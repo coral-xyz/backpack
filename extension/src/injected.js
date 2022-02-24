@@ -1,5 +1,6 @@
-const CHANNEL_INJECTED = "anchor-injected";
-const CHANNEL_CONTENT = "anchor-content";
+const CHANNEL_INJECTED_REQUEST = "anchor-injected-request";
+const CHANNEL_CONTENT_REQUEST = "anchor-content-request";
+const CHANNEL_CONTENT_RESPONSE = "anchor-content-response";
 
 const RPC_METHOD_CONNECT = "connect";
 const RPC_METHOD_DISCONNECT = "disconnect";
@@ -15,10 +16,6 @@ function initProvider() {
   window.anchor = Provider;
 }
 
-function log(str) {
-  console.log(`anchor-injected: ${str}`);
-}
-
 class Provider {
   constructor(url, options) {
     this.url = url;
@@ -27,7 +24,7 @@ class Provider {
     this.requestId = 0;
     this.responseResolvers = {};
 
-    window.addEventListener(CHANNEL_CONTENT, (event) => {
+    window.addEventListener(CHANNEL_CONTENT_RESPONSE, (event) => {
       const { id, response } = event.detail;
       const resolver = this.responseResolvers[id];
       if (!resolver) {
@@ -60,7 +57,9 @@ class Provider {
 
     const [prom, resolve, reject] = this.addResponseResolver(id);
     window.dispatchEvent(
-      new CustomEvent(CHANNEL_INJECTED, { detail: { id, method, params } })
+      new CustomEvent(CHANNEL_INJECTED_REQUEST, {
+        detail: { id, method, params },
+      })
     );
 
     const response = await this.responseResolvers[id];
@@ -79,6 +78,14 @@ class Provider {
     this.responseResolvers[requestId] = [resolve, reject];
     return [prom, resolve, reject];
   }
+}
+
+function log(str, ...args) {
+  console.log(`anchor-injected: ${str}`, ...args);
+}
+
+function error(str, ...args) {
+  console.error(`anchor-injected: ${str}`, ...args);
 }
 
 main();

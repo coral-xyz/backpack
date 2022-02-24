@@ -1,4 +1,4 @@
-const CHANNEL_CONTENT = "anchor-content";
+const CHANNEL_CONTENT_REQUEST = "anchor-content-request";
 
 const RPC_METHOD_CONNECT = "connect";
 const RPC_METHOD_DISCONNECT = "disconnect";
@@ -6,7 +6,7 @@ const RPC_METHOD_DISCONNECT = "disconnect";
 function main() {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch (message.channel) {
-      case CHANNEL_CONTENT:
+      case CHANNEL_CONTENT_REQUEST:
         handleContent(message, sender, sendResponse);
         break;
       default:
@@ -51,12 +51,12 @@ function handleDisconnect() {
   return ["disconnected yay"];
 }
 
-function log(str) {
-  console.log(`anchor-background: ${str}`);
+function log(str, ...args) {
+  console.log(`anchor-background: ${str}`, ...args);
 }
 
-function error(str) {
-  console.error(`anchor-background: ${str}`);
+function error(str, ...args) {
+  console.error(`anchor-background: ${str}`, ...args);
 }
 
 main();

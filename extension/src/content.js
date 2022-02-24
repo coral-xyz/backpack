@@ -1,5 +1,6 @@
-const CHANNEL_INJECTED = "anchor-injected";
-const CHANNEL_CONTENT = "anchor-content";
+const CHANNEL_INJECTED_REQUEST = "anchor-injected-request";
+const CHANNEL_CONTENT_REQUEST = "anchor-content-request";
+const CHANNEL_CONTENT_RESPONSE = "anchor-content-response";
 
 // Script entry.
 function main() {
@@ -26,11 +27,11 @@ function injectScript(scriptName) {
 }
 
 function initChannels() {
-  window.addEventListener(CHANNEL_INJECTED, (event) => {
+  window.addEventListener(CHANNEL_INJECTED_REQUEST, (event) => {
     const { method, params } = event.detail;
     chrome.runtime.sendMessage(
       {
-        channel: CHANNEL_CONTENT,
+        channel: CHANNEL_CONTENT_REQUEST,
         data: event.detail,
       },
       (response) => {
@@ -38,19 +39,19 @@ function initChannels() {
           return;
         }
         window.dispatchEvent(
-          new CustomEvent(CHANNEL_CONTENT, { detail: response })
+          new CustomEvent(CHANNEL_CONTENT_RESPONSE, { detail: response })
         );
       }
     );
   });
 }
 
-function log(str) {
-  console.log(`anchor-content: ${str}`);
+function log(str, ...args) {
+  console.log(`anchor-content: ${str}`, ...args);
 }
 
-function error(str) {
-  console.error(`anchor-content: ${str}`);
+function error(str, ...args) {
+  console.error(`anchor-content: ${str}`, ...args);
 }
 
 main();
