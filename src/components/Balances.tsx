@@ -1,7 +1,3 @@
 export function Balances() {
-	return (
-		<div>
-			Balances
-		</div>
-	);
+  return <div>Balances</div>;
 }

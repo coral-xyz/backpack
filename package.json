@@ -5,27 +5,28 @@
   "dependencies": {
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
-    "@testing-library/jest-dom": "^5.16.2",
-    "@testing-library/react": "^12.1.3",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.4.0",
-    "@types/node": "^16.11.25",
-    "@types/react": "^17.0.39",
-    "@types/react-dom": "^17.0.11",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^12.0.0",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "prettier": "^2.5.1",
     "react": "^17.0.2",
+    "react-browser-extension-scripts": "4.0.10",
     "react-dom": "^17.0.2",
-    "react-scripts": "5.0.0",
-    "typescript": "^4.5.5",
-    "web-vitals": "^2.1.4"
+    "react-draggable": "^4.4.3",
+    "react-resizable": "^3.0.4",
+    "typescript": "^4.1.2",
+    "web-vitals": "^1.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "clean:extension": "rm -rf ./extension/build/",
-    "build:extension": "yarn clean:extension && yarn build && cp -a ./build/. ./extension/build/ && cp -a ./extension/src/. ./extension/build/.",
-    "watch": "./watch.sh",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint:fix": "prettier src/**/* -w"
   },
   "eslintConfig": {
     "extends": [
@@ -46,6 +47,7 @@
     ]
   },
   "devDependencies": {
-    "prettier": "^2.5.1"
+    "@types/chrome": "0.0.154",
+    "@types/react-resizable": "^1.7.3"
   }
 }

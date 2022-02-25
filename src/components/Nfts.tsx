@@ -1,7 +1,3 @@
 export function Nfts() {
-	return (
-		<div>
-			NFTs
-		</div>
-	);
+  return <div>NFTs</div>;
 }
