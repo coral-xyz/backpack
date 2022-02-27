@@ -1,6 +1,7 @@
 import {
   log,
   Channel,
+  BrowserRuntime,
   CHANNEL_RPC_REQUEST,
   CHANNEL_RPC_RESPONSE,
   CHANNEL_NOTIFICATION,
@@ -22,8 +23,7 @@ function injectScript(scriptName: string) {
     const container = document.head || document.documentElement;
     const scriptTag = document.createElement("script");
     scriptTag.setAttribute("async", "false");
-    // @ts-ignore
-    scriptTag.src = chrome.runtime.getURL(scriptName);
+    scriptTag.src = BrowserRuntime.getUrl(scriptName);
     container.insertBefore(scriptTag, container.children[0]);
     container.removeChild(scriptTag);
   } catch (error) {

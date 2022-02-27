@@ -1,4 +1,5 @@
 import {
+  debug,
   Channel,
   CHANNEL_RPC_REQUEST,
   CHANNEL_NOTIFICATION,
@@ -20,6 +21,7 @@ function main() {
 }
 
 function handleRpc(ctx: Context, message: Message) {
+  debug(`handle rpc ${message.data.method}`);
   const { id } = message.data;
   const [result, error] = _handleRpc(ctx, message);
   ctx.sendResponse({

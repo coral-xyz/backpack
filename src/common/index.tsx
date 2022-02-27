@@ -10,13 +10,7 @@ export const RPC_METHOD_SIGN_MESSAGE: string = "sign-message";
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
 
-export function log(str: any, ...args: any) {
-  console.log(`anchor: ${str}`, ...args);
-}
-
-export function error(str: any, ...args: any) {
-  console.error(`anchor: ${str}`, ...args);
-}
+export const POST_MESSAGE_ORIGIN = "*";
 
 // Channel is a class that establishes communication channel from a content/injected script to
 // a background script.
@@ -25,20 +19,21 @@ export class Channel {
 
   // Forwards all messages from the client to the background script.
   public static proxy(reqChannel: string, respChannel: string) {
-    window.addEventListener(reqChannel, (event) => {
+    window.addEventListener("message", (event) => {
+      if (event.data.type !== reqChannel) return;
       // @ts-ignore
-      chrome.runtime.sendMessage(
+      BrowserRuntime.sendMessage(
         {
           channel: reqChannel,
-          // @ts-ignore
-          data: event.detail,
+          data: event.data.detail,
         },
-        (response) => {
+        (response: any) => {
           if (!response) {
             return;
           }
-          window.dispatchEvent(
-            new CustomEvent(respChannel, { detail: response })
+          window.postMessage(
+            { type: respChannel, detail: response },
+            POST_MESSAGE_ORIGIN
           );
         }
       );
@@ -48,22 +43,26 @@ export class Channel {
   // Forwards all messages from the background script to the client.
   public static proxyReverse(reqChannel: string, respChannel?: string) {
     if (respChannel) {
-      window.addEventListener(respChannel, (event) => {
-        chrome.runtime.sendMessage({
+      window.addEventListener("message", (event) => {
+        if (event.data.type !== respChannel) return;
+
+        BrowserRuntime.sendMessage({
           channel: respChannel,
-          // @ts-ignore
-          data: event.detail,
+          data: event.data.detail,
         });
       });
     }
-    chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-      if (message.channel === reqChannel) {
-        sendResponse({ result: "success" });
-        window.dispatchEvent(
-          new CustomEvent(reqChannel, { detail: message.data })
-        );
+    BrowserRuntime.addEventListener(
+      (message: any, _sender: any, sendResponse: any) => {
+        if (message.channel === reqChannel) {
+          sendResponse({ result: "success" });
+          window.postMessage(
+            { type: reqChannel, detail: message.data },
+            POST_MESSAGE_ORIGIN
+          );
+        }
       }
-    });
+    );
   }
 
   // Sends a message to the active tab, ignoring any response.
@@ -72,18 +71,81 @@ export class Channel {
       channel: this.channel,
       data,
     };
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs: any) => {
-      chrome.tabs.sendMessage(tabs[0].id, event);
-    });
+    BrowserRuntime.sendMessageActiveTab(event);
   }
 
   public handler(
     handlerFn: (message: any, sender: any, sendResponse: any) => void
   ) {
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      if (message.channel === this.channel) {
-        handlerFn(message, sender, sendResponse);
+    BrowserRuntime.addEventListener(
+      (message: any, sender: any, sendResponse: any) => {
+        if (message.channel === this.channel) {
+          handlerFn(message, sender, sendResponse);
+        }
       }
-    });
+    );
+  }
+}
+
+export function log(str: any, ...args: any) {
+  console.log(`anchor: ${str}`, ...args);
+}
+
+export function debug(str: any, ...args: any) {
+  log(str, ...args);
+}
+
+export function error(str: any, ...args: any) {
+  console.error(`anchor: ${str}`, ...args);
+}
+
+// Chrome or firefox specific apis.
+export class BrowserRuntime {
+  public static sendMessage(msg: any, cb?: any) {
+    // @ts-ignore
+    chrome
+      ? // @ts-ignore
+        chrome.runtime.sendMessage(msg, cb)
+      : // @ts-ignore
+        browser.runtime.sendMessage(msg).then(cb);
+  }
+
+  public static addEventListener(listener: any): any {
+    // @ts-ignore
+    return chrome
+      ? // @ts-ignore
+        chrome.runtime.onMessage.addListener(listener)
+      : // @ts-ignore
+        browser.runtime.onmessage.addListener(listener);
+  }
+
+  public static getUrl(scriptName: string) {
+    // @ts-ignore
+    return chrome
+      ? // @ts-ignore
+        chrome.runtime.getURL(scriptName)
+      : // @ts-ignore
+        browser.runtime.getURL(scriptName);
+  }
+
+  public static sendMessageActiveTab(msg: any) {
+    // @ts-ignore
+    return chrome
+      ? // @ts-ignore
+        chrome.tabs.query(
+          { active: true, currentWindow: true },
+          (tabs: any) => {
+            // @ts-ignore
+            chrome.tabs.sendMessage(tabs[0].id, msg);
+          }
+        )
+      : // @ts-ignore
+        browser.tabs.query(
+          { active: true, currentWindow: true },
+          (tabs: any) => {
+            // @ts-ignore
+            browser.tabs.sendMessage(tabs[0].id, msg);
+          }
+        );
   }
 }

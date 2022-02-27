@@ -10,6 +10,8 @@ const RPC_METHOD_SIGN_MESSAGE = "sign-message";
 const NOTIFICATION_CONNECTED = "anchor-connected";
 const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
 
+const POST_MESSAGE_ORIGIN = "*";
+
 // Script entry.
 function main() {
   log("starting injected script");
@@ -35,8 +37,10 @@ class Provider {
 
   _initChannels() {
     // Setup channels with the content script.
-    window.addEventListener(CHANNEL_RPC_RESPONSE, (event) => {
-      const { id, result } = event.detail;
+    window.addEventListener("message", (event) => {
+      if (event.data.type !== CHANNEL_RPC_RESPONSE) return;
+
+      const { id, result } = event.data.detail;
       const resolver = this._responseResolvers[id];
       if (!resolver) {
         error("unexpected event", event, this._responseResolvers);
@@ -46,14 +50,13 @@ class Provider {
       const [resolve, reject] = resolver;
       resolve(result);
     });
-    window.addEventListener(
-      CHANNEL_NOTIFICATION,
-      this._handleNotification.bind(this)
-    );
+    window.addEventListener("message", this._handleNotification.bind(this));
   }
 
   _handleNotification(event) {
-    switch (event.detail.name) {
+    if (event.data.type !== CHANNEL_NOTIFICATION) return;
+
+    switch (event.data.detail.name) {
       case NOTIFICATION_CONNECTED:
         this._handleNotificationConnected(event);
         break;
@@ -61,12 +64,12 @@ class Provider {
         this._handleNotificationDisconnected(event);
         break;
       default:
-        throw new Error(`unexpected notification ${event.detail.name}`);
+        throw new Error(`unexpected notification ${event.data.detail.name}`);
     }
     const handlers =
-      this._notificationHandlers[_mapNotificationName(event.detail.name)];
+      this._notificationHandlers[_mapNotificationName(event.data.detail.name)];
     if (handlers) {
-      handlers.forEach((h) => h(event.detail));
+      handlers.forEach((h) => h(event.data.detail));
     }
   }
 
@@ -126,10 +129,9 @@ class Provider {
     this._requestId += 1;
 
     const [prom, resolve, reject] = this._addResponseResolver(id);
-    window.dispatchEvent(
-      new CustomEvent(CHANNEL_RPC_REQUEST, {
-        detail: { id, method, params },
-      })
+    window.postMessage(
+      { type: CHANNEL_RPC_REQUEST, detail: { id, method, params } },
+      POST_MESSAGE_ORIGIN
     );
     return await prom;
   }
