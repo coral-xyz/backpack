@@ -4,6 +4,8 @@ import {
   CHANNEL_NOTIFICATION,
   RPC_METHOD_CONNECT,
   RPC_METHOD_DISCONNECT,
+  RPC_METHOD_SIGN_AND_SEND_TX,
+  RPC_METHOD_SIGN_MESSAGE,
   NOTIFICATION_CONNECTED,
 } from "../common";
 import { Context, Backend } from "../backend";
@@ -34,6 +36,10 @@ function _handleRpc(ctx: Context, message: Message): any {
       return handleConnect(ctx, params[0]);
     case RPC_METHOD_DISCONNECT:
       return handleDisconnect(ctx);
+    case RPC_METHOD_SIGN_AND_SEND_TX:
+      return handleSignAndSendTx(ctx, params[0]);
+    case RPC_METHOD_SIGN_MESSAGE:
+      return handleSignMessage(ctx, params[0]);
     default:
       throw new Error(`unexpected rpc method: ${method}`);
   }
@@ -52,6 +58,16 @@ function handleDisconnect(ctx: Context) {
   notificationChannel.sendMessageActiveTab({
     name: NOTIFICATION_CONNECTED,
   });
+  return [resp];
+}
+
+function handleSignAndSendTx(ctx: Context, tx: any) {
+  const resp = backend.signAndSendTx(ctx, tx);
+  return [resp];
+}
+
+function handleSignMessage(ctx: Context, msg: any) {
+  const resp = backend.signMessage(ctx, msg);
   return [resp];
 }
 

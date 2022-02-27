@@ -4,6 +4,8 @@ export const CHANNEL_NOTIFICATION = "anchor-notification";
 
 export const RPC_METHOD_CONNECT: string = "connect";
 export const RPC_METHOD_DISCONNECT: string = "disconnect";
+export const RPC_METHOD_SIGN_AND_SEND_TX: string = "sign-and-send-tx";
+export const RPC_METHOD_SIGN_MESSAGE: string = "sign-message";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
