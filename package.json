@@ -26,7 +26,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint:fix": "prettier src/**/* -w"
+    "lint:fix": "prettier src/**/* -w && prettier public/injected.js -w"
   },
   "eslintConfig": {
     "extends": [

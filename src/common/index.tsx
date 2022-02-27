@@ -16,6 +16,8 @@ export function error(str: any, ...args: any) {
   console.error(`anchor: ${str}`, ...args);
 }
 
+// Channel is a class that establishes communication channel from a content/injected script to
+// a background script.
 export class Channel {
   constructor(private channel: string) {}
 
@@ -45,47 +47,37 @@ export class Channel {
   public static proxyReverse(reqChannel: string, respChannel?: string) {
     if (respChannel) {
       window.addEventListener(respChannel, (event) => {
-        chrome.runtime.sendMessage(
-          {
-            channel: respChannel,
-            // @ts-ignore
-            data: event.detail,
-          },
-          (resp) => {
-            // no-op
-          }
-        );
+        chrome.runtime.sendMessage({
+          channel: respChannel,
+          // @ts-ignore
+          data: event.detail,
+        });
       });
     }
-    chrome.runtime.onMessage.addListener(
-      (message: any, _sender: any, _sendResponse: any) => {
-        if (message.channel === reqChannel) {
-          window.dispatchEvent(
-            new CustomEvent(reqChannel, { detail: message.data })
-          );
-        }
+    chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+      if (message.channel === reqChannel) {
+        sendResponse({ result: "success" });
+        window.dispatchEvent(
+          new CustomEvent(reqChannel, { detail: message.data })
+        );
       }
-    );
+    });
   }
 
-  // Sends a message, ignoring any response.
-  public sendMessage(data: any) {
-    // @ts-ignore
-    chrome.runtime.sendMessage(
-      {
-        channel: this.channel,
-        data,
-      },
-      (_response) => {
-        // Drop.
-      }
-    );
+  // Sends a message to the active tab, ignoring any response.
+  public sendMessageActiveTab(data: any) {
+    const event = {
+      channel: this.channel,
+      data,
+    };
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs: any) => {
+      chrome.tabs.sendMessage(tabs[0].id, event);
+    });
   }
 
   public handler(
     handlerFn: (message: any, sender: any, sendResponse: any) => void
   ) {
-    // @ts-ignore
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (message.channel === this.channel) {
         handlerFn(message, sender, sendResponse);
