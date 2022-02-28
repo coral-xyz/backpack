@@ -1,6 +1,7 @@
 import {
   debug,
   Channel,
+  PortChannel,
   BrowserRuntime,
   CHANNEL_RPC_REQUEST,
   CHANNEL_NOTIFICATION,
@@ -11,16 +12,32 @@ import {
   NOTIFICATION_CONNECTED,
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
+  CONNECTION_NAME_POPUP,
 } from "../common";
 import { Context, Backend } from "../backend";
 
+// Backend implementation. Handles business logic of RPC requests.
 const backend = new Backend();
 
+// Channel to send notifications from the background to the injected script.
 const notificationChannel = new Channel(CHANNEL_NOTIFICATION);
+
+// Channel to send rpc requests from the injected script to the channel.
 const rpcChannel = new Channel(CHANNEL_RPC_REQUEST);
 
 function main() {
+  // Handle RPC requests from the injected client.
   rpcChannel.handler(withContext(handleRpc));
+
+  // Handle RPC requests from the extesnion UI.
+  PortChannel.handler(CONNECTION_NAME_POPUP, handleRpcUi);
+}
+
+function handleRpcUi(msg: any): any {
+  const { id, method, params } = msg;
+  debug(`handle rpc ${method}`);
+  console.log("handling rpc ui", msg);
+  return "success handle rpc ui";
 }
 
 function handleRpc(ctx: Context, message: Message) {
@@ -95,7 +112,7 @@ function openPopupWindow() {
       height: EXTENSION_HEIGHT,
       top: window.top,
       left: window.left + (window.width - EXTENSION_WIDTH),
-      //      setSelfAsOpener: true,
+      //      setSelfAsOpener: true, // Doesn't work on firefox.
       focused: true,
     });
   });

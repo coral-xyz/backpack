@@ -43,7 +43,7 @@ class Provider {
       const { id, result } = event.data.detail;
       const resolver = this._responseResolvers[id];
       if (!resolver) {
-        error("unexpected event", event, this._responseResolvers);
+        error("unexpected event", event);
         throw new Error("unexpected event");
       }
       delete this._responseResolvers[id];
