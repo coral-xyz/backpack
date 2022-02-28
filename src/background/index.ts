@@ -1,6 +1,7 @@
 import {
   debug,
   Channel,
+  BrowserRuntime,
   CHANNEL_RPC_REQUEST,
   CHANNEL_NOTIFICATION,
   RPC_METHOD_CONNECT,
@@ -8,6 +9,8 @@ import {
   RPC_METHOD_SIGN_AND_SEND_TX,
   RPC_METHOD_SIGN_MESSAGE,
   NOTIFICATION_CONNECTED,
+  EXTENSION_WIDTH,
+  EXTENSION_HEIGHT,
 } from "../common";
 import { Context, Backend } from "../backend";
 
@@ -52,6 +55,7 @@ function handleConnect(ctx: Context, onlyIfTrustedMaybe: boolean) {
   notificationChannel.sendMessageActiveTab({
     name: NOTIFICATION_CONNECTED,
   });
+  openPopupWindow();
   return [resp];
 }
 
@@ -80,6 +84,21 @@ function withContext(
     const ctx = { sender, sendResponse };
     return handler(ctx, message);
   };
+}
+
+function openPopupWindow() {
+  BrowserRuntime.getLastFocusedWindow().then((window: any) => {
+    BrowserRuntime.openWindow({
+      url: "popup.html",
+      type: "popup",
+      width: EXTENSION_WIDTH,
+      height: EXTENSION_HEIGHT,
+      top: window.top,
+      left: window.left + (window.width - EXTENSION_WIDTH),
+      //      setSelfAsOpener: true,
+      focused: true,
+    });
+  });
 }
 
 type Message = {

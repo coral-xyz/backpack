@@ -12,6 +12,9 @@ export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
 
 export const POST_MESSAGE_ORIGIN = "*";
 
+export const EXTENSION_WIDTH = 357;
+export const EXTENSION_HEIGHT = 600;
+
 // Channel is a class that establishes communication channel from a content/injected script to
 // a background script.
 export class Channel {
@@ -148,4 +151,37 @@ export class BrowserRuntime {
           }
         );
   }
+
+  public static async openWindow(options: any) {
+    return new Promise((resolve, reject) => {
+      chrome.windows.create(options, (newWindow) => {
+        // todo: firefox
+        const error = BrowserRuntime.checkForError();
+        if (error) {
+          return reject(error);
+        }
+        return resolve(newWindow);
+      });
+    });
+  }
+
+  public static checkForError() {
+    // @ts-ignore
+    const { lastError } = chrome ? chrome.runtime : browser.runtime;
+    if (!lastError) {
+      return undefined;
+    }
+    if (lastError.stack && lastError.message) {
+      return lastError;
+    }
+    return new Error(lastError.message);
+  }
+
+  public static async getLastFocusedWindow(): Promise<Window> {
+    return new Promise((resolve) => {
+      chrome.windows.getLastFocused(resolve);
+    });
+  }
 }
+
+type Window = any;
