@@ -42,6 +42,7 @@ function main() {
 
 function handleRpcUi<T = any>(msg: RpcRequest): RpcResponse<T> {
   const { method, params } = msg;
+  debug(`handle rpc ${method}`);
   switch (method) {
     case UI_RPC_NOTIFICATIONS_SUBSCRIBE:
       return handleNotificationsSubscribe();
