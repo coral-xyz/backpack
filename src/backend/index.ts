@@ -28,7 +28,6 @@ export class Backend {
 
 export type Context = {
   sender: any;
-  sendResponse: any;
 };
 
 type MessageSignature = string;

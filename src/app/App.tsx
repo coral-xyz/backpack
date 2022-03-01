@@ -1,17 +1,21 @@
 import React from "react";
 import { Button } from "@material-ui/core";
-import { PortChannel, EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../common";
+import {
+  PortChannelClient,
+  EXTENSION_WIDTH,
+  EXTENSION_HEIGHT,
+} from "../common";
 import "./App.css";
 
-let _backgroundPort: PortChannel | null = null;
+let _backgroundClient: PortChannelClient | null = null;
 
-export function setBackgroundPort(backgroundPort: PortChannel) {
-  _backgroundPort = backgroundPort;
+export function setBackgroundClient(backgroundClient: PortChannelClient) {
+  _backgroundClient = backgroundClient;
 }
 
 function App() {
   const clickButton = async () => {
-    const resp = await _backgroundPort!.request({
+    const resp = await _backgroundClient!.request({
       method: "test ayyyyy",
       params: [1234],
     });

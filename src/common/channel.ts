@@ -1,12 +1,11 @@
 import { POST_MESSAGE_ORIGIN } from "./constants";
 import { BrowserRuntime } from "./browser";
 import { debug, error } from "./logging";
+import { RpcRequest, RpcResponse, Notification } from "./rpc";
 
 // Channel is a class that establishes communication channel from a
 // content/injected script to a background script.
 export class Channel {
-  constructor(private channel: string) {}
-
   // Forwards all messages from the client to the background script.
   public static proxy(reqChannel: string, respChannel: string) {
     window.addEventListener("message", (event) => {
@@ -55,22 +54,42 @@ export class Channel {
     );
   }
 
+  public static client(name: string): ChannelClient {
+    return new ChannelClient(name);
+  }
+
+  public static server(name: string): ChannelServer {
+    return new ChannelServer(name);
+  }
+}
+
+export class ChannelClient {
+  constructor(private name: string) {}
+
   // Sends a message to the active tab, ignoring any response.
   public sendMessageActiveTab(data: any) {
     const event = {
-      channel: this.channel,
+      channel: this.name,
       data,
     };
     BrowserRuntime.sendMessageActiveTab(event);
   }
+}
 
-  public handler(
-    handlerFn: (message: any, sender: any, sendResponse: any) => void
-  ) {
+export class ChannelServer {
+  constructor(private name: string) {}
+
+  public handler(handlerFn: (message: any, sender: any) => RpcResponse) {
     BrowserRuntime.addEventListener(
-      (message: any, sender: any, sendResponse: any) => {
-        if (message.channel === this.channel) {
-          handlerFn(message, sender, sendResponse);
+      (msg: any, sender: any, sendResponse: any) => {
+        if (msg.channel === this.name) {
+          const id = msg.data.id;
+          const [result, error] = handlerFn(msg, sender);
+          sendResponse({
+            id,
+            result,
+            error,
+          });
         }
       }
     );
@@ -80,9 +99,55 @@ export class Channel {
 // PortChannel is like Channel, but with a persistent connection, using the
 // browser's port API.
 export class PortChannel {
+  public static client(name: string): PortChannelClient {
+    return new PortChannelClient(name);
+  }
+
+  public static server(name: string): PortChannelServer {
+    return new PortChannelServer(name);
+  }
+
+  public static notifications(name: string): PortChannelNotifications {
+    return new PortChannelNotifications(name);
+  }
+}
+
+export class PortChannelServer {
+  constructor(private name: string) {}
+
+  public handler(handlerFn: (req: RpcRequest) => RpcResponse) {
+    chrome.runtime.onConnect.addListener((port) => {
+      debug(`on connect for server port ${port.name}`);
+      if (port.name === this.name) {
+        port.onMessage.addListener((req) => {
+          const id = req.id;
+          const [result, error] = handlerFn(req);
+          port.postMessage({ id, result, error });
+        });
+      }
+    });
+  }
+}
+
+export class PortChannelNotifications {
+  constructor(private name: string) {}
+
+  public onNotification(handlerFn: (notif: Notification) => void) {
+    chrome.runtime.onConnect.addListener((port) => {
+      debug(`on connect for notification port ${port.name}`);
+      if (port.name === this.name) {
+        port.onMessage.addListener((req) => {
+          handlerFn(req);
+        });
+      }
+    });
+  }
+}
+
+export class PortChannelClient {
   private _requestId: number;
-  private _port: Port;
   private _responseResolvers: any;
+  readonly _port: Port;
 
   constructor(name: string) {
     this._port = BrowserRuntime.connect({
@@ -107,6 +172,16 @@ export class PortChannel {
     });
   }
 
+  private _addResponseResolver(requestId: number): [Promise<any>, any, any] {
+    let resolve, reject;
+    const prom = new Promise((_resolve, _reject) => {
+      resolve = _resolve;
+      reject = _reject;
+    });
+    this._responseResolvers[requestId] = [resolve, reject];
+    return [prom, resolve, reject];
+  }
+
   public async request<T = any>({
     method,
     params,
@@ -118,36 +193,28 @@ export class PortChannel {
     this._port.postMessage({ id, method, params });
     return await prom;
   }
+}
 
-  private _addResponseResolver(requestId: number): [Promise<any>, any, any] {
-    let resolve, reject;
-    const prom = new Promise((_resolve, _reject) => {
-      resolve = _resolve;
-      reject = _reject;
-    });
-    this._responseResolvers[requestId] = [resolve, reject];
-    return [prom, resolve, reject];
+export class NotificationsClient {
+  private sink: PortChannelClient | null = null;
+
+  constructor(private name: string) {}
+
+  public connect() {
+    if (this.sink !== null) {
+      debug("already connected exiting function");
+    }
+    this.sink = PortChannel.client(this.name);
+    this.sink._port.onDisconnect.addListener(() => (this.sink = null));
   }
 
-  public static handler(name: string, handlerFn: (msg: any) => void) {
-    chrome.runtime.onConnect.addListener((port) => {
-      debug(`on connect for port ${port.name}`);
-      if (port.name === name) {
-        port.onMessage.addListener((msg) => {
-          const id = msg.id;
-          const result = handlerFn(msg);
-          port.postMessage({ id, result });
-        });
-      }
-    });
+  public pushNotification(notif: Notification) {
+    if (this.sink === null) {
+      debug("sink is null skipping notification");
+      return;
+    }
+    this.sink._port.postMessage(notif);
   }
 }
 
-type RpcRequest = {
-  id: number;
-  method: string;
-  params: Array<any>;
-};
-
-type RpcResponse<T> = any;
 type Port = any;
