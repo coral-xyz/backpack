@@ -86,6 +86,34 @@ export class BrowserRuntime {
       : // @ts-ignore
         browser.runtime.connect(connectInfo);
   }
+
+  public static async getLocalStorage(key: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      return chrome.storage.local.get(key, (result) => {
+        const err = BrowserRuntime.checkForError();
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result[key]);
+        }
+      });
+    });
+  }
+
+  public static async setLocalStorage(key: string, value: any): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const obj: any = {};
+      obj[key] = value;
+      chrome.storage.local.set(obj, () => {
+        const err = BrowserRuntime.checkForError();
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
 }
 
 type Window = any;
