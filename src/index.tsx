@@ -30,7 +30,7 @@ function bootstrap() {
 		.onNotification((notif: Notification) => {
 			console.log('ui received background script notification', notif);
 		});
-	backgroundClient.request({ method: UI_RPC_NOTIFICATIONS_SUBSCRIBE });
+	backgroundClient.request({ method: UI_RPC_NOTIFICATIONS_SUBSCRIBE, params: [] });
 }
 
 function render() {

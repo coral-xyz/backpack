@@ -1,5 +1,5 @@
 export type RpcRequest = {
-  id: number;
+  id?: number;
   method: string;
   params: any[];
 };

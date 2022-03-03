@@ -38,6 +38,10 @@ const notificationsUi = new NotificationsClient(CONNECTION_POPUP_NOTIFICATIONS);
 function main() {
   rpcServerInjected.handler(withContext(handleRpc));
   rpcServerUi.handler(handleRpcUi);
+
+  chrome.browserAction.onClicked.addListener((tab) => {
+    console.log("tab", tab);
+  });
 }
 
 function handleRpcUi<T = any>(msg: RpcRequest): RpcResponse<T> {

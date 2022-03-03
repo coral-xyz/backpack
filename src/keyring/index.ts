@@ -14,11 +14,17 @@ export class Keyring {
   // `address` is the key on the keyring to use for signing.
   public signTransaction(tx: Buffer, address: PublicKey): string {
     const kp = this.keypairs.find((kp) => kp.publicKey.equals(address));
+    if (!kp) {
+      throw new Error(`unable to find ${address.toString()}`);
+    }
     return bs58.encode(nacl.sign.detached(tx, kp.secretKey));
   }
 
   public exportPrivateKey(address: PublicKey): string {
     const kp = this.keypairs.find((kp) => kp.publicKey.equals(address));
+    if (!kp) {
+      throw new Error(`unable to find ${address.toString()}`);
+    }
     return bs58.encode(kp.secretKey);
   }
 
@@ -32,8 +38,8 @@ export class Keyring {
 
   public static fromString(str: string): Keyring {
     const payload = JSON.parse(str);
-    const keypairs = payload.keypairs.map((kp) =>
-      Keypair.fromSecretKey(Buffer.from(kp, "hex"))
+    const keypairs = payload.keypairs.map((secret: string) =>
+      Keypair.fromSecretKey(Buffer.from(secret, "hex"))
     );
     return new Keyring(keypairs);
   }

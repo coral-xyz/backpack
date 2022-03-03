@@ -1,9 +1,11 @@
 import { BrowserRuntime, EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../common";
 
+const POPUP_HTML = "popup.html";
+
 export function openPopupWindow() {
   BrowserRuntime.getLastFocusedWindow().then((window: any) => {
     BrowserRuntime.openWindow({
-      url: "popup.html",
+      url: POPUP_HTML,
       type: "popup",
       width: EXTENSION_WIDTH,
       height: EXTENSION_HEIGHT,
@@ -13,4 +15,8 @@ export function openPopupWindow() {
       focused: true,
     });
   });
+}
+
+export function openExpandedExtension() {
+  window.open(chrome.extension.getURL(POPUP_HTML), "_blank");
 }

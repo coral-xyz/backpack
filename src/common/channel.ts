@@ -185,7 +185,7 @@ export class PortChannelClient {
   public async request<T = any>({
     method,
     params,
-  }: any): Promise<RpcResponse<T>> {
+  }: RpcRequest): Promise<RpcResponse<T>> {
     const id = this._requestId;
     this._requestId += 1;
 

@@ -14,7 +14,10 @@ export class KeyringStore {
   //	private
 
   //
-  constructor(db: LocalStorageDb, memDb: MemDb) {}
+  constructor(db: LocalStorageDb, memDb: MemDb) {
+    this.db = db;
+    this.memDb = memDb;
+  }
 
   /*
 	// Creates a new keyring with the given mnemonic.
@@ -53,7 +56,7 @@ class LocalStorageDb implements Db {
 }
 
 class MemDb {
-  private db = {};
+  private db: { [key: string]: any } = {};
 
   async get(key: string): Promise<any> {
     return this.db[key];
