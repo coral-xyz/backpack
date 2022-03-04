@@ -114,6 +114,12 @@ export class BrowserRuntime {
       });
     });
   }
+
+  public static closeActiveTab() {
+    chrome.tabs.getCurrent((tab: any) => {
+      chrome.tabs.remove(tab.id, function () {});
+    });
+  }
 }
 
 type Window = any;

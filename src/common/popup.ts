@@ -20,3 +20,12 @@ export function openPopupWindow() {
 export function openExpandedExtension() {
   window.open(chrome.extension.getURL(POPUP_HTML), "_blank");
 }
+
+export function isExtensionPopup() {
+  // A bit of a hack, but we want to know this *on click*  of the extension
+  // button and so the dimensions can be smaller since the view hasn't loaded.
+  return (
+    window.innerWidth <= EXTENSION_WIDTH &&
+    window.innerHeight <= EXTENSION_HEIGHT
+  );
+}

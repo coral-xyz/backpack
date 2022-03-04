@@ -28,17 +28,23 @@ export class Keyring {
     return bs58.encode(kp.secretKey);
   }
 
-  public toString(): string {
-    return JSON.stringify({
+  public toJson(): any {
+    return {
       keypairs: this.keypairs.map((kp) =>
         Buffer.from(kp.secretKey).toString("hex")
       ),
-    });
+    };
   }
 
-  public static fromString(str: string): Keyring {
-    const payload = JSON.parse(str);
+  public static fromJson(payload: any): Keyring {
     const keypairs = payload.keypairs.map((secret: string) =>
+      Keypair.fromSecretKey(Buffer.from(secret, "hex"))
+    );
+    return new Keyring(keypairs);
+  }
+
+  public static fromImports(secretKeys: Array<string>): Keyring {
+    const keypairs = secretKeys.map((secret: string) =>
       Keypair.fromSecretKey(Buffer.from(secret, "hex"))
     );
     return new Keyring(keypairs);
@@ -120,22 +126,17 @@ export class HdKeyring extends Keyring {
     this.numberOfAccounts += 1;
   }
 
-  public toString(): string {
-    return JSON.stringify({
+  public toJson(): any {
+    return {
       mnemonic: this.mnemonic,
       seed: this.seed.toString("hex"),
       numberOfAccounts: this.numberOfAccounts,
       derivationPath: this.derivationPath,
-    });
+    };
   }
 
-  public static fromString(str: string): HdKeyring {
-    const {
-      mnemonic,
-      seed: seedStr,
-      numberOfAccounts,
-      derivationPath,
-    } = JSON.parse(str);
+  public static fromJson(obj: any): HdKeyring {
+    const { mnemonic, seed: seedStr, numberOfAccounts, derivationPath } = obj;
     const seed = Buffer.from(seedStr, "hex");
     const keypairs = deriveKeypairs(seed, derivationPath, numberOfAccounts);
 

@@ -12,15 +12,19 @@ import {
   RPC_METHOD_DISCONNECT,
   RPC_METHOD_SIGN_AND_SEND_TX,
   RPC_METHOD_SIGN_MESSAGE,
-  UI_RPC_NOTIFICATIONS_SUBSCRIBE,
+  UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE,
+  UI_RPC_METHOD_KEYRING_STORE_CREATE,
+  UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
+  UI_RPC_METHOD_KEYRING_CREATE,
+  UI_RPC_METHOD_HD_KEYRING_CREATE,
+  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
+  UI_RPC_METHOD_KEYRING_STORE_STATE,
   NOTIFICATION_CONNECTED,
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_NOTIFICATIONS,
 } from "../common";
 import { Context, Backend } from "../backend";
-
-// Backend implementation. Handles business logic of RPC requests.
-const backend = new Backend();
+import { DerivationPath } from "../keyring/crypto";
 
 // Channel to send notifications from the background to the injected script.
 const notificationsInjected = Channel.client(CHANNEL_NOTIFICATION);
@@ -35,21 +39,32 @@ const rpcServerUi = PortChannel.server(CONNECTION_POPUP_RPC);
 // This should only be created *after* the UI explicitly asks for it.
 const notificationsUi = new NotificationsClient(CONNECTION_POPUP_NOTIFICATIONS);
 
+// Backend implementation. Handles business logic of RPC requests.
+const backend = new Backend(notificationsUi);
+
 function main() {
   rpcServerInjected.handler(withContext(handleRpc));
   rpcServerUi.handler(handleRpcUi);
-
-  chrome.browserAction.onClicked.addListener((tab) => {
-    console.log("tab", tab);
-  });
 }
 
-function handleRpcUi<T = any>(msg: RpcRequest): RpcResponse<T> {
+async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
   const { method, params } = msg;
   debug(`handle rpc ${method}`);
   switch (method) {
-    case UI_RPC_NOTIFICATIONS_SUBSCRIBE:
+    case UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE:
       return handleNotificationsSubscribe();
+    case UI_RPC_METHOD_KEYRING_STORE_CREATE:
+      return await handleKeyringStoreCreate(params[0], params[1], params[2]);
+    case UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS:
+      return await handleKeyringStoreReadAllPubkeys();
+    case UI_RPC_METHOD_HD_KEYRING_CREATE:
+      return await handleHdKeyringCreate(params[0]);
+    case UI_RPC_METHOD_KEYRING_CREATE:
+      return await handleKeyringCreate(params[0]);
+    case UI_RPC_METHOD_KEYRING_STORE_STATE:
+      return await handleKeyringStoreState();
+    case UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE:
+      return await handleKeyringStoreKeepAlive();
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -104,6 +119,51 @@ function handleSignAndSendTx(ctx: Context, tx: any): RpcResponse<string> {
 
 function handleSignMessage(ctx: Context, msg: any): RpcResponse<string> {
   const resp = backend.signMessage(ctx, msg);
+  return [resp];
+}
+
+async function handleKeyringStoreCreate(
+  mnemonic: string,
+  derivationPath: DerivationPath,
+  password: string
+): Promise<RpcResponse<string>> {
+  console.log("creating keyring store");
+  const resp = await backend.keyringStoreCreate(
+    mnemonic,
+    derivationPath,
+    password
+  );
+  return [resp];
+}
+
+async function handleHdKeyringCreate(
+  mnemonic: string
+): Promise<RpcResponse<string>> {
+  const resp = backend.hdKeyringCreate(mnemonic);
+  return [resp];
+}
+
+async function handleKeyringCreate(
+  secretKey: string
+): Promise<RpcResponse<string>> {
+  const resp = backend.keyringCreate(secretKey);
+  return [resp];
+}
+
+async function handleKeyringStoreState() {
+  const resp = await backend.keyringStoreState();
+  return [resp];
+}
+
+async function handleKeyringStoreKeepAlive() {
+  const resp = await backend.keyringStoreKeepAlive();
+  return [resp];
+}
+
+async function handleKeyringStoreReadAllPubkeys(): Promise<
+  RpcResponse<Array<string>>
+> {
+  const resp = backend.keyringStoreReadAllPubkeys();
   return [resp];
 }
 

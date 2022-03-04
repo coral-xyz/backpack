@@ -114,7 +114,6 @@ export function CreateNewWallet() {
   };
   const handleDone = () => {
     const background = getBackgroundClient();
-    console.log("handling done", background);
     background
       .request({
         method: UI_RPC_METHOD_KEYRING_STORE_CREATE,

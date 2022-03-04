@@ -16,8 +16,9 @@ const useStyles = makeStyles((theme: any) => ({
 
 export function ImportWallet() {
   const classes = useStyles();
-  const [password, setPassword] = useState("");
   const [activeStep, setActiveState] = useState(0);
+  const [mnemonic, setMnemonic] = useState("");
+  const [password, setPassword] = useState("");
   const [accounts, setAccounts] = useState<null | Array<any>>(null);
   const handleNext = () => {
     setActiveState(activeStep + 1);
@@ -26,7 +27,9 @@ export function ImportWallet() {
     setActiveState(activeStep - 1);
   };
   const handleDone = () => {
-    // todo
+    // TODO
+    // - store mnemonic in background storage
+    // - trigger loading of regular UI
   };
   return (
     <div
@@ -46,7 +49,14 @@ export function ImportWallet() {
           flex: 1,
         }}
       >
-        {activeStep === 0 && <ImportMnemonic next={handleNext} />}
+        {activeStep === 0 && (
+          <ImportMnemonic
+            next={(mnemonic: string) => {
+              setMnemonic(mnemonic);
+              handleNext();
+            }}
+          />
+        )}
         {activeStep === 1 && (
           <ImportAccounts
             next={(accounts: Array<any>) => {
@@ -70,7 +80,7 @@ export function ImportWallet() {
   );
 }
 
-function ImportMnemonic({ next }: any) {
+function ImportMnemonic({ next }: { next: (m: string) => void }) {
   const canContinue = true;
   return <WithContinue next={next} canContinue={canContinue}></WithContinue>;
 }

@@ -4,18 +4,13 @@ import { MuiThemeProvider } from "@material-ui/core/styles";
 import { createTheme } from "@material-ui/core/styles";
 import {
   openExpandedExtension,
-  PortChannelClient,
+  isExtensionPopup,
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
 } from "../common";
 import { Onboarding } from "../components/Onboarding";
+import { KeyringStoreState, KeyringStoreStateEnum } from "../keyring/store";
 import "./App.css";
-
-let _backgroundClient: PortChannelClient | null = null;
-
-export function setBackgroundClient(backgroundClient: PortChannelClient) {
-  _backgroundClient = backgroundClient;
-}
 
 const theme = createTheme({
   palette: {},
@@ -29,34 +24,38 @@ const theme = createTheme({
   overrides: {},
 });
 
-export function isExtensionPopup() {
-  // A bit of a hack, but we want to know this *on click*  of the extension
-  // button and so the dimensions can be smaller since the view hasn't loaded.
-  return (
-    window.innerWidth <= EXTENSION_WIDTH &&
-    window.innerHeight <= EXTENSION_HEIGHT
-  );
-}
+export default function App({ state }: { state: KeyringStoreState }) {
+  const needsOnboarding = state === KeyringStoreStateEnum.NeedsOnboarding;
+  const isLocked = !needsOnboarding && state === KeyringStoreStateEnum.Locked;
+  const isUnlocked = !needsOnboarding && !isLocked;
 
-export default function App() {
-  console.log(
-    "window",
-    window.innerWidth,
-    window.innerHeight,
-    isExtensionPopup()
-  );
-  if (isExtensionPopup()) {
-    openExpandedExtension();
-    return <></>;
+  // Open the extension in an expanded window if we need to onboard.
+  if (needsOnboarding) {
+    // Check we're not already in the expanded window to avoid an infinite loop.
+    if (isExtensionPopup()) {
+      openExpandedExtension();
+      return <></>;
+    }
   }
+
   return (
     <div
       style={{ width: `${EXTENSION_WIDTH}px`, height: `${EXTENSION_HEIGHT}px` }}
     >
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
-        <Onboarding />
+        {needsOnboarding && <Onboarding />}
+        {isLocked && <Locked />}
+        {isUnlocked && <Wallet />}
       </MuiThemeProvider>
     </div>
   );
+}
+
+function Wallet() {
+  return <div>200ms wallet yay</div>;
+}
+
+function Locked() {
+  return <div>Locked yay!</div>;
 }

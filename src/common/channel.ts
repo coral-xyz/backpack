@@ -115,14 +115,16 @@ export class PortChannel {
 export class PortChannelServer {
   constructor(private name: string) {}
 
-  public handler(handlerFn: (req: RpcRequest) => RpcResponse) {
+  public handler(handlerFn: (req: RpcRequest) => Promise<RpcResponse>) {
     chrome.runtime.onConnect.addListener((port) => {
       debug(`on connect for server port ${port.name}`);
       if (port.name === this.name) {
         port.onMessage.addListener((req) => {
           const id = req.id;
-          const [result, error] = handlerFn(req);
-          port.postMessage({ id, result, error });
+          handlerFn(req).then((resp) => {
+            const [result, error] = resp;
+            port.postMessage({ id, result, error });
+          });
         });
       }
     });
