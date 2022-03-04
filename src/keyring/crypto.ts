@@ -57,7 +57,7 @@ function derivePathStr(dPath: DerivationPath, accountIndex: number): string {
   switch (dPath) {
     case DerivationPath.Bip44:
       return accountIndex === 0
-        ? `m/44'/501'/`
+        ? `m/44'/501'`
         : `m/44'/501'/${accountIndex - 1}'`;
     case DerivationPath.Bip44Change:
       return `m/44'/501'/${accountIndex}'/0'`;

@@ -46,7 +46,7 @@ export class Keyring {
 }
 
 export class HdKeyring extends Keyring {
-  private mnemonic: string;
+  readonly mnemonic: string;
   private seed: Buffer;
   private numberOfAccounts: number;
   private derivationPath: DerivationPath;
@@ -94,7 +94,7 @@ export class HdKeyring extends Keyring {
   }
 
   public static generate() {
-    const mnemonic = generateMnemonic();
+    const mnemonic = generateMnemonic(256);
     const seed = mnemonicToSeedSync(mnemonic);
     const numberOfAccounts = 1;
     const derivationPath = DerivationPath.Bip44;

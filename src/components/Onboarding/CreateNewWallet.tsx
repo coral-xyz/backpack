@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   makeStyles,
   MobileStepper,
@@ -8,8 +8,9 @@ import {
   TextField,
 } from "@material-ui/core";
 import { KeyboardArrowLeft } from "@material-ui/icons";
+import { HdKeyring } from "../../keyring";
 
-const useStyles = makeStyles((theme: any) => ({
+export const useStyles = makeStyles((theme: any) => ({
   stepper: {
     backgroundColor: theme.custom.colors.background,
     borderBottom: `solid 1pt #333333`,
@@ -83,6 +84,10 @@ const useStyles = makeStyles((theme: any) => ({
     textAlign: "left",
     marginTop: "8px",
   },
+  mnemonicDisplayContainer: {
+    border: `solid 1pt #333333`,
+    backgroundColor: "#333333",
+  },
 }));
 
 const STEP_COUNT = 4;
@@ -90,11 +95,25 @@ const STEP_COUNT = 4;
 export function CreateNewWallet() {
   const classes = useStyles();
   const [activeStep, setActiveState] = useState(0);
+  const hdKeyring = useMemo(() => {
+    return HdKeyring.generate();
+  }, []);
+  const [password, setPassword] = useState("");
   const handleNext = () => {
     setActiveState(activeStep + 1);
   };
   const handleBack = () => {
     setActiveState(activeStep - 1);
+  };
+  const handleDone = () => {
+    // TODO
+    // - store mnemonic in background storage
+    // - trigger loading of regular UI
+    console.log(
+      "finishing with password/mnemonic",
+      password,
+      hdKeyring.mnemonic
+    );
   };
   return (
     <div
@@ -104,53 +123,37 @@ export function CreateNewWallet() {
         height: "100%",
       }}
     >
-      <MobileStepper
-        className={classes.stepper}
-        classes={{
-          dot: classes.stepperDot,
-          dotActive: classes.stepperDotActive,
-        }}
-        variant="dots"
-        steps={STEP_COUNT}
-        position="static"
+      <Stepper
         activeStep={activeStep}
-        nextButton={
-          <Button
-            style={{ width: "24px", visibility: "hidden" }}
-            classes={{
-              root: classes.buttonRoot,
-            }}
-          ></Button>
-        }
-        backButton={
-          <Button
-            size="small"
-            onClick={handleBack}
-            disabled={activeStep === 0}
-            className={classes.progressButton}
-            classes={{
-              root: classes.buttonRoot,
-            }}
-          >
-            <KeyboardArrowLeft className={classes.progressButtonRightLabel} />
-          </Button>
-        }
+        handleBack={handleBack}
+        stepCount={STEP_COUNT}
       />
       <div
         style={{
           flex: 1,
         }}
       >
-        {activeStep === 0 && <CreatePassword next={handleNext} />}
-        {activeStep === 1 && <ShowMnemonic next={handleNext} />}
+        {activeStep === 0 && (
+          <CreatePassword
+            next={(pw) => {
+              setPassword(pw);
+              handleNext();
+            }}
+          />
+        )}
+        {activeStep === 1 && (
+          <ShowMnemonic keyring={hdKeyring} next={handleNext} />
+        )}
+        {activeStep === 2 && <Shortcut next={handleNext} />}
+        {activeStep === 3 && <Done done={handleDone} />}
       </div>
     </div>
   );
 }
 
-function CreatePassword({ next }: { next: () => void }) {
+export function CreatePassword({ next }: { next: (password: string) => void }) {
   const classes = useStyles();
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(true);
   const [password, setPassword] = useState("");
   const [passwordDup, setPasswordDup] = useState("");
   const [error, setError] = useState<null | string>(null);
@@ -163,7 +166,7 @@ function CreatePassword({ next }: { next: () => void }) {
       setError(`Passwords don't match`);
       return;
     }
-    next();
+    next(password);
   };
   return (
     <WithContinue next={clickContinue} canContinue={canContinue}>
@@ -208,35 +211,96 @@ function CreatePassword({ next }: { next: () => void }) {
         />
       </div>
       {error && <Typography className={classes.errorMsg}>{error}</Typography>}
-      <div className={classes.termsContainer}>
-        <Checkbox
-          className={classes.checkBox}
-          checked={checked}
-          onChange={() => setChecked(!checked)}
-        />
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            flexDirection: "column",
-          }}
-        >
-          <Typography className={classes.subtext}>
-            I agree to the terms of service
-          </Typography>
-        </div>
-      </div>
+      <CheckboxForm
+        checked={checked}
+        setChecked={setChecked}
+        label={"I agree to the terms of service"}
+      />
     </WithContinue>
   );
 }
 
-function ShowMnemonic({ next }: { next: () => void }) {
+function CheckboxForm({ checked, setChecked, label }: any) {
   const classes = useStyles();
-  const canContinue = true;
-  return <WithContinue next={next} canContinue={canContinue}></WithContinue>;
+  return (
+    <div className={classes.termsContainer}>
+      <Checkbox
+        className={classes.checkBox}
+        checked={checked}
+        onChange={() => setChecked(!checked)}
+      />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        <Typography className={classes.subtext}>{label}</Typography>
+      </div>
+    </div>
+  );
 }
 
-function WithContinue(props: any) {
+function ShowMnemonic({
+  next,
+  keyring,
+}: {
+  next: () => void;
+  keyring: HdKeyring;
+}) {
+  const classes = useStyles();
+  const [checked, setChecked] = useState(true);
+  const canContinue = checked;
+  return (
+    <WithContinue next={next} canContinue={canContinue}>
+      <div
+        style={{
+          marginBottom: "8px",
+        }}
+      >
+        <Typography style={{ fontSize: "28px" }}>
+          Secret Recovery Phrase
+        </Typography>
+        <Typography style={{ fontSize: "14px" }}>
+          Thise phrase is the ONLY way to recover your wallet. Do not share it
+          with anyone!
+        </Typography>
+      </div>
+      <MnemonicDisplay keyring={keyring} />
+      <CheckboxForm
+        checked={checked}
+        setChecked={setChecked}
+        label={"I saved my Secret Recovery Phrase"}
+      />
+    </WithContinue>
+  );
+}
+
+function MnemonicDisplay({ keyring }: { keyring: HdKeyring }) {
+  const classes = useStyles();
+  return (
+    <div className={classes.mnemonicDisplayContainer}>{keyring.mnemonic}</div>
+  );
+}
+
+export function Shortcut({ next }: { next: () => void }) {
+  return (
+    <WithContinue next={next} canContinue={true}>
+      Shortcut here
+    </WithContinue>
+  );
+}
+
+export function Done({ done }: { done: () => void }) {
+  return (
+    <WithContinue next={done} canContinue={true} buttonLabel={"Finish"}>
+      TODO
+    </WithContinue>
+  );
+}
+
+export function WithContinue(props: any) {
   const classes = useStyles();
   return (
     <div className={classes.withContinueContainer}>
@@ -263,9 +327,47 @@ function WithContinue(props: any) {
             disabled: classes.disabledContinue,
           }}
         >
-          Continue
+          {props.buttonLabel ?? "Continue"}
         </Button>
       </div>
     </div>
+  );
+}
+
+export function Stepper({ activeStep, handleBack, stepCount }: any) {
+  const classes = useStyles();
+  return (
+    <MobileStepper
+      className={classes.stepper}
+      classes={{
+        dot: classes.stepperDot,
+        dotActive: classes.stepperDotActive,
+      }}
+      variant="dots"
+      steps={stepCount}
+      position="static"
+      activeStep={activeStep}
+      nextButton={
+        <Button
+          style={{ width: "24px", visibility: "hidden" }}
+          classes={{
+            root: classes.buttonRoot,
+          }}
+        ></Button>
+      }
+      backButton={
+        <Button
+          size="small"
+          onClick={handleBack}
+          disabled={activeStep === 0}
+          className={classes.progressButton}
+          classes={{
+            root: classes.buttonRoot,
+          }}
+        >
+          <KeyboardArrowLeft className={classes.progressButtonRightLabel} />
+        </Button>
+      }
+    />
   );
 }
