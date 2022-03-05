@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App, { _setAppState } from './app/App';
+import App from './app/App';
 import reportWebVitals from './reportWebVitals';
 import {
 	debug,
@@ -17,6 +17,7 @@ import {
 } from './common';
 import { setBackgroundClient } from './background/client';
 import { KeyringStoreState, KeyringStoreStateEnum } from './keyring/store';
+import { setKeyringStoreState } from './context/KeyringStoreState';
 
 async function main() {
 	const state = await bootstrap();
@@ -67,15 +68,17 @@ function notificationsHandler(notif: Notification) {
 }
 
 function handleKeyringStoreLocked() {
-	// TODO
-	console.log('keyring store locked!');
+	if (setKeyringStoreState === null) {
+		throw new Error('invariant violation');
+	}
+	setKeyringStoreState(KeyringStoreStateEnum.Locked);
 }
 
 function handleKeyringStoreUnlocked() {
-	if (_setAppState === null) {
+	if (setKeyringStoreState === null) {
 		throw new Error('invariant violation');
 	}
-	_setAppState(KeyringStoreStateEnum.Unlocked);
+	setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
 }
 
 function render(state: KeyringStoreState) {

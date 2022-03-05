@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { createTheme, CssBaseline, MuiThemeProvider } from "@material-ui/core";
-import { RecoilRoot } from "recoil";
 import { openExpandedExtension, isExtensionPopup } from "../common";
 import { Onboarding } from "../components/Onboarding";
 import { KeyringStoreState, KeyringStoreStateEnum } from "../keyring/store";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
 import { Layout } from "../components/Layout";
+import {
+  KeyringStoreStateProvider,
+  useKeyringStoreStateContext,
+} from "../context/KeyringStoreState";
 import "./App.css";
-
-// Define this state setting function so that we can access it from
-// the background script notification handler, which allows us to rerender
-// components on notifications.
-export let _setAppState: null | ((state: KeyringStoreState) => void) = null;
 
 const theme = createTheme({
   palette: {},
@@ -32,25 +30,22 @@ const theme = createTheme({
 
 export default function App({ state }: { state: KeyringStoreState }) {
   return (
-    <RecoilRoot>
-      <MuiThemeProvider theme={theme}>
-        <CssBaseline />
+    <MuiThemeProvider theme={theme}>
+      <CssBaseline />
+      <KeyringStoreStateProvider keyringStoreState={state}>
         <_App state={state} />
-      </MuiThemeProvider>
-    </RecoilRoot>
+      </KeyringStoreStateProvider>
+    </MuiThemeProvider>
   );
 }
 
 function _App({ state }: { state: KeyringStoreState }) {
-  const [appState, setAppState] = useState(state);
+  const { keyringStoreState } = useKeyringStoreStateContext();
 
-  useEffect(() => {
-    _setAppState = setAppState;
-  }, [state]);
-
-  const needsOnboarding = appState === KeyringStoreStateEnum.NeedsOnboarding;
+  const needsOnboarding =
+    keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
   const isLocked =
-    !needsOnboarding && appState === KeyringStoreStateEnum.Locked;
+    !needsOnboarding && keyringStoreState === KeyringStoreStateEnum.Locked;
 
   // Open the extension in an expanded window if we need to onboard.
   if (needsOnboarding) {
