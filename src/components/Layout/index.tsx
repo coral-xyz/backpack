@@ -2,12 +2,16 @@ import { useState } from "react";
 import { makeStyles, IconButton } from "@material-ui/core";
 import { Menu } from "@material-ui/icons";
 import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../../common";
+import { useKeyringStoreStateContext } from "../../context/KeyringStoreState";
+import { KeyringStoreStateEnum } from "../../keyring/store";
 
 const useStyles = makeStyles((theme: any) => ({
   layoutContainer: {
     width: `${EXTENSION_WIDTH}px`,
     height: `${EXTENSION_HEIGHT}px`,
     backgroundColor: theme.custom.colors.background,
+    display: "flex",
+    flexDirection: "column",
   },
   navBarContainer: {
     height: "46px",
@@ -60,10 +64,12 @@ const useStyles = makeStyles((theme: any) => ({
 
 export function Layout(props: any) {
   const classes = useStyles();
+  const { keyringStoreState } = useKeyringStoreStateContext();
   return (
     <div className={classes.layoutContainer}>
       <NavBar />
       {props.children}
+      {keyringStoreState === KeyringStoreStateEnum.Unlocked && <TabBarNav />}
     </div>
   );
 }
@@ -92,7 +98,8 @@ function MenuButton() {
 
 function CenterDisplay() {
   const classes = useStyles();
-  const isLocked = true;
+  const { keyringStoreState } = useKeyringStoreStateContext();
+  const isLocked = keyringStoreState == KeyringStoreStateEnum.Locked;
   return (
     <div className={classes.centerDisplayContainer}>
       {isLocked ? <LockedCenterDisplay /> : <UnlockedCenterDisplay />}
@@ -125,4 +132,8 @@ function ConnectionIcon() {
       ></div>
     </div>
   );
+}
+
+function TabBarNav() {
+  return <div>THIS IS A TAB BAR YAY</div>;
 }
