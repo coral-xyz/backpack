@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { createTheme, CssBaseline, MuiThemeProvider } from "@material-ui/core";
-import { RecoilRoot } from "recoil";
+import { RecoilRoot, useRecoilState, atom } from "recoil";
 import { openExpandedExtension, isExtensionPopup } from "../common";
 import { Onboarding } from "../components/Onboarding";
 import { KeyringStoreState, KeyringStoreStateEnum } from "../keyring/store";
 import { Locked } from "../components/Locked";
 import { Layout } from "../components/Layout";
 import "./App.css";
+
+// Define this state setting function so that we can access it from
+// the background script notification handler, which allows us to rerender
+// components on notifications.
+export let _setAppState: null | ((state: KeyringStoreState) => void) = null;
 
 const theme = createTheme({
   palette: {},
@@ -36,8 +41,15 @@ export default function App({ state }: { state: KeyringStoreState }) {
 }
 
 function _App({ state }: { state: KeyringStoreState }) {
-  const needsOnboarding = state === KeyringStoreStateEnum.NeedsOnboarding;
-  const isLocked = !needsOnboarding && state === KeyringStoreStateEnum.Locked;
+  const [appState, setAppState] = useState(state);
+
+  useEffect(() => {
+    _setAppState = setAppState;
+  }, [state]);
+
+  const needsOnboarding = appState === KeyringStoreStateEnum.NeedsOnboarding;
+  const isLocked =
+    !needsOnboarding && appState === KeyringStoreStateEnum.Locked;
 
   // Open the extension in an expanded window if we need to onboard.
   if (needsOnboarding) {
