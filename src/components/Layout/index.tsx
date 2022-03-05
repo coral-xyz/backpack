@@ -1,9 +1,12 @@
-import { useState } from "react";
 import { makeStyles, IconButton } from "@material-ui/core";
 import { Menu } from "@material-ui/icons";
 import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../../common";
-import { useKeyringStoreStateContext } from "../../context/KeyringStoreState";
 import { KeyringStoreStateEnum } from "../../keyring/store";
+import { useKeyringStoreStateContext } from "../../context/KeyringStoreState";
+import {
+  useTabNavigationContext,
+  TabNavigationProvider,
+} from "../../context/TabNavigation";
 
 const useStyles = makeStyles((theme: any) => ({
   layoutContainer: {
@@ -66,11 +69,13 @@ export function Layout(props: any) {
   const classes = useStyles();
   const { keyringStoreState } = useKeyringStoreStateContext();
   return (
-    <div className={classes.layoutContainer}>
-      <NavBar />
-      {props.children}
-      {keyringStoreState === KeyringStoreStateEnum.Unlocked && <TabBarNav />}
-    </div>
+    <TabNavigationProvider>
+      <div className={classes.layoutContainer}>
+        <NavBar />
+        {props.children}
+        {keyringStoreState === KeyringStoreStateEnum.Unlocked && <TabBarNav />}
+      </div>
+    </TabNavigationProvider>
   );
 }
 
@@ -135,5 +140,6 @@ function ConnectionIcon() {
 }
 
 function TabBarNav() {
+  const { setTab } = useTabNavigationContext();
   return <div>THIS IS A TAB BAR YAY</div>;
 }
