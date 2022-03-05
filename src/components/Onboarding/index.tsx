@@ -81,9 +81,6 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-const URL_200 =
-  "https://aws1.discourse-cdn.com/standard11/uploads/x200ms/original/1X/c1f521d52dadc8467bf0c500c6889edae203424e.png";
-
 export function Onboarding() {
   return (
     <div>
@@ -151,9 +148,18 @@ function Welcome({
           I already have a wallet
         </Button>
       </div>
-      <div className={classes.logoContainer}>
-        <img className={classes.logo} src={URL_200} />
-      </div>
+      <Logo />
+    </div>
+  );
+}
+
+export function Logo() {
+  const classes = useStyles();
+  const URL_200 =
+    "https://aws1.discourse-cdn.com/standard11/uploads/x200ms/original/1X/c1f521d52dadc8467bf0c500c6889edae203424e.png";
+  return (
+    <div className={classes.logoContainer}>
+      <img className={classes.logo} src={URL_200} />
     </div>
   );
 }

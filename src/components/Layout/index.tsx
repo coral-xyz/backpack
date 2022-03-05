@@ -1,0 +1,104 @@
+import { useState } from "react";
+import { makeStyles, IconButton } from "@material-ui/core";
+import { Menu } from "@material-ui/icons";
+import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../../common";
+
+const useStyles = makeStyles((theme: any) => ({
+  layoutContainer: {
+    width: `${EXTENSION_WIDTH}px`,
+    height: `${EXTENSION_HEIGHT}px`,
+    backgroundColor: theme.custom.colors.background,
+  },
+  navBarContainer: {
+    height: "46px",
+    borderBottom: `solid 1pt ${theme.custom.colors.border}`,
+    display: "flex",
+    justifyContent: "space-between",
+    paddingLeft: "16px",
+    paddingRight: "16px",
+    paddingTop: "10px",
+    paddingBottom: "10px",
+  },
+  menuButtonContainer: {
+    width: "38px",
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    position: "relative",
+  },
+  menuButton: {
+    position: "absolute",
+    left: 0,
+    padding: 0,
+  },
+  menuButtonIcon: {
+    color: theme.custom.colors.offText,
+  },
+  connectedIcon: {
+    width: "12px",
+    height: "12px",
+    borderRadius: "6px",
+    backgroundColor: theme.custom.colors.connected,
+    position: "absolute",
+    right: 0,
+  },
+  disconnectedIcon: {
+    width: "12px",
+    height: "12px",
+    borderRadius: "6px",
+    backgroundColor: theme.custom.colors.disconnected,
+    position: "absolute",
+    right: 0,
+  },
+}));
+
+export function Layout(props: any) {
+  const classes = useStyles();
+  return (
+    <div className={classes.layoutContainer}>
+      <NavBar />
+      {props.children}
+    </div>
+  );
+}
+
+function NavBar() {
+  const classes = useStyles();
+  return (
+    <div className={classes.navBarContainer}>
+      <MenuButton />
+      <CenterDisplay />
+      <ConnectionIcon />
+    </div>
+  );
+}
+
+function MenuButton() {
+  const classes = useStyles();
+  return (
+    <div className={classes.menuButtonContainer}>
+      <IconButton disableRipple className={classes.menuButton}>
+        <Menu className={classes.menuButtonIcon} />
+      </IconButton>
+    </div>
+  );
+}
+
+function CenterDisplay() {
+  // todo
+  return <div>Test</div>;
+}
+
+function ConnectionIcon() {
+  const classes = useStyles();
+  const isConnected = false;
+  return (
+    <div className={classes.menuButtonContainer}>
+      <div
+        className={
+          isConnected ? classes.connectedIcon : classes.disconnectedIcon
+        }
+      ></div>
+    </div>
+  );
+}

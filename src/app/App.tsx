@@ -1,15 +1,10 @@
 import React from "react";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import { MuiThemeProvider } from "@material-ui/core/styles";
-import { createTheme } from "@material-ui/core/styles";
-import {
-  openExpandedExtension,
-  isExtensionPopup,
-  EXTENSION_WIDTH,
-  EXTENSION_HEIGHT,
-} from "../common";
+import { createTheme, CssBaseline, MuiThemeProvider } from "@material-ui/core";
+import { openExpandedExtension, isExtensionPopup } from "../common";
 import { Onboarding } from "../components/Onboarding";
 import { KeyringStoreState, KeyringStoreStateEnum } from "../keyring/store";
+import { Locked } from "../components/Locked";
+import { Layout } from "../components/Layout";
 import "./App.css";
 
 const theme = createTheme({
@@ -19,15 +14,27 @@ const theme = createTheme({
     colors: {
       background: "#1c1c1c",
       fontColor: "#fff",
+      border: "#fff",
+      connected: "green",
+      disconnected: "red",
+      offText: "#636363",
     },
   },
   overrides: {},
 });
 
 export default function App({ state }: { state: KeyringStoreState }) {
+  return (
+    <MuiThemeProvider theme={theme}>
+      <CssBaseline />
+      <_App state={state} />
+    </MuiThemeProvider>
+  );
+}
+
+function _App({ state }: { state: KeyringStoreState }) {
   const needsOnboarding = state === KeyringStoreStateEnum.NeedsOnboarding;
-  const isLocked = !needsOnboarding && state === KeyringStoreStateEnum.Locked;
-  const isUnlocked = !needsOnboarding && !isLocked;
+  const isLocked = true; //!needsOnboarding && state === KeyringStoreStateEnum.Locked;
 
   // Open the extension in an expanded window if we need to onboard.
   if (needsOnboarding) {
@@ -35,27 +42,14 @@ export default function App({ state }: { state: KeyringStoreState }) {
     if (isExtensionPopup()) {
       openExpandedExtension();
       return <></>;
+    } else {
+      return <Onboarding />;
     }
   }
 
-  return (
-    <div
-      style={{ width: `${EXTENSION_WIDTH}px`, height: `${EXTENSION_HEIGHT}px` }}
-    >
-      <MuiThemeProvider theme={theme}>
-        <CssBaseline />
-        {needsOnboarding && <Onboarding />}
-        {isLocked && <Locked />}
-        {isUnlocked && <Wallet />}
-      </MuiThemeProvider>
-    </div>
-  );
+  return <Layout>{isLocked ? <Locked /> : <Wallet />}</Layout>;
 }
 
 function Wallet() {
   return <div>200ms wallet yay</div>;
-}
-
-function Locked() {
-  return <div>Locked yay!</div>;
 }

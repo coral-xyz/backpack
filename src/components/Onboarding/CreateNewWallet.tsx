@@ -15,7 +15,6 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
 } from "../../common";
 import { DerivationPath } from "../../keyring/crypto";
-import { useLocalStorage, KEY_DID_ONBOARD } from "../../context/LocalStorage";
 
 export const useStyles = makeStyles((theme: any) => ({
   stepper: {
@@ -257,7 +256,6 @@ function ShowMnemonic({
   next: () => void;
   keyring: HdKeyring;
 }) {
-  const classes = useStyles();
   const [checked, setChecked] = useState(true);
   const canContinue = checked;
   return (

@@ -64,7 +64,7 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
     case UI_RPC_METHOD_KEYRING_STORE_STATE:
       return await handleKeyringStoreState();
     case UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE:
-      return await handleKeyringStoreKeepAlive();
+      return handleKeyringStoreKeepAlive();
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -155,8 +155,8 @@ async function handleKeyringStoreState() {
   return [resp];
 }
 
-async function handleKeyringStoreKeepAlive() {
-  const resp = await backend.keyringStoreKeepAlive();
+function handleKeyringStoreKeepAlive() {
+  const resp = backend.keyringStoreKeepAlive();
   return [resp];
 }
 

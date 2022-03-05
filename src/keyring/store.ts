@@ -49,7 +49,7 @@ export class KeyringStore {
     this.lastUsedTs = 0;
   }
 
-  public async unlock(password: string) {
+  public async tryUnlock(password: string) {
     if (this.isUnlocked()) {
       throw new Error("unable to unlock");
     }

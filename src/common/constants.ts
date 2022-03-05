@@ -27,5 +27,5 @@ export const CONNECTION_POPUP_NOTIFICATIONS = "anchor-popup-notifications";
 
 export const POST_MESSAGE_ORIGIN = "*";
 
-export const EXTENSION_WIDTH = 357;
-export const EXTENSION_HEIGHT = 600;
+export const EXTENSION_WIDTH = 360;
+export const EXTENSION_HEIGHT = 540;
