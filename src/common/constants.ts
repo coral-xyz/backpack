@@ -14,13 +14,16 @@ export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS =
 export const UI_RPC_METHOD_KEYRING_STORE_STATE = "keyring-store-state";
 export const UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE =
   "keyring-store-keep-alive";
+export const UI_RPC_METHOD_KEYRING_STORE_UNLOCK = "keyring-store-unlock";
 export const UI_RPC_METHOD_HD_KEYRING_CREATE = "hd-keyring-create";
 export const UI_RPC_METHOD_KEYRING_CREATE = "keyring-create";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
 export const NOTIFICATION_KEYRING_STORE_LOCKED =
-  "notifications-keyring-store-locked";
+  "notification-keyring-store-locked";
+export const NOTIFICATION_KEYRING_STORE_UNLOCKED =
+  "notification-keyring-store-unlocked";
 
 export const CONNECTION_POPUP_RPC = "anchor-popup-rpc";
 export const CONNECTION_POPUP_NOTIFICATIONS = "anchor-popup-notifications";

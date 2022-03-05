@@ -15,6 +15,7 @@ import {
   UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
+  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
   UI_RPC_METHOD_KEYRING_CREATE,
   UI_RPC_METHOD_HD_KEYRING_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
@@ -55,6 +56,8 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return handleNotificationsSubscribe();
     case UI_RPC_METHOD_KEYRING_STORE_CREATE:
       return await handleKeyringStoreCreate(params[0], params[1], params[2]);
+    case UI_RPC_METHOD_KEYRING_STORE_UNLOCK:
+      return await handleKeyringStoreUnlock(params[0]);
     case UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS:
       return await handleKeyringStoreReadAllPubkeys();
     case UI_RPC_METHOD_HD_KEYRING_CREATE:
@@ -127,13 +130,21 @@ async function handleKeyringStoreCreate(
   derivationPath: DerivationPath,
   password: string
 ): Promise<RpcResponse<string>> {
-  console.log("creating keyring store");
   const resp = await backend.keyringStoreCreate(
     mnemonic,
     derivationPath,
     password
   );
   return [resp];
+}
+
+async function handleKeyringStoreUnlock(password: string) {
+  try {
+    const resp = await backend.keyringStoreUnlock(password);
+    return [resp];
+  } catch (err) {
+    return [, err.toString()];
+  }
 }
 
 async function handleHdKeyringCreate(

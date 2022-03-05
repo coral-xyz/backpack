@@ -5,17 +5,20 @@ import { HdKeyring, Keyring } from ".";
 import {
   NotificationsClient,
   NOTIFICATION_KEYRING_STORE_LOCKED,
+  NOTIFICATION_KEYRING_STORE_UNLOCKED,
 } from "../common";
 
 const LOCK_INTERVAL_SECS = 10 * 60 * 1000;
 
 export class KeyringStore {
   private db: Db;
+  private notifications: NotificationsClient;
   private lastUsedTs: number;
   private hdKeyring?: HdKeyring;
   private importedKeyring?: Keyring;
 
   constructor(notifications: NotificationsClient) {
+    this.notifications = notifications;
     this.db = new LocalStorageDb();
     this.lastUsedTs = 0;
 
@@ -54,7 +57,7 @@ export class KeyringStore {
       throw new Error("unable to unlock");
     }
     const ciphertextPayload = await this.db.get(KEY_KEYRING_STORE);
-    if (ciphertextPayload !== undefined && ciphertextPayload !== null) {
+    if (ciphertextPayload === undefined || ciphertextPayload === null) {
       throw new Error("keyring store not found on disk");
     }
     const plaintext = await crypto.decrypt(ciphertextPayload, password);
@@ -63,6 +66,10 @@ export class KeyringStore {
     this.updateLastUsed();
     this.hdKeyring = HdKeyring.fromJson(hdKeyring);
     this.importedKeyring = Keyring.fromJson(importedKeyring);
+
+    this.notifications.pushNotification({
+      name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
+    });
   }
 
   public async init(

@@ -162,7 +162,7 @@ export class PortChannelClient {
 
   private _setupResponseResolvers() {
     this._port.onMessage.addListener((msg: any) => {
-      const { id, result } = msg;
+      const { id, result, error } = msg;
       const resolver = this._responseResolvers[id];
       if (!resolver) {
         error("unexpected message", msg);
@@ -170,6 +170,9 @@ export class PortChannelClient {
       }
       delete this._responseResolvers[id];
       const [resolve, reject] = resolver;
+      if (error) {
+        reject(error);
+      }
       resolve(result);
     });
   }

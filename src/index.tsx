@@ -13,6 +13,7 @@ import {
 	CONNECTION_POPUP_RPC,
 	CONNECTION_POPUP_NOTIFICATIONS,
   NOTIFICATION_KEYRING_STORE_LOCKED,
+  NOTIFICATION_KEYRING_STORE_UNLOCKED,
 } from './common';
 import { setBackgroundClient } from './background/client';
 import { KeyringStoreState } from './keyring/store';
@@ -57,6 +58,9 @@ function notificationsHandler(notif: Notification) {
 		case NOTIFICATION_KEYRING_STORE_LOCKED:
 			handleKeyringStoreLocked();
 			break;
+		case NOTIFICATION_KEYRING_STORE_UNLOCKED:
+			handleKeyringStoreUnlocked();
+			break;
 		default:
 			break;
 	}
@@ -65,6 +69,11 @@ function notificationsHandler(notif: Notification) {
 function handleKeyringStoreLocked() {
 	// TODO
 	console.log('keyring store locked!');
+}
+
+function handleKeyringStoreUnlocked() {
+	// TODO
+	console.log('notification keyring store unlocked!');
 }
 
 function render(state: KeyringStoreState) {

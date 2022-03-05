@@ -50,6 +50,12 @@ const useStyles = makeStyles((theme: any) => ({
     position: "absolute",
     right: 0,
   },
+  centerDisplayContainer: {
+    color: theme.custom.colors.fontColor,
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+  },
 }));
 
 export function Layout(props: any) {
@@ -85,8 +91,26 @@ function MenuButton() {
 }
 
 function CenterDisplay() {
+  const classes = useStyles();
+  const isLocked = true;
+  return (
+    <div className={classes.centerDisplayContainer}>
+      {isLocked ? <LockedCenterDisplay /> : <UnlockedCenterDisplay />}
+    </div>
+  );
+}
+
+function LockedCenterDisplay() {
+  return (
+    <div>
+      <b>200ms</b>
+    </div>
+  );
+}
+
+function UnlockedCenterDisplay() {
   // todo
-  return <div>Test</div>;
+  return <div>Unlocked display TODO</div>;
 }
 
 function ConnectionIcon() {

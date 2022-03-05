@@ -1,5 +1,6 @@
 import React from "react";
 import { createTheme, CssBaseline, MuiThemeProvider } from "@material-ui/core";
+import { RecoilRoot } from "recoil";
 import { openExpandedExtension, isExtensionPopup } from "../common";
 import { Onboarding } from "../components/Onboarding";
 import { KeyringStoreState, KeyringStoreStateEnum } from "../keyring/store";
@@ -25,16 +26,18 @@ const theme = createTheme({
 
 export default function App({ state }: { state: KeyringStoreState }) {
   return (
-    <MuiThemeProvider theme={theme}>
-      <CssBaseline />
-      <_App state={state} />
-    </MuiThemeProvider>
+    <RecoilRoot>
+      <MuiThemeProvider theme={theme}>
+        <CssBaseline />
+        <_App state={state} />
+      </MuiThemeProvider>
+    </RecoilRoot>
   );
 }
 
 function _App({ state }: { state: KeyringStoreState }) {
   const needsOnboarding = state === KeyringStoreStateEnum.NeedsOnboarding;
-  const isLocked = true; //!needsOnboarding && state === KeyringStoreStateEnum.Locked;
+  const isLocked = !needsOnboarding && state === KeyringStoreStateEnum.Locked;
 
   // Open the extension in an expanded window if we need to onboard.
   if (needsOnboarding) {
