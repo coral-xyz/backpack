@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { createTheme, CssBaseline, MuiThemeProvider } from "@material-ui/core";
-import { RecoilRoot, useRecoilState, atom } from "recoil";
+import { RecoilRoot } from "recoil";
 import { openExpandedExtension, isExtensionPopup } from "../common";
 import { Onboarding } from "../components/Onboarding";
 import { KeyringStoreState, KeyringStoreStateEnum } from "../keyring/store";
 import { Locked } from "../components/Locked";
+import { Unlocked } from "../components/Unlocked";
 import { Layout } from "../components/Layout";
 import "./App.css";
 
@@ -62,9 +63,5 @@ function _App({ state }: { state: KeyringStoreState }) {
     }
   }
 
-  return <Layout>{isLocked ? <Locked /> : <Wallet />}</Layout>;
-}
-
-function Wallet() {
-  return <div>200ms wallet yay</div>;
+  return <Layout>{isLocked ? <Locked /> : <Unlocked />}</Layout>;
 }

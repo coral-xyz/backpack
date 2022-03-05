@@ -49,6 +49,11 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  keyringStoreLock() {
+    this.keyringStore.lock();
+    return SUCCESS_RESPONSE;
+  }
+
   async keyringStoreState(): Promise<KeyringStoreState> {
     return await this.keyringStore.state();
   }

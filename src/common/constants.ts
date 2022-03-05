@@ -15,6 +15,7 @@ export const UI_RPC_METHOD_KEYRING_STORE_STATE = "keyring-store-state";
 export const UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE =
   "keyring-store-keep-alive";
 export const UI_RPC_METHOD_KEYRING_STORE_UNLOCK = "keyring-store-unlock";
+export const UI_RPC_METHOD_KEYRING_STORE_LOCK = "keyring-store-lock";
 export const UI_RPC_METHOD_HD_KEYRING_CREATE = "hd-keyring-create";
 export const UI_RPC_METHOD_KEYRING_CREATE = "keyring-create";
 
