@@ -35,5 +35,6 @@ export enum TabNavigation {
   Balances,
   Nfts,
   Swapper,
+  Quests,
   Settings,
 }

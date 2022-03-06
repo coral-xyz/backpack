@@ -1,5 +1,12 @@
-import { makeStyles, IconButton } from "@material-ui/core";
-import { Menu } from "@material-ui/icons";
+import { makeStyles, IconButton, Tabs, Tab } from "@material-ui/core";
+import {
+  Menu,
+  SwapHoriz,
+  Settings,
+  Apps,
+  MonetizationOn,
+  PriorityHigh,
+} from "@material-ui/icons";
 import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../../common";
 import { KeyringStoreStateEnum } from "../../keyring/store";
 import { useKeyringStoreStateContext } from "../../context/KeyringStoreState";
@@ -18,7 +25,7 @@ const useStyles = makeStyles((theme: any) => ({
   },
   navBarContainer: {
     height: "46px",
-    borderBottom: `solid 1pt ${theme.custom.colors.border}`,
+    borderBottom: `solid 1pt ${theme.custom.colors.offText}`,
     display: "flex",
     justifyContent: "space-between",
     paddingLeft: "16px",
@@ -62,6 +69,9 @@ const useStyles = makeStyles((theme: any) => ({
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
+  },
+  tab: {
+    color: theme.custom.colors.offText,
   },
 }));
 
@@ -121,7 +131,8 @@ function LockedCenterDisplay() {
 }
 
 function UnlockedCenterDisplay() {
-  // todo
+  const { keyringStoreState } = useKeyringStoreStateContext();
+  const isLocked = keyringStoreState == KeyringStoreStateEnum.Locked;
   return <div>Unlocked display TODO</div>;
 }
 
@@ -140,6 +151,21 @@ function ConnectionIcon() {
 }
 
 function TabBarNav() {
-  const { setTab } = useTabNavigationContext();
-  return <div>THIS IS A TAB BAR YAY</div>;
+  const classes = useStyles();
+  const { tab, setTab } = useTabNavigationContext();
+  return (
+    <Tabs
+      value={tab}
+      onChange={(_e, newValue) => setTab(newValue)}
+      variant="fullWidth"
+      indicatorColor="primary"
+      textColor="primary"
+    >
+      <Tab className={classes.tab} icon={<MonetizationOn />} />
+      <Tab className={classes.tab} icon={<Apps />} />
+      <Tab className={classes.tab} icon={<SwapHoriz />} />
+      <Tab className={classes.tab} icon={<PriorityHigh />} />
+      <Tab className={classes.tab} icon={<Settings />} />
+    </Tabs>
+  );
 }
