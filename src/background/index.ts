@@ -151,7 +151,8 @@ async function handleKeyringStoreUnlock(password: string) {
 }
 
 async function handleKeyringStoreLock() {
-  backend.keyringStoreLock();
+  const resp = backend.keyringStoreLock();
+  return [resp];
 }
 
 async function handleHdKeyringCreate(

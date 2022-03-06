@@ -6,6 +6,8 @@ import {
   IconButton,
   Tabs,
   Tab,
+  List,
+  ListItem,
 } from "@material-ui/core";
 import {
   Menu,
@@ -15,15 +17,22 @@ import {
   MonetizationOn,
   PriorityHigh,
   Close,
+  Lock,
+  Help,
 } from "@material-ui/icons";
 import Sidebar from "react-sidebar";
-import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../../common";
+import {
+  EXTENSION_WIDTH,
+  EXTENSION_HEIGHT,
+  UI_RPC_METHOD_KEYRING_STORE_LOCK,
+} from "../../common";
 import { KeyringStoreStateEnum } from "../../keyring/store";
 import { useKeyringStoreStateContext } from "../../context/KeyringStoreState";
 import {
   useTabNavigationContext,
   TabNavigationProvider,
 } from "../../context/TabNavigation";
+import { getBackgroundClient } from "../../background/client";
 
 const useStyles = makeStyles((theme: any) => ({
   layoutContainer: {
@@ -80,6 +89,12 @@ const useStyles = makeStyles((theme: any) => ({
   },
   tab: {
     color: theme.custom.colors.offText,
+  },
+  sidebarContentListItem: {
+    paddingLeft: 0,
+    paddingRight: 0,
+    paddingTop: "5px",
+    paddingBottom: "5px",
   },
 }));
 
@@ -140,9 +155,44 @@ function MenuButton() {
 
 function SidebarContent({ close }: { close: () => void }) {
   const classes = useStyles();
+  const theme = useTheme() as any;
+  const lockWallet = () => {
+    const background = getBackgroundClient();
+    background
+      .request({
+        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+        params: [],
+      })
+      .catch(console.error)
+      .then(() => close());
+  };
   return (
     <div>
       <SidebarHeader close={close} />
+      <List
+        style={{
+          color: theme.custom.colors.fontColor,
+          paddingLeft: "16px",
+          paddingRight: "16px",
+        }}
+      >
+        <ListItem button className={classes.sidebarContentListItem}>
+          <Help
+            style={{ color: theme.custom.colors.offText, marginRight: "12px" }}
+          />
+          <Typography>Help & Support</Typography>
+        </ListItem>
+        <ListItem
+          button
+          className={classes.sidebarContentListItem}
+          onClick={() => lockWallet()}
+        >
+          <Lock
+            style={{ color: theme.custom.colors.offText, marginRight: "12px" }}
+          />
+          <Typography>Lock Wallet</Typography>
+        </ListItem>
+      </List>
     </div>
   );
 }

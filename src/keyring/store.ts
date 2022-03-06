@@ -59,6 +59,9 @@ export class KeyringStore {
     this.hdKeyring = undefined;
     this.importedKeyring = undefined;
     this.lastUsedTs = 0;
+    this.notifications.pushNotification({
+      name: NOTIFICATION_KEYRING_STORE_LOCKED,
+    });
   }
 
   public async tryUnlock(password: string) {
