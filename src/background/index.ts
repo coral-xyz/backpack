@@ -25,7 +25,7 @@ import {
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_NOTIFICATIONS,
 } from "../common";
-import { Context, Backend } from "../backend";
+import { Context, Backend } from "./backend";
 import { DerivationPath } from "../keyring/crypto";
 
 // Channel to send notifications from the background to the injected script.
