@@ -1,8 +1,5 @@
 import { makeStyles } from "@material-ui/core";
-import {
-  useTabNavigationContext,
-  TabNavigation,
-} from "../../context/TabNavigation";
+import { useTabContext, Tab } from "../../context/Tab";
 import { Balances } from "./Balances";
 import { Nfts } from "./Nfts";
 import { Swapper } from "./Swapper";
@@ -17,14 +14,14 @@ const useStyles = makeStyles((_theme: any) => ({
 
 export function Unlocked() {
   const classes = useStyles();
-  const { tab } = useTabNavigationContext();
+  const { tab } = useTabContext();
   return (
     <div className={classes.container}>
-      {tab === TabNavigation.Balances && <Balances />}
-      {tab === TabNavigation.Nfts && <Nfts />}
-      {tab === TabNavigation.Swapper && <Swapper />}
-      {tab === TabNavigation.Quests && <Quests />}
-      {tab === TabNavigation.Settings && <Settings />}
+      {tab === Tab.Balances && <Balances />}
+      {tab === Tab.Nfts && <Nfts />}
+      {tab === Tab.Swapper && <Swapper />}
+      {tab === Tab.Quests && <Quests />}
+      {tab === Tab.Settings && <Settings />}
     </div>
   );
 }

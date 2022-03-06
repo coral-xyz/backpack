@@ -6,7 +6,7 @@ import {
   MonetizationOn,
   PriorityHigh,
 } from "@material-ui/icons";
-import { useTabNavigationContext } from "../../context/TabNavigation";
+import { useTabContext } from "../../context/Tab";
 
 const useStyles = makeStyles((theme: any) => ({
   tab: {
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme: any) => ({
 
 export function TabBar() {
   const classes = useStyles();
-  const { tab, setTab } = useTabNavigationContext();
+  const { tab, setTab } = useTabContext();
   return (
     <Tabs
       value={tab}

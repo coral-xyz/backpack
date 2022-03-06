@@ -1,11 +1,14 @@
-import { makeStyles } from "@material-ui/core";
+import { useState } from "react";
+import { makeStyles, Drawer, IconButton } from "@material-ui/core";
 import { KeyringStoreStateEnum } from "../../keyring/store";
 import { useKeyringStoreStateContext } from "../../context/KeyringStoreState";
 import { SidebarButton } from "./Sidebar";
 
+export const NAV_BAR_HEIGHT = 46;
+
 const useStyles = makeStyles((theme: any) => ({
   navBarContainer: {
-    height: "46px",
+    height: `${NAV_BAR_HEIGHT}px`,
     borderBottom: `solid 1pt ${theme.custom.colors.offText}`,
     display: "flex",
     justifyContent: "space-between",
@@ -43,6 +46,9 @@ const useStyles = makeStyles((theme: any) => ({
     justifyContent: "center",
     flexDirection: "column",
   },
+  connectionButton: {
+    padding: 0,
+  },
 }));
 
 export function NavBar() {
@@ -76,7 +82,6 @@ function LockedCenterDisplay() {
 }
 
 function UnlockedCenterDisplay() {
-  const { keyringStoreState } = useKeyringStoreStateContext();
   return <div>Unlocked display TODO</div>;
 }
 
@@ -85,11 +90,13 @@ function ConnectionIcon() {
   const isConnected = false;
   return (
     <div className={classes.menuButtonContainer}>
-      <div
-        className={
-          isConnected ? classes.connectedIcon : classes.disconnectedIcon
-        }
-      ></div>
+      <IconButton className={classes.connectionButton} disableRipple>
+        <div
+          className={
+            isConnected ? classes.connectedIcon : classes.disconnectedIcon
+          }
+        ></div>
+      </IconButton>
     </div>
   );
 }
