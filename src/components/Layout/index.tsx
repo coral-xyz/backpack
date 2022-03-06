@@ -1,4 +1,12 @@
-import { makeStyles, IconButton, Tabs, Tab } from "@material-ui/core";
+import { useState } from "react";
+import {
+  useTheme,
+  makeStyles,
+  Typography,
+  IconButton,
+  Tabs,
+  Tab,
+} from "@material-ui/core";
 import {
   Menu,
   SwapHoriz,
@@ -6,7 +14,9 @@ import {
   Apps,
   MonetizationOn,
   PriorityHigh,
+  Close,
 } from "@material-ui/icons";
+import Sidebar from "react-sidebar";
 import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../../common";
 import { KeyringStoreStateEnum } from "../../keyring/store";
 import { useKeyringStoreStateContext } from "../../context/KeyringStoreState";
@@ -41,8 +51,6 @@ const useStyles = makeStyles((theme: any) => ({
     position: "relative",
   },
   menuButton: {
-    position: "absolute",
-    left: 0,
     padding: 0,
   },
   menuButtonIcon: {
@@ -102,11 +110,85 @@ function NavBar() {
 
 function MenuButton() {
   const classes = useStyles();
+  const theme = useTheme() as any;
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
-    <div className={classes.menuButtonContainer}>
-      <IconButton disableRipple className={classes.menuButton}>
-        <Menu className={classes.menuButtonIcon} />
-      </IconButton>
+    <div id="outer-container" className={classes.menuButtonContainer}>
+      <Sidebar
+        sidebar={<SidebarContent close={() => setSidebarOpen(false)} />}
+        open={sidebarOpen}
+        onSetOpen={setSidebarOpen}
+        styles={{
+          sidebar: {
+            width: "269px",
+            position: "fixed",
+            backgroundColor: theme.custom.colors.background,
+          },
+        }}
+      >
+        <IconButton
+          disableRipple
+          className={classes.menuButton}
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+          <Menu className={classes.menuButtonIcon} />
+        </IconButton>
+      </Sidebar>
+    </div>
+  );
+}
+
+function SidebarContent({ close }: { close: () => void }) {
+  const classes = useStyles();
+  return (
+    <div>
+      <SidebarHeader close={close} />
+    </div>
+  );
+}
+
+function SidebarHeader({ close }: { close: () => void }) {
+  const theme = useTheme() as any;
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        height: "46px",
+        borderBottom: `solid 1pt ${theme.custom.colors.offText}`,
+        paddingLeft: "16px",
+        paddingRight: "16px",
+        paddingTop: "10px",
+        paddingBottom: "10px",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        <Typography
+          style={{
+            color: theme.custom.colors.fontColor,
+            fontWeight: "bold",
+          }}
+        >
+          200ms
+        </Typography>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        <IconButton onClick={close} style={{ padding: 0 }}>
+          <Close style={{ color: theme.custom.colors.offText }} />
+        </IconButton>
+      </div>
     </div>
   );
 }

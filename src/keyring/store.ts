@@ -1,3 +1,4 @@
+import { PublicKey } from "@solana/web3.js";
 import { BrowserRuntime } from "../common/browser";
 import * as crypto from "./crypto";
 import { DerivationPath } from "./crypto";
@@ -44,6 +45,14 @@ export class KeyringStore {
       return KeyringStoreStateEnum.Locked;
     }
     return KeyringStoreStateEnum.NeedsOnboarding;
+  }
+
+  public publicKeys(): Array<PublicKey> {
+    if (!this.isUnlocked()) {
+      throw new Error("keyring store is not unlocked");
+    }
+    const pubkeys = this.hdKeyring!.publicKeys();
+    return pubkeys.concat(this.importedKeyring!.publicKeys());
   }
 
   public lock() {
