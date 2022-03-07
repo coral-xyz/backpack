@@ -113,7 +113,11 @@ export class KeyringStore {
     this.updateLastUsed();
   }
 
-  public updateLastUsed() {
+  public keepAlive() {
+    this.updateLastUsed();
+  }
+
+  private updateLastUsed() {
     this.lastUsedTs = Date.now() / 1000;
   }
 

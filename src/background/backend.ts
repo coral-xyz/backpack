@@ -65,7 +65,7 @@ export class Backend {
   }
 
   keyringStoreKeepAlive(): string {
-    this.keyringStore.updateLastUsed();
+    this.keyringStore.keepAlive();
     return SUCCESS_RESPONSE;
   }
 
