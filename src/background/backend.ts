@@ -90,9 +90,13 @@ export class Backend {
     return await LocalStorageDb.get(KEY_CONNECTION_URL);
   }
 
-  async connectionUrlUpdate(url: string): Promise<String> {
+  async connectionUrlUpdate(url: string): Promise<boolean> {
+    const oldUrl = await LocalStorageDb.get(KEY_CONNECTION_URL);
+    if (oldUrl === url) {
+      return false;
+    }
     await LocalStorageDb.set(KEY_CONNECTION_URL, url);
-    return SUCCESS_RESPONSE;
+    return true;
   }
 }
 

@@ -24,6 +24,8 @@ import {
   UI_RPC_METHOD_CONNECTION_URL_READ,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
   NOTIFICATION_CONNECTED,
+  NOTIFICATION_DISCONNECTED,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_NOTIFICATIONS,
 } from "../common";
@@ -120,7 +122,7 @@ function handleConnect(
 function handleDisconnect(ctx: Context): RpcResponse<string> {
   const resp = backend.disconnect(ctx);
   notificationsInjected.sendMessageActiveTab({
-    name: NOTIFICATION_CONNECTED,
+    name: NOTIFICATION_DISCONNECTED,
   });
   return [resp];
 }
@@ -195,9 +197,15 @@ async function handleConnectionUrlRead(): Promise<RpcResponse<string>> {
 
 async function handleConnectionUrlUpdate(
   url: string
-): Promise<RpcResponse<string>> {
-  const resp = await backend.connectionUrlUpdate(url);
-  return [resp];
+): Promise<RpcResponse<boolean>> {
+  const didChange = await backend.connectionUrlUpdate(url);
+  if (didChange) {
+    notificationsInjected.sendMessageActiveTab({
+      name: NOTIFICATION_CONNECTION_URL_UPDATED,
+      data: url,
+    });
+  }
+  return [didChange];
 }
 
 async function handleKeyringStoreReadAllPubkeys(): Promise<

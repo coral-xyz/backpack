@@ -27,6 +27,8 @@ export const NOTIFICATION_KEYRING_STORE_LOCKED =
   "notification-keyring-store-locked";
 export const NOTIFICATION_KEYRING_STORE_UNLOCKED =
   "notification-keyring-store-unlocked";
+export const NOTIFICATION_CONNECTION_URL_UPDATED =
+  "anchor-connection-url-updated";
 
 export const CONNECTION_POPUP_RPC = "anchor-popup-rpc";
 export const CONNECTION_POPUP_NOTIFICATIONS = "anchor-popup-notifications";

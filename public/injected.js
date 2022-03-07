@@ -9,6 +9,7 @@ const RPC_METHOD_SIGN_MESSAGE = "sign-message";
 
 const NOTIFICATION_CONNECTED = "anchor-connected";
 const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
+const NOTIFICATION_CONNECTION_URL_UPDATED = "anchor-connection-url-updated";
 
 const POST_MESSAGE_ORIGIN = "*";
 
@@ -55,13 +56,15 @@ class Provider {
 
   _handleNotification(event) {
     if (event.data.type !== CHANNEL_NOTIFICATION) return;
-
     switch (event.data.detail.name) {
       case NOTIFICATION_CONNECTED:
         this._handleNotificationConnected(event);
         break;
       case NOTIFICATION_DISCONNECTED:
         this._handleNotificationDisconnected(event);
+        break;
+      case NOTIFICATION_CONNECTION_URL_UPDATED:
+        this._handleNotificationConnectionUrlUpdated(event);
         break;
       default:
         throw new Error(`unexpected notification ${event.data.detail.name}`);
@@ -79,6 +82,12 @@ class Provider {
 
   _handleNotificationDisconnected(event) {
     this.isConnected = false;
+  }
+
+  _handleNotificationConnectionUrlUpdated(event) {
+    // todo: Change connection object so that all hooks depending on it
+    //       rerenders.
+    console.log("got updated event", event);
   }
 
   /**
@@ -155,6 +164,8 @@ function _mapNotificationName(notificationName) {
       return "connected";
     case NOTIFICATION_DISCONNECTED:
       return "disconnected";
+    case NOTIFICATION_CONNECTION_URL_UPDATED:
+      return "connectionDidChange";
     default:
       throw new Error(`unexpected notificatoin name ${notificationName}`);
   }
