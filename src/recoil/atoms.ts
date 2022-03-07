@@ -1,9 +1,11 @@
-import { atom, atomFamily, RecoilValueReadOnly, constSelector } from "recoil";
+import { PublicKey } from "@solana/web3.js";
+import { atom, atomFamily } from "recoil";
 import { TokenAccountWithKey } from "./types";
 import {
   UI_RPC_METHOD_CONNECTION_URL_READ,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
+  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
 import { NamedPublicKey } from "../background/backend";
@@ -36,6 +38,22 @@ export const walletPublicKeys = atom<Array<NamedPublicKey>>({
       setSelf(
         background.request({
           method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
+          params: [],
+        })
+      );
+    },
+  ],
+});
+
+export const activeWallet = atom<NamedPublicKey | null>({
+  key: "activeWallet",
+  default: null,
+  effects: [
+    ({ setSelf }) => {
+      const background = getBackgroundClient();
+      setSelf(
+        background.request({
+          method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
           params: [],
         })
       );

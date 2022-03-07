@@ -23,6 +23,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_CONNECTION_URL_READ,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
@@ -80,6 +81,8 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return await handleConnectionUrlRead();
     case UI_RPC_METHOD_CONNECTION_URL_UPDATE:
       return await handleConnectionUrlUpdate(params[0]);
+    case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET:
+      return await handleWalletDataActiveWallet();
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -206,6 +209,11 @@ async function handleConnectionUrlUpdate(
     });
   }
   return [didChange];
+}
+
+async function handleWalletDataActiveWallet(): Promise<RpcResponse<string>> {
+  const pubkey = await backend.activeWallet();
+  return [pubkey];
 }
 
 async function handleKeyringStoreReadAllPubkeys(): Promise<

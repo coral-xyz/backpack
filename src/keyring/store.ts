@@ -109,6 +109,11 @@ export class KeyringStore {
     // Give a name to this wallet.
     await KeynameStore.setName(this.hdKeyring.getPublicKey(0), "Wallet 1");
 
+    // Initialize the wallet metadata.
+    await setWalletData({
+      activeWallet: this.hdKeyring.getPublicKey(0).toString(),
+    });
+
     // Update last used timestamp.
     this.updateLastUsed();
   }
@@ -169,10 +174,20 @@ export class KeynameStore {
   }
 }
 
+export async function getWalletData(): Promise<WalletData> {
+  const data = await LocalStorageDb.get(KEY_WALLET_DATA);
+  return data;
+}
+
+export async function setWalletData(data: WalletData) {
+  await LocalStorageDb.set(KEY_WALLET_DATA, data);
+}
+
 // Keys used by the local storage db.
 export const KEY_KEYRING_STORE = "keyring-store";
 export const KEY_KEYNAME_STORE = "keyname-store";
 export const KEY_CONNECTION_URL = "connection-url";
+export const KEY_WALLET_DATA = "wallet-data";
 
 export class LocalStorageDb {
   static async get(key: string): Promise<any> {
@@ -190,3 +205,7 @@ export const KeyringStoreStateEnum: { [key: string]: KeyringStoreState } = {
   NeedsOnboarding: "needs-onboarding",
 };
 export type KeyringStoreState = "locked" | "unlocked" | "needs-onboarding";
+
+export type WalletData = {
+  activeWallet: string;
+};

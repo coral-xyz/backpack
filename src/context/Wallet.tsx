@@ -1,7 +1,7 @@
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { Connection } from "@solana/web3.js";
 import { useRecoilValue, constSelector } from "recoil";
-import { walletPublicKeys } from "../recoil/atoms";
+import { walletPublicKeys, activeWallet } from "../recoil/atoms";
 import { useKeyringStoreStateContext } from "../context/KeyringStoreState";
 import { KeyringStoreStateEnum } from "../keyring/store";
 
@@ -27,6 +27,14 @@ export function useWalletPublicKeys(): Array<{
       name: k.name,
     };
   });
+}
+
+export function useActiveWallet(): { publicKey: PublicKey; name: string } {
+  const { publicKey, name } = useRecoilValue(activeWallet)!;
+  return {
+    publicKey: new PublicKey(publicKey),
+    name,
+  };
 }
 
 export type ConnectionContext = {

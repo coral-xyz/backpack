@@ -149,6 +149,7 @@ function _SidebarContent({ close }: { close: () => void }) {
         {namedPublicKeys.map(({ name, publicKey }) => {
           return (
             <ListItem
+              key={publicKey.toString()}
               button
               className={classes.sidebarContentListItem}
               onClick={() => clickWallet(publicKey)}

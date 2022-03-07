@@ -1,4 +1,4 @@
-import { TransactionSignature } from "@solana/web3.js";
+import { PublicKey, TransactionSignature } from "@solana/web3.js";
 import {
   KEY_CONNECTION_URL,
   LocalStorageDb,
@@ -6,7 +6,7 @@ import {
   KeyringStoreState,
 } from "../keyring/store";
 import { DerivationPath } from "../keyring/crypto";
-import { KeynameStore } from "../keyring/store";
+import { KeynameStore, getWalletData } from "../keyring/store";
 import { NotificationsClient } from "../common";
 
 const SUCCESS_RESPONSE = "success";
@@ -106,6 +106,16 @@ export class Backend {
     }
     await LocalStorageDb.set(KEY_CONNECTION_URL, url);
     return true;
+  }
+
+  async activeWallet(): Promise<NamedPublicKey> {
+    const { activeWallet } = await getWalletData();
+    const publicKey = activeWallet;
+    const name = await KeynameStore.getName(new PublicKey(publicKey));
+    return {
+      publicKey,
+      name,
+    };
   }
 }
 

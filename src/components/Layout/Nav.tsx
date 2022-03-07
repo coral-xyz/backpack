@@ -14,7 +14,7 @@ import { KeyringStoreStateEnum } from "../../keyring/store";
 import { useKeyringStoreStateContext } from "../../context/KeyringStoreState";
 import { SidebarButton } from "./Sidebar";
 import { useConnection } from "../../context/Connection";
-import { useWalletPublicKeys } from "../../context/Wallet";
+import { useActiveWallet } from "../../context/Wallet";
 import { WalletAddress } from "../common";
 
 export const NAV_BAR_HEIGHT = 46;
@@ -107,8 +107,7 @@ function UnlockedCenterDisplay() {
 }
 
 function _UnlockedCenterDisplay() {
-  const pubkeys = useWalletPublicKeys();
-  const { publicKey, name } = pubkeys[0];
+  const { publicKey, name } = useActiveWallet();
   return <WalletAddress publicKey={publicKey} name={name} />;
 }
 
