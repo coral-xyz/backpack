@@ -71,7 +71,7 @@ export class Backend {
   // Returns all pubkeys available for signing.
   keyringStoreReadAllPubkeys(): Array<string> {
     // todo
-    return [];
+    return ["Bq9hhowd6Q7a3T63Jw13p7VRx3jEmFc8vQBo6MD9jYyb"];
   }
 
   // Adds a new HdKeyring to the store.

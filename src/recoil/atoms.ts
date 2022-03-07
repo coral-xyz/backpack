@@ -3,6 +3,7 @@ import { TokenAccountWithKey } from "./types";
 import {
   UI_RPC_METHOD_CONNECTION_URL_READ,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
 
@@ -21,6 +22,22 @@ export const tokenAccountsMap = atomFamily<TokenAccountWithKey | null, string>({
 export const tokenAccountKeys = atom<string[]>({
   key: "tokenAccountKeys",
   default: [],
+});
+
+export const walletPublicKeys = atom<string[]>({
+  key: "walletPublicKeys",
+  default: [],
+  effects: [
+    ({ setSelf }) => {
+      const background = getBackgroundClient();
+      setSelf(
+        background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
+          params: [],
+        })
+      );
+    },
+  ],
 });
 
 /**

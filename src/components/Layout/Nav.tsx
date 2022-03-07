@@ -1,7 +1,6 @@
 import { useState, Suspense } from "react";
 import {
   makeStyles,
-  useTheme,
   IconButton,
   Popper,
   MenuList,
@@ -15,6 +14,7 @@ import { KeyringStoreStateEnum } from "../../keyring/store";
 import { useKeyringStoreStateContext } from "../../context/KeyringStoreState";
 import { SidebarButton } from "./Sidebar";
 import { useConnection } from "../../context/Connection";
+import { useWalletPublicKeys } from "../../context/Wallet";
 
 export const NAV_BAR_HEIGHT = 46;
 
@@ -98,7 +98,21 @@ function LockedCenterDisplay() {
 }
 
 function UnlockedCenterDisplay() {
-  return <div>Unlocked display TODO</div>;
+  return (
+    <Suspense fallback={<div></div>}>
+      <WalletAddress />
+    </Suspense>
+  );
+}
+
+function WalletAddress() {
+  const pubkeys = useWalletPublicKeys();
+  const pubkeyStr = pubkeys[0].toString();
+  return (
+    <div>
+      {`${pubkeyStr.slice(0, 4)}...${pubkeyStr.slice(pubkeyStr.length - 4)}`}
+    </div>
+  );
 }
 
 function ConnectionIcon() {
@@ -140,7 +154,6 @@ function _ConnectionIcon() {
 
 function ConnectionMenu({ openPopper, setOpenPopper }: any) {
   const classes = useStyles();
-  const theme = useTheme() as any;
   const { connectionUrl, setConnectionUrl } = useConnection();
 
   const MAINNET_BETA = "https://solana-api.projectserum.com";
