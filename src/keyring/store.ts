@@ -109,9 +109,10 @@ export class KeyringStore {
     // Give a name to this wallet.
     await KeynameStore.setName(this.hdKeyring.getPublicKey(0), "Wallet 1");
 
-    // Initialize the wallet metadata.
+    // Initialize the wallet ui metadata.
     await setWalletData({
       activeWallet: this.hdKeyring.getPublicKey(0).toString(),
+      deletedWallets: [],
     });
 
     // Update last used timestamp.
@@ -214,6 +215,8 @@ export const KeyringStoreStateEnum: { [key: string]: KeyringStoreState } = {
 };
 export type KeyringStoreState = "locked" | "unlocked" | "needs-onboarding";
 
+// Persistent metadata for the UI.
 export type WalletData = {
   activeWallet: string;
+  deletedWallets: Array<string>;
 };

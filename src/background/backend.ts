@@ -6,16 +6,22 @@ import {
   KeyringStoreState,
 } from "../keyring/store";
 import { DerivationPath } from "../keyring/crypto";
-import { KeynameStore, getWalletData } from "../keyring/store";
-import { NotificationsClient } from "../common";
+import { KeynameStore, getWalletData, setWalletData } from "../keyring/store";
+import {
+  NotificationsClient,
+  NOTIFICATION_KEYRING_KEY_DELETE,
+  NOTIFICATION_KEYNAME_UPDATE,
+} from "../common";
 
 const SUCCESS_RESPONSE = "success";
 
 export class Backend {
   private keyringStore: KeyringStore;
+  private notifications: NotificationsClient;
 
   constructor(notifications: NotificationsClient) {
     this.keyringStore = new KeyringStore(notifications);
+    this.notifications = notifications;
   }
 
   connect(ctx: Context, onlyIfTrustedMaybe: boolean) {
@@ -125,6 +131,33 @@ export class Backend {
     await KeynameStore.setName(pubkey, `Wallet ${accountIndex + 1}`);
     // Return the newly created key.
     return pubkey.toString();
+  }
+
+  async keynameUpdate(pubkey: PublicKey, newName: string): Promise<string> {
+    await KeynameStore.setName(pubkey, newName);
+    this.notifications.pushNotification({
+      name: NOTIFICATION_KEYNAME_UPDATE,
+      data: {
+        publicKey: pubkey.toString(),
+        name: newName,
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
+  async keyringKeyDelete(pubkey: PublicKey): Promise<string> {
+    const walletData = await getWalletData();
+    await setWalletData({
+      ...walletData,
+      deletedWallets: walletData.deletedWallets.concat([pubkey.toString()]),
+    });
+    this.notifications.pushNotification({
+      name: NOTIFICATION_KEYRING_KEY_DELETE,
+      data: {
+        publicKey: pubkey.toString(),
+      },
+    });
+    return SUCCESS_RESPONSE;
   }
 }
 

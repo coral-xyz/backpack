@@ -19,9 +19,11 @@ export const UI_RPC_METHOD_KEYRING_STORE_LOCK = "keyring-store-lock";
 export const UI_RPC_METHOD_HD_KEYRING_CREATE = "hd-keyring-create";
 export const UI_RPC_METHOD_KEYRING_CREATE = "keyring-create";
 export const UI_RPC_METHOD_KEYRING_DERIVE_WALLET = "keyring-derive";
+export const UI_RPC_METHOD_KEYRING_KEY_DELETE = "keyring-delete";
 export const UI_RPC_METHOD_CONNECTION_URL_READ = "connection-url-read";
 export const UI_RPC_METHOD_CONNECTION_URL_UPDATE = "connection-url-update";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET = "wallet-active";
+export const UI_RPC_METHOD_KEYNAME_UPDATE = "keyname-update";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
@@ -31,6 +33,8 @@ export const NOTIFICATION_KEYRING_STORE_UNLOCKED =
   "notification-keyring-store-unlocked";
 export const NOTIFICATION_CONNECTION_URL_UPDATED =
   "anchor-connection-url-updated";
+export const NOTIFICATION_KEYNAME_UPDATE = "anchor-keyname-update";
+export const NOTIFICATION_KEYRING_KEY_DELETE = "anchor-keyring-key-delete";
 
 export const CONNECTION_POPUP_RPC = "anchor-popup-rpc";
 export const CONNECTION_POPUP_NOTIFICATIONS = "anchor-popup-notifications";

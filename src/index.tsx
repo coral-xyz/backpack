@@ -14,6 +14,8 @@ import {
 	CONNECTION_POPUP_NOTIFICATIONS,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
+	NOTIFICATION_KEYRING_KEY_DELETE,
+	NOTIFICATION_KEYNAME_UPDATE,
 } from './common';
 import { setBackgroundClient } from './background/client';
 import { KeyringStoreState, KeyringStoreStateEnum } from './keyring/store';
@@ -62,6 +64,12 @@ function notificationsHandler(notif: Notification) {
 		case NOTIFICATION_KEYRING_STORE_UNLOCKED:
 			handleKeyringStoreUnlocked();
 			break;
+		case NOTIFICATION_KEYRING_KEY_DELETE:
+			handleKeyringKeyDelete();
+			break;
+		case NOTIFICATION_KEYNAME_UPDATE:
+			handleKeynameUpdate();
+			break;
 		default:
 			break;
 	}
@@ -79,6 +87,14 @@ function handleKeyringStoreUnlocked() {
 		throw new Error('invariant violation');
 	}
 	setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
+}
+
+function handleKeyringKeyDelete() {
+	// todo
+}
+
+function handleKeynameUpdate() {
+	// todo
 }
 
 function render(state: KeyringStoreState) {

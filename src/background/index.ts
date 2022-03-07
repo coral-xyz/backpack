@@ -1,3 +1,4 @@
+import { PublicKey } from "@solana/web3.js";
 import {
   debug,
   Channel,
@@ -19,12 +20,14 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_CREATE,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+  UI_RPC_METHOD_KEYRING_KEY_DELETE,
   UI_RPC_METHOD_HD_KEYRING_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_CONNECTION_URL_READ,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
+  UI_RPC_METHOD_KEYNAME_UPDATE,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
@@ -74,6 +77,8 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return await handleHdKeyringCreate(params[0]);
     case UI_RPC_METHOD_KEYRING_CREATE:
       return await handleKeyringCreate(params[0]);
+    case UI_RPC_METHOD_KEYRING_KEY_DELETE:
+      return await handleKeyringKeyDelete(params[0]);
     case UI_RPC_METHOD_KEYRING_STORE_STATE:
       return await handleKeyringStoreState();
     case UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE:
@@ -86,6 +91,8 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return await handleWalletDataActiveWallet();
     case UI_RPC_METHOD_KEYRING_DERIVE_WALLET:
       return handleKeyringDeriveWallet();
+    case UI_RPC_METHOD_KEYNAME_UPDATE:
+      return await handleKeynameUpdate(params[0], params[1]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -228,6 +235,21 @@ async function handleKeyringStoreReadAllPubkeys(): Promise<
 
 function handleKeyringDeriveWallet(): RpcResponse<string> {
   const resp = backend.keyringDeriveWallet();
+  return [resp];
+}
+
+async function handleKeynameUpdate(
+  pubkey: string,
+  newName: string
+): Promise<RpcResponse<string>> {
+  const resp = await backend.keynameUpdate(new PublicKey(pubkey), newName);
+  return [resp];
+}
+
+async function handleKeyringKeyDelete(
+  pubkey: string
+): Promise<RpcResponse<string>> {
+  const resp = await backend.keyringKeyDelete(new PublicKey(pubkey));
   return [resp];
 }
 
