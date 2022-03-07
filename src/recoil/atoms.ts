@@ -6,10 +6,10 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
+import { NamedPublicKey } from "../background/backend";
 
 /**
- * store the info from the SPL Token Account owned by
- * the connected wallet.
+ * Store the info from the SPL Token Account owned by the connected wallet.
  */
 export const tokenAccountsMap = atomFamily<TokenAccountWithKey | null, string>({
   key: "tokenAccountsMap",
@@ -17,14 +17,17 @@ export const tokenAccountsMap = atomFamily<TokenAccountWithKey | null, string>({
 });
 
 /**
- * list of all stored token accounts within tokenAccountsMap.
+ * List of all stored token accounts within tokenAccountsMap.
  */
 export const tokenAccountKeys = atom<string[]>({
   key: "tokenAccountKeys",
   default: [],
 });
 
-export const walletPublicKeys = atom<string[]>({
+/**
+ * List of all public keys for the wallet along with associated nicknames.
+ */
+export const walletPublicKeys = atom<Array<NamedPublicKey>>({
   key: "walletPublicKeys",
   default: [],
   effects: [

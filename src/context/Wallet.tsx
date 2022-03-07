@@ -11,9 +11,17 @@ export function useWallet() {
   // todo
 }
 
-export function useWalletPublicKeys(): Array<PublicKey> {
+export function useWalletPublicKeys(): Array<{
+  publicKey: PublicKey;
+  name: string;
+}> {
   const keys = useRecoilValue(walletPublicKeys);
-  return keys.map((k) => new PublicKey(k));
+  return keys.map((k) => {
+    return {
+      publicKey: new PublicKey(k.publicKey),
+      name: k.name,
+    };
+  });
 }
 
 export type ConnectionContext = {

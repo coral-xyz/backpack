@@ -6,6 +6,7 @@ import {
   KeyringStoreState,
 } from "../keyring/store";
 import { DerivationPath } from "../keyring/crypto";
+import { KeynameStore } from "../keyring/store";
 import { NotificationsClient } from "../common";
 
 const SUCCESS_RESPONSE = "success";
@@ -69,9 +70,17 @@ export class Backend {
   }
 
   // Returns all pubkeys available for signing.
-  keyringStoreReadAllPubkeys(): Array<string> {
-    // todo
-    return ["Bq9hhowd6Q7a3T63Jw13p7VRx3jEmFc8vQBo6MD9jYyb"];
+  async keyringStoreReadAllPubkeys(): Promise<Array<NamedPublicKey>> {
+    const pubkeys = this.keyringStore.publicKeys();
+    const names = await Promise.all(
+      pubkeys.map((pk) => KeynameStore.getName(pk))
+    );
+    return pubkeys.map((pk, idx) => {
+      return {
+        publicKey: pk.toString(),
+        name: names[idx],
+      };
+    });
   }
 
   // Adds a new HdKeyring to the store.
@@ -105,3 +114,7 @@ export type Context = {
 };
 
 type MessageSignature = string;
+export type NamedPublicKey = {
+  publicKey: string;
+  name: string;
+};

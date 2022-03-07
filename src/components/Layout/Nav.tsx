@@ -107,9 +107,11 @@ function UnlockedCenterDisplay() {
 
 function WalletAddress() {
   const pubkeys = useWalletPublicKeys();
-  const pubkeyStr = pubkeys[0].toString();
+  const { publicKey, name } = pubkeys[0];
+  const pubkeyStr = publicKey.toString();
   return (
     <div>
+      <b style={{ marginRight: "8px" }}>{name}</b>
       {`${pubkeyStr.slice(0, 4)}...${pubkeyStr.slice(pubkeyStr.length - 4)}`}
     </div>
   );

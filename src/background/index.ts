@@ -211,7 +211,7 @@ async function handleConnectionUrlUpdate(
 async function handleKeyringStoreReadAllPubkeys(): Promise<
   RpcResponse<Array<string>>
 > {
-  const resp = backend.keyringStoreReadAllPubkeys();
+  const resp = await backend.keyringStoreReadAllPubkeys();
   return [resp];
 }
 

@@ -66,6 +66,8 @@ export class KeyringStore {
     if (this.isUnlocked()) {
       throw new Error("unable to unlock");
     }
+
+    // Decrypt the keyring from storage.
     const ciphertextPayload = await LocalStorageDb.get(KEY_KEYRING_STORE);
     if (ciphertextPayload === undefined || ciphertextPayload === null) {
       throw new Error("keyring store not found on disk");
@@ -73,13 +75,17 @@ export class KeyringStore {
     const plaintext = await crypto.decrypt(ciphertextPayload, password);
     const { hdKeyring, importedKeyring, lastUsedTs: _ } = JSON.parse(plaintext);
 
-    this.updateLastUsed();
+    // Update the keystore object with the keyrings.
     this.hdKeyring = HdKeyring.fromJson(hdKeyring);
     this.importedKeyring = Keyring.fromJson(importedKeyring);
 
+    // Notify all listeners of the unlock.
     this.notifications.pushNotification({
       name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
     });
+
+    // Update last used ts.
+    this.updateLastUsed();
   }
 
   public async init(
@@ -93,24 +99,26 @@ export class KeyringStore {
 
     // Initialize keyrings.
     this.hdKeyring = HdKeyring.fromMnemonic(mnemonic, derivationPath);
-    this.importedKeyring = Keyring.fromImports([]);
-    this.updateLastUsed();
+    this.importedKeyring = Keyring.fromSecretKeys([]);
 
-    // Persist the store.
-    this.persistEncrypted(password);
+    // Persist the encrypted data to then store.
+    const plaintext = JSON.stringify(this.toJson());
+    const ciphertext = await crypto.encrypt(plaintext, password);
+    await LocalStorageDb.set(KEY_KEYRING_STORE, ciphertext);
+
+    // Give a name to this wallet.
+    console.log(
+      "giving this a nmae",
+      this.hdKeyring.getPublicKey(0).toString()
+    );
+    await KeynameStore.setName(this.hdKeyring.getPublicKey(0), "Wallet 1");
+
+    // Update last used timestamp.
+    this.updateLastUsed();
   }
 
   public updateLastUsed() {
     this.lastUsedTs = Date.now() / 1000;
-  }
-
-  private async persistEncrypted(password: string) {
-    // Serialize the encrypted payload.
-    const plaintext = JSON.stringify(this.toJson());
-    const ciphertext = await crypto.encrypt(plaintext, password);
-
-    // Persist the store.
-    LocalStorageDb.set(KEY_KEYRING_STORE, ciphertext);
   }
 
   private toJson(): any {
@@ -141,8 +149,29 @@ export class KeyringStore {
   }
 }
 
+export class KeynameStore {
+  public static async setName(pubkey: PublicKey, name: string) {
+    let keynames = await LocalStorageDb.get(KEY_KEYNAME_STORE);
+    if (!keynames) {
+      keynames = {};
+    }
+    keynames[pubkey.toString()] = name;
+    await LocalStorageDb.set(KEY_KEYNAME_STORE, keynames);
+  }
+
+  public static async getName(pubkey: PublicKey): Promise<string> {
+    const names = await LocalStorageDb.get(KEY_KEYNAME_STORE);
+    const name = names[pubkey.toString()];
+    if (!name) {
+      throw new Error(`unable to find name for key: ${pubkey.toString()}`);
+    }
+    return name;
+  }
+}
+
 // Keys used by the local storage db.
 export const KEY_KEYRING_STORE = "keyring-store";
+export const KEY_KEYNAME_STORE = "keyname-store";
 export const KEY_CONNECTION_URL = "connection-url";
 
 export class LocalStorageDb {

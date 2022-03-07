@@ -1,6 +1,6 @@
 import { validateMnemonic, generateMnemonic, mnemonicToSeedSync } from "bip39";
 import { Keypair, PublicKey } from "@solana/web3.js";
-import * as nacl from "tweetnacl";
+import nacl from "tweetnacl";
 import * as bs58 from "bs58";
 import { deriveKeypairs, deriveKeypair, DerivationPath } from "./crypto";
 
@@ -28,6 +28,13 @@ export class Keyring {
     return bs58.encode(kp.secretKey);
   }
 
+  public static fromSecretKeys(secretKeys: Array<string>): Keyring {
+    const keypairs = secretKeys.map((secret: string) =>
+      Keypair.fromSecretKey(Buffer.from(secret, "hex"))
+    );
+    return new Keyring(keypairs);
+  }
+
   public toJson(): any {
     return {
       keypairs: this.keypairs.map((kp) =>
@@ -38,13 +45,6 @@ export class Keyring {
 
   public static fromJson(payload: any): Keyring {
     const keypairs = payload.keypairs.map((secret: string) =>
-      Keypair.fromSecretKey(Buffer.from(secret, "hex"))
-    );
-    return new Keyring(keypairs);
-  }
-
-  public static fromImports(secretKeys: Array<string>): Keyring {
-    const keypairs = secretKeys.map((secret: string) =>
       Keypair.fromSecretKey(Buffer.from(secret, "hex"))
     );
     return new Keyring(keypairs);
@@ -124,6 +124,21 @@ export class HdKeyring extends Keyring {
       )
     );
     this.numberOfAccounts += 1;
+  }
+
+  public getPublicKey(accountIndex: number): PublicKey {
+    // This might not be true once we implement account deletion.
+    // One solution is to simply make that a UI detail.
+    if (this.keypairs.length !== this.numberOfAccounts) {
+      throw new Error("invariant violation");
+    }
+    if (accountIndex >= this.keypairs.length) {
+      throw new Error(
+        `cannot get public key for account index: ${accountIndex}`
+      );
+    }
+    const kp = this.keypairs[accountIndex];
+    return kp.publicKey;
   }
 
   public toJson(): any {
