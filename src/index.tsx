@@ -88,7 +88,7 @@ function render(state: KeyringStoreState) {
 			<App state={state} />
 		</React.StrictMode>,
 		document.getElementById('root')
-	)
+	);
 }
 
 main();

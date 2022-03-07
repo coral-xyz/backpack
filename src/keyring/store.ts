@@ -9,10 +9,9 @@ import {
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
 } from "../common";
 
-const LOCK_INTERVAL_SECS = 10 * 60 * 1000;
+const LOCK_INTERVAL_SECS = 15 * 60 * 1000;
 
 export class KeyringStore {
-  private db: Db;
   private notifications: NotificationsClient;
   private lastUsedTs: number;
   private hdKeyring?: HdKeyring;
@@ -20,7 +19,6 @@ export class KeyringStore {
 
   constructor(notifications: NotificationsClient) {
     this.notifications = notifications;
-    this.db = new LocalStorageDb();
     this.lastUsedTs = 0;
 
     // Check the last time the keystore was used at a regular interval.
@@ -68,7 +66,7 @@ export class KeyringStore {
     if (this.isUnlocked()) {
       throw new Error("unable to unlock");
     }
-    const ciphertextPayload = await this.db.get(KEY_KEYRING_STORE);
+    const ciphertextPayload = await LocalStorageDb.get(KEY_KEYRING_STORE);
     if (ciphertextPayload === undefined || ciphertextPayload === null) {
       throw new Error("keyring store not found on disk");
     }
@@ -112,7 +110,7 @@ export class KeyringStore {
     const ciphertext = await crypto.encrypt(plaintext, password);
 
     // Persist the store.
-    this.db.set(KEY_KEYRING_STORE, ciphertext);
+    LocalStorageDb.set(KEY_KEYRING_STORE, ciphertext);
   }
 
   private toJson(): any {
@@ -138,24 +136,21 @@ export class KeyringStore {
     if (this.isUnlocked()) {
       return false;
     }
-    const ciphertext = await this.db.get(KEY_KEYRING_STORE);
+    const ciphertext = await LocalStorageDb.get(KEY_KEYRING_STORE);
     return ciphertext !== undefined && ciphertext !== null;
   }
 }
 
-const KEY_KEYRING_STORE = "keyring-store";
+// Keys used by the local storage db.
+export const KEY_KEYRING_STORE = "keyring-store";
+export const KEY_CONNECTION_URL = "connection-url";
 
-export interface Db {
-  get(key: string): Promise<any>;
-  set(key: string, value: any): Promise<void>;
-}
-
-class LocalStorageDb implements Db {
-  async get(key: string): Promise<any> {
+export class LocalStorageDb {
+  static async get(key: string): Promise<any> {
     return await BrowserRuntime.getLocalStorage(key);
   }
 
-  async set(key: string, value: any): Promise<void> {
+  static async set(key: string, value: any): Promise<void> {
     await BrowserRuntime.setLocalStorage(key, value);
   }
 }

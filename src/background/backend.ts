@@ -1,5 +1,10 @@
 import { TransactionSignature } from "@solana/web3.js";
-import { KeyringStore, KeyringStoreState } from "../keyring/store";
+import {
+  KEY_CONNECTION_URL,
+  LocalStorageDb,
+  KeyringStore,
+  KeyringStoreState,
+} from "../keyring/store";
 import { DerivationPath } from "../keyring/crypto";
 import { NotificationsClient } from "../common";
 
@@ -78,6 +83,15 @@ export class Backend {
   // Adds a new ecretKey to the store (secret key is a private not a mnemonic).
   keyringCreate(secretKey: string): string {
     // todo
+    return SUCCESS_RESPONSE;
+  }
+
+  async connectionUrlRead(): Promise<string> {
+    return await LocalStorageDb.get(KEY_CONNECTION_URL);
+  }
+
+  async connectionUrlUpdate(url: string): Promise<String> {
+    await LocalStorageDb.set(KEY_CONNECTION_URL, url);
     return SUCCESS_RESPONSE;
   }
 }

@@ -21,12 +21,15 @@ import {
   UI_RPC_METHOD_HD_KEYRING_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_STATE,
+  UI_RPC_METHOD_CONNECTION_URL_READ,
+  UI_RPC_METHOD_CONNECTION_URL_UPDATE,
   NOTIFICATION_CONNECTED,
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_NOTIFICATIONS,
 } from "../common";
 import { Context, Backend } from "./backend";
 import { DerivationPath } from "../keyring/crypto";
+import { KeyringStoreState } from "../keyring/store";
 
 // Channel to send notifications from the background to the injected script.
 const notificationsInjected = Channel.client(CHANNEL_NOTIFICATION);
@@ -71,6 +74,10 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return await handleKeyringStoreState();
     case UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE:
       return handleKeyringStoreKeepAlive();
+    case UI_RPC_METHOD_CONNECTION_URL_READ:
+      return await handleConnectionUrlRead();
+    case UI_RPC_METHOD_CONNECTION_URL_UPDATE:
+      return await handleConnectionUrlUpdate(params[0]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -169,13 +176,27 @@ async function handleKeyringCreate(
   return [resp];
 }
 
-async function handleKeyringStoreState() {
+async function handleKeyringStoreState(): Promise<
+  RpcResponse<KeyringStoreState>
+> {
   const resp = await backend.keyringStoreState();
   return [resp];
 }
 
-function handleKeyringStoreKeepAlive() {
+function handleKeyringStoreKeepAlive(): RpcResponse<string> {
   const resp = backend.keyringStoreKeepAlive();
+  return [resp];
+}
+
+async function handleConnectionUrlRead(): Promise<RpcResponse<string>> {
+  const resp = await backend.connectionUrlRead();
+  return [resp];
+}
+
+async function handleConnectionUrlUpdate(
+  url: string
+): Promise<RpcResponse<string>> {
+  const resp = await backend.connectionUrlUpdate(url);
   return [resp];
 }
 

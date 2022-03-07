@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createTheme, CssBaseline, MuiThemeProvider } from "@material-ui/core";
+import { RecoilRoot } from "recoil";
 import { openExpandedExtension, isExtensionPopup } from "../common";
 import { Onboarding } from "../components/Onboarding";
 import { KeyringStoreState, KeyringStoreStateEnum } from "../keyring/store";
@@ -30,12 +31,14 @@ const theme = createTheme({
 
 export default function App({ state }: { state: KeyringStoreState }) {
   return (
-    <MuiThemeProvider theme={theme}>
-      <CssBaseline />
-      <KeyringStoreStateProvider keyringStoreState={state}>
-        <_App state={state} />
-      </KeyringStoreStateProvider>
-    </MuiThemeProvider>
+    <RecoilRoot>
+      <MuiThemeProvider theme={theme}>
+        <CssBaseline />
+        <KeyringStoreStateProvider keyringStoreState={state}>
+          <_App state={state} />
+        </KeyringStoreStateProvider>
+      </MuiThemeProvider>
+    </RecoilRoot>
   );
 }
 
