@@ -115,15 +115,15 @@ export class HdKeyring extends Keyring {
     });
   }
 
-  public deriveNext() {
-    this.keypairs.push(
-      deriveKeypair(
-        this.seed.toString("hex"),
-        this.numberOfAccounts,
-        this.derivationPath
-      )
+  public deriveNext(): [PublicKey, number] {
+    const kp = deriveKeypair(
+      this.seed.toString("hex"),
+      this.numberOfAccounts,
+      this.derivationPath
     );
+    this.keypairs.push(kp);
     this.numberOfAccounts += 1;
+    return [kp.publicKey, this.numberOfAccounts - 1];
   }
 
   public getPublicKey(accountIndex: number): PublicKey {

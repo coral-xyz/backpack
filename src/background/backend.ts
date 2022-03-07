@@ -117,6 +117,15 @@ export class Backend {
       name,
     };
   }
+
+  async keyringDeriveWallet(): Promise<string> {
+    // Derive the next key.
+    const [pubkey, accountIndex] = this.keyringStore.deriveNextKey();
+    // Save a default name.
+    await KeynameStore.setName(pubkey, `Wallet ${accountIndex + 1}`);
+    // Return the newly created key.
+    return pubkey.toString();
+  }
 }
 
 export type Context = {

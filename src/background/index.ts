@@ -18,6 +18,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_CREATE,
+  UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_HD_KEYRING_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_STATE,
@@ -83,6 +84,8 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return await handleConnectionUrlUpdate(params[0]);
     case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET:
       return await handleWalletDataActiveWallet();
+    case UI_RPC_METHOD_KEYRING_DERIVE_WALLET:
+      return handleKeyringDeriveWallet();
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -220,6 +223,11 @@ async function handleKeyringStoreReadAllPubkeys(): Promise<
   RpcResponse<Array<string>>
 > {
   const resp = await backend.keyringStoreReadAllPubkeys();
+  return [resp];
+}
+
+function handleKeyringDeriveWallet(): RpcResponse<string> {
+  const resp = backend.keyringDeriveWallet();
   return [resp];
 }
 

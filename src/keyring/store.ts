@@ -122,6 +122,14 @@ export class KeyringStore {
     this.updateLastUsed();
   }
 
+  public deriveNextKey(): [PublicKey, number] {
+    if (!this.isUnlocked()) {
+      throw new Error("keyring not unlocked");
+    }
+    const [pubkey, accountIndex] = this.hdKeyring!.deriveNext();
+    return [pubkey, accountIndex];
+  }
+
   private updateLastUsed() {
     this.lastUsedTs = Date.now() / 1000;
   }

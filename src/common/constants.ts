@@ -18,6 +18,7 @@ export const UI_RPC_METHOD_KEYRING_STORE_UNLOCK = "keyring-store-unlock";
 export const UI_RPC_METHOD_KEYRING_STORE_LOCK = "keyring-store-lock";
 export const UI_RPC_METHOD_HD_KEYRING_CREATE = "hd-keyring-create";
 export const UI_RPC_METHOD_KEYRING_CREATE = "keyring-create";
+export const UI_RPC_METHOD_KEYRING_DERIVE_WALLET = "keyring-derive";
 export const UI_RPC_METHOD_CONNECTION_URL_READ = "connection-url-read";
 export const UI_RPC_METHOD_CONNECTION_URL_UPDATE = "connection-url-update";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET = "wallet-active";
