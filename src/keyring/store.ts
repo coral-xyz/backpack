@@ -107,10 +107,6 @@ export class KeyringStore {
     await LocalStorageDb.set(KEY_KEYRING_STORE, ciphertext);
 
     // Give a name to this wallet.
-    console.log(
-      "giving this a nmae",
-      this.hdKeyring.getPublicKey(0).toString()
-    );
     await KeynameStore.setName(this.hdKeyring.getPublicKey(0), "Wallet 1");
 
     // Update last used timestamp.

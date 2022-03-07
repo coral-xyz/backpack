@@ -15,6 +15,7 @@ import { useKeyringStoreStateContext } from "../../context/KeyringStoreState";
 import { SidebarButton } from "./Sidebar";
 import { useConnection } from "../../context/Connection";
 import { useWalletPublicKeys } from "../../context/Wallet";
+import { WalletAddress } from "../common";
 
 export const NAV_BAR_HEIGHT = 46;
 
@@ -100,21 +101,15 @@ function LockedCenterDisplay() {
 function UnlockedCenterDisplay() {
   return (
     <Suspense fallback={<div></div>}>
-      <WalletAddress />
+      <_UnlockedCenterDisplay />
     </Suspense>
   );
 }
 
-function WalletAddress() {
+function _UnlockedCenterDisplay() {
   const pubkeys = useWalletPublicKeys();
   const { publicKey, name } = pubkeys[0];
-  const pubkeyStr = publicKey.toString();
-  return (
-    <div>
-      <b style={{ marginRight: "8px" }}>{name}</b>
-      {`${pubkeyStr.slice(0, 4)}...${pubkeyStr.slice(pubkeyStr.length - 4)}`}
-    </div>
-  );
+  return <WalletAddress publicKey={publicKey} name={name} />;
 }
 
 function ConnectionIcon() {

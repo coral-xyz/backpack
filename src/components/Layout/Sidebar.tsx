@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import Sidebar from "react-sidebar";
 import {
   useTheme,
   makeStyles,
@@ -11,7 +12,7 @@ import {
   Divider,
 } from "@material-ui/core";
 import { Add, Menu, Close, Lock, Help, FlashOn } from "@material-ui/icons";
-import Sidebar from "react-sidebar";
+import { PublicKey } from "@solana/web3.js";
 import {
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   EXTENSION_HEIGHT,
@@ -20,6 +21,8 @@ import { getBackgroundClient } from "../../background/client";
 import { NAV_BAR_HEIGHT } from "./Nav";
 import { useKeyringStoreStateContext } from "../../context/KeyringStoreState";
 import { KeyringStoreStateEnum } from "../../keyring/store";
+import { useWalletPublicKeys } from "../../context/Wallet";
+import { WalletAddress } from "../../components/common";
 
 const useStyles = makeStyles((theme: any) => ({
   menuButtonContainer: {
@@ -97,8 +100,17 @@ export function SidebarButton() {
 }
 
 function SidebarContent({ close }: { close: () => void }) {
+  return (
+    <Suspense fallback={<div></div>}>
+      <_SidebarContent close={close} />
+    </Suspense>
+  );
+}
+
+function _SidebarContent({ close }: { close: () => void }) {
   const classes = useStyles();
   const theme = useTheme() as any;
+  const namedPublicKeys = useWalletPublicKeys();
   const { keyringStoreState } = useKeyringStoreStateContext();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [drawerView, setDrawerView] = useState("recent-activity");
@@ -120,6 +132,10 @@ function SidebarContent({ close }: { close: () => void }) {
       .catch(console.error)
       .then(() => close());
   };
+  const clickWallet = (publicKey: PublicKey) => {
+    close();
+    // todo
+  };
   return (
     <div>
       <SidebarHeader close={close} />
@@ -130,6 +146,17 @@ function SidebarContent({ close }: { close: () => void }) {
           paddingRight: "16px",
         }}
       >
+        {namedPublicKeys.map(({ name, publicKey }) => {
+          return (
+            <ListItem
+              button
+              className={classes.sidebarContentListItem}
+              onClick={() => clickWallet(publicKey)}
+            >
+              <WalletAddress name={name} publicKey={publicKey} />
+            </ListItem>
+          );
+        })}
         {keyringStoreState === KeyringStoreStateEnum.Unlocked && (
           <>
             <ListItem
