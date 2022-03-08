@@ -13,6 +13,7 @@ import {
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
+  NOTIFICATION_KEYRING_RESET_MNEMONIC,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
 import { KeyringStoreStateEnum } from "../keyring/store";
@@ -52,6 +53,9 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_ACTIVE_WALLET_UPDATED:
           handleActiveWalletUpdated(notif);
+          break;
+        case NOTIFICATION_KEYRING_RESET_MNEMONIC:
+          handleResetMnemonic(notif);
           break;
         default:
           break;
@@ -115,6 +119,9 @@ export function NotificationsProvider(props: any) {
         };
         return next;
       });
+    };
+    const handleResetMnemonic = (notif: Notification) => {
+      // TODO.
     };
 
     //

@@ -30,6 +30,7 @@ export const UI_RPC_METHOD_KEYNAME_UPDATE = "keyname-update";
 export const UI_RPC_METHOD_PASSWORD_UPDATE = "password-update";
 export const UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY = "export-secret-key";
 export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC = "export-mnemonic";
+export const UI_RPC_METHOD_KEYRING_RESET_MNEMONIC = "reset-mnemonic";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
@@ -47,6 +48,8 @@ export const NOTIFICATION_ACTIVE_WALLET_UPDATED =
   "anchor-kerying-active-wallet-updated";
 export const NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY =
   "anchor-keyring-imported-secret-key";
+export const NOTIFICATION_KEYRING_RESET_MNEMONIC =
+  "anchor-keyring-reset-mnemonic";
 
 export const CONNECTION_POPUP_RPC = "anchor-popup-rpc";
 export const CONNECTION_POPUP_NOTIFICATIONS = "anchor-popup-notifications";

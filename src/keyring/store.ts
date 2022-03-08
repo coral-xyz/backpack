@@ -192,6 +192,16 @@ export class KeyringStore {
     return this.hdKeyring!.mnemonic;
   }
 
+  public resetMnemonic(password: string) {
+    if (!this.isUnlocked()) {
+      throw new Error("keyring store is not unlocked");
+    }
+    if (password !== this.password) {
+      throw new Error("incorrect password");
+    }
+    // TODO.
+  }
+
   private updateLastUsed() {
     this.lastUsedTs = Date.now() / 1000;
   }

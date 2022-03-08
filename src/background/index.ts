@@ -21,18 +21,19 @@ import {
   UI_RPC_METHOD_KEYRING_CREATE,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
-  UI_RPC_METHOD_HD_KEYRING_CREATE,
+  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+  UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
+  UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC,
+  UI_RPC_METHOD_KEYRING_RESET_MNEMONIC,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_STATE,
+  UI_RPC_METHOD_HD_KEYRING_CREATE,
   UI_RPC_METHOD_CONNECTION_URL_READ,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYNAME_UPDATE,
   UI_RPC_METHOD_PASSWORD_UPDATE,
-  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-  UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
-  UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
@@ -108,6 +109,8 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return handleKeyringExportSecretKey(params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC:
       return handleKeyringExportMnemonic(params[0]);
+    case UI_RPC_METHOD_KEYRING_RESET_MNEMONIC:
+      return handleKeyringResetMnemonic(params[0]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -304,6 +307,11 @@ function handleKeyringExportSecretKey(
 
 function handleKeyringExportMnemonic(password: string): RpcResponse<string> {
   const resp = backend.keyringExportMnemonic(password);
+  return [resp];
+}
+
+function handleKeyringResetMnemonic(password: string): RpcResponse<string> {
+  const resp = backend.keyringResetMnemonic(password);
   return [resp];
 }
 

@@ -223,6 +223,11 @@ export class Backend {
   keyringExportMnemonic(password: string): string {
     return this.keyringStore.exportMnemonic(password);
   }
+
+  keyringResetMnemonic(password: string): string {
+    this.keyringStore.resetMnemonic(password);
+    return SUCCESS_RESPONSE;
+  }
 }
 
 export type Context = {
