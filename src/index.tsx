@@ -1,44 +1,44 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './app/App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import App from "./app/App";
+import reportWebVitals from "./reportWebVitals";
 import {
-	debug,
-	PortChannel,
+  debug,
+  PortChannel,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
-	CONNECTION_POPUP_RPC,
-} from './common';
-import { setBackgroundClient } from './background/client';
+  CONNECTION_POPUP_RPC,
+} from "./common";
+import { setBackgroundClient } from "./background/client";
 
 async function main() {
-	await bootstrap();
-	render();
+  await bootstrap();
+  render();
 }
 
 async function bootstrap() {
-	debug('bootstrapping ui');
+  debug("bootstrapping ui");
 
-	// Client to communicate from the UI to the background script.
-	const backgroundClient = PortChannel.client(CONNECTION_POPUP_RPC);
-	setBackgroundClient(backgroundClient);
+  // Client to communicate from the UI to the background script.
+  const backgroundClient = PortChannel.client(CONNECTION_POPUP_RPC);
+  setBackgroundClient(backgroundClient);
 
-	// Keep the keyring store unlocked with a continuous poll.
-	setInterval(() => {
-		backgroundClient.request({
-			method: UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
-			params: [],
-		});
-  }, 5*60*1000);
+  // Keep the keyring store unlocked with a continuous poll.
+  setInterval(() => {
+    backgroundClient.request({
+      method: UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
+      params: [],
+    });
+  }, 5 * 60 * 1000);
 }
 
 function render() {
-	ReactDOM.render(
-		<React.StrictMode>
-			<App />
-		</React.StrictMode>,
-		document.getElementById('root')
-	);
+  ReactDOM.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+    document.getElementById("root")
+  );
 }
 
 main();
