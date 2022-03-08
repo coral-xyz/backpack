@@ -99,7 +99,7 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
     case UI_RPC_METHOD_KEYNAME_UPDATE:
       return await handleKeynameUpdate(params[0], params[1]);
     case UI_RPC_METHOD_PASSWORD_UPDATE:
-      return await handlePasswordUpdate(params[0]);
+      return await handlePasswordUpdate(params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY:
       return await handleKeyringImportSecretKey(params[0]);
     default:
@@ -270,10 +270,15 @@ async function handleKeyringKeyDelete(
 }
 
 async function handlePasswordUpdate(
-  password: string
+  currentPassword: string,
+  newPassword: string
 ): Promise<RpcResponse<string>> {
-  const resp = await backend.passwordUpdate(password);
-  return [resp];
+  try {
+    const resp = await backend.passwordUpdate(currentPassword, newPassword);
+    return [resp];
+  } catch (err) {
+    return [, err.toString()];
+  }
 }
 
 async function handleKeyringImportSecretKey(

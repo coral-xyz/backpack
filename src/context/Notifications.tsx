@@ -17,15 +17,8 @@ import {
 import { getBackgroundClient } from "../background/client";
 import { KeyringStoreStateEnum } from "../keyring/store";
 
-type NotificationsContext = {
-  //
-};
-const _NotificationsContext = React.createContext<NotificationsContext | null>(
-  null
-);
-
-// The atoms provider is used as a hack so that we can access recoil state setters
-// from outside the react component tree.
+// The Notifications provider is used to subscribe and handle notifications
+// from the background script.
 export function NotificationsProvider(props: any) {
   const setWalletPublicKeys = useSetRecoilState(atoms.walletPublicKeys);
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
@@ -69,15 +62,9 @@ export function NotificationsProvider(props: any) {
     // Notification handlers.
     //
     const handleKeyringStoreLocked = (_notif: Notification) => {
-      if (setKeyringStoreState === null) {
-        throw new Error("invariant violation");
-      }
       setKeyringStoreState(KeyringStoreStateEnum.Locked);
     };
     const handleKeyringStoreUnlocked = (_notif: Notification) => {
-      if (setKeyringStoreState === null) {
-        throw new Error("invariant violation");
-      }
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
     };
     const handleKeyringKeyDelete = (_notif: Notification) => {
@@ -131,7 +118,7 @@ export function NotificationsProvider(props: any) {
     };
 
     //
-    // Subscribe to notifications.
+    // Initiate subscription.
     //
     PortChannel.notifications(CONNECTION_POPUP_NOTIFICATIONS).onNotification(
       notificationsHandler
@@ -150,3 +137,8 @@ export function NotificationsProvider(props: any) {
     </_NotificationsContext.Provider>
   );
 }
+
+type NotificationsContext = {};
+const _NotificationsContext = React.createContext<NotificationsContext | null>(
+  null
+);

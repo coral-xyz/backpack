@@ -296,7 +296,7 @@ function SidebarHeader({ close }: { close: () => void }) {
   );
 }
 
-function WithDrawer(props: any) {
+export function WithDrawer(props: any) {
   const { children, openDrawer, setOpenDrawer } = props;
   const classes = useStyles();
   return (
@@ -317,13 +317,15 @@ function WithDrawer(props: any) {
     >
       <div className={classes.withDrawer}>
         <div className={classes.withDrawerContent}>{children}</div>
-        <Button
-          onClick={() => setOpenDrawer(false)}
-          variant="contained"
-          className={classes.closeDrawerButton}
-        >
-          Close
-        </Button>
+        {!props.skipFooter && (
+          <Button
+            onClick={() => setOpenDrawer(false)}
+            variant="contained"
+            className={classes.closeDrawerButton}
+          >
+            Close
+          </Button>
+        )}
       </div>
     </Drawer>
   );
