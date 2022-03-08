@@ -228,6 +228,11 @@ export class Backend {
     this.keyringStore.resetMnemonic(password);
     return SUCCESS_RESPONSE;
   }
+
+  async keyringAutolockUpdate(secs: number): Promise<string> {
+    await this.keyringStore.autolockUpdate(secs);
+    return SUCCESS_RESPONSE;
+  }
 }
 
 export type Context = {

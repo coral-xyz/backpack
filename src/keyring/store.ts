@@ -17,23 +17,12 @@ export class KeyringStore {
   private hdKeyring?: HdKeyring;
   private importedKeyring?: Keyring;
   private password?: string;
+  private autoLockInterval?: ReturnType<typeof setInterval>;
 
   constructor(notifications: NotificationsClient) {
     this.notifications = notifications;
     this.lastUsedTs = 0;
-
-    // Check the last time the keystore was used at a regular interval.
-    // If it hasn't been used recently, lock the keystore.
-    const interval = setInterval(() => {
-      const currentTs = Date.now() / 1000;
-      if (currentTs - this.lastUsedTs >= LOCK_INTERVAL_SECS) {
-        this.lock();
-        notifications.pushNotification({
-          name: NOTIFICATION_KEYRING_STORE_LOCKED,
-        });
-        clearInterval(interval);
-      }
-    }, LOCK_INTERVAL_SECS);
+    this.autoLockStart();
   }
 
   public async state(): Promise<KeyringStoreState> {
@@ -121,6 +110,7 @@ export class KeyringStore {
     await setWalletData({
       activeWallet: this.hdKeyring.getPublicKey(0).toString(),
       deletedWallets: [],
+      autoLockSecs: LOCK_INTERVAL_SECS,
     });
 
     // Update last used timestamp.
@@ -202,6 +192,20 @@ export class KeyringStore {
     // TODO.
   }
 
+  public async autolockUpdate(autoLockSecs: number) {
+    if (!this.isUnlocked()) {
+      throw new Error("keyring store is not unlocked");
+    }
+    const data = await getWalletData();
+    await setWalletData({
+      ...data,
+      autoLockSecs,
+    });
+
+    clearInterval(this.autoLockInterval!);
+    this.autoLockStart();
+  }
+
   private updateLastUsed() {
     this.lastUsedTs = Date.now() / 1000;
   }
@@ -240,6 +244,23 @@ export class KeyringStore {
     const plaintext = JSON.stringify(this.toJson());
     const ciphertext = await crypto.encrypt(plaintext, this.password!);
     await LocalStorageDb.set(KEY_KEYRING_STORE, ciphertext);
+  }
+
+  private autoLockStart() {
+    // Check the last time the keystore was used at a regular interval.
+    // If it hasn't been used recently, lock the keystore.
+    getWalletData().then(({ autoLockSecs }) => {
+      this.autoLockInterval = setInterval(() => {
+        const currentTs = Date.now() / 1000;
+        if (currentTs - this.lastUsedTs >= LOCK_INTERVAL_SECS) {
+          this.lock();
+          this.notifications.pushNotification({
+            name: NOTIFICATION_KEYRING_STORE_LOCKED,
+          });
+          clearInterval(this.autoLockInterval!);
+        }
+      }, autoLockSecs ?? LOCK_INTERVAL_SECS);
+    });
   }
 }
 
@@ -299,4 +320,5 @@ export type KeyringStoreState = "locked" | "unlocked" | "needs-onboarding";
 export type WalletData = {
   activeWallet: string;
   deletedWallets: Array<string>;
+  autoLockSecs: number;
 };

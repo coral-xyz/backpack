@@ -34,6 +34,7 @@ import {
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYNAME_UPDATE,
   UI_RPC_METHOD_PASSWORD_UPDATE,
+  UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
@@ -111,6 +112,8 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return handleKeyringExportMnemonic(params[0]);
     case UI_RPC_METHOD_KEYRING_RESET_MNEMONIC:
       return handleKeyringResetMnemonic(params[0]);
+    case UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE:
+      return await handleKeyringAutolockUpdate(params[0]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -312,6 +315,13 @@ function handleKeyringExportMnemonic(password: string): RpcResponse<string> {
 
 function handleKeyringResetMnemonic(password: string): RpcResponse<string> {
   const resp = backend.keyringResetMnemonic(password);
+  return [resp];
+}
+
+async function handleKeyringAutolockUpdate(
+  autolockSecs: number
+): Promise<RpcResponse<string>> {
+  const resp = await backend.keyringAutolockUpdate(autolockSecs);
   return [resp];
 }
 
