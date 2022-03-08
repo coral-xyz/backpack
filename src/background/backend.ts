@@ -13,6 +13,7 @@ import {
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
 } from "../common";
 
 const SUCCESS_RESPONSE = "success";
@@ -191,6 +192,22 @@ export class Backend {
       name: NOTIFICATION_KEYRING_KEY_DELETE,
       data: {
         publicKey: pubkey.toString(),
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
+  async passwordUpdate(password: string): Promise<string> {
+    // todo
+    return SUCCESS_RESPONSE;
+  }
+
+  async importSecretKey(secretKey: string): Promise<string> {
+    const publicKey = this.keyringStore.importSecretKey(secretKey);
+    this.notifications.pushNotification({
+      name: NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
+      data: {
+        publicKey,
       },
     });
     return SUCCESS_RESPONSE;

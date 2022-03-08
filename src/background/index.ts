@@ -29,6 +29,8 @@ import {
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYNAME_UPDATE,
+  UI_RPC_METHOD_PASSWORD_UPDATE,
+  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
@@ -96,6 +98,10 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return await handleKeyringDeriveWallet();
     case UI_RPC_METHOD_KEYNAME_UPDATE:
       return await handleKeynameUpdate(params[0], params[1]);
+    case UI_RPC_METHOD_PASSWORD_UPDATE:
+      return await handlePasswordUpdate(params[0]);
+    case UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY:
+      return await handleKeyringImportSecretKey(params[0]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -260,6 +266,20 @@ async function handleKeyringKeyDelete(
   pubkey: string
 ): Promise<RpcResponse<string>> {
   const resp = await backend.keyringKeyDelete(new PublicKey(pubkey));
+  return [resp];
+}
+
+async function handlePasswordUpdate(
+  password: string
+): Promise<RpcResponse<string>> {
+  const resp = await backend.passwordUpdate(password);
+  return [resp];
+}
+
+async function handleKeyringImportSecretKey(
+  secretKey: string
+): Promise<RpcResponse<string>> {
+  const resp = await backend.importSecretKey(secretKey);
   return [resp];
 }
 

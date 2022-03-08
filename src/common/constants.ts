@@ -20,12 +20,14 @@ export const UI_RPC_METHOD_HD_KEYRING_CREATE = "hd-keyring-create";
 export const UI_RPC_METHOD_KEYRING_CREATE = "keyring-create";
 export const UI_RPC_METHOD_KEYRING_DERIVE_WALLET = "keyring-derive";
 export const UI_RPC_METHOD_KEYRING_KEY_DELETE = "keyring-delete";
+export const UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY = "keyring-import-wallet";
 export const UI_RPC_METHOD_CONNECTION_URL_READ = "connection-url-read";
 export const UI_RPC_METHOD_CONNECTION_URL_UPDATE = "connection-url-update";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET = "wallet-active";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE =
   "wallet-active-update";
 export const UI_RPC_METHOD_KEYNAME_UPDATE = "keyname-update";
+export const UI_RPC_METHOD_PASSWORD_UPDATE = "password-update";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
@@ -41,6 +43,8 @@ export const NOTIFICATION_KEYRING_DERIVED_WALLET =
   "anchor-keyring-derived-wallet";
 export const NOTIFICATION_ACTIVE_WALLET_UPDATED =
   "anchor-kerying-active-wallet-updated";
+export const NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY =
+  "anchor-keyring-imported-secret-key";
 
 export const CONNECTION_POPUP_RPC = "anchor-popup-rpc";
 export const CONNECTION_POPUP_NOTIFICATIONS = "anchor-popup-notifications";

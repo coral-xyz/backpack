@@ -35,6 +35,12 @@ export class Keyring {
     return new Keyring(keypairs);
   }
 
+  public importSecretKey(secretKey: string): PublicKey {
+    const kp = Keypair.fromSecretKey(Buffer.from(secretKey, "hex"));
+    this.keypairs.push(kp);
+    return kp.publicKey;
+  }
+
   public toJson(): any {
     return {
       keypairs: this.keypairs.map((kp) =>

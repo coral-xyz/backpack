@@ -143,6 +143,15 @@ export class KeyringStore {
     return [pubkey, accountIndex];
   }
 
+  // Returns the public key of the secret key imported.
+  public importSecretKey(secretKey: string): PublicKey {
+    if (!this.isUnlocked()) {
+      throw new Error("keyring store is not unlocked");
+    }
+    const pubkey = this.importedKeyring!.importSecretKey(secretKey);
+    return pubkey;
+  }
+
   private updateLastUsed() {
     this.lastUsedTs = Date.now() / 1000;
   }
