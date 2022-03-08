@@ -12,11 +12,11 @@ import {
 import { setBackgroundClient } from "./background/client";
 
 async function main() {
-  await bootstrap();
+  bootstrap();
   render();
 }
 
-async function bootstrap() {
+function bootstrap() {
   debug("bootstrapping ui");
 
   // Client to communicate from the UI to the background script.
