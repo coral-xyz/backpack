@@ -1,4 +1,3 @@
-import { PublicKey } from "@solana/web3.js";
 import { atom, atomFamily, selector } from "recoil";
 import { TokenAccountWithKey } from "./types";
 import {
@@ -9,7 +8,6 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_STATE,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
-import { NamedPublicKey } from "../background/backend";
 import { WalletPublicKeys } from "./types";
 import { KeyringStoreState } from "../keyring/store";
 
@@ -85,7 +83,7 @@ export const activeWalletWithName = selector({
   get: ({ get }) => {
     const pks = get(walletPublicKeys);
     const active = get(activeWallet);
-    console.log("pks active", pks, active);
+
     const result = pks.hdPublicKeys.find(
       (pk) => pk.publicKey.toString() === active
     );

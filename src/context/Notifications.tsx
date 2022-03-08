@@ -39,16 +39,16 @@ export function NotificationsProvider(props: any) {
     const notificationsHandler = (notif: Notification) => {
       switch (notif.name) {
         case NOTIFICATION_KEYRING_STORE_LOCKED:
-          handleKeyringStoreLocked();
+          handleKeyringStoreLocked(notif);
           break;
         case NOTIFICATION_KEYRING_STORE_UNLOCKED:
-          handleKeyringStoreUnlocked();
+          handleKeyringStoreUnlocked(notif);
           break;
         case NOTIFICATION_KEYRING_KEY_DELETE:
-          handleKeyringKeyDelete();
+          handleKeyringKeyDelete(notif);
           break;
         case NOTIFICATION_KEYNAME_UPDATE:
-          handleKeynameUpdate();
+          handleKeynameUpdate(notif);
           break;
         case NOTIFICATION_KEYRING_DERIVED_WALLET:
           handleKeyringDerivedWallet(notif);
@@ -64,23 +64,45 @@ export function NotificationsProvider(props: any) {
     //
     // Notification handlers.
     //
-    const handleKeyringStoreLocked = () => {
+    const handleKeyringStoreLocked = (_notif: Notification) => {
       if (setKeyringStoreState === null) {
         throw new Error("invariant violation");
       }
       setKeyringStoreState(KeyringStoreStateEnum.Locked);
     };
-    const handleKeyringStoreUnlocked = () => {
+    const handleKeyringStoreUnlocked = (_notif: Notification) => {
       if (setKeyringStoreState === null) {
         throw new Error("invariant violation");
       }
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
     };
-    const handleKeyringKeyDelete = () => {
+    const handleKeyringKeyDelete = (_notif: Notification) => {
       // todo
     };
-    const handleKeynameUpdate = () => {
-      // todo
+    const handleKeynameUpdate = (notif: Notification) => {
+      setWalletPublicKeys((current) => {
+        const next = {
+          hdPublicKeys: [...current.hdPublicKeys.map((pk) => ({ ...pk }))],
+          importedPublicKeys: [
+            ...current.importedPublicKeys.map((pk) => ({ ...pk })),
+          ],
+        };
+
+        // Find the key this notification is referring to and then mutate the
+        // name.
+        next.hdPublicKeys.forEach((key) => {
+          if (key.publicKey === notif.data.publicKey) {
+            key.name = notif.data.name;
+          }
+        });
+        next.importedPublicKeys.forEach((key) => {
+          if (key.publicKey === notif.data.publicKey) {
+            key.name = notif.data.name;
+          }
+        });
+
+        return next;
+      });
     };
     const handleKeyringDerivedWallet = (notif: Notification) => {
       setWalletPublicKeys((current) => {
@@ -88,7 +110,6 @@ export function NotificationsProvider(props: any) {
           ...current,
           hdPublicKeys: current.hdPublicKeys.concat([notif.data]),
         };
-        console.log("next", next);
         return next;
       });
     };

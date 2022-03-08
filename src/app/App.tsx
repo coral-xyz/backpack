@@ -1,5 +1,10 @@
 import { Suspense } from "react";
-import { createTheme, CssBaseline, MuiThemeProvider } from "@material-ui/core";
+import {
+  createTheme,
+  makeStyles,
+  CssBaseline,
+  MuiThemeProvider,
+} from "@material-ui/core";
 import { RecoilRoot } from "recoil";
 import { openExpandedExtension, isExtensionPopup } from "../common";
 import { Onboarding } from "../components/Onboarding";
@@ -8,7 +13,8 @@ import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
 import { Layout } from "../components/Layout";
 import { useKeyringStoreState } from "../context/KeyringStoreState";
-import { NotificationsProvider } from "../context/Atoms";
+import { NotificationsProvider } from "../context/Notifications";
+import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../common";
 import "./App.css";
 
 const theme = createTheme({
@@ -33,7 +39,7 @@ export default function App() {
       <NotificationsProvider>
         <MuiThemeProvider theme={theme}>
           <CssBaseline />
-          <Suspense fallback={<div></div>}>
+          <Suspense fallback={<BlankApp />}>
             <_App />
           </Suspense>
         </MuiThemeProvider>
@@ -62,4 +68,17 @@ function _App() {
   }
 
   return <Layout>{isLocked ? <Locked /> : <Unlocked />}</Layout>;
+}
+
+const useStyles = makeStyles((theme: any) => ({
+  blankApp: {
+    width: `${EXTENSION_WIDTH}px`,
+    height: `${EXTENSION_HEIGHT}px`,
+    backgroundColor: theme.custom.colors.background,
+  },
+}));
+
+function BlankApp() {
+  const classes = useStyles();
+  return <div className={classes.blankApp}></div>;
 }
