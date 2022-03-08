@@ -35,6 +35,8 @@ export const NOTIFICATION_CONNECTION_URL_UPDATED =
   "anchor-connection-url-updated";
 export const NOTIFICATION_KEYNAME_UPDATE = "anchor-keyname-update";
 export const NOTIFICATION_KEYRING_KEY_DELETE = "anchor-keyring-key-delete";
+export const NOTIFICATION_KEYRING_DERIVED_WALLET =
+  "anchor-keyring-derived-wallet";
 
 export const CONNECTION_POPUP_RPC = "anchor-popup-rpc";
 export const CONNECTION_POPUP_NOTIFICATIONS = "anchor-popup-notifications";

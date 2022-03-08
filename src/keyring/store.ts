@@ -45,12 +45,19 @@ export class KeyringStore {
     return KeyringStoreStateEnum.NeedsOnboarding;
   }
 
-  public publicKeys(): Array<PublicKey> {
+  public publicKeys(): {
+    hdPublicKeys: Array<PublicKey>;
+    importedPublicKeys: Array<PublicKey>;
+  } {
     if (!this.isUnlocked()) {
       throw new Error("keyring store is not unlocked");
     }
-    const pubkeys = this.hdKeyring!.publicKeys();
-    return pubkeys.concat(this.importedKeyring!.publicKeys());
+    const hdPublicKeys = this.hdKeyring!.publicKeys();
+    const importedPublicKeys = this.importedKeyring!.publicKeys();
+    return {
+      hdPublicKeys,
+      importedPublicKeys,
+    };
   }
 
   public lock() {

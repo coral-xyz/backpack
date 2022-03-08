@@ -11,6 +11,7 @@ import {
   NotificationsClient,
   NOTIFICATION_KEYRING_KEY_DELETE,
   NOTIFICATION_KEYNAME_UPDATE,
+  NOTIFICATION_KEYRING_DERIVED_WALLET,
 } from "../common";
 
 const SUCCESS_RESPONSE = "success";
@@ -76,17 +77,31 @@ export class Backend {
   }
 
   // Returns all pubkeys available for signing.
-  async keyringStoreReadAllPubkeys(): Promise<Array<NamedPublicKey>> {
+  async keyringStoreReadAllPubkeys(): Promise<{
+    hdPublicKeys: Array<NamedPublicKey>;
+    importedPublicKeys: Array<NamedPublicKey>;
+  }> {
     const pubkeys = this.keyringStore.publicKeys();
-    const names = await Promise.all(
-      pubkeys.map((pk) => KeynameStore.getName(pk))
-    );
-    return pubkeys.map((pk, idx) => {
-      return {
-        publicKey: pk.toString(),
-        name: names[idx],
-      };
-    });
+    const [hdNames, importedNames] = await Promise.all([
+      Promise.all(pubkeys.hdPublicKeys.map((pk) => KeynameStore.getName(pk))),
+      Promise.all(
+        pubkeys.importedPublicKeys.map((pk) => KeynameStore.getName(pk))
+      ),
+    ]);
+    return {
+      hdPublicKeys: pubkeys.hdPublicKeys.map((pk, idx) => {
+        return {
+          publicKey: pk.toString(),
+          name: hdNames[idx],
+        };
+      }),
+      importedPublicKeys: pubkeys.importedPublicKeys.map((pk, idx) => {
+        return {
+          publicKey: pk.toString(),
+          name: importedNames[idx],
+        };
+      }),
+    };
   }
 
   // Adds a new HdKeyring to the store.
@@ -129,6 +144,13 @@ export class Backend {
     const [pubkey, accountIndex] = this.keyringStore.deriveNextKey();
     // Save a default name.
     await KeynameStore.setName(pubkey, `Wallet ${accountIndex + 1}`);
+    // Fire notification to listeners.
+    this.notifications.pushNotification({
+      name: NOTIFICATION_KEYRING_DERIVED_WALLET,
+      data: {
+        publicKey: pubkey.toString(),
+      },
+    });
     // Return the newly created key.
     return pubkey.toString();
   }

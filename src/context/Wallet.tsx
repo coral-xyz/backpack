@@ -13,20 +13,38 @@ export function useWallet() {
   // todo
 }
 
-export function useWalletPublicKeys(): Array<{
-  publicKey: PublicKey;
-  name: string;
-}> {
+export function useWalletPublicKeys(): {
+  hdPublicKeys: Array<{
+    publicKey: PublicKey;
+    name: string;
+  }>;
+  importedPublicKeys: Array<{
+    publicKey: PublicKey;
+    name: string;
+  }>;
+} {
   const { keyringStoreState } = useKeyringStoreStateContext();
   const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
   // @ts-ignore
-  const keys = useRecoilValue(isLocked ? constSelector([]) : walletPublicKeys);
-  return keys.map((k) => {
-    return {
-      publicKey: new PublicKey(k.publicKey),
-      name: k.name,
-    };
-  });
+  const keys = useRecoilValue(
+    isLocked
+      ? constSelector({ hdPublicKeys: [], importedPublicKeys: [] })
+      : walletPublicKeys
+  );
+  return {
+    hdPublicKeys: keys.hdPublicKeys.map((k) => {
+      return {
+        publicKey: new PublicKey(k.publicKey),
+        name: k.name,
+      };
+    }),
+    importedPublicKeys: keys.importedPublicKeys.map((k) => {
+      return {
+        publicKey: new PublicKey(k.publicKey),
+        name: k.name,
+      };
+    }),
+  };
 }
 
 export function useActiveWallet(): { publicKey: PublicKey; name: string } {

@@ -15,6 +15,7 @@ import { Add, Menu, Close, Lock, Help, FlashOn } from "@material-ui/icons";
 import { PublicKey } from "@solana/web3.js";
 import {
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
+  UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   EXTENSION_HEIGHT,
 } from "../../common";
 import { getBackgroundClient } from "../../background/client";
@@ -66,6 +67,9 @@ const useStyles = makeStyles((theme: any) => ({
     marginTop: "8px",
     marginBottom: "8px",
     backgroundColor: theme.custom.colors.offText,
+  },
+  addConnectWalletLabel: {
+    color: theme.custom.colors.fontColor,
   },
 }));
 
@@ -146,7 +150,19 @@ function _SidebarContent({ close }: { close: () => void }) {
           paddingRight: "16px",
         }}
       >
-        {namedPublicKeys.map(({ name, publicKey }) => {
+        {namedPublicKeys.hdPublicKeys.map(({ name, publicKey }) => {
+          return (
+            <ListItem
+              key={publicKey.toString()}
+              button
+              className={classes.sidebarContentListItem}
+              onClick={() => clickWallet(publicKey)}
+            >
+              <WalletAddress name={name} publicKey={publicKey} />
+            </ListItem>
+          );
+        })}
+        {namedPublicKeys.importedPublicKeys.map(({ name, publicKey }) => {
           return (
             <ListItem
               key={publicKey.toString()}
@@ -219,7 +235,9 @@ function _SidebarContent({ close }: { close: () => void }) {
       </List>
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         {drawerView === "recent-activity" && <RecentActivity />}
-        {drawerView === "add-connect" && <AddConnectWallet />}
+        {drawerView === "add-connect" && (
+          <AddConnectWallet closeDrawer={() => setOpenDrawer(false)} />
+        )}
       </WithDrawer>
     </div>
   );
@@ -309,7 +327,43 @@ function RecentActivity() {
   return <div>TODO: RECENT ACTIVITY</div>;
 }
 
-function AddConnectWallet() {
+function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
   const classes = useStyles();
-  return <div>TODO: ADD CONNECT WALLET</div>;
+  const createNewWallet = () => {
+    const background = getBackgroundClient();
+    background
+      .request({
+        method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+        params: [],
+      })
+      .then((_resp) => closeDrawer())
+      .catch(console.error);
+  };
+  const importPrivateKey = () => {
+    // todo
+  };
+  const connectHardwareWallet = () => {
+    // todo
+  };
+  return (
+    <div>
+      <List>
+        <ListItem button onClick={() => createNewWallet()}>
+          <Typography className={classes.addConnectWalletLabel}>
+            Create a new wallet
+          </Typography>
+        </ListItem>
+        <ListItem button onClick={() => importPrivateKey()}>
+          <Typography className={classes.addConnectWalletLabel}>
+            Import a private key
+          </Typography>
+        </ListItem>
+        <ListItem button onClick={() => connectHardwareWallet()}>
+          <Typography className={classes.addConnectWalletLabel}>
+            Connect hardware wallet
+          </Typography>
+        </ListItem>
+      </List>
+    </div>
+  );
 }

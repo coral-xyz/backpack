@@ -16,6 +16,7 @@ import {
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
 	NOTIFICATION_KEYRING_KEY_DELETE,
 	NOTIFICATION_KEYNAME_UPDATE,
+	NOTIFICATION_KEYRING_DERIVED_WALLET,
 } from './common';
 import { setBackgroundClient } from './background/client';
 import { KeyringStoreState, KeyringStoreStateEnum } from './keyring/store';
@@ -70,6 +71,9 @@ function notificationsHandler(notif: Notification) {
 		case NOTIFICATION_KEYNAME_UPDATE:
 			handleKeynameUpdate();
 			break;
+		case NOTIFICATION_KEYRING_DERIVED_WALLET:
+			handleKeyringDerivedWallet();
+			break;
 		default:
 			break;
 	}
@@ -94,6 +98,10 @@ function handleKeyringKeyDelete() {
 }
 
 function handleKeynameUpdate() {
+	// todo
+}
+
+function handleKeyringDerivedWallet() {
 	// todo
 }
 

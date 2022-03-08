@@ -29,9 +29,12 @@ export const tokenAccountKeys = atom<string[]>({
 /**
  * List of all public keys for the wallet along with associated nicknames.
  */
-export const walletPublicKeys = atom<Array<NamedPublicKey>>({
+export const walletPublicKeys = atom<{
+  hdPublicKeys: Array<NamedPublicKey>;
+  importedPublicKeys: Array<NamedPublicKey>;
+}>({
   key: "walletPublicKeys",
-  default: [],
+  default: { hdPublicKeys: [], importedPublicKeys: [] },
   effects: [
     ({ setSelf }) => {
       const background = getBackgroundClient();
