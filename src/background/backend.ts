@@ -198,7 +198,7 @@ export class Backend {
   }
 
   async passwordUpdate(password: string): Promise<string> {
-    // todo
+		await this.keyringStore.passwordUpdate(password);
     return SUCCESS_RESPONSE;
   }
 

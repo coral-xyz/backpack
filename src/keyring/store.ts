@@ -152,6 +152,14 @@ export class KeyringStore {
     return pubkey;
   }
 
+	public async passwordUpdate(password: string) {
+    if (!this.isUnlocked()) {
+      throw new Error("keyring store is not unlocked");
+    }
+		this.password = password;
+		this.persist();
+	}
+
   private updateLastUsed() {
     this.lastUsedTs = Date.now() / 1000;
   }

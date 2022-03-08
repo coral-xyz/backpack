@@ -1,4 +1,4 @@
-import { makeStyles, TextField, Typography } from "@material-ui/core";
+import { makeStyles, TextField, Typography, List, ListItem, ListItemText } from "@material-ui/core";
 import { useActiveWallet } from "../../context/Wallet";
 import { getBackgroundClient } from "../../background/client";
 import { UI_RPC_METHOD_KEYNAME_UPDATE } from "../../common";
@@ -26,6 +26,9 @@ export function Settings() {
       })
       .catch(console.error);
   };
+	const changePassword = () => {
+
+	};
   const pubkeyStr = publicKey.toString();
   return (
     <div>
@@ -47,6 +50,13 @@ export function Settings() {
         ({`${pubkeyStr.slice(0, 4)}...${pubkeyStr.slice(pubkeyStr.length - 4)}`}
         )
       </Typography>
+			<List>
+				<ListItem button onClick={changePassword}>
+					<ListItemText>
+						Change password
+					</ListItemText>
+				</ListItem>
+			</List>
     </div>
   );
 }
