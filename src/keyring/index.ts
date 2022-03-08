@@ -20,10 +20,10 @@ export class Keyring {
     return bs58.encode(nacl.sign.detached(tx, kp.secretKey));
   }
 
-  public exportPrivateKey(address: PublicKey): string {
+  public exportSecretKey(address: PublicKey): string | null {
     const kp = this.keypairs.find((kp) => kp.publicKey.equals(address));
     if (!kp) {
-      throw new Error(`unable to find ${address.toString()}`);
+      return null;
     }
     return bs58.encode(kp.secretKey);
   }

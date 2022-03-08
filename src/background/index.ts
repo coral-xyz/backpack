@@ -31,6 +31,8 @@ import {
   UI_RPC_METHOD_KEYNAME_UPDATE,
   UI_RPC_METHOD_PASSWORD_UPDATE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+  UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
+  UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
@@ -102,6 +104,10 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return await handlePasswordUpdate(params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY:
       return await handleKeyringImportSecretKey(params[0]);
+    case UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY:
+      return handleKeyringExportSecretKey(params[0], params[1]);
+    case UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC:
+      return handleKeyringExportMnemonic(params[0]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -285,6 +291,19 @@ async function handleKeyringImportSecretKey(
   secretKey: string
 ): Promise<RpcResponse<string>> {
   const resp = await backend.importSecretKey(secretKey);
+  return [resp];
+}
+
+function handleKeyringExportSecretKey(
+  password: string,
+  pubkey: string
+): RpcResponse<string> {
+  const resp = backend.keyringExportSecretKey(password, pubkey);
+  return [resp];
+}
+
+function handleKeyringExportMnemonic(password: string): RpcResponse<string> {
+  const resp = backend.keyringExportMnemonic(password);
   return [resp];
 }
 

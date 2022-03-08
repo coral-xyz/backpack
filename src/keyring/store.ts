@@ -163,6 +163,35 @@ export class KeyringStore {
     this.persist();
   }
 
+  public exportSecretKey(password: string, pubkey: string): string {
+    if (!this.isUnlocked()) {
+      throw new Error("keyring store is not unlocked");
+    }
+    if (password !== this.password) {
+      throw new Error("incorrect password");
+    }
+    const pk = new PublicKey(pubkey);
+    let sk = this.hdKeyring!.exportSecretKey(pk);
+    if (sk) {
+      return sk;
+    }
+    sk = this.importedKeyring!.exportSecretKey(pk);
+    if (sk) {
+      return sk;
+    }
+    throw new Error(`unable to find keypair for ${pubkey}`);
+  }
+
+  public exportMnemonic(password: string): string {
+    if (!this.isUnlocked()) {
+      throw new Error("keyring store is not unlocked");
+    }
+    if (password !== this.password) {
+      throw new Error("incorrect password");
+    }
+    return this.hdKeyring!.mnemonic;
+  }
+
   private updateLastUsed() {
     this.lastUsedTs = Date.now() / 1000;
   }

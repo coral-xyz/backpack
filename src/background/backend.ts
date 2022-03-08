@@ -215,6 +215,14 @@ export class Backend {
     });
     return SUCCESS_RESPONSE;
   }
+
+  keyringExportSecretKey(password: string, pubkey: string): string {
+    return this.keyringStore.exportSecretKey(password, pubkey);
+  }
+
+  keyringExportMnemonic(password: string): string {
+    return this.keyringStore.exportMnemonic(password);
+  }
 }
 
 export type Context = {
