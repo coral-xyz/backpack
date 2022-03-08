@@ -1,4 +1,5 @@
 import { PublicKey } from "@solana/web3.js";
+import { NamedPublicKey } from "../background/backend";
 
 export interface TokenAccount {
   amount: number;
@@ -17,3 +18,8 @@ export interface TokenAccount {
 export interface TokenAccountWithKey extends TokenAccount {
   key: PublicKey;
 }
+
+export type WalletPublicKeys = {
+  hdPublicKeys: Array<NamedPublicKey>;
+  importedPublicKeys: Array<NamedPublicKey>;
+};

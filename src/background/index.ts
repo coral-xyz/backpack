@@ -27,6 +27,7 @@ import {
   UI_RPC_METHOD_CONNECTION_URL_READ,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
+  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYNAME_UPDATE,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
@@ -89,8 +90,10 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return await handleConnectionUrlUpdate(params[0]);
     case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET:
       return await handleWalletDataActiveWallet();
+    case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE:
+      return await handleWalletDataActiveWalletUpdate(params[0]);
     case UI_RPC_METHOD_KEYRING_DERIVE_WALLET:
-      return handleKeyringDeriveWallet();
+      return await handleKeyringDeriveWallet();
     case UI_RPC_METHOD_KEYNAME_UPDATE:
       return await handleKeynameUpdate(params[0], params[1]);
     default:
@@ -226,6 +229,13 @@ async function handleWalletDataActiveWallet(): Promise<RpcResponse<string>> {
   return [pubkey];
 }
 
+async function handleWalletDataActiveWalletUpdate(
+  newWallet: string
+): Promise<RpcResponse<string>> {
+  const resp = await backend.activeWalletUpdate(newWallet);
+  return [resp];
+}
+
 async function handleKeyringStoreReadAllPubkeys(): Promise<
   RpcResponse<Array<string>>
 > {
@@ -233,8 +243,8 @@ async function handleKeyringStoreReadAllPubkeys(): Promise<
   return [resp];
 }
 
-function handleKeyringDeriveWallet(): RpcResponse<string> {
-  const resp = backend.keyringDeriveWallet();
+async function handleKeyringDeriveWallet(): Promise<RpcResponse<string>> {
+  const resp = await backend.keyringDeriveWallet();
   return [resp];
 }
 

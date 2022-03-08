@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from "react";
+import { Suspense } from "react";
 import { createTheme, CssBaseline, MuiThemeProvider } from "@material-ui/core";
 import { RecoilRoot } from "recoil";
 import { openExpandedExtension, isExtensionPopup } from "../common";
 import { Onboarding } from "../components/Onboarding";
-import { KeyringStoreState, KeyringStoreStateEnum } from "../keyring/store";
+import { KeyringStoreStateEnum } from "../keyring/store";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
 import { Layout } from "../components/Layout";
-import {
-  KeyringStoreStateProvider,
-  useKeyringStoreStateContext,
-} from "../context/KeyringStoreState";
+import { useKeyringStoreState } from "../context/KeyringStoreState";
+import { NotificationsProvider } from "../context/Atoms";
 import "./App.css";
 
 const theme = createTheme({
@@ -29,21 +27,23 @@ const theme = createTheme({
   overrides: {},
 });
 
-export default function App({ state }: { state: KeyringStoreState }) {
+export default function App() {
   return (
     <RecoilRoot>
-      <MuiThemeProvider theme={theme}>
-        <CssBaseline />
-        <KeyringStoreStateProvider keyringStoreState={state}>
-          <_App state={state} />
-        </KeyringStoreStateProvider>
-      </MuiThemeProvider>
+      <NotificationsProvider>
+        <MuiThemeProvider theme={theme}>
+          <CssBaseline />
+          <Suspense fallback={<div></div>}>
+            <_App />
+          </Suspense>
+        </MuiThemeProvider>
+      </NotificationsProvider>
     </RecoilRoot>
   );
 }
 
-function _App({ state }: { state: KeyringStoreState }) {
-  const { keyringStoreState } = useKeyringStoreStateContext();
+function _App() {
+  const keyringStoreState = useKeyringStoreState();
 
   const needsOnboarding =
     keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;

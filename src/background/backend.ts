@@ -12,6 +12,7 @@ import {
   NOTIFICATION_KEYRING_KEY_DELETE,
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
+  NOTIFICATION_ACTIVE_WALLET_UPDATED,
 } from "../common";
 
 const SUCCESS_RESPONSE = "success";
@@ -129,26 +130,39 @@ export class Backend {
     return true;
   }
 
-  async activeWallet(): Promise<NamedPublicKey> {
+  async activeWallet(): Promise<string> {
     const { activeWallet } = await getWalletData();
-    const publicKey = activeWallet;
-    const name = await KeynameStore.getName(new PublicKey(publicKey));
-    return {
-      publicKey,
-      name,
-    };
+    return activeWallet;
+  }
+
+  async activeWalletUpdate(newWallet: string): Promise<string> {
+    const data = await getWalletData();
+    await setWalletData({
+      ...data,
+      activeWallet: newWallet,
+    });
+    this.notifications.pushNotification({
+      name: NOTIFICATION_ACTIVE_WALLET_UPDATED,
+      data: {
+        activeWallet: newWallet,
+      },
+    });
+    return SUCCESS_RESPONSE;
   }
 
   async keyringDeriveWallet(): Promise<string> {
     // Derive the next key.
     const [pubkey, accountIndex] = this.keyringStore.deriveNextKey();
     // Save a default name.
-    await KeynameStore.setName(pubkey, `Wallet ${accountIndex + 1}`);
+    const name = `Wallet ${accountIndex + 1}`;
+    await KeynameStore.setName(pubkey, name);
+
     // Fire notification to listeners.
     this.notifications.pushNotification({
       name: NOTIFICATION_KEYRING_DERIVED_WALLET,
       data: {
         publicKey: pubkey.toString(),
+        name,
       },
     });
     // Return the newly created key.

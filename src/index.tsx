@@ -6,45 +6,22 @@ import reportWebVitals from './reportWebVitals';
 import {
 	debug,
 	PortChannel,
-	Notification,
-	UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE,
-	UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
 	CONNECTION_POPUP_RPC,
-	CONNECTION_POPUP_NOTIFICATIONS,
-  NOTIFICATION_KEYRING_STORE_LOCKED,
-  NOTIFICATION_KEYRING_STORE_UNLOCKED,
-	NOTIFICATION_KEYRING_KEY_DELETE,
-	NOTIFICATION_KEYNAME_UPDATE,
-	NOTIFICATION_KEYRING_DERIVED_WALLET,
 } from './common';
 import { setBackgroundClient } from './background/client';
-import { KeyringStoreState, KeyringStoreStateEnum } from './keyring/store';
-import { setKeyringStoreState } from './context/KeyringStoreState';
 
 async function main() {
-	const state = await bootstrap();
-	render(state);
+	await bootstrap();
+	render();
 }
 
-async function bootstrap(): Promise<KeyringStoreState> {
+async function bootstrap() {
 	debug('bootstrapping ui');
 
 	// Client to communicate from the UI to the background script.
 	const backgroundClient = PortChannel.client(CONNECTION_POPUP_RPC);
 	setBackgroundClient(backgroundClient);
-
-	// Setup notifications.
-	PortChannel
-		.notifications(CONNECTION_POPUP_NOTIFICATIONS)
-		.onNotification(notificationsHandler);
-	const [, state] = await Promise.all([
-		backgroundClient.request({ method: UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE, params: [] }),
-		backgroundClient.request({
-			method: UI_RPC_METHOD_KEYRING_STORE_STATE,
-			params: [],
-		}),
-	]);
 
 	// Keep the keyring store unlocked with a continuous poll.
 	setInterval(() => {
@@ -53,63 +30,12 @@ async function bootstrap(): Promise<KeyringStoreState> {
 			params: [],
 		});
   }, 5*60*1000);
-
-	return state;
 }
 
-function notificationsHandler(notif: Notification) {
-	switch (notif.name) {
-		case NOTIFICATION_KEYRING_STORE_LOCKED:
-			handleKeyringStoreLocked();
-			break;
-		case NOTIFICATION_KEYRING_STORE_UNLOCKED:
-			handleKeyringStoreUnlocked();
-			break;
-		case NOTIFICATION_KEYRING_KEY_DELETE:
-			handleKeyringKeyDelete();
-			break;
-		case NOTIFICATION_KEYNAME_UPDATE:
-			handleKeynameUpdate();
-			break;
-		case NOTIFICATION_KEYRING_DERIVED_WALLET:
-			handleKeyringDerivedWallet();
-			break;
-		default:
-			break;
-	}
-}
-
-function handleKeyringStoreLocked() {
-	if (setKeyringStoreState === null) {
-		throw new Error('invariant violation');
-	}
-	setKeyringStoreState(KeyringStoreStateEnum.Locked);
-}
-
-function handleKeyringStoreUnlocked() {
-	if (setKeyringStoreState === null) {
-		throw new Error('invariant violation');
-	}
-	setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
-}
-
-function handleKeyringKeyDelete() {
-	// todo
-}
-
-function handleKeynameUpdate() {
-	// todo
-}
-
-function handleKeyringDerivedWallet() {
-	// todo
-}
-
-function render(state: KeyringStoreState) {
-	debug(`keyring store state: ${JSON.stringify(state)}`);
+function render() {
 	ReactDOM.render(
 		<React.StrictMode>
-			<App state={state} />
+			<App />
 		</React.StrictMode>,
 		document.getElementById('root')
 	);

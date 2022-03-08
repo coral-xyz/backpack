@@ -1,8 +1,8 @@
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { Connection } from "@solana/web3.js";
 import { useRecoilValue, constSelector } from "recoil";
-import { walletPublicKeys, activeWallet } from "../recoil/atoms";
-import { useKeyringStoreStateContext } from "../context/KeyringStoreState";
+import { walletPublicKeys, activeWalletWithName } from "../recoil/atoms";
+import { useKeyringStoreState } from "../context/KeyringStoreState";
 import { KeyringStoreStateEnum } from "../keyring/store";
 
 export function useLoadWallet() {
@@ -23,7 +23,7 @@ export function useWalletPublicKeys(): {
     name: string;
   }>;
 } {
-  const { keyringStoreState } = useKeyringStoreStateContext();
+  const keyringStoreState = useKeyringStoreState();
   const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
   // @ts-ignore
   const keys = useRecoilValue(
@@ -48,7 +48,7 @@ export function useWalletPublicKeys(): {
 }
 
 export function useActiveWallet(): { publicKey: PublicKey; name: string } {
-  const { publicKey, name } = useRecoilValue(activeWallet)!;
+  const { publicKey, name } = useRecoilValue(activeWalletWithName)!;
   return {
     publicKey: new PublicKey(publicKey),
     name,

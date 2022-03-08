@@ -16,6 +16,7 @@ export class KeyringStore {
   private lastUsedTs: number;
   private hdKeyring?: HdKeyring;
   private importedKeyring?: Keyring;
+  private password?: string;
 
   constructor(notifications: NotificationsClient) {
     this.notifications = notifications;
@@ -85,6 +86,7 @@ export class KeyringStore {
     // Update the keystore object with the keyrings.
     this.hdKeyring = HdKeyring.fromJson(hdKeyring);
     this.importedKeyring = Keyring.fromJson(importedKeyring);
+    this.password = password;
 
     // Notify all listeners of the unlock.
     this.notifications.pushNotification({
@@ -107,11 +109,10 @@ export class KeyringStore {
     // Initialize keyrings.
     this.hdKeyring = HdKeyring.fromMnemonic(mnemonic, derivationPath);
     this.importedKeyring = Keyring.fromSecretKeys([]);
+    this.password = password;
 
     // Persist the encrypted data to then store.
-    const plaintext = JSON.stringify(this.toJson());
-    const ciphertext = await crypto.encrypt(plaintext, password);
-    await LocalStorageDb.set(KEY_KEYRING_STORE, ciphertext);
+    this.persist();
 
     // Give a name to this wallet.
     await KeynameStore.setName(this.hdKeyring.getPublicKey(0), "Wallet 1");
@@ -135,6 +136,10 @@ export class KeyringStore {
       throw new Error("keyring not unlocked");
     }
     const [pubkey, accountIndex] = this.hdKeyring!.deriveNext();
+    this.persist();
+
+    // Update last used timestamp.
+    this.updateLastUsed();
     return [pubkey, accountIndex];
   }
 
@@ -167,6 +172,15 @@ export class KeyringStore {
     }
     const ciphertext = await LocalStorageDb.get(KEY_KEYRING_STORE);
     return ciphertext !== undefined && ciphertext !== null;
+  }
+
+  private async persist() {
+    if (!this.isUnlocked()) {
+      throw new Error("invariant violation");
+    }
+    const plaintext = JSON.stringify(this.toJson());
+    const ciphertext = await crypto.encrypt(plaintext, this.password!);
+    await LocalStorageDb.set(KEY_KEYRING_STORE, ciphertext);
   }
 }
 

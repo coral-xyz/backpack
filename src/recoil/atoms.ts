@@ -1,14 +1,33 @@
 import { PublicKey } from "@solana/web3.js";
-import { atom, atomFamily } from "recoil";
+import { atom, atomFamily, selector } from "recoil";
 import { TokenAccountWithKey } from "./types";
 import {
   UI_RPC_METHOD_CONNECTION_URL_READ,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
+  UI_RPC_METHOD_KEYRING_STORE_STATE,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
 import { NamedPublicKey } from "../background/backend";
+import { WalletPublicKeys } from "./types";
+import { KeyringStoreState } from "../keyring/store";
+
+export const keyringStoreState = atom<KeyringStoreState | null>({
+  key: "keyringStoreState",
+  default: null,
+  effects: [
+    ({ setSelf }) => {
+      const background = getBackgroundClient();
+      setSelf(
+        background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_STATE,
+          params: [],
+        })
+      );
+    },
+  ],
+});
 
 /**
  * Store the info from the SPL Token Account owned by the connected wallet.
@@ -29,10 +48,7 @@ export const tokenAccountKeys = atom<string[]>({
 /**
  * List of all public keys for the wallet along with associated nicknames.
  */
-export const walletPublicKeys = atom<{
-  hdPublicKeys: Array<NamedPublicKey>;
-  importedPublicKeys: Array<NamedPublicKey>;
-}>({
+export const walletPublicKeys = atom<WalletPublicKeys>({
   key: "walletPublicKeys",
   default: { hdPublicKeys: [], importedPublicKeys: [] },
   effects: [
@@ -48,7 +64,7 @@ export const walletPublicKeys = atom<{
   ],
 });
 
-export const activeWallet = atom<NamedPublicKey | null>({
+export const activeWallet = atom<string | null>({
   key: "activeWallet",
   default: null,
   effects: [
@@ -62,6 +78,24 @@ export const activeWallet = atom<NamedPublicKey | null>({
       );
     },
   ],
+});
+
+export const activeWalletWithName = selector({
+  key: "filteredTodoListState",
+  get: ({ get }) => {
+    const pks = get(walletPublicKeys);
+    const active = get(activeWallet);
+    console.log("pks active", pks, active);
+    const result = pks.hdPublicKeys.find(
+      (pk) => pk.publicKey.toString() === active
+    );
+    if (result) {
+      return result;
+    }
+    return pks.importedPublicKeys.find(
+      (pk) => pk.publicKey.toString() === active
+    );
+  },
 });
 
 /**

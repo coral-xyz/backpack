@@ -16,11 +16,12 @@ import { PublicKey } from "@solana/web3.js";
 import {
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   EXTENSION_HEIGHT,
 } from "../../common";
 import { getBackgroundClient } from "../../background/client";
 import { NAV_BAR_HEIGHT } from "./Nav";
-import { useKeyringStoreStateContext } from "../../context/KeyringStoreState";
+import { useKeyringStoreState } from "../../context/KeyringStoreState";
 import { KeyringStoreStateEnum } from "../../keyring/store";
 import { useWalletPublicKeys } from "../../context/Wallet";
 import { WalletAddress } from "../../components/common";
@@ -115,7 +116,7 @@ function _SidebarContent({ close }: { close: () => void }) {
   const classes = useStyles();
   const theme = useTheme() as any;
   const namedPublicKeys = useWalletPublicKeys();
-  const { keyringStoreState } = useKeyringStoreStateContext();
+  const keyringStoreState = useKeyringStoreState();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [drawerView, setDrawerView] = useState("recent-activity");
   const _setOpenRecentActivity = (openDrawer: boolean) => {
@@ -137,8 +138,14 @@ function _SidebarContent({ close }: { close: () => void }) {
       .then(() => close());
   };
   const clickWallet = (publicKey: PublicKey) => {
-    close();
-    // todo
+    const background = getBackgroundClient();
+    background
+      .request({
+        method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+        params: [publicKey.toString()],
+      })
+      .then((_resp) => close())
+      .catch(console.error);
   };
   return (
     <div>
@@ -336,7 +343,15 @@ function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
         method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
         params: [],
       })
-      .then((_resp) => closeDrawer())
+      .then((newPubkeyStr: string) =>
+        background
+          .request({
+            method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+            params: [newPubkeyStr],
+          })
+          .then((_resp) => closeDrawer())
+          .catch(console.error)
+      )
       .catch(console.error);
   };
   const importPrivateKey = () => {

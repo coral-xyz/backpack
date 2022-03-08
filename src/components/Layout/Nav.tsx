@@ -11,7 +11,7 @@ import {
 } from "@material-ui/core";
 import { CheckBox } from "@material-ui/icons";
 import { KeyringStoreStateEnum } from "../../keyring/store";
-import { useKeyringStoreStateContext } from "../../context/KeyringStoreState";
+import { useKeyringStoreState } from "../../context/KeyringStoreState";
 import { SidebarButton } from "./Sidebar";
 import { useConnection } from "../../context/Connection";
 import { useActiveWallet } from "../../context/Wallet";
@@ -81,7 +81,7 @@ export function NavBar() {
 
 function CenterDisplay() {
   const classes = useStyles();
-  const { keyringStoreState } = useKeyringStoreStateContext();
+  const keyringStoreState = useKeyringStoreState();
   const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
   return (
     <div className={classes.centerDisplayContainer}>
@@ -121,7 +121,7 @@ function ConnectionIcon() {
 
 function _ConnectionIcon() {
   const classes = useStyles();
-  const { keyringStoreState } = useKeyringStoreStateContext();
+  const keyringStoreState = useKeyringStoreState();
   const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
   const isConnected = false;
   const [openPopper, setOpenPopper] = useState<any>(null);
