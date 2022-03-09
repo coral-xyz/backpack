@@ -1,12 +1,7 @@
 import { PublicKey, TransactionSignature } from "@solana/web3.js";
-import {
-  KEY_CONNECTION_URL,
-  LocalStorageDb,
-  KeyringStore,
-  KeyringStoreState,
-} from "../keyring/store";
+import { KeyringStore, KeyringStoreState } from "../keyring/store";
 import { DerivationPath } from "../keyring/crypto";
-import { KeynameStore, getWalletData, setWalletData } from "../keyring/store";
+import { KeynameStore } from "../keyring/store";
 import {
   NotificationsClient,
   NOTIFICATION_KEYRING_KEY_DELETE,
@@ -14,6 +9,8 @@ import {
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
+  NOTIFICATION_KEYRING_STORE_UNLOCKED,
+  NOTIFICATION_KEYRING_STORE_LOCKED,
 } from "../common";
 
 const SUCCESS_RESPONSE = "success";
@@ -61,11 +58,17 @@ export class Backend {
 
   async keyringStoreUnlock(password: string): Promise<String> {
     await this.keyringStore.tryUnlock(password);
+    this.notifications.pushNotification({
+      name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
+    });
     return SUCCESS_RESPONSE;
   }
 
   keyringStoreLock() {
     this.keyringStore.lock();
+    this.notifications.pushNotification({
+      name: NOTIFICATION_KEYRING_STORE_LOCKED,
+    });
     return SUCCESS_RESPONSE;
   }
 
@@ -119,29 +122,19 @@ export class Backend {
   }
 
   async connectionUrlRead(): Promise<string> {
-    return await LocalStorageDb.get(KEY_CONNECTION_URL);
+    return await this.keyringStore.connectionUrlRead();
   }
 
   async connectionUrlUpdate(url: string): Promise<boolean> {
-    const oldUrl = await LocalStorageDb.get(KEY_CONNECTION_URL);
-    if (oldUrl === url) {
-      return false;
-    }
-    await LocalStorageDb.set(KEY_CONNECTION_URL, url);
-    return true;
+    return await this.keyringStore.connectionUrlUpdate(url);
   }
 
   async activeWallet(): Promise<string> {
-    const { activeWallet } = await getWalletData();
-    return activeWallet;
+    return await this.keyringStore.activeWallet();
   }
 
   async activeWalletUpdate(newWallet: string): Promise<string> {
-    const data = await getWalletData();
-    await setWalletData({
-      ...data,
-      activeWallet: newWallet,
-    });
+    await this.keyringStore.activeWalletUpdate(newWallet);
     this.notifications.pushNotification({
       name: NOTIFICATION_ACTIVE_WALLET_UPDATED,
       data: {
@@ -183,11 +176,7 @@ export class Backend {
   }
 
   async keyringKeyDelete(pubkey: PublicKey): Promise<string> {
-    const walletData = await getWalletData();
-    await setWalletData({
-      ...walletData,
-      deletedWallets: walletData.deletedWallets.concat([pubkey.toString()]),
-    });
+    await this.keyringStore.keyDelete(pubkey);
     this.notifications.pushNotification({
       name: NOTIFICATION_KEYRING_KEY_DELETE,
       data: {
@@ -230,7 +219,7 @@ export class Backend {
   }
 
   async keyringAutolockUpdate(secs: number): Promise<string> {
-    await this.keyringStore.autolockUpdate(secs);
+    await this.keyringStore.autoLockUpdate(secs);
     return SUCCESS_RESPONSE;
   }
 }
