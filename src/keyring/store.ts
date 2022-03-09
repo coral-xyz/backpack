@@ -110,13 +110,7 @@ export class KeyringStore {
   public async deriveNextKey(): Promise<[PublicKey, string]> {
     return this.withUnlock(async () => {
       // Derive the next key.
-      const [pubkey, accountIndex] = this.activeBlockchain().deriveNextKey();
-
-      // Save a default name.
-      const name = KeynameStore.defaultName(accountIndex);
-      this.activeBlockchain().setKeyname(pubkey.toString(), name);
-
-      // Persist.
+      const [pubkey, name] = this.activeBlockchain().deriveNextKey();
       this.persist();
       return [pubkey, name];
     });
@@ -382,8 +376,14 @@ class BlockchainKeyring {
     return this.hdKeyring !== undefined || this.importedKeyring !== undefined;
   }
 
-  public deriveNextKey(): [PublicKey, number] {
-    return this.hdKeyring!.deriveNext();
+  public deriveNextKey(): [PublicKey, string, number] {
+    const [pubkey, accountIndex] = this.hdKeyring!.deriveNext();
+
+    // Save a default name.
+    const name = KeynameStore.defaultName(accountIndex);
+    this.setKeyname(pubkey.toString(), name);
+
+    return [pubkey, name, accountIndex];
   }
 
   public importSecretKey(secretKey: string): PublicKey {
@@ -471,7 +471,6 @@ async function setWalletData(data: WalletData) {
 // Keys used by the local storage db.
 const KEY_KEYRING_STORE = "keyring-store";
 const KEY_KEYNAME_STORE = "keyname-store";
-const KEY_CONNECTION_URL = "connection-url";
 const KEY_WALLET_DATA = "wallet-data";
 
 class KeynameStore {

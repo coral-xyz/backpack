@@ -9,7 +9,6 @@ import {
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
-  NOTIFICATION_KEYRING_STORE_CREATED,
 } from "../common";
 
 const SUCCESS_RESPONSE = "success";
@@ -52,9 +51,6 @@ export class Backend {
     password: string
   ): Promise<string> {
     await this.keyringStore.init(mnemonic, derivationPath, password);
-    this.notifications.pushNotification({
-      name: NOTIFICATION_KEYRING_STORE_CREATED,
-    });
     return SUCCESS_RESPONSE;
   }
 

@@ -14,7 +14,6 @@ import {
   NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
   NOTIFICATION_KEYRING_RESET_MNEMONIC,
-  NOTIFICATION_KEYRING_CREATED,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
 import { KeyringStoreStateEnum } from "../keyring/store";
@@ -34,9 +33,6 @@ export function NotificationsProvider(props: any) {
     //
     const notificationsHandler = (notif: Notification) => {
       switch (notif.name) {
-        case NOTIFICATION_KEYRING_CREATED:
-          handleKeyringCreated(notif);
-          break;
         case NOTIFICATION_KEYRING_STORE_LOCKED:
           handleKeyringStoreLocked(notif);
           break;
@@ -69,9 +65,6 @@ export function NotificationsProvider(props: any) {
     //
     // Notification handlers.
     //
-    const handleKeyringCreated = (_notif: Notification) => {
-      // TODO: maybe can delete this notification?
-    };
     const handleKeyringStoreLocked = (_notif: Notification) => {
       setKeyringStoreState(KeyringStoreStateEnum.Locked);
     };
