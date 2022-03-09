@@ -1,6 +1,7 @@
 import { DerivationPath } from "./crypto";
 
 export * from "./solana";
+export * from "./ethereum";
 
 export type KeyringJson = {
   keypairs: Array<string>;

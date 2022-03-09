@@ -3,9 +3,11 @@ import * as crypto from "./crypto";
 import { DerivationPath } from "./crypto";
 import {
   SolanaHdKeyringFactory,
+  SolanaKeyringFactory,
+  EthereumHdKeyringFactory,
+  EthereumKeyringFactory,
   HdKeyringFactory,
   HdKeyring,
-  SolanaKeyringFactory,
   KeyringFactory,
   Keyring,
 } from ".";
@@ -39,6 +41,7 @@ export class KeyringStore {
   constructor(notifications: NotificationsClient) {
     this.blockchains = new Map([
       [BLOCKCHAIN_SOLANA, BlockchainKeyring.solana()],
+      //      [BLOCKCHAIN_ETHEREUM, BlockchainKeyring.ethereum()],
     ]);
     this.notifications = notifications;
     this.lastUsedTs = 0;
@@ -331,6 +334,13 @@ class BlockchainKeyring {
     return new BlockchainKeyring(
       new SolanaHdKeyringFactory(),
       new SolanaKeyringFactory()
+    );
+  }
+
+  public static ethereum(): BlockchainKeyring {
+    return new BlockchainKeyring(
+      new EthereumHdKeyringFactory(),
+      new EthereumKeyringFactory()
     );
   }
 

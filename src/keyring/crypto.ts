@@ -1,5 +1,5 @@
 import { pbkdf2 } from "crypto";
-import * as nacl from "tweetnacl";
+import nacl from "tweetnacl";
 import { randomBytes, secretbox } from "tweetnacl";
 import * as bs58 from "bs58";
 import { derivePath } from "ed25519-hd-key";

@@ -177,7 +177,7 @@ export class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     return kp.publicKey.toString();
   }
 
-  public toJson(): any {
+  public toJson(): HdKeyringJson {
     return {
       mnemonic: this.mnemonic,
       seed: this.seed.toString("hex"),
