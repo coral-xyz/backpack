@@ -38,13 +38,7 @@ export class KeyringStore {
 
   constructor(notifications: NotificationsClient) {
     this.blockchains = new Map([
-      [
-        BLOCKCHAIN_SOLANA,
-        new BlockchainKeyring(
-          new SolanaHdKeyringFactory(),
-          new SolanaKeyringFactory()
-        ),
-      ],
+      [BLOCKCHAIN_SOLANA, BlockchainKeyring.solana()],
     ]);
     this.notifications = notifications;
     this.lastUsedTs = 0;
@@ -333,6 +327,13 @@ class BlockchainKeyring {
     this.keyringFactory = keyringFactory;
   }
 
+  public static solana(): BlockchainKeyring {
+    return new BlockchainKeyring(
+      new SolanaHdKeyringFactory(),
+      new SolanaKeyringFactory()
+    );
+  }
+
   public publicKeys(): {
     hdPublicKeys: Array<string>;
     importedPublicKeys: Array<string>;
@@ -407,9 +408,9 @@ class BlockchainKeyring {
 
     // Save a default name.
     const name = KeynameStore.defaultName(accountIndex);
-    this.setKeyname(pubkey.toString(), name);
+    this.setKeyname(pubkey, name);
 
-    return [pubkey.toString(), name, accountIndex];
+    return [pubkey, name, accountIndex];
   }
 
   public importSecretKey(secretKey: string): string {
