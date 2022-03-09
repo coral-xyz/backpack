@@ -86,6 +86,7 @@ export class KeyringStore {
     this.updateLastUsed();
   }
 
+  // Initializes the keystore for the first time.
   public async init(
     mnemonic: string,
     derivationPath: DerivationPath,

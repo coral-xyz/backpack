@@ -127,6 +127,7 @@ function ChangePassword({ close }: { close: () => void }) {
       <div>
         <TextField
           placeholder="Current password"
+          type="password"
           variant="outlined"
           margin="dense"
           required
@@ -142,6 +143,7 @@ function ChangePassword({ close }: { close: () => void }) {
         />
         <TextField
           placeholder="New password"
+          type="password"
           variant="outlined"
           margin="dense"
           required
@@ -157,6 +159,7 @@ function ChangePassword({ close }: { close: () => void }) {
         />
         <TextField
           placeholder="Confirm new password"
+          type="password"
           variant="outlined"
           margin="dense"
           required
