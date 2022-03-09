@@ -8,7 +8,7 @@ import {
   TextField,
 } from "@material-ui/core";
 import { KeyboardArrowLeft } from "@material-ui/icons";
-import { HdKeyring } from "../../keyring";
+import { HdKeyring, SolanaHdKeyringFactory } from "../../keyring";
 import { getBackgroundClient } from "../../background/client";
 import {
   BrowserRuntime,
@@ -101,7 +101,8 @@ const STEP_COUNT = 4;
 export function CreateNewWallet() {
   const [activeStep, setActiveState] = useState(0);
   const hdKeyring = useMemo(() => {
-    return HdKeyring.generate();
+    const factory = new SolanaHdKeyringFactory();
+    return factory.generate();
   }, []);
   const [password, setPassword] = useState("");
   const derivationPath = DerivationPath.Bip44Change;

@@ -1,7 +1,14 @@
 import { BrowserRuntime } from "../common/browser";
 import * as crypto from "./crypto";
 import { DerivationPath } from "./crypto";
-import { HdKeyring, Keyring } from ".";
+import {
+  SolanaHdKeyringFactory,
+  HdKeyringFactory,
+  HdKeyring,
+  SolanaKeyringFactory,
+  KeyringFactory,
+  Keyring,
+} from ".";
 import {
   NotificationsClient,
   NOTIFICATION_KEYRING_STORE_LOCKED,
@@ -30,7 +37,15 @@ export class KeyringStore {
   private activeBlockchainLabel?: string;
 
   constructor(notifications: NotificationsClient) {
-    this.blockchains = new Map([[BLOCKCHAIN_SOLANA, new BlockchainKeyring()]]);
+    this.blockchains = new Map([
+      [
+        BLOCKCHAIN_SOLANA,
+        new BlockchainKeyring(
+          new SolanaHdKeyringFactory(),
+          new SolanaKeyringFactory()
+        ),
+      ],
+    ]);
     this.notifications = notifications;
     this.lastUsedTs = 0;
     this.autoLockStart();
@@ -302,11 +317,21 @@ export class KeyringStore {
 
 // Represents key data for a single blockchain network, e.g., solana or ethereum.
 class BlockchainKeyring {
+  private hdKeyringFactory: HdKeyringFactory;
+  private keyringFactory: KeyringFactory;
   private hdKeyring?: HdKeyring;
   private importedKeyring?: Keyring;
   private activeWallet?: string;
   private deletedWallets?: Array<string>;
   private connectionUrl?: string;
+
+  constructor(
+    hdKeyringFactory: HdKeyringFactory,
+    keyringFactory: KeyringFactory
+  ) {
+    this.hdKeyringFactory = hdKeyringFactory;
+    this.keyringFactory = keyringFactory;
+  }
 
   public publicKeys(): {
     hdPublicKeys: Array<string>;
@@ -328,15 +353,18 @@ class BlockchainKeyring {
 
   public async init(mnemonic: string, derivationPath: DerivationPath) {
     // Initialize keyrings.
-    this.hdKeyring = HdKeyring.fromMnemonic(mnemonic, derivationPath);
-    this.importedKeyring = Keyring.fromSecretKeys([]);
-    this.activeWallet = this.hdKeyring.getPublicKey(0).toString();
+    this.hdKeyring = this.hdKeyringFactory.fromMnemonic(
+      mnemonic,
+      derivationPath
+    );
+    this.importedKeyring = this.keyringFactory.fromSecretKeys([]);
+    this.activeWallet = this.hdKeyring.getPublicKey(0);
     this.deletedWallets = [];
 
     // Persist a given name for this wallet.
     const name = KeynameStore.defaultName(0);
     const pubkey = this.hdKeyring.getPublicKey(0);
-    await KeynameStore.setName(pubkey.toString(), name);
+    await KeynameStore.setName(pubkey, name);
   }
 
   public exportSecretKey(pubkey: string): string {
@@ -363,8 +391,8 @@ class BlockchainKeyring {
       deletedWallets,
       connectionUrl,
     } = payload;
-    this.hdKeyring = HdKeyring.fromJson(hdKeyring);
-    this.importedKeyring = Keyring.fromJson(importedKeyring);
+    this.hdKeyring = this.hdKeyringFactory.fromJson(hdKeyring);
+    this.importedKeyring = this.keyringFactory.fromJson(importedKeyring);
     this.activeWallet = activeWallet;
     this.deletedWallets = deletedWallets;
     this.connectionUrl = connectionUrl;

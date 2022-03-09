@@ -4,7 +4,53 @@ import nacl from "tweetnacl";
 import * as bs58 from "bs58";
 import { deriveKeypairs, deriveKeypair, DerivationPath } from "./crypto";
 
-export class Keyring {
+type KeyringJson = {
+  keypairs: Array<string>;
+};
+
+export interface KeyringFactory {
+  fromJson(payload: KeyringJson): Keyring;
+  fromSecretKeys(secretKeys: Array<string>): Keyring;
+}
+
+export interface Keyring {
+  publicKeys(): Array<string>;
+  signTransaction(tx: Buffer, address: string): string;
+  exportSecretKey(address: string): string | null;
+  importSecretKey(secretKey: string): string;
+  toJson(): KeyringJson;
+}
+
+export interface HdKeyringFactory {
+  fromMnemonic(mnemonic: string, derivationPath?: DerivationPath): HdKeyring;
+  generate(): HdKeyring;
+  fromJson(obj: any): HdKeyring;
+}
+
+export interface HdKeyring extends Keyring {
+  readonly mnemonic: string;
+  deriveNext(): [PublicKey, number];
+  getPublicKey(accountIndex: number): string;
+  toJson(): any;
+}
+
+export class SolanaKeyringFactory implements KeyringFactory {
+  public fromJson(payload: any): SolanaKeyring {
+    const keypairs = payload.keypairs.map((secret: string) =>
+      Keypair.fromSecretKey(Buffer.from(secret, "hex"))
+    );
+    return new SolanaKeyring(keypairs);
+  }
+
+  public fromSecretKeys(secretKeys: Array<string>): SolanaKeyring {
+    const keypairs = secretKeys.map((secret: string) =>
+      Keypair.fromSecretKey(Buffer.from(secret, "hex"))
+    );
+    return new SolanaKeyring(keypairs);
+  }
+}
+
+export class SolanaKeyring implements Keyring {
   constructor(readonly keypairs: Array<Keypair>) {}
 
   public publicKeys(): Array<string> {
@@ -12,8 +58,9 @@ export class Keyring {
   }
 
   // `address` is the key on the keyring to use for signing.
-  public signTransaction(tx: Buffer, address: PublicKey): string {
-    const kp = this.keypairs.find((kp) => kp.publicKey.equals(address));
+  public signTransaction(tx: Buffer, address: string): string {
+    const pubkey = new PublicKey(address);
+    const kp = this.keypairs.find((kp) => kp.publicKey.equals(pubkey));
     if (!kp) {
       throw new Error(`unable to find ${address.toString()}`);
     }
@@ -29,17 +76,10 @@ export class Keyring {
     return bs58.encode(kp.secretKey);
   }
 
-  public static fromSecretKeys(secretKeys: Array<string>): Keyring {
-    const keypairs = secretKeys.map((secret: string) =>
-      Keypair.fromSecretKey(Buffer.from(secret, "hex"))
-    );
-    return new Keyring(keypairs);
-  }
-
-  public importSecretKey(secretKey: string): PublicKey {
+  public importSecretKey(secretKey: string): string {
     const kp = Keypair.fromSecretKey(Buffer.from(secretKey, "hex"));
     this.keypairs.push(kp);
-    return kp.publicKey;
+    return kp.publicKey.toString();
   }
 
   public toJson(): any {
@@ -49,16 +89,65 @@ export class Keyring {
       ),
     };
   }
+}
 
-  public static fromJson(payload: any): Keyring {
-    const keypairs = payload.keypairs.map((secret: string) =>
-      Keypair.fromSecretKey(Buffer.from(secret, "hex"))
-    );
-    return new Keyring(keypairs);
+export class SolanaHdKeyringFactory implements HdKeyringFactory {
+  public fromMnemonic(
+    mnemonic: string,
+    derivationPath?: DerivationPath
+  ): HdKeyring {
+    if (!derivationPath) {
+      derivationPath = DerivationPath.Bip44Change;
+    }
+    if (!validateMnemonic(mnemonic)) {
+      throw new Error("Invalid seed words");
+    }
+    const seed = mnemonicToSeedSync(mnemonic);
+    const numberOfAccounts = 1;
+    const keypairs = deriveKeypairs(seed, derivationPath, numberOfAccounts);
+    return new SolanaHdKeyring({
+      mnemonic,
+      seed,
+      numberOfAccounts,
+      keypairs,
+      derivationPath,
+    });
+  }
+
+  public generate(): HdKeyring {
+    const mnemonic = generateMnemonic(256);
+    const seed = mnemonicToSeedSync(mnemonic);
+    const numberOfAccounts = 1;
+    const derivationPath = DerivationPath.Bip44;
+    const keypairs = deriveKeypairs(seed, derivationPath, numberOfAccounts);
+
+    return new SolanaHdKeyring({
+      mnemonic,
+      seed,
+      numberOfAccounts,
+      derivationPath,
+      keypairs,
+    });
+  }
+
+  public fromJson(obj: any): HdKeyring {
+    const { mnemonic, seed: seedStr, numberOfAccounts, derivationPath } = obj;
+    const seed = Buffer.from(seedStr, "hex");
+    const keypairs = deriveKeypairs(seed, derivationPath, numberOfAccounts);
+
+    const kr = new SolanaHdKeyring({
+      mnemonic,
+      seed,
+      numberOfAccounts,
+      derivationPath,
+      keypairs,
+    });
+
+    return kr;
   }
 }
 
-export class HdKeyring extends Keyring {
+export class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   readonly mnemonic: string;
   private seed: Buffer;
   private numberOfAccounts: number;
@@ -84,44 +173,6 @@ export class HdKeyring extends Keyring {
     this.derivationPath = derivationPath;
   }
 
-  public static fromMnemonic(
-    mnemonic: string,
-    derivationPath?: DerivationPath
-  ): HdKeyring {
-    if (!derivationPath) {
-      derivationPath = DerivationPath.Bip44Change;
-    }
-    if (!validateMnemonic(mnemonic)) {
-      throw new Error("Invalid seed words");
-    }
-    const seed = mnemonicToSeedSync(mnemonic);
-    const numberOfAccounts = 1;
-    const keypairs = deriveKeypairs(seed, derivationPath, numberOfAccounts);
-    return new HdKeyring({
-      mnemonic,
-      seed,
-      numberOfAccounts,
-      keypairs,
-      derivationPath,
-    });
-  }
-
-  public static generate() {
-    const mnemonic = generateMnemonic(256);
-    const seed = mnemonicToSeedSync(mnemonic);
-    const numberOfAccounts = 1;
-    const derivationPath = DerivationPath.Bip44;
-    const keypairs = deriveKeypairs(seed, derivationPath, numberOfAccounts);
-
-    return new HdKeyring({
-      mnemonic,
-      seed,
-      numberOfAccounts,
-      derivationPath,
-      keypairs,
-    });
-  }
-
   public deriveNext(): [PublicKey, number] {
     const kp = deriveKeypair(
       this.seed.toString("hex"),
@@ -133,7 +184,7 @@ export class HdKeyring extends Keyring {
     return [kp.publicKey, this.numberOfAccounts - 1];
   }
 
-  public getPublicKey(accountIndex: number): PublicKey {
+  public getPublicKey(accountIndex: number): string {
     // This might not be true once we implement account deletion.
     // One solution is to simply make that a UI detail.
     if (this.keypairs.length !== this.numberOfAccounts) {
@@ -145,7 +196,7 @@ export class HdKeyring extends Keyring {
       );
     }
     const kp = this.keypairs[accountIndex];
-    return kp.publicKey;
+    return kp.publicKey.toString();
   }
 
   public toJson(): any {
@@ -155,22 +206,6 @@ export class HdKeyring extends Keyring {
       numberOfAccounts: this.numberOfAccounts,
       derivationPath: this.derivationPath,
     };
-  }
-
-  public static fromJson(obj: any): HdKeyring {
-    const { mnemonic, seed: seedStr, numberOfAccounts, derivationPath } = obj;
-    const seed = Buffer.from(seedStr, "hex");
-    const keypairs = deriveKeypairs(seed, derivationPath, numberOfAccounts);
-
-    const kr = new HdKeyring({
-      mnemonic,
-      seed,
-      numberOfAccounts,
-      derivationPath,
-      keypairs,
-    });
-
-    return kr;
   }
 }
 
