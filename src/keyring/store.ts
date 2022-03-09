@@ -1,4 +1,3 @@
-import { PublicKey } from "@solana/web3.js";
 import { BrowserRuntime } from "../common/browser";
 import * as crypto from "./crypto";
 import { DerivationPath } from "./crypto";
@@ -48,8 +47,8 @@ export class KeyringStore {
   }
 
   public publicKeys(): {
-    hdPublicKeys: Array<PublicKey>;
-    importedPublicKeys: Array<PublicKey>;
+    hdPublicKeys: Array<string>;
+    importedPublicKeys: Array<string>;
   } {
     return this.withUnlock(() => {
       return this.activeBlockchain().publicKeys();
@@ -107,7 +106,7 @@ export class KeyringStore {
     });
   }
 
-  public async deriveNextKey(): Promise<[PublicKey, string]> {
+  public async deriveNextKey(): Promise<[string, string]> {
     return this.withUnlock(async () => {
       // Derive the next key.
       const [pubkey, name] = this.activeBlockchain().deriveNextKey();
@@ -117,7 +116,7 @@ export class KeyringStore {
   }
 
   // Returns the public key of the secret key imported.
-  public importSecretKey(secretKey: string): PublicKey {
+  public importSecretKey(secretKey: string): string {
     return this.withUnlock(() => {
       const pubkey = this.activeBlockchain().importSecretKey(secretKey);
       return pubkey;
@@ -310,8 +309,8 @@ class BlockchainKeyring {
   private connectionUrl?: string;
 
   public publicKeys(): {
-    hdPublicKeys: Array<PublicKey>;
-    importedPublicKeys: Array<PublicKey>;
+    hdPublicKeys: Array<string>;
+    importedPublicKeys: Array<string>;
   } {
     const hdPublicKeys = this.hdKeyring!.publicKeys();
     const importedPublicKeys = this.importedKeyring!.publicKeys();
@@ -341,12 +340,11 @@ class BlockchainKeyring {
   }
 
   public exportSecretKey(pubkey: string): string {
-    const pk = new PublicKey(pubkey);
-    let sk = this.hdKeyring!.exportSecretKey(pk);
+    let sk = this.hdKeyring!.exportSecretKey(pubkey);
     if (sk) {
       return sk;
     }
-    sk = this.importedKeyring!.exportSecretKey(pk);
+    sk = this.importedKeyring!.exportSecretKey(pubkey);
     if (sk) {
       return sk;
     }
@@ -376,18 +374,18 @@ class BlockchainKeyring {
     return this.hdKeyring !== undefined || this.importedKeyring !== undefined;
   }
 
-  public deriveNextKey(): [PublicKey, string, number] {
+  public deriveNextKey(): [string, string, number] {
     const [pubkey, accountIndex] = this.hdKeyring!.deriveNext();
 
     // Save a default name.
     const name = KeynameStore.defaultName(accountIndex);
     this.setKeyname(pubkey.toString(), name);
 
-    return [pubkey, name, accountIndex];
+    return [pubkey.toString(), name, accountIndex];
   }
 
-  public importSecretKey(secretKey: string): PublicKey {
-    return this.importedKeyring!.importSecretKey(secretKey);
+  public importSecretKey(secretKey: string): string {
+    return this.importedKeyring!.importSecretKey(secretKey).toString();
   }
 
   public getActiveWallet(): string | undefined {

@@ -7,8 +7,8 @@ import { deriveKeypairs, deriveKeypair, DerivationPath } from "./crypto";
 export class Keyring {
   constructor(readonly keypairs: Array<Keypair>) {}
 
-  public publicKeys(): Array<PublicKey> {
-    return this.keypairs.map((kp) => kp.publicKey);
+  public publicKeys(): Array<string> {
+    return this.keypairs.map((kp) => kp.publicKey.toString());
   }
 
   // `address` is the key on the keyring to use for signing.
@@ -20,8 +20,9 @@ export class Keyring {
     return bs58.encode(nacl.sign.detached(tx, kp.secretKey));
   }
 
-  public exportSecretKey(address: PublicKey): string | null {
-    const kp = this.keypairs.find((kp) => kp.publicKey.equals(address));
+  public exportSecretKey(address: string): string | null {
+    const pubkey = new PublicKey(address);
+    const kp = this.keypairs.find((kp) => kp.publicKey.equals(pubkey));
     if (!kp) {
       return null;
     }
