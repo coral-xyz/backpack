@@ -1,7 +1,5 @@
-import { PublicKey, TransactionSignature } from "@solana/web3.js";
 import { KeyringStore, KeyringStoreState } from "../keyring/store";
 import { DerivationPath } from "../keyring/crypto";
-import { KeynameStore } from "../keyring/store";
 import {
   NotificationsClient,
   NOTIFICATION_KEYRING_KEY_DELETE,
@@ -11,6 +9,7 @@ import {
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
+  NOTIFICATION_KEYRING_STORE_CREATED,
 } from "../common";
 
 const SUCCESS_RESPONSE = "success";
@@ -34,7 +33,7 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  signAndSendTx(ctx: Context, tx: any): TransactionSignature {
+  signAndSendTx(ctx: Context, tx: any): string {
     // todo
     const txId = "todo";
     return txId;
@@ -53,6 +52,9 @@ export class Backend {
     password: string
   ): Promise<string> {
     await this.keyringStore.init(mnemonic, derivationPath, password);
+    this.notifications.pushNotification({
+      name: NOTIFICATION_KEYRING_STORE_CREATED,
+    });
     return SUCCESS_RESPONSE;
   }
 
@@ -88,9 +90,15 @@ export class Backend {
   }> {
     const pubkeys = this.keyringStore.publicKeys();
     const [hdNames, importedNames] = await Promise.all([
-      Promise.all(pubkeys.hdPublicKeys.map((pk) => KeynameStore.getName(pk))),
       Promise.all(
-        pubkeys.importedPublicKeys.map((pk) => KeynameStore.getName(pk))
+        pubkeys.hdPublicKeys.map((pk) =>
+          this.keyringStore.getKeyname(pk.toString())
+        )
+      ),
+      Promise.all(
+        pubkeys.importedPublicKeys.map((pk) =>
+          this.keyringStore.getKeyname(pk.toString())
+        )
       ),
     ]);
     return {
@@ -157,24 +165,24 @@ export class Backend {
     return pubkey.toString();
   }
 
-  async keynameUpdate(pubkey: PublicKey, newName: string): Promise<string> {
-    await KeynameStore.setName(pubkey, newName);
+  async keynameUpdate(publicKey: string, newName: string): Promise<string> {
+    await this.keyringStore.setKeyname(publicKey, newName);
     this.notifications.pushNotification({
       name: NOTIFICATION_KEYNAME_UPDATE,
       data: {
-        publicKey: pubkey.toString(),
+        publicKey,
         name: newName,
       },
     });
     return SUCCESS_RESPONSE;
   }
 
-  async keyringKeyDelete(pubkey: PublicKey): Promise<string> {
-    await this.keyringStore.keyDelete(pubkey);
+  async keyringKeyDelete(publicKey: string): Promise<string> {
+    await this.keyringStore.keyDelete(publicKey);
     this.notifications.pushNotification({
       name: NOTIFICATION_KEYRING_KEY_DELETE,
       data: {
-        publicKey: pubkey.toString(),
+        publicKey,
       },
     });
     return SUCCESS_RESPONSE;

@@ -1,4 +1,3 @@
-import { PublicKey } from "@solana/web3.js";
 import {
   debug,
   Channel,
@@ -270,14 +269,14 @@ async function handleKeynameUpdate(
   pubkey: string,
   newName: string
 ): Promise<RpcResponse<string>> {
-  const resp = await backend.keynameUpdate(new PublicKey(pubkey), newName);
+  const resp = await backend.keynameUpdate(pubkey, newName);
   return [resp];
 }
 
 async function handleKeyringKeyDelete(
   pubkey: string
 ): Promise<RpcResponse<string>> {
-  const resp = await backend.keyringKeyDelete(new PublicKey(pubkey));
+  const resp = await backend.keyringKeyDelete(pubkey);
   return [resp];
 }
 

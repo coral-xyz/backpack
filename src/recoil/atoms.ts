@@ -28,22 +28,6 @@ export const keyringStoreState = atom<KeyringStoreState | null>({
 });
 
 /**
- * Store the info from the SPL Token Account owned by the connected wallet.
- */
-export const tokenAccountsMap = atomFamily<TokenAccountWithKey | null, string>({
-  key: "tokenAccountsMap",
-  default: null,
-});
-
-/**
- * List of all stored token accounts within tokenAccountsMap.
- */
-export const tokenAccountKeys = atom<string[]>({
-  key: "tokenAccountKeys",
-  default: [],
-});
-
-/**
  * List of all public keys for the wallet along with associated nicknames.
  */
 export const walletPublicKeys = atom<WalletPublicKeys>({
@@ -62,6 +46,9 @@ export const walletPublicKeys = atom<WalletPublicKeys>({
   ],
 });
 
+/**
+ * Pubkey of the currently selected wallet.
+ */
 export const activeWallet = atom<string | null>({
   key: "activeWallet",
   default: null,
@@ -78,21 +65,25 @@ export const activeWallet = atom<string | null>({
   ],
 });
 
+/**
+ * Currently selected wallet with display data.
+ */
 export const activeWalletWithName = selector({
   key: "filteredTodoListState",
   get: ({ get }) => {
-    const pks = get(walletPublicKeys);
     const active = get(activeWallet);
-
-    const result = pks.hdPublicKeys.find(
+    const pks = get(walletPublicKeys);
+    let result = pks.hdPublicKeys.find(
       (pk) => pk.publicKey.toString() === active
     );
     if (result) {
       return result;
     }
-    return pks.importedPublicKeys.find(
+    result = pks.importedPublicKeys.find(
       (pk) => pk.publicKey.toString() === active
     );
+
+    return result;
   },
 });
 
@@ -117,6 +108,7 @@ export const connectionUrlAtom = atom<string>({
     },
     ({ onSet }) => {
       onSet((cluster) => {
+        // TODO: do we want to handle this via notification instead?
         const background = getBackgroundClient();
         background
           .request({
@@ -127,4 +119,20 @@ export const connectionUrlAtom = atom<string>({
       });
     },
   ],
+});
+
+/**
+ * Store the info from the SPL Token Account owned by the connected wallet.
+ */
+export const tokenAccountsMap = atomFamily<TokenAccountWithKey | null, string>({
+  key: "tokenAccountsMap",
+  default: null,
+});
+
+/**
+ * List of all stored token accounts within tokenAccountsMap.
+ */
+export const tokenAccountKeys = atom<string[]>({
+  key: "tokenAccountKeys",
+  default: [],
 });

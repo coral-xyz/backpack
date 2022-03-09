@@ -39,6 +39,8 @@ export const NOTIFICATION_KEYRING_STORE_LOCKED =
   "notification-keyring-store-locked";
 export const NOTIFICATION_KEYRING_STORE_UNLOCKED =
   "notification-keyring-store-unlocked";
+export const NOTIFICATION_KEYRING_STORE_CREATED =
+  "notification-keyring-store-created";
 export const NOTIFICATION_CONNECTION_URL_UPDATED =
   "anchor-connection-url-updated";
 export const NOTIFICATION_KEYNAME_UPDATE = "anchor-keyname-update";
@@ -51,6 +53,7 @@ export const NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY =
   "anchor-keyring-imported-secret-key";
 export const NOTIFICATION_KEYRING_RESET_MNEMONIC =
   "anchor-keyring-reset-mnemonic";
+export const NOTIFICATION_KEYRING_CREATED = "anchor-keyring-created";
 
 export const CONNECTION_POPUP_RPC = "anchor-popup-rpc";
 export const CONNECTION_POPUP_NOTIFICATIONS = "anchor-popup-notifications";
