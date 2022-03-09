@@ -145,13 +145,7 @@ export class Backend {
   }
 
   async keyringDeriveWallet(): Promise<string> {
-    // Derive the next key.
-    const [pubkey, accountIndex] = this.keyringStore.deriveNextKey();
-    // Save a default name.
-    const name = `Wallet ${accountIndex + 1}`;
-    await KeynameStore.setName(pubkey, name);
-
-    // Fire notification to listeners.
+    const [pubkey, name] = await this.keyringStore.deriveNextKey();
     this.notifications.pushNotification({
       name: NOTIFICATION_KEYRING_DERIVED_WALLET,
       data: {

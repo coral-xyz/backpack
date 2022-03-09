@@ -143,7 +143,9 @@ function _ConnectionIcon() {
           ></div>
         </IconButton>
       </div>
-      <ConnectionMenu openPopper={openPopper} setOpenPopper={setOpenPopper} />
+      {!isLocked && (
+        <ConnectionMenu openPopper={openPopper} setOpenPopper={setOpenPopper} />
+      )}
     </>
   );
 }
