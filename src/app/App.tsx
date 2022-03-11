@@ -15,10 +15,11 @@ import { Layout } from "../components/Layout";
 import { useKeyringStoreState } from "../context/KeyringStoreState";
 import { NotificationsProvider } from "../context/Notifications";
 import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../common";
+import { useDarkMode } from "../hooks/useDarkMode";
 import "./App.css";
 import "@fontsource/inter";
 
-const theme = createTheme({
+const lightTheme = createTheme({
   palette: {},
   typography: {
     fontFamily: "Inter, sans-serif",
@@ -29,40 +30,67 @@ const theme = createTheme({
       background: "#ECEFF3",
       nav: "#ffffff",
       fontColor: "#43546D",
-      //      fontColor: "#000000",
       border: "#DBDADB",
-      connected: "green",
-      disconnected: "red",
-      offText: "#636363",
-      color: "rgba(0, 0, 0, 0.5)",
       activeNavButton: "#00A2C7",
       hamburger: "#99A4B4",
-      scrollbarTrack: "rgba(255, 255, 255, 0.111)",
       scrollbarThumb: "rgb(153 164 180)",
       tabIconBackground: "#99A4B4",
       tabIconSelected: "#1196B5",
-      secondary: "rgb(0, 0, 0, .5)",
+      secondary: "#67758B",
+      positive: "#19A51E",
+      negative: "#E31B1B",
     },
   },
-  overrides: {},
+});
+
+const darkTheme = createTheme({
+  palette: {},
+  typography: {
+    fontFamily: "Inter, sans-serif",
+  },
+  // @ts-ignore
+  custom: {
+    colors: {
+      background: "#292C33",
+      nav: "#393C43",
+      fontColor: "#FFFFFF",
+      border: "#494C54",
+      activeNavButton: "#00A2C7",
+      hamburger: "#99A4B4",
+      scrollbarThumb: "rgb(153 164 180)",
+      tabIconBackground: "#99A4B4",
+      tabIconSelected: "#1196B5",
+      secondary: "#99A4B4",
+      positive: "#35A63A",
+      negative: "#E95050",
+    },
+  },
 });
 
 export default function App() {
   return (
     <RecoilRoot>
-      <NotificationsProvider>
-        <MuiThemeProvider theme={theme}>
-          <CssBaseline />
-          <Suspense fallback={<BlankApp />}>
-            <_App />
-          </Suspense>
-        </MuiThemeProvider>
-      </NotificationsProvider>
+      <_App />
     </RecoilRoot>
   );
 }
 
 function _App() {
+  const isDarkMode = useDarkMode();
+  const theme = isDarkMode ? darkTheme : lightTheme;
+  return (
+    <NotificationsProvider>
+      <MuiThemeProvider theme={theme}>
+        <CssBaseline />
+        <Suspense fallback={<BlankApp />}>
+          <__App />
+        </Suspense>
+      </MuiThemeProvider>
+    </NotificationsProvider>
+  );
+}
+
+function __App() {
   const keyringStoreState = useKeyringStoreState();
 
   const needsOnboarding =

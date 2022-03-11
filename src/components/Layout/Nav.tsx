@@ -15,8 +15,6 @@ import { KeyringStoreStateEnum } from "../../keyring/store";
 import { useKeyringStoreState } from "../../context/KeyringStoreState";
 import { SidebarButton } from "./Sidebar";
 import { useSolanaConnection } from "../../context/Connection";
-import { useActiveWallet } from "../../context/Wallet";
-import { WalletAddress } from "../common";
 
 export const NAV_BAR_HEIGHT = 56;
 

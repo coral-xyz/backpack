@@ -25,10 +25,12 @@ const useStyles = makeStyles((theme: any) => ({
     height: "68px",
   },
   blockchainCard: {
+    backgroundColor: theme.custom.colors.nav,
     marginTop: "12px",
     marginLeft: "12px",
     marginRight: "12px",
     borderRadius: "12px",
+    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
   },
   cardContentRoot: {
     padding: "0 !important",

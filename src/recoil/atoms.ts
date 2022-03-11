@@ -12,6 +12,24 @@ import { getBackgroundClient } from "../background/client";
 import { WalletPublicKeys, BlockchainBalance, TokenDisplay } from "./types";
 import { KeyringStoreState } from "../keyring/store";
 
+export const didBootstrap = atom<boolean>({
+  key: "didBootstrap",
+  default: false,
+  effects: [
+    ({ setSelf }) => {
+      setSelf(true);
+    },
+  ],
+});
+
+/**
+ * Toggle for darkmode.
+ */
+export const isDarkMode = atom<boolean>({
+  key: "isDarkMode",
+  default: false,
+});
+
 /**
  * Status of the keyring store.
  */
