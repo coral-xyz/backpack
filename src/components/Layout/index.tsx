@@ -5,7 +5,7 @@ import { useKeyringStoreState } from "../../context/KeyringStoreState";
 import { TabProvider } from "../../context/Tab";
 import { NavBar } from "./Nav";
 import { TabBar } from "./Tab";
-import Scrollable from "./Scrollable";
+import { Scrollbar } from "./Scrollbar";
 
 const useStyles = makeStyles((theme: any) => ({
   layoutContainer: {
@@ -16,6 +16,14 @@ const useStyles = makeStyles((theme: any) => ({
     flexDirection: "column",
     borderRadius: "4px",
   },
+  scrollbarThumb: {
+    backgroundColor: "red !important",
+    color: "red",
+  },
+  scrollbarTrack: {
+    backgroundColor: "red !important",
+    color: "red",
+  },
 }));
 
 export function Layout(props: any) {
@@ -25,7 +33,7 @@ export function Layout(props: any) {
     <TabProvider>
       <div className={classes.layoutContainer}>
         <NavBar />
-        <Scrollable>{props.children}</Scrollable>
+        <Scrollbar>{props.children}</Scrollbar>
         {keyringStoreState === KeyringStoreStateEnum.Unlocked && <TabBar />}
       </div>
     </TabProvider>

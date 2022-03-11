@@ -32,6 +32,8 @@ const theme = createTheme({
       offText: "#636363",
       activeNavButton: "#00A2C7",
       hamburger: "#99A4B4",
+      scrollbarTrack: "red",
+      scrollbarThumb: "blue",
     },
   },
   overrides: {},

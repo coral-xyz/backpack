@@ -60,7 +60,7 @@ export function Balances() {
   return (
     <div>
       {blockchains.map((b) => (
-        <BlockchainCard blockchain={b} />
+        <BlockchainCard key={b} blockchain={b} />
       ))}
       <div style={{ marginTop: "12px" }}>{/* Dummy div for margin. */}</div>
     </div>
@@ -86,7 +86,7 @@ function BlockchainCard({ blockchain }: { blockchain: string }) {
       <CardContent classes={{ root: classes.cardContentRoot }}>
         <List classes={{ root: classes.cardListRoot }}>
           {tokens.map((t) => (
-            <TokenListItem blockchain={blockchain} tokenAddress={t} />
+            <TokenListItem key={t} blockchain={blockchain} tokenAddress={t} />
           ))}
         </List>
       </CardContent>

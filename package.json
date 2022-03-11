@@ -26,6 +26,7 @@
     "prettier": "^2.5.1",
     "react": "^17.0.2",
     "react-browser-extension-scripts": "4.0.10",
+    "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^17.0.2",
     "react-draggable": "^4.4.3",
     "react-resizable": "^3.0.4",
@@ -63,6 +64,7 @@
   "devDependencies": {
     "@types/chrome": "0.0.154",
     "@types/react-burger-menu": "^2.8.3",
+    "@types/react-custom-scrollbars": "^4.0.10",
     "@types/react-resizable": "^1.7.3"
   }
 }
