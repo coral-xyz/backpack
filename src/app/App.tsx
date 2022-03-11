@@ -16,9 +16,13 @@ import { useKeyringStoreState } from "../context/KeyringStoreState";
 import { NotificationsProvider } from "../context/Notifications";
 import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../common";
 import "./App.css";
+import "@fontsource/inter";
 
 const theme = createTheme({
   palette: {},
+  typography: {
+    fontFamily: "Inter, sans-serif",
+  },
   // @ts-ignore
   custom: {
     colors: {
@@ -30,10 +34,14 @@ const theme = createTheme({
       connected: "green",
       disconnected: "red",
       offText: "#636363",
+      color: "rgba(0, 0, 0, 0.5)",
       activeNavButton: "#00A2C7",
       hamburger: "#99A4B4",
-      scrollbarTrack: "red",
-      scrollbarThumb: "blue",
+      scrollbarTrack: "rgba(255, 255, 255, 0.111)",
+      scrollbarThumb: "rgb(153 164 180)",
+      tabIconBackground: "#99A4B4",
+      tabIconSelected: "#1196B5",
+      secondary: "rgb(0, 0, 0, .5)",
     },
   },
   overrides: {},

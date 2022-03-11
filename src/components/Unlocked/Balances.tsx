@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme: any) => ({
   },
   tokenListItem: {
     borderTop: `solid 1pt ${theme.custom.colors.border}`,
+    height: "68px",
   },
   blockchainCard: {
     marginTop: "12px",
@@ -41,6 +42,10 @@ const useStyles = makeStyles((theme: any) => ({
     paddingLeft: "16px",
     paddingRight: "16px",
   },
+  cardHeaderTitle: {
+    fontWeight: 500,
+    fontSize: "14px",
+  },
   cardListRoot: {
     padding: "0 !important",
   },
@@ -52,6 +57,30 @@ const useStyles = makeStyles((theme: any) => ({
     flex: 1,
     display: "flex",
     justifyContent: "space-between",
+  },
+  tokenName: {
+    height: "24px",
+    fontWeight: 500,
+    fontSize: "16px",
+    maxWidth: "200px",
+    overflow: "hidden",
+    color: theme.custom.colors.fontColor,
+  },
+  tokenAmount: {
+    fontWeight: 500,
+    fontSize: "12px",
+    color: theme.custom.colors.secondary,
+  },
+  tokenBalance: {
+    fontWeight: 500,
+    fontSize: "16px",
+    color: theme.custom.colors.fontColor,
+  },
+  tokenBalanceChange: {
+    fontWeight: 500,
+    fontSize: "12px",
+    color: theme.custom.colors.secondary,
+    float: "right",
   },
 }));
 
@@ -81,6 +110,7 @@ function BlockchainCard({ blockchain }: { blockchain: string }) {
         classes={{
           root: classes.cardHeaderRoot,
           content: classes.cardHeaderContent,
+          title: classes.cardHeaderTitle,
         }}
       />
       <CardContent classes={{ root: classes.cardContentRoot }}>
@@ -103,6 +133,9 @@ function TokenListItem({
 }) {
   const classes = useStyles();
   const token = useBlockchainBalance(blockchain, tokenAddress);
+  if (token.nativeBalance === 0) {
+    return <></>;
+  }
   return (
     <ListItem className={classes.tokenListItem}>
       <ListItemIcon>
@@ -110,12 +143,18 @@ function TokenListItem({
       </ListItemIcon>
       <div className={classes.tokenListItemContent}>
         <div>
-          <Typography>{token.name}</Typography>
-          <Typography>{token.nativeBalance}</Typography>
+          <Typography className={classes.tokenName}>{token.name}</Typography>
+          <Typography className={classes.tokenAmount}>
+            {token.nativeBalance} {token.ticker}
+          </Typography>
         </div>
         <div>
-          <Typography>{token.usdBalance}</Typography>
-          <Typography>{token.recentUsdBalanceChange}</Typography>
+          <Typography className={classes.tokenBalance}>
+            ${token.usdBalance}
+          </Typography>
+          <Typography className={classes.tokenBalanceChange}>
+            ${token.recentUsdBalanceChange}
+          </Typography>
         </div>
       </div>
     </ListItem>

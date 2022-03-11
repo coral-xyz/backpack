@@ -6,7 +6,7 @@ const useStyles = makeStyles((theme: any) => ({
   tab: {
     backgroundColor: theme.custom.colors.nav,
     borderTop: `solid 1pt ${theme.custom.colors.border}`,
-    color: theme.custom.colors.fontColor,
+    color: theme.custom.colors.tabIconBackground,
     height: "64px",
   },
   tabRoot: {
@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme: any) => ({
     color: "none",
   },
   tabSelected: {
-    color: theme.custom.colors.activeNavButton,
+    color: theme.custom.colors.tabIconSelected,
   },
   tabUnselected: {},
 }));

@@ -114,10 +114,6 @@ function UnlockedCenterDisplay() {
 
 function _UnlockedCenterDisplay() {
   const classes = useStyles();
-  /*
-  const { publicKey, name } = useActiveWallet();
-  return <WalletAddress publicKey={publicKey} name={name} />;
-	*/
   return <Typography className={classes.overviewLabel}>Balances</Typography>;
 }
 

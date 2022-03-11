@@ -36,10 +36,10 @@ export function Scrollbar(props: any) {
       <style>
         {`
 				.track-vertical {
-  background: rgba(255, 255, 255, 0.111);
+  background: ${theme.custom.colors.scrollbarTrack};
 				}
 .track-vertical .thumb-vertical {
-  background-color: rgb(153 164 180);
+  background-color: ${theme.custom.colors.scrollbarThumb};
 }
 				`}
       </style>
