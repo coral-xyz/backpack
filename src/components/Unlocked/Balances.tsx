@@ -37,12 +37,12 @@ const useStyles = makeStyles((theme: any) => ({
   },
   blockchainLogo: {
     width: "12px",
-    height: "12px",
   },
   cardHeaderRoot: {
     padding: "6px",
     paddingLeft: "16px",
     paddingRight: "16px",
+    height: "36px",
   },
   cardHeaderTitle: {
     fontWeight: 500,

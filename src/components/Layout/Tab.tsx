@@ -54,15 +54,22 @@ export function TabBar() {
       }}
     >
       <Tab
+        disableRipple
         className={classes.tab}
         icon={<MonetizationOn className={className(0)} />}
       />
-      <Tab className={classes.tab} icon={<Apps className={className(1)} />} />
       <Tab
+        disableRipple
+        className={classes.tab}
+        icon={<Apps className={className(1)} />}
+      />
+      <Tab
+        disableRipple
         className={classes.tab}
         icon={<SwapHoriz className={className(2)} />}
       />
       <Tab
+        disableRipple
         className={classes.tab}
         icon={<Settings className={className(3)} />}
       />
