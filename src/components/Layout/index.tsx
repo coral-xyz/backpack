@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme: any) => ({
     backgroundColor: theme.custom.colors.background,
     display: "flex",
     flexDirection: "column",
+    borderRadius: "4px",
   },
 }));
 

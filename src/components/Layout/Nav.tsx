@@ -8,27 +8,29 @@ import {
   ClickAwayListener,
   ListItemIcon,
   ListItemText,
+  Typography,
 } from "@material-ui/core";
 import { CheckBox } from "@material-ui/icons";
 import { KeyringStoreStateEnum } from "../../keyring/store";
 import { useKeyringStoreState } from "../../context/KeyringStoreState";
 import { SidebarButton } from "./Sidebar";
-import { useConnection } from "../../context/Connection";
+import { useSolanaConnection } from "../../context/Connection";
 import { useActiveWallet } from "../../context/Wallet";
 import { WalletAddress } from "../common";
 
-export const NAV_BAR_HEIGHT = 46;
+export const NAV_BAR_HEIGHT = 56;
 
 const useStyles = makeStyles((theme: any) => ({
   navBarContainer: {
     height: `${NAV_BAR_HEIGHT}px`,
-    borderBottom: `solid 1pt ${theme.custom.colors.offText}`,
+    borderBottom: `solid 1pt ${theme.custom.colors.border}`,
     display: "flex",
     justifyContent: "space-between",
     paddingLeft: "16px",
     paddingRight: "16px",
     paddingTop: "10px",
     paddingBottom: "10px",
+    backgroundColor: theme.custom.colors.nav,
   },
   menuButtonContainer: {
     width: "38px",
@@ -65,6 +67,10 @@ const useStyles = makeStyles((theme: any) => ({
   connectionMenu: {
     backgroundColor: theme.custom.colors.offText,
     color: theme.custom.colors.fontColor,
+  },
+  overviewLabel: {
+    fontSize: "18px",
+    fontWeight: 500,
   },
 }));
 
@@ -107,8 +113,12 @@ function UnlockedCenterDisplay() {
 }
 
 function _UnlockedCenterDisplay() {
+  const classes = useStyles();
+  /*
   const { publicKey, name } = useActiveWallet();
   return <WalletAddress publicKey={publicKey} name={name} />;
+	*/
+  return <Typography className={classes.overviewLabel}>Overview</Typography>;
 }
 
 function ConnectionIcon() {
@@ -129,7 +139,7 @@ function _ConnectionIcon() {
     <>
       <div
         className={classes.menuButtonContainer}
-        style={{ visibility: isLocked ? "hidden" : undefined }}
+        style={{ visibility: "hidden" /*isLocked ? "hidden" : undefined*/ }}
       >
         <IconButton
           className={classes.connectionButton}
@@ -152,7 +162,7 @@ function _ConnectionIcon() {
 
 function ConnectionMenu({ openPopper, setOpenPopper }: any) {
   const classes = useStyles();
-  const { connectionUrl, setConnectionUrl } = useConnection();
+  const { connectionUrl, setConnectionUrl } = useSolanaConnection();
 
   const MAINNET_BETA = "https://solana-api.projectserum.com";
   const DEVNET = "https://api.devnet.solana.com";

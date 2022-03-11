@@ -1,4 +1,4 @@
-import { atom, atomFamily, selector } from "recoil";
+import { atom, atomFamily, selector, selectorFamily } from "recoil";
 import { TokenAccountWithKey } from "./types";
 import {
   UI_RPC_METHOD_CONNECTION_URL_READ,
@@ -8,9 +8,12 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_STATE,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
-import { WalletPublicKeys } from "./types";
+import { WalletPublicKeys, BlockchainBalance, TokenDisplay } from "./types";
 import { KeyringStoreState } from "../keyring/store";
 
+/**
+ * Status of the keyring store.
+ */
 export const keyringStoreState = atom<KeyringStoreState | null>({
   key: "keyringStoreState",
   default: null,
@@ -122,17 +125,59 @@ export const connectionUrlAtom = atom<string>({
 });
 
 /**
- * Store the info from the SPL Token Account owned by the connected wallet.
+ * All blockchains.
  */
-export const tokenAccountsMap = atomFamily<TokenAccountWithKey | null, string>({
-  key: "tokenAccountsMap",
-  default: null,
+export const blockchainKeys = atom<Array<string>>({
+  key: "blockchainKeys",
+  default: ["solana"],
+});
+
+/**
+ * Selects a blockchain token list based on a network string.
+ */
+export const blockchainTokens = selectorFamily({
+  key: "blockchainTokens",
+  get:
+    (b: string) =>
+    ({ get }: any) => {
+      switch (b) {
+        case "solana":
+          return get(solanaTokenAccountKeys);
+        default:
+          throw new Error("invariant violation");
+      }
+    },
+});
+
+export const blockchainTokenAccounts = selectorFamily({
+  key: "blockchainTokenAccountsMap",
+  get:
+    ({ address, blockchain }: { address: string; blockchain: string }) =>
+    ({ get }: any) => {
+      switch (blockchain) {
+        case "solana":
+          return get(solanaTokenAccountsMap(address));
+        default:
+          throw new Error("invariant violation");
+      }
+    },
 });
 
 /**
  * List of all stored token accounts within tokenAccountsMap.
  */
-export const tokenAccountKeys = atom<string[]>({
-  key: "tokenAccountKeys",
+export const solanaTokenAccountKeys = atom<string[]>({
+  key: "solanaTokenAccountKeys",
   default: [],
+});
+
+/**
+ * Store the info from the SPL Token Account owned by the connected wallet.
+ */
+export const solanaTokenAccountsMap = atomFamily<
+  TokenAccountWithKey | null,
+  string
+>({
+  key: "solanaTokenAccountsMap",
+  default: null,
 });

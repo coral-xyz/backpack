@@ -36,9 +36,12 @@ const useStyles = makeStyles((theme: any) => ({
   },
   menuButton: {
     padding: 0,
+    "&:hover": {
+      background: "transparent",
+    },
   },
   menuButtonIcon: {
-    color: theme.custom.colors.offText,
+    color: theme.custom.colors.fontColor,
   },
   sidebarContentListItem: {
     paddingLeft: 0,
@@ -72,6 +75,12 @@ const useStyles = makeStyles((theme: any) => ({
   addConnectWalletLabel: {
     color: theme.custom.colors.fontColor,
   },
+  sidebarContent: {
+    display: "flex",
+  },
+  overviewLabel: {
+    color: theme.custom.colors.fontColor,
+  },
 }));
 
 export function SidebarButton() {
@@ -81,6 +90,7 @@ export function SidebarButton() {
   return (
     <div className={classes.menuButtonContainer}>
       <Sidebar
+        contentClassName={classes.sidebarContent}
         sidebar={<SidebarContent close={() => setSidebarOpen(false)} />}
         open={sidebarOpen}
         onSetOpen={setSidebarOpen}

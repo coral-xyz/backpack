@@ -24,3 +24,16 @@ export type WalletPublicKeys = {
   importedPublicKeys: Array<NamedPublicKey>;
   // TODO: ledger.
 };
+
+export type BlockchainBalance = {
+  blockchainName: string;
+  tokens: TokenDisplay[];
+};
+
+export type TokenDisplay = {
+  name: string;
+  nativeBalance: string;
+  ticker: string;
+  usdBalance: string;
+  recentUsdBalanceChange: string;
+};

@@ -5,13 +5,18 @@ import { walletPublicKeys, activeWalletWithName } from "../recoil/atoms";
 import * as atoms from "../recoil/atoms";
 import { useKeyringStoreState } from "../context/KeyringStoreState";
 import { KeyringStoreStateEnum } from "../keyring/store";
+import { useLoadSplTokens } from "./Token";
 
 export function useLoadWallet() {
-  // todo
+  useLoadSplTokens();
 }
 
-export function useWallet() {
-  // todo
+export function useSolanaWallet(): SolanaWallet {
+  //	const { publicKey } = useActiveWallet();
+  const publicKey = new PublicKey(
+    "B987jRxFFnSBULwu6cXRKzUfKDDpyuhCGC58wVxct6Ez"
+  );
+  return new SolanaWallet(publicKey);
 }
 
 export function useWalletPublicKeys(): {
@@ -62,7 +67,12 @@ export type ConnectionContext = {
   setConnectionUrl: (url: string) => void;
 };
 
-export class Wallet {
+interface Wallet {
+  publicKey: string;
+  signTransaction(tx: any): any;
+}
+
+export class SolanaWallet {
   constructor(readonly publicKey: PublicKey) {}
 
   signTransaction(tx: Transaction): Transaction {

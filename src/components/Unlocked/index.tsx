@@ -7,7 +7,7 @@ import { Swapper } from "./Swapper";
 import { Settings } from "./Settings";
 import { Quests } from "./Quests";
 import { useLoadWallet } from "../../context/Wallet";
-import { useConnection } from "../../context/Connection";
+import { useSolanaConnection } from "../../context/Connection";
 
 const useStyles = makeStyles((_theme: any) => ({
   container: {
@@ -40,15 +40,12 @@ export function Unlocked() {
 function _Unlocked() {
   // Bootstrap app data.
   useLoadWallet();
-  const connection = useConnection();
   const { tab } = useTabContext();
-
   return (
     <>
       {tab === Tab.Balances && <Balances />}
       {tab === Tab.Nfts && <Nfts />}
       {tab === Tab.Swapper && <Swapper />}
-      {tab === Tab.Quests && <Quests />}
       {tab === Tab.Settings && <Settings />}
     </>
   );
@@ -62,3 +59,8 @@ function UnlockedLoading() {
     </div>
   );
 }
+
+/*
+- get all tokens
+-
+*/

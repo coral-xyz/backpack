@@ -33,6 +33,6 @@ export enum Tab {
   Balances,
   Nfts,
   Swapper,
-  Quests,
+  //  Quests,
   Settings,
 }

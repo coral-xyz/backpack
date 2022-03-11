@@ -1,5 +1,5 @@
 import { useRecoilTransaction_UNSTABLE } from "recoil";
-import { tokenAccountKeys, tokenAccountsMap } from "./atoms";
+import { solanaTokenAccountKeys, solanaTokenAccountsMap } from "./atoms";
 import { TokenAccountWithKey } from "./types";
 
 /**
@@ -10,18 +10,18 @@ export const useUpdateAllSplTokenAccounts = () =>
     ({ get, reset, set }) =>
       (splTokenAccounts, shouldReset) => {
         if (shouldReset) {
-          const keys = get(tokenAccountKeys) as string[];
+          const keys = get(solanaTokenAccountKeys) as string[];
           keys.forEach((key: string) => {
-            reset(tokenAccountsMap(key));
+            reset(solanaTokenAccountsMap(key));
           });
         }
         set(
-          tokenAccountKeys,
+          solanaTokenAccountKeys,
           splTokenAccounts.map((a) => a.key.toString())
         );
         splTokenAccounts.forEach((splTokenAccount) => {
           set(
-            tokenAccountsMap(splTokenAccount.key.toString()),
+            solanaTokenAccountsMap(splTokenAccount.key.toString()),
             splTokenAccount
           );
         });

@@ -2,7 +2,7 @@ import { Connection } from "@solana/web3.js";
 import { useRecoilState } from "recoil";
 import { connectionUrlAtom } from "../recoil/atoms";
 
-export function useConnection(): ConnectionContext {
+export function useSolanaConnection(): SolanaConnectionContext {
   const [connectionUrl, setConnectionUrl] = useRecoilState(connectionUrlAtom);
   const connection = new Connection(connectionUrl);
   return {
@@ -12,7 +12,7 @@ export function useConnection(): ConnectionContext {
   };
 }
 
-export type ConnectionContext = {
+export type SolanaConnectionContext = {
   connection: Connection;
   connectionUrl: string;
   setConnectionUrl: (url: string) => void;
