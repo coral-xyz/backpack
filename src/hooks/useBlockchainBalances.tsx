@@ -18,5 +18,11 @@ export function useBlockchainBalance(blockchain: string, address: string) {
   return balance;
 }
 
-//	const tokenAddresses e= useTokenAddresses();
-//	console.log('got token addresses!', tokenAddresses);
+export function useBlockchainLogo(blockchain: string): string {
+  switch (blockchain) {
+    case "solana":
+      return "solana.png";
+    default:
+      throw new Error("invariant violation");
+  }
+}

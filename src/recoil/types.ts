@@ -32,8 +32,9 @@ export type BlockchainBalance = {
 
 export type TokenDisplay = {
   name: string;
-  nativeBalance: string;
+  nativeBalance: number;
   ticker: string;
   usdBalance: string;
   recentUsdBalanceChange: string;
+  logo: string;
 };

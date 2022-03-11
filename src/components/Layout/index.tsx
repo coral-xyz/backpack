@@ -5,6 +5,7 @@ import { useKeyringStoreState } from "../../context/KeyringStoreState";
 import { TabProvider } from "../../context/Tab";
 import { NavBar } from "./Nav";
 import { TabBar } from "./Tab";
+import Scrollable from "./Scrollable";
 
 const useStyles = makeStyles((theme: any) => ({
   layoutContainer: {
@@ -24,7 +25,7 @@ export function Layout(props: any) {
     <TabProvider>
       <div className={classes.layoutContainer}>
         <NavBar />
-        {props.children}
+        <Scrollable>{props.children}</Scrollable>
         {keyringStoreState === KeyringStoreStateEnum.Unlocked && <TabBar />}
       </div>
     </TabProvider>

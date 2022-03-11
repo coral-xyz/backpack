@@ -9,6 +9,10 @@ const useStyles = makeStyles((theme: any) => ({
     color: theme.custom.colors.fontColor,
     height: "64px",
   },
+  tabRoot: {
+    height: "64px",
+    minHeight: "64px",
+  },
   tabIndicator: {
     color: "none",
   },
@@ -34,7 +38,7 @@ export function TabBar() {
       onChange={(_e, newValue) => setTab(newValue)}
       variant="fullWidth"
       classes={{
-        root: classes.tabIndicator,
+        root: classes.tabRoot,
         indicator: classes.tabIndicator,
       }}
       textColor={theme.custom.colors.activeNavButton}

@@ -118,7 +118,7 @@ function _UnlockedCenterDisplay() {
   const { publicKey, name } = useActiveWallet();
   return <WalletAddress publicKey={publicKey} name={name} />;
 	*/
-  return <Typography className={classes.overviewLabel}>Overview</Typography>;
+  return <Typography className={classes.overviewLabel}>Balances</Typography>;
 }
 
 function ConnectionIcon() {

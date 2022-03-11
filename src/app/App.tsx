@@ -15,7 +15,6 @@ import { Layout } from "../components/Layout";
 import { useKeyringStoreState } from "../context/KeyringStoreState";
 import { NotificationsProvider } from "../context/Notifications";
 import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../common";
-import { AnchorProvider } from "../context/Anchor";
 import "./App.css";
 
 const theme = createTheme({
@@ -25,12 +24,14 @@ const theme = createTheme({
     colors: {
       background: "#ECEFF3",
       nav: "#ffffff",
-      fontColor: "#000000",
+      fontColor: "#43546D",
+      //      fontColor: "#000000",
       border: "#DBDADB",
       connected: "green",
       disconnected: "red",
       offText: "#636363",
       activeNavButton: "#00A2C7",
+      hamburger: "#99A4B4",
     },
   },
   overrides: {},
@@ -43,9 +44,7 @@ export default function App() {
         <MuiThemeProvider theme={theme}>
           <CssBaseline />
           <Suspense fallback={<BlankApp />}>
-            <AnchorProvider>
-              <_App />
-            </AnchorProvider>
+            <_App />
           </Suspense>
         </MuiThemeProvider>
       </NotificationsProvider>

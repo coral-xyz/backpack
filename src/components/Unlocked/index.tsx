@@ -5,9 +5,8 @@ import { Balances } from "./Balances";
 import { Nfts } from "./Nfts";
 import { Swapper } from "./Swapper";
 import { Settings } from "./Settings";
-import { Quests } from "./Quests";
 import { useLoadWallet } from "../../context/Wallet";
-import { useSolanaConnection } from "../../context/Connection";
+import { AnchorProvider } from "../../context/Anchor";
 
 const useStyles = makeStyles((_theme: any) => ({
   container: {
@@ -29,11 +28,13 @@ const useStyles = makeStyles((_theme: any) => ({
 export function Unlocked() {
   const classes = useStyles();
   return (
-    <div className={classes.container}>
-      <Suspense fallback={<UnlockedLoading />}>
-        <_Unlocked />
-      </Suspense>
-    </div>
+    <AnchorProvider>
+      <div className={classes.container}>
+        <Suspense fallback={<UnlockedLoading />}>
+          <_Unlocked />
+        </Suspense>
+      </div>
+    </AnchorProvider>
   );
 }
 
@@ -59,8 +60,3 @@ function UnlockedLoading() {
     </div>
   );
 }
-
-/*
-- get all tokens
--
-*/

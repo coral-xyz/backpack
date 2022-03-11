@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme: any) => ({
     },
   },
   menuButtonIcon: {
-    color: theme.custom.colors.fontColor,
+    color: theme.custom.colors.hamburger,
   },
   sidebarContentListItem: {
     paddingLeft: 0,

@@ -1,11 +1,5 @@
 import React, { useContext, useMemo } from "react";
-import {
-  setProvider,
-  Program,
-  Provider,
-  Spl,
-  SplToken,
-} from "@project-serum/anchor";
+import { Program, Provider, Spl, SplToken } from "@project-serum/anchor";
 import { useSolanaConnection } from "../context/Connection";
 import { useSolanaWallet } from "../context/Wallet";
 

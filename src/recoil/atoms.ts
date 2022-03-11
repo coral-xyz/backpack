@@ -1,4 +1,5 @@
 import { atom, atomFamily, selector, selectorFamily } from "recoil";
+import { TokenListProvider, TokenInfo } from "@solana/spl-token-registry";
 import { TokenAccountWithKey } from "./types";
 import {
   UI_RPC_METHOD_CONNECTION_URL_READ,
@@ -93,6 +94,7 @@ export const activeWalletWithName = selector({
 /**
  * URL to the cluster to communicate with.
  */
+// TODO: this needs to be an atom family keyed on blockchain label.
 const DEFAULT_CONNECTION_URL = "https://solana-api.projectserum.com";
 export const connectionUrlAtom = atom<string>({
   key: "clusterConnection",
@@ -149,6 +151,7 @@ export const blockchainTokens = selectorFamily({
     },
 });
 
+// TODO: we need to get mint atoms somewhere so that we have the decimals
 export const blockchainTokenAccounts = selectorFamily({
   key: "blockchainTokenAccountsMap",
   get:
@@ -156,12 +159,30 @@ export const blockchainTokenAccounts = selectorFamily({
     ({ get }: any) => {
       switch (blockchain) {
         case "solana":
-          return get(solanaTokenAccountsMap(address));
+          const tokenRegistry = get(splTokenRegistry);
+          const tokenAccount = get(solanaTokenAccountsMap(address));
+          const tokenMetadata =
+            tokenRegistry.get(tokenAccount.mint.toString()) ?? {};
+          const ticker = tokenMetadata.symbol;
+          const logo = tokenMetadata.logoURI;
+          const name = tokenMetadata.name;
+          const nativeBalance =
+            tokenAccount.amount / (tokenMetadata.decimals ?? 1);
+          return {
+            name,
+            nativeBalance,
+            ticker,
+            logo,
+            usdBalance: "0", // todo
+            recentUsdBalanceChange: "0", // todo
+          };
         default:
           throw new Error("invariant violation");
       }
     },
 });
+
+//export const blockchainTokenBalance =
 
 /**
  * List of all stored token accounts within tokenAccountsMap.
@@ -180,4 +201,24 @@ export const solanaTokenAccountsMap = atomFamily<
 >({
   key: "solanaTokenAccountsMap",
   default: null,
+});
+
+export const splTokenRegistry = atom<Map<string, TokenInfo> | null>({
+  key: "splTokenRegistry",
+  default: null,
+  effects: [
+    ({ setSelf }) => {
+      setSelf(
+        new TokenListProvider().resolve().then((tokens) => {
+          const tokenList = tokens
+            .filterByClusterSlug("mainnet-beta")
+            .getList();
+          return tokenList.reduce((map, item) => {
+            map.set(item.address, item);
+            return map;
+          }, new Map());
+        })
+      );
+    },
+  ],
 });
