@@ -13,6 +13,8 @@ import {
   useBlockchainTokens,
   useBlockchainBalance,
   useBlockchainLogo,
+  useTotalBalance,
+  useTotalLast24HrChange,
 } from "../../hooks/useBlockchainBalances";
 
 const useStyles = makeStyles((theme: any) => ({
@@ -26,7 +28,7 @@ const useStyles = makeStyles((theme: any) => ({
   },
   blockchainCard: {
     backgroundColor: theme.custom.colors.nav,
-    marginTop: "12px",
+    marginBottom: "12px",
     marginLeft: "12px",
     marginRight: "12px",
     borderRadius: "12px",
@@ -84,16 +86,66 @@ const useStyles = makeStyles((theme: any) => ({
     color: theme.custom.colors.secondary,
     float: "right",
   },
+  balancesHeaderContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    paddingLeft: "24px",
+    paddingRight: "24px",
+    paddingTop: "16px",
+    paddingBottom: "16px",
+  },
+  headerLabel: {
+    fontSize: "12px",
+    fontWeight: 500,
+    color: theme.custom.colors.secondary,
+  },
+  totalBalance: {
+    fontWeight: 500,
+    fontSize: "20px",
+    color: theme.custom.colors.fontColor,
+  },
+  positive: {
+    color: theme.custom.colors.positive,
+    fontSize: "12px",
+  },
+  negative: {
+    color: theme.custom.colors.negative,
+    fontSize: "12px",
+  },
 }));
 
 export function Balances() {
   const blockchains = useBlockchains();
   return (
     <div>
+      <BalancesHeader />
       {blockchains.map((b) => (
         <BlockchainCard key={b} blockchain={b} />
       ))}
-      <div style={{ marginTop: "12px" }}>{/* Dummy div for margin. */}</div>
+    </div>
+  );
+}
+
+function BalancesHeader() {
+  const classes = useStyles();
+  const totalBalance = useTotalBalance();
+  const [last24Notional, last24Percent] = useTotalLast24HrChange();
+  return (
+    <div className={classes.balancesHeaderContainer}>
+      <div>
+        <Typography className={classes.headerLabel}>Total Balance</Typography>
+        <Typography className={classes.totalBalance}>
+          ${totalBalance.toLocaleString()}
+        </Typography>
+      </div>
+      <div>
+        <Typography className={classes.headerLabel}>Last 24 hrs</Typography>
+        <Typography
+          className={last24Percent > 0 ? classes.positive : classes.negative}
+        >
+          {last24Notional} ({last24Percent}%)
+        </Typography>
+      </div>
     </div>
   );
 }

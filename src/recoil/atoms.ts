@@ -27,7 +27,7 @@ export const didBootstrap = atom<boolean>({
  */
 export const isDarkMode = atom<boolean>({
   key: "isDarkMode",
-  default: false,
+  default: true,
 });
 
 /**

@@ -26,3 +26,13 @@ export function useBlockchainLogo(blockchain: string): string {
       throw new Error("invariant violation");
   }
 }
+
+export function useTotalBalance(): number {
+  // todo
+  return 32578.04;
+}
+
+export function useTotalLast24HrChange(): [number, number] {
+  // todo
+  return [475.65, 1.46];
+}
