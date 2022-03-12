@@ -35,6 +35,11 @@ export function Scrollbar(props: any) {
       </Scrollbars>
       <style>
         {`
+.view {
+display: flex;
+justify-content: center;
+flex-direction: column;
+}
 				.track-vertical {
   background: ${theme.custom.colors.scrollbarTrack};
 				}

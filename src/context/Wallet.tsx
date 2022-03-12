@@ -1,21 +1,20 @@
+import { useEffect } from "react";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { Connection } from "@solana/web3.js";
 import { useRecoilValue, constSelector } from "recoil";
-import { walletPublicKeys, activeWalletWithName } from "../recoil/atoms";
+import * as atoms from "../recoil/atoms";
 import { useKeyringStoreState } from "../context/KeyringStoreState";
 import { KeyringStoreStateEnum } from "../keyring/store";
-import { useLoadSplTokens } from "./Token";
+import { useLoadSplTokens } from "../context/Token";
 
-export function useLoadWallet() {
+// Bootstrap data for the initial load.
+export function useBootstrap() {
+  useRecoilValue(atoms.bootstrap);
   useLoadSplTokens();
 }
 
 export function useSolanaWallet(): SolanaWallet {
-  //	const { publicKey } = useActiveWallet();
-  const publicKey = new PublicKey(
-    "B987jRxFFnSBULwu6cXRKzUfKDDpyuhCGC58wVxct6Ez"
-  );
-  return new SolanaWallet(publicKey);
+  return useRecoilValue(atoms.solanaWallet)!;
 }
 
 export function useWalletPublicKeys(): {
@@ -34,7 +33,7 @@ export function useWalletPublicKeys(): {
   const keys = useRecoilValue(
     isLocked
       ? constSelector({ hdPublicKeys: [], importedPublicKeys: [] })
-      : walletPublicKeys
+      : atoms.walletPublicKeys
   );
   return {
     hdPublicKeys: keys.hdPublicKeys.map((k) => {
@@ -53,7 +52,7 @@ export function useWalletPublicKeys(): {
 }
 
 export function useActiveWallet(): { publicKey: PublicKey; name: string } {
-  const { publicKey, name } = useRecoilValue(activeWalletWithName)!;
+  const { publicKey, name } = useRecoilValue(atoms.activeWalletWithName)!;
   return {
     publicKey: new PublicKey(publicKey),
     name,

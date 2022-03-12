@@ -5,8 +5,7 @@ import { Balances } from "./Balances";
 import { Nfts } from "./Nfts";
 import { Swapper } from "./Swapper";
 import { Settings } from "./Settings";
-import { useLoadWallet } from "../../context/Wallet";
-import { AnchorProvider } from "../../context/Anchor";
+import { useBootstrap } from "../../context/Wallet";
 
 const useStyles = makeStyles((_theme: any) => ({
   container: {
@@ -28,19 +27,16 @@ const useStyles = makeStyles((_theme: any) => ({
 export function Unlocked() {
   const classes = useStyles();
   return (
-    <AnchorProvider>
-      <div className={classes.container}>
-        <Suspense fallback={<UnlockedLoading />}>
-          <_Unlocked />
-        </Suspense>
-      </div>
-    </AnchorProvider>
+    <div className={classes.container}>
+      <Suspense fallback={<UnlockedLoading />}>
+        <_Unlocked />
+      </Suspense>
+    </div>
   );
 }
 
 function _Unlocked() {
-  // Bootstrap app data.
-  useLoadWallet();
+  useBootstrap();
   const { tab } = useTabContext();
   return (
     <>

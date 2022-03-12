@@ -1,5 +1,7 @@
-import { atom, atomFamily, selector, selectorFamily } from "recoil";
+import { atom, atomFamily, selector, selectorFamily, waitForAll } from "recoil";
+import { Connection, PublicKey } from "@solana/web3.js";
 import { TokenListProvider, TokenInfo } from "@solana/spl-token-registry";
+import { Spl, Provider } from "@project-serum/anchor";
 import { TokenAccountWithKey } from "./types";
 import {
   UI_RPC_METHOD_CONNECTION_URL_READ,
@@ -9,18 +11,9 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_STATE,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
-import { WalletPublicKeys, BlockchainBalance, TokenDisplay } from "./types";
+import { WalletPublicKeys, TokenDisplay } from "./types";
 import { KeyringStoreState } from "../keyring/store";
-
-export const didBootstrap = atom<boolean>({
-  key: "didBootstrap",
-  default: false,
-  effects: [
-    ({ setSelf }) => {
-      setSelf(true);
-    },
-  ],
-});
+import { SolanaWallet } from "../context/Wallet";
 
 /**
  * Toggle for darkmode.
@@ -110,11 +103,164 @@ export const activeWalletWithName = selector({
 });
 
 /**
+ * All blockchains.
+ */
+export const blockchainKeys = atom<Array<string>>({
+  key: "blockchainKeys",
+  default: ["solana"],
+});
+
+/**
+ * Selects a blockchain token list based on a network string.
+ */
+export const blockchainTokens = selectorFamily({
+  key: "blockchainTokens",
+  get:
+    (b: string) =>
+    ({ get }: any) => {
+      switch (b) {
+        case "solana":
+          return get(solanaTokenAccountKeys);
+        default:
+          throw new Error("invariant violation");
+      }
+    },
+});
+
+export const priceData = atomFamily<TokenDisplay | null, string>({
+  key: "priceData",
+  default: selectorFamily({
+    key: "priceDataDefault",
+    get:
+      (address: string) =>
+      ({ get }: any) => {
+        const data = get(bootstrap);
+        return data.coingeckoData.get(address);
+      },
+  }),
+});
+
+export const splTokenRegistry = atom<Map<string, TokenInfo> | null>({
+  key: "splTokenRegistry",
+  default: null,
+  effects: [
+    ({ setSelf }) => {
+      setSelf(
+        new TokenListProvider().resolve().then((tokens) => {
+          const tokenList = tokens
+            .filterByClusterSlug("mainnet-beta")
+            .getList();
+          return tokenList.reduce((map, item) => {
+            map.set(item.address, item);
+            return map;
+          }, new Map());
+        })
+      );
+    },
+  ],
+});
+
+export const blockchainTokenAccounts = selectorFamily({
+  key: "blockchainTokenAccountsMap",
+  get:
+    ({ address, blockchain }: { address: string; blockchain: string }) =>
+    ({ get }: any) => {
+      switch (blockchain) {
+        case "solana":
+          get(solanaTokenAccountKeys);
+          const tokenAccount = get(solanaTokenAccountsMap(address));
+          const tokenRegistry = get(splTokenRegistry);
+          const price = get(priceData(tokenAccount.mint.toString()));
+          const tokenMetadata =
+            tokenRegistry.get(tokenAccount.mint.toString()) ?? {};
+          const ticker = tokenMetadata.symbol;
+          const logo = tokenMetadata.logoURI;
+          const name = tokenMetadata.name;
+          const nativeBalance =
+            tokenAccount.amount / (tokenMetadata.decimals ?? 1);
+          return {
+            name,
+            nativeBalance,
+            ticker,
+            logo,
+            address,
+            usdBalance: "0", // todo
+            recentUsdBalanceChange: "0", // todo
+            priceData: price,
+          };
+        default:
+          throw new Error("invariant violation");
+      }
+    },
+});
+
+/**
+ * Returns the token accounts sorted by usd notional balances.
+ */
+export const blockchainTokensSorted = selectorFamily({
+  key: "blockchainTokensSorted",
+  get:
+    (blockchain: string) =>
+    ({ get }: any) => {
+      const tokenAddresses = get(blockchainTokens(blockchain));
+      const tokenAccounts = [];
+      for (let k = 0; k < tokenAddresses.length; k += 1) {
+        const query = {
+          address: tokenAddresses[k],
+          blockchain,
+        };
+        const account = get(blockchainTokenAccounts(query));
+        tokenAccounts.push({
+          ...account,
+          usdBalance:
+            account.priceData && account.priceData.usd
+              ? account.priceData.usd * account.nativeBalance
+              : 0,
+        });
+      }
+      return tokenAccounts.sort((a, b) => b.usdBalance - a.usdBalance);
+    },
+});
+
+/**
+ * List of all stored token accounts within tokenAccountsMap.
+ */
+export const solanaTokenAccountKeys = atom<Array<string>>({
+  key: "solanaTokenAccountKeys",
+  default: selector({
+    key: "solanaTokenAccountKeysDefault",
+    get: ({ get }: any) => {
+      const data = get(bootstrap);
+      return Array.from(data.splTokenAccounts.keys()) as string[];
+    },
+  }),
+});
+
+/**
+ * Store the info from the SPL Token Account owned by the connected wallet.
+ */
+export const solanaTokenAccountsMap = atomFamily<
+  TokenAccountWithKey | null,
+  string
+>({
+  key: "solanaTokenAccountsMap",
+  default: selectorFamily({
+    key: "solanaTokenAccountsMapDefault",
+    get:
+      (address: string) =>
+      ({ get }: any) => {
+        const data = get(bootstrap);
+        return data.splTokenAccounts.get(address);
+      },
+  }),
+});
+
+/**
  * URL to the cluster to communicate with.
  */
 // TODO: this needs to be an atom family keyed on blockchain label.
 const DEFAULT_CONNECTION_URL = "https://solana-api.projectserum.com";
-export const connectionUrlAtom = atom<string>({
+export const connectionUrl = atom<string>({
   key: "clusterConnection",
   default: DEFAULT_CONNECTION_URL,
   effects: [
@@ -144,120 +290,126 @@ export const connectionUrlAtom = atom<string>({
   ],
 });
 
-/**
- * All blockchains.
- */
-export const blockchainKeys = atom<Array<string>>({
-  key: "blockchainKeys",
-  default: ["solana"],
-});
-
-/**
- * Selects a blockchain token list based on a network string.
- */
-export const blockchainTokens = selectorFamily({
-  key: "blockchainTokens",
-  get:
-    (b: string) =>
-    ({ get }: any) => {
-      switch (b) {
-        case "solana":
-          return get(solanaTokenAccountKeys);
-        default:
-          throw new Error("invariant violation");
-      }
-    },
-});
-
-// TODO: we need to get mint atoms somewhere so that we have the decimals
-export const blockchainTokenAccounts = selectorFamily({
-  key: "blockchainTokenAccountsMap",
-  get:
-    ({ address, blockchain }: { address: string; blockchain: string }) =>
-    ({ get }: any) => {
-      switch (blockchain) {
-        case "solana":
-          const tokenRegistry = get(splTokenRegistry);
-          const tokenAccount = get(solanaTokenAccountsMap(address));
-          const tokenMetadata =
-            tokenRegistry.get(tokenAccount.mint.toString()) ?? {};
-          const ticker = tokenMetadata.symbol;
-          const logo = tokenMetadata.logoURI;
-          const name = tokenMetadata.name;
-          const nativeBalance =
-            tokenAccount.amount / (tokenMetadata.decimals ?? 1);
-          return {
-            name,
-            nativeBalance,
-            ticker,
-            logo,
-            address,
-            usdBalance: "0", // todo
-            recentUsdBalanceChange: "0", // todo
-          };
-        default:
-          throw new Error("invariant violation");
-      }
-    },
-});
-
-/**
- * Returns the token accounts sorted by usd notional balances.
- */
-export const blockchainTokensSorted = selectorFamily({
-  key: "blockchainTokensSorted",
-  get:
-    (blockchain: string) =>
-    ({ get }: any) => {
-      const tokenAddresses = get(blockchainTokens(blockchain));
-      const tokenAccounts = [];
-      for (let k = 0; k < tokenAddresses.length; k += 1) {
-        const query = {
-          address: tokenAddresses[k],
-          blockchain,
-        };
-        const account = get(blockchainTokenAccounts(query));
-        tokenAccounts.push(account);
-      }
-      return tokenAccounts.sort((a, b) => b.nativeBalance - a.nativeBalance);
-    },
-});
-
-/**
- * List of all stored token accounts within tokenAccountsMap.
- */
-export const solanaTokenAccountKeys = atom<string[]>({
-  key: "solanaTokenAccountKeys",
-  default: [],
-});
-
-/**
- * Store the info from the SPL Token Account owned by the connected wallet.
- */
-export const solanaTokenAccountsMap = atomFamily<
-  TokenAccountWithKey | null,
-  string
->({
-  key: "solanaTokenAccountsMap",
-  default: null,
-});
-
-export const splTokenRegistry = atom<Map<string, TokenInfo> | null>({
-  key: "splTokenRegistry",
+export const solanaWallet = atom<SolanaWallet | null>({
+  key: "wallet",
   default: null,
   effects: [
     ({ setSelf }) => {
+      // TODO: dynamoic.
+      const publicKey = new PublicKey(
+        "B987jRxFFnSBULwu6cXRKzUfKDDpyuhCGC58wVxct6Ez"
+      );
+      const w = new SolanaWallet(publicKey);
+      setSelf(w);
+    },
+  ],
+});
+
+export const anchorContext = atom<any | null>({
+  key: "anchorContext",
+  default: null,
+  effects: [
+    ({ setSelf, getPromise }) => {
       setSelf(
-        new TokenListProvider().resolve().then((tokens) => {
-          const tokenList = tokens
-            .filterByClusterSlug("mainnet-beta")
-            .getList();
-          return tokenList.reduce((map, item) => {
-            map.set(item.address, item);
-            return map;
-          }, new Map());
-        })
+        (async () => {
+          const wallet = await getPromise(solanaWallet);
+          const connectionUrlStr = await getPromise(connectionUrl);
+          const connection = new Connection(connectionUrlStr);
+          // @ts-ignore
+          const provider = new Provider(connection, wallet, {
+            skipPreflight: false,
+            commitment: "recent",
+            preflightCommitment: "recent",
+          });
+          const tokenClient = Spl.token(provider);
+          return {
+            connection,
+            provider,
+            tokenClient,
+          };
+        })()
       );
     },
   ],
 });
+
+/**
+ * Defines the initial app load fetch.
+ */
+export const bootstrap = atom<any>({
+  key: "bootstrap",
+  default: null,
+  effects: [
+    ({ setSelf, getPromise, trigger }) => {
+      if (trigger === "get") {
+        setSelf(
+          (async () => {
+            const wallet = await getPromise(solanaWallet);
+            const { provider, tokenClient } = await getPromise(anchorContext);
+            const publicKey = wallet!.publicKey;
+            try {
+              // Fetch the accounts.
+              const resp = await provider.connection.getTokenAccountsByOwner(
+                publicKey,
+                {
+                  programId: tokenClient.programId,
+                }
+              );
+              // Decode the data.
+              const splTokenAccounts: Map<string, TokenAccountWithKey> =
+                new Map(
+                  resp.value.map(({ account, pubkey }: any) => [
+                    pubkey.toString(),
+                    {
+                      ...tokenClient.coder.accounts.decode(
+                        "Token",
+                        account.data
+                      ),
+                      key: pubkey,
+                    },
+                  ])
+                );
+              // Get all the price data.
+              const tokenRegistry = await getPromise(splTokenRegistry);
+              const mintCoingeckoIds = Array.from(splTokenAccounts.keys())
+                .map((k) => splTokenAccounts.get(k)!.mint.toString())
+                .filter((mint) => tokenRegistry!.get(mint) !== undefined)
+                .map((mint) => [mint, tokenRegistry!.get(mint)!.extensions])
+                .filter(
+                  ([, e]: any) => e !== undefined && e.coingeckoId !== undefined
+                )
+                .map(([mint, e]: any) => [mint, e!.coingeckoId]);
+              const idToMint = new Map(
+                mintCoingeckoIds.map((m) => [m[1], m[0]])
+              );
+              const coingeckoIds = Array.from(idToMint.keys()).join(",");
+              const coingeckoResp = await fetchCoingecko(coingeckoIds);
+              const coingeckoData = new Map(
+                Object.keys(coingeckoResp).map((id, idx) => [
+                  idToMint.get(id),
+                  coingeckoResp[id],
+                ])
+              );
+
+              // Set the recoil atoms.
+              setSelf({
+                splTokenAccounts,
+                coingeckoData,
+              });
+            } catch (err) {
+              // TODO show error notification
+              console.error(err);
+            }
+          })()
+        );
+      }
+    },
+  ],
+});
+
+const fetchCoingecko = async (coingeckoId: string) => {
+  const resp = await fetch(
+    `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoId}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true&include_last_updated_at=true`
+  );
+  return await resp.json();
+};

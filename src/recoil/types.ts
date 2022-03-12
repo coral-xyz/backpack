@@ -25,11 +25,6 @@ export type WalletPublicKeys = {
   // TODO: ledger.
 };
 
-export type BlockchainBalance = {
-  blockchainName: string;
-  tokens: TokenDisplay[];
-};
-
 export type TokenDisplay = {
   name: string;
   nativeBalance: number;
@@ -37,4 +32,5 @@ export type TokenDisplay = {
   usdBalance: string;
   recentUsdBalanceChange: string;
   logo: string;
+  priceData: any;
 };

@@ -208,6 +208,7 @@ function TokenListItem({ token }: { token: any }) {
   if (token.nativeBalance === 0) {
     return <></>;
   }
+  console.log("token", token);
   return (
     <ListItem button disableRipple className={classes.tokenListItem}>
       <ListItemIcon>
@@ -222,7 +223,7 @@ function TokenListItem({ token }: { token: any }) {
         </div>
         <div>
           <Typography className={classes.tokenBalance}>
-            ${token.usdBalance}
+            ${parseFloat(token.usdBalance.toFixed(2)).toLocaleString()}
           </Typography>
           <Typography className={classes.tokenBalanceChange}>
             ${token.recentUsdBalanceChange}

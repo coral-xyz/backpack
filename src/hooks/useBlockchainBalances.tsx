@@ -39,3 +39,7 @@ export function useTotalLast24HrChange(): [number, number] {
 export function useBlockchainTokensSorted(blockchain: string) {
   return useRecoilValue(atoms.blockchainTokensSorted(blockchain));
 }
+
+export function usePriceData(mintAddress: string): any {
+  return useRecoilValue(atoms.priceData(mintAddress));
+}

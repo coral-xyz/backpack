@@ -41,15 +41,9 @@ export function TabBar() {
         root: classes.tabRoot,
         indicator: classes.tabIndicator,
       }}
-      textColor={theme.custom.colors.activeNavButton}
       TabIndicatorProps={{
         style: {
           display: "none",
-        },
-      }}
-      TabScrollButtonProps={{
-        style: {
-          color: "red",
         },
       }}
     >

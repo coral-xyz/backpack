@@ -9,6 +9,7 @@ type AnchorContext = {
 };
 const _AnchorContext = React.createContext<AnchorContext | null>(null);
 
+// TODO: can we remove this?
 export function AnchorProvider(props: any) {
   const { connection } = useSolanaConnection();
   const wallet = useSolanaWallet();
