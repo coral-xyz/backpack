@@ -191,6 +191,7 @@ export const blockchainTokenAccounts = selectorFamily({
             nativeBalance,
             ticker,
             logo,
+            address,
             usdBalance: "0", // todo
             recentUsdBalanceChange: "0", // todo
           };
@@ -200,7 +201,27 @@ export const blockchainTokenAccounts = selectorFamily({
     },
 });
 
-//export const blockchainTokenBalance =
+/**
+ * Returns the token accounts sorted by usd notional balances.
+ */
+export const blockchainTokensSorted = selectorFamily({
+  key: "blockchainTokensSorted",
+  get:
+    (blockchain: string) =>
+    ({ get }: any) => {
+      const tokenAddresses = get(blockchainTokens(blockchain));
+      const tokenAccounts = [];
+      for (let k = 0; k < tokenAddresses.length; k += 1) {
+        const query = {
+          address: tokenAddresses[k],
+          blockchain,
+        };
+        const account = get(blockchainTokenAccounts(query));
+        tokenAccounts.push(account);
+      }
+      return tokenAccounts.sort((a, b) => b.nativeBalance - a.nativeBalance);
+    },
+});
 
 /**
  * List of all stored token accounts within tokenAccountsMap.

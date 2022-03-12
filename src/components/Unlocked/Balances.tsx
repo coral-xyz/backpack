@@ -8,13 +8,13 @@ import {
   ListItem,
   ListItemIcon,
 } from "@material-ui/core";
+import { ArrowForwardIos } from "@material-ui/icons";
 import {
   useBlockchains,
-  useBlockchainTokens,
-  useBlockchainBalance,
   useBlockchainLogo,
   useTotalBalance,
   useTotalLast24HrChange,
+  useBlockchainTokensSorted,
 } from "../../hooks/useBlockchainBalances";
 
 const useStyles = makeStyles((theme: any) => ({
@@ -33,6 +33,25 @@ const useStyles = makeStyles((theme: any) => ({
     marginRight: "12px",
     borderRadius: "12px",
     boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
+  },
+  blockchainFooter: {
+    borderTop: `solid 1pt ${theme.custom.colors.border}`,
+    display: "flex",
+    justifyContent: "space-between",
+    paddingLeft: "16px",
+    paddingRight: "16px",
+    paddingTop: "6px",
+    paddingBottom: "6px",
+    height: "36px",
+  },
+  footerArrowIcon: {
+    width: "10px",
+    color: theme.custom.colors.secondary,
+  },
+  footerLabel: {
+    fontSize: "14px",
+    weight: 500,
+    color: theme.custom.colors.fontColor,
   },
   cardContentRoot: {
     padding: "0 !important",
@@ -152,10 +171,10 @@ function BalancesHeader() {
 
 function BlockchainCard({ blockchain }: { blockchain: string }) {
   const classes = useStyles();
-  const tokens = useBlockchainTokens(blockchain);
   const blockchainLogo = useBlockchainLogo(blockchain);
   const blockchainDisplay =
     blockchain.slice(0, 1).toUpperCase() + blockchain.toLowerCase().slice(1);
+  const tokenAccountsSorted = useBlockchainTokensSorted(blockchain);
   return (
     <Card className={classes.blockchainCard} elevation={0}>
       <CardHeader
@@ -169,29 +188,28 @@ function BlockchainCard({ blockchain }: { blockchain: string }) {
       />
       <CardContent classes={{ root: classes.cardContentRoot }}>
         <List classes={{ root: classes.cardListRoot }}>
-          {tokens.map((t) => (
-            <TokenListItem key={t} blockchain={blockchain} tokenAddress={t} />
+          {tokenAccountsSorted.slice(0, 3).map((token) => (
+            <TokenListItem key={token.address} token={token} />
           ))}
+          {tokenAccountsSorted.length > 3 && (
+            <BlockchainCardFooter
+              blockchain={blockchain}
+              tokenCount={tokenAccountsSorted.length}
+            />
+          )}
         </List>
       </CardContent>
     </Card>
   );
 }
 
-function TokenListItem({
-  blockchain,
-  tokenAddress,
-}: {
-  blockchain: string;
-  tokenAddress: string;
-}) {
+function TokenListItem({ token }: { token: any }) {
   const classes = useStyles();
-  const token = useBlockchainBalance(blockchain, tokenAddress);
   if (token.nativeBalance === 0) {
     return <></>;
   }
   return (
-    <ListItem className={classes.tokenListItem}>
+    <ListItem button disableRipple className={classes.tokenListItem}>
       <ListItemIcon>
         <img src={token.logo} className={classes.logoIcon} />
       </ListItemIcon>
@@ -210,6 +228,40 @@ function TokenListItem({
             ${token.recentUsdBalanceChange}
           </Typography>
         </div>
+      </div>
+    </ListItem>
+  );
+}
+
+function BlockchainCardFooter({
+  blockchain,
+  tokenCount,
+}: {
+  blockchain: string;
+  tokenCount: number;
+}) {
+  const classes = useStyles();
+  return (
+    <ListItem button disableRipple className={classes.blockchainFooter}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        <Typography className={classes.footerLabel}>
+          Show all {tokenCount}
+        </Typography>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        <ArrowForwardIos className={classes.footerArrowIcon} />
       </div>
     </ListItem>
   );

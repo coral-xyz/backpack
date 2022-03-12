@@ -1,6 +1,5 @@
 import { useRecoilValue } from "recoil";
 import * as atoms from "../recoil/atoms";
-import { useTokenAddresses } from "../context/Token";
 
 export function useBlockchains(): Array<string> {
   const blockchains = useRecoilValue(atoms.blockchainKeys);
@@ -35,4 +34,8 @@ export function useTotalBalance(): number {
 export function useTotalLast24HrChange(): [number, number] {
   // todo
   return [475.65, 1.46];
+}
+
+export function useBlockchainTokensSorted(blockchain: string) {
+  return useRecoilValue(atoms.blockchainTokensSorted(blockchain));
 }
