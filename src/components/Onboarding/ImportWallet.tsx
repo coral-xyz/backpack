@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { makeStyles } from "@material-ui/core";
+import { useState, useMemo } from "react";
+import { makeStyles, Typography, TextField } from "@material-ui/core";
+import * as bip39 from "bip39";
+import { getBackgroundClient } from "../../background/client";
 import {
   WithContinue,
   Stepper,
@@ -7,6 +9,11 @@ import {
   Done,
   CreatePassword,
 } from "./CreateNewWallet";
+import {
+  BrowserRuntime,
+  UI_RPC_METHOD_KEYRING_STORE_CREATE,
+} from "../../common";
+import { DerivationPath } from "../../keyring/crypto";
 
 const STEP_COUNT = 5;
 
@@ -27,9 +34,15 @@ export function ImportWallet() {
     setActiveState(activeStep - 1);
   };
   const handleDone = () => {
-    // TODO
-    // - store mnemonic in background storage
-    // - trigger loading of regular UI
+    const derivationPath = DerivationPath.Bip44Change;
+    const background = getBackgroundClient();
+    background
+      .request({
+        method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
+        params: [mnemonic, derivationPath, password],
+      })
+      .catch(console.error)
+      .then((_) => BrowserRuntime.closeActiveTab());
   };
   return (
     <div
@@ -81,8 +94,34 @@ export function ImportWallet() {
 }
 
 function ImportMnemonic({ next }: { next: (m: string) => void }) {
-  const canContinue = true;
-  return <WithContinue next={next} canContinue={canContinue}></WithContinue>;
+  const [mnemonic, setMnemonic] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  let canContinue = true;
+  const onContinue = () => {
+    if (!bip39.validateMnemonic(mnemonic)) {
+      setError("Invalid secret recovery phrase");
+      return;
+    }
+    next(mnemonic);
+  };
+  return (
+    <WithContinue next={onContinue} canContinue={canContinue}>
+      <Typography>Secret Recovery phrase</Typography>
+      <TextField
+        placeholder="Secret Recover Phrase"
+        variant="outlined"
+        margin="dense"
+        required
+        fullWidth
+        InputLabelProps={{
+          shrink: false,
+        }}
+        value={mnemonic}
+        onChange={(e) => setMnemonic(e.target.value)}
+      />
+      {error && <Typography style={{ color: "red" }}>{error}</Typography>}
+    </WithContinue>
+  );
 }
 
 function ImportAccounts({ next }: any) {

@@ -197,6 +197,7 @@ export const blockchainTokenAccounts = selectorFamily({
             ticker,
             logo,
             address,
+            mint: tokenAccount.mint.toString(),
             usdBalance: currentUsdBalance,
             recentUsdBalanceChange,
             priceData: price,
