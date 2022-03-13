@@ -12,8 +12,7 @@ import { ArrowForwardIos } from "@material-ui/icons";
 import {
   useBlockchains,
   useBlockchainLogo,
-  useTotalBalance,
-  useTotalLast24HrChange,
+  useTotal,
   useBlockchainTokensSorted,
 } from "../../hooks/useBlockchainBalances";
 
@@ -24,7 +23,20 @@ const useStyles = makeStyles((theme: any) => ({
   },
   tokenListItem: {
     borderTop: `solid 1pt ${theme.custom.colors.border}`,
+    paddingTop: 0,
+    paddingBottom: 0,
+    paddingLeft: "12px",
+    paddingRight: "12px",
+    padding: 0,
     height: "68px",
+  },
+  tokenListItemIcon: {
+    paddingTop: "12px",
+    paddingBottom: "12px",
+    marginRight: "12px",
+  },
+  tokenListItemIconRoot: {
+    minWidth: "44px",
   },
   blockchainCard: {
     backgroundColor: theme.custom.colors.nav,
@@ -78,6 +90,10 @@ const useStyles = makeStyles((theme: any) => ({
   tokenListItemContent: {
     color: theme.custom.colors.fontColor,
     flex: 1,
+    paddingTop: "10px",
+    paddingBottom: "10px",
+  },
+  tokenListItemRow: {
     display: "flex",
     justifyContent: "space-between",
   },
@@ -159,8 +175,7 @@ export function Balances() {
 
 function BalancesHeader() {
   const classes = useStyles();
-  const totalBalance = useTotalBalance();
-  const [last24Notional, last24Percent] = useTotalLast24HrChange();
+  const { totalBalance, totalChange, percentChange } = useTotal();
   return (
     <div className={classes.balancesHeaderContainer}>
       <div>
@@ -172,9 +187,9 @@ function BalancesHeader() {
       <div>
         <Typography className={classes.headerLabel}>Last 24 hrs</Typography>
         <Typography
-          className={last24Percent > 0 ? classes.positive : classes.negative}
+          className={totalChange > 0 ? classes.positive : classes.negative}
         >
-          {last24Notional} ({last24Percent}%)
+          {totalChange.toLocaleString()} ({percentChange}%)
         </Typography>
       </div>
     </div>
@@ -200,7 +215,7 @@ function BlockchainCard({ blockchain }: { blockchain: string }) {
       />
       <CardContent classes={{ root: classes.cardContentRoot }}>
         <List classes={{ root: classes.cardListRoot }}>
-          {tokenAccountsSorted.slice(0, 3).map((token) => (
+          {tokenAccountsSorted.slice(0, 3).map((token: any) => (
             <TokenListItem key={token.address} token={token} />
           ))}
           {tokenAccountsSorted.length > 3 && (
@@ -225,19 +240,22 @@ function TokenListItem({ token }: { token: any }) {
   const neutral = token.recentusdBalanceChange === 0 ? true : false;
   return (
     <ListItem button disableRipple className={classes.tokenListItem}>
-      <ListItemIcon>
+      <ListItemIcon
+        className={classes.tokenListItemIcon}
+        classes={{ root: classes.tokenListItemIconRoot }}
+      >
         <img src={token.logo} className={classes.logoIcon} />
       </ListItemIcon>
       <div className={classes.tokenListItemContent}>
-        <div>
-          <Typography className={classes.tokenName}>{token.name}</Typography>
-          <Typography className={classes.tokenAmount}>
-            {token.nativeBalance.toLocaleString()} {token.ticker}
-          </Typography>
-        </div>
-        <div>
+        <div className={classes.tokenListItemRow}>
+          <Typography className={classes.tokenName}>{token.ticker}</Typography>
           <Typography className={classes.tokenBalance}>
             ${token.usdBalance.toLocaleString()}
+          </Typography>
+        </div>
+        <div className={classes.tokenListItemRow}>
+          <Typography className={classes.tokenAmount}>
+            {token.nativeBalance.toLocaleString()} {token.ticker}
           </Typography>
           {positive && (
             <Typography className={classes.tokenBalanceChangePositive}>

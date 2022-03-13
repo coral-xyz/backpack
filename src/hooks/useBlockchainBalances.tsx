@@ -26,14 +26,8 @@ export function useBlockchainLogo(blockchain: string): string {
   }
 }
 
-export function useTotalBalance(): number {
-  // todo
-  return 32578.04;
-}
-
-export function useTotalLast24HrChange(): [number, number] {
-  // todo
-  return [475.65, 1.46];
+export function useTotal(): any {
+  return useRecoilValue(atoms.total);
 }
 
 export function useBlockchainTokensSorted(blockchain: string) {

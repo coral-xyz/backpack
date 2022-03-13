@@ -167,7 +167,6 @@ export const blockchainTokenAccounts = selectorFamily({
     ({ get }: any) => {
       switch (blockchain) {
         case "solana":
-          get(solanaTokenAccountKeys);
           const tokenAccount = get(solanaTokenAccountsMap(address));
           const tokenRegistry = get(splTokenRegistry);
           const price = get(priceData(tokenAccount.mint.toString()));
@@ -178,19 +177,74 @@ export const blockchainTokenAccounts = selectorFamily({
           const name = tokenMetadata.name;
           const nativeBalance =
             tokenAccount.amount / (tokenMetadata.decimals ?? 1);
+          const currentUsdBalance =
+            price && price.usd ? price.usd * nativeBalance : 0;
+          const oldUsdBalance =
+            currentUsdBalance === 0
+              ? 0
+              : currentUsdBalance / (1 + price.usd_24h_change);
+          const recentUsdBalanceChange =
+            (currentUsdBalance - oldUsdBalance) / oldUsdBalance;
           return {
             name,
             nativeBalance,
             ticker,
             logo,
             address,
-            usdBalance: "0", // todo
-            recentUsdBalanceChange: "0", // todo
+            usdBalance: currentUsdBalance,
+            recentUsdBalanceChange,
             priceData: price,
           };
         default:
           throw new Error("invariant violation");
       }
+    },
+});
+
+export const total = selector({
+  key: "total",
+  get: ({ get }: any) => {
+    const blockchains = get(blockchainKeys);
+    const total = blockchains.map((b: string) => get(blockchainTotal(b)));
+    // @ts-ignore
+    const totalBalance = total
+      .map((t: any) => t.totalBalance)
+      .reduce((a: number, b: number) => a + b);
+    // @ts-ignore
+    const totalChange = total
+      .map((t: any) => t.totalChange)
+      .reduce((a: number, b: number) => a + b);
+    const oldBalance = totalBalance - totalChange;
+    const percentChange = totalChange / oldBalance;
+    return {
+      totalBalance: parseFloat(totalBalance.toFixed(2)),
+      totalChange: parseFloat(totalChange.toFixed(2)),
+      percentChange: parseFloat(percentChange.toFixed(2)),
+    };
+  },
+});
+
+export const blockchainTotal = selectorFamily({
+  key: "blockchainTotal",
+  get:
+    (blockchain: string) =>
+    ({ get }: any) => {
+      const tokens = get(blockchainTokensSorted(blockchain)).filter(
+        (t: any) => t.usdBalance && t.recentUsdBalanceChange
+      );
+
+      // @ts-ignore
+      const totalBalance = tokens
+        .map((t) => t.usdBalance)
+        .reduce((a, b) => a + b, 0);
+      // @ts-ignore
+      const totalChange = tokens
+        .map((t) => t.recentUsdBalanceChange)
+        .reduce((a, b) => a + b, 0);
+      return {
+        totalBalance: parseFloat(totalBalance.toFixed(2)),
+        totalChange: parseFloat(totalChange.toFixed(2)),
+      };
     },
 });
 
@@ -203,29 +257,15 @@ export const blockchainTokensSorted = selectorFamily({
     (blockchain: string) =>
     ({ get }: any) => {
       const tokenAddresses = get(blockchainTokens(blockchain));
-      const tokenAccounts = [];
-      for (let k = 0; k < tokenAddresses.length; k += 1) {
-        const query = {
-          address: tokenAddresses[k],
-          blockchain,
-        };
-        const account = get(blockchainTokenAccounts(query));
-        const currentUsdBalance =
-          account.priceData && account.priceData.usd
-            ? account.priceData.usd * account.nativeBalance
-            : 0;
-        const oldUsdBalance =
-          currentUsdBalance === 0
-            ? 0
-            : currentUsdBalance / (1 + account.priceData.usd_24h_change);
-        const recentUsdBalanceChange =
-          (currentUsdBalance - oldUsdBalance) / oldUsdBalance;
-        tokenAccounts.push({
-          ...account,
-          usdBalance: parseFloat(currentUsdBalance.toFixed(2)),
-          recentUsdBalanceChange: parseFloat(recentUsdBalanceChange.toFixed(2)),
-        });
-      }
+      const tokenAccounts = tokenAddresses.map((address: string) =>
+        get(
+          blockchainTokenAccounts({
+            address,
+            blockchain,
+          })
+        )
+      );
+      // @ts-ignore
       return tokenAccounts.sort((a, b) => b.usdBalance - a.usdBalance);
     },
 });
@@ -393,7 +433,7 @@ export const bootstrap = atom<any>({
               const coingeckoIds = Array.from(idToMint.keys()).join(",");
               const coingeckoResp = await fetchCoingecko(coingeckoIds);
               const coingeckoData = new Map(
-                Object.keys(coingeckoResp).map((id, idx) => [
+                Object.keys(coingeckoResp).map((id) => [
                   idToMint.get(id),
                   coingeckoResp[id],
                 ])
