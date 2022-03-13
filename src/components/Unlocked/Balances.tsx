@@ -18,6 +18,7 @@ import {
 
 const useStyles = makeStyles((theme: any) => ({
   logoIcon: {
+    borderRadius: "22px",
     width: "44px",
     height: "44px",
   },
@@ -189,7 +190,7 @@ function BalancesHeader() {
         <Typography
           className={totalChange > 0 ? classes.positive : classes.negative}
         >
-          {totalChange.toLocaleString()} ({percentChange}%)
+          ${totalChange.toLocaleString()} ({percentChange}%)
         </Typography>
       </div>
     </div>

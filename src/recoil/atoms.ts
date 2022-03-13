@@ -1,4 +1,5 @@
 import { atom, atomFamily, selector, selectorFamily, waitForAll } from "recoil";
+import BN from "bn.js";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { TokenListProvider, TokenInfo } from "@solana/spl-token-registry";
 import { Spl, Provider } from "@project-serum/anchor";
@@ -175,8 +176,13 @@ export const blockchainTokenAccounts = selectorFamily({
           const ticker = tokenMetadata.symbol;
           const logo = tokenMetadata.logoURI;
           const name = tokenMetadata.name;
-          const nativeBalance =
-            tokenAccount.amount / (tokenMetadata.decimals ?? 1);
+          const nativeBalance = tokenAccount.amount
+            .div(
+              tokenMetadata.decimals
+                ? new BN(10 ** tokenMetadata.decimals)
+                : new BN(1)
+            )
+            .toNumber();
           const currentUsdBalance =
             price && price.usd ? price.usd * nativeBalance : 0;
           const oldUsdBalance =
@@ -235,11 +241,15 @@ export const blockchainTotal = selectorFamily({
 
       // @ts-ignore
       const totalBalance = tokens
+        // @ts-ignore
         .map((t) => t.usdBalance)
+        // @ts-ignore
         .reduce((a, b) => a + b, 0);
       // @ts-ignore
       const totalChange = tokens
+        // @ts-ignore
         .map((t) => t.recentUsdBalanceChange)
+        // @ts-ignore
         .reduce((a, b) => a + b, 0);
       return {
         totalBalance: parseFloat(totalBalance.toFixed(2)),

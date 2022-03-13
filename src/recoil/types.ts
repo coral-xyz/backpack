@@ -1,17 +1,15 @@
+import BN from "bn.js";
 import { PublicKey } from "@solana/web3.js";
 import { NamedPublicKey } from "../background/backend";
 
 export interface TokenAccount {
-  amount: number;
-  closeAuthority: PublicKey;
-  closeAuthorityOption: number;
+  amount: BN;
+  closeAuthority: PublicKey | null;
   delegate: PublicKey;
-  delegateOption: number;
-  delegatedAmount: number;
-  isNative: number;
-  isNativeOption: number;
+  delegatedAmount: number | null;
+  isNative: number | null;
   mint: PublicKey;
-  owner: PublicKey;
+  authority: PublicKey;
   state: number;
 }
 
