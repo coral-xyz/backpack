@@ -17,6 +17,68 @@ import { KeyringStoreState } from "../keyring/store";
 import { SolanaWallet } from "../context/Wallet";
 
 /**
+ * Defines the initial app load fetch.
+ */
+export const bootstrap = atom<any>({
+  key: "bootstrap",
+  default: selector({
+    key: "bootstrapSelector",
+    get: async ({ get }: any) => {
+      const tokenRegistry = get(splTokenRegistry);
+      const wallet = get(solanaWallet);
+      const { provider, tokenClient } = get(anchorContext);
+      const publicKey = wallet!.publicKey;
+      try {
+        // Fetch the accounts.
+        const resp = await provider.connection.getTokenAccountsByOwner(
+          publicKey,
+          {
+            programId: tokenClient.programId,
+          }
+        );
+        // Decode the data.
+        const splTokenAccounts: Map<string, TokenAccountWithKey> = new Map(
+          resp.value.map(({ account, pubkey }: any) => [
+            pubkey.toString(),
+            {
+              ...tokenClient.coder.accounts.decode("Token", account.data),
+              key: pubkey,
+            },
+          ])
+        );
+        // Get all the price data.
+        const mintCoingeckoIds = Array.from(splTokenAccounts.keys())
+          .map((k) => splTokenAccounts.get(k)!.mint.toString())
+          .filter((mint) => tokenRegistry!.get(mint) !== undefined)
+          .map((mint) => [mint, tokenRegistry!.get(mint)!.extensions])
+          .filter(
+            ([, e]: any) => e !== undefined && e.coingeckoId !== undefined
+          )
+          .map(([mint, e]: any) => [mint, e!.coingeckoId]);
+        const idToMint = new Map(mintCoingeckoIds.map((m) => [m[1], m[0]]));
+        const coingeckoIds = Array.from(idToMint.keys()).join(",");
+        const coingeckoResp = await fetchCoingecko(coingeckoIds);
+        const coingeckoData = new Map(
+          Object.keys(coingeckoResp).map((id) => [
+            idToMint.get(id),
+            coingeckoResp[id],
+          ])
+        );
+
+        // Set the recoil atoms.
+        return {
+          splTokenAccounts,
+          coingeckoData,
+        };
+      } catch (err) {
+        // TODO show error notification
+        console.error(err);
+      }
+    },
+  }),
+});
+
+/**
  * Toggle for darkmode.
  */
 export const isDarkMode = atom<boolean>({
@@ -148,7 +210,7 @@ export const splTokenRegistry = atom<Map<string, TokenInfo> | null>({
       setSelf(
         new TokenListProvider().resolve().then((tokens) => {
           const tokenList = tokens
-            .filterByClusterSlug("mainnet-beta")
+            .filterByClusterSlug("mainnet-beta") // TODO: get network atom.
             .getList();
           return tokenList.reduce((map, item) => {
             map.set(item.address, item);
@@ -348,127 +410,39 @@ export const connectionUrl = atom<string>({
   ],
 });
 
-export const solanaWallet = atom<SolanaWallet | null>({
-  key: "wallet",
-  default: null,
-  effects: [
-    ({ setSelf, getPromise }) => {
-      setSelf(
-        (async () => {
-          const pubkeyStr = await getPromise(activeWallet);
-          const publicKey = new PublicKey(pubkeyStr!);
-          return new SolanaWallet(publicKey);
-        })()
-      );
-    },
-  ],
+export const solanaWallet = selector({
+  key: "solanaWallet",
+  get: ({ get }: any) => {
+    const pubkeyStr = get(activeWallet);
+    const publicKey = new PublicKey(pubkeyStr!);
+    return new SolanaWallet(publicKey);
+  },
 });
 
-export const anchorContext = atom<any | null>({
+export const anchorContext = selector({
   key: "anchorContext",
-  default: null,
-  effects: [
-    ({ setSelf, getPromise }) => {
-      setSelf(
-        (async () => {
-          const wallet = await getPromise(solanaWallet);
-          const connectionUrlStr = await getPromise(connectionUrl);
-          const connection = new Connection(connectionUrlStr);
-          // @ts-ignore
-          const provider = new Provider(connection, wallet, {
-            skipPreflight: false,
-            commitment: "recent",
-            preflightCommitment: "recent",
-          });
-          const tokenClient = Spl.token(provider);
-          return {
-            connection,
-            provider,
-            tokenClient,
-          };
-        })()
-      );
-    },
-  ],
+  get: ({ get }: any) => {
+    const wallet = get(solanaWallet);
+    const connectionUrlStr = get(connectionUrl);
+    const connection = new Connection(connectionUrlStr);
+    // @ts-ignore
+    const provider = new Provider(connection, wallet, {
+      skipPreflight: false,
+      commitment: "recent",
+      preflightCommitment: "recent",
+    });
+    const tokenClient = Spl.token(provider);
+    return {
+      connection,
+      provider,
+      tokenClient,
+    };
+  },
 });
 
-/**
- * Defines the initial app load fetch.
- */
-export const bootstrap = atom<any>({
-  key: "bootstrap",
-  default: null,
-  effects: [
-    ({ setSelf, getPromise, trigger }) => {
-      if (trigger === "get") {
-        setSelf(
-          (async () => {
-            const wallet = await getPromise(solanaWallet);
-            const { provider, tokenClient } = await getPromise(anchorContext);
-            const publicKey = wallet!.publicKey;
-            try {
-              // Fetch the accounts.
-              const resp = await provider.connection.getTokenAccountsByOwner(
-                publicKey,
-                {
-                  programId: tokenClient.programId,
-                }
-              );
-              // Decode the data.
-              const splTokenAccounts: Map<string, TokenAccountWithKey> =
-                new Map(
-                  resp.value.map(({ account, pubkey }: any) => [
-                    pubkey.toString(),
-                    {
-                      ...tokenClient.coder.accounts.decode(
-                        "Token",
-                        account.data
-                      ),
-                      key: pubkey,
-                    },
-                  ])
-                );
-              // Get all the price data.
-              const tokenRegistry = await getPromise(splTokenRegistry);
-              const mintCoingeckoIds = Array.from(splTokenAccounts.keys())
-                .map((k) => splTokenAccounts.get(k)!.mint.toString())
-                .filter((mint) => tokenRegistry!.get(mint) !== undefined)
-                .map((mint) => [mint, tokenRegistry!.get(mint)!.extensions])
-                .filter(
-                  ([, e]: any) => e !== undefined && e.coingeckoId !== undefined
-                )
-                .map(([mint, e]: any) => [mint, e!.coingeckoId]);
-              const idToMint = new Map(
-                mintCoingeckoIds.map((m) => [m[1], m[0]])
-              );
-              const coingeckoIds = Array.from(idToMint.keys()).join(",");
-              const coingeckoResp = await fetchCoingecko(coingeckoIds);
-              const coingeckoData = new Map(
-                Object.keys(coingeckoResp).map((id) => [
-                  idToMint.get(id),
-                  coingeckoResp[id],
-                ])
-              );
-
-              // Set the recoil atoms.
-              setSelf({
-                splTokenAccounts,
-                coingeckoData,
-              });
-            } catch (err) {
-              // TODO show error notification
-              console.error(err);
-            }
-          })()
-        );
-      }
-    },
-  ],
-});
-
-const fetchCoingecko = async (coingeckoId: string) => {
+async function fetchCoingecko(coingeckoId: string) {
   const resp = await fetch(
     `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoId}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true&include_last_updated_at=true`
   );
   return await resp.json();
-};
+}

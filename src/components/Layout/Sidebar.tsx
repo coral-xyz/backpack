@@ -160,7 +160,6 @@ function _SidebarContent({ close }: { close: () => void }) {
       .then((_resp) => close())
       .catch(console.error);
   };
-  console.log("named", namedPublicKeys);
   return (
     <div>
       <SidebarHeader close={close} />
