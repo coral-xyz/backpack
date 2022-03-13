@@ -32,7 +32,7 @@ export function useLoadSplTokens() {
           })
         );
         // Set the recoil atoms.
-        updateAllSplTokenAccounts(tokenAccounts, true);
+        updateAllSplTokenAccounts(tokenAccounts);
       } catch (err) {
         // TODO show error notification
         console.error(err);
