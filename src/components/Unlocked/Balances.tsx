@@ -99,10 +99,22 @@ const useStyles = makeStyles((theme: any) => ({
     fontSize: "16px",
     color: theme.custom.colors.fontColor,
   },
-  tokenBalanceChange: {
+  tokenBalanceChangeNeutral: {
     fontWeight: 500,
     fontSize: "12px",
     color: theme.custom.colors.secondary,
+    float: "right",
+  },
+  tokenBalanceChangePositive: {
+    fontWeight: 500,
+    fontSize: "12px",
+    color: theme.custom.colors.positive,
+    float: "right",
+  },
+  tokenBalanceChangeNegative: {
+    fontWeight: 500,
+    fontSize: "12px",
+    color: theme.custom.colors.negative,
     float: "right",
   },
   balancesHeaderContainer: {
@@ -208,7 +220,9 @@ function TokenListItem({ token }: { token: any }) {
   if (token.nativeBalance === 0) {
     return <></>;
   }
-  console.log("token", token);
+  const positive = token.recentUsdBalanceChange > 0 ? true : false;
+  const negative = token.recentUsdBalanceChange < 0 ? true : false;
+  const neutral = token.recentusdBalanceChange === 0 ? true : false;
   return (
     <ListItem button disableRipple className={classes.tokenListItem}>
       <ListItemIcon>
@@ -218,16 +232,28 @@ function TokenListItem({ token }: { token: any }) {
         <div>
           <Typography className={classes.tokenName}>{token.name}</Typography>
           <Typography className={classes.tokenAmount}>
-            {token.nativeBalance} {token.ticker}
+            {token.nativeBalance.toLocaleString()} {token.ticker}
           </Typography>
         </div>
         <div>
           <Typography className={classes.tokenBalance}>
-            ${parseFloat(token.usdBalance.toFixed(2)).toLocaleString()}
+            ${token.usdBalance.toLocaleString()}
           </Typography>
-          <Typography className={classes.tokenBalanceChange}>
-            ${token.recentUsdBalanceChange}
-          </Typography>
+          {positive && (
+            <Typography className={classes.tokenBalanceChangePositive}>
+              $+{token.recentUsdBalanceChange.toLocaleString()}
+            </Typography>
+          )}
+          {negative && (
+            <Typography className={classes.tokenBalanceChangeNegative}>
+              ${token.recentUsdBalanceChange.toLocaleString()}
+            </Typography>
+          )}
+          {neutral && (
+            <Typography className={classes.tokenBalanceChangeNeutral}>
+              ${token.recentUsdBalanceChange.toLocaleString()}
+            </Typography>
+          )}
         </div>
       </div>
     </ListItem>

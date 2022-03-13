@@ -1,10 +1,9 @@
-import { makeStyles, useTheme, Tabs, Tab } from "@material-ui/core";
+import { makeStyles, Tabs, Tab } from "@material-ui/core";
 import { SwapHoriz, Settings, Apps, MonetizationOn } from "@material-ui/icons";
 import { useTabContext } from "../../context/Tab";
 
 const useStyles = makeStyles((theme: any) => ({
   tab: {
-    backgroundColor: theme.custom.colors.nav,
     borderTop: `solid 1pt ${theme.custom.colors.border}`,
     color: theme.custom.colors.tabIconBackground,
     height: "64px",
@@ -12,6 +11,7 @@ const useStyles = makeStyles((theme: any) => ({
   tabRoot: {
     height: "64px",
     minHeight: "64px",
+    backgroundColor: theme.custom.colors.nav,
   },
   tabIndicator: {
     color: "none",
@@ -24,7 +24,6 @@ const useStyles = makeStyles((theme: any) => ({
 
 export function TabBar() {
   const classes = useStyles();
-  const theme = useTheme() as any;
   const { tab, setTab } = useTabContext();
   const className = (idx: number) => {
     if (idx === tab) {

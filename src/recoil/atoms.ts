@@ -210,12 +210,20 @@ export const blockchainTokensSorted = selectorFamily({
           blockchain,
         };
         const account = get(blockchainTokenAccounts(query));
+        const currentUsdBalance =
+          account.priceData && account.priceData.usd
+            ? account.priceData.usd * account.nativeBalance
+            : 0;
+        const oldUsdBalance =
+          currentUsdBalance === 0
+            ? 0
+            : currentUsdBalance / (1 + account.priceData.usd_24h_change);
+        const recentUsdBalanceChange =
+          (currentUsdBalance - oldUsdBalance) / oldUsdBalance;
         tokenAccounts.push({
           ...account,
-          usdBalance:
-            account.priceData && account.priceData.usd
-              ? account.priceData.usd * account.nativeBalance
-              : 0,
+          usdBalance: parseFloat(currentUsdBalance.toFixed(2)),
+          recentUsdBalanceChange: parseFloat(recentUsdBalanceChange.toFixed(2)),
         });
       }
       return tokenAccounts.sort((a, b) => b.usdBalance - a.usdBalance);
