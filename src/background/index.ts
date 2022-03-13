@@ -104,7 +104,7 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
     case UI_RPC_METHOD_PASSWORD_UPDATE:
       return await handlePasswordUpdate(params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY:
-      return await handleKeyringImportSecretKey(params[0]);
+      return await handleKeyringImportSecretKey(params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY:
       return handleKeyringExportSecretKey(params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC:
@@ -293,9 +293,10 @@ async function handlePasswordUpdate(
 }
 
 async function handleKeyringImportSecretKey(
-  secretKey: string
+  secretKey: string,
+  name: string
 ): Promise<RpcResponse<string>> {
-  const resp = await backend.importSecretKey(secretKey);
+  const resp = await backend.importSecretKey(secretKey, name);
   return [resp];
 }
 

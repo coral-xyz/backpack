@@ -128,10 +128,17 @@ export class KeyringStore {
   }
 
   // Returns the public key of the secret key imported.
-  public importSecretKey(secretKey: string): string {
-    return this.withUnlock(() => {
-      const pubkey = this.activeBlockchain().importSecretKey(secretKey);
-      return pubkey;
+  public async importSecretKey(
+    secretKey: string,
+    name: string
+  ): Promise<[string, string]> {
+    return this.withUnlock(async () => {
+      const [pubkey, _name] = await this.activeBlockchain().importSecretKey(
+        secretKey,
+        name
+      );
+      this.persist();
+      return [pubkey, _name];
     });
   }
 
@@ -423,8 +430,18 @@ class BlockchainKeyring {
     return [pubkey, name, accountIndex];
   }
 
-  public importSecretKey(secretKey: string): string {
-    return this.importedKeyring!.importSecretKey(secretKey).toString();
+  public async importSecretKey(
+    secretKey: string,
+    name: string
+  ): Promise<[string, string]> {
+    const pubkey = this.importedKeyring!.importSecretKey(secretKey).toString();
+    if (!name || name.length === 0) {
+      name = KeynameStore.defaultNameImported(
+        this.importedKeyring!.publicKeys().length
+      );
+    }
+    await this.setKeyname(pubkey, name);
+    return [pubkey, name];
   }
 
   public getActiveWallet(): string | undefined {
@@ -531,6 +548,10 @@ class KeynameStore {
 
   public static defaultName(accountIndex: number): string {
     return `Wallet ${accountIndex + 1}`;
+  }
+
+  public static defaultNameImported(accountIndex: number): string {
+    return `Imported Wallet ${accountIndex + 1}`;
   }
 }
 

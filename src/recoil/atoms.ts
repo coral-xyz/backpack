@@ -98,7 +98,6 @@ export const activeWalletWithName = selector({
     result = pks.importedPublicKeys.find(
       (pk) => pk.publicKey.toString() === active
     );
-
     return result;
   },
 });
@@ -353,13 +352,14 @@ export const solanaWallet = atom<SolanaWallet | null>({
   key: "wallet",
   default: null,
   effects: [
-    ({ setSelf }) => {
-      // TODO: dynamoic.
-      const publicKey = new PublicKey(
-        "B987jRxFFnSBULwu6cXRKzUfKDDpyuhCGC58wVxct6Ez"
+    ({ setSelf, getPromise }) => {
+      setSelf(
+        (async () => {
+          const pubkeyStr = await getPromise(activeWallet);
+          const publicKey = new PublicKey(pubkeyStr!);
+          return new SolanaWallet(publicKey);
+        })()
       );
-      const w = new SolanaWallet(publicKey);
-      setSelf(w);
     },
   ],
 });

@@ -1,5 +1,6 @@
 import { useState, Suspense } from "react";
 import Sidebar from "react-sidebar";
+import * as bs58 from "bs58";
 import {
   useTheme,
   makeStyles,
@@ -10,13 +11,15 @@ import {
   Drawer,
   Button,
   Divider,
+  TextField,
 } from "@material-ui/core";
 import { Add, Menu, Close, Lock, Help, FlashOn } from "@material-ui/icons";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, Keypair } from "@solana/web3.js";
 import {
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   EXTENSION_HEIGHT,
 } from "../../common";
 import { getBackgroundClient } from "../../background/client";
@@ -157,6 +160,7 @@ function _SidebarContent({ close }: { close: () => void }) {
       .then((_resp) => close())
       .catch(console.error);
   };
+  console.log("named", namedPublicKeys);
   return (
     <div>
       <SidebarHeader close={close} />
@@ -347,6 +351,32 @@ function RecentActivity() {
 }
 
 function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
+  const [importPrivateKey, setImportPrivateKey] = useState(false);
+  const [connectHardware, setConnectHardware] = useState(false);
+  return (
+    <div>
+      {importPrivateKey && <ImportPrivateKey closeDrawer={closeDrawer} />}
+      {connectHardware && <ConnectHardware closeDrawer={closeDrawer} />}
+      {!importPrivateKey && !connectHardware && (
+        <AddConnectWalletMenu
+          setImportPrivateKey={setImportPrivateKey}
+          setConnectHardware={setConnectHardware}
+          closeDrawer={closeDrawer}
+        />
+      )}
+    </div>
+  );
+}
+
+function AddConnectWalletMenu({
+  closeDrawer,
+  setImportPrivateKey,
+  setConnectHardware,
+}: {
+  closeDrawer: () => void;
+  setImportPrivateKey: (s: boolean) => void;
+  setConnectHardware: (s: boolean) => void;
+}) {
   const classes = useStyles();
   const createNewWallet = () => {
     const background = getBackgroundClient();
@@ -366,31 +396,92 @@ function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
       )
       .catch(console.error);
   };
-  const importPrivateKey = () => {
-    // todo
-  };
-  const connectHardwareWallet = () => {
-    // todo
+  return (
+    <List>
+      <ListItem button onClick={() => createNewWallet()}>
+        <Typography className={classes.addConnectWalletLabel}>
+          Create a new wallet
+        </Typography>
+      </ListItem>
+      <ListItem button onClick={() => setImportPrivateKey(true)}>
+        <Typography className={classes.addConnectWalletLabel}>
+          Import a private key
+        </Typography>
+      </ListItem>
+      <ListItem button onClick={() => setConnectHardware(true)}>
+        <Typography className={classes.addConnectWalletLabel}>
+          Connect hardware wallet
+        </Typography>
+      </ListItem>
+    </List>
+  );
+}
+
+function ImportPrivateKey({ closeDrawer }: any) {
+  const [name, setName] = useState("");
+  const [secretKey, setSecretKey] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const onImport = () => {
+    const kp = decodeAccount(secretKey);
+    if (!kp) {
+      setError("Invalid private key");
+      return;
+    }
+    const secretKeyStr = Buffer.from(kp.secretKey).toString("hex");
+    const background = getBackgroundClient();
+    background
+      .request({
+        method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+        params: [secretKeyStr, name],
+      })
+      .then(() => closeDrawer())
+      .catch(console.error);
   };
   return (
     <div>
-      <List>
-        <ListItem button onClick={() => createNewWallet()}>
-          <Typography className={classes.addConnectWalletLabel}>
-            Create a new wallet
-          </Typography>
-        </ListItem>
-        <ListItem button onClick={() => importPrivateKey()}>
-          <Typography className={classes.addConnectWalletLabel}>
-            Import a private key
-          </Typography>
-        </ListItem>
-        <ListItem button onClick={() => connectHardwareWallet()}>
-          <Typography className={classes.addConnectWalletLabel}>
-            Connect hardware wallet
-          </Typography>
-        </ListItem>
-      </List>
+      <Typography>Import private key</Typography>
+      <TextField
+        placeholder="Name (optional)"
+        variant="outlined"
+        margin="dense"
+        required
+        fullWidth
+        InputLabelProps={{
+          shrink: false,
+        }}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <TextField
+        placeholder="Secret Recover Phrase"
+        variant="outlined"
+        margin="dense"
+        required
+        fullWidth
+        InputLabelProps={{
+          shrink: false,
+        }}
+        value={secretKey}
+        onChange={(e) => setSecretKey(e.target.value)}
+      />
+      {error && <Typography style={{ color: "red" }}>{error}</Typography>}
+      <Button onClick={onImport}>Import</Button>
     </div>
   );
+}
+
+function ConnectHardware({ closeDrawer }: any) {
+  return <div>Connect hardware TODO</div>;
+}
+
+function decodeAccount(privateKey: string) {
+  try {
+    return Keypair.fromSecretKey(new Uint8Array(JSON.parse(privateKey)));
+  } catch (_) {
+    try {
+      return Keypair.fromSecretKey(new Uint8Array(bs58.decode(privateKey)));
+    } catch (_) {
+      return undefined;
+    }
+  }
 }

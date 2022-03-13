@@ -192,12 +192,16 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async importSecretKey(secretKey: string): Promise<string> {
-    const publicKey = this.keyringStore.importSecretKey(secretKey);
+  async importSecretKey(secretKey: string, name: string): Promise<string> {
+    const [publicKey, _name] = await this.keyringStore.importSecretKey(
+      secretKey,
+      name
+    );
     this.notifications.pushNotification({
       name: NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
       data: {
         publicKey,
+        name: _name,
       },
     });
     return SUCCESS_RESPONSE;

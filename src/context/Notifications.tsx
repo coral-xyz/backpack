@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 import * as atoms from "../recoil/atoms";
 import {
+  debug,
   PortChannel,
   UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE,
   CONNECTION_POPUP_NOTIFICATIONS,
@@ -32,6 +33,7 @@ export function NotificationsProvider(props: any) {
     // Notification dispatch.
     //
     const notificationsHandler = (notif: Notification) => {
+      debug("received notification", notif);
       switch (notif.name) {
         case NOTIFICATION_KEYRING_STORE_LOCKED:
           handleKeyringStoreLocked(notif);
