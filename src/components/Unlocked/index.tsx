@@ -6,6 +6,7 @@ import { Nfts } from "./Nfts";
 import { Swapper } from "./Swapper";
 import { Settings } from "./Settings";
 import { useBootstrap } from "../../context/Wallet";
+import { WithNav } from "../Layout/Nav";
 
 const useStyles = makeStyles((_theme: any) => ({
   container: {
@@ -28,24 +29,52 @@ export function Unlocked() {
   const classes = useStyles();
   return (
     <div className={classes.container}>
-      <Suspense fallback={<UnlockedLoading />}>
-        <_Unlocked />
-      </Suspense>
+      <_Unlocked />
     </div>
   );
 }
 
 function _Unlocked() {
-  useBootstrap();
   const { tab } = useTabContext();
   return (
     <>
-      {tab === Tab.Balances && <Balances />}
-      {tab === Tab.Nfts && <Nfts />}
-      {tab === Tab.Swapper && <Swapper />}
-      {tab === Tab.Settings && <Settings />}
+      {tab === Tab.Balances && (
+        <WithBootstrap title={"Balances"}>
+          <Balances />
+        </WithBootstrap>
+      )}
+      {tab === Tab.Nfts && (
+        <WithBootstrap title={"Nfts"}>
+          <Nfts />
+        </WithBootstrap>
+      )}
+      {tab === Tab.Swapper && (
+        <WithBootstrap title={"Swapper"}>
+          <Swapper />
+        </WithBootstrap>
+      )}
+      {tab === Tab.Settings && (
+        <WithBootstrap title={"Settings"}>
+          <Settings />
+        </WithBootstrap>
+      )}
     </>
   );
+}
+
+function WithBootstrap(props: any) {
+  return (
+    <WithNav title={props.title}>
+      <Suspense fallback={<UnlockedLoading />}>
+        <_WithBootstrap>{props.children}</_WithBootstrap>
+      </Suspense>
+    </WithNav>
+  );
+}
+
+function _WithBootstrap(props: any) {
+  useBootstrap();
+  return <>{props.children}</>;
 }
 
 function UnlockedLoading() {

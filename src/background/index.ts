@@ -34,6 +34,7 @@ import {
   UI_RPC_METHOD_KEYNAME_UPDATE,
   UI_RPC_METHOD_PASSWORD_UPDATE,
   UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE,
+  UI_RPC_METHOD_NAVIGATION_UPDATE,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
@@ -113,6 +114,8 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return handleKeyringResetMnemonic(params[0]);
     case UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE:
       return await handleKeyringAutolockUpdate(params[0]);
+    case UI_RPC_METHOD_NAVIGATION_UPDATE:
+      return await handleNavigationUpdate();
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -322,6 +325,11 @@ async function handleKeyringAutolockUpdate(
   autolockSecs: number
 ): Promise<RpcResponse<string>> {
   const resp = await backend.keyringAutolockUpdate(autolockSecs);
+  return [resp];
+}
+
+async function handleNavigationUpdate(): Promise<RpcResponse<string>> {
+  const resp = await backend.navigationUpdate();
   return [resp];
 }
 

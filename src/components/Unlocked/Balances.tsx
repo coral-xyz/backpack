@@ -7,6 +7,7 @@ import {
   List,
   ListItem,
   ListItemIcon,
+  Button,
 } from "@material-ui/core";
 import { ArrowForwardIos } from "@material-ui/icons";
 import {
@@ -15,6 +16,7 @@ import {
   useTotal,
   useBlockchainTokensSorted,
 } from "../../hooks/useBlockchainBalances";
+import { useNavigationContext } from "../../context/Navigation";
 
 const useStyles = makeStyles((theme: any) => ({
   logoIcon: {
@@ -233,6 +235,7 @@ function BlockchainCard({ blockchain }: { blockchain: string }) {
 
 function TokenListItem({ token }: { token: any }) {
   const classes = useStyles();
+  const { push: pushNavigation } = useNavigationContext();
   if (token.nativeBalance === 0) {
     return <></>;
   }
@@ -240,7 +243,12 @@ function TokenListItem({ token }: { token: any }) {
   const negative = token.recentUsdBalanceChange < 0 ? true : false;
   const neutral = token.recentusdBalanceChange === 0 ? true : false;
   return (
-    <ListItem button disableRipple className={classes.tokenListItem}>
+    <ListItem
+      button
+      disableRipple
+      className={classes.tokenListItem}
+      onClick={() => pushNavigation(<Dummy />)}
+    >
       <ListItemIcon
         className={classes.tokenListItemIcon}
         classes={{ root: classes.tokenListItemIconRoot }}
@@ -276,6 +284,25 @@ function TokenListItem({ token }: { token: any }) {
         </div>
       </div>
     </ListItem>
+  );
+}
+
+/*
+alert-enter-active
+  transform: translateX(0);
+transition: opacity 300ms, transform 300ms;
+
+alert-exit-active
+  transform: scale(0.9);
+  transition: opacity 300ms, transform 300ms;
+*/
+
+function Dummy() {
+  const { pop } = useNavigationContext();
+  return (
+    <div>
+      <Button onClick={() => pop()}>Pop me</Button>
+    </div>
   );
 }
 

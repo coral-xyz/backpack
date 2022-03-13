@@ -6,7 +6,7 @@ export function Scrollbar(props: any) {
   return (
     <>
       <Scrollbars
-        style={{ width: "100%" }}
+        style={{ width: "100%", height: "100%" }}
         renderTrackHorizontal={(props) => (
           <div {...props} className="track-horizontal" />
         )}
@@ -35,11 +35,6 @@ export function Scrollbar(props: any) {
       </Scrollbars>
       <style>
         {`
-.view {
-display: flex;
-justify-content: center;
-flex-direction: column;
-}
 				.track-vertical {
   background: ${theme.custom.colors.scrollbarTrack};
 				}

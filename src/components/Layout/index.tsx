@@ -3,9 +3,7 @@ import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../../common";
 import { KeyringStoreStateEnum } from "../../keyring/store";
 import { useKeyringStoreState } from "../../context/KeyringStoreState";
 import { TabProvider } from "../../context/Tab";
-import { NavBar } from "./Nav";
 import { TabBar } from "./Tab";
-import { Scrollbar } from "./Scrollbar";
 
 const useStyles = makeStyles((theme: any) => ({
   layoutContainer: {
@@ -32,8 +30,7 @@ export function Layout(props: any) {
   return (
     <TabProvider>
       <div className={classes.layoutContainer}>
-        <NavBar />
-        <Scrollbar>{props.children}</Scrollbar>
+        {props.children}
         {keyringStoreState === KeyringStoreStateEnum.Unlocked && <TabBar />}
       </div>
     </TabProvider>

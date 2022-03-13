@@ -30,6 +30,10 @@ import { useWalletPublicKeys } from "../../context/Wallet";
 import { WalletAddress } from "../../components/common";
 
 const useStyles = makeStyles((theme: any) => ({
+  sidebarContainer: {
+    backgroundColor: theme.custom.colors.nav,
+    height: "100%",
+  },
   menuButtonContainer: {
     width: "38px",
     display: "flex",
@@ -99,7 +103,7 @@ export function SidebarButton() {
         onSetOpen={setSidebarOpen}
         styles={{
           sidebar: {
-            width: "269px",
+            width: "300px",
             position: "fixed",
             backgroundColor: theme.custom.colors.background,
           },
@@ -161,7 +165,7 @@ function _SidebarContent({ close }: { close: () => void }) {
       .catch(console.error);
   };
   return (
-    <div>
+    <div className={classes.sidebarContainer}>
       <SidebarHeader close={close} />
       <List
         style={{
@@ -302,7 +306,7 @@ function SidebarHeader({ close }: { close: () => void }) {
         }}
       >
         <IconButton onClick={close} style={{ padding: 0 }}>
-          <Close style={{ color: theme.custom.colors.offText }} />
+          <Close style={{ color: theme.custom.colors.secondary }} />
         </IconButton>
       </div>
     </div>

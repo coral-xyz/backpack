@@ -32,6 +32,7 @@ export const UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY = "export-secret-key";
 export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC = "export-mnemonic";
 export const UI_RPC_METHOD_KEYRING_RESET_MNEMONIC = "reset-mnemonic";
 export const UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE = "autolock-update";
+export const UI_RPC_METHOD_NAVIGATION_UPDATE = "navigation-update";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";

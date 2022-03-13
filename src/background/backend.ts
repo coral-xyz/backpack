@@ -224,6 +224,11 @@ export class Backend {
     await this.keyringStore.autoLockUpdate(secs);
     return SUCCESS_RESPONSE;
   }
+
+  async navigationUpdate(): Promise<string> {
+    // todo
+    return SUCCESS_RESPONSE;
+  }
 }
 
 export type Context = {

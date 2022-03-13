@@ -33,7 +33,7 @@ export function NotificationsProvider(props: any) {
     // Notification dispatch.
     //
     const notificationsHandler = (notif: Notification) => {
-      debug("received notification", notif);
+      debug(`received notification ${notif.name}`, notif);
       switch (notif.name) {
         case NOTIFICATION_KEYRING_STORE_LOCKED:
           handleKeyringStoreLocked(notif);

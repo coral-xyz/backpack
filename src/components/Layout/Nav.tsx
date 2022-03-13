@@ -1,8 +1,21 @@
-import { Suspense } from "react";
-import { makeStyles, Typography } from "@material-ui/core";
+import { Suspense, useMemo } from "react";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
+import {
+  makeStyles,
+  Typography,
+  IconButton,
+  useTheme,
+} from "@material-ui/core";
+import { ArrowBack } from "@material-ui/icons";
 import { KeyringStoreStateEnum } from "../../keyring/store";
 import { useKeyringStoreState } from "../../context/KeyringStoreState";
 import { SidebarButton } from "./Sidebar";
+import { Scrollbar } from "./Scrollbar";
+import {
+  NavigationProvider,
+  useNavigationContext,
+  //  NavigationContent,
+} from "../../context/Navigation";
 
 export const NAV_BAR_HEIGHT = 56;
 
@@ -60,19 +73,58 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-export function NavBar() {
+export function WithNav(props: any) {
+  return (
+    <NavigationProvider
+      title={props.title}
+      name={props.name}
+      root={props.children}
+    >
+      <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+        <NavBar />
+        <NavContent />
+      </div>
+    </NavigationProvider>
+  );
+}
+
+function NavBar() {
   const classes = useStyles();
+  const { stack } = useNavigationContext();
   return (
     <div className={classes.navBarContainer}>
-      <SidebarButton />
+      {stack.components.length === 1 ? <SidebarButton /> : <NavBackButton />}
       <CenterDisplay />
       <DummyButton />
     </div>
   );
 }
 
+function NavBackButton() {
+  const theme = useTheme() as any;
+  const { pop } = useNavigationContext();
+  return (
+    <div style={{ display: "flex", width: "38px" }}>
+      <IconButton disableRipple onClick={() => pop()} style={{ padding: 0 }}>
+        <ArrowBack style={{ color: theme.custom.colors.secondary }} />
+      </IconButton>
+    </div>
+  );
+}
+
+function NavContent() {
+  const { stack } = useNavigationContext();
+  const render = stack.components[stack.components.length - 1];
+  return (
+    <div style={{ flex: 1 }}>
+      <Scrollbar>{render}</Scrollbar>
+    </div>
+  );
+}
+
 function CenterDisplay() {
   const classes = useStyles();
+  const { title } = useNavigationContext();
   const keyringStoreState = useKeyringStoreState();
   const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
   return (
@@ -100,7 +152,8 @@ function UnlockedCenterDisplay() {
 
 function _UnlockedCenterDisplay() {
   const classes = useStyles();
-  return <Typography className={classes.overviewLabel}>Balances</Typography>;
+  const { title } = useNavigationContext();
+  return <Typography className={classes.overviewLabel}>{title}</Typography>;
 }
 
 function DummyButton() {
