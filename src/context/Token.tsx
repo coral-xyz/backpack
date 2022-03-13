@@ -10,8 +10,7 @@ const REFRESH_INTERVAL = 10 * 1000;
 
 export function useLoadSplTokens() {
   const wallet = useSolanaWallet();
-  const { tokenClient } = useRecoilValue(atoms.anchorContext);
-  const { connection } = useSolanaConnection();
+  const { tokenClient, provider } = useRecoilValue(atoms.anchorContext);
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   const publicKey = wallet.publicKey;
   useEffect(() => {
@@ -21,9 +20,13 @@ export function useLoadSplTokens() {
       }
       try {
         // Fetch the accounts.
-        const resp = await connection.getTokenAccountsByOwner(publicKey, {
-          programId: tokenClient.programId,
-        });
+        const resp = await provider.connection.getTokenAccountsByOwner(
+          publicKey,
+          {
+            programId: tokenClient.programId,
+          },
+          provider.connection.commitment
+        );
         // Decode the data.
         const tokenAccounts: TokenAccountWithKey[] = resp.value.map(
           ({ account, pubkey }) => ({
@@ -42,7 +45,7 @@ export function useLoadSplTokens() {
     return () => {
       clearInterval(interval);
     };
-  }, [connection, publicKey, updateAllSplTokenAccounts]);
+  }, [provider, publicKey, updateAllSplTokenAccounts]);
 }
 
 export function useTokenAddresses(): string[] {

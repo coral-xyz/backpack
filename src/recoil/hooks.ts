@@ -9,8 +9,8 @@ export const useUpdateAllSplTokenAccounts = () =>
   useRecoilCallback(
     ({ set }: any) =>
       async (splTokenAccounts: TokenAccountWithKey[]) => {
-				// TODO: do we want to check if the atoms have changed before setting
-				//       them?
+        // TODO: do we want to check if the atoms have changed before setting
+        //       them?
         set(
           solanaTokenAccountKeys,
           splTokenAccounts.map((a) => a.key.toString())
