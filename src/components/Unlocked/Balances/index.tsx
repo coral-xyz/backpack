@@ -174,7 +174,7 @@ export function Balances() {
         <BlockchainCard
           key={b}
           blockchain={b}
-          title={b}
+          title={toTitleCase(b)}
           limit={3}
           avatar={true}
         />
@@ -213,13 +213,12 @@ export function BlockchainCard({
   avatar = false,
 }: {
   blockchain: string;
-  title?: string;
+  title: string;
   limit?: number;
   avatar?: boolean;
 }) {
   const classes = useStyles();
   const blockchainLogo = useBlockchainLogo(blockchain);
-  const blockchainDisplay = title ?? toTitleCase(blockchain);
   const tokenAccountsSorted = useBlockchainTokensSorted(blockchain);
   return (
     <Card className={classes.blockchainCard} elevation={0}>
@@ -229,7 +228,7 @@ export function BlockchainCard({
             <img className={classes.blockchainLogo} src={blockchainLogo} />
           ) : undefined
         }
-        title={blockchainDisplay}
+        title={title}
         classes={{
           root: classes.cardHeaderRoot,
           content: classes.cardHeaderContent,

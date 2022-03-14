@@ -4,7 +4,7 @@ import { Balances } from "./Balances";
 import { Nfts } from "./Nfts";
 import { Swapper } from "./Swapper";
 import { Settings } from "./Settings";
-import { useBootstrap } from "../../context/Wallet";
+import { useBootstrap, useBootstrapFast } from "../../context/Wallet";
 import { WithNav, WithNavContext } from "../Layout/Nav";
 import { TAB_BALANCES, TAB_NFTS, TAB_SWAP, TAB_SETTINGS } from "../../common";
 
@@ -79,6 +79,7 @@ function WithBootstrap(props: any) {
 }
 
 function _WithBootstrap(props: any) {
+  useBootstrapFast();
   useBootstrap();
   return <>{props.children}</>;
 }

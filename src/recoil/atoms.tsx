@@ -22,6 +22,7 @@ import { WalletPublicKeys, TokenDisplay } from "./types";
 import { KeyringStoreState } from "../keyring/store";
 import { SolanaWallet } from "../context/Wallet";
 import { Network } from "../components/Unlocked/Balances/Network";
+import { TABS } from "../background/backend";
 
 /**
  * Defines the initial app load fetch.
@@ -72,7 +73,7 @@ export const bootstrap = atom<any>({
           ])
         );
 
-        // Set the recoil atoms.
+        // Done.
         return {
           splTokenAccounts,
           coingeckoData,
@@ -81,6 +82,30 @@ export const bootstrap = atom<any>({
         // TODO show error notification
         console.error(err);
       }
+    },
+  }),
+});
+
+// Version of bootstrap for very fast data on load. This shouldn't block the load
+// in any discernable way.
+export const bootstrapFast = atom<any>({
+  key: "bootstrapFast",
+  default: selector({
+    key: "bootstrapFastSelector",
+    get: async ({ get }: any) => {
+      // Fetch all navigation state.
+      const backgroundClient = getBackgroundClient();
+      const tabs = await Promise.all(
+        TABS.map((t) =>
+          backgroundClient.request({
+            method: UI_RPC_METHOD_NAVIGATION_READ,
+            params: [t[0]],
+          })
+        )
+      );
+      return {
+        tabs,
+      };
     },
   }),
 });
@@ -119,51 +144,18 @@ export const navigationActiveTab = atom<string>({
 export const navigationDataMap = atomFamily<any, string>({
   key: "navigationState",
   default: selectorFamily({
-    key: "asdf",
+    key: "navigationStateDefault",
     get:
-      (tab: string) =>
+      (navKey: string) =>
       ({ get }: any) => {
-        const df: any = {
-          balances: {
-            id: "balances",
-            title: "Balances",
-            components: [],
-            props: [],
-            titles: [],
-            transition: "init",
-          },
-          nfts: {
-            id: "nfts",
-            title: "Nfts",
-            components: [],
-            props: [],
-            titles: [],
-            transition: "init",
-          },
-          swap: {
-            id: "swap",
-            title: "Swap",
-            components: [],
-            props: [],
-            titles: [],
-            transition: "init",
-          },
-          settings: {
-            id: "settings",
-            title: "Settings",
-            components: [],
-            props: [],
-            titles: [],
-            transition: "init",
-          },
-        };
-        return df[tab];
+        const { tabs } = get(bootstrapFast);
+        // @ts-ignore
+        return tabs.filter((t) => t.id === navKey)[0];
       },
-    /*
-  default: null,
+  }),
   effects: (nav: string) => [
-    ({ setSelf, onSet }) => {
-      // Init by reading from local storage.
+    ({ onSet }) => {
+      /*
       setSelf(
         (async () => {
           const background = getBackgroundClient();
@@ -175,6 +167,7 @@ export const navigationDataMap = atomFamily<any, string>({
             .catch(console.error);
         })()
       );
+			*/
 
       onSet((navData) => {
         const background = getBackgroundClient();
@@ -187,8 +180,6 @@ export const navigationDataMap = atomFamily<any, string>({
       });
     },
   ],
-	*/
-  }),
 });
 
 /**

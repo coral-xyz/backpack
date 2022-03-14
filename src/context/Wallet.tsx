@@ -13,6 +13,10 @@ export function useBootstrap() {
   useLoadSplTokens();
 }
 
+export function useBootstrapFast() {
+  useRecoilValue(atoms.bootstrapFast);
+}
+
 export function useSolanaWallet(): SolanaWallet {
   return useRecoilValue(atoms.solanaWallet)!;
 }

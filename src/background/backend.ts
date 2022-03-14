@@ -289,39 +289,28 @@ export type NamedPublicKey = {
   name: string;
 };
 
-const defaultNav: any = {
-  activeTab: TAB_BALANCES,
-  data: {},
-};
-defaultNav.data[TAB_BALANCES] = {
-  id: TAB_BALANCES,
-  title: "Balances",
-  components: [],
-  props: [],
-  titles: [],
-  transition: "init",
-};
-defaultNav.data[TAB_NFTS] = {
-  id: TAB_NFTS,
-  title: "Nfts",
-  components: [],
-  props: [],
-  titles: [],
-  transition: "init",
-};
-defaultNav.data[TAB_SWAP] = {
-  id: TAB_SWAP,
-  title: "Swap",
-  components: [],
-  props: [],
-  titles: [],
-  transition: "init",
-};
-defaultNav.data[TAB_SETTINGS] = {
-  id: TAB_SETTINGS,
-  title: "Settings",
-  components: [],
-  props: [],
-  titles: [],
-  transition: "init",
-};
+export const TABS = [
+  [TAB_BALANCES, "Balances"],
+  [TAB_NFTS, "Nfts"],
+  [TAB_SWAP, "Swap"],
+  [TAB_SETTINGS, "Settings"],
+];
+const defaultNav = makeDefaultNav();
+
+function makeDefaultNav() {
+  const defaultNav: any = {
+    activeTab: TAB_BALANCES,
+    data: {},
+  };
+  TABS.forEach(([tabName, tabTitle]) => {
+    defaultNav[tabName] = {
+      id: tabName,
+      title: tabTitle,
+      components: [],
+      props: [],
+      titles: [],
+      transition: "init",
+    };
+  });
+  return defaultNav;
+}

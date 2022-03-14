@@ -41,7 +41,6 @@ export function useNavigationContext(): NavigationContext {
   const [navData, setNavData] = useRecoilState(
     atoms.navigationDataMap(activeTab)
   );
-  console.log("data", navData);
   const isRoot = navData.components.length === 0;
   const title = isRoot
     ? navData.title
