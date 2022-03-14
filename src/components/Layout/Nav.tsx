@@ -72,6 +72,12 @@ const useStyles = makeStyles((theme: any) => ({
     fontSize: "18px",
     fontWeight: 500,
   },
+  backButton: {
+    padding: 0,
+    "&:hover": {
+      background: "transparent",
+    },
+  },
 }));
 
 export function WithNav(props: any) {
@@ -114,11 +120,16 @@ function RightNavButton() {
 }
 
 function NavBackButton() {
+  const classes = useStyles();
   const theme = useTheme() as any;
   const { pop } = useNavigationContext();
   return (
     <div style={{ display: "flex", width: "38px" }}>
-      <IconButton disableRipple onClick={() => pop()} style={{ padding: 0 }}>
+      <IconButton
+        disableRipple
+        onClick={() => pop()}
+        className={classes.backButton}
+      >
         <ArrowBack style={{ color: theme.custom.colors.secondary }} />
       </IconButton>
     </div>

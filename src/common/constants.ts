@@ -75,3 +75,4 @@ export const TAB_NFTS = "nfts";
 export const TAB_SWAP = "swap";
 export const TAB_SETTINGS = "settings";
 export const NAV_COMPONENT_BALANCES_NETWORK = "balancesNetwork";
+export const NAV_COMPONENT_TOKEN = "token";

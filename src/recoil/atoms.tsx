@@ -15,6 +15,7 @@ import {
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   NAV_COMPONENT_BALANCES_NETWORK,
+  NAV_COMPONENT_TOKEN,
   TAB_BALANCES,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
@@ -23,6 +24,7 @@ import { KeyringStoreState } from "../keyring/store";
 import { SolanaWallet } from "../context/Wallet";
 import { Network } from "../components/Unlocked/Balances/Network";
 import { TABS } from "../background/backend";
+import { Token } from "../components/Unlocked/Balances/Token";
 
 /**
  * Defines the initial app load fetch.
@@ -153,22 +155,8 @@ export const navigationDataMap = atomFamily<any, string>({
         return tabs.filter((t) => t.id === navKey)[0];
       },
   }),
-  effects: (nav: string) => [
+  effects: (_nav: string) => [
     ({ onSet }) => {
-      /*
-      setSelf(
-        (async () => {
-          const background = getBackgroundClient();
-          return background
-            .request({
-              method: UI_RPC_METHOD_NAVIGATION_READ,
-              params: [nav],
-            })
-            .catch(console.error);
-        })()
-      );
-			*/
-
       onSet((navData) => {
         const background = getBackgroundClient();
         background
@@ -193,6 +181,8 @@ export const navigationComponentMap = selectorFamily({
       switch (navId) {
         case NAV_COMPONENT_BALANCES_NETWORK:
           return (props: any) => <Network {...props} />;
+        case NAV_COMPONENT_TOKEN:
+          return (props: any) => <Token {...props} />;
         default:
           throw new Error("invariant violation");
       }

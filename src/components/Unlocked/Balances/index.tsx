@@ -18,6 +18,10 @@ import {
 } from "../../../hooks/useBlockchainBalances";
 import { useNavigationContext } from "../../../context/Navigation";
 import { Network } from "./Network";
+import {
+  NAV_COMPONENT_BALANCES_NETWORK,
+  NAV_COMPONENT_TOKEN,
+} from "../../../common";
 
 const useStyles = makeStyles((theme: any) => ({
   logoIcon: {
@@ -240,7 +244,11 @@ export function BlockchainCard({
           {tokenAccountsSorted
             .slice(0, limit ?? tokenAccountsSorted.length - 1)
             .map((token: any) => (
-              <TokenListItem key={token.address} token={token} />
+              <TokenListItem
+                key={token.address}
+                blockchain={blockchain}
+                token={token}
+              />
             ))}
           {tokenAccountsSorted.length > 3 && limit && (
             <BlockchainCardFooter
@@ -254,24 +262,36 @@ export function BlockchainCard({
   );
 }
 
-function TokenListItem({ token }: { token: any }) {
+function TokenListItem({
+  token,
+  blockchain,
+}: {
+  token: any;
+  blockchain: string;
+}) {
   const classes = useStyles();
-
-  //const { push: pushNavigation } = useNavigationContext();
-  const pushNavigation = (c: any) => {}; // todo
+  const { push: pushNavigation } = useNavigationContext();
 
   if (token.nativeBalance === 0) {
     return <></>;
   }
+
   const positive = token.recentUsdBalanceChange > 0 ? true : false;
   const negative = token.recentUsdBalanceChange < 0 ? true : false;
   const neutral = token.recentusdBalanceChange === 0 ? true : false;
+
   return (
     <ListItem
       button
       disableRipple
       className={classes.tokenListItem}
-      onClick={() => pushNavigation(<Dummy />)}
+      onClick={() =>
+        pushNavigation({
+          title: `${toTitleCase(blockchain)} / ${token.ticker}`,
+          componentId: NAV_COMPONENT_TOKEN,
+          componentProps: {},
+        })
+      }
     >
       <ListItemIcon
         className={classes.tokenListItemIcon}
@@ -311,10 +331,6 @@ function TokenListItem({ token }: { token: any }) {
   );
 }
 
-function Dummy() {
-  return <div></div>;
-}
-
 function BlockchainCardFooter({
   blockchain,
   tokenCount,
@@ -327,7 +343,7 @@ function BlockchainCardFooter({
   const onClick = () => {
     push({
       title: toTitleCase(blockchain),
-      componentId: "balancesNetwork",
+      componentId: NAV_COMPONENT_BALANCES_NETWORK,
       componentProps: { blockchain },
     });
   };
