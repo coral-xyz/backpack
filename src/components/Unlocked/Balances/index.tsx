@@ -187,9 +187,9 @@ export function Balances() {
   );
 }
 
-function BalancesHeader() {
+export function BalancesHeader({ blockchain }: { blockchain?: string }) {
   const classes = useStyles();
-  const { totalBalance, totalChange, percentChange } = useTotal();
+  const { totalBalance, totalChange, percentChange } = useTotal(blockchain);
   return (
     <div className={classes.balancesHeaderContainer}>
       <div>
@@ -285,13 +285,17 @@ function TokenListItem({
       button
       disableRipple
       className={classes.tokenListItem}
-      onClick={() =>
+      onClick={() => {
+        console.log("token", token, blockchain);
         pushNavigation({
           title: `${toTitleCase(blockchain)} / ${token.ticker}`,
           componentId: NAV_COMPONENT_TOKEN,
-          componentProps: {},
-        })
-      }
+          componentProps: {
+            blockchain,
+            address: token.address,
+          },
+        });
+      }}
     >
       <ListItemIcon
         className={classes.tokenListItemIcon}

@@ -11,7 +11,6 @@ import { useKeyringStoreState } from "../../context/KeyringStoreState";
 import { SidebarButton } from "./Sidebar";
 import { Scrollbar } from "./Scrollbar";
 import {
-  //  NavigationProvider,
   NavigationStackProvider,
   useNavigationContext,
   useNavigationRender,
@@ -22,8 +21,6 @@ export const NAV_BAR_HEIGHT = 56;
 
 const useStyles = makeStyles((theme: any) => ({
   navBarContainer: {
-    height: `${NAV_BAR_HEIGHT}px`,
-    borderBottom: `solid 1pt ${theme.custom.colors.border}`,
     display: "flex",
     justifyContent: "space-between",
     paddingLeft: "16px",
@@ -101,8 +98,18 @@ export function WithNavContext(props: any) {
 
 function NavBar() {
   const classes = useStyles();
+  const theme = useTheme() as any;
+  const { navBorderBottom } = useNavigationContext();
   return (
-    <div className={classes.navBarContainer}>
+    <div
+      style={{
+        borderBottom: navBorderBottom
+          ? `solid 1pt ${theme.custom.colors.border}`
+          : undefined,
+        height: `${NAV_BAR_HEIGHT}px`,
+      }}
+      className={classes.navBarContainer}
+    >
       <LeftNavButton />
       <CenterDisplay />
       <RightNavButton />
@@ -116,7 +123,8 @@ function LeftNavButton() {
 }
 
 function RightNavButton() {
-  return <DummyButton />;
+  const { navButtonRight } = useNavigationContext();
+  return navButtonRight ? navButtonRight : <DummyButton />;
 }
 
 function NavBackButton() {

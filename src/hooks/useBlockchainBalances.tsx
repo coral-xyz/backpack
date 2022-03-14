@@ -26,8 +26,21 @@ export function useBlockchainLogo(blockchain: string): string {
   }
 }
 
-export function useTotal(): any {
-  return useRecoilValue(atoms.total);
+export function useTotal(blockchain?: string): any {
+  return useRecoilValue(
+    blockchain ? atoms.blockchainTotal(blockchain) : atoms.total
+  );
+}
+
+export function useBlockchainTotal(blockchain: string): any {
+  return useRecoilValue(atoms.blockchainTotal(blockchain));
+}
+
+export function useBlockchainTokenAccount(
+  blockchain: string,
+  address: string
+): any {
+  return useRecoilValue(atoms.blockchainTokenAccounts({ blockchain, address }));
 }
 
 export function useBlockchainTokensSorted(blockchain: string) {

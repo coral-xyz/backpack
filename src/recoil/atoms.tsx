@@ -213,6 +213,16 @@ export const navigationRenderer = selectorFamily({
     },
 });
 
+export const navigationBorderBottom = atom<boolean>({
+  key: "navigationBorderBottom",
+  default: true,
+});
+
+export const navigationRightButton = atom<any | null>({
+  key: "navigationRightButton",
+  default: null,
+});
+
 /**
  * Toggle for darkmode.
  */
@@ -448,9 +458,12 @@ export const blockchainTotal = selectorFamily({
         .map((t) => t.recentUsdBalanceChange)
         // @ts-ignore
         .reduce((a, b) => a + b, 0);
+      const oldBalance = totalBalance - totalChange;
+      const percentChange = totalChange / oldBalance;
       return {
         totalBalance: parseFloat(totalBalance.toFixed(2)),
         totalChange: parseFloat(totalChange.toFixed(2)),
+        percentChange: parseFloat(percentChange.toFixed(2)),
       };
     },
 });

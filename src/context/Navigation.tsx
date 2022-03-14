@@ -11,12 +11,10 @@ type NavigationContext = {
   title: string;
   push: any;
   pop: any;
-};
-
-type NavigationStackContext = {
-  push: any;
-  pop: any;
-  navData: any; // todo: remove?
+  navBorderBottom: boolean;
+  navButtonRight: any | null;
+  setNavButtonRight: (b: null | any) => void;
+  setNavBorderBottom: any;
 };
 
 const _NavigationStackRootContext =
@@ -40,6 +38,12 @@ export function useNavigationContext(): NavigationContext {
   const activeTab = useRecoilValue(atoms.navigationActiveTab);
   const [navData, setNavData] = useRecoilState(
     atoms.navigationDataMap(activeTab)
+  );
+  const [navBorderBottom, setNavBorderBottom] = useRecoilState(
+    atoms.navigationBorderBottom
+  );
+  const [navButtonRight, setNavButtonRight] = useRecoilState(
+    atoms.navigationRightButton
   );
   const isRoot = navData.components.length === 0;
   const title = isRoot
@@ -82,10 +86,14 @@ export function useNavigationContext(): NavigationContext {
     isRoot,
     push,
     pop,
+    navBorderBottom,
+    setNavBorderBottom,
+    navButtonRight,
+    setNavButtonRight,
   };
 }
 
-function useNavigationStackRootContext(): NavigationStackRootContext {
+export function useNavigationStackRootContext(): NavigationStackRootContext {
   const ctx = useContext(_NavigationStackRootContext);
   if (ctx === null) {
     throw new Error("Context not available");

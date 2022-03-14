@@ -242,7 +242,7 @@ export class Backend {
     if (!d) {
       throw new Error("invariant violation");
     }
-    setNavData(navData.id, navData);
+    await setNavData(navData.id, navData);
     return SUCCESS_RESPONSE;
   }
 
@@ -303,7 +303,7 @@ function makeDefaultNav() {
     data: {},
   };
   TABS.forEach(([tabName, tabTitle]) => {
-    defaultNav[tabName] = {
+    defaultNav.data[tabName] = {
       id: tabName,
       title: tabTitle,
       components: [],

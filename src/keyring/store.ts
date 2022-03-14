@@ -526,7 +526,7 @@ async function setWalletData(data: WalletData) {
 const KEY_KEYRING_STORE = "keyring-store";
 const KEY_KEYNAME_STORE = "keyname-store";
 const KEY_WALLET_DATA = "wallet-data";
-const KEY_NAV = "nav-store2";
+const KEY_NAV = "nav-store5";
 
 class KeynameStore {
   public static async setName(pubkey: string, name: string) {
