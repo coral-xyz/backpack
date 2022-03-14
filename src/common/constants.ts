@@ -33,6 +33,11 @@ export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC = "export-mnemonic";
 export const UI_RPC_METHOD_KEYRING_RESET_MNEMONIC = "reset-mnemonic";
 export const UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE = "autolock-update";
 export const UI_RPC_METHOD_NAVIGATION_UPDATE = "navigation-update";
+export const UI_RPC_METHOD_NAVIGATION_READ = "navigation-read";
+export const UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ =
+  "navigation-active-tab-read";
+export const UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE =
+  "navigation-active-tab-update";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
@@ -61,3 +66,12 @@ export const POST_MESSAGE_ORIGIN = "*";
 
 export const EXTENSION_WIDTH = 375;
 export const EXTENSION_HEIGHT = 600;
+
+//
+// UI View Model Constants.
+//
+export const TAB_BALANCES = "balances";
+export const TAB_NFTS = "nfts";
+export const TAB_SWAP = "swap";
+export const TAB_SETTINGS = "settings";
+export const NAV_COMPONENT_BALANCES_NETWORK = "balancesNetwork";

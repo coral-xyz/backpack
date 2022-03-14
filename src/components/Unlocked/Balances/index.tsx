@@ -257,7 +257,10 @@ export function BlockchainCard({
 
 function TokenListItem({ token }: { token: any }) {
   const classes = useStyles();
-  const { push: pushNavigation } = useNavigationContext();
+
+  //const { push: pushNavigation } = useNavigationContext();
+  const pushNavigation = (c: any) => {}; // todo
+
   if (token.nativeBalance === 0) {
     return <></>;
   }
@@ -310,12 +313,7 @@ function TokenListItem({ token }: { token: any }) {
 }
 
 function Dummy() {
-  const { pop } = useNavigationContext();
-  return (
-    <div>
-      <Button onClick={() => pop()}>Pop me</Button>
-    </div>
-  );
+  return <div></div>;
 }
 
 function BlockchainCardFooter({
@@ -328,7 +326,11 @@ function BlockchainCardFooter({
   const classes = useStyles();
   const { push } = useNavigationContext();
   const onClick = () => {
-    push(<Network blockchain={blockchain} />);
+    push({
+      title: toTitleCase(blockchain),
+      componentId: "balancesNetwork",
+      componentProps: { blockchain },
+    });
   };
   return (
     <ListItem

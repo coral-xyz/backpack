@@ -1,68 +1,105 @@
-import React, { useContext, useMemo, useState } from "react";
-import { CSSTransition } from "react-transition-group";
+import React, { useContext, useState } from "react";
+import { useRecoilValue, useRecoilState } from "recoil";
+import * as atoms from "../recoil/atoms";
+
+type NavigationStackRootContext = {
+  root: any;
+};
 
 type NavigationContext = {
-  name: string;
-  push: (component: any) => void;
-  pop: () => void;
-  stack: any;
+  isRoot: boolean;
   title: string;
-  setTitle: (title: string) => void;
+  push: any;
+  pop: any;
 };
-const _NavigationContext = React.createContext<NavigationContext | null>(null);
 
-export function NavigationProvider(props: any) {
-  const [title, setTitle] = useState(props.title);
-  const name = props.name;
-  const [stack, setStack] = useState<any>({
-    transition: "init",
-    components: [props.root],
-  });
-  const push = (component: any) => {
-    const render = component;
-    const newStack = {
-      transition: "push",
-      components: [...stack.components, render],
-    };
-    setStack(newStack);
-  };
-  const pop = () => {
-    const components = [...stack.components];
-    components.pop();
-    const newStack = {
-      transition: "pop",
-      components,
-    };
-    setStack(newStack);
-  };
+type NavigationStackContext = {
+  push: any;
+  pop: any;
+  navData: any; // todo: remove?
+};
+
+const _NavigationStackRootContext =
+  React.createContext<NavigationStackRootContext | null>(null);
+
+// The root component prop *must* not have any props.
+export function NavigationStackProvider(props: any) {
+  const root = props.root;
   return (
-    <_NavigationContext.Provider
+    <_NavigationStackRootContext.Provider
       value={{
-        push,
-        pop,
-        name,
-        stack,
-        title,
-        setTitle,
+        root,
       }}
     >
       {props.children}
-    </_NavigationContext.Provider>
+    </_NavigationStackRootContext.Provider>
   );
 }
 
 export function useNavigationContext(): NavigationContext {
-  const ctx = useContext(_NavigationContext);
+  const activeTab = useRecoilValue(atoms.navigationActiveTab);
+  const [navData, setNavData] = useRecoilState(
+    atoms.navigationDataMap(activeTab)
+  );
+  console.log("data", navData);
+  const isRoot = navData.components.length === 0;
+  const title = isRoot
+    ? navData.title
+    : navData.titles[navData.titles.length - 1];
+  const push = ({
+    title,
+    componentId,
+    componentProps,
+  }: {
+    title: string;
+    componentId: string;
+    componentProps: any;
+  }) => {
+    setNavData({
+      ...navData,
+      transition: "push",
+      components: [...navData.components, componentId],
+      props: [...navData.props, componentProps],
+      titles: [...navData.titles, title],
+    });
+  };
+  const pop = () => {
+    const components = [...navData.components];
+    const componentProps = [...navData.props];
+    const titles = [...navData.titles];
+    components.pop();
+    componentProps.pop();
+    titles.pop();
+    setNavData({
+      ...navData,
+      transition: "pop",
+      components,
+      titles,
+      props: componentProps,
+    });
+  };
+  return {
+    title,
+    isRoot,
+    push,
+    pop,
+  };
+}
+
+function useNavigationStackRootContext(): NavigationStackRootContext {
+  const ctx = useContext(_NavigationStackRootContext);
   if (ctx === null) {
     throw new Error("Context not available");
   }
   return ctx;
 }
 
-export function NavigationContent(props: any) {
-  // Hack to allow the component to mount before triggering the animation in.
-  const [display, setDisplay] = useState(false);
-  setTimeout(() => setDisplay(true), 1);
-  //  const isPushing = props.isPushing;
-  return props.children;
+export function useNavigationRender(): () => any {
+  const { root } = useNavigationStackRootContext();
+  const activeTab = useRecoilValue(atoms.navigationActiveTab);
+  const renderer = useRecoilValue(atoms.navigationRenderer(activeTab));
+  if (!renderer) {
+    return () => root;
+  }
+  return renderer;
 }

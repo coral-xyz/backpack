@@ -1,5 +1,4 @@
-import { Suspense, useMemo } from "react";
-import { TransitionGroup, CSSTransition } from "react-transition-group";
+import { Suspense } from "react";
 import {
   makeStyles,
   Typography,
@@ -12,10 +11,12 @@ import { useKeyringStoreState } from "../../context/KeyringStoreState";
 import { SidebarButton } from "./Sidebar";
 import { Scrollbar } from "./Scrollbar";
 import {
-  NavigationProvider,
+  //  NavigationProvider,
+  NavigationStackProvider,
   useNavigationContext,
-  //  NavigationContent,
+  useNavigationRender,
 } from "../../context/Navigation";
+import { UnlockedLoading } from "../Unlocked";
 
 export const NAV_BAR_HEIGHT = 56;
 
@@ -75,29 +76,41 @@ const useStyles = makeStyles((theme: any) => ({
 
 export function WithNav(props: any) {
   return (
-    <NavigationProvider
-      title={props.title}
-      name={props.name}
-      root={props.children}
-    >
+    <Suspense fallback={<div></div>}>
       <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
         <NavBar />
-        <NavContent />
+        {props.children}
       </div>
-    </NavigationProvider>
+    </Suspense>
+  );
+}
+
+export function WithNavContext(props: any) {
+  return (
+    <NavigationStackProvider root={props.children}>
+      <NavContent />
+    </NavigationStackProvider>
   );
 }
 
 function NavBar() {
   const classes = useStyles();
-  const { stack } = useNavigationContext();
   return (
     <div className={classes.navBarContainer}>
-      {stack.components.length === 1 ? <SidebarButton /> : <NavBackButton />}
+      <LeftNavButton />
       <CenterDisplay />
-      <DummyButton />
+      <RightNavButton />
     </div>
   );
+}
+
+function LeftNavButton() {
+  const { isRoot } = useNavigationContext();
+  return isRoot ? <SidebarButton /> : <NavBackButton />;
+}
+
+function RightNavButton() {
+  return <DummyButton />;
 }
 
 function NavBackButton() {
@@ -113,18 +126,18 @@ function NavBackButton() {
 }
 
 function NavContent() {
-  const { stack } = useNavigationContext();
-  const render = stack.components[stack.components.length - 1];
+  const render = useNavigationRender();
   return (
     <div style={{ flex: 1 }}>
-      <Scrollbar>{render}</Scrollbar>
+      <Scrollbar>
+        <Suspense fallback={<UnlockedLoading />}>{render()}</Suspense>
+      </Scrollbar>
     </div>
   );
 }
 
 function CenterDisplay() {
   const classes = useStyles();
-  const { title } = useNavigationContext();
   const keyringStoreState = useKeyringStoreState();
   const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
   return (

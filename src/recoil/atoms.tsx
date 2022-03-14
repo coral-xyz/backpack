@@ -10,11 +10,18 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
   UI_RPC_METHOD_KEYRING_STORE_STATE,
+  UI_RPC_METHOD_NAVIGATION_UPDATE,
+  UI_RPC_METHOD_NAVIGATION_READ,
+  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
+  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+  NAV_COMPONENT_BALANCES_NETWORK,
+  TAB_BALANCES,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
 import { WalletPublicKeys, TokenDisplay } from "./types";
 import { KeyringStoreState } from "../keyring/store";
 import { SolanaWallet } from "../context/Wallet";
+import { Network } from "../components/Unlocked/Balances/Network";
 
 /**
  * Defines the initial app load fetch.
@@ -76,6 +83,153 @@ export const bootstrap = atom<any>({
       }
     },
   }),
+});
+
+export const navigationActiveTab = atom<string>({
+  key: "navigationActiveTab",
+  default: TAB_BALANCES,
+  effects: [
+    ({ setSelf, onSet }) => {
+      setSelf(
+        (async () => {
+          const background = getBackgroundClient();
+          return background.request({
+            method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
+            params: [],
+          });
+        })()
+      );
+
+      onSet((activeTab) => {
+        const background = getBackgroundClient();
+        return background.request({
+          method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+          params: [activeTab],
+        });
+      });
+    },
+  ],
+});
+
+/**
+ * Each atom in the family represents a single navigation stack. This is used
+ * to persistently keep track of the UI state the user left the tab in, so that
+ * when the user switches back and forth, the state doesn't reset.
+ */
+export const navigationDataMap = atomFamily<any, string>({
+  key: "navigationState",
+  default: selectorFamily({
+    key: "asdf",
+    get:
+      (tab: string) =>
+      ({ get }: any) => {
+        const df: any = {
+          balances: {
+            id: "balances",
+            title: "Balances",
+            components: [],
+            props: [],
+            titles: [],
+            transition: "init",
+          },
+          nfts: {
+            id: "nfts",
+            title: "Nfts",
+            components: [],
+            props: [],
+            titles: [],
+            transition: "init",
+          },
+          swap: {
+            id: "swap",
+            title: "Swap",
+            components: [],
+            props: [],
+            titles: [],
+            transition: "init",
+          },
+          settings: {
+            id: "settings",
+            title: "Settings",
+            components: [],
+            props: [],
+            titles: [],
+            transition: "init",
+          },
+        };
+        return df[tab];
+      },
+    /*
+  default: null,
+  effects: (nav: string) => [
+    ({ setSelf, onSet }) => {
+      // Init by reading from local storage.
+      setSelf(
+        (async () => {
+          const background = getBackgroundClient();
+          return background
+            .request({
+              method: UI_RPC_METHOD_NAVIGATION_READ,
+              params: [nav],
+            })
+            .catch(console.error);
+        })()
+      );
+
+      onSet((navData) => {
+        const background = getBackgroundClient();
+        background
+          .request({
+            method: UI_RPC_METHOD_NAVIGATION_UPDATE,
+            params: [navData],
+          })
+          .catch(console.error);
+      });
+    },
+  ],
+	*/
+  }),
+});
+
+/**
+ * Maps component stringified label to an actual component constructor.
+ */
+export const navigationComponentMap = selectorFamily({
+  key: "navigationStack",
+  get:
+    (navId: string) =>
+    ({ get }) => {
+      switch (navId) {
+        case NAV_COMPONENT_BALANCES_NETWORK:
+          return (props: any) => <Network {...props} />;
+        default:
+          throw new Error("invariant violation");
+      }
+    },
+});
+
+/**
+ * Returns the function to render the component on the given navigation stack.
+ */
+export const navigationRenderer = selectorFamily({
+  key: "navigationRenderer",
+  get:
+    (navKey: string) =>
+    ({ get }) => {
+      const navData = get(navigationDataMap(navKey));
+      const componentStr =
+        navData.components.length > 0
+          ? navData.components[navData.components.length - 1]
+          : undefined;
+      const props =
+        navData.props.length > 0
+          ? navData.props[navData.props.length - 1]
+          : undefined;
+      if (!componentStr) {
+        return undefined;
+      }
+      return () => get(navigationComponentMap(componentStr))(props);
+    },
 });
 
 /**

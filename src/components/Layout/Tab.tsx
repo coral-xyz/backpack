@@ -1,6 +1,7 @@
 import { makeStyles, Tabs, Tab } from "@material-ui/core";
 import { SwapHoriz, Settings, Apps, MonetizationOn } from "@material-ui/icons";
-import { useTabContext } from "../../context/Tab";
+import { useTab } from "../../hooks/useTab";
+import { TAB_BALANCES, TAB_NFTS, TAB_SWAP, TAB_SETTINGS } from "../../common";
 
 const useStyles = makeStyles((theme: any) => ({
   tab: {
@@ -24,8 +25,8 @@ const useStyles = makeStyles((theme: any) => ({
 
 export function TabBar() {
   const classes = useStyles();
-  const { tab, setTab } = useTabContext();
-  const className = (idx: number) => {
+  const { tab, setTab } = useTab();
+  const className = (idx: string) => {
     if (idx === tab) {
       return classes.tabSelected;
     }
@@ -47,24 +48,28 @@ export function TabBar() {
       }}
     >
       <Tab
+        value={TAB_BALANCES}
         disableRipple
         className={classes.tab}
-        icon={<MonetizationOn className={className(0)} />}
+        icon={<MonetizationOn className={className(TAB_BALANCES)} />}
       />
       <Tab
+        value={TAB_NFTS}
         disableRipple
         className={classes.tab}
-        icon={<Apps className={className(1)} />}
+        icon={<Apps className={className(TAB_NFTS)} />}
       />
       <Tab
+        value={TAB_SWAP}
         disableRipple
         className={classes.tab}
-        icon={<SwapHoriz className={className(2)} />}
+        icon={<SwapHoriz className={className(TAB_SWAP)} />}
       />
       <Tab
+        value={TAB_SETTINGS}
         disableRipple
         className={classes.tab}
-        icon={<Settings className={className(3)} />}
+        icon={<Settings className={className(TAB_SETTINGS)} />}
       />
     </Tabs>
   );

@@ -526,6 +526,7 @@ async function setWalletData(data: WalletData) {
 const KEY_KEYRING_STORE = "keyring-store";
 const KEY_KEYNAME_STORE = "keyname-store";
 const KEY_WALLET_DATA = "wallet-data";
+const KEY_NAV = "nav-store2";
 
 class KeynameStore {
   public static async setName(pubkey: string, name: string) {
@@ -564,3 +565,32 @@ class LocalStorageDb {
     await BrowserRuntime.setLocalStorage(key, value);
   }
 }
+
+export async function getNavData(navKey: string): Promise<Nav | undefined> {
+  const nav = await LocalStorageDb.get(KEY_NAV);
+  return nav.data[navKey];
+}
+
+export async function setNavData(navKey: string, data: any) {
+  const nav = await LocalStorageDb.get(KEY_NAV);
+  nav.data[navKey] = data;
+  await LocalStorageDb.set(KEY_NAV, nav);
+}
+
+export async function getNav(): Promise<Nav | undefined> {
+  return await LocalStorageDb.get(KEY_NAV);
+}
+
+export async function setNav(nav: Nav) {
+  await LocalStorageDb.set(KEY_NAV, nav);
+}
+
+export type Nav = { activeTab: string; data: { [navId: string]: NavData } };
+
+export type NavData = {
+  id: string;
+  title: string;
+  components: Array<string>;
+  props: Array<any>;
+  transition: string;
+};

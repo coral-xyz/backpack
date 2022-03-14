@@ -1,5 +1,5 @@
 import { makeStyles } from "@material-ui/core";
-import { useNavigationContext } from "../../../context/Navigation";
+//import { useNavigationContext } from "../../../context/Navigation";
 import { toTitleCase, BlockchainCard } from ".";
 
 const useStyles = makeStyles((theme: any) => ({
@@ -7,8 +7,6 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export function Network({ blockchain }: any) {
-  const { setTitle } = useNavigationContext();
-  setTitle(toTitleCase(blockchain));
   return (
     <div>
       <NetworkHeader />

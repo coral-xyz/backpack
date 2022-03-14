@@ -1,12 +1,12 @@
-import { Suspense } from "react";
 import { makeStyles, CircularProgress } from "@material-ui/core";
-import { useTabContext, Tab } from "../../context/Tab";
+import { useTab } from "../../hooks/useTab";
 import { Balances } from "./Balances";
 import { Nfts } from "./Nfts";
 import { Swapper } from "./Swapper";
 import { Settings } from "./Settings";
 import { useBootstrap } from "../../context/Wallet";
-import { WithNav } from "../Layout/Nav";
+import { WithNav, WithNavContext } from "../Layout/Nav";
+import { TAB_BALANCES, TAB_NFTS, TAB_SWAP, TAB_SETTINGS } from "../../common";
 
 const useStyles = makeStyles((_theme: any) => ({
   container: {
@@ -35,26 +35,34 @@ export function Unlocked() {
 }
 
 function _Unlocked() {
-  const { tab } = useTabContext();
+  return (
+    <WithNav>
+      <TabbedNavContent />
+    </WithNav>
+  );
+}
+
+function TabbedNavContent() {
+  const { tab } = useTab();
   return (
     <>
-      {tab === Tab.Balances && (
-        <WithBootstrap title={"Balances"}>
+      {tab === TAB_BALANCES && (
+        <WithBootstrap title={"Balances"} navKey={TAB_BALANCES}>
           <Balances />
         </WithBootstrap>
       )}
-      {tab === Tab.Nfts && (
-        <WithBootstrap title={"Nfts"}>
+      {tab === TAB_NFTS && (
+        <WithBootstrap title={"Nfts"} navKey={TAB_NFTS}>
           <Nfts />
         </WithBootstrap>
       )}
-      {tab === Tab.Swapper && (
-        <WithBootstrap title={"Swapper"}>
+      {tab === TAB_SWAP && (
+        <WithBootstrap title={"Swapper"} navKey={TAB_SWAP}>
           <Swapper />
         </WithBootstrap>
       )}
-      {tab === Tab.Settings && (
-        <WithBootstrap title={"Settings"}>
+      {tab === TAB_SETTINGS && (
+        <WithBootstrap title={"Settings"} navKey={TAB_SETTINGS}>
           <Settings />
         </WithBootstrap>
       )}
@@ -64,11 +72,9 @@ function _Unlocked() {
 
 function WithBootstrap(props: any) {
   return (
-    <WithNav title={props.title}>
-      <Suspense fallback={<UnlockedLoading />}>
-        <_WithBootstrap>{props.children}</_WithBootstrap>
-      </Suspense>
-    </WithNav>
+    <WithNavContext title={props.title} navKey={props.navKey}>
+      <_WithBootstrap>{props.children}</_WithBootstrap>
+    </WithNavContext>
   );
 }
 
@@ -77,7 +83,7 @@ function _WithBootstrap(props: any) {
   return <>{props.children}</>;
 }
 
-function UnlockedLoading() {
+export function UnlockedLoading() {
   const classes = useStyles();
   return (
     <div className={classes.loadingContainer}>

@@ -35,6 +35,9 @@ import {
   UI_RPC_METHOD_PASSWORD_UPDATE,
   UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE,
   UI_RPC_METHOD_NAVIGATION_UPDATE,
+  UI_RPC_METHOD_NAVIGATION_READ,
+  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
+  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
@@ -115,7 +118,13 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
     case UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE:
       return await handleKeyringAutolockUpdate(params[0]);
     case UI_RPC_METHOD_NAVIGATION_UPDATE:
-      return await handleNavigationUpdate();
+      return await handleNavigationUpdate(params[0]);
+    case UI_RPC_METHOD_NAVIGATION_READ:
+      return await handleNavigationRead(params[0]);
+    case UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ:
+      return await handleNavigationActiveTabRead();
+    case UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE:
+      return await handleNavigationActiveTabUpdate(params[0]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -328,8 +337,27 @@ async function handleKeyringAutolockUpdate(
   return [resp];
 }
 
-async function handleNavigationUpdate(): Promise<RpcResponse<string>> {
-  const resp = await backend.navigationUpdate();
+async function handleNavigationUpdate(
+  navData: any
+): Promise<RpcResponse<string>> {
+  const resp = await backend.navigationUpdate(navData);
+  return [resp];
+}
+
+async function handleNavigationRead(nav: string): Promise<RpcResponse<string>> {
+  const resp = await backend.navigationRead(nav);
+  return [resp];
+}
+
+async function handleNavigationActiveTabRead(): Promise<RpcResponse<string>> {
+  const resp = await backend.navigationActiveTabRead();
+  return [resp];
+}
+
+async function handleNavigationActiveTabUpdate(
+  tabKey: string
+): Promise<RpcResponse<string>> {
+  const resp = await backend.navigationActiveTabUpdate(tabKey);
   return [resp];
 }
 

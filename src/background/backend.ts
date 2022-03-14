@@ -1,4 +1,12 @@
-import { KeyringStore, KeyringStoreState } from "../keyring/store";
+import {
+  KeyringStore,
+  KeyringStoreState,
+  getNavData,
+  setNavData,
+  setNav,
+  getNav,
+  NavData,
+} from "../keyring/store";
 import { DerivationPath } from "../keyring/crypto";
 import {
   NotificationsClient,
@@ -9,6 +17,10 @@ import {
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
+  TAB_BALANCES,
+  TAB_NFTS,
+  TAB_SWAP,
+  TAB_SETTINGS,
 } from "../common";
 
 const SUCCESS_RESPONSE = "success";
@@ -225,8 +237,44 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async navigationUpdate(): Promise<string> {
-    // todo
+  async navigationUpdate(navData: any): Promise<string> {
+    const d = await getNavData(navData.id);
+    if (!d) {
+      throw new Error("invariant violation");
+    }
+    setNavData(navData.id, navData);
+    return SUCCESS_RESPONSE;
+  }
+
+  async navigationRead(navKey: string): Promise<NavData> {
+    let nav = await getNav();
+    if (!nav) {
+      await setNav(defaultNav);
+      nav = defaultNav;
+    }
+    // @ts-ignore
+    return nav.data[navKey];
+  }
+
+  async navigationActiveTabRead(): Promise<string> {
+    let nav = await getNav();
+    if (!nav) {
+      await setNav(defaultNav);
+      nav = defaultNav;
+    }
+    // @ts-ignore
+    return nav.activeTab;
+  }
+
+  async navigationActiveTabUpdate(activeTab: string): Promise<string> {
+    let nav = await getNav();
+    if (!nav) {
+      throw new Error("invariant violation");
+    }
+    await setNav({
+      ...nav,
+      activeTab,
+    });
     return SUCCESS_RESPONSE;
   }
 }
@@ -239,4 +287,41 @@ type MessageSignature = string;
 export type NamedPublicKey = {
   publicKey: string;
   name: string;
+};
+
+const defaultNav: any = {
+  activeTab: TAB_BALANCES,
+  data: {},
+};
+defaultNav.data[TAB_BALANCES] = {
+  id: TAB_BALANCES,
+  title: "Balances",
+  components: [],
+  props: [],
+  titles: [],
+  transition: "init",
+};
+defaultNav.data[TAB_NFTS] = {
+  id: TAB_NFTS,
+  title: "Nfts",
+  components: [],
+  props: [],
+  titles: [],
+  transition: "init",
+};
+defaultNav.data[TAB_SWAP] = {
+  id: TAB_SWAP,
+  title: "Swap",
+  components: [],
+  props: [],
+  titles: [],
+  transition: "init",
+};
+defaultNav.data[TAB_SETTINGS] = {
+  id: TAB_SETTINGS,
+  title: "Settings",
+  components: [],
+  props: [],
+  titles: [],
+  transition: "init",
 };
