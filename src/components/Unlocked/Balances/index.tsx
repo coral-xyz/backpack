@@ -15,8 +15,9 @@ import {
   useBlockchainLogo,
   useTotal,
   useBlockchainTokensSorted,
-} from "../../hooks/useBlockchainBalances";
-import { useNavigationContext } from "../../context/Navigation";
+} from "../../../hooks/useBlockchainBalances";
+import { useNavigationContext } from "../../../context/Navigation";
+import { Network } from "./Network";
 
 const useStyles = makeStyles((theme: any) => ({
   logoIcon: {
@@ -170,7 +171,13 @@ export function Balances() {
     <div>
       <BalancesHeader />
       {blockchains.map((b) => (
-        <BlockchainCard key={b} blockchain={b} />
+        <BlockchainCard
+          key={b}
+          blockchain={b}
+          title={b}
+          limit={3}
+          avatar={true}
+        />
       ))}
     </div>
   );
@@ -199,16 +206,29 @@ function BalancesHeader() {
   );
 }
 
-function BlockchainCard({ blockchain }: { blockchain: string }) {
+export function BlockchainCard({
+  blockchain,
+  title,
+  limit,
+  avatar = false,
+}: {
+  blockchain: string;
+  title?: string;
+  limit?: number;
+  avatar?: boolean;
+}) {
   const classes = useStyles();
   const blockchainLogo = useBlockchainLogo(blockchain);
-  const blockchainDisplay =
-    blockchain.slice(0, 1).toUpperCase() + blockchain.toLowerCase().slice(1);
+  const blockchainDisplay = title ?? toTitleCase(blockchain);
   const tokenAccountsSorted = useBlockchainTokensSorted(blockchain);
   return (
     <Card className={classes.blockchainCard} elevation={0}>
       <CardHeader
-        avatar={<img className={classes.blockchainLogo} src={blockchainLogo} />}
+        avatar={
+          avatar ? (
+            <img className={classes.blockchainLogo} src={blockchainLogo} />
+          ) : undefined
+        }
         title={blockchainDisplay}
         classes={{
           root: classes.cardHeaderRoot,
@@ -218,10 +238,12 @@ function BlockchainCard({ blockchain }: { blockchain: string }) {
       />
       <CardContent classes={{ root: classes.cardContentRoot }}>
         <List classes={{ root: classes.cardListRoot }}>
-          {tokenAccountsSorted.slice(0, 3).map((token: any) => (
-            <TokenListItem key={token.address} token={token} />
-          ))}
-          {tokenAccountsSorted.length > 3 && (
+          {tokenAccountsSorted
+            .slice(0, limit ?? tokenAccountsSorted.length - 1)
+            .map((token: any) => (
+              <TokenListItem key={token.address} token={token} />
+            ))}
+          {tokenAccountsSorted.length > 3 && limit && (
             <BlockchainCardFooter
               blockchain={blockchain}
               tokenCount={tokenAccountsSorted.length}
@@ -287,16 +309,6 @@ function TokenListItem({ token }: { token: any }) {
   );
 }
 
-/*
-alert-enter-active
-  transform: translateX(0);
-transition: opacity 300ms, transform 300ms;
-
-alert-exit-active
-  transform: scale(0.9);
-  transition: opacity 300ms, transform 300ms;
-*/
-
 function Dummy() {
   const { pop } = useNavigationContext();
   return (
@@ -314,8 +326,17 @@ function BlockchainCardFooter({
   tokenCount: number;
 }) {
   const classes = useStyles();
+  const { push } = useNavigationContext();
+  const onClick = () => {
+    push(<Network blockchain={blockchain} />);
+  };
   return (
-    <ListItem button disableRipple className={classes.blockchainFooter}>
+    <ListItem
+      button
+      disableRipple
+      className={classes.blockchainFooter}
+      onClick={onClick}
+    >
       <div
         style={{
           display: "flex",
@@ -337,5 +358,11 @@ function BlockchainCardFooter({
         <ArrowForwardIos className={classes.footerArrowIcon} />
       </div>
     </ListItem>
+  );
+}
+
+export function toTitleCase(blockchain: string) {
+  return (
+    blockchain.slice(0, 1).toUpperCase() + blockchain.toLowerCase().slice(1)
   );
 }
