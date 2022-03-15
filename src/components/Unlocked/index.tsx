@@ -1,12 +1,12 @@
 import { makeStyles, CircularProgress } from "@material-ui/core";
 import { useTab } from "../../hooks/useTab";
 import { Balances } from "./Balances";
-import { Nfts } from "./Nfts";
-import { Swapper } from "./Swapper";
+import { Quests } from "./Quests";
+import { Bridge } from "./Bridge";
 import { Settings } from "./Settings";
 import { useBootstrap, useBootstrapFast } from "../../context/Wallet";
 import { WithNav, WithNavContext } from "../Layout/Nav";
-import { TAB_BALANCES, TAB_NFTS, TAB_SWAP, TAB_SETTINGS } from "../../common";
+import { TAB_BALANCES, TAB_BRIDGE, TAB_QUEST, TAB_FRIENDS } from "../../common";
 
 const useStyles = makeStyles((_theme: any) => ({
   container: {
@@ -51,18 +51,18 @@ function TabbedNavContent() {
           <Balances />
         </WithBootstrap>
       )}
-      {tab === TAB_NFTS && (
-        <WithBootstrap title={"Nfts"} navKey={TAB_NFTS}>
-          <Nfts />
+      {tab === TAB_QUEST && (
+        <WithBootstrap title={"Nfts"} navKey={TAB_QUEST}>
+          <Quests />
         </WithBootstrap>
       )}
-      {tab === TAB_SWAP && (
-        <WithBootstrap title={"Swapper"} navKey={TAB_SWAP}>
-          <Swapper />
+      {tab === TAB_BRIDGE && (
+        <WithBootstrap title={"Swapper"} navKey={TAB_BRIDGE}>
+          <Bridge />
         </WithBootstrap>
       )}
-      {tab === TAB_SETTINGS && (
-        <WithBootstrap title={"Settings"} navKey={TAB_SETTINGS}>
+      {tab === TAB_FRIENDS && (
+        <WithBootstrap title={"Friends"} navKey={TAB_FRIENDS}>
           <Settings />
         </WithBootstrap>
       )}

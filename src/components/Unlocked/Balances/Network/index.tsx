@@ -7,10 +7,14 @@ import {
   Tabs,
   Tab,
 } from "@material-ui/core";
-import { Settings, FlashOn } from "@material-ui/icons";
-import { BalancesHeader, BlockchainCard } from ".";
-import { useNavigationContext } from "../../../context/Navigation";
-import { WithDrawer } from "../../Layout/Sidebar";
+import { OfflineBolt as Bolt, Settings, FlashOn } from "@material-ui/icons";
+import { useNavigationContext } from "../../../../context/Navigation";
+import { WithDrawer } from "../../../Layout/Sidebar";
+import { Nfts } from "./Nfts";
+import { Swap } from "./Swap";
+import { Overview } from "./Overview";
+import { Transfer } from "./Transfer";
+import { Yield } from "./Yield";
 
 const useStyles = makeStyles((theme: any) => ({
   cardContainer: {},
@@ -53,6 +57,8 @@ const useStyles = makeStyles((theme: any) => ({
   },
   networkSettingsButtonContainer: {
     display: "flex",
+    flexDirection: "row-reverse",
+    width: "38px",
   },
   networkSettingsButton: {
     padding: 0,
@@ -66,7 +72,10 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export function Network({ blockchain }: any) {
+  const [tab, setTab] = useState("overview");
   const { setNavBorderBottom, setNavButtonRight } = useNavigationContext();
+
+  // Customize the nav bar for this page.
   useEffect(() => {
     setNavBorderBottom(false);
     setNavButtonRight(<NetworkSettingsButton />);
@@ -74,12 +83,16 @@ export function Network({ blockchain }: any) {
       setNavBorderBottom(true);
       setNavButtonRight(null);
     };
-  }, [setNavBorderBottom]);
+  }, [setNavBorderBottom, setNavButtonRight]);
+
   return (
     <div>
-      <NetworkHeader blockchain={blockchain} />
-      <BalancesHeader blockchain={blockchain} />
-      <BlockchainCard blockchain={blockchain} title={"All Wallets"} />
+      <NetworkHeader blockchain={blockchain} tab={tab} setTab={setTab} />
+      {tab === "overview" && <Overview blockchain={blockchain} />}
+      {tab === "nfts" && <Nfts blockchain={blockchain} />}
+      {tab === "swap" && <Swap blockchain={blockchain} />}
+      {tab === "transfer" && <Transfer blockchain={blockchain} />}
+      {tab === "yield" && <Yield blockchain={blockchain} />}
     </div>
   );
 }
@@ -94,7 +107,7 @@ function NetworkSettingsButton() {
         className={classes.networkSettingsButton}
         onClick={() => setOpenDrawer(true)}
       >
-        <FlashOn className={classes.networkSettingsIcon} />
+        <Bolt className={classes.networkSettingsIcon} />
       </IconButton>
       <WithDrawer
         openDrawer={openDrawer}
@@ -104,10 +117,9 @@ function NetworkSettingsButton() {
   );
 }
 
-function NetworkHeader({ blockchain }: any) {
+function NetworkHeader({ blockchain, tab, setTab }: any) {
   const classes = useStyles();
   const theme = useTheme() as any;
-  const [tab, setTab] = useState<string>("overview");
 
   if (blockchain !== "solana") {
     throw new Error("only solana currently supported");

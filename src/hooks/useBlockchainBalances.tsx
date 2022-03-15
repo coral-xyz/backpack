@@ -50,3 +50,10 @@ export function useBlockchainTokensSorted(blockchain: string) {
 export function usePriceData(mintAddress: string): any {
   return useRecoilValue(atoms.priceData(mintAddress));
 }
+
+export function useNftMetadata(blockchain: string): any {
+  if (blockchain !== "solana") {
+    throw new Error("only solana currently supported");
+  }
+  return useRecoilValue(atoms.solanaNftMetadata);
+}

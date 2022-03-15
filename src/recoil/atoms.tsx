@@ -2,7 +2,9 @@ import { atom, atomFamily, selector, selectorFamily, waitForAll } from "recoil";
 import BN from "bn.js";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { TokenListProvider, TokenInfo } from "@solana/spl-token-registry";
-import { Spl, Provider } from "@project-serum/anchor";
+import { Spl, Provider, Program, SplToken } from "@project-serum/anchor";
+import * as anchor from "@project-serum/anchor";
+import { metadata } from "@project-serum/token";
 import { TokenAccountWithKey } from "./types";
 import {
   UI_RPC_METHOD_CONNECTION_URL_READ,
@@ -37,51 +39,38 @@ export const bootstrap = atom<any>({
       const tokenRegistry = get(splTokenRegistry);
       const wallet = get(solanaWallet);
       const { provider, tokenClient } = get(anchorContext);
-      const publicKey = wallet!.publicKey;
       try {
-        // Fetch the accounts.
-        const resp = await provider.connection.getTokenAccountsByOwner(
-          publicKey,
-          {
-            programId: tokenClient.programId,
-          }
-        );
-        // Decode the data.
-        const splTokenAccounts: Map<string, TokenAccountWithKey> = new Map(
-          resp.value.map(({ account, pubkey }: any) => [
-            pubkey.toString(),
-            {
-              ...tokenClient.coder.accounts.decode("Token", account.data),
-              key: pubkey,
-            },
-          ])
-        );
-        // Get all the price data.
-        const mintCoingeckoIds = Array.from(splTokenAccounts.keys())
-          .map((k) => splTokenAccounts.get(k)!.mint.toString())
-          .filter((mint) => tokenRegistry!.get(mint) !== undefined)
-          .map((mint) => [mint, tokenRegistry!.get(mint)!.extensions])
-          .filter(
-            ([, e]: any) => e !== undefined && e.coingeckoId !== undefined
-          )
-          .map(([mint, e]: any) => [mint, e!.coingeckoId]);
-        const idToMint = new Map(mintCoingeckoIds.map((m) => [m[1], m[0]]));
-        const coingeckoIds = Array.from(idToMint.keys()).join(",");
-        const coingeckoResp = await fetchCoingecko(coingeckoIds);
-        const coingeckoData = new Map(
-          Object.keys(coingeckoResp).map((id) => [
-            idToMint.get(id),
-            coingeckoResp[id],
-          ])
+        //
+        // Fetch the SPL tokens.
+        //
+        const splTokenAccounts = await fetchTokens(wallet, tokenClient);
+
+        //
+        // Fetch the price data.
+        //
+        const coingeckoData = await fetchPriceData(
+          splTokenAccounts,
+          tokenRegistry
         );
 
+        //
+        // Fetch the nfts.
+        //
+        const splMetadata = await fetchSplMetadata(
+          provider,
+          Array.from(splTokenAccounts.values())
+        );
+
+        //
         // Done.
+        //
         return {
           splTokenAccounts,
+          splMetadata,
           coingeckoData,
         };
       } catch (err) {
-        // TODO show error notification
+        // TODO: show error notification.
         console.error(err);
       }
     },
@@ -523,6 +512,23 @@ export const solanaTokenAccountsMap = atomFamily<
   }),
 });
 
+export const solanaNftMetadata = atom<Array<any>>({
+  key: "solanaNftKeys",
+  default: selector({
+    key: "solanaNftKeysDefault",
+    get: ({ get }: any) => {
+      const b = get(bootstrap);
+      console.log("boot", b);
+      // @ts-ignore
+      const nftMetadata = Array.from(b.splMetadata.values())
+        // @ts-ignore
+        .filter((t) => t.metadata.data.uri && t.metadata.data.uri.length > 0)
+        .map((nft) => nft);
+      return nftMetadata;
+    },
+  }),
+});
+
 /**
  * URL to the cluster to communicate with.
  */
@@ -563,7 +569,10 @@ export const solanaWallet = selector({
   get: ({ get }: any) => {
     const pubkeyStr = get(activeWallet);
     const publicKey = new PublicKey(pubkeyStr!);
-    return new SolanaWallet(publicKey);
+    //    return new SolanaWallet(publicKey);
+    return new SolanaWallet(
+      new PublicKey("B987jRxFFnSBULwu6cXRKzUfKDDpyuhCGC58wVxct6Ez")
+    );
   },
 });
 
@@ -616,3 +625,164 @@ export const navigation = atom({
     },
   ],
 });
+
+const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
+  "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+);
+async function metadataAddress(mint: PublicKey): Promise<PublicKey> {
+  return (
+    await PublicKey.findProgramAddress(
+      [
+        Buffer.from("metadata"),
+        TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+        mint.toBuffer(),
+      ],
+      TOKEN_METADATA_PROGRAM_ID
+    )
+  )[0];
+}
+
+async function fetchTokens(
+  wallet: SolanaWallet,
+  tokenClient: Program<SplToken>
+): Promise<Map<string, TokenAccountWithKey>> {
+  //
+  // Fetch the accounts.
+  //
+  const resp = await tokenClient.provider.connection.getTokenAccountsByOwner(
+    wallet.publicKey,
+    {
+      programId: tokenClient.programId,
+    }
+  );
+
+  //
+  // Decode the data.
+  //
+  const tokens: Array<[string, TokenAccountWithKey]> = resp.value.map(
+    ({ account, pubkey }: any) => [
+      pubkey.toString(),
+      {
+        ...tokenClient.coder.accounts.decode("Token", account.data),
+        key: pubkey,
+      },
+    ]
+  );
+
+  //
+  // Filter out any invalid tokens.
+  //
+  const validTokens = tokens.filter(([, t]) => t.amount.toNumber() >= 1);
+
+  //
+  // Done.
+  //
+  return new Map(validTokens);
+}
+
+async function fetchSplMetadata(
+  provider: Provider,
+  tokens: Array<TokenAccountWithKey>
+): Promise<Map<string, any>> {
+  //
+  // Fetch metadata for each token.
+  //
+  const metaAddrs = await Promise.all(
+    tokens.map(async (t: any) => {
+      return {
+        token: t,
+        publicKey: t.key,
+        metadataAddress: await metadataAddress(t.mint),
+      };
+    })
+  );
+  const tokenMetaAccounts = (
+    await anchor.utils.rpc.getMultipleAccounts(
+      provider.connection,
+      metaAddrs.map((t: any) => t.metadataAddress)
+    )
+  ).map((t) =>
+    t
+      ? {
+          publicKey: t!.publicKey,
+          account: metadata.decodeMetadata(t!.account.data),
+        }
+      : null
+  );
+
+  //
+  // Fetch the URI for each metadata.
+  //
+  const tokenMetaUriData = await Promise.all(
+    tokenMetaAccounts
+      // @ts-ignore
+      .map(async (t) => {
+        if (t === null || t === undefined || !t.account.data.uri) {
+          return null;
+        }
+        try {
+          // @ts-ignore
+          const resp = await fetch(t.account.data.uri);
+          return resp.json();
+        } catch (err) {
+          console.error(err);
+        }
+      })
+  );
+
+  //
+  // Zip it all together.
+  //
+  const splMetadata: Map<string, any> = new Map(
+    // @ts-ignore
+    tokens
+      // @ts-ignore
+      .map((m, idx) => {
+        const tokenMetadata = tokenMetaAccounts[idx];
+        if (tokenMetadata === null) {
+          return null;
+        }
+        if (tokenMetadata === undefined) {
+          return null;
+        }
+        return [
+          m.key,
+          {
+            publicKey: m.key,
+            metadataAddress: tokenMetadata.publicKey,
+            metadata: tokenMetadata.account,
+            tokenMetaUriData: tokenMetaUriData[idx],
+          },
+        ];
+      })
+      // @ts-ignore
+      .filter((m) => m !== null)
+  );
+
+  //
+  // Done.
+  //
+  return splMetadata;
+}
+
+async function fetchPriceData(
+  splTokenAccounts: Map<string, TokenAccountWithKey>,
+  tokenRegistry: Map<string, TokenInfo>
+): Promise<Map<string, any>> {
+  const mintCoingeckoIds = Array.from(splTokenAccounts.keys())
+    .map((k) => splTokenAccounts.get(k)!.mint.toString())
+    .filter((mint) => tokenRegistry!.get(mint) !== undefined)
+    .map((mint) => [mint, tokenRegistry!.get(mint)!.extensions])
+    .filter(([, e]: any) => e !== undefined && e.coingeckoId !== undefined)
+    .map(([mint, e]: any) => [mint, e!.coingeckoId]);
+  const idToMint = new Map(mintCoingeckoIds.map((m) => [m[1], m[0]]));
+  const coingeckoIds = Array.from(idToMint.keys()).join(",");
+  const coingeckoResp = await fetchCoingecko(coingeckoIds);
+  const coingeckoData = new Map(
+    Object.keys(coingeckoResp).map((id) => [
+      idToMint.get(id),
+      coingeckoResp[id],
+    ])
+  );
+  return coingeckoData;
+}

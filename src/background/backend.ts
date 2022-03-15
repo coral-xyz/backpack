@@ -18,9 +18,9 @@ import {
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   TAB_BALANCES,
-  TAB_NFTS,
-  TAB_SWAP,
-  TAB_SETTINGS,
+  TAB_QUEST,
+  TAB_BRIDGE,
+  TAB_FRIENDS,
 } from "../common";
 
 const SUCCESS_RESPONSE = "success";
@@ -291,9 +291,9 @@ export type NamedPublicKey = {
 
 export const TABS = [
   [TAB_BALANCES, "Balances"],
-  [TAB_NFTS, "Nfts"],
-  [TAB_SWAP, "Swap"],
-  [TAB_SETTINGS, "Settings"],
+  [TAB_BRIDGE, "Bridge"],
+  [TAB_QUEST, "Quest"],
+  [TAB_FRIENDS, "Friends"],
 ];
 const defaultNav = makeDefaultNav();
 
