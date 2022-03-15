@@ -5,6 +5,10 @@ import { TokenAccountWithKey } from "./types";
 /**
  * Insert all of the token accounts.
  */
+// TODO: It would be nice to use a recoil transaction here, but alas, atoms
+//       with default values that are selectors are not yet supported.
+//
+//       See https://recoiljs.org/docs/api-reference/core/useRecoilTransaction.
 export const useUpdateAllSplTokenAccounts = () =>
   useRecoilCallback(
     ({ set }: any) =>
@@ -17,8 +21,9 @@ export const useUpdateAllSplTokenAccounts = () =>
         tokenMetadata: Array<null | any>;
         nftMetadata: Map<string, any>;
       }) => {
-        // TODO: do we want to check if the atoms have changed before setting
-        //       them?
+        // TODO: Do we want to check if the atoms have changed before setting
+        //       them? Probably since we don't have a recoil transaction and
+        //       so this hook may cause unnecessary rerenders.
 
         //
         // Regular tokens.

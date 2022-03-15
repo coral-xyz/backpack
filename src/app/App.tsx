@@ -51,15 +51,15 @@ const darkTheme = createTheme({
   // @ts-ignore
   custom: {
     colors: {
-      background: "#292C33",
-      nav: "#393C43",
+      background: "#1B1D23",
+      nav: "#292C33",
       fontColor: "#FFFFFF",
-      border: "#494C54",
-      activeNavButton: "#00A2C7",
+      border: "#393C43",
+      activeNavButton: "#24B0D0",
       hamburger: "#99A4B4",
       scrollbarThumb: "rgb(153 164 180)",
       tabIconBackground: "#99A4B4",
-      tabIconSelected: "#1196B5",
+      tabIconSelected: "#24B0D0",
       secondary: "#99A4B4",
       positive: "#35A63A",
       negative: "#E95050",

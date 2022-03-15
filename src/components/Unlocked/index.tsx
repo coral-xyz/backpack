@@ -12,7 +12,7 @@ import {
 import { WithNav, WithNavContext } from "../Layout/Nav";
 import { TAB_BALANCES, TAB_BRIDGE, TAB_QUEST, TAB_FRIENDS } from "../../common";
 
-const useStyles = makeStyles((_theme: any) => ({
+const useStyles = makeStyles((theme: any) => ({
   container: {
     flex: 1,
   },
@@ -26,6 +26,7 @@ const useStyles = makeStyles((_theme: any) => ({
     display: "block",
     marginLeft: "auto",
     marginRight: "auto",
+    color: theme.custom.colors.activeNavButton,
   },
 }));
 
