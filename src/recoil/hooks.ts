@@ -1,5 +1,5 @@
 import { useRecoilCallback, useRecoilTransaction_UNSTABLE } from "recoil";
-import { solanaTokenAccountKeys, solanaTokenAccountsMap } from "./atoms";
+import * as atoms from "./atoms";
 import { TokenAccountWithKey } from "./types";
 
 /**
@@ -11,26 +11,36 @@ export const useUpdateAllSplTokenAccounts = () =>
       async ({
         tokenAccounts,
         tokenMetadata,
+        nftMetadata,
       }: {
         tokenAccounts: TokenAccountWithKey[];
-        tokenMetadata: any;
+        tokenMetadata: Array<null | any>;
+        nftMetadata: Map<string, any>;
       }) => {
         // TODO: do we want to check if the atoms have changed before setting
         //       them?
+
+        //
+        // Regular tokens.
+        //
         set(
-          solanaTokenAccountKeys,
+          atoms.solanaTokenAccountKeys,
           tokenAccounts.map((a) => a.key.toString())
         );
         tokenAccounts.forEach((tokenAccount) => {
           set(
-            solanaTokenAccountsMap(tokenAccount.key.toString()),
+            atoms.solanaTokenAccountsMap(tokenAccount.key.toString()),
             tokenAccount
           );
         });
 
         //
-        // TODO: set metadata and reset atoms?.
+        // Nfts.
         //
-        // set `atoms.solanaNftMetadata` here.
+        set(atoms.solanaNftMetadataKeys, Array.from(nftMetadata.keys()));
+        // @ts-ignore
+        for (let [key, value] of nftMetadata) {
+          set(atoms.solanaNftMetadataMap(key), value);
+        }
       }
   );

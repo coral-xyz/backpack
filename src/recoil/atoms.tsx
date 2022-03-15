@@ -527,21 +527,32 @@ export const solanaTokenAccountsMap = atomFamily<
 });
 
 //
-// Metadata for all nfts.
+// Token account address for all nfts.
 //
-export const solanaNftMetadata = atom<Array<any>>({
+export const solanaNftMetadataKeys = atom<Array<string>>({
   key: "solanaNftKeys",
   default: selector({
     key: "solanaNftKeysDefault",
     get: ({ get }: any) => {
       const b = get(bootstrap);
-      // @ts-ignore
-      const nftMetadata = Array.from(b.splNftMetadata.values())
-        // @ts-ignore
-        .filter((t) => t.tokenMetaUriData !== null)
-        .map((nft) => nft);
-      return nftMetadata;
+      return Array.from(b.splNftMetadata.keys());
     },
+  }),
+});
+
+//
+// Full token metadata for all nfts.
+//
+export const solanaNftMetadataMap = atomFamily<any, string>({
+  key: "solanaNftMap",
+  default: selectorFamily({
+    key: "solanaNftMapDefault",
+    get:
+      (tokenAddress: string) =>
+      ({ get }: any) => {
+        const b = get(bootstrap);
+        return b.splNftMetadata.get(tokenAddress);
+      },
   }),
 });
 
@@ -729,7 +740,7 @@ export async function fetchSplMetadata(
   return tokenMetaAccounts;
 }
 
-async function fetchSplMetadataUri(
+export async function fetchSplMetadataUri(
   tokens: Array<TokenAccountWithKey>,
   splTokenMetadata: Array<any>
 ): Promise<Map<string, any>> {
@@ -810,7 +821,7 @@ async function fetchPriceData(
   return coingeckoData;
 }
 
-function removeNfts(
+export function removeNfts(
   splTokenAccounts: Map<string, TokenAccountWithKey>,
   splNftMetadata: Map<string, any>
 ): Map<string, TokenAccountWithKey> {

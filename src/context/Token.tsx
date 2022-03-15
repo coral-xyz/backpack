@@ -3,7 +3,12 @@ import { useRecoilValue } from "recoil";
 import { useSolanaWallet } from "../context/Wallet";
 import { useUpdateAllSplTokenAccounts } from "../recoil/hooks";
 import * as atoms from "../recoil/atoms";
-import { fetchTokens, fetchSplMetadata } from "../recoil/atoms";
+import {
+  fetchTokens,
+  fetchSplMetadata,
+  fetchSplMetadataUri,
+  removeNfts,
+} from "../recoil/atoms";
 
 const REFRESH_INTERVAL = 10 * 1000;
 
@@ -21,25 +26,40 @@ export function useLoadSplTokens() {
         //
         // Fetch tokens.
         //
-        const tokenAccounts = Array.from(
-          (await fetchTokens(wallet, tokenClient)).values()
-        );
+        const tokenAccounts = await fetchTokens(wallet, tokenClient);
+        const tokenAccountsArray = Array.from(tokenAccounts.values());
 
         //
         // Fetch metadata.
         //
-        const tokenMetadata = await fetchSplMetadata(provider, tokenAccounts);
+        const tokenMetadata = await fetchSplMetadata(
+          provider,
+          tokenAccountsArray
+        );
+
+        //
+        // Fetch the metadata uri and interpert as NFTs.
+        //
+        const nftMetadata = await fetchSplMetadataUri(
+          tokenAccountsArray,
+          tokenMetadata
+        );
 
         //
         // Set the recoil atoms.
         //
-        updateAllSplTokenAccounts({ tokenAccounts, tokenMetadata });
+        updateAllSplTokenAccounts({
+          tokenAccounts: Array.from(
+            removeNfts(tokenAccounts, nftMetadata).values()
+          ),
+          tokenMetadata,
+          nftMetadata,
+        });
       } catch (err) {
         // TODO show error notification
         console.error(err);
       }
     }, REFRESH_INTERVAL);
-
     return () => {
       clearInterval(interval);
     };

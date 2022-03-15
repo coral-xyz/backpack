@@ -11,7 +11,10 @@ import { OfflineBolt as Bolt, Settings, FlashOn } from "@material-ui/icons";
 import { BalancesHeader, BlockchainCard } from ".";
 import { useNavigationContext } from "../../../context/Navigation";
 import { WithDrawer } from "../../Layout/Sidebar";
-import { useNftMetadata } from "../../../hooks/useBlockchainBalances";
+import {
+  useNftMetadata,
+  useNftMetadataAddresses,
+} from "../../../hooks/useBlockchainBalances";
 
 const useStyles = makeStyles((theme: any) => ({
   cardContainer: {},
@@ -210,19 +213,18 @@ function NetworkHeader({ blockchain, tab, setTab }: any) {
 }
 
 function Nfts({ blockchain }: any) {
-  const nftMetadata = useNftMetadata(blockchain);
+  const nftMetadata = useNftMetadataAddresses(blockchain);
   return (
     <div>
-      {nftMetadata
-        .filter((t: any) => t.tokenMetaUriData !== undefined)
-        .map((nft: any) => (
-          <Nft key={nft.publicKey.toString()} nftMetadata={nft} />
-        ))}
+      {nftMetadata.map((address: string) => (
+        <Nft key={address} nftMetadataAddress={address} />
+      ))}
     </div>
   );
 }
 
-function Nft({ nftMetadata }: any) {
+function Nft({ nftMetadataAddress }: any) {
+  const nftMetadata = useNftMetadata(nftMetadataAddress);
   return (
     <img src={nftMetadata.tokenMetaUriData.image} style={{ width: "75px" }} />
   );

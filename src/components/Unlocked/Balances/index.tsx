@@ -242,7 +242,7 @@ export function BlockchainCard({
       <CardContent classes={{ root: classes.cardContentRoot }}>
         <List classes={{ root: classes.cardListRoot }}>
           {tokenAccountsSorted
-            .slice(0, limit ?? tokenAccountsSorted.length - 1)
+            .slice(0, limit ?? tokenAccountsSorted.length)
             .map((token: any) => (
               <TokenListItem
                 key={token.address}

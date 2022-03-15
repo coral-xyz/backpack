@@ -51,9 +51,13 @@ export function usePriceData(mintAddress: string): any {
   return useRecoilValue(atoms.priceData(mintAddress));
 }
 
-export function useNftMetadata(blockchain: string): any {
+export function useNftMetadataAddresses(blockchain: string): Array<string> {
   if (blockchain !== "solana") {
     throw new Error("only solana currently supported");
   }
-  return useRecoilValue(atoms.solanaNftMetadata);
+  return useRecoilValue(atoms.solanaNftMetadataKeys);
+}
+
+export function useNftMetadata(address: string): any {
+  return useRecoilValue(atoms.solanaNftMetadataMap(address));
 }

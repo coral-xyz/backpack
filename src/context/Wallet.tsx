@@ -10,11 +10,14 @@ import { useLoadSplTokens } from "../context/Token";
 // Bootstrap data for the initial load.
 export function useBootstrap() {
   useRecoilValue(atoms.bootstrap);
-  useLoadSplTokens();
 }
 
 export function useBootstrapFast() {
   useRecoilValue(atoms.bootstrapFast);
+}
+
+export function useBackgroundPoll() {
+  useLoadSplTokens();
 }
 
 export function useSolanaWallet(): SolanaWallet {

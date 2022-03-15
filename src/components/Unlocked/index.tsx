@@ -4,7 +4,11 @@ import { Balances } from "./Balances";
 import { Quests } from "./Quests";
 import { Bridge } from "./Bridge";
 import { Settings } from "./Settings";
-import { useBootstrap, useBootstrapFast } from "../../context/Wallet";
+import {
+  useBootstrap,
+  useBootstrapFast,
+  useBackgroundPoll,
+} from "../../context/Wallet";
 import { WithNav, WithNavContext } from "../Layout/Nav";
 import { TAB_BALANCES, TAB_BRIDGE, TAB_QUEST, TAB_FRIENDS } from "../../common";
 
@@ -26,6 +30,7 @@ const useStyles = makeStyles((_theme: any) => ({
 }));
 
 export function Unlocked() {
+  useBackgroundPoll();
   const classes = useStyles();
   return (
     <div className={classes.container}>
