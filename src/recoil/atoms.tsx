@@ -39,11 +39,16 @@ export const bootstrap = atom<any>({
       const tokenRegistry = get(splTokenRegistry);
       const wallet = get(solanaWallet);
       const { provider, tokenClient } = get(anchorContext);
+
+      //
+      // Perform data fetch.
+      //
       try {
         //
         // Fetch the SPL tokens.
         //
         const splTokenAccounts = await fetchTokens(wallet, tokenClient);
+        const splTokenAccountsArray = Array.from(splTokenAccounts.values());
 
         //
         // Fetch the price data.
@@ -54,19 +59,28 @@ export const bootstrap = atom<any>({
         );
 
         //
-        // Fetch the nfts.
+        // Fetch the token metadata.
         //
-        const splMetadata = await fetchSplMetadata(
+        const splTokenMetadata = await fetchSplMetadata(
           provider,
-          Array.from(splTokenAccounts.values())
+          splTokenAccountsArray
+        );
+
+        //
+        // Fetch the metadata uri and interpert as NFTs.
+        //
+        const splNftMetadata = await fetchSplMetadataUri(
+          splTokenAccountsArray,
+          splTokenMetadata
         );
 
         //
         // Done.
         //
         return {
-          splTokenAccounts,
-          splMetadata,
+          splTokenAccounts: removeNfts(splTokenAccounts, splNftMetadata),
+          splTokenMetadata,
+          splNftMetadata,
           coingeckoData,
         };
       } catch (err) {
@@ -522,7 +536,7 @@ export const solanaNftMetadata = atom<Array<any>>({
     get: ({ get }: any) => {
       const b = get(bootstrap);
       // @ts-ignore
-      const nftMetadata = Array.from(b.splMetadata.values())
+      const nftMetadata = Array.from(b.splNftMetadata.values())
         // @ts-ignore
         .filter((t) => t.tokenMetaUriData !== null)
         .map((nft) => nft);
@@ -685,7 +699,7 @@ export async function fetchTokens(
 export async function fetchSplMetadata(
   provider: Provider,
   tokens: Array<TokenAccountWithKey>
-): Promise<Map<string, any>> {
+): Promise<Array<null | { publicKey: PublicKey; account: any }>> {
   //
   // Fetch metadata for each token.
   //
@@ -712,11 +726,18 @@ export async function fetchSplMetadata(
       : null
   );
 
+  return tokenMetaAccounts;
+}
+
+async function fetchSplMetadataUri(
+  tokens: Array<TokenAccountWithKey>,
+  splTokenMetadata: Array<any>
+): Promise<Map<string, any>> {
   //
   // Fetch the URI for each metadata.
   //
   const tokenMetaUriData = await Promise.all(
-    tokenMetaAccounts
+    splTokenMetadata
       // @ts-ignore
       .map(async (t) => {
         if (t === null || t === undefined || !t.account.data.uri) {
@@ -735,20 +756,20 @@ export async function fetchSplMetadata(
   //
   // Zip it all together.
   //
-  const splMetadata: Map<string, any> = new Map(
+  const splNftMetadata: Map<string, any> = new Map(
     // @ts-ignore
     tokens
       // @ts-ignore
       .map((m, idx) => {
-        const tokenMetadata = tokenMetaAccounts[idx];
-        if (tokenMetadata === null) {
+        const tokenMetadata = splTokenMetadata[idx];
+        if (!tokenMetadata) {
           return null;
         }
-        if (tokenMetadata === undefined) {
+        if (!tokenMetaUriData[idx]) {
           return null;
         }
         return [
-          m.key,
+          m.key.toString(),
           {
             publicKey: m.key,
             metadataAddress: tokenMetadata.publicKey,
@@ -764,7 +785,7 @@ export async function fetchSplMetadata(
   //
   // Done.
   //
-  return splMetadata;
+  return splNftMetadata;
 }
 
 async function fetchPriceData(
@@ -787,4 +808,15 @@ async function fetchPriceData(
     ])
   );
   return coingeckoData;
+}
+
+function removeNfts(
+  splTokenAccounts: Map<string, TokenAccountWithKey>,
+  splNftMetadata: Map<string, any>
+): Map<string, TokenAccountWithKey> {
+  // @ts-ignore
+  for (let key of splNftMetadata.keys()) {
+    splTokenAccounts.delete(key);
+  }
+  return splTokenAccounts;
 }
