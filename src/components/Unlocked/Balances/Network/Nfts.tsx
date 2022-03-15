@@ -1,22 +1,35 @@
-import { useNftMetadata } from "../../../../hooks/useBlockchainBalances";
+import { makeStyles } from "@material-ui/core";
+import {
+  useNftMetadata,
+  useNftMetadataAddresses,
+} from "../../../../hooks/useBlockchainBalances";
+
+const useStyles = makeStyles((theme: any) => ({
+  nftImage: {
+    width: "187px",
+  },
+}));
 
 export function Nfts({ blockchain }: any) {
-  const nftMetadata = useNftMetadata(blockchain);
-  console.log("got nft metadata", nftMetadata);
+  const nftMetadataAddresses = useNftMetadataAddresses(blockchain);
   return (
-    <div>
-      {nftMetadata
-        .filter((t: any) => t.tokenMetaUriData !== undefined)
-        .map((nft: any) => (
-          <Nft key={nft.publicKey.toString()} nftMetadata={nft} />
-        ))}
+    <div style={{ flexWrap: "wrap", display: "flex" }}>
+      {nftMetadataAddresses.map((address: string) => (
+        <Nft key={address} address={address} />
+      ))}
     </div>
   );
 }
 
-function Nft({ nftMetadata }: any) {
-  console.log("nftmetadata", nftMetadata);
+function Nft({ address }: any) {
+  const classes = useStyles();
+  const nftMetadata = useNftMetadata(address);
   return (
-    <img src={nftMetadata.tokenMetaUriData.image} style={{ width: "75px" }} />
+    <div style={{ height: "187px", overflow: "hidden" }}>
+      <img
+        src={nftMetadata.tokenMetaUriData.image}
+        className={classes.nftImage}
+      />
+    </div>
   );
 }

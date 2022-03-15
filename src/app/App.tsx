@@ -39,6 +39,7 @@ const lightTheme = createTheme({
       secondary: "#67758B",
       positive: "#19A51E",
       negative: "#E31B1B",
+      onboardButton: "#07758E",
     },
   },
 });
@@ -63,6 +64,7 @@ const darkTheme = createTheme({
       secondary: "#99A4B4",
       positive: "#35A63A",
       negative: "#E95050",
+      onboardButton: "#07758E",
     },
   },
 });
