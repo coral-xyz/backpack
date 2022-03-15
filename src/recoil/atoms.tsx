@@ -512,17 +512,19 @@ export const solanaTokenAccountsMap = atomFamily<
   }),
 });
 
+//
+// Metadata for all nfts.
+//
 export const solanaNftMetadata = atom<Array<any>>({
   key: "solanaNftKeys",
   default: selector({
     key: "solanaNftKeysDefault",
     get: ({ get }: any) => {
       const b = get(bootstrap);
-      console.log("boot", b);
       // @ts-ignore
       const nftMetadata = Array.from(b.splMetadata.values())
         // @ts-ignore
-        .filter((t) => t.metadata.data.uri && t.metadata.data.uri.length > 0)
+        .filter((t) => t.tokenMetaUriData !== null)
         .map((nft) => nft);
       return nftMetadata;
     },
@@ -642,7 +644,7 @@ async function metadataAddress(mint: PublicKey): Promise<PublicKey> {
   )[0];
 }
 
-async function fetchTokens(
+export async function fetchTokens(
   wallet: SolanaWallet,
   tokenClient: Program<SplToken>
 ): Promise<Map<string, TokenAccountWithKey>> {
@@ -680,7 +682,7 @@ async function fetchTokens(
   return new Map(validTokens);
 }
 
-async function fetchSplMetadata(
+export async function fetchSplMetadata(
   provider: Provider,
   tokens: Array<TokenAccountWithKey>
 ): Promise<Map<string, any>> {

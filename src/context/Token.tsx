@@ -2,9 +2,8 @@ import { useEffect } from "react";
 import { useRecoilValue } from "recoil";
 import { useSolanaWallet } from "../context/Wallet";
 import { useUpdateAllSplTokenAccounts } from "../recoil/hooks";
-import { TokenAccountWithKey } from "../recoil/types";
 import * as atoms from "../recoil/atoms";
-import { useSolanaConnection } from "../context/Connection";
+import { fetchTokens, fetchSplMetadata } from "../recoil/atoms";
 
 const REFRESH_INTERVAL = 10 * 1000;
 
@@ -19,23 +18,22 @@ export function useLoadSplTokens() {
         return;
       }
       try {
-        // Fetch the accounts.
-        const resp = await provider.connection.getTokenAccountsByOwner(
-          publicKey,
-          {
-            programId: tokenClient.programId,
-          },
-          provider.connection.commitment
+        //
+        // Fetch tokens.
+        //
+        const tokenAccounts = Array.from(
+          (await fetchTokens(wallet, tokenClient)).values()
         );
-        // Decode the data.
-        const tokenAccounts: TokenAccountWithKey[] = resp.value.map(
-          ({ account, pubkey }) => ({
-            ...tokenClient.coder.accounts.decode("Token", account.data),
-            key: pubkey,
-          })
-        );
+
+        //
+        // Fetch metadata.
+        //
+        const tokenMetadata = await fetchSplMetadata(provider, tokenAccounts);
+
+        //
         // Set the recoil atoms.
-        updateAllSplTokenAccounts(tokenAccounts);
+        //
+        updateAllSplTokenAccounts({ tokenAccounts, tokenMetadata });
       } catch (err) {
         // TODO show error notification
         console.error(err);
