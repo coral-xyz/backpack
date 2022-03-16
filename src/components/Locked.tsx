@@ -56,10 +56,25 @@ export const useStyles = makeStyles((theme: any) => ({
     width: "351px",
     borderRadius: "12px",
     backgroundColor: theme.custom.colors.background,
-    //    border: `solid 1pt ${theme.custom.colors.border}`,
-    //
     "& .MuiOutlinedInput-root": {
       border: `solid 1pt ${theme.custom.colors.border}`,
+      borderRadius: "12px",
+      height: "56px",
+      "& fieldset": {
+        border: "none",
+      },
+    },
+  },
+  passwordRootNegative: {
+    marginLeft: "12px",
+    marginRight: "12px",
+    marginTop: "24px",
+    marginBottom: "24px",
+    width: "351px",
+    borderRadius: "12px",
+    backgroundColor: theme.custom.colors.background,
+    "& .MuiOutlinedInput-root": {
+      border: `solid 1pt ${theme.custom.colors.negative}`,
       borderRadius: "12px",
       height: "56px",
       "& fieldset": {
@@ -71,7 +86,7 @@ export const useStyles = makeStyles((theme: any) => ({
     textAlign: "center",
   },
   errorLabel: {
-    color: "red",
+    color: theme.custom.colors.negative,
   },
   content: {
     borderTopLeftRadius: "12px",
@@ -118,16 +133,13 @@ export const useStyles = makeStyles((theme: any) => ({
     marginRight: "12px",
     marginTop: "38px",
   },
-  forgotButton: {
-    padding: 0,
-    marginLeft: "18px",
-    marginRight: "18px",
-  },
   forgotButtonTitle: {
     color: theme.custom.colors.secondary,
     textTransform: "none",
     fontSize: "12px",
     fontWeight: 500,
+    marginLeft: "18px",
+    marginRight: "18px",
   },
   recoverButton: {
     position: "absolute",
@@ -184,7 +196,7 @@ export function Locked() {
             className: classes.passwordField,
           }}
           classes={{
-            root: classes.passwordRoot,
+            root: error ? classes.passwordRootNegative : classes.passwordRoot,
           }}
           InputLabelProps={{
             shrink: false,
@@ -195,9 +207,6 @@ export function Locked() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        {error && (
-          <Typography className={classes.errorLabel}>{error}</Typography>
-        )}
         <Button
           onClick={onUnlock}
           disableElevation
@@ -208,7 +217,7 @@ export function Locked() {
             Unlock
           </Typography>
         </Button>
-        <div>
+        <div style={{ visibility: error ? undefined : "hidden" }}>
           <div className={classes.forgotContainer}>
             <div
               style={{
@@ -219,15 +228,9 @@ export function Locked() {
             >
               <Divider className={classes.divider} />
             </div>
-            <Button
-              disableRipple
-              disableElevation
-              className={classes.forgotButton}
-            >
-              <Typography className={classes.forgotButtonTitle}>
-                Forgot your password?
-              </Typography>
-            </Button>
+            <Typography className={classes.forgotButtonTitle}>
+              Forgot your password?
+            </Typography>
             <div
               style={{
                 display: "flex",
