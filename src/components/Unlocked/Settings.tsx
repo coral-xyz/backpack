@@ -14,7 +14,7 @@ import {
   UI_RPC_METHOD_KEYNAME_UPDATE,
   UI_RPC_METHOD_PASSWORD_UPDATE,
 } from "../../common";
-import { WithDrawer } from "../Layout/Sidebar";
+import { WithDrawer } from "../Layout/Drawer";
 
 const useStyles = makeStyles((theme: any) => ({
   walletNameField: {

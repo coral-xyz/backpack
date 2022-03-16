@@ -7,14 +7,15 @@ import {
   Tabs,
   Tab,
 } from "@material-ui/core";
-import { OfflineBolt as Bolt, Settings, FlashOn } from "@material-ui/icons";
+import { OfflineBolt as Bolt } from "@material-ui/icons";
 import { useNavigationContext } from "../../../../context/Navigation";
-import { WithDrawer } from "../../../Layout/Sidebar";
+import { WithDrawer } from "../../../Layout/Drawer";
 import { Nfts } from "./Nfts";
 import { Swap } from "./Swap";
 import { Overview } from "./Overview";
 import { Transfer } from "./Transfer";
 import { Yield } from "./Yield";
+import { RecentActivity } from "./RecentActivity";
 
 const useStyles = makeStyles((theme: any) => ({
   cardContainer: {},
@@ -112,7 +113,10 @@ function NetworkSettingsButton() {
       <WithDrawer
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}
-      ></WithDrawer>
+        title={"Recent Activity"}
+      >
+        <RecentActivity />
+      </WithDrawer>
     </div>
   );
 }

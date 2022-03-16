@@ -8,7 +8,6 @@ import {
   IconButton,
   List,
   ListItem,
-  Drawer,
   Button,
   Divider,
   TextField,
@@ -20,14 +19,13 @@ import {
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-  EXTENSION_HEIGHT,
 } from "../../common";
 import { getBackgroundClient } from "../../background/client";
-import { NAV_BAR_HEIGHT } from "./Nav";
 import { useKeyringStoreState } from "../../context/KeyringStoreState";
 import { KeyringStoreStateEnum } from "../../keyring/store";
 import { useWalletPublicKeys } from "../../context/Wallet";
 import { WalletAddress } from "../../components/common";
+import { WithDrawerNoHeader } from "./Drawer";
 
 const useStyles = makeStyles((theme: any) => ({
   sidebarContainer: {
@@ -55,24 +53,6 @@ const useStyles = makeStyles((theme: any) => ({
     paddingRight: 0,
     paddingTop: "5px",
     paddingBottom: "5px",
-  },
-  withDrawer: {
-    height: EXTENSION_HEIGHT - NAV_BAR_HEIGHT,
-    backgroundColor: theme.custom.colors.background,
-    padding: "20px",
-    display: "flex",
-    flexDirection: "column",
-  },
-  withDrawerContent: {
-    flex: 1,
-  },
-  drawerRoot: {
-    top: `${NAV_BAR_HEIGHT}px !important`,
-    zIndex: "1 !important" as any,
-  },
-  closeDrawerButton: {
-    backgroundColor: theme.custom.colors,
-    width: "100%",
   },
   sidebarDivider: {
     marginTop: "8px",
@@ -257,12 +237,12 @@ function _SidebarContent({ close }: { close: () => void }) {
           </ListItem>
         )}
       </List>
-      <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+      <WithDrawerNoHeader openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         {drawerView === "recent-activity" && <RecentActivity />}
         {drawerView === "add-connect" && (
           <AddConnectWallet closeDrawer={() => setOpenDrawer(false)} />
         )}
-      </WithDrawer>
+      </WithDrawerNoHeader>
     </div>
   );
 }
@@ -310,41 +290,6 @@ function SidebarHeader({ close }: { close: () => void }) {
         </IconButton>
       </div>
     </div>
-  );
-}
-
-export function WithDrawer(props: any) {
-  const { children, openDrawer, setOpenDrawer } = props;
-  const classes = useStyles();
-  return (
-    <Drawer
-      BackdropProps={{
-        style: {
-          position: "absolute",
-          top: NAV_BAR_HEIGHT,
-          height: EXTENSION_HEIGHT - NAV_BAR_HEIGHT,
-        },
-      }}
-      anchor={"bottom"}
-      open={openDrawer}
-      onClose={() => setOpenDrawer(false)}
-      classes={{
-        root: classes.drawerRoot,
-      }}
-    >
-      <div className={classes.withDrawer}>
-        <div className={classes.withDrawerContent}>{children}</div>
-        {!props.skipFooter && (
-          <Button
-            onClick={() => setOpenDrawer(false)}
-            variant="contained"
-            className={classes.closeDrawerButton}
-          >
-            Close
-          </Button>
-        )}
-      </div>
-    </Drawer>
   );
 }
 

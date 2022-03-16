@@ -27,6 +27,7 @@ import { SolanaWallet } from "../context/Wallet";
 import { Network } from "../components/Unlocked/Balances/Network";
 import { TABS } from "../background/backend";
 import { Token } from "../components/Unlocked/Balances/Token";
+import { txHistoryConnection } from "./ignore";
 
 /**
  * Defines the initial app load fetch.
@@ -78,15 +79,13 @@ export const bootstrap = atom<any>({
         // Get the transaction data for the wallet's recent transactions.
         //
         //	const publicKey = new PublicKey('FhmUh2PEpTzUwBWPt4qgDBeqfmb2ES3T64CkT1ZiktSS');
-        //				const publicKey = new PublicKey('B987jRxFFnSBULwu6cXRKzUfKDDpyuhCGC58wVxct6Ez');
         const publicKey = new PublicKey(
-          "AQKQcAaQHpEFuUu4i8tckRnCotUqTuYVjF2X7tePsQQy"
+          "B987jRxFFnSBULwu6cXRKzUfKDDpyuhCGC58wVxct6Ez"
         );
         const recentTransactions = await fetchRecentTransactions(
           publicKey,
           provider
         );
-        console.log("recent", recentTransactions);
 
         //
         // Done.
@@ -306,26 +305,17 @@ export const activeWallet = atom<string | null>({
   ],
 });
 
-export const recentTransactions = atom<any>({
+export const recentTransactions = atomFamily<any, string>({
   key: "recentTransactions",
-  default: selector({
+  default: selectorFamily({
     key: "recentTransactionsDefault",
-    get: ({ get }: any) => {
-      const b = get(bootstrap);
-      return b.recentTransactions;
-    },
+    get:
+      (address: string) =>
+      ({ get }: any) => {
+        const b = get(bootstrap);
+        return b.recentTransactions;
+      },
   }),
-});
-
-export const recentTokenTransactions = selectorFamily({
-  key: "recentTokenTransactions",
-  get:
-    (address: string) =>
-    ({ get }: any) => {
-      const recent = get(recentTransactions);
-      // todo: filter on the given address
-      return recent;
-    },
 });
 
 /**
@@ -876,16 +866,13 @@ async function fetchRecentTransactions(
   publicKey: PublicKey,
   provider: Provider
 ) {
-  const resp = await provider.connection.getConfirmedSignaturesForAddress2(
-    publicKey,
-    {
-      limit: 15,
-    }
-  );
+  const connection = txHistoryConnection();
+  const resp = await connection.getConfirmedSignaturesForAddress2(publicKey, {
+    limit: 15,
+  });
   // @ts-ignore
   const signatures = resp.map((s) => s.signature);
-  const transactions = await provider.connection.getParsedTransactions(
-    signatures
-  );
+  const transactions = await connection.getParsedTransactions(signatures);
+  console.log("tx", transactions);
   return transactions;
 }

@@ -1,13 +1,6 @@
-import {
-  makeStyles,
-  Button,
-  Typography,
-  List,
-  ListItem,
-  ListItemIcon,
-} from "@material-ui/core";
+import { makeStyles, Button, Typography } from "@material-ui/core";
 import { useBlockchainTokenAccount } from "../../../hooks/useBlockchainBalances";
-import { useRecentTokenTransactions } from "../../../hooks/useRecentTransactions";
+import { RecentActivitySmall } from "./Network/RecentActivity";
 
 const useStyles = makeStyles((theme: any) => ({
   tokenHeaderContainer: {
@@ -29,10 +22,16 @@ const useStyles = makeStyles((theme: any) => ({
     width: "100px",
     height: "40px",
     backgroundColor: theme.custom.colors.nav,
-    color: theme.custom.colors.fontColor,
     "&:hover": {
       backgroundColor: theme.custom.colors.nav,
     },
+  },
+  headerButtonLabel: {
+    color: theme.custom.colors.fontColor,
+    fontSize: "14px",
+    lineHeight: "24px",
+    fontWeight: 500,
+    textTransform: "none",
   },
   positivePercent: {
     color: theme.custom.colors.positive,
@@ -45,6 +44,7 @@ const useStyles = makeStyles((theme: any) => ({
     fontSize: "20px",
     fontWeight: 500,
     textAlign: "center",
+    lineHeight: "24px",
   },
   usdBalanceLabel: {
     color: theme.custom.colors.fontColor,
@@ -52,16 +52,7 @@ const useStyles = makeStyles((theme: any) => ({
     fontSize: "14px",
     textAlign: "center",
     marginTop: "6px",
-  },
-  recentActivityLabel: {
-    color: theme.custom.colors.fontColor,
-    fontWeight: 500,
-    fontSize: "14px",
-  },
-  allWalletsLabel: {
-    fontWeight: 500,
-    fontSize: "12px",
-    color: theme.custom.colors.secondary,
+    lineHeight: "24px",
   },
 }));
 
@@ -69,7 +60,7 @@ export function Token({ blockchain, address }: any) {
   return (
     <div>
       <TokenHeader blockchain={blockchain} address={address} />
-      <TokenRecentActivity address={address} />
+      <RecentActivitySmall address={address} />
     </div>
   );
 }
@@ -99,7 +90,7 @@ function TokenHeader({ blockchain, address }: any) {
           className={classes.headerButton}
           disableRipple
         >
-          Deposit
+          <Typography className={classes.headerButtonLabel}>Deposit</Typography>
         </Button>
         <Button
           disableElevation
@@ -107,45 +98,9 @@ function TokenHeader({ blockchain, address }: any) {
           className={classes.headerButton}
           disableRipple
         >
-          Send
+          <Typography className={classes.headerButtonLabel}>Send</Typography>
         </Button>
       </div>
-    </div>
-  );
-}
-
-function TokenRecentActivity({ address }: any) {
-  const classes = useStyles();
-  const actions: any = useRecentTokenTransactions(address);
-  return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginLeft: "12px",
-          marginRight: "12px",
-        }}
-      >
-        <div>
-          <Typography className={classes.recentActivityLabel}>
-            Recent Actvitiy
-          </Typography>
-        </div>
-        <div>
-          <Typography className={classes.allWalletsLabel}>
-            All Wallets
-          </Typography>
-        </div>
-      </div>
-      <List>
-        {actions.map((action: any) => (
-          <ListItem>
-            <ListItemIcon>{JSON.stringify(action)}</ListItemIcon>
-            <div></div>
-          </ListItem>
-        ))}
-      </List>
     </div>
   );
 }
