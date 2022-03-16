@@ -1,5 +1,11 @@
 import { Suspense } from "react";
-import { makeStyles, Typography, List, ListItem } from "@material-ui/core";
+import {
+  makeStyles,
+  useTheme,
+  Typography,
+  List,
+  ListItem,
+} from "@material-ui/core";
 import { Check, Clear } from "@material-ui/icons";
 import { explorerUrl } from "../../../../common/explorer";
 import { useSolanaWallet } from "../../../../context/Wallet";
@@ -31,6 +37,7 @@ const useStyles = makeStyles((theme: any) => ({
     paddingBottom: "10px",
     display: "flex",
     height: "68px",
+    borderBottom: `solid 1pt ${theme.custom.colors.border}`,
   },
   recentActivityListItemIconContainer: {
     width: "44px",
@@ -76,10 +83,14 @@ export function RecentActivity() {
 }
 
 export function RecentActivitySmall({ address }: any) {
+  const theme = useTheme() as any;
   return (
     <div>
       <RecentActivitySmallHeader />
-      <RecentActivityList address={address} />
+      <RecentActivityList
+        address={address}
+        style={{ borderTop: `solid 1pt ${theme.custom.colors.border}` }}
+      />
     </div>
   );
 }
@@ -108,18 +119,25 @@ export function RecentActivitySmallHeader() {
   );
 }
 
-export function RecentActivityList({ address }: any) {
+export function RecentActivityList({ address, style }: any) {
   return (
     <Suspense fallback={<RecentActivityLoading />}>
-      <_RecentActivityList address={address} />
+      <_RecentActivityList style={style} address={address} />
     </Suspense>
   );
 }
 
 function RecentActivityLoading() {
   const classes = useStyles();
+  const theme = useTheme() as any;
   return (
-    <div className={classes.listItem} style={{ height: "40px" }}>
+    <div
+      className={classes.listItem}
+      style={{
+        height: "40px",
+        borderTop: `solid 1pt ${theme.custom.colors.border}`,
+      }}
+    >
       <div
         style={{ display: "block", marginLeft: "auto", marginRight: "auto" }}
       >
@@ -129,10 +147,13 @@ function RecentActivityLoading() {
   );
 }
 
-export function _RecentActivityList({ address }: any) {
+export function _RecentActivityList({ address, style }: any) {
+  if (!style) {
+    style = {};
+  }
   const transactions = useRecentTransactions(address);
   return (
-    <List style={{ paddingTop: 0, paddingBottom: 0 }}>
+    <List style={{ ...style, paddingTop: 0, paddingBottom: 0 }}>
       {transactions.length > 0 ? (
         transactions.map((tx: any) => (
           <RecentActivityListItem transaction={tx} />
