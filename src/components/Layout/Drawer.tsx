@@ -13,7 +13,7 @@ import { Scrollbar } from "./Scrollbar";
 const useStyles = makeStyles((theme: any) => ({
   withDrawer: {
     backgroundColor: theme.custom.colors.background,
-    //    padding: "20px",
+    height: "100%",
     display: "flex",
     flexDirection: "column",
   },
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme: any) => ({
   title: {
     fontWeight: 500,
     color: theme.custom.colors.fontColor,
-    fontSize: "16px",
+    fontSize: "18px",
   },
   rightButton: {
     "&:hover": {

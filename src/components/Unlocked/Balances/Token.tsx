@@ -1,6 +1,8 @@
 import { makeStyles, Button, Typography } from "@material-ui/core";
 import { useBlockchainTokenAccount } from "../../../hooks/useBlockchainBalances";
 import { RecentActivitySmall } from "./Network/RecentActivity";
+import { SendButton } from "./Send";
+import { DepositButton } from "./Deposit";
 
 const useStyles = makeStyles((theme: any) => ({
   tokenHeaderContainer: {
@@ -16,22 +18,6 @@ const useStyles = makeStyles((theme: any) => ({
     marginLeft: "auto",
     marginRight: "auto",
     marginTop: "20px",
-  },
-  headerButton: {
-    borderRadius: "12px",
-    width: "100px",
-    height: "40px",
-    backgroundColor: theme.custom.colors.nav,
-    "&:hover": {
-      backgroundColor: theme.custom.colors.nav,
-    },
-  },
-  headerButtonLabel: {
-    color: theme.custom.colors.fontColor,
-    fontSize: "14px",
-    lineHeight: "24px",
-    fontWeight: 500,
-    textTransform: "none",
   },
   positivePercent: {
     color: theme.custom.colors.positive,
@@ -84,22 +70,8 @@ function TokenHeader({ blockchain, address }: any) {
         </Typography>
       </div>
       <div className={classes.tokenHeaderButtonContainer}>
-        <Button
-          disableElevation
-          variant="contained"
-          className={classes.headerButton}
-          disableRipple
-        >
-          <Typography className={classes.headerButtonLabel}>Deposit</Typography>
-        </Button>
-        <Button
-          disableElevation
-          variant="contained"
-          className={classes.headerButton}
-          disableRipple
-        >
-          <Typography className={classes.headerButtonLabel}>Send</Typography>
-        </Button>
+        <DepositButton token={token} />
+        <SendButton token={token} />
       </div>
     </div>
   );
