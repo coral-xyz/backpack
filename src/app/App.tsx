@@ -40,6 +40,8 @@ const lightTheme = createTheme({
       positive: "#19A51E",
       negative: "#E31B1B",
       onboardButton: "#07758E",
+      sendGradient:
+        "linear-gradient(180deg, #1B1D23 0%, rgba(27, 29, 35, 0) 100%)", // todo
     },
   },
 });
@@ -65,6 +67,8 @@ const darkTheme = createTheme({
       positive: "#35A63A",
       negative: "#E95050",
       onboardButton: "#07758E",
+      sendGradient:
+        "linear-gradient(180deg, #1B1D23 0%, rgba(27, 29, 35, 0) 100%)",
     },
   },
 });
