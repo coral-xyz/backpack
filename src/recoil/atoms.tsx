@@ -75,6 +75,20 @@ export const bootstrap = atom<any>({
         );
 
         //
+        // Get the transaction data for the wallet's recent transactions.
+        //
+        //	const publicKey = new PublicKey('FhmUh2PEpTzUwBWPt4qgDBeqfmb2ES3T64CkT1ZiktSS');
+        //				const publicKey = new PublicKey('B987jRxFFnSBULwu6cXRKzUfKDDpyuhCGC58wVxct6Ez');
+        const publicKey = new PublicKey(
+          "AQKQcAaQHpEFuUu4i8tckRnCotUqTuYVjF2X7tePsQQy"
+        );
+        const recentTransactions = await fetchRecentTransactions(
+          publicKey,
+          provider
+        );
+        console.log("recent", recentTransactions);
+
+        //
         // Done.
         //
         return {
@@ -82,6 +96,7 @@ export const bootstrap = atom<any>({
           splTokenMetadata,
           splNftMetadata,
           coingeckoData,
+          recentTransactions,
         };
       } catch (err) {
         // TODO: show error notification.
@@ -291,6 +306,28 @@ export const activeWallet = atom<string | null>({
   ],
 });
 
+export const recentTransactions = atom<any>({
+  key: "recentTransactions",
+  default: selector({
+    key: "recentTransactionsDefault",
+    get: ({ get }: any) => {
+      const b = get(bootstrap);
+      return b.recentTransactions;
+    },
+  }),
+});
+
+export const recentTokenTransactions = selectorFamily({
+  key: "recentTokenTransactions",
+  get:
+    (address: string) =>
+    ({ get }: any) => {
+      const recent = get(recentTransactions);
+      // todo: filter on the given address
+      return recent;
+    },
+});
+
 /**
  * Currently selected wallet with display data.
  */
@@ -408,6 +445,9 @@ export const blockchainTokenAccounts = selectorFamily({
             address,
             mint: tokenAccount.mint.toString(),
             usdBalance: currentUsdBalance,
+            recentPercentChange: price
+              ? parseFloat(price.usd_24h_change.toFixed(2))
+              : undefined,
             recentUsdBalanceChange,
             priceData: price,
           };
@@ -830,4 +870,22 @@ export function removeNfts(
     splTokenAccounts.delete(key);
   }
   return splTokenAccounts;
+}
+
+async function fetchRecentTransactions(
+  publicKey: PublicKey,
+  provider: Provider
+) {
+  const resp = await provider.connection.getConfirmedSignaturesForAddress2(
+    publicKey,
+    {
+      limit: 15,
+    }
+  );
+  // @ts-ignore
+  const signatures = resp.map((s) => s.signature);
+  const transactions = await provider.connection.getParsedTransactions(
+    signatures
+  );
+  return transactions;
 }
