@@ -90,11 +90,14 @@ function _WithBootstrap(props: any) {
   return <>{props.children}</>;
 }
 
-export function UnlockedLoading() {
+export function UnlockedLoading(props: any) {
   const classes = useStyles();
   return (
     <div className={classes.loadingContainer}>
-      <CircularProgress className={classes.loadingIndicator} />
+      <CircularProgress
+        className={classes.loadingIndicator}
+        style={props.iconStyle}
+      />
     </div>
   );
 }

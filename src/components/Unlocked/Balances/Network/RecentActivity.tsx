@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import { makeStyles, Typography, List, ListItem } from "@material-ui/core";
 import { Check, Clear } from "@material-ui/icons";
 import { explorerUrl } from "../../../../common/explorer";
 import { useSolanaWallet } from "../../../../context/Wallet";
 import { useRecentTransactions } from "../../../../hooks/useRecentTransactions";
+import { UnlockedLoading } from "../../../Unlocked";
 
 const useStyles = makeStyles((theme: any) => ({
   recentActivityLabel: {
@@ -107,6 +109,27 @@ export function RecentActivitySmallHeader() {
 }
 
 export function RecentActivityList({ address }: any) {
+  return (
+    <Suspense fallback={<RecentActivityLoading />}>
+      <_RecentActivityList address={address} />
+    </Suspense>
+  );
+}
+
+function RecentActivityLoading() {
+  const classes = useStyles();
+  return (
+    <div className={classes.listItem} style={{ height: "40px" }}>
+      <div
+        style={{ display: "block", marginLeft: "auto", marginRight: "auto" }}
+      >
+        <UnlockedLoading iconStyle={{ width: "25px", height: "25px" }} />
+      </div>
+    </div>
+  );
+}
+
+export function _RecentActivityList({ address }: any) {
   const transactions = useRecentTransactions(address);
   return (
     <List style={{ paddingTop: 0, paddingBottom: 0 }}>
@@ -130,7 +153,6 @@ function RecentActivityListItem({ transaction }: any) {
   const onClick = () => {
     window.open(explorerUrl(txSig));
   };
-  console.log("taaa", transaction);
   return (
     <ListItem
       button

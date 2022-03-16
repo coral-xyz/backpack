@@ -96,6 +96,7 @@ export const bootstrap = atom<any>({
           splNftMetadata,
           coingeckoData,
           recentTransactions,
+          walletPublicKey: wallet.publicKey,
         };
       } catch (err) {
         // TODO: show error notification.
@@ -305,17 +306,26 @@ export const activeWallet = atom<string | null>({
   ],
 });
 
-export const recentTransactions = atomFamily<any, string>({
-  key: "recentTransactions",
-  default: selectorFamily({
-    key: "recentTransactionsDefault",
-    get:
-      (address: string) =>
-      ({ get }: any) => {
-        const b = get(bootstrap);
-        return b.recentTransactions;
-      },
-  }),
+export const recentTransactions = atomFamily<any | null, string>({
+  key: "recentTransactionsMap",
+  default: null,
+  effects: (address: string) => [
+    ({ setSelf, getPromise }: any) => {
+      // TODO: This won't reload individual tokens unless we poll in the background.
+      //       Easier thing to do would be to just fetch everytime on component mount.
+      setSelf(
+        getPromise(bootstrap).then((b: any) => {
+          if (b.walletPublicKey.toString() === address) {
+            return b.recentTransactions;
+          } else {
+            return getPromise(anchorContext).then(({ provider }: any) => {
+              return fetchRecentTransactions(new PublicKey(address), provider);
+            });
+          }
+        })
+      );
+    },
+  ],
 });
 
 /**
