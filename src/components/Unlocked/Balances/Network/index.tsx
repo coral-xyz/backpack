@@ -68,7 +68,10 @@ const useStyles = makeStyles((theme: any) => ({
     },
   },
   networkSettingsIcon: {
-    color: theme.custom.colors.secondary,
+    //    color: theme.custom.colors.secondary,
+    color: theme.custom.colors.nav,
+    backgroundColor: theme.custom.colors.secondary,
+    borderRadius: "12px",
   },
 }));
 
