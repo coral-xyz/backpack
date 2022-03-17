@@ -31,6 +31,18 @@ const useStyles = makeStyles((theme: any) => ({
       },
     },
   },
+  sendTo: {
+    color: theme.custom.colors.fontColor,
+    fontSize: "12px",
+    lineHeight: "16px",
+    fontWeight: 500,
+  },
+  addressBook: {
+    fontWeight: 500,
+    fontSize: "12px",
+    lineHeight: "16px",
+    color: theme.custom.colors.interactiveIconsActive,
+  },
 }));
 
 export function WalletAddress({
@@ -81,5 +93,23 @@ export function TextField({
       value={value}
       onChange={(e) => setValue(e.target.value)}
     />
+  );
+}
+
+export function TextFieldLabel({ leftLabel, rightLabel }: any) {
+  const classes = useStyles();
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        marginLeft: "24px",
+        marginRight: "24px",
+        marginBottom: "8px",
+      }}
+    >
+      <Typography className={classes.sendTo}>{leftLabel}</Typography>
+      <Typography className={classes.addressBook}>{rightLabel}</Typography>
+    </div>
   );
 }

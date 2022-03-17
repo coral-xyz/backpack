@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { makeStyles, Button, Typography } from "@material-ui/core";
 import { useBlockchainTokenAccount } from "../../../hooks/useBlockchainBalances";
 import { RecentActivitySmall } from "./Network/RecentActivity";
 import { SendButton } from "./Send";
 import { DepositButton } from "./Deposit";
+import { WithDrawer } from "../../Layout/Drawer";
+import { Swap } from "./Network/Swap";
 
 const useStyles = makeStyles((theme: any) => ({
   tokenHeaderContainer: {
@@ -12,7 +15,7 @@ const useStyles = makeStyles((theme: any) => ({
     marginTop: "24px",
   },
   tokenHeaderButtonContainer: {
-    width: "208px",
+    width: "316px",
     display: "flex",
     justifyContent: "space-between",
     marginLeft: "auto",
@@ -39,6 +42,22 @@ const useStyles = makeStyles((theme: any) => ({
     textAlign: "center",
     marginTop: "6px",
     lineHeight: "24px",
+  },
+  headerButton: {
+    borderRadius: "12px",
+    width: "100px",
+    height: "40px",
+    backgroundColor: theme.custom.colors.nav,
+    "&:hover": {
+      backgroundColor: theme.custom.colors.nav,
+    },
+  },
+  headerButtonLabel: {
+    color: theme.custom.colors.fontColor,
+    fontSize: "14px",
+    lineHeight: "24px",
+    fontWeight: 500,
+    textTransform: "none",
   },
 }));
 
@@ -72,7 +91,50 @@ function TokenHeader({ blockchain, address }: any) {
       <div className={classes.tokenHeaderButtonContainer}>
         <DepositButton token={token} />
         <SendButton token={token} />
+        <SwapButton blockchain={blockchain} token={token} />
       </div>
     </div>
+  );
+}
+
+export function WithHeaderButton({ label, dialog, dialogTitle }: any) {
+  const classes = useStyles();
+  const [openDrawer, setOpenDrawer] = useState(false);
+  return (
+    <>
+      <Button
+        disableElevation
+        variant="contained"
+        className={classes.headerButton}
+        disableRipple
+        onClick={() => setOpenDrawer(true)}
+      >
+        <Typography className={classes.headerButtonLabel}>{label}</Typography>
+      </Button>
+      <WithDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
+        title={dialogTitle}
+      >
+        {dialog(setOpenDrawer)}
+      </WithDrawer>
+    </>
+  );
+}
+
+function SwapButton({ blockchain, token }: any) {
+  return (
+    <WithHeaderButton
+      label={"Swap"}
+      dialogTitle={`${token.ticker} / Swap`}
+      dialog={(setOpenDrawer: any) => (
+        <Swap
+          token={token}
+          blockchain={blockchain}
+          cancel={true}
+          onCancel={() => setOpenDrawer(false)}
+        />
+      )}
+    />
   );
 }

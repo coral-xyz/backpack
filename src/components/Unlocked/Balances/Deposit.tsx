@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { makeStyles, Button, Typography } from "@material-ui/core";
-import { WithDrawer } from "../../Layout/Drawer";
+import { WithHeaderButton } from "./Token";
 
 const useStyles = makeStyles((theme: any) => ({
   headerButton: {
@@ -22,30 +22,15 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export function DepositButton({ token }: any) {
-  const classes = useStyles();
-  const [openDrawer, setOpenDrawer] = useState(false);
   return (
-    <>
-      <Button
-        disableElevation
-        variant="contained"
-        className={classes.headerButton}
-        disableRipple
-        onClick={() => setOpenDrawer(true)}
-      >
-        <Typography className={classes.headerButtonLabel}>Deposit</Typography>
-      </Button>
-      <WithDrawer
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-        title={`${token.ticker} / Deposit`}
-      >
-        <Deposit />
-      </WithDrawer>
-    </>
+    <WithHeaderButton
+      label={"Deposit"}
+      dialogTitle={`${token.ticker} / Deposit`}
+      dialog={(_setOpenDrawer: any) => <Deposit token={token} />}
+    />
   );
 }
 
-function Deposit() {
+function Deposit({ token }: any) {
   return <div>Deposit</div>;
 }

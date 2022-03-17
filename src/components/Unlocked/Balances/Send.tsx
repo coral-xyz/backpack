@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { makeStyles, Button, Typography } from "@material-ui/core";
-import { WithDrawer } from "../../Layout/Drawer";
-import { TextField } from "../../common";
+import { TextField, TextFieldLabel } from "../../common";
+import { WithHeaderButton } from "./Token";
 
 const useStyles = makeStyles((theme: any) => ({
   container: {
@@ -64,18 +64,6 @@ const useStyles = makeStyles((theme: any) => ({
       backgroundColor: `${theme.custom.colors.nav} !important`,
     },
   },
-  sendTo: {
-    color: theme.custom.colors.fontColor,
-    fontSize: "12px",
-    lineHeight: "16px",
-    fontWeight: 500,
-  },
-  addressBook: {
-    fontWeight: 500,
-    fontSize: "12px",
-    lineHeight: "16px",
-    color: theme.custom.colors.interactiveIconsActive,
-  },
   bottomHalfLabel: {
     fontWeight: 500,
     color: theme.custom.colors.secondary,
@@ -85,27 +73,14 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export function SendButton({ token }: any) {
-  const classes = useStyles();
-  const [openDrawer, setOpenDrawer] = useState(false);
   return (
-    <>
-      <Button
-        disableElevation
-        variant="contained"
-        className={classes.headerButton}
-        disableRipple
-        onClick={() => setOpenDrawer(true)}
-      >
-        <Typography className={classes.headerButtonLabel}>Send</Typography>
-      </Button>
-      <WithDrawer
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-        title={`${token.ticker} / Send`}
-      >
+    <WithHeaderButton
+      label={"Send"}
+      dialogTitle={`${token.ticker} / Send`}
+      dialog={(setOpenDrawer: any) => (
         <Send token={token} onCancel={() => setOpenDrawer(false)} />
-      </WithDrawer>
-    </>
+      )}
+    />
   );
 }
 
@@ -113,25 +88,11 @@ function Send({ onCancel, token }: any) {
   const classes = useStyles() as any;
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState(0);
-  const networkFee = "-"; // TODO
   return (
     <div className={classes.container}>
       <div className={classes.topHalf}>
         <div style={{ marginBottom: "40px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginLeft: "24px",
-              marginRight: "24px",
-              marginBottom: "8px",
-            }}
-          >
-            <Typography className={classes.sendTo}>Send to</Typography>
-            <Typography className={classes.addressBook}>
-              Address Book
-            </Typography>
-          </div>
+          <TextFieldLabel leftLabel={"Send to"} rightLabel={"Address Book"} />
           <TextField
             rootClass={classes.textRoot}
             placeholder={"SOL Address"}
@@ -140,20 +101,10 @@ function Send({ onCancel, token }: any) {
           />
         </div>
         <div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginLeft: "24px",
-              marginRight: "24px",
-              marginBottom: "8px",
-            }}
-          >
-            <Typography className={classes.sendTo}>Amount</Typography>
-            <Typography className={classes.addressBook}>
-              {token.nativeBalance} {token.ticker}
-            </Typography>
-          </div>
+          <TextFieldLabel
+            leftLabel={"Amount"}
+            rightLabel={`${token.nativeBalance} ${token.ticker}`}
+          />
           <TextField
             rootClass={classes.textRoot}
             type={"number"}
@@ -164,44 +115,7 @@ function Send({ onCancel, token }: any) {
         </div>
       </div>
       <div className={classes.bottomHalf}>
-        <div
-          style={{
-            marginLeft: "24px",
-            marginRight: "24px",
-            marginTop: "28px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            <Typography className={classes.bottomHalfLabel}>Network</Typography>
-            <Typography className={classes.bottomHalfLabel}>Solana</Typography>
-          </div>
-          <div
-            style={{
-              marginTop: "10px",
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            <Typography className={classes.bottomHalfLabel}>
-              Network Fee
-            </Typography>
-            <Typography className={classes.bottomHalfLabel}>
-              {networkFee}
-            </Typography>
-          </div>
-          <div
-            style={{
-              marginTop: "10px",
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          ></div>
-        </div>
+        <NetworkFeeInfo />
       </div>
       <div className={classes.buttonContainer}>
         <Button
@@ -222,6 +136,49 @@ function Send({ onCancel, token }: any) {
           <Typography className={classes.buttonLabel}>Next</Typography>
         </Button>
       </div>
+    </div>
+  );
+}
+
+export function NetworkFeeInfo() {
+  const classes = useStyles();
+  const networkFee = "-"; // TODO
+  return (
+    <div
+      style={{
+        marginLeft: "24px",
+        marginRight: "24px",
+        marginTop: "28px",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <Typography className={classes.bottomHalfLabel}>Network</Typography>
+        <Typography className={classes.bottomHalfLabel}>Solana</Typography>
+      </div>
+      <div
+        style={{
+          marginTop: "10px",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <Typography className={classes.bottomHalfLabel}>Network Fee</Typography>
+        <Typography className={classes.bottomHalfLabel}>
+          {networkFee}
+        </Typography>
+      </div>
+      <div
+        style={{
+          marginTop: "10px",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      ></div>
     </div>
   );
 }

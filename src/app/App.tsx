@@ -73,6 +73,8 @@ const darkTheme = createTheme({
       onboardButton: "#07758E",
       sendGradient:
         "linear-gradient(180deg, #1B1D23 0%, rgba(27, 29, 35, 0) 100%)",
+      swapGradient:
+        "linear-gradient(180deg, #292C33 0%, rgba(41, 44, 51, 0) 100%)",
       interactiveIconsActive: "#1196B5",
     },
   },
