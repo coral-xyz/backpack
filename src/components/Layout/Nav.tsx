@@ -68,6 +68,11 @@ const useStyles = makeStyles((theme: any) => ({
   overviewLabel: {
     fontSize: "18px",
     fontWeight: 500,
+    lineHeight: "24px",
+    color: theme.custom.colors.fontColor,
+  },
+  overviewLabelPrefix: {
+    color: theme.custom.colors.secondary,
   },
   backButton: {
     padding: 0,
@@ -183,9 +188,23 @@ function UnlockedCenterDisplay() {
 }
 
 function _UnlockedCenterDisplay() {
-  const classes = useStyles();
   const { title } = useNavigationContext();
-  return <Typography className={classes.overviewLabel}>{title}</Typography>;
+  return <NavTitleLabel title={title} />;
+}
+
+export function NavTitleLabel({ title }: any) {
+  const classes = useStyles();
+  const titleComponents = title.split("/");
+  return titleComponents.length === 2 ? (
+    <Typography className={classes.overviewLabel}>
+      <span className={classes.overviewLabelPrefix}>
+        {titleComponents[0]} /
+      </span>
+      {titleComponents[1]}
+    </Typography>
+  ) : (
+    <Typography className={classes.overviewLabel}>{title}</Typography>
+  );
 }
 
 function DummyButton() {

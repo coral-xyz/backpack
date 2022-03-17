@@ -3,9 +3,7 @@ import {
   SwapCalls as Bridge,
   Person,
   PriorityHigh,
-  SwapHoriz,
-  Apps,
-  MonetizationOn,
+  AttachMoney as Money,
 } from "@material-ui/icons";
 import { useTab } from "../../hooks/useTab";
 import { TAB_BALANCES, TAB_QUEST, TAB_BRIDGE, TAB_FRIENDS } from "../../common";
@@ -58,7 +56,7 @@ export function TabBar() {
         value={TAB_BALANCES}
         disableRipple
         className={classes.tab}
-        icon={<MonetizationOn className={className(TAB_BALANCES)} />}
+        icon={<Money className={className(TAB_BALANCES)} />}
       />
       <Tab
         value={TAB_BRIDGE}

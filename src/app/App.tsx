@@ -42,6 +42,7 @@ const lightTheme = createTheme({
       onboardButton: "#07758E",
       sendGradient:
         "linear-gradient(180deg, #1B1D23 0%, rgba(27, 29, 35, 0) 100%)", // todo
+      interactiveIconsActive: "#1196B5",
     },
   },
 });
@@ -59,16 +60,20 @@ const darkTheme = createTheme({
       fontColor: "#FFFFFF",
       border: "#393C43",
       activeNavButton: "#24B0D0",
+      //			activeNavButton: "#7dffd0",
+      //			activeNavButton: '#ff62eb',
       hamburger: "#99A4B4",
       scrollbarThumb: "rgb(153 164 180)",
       tabIconBackground: "#99A4B4",
       tabIconSelected: "#24B0D0",
+      //			tabIconSelected: '#ff62eb',
       secondary: "#99A4B4",
       positive: "#35A63A",
       negative: "#E95050",
       onboardButton: "#07758E",
       sendGradient:
         "linear-gradient(180deg, #1B1D23 0%, rgba(27, 29, 35, 0) 100%)",
+      interactiveIconsActive: "#1196B5",
     },
   },
 });

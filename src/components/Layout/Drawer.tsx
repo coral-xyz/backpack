@@ -1,13 +1,7 @@
-import {
-  makeStyles,
-  Drawer,
-  Button,
-  IconButton,
-  Typography,
-} from "@material-ui/core";
+import { makeStyles, Drawer, Button, IconButton } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { EXTENSION_HEIGHT } from "../../common";
-import { NAV_BAR_HEIGHT } from "./Nav";
+import { NAV_BAR_HEIGHT, NavTitleLabel } from "./Nav";
 import { Scrollbar } from "./Scrollbar";
 
 const useStyles = makeStyles((theme: any) => ({
@@ -38,11 +32,6 @@ const useStyles = makeStyles((theme: any) => ({
   closeDrawerButton: {
     backgroundColor: theme.custom.colors,
     width: "100%",
-  },
-  title: {
-    fontWeight: 500,
-    color: theme.custom.colors.fontColor,
-    fontSize: "18px",
   },
   rightButton: {
     "&:hover": {
@@ -101,7 +90,7 @@ function Title({ title }: any) {
         flexDirection: "column",
       }}
     >
-      <Typography className={classes.title}>{title}</Typography>
+      <NavTitleLabel title={title} />
     </div>
   );
 }

@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { Lock } from "@material-ui/icons";
-import {
-  makeStyles,
-  Divider,
-  Typography,
-  TextField,
-  Button,
-} from "@material-ui/core";
+import { makeStyles, Divider, Typography, Button } from "@material-ui/core";
+import { TextField } from "./common";
 import { getBackgroundClient } from "../background/client";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "../common";
 
@@ -30,56 +25,21 @@ export const useStyles = makeStyles((theme: any) => ({
   },
   navTitle: {
     fontSize: "18px",
+    lineHeight: "24px",
     color: theme.custom.colors.fontColor,
     fontWeight: 500,
     textAlign: "center",
   },
   header: {
+    lineHeight: "24px",
     height: "188px",
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
   },
-  passwordField: {
-    fontSize: "14px",
-    fontWeight: 500,
-    borderRadius: "12px",
-    color: theme.custom.colors.secondary,
-    width: "351px",
-  },
-  passwordFieldContainer: {},
-  passwordRoot: {
-    marginLeft: "12px",
-    marginRight: "12px",
-    marginTop: "24px",
-    marginBottom: "24px",
-    width: "351px",
-    borderRadius: "12px",
-    backgroundColor: theme.custom.colors.background,
-    "& .MuiOutlinedInput-root": {
-      border: `solid 1pt ${theme.custom.colors.border}`,
-      borderRadius: "12px",
-      height: "56px",
-      "& fieldset": {
-        border: "none",
-      },
-    },
-  },
   passwordRootNegative: {
-    marginLeft: "12px",
-    marginRight: "12px",
-    marginTop: "24px",
-    marginBottom: "24px",
-    width: "351px",
-    borderRadius: "12px",
-    backgroundColor: theme.custom.colors.background,
     "& .MuiOutlinedInput-root": {
       border: `solid 1pt ${theme.custom.colors.negative}`,
-      borderRadius: "12px",
-      height: "56px",
-      "& fieldset": {
-        border: "none",
-      },
     },
   },
   passwordLabel: {
@@ -112,6 +72,7 @@ export const useStyles = makeStyles((theme: any) => ({
     marginBottom: "3px",
   },
   headerSubtitle: {
+    lineHeight: "20px",
     color: theme.custom.colors.secondary,
     fontSize: "14px",
     fontWeight: 500,
@@ -185,27 +146,11 @@ export function Locked() {
       </div>
       <div className={classes.content}>
         <TextField
-          placeholder="Password"
-          variant="outlined"
-          margin="dense"
-          required
-          fullWidth
-          type="password"
-          className={classes.passwordFieldContainer}
-          inputProps={{
-            className: classes.passwordField,
-          }}
-          classes={{
-            root: error ? classes.passwordRootNegative : classes.passwordRoot,
-          }}
-          InputLabelProps={{
-            shrink: false,
-            style: {
-              borderRadius: "12px",
-            },
-          }}
+          rootClass={error ? classes.passwordRootNegative : undefined}
+          placeholder={"Password"}
+          type={"password"}
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          setValue={setPassword}
         />
         <Button
           onClick={onUnlock}
