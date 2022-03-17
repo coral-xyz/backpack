@@ -7,7 +7,6 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  Button,
 } from "@material-ui/core";
 import { ArrowForwardIos } from "@material-ui/icons";
 import {
@@ -17,7 +16,6 @@ import {
   useBlockchainTokensSorted,
 } from "../../../hooks/useBlockchainBalances";
 import { useNavigationContext } from "../../../context/Navigation";
-import { Network } from "./Network";
 import {
   NAV_COMPONENT_BALANCES_NETWORK,
   NAV_COMPONENT_TOKEN,
@@ -153,19 +151,23 @@ const useStyles = makeStyles((theme: any) => ({
     fontSize: "12px",
     fontWeight: 500,
     color: theme.custom.colors.secondary,
+    lineHeight: "24px",
   },
   totalBalance: {
     fontWeight: 500,
     fontSize: "20px",
     color: theme.custom.colors.fontColor,
+    lineHeight: "24px",
   },
   positive: {
     color: theme.custom.colors.positive,
     fontSize: "12px",
+    lineHeight: "24px",
   },
   negative: {
     color: theme.custom.colors.negative,
     fontSize: "12px",
+    lineHeight: "24px",
   },
 }));
 
