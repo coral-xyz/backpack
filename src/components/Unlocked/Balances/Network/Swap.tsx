@@ -152,6 +152,7 @@ function _Swap({ blockchain, cancel, onCancel }: any) {
     toToken,
     fromMint,
     toMint,
+    swapToFromMints,
   } = useSwapContext();
   const fromTokenData = useBlockchainTokenAccount(blockchain, fromToken);
   return (
@@ -178,7 +179,7 @@ function _Swap({ blockchain, cancel, onCancel }: any) {
         />
       </div>
       <div className={classes.bottomHalfContent}>
-        <SwapTokensButton />
+        <SwapTokensButton onClick={swapToFromMints} />
         <TextFieldLabel leftLabel={"You Receive"} rightLabel={""} />
         <TextField
           endAdornment={
@@ -225,11 +226,15 @@ function ReviewButton() {
   );
 }
 
-function SwapTokensButton() {
+function SwapTokensButton({ onClick }: any) {
   const classes = useStyles();
   return (
     <div className={classes.swapTokensContainer}>
-      <IconButton disableRipple className={classes.swapTokensButton}>
+      <IconButton
+        disableRipple
+        className={classes.swapTokensButton}
+        onClick={onClick}
+      >
         <SwapVert className={classes.swapIcon} />
       </IconButton>
     </div>
@@ -261,19 +266,29 @@ function TokenSelectorButton({ mint, isFrom, blockchain }: any) {
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}
       >
-        <TokenList blockchain={blockchain} isFrom={isFrom} />
+        <TokenList
+          blockchain={blockchain}
+          isFrom={isFrom}
+          close={() => setOpenDrawer(false)}
+        />
       </WithDrawer>
     </InputAdornment>
   );
 }
 
-function TokenList({ isFrom, blockchain }: any) {
+function TokenList({ isFrom, blockchain, close }: any) {
   const [search, setSearch] = useState("");
+  const { setFromMint, setToMint } = useSwapContext();
   const classes = useStyles();
   const tokenRegistry = useSplTokenRegistry();
   const tokenAccountsSorted = useBlockchainTokensSorted(blockchain);
   const didSelect = (token: any) => {
-    console.log("did select", token);
+    if (isFrom) {
+      setFromMint(token.mint);
+    } else {
+      setToMint(token.mint);
+    }
+    close();
   };
 
   let tokens;

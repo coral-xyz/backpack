@@ -2,17 +2,21 @@ import React, { useContext, useState } from "react";
 import * as anchor from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { useSolanaWallet } from "./Wallet";
-import { useAnchorContext } from "./Anchor";
 
 type SwapContext = {
-  fromMint: string;
-  setFromMint: any;
-  toMint: string;
-  setToMint: any;
   fromAmount: number;
   setFromAmount: any;
+
   toAmount: number;
   setToAmount: any;
+
+  fromMint: string;
+  toMint: string;
+
+  setToMint: (mint: string) => void;
+  setFromMint: (mint: string) => void;
+  swapToFromMints: any;
+
   fromToken: string;
   toToken: string;
 };
@@ -28,8 +32,10 @@ const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 const WSOL_MINT = "So11111111111111111111111111111111111111112";
 
 export function SwapProvider(props: any) {
-  const [fromMint, setFromMint] = useState(WSOL_MINT);
-  const [toMint, setToMint] = useState(USDC_MINT);
+  const [[fromMint, toMint], setFromMintToMint] = useState([
+    WSOL_MINT,
+    USDC_MINT,
+  ]);
   const [fromAmount, setFromAmount] = useState(0); // todo
   const [toAmount, setToAmount] = useState(0); // todo
   const wallet = useSolanaWallet();
@@ -42,17 +48,34 @@ export function SwapProvider(props: any) {
     wallet.publicKey
   );
 
+  const swapToFromMints = () => {
+    setFromMintToMint([toMint, fromMint]);
+  };
+
+  const setFromMint = (mint: string) => {
+    setFromMintToMint([mint, toMint]);
+  };
+
+  const setToMint = (mint: string) => {
+    setFromMintToMint([fromMint, mint]);
+  };
+
   return (
     <_SwapContext.Provider
       value={{
         fromAmount,
         setFromAmount,
+
         toAmount,
         setToAmount,
-        setFromMint,
-        setToMint,
+
         fromMint,
         toMint,
+
+        setFromMint,
+        setToMint,
+        swapToFromMints,
+
         fromToken: fromToken.toString(),
         toToken: toToken.toString(),
       }}
