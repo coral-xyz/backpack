@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 import { Check, Clear } from "@material-ui/icons";
 import { explorerUrl } from "../../../../common/explorer";
-import { useSolanaWallet } from "../../../../context/Wallet";
+import { useSolanaWallet } from "../../../../hooks/useWallet";
 import { useRecentTransactions } from "../../../../hooks/useRecentTransactions";
 import { UnlockedLoading } from "../../../Unlocked";
 

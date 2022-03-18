@@ -12,7 +12,7 @@ import { KeyringStoreStateEnum } from "../keyring/store";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
 import { Layout } from "../components/Layout";
-import { useKeyringStoreState } from "../context/KeyringStoreState";
+import { useKeyringStoreState } from "../hooks/useKeyringStoreState";
 import { NotificationsProvider } from "../context/Notifications";
 import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../common";
 import { useDarkMode } from "../hooks/useDarkMode";

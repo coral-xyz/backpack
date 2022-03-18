@@ -7,7 +7,7 @@ import {
 } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import { KeyringStoreStateEnum } from "../../keyring/store";
-import { useKeyringStoreState } from "../../context/KeyringStoreState";
+import { useKeyringStoreState } from "../../hooks/useKeyringStoreState";
 import { SidebarButton } from "./Sidebar";
 import { Scrollbar } from "./Scrollbar";
 import {

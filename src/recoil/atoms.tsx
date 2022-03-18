@@ -23,7 +23,7 @@ import {
 import { getBackgroundClient } from "../background/client";
 import { WalletPublicKeys, TokenDisplay } from "./types";
 import { KeyringStoreState } from "../keyring/store";
-import { SolanaWallet } from "../context/Wallet";
+import { SolanaWallet } from "../hooks/useWallet";
 import { Network } from "../components/Unlocked/Balances/Network";
 import { TABS } from "../background/backend";
 import { Token } from "../components/Unlocked/Balances/Token";

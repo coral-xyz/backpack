@@ -1,14 +1,16 @@
 import React, { useContext, useState } from "react";
 import * as anchor from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
-import { useSolanaWallet } from "./Wallet";
+import { useSolanaWallet } from "../hooks/useWallet";
+
+const DEFAULT_SLIPPAGE_PERCENT = 0.5;
 
 type SwapContext = {
   fromAmount: number;
-  setFromAmount: any;
-
   toAmount: number;
-  setToAmount: any;
+
+  setToAmount: (a: number) => void;
+  setFromAmount: (a: number) => void;
 
   fromMint: string;
   toMint: string;
@@ -19,25 +21,19 @@ type SwapContext = {
 
   fromToken: string;
   toToken: string;
+
+  slippage: number;
+  setSlippage: (s: number) => void;
 };
 const _SwapContext = React.createContext<SwapContext | null>(null);
-
-const TOKEN_PROGRAM_ID = new PublicKey(
-  "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-);
-const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
-  "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
-);
-const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
-const WSOL_MINT = "So11111111111111111111111111111111111111112";
 
 export function SwapProvider(props: any) {
   const [[fromMint, toMint], setFromMintToMint] = useState([
     WSOL_MINT,
     USDC_MINT,
   ]);
-  const [fromAmount, setFromAmount] = useState(0); // todo
-  const [toAmount, setToAmount] = useState(0); // todo
+  const [[fromAmount, toAmount], setFromAmountToAmount] = useState([0, 0]); // todo
+  const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE_PERCENT);
   const wallet = useSolanaWallet();
   const fromToken = associatedTokenAddress(
     new PublicKey(fromMint),
@@ -50,6 +46,15 @@ export function SwapProvider(props: any) {
 
   const swapToFromMints = () => {
     setFromMintToMint([toMint, fromMint]);
+    setFromAmountToAmount([toAmount, fromAmount]);
+  };
+
+  const setFromAmount = (amount: number) => {
+    setFromAmountToAmount([amount, toAmount]);
+  };
+
+  const setToAmount = (amount: number) => {
+    setFromAmountToAmount([fromAmount, amount]);
   };
 
   const setFromMint = (mint: string) => {
@@ -64,9 +69,9 @@ export function SwapProvider(props: any) {
     <_SwapContext.Provider
       value={{
         fromAmount,
-        setFromAmount,
-
         toAmount,
+
+        setFromAmount,
         setToAmount,
 
         fromMint,
@@ -78,6 +83,9 @@ export function SwapProvider(props: any) {
 
         fromToken: fromToken.toString(),
         toToken: toToken.toString(),
+
+        slippage,
+        setSlippage,
       }}
     >
       {props.children}
@@ -99,3 +107,12 @@ function associatedTokenAddress(mint: PublicKey, wallet: PublicKey): PublicKey {
     ASSOCIATED_TOKEN_PROGRAM_ID
   )[0];
 }
+
+const TOKEN_PROGRAM_ID = new PublicKey(
+  "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+);
+const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
+  "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+);
+const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+const WSOL_MINT = "So11111111111111111111111111111111111111112";

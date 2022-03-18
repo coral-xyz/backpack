@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core";
 import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../../common";
 import { KeyringStoreStateEnum } from "../../keyring/store";
-import { useKeyringStoreState } from "../../context/KeyringStoreState";
+import { useKeyringStoreState } from "../../hooks/useKeyringStoreState";
 import { TabBar } from "./Tab";
 
 const useStyles = makeStyles((theme: any) => ({

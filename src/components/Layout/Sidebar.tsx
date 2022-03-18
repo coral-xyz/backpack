@@ -21,9 +21,9 @@ import {
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
 } from "../../common";
 import { getBackgroundClient } from "../../background/client";
-import { useKeyringStoreState } from "../../context/KeyringStoreState";
+import { useKeyringStoreState } from "../../hooks/useKeyringStoreState";
+import { useWalletPublicKeys } from "../../hooks/useWallet";
 import { KeyringStoreStateEnum } from "../../keyring/store";
-import { useWalletPublicKeys } from "../../context/Wallet";
 import { WalletAddress } from "../../components/common";
 import { WithDrawerNoHeader } from "./Drawer";
 

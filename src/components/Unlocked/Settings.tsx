@@ -8,7 +8,7 @@ import {
   ListItem,
   ListItemText,
 } from "@material-ui/core";
-import { useActiveWallet } from "../../context/Wallet";
+import { useActiveWallet } from "../../hooks/useWallet";
 import { getBackgroundClient } from "../../background/client";
 import {
   UI_RPC_METHOD_KEYNAME_UPDATE,

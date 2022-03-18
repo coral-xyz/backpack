@@ -8,7 +8,7 @@ import {
   useBootstrap,
   useBootstrapFast,
   useBackgroundPoll,
-} from "../../context/Wallet";
+} from "../../hooks/useWallet";
 import { WithNav, WithNavContext } from "../Layout/Nav";
 import { TAB_BALANCES, TAB_BRIDGE, TAB_QUEST, TAB_FRIENDS } from "../../common";
 

@@ -1,11 +1,10 @@
-import { useEffect } from "react";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { Connection } from "@solana/web3.js";
 import { useRecoilValue, constSelector } from "recoil";
 import * as atoms from "../recoil/atoms";
-import { useKeyringStoreState } from "../context/KeyringStoreState";
+import { useKeyringStoreState } from "../hooks/useKeyringStoreState";
 import { KeyringStoreStateEnum } from "../keyring/store";
-import { useLoadSplTokens } from "../context/Token";
+import { useLoadSplTokens } from "../hooks/useLoadSplTokens";
 
 // Bootstrap data for the initial load.
 export function useBootstrap() {
