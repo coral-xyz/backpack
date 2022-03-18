@@ -415,6 +415,9 @@ export const blockchainTokenAccounts = selectorFamily({
       switch (blockchain) {
         case "solana":
           const tokenAccount = get(solanaTokenAccountsMap(address));
+          if (!tokenAccount) {
+            return null;
+          }
           const tokenRegistry = get(splTokenRegistry);
           const price = get(priceData(tokenAccount.mint.toString()));
           const tokenMetadata =

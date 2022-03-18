@@ -1,8 +1,21 @@
 import { useState } from "react";
-import { makeStyles, Button, Typography, IconButton } from "@material-ui/core";
-import { SwapVert } from "@material-ui/icons";
+import {
+  makeStyles,
+  List,
+  ListItem,
+  InputAdornment,
+  Button,
+  Typography,
+  IconButton,
+} from "@material-ui/core";
+import { ExpandMore, SwapVert } from "@material-ui/icons";
 import { TextField, TextFieldLabel } from "../../../common";
 import { NetworkFeeInfo } from "../Send";
+import { SwapProvider, useSwapContext } from "../../../../context/Swap";
+import { useBlockchainTokenAccount } from "../../../../hooks/useBlockchainBalances";
+import { useSplTokenRegistry } from "../../../../hooks/useSplTokenRegistry";
+import { WithDrawer } from "../../../../components/Layout/Drawer";
+import { useBlockchainTokensSorted } from "../../../../hooks/useBlockchainBalances";
 
 const useStyles = makeStyles((theme: any) => ({
   container: {
@@ -76,18 +89,88 @@ const useStyles = makeStyles((theme: any) => ({
   swapIcon: {
     color: theme.custom.colors.secondary,
   },
+  tokenSelectorButton: {
+    display: "flex",
+  },
+  tokenSelectorButtonLabel: {
+    color: theme.custom.colors.fontColor,
+    fontSize: "14px",
+    fontWeight: 600,
+    lineHeight: "24px",
+  },
+  expandMore: {
+    color: theme.custom.colors.secondary,
+    fontSize: "18px",
+    marginLeft: "6px",
+  },
+  tokenLogo: {
+    marginRight: "8px",
+    width: "20px",
+    height: "20px",
+    borderRadius: "10px",
+  },
+  tokenList: {
+    borderTop: `solid 1pt ${theme.custom.colors.border}`,
+    padding: 0,
+  },
+  tokenListItem: {
+    display: "flex",
+    justifyContent: "space-between",
+    borderBottom: `solid 1pt ${theme.custom.colors.border}`,
+  },
+  tokenListItemName: {
+    color: theme.custom.colors.fontColor,
+    fontWeight: 500,
+  },
+  tokenListItemBalance: {
+    color: theme.custom.colors.secondary,
+    fontWeight: 500,
+  },
+  tokenListSearchRoot: {},
+  tokenListContainer: {
+    flex: 1,
+    backgroundColor: theme.custom.colors.nav,
+  },
 }));
 
 export function Swap({ blockchain, cancel, onCancel }: any) {
+  return (
+    <SwapProvider>
+      <_Swap blockchain={blockchain} cancel={cancel} onCancel={onCancel} />
+    </SwapProvider>
+  );
+}
+
+function _Swap({ blockchain, cancel, onCancel }: any) {
   const classes = useStyles();
-  const fromTokenBalance = 0; // todo
-  const [fromAmount, setFromAmount] = useState(0); // todo
-  const [toAmount, setToAmount] = useState(0); // todo
+  const {
+    fromAmount,
+    setFromAmount,
+    toAmount,
+    setToAmount,
+    fromToken,
+    toToken,
+    fromMint,
+    toMint,
+  } = useSwapContext();
+  const fromTokenData = useBlockchainTokenAccount(blockchain, fromToken);
   return (
     <div className={classes.container}>
       <div className={classes.topHalf}>
-        <TextFieldLabel leftLabel={"You Pay"} rightLabel={fromTokenBalance} />
+        <TextFieldLabel
+          leftLabel={"You Pay"}
+          rightLabel={
+            fromTokenData ? fromTokenData.nativeBalance.toString() : "-"
+          }
+        />
         <TextField
+          endAdornment={
+            <TokenSelectorButton
+              blockchain={blockchain}
+              isFrom={true}
+              mint={fromMint}
+            />
+          }
           rootClass={classes.fromFieldRoot}
           type={"number"}
           value={fromAmount}
@@ -98,6 +181,9 @@ export function Swap({ blockchain, cancel, onCancel }: any) {
         <SwapTokensButton />
         <TextFieldLabel leftLabel={"You Receive"} rightLabel={""} />
         <TextField
+          endAdornment={
+            <TokenSelectorButton blockchain={blockchain} mint={toMint} />
+          }
           rootClass={classes.receiveFieldRoot}
           type={"number"}
           value={toAmount}
@@ -147,5 +233,113 @@ function SwapTokensButton() {
         <SwapVert className={classes.swapIcon} />
       </IconButton>
     </div>
+  );
+}
+
+function TokenSelectorButton({ mint, isFrom, blockchain }: any) {
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const classes = useStyles();
+  const tokenRegistry = useSplTokenRegistry();
+  const tokenInfo = tokenRegistry.get(mint); // todo handle null case
+  const symbol = tokenInfo ? tokenInfo.symbol : "-";
+  const logoUri = tokenInfo ? tokenInfo.logoURI : "-";
+  return (
+    <InputAdornment position="end">
+      <Button
+        disableRipple
+        className={classes.tokenSelectorButton}
+        onClick={() => setOpenDrawer(true)}
+      >
+        <img className={classes.tokenLogo} src={logoUri} />
+        <Typography className={classes.tokenSelectorButtonLabel}>
+          {symbol}
+        </Typography>
+        <ExpandMore className={classes.expandMore} />
+      </Button>
+      <WithDrawer
+        title={"Tokens"}
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
+      >
+        <TokenList blockchain={blockchain} isFrom={isFrom} />
+      </WithDrawer>
+    </InputAdornment>
+  );
+}
+
+function TokenList({ isFrom, blockchain }: any) {
+  const [search, setSearch] = useState("");
+  const classes = useStyles();
+  const tokenRegistry = useSplTokenRegistry();
+  const tokenAccountsSorted = useBlockchainTokensSorted(blockchain);
+  const didSelect = (token: any) => {
+    console.log("did select", token);
+  };
+
+  let tokens;
+  if (isFrom) {
+    tokens = tokenAccountsSorted.filter((t: any) => t.nativeBalance > 0);
+  } else {
+    tokens = tokenAccountsSorted.filter((t: any) => t.nativeBalance > 0);
+  }
+
+  const searchLower = search.toLowerCase();
+  tokens = tokens.filter(
+    (t: any) =>
+      t.name &&
+      (t.name.toLowerCase().startsWith(searchLower) ||
+        t.ticker.toLowerCase().startsWith(searchLower))
+  );
+
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <TextField
+        placeholder={"Search name"}
+        rootClass={classes.tokenListSearchRoot}
+        value={search}
+        setValue={setSearch}
+      />
+      <div className={classes.tokenListContainer}>
+        <List className={classes.tokenList}>
+          {tokens.map((t: any) => (
+            <TokenListItem key={t.address} onClick={didSelect} token={t} />
+          ))}
+        </List>
+      </div>
+    </div>
+  );
+}
+
+function TokenListItem({ token, onClick }: any) {
+  const classes = useStyles();
+  return (
+    <ListItem
+      button
+      className={classes.tokenListItem}
+      onClick={() => onClick(token)}
+    >
+      <div style={{ display: "flex " }}>
+        <img
+          src={token.logo}
+          style={{ width: "30px", height: "30px", marginRight: "8px" }}
+        />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+          }}
+        >
+          <Typography className={classes.tokenListItemName}>
+            {token.name}
+          </Typography>
+        </div>
+      </div>
+      <div>
+        <Typography className={classes.tokenListItemBalance}>
+          {token.nativeBalance.toLocaleString()} {token.ticker}
+        </Typography>
+      </div>
+    </ListItem>
   );
 }

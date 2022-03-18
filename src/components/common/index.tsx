@@ -67,6 +67,7 @@ export function TextField({
   value,
   setValue,
   rootClass,
+  endAdornment,
 }: any) {
   const classes = useStyles();
   return (
@@ -89,6 +90,9 @@ export function TextField({
         style: {
           borderRadius: "12px",
         },
+      }}
+      InputProps={{
+        endAdornment,
       }}
       value={value}
       onChange={(e) => setValue(e.target.value)}

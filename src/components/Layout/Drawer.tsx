@@ -81,7 +81,6 @@ function LeftButton() {
 }
 
 function Title({ title }: any) {
-  const classes = useStyles();
   return (
     <div
       style={{
