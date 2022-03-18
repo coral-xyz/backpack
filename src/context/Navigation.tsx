@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { useRecoilValue, useRecoilState } from "recoil";
 import * as atoms from "../recoil/atoms";
 
@@ -24,11 +24,7 @@ const _NavigationStackRootContext =
 export function NavigationStackProvider(props: any) {
   const root = props.root;
   return (
-    <_NavigationStackRootContext.Provider
-      value={{
-        root,
-      }}
-    >
+    <_NavigationStackRootContext.Provider value={{ root }}>
       {props.children}
     </_NavigationStackRootContext.Provider>
   );

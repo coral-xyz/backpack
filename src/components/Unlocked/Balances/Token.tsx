@@ -5,7 +5,6 @@ import { RecentActivitySmall } from "./Network/RecentActivity";
 import { SendButton } from "./Send";
 import { DepositButton } from "./Deposit";
 import { WithDrawer } from "../../Layout/Drawer";
-import { Swap } from "./Network/Swap";
 
 const useStyles = makeStyles((theme: any) => ({
   tokenHeaderContainer: {
@@ -91,7 +90,7 @@ function TokenHeader({ blockchain, address }: any) {
       <div className={classes.tokenHeaderButtonContainer}>
         <DepositButton token={token} />
         <SendButton token={token} />
-        <SwapButton blockchain={blockchain} token={token} />
+        <CheckButton token={token} />
       </div>
     </div>
   );
@@ -122,19 +121,18 @@ export function WithHeaderButton({ label, dialog, dialogTitle }: any) {
   );
 }
 
-function SwapButton({ blockchain, token }: any) {
+function CheckButton({ token }: any) {
   return (
     <WithHeaderButton
-      label={"Swap"}
-      dialogTitle={`${token.ticker} / Swap`}
+      label={"Check"}
+      dialogTitle={`${token.ticker} / Check`}
       dialog={(setOpenDrawer: any) => (
-        <Swap
-          token={token}
-          blockchain={blockchain}
-          cancel={true}
-          onCancel={() => setOpenDrawer(false)}
-        />
+        <Check onCancel={() => setOpenDrawer(false)} token={token} />
       )}
     />
   );
+}
+
+function Check({ onCancel, token }: any) {
+  return <div>this is a check</div>;
 }
