@@ -14,6 +14,7 @@ import { WithTabs } from "./Tab";
 import { useBootstrap } from "../../hooks/useWallet";
 
 export const NAV_BAR_HEIGHT = 56;
+export const NAV_BUTTON_WIDTH = 38;
 
 const useStyles = makeStyles((theme: any) => ({
   withNavContainer: {
@@ -32,7 +33,7 @@ const useStyles = makeStyles((theme: any) => ({
     backgroundColor: theme.custom.colors.nav,
   },
   menuButtonContainer: {
-    width: "38px",
+    width: `${NAV_BUTTON_WIDTH}px`,
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
@@ -146,7 +147,7 @@ export function _NavBackButton({ pop }: any) {
   const classes = useStyles();
   const theme = useTheme() as any;
   return (
-    <div style={{ display: "flex", width: "38px" }}>
+    <div style={{ display: "flex", width: `${NAV_BUTTON_WIDTH}px` }}>
       <IconButton
         disableRipple
         onClick={() => pop()}

@@ -2,10 +2,9 @@ import { useEffect } from "react";
 import { makeStyles, Drawer, Button, IconButton } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { EXTENSION_HEIGHT } from "../../common";
-import { NAV_BAR_HEIGHT, NavTitleLabel } from "./Nav";
+import { NAV_BAR_HEIGHT, NAV_BUTTON_WIDTH } from "./Nav";
 import { WithEphemeralNav } from "./NavEphemeral";
 import { useEphemeralNav } from "../../context/NavEphemeral";
-import { Scrollbar } from "./Scrollbar";
 
 const useStyles = makeStyles((theme: any) => ({
   withDrawer: {
@@ -43,6 +42,11 @@ const useStyles = makeStyles((theme: any) => ({
   },
   rightButtonIcon: {
     color: theme.custom.colors.secondary,
+  },
+  rightButtonLabel: {
+    display: "flex",
+    flexDirection: "row-reverse",
+    justifyContent: "end",
   },
   navContainer: {
     display: "flex",
@@ -90,7 +94,14 @@ function WithDrawerContent({ children, setOpenDrawer }: any) {
 function RightButton({ onClick }: any) {
   const classes = useStyles();
   return (
-    <IconButton disableRipple style={{ width: "48px" }} onClick={onClick}>
+    <IconButton
+      classes={{
+        label: classes.rightButtonLabel,
+      }}
+      disableRipple
+      style={{ padding: 0, width: `${NAV_BUTTON_WIDTH}px` }}
+      onClick={onClick}
+    >
       <Close className={classes.rightButtonIcon} />
     </IconButton>
   );
