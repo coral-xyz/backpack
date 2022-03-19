@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 import {
   makeStyles,
+  useTheme,
   Typography,
   IconButton,
-  useTheme,
 } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import { KeyringStoreStateEnum } from "../../keyring/store";
@@ -15,11 +15,17 @@ import {
   useNavigationContext,
   useNavigationRender,
 } from "../../context/Navigation";
-import { UnlockedLoading } from "../Unlocked";
+import { Loading } from "../common";
 
 export const NAV_BAR_HEIGHT = 56;
 
 const useStyles = makeStyles((theme: any) => ({
+  withNavContainer: {
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+  },
+  navBarSuspense: {},
   navBarContainer: {
     display: "flex",
     justifyContent: "space-between",
@@ -82,18 +88,17 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-export function WithNav(props: any) {
+export function WithNav({ children }: any) {
+  const classes = useStyles();
   return (
-    <Suspense fallback={<div></div>}>
-      <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-        <NavBar />
-        {props.children}
-      </div>
-    </Suspense>
+    <div className={classes.withNavContainer}>
+      <NavBar />
+      <WithNavContext>{children}</WithNavContext>
+    </div>
   );
 }
 
-export function WithNavContext(props: any) {
+function WithNavContext(props: any) {
   return (
     <NavigationStackProvider root={props.children}>
       <NavContent />
@@ -102,6 +107,15 @@ export function WithNavContext(props: any) {
 }
 
 function NavBar() {
+  const classes = useStyles();
+  return (
+    <Suspense fallback={<div className={classes.navBarSuspense}></div>}>
+      <_NavBar />
+    </Suspense>
+  );
+}
+
+function _NavBar() {
   const classes = useStyles();
   const theme = useTheme() as any;
   const { navBorderBottom } = useNavigationContext();
@@ -154,7 +168,7 @@ function NavContent() {
   return (
     <div style={{ flex: 1 }}>
       <Scrollbar>
-        <Suspense fallback={<UnlockedLoading />}>{render()}</Suspense>
+        <Suspense fallback={<Loading />}>{render()}</Suspense>
       </Scrollbar>
     </div>
   );

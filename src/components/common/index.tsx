@@ -3,6 +3,7 @@ import {
   makeStyles,
   TextField as MuiTextField,
   Typography,
+  CircularProgress,
 } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: any) => ({
@@ -42,6 +43,18 @@ const useStyles = makeStyles((theme: any) => ({
     fontSize: "12px",
     lineHeight: "16px",
     color: theme.custom.colors.interactiveIconsActive,
+  },
+  loadingContainer: {
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    height: "100%",
+  },
+  loadingIndicator: {
+    display: "block",
+    marginLeft: "auto",
+    marginRight: "auto",
+    color: theme.custom.colors.activeNavButton,
   },
 }));
 
@@ -114,6 +127,18 @@ export function TextFieldLabel({ leftLabel, rightLabel }: any) {
     >
       <Typography className={classes.sendTo}>{leftLabel}</Typography>
       <Typography className={classes.addressBook}>{rightLabel}</Typography>
+    </div>
+  );
+}
+
+export function Loading(props: any) {
+  const classes = useStyles();
+  return (
+    <div className={classes.loadingContainer}>
+      <CircularProgress
+        className={classes.loadingIndicator}
+        style={props.iconStyle}
+      />
     </div>
   );
 }

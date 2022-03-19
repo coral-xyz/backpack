@@ -1,4 +1,4 @@
-import { atom, atomFamily, selectorFamily } from "recoil";
+import { atom, atomFamily, selector, selectorFamily } from "recoil";
 import {
   UI_RPC_METHOD_NAVIGATION_UPDATE,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
@@ -37,19 +37,15 @@ export const navigation = atom({
 
 export const navigationActiveTab = atom<string>({
   key: "navigationActiveTab",
-  default: TAB_BALANCES,
+  default: selector({
+    key: "navigationActiveTabDefault",
+    get: ({ get }: any) => {
+      const bs = get(bootstrapFast);
+      return bs.activeTab;
+    },
+  }),
   effects: [
-    ({ setSelf, onSet }) => {
-      setSelf(
-        (async () => {
-          const background = getBackgroundClient();
-          return background.request({
-            method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
-            params: [],
-          });
-        })()
-      );
-
+    ({ onSet }) => {
       onSet((activeTab) => {
         const background = getBackgroundClient();
         return background.request({

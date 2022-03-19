@@ -5,14 +5,17 @@ import * as atoms from "../recoil/atoms";
 import { useKeyringStoreState } from "../hooks/useKeyringStoreState";
 import { KeyringStoreStateEnum } from "../keyring/store";
 import { useLoadSplTokens } from "../hooks/useLoadSplTokens";
+import { useTab } from "../hooks/useTab";
 
 // Bootstrap data for the initial load.
 export function useBootstrap() {
-  useRecoilValue(atoms.bootstrap);
+  return useRecoilValue(atoms.bootstrap);
 }
 
 export function useBootstrapFast() {
   useRecoilValue(atoms.bootstrapFast);
+  // Hack: load all the navigation atoms to prevent UI flickering.
+  useTab();
 }
 
 export function useBackgroundPoll() {

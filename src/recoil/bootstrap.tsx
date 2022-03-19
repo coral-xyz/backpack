@@ -1,7 +1,10 @@
 import { atom, selector } from "recoil";
 import { PublicKey } from "@solana/web3.js";
 import { TokenAccountWithKey } from "./types";
-import { UI_RPC_METHOD_NAVIGATION_READ } from "../common";
+import {
+  UI_RPC_METHOD_NAVIGATION_READ,
+  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
+} from "../common";
 import { getBackgroundClient } from "../background/client";
 import { TABS } from "../background/backend";
 import { fetchRecentTransactions } from "./recent-transactions";
@@ -92,27 +95,37 @@ export const bootstrap = atom<any>({
 });
 
 // Version of bootstrap for very fast data on load. This shouldn't block the load
-// in any discernable way.
+// in any discernable way and can be called on initial load, regardless of the app
+// being locked or unlocked.
 export const bootstrapFast = atom<any>({
   key: "bootstrapFast",
-  default: selector({
-    key: "bootstrapFastSelector",
-    get: async ({ get }: any) => {
-      // Fetch all navigation state.
-      const backgroundClient = getBackgroundClient();
-      const tabs = await Promise.all(
-        TABS.map((t) =>
-          backgroundClient.request({
-            method: UI_RPC_METHOD_NAVIGATION_READ,
-            params: [t[0]],
-          })
-        )
+  default: null,
+  effects: [
+    ({ setSelf }) => {
+      setSelf(
+        (async () => {
+          // Fetch all navigation state.
+          const backgroundClient = getBackgroundClient();
+          const tabs = await Promise.all(
+            TABS.map((t) =>
+              backgroundClient.request({
+                method: UI_RPC_METHOD_NAVIGATION_READ,
+                params: [t[0]],
+              })
+            )
+          );
+          const activeTab = await backgroundClient.request({
+            method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
+            params: [],
+          });
+          return {
+            tabs,
+            activeTab,
+          };
+        })()
       );
-      return {
-        tabs,
-      };
     },
-  }),
+  ],
 });
 
 export function removeNfts(

@@ -10,7 +10,7 @@ import { Check, Clear } from "@material-ui/icons";
 import { explorerUrl } from "../../../../common/explorer";
 import { useSolanaWallet } from "../../../../hooks/useWallet";
 import { useRecentTransactions } from "../../../../hooks/useRecentTransactions";
-import { UnlockedLoading } from "../../../Unlocked";
+import { Loading } from "../../../common";
 
 const useStyles = makeStyles((theme: any) => ({
   recentActivityLabel: {
@@ -141,7 +141,7 @@ function RecentActivityLoading() {
       <div
         style={{ display: "block", marginLeft: "auto", marginRight: "auto" }}
       >
-        <UnlockedLoading iconStyle={{ width: "25px", height: "25px" }} />
+        <Loading iconStyle={{ width: "25px", height: "25px" }} />
       </div>
     </div>
   );

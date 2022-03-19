@@ -9,6 +9,15 @@ import { useTab } from "../../hooks/useTab";
 import { TAB_BALANCES, TAB_QUEST, TAB_BRIDGE, TAB_FRIENDS } from "../../common";
 
 const useStyles = makeStyles((theme: any) => ({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+  },
   tab: {
     borderTop: `solid 1pt ${theme.custom.colors.border}`,
     color: theme.custom.colors.tabIconBackground,
@@ -28,7 +37,17 @@ const useStyles = makeStyles((theme: any) => ({
   tabUnselected: {},
 }));
 
-export function TabBar() {
+export function WithTabs(props: any) {
+  const classes = useStyles();
+  return (
+    <div className={classes.container}>
+      {props.children}
+      <TabBar />
+    </div>
+  );
+}
+
+function TabBar() {
   const classes = useStyles();
   const { tab, setTab } = useTab();
   const className = (idx: string) => {
