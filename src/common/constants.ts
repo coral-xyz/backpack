@@ -38,6 +38,9 @@ export const UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ =
   "navigation-active-tab-read";
 export const UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE =
   "navigation-active-tab-update";
+export const UI_RPC_METHOD_SETTINGS_DARK_MODE_READ = "settings-dark-mode-read";
+export const UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE =
+  "settings-dark-mode-update";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";

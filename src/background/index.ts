@@ -38,6 +38,8 @@ import {
   UI_RPC_METHOD_NAVIGATION_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+  UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
+  UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
@@ -125,6 +127,10 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return await handleNavigationActiveTabRead();
     case UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE:
       return await handleNavigationActiveTabUpdate(params[0]);
+    case UI_RPC_METHOD_SETTINGS_DARK_MODE_READ:
+      return await handleDarkModeRead();
+    case UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE:
+      return await handleDarkModeUpdate(params[0]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -358,6 +364,18 @@ async function handleNavigationActiveTabUpdate(
   tabKey: string
 ): Promise<RpcResponse<string>> {
   const resp = await backend.navigationActiveTabUpdate(tabKey);
+  return [resp];
+}
+
+async function handleDarkModeRead(): Promise<RpcResponse<boolean>> {
+  const resp = await backend.darkModeRead();
+  return [resp];
+}
+
+async function handleDarkModeUpdate(
+  darkMode: boolean
+): Promise<RpcResponse<string>> {
+  const resp = await backend.darkModeUpdate(darkMode);
   return [resp];
 }
 

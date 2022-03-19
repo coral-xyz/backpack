@@ -277,6 +277,16 @@ export class Backend {
     });
     return SUCCESS_RESPONSE;
   }
+
+  async darkModeRead(): Promise<boolean> {
+    // todo
+    return true;
+  }
+
+  async darkModeUpdate(darkMode: boolean): Promise<string> {
+    // todo
+    return SUCCESS_RESPONSE;
+  }
 }
 
 export type Context = {
