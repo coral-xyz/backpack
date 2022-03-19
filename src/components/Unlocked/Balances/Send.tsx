@@ -2,6 +2,7 @@ import { useState } from "react";
 import { makeStyles, Button, Typography } from "@material-ui/core";
 import { TextField, TextFieldLabel } from "../../common";
 import { WithHeaderButton } from "./Token";
+import { useEphemeralNav } from "../../../context/NavEphemeral";
 
 const useStyles = makeStyles((theme: any) => ({
   container: {
@@ -84,12 +85,17 @@ export function SendButton({ token }: any) {
   );
 }
 
+function Testing() {
+  return <div>TESTING</div>;
+}
+
 function Send({ onCancel, token }: any) {
   const classes = useStyles() as any;
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState(0);
+  const { push } = useEphemeralNav();
   const onNext = () => {
-    // todo
+    push(<Testing />);
   };
   return (
     <div className={classes.container}>

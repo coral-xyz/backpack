@@ -26,8 +26,6 @@ export function useBootstrapFast() {
   useNavigationRoot(tab);
   useNavigation();
   useKeyringStoreState();
-  //	useSolanaWallet();
-  //	useAnchorContext();
 }
 
 export function useBackgroundPoll() {

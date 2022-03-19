@@ -84,6 +84,7 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
+// The main nav persistent stack.
 export function TabNavStack() {
   const classes = useStyles();
   return (
@@ -136,10 +137,14 @@ function RightNavButton() {
   return navButtonRight ? navButtonRight : <DummyButton />;
 }
 
-function NavBackButton() {
+export function NavBackButton() {
+  const { pop } = useNavigation();
+  return <_NavBackButton pop={pop} />;
+}
+
+export function _NavBackButton({ pop }: any) {
   const classes = useStyles();
   const theme = useTheme() as any;
-  const { pop } = useNavigation();
   return (
     <div style={{ display: "flex", width: "38px" }}>
       <IconButton
@@ -181,6 +186,10 @@ function CenterDisplay() {
 
 function _CenterDisplay() {
   const { title } = useNavigation();
+  return <__CenterDisplay title={title} />;
+}
+
+export function __CenterDisplay({ title }: any) {
   return (
     <div
       style={{
@@ -209,7 +218,7 @@ export function NavTitleLabel({ title }: any) {
   );
 }
 
-function DummyButton() {
+export function DummyButton() {
   const classes = useStyles();
   return <div className={classes.menuButtonContainer}></div>;
 }

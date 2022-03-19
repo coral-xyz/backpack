@@ -1,7 +1,10 @@
+import { useEffect } from "react";
 import { makeStyles, Drawer, Button, IconButton } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { EXTENSION_HEIGHT } from "../../common";
 import { NAV_BAR_HEIGHT, NavTitleLabel } from "./Nav";
+import { WithEphemeralNav } from "./NavEphemeral";
+import { useEphemeralNav } from "../../context/NavEphemeral";
 import { Scrollbar } from "./Scrollbar";
 
 const useStyles = makeStyles((theme: any) => ({
@@ -62,34 +65,24 @@ export function WithDrawer(props: any) {
         paper: classes.drawerPaper,
       }}
     >
-      <div className={classes.navContainer}>
-        <LeftButton />
-        <Title title={title} />
-        <RightButton onClick={() => setOpenDrawer(false)} />
-      </div>
-      <Scrollbar>
-        <div className={classes.withDrawer}>
-          <div className={classes.withDrawerContent}>{children}</div>
-        </div>
-      </Scrollbar>
+      <WithEphemeralNav title={title}>
+        <WithDrawerContent setOpenDrawer={setOpenDrawer}>
+          {children}
+        </WithDrawerContent>
+      </WithEphemeralNav>
     </Drawer>
   );
 }
 
-function LeftButton() {
-  return <div style={{ width: "48px" }}></div>;
-}
-
-function Title({ title }: any) {
+function WithDrawerContent({ children, setOpenDrawer }: any) {
+  const classes = useStyles();
+  const { setNavButtonRight } = useEphemeralNav();
+  useEffect(() => {
+    setNavButtonRight(<RightButton onClick={() => setOpenDrawer(false)} />);
+  }, [setNavButtonRight]);
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
-      }}
-    >
-      <NavTitleLabel title={title} />
+    <div className={classes.withDrawer}>
+      <div className={classes.withDrawerContent}>{children}</div>
     </div>
   );
 }
