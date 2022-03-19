@@ -49,7 +49,6 @@ function _App() {
 }
 
 function __App() {
-  useBootstrapFast();
   const classes = useStyles();
   const keyringStoreState = useKeyringStoreState();
 
@@ -71,9 +70,14 @@ function __App() {
 
   return (
     <div className={classes.appContainer}>
-      {isLocked ? <Locked /> : <Unlocked />}
+      {isLocked ? <LockedBootstrap /> : <Unlocked />}
     </div>
   );
+}
+
+function LockedBootstrap() {
+  useBootstrapFast();
+  return <Locked />;
 }
 
 function BlankApp() {

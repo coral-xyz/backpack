@@ -1,10 +1,5 @@
-import React, { useContext } from "react";
 import { useRecoilValue, useRecoilState } from "recoil";
 import * as atoms from "../recoil/atoms";
-
-type NavigationStackRootContext = {
-  root: any;
-};
 
 type NavigationContext = {
   isRoot: boolean;
@@ -17,21 +12,8 @@ type NavigationContext = {
   setNavBorderBottom: any;
 };
 
-const _NavigationStackRootContext =
-  React.createContext<NavigationStackRootContext | null>(null);
-
-// The root component prop *must* not have any props.
-export function NavigationStackProvider(props: any) {
-  const root = props.root;
-  return (
-    <_NavigationStackRootContext.Provider value={{ root }}>
-      {props.children}
-    </_NavigationStackRootContext.Provider>
-  );
-}
-
-export function useNavigationContext(): NavigationContext {
-  const activeTab = useRecoilValue(atoms.navigationActiveTab);
+export function useNavigation(): NavigationContext {
+  const activeTab = useRecoilValue(atoms.navigationActiveTab)!;
   const [navData, setNavData] = useRecoilState(
     atoms.navigationDataMap(activeTab)
   );
@@ -89,20 +71,16 @@ export function useNavigationContext(): NavigationContext {
   };
 }
 
-export function useNavigationStackRootContext(): NavigationStackRootContext {
-  const ctx = useContext(_NavigationStackRootContext);
-  if (ctx === null) {
-    throw new Error("Context not available");
-  }
-  return ctx;
-}
-
 export function useNavigationRender(): () => any {
-  const { root } = useNavigationStackRootContext();
-  const activeTab = useRecoilValue(atoms.navigationActiveTab);
+  const activeTab = useRecoilValue(atoms.navigationActiveTab)!;
+  const root = useNavigationRoot(activeTab);
   const renderer = useRecoilValue(atoms.navigationRenderer(activeTab));
   if (!renderer) {
-    return () => root;
+    return () => root();
   }
   return renderer;
+}
+
+export function useNavigationRoot(tab: string) {
+  return useRecoilValue(atoms.navigationTabRootRenderer(tab));
 }

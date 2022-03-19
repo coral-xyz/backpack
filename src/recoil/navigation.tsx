@@ -1,17 +1,23 @@
 import { atom, atomFamily, selector, selectorFamily } from "recoil";
 import {
   UI_RPC_METHOD_NAVIGATION_UPDATE,
-  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
   NAV_COMPONENT_BALANCES_NETWORK,
   NAV_COMPONENT_TOKEN,
   TAB_BALANCES,
+  TAB_BRIDGE,
+  TAB_QUEST,
+  TAB_FRIENDS,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
+import { Balances } from "./../components/Unlocked/Balances";
+import { Quests } from "./../components/Unlocked/Quests";
+import { Bridge } from "./../components/Unlocked/Bridge";
+import { Settings } from "./../components/Unlocked/Settings";
 import { Network } from "../components/Unlocked/Balances/Network";
 import { Token } from "../components/Unlocked/Balances/Token";
-import { bootstrapFast } from "./bootstrap";
+import { bootstrap, bootstrapFast } from "./bootstrap";
 
 /**
  * Effective view model for each tab's navigation controller.
@@ -89,23 +95,40 @@ export const navigationDataMap = atomFamily<any, string>({
   ],
 });
 
+// Returns the root of the navigation stack for a given tab.
+export const navigationTabRootRenderer = selectorFamily({
+  key: "navigationTabRoot",
+  get:
+    (tab: string) =>
+    ({ get }: any) => {
+      return () => {
+        return (
+          <>
+            {tab === TAB_BALANCES && <Balances />}
+            {tab === TAB_QUEST && <Quests />}
+            {tab === TAB_BRIDGE && <Bridge />}
+            {tab === TAB_FRIENDS && <Settings />}
+          </>
+        );
+      };
+    },
+});
+
 /**
  * Maps component stringified label to an actual component constructor.
  */
 export const navigationComponentMap = selectorFamily({
   key: "navigationStack",
-  get:
-    (navId: string) =>
-    ({ get }) => {
-      switch (navId) {
-        case NAV_COMPONENT_BALANCES_NETWORK:
-          return (props: any) => <Network {...props} />;
-        case NAV_COMPONENT_TOKEN:
-          return (props: any) => <Token {...props} />;
-        default:
-          throw new Error("invariant violation");
-      }
-    },
+  get: (navId: string) => () => {
+    switch (navId) {
+      case NAV_COMPONENT_BALANCES_NETWORK:
+        return (props: any) => <Network {...props} />;
+      case NAV_COMPONENT_TOKEN:
+        return (props: any) => <Token {...props} />;
+      default:
+        throw new Error("invariant violation");
+    }
+  },
 });
 
 /**

@@ -1,11 +1,17 @@
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { Connection } from "@solana/web3.js";
-import { useRecoilValue, constSelector } from "recoil";
+import {
+  useRecoilValue,
+  useRecoilValueLoadable,
+  constSelector,
+  Loadable,
+} from "recoil";
 import * as atoms from "../recoil/atoms";
-import { useKeyringStoreState } from "../hooks/useKeyringStoreState";
 import { KeyringStoreStateEnum } from "../keyring/store";
 import { useLoadSplTokens } from "../hooks/useLoadSplTokens";
+import { useNavigation, useNavigationRoot } from "../hooks/useNavigation";
 import { useTab } from "../hooks/useTab";
+import { useKeyringStoreState } from "../hooks/useKeyringStoreState";
 
 // Bootstrap data for the initial load.
 export function useBootstrap() {
@@ -14,8 +20,14 @@ export function useBootstrap() {
 
 export function useBootstrapFast() {
   useRecoilValue(atoms.bootstrapFast);
+
   // Hack: load all the navigation atoms to prevent UI flickering.
-  useTab();
+  const { tab } = useTab();
+  useNavigationRoot(tab);
+  useNavigation();
+  useKeyringStoreState();
+  //	useSolanaWallet();
+  //	useAnchorContext();
 }
 
 export function useBackgroundPoll() {
@@ -24,6 +36,10 @@ export function useBackgroundPoll() {
 
 export function useSolanaWallet(): SolanaWallet {
   return useRecoilValue(atoms.solanaWallet)!;
+}
+
+export function useSolanaWalletLoadable(): Loadable<SolanaWallet> {
+  return useRecoilValueLoadable(atoms.solanaWallet)!;
 }
 
 export function useWalletPublicKeys(): {
@@ -66,6 +82,14 @@ export function useActiveWallet(): { publicKey: PublicKey; name: string } {
     publicKey: new PublicKey(publicKey),
     name,
   };
+}
+
+export function useAnchorContext() {
+  return useRecoilValue(atoms.anchorContext);
+}
+
+export function useAnchorContextLoadable(): Loadable<any> {
+  return useRecoilValueLoadable(atoms.anchorContext);
 }
 
 export type ConnectionContext = {

@@ -8,7 +8,7 @@ import {
   Tab,
 } from "@material-ui/core";
 import { OfflineBolt as Bolt } from "@material-ui/icons";
-import { useNavigationContext } from "../../../../context/Navigation";
+import { useNavigation } from "../../../../hooks/useNavigation";
 import { WithDrawer } from "../../../Layout/Drawer";
 import { Nfts } from "./Nfts";
 import { Swap } from "./Swap";
@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme: any) => ({
 
 export function Network({ blockchain }: any) {
   const [tab, setTab] = useState("overview");
-  const { setNavBorderBottom, setNavButtonRight } = useNavigationContext();
+  const { setNavBorderBottom, setNavButtonRight } = useNavigation();
 
   // Customize the nav bar for this page.
   useEffect(() => {

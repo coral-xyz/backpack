@@ -9,7 +9,7 @@ type TabContext = {
 export function useTab(): TabContext {
   const [tab, setTab] = useRecoilState(atoms.navigationActiveTab);
   return {
-    tab,
+    tab: tab!,
     setTab,
   };
 }

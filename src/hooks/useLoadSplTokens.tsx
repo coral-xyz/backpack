@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useRecoilValue, useRecoilCallback } from "recoil";
 import { TokenAccountWithKey } from "../recoil/types";
-import { useSolanaWallet } from "../hooks/useWallet";
+import { useSolanaWalletLoadable } from "../hooks/useWallet";
 import * as atoms from "../recoil/atoms";
 import {
   fetchTokens,
@@ -9,15 +9,25 @@ import {
   fetchSplMetadataUri,
   removeNfts,
 } from "../recoil/atoms";
+import { useAnchorContextLoadable } from "../hooks/useWallet";
 
 const REFRESH_INTERVAL = 10 * 1000;
 
 export function useLoadSplTokens() {
-  const wallet = useSolanaWallet();
-  const { tokenClient, provider } = useRecoilValue(atoms.anchorContext);
+  const walletLoadable = useSolanaWalletLoadable();
+  const anchorLoadable = useAnchorContextLoadable();
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
-  const publicKey = wallet.publicKey;
   useEffect(() => {
+    if (
+      walletLoadable.state !== "hasValue" ||
+      anchorLoadable.state !== "hasValue"
+    ) {
+      return;
+    }
+    const wallet = walletLoadable.contents;
+    const { tokenClient, provider } = anchorLoadable.contents;
+    const publicKey = wallet.publicKey;
+
     const interval = setInterval(async () => {
       if (!publicKey) {
         return;
@@ -63,7 +73,7 @@ export function useLoadSplTokens() {
     return () => {
       clearInterval(interval);
     };
-  }, [provider, publicKey, updateAllSplTokenAccounts]);
+  }, [walletLoadable, anchorLoadable, updateAllSplTokenAccounts]);
 }
 
 export function useTokenAddresses(): string[] {

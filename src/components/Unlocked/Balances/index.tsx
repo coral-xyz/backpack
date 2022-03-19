@@ -15,7 +15,7 @@ import {
   useTotal,
   useBlockchainTokensSorted,
 } from "../../../hooks/useBlockchainBalances";
-import { useNavigationContext } from "../../../context/Navigation";
+import { useNavigation } from "../../../hooks/useNavigation";
 import {
   NAV_COMPONENT_BALANCES_NETWORK,
   NAV_COMPONENT_TOKEN,
@@ -272,7 +272,7 @@ function TokenListItem({
   blockchain: string;
 }) {
   const classes = useStyles();
-  const { push: pushNavigation } = useNavigationContext();
+  const { push: pushNavigation } = useNavigation();
 
   if (token.nativeBalance === 0) {
     return <></>;
@@ -345,7 +345,7 @@ function BlockchainCardFooter({
   tokenCount: number;
 }) {
   const classes = useStyles();
-  const { push } = useNavigationContext();
+  const { push } = useNavigation();
   const onClick = () => {
     push({
       title: toTitleCase(blockchain),

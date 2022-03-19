@@ -6,16 +6,12 @@ import {
   IconButton,
 } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
-import { KeyringStoreStateEnum } from "../../keyring/store";
-import { useKeyringStoreState } from "../../hooks/useKeyringStoreState";
 import { SidebarButton } from "./Sidebar";
 import { Scrollbar } from "./Scrollbar";
-import {
-  NavigationStackProvider,
-  useNavigationContext,
-  useNavigationRender,
-} from "../../context/Navigation";
+import { useNavigation, useNavigationRender } from "../../hooks/useNavigation";
 import { Loading } from "../common";
+import { WithTabs } from "./Tab";
+import { useBootstrap } from "../../hooks/useWallet";
 
 export const NAV_BAR_HEIGHT = 56;
 
@@ -88,21 +84,15 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-export function WithNav({ children }: any) {
+export function TabNavStack() {
   const classes = useStyles();
   return (
-    <div className={classes.withNavContainer}>
-      <NavBar />
-      <WithNavContext>{children}</WithNavContext>
-    </div>
-  );
-}
-
-function WithNavContext(props: any) {
-  return (
-    <NavigationStackProvider root={props.children}>
-      <NavContent />
-    </NavigationStackProvider>
+    <WithTabs>
+      <div className={classes.withNavContainer}>
+        <NavBar />
+        <NavContent />
+      </div>
+    </WithTabs>
   );
 }
 
@@ -118,7 +108,7 @@ function NavBar() {
 function _NavBar() {
   const classes = useStyles();
   const theme = useTheme() as any;
-  const { navBorderBottom } = useNavigationContext();
+  const { navBorderBottom } = useNavigation();
   return (
     <div
       style={{
@@ -137,19 +127,19 @@ function _NavBar() {
 }
 
 function LeftNavButton() {
-  const { isRoot } = useNavigationContext();
+  const { isRoot } = useNavigation();
   return isRoot ? <SidebarButton /> : <NavBackButton />;
 }
 
 function RightNavButton() {
-  const { navButtonRight } = useNavigationContext();
+  const { navButtonRight } = useNavigation();
   return navButtonRight ? navButtonRight : <DummyButton />;
 }
 
 function NavBackButton() {
   const classes = useStyles();
   const theme = useTheme() as any;
-  const { pop } = useNavigationContext();
+  const { pop } = useNavigation();
   return (
     <div style={{ display: "flex", width: "38px" }}>
       <IconButton
@@ -164,46 +154,44 @@ function NavBackButton() {
 }
 
 function NavContent() {
-  const render = useNavigationRender();
   return (
     <div style={{ flex: 1 }}>
       <Scrollbar>
-        <Suspense fallback={<Loading />}>{render()}</Suspense>
+        <Suspense fallback={<Loading />}>
+          <_NavContent />
+        </Suspense>
       </Scrollbar>
     </div>
   );
 }
 
+function _NavContent() {
+  useBootstrap();
+  const render = useNavigationRender();
+  return render();
+}
+
 function CenterDisplay() {
-  const classes = useStyles();
-  const keyringStoreState = useKeyringStoreState();
-  const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
-  return (
-    <div className={classes.centerDisplayContainer}>
-      {isLocked ? <LockedCenterDisplay /> : <UnlockedCenterDisplay />}
-    </div>
-  );
-}
-
-function LockedCenterDisplay() {
-  return (
-    <div>
-      <b>200ms</b>
-    </div>
-  );
-}
-
-function UnlockedCenterDisplay() {
   return (
     <Suspense fallback={<div></div>}>
-      <_UnlockedCenterDisplay />
+      <_CenterDisplay />
     </Suspense>
   );
 }
 
-function _UnlockedCenterDisplay() {
-  const { title } = useNavigationContext();
-  return <NavTitleLabel title={title} />;
+function _CenterDisplay() {
+  const { title } = useNavigation();
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
+      <NavTitleLabel title={title} />
+    </div>
+  );
 }
 
 export function NavTitleLabel({ title }: any) {
