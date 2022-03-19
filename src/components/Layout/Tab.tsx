@@ -64,6 +64,7 @@ export function TabBar() {
         className={classes.tab}
         icon={<Bridge className={className(TAB_BRIDGE)} />}
       />
+      {/*
       <Tab
         value={TAB_QUEST}
         disableRipple
@@ -76,6 +77,7 @@ export function TabBar() {
         className={classes.tab}
         icon={<Person className={className(TAB_FRIENDS)} />}
       />
+			*/}
     </Tabs>
   );
 }

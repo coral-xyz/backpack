@@ -10,7 +10,9 @@ import {
  */
 export const isDarkMode = atom<boolean | null>({
   key: "isDarkMode",
-  default: null,
+  default: true,
+  // TODO: enable this.
+  /*
   effects: [
     ({ setSelf }) => {
       const background = getBackgroundClient();
@@ -33,4 +35,5 @@ export const isDarkMode = atom<boolean | null>({
       });
     },
   ],
+	*/
 });

@@ -88,6 +88,9 @@ function Send({ onCancel, token }: any) {
   const classes = useStyles() as any;
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState(0);
+  const onNext = () => {
+    // todo
+  };
   return (
     <div className={classes.container}>
       <div className={classes.topHalf}>
@@ -132,6 +135,7 @@ function Send({ onCancel, token }: any) {
           disableRipple
           disableElevation
           className={classes.button}
+          onClick={onNext}
         >
           <Typography className={classes.buttonLabel}>Next</Typography>
         </Button>

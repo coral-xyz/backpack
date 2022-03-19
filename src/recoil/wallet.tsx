@@ -110,10 +110,7 @@ export const solanaWallet = selector({
   get: ({ get }: any) => {
     const pubkeyStr = get(activeWallet);
     const publicKey = new PublicKey(pubkeyStr!);
-    //    return new SolanaWallet(publicKey);
-    return new SolanaWallet(
-      new PublicKey("B987jRxFFnSBULwu6cXRKzUfKDDpyuhCGC58wVxct6Ez")
-    );
+    return new SolanaWallet(publicKey);
   },
 });
 
