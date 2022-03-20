@@ -16,6 +16,7 @@ import {
   fetchSplMetadataUri,
 } from "./token";
 import { fetchPriceData } from "./price-data";
+import * as atoms from "./atoms";
 
 /**
  * Defines the initial app load fetch.
@@ -28,6 +29,7 @@ export const bootstrap = atom<any>({
       const tokenRegistry = get(splTokenRegistry);
       const wallet = get(solanaWallet);
       const { provider, tokenClient } = get(anchorContext);
+      const commitment = get(atoms.commitment);
 
       //
       // Perform data fetch.
@@ -76,6 +78,13 @@ export const bootstrap = atom<any>({
         );
 
         //
+        // Get the recent blockhash for transaction construction.
+        //
+        const { blockhash } = await provider.connection.getLatestBlockhash(
+          commitment
+        );
+
+        //
         // Done.
         //
         return {
@@ -84,6 +93,7 @@ export const bootstrap = atom<any>({
           splNftMetadata,
           coingeckoData,
           recentTransactions,
+          recentBlockhash: blockhash,
           walletPublicKey: wallet.publicKey,
         };
       } catch (err) {

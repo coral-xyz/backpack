@@ -1,4 +1,4 @@
-import { Blockhash, PublicKey, Connection, Transaction } from "@solana/web3.js";
+import * as bs58 from "bs58";
 import BN from "bn.js";
 import {
   useRecoilValue,
@@ -6,6 +6,13 @@ import {
   constSelector,
   Loadable,
 } from "recoil";
+import {
+  Commitment,
+  Blockhash,
+  PublicKey,
+  Connection,
+  Transaction,
+} from "@solana/web3.js";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { Program, SplToken } from "@project-serum/anchor";
 import * as atoms from "../recoil/atoms";
@@ -21,6 +28,8 @@ import {
   useRecentBlockhash,
 } from "./useRecentBlockhash";
 import { useSplTokenRegistry } from "./useSplTokenRegistry";
+import { UI_RPC_METHOD_SIGN_TRANSACTION } from "../common";
+import { getBackgroundClient } from "../background/client";
 
 // Bootstrap data for the initial load.
 export function useBootstrap() {
@@ -57,11 +66,13 @@ export function useSolanaWalletCtx(): SolanaWalletContext {
   const recentBlockhash = useRecentBlockhash();
   const { tokenClient } = useAnchorContext();
   const registry = useSplTokenRegistry();
+  const commitment = useCommitment();
   return {
     wallet,
     recentBlockhash,
     tokenClient,
     registry,
+    commitment,
   };
 }
 
@@ -126,6 +137,7 @@ interface Wallet {
   signTransaction(tx: any): any;
 }
 
+// API for signing transactions from the UI.
 export class SolanaWallet {
   constructor(readonly publicKey: PublicKey) {}
 
@@ -134,7 +146,7 @@ export class SolanaWallet {
     req: TransferTokenRequest
   ): Promise<string> {
     const { mint, destination, amount } = req;
-    const { registry, recentBlockhash, tokenClient } = ctx;
+    const { registry, recentBlockhash, tokenClient, commitment } = ctx;
 
     const tokenInfo = registry.get(mint.toString());
     if (!tokenInfo) {
@@ -142,11 +154,15 @@ export class SolanaWallet {
       throw new Error("no token info found");
     }
     const decimals = tokenInfo.decimals;
+    const nativeAmount = new BN(amount).muln(10 ** decimals);
+
+    // TODO: create the ata if needed.
+    // TODO: assert the given address is not a PDA and is a SOL address.
 
     const sourceAta = associatedTokenAddress(mint, this.publicKey);
     const destinationAta = associatedTokenAddress(mint, destination);
     const tx = await tokenClient.methods
-      .transferChecked(new BN(amount), decimals)
+      .transferChecked(nativeAmount, decimals)
       .accounts({
         source: sourceAta,
         mint,
@@ -156,28 +172,32 @@ export class SolanaWallet {
       .transaction();
     tx.feePayer = this.publicKey;
     tx.recentBlockhash = recentBlockhash;
-    const signedTx = this.signTransaction(tx);
+    const signedTx = await this.signTransaction(tx);
     const rawTx = signedTx.serialize();
-    console.log("raw tx", rawTx);
-    /*
-    return await client.provider.connection.sendRawTransaction(rawTx, {
+
+    return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
       skipPreflight: false,
-      preflightCommitment: "processed",
+      preflightCommitment: commitment,
     });
-		*/
-    return "todo";
   }
 
   async transferSol(
     ctx: SolanaWalletContext,
     req: TransferSolRequest
   ): Promise<string> {
+    // todo
     return "todo";
   }
 
-  signTransaction(tx: Transaction): Transaction {
-    console.log("tim eto sing", tx);
-    // todo
+  async signTransaction(tx: Transaction): Promise<Transaction> {
+    const txSerialized = tx.serializeMessage();
+    const message = bs58.encode(txSerialized);
+    const background = getBackgroundClient();
+    const respSignature = await background.request({
+      method: UI_RPC_METHOD_SIGN_TRANSACTION,
+      params: [message, this.publicKey.toString()],
+    });
+    tx.addSignature(this.publicKey, Buffer.from(bs58.decode(respSignature)));
     return tx;
   }
 }
@@ -203,4 +223,5 @@ export type SolanaWalletContext = {
   recentBlockhash: Blockhash;
   tokenClient: Program<SplToken>;
   registry: Map<string, TokenInfo>;
+  commitment: Commitment;
 };

@@ -156,7 +156,10 @@ export function _RecentActivityList({ address, style }: any) {
     <List style={{ ...style, paddingTop: 0, paddingBottom: 0 }}>
       {transactions.length > 0 ? (
         transactions.map((tx: any) => (
-          <RecentActivityListItem transaction={tx} />
+          <RecentActivityListItem
+            key={tx.transaction.signatures[0]}
+            transaction={tx}
+          />
         ))
       ) : (
         <NoRecentActivityLabel />

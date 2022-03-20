@@ -1,3 +1,4 @@
+import * as bs58 from "bs58";
 import { BrowserRuntime } from "../common/browser";
 import * as crypto from "./crypto";
 import { DerivationPath } from "./crypto";
@@ -307,7 +308,7 @@ export class KeyringStore {
     this.lastUsedTs = Date.now() / 1000;
   }
 
-  private activeBlockchain(): BlockchainKeyring {
+  public activeBlockchain(): BlockchainKeyring {
     return this.withUnlock(() => {
       return this.activeBlockchainUnchecked();
     });
@@ -487,6 +488,22 @@ class BlockchainKeyring {
       deletedWallets: this.deletedWallets,
       connectionUrl: this.connectionUrl,
     };
+  }
+
+  // txMsg is base58 encoded for solana.
+  public signTransaction(txMsg: string, walletAddress: string): string {
+    const keyring = this.getKeyring(walletAddress);
+    const msg = Buffer.from(bs58.decode(txMsg));
+    return keyring.signTransaction(msg, walletAddress);
+  }
+
+  private getKeyring(walletAddress: string): Keyring {
+    const found = this.hdKeyring!.publicKeys().find((k) => k === walletAddress);
+    if (found) {
+      return this.hdKeyring!;
+    } else {
+      return this.importedKeyring!;
+    }
   }
 }
 

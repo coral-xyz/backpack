@@ -44,6 +44,7 @@ export const UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE =
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ = "solana-commitment-read";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE =
   "solana-commitment-update";
+export const UI_RPC_METHOD_SIGN_TRANSACTION = "ui-rpc-method-sign-tx";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";

@@ -42,6 +42,7 @@ import {
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
+  UI_RPC_METHOD_SIGN_TRANSACTION,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
@@ -137,6 +138,8 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return await handleSolanaCommitmentRead();
     case UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE:
       return await handleSolanaCommitmentUpdate(params[0]);
+    case UI_RPC_METHOD_SIGN_TRANSACTION:
+      return await handleSignTransaction(params[0], params[1]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -394,6 +397,14 @@ async function handleSolanaCommitmentUpdate(
   commitment: string
 ): Promise<RpcResponse<string>> {
   const resp = await backend.solanaCommitmentUpdate(commitment);
+  return [resp];
+}
+
+async function handleSignTransaction(
+  messageBs58: string,
+  walletAddress: string
+): Promise<RpcResponse<string>> {
+  const resp = await backend.signTransaction(messageBs58, walletAddress);
   return [resp];
 }
 

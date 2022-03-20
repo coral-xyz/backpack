@@ -209,7 +209,7 @@ function SendConfirmation({ token, address, amount }: any) {
   const ctx = useSolanaWalletCtx();
   const wallet = ctx.wallet;
   const onConfirm = async () => {
-    const txSig = wallet.transferToken(ctx, {
+    const txSig = await wallet.transferToken(ctx, {
       destination: new PublicKey(address),
       mint: new PublicKey(token.mint),
       amount,

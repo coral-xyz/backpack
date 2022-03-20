@@ -297,6 +297,15 @@ export class Backend {
     // todo
     return SUCCESS_RESPONSE;
   }
+
+  // Returns the signature.
+  async signTransaction(
+    txMessage: string,
+    walletAddress: string
+  ): Promise<string> {
+    const blockchainKeyring = this.keyringStore.activeBlockchain();
+    return blockchainKeyring.signTransaction(txMessage, walletAddress);
+  }
 }
 
 export type Context = {

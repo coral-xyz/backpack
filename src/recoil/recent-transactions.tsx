@@ -1,4 +1,4 @@
-import { atom, atomFamily } from "recoil";
+import { atom, atomFamily, selector } from "recoil";
 import { PublicKey, Blockhash } from "@solana/web3.js";
 import { Provider } from "@project-serum/anchor";
 import { txHistoryConnection } from "./ignore";
@@ -29,7 +29,13 @@ export const recentTransactions = atomFamily<any | null, string>({
 
 export const recentBlockhash = atom<Blockhash | null>({
   key: "recentBlockhash",
-  default: null,
+  default: selector({
+    key: "recentBlockhashDefault",
+    get: ({ get }) => {
+      const bs = get(bootstrap);
+      return bs.recentBlockhash;
+    },
+  }),
 });
 
 export async function fetchRecentTransactions(

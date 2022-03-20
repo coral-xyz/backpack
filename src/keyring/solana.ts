@@ -42,7 +42,7 @@ export class SolanaKeyring implements Keyring {
     if (!kp) {
       throw new Error(`unable to find ${address.toString()}`);
     }
-    return bs58.encode(nacl.sign.detached(tx, kp.secretKey));
+    return bs58.encode(nacl.sign.detached(new Uint8Array(tx), kp.secretKey));
   }
 
   public exportSecretKey(address: string): string | null {
