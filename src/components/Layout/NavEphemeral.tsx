@@ -6,9 +6,12 @@ import {
   NavEphemeralProvider,
   useEphemeralNav,
 } from "../../context/NavEphemeral";
-import { DummyButton, _NavBackButton, __CenterDisplay } from "./Nav";
-
-export const NAV_BAR_HEIGHT = 56;
+import {
+  DummyButton,
+  NAV_BAR_HEIGHT,
+  _NavBackButton,
+  __CenterDisplay,
+} from "./Nav";
 
 const useStyles = makeStyles((theme: any) => ({
   withNavContainer: {
