@@ -1,5 +1,5 @@
-import { atomFamily } from "recoil";
-import { PublicKey } from "@solana/web3.js";
+import { atom, atomFamily } from "recoil";
+import { PublicKey, Blockhash } from "@solana/web3.js";
 import { Provider } from "@project-serum/anchor";
 import { txHistoryConnection } from "./ignore";
 import { bootstrap } from "./bootstrap";
@@ -25,6 +25,11 @@ export const recentTransactions = atomFamily<any | null, string>({
       );
     },
   ],
+});
+
+export const recentBlockhash = atom<Blockhash | null>({
+  key: "recentBlockhash",
+  default: null,
 });
 
 export async function fetchRecentTransactions(

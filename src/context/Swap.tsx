@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
-import * as anchor from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { useSolanaWallet } from "../hooks/useWallet";
+import { associatedTokenAddress, USDC_MINT, WSOL_MINT } from "../common/token";
 
 const DEFAULT_SLIPPAGE_PERCENT = 0.5;
 
@@ -100,19 +100,3 @@ export function useSwapContext(): SwapContext {
   }
   return ctx;
 }
-
-function associatedTokenAddress(mint: PublicKey, wallet: PublicKey): PublicKey {
-  return anchor.utils.publicKey.findProgramAddressSync(
-    [wallet.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
-    ASSOCIATED_TOKEN_PROGRAM_ID
-  )[0];
-}
-
-const TOKEN_PROGRAM_ID = new PublicKey(
-  "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-);
-const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
-  "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
-);
-const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
-const WSOL_MINT = "So11111111111111111111111111111111111111112";

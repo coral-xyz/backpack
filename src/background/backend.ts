@@ -287,6 +287,16 @@ export class Backend {
     // todo
     return SUCCESS_RESPONSE;
   }
+
+  async solanaCommitmentRead(): Promise<string> {
+    // todo
+    return "processed";
+  }
+
+  async solanaCommitmentUpdate(commitment: string): Promise<string> {
+    // todo
+    return SUCCESS_RESPONSE;
+  }
 }
 
 export type Context = {

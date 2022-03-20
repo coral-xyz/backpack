@@ -41,6 +41,9 @@ export const UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE =
 export const UI_RPC_METHOD_SETTINGS_DARK_MODE_READ = "settings-dark-mode-read";
 export const UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE =
   "settings-dark-mode-update";
+export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ = "solana-commitment-read";
+export const UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE =
+  "solana-commitment-update";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";

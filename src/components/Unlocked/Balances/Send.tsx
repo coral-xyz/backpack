@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { makeStyles, Button, Typography } from "@material-ui/core";
+import { makeStyles, useTheme, Button, Typography } from "@material-ui/core";
+import { PublicKey } from "@solana/web3.js";
 import { TextField, TextFieldLabel } from "../../common";
 import { WithHeaderButton } from "./Token";
 import { useEphemeralNav } from "../../../context/NavEphemeral";
+import { useSolanaWalletCtx, useAnchorContext } from "../../../hooks/useWallet";
 
 const useStyles = makeStyles((theme: any) => ({
   container: {
@@ -71,6 +73,9 @@ const useStyles = makeStyles((theme: any) => ({
     fontSize: "12px",
     lineHeight: "16px",
   },
+  sendConfirmationContainer: {
+    height: "100%",
+  },
 }));
 
 export function SendButton({ token }: any) {
@@ -85,17 +90,21 @@ export function SendButton({ token }: any) {
   );
 }
 
-function Testing() {
-  return <div>TESTING</div>;
-}
-
 function Send({ onCancel, token }: any) {
   const classes = useStyles() as any;
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState(0);
+  const [error, setError] = useState<any>(null);
   const { push } = useEphemeralNav();
   const onNext = () => {
-    push(<Testing />);
+    // TODO: don't allow amounts <= 0.
+    try {
+      new PublicKey(address);
+    } catch (_err) {
+      setError("invalid public key");
+      return;
+    }
+    push(<SendConfirmation token={token} address={address} amount={amount} />);
   };
   return (
     <div className={classes.container}>
@@ -189,6 +198,41 @@ export function NetworkFeeInfo() {
           justifyContent: "space-between",
         }}
       ></div>
+    </div>
+  );
+}
+
+function SendConfirmation({ token, address, amount }: any) {
+  const classes = useStyles();
+  const theme = useTheme() as any;
+  const { tokenClient } = useAnchorContext();
+  const ctx = useSolanaWalletCtx();
+  const wallet = ctx.wallet;
+  const onConfirm = async () => {
+    const txSig = wallet.transferToken(ctx, {
+      destination: new PublicKey(address),
+      mint: new PublicKey(token.mint),
+      amount,
+    });
+    console.log("tx sig received", txSig);
+  };
+  return (
+    <div className={classes.sendConfirmationContainer}>
+      <Typography style={{ color: theme.custom.colors.fontColor }}>
+        THIS IS AN UNSTYLED UI
+      </Typography>
+      <Typography style={{ color: theme.custom.colors.fontColor }}>
+        Confirm send {token.ticker} to {address}
+      </Typography>
+      <Typography style={{ color: theme.custom.colors.fontColor }}>
+        Amount: {amount}
+      </Typography>
+      <Button
+        style={{ color: theme.custom.colors.fontColor }}
+        onClick={onConfirm}
+      >
+        Confirm
+      </Button>
     </div>
   );
 }

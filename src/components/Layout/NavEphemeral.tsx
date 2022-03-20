@@ -83,6 +83,10 @@ const useStyles = makeStyles((theme: any) => ({
       background: "transparent",
     },
   },
+  navContentContainer: {
+    flex: 1,
+    backgroundColor: theme.custom.colors.background,
+  },
 }));
 
 export function WithEphemeralNav({ title, children }: any) {
@@ -106,8 +110,9 @@ function NavBar() {
 }
 
 function NavContent() {
+  const classes = useStyles();
   return (
-    <div style={{ flex: 1 }}>
+    <div className={classes.navContentContainer}>
       <Scrollbar>
         <Suspense fallback={<Loading />}>
           <_NavContent />

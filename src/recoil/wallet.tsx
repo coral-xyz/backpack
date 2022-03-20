@@ -1,11 +1,13 @@
 import { atom, selector } from "recoil";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey, Commitment } from "@solana/web3.js";
 import { Spl, Provider } from "@project-serum/anchor";
 import {
   UI_RPC_METHOD_CONNECTION_URL_READ,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
+  UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
+  UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
 import { WalletPublicKeys } from "./types";
@@ -133,4 +135,31 @@ export const anchorContext = selector({
       tokenClient,
     };
   },
+});
+
+export const commitment = atom<Commitment>({
+  key: "solanaCommitment",
+  default: "processed",
+  effects: [
+    ({ setSelf }) => {
+      const background = getBackgroundClient();
+      setSelf(
+        background.request({
+          method: UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
+          params: [],
+        })
+      );
+    },
+    ({ onSet }) => {
+      onSet((commitment) => {
+        const background = getBackgroundClient();
+        background
+          .request({
+            method: UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
+            params: [commitment],
+          })
+          .catch(console.error);
+      });
+    },
+  ],
 });
