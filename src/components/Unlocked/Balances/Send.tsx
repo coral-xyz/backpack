@@ -205,7 +205,6 @@ export function NetworkFeeInfo() {
 function SendConfirmation({ token, address, amount }: any) {
   const classes = useStyles();
   const theme = useTheme() as any;
-  const { tokenClient } = useAnchorContext();
   const ctx = useSolanaWalletCtx();
   const wallet = ctx.wallet;
   const onConfirm = async () => {

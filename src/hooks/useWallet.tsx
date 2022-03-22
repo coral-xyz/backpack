@@ -1,5 +1,6 @@
 import * as bs58 from "bs58";
 import BN from "bn.js";
+import * as BufferLayout from "@solana/buffer-layout";
 import {
   useRecoilValue,
   useRecoilValueLoadable,
@@ -7,11 +8,13 @@ import {
   Loadable,
 } from "recoil";
 import {
+  AccountMeta,
   Commitment,
   Blockhash,
   PublicKey,
   Connection,
   Transaction,
+  TransactionInstruction,
 } from "@solana/web3.js";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { Program, SplToken } from "@project-serum/anchor";
@@ -159,6 +162,8 @@ export class SolanaWallet {
     // TODO: create the ata if needed.
     // TODO: assert the given address is not a PDA and is a SOL address.
 
+    //		if (!this.destination.
+
     const sourceAta = associatedTokenAddress(mint, this.publicKey);
     const destinationAta = associatedTokenAddress(mint, destination);
     const tx = await tokenClient.methods
@@ -225,3 +230,56 @@ export type SolanaWalletContext = {
   registry: Map<string, TokenInfo>;
   commitment: Commitment;
 };
+
+export const OWNER_VALIDATION_PROGRAM_ID = new PublicKey(
+  "4MNPdKu9wFMvEeZBMt3Eipfs5ovVWTJb31pEXDJAAxX5"
+);
+
+function assertOwnerInstruction({
+  account,
+  owner,
+}: {
+  account: PublicKey;
+  owner: PublicKey;
+}) {
+  const keys: Array<AccountMeta> = [
+    { pubkey: account, isSigner: false, isWritable: false },
+  ];
+  return new TransactionInstruction({
+    keys,
+    data: encodeOwnerValidationInstruction({ account: owner }),
+    programId: OWNER_VALIDATION_PROGRAM_ID,
+  });
+}
+
+// @ts-ignore
+export function encodeOwnerValidationInstruction(instruction) {
+  const b = Buffer.alloc(OWNER_VALIDATION_LAYOUT.span);
+  const span = OWNER_VALIDATION_LAYOUT.encode(instruction, b);
+  return b.slice(0, span);
+}
+
+function publicKeyLayout(property: string) {
+  return new PublicKeyLayout(property);
+}
+
+class PublicKeyLayout extends BufferLayout.Blob {
+  constructor(property: string) {
+    super(32, property);
+  }
+
+  // @ts-ignore
+  decode(b, offset) {
+    return new PublicKey(super.decode(b, offset));
+  }
+
+  // @ts-ignore
+  encode(src, b, offset) {
+    return super.encode(src.toBuffer(), b, offset);
+  }
+}
+
+const OWNER_VALIDATION_LAYOUT = BufferLayout.struct([
+  // @ts-ignore
+  publicKeyLayout("account"),
+]);

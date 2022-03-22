@@ -315,7 +315,7 @@ export async function fetchTokens(
     ({ account, pubkey }: any) => [
       pubkey.toString(),
       {
-        ...tokenClient.coder.accounts.decode("Token", account.data),
+        ...tokenClient.coder.accounts.decode("token", account.data),
         key: pubkey,
       },
     ]

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { makeStyles, Button, Typography, Card } from "@material-ui/core";
+import { useState } from "react";
+import { makeStyles, useTheme, Typography, Card } from "@material-ui/core";
 import { Help } from "@material-ui/icons";
 import { CreateNewWallet } from "./CreateNewWallet";
 import { ImportWallet } from "./ImportWallet";
+import { OnboardButton } from "../common";
 
 const useStyles = makeStyles((theme: any) => ({
   logo: {
@@ -13,10 +14,11 @@ const useStyles = makeStyles((theme: any) => ({
   },
   button: {
     width: "100%",
+    height: "48px",
   },
   card: {
-    width: "420px",
-    height: "480px",
+    width: "375px",
+    height: "600px",
     background: theme.custom.colors.background,
     textAlign: "center",
     position: "fixed",
@@ -32,9 +34,7 @@ const useStyles = makeStyles((theme: any) => ({
     flexDirection: "column-reverse",
     flex: 1,
   },
-  buttonContainer: {
-    marginTop: "20px",
-  },
+  buttonContainer: {},
   header: {
     position: "absolute",
     left: 0,
@@ -84,7 +84,6 @@ const useStyles = makeStyles((theme: any) => ({
 export function Onboarding() {
   return (
     <div>
-      <OnboardingHeader />
       <ContentCard />
     </div>
   );
@@ -129,24 +128,22 @@ function Welcome({
   didSelectContent: (content: string) => void;
 }) {
   const classes = useStyles();
+  const theme = useTheme() as any;
   return (
     <div className={classes.content}>
       <div className={classes.buttonContainer}>
-        <Button
-          className={classes.button}
-          variant="contained"
+        <OnboardButton
           onClick={() => didSelectContent("create-new-wallet")}
-        >
-          Create a new wallet
-        </Button>
-        <Button
-          style={{ marginTop: "10px" }}
-          className={classes.button}
-          variant="contained"
+          label={"Create New Wallet"}
+        />
+        <OnboardButton
+          style={{
+            marginTop: "10px",
+            backgroundColor: theme.custom.colors.nav,
+          }}
           onClick={() => didSelectContent("import-wallet")}
-        >
-          I already have a wallet
-        </Button>
+          label={"Import Wallet"}
+        />
       </div>
       <Logo />
     </div>
@@ -155,11 +152,21 @@ function Welcome({
 
 export function Logo() {
   const classes = useStyles();
-  const URL_200 =
-    "https://aws1.discourse-cdn.com/standard11/uploads/x200ms/original/1X/c1f521d52dadc8467bf0c500c6889edae203424e.png";
+  //  const URL_200 =
+  //    "https://aws1.discourse-cdn.com/standard11/uploads/x200ms/original/1X/c1f521d52dadc8467bf0c500c6889edae203424e.png";
+  const URL =
+    "https://camo.githubusercontent.com/0542190d13e5a50f7d601abc4bfde84cf02af2ca786af519e78411f43f3ca9c0/68747470733a2f2f6d656469612e646973636f72646170702e6e65742f6174746163686d656e74732f3831333434343531343934393130333635382f3839303237383532303535333630333039322f6578706f72742e706e673f77696474683d373436266865696768743d373436";
   return (
     <div className={classes.logoContainer}>
-      <img className={classes.logo} src={URL_200} />
+      <img
+        src={URL}
+        style={{
+          width: "175px",
+          height: "175px",
+          marginLeft: "auto",
+          marginRight: "auto",
+        }}
+      />
     </div>
   );
 }

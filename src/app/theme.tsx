@@ -57,6 +57,7 @@ export const darkTheme = createTheme({
       swapGradient:
         "linear-gradient(180deg, #292C33 0%, rgba(41, 44, 51, 0) 100%)",
       interactiveIconsActive: "#1196B5",
+      interactiveIconsHover: "#67758B",
     },
   },
 });

@@ -5,9 +5,9 @@ import {
   Button,
   Checkbox,
   Typography,
-  TextField,
 } from "@material-ui/core";
-import { KeyboardArrowLeft } from "@material-ui/icons";
+import { MenuBook } from "@material-ui/icons";
+import { TextField } from "../common";
 import { HdKeyring, SolanaHdKeyringFactory } from "../../keyring";
 import { getBackgroundClient } from "../../background/client";
 import {
@@ -15,22 +15,25 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
 } from "../../common";
 import { DerivationPath } from "../../keyring/crypto";
+import { OnboardButton } from "../common";
+import { _NavBackButton, DummyButton } from "../Layout/Nav";
 
 export const useStyles = makeStyles((theme: any) => ({
   stepper: {
-    backgroundColor: theme.custom.colors.background,
-    borderBottom: `solid 1pt #333333`,
+    backgroundColor: theme.custom.colors.nav,
+    borderBottom: `solid 1pt ${theme.custom.colors.border}`,
     paddingTop: "10px",
     paddingBottom: "10px",
     paddingLeft: "14px",
     paddingRight: "14px",
     position: "relative",
+    height: "100%",
   },
   stepperDot: {
-    background: "#333333",
+    background: theme.custom.colors.interactiveIconsHover,
   },
   stepperDotActive: {
-    background: "#fffe",
+    background: theme.custom.colors.tabIconSelected,
   },
   progressButton: {
     color: "#fff",
@@ -65,9 +68,16 @@ export const useStyles = makeStyles((theme: any) => ({
   },
   checkBox: {
     padding: 0,
+    color: theme.custom.colors.onboardButton,
+  },
+  checkBoxChecked: {
+    color: `${theme.custom.colors.onboardButton} !important`,
   },
   subtext: {
-    color: "#333333",
+    color: theme.custom.colors.secondary,
+    fontSize: "12px",
+    lineHeight: "20px",
+    fontWeight: 500,
   },
   continueButtonContainer: {
     position: "absolute",
@@ -78,25 +88,63 @@ export const useStyles = makeStyles((theme: any) => ({
     left: 0,
     right: 0,
   },
-  continueButton: {
-    width: "100%",
-  },
-  disabledContinue: {
-    backgroundColor: "#333 !important",
-    color: "#fff",
-  },
   errorMsg: {
     color: "red",
     textAlign: "left",
     marginTop: "8px",
   },
   mnemonicDisplayContainer: {
-    border: `solid 1pt #333333`,
-    backgroundColor: "#333333",
+    backgroundColor: theme.custom.colors.nav,
+    borderRadius: "12px",
+    marginBottom: "16px",
+  },
+  passwordHeader: {
+    fontSize: "20px",
+    lineHeight: "24px",
+    fontWeight: 500,
+    color: theme.custom.colors.fontColor,
+    marginBottom: "8px",
+  },
+  passwordSubheader: {
+    fontWeight: 500,
+    fontSize: "14px",
+    lineHieght: "20px",
+    color: theme.custom.colors.secondary,
+  },
+  passwordFieldRoot: {
+    margin: 0,
+    width: "100%",
+    marginBottom: "16px",
+  },
+  menuIcon: {
+    color: theme.custom.colors.tabIconSelected,
+    width: "26px",
+    height: "26px",
+    marginBottom: "8px",
+  },
+  mnemonicDisplayText: {
+    color: theme.custom.colors.fontColor,
+    fontWeight: 500,
+    fontSize: "14px",
+    lineHeight: "20px",
+    padding: "16px",
+  },
+  mnemonicCopyButton: {
+    padding: 0,
+    borderTop: `solid 1pt ${theme.custom.colors.border}`,
+    width: "100%",
+    height: "36px",
+  },
+  mnemonicCopyButtonText: {
+    textTransform: "none",
+    color: theme.custom.colors.activeNavButton,
+    fontWeight: 500,
+    fontSize: "14px",
+    lineHeight: "24px",
   },
 }));
 
-const STEP_COUNT = 4;
+const STEP_COUNT = 3;
 
 export function CreateNewWallet() {
   const [activeStep, setActiveState] = useState(0);
@@ -113,6 +161,7 @@ export function CreateNewWallet() {
     setActiveState(activeStep - 1);
   };
   const handleDone = () => {
+    console.log("clicked handle done");
     const background = getBackgroundClient();
     background
       .request({
@@ -130,11 +179,13 @@ export function CreateNewWallet() {
         height: "100%",
       }}
     >
-      <Stepper
-        activeStep={activeStep}
-        handleBack={handleBack}
-        stepCount={STEP_COUNT}
-      />
+      <div style={{ height: "56px" }}>
+        <Stepper
+          activeStep={activeStep}
+          handleBack={handleBack}
+          stepCount={STEP_COUNT}
+        />
+      </div>
       <div
         style={{
           flex: 1,
@@ -151,8 +202,7 @@ export function CreateNewWallet() {
         {activeStep === 1 && (
           <ShowMnemonic keyring={hdKeyring} next={handleNext} />
         )}
-        {activeStep === 2 && <Shortcut next={handleNext} />}
-        {activeStep === 3 && <Done done={handleDone} />}
+        {activeStep === 2 && <Done done={handleDone} />}
       </div>
     </div>
   );
@@ -177,44 +227,24 @@ export function CreatePassword({ next }: { next: (password: string) => void }) {
   };
   return (
     <WithContinue next={clickContinue} canContinue={canContinue}>
-      <div
-        style={{
-          marginBottom: "8px",
-        }}
-      >
-        <Typography variant="h4">Create a password</Typography>
-        <Typography style={{ color: "#5d5d5d" }}>
-          You will use this to unlock your wallet
-        </Typography>
-      </div>
+      <OnboardHeader
+        text={"Create a password"}
+        subtext={"You will use this to unlock your wallet"}
+      />
       <div>
         <TextField
           placeholder="Enter your password..."
-          variant="outlined"
-          margin="dense"
-          className={classes.passwordField}
-          required
-          fullWidth
           type="password"
-          InputLabelProps={{
-            shrink: false,
-          }}
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          setValue={setPassword}
+          rootClass={classes.passwordFieldRoot}
         />
         <TextField
           placeholder="Confirm your password..."
-          variant="outlined"
-          margin="dense"
-          className={classes.passwordField}
-          required
-          fullWidth
           type="password"
-          InputLabelProps={{
-            shrink: false,
-          }}
           value={passwordDup}
-          onChange={(e) => setPasswordDup(e.target.value)}
+          setValue={setPasswordDup}
+          rootClass={classes.passwordFieldRoot}
         />
       </div>
       {error && <Typography className={classes.errorMsg}>{error}</Typography>}
@@ -227,6 +257,17 @@ export function CreatePassword({ next }: { next: (password: string) => void }) {
   );
 }
 
+export function OnboardHeader({ text, subtext }: any) {
+  const classes = useStyles();
+  return (
+    <div style={{ marginBottom: "42px" }}>
+      <Symbol />
+      <Typography className={classes.passwordHeader}>{text}</Typography>
+      <Typography className={classes.passwordSubheader}>{subtext}</Typography>
+    </div>
+  );
+}
+
 function CheckboxForm({ checked, setChecked, label }: any) {
   const classes = useStyles();
   return (
@@ -235,12 +276,16 @@ function CheckboxForm({ checked, setChecked, label }: any) {
         className={classes.checkBox}
         checked={checked}
         onChange={() => setChecked(!checked)}
+        classes={{
+          checked: classes.checkBoxChecked,
+        }}
       />
       <div
         style={{
           display: "flex",
           justifyContent: "center",
           flexDirection: "column",
+          marginLeft: "10px",
         }}
       >
         <Typography className={classes.subtext}>{label}</Typography>
@@ -260,19 +305,12 @@ function ShowMnemonic({
   const canContinue = checked;
   return (
     <WithContinue next={next} canContinue={canContinue}>
-      <div
-        style={{
-          marginBottom: "8px",
-        }}
-      >
-        <Typography style={{ fontSize: "28px" }}>
-          Secret Recovery Phrase
-        </Typography>
-        <Typography style={{ fontSize: "14px" }}>
-          Thise phrase is the ONLY way to recover your wallet. Do not share it
-          with anyone!
-        </Typography>
-      </div>
+      <OnboardHeader
+        text={"Secret Recovery Phrase"}
+        subtext={
+          "This phrase is the ONLY way to recover your wallet. Do not share it with anyone!"
+        }
+      />
       <MnemonicDisplay keyring={keyring} />
       <CheckboxForm
         checked={checked}
@@ -285,8 +323,18 @@ function ShowMnemonic({
 
 function MnemonicDisplay({ keyring }: { keyring: HdKeyring }) {
   const classes = useStyles();
+  const onClick = () => {
+    navigator.clipboard.writeText(keyring.mnemonic);
+  };
   return (
-    <div className={classes.mnemonicDisplayContainer}>{keyring.mnemonic}</div>
+    <div className={classes.mnemonicDisplayContainer}>
+      <Typography className={classes.mnemonicDisplayText}>
+        {keyring.mnemonic}
+      </Typography>
+      <Button onClick={onClick} className={classes.mnemonicCopyButton}>
+        <Typography className={classes.mnemonicCopyButtonText}>Copy</Typography>
+      </Button>
+    </div>
   );
 }
 
@@ -300,8 +348,11 @@ export function Shortcut({ next }: { next: () => void }) {
 
 export function Done({ done }: { done: () => void }) {
   return (
-    <WithContinue next={done} canContinue={true} buttonLabel={"Finish"}>
-      TODO
+    <WithContinue next={() => done()} canContinue={true} buttonLabel={"Finish"}>
+      <OnboardHeader
+        text={`You're all done!`}
+        subtext={"Click finish to complete onboarding"}
+      />
     </WithContinue>
   );
 }
@@ -324,17 +375,10 @@ export function WithContinue(props: any) {
         {props.children}
       </div>
       <div className={classes.continueButtonContainer}>
-        <Button
-          disabled={!props.canContinue}
-          className={classes.continueButton}
-          variant="contained"
+        <OnboardButton
           onClick={() => props.next()}
-          classes={{
-            disabled: classes.disabledContinue,
-          }}
-        >
-          {props.buttonLabel ?? "Continue"}
-        </Button>
+          label={props.buttonLabel ?? "Continue"}
+        />
       </div>
     </div>
   );
@@ -362,18 +406,13 @@ export function Stepper({ activeStep, handleBack, stepCount }: any) {
         ></Button>
       }
       backButton={
-        <Button
-          size="small"
-          onClick={handleBack}
-          disabled={activeStep === 0}
-          className={classes.progressButton}
-          classes={{
-            root: classes.buttonRoot,
-          }}
-        >
-          <KeyboardArrowLeft className={classes.progressButtonRightLabel} />
-        </Button>
+        activeStep > 0 ? <_NavBackButton pop={handleBack} /> : <DummyButton />
       }
     />
   );
+}
+
+function Symbol() {
+  const classes = useStyles();
+  return <MenuBook className={classes.menuIcon} />;
 }

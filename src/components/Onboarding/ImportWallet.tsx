@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { makeStyles, Typography, TextField } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
 import * as bip39 from "bip39";
 import { getBackgroundClient } from "../../background/client";
 import {
@@ -14,11 +14,17 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
 } from "../../common";
 import { DerivationPath } from "../../keyring/crypto";
+import { TextField } from "../common";
+import { OnboardHeader } from "./CreateNewWallet";
 
-const STEP_COUNT = 5;
+const STEP_COUNT = 4;
 
 const useStyles = makeStyles((theme: any) => ({
-  //
+  importMnemonicRoot: {
+    margin: 0,
+    width: "100%",
+    marginBottom: "16px",
+  },
 }));
 
 export function ImportWallet() {
@@ -52,11 +58,13 @@ export function ImportWallet() {
         height: "100%",
       }}
     >
-      <Stepper
-        activeStep={activeStep}
-        handleBack={handleBack}
-        stepCount={STEP_COUNT}
-      />
+      <div style={{ height: "56px" }}>
+        <Stepper
+          activeStep={activeStep}
+          handleBack={handleBack}
+          stepCount={STEP_COUNT}
+        />
+      </div>
       <div
         style={{
           flex: 1,
@@ -86,14 +94,14 @@ export function ImportWallet() {
             }}
           />
         )}
-        {activeStep === 3 && <Shortcut next={handleNext} />}
-        {activeStep === 4 && <Done done={handleDone} />}
+        {activeStep === 3 && <Done done={handleDone} />}
       </div>
     </div>
   );
 }
 
 function ImportMnemonic({ next }: { next: (m: string) => void }) {
+  const classes = useStyles();
   const [mnemonic, setMnemonic] = useState("");
   const [error, setError] = useState<string | null>(null);
   let canContinue = true;
@@ -106,18 +114,15 @@ function ImportMnemonic({ next }: { next: (m: string) => void }) {
   };
   return (
     <WithContinue next={onContinue} canContinue={canContinue}>
-      <Typography>Secret Recovery phrase</Typography>
+      <OnboardHeader
+        text={"Secret Recovery Phrase"}
+        subtext={"Enter your mnemonic"}
+      />
       <TextField
         placeholder="Secret Recover Phrase"
-        variant="outlined"
-        margin="dense"
-        required
-        fullWidth
-        InputLabelProps={{
-          shrink: false,
-        }}
         value={mnemonic}
-        onChange={(e) => setMnemonic(e.target.value)}
+        setValue={setMnemonic}
+        rootClass={classes.importMnemonicRoot}
       />
       {error && <Typography style={{ color: "red" }}>{error}</Typography>}
     </WithContinue>
@@ -126,5 +131,14 @@ function ImportMnemonic({ next }: { next: (m: string) => void }) {
 
 function ImportAccounts({ next }: any) {
   const canContinue = true;
-  return <WithContinue next={next} canContinue={canContinue}></WithContinue>;
+  return (
+    <WithContinue next={next} canContinue={canContinue}>
+      <OnboardHeader
+        text={"Import accounts"}
+        subtext={
+          "Your first account will be imported. Once setup is complete, you can add the rest of your accounts from within the settings page. Click continue."
+        }
+      />
+    </WithContinue>
+  );
 }

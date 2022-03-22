@@ -3,6 +3,7 @@ import {
   makeStyles,
   TextField as MuiTextField,
   Typography,
+  Button,
   CircularProgress,
 } from "@material-ui/core";
 
@@ -55,6 +56,20 @@ const useStyles = makeStyles((theme: any) => ({
     marginLeft: "auto",
     marginRight: "auto",
     color: theme.custom.colors.activeNavButton,
+  },
+
+  button: {
+    width: "100%",
+    backgroundColor: theme.custom.colors.onboardButton,
+    height: "48px",
+    borderRadius: "12px",
+  },
+  buttonLabel: {
+    color: theme.custom.colors.fontColor,
+    weight: 500,
+    fontSize: "16px",
+    lineHeight: "24px",
+    textTransform: "none",
   },
 }));
 
@@ -140,5 +155,31 @@ export function Loading(props: any) {
         style={props.iconStyle}
       />
     </div>
+  );
+}
+
+export function OnboardButton({
+  style,
+  disabled,
+  onClick,
+  disabledClass,
+  label,
+}: any) {
+  const classes = useStyles();
+  return (
+    <Button
+      disableRipple
+      disableElevation
+      style={style}
+      disabled={disabled}
+      className={classes.button}
+      variant="contained"
+      onClick={onClick}
+      classes={{
+        disabled: disabledClass,
+      }}
+    >
+      <Typography className={classes.buttonLabel}>{label}</Typography>
+    </Button>
   );
 }
