@@ -24,8 +24,8 @@ export const useStyles = makeStyles((theme: any) => ({
     borderBottom: `solid 1pt ${theme.custom.colors.border}`,
     paddingTop: "10px",
     paddingBottom: "10px",
-    paddingLeft: "14px",
-    paddingRight: "14px",
+    paddingLeft: "12px",
+    paddingRight: "12px",
     position: "relative",
     height: "100%",
   },
@@ -53,11 +53,11 @@ export const useStyles = makeStyles((theme: any) => ({
   withContinueContainer: {
     display: "flex",
     flexDirection: "column",
+    flex: 1,
     color: theme.custom.colors.fontColor,
-    paddingLeft: "14px",
-    paddingRight: "14px",
-    paddingTop: "10px",
-    paddingBottom: "10px",
+    padding: "20px",
+    position: "relative",
+    height: "100%",
   },
   termsContainer: {
     display: "flex",
@@ -79,15 +79,7 @@ export const useStyles = makeStyles((theme: any) => ({
     lineHeight: "20px",
     fontWeight: 500,
   },
-  continueButtonContainer: {
-    position: "absolute",
-    marginBottom: "20px",
-    marginRight: "20px",
-    marginLeft: "20px",
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
+  continueButtonContainer: {},
   errorMsg: {
     color: "red",
     textAlign: "left",
@@ -363,13 +355,11 @@ export function WithContinue(props: any) {
     <div className={classes.withContinueContainer}>
       <div
         style={{
-          position: "fixed",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
+          flex: 1,
           width: "100%",
-          paddingLeft: "20px",
-          paddingRight: "20px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
         }}
       >
         {props.children}

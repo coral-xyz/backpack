@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { makeStyles, useTheme, Typography, Card } from "@material-ui/core";
-import { Help } from "@material-ui/icons";
+import { makeStyles, useTheme, Card } from "@material-ui/core";
 import { CreateNewWallet } from "./CreateNewWallet";
 import { ImportWallet } from "./ImportWallet";
 import { OnboardButton } from "../common";
@@ -21,12 +20,10 @@ const useStyles = makeStyles((theme: any) => ({
     height: "600px",
     background: theme.custom.colors.background,
     textAlign: "center",
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
     display: "flex",
     flexDirection: "column",
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   content: {
     padding: "20px",
@@ -83,25 +80,16 @@ const useStyles = makeStyles((theme: any) => ({
 
 export function Onboarding() {
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+        width: "100vw",
+        height: "100vh",
+      }}
+    >
       <ContentCard />
-    </div>
-  );
-}
-
-function OnboardingHeader() {
-  const classes = useStyles();
-  return (
-    <div className={classes.header}>
-      <div className={classes.headerLabel}>
-        <Typography>
-          <b>Beta</b>
-        </Typography>
-      </div>
-      <div className={classes.headerButton}>
-        <Help className={classes.helpIcon} />
-        <Typography className={classes.helpText}>Help</Typography>
-      </div>
     </div>
   );
 }
@@ -152,8 +140,6 @@ function Welcome({
 
 export function Logo() {
   const classes = useStyles();
-  //  const URL_200 =
-  //    "https://aws1.discourse-cdn.com/standard11/uploads/x200ms/original/1X/c1f521d52dadc8467bf0c500c6889edae203424e.png";
   const URL =
     "https://camo.githubusercontent.com/0542190d13e5a50f7d601abc4bfde84cf02af2ca786af519e78411f43f3ca9c0/68747470733a2f2f6d656469612e646973636f72646170702e6e65742f6174746163686d656e74732f3831333434343531343934393130333635382f3839303237383532303535333630333039322f6578706f72742e706e673f77696474683d373436266865696768743d373436";
   return (
