@@ -1,14 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { makeStyles, Typography } from "@material-ui/core";
 import * as bip39 from "bip39";
 import { getBackgroundClient } from "../../background/client";
-import {
-  WithContinue,
-  Stepper,
-  Shortcut,
-  Done,
-  CreatePassword,
-} from "./CreateNewWallet";
+import { WithContinue, Stepper, Done, CreatePassword } from "./CreateNewWallet";
 import {
   BrowserRuntime,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,

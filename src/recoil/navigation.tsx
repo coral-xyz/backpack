@@ -17,7 +17,7 @@ import { Bridge } from "./../components/Unlocked/Bridge";
 import { Settings } from "./../components/Unlocked/Settings";
 import { Network } from "../components/Unlocked/Balances/Network";
 import { Token } from "../components/Unlocked/Balances/Token";
-import { bootstrap, bootstrapFast } from "./bootstrap";
+import { bootstrapFast } from "./bootstrap";
 
 /**
  * Effective view model for each tab's navigation controller.

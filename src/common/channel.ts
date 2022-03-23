@@ -1,6 +1,6 @@
 import { POST_MESSAGE_ORIGIN } from "./constants";
 import { BrowserRuntime } from "./browser";
-import { debug, error } from "./logging";
+import { debug } from "./logging";
 import { RpcRequest, RpcResponse, Notification } from "./rpc";
 
 // Channel is a class that establishes communication channel from a
