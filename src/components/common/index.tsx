@@ -1,6 +1,7 @@
 import { PublicKey } from "@solana/web3.js";
 import {
   makeStyles,
+  useTheme,
   TextField as MuiTextField,
   Typography,
   Button,
@@ -57,12 +58,7 @@ const useStyles = makeStyles((theme: any) => ({
     marginRight: "auto",
     color: theme.custom.colors.activeNavButton,
   },
-  button: {
-    width: "100%",
-    backgroundColor: theme.custom.colors.onboardButton,
-    height: "48px",
-    borderRadius: "12px",
-  },
+  button: {},
   buttonLabel: {
     color: theme.custom.colors.buttonFontColor,
     weight: 500,
@@ -105,8 +101,15 @@ export function TextField({
   rootClass,
   endAdornment,
   isError,
+  inputProps,
 }: any) {
   const classes = useStyles();
+  inputProps = Object.assign(
+    {
+      className: classes.passwordField,
+    },
+    inputProps
+  );
   return (
     <MuiTextField
       placeholder={placeholder}
@@ -116,9 +119,7 @@ export function TextField({
       fullWidth
       type={type}
       className={classes.passwordFieldContainer}
-      inputProps={{
-        className: classes.passwordField,
-      }}
+      inputProps={inputProps}
       classes={{
         root: `${isError ? classes.textRootError : ""} ${
           classes.passwordRoot
@@ -174,15 +175,25 @@ export function OnboardButton({
   disabled,
   onClick,
   disabledClass,
-  buttonLabelProps,
+  buttonLabelStyle,
   label,
 }: any) {
   const classes = useStyles();
+  const theme = useTheme() as any;
+  const buttonStyle = Object.assign(
+    {
+      width: "100%",
+      backgroundColor: theme.custom.colors.onboardButton,
+      height: "48px",
+      borderRadius: "12px",
+    },
+    style
+  );
   return (
     <Button
       disableRipple
       disableElevation
-      style={style}
+      style={buttonStyle}
       disabled={disabled}
       className={classes.button}
       variant="contained"
@@ -191,7 +202,7 @@ export function OnboardButton({
         disabled: disabledClass,
       }}
     >
-      <Typography {...buttonLabelProps} className={classes.buttonLabel}>
+      <Typography style={buttonLabelStyle} className={classes.buttonLabel}>
         {label}
       </Typography>
     </Button>
