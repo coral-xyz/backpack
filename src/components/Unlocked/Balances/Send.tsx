@@ -33,7 +33,8 @@ const useStyles = makeStyles((theme: any) => ({
   },
   topHalf: {
     paddingTop: "24px",
-    height: "249px",
+    //    height: "249px",
+    flex: 1,
   },
   bottomHalf: {
     borderTopLeftRadius: "12px",
@@ -42,7 +43,6 @@ const useStyles = makeStyles((theme: any) => ({
     height: "194px",
   },
   buttonContainer: {
-    flex: 1,
     display: "flex",
     paddingLeft: "12px",
     paddingRight: "12px",
@@ -82,11 +82,11 @@ const useStyles = makeStyles((theme: any) => ({
     flexDirection: "column",
     justifyContent: "center",
     background: theme.custom.colors.background,
-    borderRadius: "12px",
+    borderTopLeftRadius: "12px",
+    borderTopRightRadius: "12px",
   },
   sendConfirmationTopHalf: {
     background: theme.custom.colors.drawerGradient,
-    padding: "24px",
   },
   confirmRow: {
     display: "flex",
@@ -177,7 +177,6 @@ function Send({ onCancel, token }: any) {
           />
         </div>
       </div>
-      <div className={classes.bottomHalf}></div>
       <div className={classes.buttonContainer}>
         <OnboardButton
           className={classes.button}
@@ -185,7 +184,12 @@ function Send({ onCancel, token }: any) {
           label={"Send"}
         />
         <WithMiniDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-          <SendConfirmation token={token} address={address} amount={amount} />
+          <SendConfirmation
+            token={token}
+            address={address}
+            amount={amount}
+            close={() => onCancel()}
+          />
         </WithMiniDrawer>
       </div>
     </div>
@@ -235,7 +239,7 @@ export function NetworkFeeInfo() {
   );
 }
 
-function SendConfirmation({ token, address, amount }: any) {
+function SendConfirmation({ token, address, amount, close }: any) {
   const classes = useStyles();
   const theme = useTheme() as any;
   const ctx = useSolanaWalletCtx();
@@ -247,10 +251,11 @@ function SendConfirmation({ token, address, amount }: any) {
       amount,
     });
     console.log("tx sig received", txSig);
+    close();
   };
   return (
-    <div className={classes.sendConfirmationContainer}>
-      <div className={classes.sendConfirmationTopHalf} style={{ flex: 1 }}>
+    <BottomCard onButtonClick={onConfirm} buttonLabel={"Confirm"}>
+      <div style={{ padding: "24px" }}>
         <Typography
           style={{
             color: theme.custom.colors.fontColor,
@@ -300,6 +305,23 @@ function SendConfirmation({ token, address, amount }: any) {
           </div>
         </div>
       </div>
+    </BottomCard>
+  );
+}
+
+export function BottomCard({
+  onButtonClick,
+  buttonLabel,
+  buttonStyle,
+  buttonLabelStyle,
+  children,
+}: any) {
+  const classes = useStyles();
+  return (
+    <div className={classes.sendConfirmationContainer}>
+      <div className={classes.sendConfirmationTopHalf} style={{ flex: 1 }}>
+        {children}
+      </div>
       <div
         style={{
           marginBottom: "24px",
@@ -308,7 +330,12 @@ function SendConfirmation({ token, address, amount }: any) {
           marginRight: "12px",
         }}
       >
-        <OnboardButton onClick={onConfirm} label={"Confirm"} />
+        <OnboardButton
+          style={buttonStyle}
+          buttonLabelStyle={buttonLabelStyle}
+          onClick={onButtonClick}
+          label={buttonLabel}
+        />
       </div>
     </div>
   );

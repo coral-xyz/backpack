@@ -174,6 +174,7 @@ export function OnboardButton({
   disabled,
   onClick,
   disabledClass,
+  buttonLabelProps,
   label,
 }: any) {
   const classes = useStyles();
@@ -190,7 +191,9 @@ export function OnboardButton({
         disabled: disabledClass,
       }}
     >
-      <Typography className={classes.buttonLabel}>{label}</Typography>
+      <Typography {...buttonLabelProps} className={classes.buttonLabel}>
+        {label}
+      </Typography>
     </Button>
   );
 }

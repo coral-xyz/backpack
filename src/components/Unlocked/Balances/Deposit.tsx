@@ -1,5 +1,6 @@
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, useTheme } from "@material-ui/core";
 import { WithHeaderButton } from "./Token";
+import { BottomCard } from "./Send";
 
 const useStyles = makeStyles((theme: any) => ({
   headerButton: {
@@ -25,11 +26,49 @@ export function DepositButton({ token }: any) {
     <WithHeaderButton
       label={"Deposit"}
       dialogTitle={`${token.ticker} / Deposit`}
-      dialog={(_setOpenDrawer: any) => <Deposit token={token} />}
+      dialog={(setOpenDrawer: any) => (
+        <Deposit token={token} close={() => setOpenDrawer(false)} />
+      )}
     />
   );
 }
 
-function Deposit({ token }: any) {
-  return <div>Deposit</div>;
+function Deposit({ token, close }: any) {
+  const classes = useStyles();
+  const theme = useTheme() as any;
+  return (
+    <div
+      style={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+        }}
+      >
+        Deposit
+      </div>
+      <div
+        style={{
+          height: "439px",
+        }}
+      >
+        <BottomCard
+          buttonLabel={"Close"}
+          onButtonClick={close}
+          buttonStyle={{
+            backgroundColor: `${theme.custom.colors.nav} !important`,
+          }}
+          buttonLabelStyle={{
+            fontColor: theme.custom.colors.fontColor,
+          }}
+        >
+          <div></div>
+        </BottomCard>
+      </div>
+    </div>
+  );
 }
