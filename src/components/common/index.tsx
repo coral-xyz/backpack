@@ -84,13 +84,17 @@ export function WalletAddress({
   publicKey: PublicKey;
   name: string;
 }) {
-  const pubkeyStr = publicKey.toString();
   return (
     <Typography>
       <b style={{ marginRight: "8px" }}>{name}</b>(
-      {`${pubkeyStr.slice(0, 4)}...${pubkeyStr.slice(pubkeyStr.length - 4)}`})
+      {walletAddressDisplay(publicKey)})
     </Typography>
   );
+}
+
+export function walletAddressDisplay(publicKey: PublicKey) {
+  const pubkeyStr = publicKey.toString();
+  return `${pubkeyStr.slice(0, 4)}...${pubkeyStr.slice(pubkeyStr.length - 4)}`;
 }
 
 export function TextField({

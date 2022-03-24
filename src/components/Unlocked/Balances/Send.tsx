@@ -7,6 +7,7 @@ import { useEphemeralNav } from "../../../context/NavEphemeral";
 import { useSolanaWalletCtx } from "../../../hooks/useWallet";
 import { OnboardButton } from "../../common";
 import { WithMiniDrawer } from "../../Layout/Drawer";
+import { walletAddressDisplay } from "../../common";
 
 const useStyles = makeStyles((theme: any) => ({
   container: {
@@ -85,6 +86,24 @@ const useStyles = makeStyles((theme: any) => ({
   },
   sendConfirmationTopHalf: {
     background: theme.custom.colors.drawerGradient,
+    padding: "24px",
+  },
+  confirmRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: "8px",
+  },
+  confirmRowLabelLeft: {
+    fontSize: "12px",
+    lineHeight: "16px",
+    fontWeight: 500,
+    color: theme.custom.colors.secondary,
+  },
+  confirmRowLabelRight: {
+    fontSize: "12px",
+    lineHeight: "16px",
+    fontWeight: 500,
+    color: theme.custom.colors.fontColor,
   },
 }));
 
@@ -158,9 +177,7 @@ function Send({ onCancel, token }: any) {
           />
         </div>
       </div>
-      <div className={classes.bottomHalf}>
-        <NetworkFeeInfo />
-      </div>
+      <div className={classes.bottomHalf}></div>
       <div className={classes.buttonContainer}>
         <OnboardButton
           className={classes.button}
@@ -234,15 +251,54 @@ function SendConfirmation({ token, address, amount }: any) {
   return (
     <div className={classes.sendConfirmationContainer}>
       <div className={classes.sendConfirmationTopHalf} style={{ flex: 1 }}>
-        <Typography style={{ color: theme.custom.colors.fontColor }}>
-          THIS IS AN UNSTYLED UI
+        <Typography
+          style={{
+            color: theme.custom.colors.fontColor,
+            fontWeight: 500,
+            fontSize: "18px",
+            lineHeight: "24px",
+          }}
+        >
+          Confirm Send
         </Typography>
-        <Typography style={{ color: theme.custom.colors.fontColor }}>
-          Confirm send {token.ticker} to {address}
-        </Typography>
-        <Typography style={{ color: theme.custom.colors.fontColor }}>
-          Amount: {amount}
-        </Typography>
+        <div
+          style={{
+            marginTop: "18px",
+          }}
+        >
+          <div className={classes.confirmRow}>
+            <Typography className={classes.confirmRowLabelLeft}>
+              Network
+            </Typography>
+            <Typography className={classes.confirmRowLabelRight}>
+              Solana
+            </Typography>
+          </div>
+          <div className={classes.confirmRow}>
+            <Typography className={classes.confirmRowLabelLeft}>
+              Network Fee
+            </Typography>
+            <Typography className={classes.confirmRowLabelRight}>
+              - SOL
+            </Typography>
+          </div>
+          <div className={classes.confirmRow}>
+            <Typography className={classes.confirmRowLabelLeft}>
+              Sending from
+            </Typography>
+            <Typography className={classes.confirmRowLabelRight}>
+              {walletAddressDisplay(wallet.publicKey)}
+            </Typography>
+          </div>
+          <div className={classes.confirmRow}>
+            <Typography className={classes.confirmRowLabelLeft}>
+              Sending to
+            </Typography>
+            <Typography className={classes.confirmRowLabelRight}>
+              {walletAddressDisplay(new PublicKey(address))}
+            </Typography>
+          </div>
+        </div>
       </div>
       <div
         style={{
