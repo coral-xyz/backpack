@@ -4,13 +4,14 @@ import { PublicKey } from "@solana/web3.js";
 import { TextField, TextFieldLabel } from "../../common";
 import { WithHeaderButton } from "./Token";
 import { useEphemeralNav } from "../../../context/NavEphemeral";
-import { useSolanaWalletCtx, useAnchorContext } from "../../../hooks/useWallet";
+import { useSolanaWalletCtx } from "../../../hooks/useWallet";
+import { OnboardButton } from "../../common";
+import { WithMiniDrawer } from "../../Layout/Drawer";
 
 const useStyles = makeStyles((theme: any) => ({
   container: {
     display: "flex",
     flexDirection: "column",
-    backgroundColor: theme.custom.colors.nav,
     height: "100%",
   },
   headerButton: {
@@ -42,8 +43,8 @@ const useStyles = makeStyles((theme: any) => ({
   buttonContainer: {
     flex: 1,
     display: "flex",
-    paddingLeft: "24px",
-    paddingRight: "24px",
+    paddingLeft: "12px",
+    paddingRight: "12px",
     paddingBottom: "24px",
     paddingTop: "25px",
     justifyContent: "space-between",
@@ -57,7 +58,7 @@ const useStyles = makeStyles((theme: any) => ({
   },
   button: {
     background: "transparent",
-    width: "159px",
+    width: "100%",
     height: "48px",
   },
   textRoot: {
@@ -75,6 +76,15 @@ const useStyles = makeStyles((theme: any) => ({
   },
   sendConfirmationContainer: {
     height: "100%",
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    background: theme.custom.colors.background,
+    borderRadius: "12px",
+  },
+  sendConfirmationTopHalf: {
+    background: theme.custom.colors.drawerGradient,
   },
 }));
 
@@ -92,6 +102,7 @@ export function SendButton({ token }: any) {
 
 function Send({ onCancel, token }: any) {
   const classes = useStyles() as any;
+  const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState(0);
   const [addressError, setAddressError] = useState<boolean>(false);
@@ -117,8 +128,7 @@ function Send({ onCancel, token }: any) {
       setAddressError(didAddressError);
       return;
     }
-
-    push(<SendConfirmation token={token} address={address} amount={amount} />);
+    setOpenDrawer(true);
   };
   return (
     <div className={classes.container}>
@@ -152,24 +162,14 @@ function Send({ onCancel, token }: any) {
         <NetworkFeeInfo />
       </div>
       <div className={classes.buttonContainer}>
-        <Button
-          variant="contained"
-          disableRipple
-          disableElevation
-          className={classes.button}
-          onClick={onCancel}
-        >
-          <Typography className={classes.buttonLabel}>Cancel</Typography>
-        </Button>
-        <Button
-          variant="contained"
-          disableRipple
-          disableElevation
+        <OnboardButton
           className={classes.button}
           onClick={onNext}
-        >
-          <Typography className={classes.buttonLabel}>Next</Typography>
-        </Button>
+          label={"Send"}
+        />
+        <WithMiniDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+          <SendConfirmation token={token} address={address} amount={amount} />
+        </WithMiniDrawer>
       </div>
     </div>
   );
@@ -233,21 +233,27 @@ function SendConfirmation({ token, address, amount }: any) {
   };
   return (
     <div className={classes.sendConfirmationContainer}>
-      <Typography style={{ color: theme.custom.colors.fontColor }}>
-        THIS IS AN UNSTYLED UI
-      </Typography>
-      <Typography style={{ color: theme.custom.colors.fontColor }}>
-        Confirm send {token.ticker} to {address}
-      </Typography>
-      <Typography style={{ color: theme.custom.colors.fontColor }}>
-        Amount: {amount}
-      </Typography>
-      <Button
-        style={{ color: theme.custom.colors.fontColor }}
-        onClick={onConfirm}
+      <div className={classes.sendConfirmationTopHalf} style={{ flex: 1 }}>
+        <Typography style={{ color: theme.custom.colors.fontColor }}>
+          THIS IS AN UNSTYLED UI
+        </Typography>
+        <Typography style={{ color: theme.custom.colors.fontColor }}>
+          Confirm send {token.ticker} to {address}
+        </Typography>
+        <Typography style={{ color: theme.custom.colors.fontColor }}>
+          Amount: {amount}
+        </Typography>
+      </div>
+      <div
+        style={{
+          marginBottom: "24px",
+          marginTop: "24px",
+          marginLeft: "12px",
+          marginRight: "12px",
+        }}
       >
-        Confirm
-      </Button>
+        <OnboardButton onClick={onConfirm} label={"Confirm"} />
+      </div>
     </div>
   );
 }

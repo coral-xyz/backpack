@@ -1,9 +1,16 @@
 import { useState } from "react";
 import { Lock } from "@material-ui/icons";
-import { makeStyles, Divider, Typography, Button } from "@material-ui/core";
+import {
+  makeStyles,
+  Divider,
+  Typography,
+  Button,
+  ButtonBase,
+} from "@material-ui/core";
 import { TextField } from "./common";
 import { getBackgroundClient } from "../background/client";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "../common";
+import { OnboardButton } from "./common";
 
 export const NAV_BAR_HEIGHT = 56;
 
@@ -53,13 +60,6 @@ export const useStyles = makeStyles((theme: any) => ({
     borderTopRightRadius: "12px",
     background: "linear-gradient(180deg, #292C33 0%, rgba(41, 44, 51, 0) 100%)",
     height: "258px",
-  },
-  unlockButton: {
-    backgroundColor: theme.custom.colors.onboardButton,
-    width: "351px",
-    height: "48px",
-    color: theme.custom.colors.fontColor,
-    borderRadius: "12px",
   },
   headerIcon: {
     color: theme.custom.colors.onboardButton,
@@ -152,16 +152,9 @@ export function Locked() {
           value={password}
           setValue={setPassword}
         />
-        <Button
-          onClick={onUnlock}
-          disableElevation
-          variant="contained"
-          className={classes.unlockButton}
-        >
-          <Typography style={{ fontWeight: 500, textTransform: "none" }}>
-            Unlock
-          </Typography>
-        </Button>
+        <div style={{ marginLeft: "12px", marginRight: "12px" }}>
+          <OnboardButton onClick={onUnlock} label={"Unlock"} />
+        </div>
         <div style={{ visibility: error ? undefined : "hidden" }}>
           <div className={classes.forgotContainer}>
             <div

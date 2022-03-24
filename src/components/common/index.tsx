@@ -57,7 +57,6 @@ const useStyles = makeStyles((theme: any) => ({
     marginRight: "auto",
     color: theme.custom.colors.activeNavButton,
   },
-
   button: {
     width: "100%",
     backgroundColor: theme.custom.colors.onboardButton,
@@ -65,7 +64,7 @@ const useStyles = makeStyles((theme: any) => ({
     borderRadius: "12px",
   },
   buttonLabel: {
-    color: theme.custom.colors.fontColor,
+    color: theme.custom.colors.buttonFontColor,
     weight: 500,
     fontSize: "16px",
     lineHeight: "24px",

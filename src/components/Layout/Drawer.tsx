@@ -6,6 +6,8 @@ import { NAV_BAR_HEIGHT, NAV_BUTTON_WIDTH } from "./Nav";
 import { WithEphemeralNav } from "./NavEphemeral";
 import { useEphemeralNav } from "../../context/NavEphemeral";
 
+const MINI_DRAWER_HEIGHT = 295;
+
 const useStyles = makeStyles((theme: any) => ({
   withDrawer: {
     backgroundColor: theme.custom.colors.background,
@@ -30,6 +32,15 @@ const useStyles = makeStyles((theme: any) => ({
   },
   drawerPaper: {
     height: "100%",
+  },
+  miniDrawerRoot: {
+    background: "transparent",
+    zIndex: "1 !important" as any,
+    flex: 1,
+  },
+  miniDrawerPaper: {
+    height: `${MINI_DRAWER_HEIGHT}px`,
+    background: "transparent",
   },
   closeDrawerButton: {
     backgroundColor: theme.custom.colors,
@@ -74,6 +85,30 @@ export function WithDrawer(props: any) {
           {children}
         </WithDrawerContent>
       </WithEphemeralNav>
+    </Drawer>
+  );
+}
+
+export function WithMiniDrawer(props: any) {
+  const classes = useStyles();
+  const { children, openDrawer, setOpenDrawer } = props;
+  return (
+    <Drawer
+      anchor={"bottom"}
+      open={openDrawer}
+      onClose={() => setOpenDrawer(false)}
+      classes={{
+        root: classes.miniDrawerRoot,
+        paper: classes.miniDrawerPaper,
+      }}
+      BackdropProps={{
+        style: {
+          background: "transparent",
+        },
+      }}
+      ModalProps={{ onBackdropClick: () => setOpenDrawer(false) }}
+    >
+      {children}
     </Drawer>
   );
 }
