@@ -94,16 +94,30 @@ function Send({ onCancel, token }: any) {
   const classes = useStyles() as any;
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState(0);
-  const [error, setError] = useState<any>(null);
+  const [addressError, setAddressError] = useState<boolean>(false);
+  const [amountError, setAmountError] = useState<boolean>(false);
   const { push } = useEphemeralNav();
   const onNext = () => {
-    // TODO: don't allow amounts <= 0.
+    let didAmountError = false;
+    if (amount <= 0) {
+      didAmountError = true;
+    }
+
+    let didAddressError = false;
     try {
       new PublicKey(address);
     } catch (_err) {
-      setError("invalid public key");
+      didAddressError = true;
+    }
+
+    // Do this below the above so that we can set the proper error states
+    // on all the fields.
+    if (didAmountError || didAddressError) {
+      setAmountError(didAmountError);
+      setAddressError(didAddressError);
       return;
     }
+
     push(<SendConfirmation token={token} address={address} amount={amount} />);
   };
   return (
@@ -116,6 +130,7 @@ function Send({ onCancel, token }: any) {
             placeholder={"SOL Address"}
             value={address}
             setValue={setAddress}
+            isError={addressError}
           />
         </div>
         <div>
@@ -129,6 +144,7 @@ function Send({ onCancel, token }: any) {
             placeholder={"Amount"}
             value={amount}
             setValue={setAmount}
+            isError={amountError}
           />
         </div>
       </div>

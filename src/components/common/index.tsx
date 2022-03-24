@@ -71,6 +71,11 @@ const useStyles = makeStyles((theme: any) => ({
     lineHeight: "24px",
     textTransform: "none",
   },
+  textRootError: {
+    "& .MuiOutlinedInput-root": {
+      borderColor: `${theme.custom.colors.negative} !important`,
+    },
+  },
 }));
 
 export function WalletAddress({
@@ -96,6 +101,7 @@ export function TextField({
   setValue,
   rootClass,
   endAdornment,
+  isError,
 }: any) {
   const classes = useStyles();
   return (
@@ -111,7 +117,9 @@ export function TextField({
         className: classes.passwordField,
       }}
       classes={{
-        root: `${classes.passwordRoot} ${rootClass ?? ""}`,
+        root: `${isError ? classes.textRootError : ""} ${
+          classes.passwordRoot
+        } ${rootClass ?? ""}`,
       }}
       InputLabelProps={{
         shrink: false,
