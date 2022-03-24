@@ -122,7 +122,7 @@ export const useStyles = makeStyles((theme: any) => ({
 export function Locked() {
   const classes = useStyles();
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<null | string>(null);
+  const [error, setError] = useState<boolean>(false);
   const onUnlock = () => {
     const background = getBackgroundClient();
     background
@@ -130,7 +130,7 @@ export function Locked() {
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
         params: [password],
       })
-      .catch(setError);
+      .catch(() => setError(true));
   };
   return (
     <div className={classes.container}>
@@ -146,7 +146,7 @@ export function Locked() {
       </div>
       <div className={classes.content}>
         <TextField
-          rootClass={error ? classes.passwordRootNegative : undefined}
+          isError={error}
           placeholder={"Password"}
           type={"password"}
           value={password}
