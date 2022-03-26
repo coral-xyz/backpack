@@ -74,22 +74,35 @@ export class ChannelClient {
     };
     BrowserRuntime.sendMessageActiveTab(event);
   }
+
+  public sendMessageTab(windowId: number, tabId: number, data: any) {
+    const event = {
+      channel: this.name,
+      data,
+    };
+    BrowserRuntime.sendMessageTab(tabId, event);
+  }
 }
 
 export class ChannelServer {
   constructor(private name: string) {}
 
-  public handler(handlerFn: (message: any, sender: any) => RpcResponse) {
+  public handler(
+    handlerFn: (message: any, sender: any) => Promise<RpcResponse>
+  ) {
     BrowserRuntime.addEventListener(
       (msg: any, sender: any, sendResponse: any) => {
         if (msg.channel === this.name) {
           const id = msg.data.id;
-          const [result, error] = handlerFn(msg, sender);
-          sendResponse({
-            id,
-            result,
-            error,
+          handlerFn(msg, sender).then(([result, error]) => {
+            console.log("got result", result);
+            sendResponse({
+              id,
+              result,
+              error,
+            });
           });
+          return true;
         }
       }
     );

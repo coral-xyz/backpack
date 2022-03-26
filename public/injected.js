@@ -21,41 +21,48 @@ function main() {
 }
 
 function initProvider() {
-  window.anchor = Provider;
+  window.anchor = new Provider();
 }
 
 class Provider {
-  constructor(url, options) {
-    this._url = url;
-    this._options = options;
+  constructor() {
+    this._url = undefined;
+    this._options = undefined;
     this._requestId = 0;
     this._responseResolvers = {};
     this._initChannels();
     this._notificationHandlers = {};
 
+    this.isAnchor = true;
     this.isConnected = false;
+    this.publicKey = undefined;
   }
 
+  // Setup channels with the content script.
   _initChannels() {
-    // Setup channels with the content script.
-    window.addEventListener("message", (event) => {
-      if (event.data.type !== CHANNEL_RPC_RESPONSE) return;
-
-      const { id, result } = event.data.detail;
-      const resolver = this._responseResolvers[id];
-      if (!resolver) {
-        error("unexpected event", event);
-        throw new Error("unexpected event");
-      }
-      delete this._responseResolvers[id];
-      const [resolve, reject] = resolver;
-      resolve(result);
-    });
+    window.addEventListener("message", this._handleRpcResponse.bind(this));
     window.addEventListener("message", this._handleNotification.bind(this));
   }
 
+  _handleRpcResponse(event) {
+    if (event.data.type !== CHANNEL_RPC_RESPONSE) return;
+
+    const { id, result } = event.data.detail;
+    const resolver = this._responseResolvers[id];
+    if (!resolver) {
+      error("unexpected event", event);
+      throw new Error("unexpected event");
+    }
+    delete this._responseResolvers[id];
+    const [resolve, reject] = resolver;
+    resolve(result);
+  }
+
   _handleNotification(event) {
+    console.log("handling notif", event);
     if (event.data.type !== CHANNEL_NOTIFICATION) return;
+    log("notification", event);
+
     switch (event.data.detail.name) {
       case NOTIFICATION_CONNECTED:
         this._handleNotificationConnected(event);
@@ -69,8 +76,9 @@ class Provider {
       default:
         throw new Error(`unexpected notification ${event.data.detail.name}`);
     }
-    const handlers =
-      this._notificationHandlers[_mapNotificationName(event.data.detail.name)];
+
+    const key = _mapNotificationName(event.data.detail.name);
+    const handlers = this._notificationHandlers[key];
     if (handlers) {
       handlers.forEach((h) => h(event.data.detail));
     }
@@ -78,6 +86,8 @@ class Provider {
 
   _handleNotificationConnected(event) {
     this.isConnected = true;
+    this.publicKey = event.data.detail.data;
+    console.log("got connected update", event);
   }
 
   _handleNotificationDisconnected(event) {
@@ -87,7 +97,7 @@ class Provider {
   _handleNotificationConnectionUrlUpdated(event) {
     // todo: Change connection object so that all hooks depending on it
     //       rerenders.
-    console.log("got updated event", event);
+    console.log("armani: got updated event", event);
   }
 
   /**
@@ -99,6 +109,10 @@ class Provider {
     } else {
       this._notificationHandlers[eventName] = [handler];
     }
+  }
+
+  off(eventName, listener) {
+    // todo
   }
 
   async connect(onlyIfTrustedMaybe) {
@@ -124,9 +138,17 @@ class Provider {
     });
   }
 
-  async signAndSendMessage(msg) {
+  async signTransaction(tx) {
+    throw new Error("not yet implemented");
+  }
+
+  async signAllTransactions(tx) {
+    throw new Error("not yet implemented");
+  }
+
+  async signMessage(msg) {
     return await this.request({
-      method: RPC_SIGN_AND_SEND_MESSAGE,
+      method: RPC_SIGN_MESSAGE,
       params: [msg],
     });
   }
@@ -161,9 +183,9 @@ class Provider {
 function _mapNotificationName(notificationName) {
   switch (notificationName) {
     case NOTIFICATION_CONNECTED:
-      return "connected";
+      return "connect";
     case NOTIFICATION_DISCONNECTED:
-      return "disconnected";
+      return "disconnect";
     case NOTIFICATION_CONNECTION_URL_UPDATED:
       return "connectionDidChange";
     default:

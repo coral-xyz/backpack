@@ -15,6 +15,7 @@ import {
   NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
   NOTIFICATION_KEYRING_RESET_MNEMONIC,
+  NOTIFICATION_APPROVED_ORIGINS_UPDATE,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
 import { KeyringStoreStateEnum } from "../keyring/store";
@@ -25,6 +26,7 @@ export function NotificationsProvider(props: any) {
   const setWalletPublicKeys = useSetRecoilState(atoms.walletPublicKeys);
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveWallet = useSetRecoilState(atoms.activeWallet);
+  const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
 
   useEffect(() => {
     const backgroundClient = getBackgroundClient();
@@ -58,6 +60,9 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_KEYRING_RESET_MNEMONIC:
           handleResetMnemonic(notif);
+          break;
+        case NOTIFICATION_APPROVED_ORIGINS_UPDATE:
+          handleApprovedOriginsUpdate(notif);
           break;
         default:
           break;
@@ -124,6 +129,9 @@ export function NotificationsProvider(props: any) {
     };
     const handleResetMnemonic = (notif: Notification) => {
       // TODO.
+    };
+    const handleApprovedOriginsUpdate = (notif: Notification) => {
+      setApprovedOrigins(notif.data.approvedOrigins);
     };
 
     //

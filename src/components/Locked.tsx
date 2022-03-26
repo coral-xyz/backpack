@@ -81,8 +81,9 @@ export const useStyles = makeStyles((theme: any) => ({
     color: theme.custom.colors.activeNavButton,
     marginLeft: "auto",
     marginRight: "auto",
-    width: "100%",
-    height: "30px",
+    height: "120px",
+    width: "120px",
+    borderRadius: "30px",
   },
   divider: {
     backgroundColor: theme.custom.colors.border,
@@ -119,30 +120,39 @@ export const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-export function Locked() {
+export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const classes = useStyles();
   const [password, setPassword] = useState("");
   const [error, setError] = useState<boolean>(false);
-  const onUnlock = () => {
-    const background = getBackgroundClient();
-    background
-      .request({
+  const _onUnlock = async () => {
+    try {
+      const background = getBackgroundClient();
+      await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
         params: [password],
-      })
-      .catch(() => setError(true));
+      });
+
+      if (onUnlock) {
+        onUnlock();
+      }
+    } catch (err) {
+      setError(true);
+    }
   };
   return (
     <div className={classes.container}>
       <div className={classes.nav}>
-        <Typography className={classes.navTitle}>200ms</Typography>
+        <Typography className={classes.navTitle}>Anchor</Typography>
       </div>
       <div className={classes.header}>
-        <Lock className={classes.lockIcon} />
+        {/*<Lock className={classes.lockIcon} />*/}
+        <img src="anchor.png" className={classes.lockIcon} />
+        {/*
         <Typography className={classes.headerTitle}>Unlock Wallet</Typography>
         <Typography className={classes.headerSubtitle}>
           Enter your password to unlock wallet.
         </Typography>
+				*/}
       </div>
       <div className={classes.content}>
         <TextField
@@ -153,7 +163,7 @@ export function Locked() {
           setValue={setPassword}
         />
         <div style={{ marginLeft: "12px", marginRight: "12px" }}>
-          <OnboardButton onClick={onUnlock} label={"Unlock"} />
+          <OnboardButton onClick={_onUnlock} label={"Unlock"} />
         </div>
         <div style={{ visibility: error ? undefined : "hidden" }}>
           <div className={classes.forgotContainer}>

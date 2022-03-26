@@ -17,13 +17,14 @@ import {
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
+  NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   TAB_BALANCES,
   TAB_QUEST,
   TAB_BRIDGE,
   TAB_FRIENDS,
 } from "../common";
 
-const SUCCESS_RESPONSE = "success";
+export const SUCCESS_RESPONSE = "success";
 
 export class Backend {
   private keyringStore: KeyringStore;
@@ -34,9 +35,8 @@ export class Backend {
     this.notifications = notifications;
   }
 
-  connect(ctx: Context, onlyIfTrustedMaybe: boolean) {
-    // todo
-    return SUCCESS_RESPONSE;
+  async isApprovedOrigin(origin: string): Promise<boolean> {
+    return await this.keyringStore.isApprovedOrigin(origin);
   }
 
   disconnect(ctx: Context) {
@@ -305,6 +305,21 @@ export class Backend {
   ): Promise<string> {
     const blockchainKeyring = this.keyringStore.activeBlockchain();
     return blockchainKeyring.signTransaction(txMessage, walletAddress);
+  }
+
+  async approvedOriginsRead(): Promise<Array<string>> {
+    return await this.keyringStore.approvedOrigins();
+  }
+
+  async approvedOriginsUpdate(approvedOrigins: Array<string>): Promise<string> {
+    await this.keyringStore.approvedOriginsUpdate(approvedOrigins);
+    this.notifications.pushNotification({
+      name: NOTIFICATION_APPROVED_ORIGINS_UPDATE,
+      data: {
+        approvedOrigins,
+      },
+    });
+    return SUCCESS_RESPONSE;
   }
 }
 

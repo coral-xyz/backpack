@@ -318,6 +318,40 @@ export class KeyringStore {
   private activeBlockchainUnchecked(): BlockchainKeyring {
     return this.blockchains.get(this.activeBlockchainLabel!)!;
   }
+
+  public async isApprovedOrigin(origin: string): Promise<boolean> {
+    const data = await getWalletData();
+    if (!data.approvedOrigins) {
+      return false;
+    }
+    const found = data.approvedOrigins.find((o) => o === origin);
+    return found !== undefined;
+  }
+
+  public async approvedOrigins(): Promise<Array<string>> {
+    const data = await getWalletData();
+    return data.approvedOrigins;
+  }
+
+  public async approveOrigin(origin: string) {
+    const data = await getWalletData();
+    const found = data.approvedOrigins.find((o) => o === origin);
+    if (found) {
+      throw new Error(`origin already approved: ${origin}`);
+    }
+    await setWalletData({
+      ...data,
+      approvedOrigins: [...data.approvedOrigins, origin],
+    });
+  }
+
+  public async approvedOriginsUpdate(approvedOrigins: Array<string>) {
+    const data = await getWalletData();
+    await setWalletData({
+      ...data,
+      approvedOrigins,
+    });
+  }
 }
 
 // Represents key data for a single blockchain network, e.g., solana or ethereum.
@@ -510,11 +544,13 @@ class BlockchainKeyring {
 // Persistent metadata for the UI shared across all networks.
 export type WalletData = {
   autoLockSecs: number;
+  approvedOrigins: Array<string>;
 };
 
 async function initWalletData() {
   await setWalletData({
     autoLockSecs: LOCK_INTERVAL_SECS,
+    approvedOrigins: [],
   });
 }
 

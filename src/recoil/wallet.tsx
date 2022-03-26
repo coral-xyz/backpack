@@ -8,6 +8,7 @@ import {
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
+  UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
 import { WalletPublicKeys } from "./types";

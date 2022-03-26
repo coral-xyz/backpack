@@ -3,7 +3,9 @@ import {
   Channel,
   PortChannel,
   NotificationsClient,
-  openPopupWindow,
+  openLockedPopupWindow,
+  openApprovalPopupWindow,
+  openLockedApprovalPopupWindow,
   RpcRequest,
   RpcResponse,
   CHANNEL_RPC_REQUEST,
@@ -43,13 +45,16 @@ import {
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
   UI_RPC_METHOD_SIGN_TRANSACTION,
+  UI_RPC_METHOD_APPROVED_ORIGINS_READ,
+  UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
+  UI_RPC_METHOD_DID_CONNECT,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_NOTIFICATIONS,
 } from "../common";
-import { Context, Backend } from "./backend";
+import { Context, Backend, SUCCESS_RESPONSE } from "./backend";
 import { DerivationPath } from "../keyring/crypto";
 import { KeyringStoreState } from "../keyring/store";
 
@@ -140,17 +145,26 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return await handleSolanaCommitmentUpdate(params[0]);
     case UI_RPC_METHOD_SIGN_TRANSACTION:
       return await handleSignTransaction(params[0], params[1]);
+    case UI_RPC_METHOD_APPROVED_ORIGINS_READ:
+      return await handleApprovedOriginsRead();
+    case UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE:
+      return await handleApprovedOriginsUpdate(params[0]);
+    case UI_RPC_METHOD_DID_CONNECT:
+      return await handleDidConnect(params[0], params[1]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
 }
 
-function handleRpc<T = any>(ctx: Context, req: RpcRequest): RpcResponse<T> {
+async function handleRpc<T = any>(
+  ctx: Context,
+  req: RpcRequest
+): Promise<RpcResponse<T>> {
   debug(`handle rpc ${req.method}`);
   const { method, params } = req;
   switch (method) {
     case RPC_METHOD_CONNECT:
-      return handleConnect(ctx, params[0]);
+      return await handleConnect(ctx, params[0]);
     case RPC_METHOD_DISCONNECT:
       return handleDisconnect(ctx);
     case RPC_METHOD_SIGN_AND_SEND_TX:
@@ -167,16 +181,37 @@ function handleNotificationsSubscribe(): RpcResponse<string> {
   return ["success"];
 }
 
-function handleConnect(
+// Automatically connect in the event we're unlocked and the origin
+// has been previously approved. Otherwise, open a new winddow to prompt
+// the user to unlock and approve.
+async function handleConnect(
   ctx: Context,
   onlyIfTrustedMaybe: boolean
-): RpcResponse<string> {
-  const resp = backend.connect(ctx, onlyIfTrustedMaybe);
-  notificationsInjected.sendMessageActiveTab({
-    name: NOTIFICATION_CONNECTED,
-  });
-  openPopupWindow();
-  return [resp];
+): Promise<RpcResponse<string>> {
+  const origin = ctx.sender.origin;
+  const keyringStoreState = await backend.keyringStoreState();
+  if (keyringStoreState === "unlocked") {
+    if (await backend.isApprovedOrigin(origin)) {
+      debug("already approved so automatically connecting");
+      const activeWallet = await backend.activeWallet();
+      notificationsInjected.sendMessageActiveTab({
+        name: NOTIFICATION_CONNECTED,
+        data: activeWallet,
+      });
+    } else {
+      openApprovalPopupWindow(ctx);
+    }
+  } else if (keyringStoreState === "locked") {
+    if (await backend.isApprovedOrigin(origin)) {
+      openLockedPopupWindow(ctx);
+    } else {
+      openLockedApprovalPopupWindow(ctx);
+    }
+  } else {
+    throw new Error("invariant violation keyring not created");
+  }
+
+  return [SUCCESS_RESPONSE];
 }
 
 function handleDisconnect(ctx: Context): RpcResponse<string> {
@@ -408,13 +443,39 @@ async function handleSignTransaction(
   return [resp];
 }
 
+async function handleApprovedOriginsRead(): Promise<
+  RpcResponse<Array<string>>
+> {
+  const resp = await backend.approvedOriginsRead();
+  return [resp];
+}
+
+async function handleApprovedOriginsUpdate(
+  approvedOrigins: Array<string>
+): Promise<RpcResponse<string>> {
+  const resp = await backend.approvedOriginsUpdate(approvedOrigins);
+  return [resp];
+}
+
+async function handleDidConnect(
+  windowId: number,
+  tabId: number
+): Promise<RpcResponse<string>> {
+  const activeWallet = await backend.activeWallet();
+  notificationsInjected.sendMessageTab(windowId, tabId, {
+    name: NOTIFICATION_CONNECTED,
+    data: activeWallet,
+  });
+  return [SUCCESS_RESPONSE];
+}
+
 // Utility to transform the handler API into something a little more friendly.
 function withContext(
-  handler: (ctx: Context, req: RpcRequest) => RpcResponse
-): ({ data }: { data: RpcRequest }, sender: any) => RpcResponse {
-  return ({ data }: { data: RpcRequest }, sender: any) => {
+  handler: (ctx: Context, req: RpcRequest) => Promise<RpcResponse>
+): ({ data }: { data: RpcRequest }, sender: any) => Promise<RpcResponse> {
+  return async ({ data }: { data: RpcRequest }, sender: any) => {
     const ctx = { sender };
-    return handler(ctx, data);
+    return await handler(ctx, data);
   };
 }
 

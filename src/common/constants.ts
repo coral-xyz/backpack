@@ -12,6 +12,8 @@ export const UI_RPC_METHOD_KEYRING_STORE_CREATE = "keyring-store-create";
 export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS =
   "keyring-read-all-pubkeys";
 export const UI_RPC_METHOD_KEYRING_STORE_STATE = "keyring-store-state";
+export const UI_RPC_METHOD_APPROVED_ORIGINS_READ = "approved-origins-read";
+export const UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE = "approved-origins-update";
 export const UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE =
   "keyring-store-keep-alive";
 export const UI_RPC_METHOD_KEYRING_STORE_UNLOCK = "keyring-store-unlock";
@@ -45,6 +47,7 @@ export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ = "solana-commitment-read";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE =
   "solana-commitment-update";
 export const UI_RPC_METHOD_SIGN_TRANSACTION = "ui-rpc-method-sign-tx";
+export const UI_RPC_METHOD_DID_CONNECT = "ui-rpc-method-did-connect";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
@@ -65,6 +68,8 @@ export const NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY =
 export const NOTIFICATION_KEYRING_RESET_MNEMONIC =
   "anchor-keyring-reset-mnemonic";
 export const NOTIFICATION_KEYRING_CREATED = "anchor-keyring-created";
+export const NOTIFICATION_APPROVED_ORIGINS_UPDATE =
+  "anchor-approved-origins-update";
 
 export const CONNECTION_POPUP_RPC = "anchor-popup-rpc";
 export const CONNECTION_POPUP_NOTIFICATIONS = "anchor-popup-notifications";
