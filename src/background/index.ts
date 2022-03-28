@@ -273,10 +273,11 @@ async function handleSignAndSendTx(
 
   // Only sign if the user clicked approve.
   if (didApprove) {
-    await backend.signAndSendTx(ctx, tx, walletAddress);
+    const sig = await backend.signAndSendTx(ctx, tx, walletAddress);
+    return [sig];
   }
 
-  return [SUCCESS_RESPONSE];
+  return [null];
 }
 
 function handleSignMessage(ctx: Context, msg: any): RpcResponse<string> {

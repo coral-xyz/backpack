@@ -1,4 +1,10 @@
-import { Connection } from "@solana/web3.js";
+import * as bs58 from "bs58";
+import {
+  Commitment,
+  PublicKey,
+  Connection,
+  Transaction,
+} from "@solana/web3.js";
 import {
   BLOCKCHAIN_SOLANA,
   KeyringStore,
@@ -48,14 +54,23 @@ export class Backend {
 
   async signAndSendTx(
     ctx: Context,
-    tx: any,
+    txStr: string,
     walletAddress: string
   ): Promise<string> {
-    //		const signedTx = await this.signTransaction();
-    // todo
-    console.log("sign and send tx here", tx);
-    const txId = "todo";
-    return txId;
+    // Sign the transaction.
+    const tx = Transaction.from(bs58.decode(txStr));
+    const txMsg = bs58.encode(tx.serializeMessage());
+    const signature = await this.signTransaction(txMsg, walletAddress);
+    const pubkey = new PublicKey(walletAddress);
+    tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
+
+    // Send it to the network.
+    const conn = await this.solanaConnection();
+    const commitment = await this.solanaCommitmentRead();
+    return await conn.sendRawTransaction(tx.serialize(), {
+      skipPreflight: false,
+      preflightCommitment: commitment,
+    });
   }
 
   signMessage(ctx: Context, msg: any): MessageSignature {
@@ -67,11 +82,16 @@ export class Backend {
   // TODO: this should be shared with the frontend extension UI and put
   //       on a regular interval poll.
   async recentBlockhash(): Promise<string> {
+    const conn = await this.solanaConnection();
+    const { blockhash } = await conn.getLatestBlockhash();
+    return blockhash;
+  }
+
+  async solanaConnection(): Promise<Connection> {
     const blockchain = this.keyringStore.blockchains.get(BLOCKCHAIN_SOLANA);
     const url = await blockchain!.connectionUrlRead();
     const conn = new Connection(url);
-    const { blockhash } = await conn.getLatestBlockhash();
-    return blockhash;
+    return conn;
   }
 
   // Creates a brand new keyring store. Should be run once on initializtion.
@@ -306,7 +326,7 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async solanaCommitmentRead(): Promise<string> {
+  async solanaCommitmentRead(): Promise<Commitment> {
     // todo
     return "processed";
   }

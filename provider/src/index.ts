@@ -1,7 +1,12 @@
 // TODO: we need to put this under the same workspace as the main package
 //       so that we can share code across the extension and this package.
 
-import { PublicKey, ConfirmOptions, Transaction } from "@solana/web3.js";
+import {
+  TransactionSignature,
+  PublicKey,
+  ConfirmOptions,
+  Transaction,
+} from "@solana/web3.js";
 import * as bs58 from "bs58";
 import { EventEmitter } from "eventemitter3";
 
@@ -131,7 +136,9 @@ class Provider extends EventEmitter {
     return await this.request({ method: RPC_METHOD_DISCONNECT, params: [] });
   }
 
-  async signAndSendTransaction(tx: Transaction) {
+  async signAndSendTransaction(
+    tx: Transaction
+  ): Promise<TransactionSignature | null> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
@@ -141,7 +148,9 @@ class Provider extends EventEmitter {
     });
     tx.feePayer = this.publicKey;
     tx.recentBlockhash = recentBlockhash;
-    const txSerialize = tx.serializeMessage();
+    const txSerialize = tx.serialize({
+      requireAllSignatures: false,
+    });
     const message = bs58.encode(txSerialize);
     return await this.request({
       method: RPC_METHOD_SIGN_AND_SEND_TX,
