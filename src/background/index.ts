@@ -7,6 +7,7 @@ import {
   openApprovalPopupWindow,
   openLockedApprovalPopupWindow,
   openApproveTransactionPopupWindow,
+  Window,
   RpcRequest,
   RpcResponse,
   CHANNEL_RPC_REQUEST,
@@ -217,13 +218,13 @@ async function handleConnect(
         data: activeWallet,
       });
     } else {
-      openApprovalPopupWindow(ctx);
+      const window = await openApprovalPopupWindow(ctx);
     }
   } else if (keyringStoreState === "locked") {
     if (await backend.isApprovedOrigin(origin)) {
-      openLockedPopupWindow(ctx);
+      const window = await openLockedPopupWindow(ctx);
     } else {
-      openLockedApprovalPopupWindow(ctx);
+      const window = await openLockedApprovalPopupWindow(ctx);
     }
   } else {
     throw new Error("invariant violation keyring not created");
@@ -246,11 +247,12 @@ async function handleSignAndSendTx(
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    openApproveTransactionPopupWindow(ctx, requestId);
+    return openApproveTransactionPopupWindow(ctx, requestId);
   });
+  const didApprove = uiResp.result;
 
   // Only sign if the user clicked approve.
-  if (uiResp) {
+  if (didApprove) {
     await backend.signAndSendTx(ctx, tx, walletAddress);
   }
 
@@ -519,12 +521,30 @@ class RequestManager {
 
   // Initiate a request. The given popupFn should relay the given requestId to
   // the UI, which will send it back with a response.
+  //
+  // Note that there are two ways we can receive a response.
+  //
+  // 1) The user can explicit perform a UI action via our components.
+  // 2) The user can close the window.
+  //
   public static requestUiAction<T = any>(
-    popupFn: (reqId: number) => void
+    popupFn: (reqId: number) => Promise<Window>
   ): Promise<T> {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       const requestId = RequestManager.addResponseResolver(resolve, reject);
-      popupFn(requestId);
+      const window = await popupFn(requestId);
+      chrome.windows.onRemoved.addListener((windowId) => {
+        if (windowId === window.id) {
+          RequestManager.removeResponseResolver(requestId);
+          resolve({
+            // @ts-ignore
+            id: requestId,
+            result: undefined,
+            error: undefined,
+            windowClosed: true,
+          });
+        }
+      });
     });
   }
 
@@ -537,11 +557,18 @@ class RequestManager {
 
     const [resolve, reject] = resolver;
 
+    RequestManager.removeResponseResolver(id);
+
     if (error) {
       reject(error);
     }
 
-    resolve(result);
+    resolve({
+      id,
+      result,
+      error,
+      windowClosed: undefined,
+    });
   }
 
   private static addResponseResolver(
@@ -561,6 +588,10 @@ class RequestManager {
 
   private static getResponseResolver(requestId: number): [Function, Function] {
     return RequestManager._responseResolvers[requestId];
+  }
+
+  private static removeResponseResolver(requestId: number) {
+    delete RequestManager._responseResolvers[requestId];
   }
 }
 main();

@@ -9,40 +9,50 @@ export const QUERY_APPROVE_TRANSACTION = "approve-tx=true";
 
 const MACOS_TOOLBAR_HEIGHT = 28;
 
-export function openLockedApprovalPopupWindow(ctx: Context) {
+export interface Window {
+  id: number;
+}
+
+export async function openLockedApprovalPopupWindow(
+  ctx: Context
+): Promise<Window> {
   const url = `${POPUP_HTML}?${QUERY_LOCKED_APPROVAL}&origin=${ctx.sender.origin}`;
   return openPopupWindow(ctx, url);
 }
 
-export function openLockedPopupWindow(ctx: Context) {
+export async function openLockedPopupWindow(ctx: Context): Promise<Window> {
   const url = `${POPUP_HTML}?${QUERY_LOCKED}&origin=${ctx.sender.origin}`;
   return openPopupWindow(ctx, url);
 }
 
-export function openApprovalPopupWindow(ctx: Context) {
+export async function openApprovalPopupWindow(ctx: Context): Promise<Window> {
   const url = `${POPUP_HTML}?${QUERY_APPROVAL}&origin=${ctx.sender.origin}`;
   return openPopupWindow(ctx, url);
 }
 
-export function openApproveTransactionPopupWindow(
+export async function openApproveTransactionPopupWindow(
   ctx: Context,
   requestId: number
-) {
+): Promise<Window> {
   const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${ctx.sender.origin}&requestId=${requestId}`;
-  return openPopupWindow(ctx, url);
+  return await openPopupWindow(ctx, url);
 }
 
-function openPopupWindow(ctx: Context, url: string) {
-  BrowserRuntime.getLastFocusedWindow().then((window: any) => {
-    chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-      BrowserRuntime.openWindow({
-        url: `${url}&tabId=${tab.id}`,
-        type: "popup",
-        width: EXTENSION_WIDTH,
-        height: EXTENSION_HEIGHT + (isMacOs() ? MACOS_TOOLBAR_HEIGHT : 0),
-        top: window.top,
-        left: window.left + (window.width - EXTENSION_WIDTH),
-        focused: true,
+async function openPopupWindow(ctx: Context, url: string): Promise<Window> {
+  return new Promise((resolve, reject) => {
+    BrowserRuntime.getLastFocusedWindow().then((window: any) => {
+      chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+        BrowserRuntime.openWindow({
+          url: `${url}&tabId=${tab.id}`,
+          type: "popup",
+          width: EXTENSION_WIDTH,
+          height: EXTENSION_HEIGHT + (isMacOs() ? MACOS_TOOLBAR_HEIGHT : 0),
+          top: window.top,
+          left: window.left + (window.width - EXTENSION_WIDTH),
+          focused: true,
+        }).then((window: any) => {
+          resolve(window);
+        });
       });
     });
   });
