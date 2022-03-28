@@ -9,6 +9,7 @@
     "@material-ui/icons": "^4.11.2",
     "@project-serum/anchor": "^0.23.0",
     "@project-serum/token": "^0.1.0",
+    "@rollup/plugin-json": "^4.1.0",
     "@solana/buffer-layout": "^4.0.0",
     "@solana/spl-token-registry": "^0.2.2842",
     "@solana/web3.js": "^1.35.1",
@@ -22,14 +23,16 @@
     "react-sidebar": "^3.0.2",
     "recoil": "^0.6.1",
     "tweetnacl": "^1.0.3",
+    "uuid": "^8.3.2",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build:provider": "cd provider && yarn build && cp dist/browser/index.js ../public/injected.js && cd ../",
+    "start": "yarn build:provider && react-scripts start",
+    "build": "yarn build:provider && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint:fix": "prettier src/**/* -w && prettier public/injected.js -w"
+    "lint:fix": "prettier src/**/* -w && prettier provider/src/**/* -w"
   },
   "eslintConfig": {
     "extends": [

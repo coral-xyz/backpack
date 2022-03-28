@@ -19,9 +19,11 @@ import {
 
 const LOCK_INTERVAL_SECS = 15 * 60 * 1000;
 
-const BLOCKCHAIN_SOLANA = "solana";
+export const BLOCKCHAIN_SOLANA = "solana";
 const BLOCKCHAIN_ETHEREUM = "ethereum";
 const BLOCKCHAIN_DEFAULT = BLOCKCHAIN_SOLANA;
+
+const DEFAULT_SOLANA_CONNECTION_URL = "https://solana-api.projectserum.com";
 
 export const KeyringStoreStateEnum: { [key: string]: KeyringStoreState } = {
   Locked: "locked",
@@ -32,7 +34,7 @@ export type KeyringStoreState = "locked" | "unlocked" | "needs-onboarding";
 
 // Manages all key data for all blockchains.
 export class KeyringStore {
-  private blockchains: Map<string, BlockchainKeyring>;
+  readonly blockchains: Map<string, BlockchainKeyring>;
   private notifications: NotificationsClient;
   private lastUsedTs: number;
   private password?: string;
@@ -492,7 +494,7 @@ class BlockchainKeyring {
   }
 
   public async connectionUrlRead(): Promise<string> {
-    return this.connectionUrl!;
+    return this.connectionUrl ?? DEFAULT_SOLANA_CONNECTION_URL;
   }
 
   public async connectionUrlUpdate(url: string): Promise<boolean> {

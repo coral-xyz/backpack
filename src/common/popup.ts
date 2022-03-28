@@ -5,6 +5,9 @@ const POPUP_HTML = "popup.html";
 export const QUERY_LOCKED = "locked=true";
 export const QUERY_APPROVAL = "approval=true";
 export const QUERY_LOCKED_APPROVAL = "locked-approval=true";
+export const QUERY_APPROVE_TRANSACTION = "approve-tx=true";
+
+const MACOS_TOOLBAR_HEIGHT = 28;
 
 export function openLockedApprovalPopupWindow(ctx: Context) {
   const url = `${POPUP_HTML}?${QUERY_LOCKED_APPROVAL}&origin=${ctx.sender.origin}`;
@@ -21,14 +24,22 @@ export function openApprovalPopupWindow(ctx: Context) {
   return openPopupWindow(ctx, url);
 }
 
+export function openApproveTransactionPopupWindow(
+  ctx: Context,
+  requestId: number
+) {
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${ctx.sender.origin}&requestId=${requestId}`;
+  return openPopupWindow(ctx, url);
+}
+
 function openPopupWindow(ctx: Context, url: string) {
   BrowserRuntime.getLastFocusedWindow().then((window: any) => {
     chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
       BrowserRuntime.openWindow({
-        url: `${url}&windowId=${window.id}&tabId=${tab.id}`,
+        url: `${url}&tabId=${tab.id}`,
         type: "popup",
         width: EXTENSION_WIDTH,
-        height: EXTENSION_HEIGHT,
+        height: EXTENSION_HEIGHT + (isMacOs() ? MACOS_TOOLBAR_HEIGHT : 0),
         top: window.top,
         left: window.left + (window.width - EXTENSION_WIDTH),
         focused: true,
@@ -48,4 +59,13 @@ export function isExtensionPopup() {
     window.innerWidth <= EXTENSION_WIDTH &&
     window.innerHeight <= EXTENSION_HEIGHT
   );
+}
+
+function getOs() {
+  const os = ["Windows", "Linux", "Mac"];
+  return os.find((v) => navigator.appVersion.indexOf(v) >= 0);
+}
+
+function isMacOs(): boolean {
+  return getOs() === "Mac";
 }

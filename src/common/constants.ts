@@ -6,6 +6,7 @@ export const RPC_METHOD_CONNECT = "connect";
 export const RPC_METHOD_DISCONNECT = "disconnect";
 export const RPC_METHOD_SIGN_AND_SEND_TX = "sign-and-send-tx";
 export const RPC_METHOD_SIGN_MESSAGE = "sign-message";
+export const RPC_METHOD_RECENT_BLOCKHASH = "recent-blockhash";
 
 export const UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE = "notifications-subscribe";
 export const UI_RPC_METHOD_KEYRING_STORE_CREATE = "keyring-store-create";
@@ -72,6 +73,7 @@ export const NOTIFICATION_APPROVED_ORIGINS_UPDATE =
   "anchor-approved-origins-update";
 
 export const CONNECTION_POPUP_RPC = "anchor-popup-rpc";
+export const CONNECTION_POPUP_RESPONSE = "anchor-popup-response";
 export const CONNECTION_POPUP_NOTIFICATIONS = "anchor-popup-notifications";
 
 export const POST_MESSAGE_ORIGIN = "*";

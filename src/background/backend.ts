@@ -1,4 +1,6 @@
+import { Connection } from "@solana/web3.js";
 import {
+  BLOCKCHAIN_SOLANA,
   KeyringStore,
   KeyringStoreState,
   getNavData,
@@ -44,8 +46,14 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  signAndSendTx(ctx: Context, tx: any): string {
+  async signAndSendTx(
+    ctx: Context,
+    tx: any,
+    walletAddress: string
+  ): Promise<string> {
+    //		const signedTx = await this.signTransaction();
     // todo
+    console.log("sign and send tx here", tx);
     const txId = "todo";
     return txId;
   }
@@ -54,6 +62,16 @@ export class Backend {
     // todo
     const signature = "todo";
     return signature;
+  }
+
+  // TODO: this should be shared with the frontend extension UI and put
+  //       on a regular interval poll.
+  async recentBlockhash(): Promise<string> {
+    const blockchain = this.keyringStore.blockchains.get(BLOCKCHAIN_SOLANA);
+    const url = await blockchain!.connectionUrlRead();
+    const conn = new Connection(url);
+    const { blockhash } = await conn.getLatestBlockhash();
+    return blockhash;
   }
 
   // Creates a brand new keyring store. Should be run once on initializtion.

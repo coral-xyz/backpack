@@ -75,7 +75,7 @@ export class ChannelClient {
     BrowserRuntime.sendMessageActiveTab(event);
   }
 
-  public sendMessageTab(windowId: number, tabId: number, data: any) {
+  public sendMessageTab(tabId: number, data: any) {
     const event = {
       channel: this.name,
       data,
@@ -210,6 +210,13 @@ export class PortChannelClient {
     const [prom, resolve, reject] = this._addResponseResolver(id);
     this._port.postMessage({ id, method, params });
     return await prom;
+  }
+
+  public async response<T = any>({
+    id,
+    result,
+  }: RpcResponse): Promise<RpcResponse<T>> {
+    this._port.postMessage({ id, result });
   }
 }
 

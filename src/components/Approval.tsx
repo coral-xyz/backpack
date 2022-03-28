@@ -1,9 +1,10 @@
-import { useTheme, makeStyles, Typography } from "@material-ui/core";
+import { useTheme, makeStyles, Typography, Button } from "@material-ui/core";
 import { BottomCard } from "./Unlocked/Balances/Send";
 import { useActiveWallet } from "../hooks/useWallet";
 import { walletAddressDisplay } from "../components/common";
 import { WithEphemeralNav } from "../components/Layout/NavEphemeral";
 import { useApproveOrigin } from "../hooks/useKeyringStoreState";
+import { getBackgroundResponseClient } from "../background/client";
 
 const useStyles = makeStyles((theme: any) => ({
   activeWallet: {
@@ -77,6 +78,16 @@ export function Approval({ origin, onApproval }: any) {
         </div>
       </div>
     </WithEphemeralNav>
+  );
+}
+
+export function ApproveTransaction({ origin, onCompletion }: any) {
+  return (
+    <div>
+      APPROVE TRANSACTION HERE!
+      <Button onClick={() => onCompletion(false)}>REJECT</Button>
+      <Button onClick={() => onCompletion(true)}>APPROVE</Button>
+    </div>
   );
 }
 

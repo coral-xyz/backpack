@@ -22,7 +22,7 @@ export function useApproveOrigin(): (origin: string) => Promise<void> {
     const background = getBackgroundClient();
     await background.request({
       method: UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
-      params: [approvedOrigins],
+      params: [[...approvedOrigins!, origin]],
     });
   };
 }

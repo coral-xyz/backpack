@@ -1,3 +1,10 @@
+// TODO: we need to put this under the same workspace as the main package
+//       so that we can share code across the extension and this package.
+
+import { PublicKey, ConfirmOptions, Transaction } from "@solana/web3.js";
+import * as bs58 from "bs58";
+import { EventEmitter } from "eventemitter3";
+
 const CHANNEL_RPC_REQUEST = "anchor-rpc-request";
 const CHANNEL_RPC_RESPONSE = "anchor-rpc-response";
 const CHANNEL_NOTIFICATION = "anchor-notification";
@@ -6,6 +13,7 @@ const RPC_METHOD_CONNECT = "connect";
 const RPC_METHOD_DISCONNECT = "disconnect";
 const RPC_METHOD_SIGN_AND_SEND_TX = "sign-and-send-tx";
 const RPC_METHOD_SIGN_MESSAGE = "sign-message";
+const RPC_METHOD_RECENT_BLOCKHASH = "recent-blockhash";
 
 const NOTIFICATION_CONNECTED = "anchor-connected";
 const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
@@ -13,25 +21,38 @@ const NOTIFICATION_CONNECTION_URL_UPDATED = "anchor-connection-url-updated";
 
 const POST_MESSAGE_ORIGIN = "*";
 
+type Event = any;
+type EventHandler = (notif: any) => void;
+type ResponseHandler = [Function, Function];
+
 // Script entry.
 function main() {
-  log("starting injected script");
+  console.log("anchor: starting injected script");
   initProvider();
-  log("provider ready");
+  console.log("anchor: provider ready");
 }
 
 function initProvider() {
+  // @ts-ignore
   window.anchor = new Provider();
 }
 
-class Provider {
+class Provider extends EventEmitter {
+  private _url?: string;
+  private _options?: ConfirmOptions;
+  private _requestId: number;
+  private _responseResolvers: { [requestId: number]: ResponseHandler };
+  public isAnchor: boolean;
+  public isConnected: boolean;
+  public publicKey?: PublicKey;
+
   constructor() {
+    super();
     this._url = undefined;
     this._options = undefined;
     this._requestId = 0;
     this._responseResolvers = {};
     this._initChannels();
-    this._notificationHandlers = {};
 
     this.isAnchor = true;
     this.isConnected = false;
@@ -44,7 +65,7 @@ class Provider {
     window.addEventListener("message", this._handleNotification.bind(this));
   }
 
-  _handleRpcResponse(event) {
+  _handleRpcResponse(event: Event) {
     if (event.data.type !== CHANNEL_RPC_RESPONSE) return;
 
     const { id, result } = event.data.detail;
@@ -58,8 +79,7 @@ class Provider {
     resolve(result);
   }
 
-  _handleNotification(event) {
-    console.log("handling notif", event);
+  _handleNotification(event: Event) {
     if (event.data.type !== CHANNEL_NOTIFICATION) return;
     log("notification", event);
 
@@ -77,45 +97,25 @@ class Provider {
         throw new Error(`unexpected notification ${event.data.detail.name}`);
     }
 
-    const key = _mapNotificationName(event.data.detail.name);
-    const handlers = this._notificationHandlers[key];
-    if (handlers) {
-      handlers.forEach((h) => h(event.data.detail));
-    }
+    this.emit(_mapNotificationName(event.data.detail.name));
   }
 
-  _handleNotificationConnected(event) {
+  _handleNotificationConnected(event: Event) {
     this.isConnected = true;
-    this.publicKey = event.data.detail.data;
-    console.log("got connected update", event);
+    this.publicKey = new PublicKey(event.data.detail.data);
   }
 
-  _handleNotificationDisconnected(event) {
+  _handleNotificationDisconnected(event: Event) {
     this.isConnected = false;
   }
 
-  _handleNotificationConnectionUrlUpdated(event) {
+  _handleNotificationConnectionUrlUpdated(event: Event) {
     // todo: Change connection object so that all hooks depending on it
     //       rerenders.
-    console.log("armani: got updated event", event);
+    console.log("got updated event", event);
   }
 
-  /**
-   * Registers an event handler for notifications sent from the extension.
-   */
-  on(eventName, handler) {
-    if (this._notificationHandlers[eventName]) {
-      this._notificationHandlers[eventName].push(handler);
-    } else {
-      this._notificationHandlers[eventName] = [handler];
-    }
-  }
-
-  off(eventName, listener) {
-    // todo
-  }
-
-  async connect(onlyIfTrustedMaybe) {
+  async connect(onlyIfTrustedMaybe: boolean) {
     if (this.isConnected) {
       throw new Error("provider already connected");
     }
@@ -131,24 +131,35 @@ class Provider {
     return await this.request({ method: RPC_METHOD_DISCONNECT, params: [] });
   }
 
-  async signAndSendTransaction(tx) {
+  async signAndSendTransaction(tx: Transaction) {
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    const recentBlockhash = await this.request({
+      method: RPC_METHOD_RECENT_BLOCKHASH,
+      params: [],
+    });
+    tx.feePayer = this.publicKey;
+    tx.recentBlockhash = recentBlockhash;
+    const txSerialize = tx.serializeMessage();
+    const message = bs58.encode(txSerialize);
     return await this.request({
-      method: RPC_SIGN_AND_SEND_TRANSCTION,
-      params: [tx],
+      method: RPC_METHOD_SIGN_AND_SEND_TX,
+      params: [message, this.publicKey!.toString()],
     });
   }
 
-  async signTransaction(tx) {
-    throw new Error("not yet implemented");
+  async signTransaction(tx: Transaction) {
+    throw new Error("not implemented please use signAndSendTransaction");
   }
 
-  async signAllTransactions(tx) {
-    throw new Error("not yet implemented");
+  async signAllTransactions(tx: Array<Transaction>) {
+    throw new Error("not implemented please use signAndSendTransaction");
   }
 
-  async signMessage(msg) {
+  async signMessage(msg: string) {
     return await this.request({
-      method: RPC_SIGN_MESSAGE,
+      method: RPC_METHOD_SIGN_MESSAGE,
       params: [msg],
     });
   }
@@ -168,7 +179,7 @@ class Provider {
   }
 
   // This must be called before `window.dipsatchEvent`.
-  _addResponseResolver(requestId) {
+  _addResponseResolver(requestId: number) {
     let resolve, reject;
     const prom = new Promise((_resolve, _reject) => {
       resolve = _resolve;
@@ -180,7 +191,7 @@ class Provider {
 }
 
 // Maps the notification name (internal) to the event name.
-function _mapNotificationName(notificationName) {
+function _mapNotificationName(notificationName: string) {
   switch (notificationName) {
     case NOTIFICATION_CONNECTED:
       return "connect";
@@ -193,11 +204,11 @@ function _mapNotificationName(notificationName) {
   }
 }
 
-function log(str, ...args) {
+function log(str: string, ...args) {
   console.log(`anchor-injected: ${str}`, ...args);
 }
 
-function error(str, ...args) {
+function error(str: string, ...args) {
   console.error(`anchor-injected: ${str}`, ...args);
 }
 

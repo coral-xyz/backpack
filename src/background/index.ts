@@ -6,6 +6,7 @@ import {
   openLockedPopupWindow,
   openApprovalPopupWindow,
   openLockedApprovalPopupWindow,
+  openApproveTransactionPopupWindow,
   RpcRequest,
   RpcResponse,
   CHANNEL_RPC_REQUEST,
@@ -14,6 +15,7 @@ import {
   RPC_METHOD_DISCONNECT,
   RPC_METHOD_SIGN_AND_SEND_TX,
   RPC_METHOD_SIGN_MESSAGE,
+  RPC_METHOD_RECENT_BLOCKHASH,
   UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
@@ -52,6 +54,7 @@ import {
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
   CONNECTION_POPUP_RPC,
+  CONNECTION_POPUP_RESPONSE,
   CONNECTION_POPUP_NOTIFICATIONS,
 } from "../common";
 import { Context, Backend, SUCCESS_RESPONSE } from "./backend";
@@ -67,6 +70,11 @@ const rpcServerInjected = Channel.server(CHANNEL_RPC_REQUEST);
 // Server rceiving rpc requests from the extension UI.
 const rpcServerUi = PortChannel.server(CONNECTION_POPUP_RPC);
 
+// Server receiving responses from the extension UI. This is used when the
+// background script wants to request some type of user action from the UI,
+// e.g., the approval of a transaction.
+const popupUiResponse = PortChannel.server(CONNECTION_POPUP_RESPONSE);
+
 // Client to send notifications from the background script to the extension UI.
 // This should only be created *after* the UI explicitly asks for it.
 const notificationsUi = new NotificationsClient(CONNECTION_POPUP_NOTIFICATIONS);
@@ -77,6 +85,7 @@ const backend = new Backend(notificationsUi);
 function main() {
   rpcServerInjected.handler(withContext(handleRpc));
   rpcServerUi.handler(handleRpcUi);
+  popupUiResponse.handler(handlePopupUiResponse);
 }
 
 async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
@@ -150,7 +159,7 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
     case UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE:
       return await handleApprovedOriginsUpdate(params[0]);
     case UI_RPC_METHOD_DID_CONNECT:
-      return await handleDidConnect(params[0], params[1]);
+      return await handleDidConnect(params[0]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -168,12 +177,21 @@ async function handleRpc<T = any>(
     case RPC_METHOD_DISCONNECT:
       return handleDisconnect(ctx);
     case RPC_METHOD_SIGN_AND_SEND_TX:
-      return handleSignAndSendTx(ctx, params[0]);
+      return await handleSignAndSendTx(ctx, params[0], params[1]);
     case RPC_METHOD_SIGN_MESSAGE:
       return handleSignMessage(ctx, params[0]);
+    case RPC_METHOD_RECENT_BLOCKHASH:
+      return await handleRecentBlockhash(ctx);
     default:
       throw new Error(`unexpected rpc method: ${method}`);
   }
+}
+
+async function handlePopupUiResponse(msg: RpcResponse): Promise<string> {
+  const { id, result, error } = msg;
+  debug("handle popup ui response");
+  RequestManager.resolveResponse(id, result, error);
+  return SUCCESS_RESPONSE;
 }
 
 function handleNotificationsSubscribe(): RpcResponse<string> {
@@ -222,13 +240,32 @@ function handleDisconnect(ctx: Context): RpcResponse<string> {
   return [resp];
 }
 
-function handleSignAndSendTx(ctx: Context, tx: any): RpcResponse<string> {
-  const resp = backend.signAndSendTx(ctx, tx);
-  return [resp];
+async function handleSignAndSendTx(
+  ctx: Context,
+  tx: any,
+  walletAddress: string
+): Promise<RpcResponse<string>> {
+  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
+    openApproveTransactionPopupWindow(ctx, requestId);
+  });
+
+  // Only sign if the user clicked approve.
+  if (uiResp) {
+    await backend.signAndSendTx(ctx, tx, walletAddress);
+  }
+
+  return [SUCCESS_RESPONSE];
 }
 
 function handleSignMessage(ctx: Context, msg: any): RpcResponse<string> {
   const resp = backend.signMessage(ctx, msg);
+  return [resp];
+}
+
+async function handleRecentBlockhash(
+  ctx: Context
+): Promise<RpcResponse<string>> {
+  const resp = await backend.recentBlockhash();
   return [resp];
 }
 
@@ -457,12 +494,9 @@ async function handleApprovedOriginsUpdate(
   return [resp];
 }
 
-async function handleDidConnect(
-  windowId: number,
-  tabId: number
-): Promise<RpcResponse<string>> {
+async function handleDidConnect(tabId: number): Promise<RpcResponse<string>> {
   const activeWallet = await backend.activeWallet();
-  notificationsInjected.sendMessageTab(windowId, tabId, {
+  notificationsInjected.sendMessageTab(tabId, {
     name: NOTIFICATION_CONNECTED,
     data: activeWallet,
   });
@@ -479,4 +513,54 @@ function withContext(
   };
 }
 
+class RequestManager {
+  static _requestId = 0;
+  static _responseResolvers: any = {};
+
+  // Initiate a request. The given popupFn should relay the given requestId to
+  // the UI, which will send it back with a response.
+  public static requestUiAction<T = any>(
+    popupFn: (reqId: number) => void
+  ): Promise<T> {
+    return new Promise((resolve, reject) => {
+      const requestId = RequestManager.addResponseResolver(resolve, reject);
+      popupFn(requestId);
+    });
+  }
+
+  // Resolve a response initiated via `requestUiAction`.
+  public static resolveResponse(id: number, result: any, error: any) {
+    const resolver = RequestManager.getResponseResolver(id);
+    if (!resolver) {
+      throw new Error(`unable to find response resolver for: ${id}`);
+    }
+
+    const [resolve, reject] = resolver;
+
+    if (error) {
+      reject(error);
+    }
+
+    resolve(result);
+  }
+
+  private static addResponseResolver(
+    resolve: Function,
+    reject: Function
+  ): number {
+    const requestId = RequestManager.nextRequestId();
+    RequestManager._responseResolvers[requestId] = [resolve, reject];
+    return requestId;
+  }
+
+  private static nextRequestId(): number {
+    const r = RequestManager._requestId;
+    RequestManager._requestId += 1;
+    return r;
+  }
+
+  private static getResponseResolver(requestId: number): [Function, Function] {
+    return RequestManager._responseResolvers[requestId];
+  }
+}
 main();
