@@ -199,8 +199,12 @@ function handleNotificationsSubscribe(): RpcResponse<string> {
 }
 
 // Automatically connect in the event we're unlocked and the origin
-// has been previously approved. Otherwise, open a new winddow to prompt
+// has been previously approved. Otherwise, open a new window to prompt
 // the user to unlock and approve.
+//
+// Note that "connected" simply means that the wallet can be used to issue
+// requests because it's both approved and unlocked. There is currently no
+// extra session state or connections that are maintained.
 async function handleConnect(
   ctx: Context,
   onlyIfTrustedMaybe: boolean
@@ -237,7 +241,7 @@ async function handleConnect(
     throw new Error("invariant violation keyring not created");
   }
 
-  // If the user approved, then send a notification to the UI.
+  // If the user approved and unlocked, then we're connected.
   if (didApprove) {
     const activeWallet = await backend.activeWallet();
     notificationsInjected.sendMessageTab(activeTab.id, {

@@ -4,7 +4,6 @@ import { useActiveWallet } from "../hooks/useWallet";
 import { walletAddressDisplay } from "../components/common";
 import { WithEphemeralNav } from "../components/Layout/NavEphemeral";
 import { useApproveOrigin } from "../hooks/useKeyringStoreState";
-import { getBackgroundResponseClient } from "../background/client";
 
 const useStyles = makeStyles((theme: any) => ({
   activeWallet: {
@@ -20,6 +19,7 @@ const useStyles = makeStyles((theme: any) => ({
     marginTop: 150,
     paddingLeft: "24px",
     paddingRight: "24px",
+    width: "100%",
   },
   contentTitle: {
     fontSize: "18px",
@@ -42,16 +42,80 @@ const useStyles = makeStyles((theme: any) => ({
     fontWeight: 500,
     marginLeft: "6px",
   },
+  txChangesRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: "8px",
+  },
+  txChangesRowLeft: {
+    color: theme.custom.colors.secondary,
+    fontSize: "12px",
+    lineHeight: "16px",
+    fontWeight: 500,
+  },
+  txChangesRowRight: {
+    color: theme.custom.colors.fontColor,
+    fontSize: "12px",
+    lineHeight: "16px",
+    fontWeight: 500,
+  },
 }));
 
-export function Approval({ origin, onApproval }: any) {
+export function Approval({ origin, onCompletion }: any) {
   const approveOrigin = useApproveOrigin();
   const approve = async () => {
     await approveOrigin(origin);
-    await onApproval();
+    await onCompletion(true);
+  };
+  const reject = async () => {
+    await onCompletion(false);
   };
   return (
-    <WithEphemeralNav title={"Connect"}>
+    <WithApproval title={"Connect"} onApproval={approve} onReject={reject}>
+      <ConnectContent origin={origin} />
+    </WithApproval>
+  );
+}
+
+export function ApproveTransaction({ origin, onCompletion }: any) {
+  const classes = useStyles();
+  const approve = async () => {
+    onCompletion(true);
+  };
+  const onReject = async () => {
+    onCompletion(false);
+  };
+  const rows = [
+    ["Network", "Solana"],
+    ["Network Fee", "- SOL"],
+  ];
+  return (
+    <WithApproval
+      title={"Approve Transaction"}
+      onApproval={approve}
+      onReject={onReject}
+      origin={origin}
+    >
+      <Typography
+        className={classes.contentTitle}
+        style={{ marginBottom: "16px" }}
+      >
+        Transaction Changes
+      </Typography>
+      {rows.map((r) => (
+        <div className={classes.txChangesRow}>
+          <Typography className={classes.txChangesRowLeft}>{r[0]}</Typography>
+          <Typography className={classes.txChangesRowRight}>{r[1]}</Typography>
+        </div>
+      ))}
+    </WithApproval>
+  );
+}
+
+function WithApproval({ title, onApproval, onReject, origin, children }: any) {
+  const classes = useStyles();
+  return (
+    <WithEphemeralNav title={title}>
       <div
         style={{
           height: "100%",
@@ -71,23 +135,18 @@ export function Approval({ origin, onApproval }: any) {
             height: "439px",
           }}
         >
-          <BottomCard buttonLabel={"Approve"} onButtonClick={approve}>
+          <BottomCard
+            buttonLabel={"Approve"}
+            onButtonClick={onApproval}
+            onReject={onReject}
+            cancelButton={true}
+          >
             <AppLogo origin={origin} />
-            <ConnectContent origin={origin} />
+            <div className={classes.contentContainer}>{children}</div>
           </BottomCard>
         </div>
       </div>
     </WithEphemeralNav>
-  );
-}
-
-export function ApproveTransaction({ origin, onCompletion }: any) {
-  return (
-    <div>
-      APPROVE TRANSACTION HERE!
-      <Button onClick={() => onCompletion(false)}>REJECT</Button>
-      <Button onClick={() => onCompletion(true)}>APPROVE</Button>
-    </div>
   );
 }
 
@@ -148,7 +207,7 @@ function ConnectContent({ origin }: any) {
   const classes = useStyles();
   const url = new URL(origin);
   return (
-    <div className={classes.contentContainer}>
+    <>
       <Typography className={classes.contentTitle}>
         Connect Wallet to {url.hostname}
       </Typography>
@@ -167,6 +226,6 @@ function ConnectContent({ origin }: any) {
           Request approval for transactions
         </span>
       </Typography>
-    </div>
+    </>
   );
 }

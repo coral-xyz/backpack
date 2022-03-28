@@ -311,12 +311,15 @@ function SendConfirmation({ token, address, amount, close }: any) {
 
 export function BottomCard({
   onButtonClick,
+  onReject,
   buttonLabel,
   buttonStyle,
+  cancelButton,
   buttonLabelStyle,
   children,
 }: any) {
   const classes = useStyles();
+  const theme = useTheme() as any;
   return (
     <div className={classes.sendConfirmationContainer}>
       <div className={classes.sendConfirmationTopHalf} style={{ flex: 1 }}>
@@ -328,8 +331,22 @@ export function BottomCard({
           marginTop: "24px",
           marginLeft: "12px",
           marginRight: "12px",
+          display: "flex",
+          justifyContent: "space-between",
         }}
       >
+        {cancelButton && (
+          <OnboardButton
+            style={{
+              marginRight: "8px",
+              backgroundColor: theme.custom.colors.nav,
+            }}
+            buttonLabelStyle={{ color: theme.custom.colors.fontColor }}
+            onClick={onReject}
+            label={"Cancel"}
+          />
+        )}
+
         <OnboardButton
           style={buttonStyle}
           buttonLabelStyle={buttonLabelStyle}

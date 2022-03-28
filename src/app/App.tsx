@@ -166,7 +166,9 @@ function QueryApproval() {
   return (
     <Approval
       origin={origin}
-      onApproval={() => connectFlowDidComplete(requestId, true)}
+      onCompletion={(didApprove: boolean) =>
+        connectFlowDidComplete(requestId, didApprove)
+      }
     />
   );
 }
