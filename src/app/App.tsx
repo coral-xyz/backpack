@@ -20,7 +20,6 @@ import {
   QUERY_APPROVAL,
   QUERY_LOCKED_APPROVAL,
   QUERY_APPROVE_TRANSACTION,
-  UI_RPC_METHOD_DID_CONNECT,
 } from "../common";
 import { Approval, ApproveTransaction } from "../components/Approval";
 import "./App.css";
@@ -136,24 +135,27 @@ function QueryLockedApproval() {
 
 function QueryLocked() {
   debug("query locked");
+  const url = new URL(window.location.href);
+  const requestId = parseInt(url.searchParams.get("requestId")!);
+
   const keyringStoreState = useKeyringStoreState();
   const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
-
-  const url = new URL(window.location.href);
-  const tabId = parseInt(url.searchParams.get("tabId")!);
 
   // Wallet is unlocked so close the window. We're done.
   if (!isLocked) {
     return <></>;
   }
-  return <LockedBootstrap onUnlock={() => connectFlowDidComplete(tabId)} />;
+  return (
+    <LockedBootstrap onUnlock={() => connectFlowDidComplete(requestId, true)} />
+  );
 }
 
 function QueryApproval() {
   debug("query approval");
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
-  const tabId = parseInt(url.searchParams.get("tabId")!);
+  const requestId = parseInt(url.searchParams.get("requestId")!);
+
   const approvedOrigins = useApprovedOrigins();
   const found = approvedOrigins.find((ao) => ao === origin);
 
@@ -164,7 +166,7 @@ function QueryApproval() {
   return (
     <Approval
       origin={origin}
-      onApproval={() => connectFlowDidComplete(tabId)}
+      onApproval={() => connectFlowDidComplete(requestId, true)}
     />
   );
 }
@@ -174,14 +176,13 @@ function QueryApproveTransaction() {
 
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
-  const tabId = parseInt(url.searchParams.get("tabId")!);
   const requestId = parseInt(url.searchParams.get("requestId")!);
 
   return (
     <ApproveTransaction
       origin={origin}
       onCompletion={(didApprove: boolean) => {
-        approveTransactionFlowDidComplete(tabId, requestId, didApprove);
+        approveTransactionFlowDidComplete(requestId, didApprove);
       }}
     />
   );
@@ -210,11 +211,11 @@ function BlankApp() {
 // Invoked at the end of a connection flow. Triggers a notification to be sent
 // from the UI -> background script -> injected script and subsequently closes
 // the window.
-async function connectFlowDidComplete(tabId: number) {
-  const background = getBackgroundClient();
-  await background.request({
-    method: UI_RPC_METHOD_DID_CONNECT,
-    params: [tabId],
+async function connectFlowDidComplete(requestId: number, result: boolean) {
+  const background = getBackgroundResponseClient();
+  await background.response({
+    id: requestId,
+    result,
   });
   // Must close *after* the above request goes through so that the notification
   // can be relayed to the injected scrpit.
@@ -222,7 +223,6 @@ async function connectFlowDidComplete(tabId: number) {
 }
 
 async function approveTransactionFlowDidComplete(
-  tabId: number,
   requestId: number,
   result: boolean
 ) {

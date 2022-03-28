@@ -130,6 +130,14 @@ export class BrowserRuntime {
       chrome.tabs.remove(tab.id, function () {});
     });
   }
+
+  public static activeTab(): Promise<any> {
+    return new Promise((resolve) => {
+      chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+        resolve(tab);
+      });
+    });
+  }
 }
 
 type Window = any;

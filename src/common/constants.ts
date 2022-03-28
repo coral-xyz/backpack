@@ -48,7 +48,6 @@ export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ = "solana-commitment-read";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE =
   "solana-commitment-update";
 export const UI_RPC_METHOD_SIGN_TRANSACTION = "ui-rpc-method-sign-tx";
-export const UI_RPC_METHOD_DID_CONNECT = "ui-rpc-method-did-connect";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";

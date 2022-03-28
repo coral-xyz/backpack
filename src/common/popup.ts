@@ -14,19 +14,26 @@ export interface Window {
 }
 
 export async function openLockedApprovalPopupWindow(
-  ctx: Context
+  ctx: Context,
+  requestId: number
 ): Promise<Window> {
-  const url = `${POPUP_HTML}?${QUERY_LOCKED_APPROVAL}&origin=${ctx.sender.origin}`;
+  const url = `${POPUP_HTML}?${QUERY_LOCKED_APPROVAL}&origin=${ctx.sender.origin}&requestId=${requestId}`;
   return openPopupWindow(ctx, url);
 }
 
-export async function openLockedPopupWindow(ctx: Context): Promise<Window> {
-  const url = `${POPUP_HTML}?${QUERY_LOCKED}&origin=${ctx.sender.origin}`;
+export async function openLockedPopupWindow(
+  ctx: Context,
+  requestId: number
+): Promise<Window> {
+  const url = `${POPUP_HTML}?${QUERY_LOCKED}&origin=${ctx.sender.origin}&requestId=${requestId}`;
   return openPopupWindow(ctx, url);
 }
 
-export async function openApprovalPopupWindow(ctx: Context): Promise<Window> {
-  const url = `${POPUP_HTML}?${QUERY_APPROVAL}&origin=${ctx.sender.origin}`;
+export async function openApprovalPopupWindow(
+  ctx: Context,
+  requestId: number
+): Promise<Window> {
+  const url = `${POPUP_HTML}?${QUERY_APPROVAL}&origin=${ctx.sender.origin}&requestId=${requestId}`;
   return openPopupWindow(ctx, url);
 }
 
@@ -41,18 +48,16 @@ export async function openApproveTransactionPopupWindow(
 async function openPopupWindow(ctx: Context, url: string): Promise<Window> {
   return new Promise((resolve, reject) => {
     BrowserRuntime.getLastFocusedWindow().then((window: any) => {
-      chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-        BrowserRuntime.openWindow({
-          url: `${url}&tabId=${tab.id}`,
-          type: "popup",
-          width: EXTENSION_WIDTH,
-          height: EXTENSION_HEIGHT + (isMacOs() ? MACOS_TOOLBAR_HEIGHT : 0),
-          top: window.top,
-          left: window.left + (window.width - EXTENSION_WIDTH),
-          focused: true,
-        }).then((window: any) => {
-          resolve(window);
-        });
+      BrowserRuntime.openWindow({
+        url: `${url}`,
+        type: "popup",
+        width: EXTENSION_WIDTH,
+        height: EXTENSION_HEIGHT + (isMacOs() ? MACOS_TOOLBAR_HEIGHT : 0),
+        top: window.top,
+        left: window.left + (window.width - EXTENSION_WIDTH),
+        focused: true,
+      }).then((window: any) => {
+        resolve(window);
       });
     });
   });

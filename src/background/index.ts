@@ -1,5 +1,6 @@
 import {
   debug,
+  BrowserRuntime,
   Channel,
   PortChannel,
   NotificationsClient,
@@ -50,7 +51,6 @@ import {
   UI_RPC_METHOD_SIGN_TRANSACTION,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
-  UI_RPC_METHOD_DID_CONNECT,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
@@ -159,8 +159,6 @@ async function handleRpcUi<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return await handleApprovedOriginsRead();
     case UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE:
       return await handleApprovedOriginsUpdate(params[0]);
-    case UI_RPC_METHOD_DID_CONNECT:
-      return await handleDidConnect(params[0]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -209,25 +207,43 @@ async function handleConnect(
 ): Promise<RpcResponse<string>> {
   const origin = ctx.sender.origin;
   const keyringStoreState = await backend.keyringStoreState();
+  const activeTab = await BrowserRuntime.activeTab();
+  let didApprove = false;
+
+  // Use the UI to ask the user if it should connect.
   if (keyringStoreState === "unlocked") {
     if (await backend.isApprovedOrigin(origin)) {
       debug("already approved so automatically connecting");
-      const activeWallet = await backend.activeWallet();
-      notificationsInjected.sendMessageActiveTab({
-        name: NOTIFICATION_CONNECTED,
-        data: activeWallet,
-      });
+      didApprove = true;
     } else {
-      const window = await openApprovalPopupWindow(ctx);
+      const resp = await RequestManager.requestUiAction((requestId: number) => {
+        return openApprovalPopupWindow(ctx, requestId);
+      });
+      didApprove = !resp.windowClosed && resp.result;
     }
   } else if (keyringStoreState === "locked") {
     if (await backend.isApprovedOrigin(origin)) {
-      const window = await openLockedPopupWindow(ctx);
+      const resp = await RequestManager.requestUiAction((requestId: number) => {
+        return openLockedPopupWindow(ctx, requestId);
+      });
+      didApprove = !resp.windowClosed && resp.result;
     } else {
-      const window = await openLockedApprovalPopupWindow(ctx);
+      const resp = await RequestManager.requestUiAction((requestId: number) => {
+        return openLockedApprovalPopupWindow(ctx, requestId);
+      });
+      didApprove = !resp.windowClosed && resp.result;
     }
   } else {
     throw new Error("invariant violation keyring not created");
+  }
+
+  // If the user approved, then send a notification to the UI.
+  if (didApprove) {
+    const activeWallet = await backend.activeWallet();
+    notificationsInjected.sendMessageTab(activeTab.id, {
+      name: NOTIFICATION_CONNECTED,
+      data: activeWallet,
+    });
   }
 
   return [SUCCESS_RESPONSE];
@@ -494,15 +510,6 @@ async function handleApprovedOriginsUpdate(
 ): Promise<RpcResponse<string>> {
   const resp = await backend.approvedOriginsUpdate(approvedOrigins);
   return [resp];
-}
-
-async function handleDidConnect(tabId: number): Promise<RpcResponse<string>> {
-  const activeWallet = await backend.activeWallet();
-  notificationsInjected.sendMessageTab(tabId, {
-    name: NOTIFICATION_CONNECTED,
-    data: activeWallet,
-  });
-  return [SUCCESS_RESPONSE];
 }
 
 // Utility to transform the handler API into something a little more friendly.
