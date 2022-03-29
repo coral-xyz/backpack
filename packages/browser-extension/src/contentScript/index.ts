@@ -27,7 +27,7 @@ function injectScript(scriptName: string) {
     container.insertBefore(scriptTag, container.children[0]);
     container.removeChild(scriptTag);
   } catch (error) {
-    error("provider injection failed.", error);
+    console.error("provider injection failed.", error);
   }
 }
 

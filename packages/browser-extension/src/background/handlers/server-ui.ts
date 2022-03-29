@@ -147,7 +147,7 @@ async function handleKeyringStoreUnlock(password: string) {
     const resp = await BACKEND.keyringStoreUnlock(password);
     return [resp];
   } catch (err) {
-    return [, err.toString()];
+    return [, String(err)];
   }
 }
 
@@ -246,8 +246,8 @@ async function handlePasswordUpdate(
   try {
     const resp = await BACKEND.passwordUpdate(currentPassword, newPassword);
     return [resp];
-  } catch (err) {
-    return [, err.toString()];
+  } catch (err: any) {
+    return [, String(err)];
   }
 }
 

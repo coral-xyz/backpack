@@ -1,8 +1,6 @@
 {
-  "include": [
-    "./src/**/*"
-  ],
-	"compilerOptions": {
+  "include": ["./src/**/*"],
+  "compilerOptions": {
     "moduleResolution": "node",
     "module": "es2022",
     "target": "es2019",
@@ -20,17 +18,10 @@
     "resolveJsonModule": true,
     "composite": true,
     "baseUrl": ".",
-    "typeRoots": [
-      "types/",
-      "node_modules/@types"
-    ],
+    "typeRoots": ["types/", "node_modules/@types"],
     "paths": {
-      "@solana/web3.js": [
-        "./node_modules/@solana/web3.js/lib"
-      ],
-      "bs58": [
-        "./node_modules/bs58"
-      ]
+      "@solana/web3.js": ["./node_modules/@solana/web3.js/lib"],
+      "bs58": ["./node_modules/bs58"]
     }
   }
 }

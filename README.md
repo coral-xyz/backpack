@@ -1,41 +1,18 @@
-# anchor-wallet
+# Anchor Wallet
 
-## Developing
+## Packages
 
-### Install Dependencies
+### [Browser Extension](tree/master/packages/browser-extension)
 
-To install dependencies, run
+`yarn start:wallet`
 
-```shell
-yarn
-```
+The chrome browser extension
 
-### Run Development Server
+### [Example Client](tree/master/packages/example-client)
 
-To start the development server, run
+`yarn start:client`
 
-```shell
-yarn start
-```
-
-This will place the build artifacts in the `dev/` directory and will hot reload the extension ui and background script on file change.
-Note that the content and injected scripts won't be hot reloaded and must be manually loaded.
-
-### Build for Production
-
-Alternatively, you can build for production by running
-
-```shell
-yarn build
-```
-
-which will place the bulid artifacts in the `build/` directory.
-
-### Install the Extension
-
-After building via `yarn start` or `yarn build`, you can install the extension locally by opening chrome and going to the **manage extensions** page,
-turning on **developer mode** and clicking **load unpacked**, where you can load the build artifacts above. Once done, optionally pin the extension to your
-browser's toolbar and you're good to go.
+A react app that can interact with the browser extension
 
 ## License
 

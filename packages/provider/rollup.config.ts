@@ -10,7 +10,7 @@ const env = process.env.NODE_ENV;
 export default {
   input: "src/index.ts",
   plugins: [
-		json(),
+    json(),
     commonjs(),
     nodeResolve({
       browser: true,
