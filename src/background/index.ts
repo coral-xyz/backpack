@@ -247,9 +247,13 @@ async function handleConnect(
   // If the user approved and unlocked, then we're connected.
   if (didApprove) {
     const activeWallet = await backend.activeWallet();
+    const connectionUrl = await backend.solanaConnectionUrl();
     notificationsInjected.sendMessageTab(activeTab.id, {
       name: NOTIFICATION_CONNECTED,
-      data: activeWallet,
+      data: {
+        publicKey: activeWallet,
+        connectionUrl,
+      },
     });
   }
 

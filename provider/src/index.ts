@@ -6,6 +6,7 @@ import {
   PublicKey,
   ConfirmOptions,
   Transaction,
+  Connection,
 } from "@solana/web3.js";
 import * as bs58 from "bs58";
 import { EventEmitter } from "eventemitter3";
@@ -48,9 +49,11 @@ class Provider extends EventEmitter {
   private _options?: ConfirmOptions;
   private _requestId: number;
   private _responseResolvers: { [requestId: number]: ResponseHandler };
+
   public isAnchor: boolean;
   public isConnected: boolean;
   public publicKey?: PublicKey;
+  public connection?: Connection;
 
   constructor() {
     super();
@@ -63,6 +66,7 @@ class Provider extends EventEmitter {
     this.isAnchor = true;
     this.isConnected = false;
     this.publicKey = undefined;
+    this.connection = undefined;
   }
 
   // Setup channels with the content script.
@@ -108,7 +112,8 @@ class Provider extends EventEmitter {
 
   _handleNotificationConnected(event: Event) {
     this.isConnected = true;
-    this.publicKey = new PublicKey(event.data.detail.data);
+    this.publicKey = new PublicKey(event.data.detail.data.publicKey);
+    this.connection = new Connection(event.data.detail.data.connectionUrl);
   }
 
   _handleNotificationDisconnected(event: Event) {
@@ -116,9 +121,7 @@ class Provider extends EventEmitter {
   }
 
   _handleNotificationConnectionUrlUpdated(event: Event) {
-    // todo: Change connection object so that all hooks depending on it
-    //       rerenders.
-    console.log("got updated event", event);
+    this.connection = new Connection(event.data.detail.data);
   }
 
   async connect(onlyIfTrustedMaybe: boolean) {
@@ -134,7 +137,8 @@ class Provider extends EventEmitter {
   }
 
   async disconnect() {
-    return await this.request({ method: RPC_METHOD_DISCONNECT, params: [] });
+    await this.request({ method: RPC_METHOD_DISCONNECT, params: [] });
+    this.connection = undefined;
   }
 
   async signAndSendTransaction(

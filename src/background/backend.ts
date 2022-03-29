@@ -88,10 +88,15 @@ export class Backend {
   }
 
   async solanaConnection(): Promise<Connection> {
-    const blockchain = this.keyringStore.blockchains.get(BLOCKCHAIN_SOLANA);
-    const url = await blockchain!.connectionUrlRead();
+    const url = await this.solanaConnectionUrl();
     const conn = new Connection(url);
     return conn;
+  }
+
+  async solanaConnectionUrl(): Promise<string> {
+    const blockchain = this.keyringStore.blockchains.get(BLOCKCHAIN_SOLANA);
+    const url = await blockchain!.connectionUrlRead();
+    return url;
   }
 
   // Creates a brand new keyring store. Should be run once on initializtion.
