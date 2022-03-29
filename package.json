@@ -27,7 +27,7 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "build:provider": "cd provider && yarn build && cp dist/browser/index.js ../public/injected.js && cd ../",
+    "build:provider": "cd provider && yarn && yarn build && cp dist/browser/index.js ../public/injected.js && cd ../",
     "start": "yarn build:provider && react-scripts start",
     "build": "yarn build:provider && react-scripts build",
     "test": "react-scripts test",
