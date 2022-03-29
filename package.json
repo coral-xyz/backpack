@@ -32,7 +32,8 @@
     "build": "yarn build:provider && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint:fix": "prettier src/**/* -w && prettier provider/src/**/* -w && prettier test/app/src/**/* -w"
+    "lint:fix": "prettier src/**/* -w && prettier provider/src/**/* -w && prettier test/app/src/**/* -w",
+    "prepare": "husky install"
   },
   "eslintConfig": {
     "extends": [
@@ -62,7 +63,12 @@
     "@types/react-custom-scrollbars": "^4.0.10",
     "@types/react-dom": "^17.0.0",
     "@types/react-sidebar": "^3.0.2",
-    "prettier": "^2.5.1",
-    "typescript": "^4.1.2"
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.7",
+    "prettier": "^2.6.1",
+    "typescript": "^4.6.3"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,css,md,json,html}": "prettier --write"
   }
 }
