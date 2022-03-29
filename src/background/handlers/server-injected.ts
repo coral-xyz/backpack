@@ -1,0 +1,267 @@
+// All RPC request handlers for requests that can be sent from the injected
+// script to the background script.
+
+import {
+  debug,
+  BrowserRuntime,
+  openLockedPopupWindow,
+  openApprovalPopupWindow,
+  openLockedApprovalPopupWindow,
+  openApproveTransactionPopupWindow,
+  Window,
+  RpcRequest,
+  RpcResponse,
+  RPC_METHOD_CONNECT,
+  RPC_METHOD_DISCONNECT,
+  RPC_METHOD_SIGN_AND_SEND_TX,
+  RPC_METHOD_SIGN_TX,
+  RPC_METHOD_SIGN_MESSAGE,
+  RPC_METHOD_RECENT_BLOCKHASH,
+  NOTIFICATION_CONNECTED,
+  NOTIFICATION_DISCONNECTED,
+} from "../../common";
+import { BACKEND, Context, SUCCESS_RESPONSE } from "../backend";
+import { Io } from "../io";
+
+export function start() {
+  Io.rpcServerInjected.handler(withContext(handle));
+  Io.popupUiResponse.handler(handlePopupUiResponse);
+}
+
+async function handle<T = any>(
+  ctx: Context,
+  req: RpcRequest
+): Promise<RpcResponse<T>> {
+  debug(`handle rpc ${req.method}`);
+  const { method, params } = req;
+  switch (method) {
+    case RPC_METHOD_CONNECT:
+      return await handleConnect(ctx, params[0]);
+    case RPC_METHOD_DISCONNECT:
+      return handleDisconnect(ctx);
+    case RPC_METHOD_SIGN_AND_SEND_TX:
+      return await handleSignAndSendTx(ctx, params[0], params[1]);
+    case RPC_METHOD_SIGN_TX:
+      return await handleSignTx(ctx, params[0], params[1]);
+    case RPC_METHOD_SIGN_MESSAGE:
+      return handleSignMessage(ctx, params[0]);
+    case RPC_METHOD_RECENT_BLOCKHASH:
+      return await handleRecentBlockhash(ctx);
+    default:
+      throw new Error(`unexpected rpc method: ${method}`);
+  }
+}
+
+// Automatically connect in the event we're unlocked and the origin
+// has been previously approved. Otherwise, open a new window to prompt
+// the user to unlock and approve.
+//
+// Note that "connected" simply means that the wallet can be used to issue
+// requests because it's both approved and unlocked. There is currently no
+// extra session state or connections that are maintained.
+async function handleConnect(
+  ctx: Context,
+  onlyIfTrustedMaybe: boolean
+): Promise<RpcResponse<string>> {
+  const origin = ctx.sender.origin;
+  const keyringStoreState = await BACKEND.keyringStoreState();
+  const activeTab = await BrowserRuntime.activeTab();
+  let didApprove = false;
+
+  // Use the UI to ask the user if it should connect.
+  if (keyringStoreState === "unlocked") {
+    if (await BACKEND.isApprovedOrigin(origin)) {
+      debug("already approved so automatically connecting");
+      didApprove = true;
+    } else {
+      const resp = await RequestManager.requestUiAction((requestId: number) => {
+        return openApprovalPopupWindow(ctx, requestId);
+      });
+      didApprove = !resp.windowClosed && resp.result;
+    }
+  } else if (keyringStoreState === "locked") {
+    if (await BACKEND.isApprovedOrigin(origin)) {
+      const resp = await RequestManager.requestUiAction((requestId: number) => {
+        return openLockedPopupWindow(ctx, requestId);
+      });
+      didApprove = !resp.windowClosed && resp.result;
+    } else {
+      const resp = await RequestManager.requestUiAction((requestId: number) => {
+        return openLockedApprovalPopupWindow(ctx, requestId);
+      });
+      didApprove = !resp.windowClosed && resp.result;
+    }
+  } else {
+    throw new Error("invariant violation keyring not created");
+  }
+
+  // If the user approved and unlocked, then we're connected.
+  if (didApprove) {
+    const activeWallet = await BACKEND.activeWallet();
+    const connectionUrl = await BACKEND.solanaConnectionUrl();
+    Io.notificationsInjected.sendMessageTab(activeTab.id, {
+      name: NOTIFICATION_CONNECTED,
+      data: {
+        publicKey: activeWallet,
+        connectionUrl,
+      },
+    });
+  }
+
+  return [SUCCESS_RESPONSE];
+}
+
+function handleDisconnect(ctx: Context): RpcResponse<string> {
+  const resp = BACKEND.disconnect(ctx);
+  Io.notificationsInjected.sendMessageActiveTab({
+    name: NOTIFICATION_DISCONNECTED,
+  });
+  return [resp];
+}
+
+async function handleSignAndSendTx(
+  ctx: Context,
+  tx: any,
+  walletAddress: string
+): Promise<RpcResponse<string>> {
+  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
+    return openApproveTransactionPopupWindow(ctx, requestId);
+  });
+  const didApprove = uiResp.result;
+
+  // Only sign if the user clicked approve.
+  if (didApprove) {
+    const sig = await BACKEND.signAndSendTx(ctx, tx, walletAddress);
+    return [sig];
+  }
+
+  return [null];
+}
+
+async function handleSignTx(
+  ctx: Context,
+  tx: any,
+  walletAddress: string
+): Promise<RpcResponse<string>> {
+  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
+    return openApproveTransactionPopupWindow(ctx, requestId);
+  });
+  const didApprove = uiResp.result;
+
+  // Only sign if the user clicked approve.
+  if (didApprove) {
+    const sig = await BACKEND.signTransaction(tx, walletAddress);
+    return [sig];
+  }
+
+  return [null];
+}
+
+function handleSignMessage(ctx: Context, msg: any): RpcResponse<string> {
+  const resp = BACKEND.signMessage(ctx, msg);
+  return [resp];
+}
+
+async function handleRecentBlockhash(
+  ctx: Context
+): Promise<RpcResponse<string>> {
+  const resp = await BACKEND.recentBlockhash();
+  return [resp];
+}
+
+class RequestManager {
+  static _requestId = 0;
+  static _responseResolvers: any = {};
+
+  // Initiate a request. The given popupFn should relay the given requestId to
+  // the UI, which will send it back with a response.
+  //
+  // Note that there are two ways we can receive a response.
+  //
+  // 1) The user can explicit perform a UI action via our components.
+  // 2) The user can close the window.
+  //
+  public static requestUiAction<T = any>(
+    popupFn: (reqId: number) => Promise<Window>
+  ): Promise<T> {
+    return new Promise(async (resolve, reject) => {
+      const requestId = RequestManager.addResponseResolver(resolve, reject);
+      const window = await popupFn(requestId);
+      chrome.windows.onRemoved.addListener((windowId) => {
+        if (windowId === window.id) {
+          RequestManager.removeResponseResolver(requestId);
+          resolve({
+            // @ts-ignore
+            id: requestId,
+            result: undefined,
+            error: undefined,
+            windowClosed: true,
+          });
+        }
+      });
+    });
+  }
+
+  // Resolve a response initiated via `requestUiAction`.
+  public static resolveResponse(id: number, result: any, error: any) {
+    const resolver = RequestManager.getResponseResolver(id);
+    if (!resolver) {
+      throw new Error(`unable to find response resolver for: ${id}`);
+    }
+
+    const [resolve, reject] = resolver;
+
+    RequestManager.removeResponseResolver(id);
+
+    if (error) {
+      reject(error);
+    }
+
+    resolve({
+      id,
+      result,
+      error,
+      windowClosed: undefined,
+    });
+  }
+
+  private static addResponseResolver(
+    resolve: Function,
+    reject: Function
+  ): number {
+    const requestId = RequestManager.nextRequestId();
+    RequestManager._responseResolvers[requestId] = [resolve, reject];
+    return requestId;
+  }
+
+  private static nextRequestId(): number {
+    const r = RequestManager._requestId;
+    RequestManager._requestId += 1;
+    return r;
+  }
+
+  private static getResponseResolver(requestId: number): [Function, Function] {
+    return RequestManager._responseResolvers[requestId];
+  }
+
+  private static removeResponseResolver(requestId: number) {
+    delete RequestManager._responseResolvers[requestId];
+  }
+}
+
+// Utility to transform the handler API into something a little more friendly.
+function withContext(
+  handler: (ctx: Context, req: RpcRequest) => Promise<RpcResponse>
+): ({ data }: { data: RpcRequest }, sender: any) => Promise<RpcResponse> {
+  return async ({ data }: { data: RpcRequest }, sender: any) => {
+    const ctx = { sender };
+    return await handler(ctx, data);
+  };
+}
+
+async function handlePopupUiResponse(msg: RpcResponse): Promise<string> {
+  const { id, result, error } = msg;
+  debug("handle popup ui response");
+  RequestManager.resolveResponse(id, result, error);
+  return SUCCESS_RESPONSE;
+}

@@ -31,8 +31,7 @@ import {
   TAB_BRIDGE,
   TAB_FRIENDS,
 } from "../common";
-
-export const SUCCESS_RESPONSE = "success";
+import { Io } from "./io";
 
 export class Backend {
   private keyringStore: KeyringStore;
@@ -401,3 +400,10 @@ function makeDefaultNav() {
   });
   return defaultNav;
 }
+
+export const SUCCESS_RESPONSE = "success";
+
+//
+// Backend singleton.
+//
+export const BACKEND = new Backend(Io.notificationsUi);
