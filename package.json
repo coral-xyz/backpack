@@ -32,7 +32,7 @@
     "build": "yarn build:provider && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint:fix": "prettier src/**/* -w && prettier provider/src/**/* -w && prettier test/app/src/**/* -w",
+    "lint:fix": "prettier src/* src/**/* -w && prettier provider/src/**/* -w && prettier test/app/src/**/* -w",
     "prepare": "husky install"
   },
   "eslintConfig": {

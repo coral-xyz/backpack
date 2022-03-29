@@ -11,8 +11,8 @@ import {
   CONNECTION_POPUP_RESPONSE,
 } from "./common";
 import {
-	setBackgroundClient,
-	setBackgroundResponseClient,
+  setBackgroundClient,
+  setBackgroundResponseClient,
 } from "./background/client";
 
 async function main() {
@@ -27,11 +27,13 @@ function bootstrap() {
   const backgroundClient = PortChannel.client(CONNECTION_POPUP_RPC);
   setBackgroundClient(backgroundClient);
 
-	// Client to send responses from the UI to the background script.
-	// Used when the background script asks the UI to do something, e.g.,
-	// approve a transaction.
-	const backgroundResponseClient = PortChannel.client(CONNECTION_POPUP_RESPONSE);
-	setBackgroundResponseClient(backgroundResponseClient);
+  // Client to send responses from the UI to the background script.
+  // Used when the background script asks the UI to do something, e.g.,
+  // approve a transaction.
+  const backgroundResponseClient = PortChannel.client(
+    CONNECTION_POPUP_RESPONSE
+  );
+  setBackgroundResponseClient(backgroundResponseClient);
 
   // Keep the keyring store unlocked with a continuous poll.
   setInterval(() => {
