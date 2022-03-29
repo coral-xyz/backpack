@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import * as bs58 from "bs58";
+import { Message } from "@solana/web3.js";
 import { useTheme, makeStyles, Typography, Button } from "@material-ui/core";
 import { BottomCard } from "./Unlocked/Balances/Send";
 import { useActiveWallet } from "../hooks/useWallet";
@@ -86,6 +89,12 @@ export function Approval({ origin, onCompletion }: any) {
 
 export function ApproveTransaction({ tx, origin, onCompletion }: any) {
   const classes = useStyles();
+  useEffect(() => {
+    const msg = Message.from(bs58.decode(tx));
+    console.log("got msg", msg);
+    // TODO: Fetch all IDLS for each program and decode ix name and description.
+  }, [tx]);
+
   const approve = async () => {
     onCompletion(true);
   };
@@ -96,8 +105,7 @@ export function ApproveTransaction({ tx, origin, onCompletion }: any) {
     { left: "Network", right: "Solana" },
     { left: "Network Fee", right: "- SOL" },
   ];
-  // TODO: should decode the tx data here and provide a more
-  //       informative display, e.g., with account names and instructions.
+
   return (
     <WithApproval
       title={"Approve Transaction"}

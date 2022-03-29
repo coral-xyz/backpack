@@ -162,8 +162,6 @@ export class SolanaWallet {
     // TODO: create the ata if needed.
     // TODO: assert the given address is not a PDA and is a SOL address.
 
-    //		if (!this.destination.
-
     const sourceAta = associatedTokenAddress(mint, this.publicKey);
     const destinationAta = associatedTokenAddress(mint, destination);
     const tx = await tokenClient.methods

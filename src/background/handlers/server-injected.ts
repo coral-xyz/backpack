@@ -1,6 +1,8 @@
 // All RPC request handlers for requests that can be sent from the injected
 // script to the background script.
 
+import * as bs58 from "bs58";
+import { Transaction, Message } from "@solana/web3.js";
 import {
   debug,
   BrowserRuntime,
@@ -125,8 +127,13 @@ async function handleSignAndSendTx(
   tx: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
+  // Transform from transaction string to message string.
+  const txObject = Transaction.from(bs58.decode(tx));
+  const txMsg = bs58.encode(txObject.serializeMessage());
+
+  // Get user approval.
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveTransactionPopupWindow(ctx, requestId, tx);
+    return openApproveTransactionPopupWindow(ctx, requestId, txMsg);
   });
   const didApprove = uiResp.result;
 
@@ -141,17 +148,17 @@ async function handleSignAndSendTx(
 
 async function handleSignTx(
   ctx: Context,
-  tx: string,
+  txMsg: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveTransactionPopupWindow(ctx, requestId, tx);
+    return openApproveTransactionPopupWindow(ctx, requestId, txMsg);
   });
   const didApprove = uiResp.result;
 
   // Only sign if the user clicked approve.
   if (didApprove) {
-    const sig = await BACKEND.signTransaction(tx, walletAddress);
+    const sig = await BACKEND.signTransaction(txMsg, walletAddress);
     return [sig];
   }
 

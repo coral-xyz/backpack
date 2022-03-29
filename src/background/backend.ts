@@ -72,6 +72,15 @@ export class Backend {
     });
   }
 
+  // Returns the signature.
+  async signTransaction(
+    txMessage: string,
+    walletAddress: string
+  ): Promise<string> {
+    const blockchainKeyring = this.keyringStore.activeBlockchain();
+    return blockchainKeyring.signTransaction(txMessage, walletAddress);
+  }
+
   signMessage(ctx: Context, msg: string, walletAddress: string): string {
     const blockchainKeyring = this.keyringStore.activeBlockchain();
     return blockchainKeyring.signMessage(msg, walletAddress);
@@ -337,15 +346,6 @@ export class Backend {
   async solanaCommitmentUpdate(commitment: string): Promise<string> {
     // todo
     return SUCCESS_RESPONSE;
-  }
-
-  // Returns the signature.
-  async signTransaction(
-    txMessage: string,
-    walletAddress: string
-  ): Promise<string> {
-    const blockchainKeyring = this.keyringStore.activeBlockchain();
-    return blockchainKeyring.signTransaction(txMessage, walletAddress);
   }
 
   async approvedOriginsRead(): Promise<Array<string>> {
