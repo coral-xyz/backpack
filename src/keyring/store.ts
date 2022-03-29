@@ -534,6 +534,12 @@ class BlockchainKeyring {
     return keyring.signTransaction(msg, walletAddress);
   }
 
+  public signMessage(msg: string, walletAddress: string): string {
+    const keyring = this.getKeyring(walletAddress);
+    const msgBuffer = Buffer.from(bs58.decode(msg));
+    return keyring.signMessage(msgBuffer, walletAddress);
+  }
+
   private getKeyring(walletAddress: string): Keyring {
     const found = this.hdKeyring!.publicKeys().find((k) => k === walletAddress);
     if (found) {

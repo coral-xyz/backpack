@@ -45,6 +45,13 @@ export class SolanaKeyring implements Keyring {
     return bs58.encode(nacl.sign.detached(new Uint8Array(tx), kp.secretKey));
   }
 
+  public signMessage(tx: Buffer, address: string): string {
+    // TODO: this shouldn't blindly sign. We should check some
+    //       type of unique prefix that asserts this isn't a
+    //       real transaction.
+    return this.signTransaction(tx, address);
+  }
+
   public exportSecretKey(address: string): string | null {
     const pubkey = new PublicKey(address);
     const kp = this.keypairs.find((kp) => kp.publicKey.equals(pubkey));

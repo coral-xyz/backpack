@@ -15,6 +15,7 @@ export interface KeyringFactory {
 export interface Keyring {
   publicKeys(): Array<string>;
   signTransaction(tx: Buffer, address: string): string;
+  signMessage(tx: Buffer, address: string): string;
   exportSecretKey(address: string): string | null;
   importSecretKey(secretKey: string): string;
   toJson(): KeyringJson;

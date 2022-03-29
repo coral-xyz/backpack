@@ -42,7 +42,7 @@ import {
 } from "../../common";
 import { DerivationPath } from "../../keyring/crypto";
 import { KeyringStoreState } from "../../keyring/store";
-import { BACKEND } from "../backend";
+import { BACKEND, SUCCESS_RESPONSE } from "../backend";
 import { Io } from "../io";
 
 export function start() {
@@ -126,7 +126,7 @@ async function handle<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
 
 function handleNotificationsSubscribe(): RpcResponse<string> {
   Io.notificationsUi.connect();
-  return ["success"];
+  return [SUCCESS_RESPONSE];
 }
 
 async function handleKeyringStoreCreate(

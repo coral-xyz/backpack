@@ -72,10 +72,9 @@ export class Backend {
     });
   }
 
-  signMessage(ctx: Context, msg: any): MessageSignature {
-    // todo
-    const signature = "todo";
-    return signature;
+  signMessage(ctx: Context, msg: string, walletAddress: string): string {
+    const blockchainKeyring = this.keyringStore.activeBlockchain();
+    return blockchainKeyring.signMessage(msg, walletAddress);
   }
 
   // TODO: this should be shared with the frontend extension UI and put

@@ -32,6 +32,11 @@ export class EthereumKeyring implements Keyring {
   }
 
   // @ts-ignore
+  public signMessage(tx: Buffer, address: string): string {
+    // todo
+  }
+
+  // @ts-ignore
   public exportSecretKey(address: string): string | null {
     // todo
   }

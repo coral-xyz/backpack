@@ -183,11 +183,13 @@ class Provider extends EventEmitter {
     throw new Error("not implemented please use signAndSendTransaction");
   }
 
-  async signMessage(msg: string) {
-    return await this.request({
+  async signMessage(msg: Uint8Array): Promise<Uint8Array> {
+    const msgStr = bs58.encode(msg);
+    const signature = await this.request({
       method: RPC_METHOD_SIGN_MESSAGE,
-      params: [msg],
+      params: [msgStr, this.publicKey!.toString()],
     });
+    return bs58.decode(signature);
   }
 
   // Sends a request from this script to the content script across the

@@ -44,7 +44,7 @@ async function handle<T = any>(
     case RPC_METHOD_SIGN_TX:
       return await handleSignTx(ctx, params[0], params[1]);
     case RPC_METHOD_SIGN_MESSAGE:
-      return handleSignMessage(ctx, params[0]);
+      return handleSignMessage(ctx, params[0], params[1]);
     case RPC_METHOD_RECENT_BLOCKHASH:
       return await handleRecentBlockhash(ctx);
     default:
@@ -157,8 +157,12 @@ async function handleSignTx(
   return [null];
 }
 
-function handleSignMessage(ctx: Context, msg: any): RpcResponse<string> {
-  const resp = BACKEND.signMessage(ctx, msg);
+function handleSignMessage(
+  ctx: Context,
+  msg: string,
+  walletAddress: string
+): RpcResponse<string> {
+  const resp = BACKEND.signMessage(ctx, msg, walletAddress);
   return [resp];
 }
 
