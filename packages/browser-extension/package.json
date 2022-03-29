@@ -1,0 +1,67 @@
+{
+  "name": "anchor-wallet",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@fontsource/inter": "^4.5.5",
+    "@ledgerhq/hw-transport": "^6.24.1",
+    "@material-ui/core": "^4.12.3",
+    "@material-ui/icons": "^4.11.2",
+    "@project-serum/anchor": "^0.23.0",
+    "@project-serum/token": "^0.1.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "@solana/buffer-layout": "^4.0.0",
+    "@solana/spl-token-registry": "^0.2.2842",
+    "@solana/web3.js": "^1.35.1",
+    "bip39": "^3.0.4",
+    "bs58": "^5.0.0",
+    "ed25519-hd-key": "^1.2.0",
+    "react": "^17.0.2",
+    "react-browser-extension-scripts": "4.0.10",
+    "react-custom-scrollbars": "^4.2.1",
+    "react-dom": "^17.0.2",
+    "react-sidebar": "^3.0.2",
+    "recoil": "^0.6.1",
+    "tweetnacl": "^1.0.3",
+    "uuid": "^8.3.2",
+    "web-vitals": "^1.0.1"
+  },
+  "scripts": {
+    "build:provider": "cd ../provider && yarn && yarn build && cp dist/browser/index.js ../browser-extension/public/injected.js && cd ../",
+    "start": "yarn build:provider && react-scripts start",
+    "build": "yarn build:provider && react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@types/bn.js": "^5.1.0",
+    "@types/chrome": "0.0.154",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^12.0.0",
+    "@types/react": "^17.0.0",
+    "@types/react-custom-scrollbars": "^4.0.10",
+    "@types/react-dom": "^17.0.0",
+    "@types/react-sidebar": "^3.0.2",
+    "typescript": "^4.6.3"
+  }
+}
