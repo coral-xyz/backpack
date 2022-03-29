@@ -9,7 +9,7 @@ function App() {
     <div className="App">
       <Wallet>
         <SendLamportButton />
-				<SignMessageButton />
+        <SignMessageButton />
       </Wallet>
     </div>
   );

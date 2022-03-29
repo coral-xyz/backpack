@@ -8,11 +8,10 @@ export const SignMessageButton: FC = () => {
   const onClick = useCallback(async () => {
     if (!wallet.publicKey) throw new WalletNotConnectedError();
 
-		const msg = new Uint8Array([1,2,3,4,5]);
-		console.log('requesting sig over', msg);
+    const msg = new Uint8Array([1, 2, 3, 4, 5]);
+    console.log("requesting sig over", msg);
     const signature = await wallet.signMessage!(msg);
-		console.log('signature', signature);
-
+    console.log("signature", signature);
   }, [wallet.publicKey, wallet.sendTransaction, connection]);
 
   return (
