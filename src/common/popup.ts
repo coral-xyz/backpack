@@ -6,6 +6,7 @@ export const QUERY_LOCKED = "locked=true";
 export const QUERY_APPROVAL = "approval=true";
 export const QUERY_LOCKED_APPROVAL = "locked-approval=true";
 export const QUERY_APPROVE_TRANSACTION = "approve-tx=true";
+export const QUERY_APPROVE_MESSAGE = "approve-message=true";
 
 const MACOS_TOOLBAR_HEIGHT = 28;
 
@@ -42,6 +43,15 @@ export async function openApproveTransactionPopupWindow(
   requestId: number
 ): Promise<Window> {
   const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${ctx.sender.origin}&requestId=${requestId}`;
+  return await openPopupWindow(ctx, url);
+}
+
+export async function openApproveMessagePopupWindow(
+  ctx: Context,
+  requestId: number,
+  message: string
+): Promise<Window> {
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_MESSAGE}&origin=${ctx.sender.origin}&requestId=${requestId}&message=${message}`;
   return await openPopupWindow(ctx, url);
 }
 

@@ -59,6 +59,13 @@ const useStyles = makeStyles((theme: any) => ({
     lineHeight: "16px",
     fontWeight: 500,
   },
+  approveMessageData: {
+    textAlign: "center",
+    color: theme.custom.colors.fontColor,
+    fontSize: "12px",
+    lineHeight: "16px",
+    fontWeight: 500,
+  },
 }));
 
 export function Approval({ origin, onCompletion }: any) {
@@ -108,6 +115,32 @@ export function ApproveTransaction({ origin, onCompletion }: any) {
           <Typography className={classes.txChangesRowRight}>{r[1]}</Typography>
         </div>
       ))}
+    </WithApproval>
+  );
+}
+
+export function ApproveMessage({ message, origin, onCompletion }: any) {
+  const classes = useStyles();
+  const approve = async () => {
+    onCompletion(true);
+  };
+  const onReject = async () => {
+    onCompletion(false);
+  };
+  return (
+    <WithApproval
+      title={"Approve Message"}
+      onApproval={approve}
+      onReject={onReject}
+      origin={origin}
+    >
+      <Typography
+        className={classes.contentTitle}
+        style={{ marginBottom: "16px" }}
+      >
+        Message
+      </Typography>
+      <Typography className={classes.approveMessageData}>{message}</Typography>
     </WithApproval>
   );
 }

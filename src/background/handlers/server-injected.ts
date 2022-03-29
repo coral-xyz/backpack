@@ -8,6 +8,7 @@ import {
   openApprovalPopupWindow,
   openLockedApprovalPopupWindow,
   openApproveTransactionPopupWindow,
+  openApproveMessagePopupWindow,
   Window,
   RpcRequest,
   RpcResponse,
@@ -44,7 +45,7 @@ async function handle<T = any>(
     case RPC_METHOD_SIGN_TX:
       return await handleSignTx(ctx, params[0], params[1]);
     case RPC_METHOD_SIGN_MESSAGE:
-      return handleSignMessage(ctx, params[0], params[1]);
+      return await handleSignMessage(ctx, params[0], params[1]);
     case RPC_METHOD_RECENT_BLOCKHASH:
       return await handleRecentBlockhash(ctx);
     default:
@@ -157,13 +158,22 @@ async function handleSignTx(
   return [null];
 }
 
-function handleSignMessage(
+async function handleSignMessage(
   ctx: Context,
   msg: string,
   walletAddress: string
-): RpcResponse<string> {
-  const resp = BACKEND.signMessage(ctx, msg, walletAddress);
-  return [resp];
+): Promise<RpcResponse<string>> {
+  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
+    return openApproveMessagePopupWindow(ctx, requestId, msg);
+  });
+  const didApprove = uiResp.result;
+
+  if (didApprove) {
+    const sig = BACKEND.signMessage(ctx, msg, walletAddress);
+    return [sig];
+  }
+
+  return [null];
 }
 
 async function handleRecentBlockhash(

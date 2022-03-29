@@ -20,14 +20,16 @@ import {
   QUERY_APPROVAL,
   QUERY_LOCKED_APPROVAL,
   QUERY_APPROVE_TRANSACTION,
+  QUERY_APPROVE_MESSAGE,
 } from "../common";
-import { Approval, ApproveTransaction } from "../components/Approval";
+import {
+  Approval,
+  ApproveTransaction,
+  ApproveMessage,
+} from "../components/Approval";
 import "./App.css";
 import "@fontsource/inter";
-import {
-  getBackgroundClient,
-  getBackgroundResponseClient,
-} from "../background/client";
+import { getBackgroundResponseClient } from "../background/client";
 
 const useStyles = makeStyles((theme: any) => ({
   appContainer: {
@@ -121,6 +123,8 @@ function AppRouter() {
       return <QueryLockedApproval />;
     case QUERY_APPROVE_TRANSACTION:
       return <QueryApproveTransaction />;
+    case QUERY_APPROVE_MESSAGE:
+      return <QueryApproveMessage />;
     default:
       return <FullApp />;
   }
@@ -184,7 +188,26 @@ function QueryApproveTransaction() {
     <ApproveTransaction
       origin={origin}
       onCompletion={(didApprove: boolean) => {
-        approveTransactionFlowDidComplete(requestId, didApprove);
+        approveFlowDidComplete(requestId, didApprove);
+      }}
+    />
+  );
+}
+
+function QueryApproveMessage() {
+  debug("query approve transaction");
+
+  const url = new URL(window.location.href);
+  const origin = url.searchParams.get("origin");
+  const requestId = parseInt(url.searchParams.get("requestId")!);
+  const message = url.searchParams.get("message");
+
+  return (
+    <ApproveMessage
+      message={message}
+      origin={origin}
+      onCompletion={(didApprove: boolean) => {
+        approveFlowDidComplete(requestId, didApprove);
       }}
     />
   );
@@ -224,10 +247,7 @@ async function connectFlowDidComplete(requestId: number, result: boolean) {
   window.close();
 }
 
-async function approveTransactionFlowDidComplete(
-  requestId: number,
-  result: boolean
-) {
+async function approveFlowDidComplete(requestId: number, result: boolean) {
   const respClient = getBackgroundResponseClient();
   await respClient.response({
     id: requestId,
