@@ -84,7 +84,7 @@ export function Approval({ origin, onCompletion }: any) {
   );
 }
 
-export function ApproveTransaction({ origin, onCompletion }: any) {
+export function ApproveTransaction({ tx, origin, onCompletion }: any) {
   const classes = useStyles();
   const approve = async () => {
     onCompletion(true);
@@ -93,9 +93,11 @@ export function ApproveTransaction({ origin, onCompletion }: any) {
     onCompletion(false);
   };
   const rows = [
-    ["Network", "Solana"],
-    ["Network Fee", "- SOL"],
+    { left: "Network", right: "Solana" },
+    { left: "Network Fee", right: "- SOL" },
   ];
+  // TODO: should decode the tx data here and provide a more
+  //       informative display, e.g., with account names and instructions.
   return (
     <WithApproval
       title={"Approve Transaction"}
@@ -111,8 +113,10 @@ export function ApproveTransaction({ origin, onCompletion }: any) {
       </Typography>
       {rows.map((r) => (
         <div className={classes.txChangesRow}>
-          <Typography className={classes.txChangesRowLeft}>{r[0]}</Typography>
-          <Typography className={classes.txChangesRowRight}>{r[1]}</Typography>
+          <Typography className={classes.txChangesRowLeft}>{r.left}</Typography>
+          <Typography className={classes.txChangesRowRight}>
+            {r.right}
+          </Typography>
         </div>
       ))}
     </WithApproval>

@@ -40,9 +40,10 @@ export async function openApprovalPopupWindow(
 
 export async function openApproveTransactionPopupWindow(
   ctx: Context,
-  requestId: number
+  requestId: number,
+  tx: string
 ): Promise<Window> {
-  const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${ctx.sender.origin}&requestId=${requestId}`;
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${ctx.sender.origin}&requestId=${requestId}&tx=${tx}`;
   return await openPopupWindow(ctx, url);
 }
 

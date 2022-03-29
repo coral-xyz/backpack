@@ -122,11 +122,11 @@ function handleDisconnect(ctx: Context): RpcResponse<string> {
 
 async function handleSignAndSendTx(
   ctx: Context,
-  tx: any,
+  tx: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveTransactionPopupWindow(ctx, requestId);
+    return openApproveTransactionPopupWindow(ctx, requestId, tx);
   });
   const didApprove = uiResp.result;
 
@@ -141,11 +141,11 @@ async function handleSignAndSendTx(
 
 async function handleSignTx(
   ctx: Context,
-  tx: any,
+  tx: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveTransactionPopupWindow(ctx, requestId);
+    return openApproveTransactionPopupWindow(ctx, requestId, tx);
   });
   const didApprove = uiResp.result;
 

@@ -183,9 +183,11 @@ function QueryApproveTransaction() {
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
   const requestId = parseInt(url.searchParams.get("requestId")!);
+  const tx = url.searchParams.get("tx");
 
   return (
     <ApproveTransaction
+      tx={tx}
       origin={origin}
       onCompletion={(didApprove: boolean) => {
         approveFlowDidComplete(requestId, didApprove);
