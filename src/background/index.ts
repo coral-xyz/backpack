@@ -16,6 +16,7 @@ import {
   RPC_METHOD_CONNECT,
   RPC_METHOD_DISCONNECT,
   RPC_METHOD_SIGN_AND_SEND_TX,
+  RPC_METHOD_SIGN_TX,
   RPC_METHOD_SIGN_MESSAGE,
   RPC_METHOD_RECENT_BLOCKHASH,
   UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE,
@@ -177,6 +178,8 @@ async function handleRpc<T = any>(
       return handleDisconnect(ctx);
     case RPC_METHOD_SIGN_AND_SEND_TX:
       return await handleSignAndSendTx(ctx, params[0], params[1]);
+    case RPC_METHOD_SIGN_TX:
+      return await handleSignTx(ctx, params[0], params[1]);
     case RPC_METHOD_SIGN_MESSAGE:
       return handleSignMessage(ctx, params[0]);
     case RPC_METHOD_RECENT_BLOCKHASH:
@@ -274,6 +277,25 @@ async function handleSignAndSendTx(
   // Only sign if the user clicked approve.
   if (didApprove) {
     const sig = await backend.signAndSendTx(ctx, tx, walletAddress);
+    return [sig];
+  }
+
+  return [null];
+}
+
+async function handleSignTx(
+  ctx: Context,
+  tx: any,
+  walletAddress: string
+): Promise<RpcResponse<string>> {
+  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
+    return openApproveTransactionPopupWindow(ctx, requestId);
+  });
+  const didApprove = uiResp.result;
+
+  // Only sign if the user clicked approve.
+  if (didApprove) {
+    const sig = await backend.signTransaction(tx, walletAddress);
     return [sig];
   }
 

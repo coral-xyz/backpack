@@ -526,7 +526,8 @@ class BlockchainKeyring {
     };
   }
 
-  // txMsg is base58 encoded for solana.
+  // txMsg is base58 encoded for solana. Note that `txMsg` is the *Message*.
+  // Distinctly different from the full transaction.
   public signTransaction(txMsg: string, walletAddress: string): string {
     const keyring = this.getKeyring(walletAddress);
     const msg = Buffer.from(bs58.decode(txMsg));

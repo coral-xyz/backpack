@@ -17,6 +17,7 @@ const CHANNEL_NOTIFICATION = "anchor-notification";
 const RPC_METHOD_CONNECT = "connect";
 const RPC_METHOD_DISCONNECT = "disconnect";
 const RPC_METHOD_SIGN_AND_SEND_TX = "sign-and-send-tx";
+const RPC_METHOD_SIGN_TX = "sign-tx";
 const RPC_METHOD_SIGN_MESSAGE = "sign-message";
 const RPC_METHOD_RECENT_BLOCKHASH = "recent-blockhash";
 
@@ -158,8 +159,20 @@ class Provider extends EventEmitter {
     });
   }
 
-  async signTransaction(tx: Transaction) {
-    throw new Error("not implemented please use signAndSendTransaction");
+  async signTransaction(tx: Transaction): Promise<Transaction> {
+    const recentBlockhash = await this.request({
+      method: RPC_METHOD_RECENT_BLOCKHASH,
+      params: [],
+    });
+    tx.feePayer = this.publicKey;
+    tx.recentBlockhash = recentBlockhash;
+    const message = bs58.encode(tx.serializeMessage());
+    const signature = await this.request({
+      method: RPC_METHOD_SIGN_TX,
+      params: [message, this.publicKey!.toString()],
+    });
+    tx.addSignature(this.publicKey!, Buffer.from(bs58.decode(signature)));
+    return tx;
   }
 
   async signAllTransactions(tx: Array<Transaction>) {

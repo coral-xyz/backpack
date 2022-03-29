@@ -5,6 +5,7 @@ export const CHANNEL_NOTIFICATION = "anchor-notification";
 export const RPC_METHOD_CONNECT = "connect";
 export const RPC_METHOD_DISCONNECT = "disconnect";
 export const RPC_METHOD_SIGN_AND_SEND_TX = "sign-and-send-tx";
+export const RPC_METHOD_SIGN_TX = "sign-tx";
 export const RPC_METHOD_SIGN_MESSAGE = "sign-message";
 export const RPC_METHOD_RECENT_BLOCKHASH = "recent-blockhash";
 
