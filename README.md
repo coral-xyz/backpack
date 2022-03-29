@@ -2,13 +2,13 @@
 
 ## Packages
 
-### [Browser Extension](tree/master/packages/browser-extension)
+### [Browser Extension](packages/browser-extension)
 
 `yarn start:wallet`
 
 The chrome browser extension
 
-### [Example Client](tree/master/packages/example-client)
+### [Example Client](packages/example-client)
 
 `yarn start:client`
 
