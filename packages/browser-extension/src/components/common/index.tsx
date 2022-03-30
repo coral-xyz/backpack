@@ -175,7 +175,7 @@ export function OnboardButton({
   label,
   ...buttonProps
 }: {
-  buttonLabelStyle?: Record<string, unknown>;
+  buttonLabelStyle?: React.CSSProperties;
   label?: string;
 } & React.ComponentProps<typeof Button>) {
   const classes = useStyles();
