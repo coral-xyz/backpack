@@ -207,6 +207,7 @@ export class PortChannelClient {
     const id = this._requestId;
     this._requestId += 1;
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [prom, resolve, reject] = this._addResponseResolver(id);
     this._port.postMessage({ id, method, params });
     return await prom;

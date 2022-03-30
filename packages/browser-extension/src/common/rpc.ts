@@ -4,6 +4,7 @@ export type RpcRequest = {
   params: any[];
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type RpcResponse<T = any> = any;
 
 export type Notification = {
