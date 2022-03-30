@@ -124,7 +124,8 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const classes = useStyles();
   const [password, setPassword] = useState("");
   const [error, setError] = useState<boolean>(false);
-  const _onUnlock = async () => {
+  const _onUnlock = async (e: any) => {
+    e.preventDefault();
     try {
       const background = getBackgroundClient();
       await background.request({
@@ -155,16 +156,18 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
 				*/}
       </div>
       <div className={classes.content}>
-        <TextField
-          isError={error}
-          placeholder={"Password"}
-          type={"password"}
-          value={password}
-          setValue={setPassword}
-        />
-        <div style={{ marginLeft: "12px", marginRight: "12px" }}>
-          <OnboardButton onClick={_onUnlock} label={"Unlock"} />
-        </div>
+        <form onSubmit={_onUnlock}>
+          <TextField
+            isError={error}
+            placeholder={"Password"}
+            type={"password"}
+            value={password}
+            setValue={setPassword}
+          />
+          <div style={{ marginLeft: "12px", marginRight: "12px" }}>
+            <OnboardButton label="Unlock" type="submit" />
+          </div>
+        </form>
         <div style={{ visibility: error ? undefined : "hidden" }}>
           <div className={classes.forgotContainer}>
             <div

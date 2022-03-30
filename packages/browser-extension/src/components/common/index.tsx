@@ -171,13 +171,13 @@ export function Loading(props: any) {
 }
 
 export function OnboardButton({
-  style,
-  disabled,
-  onClick,
-  disabledClass,
   buttonLabelStyle,
   label,
-}: any) {
+  ...buttonProps
+}: {
+  buttonLabelStyle?: Record<string, unknown>;
+  label?: string;
+} & React.ComponentProps<typeof Button>) {
   const classes = useStyles();
   const theme = useTheme() as any;
   const buttonStyle = Object.assign(
@@ -187,20 +187,16 @@ export function OnboardButton({
       height: "48px",
       borderRadius: "12px",
     },
-    style
+    buttonProps.style
   );
   return (
     <Button
       disableRipple
       disableElevation
-      style={buttonStyle}
-      disabled={disabled}
       className={classes.button}
       variant="contained"
-      onClick={onClick}
-      classes={{
-        disabled: disabledClass,
-      }}
+      {...buttonProps}
+      style={buttonStyle}
     >
       <Typography style={buttonLabelStyle} className={classes.buttonLabel}>
         {label}
