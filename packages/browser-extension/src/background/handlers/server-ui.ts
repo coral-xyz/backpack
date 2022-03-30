@@ -36,6 +36,8 @@ import {
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
   UI_RPC_METHOD_SIGN_TRANSACTION,
+  UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS,
+  UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_CONNECTION_URL_UPDATED,
@@ -115,6 +117,10 @@ async function handle<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return await handleSolanaCommitmentUpdate(params[0]);
     case UI_RPC_METHOD_SIGN_TRANSACTION:
       return await handleSignTransaction(params[0], params[1]);
+    case UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS:
+      return await handleSignAllTransactions(params[0], params[1]);
+    case UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION:
+      return await handleSignAndSendTransaction(params[0], params[1]);
     case UI_RPC_METHOD_APPROVED_ORIGINS_READ:
       return await handleApprovedOriginsRead();
     case UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE:
@@ -337,6 +343,22 @@ async function handleSignTransaction(
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const resp = await BACKEND.signTransaction(messageBs58, walletAddress);
+  return [resp];
+}
+
+async function handleSignAllTransactions(
+  txs: Array<string>,
+  walletAddress: string
+): Promise<RpcResponse<string>> {
+  const resp = await BACKEND.signAllTransactions(txs, walletAddress);
+  return [resp];
+}
+
+async function handleSignAndSendTransaction(
+  tx: string,
+  walletAddress: string
+): Promise<RpcResponse<string>> {
+  const resp = await BACKEND.signAndSendTx(tx, walletAddress);
   return [resp];
 }
 

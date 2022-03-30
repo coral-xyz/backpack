@@ -8,3 +8,4 @@ export * from "./token";
 export * from "./wallet";
 export * from "./blockchains";
 export * from "./price-data";
+export * from "./jupiter";

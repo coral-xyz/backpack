@@ -143,7 +143,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   return (
     <div className={classes.container}>
       <div className={classes.nav}>
-        <Typography className={classes.navTitle}>Anchor</Typography>
+        <Typography className={classes.navTitle}>Backpack</Typography>
       </div>
       <div className={classes.header}>
         {/*<Lock className={classes.lockIcon} />*/}

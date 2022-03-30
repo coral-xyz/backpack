@@ -1,19 +1,21 @@
 import React, { useContext, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
-import { useActiveWallet } from "../hooks/useWallet";
+import { JupiterProvider, useJupiter, RouteInfo } from "@jup-ag/react-hook";
+import { useAnchorContext, useActiveWallet } from "../hooks/useWallet";
 import {
   associatedTokenAddress,
   USDC_MINT,
   WSOL_MINT,
 } from "../common/solana/programs/token";
+import { useSplTokenRegistry } from "../hooks/useSplTokenRegistry";
+import { SolanaWalletAdapter } from "../common/solana/wallet-adapter";
 
 const DEFAULT_SLIPPAGE_PERCENT = 0.5;
 
 type SwapContext = {
   fromAmount: number;
-  toAmount: number;
+  toAmount?: number;
 
-  setToAmount: (a: number) => void;
   setFromAmount: (a: number) => void;
 
   fromMint: string;
@@ -28,37 +30,56 @@ type SwapContext = {
 
   slippage: number;
   setSlippage: (s: number) => void;
+
+  executeSwap: () => Promise<any>;
 };
 const _SwapContext = React.createContext<SwapContext | null>(null);
 
 export function SwapProvider(props: any) {
+  const { connection } = useAnchorContext();
+  const { publicKey } = useActiveWallet();
+  return (
+    <JupiterProvider
+      connection={connection}
+      cluster="mainnet-beta"
+      userPublicKey={publicKey}
+    >
+      <_SwapProvider>{props.children}</_SwapProvider>
+    </JupiterProvider>
+  );
+}
+
+export function _SwapProvider(props: any) {
+  const tokenRegistry = useSplTokenRegistry();
   const [[fromMint, toMint], setFromMintToMint] = useState([
     WSOL_MINT,
     USDC_MINT,
   ]);
-  const [[fromAmount, toAmount], setFromAmountToAmount] = useState([0, 0]); // todo
+  const fromMintPubkey = new PublicKey(fromMint);
+  const toMintPubkey = new PublicKey(toMint);
+  const [fromAmount, setFromAmount] = useState(0);
   const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE_PERCENT);
   const wallet = useActiveWallet();
-  const fromToken = associatedTokenAddress(
-    new PublicKey(fromMint),
-    wallet.publicKey
-  );
-  const toToken = associatedTokenAddress(
-    new PublicKey(toMint),
-    wallet.publicKey
-  );
+
+  const fromMintInfo = tokenRegistry.get(fromMintPubkey.toString())!;
+  const toMintInfo = tokenRegistry.get(toMintPubkey.toString())!;
+
+  const jupiter = useJupiter({
+    amount: fromAmount * 10 ** fromMintInfo.decimals,
+    inputMint: fromMintPubkey,
+    outputMint: toMintPubkey,
+    slippage,
+  });
+  const routeInfo = jupiter.routes && jupiter.routes[0];
+
+  const fromToken = associatedTokenAddress(fromMintPubkey, wallet.publicKey);
+  const toToken = associatedTokenAddress(toMintPubkey, wallet.publicKey);
+
+  const toAmount = routeInfo && routeInfo.outAmount / 10 ** toMintInfo.decimals;
 
   const swapToFromMints = () => {
     setFromMintToMint([toMint, fromMint]);
-    setFromAmountToAmount([toAmount, fromAmount]);
-  };
-
-  const setFromAmount = (amount: number) => {
-    setFromAmountToAmount([amount, toAmount]);
-  };
-
-  const setToAmount = (amount: number) => {
-    setFromAmountToAmount([fromAmount, amount]);
+    setFromAmount(toAmount ?? 0);
   };
 
   const setFromMint = (mint: string) => {
@@ -69,6 +90,25 @@ export function SwapProvider(props: any) {
     setFromMintToMint([fromMint, mint]);
   };
 
+  const executeSwap = async () => {
+    const adapter = new SolanaWalletAdapter(wallet.publicKey);
+
+    try {
+      const result = await jupiter.exchange({
+        wallet: {
+          publicKey: adapter.publicKey,
+          sendTransaction: adapter.sendTransaction,
+          signAllTransactions: adapter.signAllTransactions,
+          signTransaction: adapter.signTransaction,
+        },
+        routeInfo: routeInfo!,
+      });
+      return result;
+    } catch (err) {
+      console.log("got swap err", err);
+    }
+  };
+
   return (
     <_SwapContext.Provider
       value={{
@@ -76,7 +116,6 @@ export function SwapProvider(props: any) {
         toAmount,
 
         setFromAmount,
-        setToAmount,
 
         fromMint,
         toMint,
@@ -90,6 +129,8 @@ export function SwapProvider(props: any) {
 
         slippage,
         setSlippage,
+
+        executeSwap,
       }}
     >
       {props.children}

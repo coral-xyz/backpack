@@ -1,4 +1,3 @@
-import * as bs58 from "bs58";
 import BN from "bn.js";
 import {
   Commitment,
@@ -14,8 +13,7 @@ import { Program, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { associatedTokenAddress } from "./programs/token";
 import * as assertOwner from "./programs/assert-owner";
-import { UI_RPC_METHOD_SIGN_TRANSACTION } from "../../common";
-import { getBackgroundClient } from "../../background/client";
+import { SolanaProvider } from "./provider";
 
 // API for performing solana actions.
 export class Solana {
@@ -93,7 +91,7 @@ export class Solana {
       .transaction();
     tx.feePayer = walletPublicKey;
     tx.recentBlockhash = recentBlockhash;
-    const signedTx = await Solana.signTransaction(ctx, tx);
+    const signedTx = await SolanaProvider.signTransaction(ctx, tx);
     const rawTx = signedTx.serialize();
 
     return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
@@ -117,29 +115,13 @@ export class Solana {
     );
     tx.feePayer = walletPublicKey;
     tx.recentBlockhash = ctx.recentBlockhash;
-    const signedTx = await Solana.signTransaction(ctx, tx);
+    const signedTx = await SolanaProvider.signTransaction(ctx, tx);
     const rawTx = signedTx.serialize();
 
     return await ctx.tokenClient.provider.connection.sendRawTransaction(rawTx, {
       skipPreflight: false,
       preflightCommitment: ctx.commitment,
     });
-  }
-
-  private static async signTransaction(
-    ctx: SolanaContext,
-    tx: Transaction
-  ): Promise<Transaction> {
-    const { walletPublicKey } = ctx;
-    const txSerialized = tx.serializeMessage();
-    const message = bs58.encode(txSerialized);
-    const background = getBackgroundClient();
-    const respSignature = await background.request({
-      method: UI_RPC_METHOD_SIGN_TRANSACTION,
-      params: [message, walletPublicKey.toString()],
-    });
-    tx.addSignature(walletPublicKey, Buffer.from(bs58.decode(respSignature)));
-    return tx;
   }
 }
 

@@ -19,6 +19,7 @@ const RPC_METHOD_CONNECT = "connect";
 const RPC_METHOD_DISCONNECT = "disconnect";
 const RPC_METHOD_SIGN_AND_SEND_TX = "sign-and-send-tx";
 const RPC_METHOD_SIGN_TX = "sign-tx";
+const RPC_METHOD_SIGN_ALL_TRANSACTIONS = "sign-all-txs";
 const RPC_METHOD_SIGN_MESSAGE = "sign-message";
 const RPC_METHOD_RECENT_BLOCKHASH = "recent-blockhash";
 
@@ -179,8 +180,31 @@ class Provider extends EventEmitter {
     return tx;
   }
 
-  async signAllTransactions(tx: Array<Transaction>) {
-    throw new Error("not implemented please use signAndSendTransaction");
+  async signAllTransactions(
+    txs: Array<Transaction>
+  ): Promise<Array<Transaction>> {
+    // Serialize messages.
+    const messages = txs.map((tx) => {
+      const txSerialized = tx.serializeMessage();
+      const message = bs58.encode(txSerialized);
+      return message;
+    });
+
+    // Get signatures from the background script.
+    const signatures: Array<string> = await this.request({
+      method: RPC_METHOD_SIGN_ALL_TRANSACTIONS,
+      params: [messages, this.publicKey!.toString()],
+    });
+
+    // Add the signatures to the transactions.
+    txs.forEach((t, idx) => {
+      t.addSignature(
+        this.publicKey!,
+        Buffer.from(bs58.decode(signatures[idx]))
+      );
+    });
+
+    return txs;
   }
 
   async signMessage(msg: Uint8Array): Promise<Uint8Array | null> {

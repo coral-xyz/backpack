@@ -87,7 +87,6 @@ export function Network({ blockchain }: any) {
       setNavButtonRight(null);
     };
   }, [setNavBorderBottom, setNavButtonRight]);
-
   return (
     <div>
       <NetworkHeader blockchain={blockchain} tab={tab} setTab={setTab} />
@@ -136,7 +135,7 @@ function NetworkHeader({ blockchain, tab, setTab }: any) {
     }
     return classes.tabLabel;
   };
-
+  console.log("rendering tab");
   return (
     <div className={classes.subNavigation}>
       <Tabs

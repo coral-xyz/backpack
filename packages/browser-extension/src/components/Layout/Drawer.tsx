@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: any) => ({
   },
   drawerRoot: {
     top: `${NAV_BAR_HEIGHT}px !important`,
-    zIndex: "1 !important" as any,
+    zIndex: "2 !important" as any,
     flex: 1,
   },
   drawerPaper: {
@@ -91,7 +91,7 @@ export function WithDrawer(props: any) {
 
 export function WithMiniDrawer(props: any) {
   const classes = useStyles();
-  const { children, openDrawer, setOpenDrawer } = props;
+  const { children, openDrawer, setOpenDrawer, paperAnchorBottom } = props;
   return (
     <Drawer
       anchor={"bottom"}
@@ -100,6 +100,7 @@ export function WithMiniDrawer(props: any) {
       classes={{
         root: classes.miniDrawerRoot,
         paper: classes.miniDrawerPaper,
+        paperAnchorBottom: paperAnchorBottom,
       }}
       BackdropProps={{
         style: {

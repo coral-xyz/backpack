@@ -51,11 +51,7 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async signAndSendTx(
-    ctx: Context,
-    txStr: string,
-    walletAddress: string
-  ): Promise<string> {
+  async signAndSendTx(txStr: string, walletAddress: string): Promise<string> {
     // Sign the transaction.
     const tx = Transaction.from(bs58.decode(txStr));
     const txMsg = bs58.encode(tx.serializeMessage());
@@ -79,6 +75,16 @@ export class Backend {
   ): Promise<string> {
     const blockchainKeyring = this.keyringStore.activeBlockchain();
     return blockchainKeyring.signTransaction(txMessage, walletAddress);
+  }
+
+  async signAllTransactions(
+    txMessages: Array<string>,
+    walletAddress: string
+  ): Promise<Array<string>> {
+    const blockchainKeyring = this.keyringStore.activeBlockchain();
+    return txMessages.map((t) =>
+      blockchainKeyring.signTransaction(t, walletAddress)
+    );
   }
 
   signMessage(ctx: Context, msg: string, walletAddress: string): string {

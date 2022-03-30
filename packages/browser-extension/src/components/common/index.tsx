@@ -102,6 +102,7 @@ export function TextField({
   endAdornment,
   isError,
   inputProps,
+  disabled,
 }: any) {
   const classes = useStyles();
   inputProps = Object.assign(
@@ -112,6 +113,7 @@ export function TextField({
   );
   return (
     <MuiTextField
+      disabled={disabled}
       placeholder={placeholder}
       variant="outlined"
       margin="dense"

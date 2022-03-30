@@ -72,12 +72,8 @@ export const bootstrap = atom<any>({
         //
         // Get the transaction data for the wallet's recent transactions.
         //
-        //	const publicKey = new PublicKey('FhmUh2PEpTzUwBWPt4qgDBeqfmb2ES3T64CkT1ZiktSS');
-        const publicKey = new PublicKey(
-          "B987jRxFFnSBULwu6cXRKzUfKDDpyuhCGC58wVxct6Ez"
-        );
         const recentTransactions = await fetchRecentTransactions(
-          publicKey,
+          walletPublicKey,
           provider
         );
 

@@ -6,6 +6,7 @@ export const RPC_METHOD_CONNECT = "connect";
 export const RPC_METHOD_DISCONNECT = "disconnect";
 export const RPC_METHOD_SIGN_AND_SEND_TX = "sign-and-send-tx";
 export const RPC_METHOD_SIGN_TX = "sign-tx";
+export const RPC_METHOD_SIGN_ALL_TXS = "sign-all-txs";
 export const RPC_METHOD_SIGN_MESSAGE = "sign-message";
 export const RPC_METHOD_RECENT_BLOCKHASH = "recent-blockhash";
 
@@ -49,6 +50,9 @@ export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ = "solana-commitment-read";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE =
   "solana-commitment-update";
 export const UI_RPC_METHOD_SIGN_TRANSACTION = "ui-rpc-method-sign-tx";
+export const UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS = "ui-rpc-method-sign-all-txs";
+export const UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION =
+  "ui-rpc-method-sign-and-send-tx";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";

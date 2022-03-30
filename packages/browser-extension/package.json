@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "@fontsource/inter": "^4.5.5",
+    "@jup-ag/core": "^1.0.0-beta.19",
+    "@jup-ag/react-hook": "^1.0.0-beta.19",
     "@ledgerhq/hw-transport": "^6.24.1",
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
@@ -13,6 +15,7 @@
     "@solana/buffer-layout": "^4.0.0",
     "@solana/spl-token": "^0.1.0",
     "@solana/spl-token-registry": "^0.2.2842",
+    "@solana/wallet-adapter-base": "^0.9.5",
     "@solana/web3.js": "^1.35.1",
     "bip39": "^3.0.4",
     "bs58": "^5.0.0",
@@ -40,18 +43,11 @@
       "react-app/jest"
     ]
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
