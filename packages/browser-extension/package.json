@@ -11,6 +11,7 @@
     "@project-serum/token": "^0.1.0",
     "@rollup/plugin-json": "^4.1.0",
     "@solana/buffer-layout": "^4.0.0",
+    "@solana/spl-token": "^0.1.0",
     "@solana/spl-token-registry": "^0.2.2842",
     "@solana/web3.js": "^1.35.1",
     "bip39": "^3.0.4",

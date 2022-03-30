@@ -52,6 +52,7 @@ export const darkTheme = createTheme({
       negative: "#E95050",
       //onboardButton: "#07758E",
       onboardButton: "#EF5DA8",
+      onboardButtonDisabled: "##99A4B4",
       buttonFontColor: "#1B1D23",
       sendGradient:
         "linear-gradient(180deg, #1B1D23 0%, rgba(27, 29, 35, 0) 100%)",

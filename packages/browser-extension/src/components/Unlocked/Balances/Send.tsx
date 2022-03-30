@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { makeStyles, useTheme, Button, Typography } from "@material-ui/core";
-import { PublicKey } from "@solana/web3.js";
+import { useState, useEffect } from "react";
+import { makeStyles, useTheme, Typography } from "@material-ui/core";
+import { SystemProgram, PublicKey } from "@solana/web3.js";
 import { TextField, TextFieldLabel } from "../../common";
 import { WithHeaderButton } from "./Token";
 import { useEphemeralNav } from "../../../context/NavEphemeral";
-import { useSolanaWalletCtx } from "../../../hooks/useWallet";
+import { useAnchorContext, useSolanaWalletCtx } from "../../../hooks/useWallet";
 import { OnboardButton } from "../../common";
 import { WithMiniDrawer } from "../../Layout/Drawer";
 import { walletAddressDisplay } from "../../common";
@@ -126,7 +126,45 @@ function Send({ onCancel, token }: any) {
   const [amount, setAmount] = useState(0);
   const [addressError, setAddressError] = useState<boolean>(false);
   const [amountError, setAmountError] = useState<boolean>(false);
-  const { push } = useEphemeralNav();
+  const [_isFreshAccount, setIsFreshAccount] = useState<boolean>(false); // Not used for now.
+  const [accountValidated, setAccountValidated] = useState<boolean>(false);
+  const { provider } = useAnchorContext();
+
+  // This effect validates the account address given.
+  useEffect(() => {
+    if (accountValidated) {
+      setAccountValidated(false);
+    }
+    (async () => {
+      let pubkey;
+      try {
+        pubkey = new PublicKey(address);
+      } catch (err) {
+        // Not valid address so don't bother validating it.
+        return;
+      }
+
+      const account = await provider.connection.getAccountInfo(pubkey);
+
+      // Null data means the account has no lamports. This is valid.
+      if (!account) {
+        setIsFreshAccount(true);
+        setAccountValidated(true);
+        return;
+      }
+
+      // Only allow system program accounts to be given. ATAs only!
+      if (!account.owner.equals(SystemProgram.programId)) {
+        setAddressError(true);
+        return;
+      }
+
+      // The account data has been successfully validated.
+      setAccountValidated(true);
+    })();
+  }, [address]);
+
+  // On click handler.
   const onNext = () => {
     let didAmountError = false;
     if (amount <= 0) {
@@ -147,8 +185,12 @@ function Send({ onCancel, token }: any) {
       setAddressError(didAddressError);
       return;
     }
+    if (!accountValidated) {
+      return;
+    }
     setOpenDrawer(true);
   };
+
   return (
     <div className={classes.container}>
       <div className={classes.topHalf}>

@@ -15,9 +15,12 @@ import {
   Connection,
   Transaction,
   TransactionInstruction,
+  SystemProgram,
 } from "@solana/web3.js";
+import { Token } from "@solana/spl-token";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { Program, SplToken } from "@project-serum/anchor";
+import * as anchor from "@project-serum/anchor";
 import * as atoms from "../recoil/atoms";
 import { KeyringStoreStateEnum } from "../keyring/store";
 import { useLoadSplTokens } from "../hooks/useLoadSplTokens";
@@ -25,6 +28,7 @@ import { useNavigation, useNavigationRoot } from "../hooks/useNavigation";
 import { useTab } from "../hooks/useTab";
 import { useKeyringStoreState } from "../hooks/useKeyringStoreState";
 import { associatedTokenAddress } from "../common/token";
+import * as assertOwner from "../common/programs/assert-owner";
 import {
   useLoadRecentBlockhash,
   useCommitment,
@@ -135,11 +139,6 @@ export type ConnectionContext = {
   setConnectionUrl: (url: string) => void;
 };
 
-interface Wallet {
-  publicKey: string;
-  signTransaction(tx: any): any;
-}
-
 // API for signing transactions from the UI.
 export class SolanaWallet {
   constructor(readonly publicKey: PublicKey) {}
@@ -157,13 +156,50 @@ export class SolanaWallet {
       throw new Error("no token info found");
     }
     const decimals = tokenInfo.decimals;
-    const nativeAmount = new BN(amount).muln(10 ** decimals);
+    const nativeAmount = new BN(amount * 10 ** decimals);
 
-    // TODO: create the ata if needed.
-    // TODO: assert the given address is not a PDA and is a SOL address.
-
-    const sourceAta = associatedTokenAddress(mint, this.publicKey);
     const destinationAta = associatedTokenAddress(mint, destination);
+    const sourceAta = associatedTokenAddress(mint, this.publicKey);
+
+    const [destinationAccount, destinationAtaAccount] =
+      await anchor.utils.rpc.getMultipleAccounts(
+        tokenClient.provider.connection,
+        [destination, destinationAta],
+        commitment
+      );
+
+    //
+    // Require the count to either be a system program account or a brand new
+    // account.
+    //
+    if (
+      destinationAccount &&
+      !destinationAccount.account.owner.equals(SystemProgram.programId)
+    ) {
+      throw new Error("invalid account");
+    }
+
+    // Instructions to execute prior to the transfer.
+    let preInstructions: Array<TransactionInstruction> = [];
+    if (!destinationAtaAccount) {
+      preInstructions.push(
+        assertOwner.assertOwnerInstruction({
+          account: destination,
+          owner: SystemProgram.programId,
+        })
+      );
+      preInstructions.push(
+        Token.createAssociatedTokenAccountInstruction(
+          anchor.utils.token.ASSOCIATED_PROGRAM_ID,
+          anchor.utils.token.TOKEN_PROGRAM_ID,
+          mint,
+          destinationAta,
+          destination,
+          this.publicKey
+        )
+      );
+    }
+
     const tx = await tokenClient.methods
       .transferChecked(nativeAmount, decimals)
       .accounts({
@@ -172,6 +208,7 @@ export class SolanaWallet {
         destination: destinationAta,
         authority: this.publicKey,
       })
+      .preInstructions(preInstructions)
       .transaction();
     tx.feePayer = this.publicKey;
     tx.recentBlockhash = recentBlockhash;
@@ -228,56 +265,3 @@ export type SolanaWalletContext = {
   registry: Map<string, TokenInfo>;
   commitment: Commitment;
 };
-
-export const OWNER_VALIDATION_PROGRAM_ID = new PublicKey(
-  "4MNPdKu9wFMvEeZBMt3Eipfs5ovVWTJb31pEXDJAAxX5"
-);
-
-function assertOwnerInstruction({
-  account,
-  owner,
-}: {
-  account: PublicKey;
-  owner: PublicKey;
-}) {
-  const keys: Array<AccountMeta> = [
-    { pubkey: account, isSigner: false, isWritable: false },
-  ];
-  return new TransactionInstruction({
-    keys,
-    data: encodeOwnerValidationInstruction({ account: owner }),
-    programId: OWNER_VALIDATION_PROGRAM_ID,
-  });
-}
-
-// @ts-ignore
-export function encodeOwnerValidationInstruction(instruction) {
-  const b = Buffer.alloc(OWNER_VALIDATION_LAYOUT.span);
-  const span = OWNER_VALIDATION_LAYOUT.encode(instruction, b);
-  return b.slice(0, span);
-}
-
-function publicKeyLayout(property: string) {
-  return new PublicKeyLayout(property);
-}
-
-class PublicKeyLayout extends BufferLayout.Blob {
-  constructor(property: string) {
-    super(32, property);
-  }
-
-  // @ts-ignore
-  decode(b, offset) {
-    return new PublicKey(super.decode(b, offset));
-  }
-
-  // @ts-ignore
-  encode(src, b, offset) {
-    return super.encode(src.toBuffer(), b, offset);
-  }
-}
-
-const OWNER_VALIDATION_LAYOUT = BufferLayout.struct([
-  // @ts-ignore
-  publicKeyLayout("account"),
-]);
