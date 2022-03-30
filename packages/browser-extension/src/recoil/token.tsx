@@ -6,7 +6,6 @@ import { Provider, Program, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { metadata } from "@project-serum/token";
 import { TokenAccountWithKey } from "./types";
-import { SolanaWallet } from "../hooks/useWallet";
 import { bootstrap } from "./bootstrap";
 import { priceData } from "./price-data";
 
@@ -295,14 +294,14 @@ async function metadataAddress(mint: PublicKey): Promise<PublicKey> {
 }
 
 export async function fetchTokens(
-  wallet: SolanaWallet,
+  walletPublicKey: PublicKey,
   tokenClient: Program<SplToken>
 ): Promise<Map<string, TokenAccountWithKey>> {
   //
   // Fetch the accounts.
   //
   const resp = await tokenClient.provider.connection.getTokenAccountsByOwner(
-    wallet.publicKey,
+    walletPublicKey,
     {
       programId: tokenClient.programId,
     }

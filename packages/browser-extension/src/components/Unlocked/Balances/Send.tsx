@@ -3,11 +3,11 @@ import { makeStyles, useTheme, Typography } from "@material-ui/core";
 import { SystemProgram, PublicKey } from "@solana/web3.js";
 import { TextField, TextFieldLabel } from "../../common";
 import { WithHeaderButton } from "./Token";
-import { useEphemeralNav } from "../../../context/NavEphemeral";
-import { useAnchorContext, useSolanaWalletCtx } from "../../../hooks/useWallet";
+import { useAnchorContext, useSolanaCtx } from "../../../hooks/useWallet";
 import { OnboardButton } from "../../common";
 import { WithMiniDrawer } from "../../Layout/Drawer";
 import { walletAddressDisplay } from "../../common";
+import { Solana } from "../../../common/solana";
 
 const useStyles = makeStyles((theme: any) => ({
   container: {
@@ -33,7 +33,6 @@ const useStyles = makeStyles((theme: any) => ({
   },
   topHalf: {
     paddingTop: "24px",
-    //    height: "249px",
     flex: 1,
   },
   bottomHalf: {
@@ -284,10 +283,9 @@ export function NetworkFeeInfo() {
 function SendConfirmation({ token, address, amount, close }: any) {
   const classes = useStyles();
   const theme = useTheme() as any;
-  const ctx = useSolanaWalletCtx();
-  const wallet = ctx.wallet;
+  const ctx = useSolanaCtx();
   const onConfirm = async () => {
-    const txSig = await wallet.transferToken(ctx, {
+    const txSig = await Solana.transferToken(ctx, {
       destination: new PublicKey(address),
       mint: new PublicKey(token.mint),
       amount,
@@ -334,7 +332,7 @@ function SendConfirmation({ token, address, amount, close }: any) {
               Sending from
             </Typography>
             <Typography className={classes.confirmRowLabelRight}>
-              {walletAddressDisplay(wallet.publicKey)}
+              {walletAddressDisplay(ctx.walletPublicKey)}
             </Typography>
           </div>
           <div className={classes.confirmRow}>

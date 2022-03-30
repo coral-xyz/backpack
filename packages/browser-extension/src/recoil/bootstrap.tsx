@@ -8,7 +8,7 @@ import {
 import { getBackgroundClient } from "../background/client";
 import { TABS } from "../background/backend";
 import { fetchRecentTransactions } from "./recent-transactions";
-import { solanaWallet, anchorContext } from "./wallet";
+import { anchorContext } from "./wallet";
 import {
   splTokenRegistry,
   fetchTokens,
@@ -27,9 +27,10 @@ export const bootstrap = atom<any>({
     key: "bootstrapSelector",
     get: async ({ get }: any) => {
       const tokenRegistry = get(splTokenRegistry);
-      const wallet = get(solanaWallet);
       const { provider, tokenClient } = get(anchorContext);
       const commitment = get(atoms.commitment);
+      const activeWallet = get(atoms.activeWallet);
+      const walletPublicKey = new PublicKey(activeWallet);
 
       //
       // Perform data fetch.
@@ -38,7 +39,10 @@ export const bootstrap = atom<any>({
         //
         // Fetch the SPL tokens.
         //
-        const splTokenAccounts = await fetchTokens(wallet, tokenClient);
+        const splTokenAccounts = await fetchTokens(
+          walletPublicKey,
+          tokenClient
+        );
         const splTokenAccountsArray = Array.from(splTokenAccounts.values());
 
         //
@@ -94,7 +98,7 @@ export const bootstrap = atom<any>({
           coingeckoData,
           recentTransactions,
           recentBlockhash: blockhash,
-          walletPublicKey: wallet.publicKey,
+          walletPublicKey,
         };
       } catch (err) {
         // TODO: show error notification.

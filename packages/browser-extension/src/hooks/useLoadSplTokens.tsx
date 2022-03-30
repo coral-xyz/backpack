@@ -1,7 +1,8 @@
 import { useEffect } from "react";
+import { PublicKey } from "@solana/web3.js";
 import { useRecoilValue, useRecoilCallback } from "recoil";
 import { TokenAccountWithKey } from "../recoil/types";
-import { useSolanaWalletLoadable } from "../hooks/useWallet";
+import { useActiveWalletLoadable } from "../hooks/useWallet";
 import * as atoms from "../recoil/atoms";
 import {
   fetchTokens,
@@ -14,7 +15,7 @@ import { useAnchorContextLoadable } from "../hooks/useWallet";
 const REFRESH_INTERVAL = 10 * 1000;
 
 export function useLoadSplTokens() {
-  const walletLoadable = useSolanaWalletLoadable();
+  const walletLoadable = useActiveWalletLoadable();
   const anchorLoadable = useAnchorContextLoadable();
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   useEffect(() => {
@@ -26,7 +27,7 @@ export function useLoadSplTokens() {
     }
     const wallet = walletLoadable.contents;
     const { tokenClient, provider } = anchorLoadable.contents;
-    const publicKey = wallet.publicKey;
+    const publicKey = new PublicKey(wallet.publicKey);
 
     const interval = setInterval(async () => {
       if (!publicKey) {
@@ -36,7 +37,7 @@ export function useLoadSplTokens() {
         //
         // Fetch tokens.
         //
-        const tokenAccounts = await fetchTokens(wallet, tokenClient);
+        const tokenAccounts = await fetchTokens(publicKey, tokenClient);
         const tokenAccountsArray = Array.from(tokenAccounts.values());
 
         //

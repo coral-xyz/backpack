@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
-import { useSolanaWallet } from "../hooks/useWallet";
+import { useActiveWallet } from "../hooks/useWallet";
 import { associatedTokenAddress, USDC_MINT, WSOL_MINT } from "../common/token";
 
 const DEFAULT_SLIPPAGE_PERCENT = 0.5;
@@ -34,7 +34,7 @@ export function SwapProvider(props: any) {
   ]);
   const [[fromAmount, toAmount], setFromAmountToAmount] = useState([0, 0]); // todo
   const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE_PERCENT);
-  const wallet = useSolanaWallet();
+  const wallet = useActiveWallet();
   const fromToken = associatedTokenAddress(
     new PublicKey(fromMint),
     wallet.publicKey

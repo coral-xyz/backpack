@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 import { Check, Clear } from "@material-ui/icons";
 import { explorerUrl } from "../../../../common/explorer";
-import { useSolanaWallet } from "../../../../hooks/useWallet";
+import { useActiveWallet } from "../../../../hooks/useWallet";
 import { useRecentTransactions } from "../../../../hooks/useRecentTransactions";
 import { Loading } from "../../../common";
 
@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export function RecentActivity() {
-  const wallet = useSolanaWallet();
+  const wallet = useActiveWallet();
   return (
     <div>
       <RecentActivityList address={wallet.publicKey.toString()} />
