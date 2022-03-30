@@ -225,8 +225,23 @@ export class SolanaWallet {
     ctx: SolanaWalletContext,
     req: TransferSolRequest
   ): Promise<string> {
-    // todo
-    return "todo";
+    const tx = new Transaction();
+    tx.add(
+      SystemProgram.transfer({
+        fromPubkey: new PublicKey(req.source),
+        toPubkey: new PublicKey(req.destination),
+        lamports: req.amount * 10 ** 9,
+      })
+    );
+    tx.feePayer = this.publicKey;
+    tx.recentBlockhash = ctx.recentBlockhash;
+    const signedTx = await this.signTransaction(tx);
+    const rawTx = signedTx.serialize();
+
+    return await ctx.tokenClient.provider.connection.sendRawTransaction(rawTx, {
+      skipPreflight: false,
+      preflightCommitment: ctx.commitment,
+    });
   }
 
   async signTransaction(tx: Transaction): Promise<Transaction> {
