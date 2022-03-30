@@ -3,9 +3,11 @@
     "lint:fix": "prettier packages/**/*.{ts,tsx,css,md,json,html} --write",
     "prepare": "husky install",
     "start:wallet": "cd packages/browser-extension && yarn && yarn start",
-    "start:client": "cd packages/example-client && yarn && yarn start"
+    "start:client": "cd packages/example-client && yarn && yarn start",
+    "start": "concurrently 'yarn start:wallet' 'yarn start:client'"
   },
   "devDependencies": {
+    "concurrently": "^7.0.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.7",
     "prettier": "^2.6.1"
