@@ -20,7 +20,7 @@ import {
 const LOCK_INTERVAL_SECS = 15 * 60 * 1000;
 
 export const BLOCKCHAIN_SOLANA = "solana";
-const BLOCKCHAIN_ETHEREUM = "ethereum";
+// const BLOCKCHAIN_ETHEREUM = "ethereum";
 const BLOCKCHAIN_DEFAULT = BLOCKCHAIN_SOLANA;
 
 const DEFAULT_SOLANA_CONNECTION_URL = "https://solana-api.projectserum.com";
@@ -88,10 +88,12 @@ export class KeyringStore {
         throw new Error("keyring store not found on disk");
       }
       const plaintext = await crypto.decrypt(ciphertextPayload, password);
+
       const {
         solana,
         activeBlockchainLabel,
-        lastUsedTs: _,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        lastUsedTs,
       } = JSON.parse(plaintext);
 
       // Unlock the keyring stores.

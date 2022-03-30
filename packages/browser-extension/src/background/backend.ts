@@ -368,7 +368,7 @@ export type Context = {
   sender: any;
 };
 
-type MessageSignature = string;
+// type MessageSignature = string;
 export type NamedPublicKey = {
   publicKey: string;
   name: string;
