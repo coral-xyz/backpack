@@ -12,8 +12,8 @@ import { Token } from "@solana/spl-token";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { Program, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
-import { associatedTokenAddress } from "../../common/token";
-import * as assertOwner from "../../common/programs/assert-owner";
+import { associatedTokenAddress } from "./programs/token";
+import * as assertOwner from "./programs/assert-owner";
 import { UI_RPC_METHOD_SIGN_TRANSACTION } from "../../common";
 import { getBackgroundClient } from "../../background/client";
 

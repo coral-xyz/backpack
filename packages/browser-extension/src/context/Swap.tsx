@@ -1,7 +1,11 @@
 import React, { useContext, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import { useActiveWallet } from "../hooks/useWallet";
-import { associatedTokenAddress, USDC_MINT, WSOL_MINT } from "../common/token";
+import {
+  associatedTokenAddress,
+  USDC_MINT,
+  WSOL_MINT,
+} from "../common/solana/programs/token";
 
 const DEFAULT_SLIPPAGE_PERCENT = 0.5;
 

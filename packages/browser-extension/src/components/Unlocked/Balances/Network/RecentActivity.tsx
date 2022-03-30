@@ -7,7 +7,7 @@ import {
   ListItem,
 } from "@material-ui/core";
 import { Check, Clear } from "@material-ui/icons";
-import { explorerUrl } from "../../../../common/explorer";
+import { explorerUrl } from "../../../../common/solana/explorer";
 import { useActiveWallet } from "../../../../hooks/useWallet";
 import { useRecentTransactions } from "../../../../hooks/useRecentTransactions";
 import { Loading } from "../../../common";
