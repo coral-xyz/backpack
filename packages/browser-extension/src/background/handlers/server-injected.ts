@@ -2,7 +2,7 @@
 // script to the background script.
 
 import * as bs58 from "bs58";
-import { Transaction, Message } from "@solana/web3.js";
+import { Transaction } from "@solana/web3.js";
 import {
   debug,
   BrowserRuntime,

@@ -2,7 +2,6 @@ import { atom } from "recoil";
 import {
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
-  UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
 import { KeyringStoreState } from "../keyring/store";
