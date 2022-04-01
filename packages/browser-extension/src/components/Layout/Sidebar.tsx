@@ -26,6 +26,7 @@ import { useWalletPublicKeys } from "../../hooks/useWallet";
 import { KeyringStoreStateEnum } from "../../keyring/store";
 import { WalletAddress } from "../../components/common";
 import { WithDrawerNoHeader } from "./Drawer";
+import { openConnectHardware } from "../../common";
 
 const useStyles = makeStyles((theme: any) => ({
   sidebarContainer: {
@@ -300,15 +301,12 @@ function RecentActivity() {
 
 function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
   const [importPrivateKey, setImportPrivateKey] = useState(false);
-  const [connectHardware, setConnectHardware] = useState(false);
   return (
     <div>
       {importPrivateKey && <ImportPrivateKey closeDrawer={closeDrawer} />}
-      {connectHardware && <ConnectHardware closeDrawer={closeDrawer} />}
-      {!importPrivateKey && !connectHardware && (
+      {!importPrivateKey && (
         <AddConnectWalletMenu
           setImportPrivateKey={setImportPrivateKey}
-          setConnectHardware={setConnectHardware}
           closeDrawer={closeDrawer}
         />
       )}
@@ -319,11 +317,9 @@ function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
 function AddConnectWalletMenu({
   closeDrawer,
   setImportPrivateKey,
-  setConnectHardware,
 }: {
   closeDrawer: () => void;
   setImportPrivateKey: (s: boolean) => void;
-  setConnectHardware: (s: boolean) => void;
 }) {
   const classes = useStyles();
   const createNewWallet = () => {
@@ -356,7 +352,7 @@ function AddConnectWalletMenu({
           Import a private key
         </Typography>
       </ListItem>
-      <ListItem button onClick={() => setConnectHardware(true)}>
+      <ListItem button onClick={() => openConnectHardware()}>
         <Typography className={classes.addConnectWalletLabel}>
           Connect hardware wallet
         </Typography>
@@ -416,10 +412,6 @@ function ImportPrivateKey({ closeDrawer }: any) {
       <Button onClick={onImport}>Import</Button>
     </div>
   );
-}
-
-function ConnectHardware({ closeDrawer }: any) {
-  return <div>Connect hardware TODO</div>;
 }
 
 function decodeAccount(privateKey: string) {

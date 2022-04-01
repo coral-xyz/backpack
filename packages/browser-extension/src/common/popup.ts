@@ -7,6 +7,7 @@ export const QUERY_APPROVAL = "approval=true";
 export const QUERY_LOCKED_APPROVAL = "locked-approval=true";
 export const QUERY_APPROVE_TRANSACTION = "approve-tx=true";
 export const QUERY_APPROVE_MESSAGE = "approve-message=true";
+export const QUERY_CONNECT_HARDWARE = "connect-hardware=true";
 
 const MACOS_TOOLBAR_HEIGHT = 28;
 
@@ -76,6 +77,11 @@ async function openPopupWindow(ctx: Context, url: string): Promise<Window> {
 
 export function openExpandedExtension() {
   window.open(chrome.extension.getURL(POPUP_HTML), "_blank");
+}
+
+export function openConnectHardware() {
+  const url = `${POPUP_HTML}?${QUERY_CONNECT_HARDWARE}`;
+  window.open(chrome.extension.getURL(url), "_blank");
 }
 
 export function isExtensionPopup() {

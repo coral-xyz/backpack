@@ -222,7 +222,6 @@ function _Swap({ blockchain, cancel, onCancel }: any) {
     setFromAmount,
     toAmount,
     fromToken,
-    toToken,
     fromMint,
     toMint,
     swapToFromMints,
@@ -233,7 +232,6 @@ function _Swap({ blockchain, cancel, onCancel }: any) {
   const [isConfirmingSwap, setIsConfirmingSwap] = useState(false);
 
   const setOpenDrawer = () => {
-    console.log("setting to true");
     _setOpenDrawer(true);
   };
   const onConfirm = async () => {
@@ -314,16 +312,13 @@ function _Swap({ blockchain, cancel, onCancel }: any) {
         setOpenDrawer={_setOpenDrawer}
         paperAnchorBottom={classes.paperAnchorBottom}
       >
-        <SwapConfirmation
-          onConfirm={onConfirm}
-          onCancel={() => _setOpenDrawer(false)}
-        />
+        <SwapConfirmation onConfirm={onConfirm} />
       </WithMiniDrawer>
     </div>
   );
 }
 
-function SwapConfirmation({ onConfirm, onCancel }: any) {
+function SwapConfirmation({ onConfirm }: any) {
   const classes = useStyles();
   const { fromAmount, toAmount, fromMint, toMint } = useSwapContext();
   const tokenRegistry = useSplTokenRegistry();
