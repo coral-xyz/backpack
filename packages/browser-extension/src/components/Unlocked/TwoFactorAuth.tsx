@@ -1,15 +1,13 @@
 import { toDataURL } from "qrcode";
 import { authenticator } from "@otplib/preset-default";
 import { useEffect, useState } from "react";
-import { useActiveWallet } from "../../hooks/useWallet";
 
 export const TwoFactorAuth = () => {
   const [code, setCode] = useState<string>();
-  const activeWallet = useActiveWallet();
 
   useEffect(() => {
     const otpauth = authenticator.keyuri(
-      activeWallet.publicKey.toString(),
+      "PLACEHOLDER_ID",
       "Anchor Wallet",
       authenticator.generateSecret()
     );
