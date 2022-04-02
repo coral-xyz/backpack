@@ -1,0 +1,31 @@
+{
+  "name": "ledger-injection",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup --config && cp ./index.html dist/browser/index.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@ledgerhq/hw-transport": "^6.24.1",
+    "@ledgerhq/hw-transport-webhid": "^6.24.1",
+    "@solana/web3.js": "^1.36.0",
+    "@types/rollup-plugin-node-builtins": "^2.1.2",
+    "bs58": "^5.0.0",
+    "eventemitter3": "^4.0.7"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.0.6",
+    "@rollup/plugin-replace": "^3.0.0",
+    "@rollup/plugin-typescript": "^8.3.0",
+    "@types/rollup-plugin-node-globals": "^1.4.1",
+    "rollup": "^2.70.1",
+    "rollup-plugin-node-globals": "^1.4.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "typescript": "^4.6.3"
+  }
+}

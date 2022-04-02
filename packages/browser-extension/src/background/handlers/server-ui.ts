@@ -40,6 +40,8 @@ import {
   UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
+  UI_RPC_METHOD_LEDGER_CONFIRM_PUBKEY,
+  UI_RPC_METHOD_LEDGER_CONNECT,
   NOTIFICATION_CONNECTION_URL_UPDATED,
 } from "../../common";
 import { DerivationPath } from "../../keyring/crypto";
@@ -125,6 +127,10 @@ async function handle<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return await handleApprovedOriginsRead();
     case UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE:
       return await handleApprovedOriginsUpdate(params[0]);
+    case UI_RPC_METHOD_LEDGER_CONNECT:
+      return await handleLedgerConnect();
+    case UI_RPC_METHOD_LEDGER_CONFIRM_PUBKEY:
+      return await handleLedgerConfirmPubkey();
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -373,5 +379,15 @@ async function handleApprovedOriginsUpdate(
   approvedOrigins: Array<string>
 ): Promise<RpcResponse<string>> {
   const resp = await BACKEND.approvedOriginsUpdate(approvedOrigins);
+  return [resp];
+}
+
+async function handleLedgerConnect() {
+  const resp = await BACKEND.ledgerConnect();
+  return [resp];
+}
+
+async function handleLedgerConfirmPubkey() {
+  const resp = await BACKEND.confirmPubkey();
   return [resp];
 }

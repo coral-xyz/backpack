@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { useTheme } from "@material-ui/core";
 import { Stepper, WithContinue } from "../Onboarding/CreateNewWallet";
-import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../../common";
+import {
+  UI_RPC_METHOD_LEDGER_CONNECT,
+  EXTENSION_WIDTH,
+  EXTENSION_HEIGHT,
+} from "../../common";
+import { getBackgroundClient } from "../../background/client";
 
 const STEP_COUNT = 3;
 
@@ -52,9 +57,17 @@ export function ConnectHardware() {
 }
 
 function Step0({ next }: any) {
+  const _next = async () => {
+    const client = getBackgroundClient();
+    const resp = await client.request({
+      method: UI_RPC_METHOD_LEDGER_CONNECT,
+      params: [],
+    });
+    console.log("got response", resp);
+  };
   const canContinue = true;
   return (
-    <WithContinue next={next} canContinue={canContinue}>
+    <WithContinue next={_next} canContinue={canContinue}>
       <div>step0</div>
     </WithContinue>
   );

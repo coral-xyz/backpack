@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "lint:fix": "prettier packages/**/*.{ts,tsx,css,md,json,html} --write",
+    "lint:fix": "prettier packages/**/*.{ts,tsx,css,md,json} --write",
     "prepare": "husky install",
     "start:wallet": "cd packages/browser-extension && yarn && yarn start",
     "start:client": "cd packages/example-client && yarn && yarn start",
@@ -13,6 +13,6 @@
     "prettier": "^2.6.1"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,css,md,json,html}": "prettier --write"
+    "*.{ts,tsx,js,jsx,css,md,json}": "prettier --write"
   }
 }

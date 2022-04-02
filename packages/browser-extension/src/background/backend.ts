@@ -368,6 +368,16 @@ export class Backend {
     });
     return SUCCESS_RESPONSE;
   }
+
+  async ledgerConnect() {
+    await this.keyringStore.ledgerConnect();
+    return SUCCESS_RESPONSE;
+  }
+
+  async confirmPubkey() {
+    // todo
+    return true;
+  }
 }
 
 export type Context = {

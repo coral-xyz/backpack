@@ -10,6 +10,7 @@ import {
   HdKeyring,
   HdKeyringFactory,
   HdKeyringJson,
+  LedgerKeyringJson,
 } from ".";
 
 export class SolanaKeyringFactory implements KeyringFactory {
@@ -194,20 +195,57 @@ export class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   }
 }
 
-export class LedgerKeyring {
-  private derivationPath: DerivationPath;
+//const LEDGER_IFRAME_URL = "https://200ms-labs.github.io/anchor-wallet";
+const LEDGER_IFRAME_URL = "https://localhost:4443/dist/browser";
+
+export class SolanaLedgerKeyringFactory {
+  public init(): SolanaLedgerKeyring {
+    return new SolanaLedgerKeyring([]);
+  }
+
+  public fromJson(obj: LedgerKeyringJson): SolanaLedgerKeyring {
+    return new SolanaLedgerKeyring(obj.derivationPaths);
+  }
+}
+
+export class SolanaLedgerKeyring {
+  private derivationPaths: Array<string>;
+
+  private requestId: number;
+  private responseResolvers: { [reqId: number]: [Function, Function] };
+
   private iframe: any;
   private iframeUrl: string;
 
-  constructor({ derivationPath }: { derivationPath: DerivationPath }) {
-    this.derivationPath = derivationPath;
+  constructor(derivationPaths: Array<string>) {
+    this.derivationPaths = derivationPaths;
+    this.requestId = 0;
+    this.responseResolvers = {};
 
-    // Iframe.
-    this.iframeUrl = "https://200ms-labs.github.io/anchor-wallet";
+    // Responses from the iframe.
+    this._setupResponseChannel();
+
+    // Inject the iframe.
+    this.iframeUrl = LEDGER_IFRAME_URL;
     this.iframe = document.createElement("iframe");
     this.iframe.src = this.iframeUrl;
     this.iframe.allow = `hid 'src'`;
     document.head.appendChild(this.iframe);
+  }
+
+  public async connect() {
+    const resp = await this.request({
+      method: LEDGER_METHOD_CONNECT,
+      params: [],
+    });
+    return resp;
+  }
+
+  public async confirmPublicKey() {
+    return await this.request({
+      method: LEDGER_METHOD_CONFIRM_PUBKEY,
+      params: [],
+    });
   }
 
   public signTransaction(tx: Buffer, address: PublicKey): string {
@@ -217,15 +255,63 @@ export class LedgerKeyring {
 
   public toString(): string {
     return JSON.stringify({
-      derivationPath: this.derivationPath,
+      derivationPath: this.derivationPaths,
     });
   }
 
-  public static fromString(str: string): LedgerKeyring {
-    const { derivationPath } = JSON.parse(str);
+  public static fromString(str: string): SolanaLedgerKeyring {
+    const { derivationPaths } = JSON.parse(str);
+    return new SolanaLedgerKeyring(derivationPaths);
+  }
 
-    return new LedgerKeyring({
-      derivationPath,
+  public toJson(): LedgerKeyringJson {
+    return {
+      derivationPaths: this.derivationPaths,
+    };
+  }
+
+  private async request(req: { method: string; params: Array<any> }) {
+    return new Promise((resolve, reject) => {
+      const id = this.nextRequestId();
+      this.responseResolvers[id] = [resolve, reject];
+      const msg = {
+        type: LEDGER_INJECTED_CHANNEL_REQUEST,
+        detail: {
+          id,
+          ...req,
+        },
+      };
+      this.iframe.contentWindow.postMessage(msg, "*");
+    });
+  }
+
+  private nextRequestId(): number {
+    const id = this.requestId;
+    this.requestId += 1;
+    return id;
+  }
+
+  private _setupResponseChannel() {
+    window.addEventListener("message", (event) => {
+      if (event.data.type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
+        return;
+      }
+      const { id, result, error } = event.data.detail;
+      const [resolve, reject] = this.responseResolvers[id];
+      delete this.responseResolvers[id];
+      if (error) {
+        reject(error);
+      }
+      resolve(result);
     });
   }
 }
+
+// TODO: share all these with a common package.
+const LEDGER_INJECTED_CHANNEL_REQUEST = "ledger-injected-request";
+const LEDGER_INJECTED_CHANNEL_RESPONSE = "ledger-injected-response";
+const LEDGER_METHOD_UNLOCK = "ledger-method-unlock";
+const LEDGER_METHOD_CONNECT = "ledger-method-connect";
+const LEDGER_METHOD_SIGN_TRANSACTION = "ledger-method-sign-transaction";
+const LEDGER_METHOD_SIGN_MESSAGE = "ledger-method-sign-message";
+const LEDGER_METHOD_CONFIRM_PUBKEY = "ledger-confirm-pubkey";

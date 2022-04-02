@@ -95,7 +95,6 @@ export class ChannelServer {
         if (msg.channel === this.name) {
           const id = msg.data.id;
           handlerFn(msg, sender).then(([result, error]) => {
-            console.log("got result", result);
             sendResponse({
               id,
               result,

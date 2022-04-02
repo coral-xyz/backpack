@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { makeStyles } from "@material-ui/core";
-import { openExpandedExtension, isExtensionPopup, debug } from "../common";
-import { Onboarding } from "../components/Onboarding";
+import { openOnboarding, debug } from "../common";
+
 import { KeyringStoreStateEnum } from "../keyring/store";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
@@ -16,7 +16,6 @@ import {
   QUERY_LOCKED_APPROVAL,
   QUERY_APPROVE_TRANSACTION,
   QUERY_APPROVE_MESSAGE,
-  QUERY_CONNECT_HARDWARE,
 } from "../common";
 import {
   Approval,
@@ -24,7 +23,6 @@ import {
   ApproveMessage,
 } from "../components/Approval";
 import { getBackgroundResponseClient } from "../background/client";
-import { ConnectHardware } from "../components/ConnectHardware";
 import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../common";
 import "./App.css";
 import "@fontsource/inter";
@@ -41,34 +39,13 @@ function _Router() {
   const classes = useStyles();
 
   //
-  // Extract the url query parameters for routing dispatch.
-  //
-  const search =
-    window.location.search.length > 0
-      ? window.location.search.substring(1)
-      : "";
-  const query = search.split("&")[0];
-
-  //
   // Expanded view: first time onboarding flow.
   //
   const needsOnboarding =
     useKeyringStoreState() === KeyringStoreStateEnum.NeedsOnboarding;
   if (needsOnboarding) {
-    // Check we're not already in the expanded window to avoid an infinite loop.
-    if (isExtensionPopup()) {
-      openExpandedExtension();
-      return <></>;
-    } else {
-      return <Onboarding />;
-    }
-  }
-
-  //
-  // Expanded view: connecting a hardware wallet.
-  //
-  if (query === QUERY_CONNECT_HARDWARE) {
-    return <QueryConnectHardware />;
+    openOnboarding();
+    return <></>;
   }
 
   //
@@ -76,7 +53,7 @@ function _Router() {
   //
   return (
     <div className={classes.appContainer}>
-      <PopupRouter query={query} />
+      <PopupRouter />
     </div>
   );
 }
@@ -99,10 +76,19 @@ function _Router() {
 // 4) There is a "locked-approval" query parameter. This combines 2) and 3).
 //    First we provide the ability to unlock the wallet, and then approve.
 //
-function PopupRouter({ query }: any) {
+function PopupRouter() {
   debug("app router search", window.location.search);
 
-  // Render the 5 app flows described above.
+  //
+  // Extract the url query parameters for routing dispatch.
+  //
+  const search =
+    window.location.search.length > 0
+      ? window.location.search.substring(1)
+      : "";
+  const query = search.split("&")[0];
+
+  // Render the app flows described above.
   switch (query) {
     case QUERY_LOCKED:
       return <QueryLocked />;
@@ -202,10 +188,6 @@ function QueryApproveMessage() {
       }}
     />
   );
-}
-
-function QueryConnectHardware() {
-  return <ConnectHardware />;
 }
 
 function FullApp() {

@@ -5,6 +5,8 @@ import { DerivationPath } from "./crypto";
 import {
   SolanaHdKeyringFactory,
   SolanaKeyringFactory,
+  SolanaLedgerKeyring,
+  SolanaLedgerKeyringFactory,
   EthereumHdKeyringFactory,
   EthereumKeyringFactory,
   HdKeyringFactory,
@@ -226,6 +228,12 @@ export class KeyringStore {
     return this.withUnlock(() => {});
   }
 
+  public ledgerConnect() {
+    return this.withUnlock(() => {
+      return this.activeBlockchain().ledgerKeyring!.connect();
+    });
+  }
+
   private toJson(): any {
     const json: any = {
       lastUsedTs: this.lastUsedTs,
@@ -362,31 +370,37 @@ export class KeyringStore {
 class BlockchainKeyring {
   private hdKeyringFactory: HdKeyringFactory;
   private keyringFactory: KeyringFactory;
+  private ledgerKeyringFactory: SolanaLedgerKeyringFactory; // TODO: make interface
   private hdKeyring?: HdKeyring;
   private importedKeyring?: Keyring;
+  public ledgerKeyring?: SolanaLedgerKeyring; // TODO: make interface
   private activeWallet?: string;
   private deletedWallets?: Array<string>;
   private connectionUrl?: string;
 
   constructor(
     hdKeyringFactory: HdKeyringFactory,
-    keyringFactory: KeyringFactory
+    keyringFactory: KeyringFactory,
+    ledgerKeyringFactory: SolanaLedgerKeyringFactory
   ) {
     this.hdKeyringFactory = hdKeyringFactory;
     this.keyringFactory = keyringFactory;
+    this.ledgerKeyringFactory = ledgerKeyringFactory;
   }
 
   public static solana(): BlockchainKeyring {
     return new BlockchainKeyring(
       new SolanaHdKeyringFactory(),
-      new SolanaKeyringFactory()
+      new SolanaKeyringFactory(),
+      new SolanaLedgerKeyringFactory()
     );
   }
 
   public static ethereum(): BlockchainKeyring {
     return new BlockchainKeyring(
       new EthereumHdKeyringFactory(),
-      new EthereumKeyringFactory()
+      new EthereumKeyringFactory(),
+      new SolanaLedgerKeyringFactory() // TODO make ethereum
     );
   }
 
@@ -405,6 +419,7 @@ class BlockchainKeyring {
   public lock() {
     this.hdKeyring = undefined;
     this.importedKeyring = undefined;
+    this.ledgerKeyring = undefined;
     this.activeWallet = undefined;
   }
 
@@ -415,6 +430,7 @@ class BlockchainKeyring {
       derivationPath
     );
     this.importedKeyring = this.keyringFactory.fromSecretKeys([]);
+    this.ledgerKeyring = this.ledgerKeyringFactory.init();
     this.activeWallet = this.hdKeyring.getPublicKey(0);
     this.deletedWallets = [];
 
@@ -447,9 +463,11 @@ class BlockchainKeyring {
       activeWallet,
       deletedWallets,
       connectionUrl,
+      ledgerKeyring,
     } = payload;
     this.hdKeyring = this.hdKeyringFactory.fromJson(hdKeyring);
     this.importedKeyring = this.keyringFactory.fromJson(importedKeyring);
+    this.ledgerKeyring = this.ledgerKeyringFactory.fromJson(ledgerKeyring);
     this.activeWallet = activeWallet;
     this.deletedWallets = deletedWallets;
     this.connectionUrl = connectionUrl;
@@ -516,12 +534,13 @@ class BlockchainKeyring {
   }
 
   public toJson(): any {
-    if (!this.hdKeyring || !this.importedKeyring) {
+    if (!this.hdKeyring || !this.importedKeyring || !this.ledgerKeyring) {
       throw new Error("blockchain keyring is locked");
     }
     return {
       hdKeyring: this.hdKeyring.toJson(),
       importedKeyring: this.importedKeyring.toJson(),
+      ledgerKeyring: this.ledgerKeyring.toJson(),
       activeWallet: this.activeWallet,
       deletedWallets: this.deletedWallets,
       connectionUrl: this.connectionUrl,

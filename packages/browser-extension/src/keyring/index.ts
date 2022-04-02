@@ -28,6 +28,10 @@ export type HdKeyringJson = {
   derivationPath: DerivationPath;
 };
 
+export type LedgerKeyringJson = {
+  derivationPaths: Array<string>;
+};
+
 export interface HdKeyringFactory {
   fromMnemonic(mnemonic: string, derivationPath?: DerivationPath): HdKeyring;
   generate(): HdKeyring;

@@ -53,6 +53,9 @@ export const UI_RPC_METHOD_SIGN_TRANSACTION = "ui-rpc-method-sign-tx";
 export const UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS = "ui-rpc-method-sign-all-txs";
 export const UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION =
   "ui-rpc-method-sign-and-send-tx";
+export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
+export const UI_RPC_METHOD_LEDGER_CONFIRM_PUBKEY =
+  "ui-rpc-method-ledger-confirm-pubkey";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
