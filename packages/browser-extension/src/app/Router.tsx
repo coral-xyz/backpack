@@ -29,9 +29,9 @@ import "@fontsource/inter";
 
 export function Router() {
   return (
-    <Suspense fallback={<BlankApp />}>
+    <WithSuspense>
       <_Router />
-    </Suspense>
+    </WithSuspense>
   );
 }
 
@@ -226,6 +226,10 @@ async function approveFlowDidComplete(requestId: number, result: boolean) {
     result,
   });
   window.close();
+}
+
+export function WithSuspense(props: any) {
+  return <Suspense fallback={<BlankApp />}>{props.children}</Suspense>;
 }
 
 function BlankApp() {

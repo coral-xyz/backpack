@@ -26,6 +26,7 @@ export const UI_RPC_METHOD_KEYRING_CREATE = "keyring-create";
 export const UI_RPC_METHOD_KEYRING_DERIVE_WALLET = "keyring-derive";
 export const UI_RPC_METHOD_KEYRING_KEY_DELETE = "keyring-delete";
 export const UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY = "keyring-import-wallet";
+
 export const UI_RPC_METHOD_CONNECTION_URL_READ = "connection-url-read";
 export const UI_RPC_METHOD_CONNECTION_URL_UPDATE = "connection-url-update";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET = "wallet-active";
@@ -56,6 +57,7 @@ export const UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION =
 export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
 export const UI_RPC_METHOD_LEDGER_CONFIRM_PUBKEY =
   "ui-rpc-method-ledger-confirm-pubkey";
+export const UI_RPC_METHOD_LEDGER_IMPORT = "ledger-import";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";

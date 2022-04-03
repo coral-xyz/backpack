@@ -33,7 +33,7 @@ export default {
         "process.env.BROWSER": JSON.stringify(true),
       },
     }),
-    terser(),
+    //    terser(),
   ],
   output: {
     file: "dist/browser/index.js",

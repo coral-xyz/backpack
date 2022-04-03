@@ -2,6 +2,7 @@ import Transport from "@ledgerhq/hw-transport";
 import { Transaction, PublicKey } from "@solana/web3.js";
 //import { DerivationPath } from "./crypto";
 import * as bs58 from "bs58";
+import { Buffer } from "buffer";
 
 // TODO: yarn workspace.
 export const DerivationPath: { [key: string]: DerivationPath } = {
@@ -34,27 +35,18 @@ export function solanaDerivationPath(
   account: number,
   derivationPath: DerivationPath
 ): Buffer {
-  const change = 0;
-  derivationPath = derivationPath ? derivationPath : DerivationPath.bip44Change;
-
-  if (derivationPath === DerivationPath.bip44Root) {
-    const length = 2;
-    const derivation = Buffer.alloc(1 + length * 4);
-    let offset = 0;
-    offset = derivation.writeUInt8(length, offset);
-    offset = derivation.writeUInt32BE(_harden(44), offset); // Using BIP44
-    derivation.writeUInt32BE(_harden(501), offset); // Solana's BIP44 path
-    return derivation;
-  } else if (derivationPath === DerivationPath.bip44) {
-    const length = 3;
+  if (derivationPath === DerivationPath.Bip44) {
+    const length = account === 0 ? 2 : 3;
     const derivation = Buffer.alloc(1 + length * 4);
     let offset = 0;
     offset = derivation.writeUInt8(length, offset);
     offset = derivation.writeUInt32BE(_harden(44), offset); // Using BIP44
     offset = derivation.writeUInt32BE(_harden(501), offset); // Solana's BIP44 path
-    derivation.writeUInt32BE(_harden(account), offset);
+    if (account > 0) {
+      derivation.writeUInt32BE(_harden(account), offset);
+    }
     return derivation;
-  } else if (derivationPath === DerivationPath.bip44Change) {
+  } else if (derivationPath === DerivationPath.Bip44Change) {
     const length = 4;
     const derivation = Buffer.alloc(1 + length * 4);
     let offset = 0;
@@ -62,7 +54,7 @@ export function solanaDerivationPath(
     offset = derivation.writeUInt32BE(_harden(44), offset); // Using BIP44
     offset = derivation.writeUInt32BE(_harden(501), offset); // Solana's BIP44 path
     offset = derivation.writeUInt32BE(_harden(account), offset);
-    derivation.writeUInt32BE(_harden(change), offset);
+    derivation.writeUInt32BE(_harden(0), offset);
     return derivation;
   } else {
     throw new Error("Invalid derivation path");
@@ -81,7 +73,7 @@ export async function solanaLedgerSignTransaction(
 export async function solanaLedgerSignBytes(
   transport: Transport,
   derivationPath: Buffer,
-  msgBytes: Buffer
+  msgBytes: Buffer // Transaction "message".
 ) {
   var numPaths = Buffer.alloc(1);
   // @ts-ignore

@@ -17,7 +17,7 @@ import { WalletPublicKeys } from "./types";
  */
 export const walletPublicKeys = atom<WalletPublicKeys>({
   key: "walletPublicKeys",
-  default: { hdPublicKeys: [], importedPublicKeys: [] },
+  default: { hdPublicKeys: [], importedPublicKeys: [], ledgerPublicKeys: [] },
   effects: [
     ({ setSelf }) => {
       const background = getBackgroundClient();
@@ -65,6 +65,12 @@ export const activeWalletWithName = selector({
       return result;
     }
     result = pks.importedPublicKeys.find(
+      (pk) => pk.publicKey.toString() === active
+    );
+    if (result) {
+      return result;
+    }
+    result = pks.ledgerPublicKeys.find(
       (pk) => pk.publicKey.toString() === active
     );
     return result;

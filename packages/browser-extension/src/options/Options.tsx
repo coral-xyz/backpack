@@ -1,5 +1,6 @@
 import React from "react";
 import { RecoilRoot } from "recoil";
+import { WithSuspense } from "../app/Router";
 import { WithTheme } from "../app/theme";
 import { ConnectHardware } from "../components/ConnectHardware";
 import { setupBackgroundClient } from "../background/client";
@@ -26,7 +27,9 @@ function Options() {
 function _Options() {
   return (
     <WithTheme>
-      <Router />
+      <WithSuspense>
+        <Router />
+      </WithSuspense>
     </WithTheme>
   );
 }

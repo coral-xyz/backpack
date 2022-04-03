@@ -27,12 +27,12 @@ export class EthereumKeyring implements Keyring {
   }
 
   // @ts-ignore
-  public signTransaction(tx: Buffer, address: string): string {
+  public async signTransaction(tx: Buffer, address: string): Promise<string> {
     // todo
   }
 
   // @ts-ignore
-  public signMessage(tx: Buffer, address: string): string {
+  public async signMessage(tx: Buffer, address: string): Promise<string> {
     // todo
   }
 

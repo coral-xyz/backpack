@@ -17,6 +17,7 @@ export const SendLamportButton: FC = () => {
       })
     );
 
+    console.log("sending transaction", transaction);
     const signature = await wallet.sendTransaction(transaction, connection);
     console.log("signature", signature);
     await connection.confirmTransaction(signature, "processed");

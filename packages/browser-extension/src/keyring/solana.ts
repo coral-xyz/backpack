@@ -11,6 +11,7 @@ import {
   HdKeyringFactory,
   HdKeyringJson,
   LedgerKeyringJson,
+  LedgerKeyring,
 } from ".";
 
 export class SolanaKeyringFactory implements KeyringFactory {
@@ -37,7 +38,7 @@ export class SolanaKeyring implements Keyring {
   }
 
   // `address` is the key on the keyring to use for signing.
-  public signTransaction(tx: Buffer, address: string): string {
+  public async signTransaction(tx: Buffer, address: string): Promise<string> {
     const pubkey = new PublicKey(address);
     const kp = this.keypairs.find((kp) => kp.publicKey.equals(pubkey));
     if (!kp) {
@@ -46,7 +47,7 @@ export class SolanaKeyring implements Keyring {
     return bs58.encode(nacl.sign.detached(new Uint8Array(tx), kp.secretKey));
   }
 
-  public signMessage(tx: Buffer, address: string): string {
+  public async signMessage(tx: Buffer, address: string): Promise<string> {
     // TODO: this shouldn't blindly sign. We should check some
     //       type of unique prefix that asserts this isn't a
     //       real transaction.
@@ -208,8 +209,14 @@ export class SolanaLedgerKeyringFactory {
   }
 }
 
-export class SolanaLedgerKeyring {
-  private derivationPaths: Array<string>;
+export type ImportedDerivationPath = {
+  path: string;
+  account: number;
+  publicKey: string;
+};
+
+export class SolanaLedgerKeyring implements LedgerKeyring {
+  private derivationPaths: Array<ImportedDerivationPath>;
 
   private requestId: number;
   private responseResolvers: { [reqId: number]: [Function, Function] };
@@ -217,7 +224,7 @@ export class SolanaLedgerKeyring {
   private iframe: any;
   private iframeUrl: string;
 
-  constructor(derivationPaths: Array<string>) {
+  constructor(derivationPaths: Array<ImportedDerivationPath>) {
     this.derivationPaths = derivationPaths;
     this.requestId = 0;
     this.responseResolvers = {};
@@ -233,12 +240,26 @@ export class SolanaLedgerKeyring {
     document.head.appendChild(this.iframe);
   }
 
+  public keyCount(): number {
+    return this.derivationPaths.length;
+  }
+
   public async connect() {
     const resp = await this.request({
       method: LEDGER_METHOD_CONNECT,
       params: [],
     });
     return resp;
+  }
+
+  public async ledgerImport(path: string, account: number, publicKey: string) {
+    const found = this.derivationPaths.find(
+      ({ path, account, publicKey: pk }) => publicKey === pk
+    );
+    if (found) {
+      throw new Error("ledger account already exists");
+    }
+    this.derivationPaths.push({ path, account, publicKey });
   }
 
   public async confirmPublicKey() {
@@ -248,9 +269,38 @@ export class SolanaLedgerKeyring {
     });
   }
 
-  public signTransaction(tx: Buffer, address: PublicKey): string {
-    // todo
-    return "";
+  public publicKeys(): Array<string> {
+    return this.derivationPaths.map((dp) => dp.publicKey);
+  }
+
+  public async signTransaction(tx: Buffer, address: string): Promise<string> {
+    const path = this.derivationPaths.find((p) => p.publicKey === address);
+    if (!path) {
+      throw new Error("ledger address not found");
+    }
+    return await this.request({
+      method: LEDGER_METHOD_SIGN_TRANSACTION,
+      params: [bs58.encode(tx), path.path, path.account],
+    });
+  }
+
+  public async signMessage(msg: Buffer, address: string): Promise<string> {
+    const path = this.derivationPaths.find((p) => p.publicKey === address);
+    if (!path) {
+      throw new Error("ledger address not found");
+    }
+    return await this.request({
+      method: LEDGER_METHOD_SIGN_MESSAGE,
+      params: [bs58.encode(msg), path.path, path.account],
+    });
+  }
+
+  exportSecretKey(address: string): string | null {
+    throw new Error("ledger keyring cannot secret keys");
+  }
+
+  importSecretKey(secretKey: string): string {
+    throw new Error("ledger keyring cannot import secret keys");
   }
 
   public toString(): string {
@@ -270,7 +320,10 @@ export class SolanaLedgerKeyring {
     };
   }
 
-  private async request(req: { method: string; params: Array<any> }) {
+  private async request<T = any>(req: {
+    method: string;
+    params: Array<any>;
+  }): Promise<T> {
     return new Promise((resolve, reject) => {
       const id = this.nextRequestId();
       this.responseResolvers[id] = [resolve, reject];
@@ -297,7 +350,12 @@ export class SolanaLedgerKeyring {
         return;
       }
       const { id, result, error } = event.data.detail;
-      const [resolve, reject] = this.responseResolvers[id];
+      const resolver = this.responseResolvers[id];
+      if (!resolver) {
+        // Why does this get thrown?
+        throw new Error(`resolver not found for request id: ${id}`);
+      }
+      const [resolve, reject] = resolver;
       delete this.responseResolvers[id];
       if (error) {
         reject(error);

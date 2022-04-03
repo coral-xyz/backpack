@@ -1,6 +1,8 @@
+import * as bs58 from "bs58";
 import Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
 import * as core from "./core";
+import { Buffer } from "buffer";
 
 // TODO: share all these with a common package.
 const LEDGER_INJECTED_CHANNEL_REQUEST = "ledger-injected-request";
@@ -32,6 +34,7 @@ class LedgerInjection {
       if (event.data.type !== LEDGER_INJECTED_CHANNEL_REQUEST) {
         return;
       }
+      console.log("ledger event", event);
       const { id, method, params } = event.data.detail;
 
       let result: any;
@@ -40,10 +43,18 @@ class LedgerInjection {
           result = await this.handleConnect();
           break;
         case LEDGER_METHOD_SIGN_TRANSACTION:
-          result = this.handleSignTransaction(params[0]);
+          result = await this.handleSignTransaction(
+            params[0],
+            params[1],
+            params[2]
+          );
           break;
         case LEDGER_METHOD_SIGN_MESSAGE:
-          result = this.handleSignMessage(params[0]);
+          result = await this.handleSignMessage(
+            params[0],
+            params[1],
+            params[2]
+          );
           break;
         case LEDGER_METHOD_CONFIRM_PUBKEY:
           result = this.handleConfirmPubkey();
@@ -57,33 +68,59 @@ class LedgerInjection {
         detail: {
           id,
           result,
+          error: undefined,
         },
       };
-      console.log("posting response", resp);
       window.parent.postMessage(resp, "*");
     });
   }
 
   async handleConnect() {
-    console.log("connecting qwer here");
-    if (TRANSPORT === null) {
-      TRANSPORT = await TransportWebHid.create();
-      console.log("transport", TRANSPORT);
+    if (this.transport) {
+      throw new Error("already connected to ledger");
     }
-    // todo
-    return "connect success";
+    this.transport = await TransportWebHid.create();
+    return "success";
   }
 
-  handleSignTransaction(tx: string) {
-    // todo
+  async handleSignTransaction(tx: string, dPath: string, account: number) {
+    await this.connectIfNeeded();
+
+    const derivationPath = core.solanaDerivationPath(
+      account,
+      dPath as core.DerivationPath
+    );
+    const sig = await core.solanaLedgerSignBytes(
+      this.transport!,
+      derivationPath,
+      Buffer.from(bs58.decode(tx))
+    );
+    return bs58.encode(sig);
   }
 
-  handleSignMessage(msg: string) {
-    // todo
+  async handleSignMessage(msg: string, dPath: string, account: number) {
+    await this.connectIfNeeded();
+
+    const derivationPath = core.solanaDerivationPath(
+      account,
+      dPath as core.DerivationPath
+    );
+    const sig = await core.solanaLedgerSignBytes(
+      this.transport!,
+      derivationPath,
+      Buffer.from(bs58.decode(msg))
+    );
+    return bs58.encode(sig);
   }
 
   handleConfirmPubkey() {
     // todo
+  }
+
+  async connectIfNeeded() {
+    if (!this.transport) {
+      this.transport = await TransportWebHid.create();
+    }
   }
 }
 

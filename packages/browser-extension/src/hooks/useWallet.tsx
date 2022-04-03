@@ -72,13 +72,21 @@ export function useWalletPublicKeys(): {
     publicKey: PublicKey;
     name: string;
   }>;
+  ledgerPublicKeys: Array<{
+    publicKey: PublicKey;
+    name: string;
+  }>;
 } {
   const keyringStoreState = useKeyringStoreState();
   const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
   // @ts-ignore
   const keys = useRecoilValue(
     isLocked
-      ? constSelector({ hdPublicKeys: [], importedPublicKeys: [] })
+      ? constSelector({
+          hdPublicKeys: [],
+          importedPublicKeys: [],
+          ledgerPublicKeys: [],
+        })
       : atoms.walletPublicKeys
   );
   return {
@@ -89,6 +97,12 @@ export function useWalletPublicKeys(): {
       };
     }),
     importedPublicKeys: keys.importedPublicKeys.map((k) => {
+      return {
+        publicKey: new PublicKey(k.publicKey),
+        name: k.name,
+      };
+    }),
+    ledgerPublicKeys: keys.ledgerPublicKeys.map((k) => {
       return {
         publicKey: new PublicKey(k.publicKey),
         name: k.name,

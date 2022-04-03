@@ -88,6 +88,9 @@ export function NotificationsProvider(props: any) {
           importedPublicKeys: [
             ...current.importedPublicKeys.map((pk) => ({ ...pk })),
           ],
+          ledgerPublicKeys: [
+            ...current.ledgerPublicKeys.map((pk) => ({ ...pk })),
+          ],
         };
 
         // Find the key this notification is referring to and then mutate the
@@ -98,6 +101,11 @@ export function NotificationsProvider(props: any) {
           }
         });
         next.importedPublicKeys.forEach((key) => {
+          if (key.publicKey === notif.data.publicKey) {
+            key.name = notif.data.name;
+          }
+        });
+        next.ledgerPublicKeys.forEach((key) => {
           if (key.publicKey === notif.data.publicKey) {
             key.name = notif.data.name;
           }

@@ -66,6 +66,7 @@ export class KeyringStore {
   public publicKeys(): {
     hdPublicKeys: Array<string>;
     importedPublicKeys: Array<string>;
+    ledgerPublicKeys: Array<string>;
   } {
     return this.withUnlock(() => {
       return this.activeBlockchain().publicKeys();
@@ -231,6 +232,17 @@ export class KeyringStore {
   public ledgerConnect() {
     return this.withUnlock(() => {
       return this.activeBlockchain().ledgerKeyring!.connect();
+    });
+  }
+
+  public async ledgerImport(dPath: string, account: number, pubkey: string) {
+    return this.withUnlock(async () => {
+      const ledgerKeyring = this.activeBlockchain().ledgerKeyring!;
+      await ledgerKeyring.ledgerImport(dPath, account, pubkey);
+      const name = KeynameStore.defaultNameLedger(ledgerKeyring.keyCount());
+      await this.setKeyname(pubkey, name);
+
+      await this.persist();
     });
   }
 
@@ -407,12 +419,15 @@ class BlockchainKeyring {
   public publicKeys(): {
     hdPublicKeys: Array<string>;
     importedPublicKeys: Array<string>;
+    ledgerPublicKeys: Array<string>;
   } {
     const hdPublicKeys = this.hdKeyring!.publicKeys();
     const importedPublicKeys = this.importedKeyring!.publicKeys();
+    const ledgerPublicKeys = this.ledgerKeyring!.publicKeys();
     return {
       hdPublicKeys,
       importedPublicKeys,
+      ledgerPublicKeys,
     };
   }
 
@@ -549,25 +564,34 @@ class BlockchainKeyring {
 
   // txMsg is base58 encoded for solana. Note that `txMsg` is the *Message*.
   // Distinctly different from the full transaction.
-  public signTransaction(txMsg: string, walletAddress: string): string {
+  public async signTransaction(
+    txMsg: string,
+    walletAddress: string
+  ): Promise<string> {
     const keyring = this.getKeyring(walletAddress);
     const msg = Buffer.from(bs58.decode(txMsg));
     return keyring.signTransaction(msg, walletAddress);
   }
 
-  public signMessage(msg: string, walletAddress: string): string {
+  public async signMessage(
+    msg: string,
+    walletAddress: string
+  ): Promise<string> {
     const keyring = this.getKeyring(walletAddress);
     const msgBuffer = Buffer.from(bs58.decode(msg));
     return keyring.signMessage(msgBuffer, walletAddress);
   }
 
   private getKeyring(walletAddress: string): Keyring {
-    const found = this.hdKeyring!.publicKeys().find((k) => k === walletAddress);
+    let found = this.hdKeyring!.publicKeys().find((k) => k === walletAddress);
     if (found) {
       return this.hdKeyring!;
-    } else {
+    }
+    found = this.importedKeyring!.publicKeys().find((k) => k === walletAddress);
+    if (found) {
       return this.importedKeyring!;
     }
+    return this.ledgerKeyring!;
   }
 }
 
@@ -636,6 +660,10 @@ class KeynameStore {
 
   public static defaultNameImported(accountIndex: number): string {
     return `Imported Wallet ${accountIndex + 1}`;
+  }
+
+  public static defaultNameLedger(accountIndex: number): string {
+    return `Ledger ${accountIndex + 1}`;
   }
 }
 

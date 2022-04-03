@@ -27,6 +27,7 @@ export function useLoadSplTokens() {
     }
     const wallet = walletLoadable.contents;
     const { tokenClient, provider } = anchorLoadable.contents;
+
     const publicKey = new PublicKey(wallet.publicKey);
 
     const interval = setInterval(async () => {

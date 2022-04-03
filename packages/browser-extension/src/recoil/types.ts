@@ -20,7 +20,7 @@ export interface TokenAccountWithKey extends TokenAccount {
 export type WalletPublicKeys = {
   hdPublicKeys: Array<NamedPublicKey>;
   importedPublicKeys: Array<NamedPublicKey>;
-  // TODO: ledger.
+  ledgerPublicKeys: Array<NamedPublicKey>;
 };
 
 export type TokenDisplay = {

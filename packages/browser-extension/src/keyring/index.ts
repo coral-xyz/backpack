@@ -1,4 +1,5 @@
 import { DerivationPath } from "./crypto";
+import { ImportedDerivationPath } from "./solana";
 
 export * from "./solana";
 export * from "./ethereum";
@@ -14,11 +15,11 @@ export interface KeyringFactory {
 
 export interface Keyring {
   publicKeys(): Array<string>;
-  signTransaction(tx: Buffer, address: string): string;
-  signMessage(tx: Buffer, address: string): string;
+  signTransaction(tx: Buffer, address: string): Promise<string>;
+  signMessage(tx: Buffer, address: string): Promise<string>;
   exportSecretKey(address: string): string | null;
   importSecretKey(secretKey: string): string;
-  toJson(): KeyringJson;
+  toJson(): any;
 }
 
 export type HdKeyringJson = {
@@ -29,7 +30,7 @@ export type HdKeyringJson = {
 };
 
 export type LedgerKeyringJson = {
-  derivationPaths: Array<string>;
+  derivationPaths: Array<ImportedDerivationPath>;
 };
 
 export interface HdKeyringFactory {
@@ -44,3 +45,5 @@ export interface HdKeyring extends Keyring {
   getPublicKey(accountIndex: number): string;
   toJson(): any;
 }
+
+export interface LedgerKeyring extends Keyring {}

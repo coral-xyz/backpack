@@ -74,7 +74,7 @@ export class Backend {
     walletAddress: string
   ): Promise<string> {
     const blockchainKeyring = this.keyringStore.activeBlockchain();
-    return blockchainKeyring.signTransaction(txMessage, walletAddress);
+    return await blockchainKeyring.signTransaction(txMessage, walletAddress);
   }
 
   async signAllTransactions(
@@ -82,14 +82,18 @@ export class Backend {
     walletAddress: string
   ): Promise<Array<string>> {
     const blockchainKeyring = this.keyringStore.activeBlockchain();
-    return txMessages.map((t) =>
-      blockchainKeyring.signTransaction(t, walletAddress)
+    return await Promise.all(
+      txMessages.map((t) => blockchainKeyring.signTransaction(t, walletAddress))
     );
   }
 
-  signMessage(ctx: Context, msg: string, walletAddress: string): string {
+  async signMessage(
+    ctx: Context,
+    msg: string,
+    walletAddress: string
+  ): Promise<string> {
     const blockchainKeyring = this.keyringStore.activeBlockchain();
-    return blockchainKeyring.signMessage(msg, walletAddress);
+    return await blockchainKeyring.signMessage(msg, walletAddress);
   }
 
   // TODO: this should be shared with the frontend extension UI and put
@@ -151,9 +155,10 @@ export class Backend {
   async keyringStoreReadAllPubkeys(): Promise<{
     hdPublicKeys: Array<NamedPublicKey>;
     importedPublicKeys: Array<NamedPublicKey>;
+    ledgerPublicKeys: Array<NamedPublicKey>;
   }> {
     const pubkeys = this.keyringStore.publicKeys();
-    const [hdNames, importedNames] = await Promise.all([
+    const [hdNames, importedNames, ledgerNames] = await Promise.all([
       Promise.all(
         pubkeys.hdPublicKeys.map((pk) =>
           this.keyringStore.getKeyname(pk.toString())
@@ -161,6 +166,11 @@ export class Backend {
       ),
       Promise.all(
         pubkeys.importedPublicKeys.map((pk) =>
+          this.keyringStore.getKeyname(pk.toString())
+        )
+      ),
+      Promise.all(
+        pubkeys.ledgerPublicKeys.map((pk) =>
           this.keyringStore.getKeyname(pk.toString())
         )
       ),
@@ -176,6 +186,12 @@ export class Backend {
         return {
           publicKey: pk.toString(),
           name: importedNames[idx],
+        };
+      }),
+      ledgerPublicKeys: pubkeys.ledgerPublicKeys.map((pk, idx) => {
+        return {
+          publicKey: pk.toString(),
+          name: ledgerNames[idx],
         };
       }),
     };
@@ -377,6 +393,11 @@ export class Backend {
   async confirmPubkey() {
     // todo
     return true;
+  }
+
+  async ledgerImport(dPath: string, account: number, pubkey: string) {
+    await this.keyringStore.ledgerImport(dPath, account, pubkey);
+    return SUCCESS_RESPONSE;
   }
 }
 

@@ -179,6 +179,18 @@ function _SidebarContent({ close }: { close: () => void }) {
             </ListItem>
           );
         })}
+        {namedPublicKeys.ledgerPublicKeys.map(({ name, publicKey }) => {
+          return (
+            <ListItem
+              key={publicKey.toString()}
+              button
+              className={classes.sidebarContentListItem}
+              onClick={() => clickWallet(publicKey)}
+            >
+              <WalletAddress name={name} publicKey={publicKey} />
+            </ListItem>
+          );
+        })}
         {keyringStoreState === KeyringStoreStateEnum.Unlocked && (
           <>
             <ListItem
