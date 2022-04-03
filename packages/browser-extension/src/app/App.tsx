@@ -1,8 +1,6 @@
-import { CssBaseline, MuiThemeProvider } from "@material-ui/core";
 import { RecoilRoot } from "recoil";
 import { NotificationsProvider } from "../context/Notifications";
-import { useDarkMode } from "../hooks/useDarkMode";
-import { darkTheme, lightTheme } from "./theme";
+import { WithTheme } from "./theme";
 import { Router } from "./Router";
 import "./App.css";
 import "@fontsource/inter";
@@ -16,14 +14,11 @@ export default function App() {
 }
 
 function _App() {
-  const isDarkMode = useDarkMode();
-  const theme = isDarkMode ? darkTheme : lightTheme;
   return (
     <NotificationsProvider>
-      <MuiThemeProvider theme={theme}>
-        <CssBaseline />
+      <WithTheme>
         <Router />
-      </MuiThemeProvider>
+      </WithTheme>
     </NotificationsProvider>
   );
 }

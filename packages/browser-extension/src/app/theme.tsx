@@ -1,4 +1,5 @@
-import { createTheme } from "@material-ui/core";
+import { createTheme, CssBaseline, MuiThemeProvider } from "@material-ui/core";
+import { useDarkMode } from "../hooks/useDarkMode";
 
 export const lightTheme = createTheme({
   palette: {},
@@ -66,3 +67,14 @@ export const darkTheme = createTheme({
     },
   },
 });
+
+export function WithTheme(props: any) {
+  const isDarkMode = useDarkMode();
+  const theme = isDarkMode ? darkTheme : lightTheme;
+  return (
+    <MuiThemeProvider theme={theme}>
+      <CssBaseline />
+      {props.children}
+    </MuiThemeProvider>
+  );
+}

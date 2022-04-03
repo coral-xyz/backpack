@@ -1,8 +1,6 @@
 import React from "react";
-import { CssBaseline, MuiThemeProvider } from "@material-ui/core";
 import { RecoilRoot } from "recoil";
-import { useDarkMode } from "../hooks/useDarkMode";
-import { darkTheme, lightTheme } from "../app/theme";
+import { WithTheme } from "../app/theme";
 import { ConnectHardware } from "../components/ConnectHardware";
 import { setupBackgroundClient } from "../background/client";
 import { Onboarding } from "../components/Onboarding";
@@ -26,13 +24,10 @@ function Options() {
 }
 
 function _Options() {
-  const isDarkMode = useDarkMode();
-  const theme = isDarkMode ? darkTheme : lightTheme;
   return (
-    <MuiThemeProvider theme={theme}>
-      <CssBaseline />
+    <WithTheme>
       <Router />
-    </MuiThemeProvider>
+    </WithTheme>
   );
 }
 
