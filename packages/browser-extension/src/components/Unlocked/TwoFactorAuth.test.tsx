@@ -1,5 +1,6 @@
 import { waitFor } from "@testing-library/react";
 import { renderAndSetup } from "../../testHelpers";
+import { authenticator } from "@otplib/preset-default";
 
 import { TwoFactorAuth } from "./TwoFactorAuth";
 
@@ -22,11 +23,13 @@ describe("during registration, the user enters...", () => {
 
     await user.click(getByText("Continue"));
 
-    await user.type(getByTestId("2fa-value"), "123");
+    await user.type(getByTestId("2fa-value"), authenticator.generate("123"));
 
     await user.click(getByText("Submit"));
 
-    expect(getByText((txt) => txt.includes("valid code"))).toBeInTheDocument();
+    expect(
+      getByText((txt) => txt.includes("was a valid code"))
+    ).toBeInTheDocument();
   });
 
   test("an incorrect code", async () => {

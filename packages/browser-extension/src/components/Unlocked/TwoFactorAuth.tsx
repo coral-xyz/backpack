@@ -91,7 +91,7 @@ export const TwoFactorAuth = ({
     case "form":
       return <Form secret={secret} setPage={setPage} />;
     case "final":
-      return <p>valid code</p>;
+      return <p>was a valid code</p>;
     default:
       return null;
   }
