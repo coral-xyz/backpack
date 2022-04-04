@@ -2,9 +2,11 @@ import { toDataURL } from "qrcode";
 import { authenticator } from "@otplib/preset-default";
 import { useEffect, useRef, useState } from "react";
 
+type Page = "qr" | "input" | "confirmation";
+
 interface Props {
   secret?: string;
-  setPage?: (page: string) => void;
+  setPage?: (page: Page) => void;
 }
 
 const QRCode: React.FC<Pick<Required<Props>, "secret">> = ({ secret }) => {
@@ -52,7 +54,7 @@ const Form: React.FC<Required<Props>> = ({ secret, setPage }) => {
           setErrors(undefined);
 
           if (authenticator.check(code, secret)) {
-            setPage("final");
+            setPage("confirmation");
           } else {
             setErrors(["invalid code"]);
           }
@@ -69,7 +71,7 @@ const Form: React.FC<Required<Props>> = ({ secret, setPage }) => {
 
         <button type="submit">Submit</button>
       </form>
-      <button onClick={() => setPage("init")}>Back</button>
+      <button onClick={() => setPage("qr")}>Back</button>
     </>
   );
 };
@@ -77,21 +79,19 @@ const Form: React.FC<Required<Props>> = ({ secret, setPage }) => {
 export const TwoFactorAuth: React.FC<Pick<Props, "secret">> = ({
   secret = authenticator.generateSecret(),
 }) => {
-  const [page, setPage] = useState("init");
+  const [page, setPage] = useState<Page>("qr");
   switch (page) {
-    case "init":
+    case "qr":
       return (
         <>
           <QRCode secret={secret} />
           <p>Scan this code, or manually enter {secret} and press continue</p>
-          <button onClick={() => setPage("form")}>Continue</button>
+          <button onClick={() => setPage("input")}>Continue</button>
         </>
       );
-    case "form":
+    case "input":
       return <Form secret={secret} setPage={setPage} />;
-    case "final":
+    case "confirmation":
       return <p>that was a valid code</p>;
-    default:
-      return null;
   }
 };
