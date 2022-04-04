@@ -14,7 +14,9 @@ describe("during registration, the user enters...", () => {
       // check QR code exists
       expect(getByAltText("qr code")).toHaveAttribute(
         "src",
-        expect.stringMatching(/^data:image\/png;base64,[a-z0-9/+]{500,}==?$/i)
+        expect.stringMatching(
+          /^data:image\/png;base64,[a-z0-9/+]{500,}={0,2}$/i
+        )
       );
 
       // check code is written out manually
