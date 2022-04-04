@@ -11,6 +11,8 @@ import { PublicKey } from "@solana/web3.js";
 import Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
 import * as anchor from "@project-serum/anchor";
+import * as ledgerCore from "@200ms/ledger-core";
+import { DerivationPath } from "@200ms/common";
 import { useAnchorContext } from "../../hooks/useWallet";
 import { Stepper, WithContinue } from "../Onboarding/CreateNewWallet";
 import {
@@ -19,7 +21,6 @@ import {
   UI_RPC_METHOD_LEDGER_IMPORT,
 } from "../../common";
 import * as crypto from "../../keyring/crypto";
-import * as ledgerCore from "../../keyring/ledger-core";
 import { getBackgroundClient } from "../../background/client";
 
 const STEP_COUNT = 3;
@@ -126,7 +127,6 @@ function Step0({ next }: any) {
       setDeviceState("detecting");
       // @ts-ignore
       const devices = await navigator.hid.getDevices();
-      console.log("devices", devices);
       if (devices.length > 0) {
         setDeviceState("found");
       } else {
@@ -213,7 +213,7 @@ function Step1({ next }: any) {
         const p = await ledgerCore.getPublicKey(
           TRANSPORT!,
           k,
-          crypto.DerivationPath.Bip44
+          DerivationPath.Bip44
         );
         combinedPubkeys.push(p);
       }
@@ -223,7 +223,7 @@ function Step1({ next }: any) {
         const p = await ledgerCore.getPublicKey(
           TRANSPORT!,
           k,
-          crypto.DerivationPath.Bip44Change
+          DerivationPath.Bip44Change
         );
         combinedPubkeys.push(p);
       }

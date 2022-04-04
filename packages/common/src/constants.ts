@@ -85,6 +85,16 @@ export const CONNECTION_POPUP_RPC = "anchor-popup-rpc";
 export const CONNECTION_POPUP_RESPONSE = "anchor-popup-response";
 export const CONNECTION_POPUP_NOTIFICATIONS = "anchor-popup-notifications";
 
+//const LEDGER_IFRAME_URL = "https://200ms-labs.github.io/anchor-wallet";
+export const LEDGER_IFRAME_URL = "https://localhost:4443/dist/browser";
+export const LEDGER_INJECTED_CHANNEL_REQUEST = "ledger-injected-request";
+export const LEDGER_INJECTED_CHANNEL_RESPONSE = "ledger-injected-response";
+export const LEDGER_METHOD_UNLOCK = "ledger-method-unlock";
+export const LEDGER_METHOD_CONNECT = "ledger-method-connect";
+export const LEDGER_METHOD_SIGN_TRANSACTION = "ledger-method-sign-transaction";
+export const LEDGER_METHOD_SIGN_MESSAGE = "ledger-method-sign-message";
+export const LEDGER_METHOD_CONFIRM_PUBKEY = "ledger-confirm-pubkey";
+
 export const POST_MESSAGE_ORIGIN = "*";
 
 export const EXTENSION_WIDTH = 375;

@@ -2,7 +2,7 @@ import { validateMnemonic, generateMnemonic, mnemonicToSeedSync } from "bip39";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import * as bs58 from "bs58";
-import { deriveKeypairs, deriveKeypair, DerivationPath } from "./crypto";
+import { deriveKeypairs, deriveKeypair } from "./crypto";
 import {
   Keyring,
   KeyringFactory,
@@ -13,6 +13,16 @@ import {
   LedgerKeyringJson,
   LedgerKeyring,
 } from ".";
+import {
+  LEDGER_IFRAME_URL,
+  LEDGER_INJECTED_CHANNEL_REQUEST,
+  LEDGER_INJECTED_CHANNEL_RESPONSE,
+  LEDGER_METHOD_CONNECT,
+  LEDGER_METHOD_SIGN_TRANSACTION,
+  LEDGER_METHOD_SIGN_MESSAGE,
+  LEDGER_METHOD_CONFIRM_PUBKEY,
+  DerivationPath,
+} from "@200ms/common";
 
 export class SolanaKeyringFactory implements KeyringFactory {
   public fromJson(payload: KeyringJson): SolanaKeyring {
@@ -196,9 +206,6 @@ export class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   }
 }
 
-//const LEDGER_IFRAME_URL = "https://200ms-labs.github.io/anchor-wallet";
-const LEDGER_IFRAME_URL = "https://localhost:4443/dist/browser";
-
 export class SolanaLedgerKeyringFactory {
   public init(): SolanaLedgerKeyring {
     return new SolanaLedgerKeyring([]);
@@ -364,12 +371,3 @@ export class SolanaLedgerKeyring implements LedgerKeyring {
     });
   }
 }
-
-// TODO: share all these with a common package.
-const LEDGER_INJECTED_CHANNEL_REQUEST = "ledger-injected-request";
-const LEDGER_INJECTED_CHANNEL_RESPONSE = "ledger-injected-response";
-const LEDGER_METHOD_UNLOCK = "ledger-method-unlock";
-const LEDGER_METHOD_CONNECT = "ledger-method-connect";
-const LEDGER_METHOD_SIGN_TRANSACTION = "ledger-method-sign-transaction";
-const LEDGER_METHOD_SIGN_MESSAGE = "ledger-method-sign-message";
-const LEDGER_METHOD_CONFIRM_PUBKEY = "ledger-confirm-pubkey";

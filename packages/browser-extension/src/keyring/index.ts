@@ -1,4 +1,4 @@
-import { DerivationPath } from "./crypto";
+import { DerivationPath } from "@200ms/common";
 import { ImportedDerivationPath } from "./solana";
 
 export * from "./solana";

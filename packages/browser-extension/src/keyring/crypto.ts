@@ -4,6 +4,7 @@ import { randomBytes, secretbox } from "tweetnacl";
 import * as bs58 from "bs58";
 import { derivePath } from "ed25519-hd-key";
 import { Keypair } from "@solana/web3.js";
+import { DerivationPath } from "@200ms/common";
 
 // An encrypted secret wiht associated metadata required for decryption.
 export type SecretPayload = {
@@ -19,13 +20,6 @@ type MnemonicSeed = {
   mnemonic: string;
   seed: string;
 };
-
-export const DerivationPath: { [key: string]: DerivationPath } = {
-  Bip44: "bip44",
-  Bip44Change: "bip44-change",
-  Default: "bip44-change",
-};
-export type DerivationPath = "bip44" | "bip44-change";
 
 export function deriveKeypairs(
   seed: Buffer,

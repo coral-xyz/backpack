@@ -1,4 +1,4 @@
-import { POST_MESSAGE_ORIGIN } from "./constants";
+import { POST_MESSAGE_ORIGIN } from "@200ms/common";
 import { BrowserRuntime } from "./browser";
 import { debug } from "./logging";
 import { RpcRequest, RpcResponse, Notification } from "./rpc";

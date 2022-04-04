@@ -1,17 +1,16 @@
 import * as bs58 from "bs58";
 import Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
-import * as core from "./core";
+import * as core from "@200ms/ledger-core";
 import { Buffer } from "buffer";
-
-// TODO: share all these with a common package.
-const LEDGER_INJECTED_CHANNEL_REQUEST = "ledger-injected-request";
-const LEDGER_INJECTED_CHANNEL_RESPONSE = "ledger-injected-response";
-const LEDGER_METHOD_CONNECT = "ledger-method-connect";
-const LEDGER_METHOD_UNLOCK = "ledger-method-unlock";
-const LEDGER_METHOD_SIGN_TRANSACTION = "ledger-method-sign-transaction";
-const LEDGER_METHOD_SIGN_MESSAGE = "ledger-method-sign-message";
-const LEDGER_METHOD_CONFIRM_PUBKEY = "ledger-confirm-pubkey";
+import {
+  LEDGER_INJECTED_CHANNEL_REQUEST,
+  LEDGER_INJECTED_CHANNEL_RESPONSE,
+  LEDGER_METHOD_CONNECT,
+  LEDGER_METHOD_SIGN_TRANSACTION,
+  LEDGER_METHOD_SIGN_MESSAGE,
+  LEDGER_METHOD_CONFIRM_PUBKEY,
+} from "@200ms/common";
 
 // Script entry.
 function main() {
@@ -19,8 +18,6 @@ function main() {
   LEDGER.start();
   console.log("anchor: ledger injection ready");
 }
-
-let TRANSPORT: Transport | null = null;
 
 class LedgerInjection {
   private transport?: Transport;
@@ -34,7 +31,6 @@ class LedgerInjection {
       if (event.data.type !== LEDGER_INJECTED_CHANNEL_REQUEST) {
         return;
       }
-      console.log("ledger event", event);
       const { id, method, params } = event.data.detail;
 
       let result: any;

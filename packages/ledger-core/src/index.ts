@@ -1,16 +1,8 @@
 import Transport from "@ledgerhq/hw-transport";
 import { Transaction, PublicKey } from "@solana/web3.js";
-//import { DerivationPath } from "./crypto";
 import * as bs58 from "bs58";
 import { Buffer } from "buffer";
-
-// TODO: yarn workspace.
-export const DerivationPath: { [key: string]: DerivationPath } = {
-  Bip44: "bip44",
-  Bip44Change: "bip44-change",
-  Default: "bip44-change",
-};
-export type DerivationPath = "bip44" | "bip44-change";
+import { DerivationPath } from "@200ms/common";
 
 const INS_GET_PUBKEY = 0x05;
 const INS_SIGN_MESSAGE = 0x06;

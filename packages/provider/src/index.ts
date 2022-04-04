@@ -1,6 +1,3 @@
-// TODO: we need to put this under the same workspace as the main package
-//       so that we can share code across the extension and this package.
-
 import {
   TransactionSignature,
   PublicKey,
@@ -10,22 +7,21 @@ import {
 } from "@solana/web3.js";
 import * as bs58 from "bs58";
 import { EventEmitter } from "eventemitter3";
-
-const CHANNEL_RPC_REQUEST = "anchor-rpc-request";
-const CHANNEL_RPC_RESPONSE = "anchor-rpc-response";
-const CHANNEL_NOTIFICATION = "anchor-notification";
-
-const RPC_METHOD_CONNECT = "connect";
-const RPC_METHOD_DISCONNECT = "disconnect";
-const RPC_METHOD_SIGN_AND_SEND_TX = "sign-and-send-tx";
-const RPC_METHOD_SIGN_TX = "sign-tx";
-const RPC_METHOD_SIGN_ALL_TRANSACTIONS = "sign-all-txs";
-const RPC_METHOD_SIGN_MESSAGE = "sign-message";
-const RPC_METHOD_RECENT_BLOCKHASH = "recent-blockhash";
-
-const NOTIFICATION_CONNECTED = "anchor-connected";
-const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
-const NOTIFICATION_CONNECTION_URL_UPDATED = "anchor-connection-url-updated";
+import {
+  CHANNEL_RPC_REQUEST,
+  CHANNEL_RPC_RESPONSE,
+  CHANNEL_NOTIFICATION,
+  RPC_METHOD_CONNECT,
+  RPC_METHOD_DISCONNECT,
+  RPC_METHOD_SIGN_AND_SEND_TX,
+  RPC_METHOD_SIGN_TX,
+  RPC_METHOD_SIGN_ALL_TXS,
+  RPC_METHOD_SIGN_MESSAGE,
+  RPC_METHOD_RECENT_BLOCKHASH,
+  NOTIFICATION_CONNECTED,
+  NOTIFICATION_DISCONNECTED,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
+} from "@200ms/common";
 
 const POST_MESSAGE_ORIGIN = "*";
 
@@ -192,7 +188,7 @@ class Provider extends EventEmitter {
 
     // Get signatures from the background script.
     const signatures: Array<string> = await this.request({
-      method: RPC_METHOD_SIGN_ALL_TRANSACTIONS,
+      method: RPC_METHOD_SIGN_ALL_TXS,
       params: [messages, this.publicKey!.toString()],
     });
 

@@ -4,7 +4,7 @@ import {
   UI_RPC_METHOD_SIGN_TRANSACTION,
   UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS,
   UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
-} from "../../common";
+} from "../";
 import { getBackgroundClient } from "../../background/client";
 import { SolanaContext } from ".";
 

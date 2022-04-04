@@ -45,7 +45,7 @@ import {
   UI_RPC_METHOD_LEDGER_IMPORT,
   NOTIFICATION_CONNECTION_URL_UPDATED,
 } from "../../common";
-import { DerivationPath } from "../../keyring/crypto";
+import { DerivationPath } from "@200ms/common";
 import { KeyringStoreState } from "../../keyring/store";
 import { BACKEND, SUCCESS_RESPONSE } from "../backend";
 import { Io } from "../io";

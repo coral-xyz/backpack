@@ -5,6 +5,7 @@ import {
   Connection,
   Transaction,
 } from "@solana/web3.js";
+import { DerivationPath } from "@200ms/common";
 import {
   BLOCKCHAIN_SOLANA,
   KeyringStore,
@@ -15,7 +16,6 @@ import {
   getNav,
   NavData,
 } from "../keyring/store";
-import { DerivationPath } from "../keyring/crypto";
 import {
   NotificationsClient,
   NOTIFICATION_KEYRING_KEY_DELETE,

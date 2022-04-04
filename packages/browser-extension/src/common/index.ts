@@ -1,4 +1,4 @@
-export * from "./constants";
+export * from "@200ms/common";
 export * from "./channel";
 export * from "./logging";
 export * from "./browser";

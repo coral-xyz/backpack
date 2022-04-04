@@ -1,7 +1,7 @@
 import * as bs58 from "bs58";
+import { DerivationPath } from "@200ms/common";
 import { BrowserRuntime } from "../common/browser";
 import * as crypto from "./crypto";
-import { DerivationPath } from "./crypto";
 import {
   SolanaHdKeyringFactory,
   SolanaKeyringFactory,

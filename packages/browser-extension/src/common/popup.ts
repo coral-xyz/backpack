@@ -1,5 +1,4 @@
-import { BrowserRuntime, EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../common";
-import { Context } from "../background/backend";
+import { BrowserRuntime, EXTENSION_WIDTH, EXTENSION_HEIGHT } from ".";
 
 const POPUP_HTML = "popup.html";
 const EXPANDED_HTML = "options.html";
@@ -16,6 +15,8 @@ const MACOS_TOOLBAR_HEIGHT = 28;
 export interface Window {
   id: number;
 }
+
+type Context = any; // TODO: remove.
 
 export async function openLockedApprovalPopupWindow(
   ctx: Context,

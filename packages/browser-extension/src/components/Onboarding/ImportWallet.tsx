@@ -7,7 +7,7 @@ import {
   BrowserRuntime,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
 } from "../../common";
-import { DerivationPath } from "../../keyring/crypto";
+import { DerivationPath } from "@200ms/common";
 import { TextField } from "../common";
 import { OnboardHeader } from "./CreateNewWallet";
 

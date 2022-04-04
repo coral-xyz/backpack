@@ -1,4 +1,13 @@
 {
+  "name": "anchor-wallet",
+  "private": true,
+  "workspaces": [
+    "packages/ledger-core",
+    "packages/ledger-injection",
+    "packages/browser-extension",
+    "packages/common",
+    "packages/provider"
+  ],
   "scripts": {
     "lint:fix": "prettier packages/**/*.{ts,tsx,css,md,json} --write",
     "prepare": "husky install",
