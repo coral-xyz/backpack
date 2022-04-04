@@ -7,15 +7,14 @@ interface Props {
   setPage?: (page: string) => void;
 }
 
-const QRCode = ({ secret }: Pick<Required<Props>, "secret">) => {
+const QRCode: React.FC<Pick<Required<Props>, "secret">> = ({ secret }) => {
   const [code, setCode] = useState("");
   const img = useRef(null);
-  // const activeWallet = useActiveWallet();
 
   useEffect(() => {
     const otpauth = authenticator.keyuri(
-      // "activeWallet.publicKey.toString()",
-      "PLACEHOLDER_ID",
+      // TODO: determine what to use as account reference
+      "",
       "Anchor Wallet",
       secret
     );
@@ -41,7 +40,7 @@ const QRCode = ({ secret }: Pick<Required<Props>, "secret">) => {
   );
 };
 
-const Form = ({ secret, setPage }: Required<Props>) => {
+const Form: React.FC<Required<Props>> = ({ secret, setPage }) => {
   const [code, setCode] = useState("");
   const [errors, setErrors] = useState<Array<string>>();
   return (
@@ -75,9 +74,9 @@ const Form = ({ secret, setPage }: Required<Props>) => {
   );
 };
 
-export const TwoFactorAuth = ({
+export const TwoFactorAuth: React.FC<Pick<Props, "secret">> = ({
   secret = authenticator.generateSecret(),
-}: Pick<Props, "secret">) => {
+}) => {
   const [page, setPage] = useState("init");
   switch (page) {
     case "init":
@@ -91,7 +90,7 @@ export const TwoFactorAuth = ({
     case "form":
       return <Form secret={secret} setPage={setPage} />;
     case "final":
-      return <p>was a valid code</p>;
+      return <p>that was a valid code</p>;
     default:
       return null;
   }
