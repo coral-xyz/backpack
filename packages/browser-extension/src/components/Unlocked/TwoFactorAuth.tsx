@@ -63,7 +63,9 @@ const Form: React.FC<Required<Props>> = ({ secret, setPage }) => {
         {errors?.join("<br />")}
 
         <input
-          type="text"
+          type="number"
+          maxLength={8}
+          inputMode="decimal"
           data-testid="2fa-value"
           value={code}
           onChange={(e) => setCode(e.target.value)}
