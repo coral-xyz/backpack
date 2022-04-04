@@ -1,18 +1,28 @@
 import { toDataURL } from "qrcode";
 import { authenticator } from "@otplib/preset-default";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-export const TwoFactorAuth = () => {
-  const [code, setCode] = useState<string>();
+interface Props {
+  secret?: string;
+  setPage?: (page: string) => void;
+}
+
+const QRCode = ({ secret }: Pick<Required<Props>, "secret">) => {
+  const [code, setCode] = useState("");
+  const img = useRef(null);
+  // const activeWallet = useActiveWallet();
 
   useEffect(() => {
     const otpauth = authenticator.keyuri(
+      // "activeWallet.publicKey.toString()",
       "PLACEHOLDER_ID",
       "Anchor Wallet",
-      authenticator.generateSecret()
+      secret
     );
 
     toDataURL(otpauth, (err, imageUrl) => {
+      if (!img.current) return;
+
       if (err) {
         console.error({ "qr code error": err });
       } else {
@@ -21,7 +31,68 @@ export const TwoFactorAuth = () => {
     });
   }, []);
 
-  return code ? (
-    <img src={code} style={{ width: "100%" }} alt="two factor auth qr code" />
-  ) : null;
+  return (
+    <img
+      ref={img}
+      src={code}
+      style={{ display: code ? "block" : "none", width: "100%" }}
+      alt="qr code"
+    />
+  );
+};
+
+const Form = ({ secret, setPage }: Required<Props>) => {
+  const [code, setCode] = useState("");
+  const [errors, setErrors] = useState<Array<string>>();
+  return (
+    <>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+
+          setErrors(undefined);
+
+          if (authenticator.check(code, secret)) {
+            setPage("final");
+          } else {
+            setErrors(["invalid code"]);
+          }
+        }}
+      >
+        {errors?.join("<br />")}
+
+        <input
+          type="text"
+          data-testid="2fa-value"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+        />
+
+        <button type="submit">Submit</button>
+      </form>
+      <button onClick={() => setPage("init")}>Back</button>
+    </>
+  );
+};
+
+export const TwoFactorAuth = ({
+  secret = authenticator.generateSecret(),
+}: Pick<Props, "secret">) => {
+  const [page, setPage] = useState("init");
+  switch (page) {
+    case "init":
+      return (
+        <>
+          <QRCode secret={secret} />
+          <p>Scan this code, or manually enter {secret} and press continue</p>
+          <button onClick={() => setPage("form")}>Continue</button>
+        </>
+      );
+    case "form":
+      return <Form secret={secret} setPage={setPage} />;
+    case "final":
+      return <p>valid code</p>;
+    default:
+      return null;
+  }
 };

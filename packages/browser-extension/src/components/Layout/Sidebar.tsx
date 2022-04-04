@@ -275,7 +275,7 @@ function _SidebarContent({ close }: { close: () => void }) {
         ) : drawerView === DrawView.AddConnect ? (
           <AddConnectWallet closeDrawer={() => setOpenDrawer(false)} />
         ) : drawerView === DrawView.TwoFactorAuth ? (
-          <TwoFactorAuth />
+          <TwoFactorAuth secret="PLACEHOLDER_SECRET_CODE" />
         ) : null}
       </WithDrawerNoHeader>
     </div>
