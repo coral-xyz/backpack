@@ -1,0 +1,22 @@
+name = "backend"
+# type = "javascript" is required to use the `[build]` section
+type = "javascript"
+account_id = ""
+workers_dev = true
+route = ""
+zone_id = ""
+compatibility_date = "2022-03-30"
+
+[build]
+command = "yarn install && yarn build"
+[build.upload]
+# The "modules" upload format is required for all projects that export a Durable Objects class
+format = "modules"
+main = "./index.mjs"
+
+# [durable_objects]
+# bindings = [{name = "COUNTER", class_name = "CounterTs"}]
+
+# [[migrations]]
+# tag = "v1" # Should be unique for each entry
+# new_classes = ["CounterTs"]

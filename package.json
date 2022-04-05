@@ -4,7 +4,8 @@
     "prepare": "husky install",
     "start:wallet": "cd packages/browser-extension && yarn && yarn start",
     "start:client": "cd packages/example-client && yarn && yarn start",
-    "start": "concurrently 'yarn start:wallet' 'yarn start:client'"
+    "start:backend": "cd packages/backend && yarn && yarn start",
+    "start": "concurrently 'yarn start:wallet' 'yarn start:client' 'yarn start:backend'"
   },
   "devDependencies": {
     "concurrently": "^7.0.0",
