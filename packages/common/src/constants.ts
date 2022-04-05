@@ -8,7 +8,6 @@ export const RPC_METHOD_SIGN_AND_SEND_TX = "sign-and-send-tx";
 export const RPC_METHOD_SIGN_TX = "sign-tx";
 export const RPC_METHOD_SIGN_ALL_TXS = "sign-all-txs";
 export const RPC_METHOD_SIGN_MESSAGE = "sign-message";
-export const RPC_METHOD_RECENT_BLOCKHASH = "recent-blockhash";
 export const RPC_METHOD_SIMULATE = "simulate";
 
 export const UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE = "notifications-subscribe";

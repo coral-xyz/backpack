@@ -22,7 +22,6 @@ import {
   RPC_METHOD_SIGN_ALL_TXS,
   RPC_METHOD_SIGN_MESSAGE,
   RPC_METHOD_SIMULATE,
-  RPC_METHOD_RECENT_BLOCKHASH,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
@@ -223,12 +222,7 @@ class Provider extends EventEmitter {
   }
 
   async signTransaction(tx: Transaction): Promise<Transaction> {
-    const recentBlockhash = await this.request({
-      method: RPC_METHOD_RECENT_BLOCKHASH,
-      params: [],
-    });
     tx.feePayer = this.publicKey;
-    tx.recentBlockhash = recentBlockhash;
     const message = bs58.encode(tx.serializeMessage());
     const signature = await this.request({
       method: RPC_METHOD_SIGN_TX,

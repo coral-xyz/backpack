@@ -21,7 +21,6 @@ import {
   RPC_METHOD_SIGN_ALL_TXS,
   RPC_METHOD_SIGN_MESSAGE,
   RPC_METHOD_SIMULATE,
-  RPC_METHOD_RECENT_BLOCKHASH,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
 } from "../../common";
@@ -54,8 +53,6 @@ async function handle<T = any>(
       return await handleSignMessage(ctx, params[0], params[1]);
     case RPC_METHOD_SIMULATE:
       return await handleSimulate(ctx, params[0], params[1], params[2]);
-    case RPC_METHOD_RECENT_BLOCKHASH:
-      return await handleRecentBlockhash(ctx, params[0]);
     default:
       throw new Error(`unexpected rpc method: ${method}`);
   }
@@ -206,14 +203,6 @@ async function handleSimulate(
   commitment: Commitment
 ): Promise<RpcResponse<string>> {
   const resp = await BACKEND.simulate(txStr, walletAddress, commitment);
-  return [resp];
-}
-
-async function handleRecentBlockhash(
-  ctx: Context,
-  commitment?: Commitment
-): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.recentBlockhash(commitment);
   return [resp];
 }
 
