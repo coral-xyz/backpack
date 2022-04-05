@@ -2,7 +2,7 @@
 
 ## Packages
 
-### [Browser Extension](packages/browser-extension)
+### [Browser Extension](packages/extension)
 
 `yarn start:wallet`
 

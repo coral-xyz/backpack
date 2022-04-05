@@ -1,5 +1,5 @@
 {
-  "name": "@200ms/browser-extension",
+  "name": "@200ms/extension",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -34,7 +34,7 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "build:provider": "cd ../provider-injection && yarn && yarn build && cp dist/browser/index.js ../browser-extension/public/injected.js && cd ../",
+    "build:provider": "cd ../provider-injection && yarn && yarn build && cp dist/browser/index.js ../extension/public/injected.js && cd ../",
     "build:ledger": "cd ../ledger-injection && yarn && yarn build && cd ../",
     "start": "yarn build:provider && yarn build:ledger && react-scripts start",
     "build": "yarn build:provider && yarn build:ledger && react-scripts build",

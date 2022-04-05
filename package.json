@@ -4,14 +4,14 @@
   "workspaces": [
     "packages/ledger-core",
     "packages/ledger-injection",
-    "packages/browser-extension",
+    "packages/extension",
     "packages/common",
     "packages/provider-injection"
   ],
   "scripts": {
     "lint:fix": "prettier packages/**/*.{ts,tsx,css,md,json} --write",
     "prepare": "husky install",
-    "start:wallet": "cd packages/browser-extension && yarn && yarn start",
+    "start:wallet": "cd packages/extension && yarn && yarn start",
     "start:client": "cd packages/example-client && yarn && yarn start",
     "start": "concurrently 'yarn start:wallet' 'yarn start:client'"
   },
