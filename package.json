@@ -10,7 +10,7 @@
     "start:extension": "yarn workspace @200ms/extension start",
     "start:client": "yarn workspace @200ms/client start",
     "start": "concurrently 'yarn start:extension' 'yarn start:client'",
-    "test": "yarn workspaces run test"
+    "test": "yarn workspaces run test --passWithNoTests"
   },
   "devDependencies": {
     "concurrently": "^7.0.0",
