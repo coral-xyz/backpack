@@ -8,7 +8,7 @@
     "lint:fix": "prettier packages/**/*.{ts,tsx,css,md,json} --write",
     "prepare": "husky install",
     "start:extension": "yarn workspace @200ms/extension start",
-    "start:client": "cd packages/example-client && yarn link @solana/wallet-adapter-wallets && yarn workspace @200ms/client start",
+    "start:client": "yarn workspace @200ms/client start",
     "start": "concurrently 'yarn start:extension' 'yarn start:client'"
   },
   "devDependencies": {
