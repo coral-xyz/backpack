@@ -2,7 +2,7 @@
 // script to the background script.
 
 import * as bs58 from "bs58";
-import { Transaction } from "@solana/web3.js";
+import { Transaction, SendOptions, Commitment } from "@solana/web3.js";
 import {
   debug,
   BrowserRuntime,
@@ -20,6 +20,7 @@ import {
   RPC_METHOD_SIGN_TX,
   RPC_METHOD_SIGN_ALL_TXS,
   RPC_METHOD_SIGN_MESSAGE,
+  RPC_METHOD_SIMULATE,
   RPC_METHOD_RECENT_BLOCKHASH,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
@@ -44,15 +45,17 @@ async function handle<T = any>(
     case RPC_METHOD_DISCONNECT:
       return handleDisconnect(ctx);
     case RPC_METHOD_SIGN_AND_SEND_TX:
-      return await handleSignAndSendTx(ctx, params[0], params[1]);
+      return await handleSignAndSendTx(ctx, params[0], params[1], params[2]);
     case RPC_METHOD_SIGN_TX:
       return await handleSignTx(ctx, params[0], params[1]);
     case RPC_METHOD_SIGN_ALL_TXS:
       return await handleSignAllTxs(ctx, params[0], params[1]);
     case RPC_METHOD_SIGN_MESSAGE:
       return await handleSignMessage(ctx, params[0], params[1]);
+    case RPC_METHOD_SIMULATE:
+      return await handleSimulate(ctx, params[0], params[1], params[2]);
     case RPC_METHOD_RECENT_BLOCKHASH:
-      return await handleRecentBlockhash(ctx);
+      return await handleRecentBlockhash(ctx, params[0]);
     default:
       throw new Error(`unexpected rpc method: ${method}`);
   }
@@ -128,7 +131,8 @@ function handleDisconnect(ctx: Context): RpcResponse<string> {
 async function handleSignAndSendTx(
   ctx: Context,
   tx: string,
-  walletAddress: string
+  walletAddress: string,
+  options?: SendOptions
 ): Promise<RpcResponse<string>> {
   // Transform from transaction string to message string.
   const txObject = Transaction.from(bs58.decode(tx));
@@ -142,7 +146,7 @@ async function handleSignAndSendTx(
 
   // Only sign if the user clicked approve.
   if (didApprove) {
-    const sig = await BACKEND.signAndSendTx(tx, walletAddress);
+    const sig = await BACKEND.signAndSendTx(tx, walletAddress, options);
     return [sig];
   }
 
@@ -195,10 +199,21 @@ async function handleSignMessage(
   return [null];
 }
 
-async function handleRecentBlockhash(
-  ctx: Context
+async function handleSimulate(
+  ctx: Context,
+  txStr: string,
+  walletAddress: string,
+  commitment: Commitment
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.recentBlockhash();
+  const resp = await BACKEND.simulate(txStr, walletAddress, commitment);
+  return [resp];
+}
+
+async function handleRecentBlockhash(
+  ctx: Context,
+  commitment?: Commitment
+): Promise<RpcResponse<string>> {
+  const resp = await BACKEND.recentBlockhash(commitment);
   return [resp];
 }
 

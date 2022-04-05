@@ -4,6 +4,10 @@ import {
   ConfirmOptions,
   Transaction,
   Connection,
+  Signer,
+  SendOptions,
+  SimulatedTransactionResponse,
+  Commitment,
 } from "@solana/web3.js";
 import * as bs58 from "bs58";
 import { EventEmitter } from "eventemitter3";
@@ -17,6 +21,7 @@ import {
   RPC_METHOD_SIGN_TX,
   RPC_METHOD_SIGN_ALL_TXS,
   RPC_METHOD_SIGN_MESSAGE,
+  RPC_METHOD_SIMULATE,
   RPC_METHOD_RECENT_BLOCKHASH,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
@@ -138,25 +143,82 @@ class Provider extends EventEmitter {
     this.connection = undefined;
   }
 
-  async signAndSendTransaction(
-    tx: Transaction
-  ): Promise<TransactionSignature | null> {
+  async sendAndConfirm(
+    tx: Transaction,
+    signers?: Signer[],
+    options?: ConfirmOptions
+  ): Promise<TransactionSignature> {
+    const sig = await this.send(tx, signers, options);
+    const resp = await this.connection?.confirmTransaction(
+      sig,
+      options?.commitment
+    );
+    if (resp?.value.err) {
+      throw new Error(
+        `error confirming transaction: ${resp.value.err.toString()}`
+      );
+    }
+    return sig;
+  }
+
+  async send(
+    tx: Transaction,
+    signers?: Signer[],
+    options?: SendOptions
+  ): Promise<TransactionSignature> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
-    const recentBlockhash = await this.request({
-      method: RPC_METHOD_RECENT_BLOCKHASH,
-      params: [],
-    });
+    if (signers) {
+      signers.forEach((s: Signer) => {
+        tx.partialSign(s);
+      });
+    }
+    const { blockhash } = await this.connection!.getLatestBlockhash(
+      options?.preflightCommitment
+    );
     tx.feePayer = this.publicKey;
-    tx.recentBlockhash = recentBlockhash;
+    tx.recentBlockhash = blockhash;
     const txSerialize = tx.serialize({
       requireAllSignatures: false,
     });
     const message = bs58.encode(txSerialize);
     return await this.request({
       method: RPC_METHOD_SIGN_AND_SEND_TX,
-      params: [message, this.publicKey!.toString()],
+      params: [message, this.publicKey!.toString(), options],
+    });
+  }
+
+  async sendAll(
+    _txWithSigners: { tx: Transaction; signers?: Signer[] }[],
+    _opts?: ConfirmOptions
+  ): Promise<Array<TransactionSignature>> {
+    throw new Error("sendAll not implemented");
+  }
+
+  async simulate(
+    tx: Transaction,
+    signers?: Signer[],
+    commitment?: Commitment
+  ): Promise<SimulatedTransactionResponse> {
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    if (signers) {
+      signers.forEach((s: Signer) => {
+        tx.partialSign(s);
+      });
+    }
+    const { blockhash } = await this.connection!.getLatestBlockhash(commitment);
+    tx.feePayer = this.publicKey;
+    tx.recentBlockhash = blockhash;
+    const txSerialize = tx.serialize({
+      requireAllSignatures: false,
+    });
+    const message = bs58.encode(txSerialize);
+    return await this.request({
+      method: RPC_METHOD_SIMULATE,
+      params: [message, this.publicKey!.toString(), commitment],
     });
   }
 

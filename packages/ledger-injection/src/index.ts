@@ -1,15 +1,15 @@
 import * as bs58 from "bs58";
+import { Buffer } from "buffer";
 import Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
 import * as core from "@200ms/ledger-core";
-import { Buffer } from "buffer";
 import {
+  DerivationPath,
   LEDGER_INJECTED_CHANNEL_REQUEST,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
   LEDGER_METHOD_CONNECT,
   LEDGER_METHOD_SIGN_TRANSACTION,
   LEDGER_METHOD_SIGN_MESSAGE,
-  LEDGER_METHOD_CONFIRM_PUBKEY,
 } from "@200ms/common";
 
 // Script entry.
@@ -52,9 +52,6 @@ class LedgerInjection {
             params[2]
           );
           break;
-        case LEDGER_METHOD_CONFIRM_PUBKEY:
-          result = this.handleConfirmPubkey();
-          break;
         default:
           throw new Error("unexpected event");
       }
@@ -84,7 +81,7 @@ class LedgerInjection {
 
     const derivationPath = core.solanaDerivationPath(
       account,
-      dPath as core.DerivationPath
+      dPath as DerivationPath
     );
     const sig = await core.solanaLedgerSignBytes(
       this.transport!,
@@ -99,7 +96,7 @@ class LedgerInjection {
 
     const derivationPath = core.solanaDerivationPath(
       account,
-      dPath as core.DerivationPath
+      dPath as DerivationPath
     );
     const sig = await core.solanaLedgerSignBytes(
       this.transport!,
@@ -107,10 +104,6 @@ class LedgerInjection {
       Buffer.from(bs58.decode(msg))
     );
     return bs58.encode(sig);
-  }
-
-  handleConfirmPubkey() {
-    // todo
   }
 
   async connectIfNeeded() {

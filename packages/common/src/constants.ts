@@ -9,6 +9,7 @@ export const RPC_METHOD_SIGN_TX = "sign-tx";
 export const RPC_METHOD_SIGN_ALL_TXS = "sign-all-txs";
 export const RPC_METHOD_SIGN_MESSAGE = "sign-message";
 export const RPC_METHOD_RECENT_BLOCKHASH = "recent-blockhash";
+export const RPC_METHOD_SIMULATE = "simulate";
 
 export const UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE = "notifications-subscribe";
 export const UI_RPC_METHOD_KEYRING_STORE_CREATE = "keyring-store-create";
@@ -55,8 +56,6 @@ export const UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS = "ui-rpc-method-sign-all-txs";
 export const UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION =
   "ui-rpc-method-sign-and-send-tx";
 export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
-export const UI_RPC_METHOD_LEDGER_CONFIRM_PUBKEY =
-  "ui-rpc-method-ledger-confirm-pubkey";
 export const UI_RPC_METHOD_LEDGER_IMPORT = "ledger-import";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
@@ -93,7 +92,6 @@ export const LEDGER_METHOD_UNLOCK = "ledger-method-unlock";
 export const LEDGER_METHOD_CONNECT = "ledger-method-connect";
 export const LEDGER_METHOD_SIGN_TRANSACTION = "ledger-method-sign-transaction";
 export const LEDGER_METHOD_SIGN_MESSAGE = "ledger-method-sign-message";
-export const LEDGER_METHOD_CONFIRM_PUBKEY = "ledger-confirm-pubkey";
 
 export const POST_MESSAGE_ORIGIN = "*";
 

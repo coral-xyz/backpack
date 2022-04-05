@@ -43,7 +43,6 @@ export interface HdKeyring extends Keyring {
   readonly mnemonic: string;
   deriveNext(): [string, number];
   getPublicKey(accountIndex: number): string;
-  toJson(): any;
 }
 
 export interface LedgerKeyring extends Keyring {}

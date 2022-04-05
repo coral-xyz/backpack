@@ -4,6 +4,7 @@ import {
   PublicKey,
   Connection,
   Transaction,
+  SendOptions,
 } from "@solana/web3.js";
 import { DerivationPath } from "@200ms/common";
 import {
@@ -51,7 +52,11 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async signAndSendTx(txStr: string, walletAddress: string): Promise<string> {
+  async signAndSendTx(
+    txStr: string,
+    walletAddress: string,
+    options?: SendOptions
+  ): Promise<string> {
     // Sign the transaction.
     const tx = Transaction.from(bs58.decode(txStr));
     const txMsg = bs58.encode(tx.serializeMessage());
@@ -62,10 +67,13 @@ export class Backend {
     // Send it to the network.
     const conn = await this.solanaConnection();
     const commitment = await this.solanaCommitmentRead();
-    return await conn.sendRawTransaction(tx.serialize(), {
-      skipPreflight: false,
-      preflightCommitment: commitment,
-    });
+    return await conn.sendRawTransaction(
+      tx.serialize(),
+      options ?? {
+        skipPreflight: false,
+        preflightCommitment: commitment,
+      }
+    );
   }
 
   // Returns the signature.
@@ -96,11 +104,26 @@ export class Backend {
     return await blockchainKeyring.signMessage(msg, walletAddress);
   }
 
+  async simulate(
+    txStr: string,
+    walletAddress: string,
+    commitment: Commitment
+  ): Promise<any> {
+    const tx = Transaction.from(bs58.decode(txStr));
+    const txMsg = bs58.encode(tx.serializeMessage());
+    const signature = await this.signTransaction(txMsg, walletAddress);
+    const pubkey = new PublicKey(walletAddress);
+    tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
+
+    const conn = await this.solanaConnection();
+    return await conn.simulateTransaction(tx);
+  }
+
   // TODO: this should be shared with the frontend extension UI and put
   //       on a regular interval poll.
-  async recentBlockhash(): Promise<string> {
+  async recentBlockhash(commitment?: Commitment): Promise<string> {
     const conn = await this.solanaConnection();
-    const { blockhash } = await conn.getLatestBlockhash();
+    const { blockhash } = await conn.getLatestBlockhash(commitment);
     return blockhash;
   }
 
@@ -388,11 +411,6 @@ export class Backend {
   async ledgerConnect() {
     await this.keyringStore.ledgerConnect();
     return SUCCESS_RESPONSE;
-  }
-
-  async confirmPubkey() {
-    // todo
-    return true;
   }
 
   async ledgerImport(dPath: string, account: number, pubkey: string) {

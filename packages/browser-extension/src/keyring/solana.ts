@@ -20,7 +20,6 @@ import {
   LEDGER_METHOD_CONNECT,
   LEDGER_METHOD_SIGN_TRANSACTION,
   LEDGER_METHOD_SIGN_MESSAGE,
-  LEDGER_METHOD_CONFIRM_PUBKEY,
   DerivationPath,
 } from "@200ms/common";
 
@@ -267,13 +266,6 @@ export class SolanaLedgerKeyring implements LedgerKeyring {
       throw new Error("ledger account already exists");
     }
     this.derivationPaths.push({ path, account, publicKey });
-  }
-
-  public async confirmPublicKey() {
-    return await this.request({
-      method: LEDGER_METHOD_CONFIRM_PUBKEY,
-      params: [],
-    });
   }
 
   public publicKeys(): Array<string> {

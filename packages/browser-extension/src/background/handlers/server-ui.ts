@@ -1,6 +1,7 @@
 // All RPC request handlers for requests that can be sent from the UI to the
 // background script.
 
+import { DerivationPath } from "@200ms/common";
 import {
   debug,
   RpcRequest,
@@ -40,12 +41,10 @@ import {
   UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
-  UI_RPC_METHOD_LEDGER_CONFIRM_PUBKEY,
   UI_RPC_METHOD_LEDGER_CONNECT,
   UI_RPC_METHOD_LEDGER_IMPORT,
   NOTIFICATION_CONNECTION_URL_UPDATED,
 } from "../../common";
-import { DerivationPath } from "@200ms/common";
 import { KeyringStoreState } from "../../keyring/store";
 import { BACKEND, SUCCESS_RESPONSE } from "../backend";
 import { Io } from "../io";
@@ -130,8 +129,6 @@ async function handle<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return await handleApprovedOriginsUpdate(params[0]);
     case UI_RPC_METHOD_LEDGER_CONNECT:
       return await handleLedgerConnect();
-    case UI_RPC_METHOD_LEDGER_CONFIRM_PUBKEY:
-      return await handleLedgerConfirmPubkey();
     case UI_RPC_METHOD_LEDGER_IMPORT:
       return await handleKeyringLedgerImport(params[0], params[1], params[2]);
     default:
@@ -387,11 +384,6 @@ async function handleApprovedOriginsUpdate(
 
 async function handleLedgerConnect() {
   const resp = await BACKEND.ledgerConnect();
-  return [resp];
-}
-
-async function handleLedgerConfirmPubkey() {
-  const resp = await BACKEND.confirmPubkey();
   return [resp];
 }
 
