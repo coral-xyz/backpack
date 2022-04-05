@@ -1,5 +1,5 @@
 {
-  "name": "@200ms/client",
+  "name": "@200ms/example-client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
