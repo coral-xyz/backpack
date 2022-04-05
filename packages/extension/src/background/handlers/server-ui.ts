@@ -1,5 +1,5 @@
-// All RPC request handlers for requests that can be sent from the UI to the
-// background script.
+// All RPC request handlers for requests that can be sent from the trusted
+// extension UI to the background script.
 
 import { DerivationPath } from "@200ms/common";
 import {
@@ -54,8 +54,9 @@ export function start() {
 }
 
 async function handle<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
+  debug(`handle rpc ${msg.method}`);
+
   const { method, params } = msg;
-  debug(`handle rpc ${method}`);
   switch (method) {
     //
     // Keyring.

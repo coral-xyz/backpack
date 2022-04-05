@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Blockhash, Commitment } from "@solana/web3.js";
 import { useRecoilValue, useRecoilCallback } from "recoil";
 import * as atoms from "../recoil/atoms";
-import { useAnchorContext } from "./useWallet";
+import { useAnchorContextLoadable } from "./useWallet";
 
 const REFRESH_INTERVAL = 10 * 1000;
 
@@ -15,20 +15,24 @@ export function useRecentBlockhash(): Blockhash {
 }
 
 export function useLoadRecentBlockhash() {
-  const { provider } = useAnchorContext();
+  const anchorLoadable = useAnchorContextLoadable();
   const commitment = useCommitment();
   const updateRecentBlockhash = useUpdateRecentBlockhash();
   useEffect(() => {
+    if (anchorLoadable.state !== "hasValue") {
+      return;
+    }
     const interval = setInterval(async () => {
-      const { blockhash } = await provider.connection.getLatestBlockhash(
-        commitment
-      );
+      const { blockhash } =
+        await anchorLoadable.contents.provider.connection.getLatestBlockhash(
+          commitment
+        );
       updateRecentBlockhash(blockhash);
     }, REFRESH_INTERVAL);
     return () => {
       clearInterval(interval);
     };
-  }, [commitment, provider.connection]);
+  }, [commitment, anchorLoadable]);
 }
 
 export function useCommitment(): Commitment {

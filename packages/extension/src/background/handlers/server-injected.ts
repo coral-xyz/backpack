@@ -37,6 +37,7 @@ async function handle<T = any>(
   req: RpcRequest
 ): Promise<RpcResponse<T>> {
   debug(`handle rpc ${req.method}`);
+
   const { method, params } = req;
   switch (method) {
     case RPC_METHOD_CONNECT:
