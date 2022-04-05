@@ -1,5 +1,5 @@
 {
-  "name": "app",
+  "name": "@200ms/example-client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -27,7 +27,8 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "preinstall": "yarn link @solana/wallet-adapter-wallets"
   },
   "eslintConfig": {
     "extends": [

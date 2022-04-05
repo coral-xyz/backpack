@@ -6,7 +6,8 @@
   "types": "dist/esm/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "start": "tsc --watch"
+    "start": "tsc --watch",
+    "test": "echo 'no tests'"
   },
   "author": "",
   "license": "ISC",

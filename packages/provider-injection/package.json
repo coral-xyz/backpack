@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rollup --config"
+    "build": "rollup --config",
+    "test": "echo 'no tests'"
   },
   "author": "",
   "license": "ISC",

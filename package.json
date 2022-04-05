@@ -2,18 +2,15 @@
   "name": "anchor-wallet",
   "private": true,
   "workspaces": [
-    "packages/ledger-core",
-    "packages/ledger-injection",
-    "packages/extension",
-    "packages/common",
-    "packages/provider-injection"
+    "packages/*"
   ],
   "scripts": {
     "lint:fix": "prettier packages/**/*.{ts,tsx,css,md,json} --write",
     "prepare": "husky install",
-    "start:wallet": "cd packages/extension && yarn && yarn start",
-    "start:client": "cd packages/example-client && yarn && yarn start",
-    "start": "concurrently 'yarn start:wallet' 'yarn start:client'"
+    "start:extension": "yarn workspace @200ms/extension start",
+    "start:example-client": "yarn workspace @200ms/example-client start",
+    "start": "concurrently 'yarn start:extension' 'yarn start:example-client'",
+    "test": "yarn workspaces run test --passWithNoTests --watchAll=false"
   },
   "devDependencies": {
     "concurrently": "^7.0.0",
