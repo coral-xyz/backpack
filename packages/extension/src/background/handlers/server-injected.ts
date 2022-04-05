@@ -1,5 +1,5 @@
 // All RPC request handlers for requests that can be sent from the injected
-// script to the background script.
+// provider script to the background script.
 
 import * as bs58 from "bs58";
 import { Transaction, SendOptions, Commitment } from "@solana/web3.js";

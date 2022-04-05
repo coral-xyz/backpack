@@ -107,7 +107,7 @@ export class Backend {
   async simulate(
     txStr: string,
     walletAddress: string,
-    commitment: Commitment
+    commitment: Commitment // TODO: use this when we have the new anchor api.
   ): Promise<any> {
     const tx = Transaction.from(bs58.decode(txStr));
     const txMsg = bs58.encode(tx.serializeMessage());
