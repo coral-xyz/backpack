@@ -6,7 +6,7 @@
     "packages/ledger-injection",
     "packages/browser-extension",
     "packages/common",
-    "packages/provider"
+    "packages/provider-injection"
   ],
   "scripts": {
     "lint:fix": "prettier packages/**/*.{ts,tsx,css,md,json} --write",

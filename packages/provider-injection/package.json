@@ -1,5 +1,5 @@
 {
-  "name": "@200ms/provider",
+  "name": "@200ms/provider-injection",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
