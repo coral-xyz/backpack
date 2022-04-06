@@ -26,6 +26,7 @@ jobs:
 
       - name: yarn link wallet-adapter
         run: cd wallet-adapter &&
+          yarn install &&
           yarn build &&
           npx lerna exec -- yarn link
 
