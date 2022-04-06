@@ -11,9 +11,24 @@ jobs:
     name: Run tests
     steps:
       - uses: actions/checkout@v3
+
       - uses: actions/setup-node@v3
         with:
           node-version: 16
           cache: yarn
+
+      - name: checkout wallet-adapter
+        uses: actions/checkout@v3
+        with:
+          repository: 200ms-labs/wallet-adapter
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: wallet-adapter
+
+      - name: yarn link wallet-adapter
+        run: cd wallet-adapter &&
+          yarn build &&
+          npx lerna exec -- yarn link
+
       - run: yarn install
+
       - run: yarn test
