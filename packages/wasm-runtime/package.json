@@ -1,0 +1,33 @@
+{
+  "name": "@200ms/wasm-runtime",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/browser/index.js",
+  "types": "dist/browser/index.d.ts",
+  "scripts": {
+    "build": "rollup --config",
+    "test": "echo 'no tests'"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "wasm": "file:/Users/armaniferrante/Documents/code/src/github.com/200ms-labs/anchor-wallet-runtime/wasm/pkg",
+    "@200ms/common": "1.0.0",
+    "@ledgerhq/hw-transport": "^6.24.1",
+    "@ledgerhq/hw-transport-webhid": "^6.24.1",
+    "@solana/web3.js": "^1.36.0",
+    "bs58": "^5.0.0",
+    "eventemitter3": "^4.0.7"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.0.6",
+    "@rollup/plugin-replace": "^3.0.0",
+    "@rollup/plugin-typescript": "^8.3.0",
+    "@rollup/plugin-wasm": "^5.1.2",
+    "rollup": "^2.70.1",
+    "rollup-plugin-terser": "^7.0.2",
+    "typescript": "^4.6.3"
+  }
+}

@@ -49,6 +49,15 @@ import { KeyringStoreState } from "../../keyring/store";
 import { BACKEND, SUCCESS_RESPONSE } from "../backend";
 import { Io } from "../io";
 
+let RUNTIME: any = null;
+console.log("run importing here");
+import("wasm").then((runtime) => {
+  RUNTIME = runtime;
+  console.log("run", RUNTIME);
+  const r = RUNTIME.exec();
+  console.log("r", r);
+});
+
 export function start() {
   Io.rpcServerUi.handler(handle);
 }
