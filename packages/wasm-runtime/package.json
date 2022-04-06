@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/browser/index.js",
-  "types": "dist/browser/index.d.ts",
+  "types": "dist/browser/types/index.d.ts",
   "scripts": {
     "build": "rollup --config",
     "test": "echo 'no tests'"
