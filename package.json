@@ -16,7 +16,8 @@
     "concurrently": "^7.0.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.7",
-    "prettier": "^2.6.1"
+    "prettier": "^2.6.1",
+    "turbo": "^1.1.10"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,css,md,json}": "prettier --write"
