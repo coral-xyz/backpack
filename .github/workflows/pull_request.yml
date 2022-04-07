@@ -35,7 +35,7 @@ jobs:
           cd wallet-adapter && git rev-parse --short HEAD
           )" >> $GITHUB_ENV
 
-      # cache `yarn build` based on latest commit SHA, as it takes 10+ mins
+      # cache `yarn build` output based on latest commit SHA as it takes 10+ mins
 
       - name: "[wallet-adapter] cache"
         id: wallet-adapter-cache
