@@ -17,6 +17,12 @@ jobs:
           node-version: 16
           cache: yarn
 
+      # The following [wallet-adapter] tasks are only necessary until
+      # the 'anchor' branch in https://github.com/200ms-labs/wallet-adapter
+      # gets merged upstream and deployed in @solana/wallet-adapter
+
+      # <<< START [wallet-adapter] tasks
+
       - name: "[wallet-adapter] checkout"
         uses: actions/checkout@v3
         with:
@@ -25,7 +31,11 @@ jobs:
           path: wallet-adapter
 
       - name: "[wallet-adapter] set env var"
-        run: echo "wallet_adapter_sha=$(cd wallet-adapter && git rev-parse --short HEAD)" >> $GITHUB_ENV
+        run: echo "wallet_adapter_sha=$(
+          cd wallet-adapter && git rev-parse --short HEAD
+          )" >> $GITHUB_ENV
+
+      # cache `yarn build` based on latest commit SHA, as it takes 10+ mins
 
       - name: "[wallet-adapter] cache"
         id: wallet-adapter-cache
@@ -44,7 +54,10 @@ jobs:
         run: yarn build
 
       - name: "[wallet-adapter] yarn link"
+        working-directory: wallet-adapter
         run: npx lerna exec -- yarn link
+
+      # END [wallet-adapter] tasks >>>
 
       - run: yarn install
 
