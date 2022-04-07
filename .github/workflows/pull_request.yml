@@ -17,30 +17,33 @@ jobs:
           node-version: 16
           cache: yarn
 
-      - name: checkout wallet-adapter
+      - name: "[wallet-adapter] checkout"
         uses: actions/checkout@v3
         with:
           repository: 200ms-labs/wallet-adapter
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           path: wallet-adapter
 
-      - name: cache wallet-adapter
+      - name: "[wallet-adapter] set env var"
+        run: echo "wallet_adapter_sha=$(cd wallet-adapter && git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: "[wallet-adapter] cache"
         id: wallet-adapter-cache
         uses: actions/cache@v3
         with:
           path: wallet-adapter
-          key: ${{ runner.OS }}-wallet-adapter-cache-${{ cd wallet-adapter && git rev-parse --short HEAD }}
+          key: ${{ runner.OS }}-wallet-adapter-cache-${{ env.wallet_adapter_sha }}
 
-      - name: install wallet-adapter deps
+      - name: "[wallet-adapter] install deps"
         working-directory: wallet-adapter
         run: yarn install
 
-      - name: build wallet-adapter
+      - name: "[wallet-adapter] build"
         if: steps.wallet-adapter-cache.outputs.cache-hit != 'true'
         working-directory: wallet-adapter
         run: yarn build
 
-      - name: yarn link wallet-adapter
+      - name: "[wallet-adapter] yarn link"
         run: npx lerna exec -- yarn link
 
       - run: yarn install
