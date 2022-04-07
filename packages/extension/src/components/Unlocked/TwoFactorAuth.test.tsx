@@ -25,7 +25,9 @@ describe("during registration, the user enters...", () => {
 
     await user.click(getByText("Continue"));
 
-    await user.type(getByTestId("2fa-value"), authenticator.generate("123"));
+    const VALID_CODE = authenticator.generate("123");
+
+    await user.type(getByTestId("2fa-value"), VALID_CODE);
 
     await user.click(getByText("Submit"));
 
@@ -41,7 +43,9 @@ describe("during registration, the user enters...", () => {
 
     await user.click(getByText("Continue"));
 
-    await user.type(getByTestId("2fa-value"), "123");
+    const INVALID_CODE = "999999";
+
+    await user.type(getByTestId("2fa-value"), INVALID_CODE);
 
     await user.click(getByText("Submit"));
 
