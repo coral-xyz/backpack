@@ -24,11 +24,24 @@ jobs:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           path: wallet-adapter
 
+      - name: cache wallet-adapter
+        id: wallet-adapter-cache
+        uses: actions/cache@v3
+        with:
+          path: wallet-adapter
+          key: ${{ runner.OS }}-wallet-adapter-cache-${{ cd wallet-adapter && git rev-parse --short HEAD }}
+
+      - name: install wallet-adapter deps
+        working-directory: wallet-adapter
+        run: yarn install
+
+      - name: build wallet-adapter
+        if: steps.wallet-adapter-cache.outputs.cache-hit != 'true'
+        working-directory: wallet-adapter
+        run: yarn build
+
       - name: yarn link wallet-adapter
-        run: cd wallet-adapter &&
-          yarn install &&
-          yarn build &&
-          npx lerna exec -- yarn link
+        run: npx lerna exec -- yarn link
 
       - run: yarn install
 
