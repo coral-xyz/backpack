@@ -12,7 +12,15 @@ import {
   Divider,
   TextField,
 } from "@material-ui/core";
-import { Add, Menu, Close, Lock, Help, FlashOn } from "@material-ui/icons";
+import {
+  Add,
+  Menu,
+  Close,
+  Lock,
+  Help,
+  FlashOn,
+  Security,
+} from "@material-ui/icons";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import {
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
@@ -27,6 +35,7 @@ import { KeyringStoreStateEnum } from "../../keyring/store";
 import { WalletAddress } from "../../components/common";
 import { WithDrawerNoHeader } from "./Drawer";
 import { openConnectHardware } from "../../common";
+import { TwoFactorAuth } from "../Unlocked/TwoFactorAuth";
 
 const useStyles = makeStyles((theme: any) => ({
   sidebarContainer: {
@@ -110,19 +119,23 @@ function SidebarContent({ close }: { close: () => void }) {
   );
 }
 
+const enum DrawView {
+  RecentActivity = "recent-activity",
+  AddConnect = "add-connect",
+  TwoFactorAuth = "two-factor-auth",
+}
+
 function _SidebarContent({ close }: { close: () => void }) {
   const classes = useStyles();
   const theme = useTheme() as any;
   const namedPublicKeys = useWalletPublicKeys();
   const keyringStoreState = useKeyringStoreState();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [drawerView, setDrawerView] = useState("recent-activity");
-  const _setOpenRecentActivity = (openDrawer: boolean) => {
-    setDrawerView("recent-activity");
-    setOpenDrawer(openDrawer);
-  };
-  const _setOpenAddConnect = (openDrawer: boolean) => {
-    setDrawerView("add-connect");
+  const [drawerView, setDrawerView] = useState<DrawView>(
+    DrawView.RecentActivity
+  );
+  const _setDrawView = (view: DrawView) => (openDrawer: boolean) => {
+    setDrawerView(view);
     setOpenDrawer(openDrawer);
   };
   const lockWallet = () => {
@@ -198,7 +211,7 @@ function _SidebarContent({ close }: { close: () => void }) {
               className={classes.sidebarContentListItem}
               onClick={() => {
                 close();
-                _setOpenAddConnect(true);
+                _setDrawView(DrawView.AddConnect)(true);
               }}
             >
               <Add
@@ -215,7 +228,7 @@ function _SidebarContent({ close }: { close: () => void }) {
               className={classes.sidebarContentListItem}
               onClick={() => {
                 close();
-                _setOpenRecentActivity(true);
+                _setDrawView(DrawView.RecentActivity)(true);
               }}
             >
               <FlashOn
@@ -234,6 +247,24 @@ function _SidebarContent({ close }: { close: () => void }) {
           />
           <Typography>Help & Support</Typography>
         </ListItem>
+        <ListItem button className={classes.sidebarContentListItem}>
+          <ListItem
+            button
+            className={classes.sidebarContentListItem}
+            onClick={() => {
+              close();
+              _setDrawView(DrawView.TwoFactorAuth)(true);
+            }}
+          >
+            <Security
+              style={{
+                color: theme.custom.colors.offText,
+                marginRight: "12px",
+              }}
+            />
+            <Typography>2FA</Typography>
+          </ListItem>
+        </ListItem>
         {keyringStoreState === KeyringStoreStateEnum.Unlocked && (
           <ListItem
             button
@@ -251,10 +282,13 @@ function _SidebarContent({ close }: { close: () => void }) {
         )}
       </List>
       <WithDrawerNoHeader openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        {drawerView === "recent-activity" && <RecentActivity />}
-        {drawerView === "add-connect" && (
+        {drawerView === DrawView.RecentActivity ? (
+          <RecentActivity />
+        ) : drawerView === DrawView.AddConnect ? (
           <AddConnectWallet closeDrawer={() => setOpenDrawer(false)} />
-        )}
+        ) : drawerView === DrawView.TwoFactorAuth ? (
+          <TwoFactorAuth secret="PLACEHOLDERSECRETCODE" />
+        ) : null}
       </WithDrawerNoHeader>
     </div>
   );
@@ -307,7 +341,6 @@ function SidebarHeader({ close }: { close: () => void }) {
 }
 
 function RecentActivity() {
-  const classes = useStyles();
   return <div>TODO: RECENT ACTIVITY</div>;
 }
 
