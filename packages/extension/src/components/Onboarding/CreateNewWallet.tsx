@@ -225,6 +225,7 @@ export function CreatePassword({ next }: { next: (password: string) => void }) {
       />
       <div>
         <TextField
+          inputProps={{ name: "password" }}
           placeholder="Enter your password..."
           type="password"
           value={password}
@@ -232,6 +233,7 @@ export function CreatePassword({ next }: { next: (password: string) => void }) {
           rootClass={classes.passwordFieldRoot}
         />
         <TextField
+          inputProps={{ name: "password-confirmation" }}
           placeholder="Confirm your password..."
           type="password"
           value={passwordDup}
@@ -349,10 +351,16 @@ export function Done({ done }: { done: () => void }) {
   );
 }
 
-export function WithContinue(props: any) {
+export function WithContinue({ buttonLabel = "Continue", ...props }: any) {
   const classes = useStyles();
   return (
-    <div className={classes.withContinueContainer}>
+    <form
+      className={classes.withContinueContainer}
+      onSubmit={(e) => {
+        e.preventDefault();
+        props.next();
+      }}
+    >
       <div
         style={{
           flex: 1,
@@ -365,12 +373,9 @@ export function WithContinue(props: any) {
         {props.children}
       </div>
       <div className={classes.continueButtonContainer}>
-        <OnboardButton
-          onClick={() => props.next()}
-          label={props.buttonLabel ?? "Continue"}
-        />
+        <OnboardButton type="submit" label={buttonLabel} />
       </div>
-    </div>
+    </form>
   );
 }
 
