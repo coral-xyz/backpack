@@ -113,7 +113,8 @@ function ImportMnemonic({ next }: { next: (m: string) => void }) {
         subtext={"Enter your mnemonic"}
       />
       <TextField
-        placeholder="Secret Recover Phrase"
+        inputProps={{ name: "mnemonic" }}
+        placeholder="Secret Recovery Phrase"
         value={mnemonic}
         setValue={setMnemonic}
         rootClass={classes.importMnemonicRoot}

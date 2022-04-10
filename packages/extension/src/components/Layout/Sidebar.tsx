@@ -409,7 +409,10 @@ function ImportPrivateKey({ closeDrawer }: any) {
         onChange={(e) => setName(e.target.value)}
       />
       <TextField
-        placeholder="Secret Recover Phrase"
+        inputProps={{
+          name: "mnemonic",
+        }}
+        placeholder="Secret Recovery Phrase"
         variant="outlined"
         margin="dense"
         required

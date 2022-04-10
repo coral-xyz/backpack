@@ -1,7 +1,6 @@
 import { atom, atomFamily, selector } from "recoil";
-import { PublicKey, Blockhash } from "@solana/web3.js";
+import { Blockhash, Connection, PublicKey } from "@solana/web3.js";
 import { Provider } from "@project-serum/anchor";
-import { txHistoryConnection } from "./ignore";
 import { bootstrap } from "./bootstrap";
 import { anchorContext } from "./wallet";
 
@@ -42,11 +41,14 @@ export async function fetchRecentTransactions(
   publicKey: PublicKey,
   provider: Provider
 ) {
-  const connection = txHistoryConnection();
+  const connection = process.env.RPC_WITH_TX_HISTORY
+    ? new Connection(process.env.RPC_WITH_TX_HISTORY)
+    : provider.connection;
+
   const resp = await connection.getConfirmedSignaturesForAddress2(publicKey, {
     limit: 15,
   });
-  // @ts-ignore
+
   const signatures = resp.map((s) => s.signature);
   const transactions = await connection.getParsedTransactions(signatures);
   return transactions;
