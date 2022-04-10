@@ -1,5 +1,5 @@
 import { atom, selector } from "recoil";
-import { Connection, Commitment } from "@solana/web3.js";
+import { Commitment } from "@solana/web3.js";
 import { Spl, Provider } from "@project-serum/anchor";
 import {
   UI_RPC_METHOD_CONNECTION_URL_READ,
@@ -10,6 +10,7 @@ import {
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
+import { BackgroundSolanaConnection } from "../background/solana-connection/client";
 import { WalletPublicKeys } from "./types";
 
 /**
@@ -114,9 +115,9 @@ export const connectionUrl = atom<string>({
 
 export const anchorContext = selector({
   key: "anchorContext",
-  get: ({ get }: any) => {
+  get: async ({ get }: any) => {
     const connectionUrlStr = get(connectionUrl);
-    const connection = new Connection(connectionUrlStr);
+    const connection = new BackgroundSolanaConnection(connectionUrlStr);
     // Note: this provider is *read-only*.
     //
     // @ts-ignore

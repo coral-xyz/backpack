@@ -1,8 +1,9 @@
 import { atom, atomFamily, selector } from "recoil";
-import { Blockhash, Connection, PublicKey } from "@solana/web3.js";
+import { Blockhash, PublicKey } from "@solana/web3.js";
 import { Provider } from "@project-serum/anchor";
 import { bootstrap } from "./bootstrap";
 import { anchorContext } from "./wallet";
+import { BackgroundSolanaConnection } from "../background/solana-connection/client";
 
 export const recentTransactions = atomFamily<any | null, string>({
   key: "recentTransactionsMap",
@@ -42,7 +43,7 @@ export async function fetchRecentTransactions(
   provider: Provider
 ) {
   const connection = process.env.RPC_WITH_TX_HISTORY
-    ? new Connection(process.env.RPC_WITH_TX_HISTORY)
+    ? new BackgroundSolanaConnection(process.env.RPC_WITH_TX_HISTORY)
     : provider.connection;
 
   const resp = await connection.getConfirmedSignaturesForAddress2(publicKey, {

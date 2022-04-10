@@ -3,7 +3,7 @@ import { RecoilRoot } from "recoil";
 import { WithSuspense } from "../app/Router";
 import { WithTheme } from "../app/theme";
 import { ConnectHardware } from "../components/ConnectHardware";
-import { setupBackgroundClient } from "../background/client";
+import { setupBackgroundClients } from "../background/client";
 import { Onboarding } from "../components/Onboarding";
 import { QUERY_CONNECT_HARDWARE, QUERY_ONBOARDING } from "../common";
 import "../app/App.css";
@@ -16,7 +16,7 @@ import "@fontsource/inter";
 // - Connect to hardware
 //
 function Options() {
-  setupBackgroundClient();
+  setupBackgroundClients();
   return (
     <RecoilRoot>
       <_Options />

@@ -33,6 +33,8 @@ import {
   TAB_FRIENDS,
 } from "../common";
 import { Io } from "./io";
+import * as solanaConnection from "./solana-connection/backend";
+import { BACKEND as SOLANA_CONNECTION_BACKEND } from "./solana-connection/backend";
 
 export class Backend {
   private keyringStore: KeyringStore;
@@ -151,6 +153,13 @@ export class Backend {
 
   async keyringStoreUnlock(password: string): Promise<String> {
     await this.keyringStore.tryUnlock(password);
+
+    //
+    // Bootup the network connection.
+    //
+    const url = await this.solanaConnectionUrl();
+    solanaConnection.start(url);
+
     this.notifications.pushNotification({
       name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
     });
@@ -237,7 +246,11 @@ export class Backend {
   }
 
   async connectionUrlUpdate(url: string): Promise<boolean> {
-    return await this.keyringStore.connectionUrlUpdate(url);
+    const didChange = await this.keyringStore.connectionUrlUpdate(url);
+    if (didChange) {
+      SOLANA_CONNECTION_BACKEND!.urlDidUpdate(url);
+    }
+    return didChange;
   }
 
   async activeWallet(): Promise<string> {

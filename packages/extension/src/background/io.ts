@@ -7,6 +7,7 @@ import {
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_RESPONSE,
   CONNECTION_POPUP_NOTIFICATIONS,
+  SOLANA_CONNECTION_RPC_UI,
 } from "../common";
 
 //
@@ -22,6 +23,9 @@ export class Io {
 
   // Server rceiving rpc requests from the extension UI.
   public static rpcServerUi = PortChannel.server(CONNECTION_POPUP_RPC);
+
+  // Server receiving Connection API requests from the extension UI.
+  public static solanaConnection = PortChannel.server(SOLANA_CONNECTION_RPC_UI);
 
   // Server receiving responses from the extension UI. This is used when the
   // background script wants to request some type of user action from the UI,

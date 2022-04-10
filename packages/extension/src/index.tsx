@@ -3,10 +3,10 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./app/App";
 import reportWebVitals from "./reportWebVitals";
-import { setupBackgroundClient } from "./background/client";
+import { setupBackgroundClients } from "./background/client";
 
 async function main() {
-  setupBackgroundClient();
+  setupBackgroundClients();
   render();
 }
 

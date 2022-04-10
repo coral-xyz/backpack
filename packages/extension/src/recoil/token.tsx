@@ -306,7 +306,6 @@ export async function fetchTokens(
       programId: tokenClient.programId,
     }
   );
-
   //
   // Decode the data.
   //
@@ -319,12 +318,10 @@ export async function fetchTokens(
       },
     ]
   );
-
   //
   // Filter out any invalid tokens.
   //
   const validTokens = tokens.filter(([, t]) => t.amount.toNumber() >= 1);
-
   //
   // Done.
   //

@@ -79,9 +79,26 @@ export const NOTIFICATION_KEYRING_CREATED = "anchor-keyring-created";
 export const NOTIFICATION_APPROVED_ORIGINS_UPDATE =
   "anchor-approved-origins-update";
 
+export const SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO = "solana-get-account-info";
+export const SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH =
+  "solana-get-latest-blockhash";
+export const SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNTS_BY_OWNER =
+  "solana-get-token-accounts-by-owner";
+export const SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION =
+  "solana-send-raw-transaction";
+export const SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION =
+  "solana-confirm-transaction";
+export const SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS =
+  "solana-get-parsed-transactions";
+export const SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO =
+  "solana-get-multiple-accounts-info";
+export const SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2 =
+  "solana-get-confirmed-signatures-for-address-2";
+
 export const CONNECTION_POPUP_RPC = "anchor-popup-rpc";
 export const CONNECTION_POPUP_RESPONSE = "anchor-popup-response";
 export const CONNECTION_POPUP_NOTIFICATIONS = "anchor-popup-notifications";
+export const SOLANA_CONNECTION_RPC_UI = "solana-connection-rpc-ui";
 
 //const LEDGER_IFRAME_URL = "https://200ms-labs.github.io/anchor-wallet";
 export const LEDGER_IFRAME_URL = "https://localhost:4443/dist/browser";
