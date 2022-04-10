@@ -1,82 +1,6 @@
-import { useEffect } from "react";
-import { PublicKey } from "@solana/web3.js";
 import { useRecoilValue, useRecoilCallback } from "recoil";
 import { TokenAccountWithKey } from "../recoil/types";
-import { useActiveWalletLoadable } from "../hooks/useWallet";
 import * as atoms from "../recoil/atoms";
-import {
-  fetchTokens,
-  fetchSplMetadata,
-  fetchSplMetadataUri,
-  removeNfts,
-} from "../recoil/atoms";
-import { useAnchorContextLoadable } from "../hooks/useWallet";
-
-const REFRESH_INTERVAL = 10 * 1000;
-
-export function useLoadSplTokens() {
-  const walletLoadable = useActiveWalletLoadable();
-  const anchorLoadable = useAnchorContextLoadable();
-  const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
-  useEffect(() => {
-    if (
-      walletLoadable.state !== "hasValue" ||
-      anchorLoadable.state !== "hasValue"
-    ) {
-      return;
-    }
-    const wallet = walletLoadable.contents;
-    const { tokenClient, provider } = anchorLoadable.contents;
-
-    const publicKey = new PublicKey(wallet.publicKey);
-
-    const interval = setInterval(async () => {
-      if (!publicKey) {
-        return;
-      }
-      try {
-        //
-        // Fetch tokens.
-        //
-        const tokenAccounts = await fetchTokens(publicKey, tokenClient);
-        const tokenAccountsArray = Array.from(tokenAccounts.values());
-
-        //
-        // Fetch metadata.
-        //
-        const tokenMetadata = await fetchSplMetadata(
-          provider,
-          tokenAccountsArray
-        );
-
-        //
-        // Fetch the metadata uri and interpert as NFTs.
-        //
-        const nftMetadata = await fetchSplMetadataUri(
-          tokenAccountsArray,
-          tokenMetadata
-        );
-
-        //
-        // Set the recoil atoms.
-        //
-        updateAllSplTokenAccounts({
-          tokenAccounts: Array.from(
-            removeNfts(tokenAccounts, nftMetadata).values()
-          ),
-          tokenMetadata,
-          nftMetadata,
-        });
-      } catch (err) {
-        // TODO show error notification
-        console.error(err);
-      }
-    }, REFRESH_INTERVAL);
-    return () => {
-      clearInterval(interval);
-    };
-  }, [walletLoadable, anchorLoadable, updateAllSplTokenAccounts]);
-}
 
 export function useTokenAddresses(): string[] {
   return useRecoilValue(atoms.solanaTokenAccountKeys)!;
@@ -89,7 +13,7 @@ export function useTokenAddresses(): string[] {
 //       with default values that are selectors are not yet supported.
 //
 //       See https://recoiljs.org/docs/api-reference/core/useRecoilTransaction.
-const useUpdateAllSplTokenAccounts = () =>
+export const useUpdateAllSplTokenAccounts = () =>
   useRecoilCallback(
     ({ set }: any) =>
       async ({

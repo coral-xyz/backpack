@@ -10,6 +10,7 @@ import {
   debug,
   RpcRequest,
   RpcResponse,
+  SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
   SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH,
@@ -54,6 +55,8 @@ async function handle<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       );
     case SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS:
       return await handleGetParsedTransactions(params[0], params[1]);
+    case SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS:
+      return await handleCustomSplTokenAccounts(params[0]);
     default:
       throw new Error("invalid rpc method");
   }
@@ -136,5 +139,10 @@ async function handleGetParsedTransactions(
   commitment?: Finality
 ) {
   const resp = await BACKEND!.getParsedTransactions(signatures, commitment);
+  return [resp];
+}
+
+async function handleCustomSplTokenAccounts(pubkey: string) {
+  const resp = await BACKEND!.customSplTokenAccounts(new PublicKey(pubkey));
   return [resp];
 }

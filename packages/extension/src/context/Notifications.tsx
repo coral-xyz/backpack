@@ -16,9 +16,14 @@ import {
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
   NOTIFICATION_KEYRING_RESET_MNEMONIC,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
+  NOTIFICATION_BLOCKHASH_DID_UPDATE,
+  NOTIFICATION_SPL_TOKENS_DID_UPDATE,
 } from "../common";
 import { getBackgroundClient } from "../background/client";
 import { KeyringStoreStateEnum } from "../keyring/store";
+import { useUpdateAllSplTokenAccounts } from "../hooks/useLoadSplTokens";
+import { useUpdateRecentBlockhash } from "../hooks/useRecentBlockhash";
+import { BackgroundSolanaConnection } from "../background/solana-connection/client";
 
 // The Notifications provider is used to subscribe and handle notifications
 // from the background script.
@@ -27,6 +32,8 @@ export function NotificationsProvider(props: any) {
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveWallet = useSetRecoilState(atoms.activeWallet);
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
+  const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
+  const updateRecentBlockhash = useUpdateRecentBlockhash();
 
   useEffect(() => {
     const backgroundClient = getBackgroundClient();
@@ -63,6 +70,12 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_APPROVED_ORIGINS_UPDATE:
           handleApprovedOriginsUpdate(notif);
+          break;
+        case NOTIFICATION_BLOCKHASH_DID_UPDATE:
+          handleBlockhashDidUpdate(notif);
+          break;
+        case NOTIFICATION_SPL_TOKENS_DID_UPDATE:
+          handleSplTokensDidUpdate(notif);
           break;
         default:
           break;
@@ -140,6 +153,20 @@ export function NotificationsProvider(props: any) {
     };
     const handleApprovedOriginsUpdate = (notif: Notification) => {
       setApprovedOrigins(notif.data.approvedOrigins);
+    };
+    const handleBlockhashDidUpdate = (notif: Notification) => {
+      const { blockhash } = notif.data;
+      updateRecentBlockhash(blockhash);
+    };
+    const handleSplTokensDidUpdate = (notif: Notification) => {
+      const result = BackgroundSolanaConnection.customSplTokenAccountsFromJson(
+        notif.data
+      );
+      updateAllSplTokenAccounts({
+        ...result,
+        tokenAccounts: result.tokenAccountsMap.map((t: any) => t[1]),
+        nftMetadata: new Map(result.nftMetadata),
+      });
     };
 
     //

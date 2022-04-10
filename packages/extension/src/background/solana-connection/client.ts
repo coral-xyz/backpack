@@ -1,3 +1,4 @@
+import BN from "bn.js";
 import {
   Connection,
   ConnectionConfig,
@@ -74,14 +75,39 @@ import {
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
   SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2,
+  SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
 } from "../../common";
 
 export class BackgroundSolanaConnection extends Connection {
+  // Note that this constructor is actually meaningless.
+  // We only use it so that we can subclass Connection.
+  // In reality, the params here are actually read in the context of the
+  // background script.
   constructor(
     endpoint: string,
     commitmentOrConfig?: Commitment | ConnectionConfig
   ) {
     super(endpoint, commitmentOrConfig);
+  }
+
+  async customSplTokenAccounts(publicKey: PublicKey): Promise<{
+    tokenAccounts: any;
+    tokenMetadata: any;
+    nftMetadata: any;
+  }> {
+    const resp = await getBackgroundClient().request({
+      method: SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
+      params: [publicKey.toString()],
+    });
+    return BackgroundSolanaConnection.customSplTokenAccountsFromJson(resp);
+  }
+
+  static customSplTokenAccountsFromJson(json: any) {
+    json.tokenAccountsMap.map((t: any) => {
+      t[1].amount = new BN(t[1].amount);
+      return t;
+    });
+    return json;
   }
 
   async getAccountInfo(
@@ -690,7 +716,6 @@ export class BackgroundSolanaConnection extends Connection {
 
 let _backgroundSolanaConnectionClient: PortChannelClient | null = null;
 
-// TODO: can we get rid of this function and just set directly?
 export function setupBackgroundClient() {
   //
   // Client to communicate from the UI to the background script for the

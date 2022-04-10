@@ -1,7 +1,9 @@
+import { EventEmitter } from "eventemitter3";
 import {
   Channel,
   PortChannel,
   NotificationsClient,
+  BACKEND_EVENT,
   CHANNEL_RPC_REQUEST,
   CHANNEL_NOTIFICATION,
   CONNECTION_POPUP_RPC,
@@ -32,9 +34,20 @@ export class Io {
   // e.g., the approval of a transaction.
   public static popupUiResponse = PortChannel.server(CONNECTION_POPUP_RESPONSE);
 
+  // Main event emitter for the
+  public static events = new EventEmitter();
+
   // Client to send notifications from the background script to the extension UI.
   // This should only be created *after* the UI explicitly asks for it.
-  public static notificationsUi = new NotificationsClient(
+  public static notificationsUi = startNotificationsUi();
+}
+
+function startNotificationsUi(): NotificationsClient {
+  const notificationsUi = new NotificationsClient(
     CONNECTION_POPUP_NOTIFICATIONS
   );
+  Io.events.on(BACKEND_EVENT, (notification) => {
+    notificationsUi.pushNotification(notification);
+  });
+  return notificationsUi;
 }

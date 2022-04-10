@@ -1,3 +1,4 @@
+import { Provider } from "@project-serum/anchor";
 import {
   TransactionSignature,
   PublicKey,
@@ -42,10 +43,10 @@ function main() {
 
 function initProvider() {
   // @ts-ignore
-  window.anchor = new Provider();
+  window.anchor = new ProviderInjection();
 }
 
-class Provider extends EventEmitter {
+class ProviderInjection extends EventEmitter implements Provider {
   private _url?: string;
   private _options?: ConfirmOptions;
   private _requestId: number;
@@ -54,7 +55,7 @@ class Provider extends EventEmitter {
   public isAnchor: boolean;
   public isConnected: boolean;
   public publicKey?: PublicKey;
-  public connection?: Connection;
+  public connection: Connection;
 
   constructor() {
     super();
@@ -67,7 +68,11 @@ class Provider extends EventEmitter {
     this.isAnchor = true;
     this.isConnected = false;
     this.publicKey = undefined;
-    this.connection = undefined;
+    this.connection = this.defaultConnection();
+  }
+
+  defaultConnection(): Connection {
+    return new Connection("https://solana-api.projectserum.com");
   }
 
   // Setup channels with the content script.
@@ -139,7 +144,7 @@ class Provider extends EventEmitter {
 
   async disconnect() {
     await this.request({ method: RPC_METHOD_DISCONNECT, params: [] });
-    this.connection = undefined;
+    this.connection = this.defaultConnection();
   }
 
   async sendAndConfirm(

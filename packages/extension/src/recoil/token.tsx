@@ -240,7 +240,7 @@ export async function fetchSplMetadataUri(
           const resp = await fetch(t.account.data.uri);
           return resp.json();
         } catch (err) {
-          console.error(err);
+          console.log(err);
         }
       })
   );

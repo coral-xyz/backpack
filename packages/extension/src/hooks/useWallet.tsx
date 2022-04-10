@@ -7,15 +7,10 @@ import {
 import { PublicKey, Connection } from "@solana/web3.js";
 import * as atoms from "../recoil/atoms";
 import { KeyringStoreStateEnum } from "../keyring/store";
-import { useLoadSplTokens } from "../hooks/useLoadSplTokens";
 import { useNavigation, useNavigationRoot } from "../hooks/useNavigation";
 import { useTab } from "../hooks/useTab";
 import { useKeyringStoreState } from "../hooks/useKeyringStoreState";
-import {
-  useLoadRecentBlockhash,
-  useCommitment,
-  useRecentBlockhash,
-} from "./useRecentBlockhash";
+import { useCommitment, useRecentBlockhash } from "./useRecentBlockhash";
 import { useSplTokenRegistry } from "./useSplTokenRegistry";
 import { SolanaContext } from "../common/solana";
 
@@ -34,11 +29,6 @@ export function useBootstrapFast() {
   useNavigation();
   useKeyringStoreState();
   useCommitment();
-}
-
-export function useBackgroundPoll() {
-  useLoadSplTokens();
-  useLoadRecentBlockhash();
 }
 
 export function useActiveWalletLoadable(): Loadable<{

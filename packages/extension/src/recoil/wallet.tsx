@@ -18,18 +18,16 @@ import { WalletPublicKeys } from "./types";
  */
 export const walletPublicKeys = atom<WalletPublicKeys>({
   key: "walletPublicKeys",
-  default: { hdPublicKeys: [], importedPublicKeys: [], ledgerPublicKeys: [] },
-  effects: [
-    ({ setSelf }) => {
+  default: selector({
+    key: "walletPublicKeysDefault",
+    get: async ({}) => {
       const background = getBackgroundClient();
-      setSelf(
-        background.request({
-          method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-          params: [],
-        })
-      );
+      return await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
+        params: [],
+      });
     },
-  ],
+  }),
 });
 
 /**
@@ -37,18 +35,16 @@ export const walletPublicKeys = atom<WalletPublicKeys>({
  */
 export const activeWallet = atom<string | null>({
   key: "activeWallet",
-  default: null,
-  effects: [
-    ({ setSelf }) => {
+  default: selector({
+    key: "activeWalletDefault",
+    get: async ({}) => {
       const background = getBackgroundClient();
-      setSelf(
-        background.request({
-          method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
-          params: [],
-        })
-      );
+      return await background.request({
+        method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
+        params: [],
+      });
     },
-  ],
+  }),
 });
 
 /**
@@ -118,13 +114,14 @@ export const anchorContext = selector({
   get: async ({ get }: any) => {
     const connectionUrlStr = get(connectionUrl);
     const connection = new BackgroundSolanaConnection(connectionUrlStr);
+    const _commitment = get(commitment);
     // Note: this provider is *read-only*.
     //
     // @ts-ignore
     const provider = new Provider(connection, undefined, {
       skipPreflight: false,
-      commitment: "recent",
-      preflightCommitment: "recent",
+      commitment: _commitment,
+      preflightCommitment: _commitment,
     });
     const tokenClient = Spl.token(provider);
     return {

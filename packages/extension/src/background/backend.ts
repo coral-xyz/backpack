@@ -2,7 +2,6 @@ import * as bs58 from "bs58";
 import {
   Commitment,
   PublicKey,
-  Connection,
   Transaction,
   SendOptions,
 } from "@solana/web3.js";
@@ -18,7 +17,7 @@ import {
   NavData,
 } from "../keyring/store";
 import {
-  NotificationsClient,
+  BACKEND_EVENT,
   NOTIFICATION_KEYRING_KEY_DELETE,
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
@@ -27,22 +26,20 @@ import {
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
   TAB_BALANCES,
   TAB_QUEST,
   TAB_BRIDGE,
   TAB_FRIENDS,
 } from "../common";
 import { Io } from "./io";
-import * as solanaConnection from "./solana-connection/backend";
 import { BACKEND as SOLANA_CONNECTION_BACKEND } from "./solana-connection/backend";
 
 export class Backend {
   private keyringStore: KeyringStore;
-  private notifications: NotificationsClient;
 
-  constructor(notifications: NotificationsClient) {
-    this.keyringStore = new KeyringStore(notifications);
-    this.notifications = notifications;
+  constructor() {
+    this.keyringStore = new KeyringStore();
   }
 
   async isApprovedOrigin(origin: string): Promise<boolean> {
@@ -67,9 +64,8 @@ export class Backend {
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
 
     // Send it to the network.
-    const conn = await this.solanaConnection();
     const commitment = await this.solanaCommitmentRead();
-    return await conn.sendRawTransaction(
+    return await SOLANA_CONNECTION_BACKEND.sendRawTransaction(
       tx.serialize(),
       options ?? {
         skipPreflight: false,
@@ -117,22 +113,14 @@ export class Backend {
     const pubkey = new PublicKey(walletAddress);
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
 
-    const conn = await this.solanaConnection();
-    return await conn.simulateTransaction(tx);
+    return await SOLANA_CONNECTION_BACKEND.simulateTransaction(tx);
   }
 
-  // TODO: this should be shared with the frontend extension UI and put
-  //       on a regular interval poll.
   async recentBlockhash(commitment?: Commitment): Promise<string> {
-    const conn = await this.solanaConnection();
-    const { blockhash } = await conn.getLatestBlockhash(commitment);
+    const { blockhash } = await SOLANA_CONNECTION_BACKEND.getLatestBlockhash(
+      commitment
+    );
     return blockhash;
-  }
-
-  async solanaConnection(): Promise<Connection> {
-    const url = await this.solanaConnectionUrl();
-    const conn = new Connection(url);
-    return conn;
   }
 
   async solanaConnectionUrl(): Promise<string> {
@@ -154,21 +142,25 @@ export class Backend {
   async keyringStoreUnlock(password: string): Promise<String> {
     await this.keyringStore.tryUnlock(password);
 
-    //
-    // Bootup the network connection.
-    //
     const url = await this.solanaConnectionUrl();
-    solanaConnection.start(url);
+    const activeWallet = await this.activeWallet();
+    const commitment = await this.solanaCommitmentRead();
 
-    this.notifications.pushNotification({
+    Io.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
+      data: {
+        url,
+        activeWallet,
+        commitment,
+      },
     });
+
     return SUCCESS_RESPONSE;
   }
 
   keyringStoreLock() {
     this.keyringStore.lock();
-    this.notifications.pushNotification({
+    Io.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_LOCKED,
     });
     return SUCCESS_RESPONSE;
@@ -248,7 +240,12 @@ export class Backend {
   async connectionUrlUpdate(url: string): Promise<boolean> {
     const didChange = await this.keyringStore.connectionUrlUpdate(url);
     if (didChange) {
-      SOLANA_CONNECTION_BACKEND!.urlDidUpdate(url);
+      Io.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_CONNECTION_URL_UPDATED,
+        data: {
+          url,
+        },
+      });
     }
     return didChange;
   }
@@ -259,7 +256,7 @@ export class Backend {
 
   async activeWalletUpdate(newWallet: string): Promise<string> {
     await this.keyringStore.activeWalletUpdate(newWallet);
-    this.notifications.pushNotification({
+    Io.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_ACTIVE_WALLET_UPDATED,
       data: {
         activeWallet: newWallet,
@@ -270,7 +267,7 @@ export class Backend {
 
   async keyringDeriveWallet(): Promise<string> {
     const [pubkey, name] = await this.keyringStore.deriveNextKey();
-    this.notifications.pushNotification({
+    Io.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_DERIVED_WALLET,
       data: {
         publicKey: pubkey.toString(),
@@ -283,7 +280,7 @@ export class Backend {
 
   async keynameUpdate(publicKey: string, newName: string): Promise<string> {
     await this.keyringStore.setKeyname(publicKey, newName);
-    this.notifications.pushNotification({
+    Io.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYNAME_UPDATE,
       data: {
         publicKey,
@@ -295,7 +292,7 @@ export class Backend {
 
   async keyringKeyDelete(publicKey: string): Promise<string> {
     await this.keyringStore.keyDelete(publicKey);
-    this.notifications.pushNotification({
+    Io.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_KEY_DELETE,
       data: {
         publicKey,
@@ -317,7 +314,7 @@ export class Backend {
       secretKey,
       name
     );
-    this.notifications.pushNotification({
+    Io.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
       data: {
         publicKey,
@@ -412,7 +409,7 @@ export class Backend {
 
   async approvedOriginsUpdate(approvedOrigins: Array<string>): Promise<string> {
     await this.keyringStore.approvedOriginsUpdate(approvedOrigins);
-    this.notifications.pushNotification({
+    Io.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_APPROVED_ORIGINS_UPDATE,
       data: {
         approvedOrigins,
@@ -473,4 +470,4 @@ export const SUCCESS_RESPONSE = "success";
 //
 // Backend singleton.
 //
-export const BACKEND = new Backend(Io.notificationsUi);
+export const BACKEND = new Backend();

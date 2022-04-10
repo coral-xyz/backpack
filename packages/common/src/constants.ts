@@ -78,6 +78,9 @@ export const NOTIFICATION_KEYRING_RESET_MNEMONIC =
 export const NOTIFICATION_KEYRING_CREATED = "anchor-keyring-created";
 export const NOTIFICATION_APPROVED_ORIGINS_UPDATE =
   "anchor-approved-origins-update";
+export const NOTIFICATION_BLOCKHASH_DID_UPDATE = "anchor-blockhash-did-update";
+export const NOTIFICATION_SPL_TOKENS_DID_UPDATE =
+  "anchor-spl-tokens-did-update";
 
 export const SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO = "solana-get-account-info";
 export const SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH =
@@ -94,6 +97,8 @@ export const SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO =
   "solana-get-multiple-accounts-info";
 export const SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2 =
   "solana-get-confirmed-signatures-for-address-2";
+export const SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS =
+  "solana-custom-spl-token-accounts";
 
 export const CONNECTION_POPUP_RPC = "anchor-popup-rpc";
 export const CONNECTION_POPUP_RESPONSE = "anchor-popup-response";
@@ -123,3 +128,5 @@ export const TAB_BRIDGE = "bridge";
 export const TAB_FRIENDS = "friends";
 export const NAV_COMPONENT_BALANCES_NETWORK = "balancesNetwork";
 export const NAV_COMPONENT_TOKEN = "token";
+
+export const BACKEND_EVENT = "backend-event";

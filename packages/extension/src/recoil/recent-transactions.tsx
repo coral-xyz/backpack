@@ -1,5 +1,5 @@
 import { atom, atomFamily, selector } from "recoil";
-import { Blockhash, PublicKey } from "@solana/web3.js";
+import { Blockhash, PublicKey, Connection } from "@solana/web3.js";
 import { Provider } from "@project-serum/anchor";
 import { bootstrap } from "./bootstrap";
 import { anchorContext } from "./wallet";

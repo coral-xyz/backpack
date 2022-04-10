@@ -1,6 +1,5 @@
 import { atom, selector } from "recoil";
 import { PublicKey } from "@solana/web3.js";
-import { TokenAccountWithKey } from "./types";
 import {
   UI_RPC_METHOD_NAVIGATION_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
@@ -17,6 +16,7 @@ import {
 } from "./token";
 import { fetchPriceData } from "./price-data";
 import * as atoms from "./atoms";
+import { TokenAccountWithKey } from "./types";
 
 /**
  * Defines the initial app load fetch.
@@ -27,8 +27,7 @@ export const bootstrap = atom<any>({
     key: "bootstrapSelector",
     get: async ({ get }: any) => {
       const tokenRegistry = get(splTokenRegistry);
-      const { provider, tokenClient } = get(anchorContext);
-      const commitment = get(atoms.commitment);
+      const { provider } = get(anchorContext);
       const activeWallet = get(atoms.activeWallet);
       const walletPublicKey = new PublicKey(activeWallet);
 
@@ -37,13 +36,13 @@ export const bootstrap = atom<any>({
       //
       try {
         //
-        // Fetch the SPL tokens.
+        // Fetch token data.
         //
-        const splTokenAccounts = await fetchTokens(
-          walletPublicKey,
-          tokenClient
+        const { tokenAccountsMap, tokenMetadata, nftMetadata } =
+          await provider.connection.customSplTokenAccounts(walletPublicKey);
+        const splTokenAccounts = new Map<string, TokenAccountWithKey>(
+          tokenAccountsMap
         );
-        const splTokenAccountsArray = Array.from(splTokenAccounts.values());
 
         //
         // Fetch the price data.
@@ -51,22 +50,6 @@ export const bootstrap = atom<any>({
         const coingeckoData = await fetchPriceData(
           splTokenAccounts,
           tokenRegistry
-        );
-
-        //
-        // Fetch the token metadata.
-        //
-        const splTokenMetadata = await fetchSplMetadata(
-          provider,
-          splTokenAccountsArray
-        );
-
-        //
-        // Fetch the metadata uri and interpert as NFTs.
-        //
-        const splNftMetadata = await fetchSplMetadataUri(
-          splTokenAccountsArray,
-          splTokenMetadata
         );
 
         //
@@ -80,17 +63,15 @@ export const bootstrap = atom<any>({
         //
         // Get the recent blockhash for transaction construction.
         //
-        const { blockhash } = await provider.connection.getLatestBlockhash(
-          commitment
-        );
+        const { blockhash } = await provider.connection.getLatestBlockhash();
 
         //
         // Done.
         //
         return {
-          splTokenAccounts: removeNfts(splTokenAccounts, splNftMetadata),
-          splTokenMetadata,
-          splNftMetadata,
+          splTokenAccounts,
+          splTokenMetadata: tokenMetadata,
+          splNftMetadata: new Map(nftMetadata),
           coingeckoData,
           recentTransactions,
           recentBlockhash: blockhash,
@@ -137,14 +118,3 @@ export const bootstrapFast = atom<any>({
     },
   ],
 });
-
-export function removeNfts(
-  splTokenAccounts: Map<string, TokenAccountWithKey>,
-  splNftMetadata: Map<string, any>
-): Map<string, TokenAccountWithKey> {
-  // @ts-ignore
-  for (let key of splNftMetadata.keys()) {
-    splTokenAccounts.delete(key);
-  }
-  return splTokenAccounts;
-}

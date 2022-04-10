@@ -1,3 +1,4 @@
+import { Spl, Provider } from "@project-serum/anchor";
 import {
   Connection,
   ConnectionConfig,
@@ -62,41 +63,216 @@ import {
   SignatureStatus,
   PerfSample,
 } from "@solana/web3.js";
+import { Io } from "../io";
+import {
+  Notification,
+  BACKEND_EVENT,
+  NOTIFICATION_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_KEYRING_STORE_UNLOCKED,
+  NOTIFICATION_KEYRING_STORE_LOCKED,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
+  NOTIFICATION_SPL_TOKENS_DID_UPDATE,
+  NOTIFICATION_BLOCKHASH_DID_UPDATE,
+} from "../../common";
+import { TokenAccountWithKey } from "../../recoil/types";
+import {
+  fetchTokens,
+  fetchSplMetadata,
+  fetchSplMetadataUri,
+} from "../../recoil/token";
 
-const LATEST_BLOCKHASH_KEY = "latest-blockhash";
+export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
+export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;
 
 export class Backend {
   private cache = new Map<string, any>();
-  private connection: Connection;
-  private url: string;
+  private connection?: Connection;
+  private url?: string;
+  private pollIntervals: Array<any>;
 
-  constructor(url: string) {
-    this.connection = new Connection(url);
-    this.url = url;
+  constructor() {
+    this.pollIntervals = [];
+    this.setupEventListeners();
   }
 
-  urlDidUpdate(url: string) {
-    this.cache = new Map();
-    this.connection = new Connection(url);
-    this.url = url;
+  //
+  // The connection backend needs to change its behavior based on what happens
+  // in the core backend. E.g., if the keyring store gets locked, then we
+  // need to stop polling.
+  //
+  private setupEventListeners() {
+    Io.events.addListener(BACKEND_EVENT, (notif: Notification) => {
+      switch (notif.name) {
+        case NOTIFICATION_KEYRING_STORE_UNLOCKED:
+          handleKeyringStoreUnlocked(notif);
+          break;
+        case NOTIFICATION_KEYRING_STORE_LOCKED:
+          handleKeyringStoreLocked(notif);
+          break;
+        case NOTIFICATION_ACTIVE_WALLET_UPDATED:
+          handleActiveWalletUpdated(notif);
+          break;
+        case NOTIFICATION_CONNECTION_URL_UPDATED:
+          handleConnectionUrlUpdated(notif);
+          break;
+        default:
+      }
+    });
+
+    const handleKeyringStoreUnlocked = (notif: Notification) => {
+      const { url, activeWallet, commitment } = notif.data;
+      this.connection = new Connection(url, commitment);
+      this.url = url;
+      this.hookRpcRequest();
+      this.startPolling(new PublicKey(activeWallet));
+    };
+    const handleKeyringStoreLocked = (notif: Notification) => {
+      this.stopPolling();
+    };
+    const handleActiveWalletUpdated = (notif: Notification) => {
+      const { activeWallet } = notif.data;
+      this.stopPolling();
+      this.startPolling(new PublicKey(activeWallet));
+    };
+    const handleConnectionUrlUpdated = (notif: Notification) => {
+      const { url } = notif.data;
+      this.cache = new Map();
+      this.connection = new Connection(url, this.connection!.commitment);
+      this.url = url;
+      this.hookRpcRequest();
+    };
   }
 
-  async startPolling() {
-    // todo
+  //
+  // Poll for data in the background script so that, even if the popup closes
+  // the data is still fresh.
+  //
+  private async startPolling(activeWallet: PublicKey) {
+    this.pollIntervals.push(
+      setInterval(async () => {
+        const data = await this._customSplTokenAccounts(activeWallet);
+        const key = JSON.stringify({
+          method: "customSplTokenAccounts",
+          args: [activeWallet.toString()],
+        });
+        this.cache.set(key, data);
+        Io.events.emit(BACKEND_EVENT, {
+          name: NOTIFICATION_SPL_TOKENS_DID_UPDATE,
+          data,
+        });
+      }, LOAD_SPL_TOKENS_REFRESH_INTERVAL)
+    );
+
+    this.pollIntervals.push(
+      setInterval(async () => {
+        const conn = new Connection(this.url!); // Unhooked connection.
+        const data = await conn.getLatestBlockhash();
+        const key = JSON.stringify({ method: "getLatestBlockhash", args: [] });
+        this.cache.set(key, data);
+        Io.events.emit(BACKEND_EVENT, {
+          name: NOTIFICATION_BLOCKHASH_DID_UPDATE,
+          data,
+        });
+      }, RECENT_BLOCKHASH_REFRESH_INTERVAL)
+    );
   }
+
+  private stopPolling() {
+    this.pollIntervals.forEach((interval: number) => {
+      clearInterval(interval);
+    });
+  }
+
+  private hookRpcRequest() {
+    // @ts-ignore
+    const _rpcRequest = this.connection._rpcRequest;
+    // @ts-ignore
+    this.connection._rpcRequest = async (method: string, args: any[]) => {
+      const key = JSON.stringify({ method, args });
+      const value = this.cache.get(key);
+      if (value) {
+        return value;
+      }
+      const resp = await _rpcRequest(method, args);
+      this.cache.set(key, resp);
+      return resp;
+    };
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Custom endpoints.
+  //////////////////////////////////////////////////////////////////////////////
+
+  async customSplTokenAccounts(publicKey: PublicKey): Promise<any> {
+    const key = JSON.stringify({
+      method: "customSplTokenAccounts",
+      args: [publicKey.toString()],
+    });
+    const value = this.cache.get(key);
+    if (value) {
+      return value;
+    }
+    const resp = await this._customSplTokenAccounts(publicKey);
+    this.cache.set(key, resp);
+    return resp;
+  }
+
+  async _customSplTokenAccounts(publicKey: PublicKey): Promise<any> {
+    // Unhooked connection.
+    // @ts-ignore
+    const tokenClient = Spl.token(new Provider(new Connection(this.url!)));
+    //
+    // Fetch tokens.
+    //
+    const tokenAccounts = await fetchTokens(publicKey, tokenClient);
+    const tokenAccountsArray = Array.from(tokenAccounts.values());
+
+    //
+    // Fetch metadata.
+    //
+    const tokenMetadata = await fetchSplMetadata(
+      tokenClient.provider,
+      tokenAccountsArray
+    );
+
+    //
+    // Fetch the metadata uri and interpert as NFTs.
+    //
+    const nftMetadata = await fetchSplMetadataUri(
+      tokenAccountsArray,
+      tokenMetadata
+    );
+
+    return {
+      tokenAccountsMap: Array.from(removeNfts(tokenAccounts, nftMetadata)).map(
+        (t) => {
+          // Convert BN to string for response.
+          // @ts-ignore
+          t[1].amount = t[1].amount.toString();
+          return t;
+        }
+      ),
+      tokenMetadata,
+      nftMetadata: Array.from(nftMetadata),
+    };
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Solana Connection API.
+  //////////////////////////////////////////////////////////////////////////////
 
   async getAccountInfo(
     publicKey: PublicKey,
     commitment?: Commitment
   ): Promise<AccountInfo<Buffer> | null> {
-    return await this.connection.getAccountInfo(publicKey, commitment);
+    return await this.connection!.getAccountInfo(publicKey, commitment);
   }
 
   async getLatestBlockhash(commitment?: Commitment): Promise<{
     blockhash: Blockhash;
     lastValidBlockHeight: number;
   }> {
-    return await this.connection.getLatestBlockhash(commitment);
+    return await this.connection!.getLatestBlockhash(commitment);
   }
 
   async getTokenAccountsByOwner(
@@ -111,7 +287,7 @@ export class Backend {
       }>
     >
   > {
-    return await this.connection.getTokenAccountsByOwner(
+    return await this.connection!.getTokenAccountsByOwner(
       ownerAddress,
       filter,
       commitment
@@ -122,14 +298,14 @@ export class Backend {
     rawTransaction: Buffer | Uint8Array | Array<number>,
     options?: SendOptions
   ): Promise<TransactionSignature> {
-    return await this.connection.sendRawTransaction(rawTransaction, options);
+    return await this.connection!.sendRawTransaction(rawTransaction, options);
   }
 
   async confirmTransaction(
     signature: TransactionSignature,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<SignatureResult>> {
-    return await this.connection.confirmTransaction(signature, commitment);
+    return await this.connection!.confirmTransaction(signature, commitment);
   }
 
   async simulateTransaction(
@@ -137,7 +313,7 @@ export class Backend {
     signers?: Array<Signer>,
     includeAccounts?: boolean | Array<PublicKey>
   ): Promise<RpcResponseAndContext<SimulatedTransactionResponse>> {
-    return await this.connection.simulateTransaction(
+    return await this.connection!.simulateTransaction(
       transactionOrMessage,
       signers,
       includeAccounts
@@ -148,7 +324,7 @@ export class Backend {
     publicKeys: PublicKey[],
     commitment?: Commitment
   ): Promise<(AccountInfo<Buffer> | null)[]> {
-    return await this.connection.getMultipleAccountsInfo(
+    return await this.connection!.getMultipleAccountsInfo(
       publicKeys,
       commitment
     );
@@ -159,10 +335,10 @@ export class Backend {
     options?: ConfirmedSignaturesForAddress2Options,
     commitment?: Finality
   ): Promise<Array<ConfirmedSignatureInfo>> {
-    return await this.connection.getConfirmedSignaturesForAddress2(
+    return await this.connection!.getConfirmedSignaturesForAddress2(
       address,
       options,
-      commitment
+      commitment ?? "confirmed"
     );
   }
 
@@ -170,7 +346,10 @@ export class Backend {
     signatures: TransactionSignature[],
     commitment?: Finality
   ): Promise<(ParsedConfirmedTransaction | null)[]> {
-    return await this.connection.getParsedTransactions(signatures, commitment);
+    return await this.connection!.getParsedTransactions(
+      signatures,
+      commitment ?? "confirmed"
+    );
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -654,13 +833,15 @@ export class Backend {
   }
 }
 
-export function start(url: string) {
-  BACKEND = new Backend(url);
-  BACKEND.startPolling();
-}
+export const BACKEND = new Backend();
 
-export function stop() {
-  BACKEND = null;
+function removeNfts(
+  splTokenAccounts: Map<string, TokenAccountWithKey>,
+  splNftMetadata: Map<string, any>
+): Map<string, TokenAccountWithKey> {
+  // @ts-ignore
+  for (let key of splNftMetadata.keys()) {
+    splTokenAccounts.delete(key);
+  }
+  return splTokenAccounts;
 }
-
-export let BACKEND: Backend | null = null;
