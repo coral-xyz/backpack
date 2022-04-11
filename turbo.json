@@ -13,6 +13,8 @@
       "dependsOn": ["^build"]
     },
     "start": {
+      "dependsOn": ["^build"],
+      "outputs": ["packages/extension/dev"],
       "cache": false
     }
   }
