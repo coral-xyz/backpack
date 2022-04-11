@@ -8,7 +8,7 @@
     "lint:fix": "prettier packages/**/*.{ts,tsx,css,md,json} --write",
     "prepare": "husky install",
     "start": "turbo run start --filter=@200ms/extension --filter=@200ms/example-client",
-    "test": "turbo run test",
+    "test": "turbo run test -- --passWithNoTests --watchAll=false",
     "build": "turbo run build",
     "e2e": "turbo run e2e",
     "clean": "npx rimraf node_modules/ packages/**/node_modules packages/**/build packages/**/dist packages/extension/dev"
