@@ -11,7 +11,7 @@
     "test": "turbo run test -- --passWithNoTests --watchAll=false",
     "build": "turbo run build",
     "e2e": "turbo run e2e",
-    "clean": "npx rimraf node_modules/ packages/**/node_modules packages/**/build packages/**/dist packages/extension/dev"
+    "clean": "npx rimraf .turbo node_modules/ packages/**/node_modules packages/**/.turbo packages/**/build packages/**/dist packages/extension/dev"
   },
   "devDependencies": {
     "husky": "^7.0.4",
