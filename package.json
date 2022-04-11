@@ -7,17 +7,17 @@
   "scripts": {
     "lint:fix": "prettier packages/**/*.{ts,tsx,css,md,json} --write",
     "prepare": "husky install",
-    "start:extension": "yarn workspace @200ms/extension start",
-    "start:example-client": "yarn workspace @200ms/example-client start",
-    "start": "concurrently 'yarn start:extension' 'yarn start:example-client'",
-    "test": "yarn workspaces run test --passWithNoTests --watchAll=false"
+    "start": "turbo run start --filter=@200ms/extension --filter=@200ms/example-client",
+    "test": "turbo run test",
+    "build": "turbo run build",
+    "e2e": "turbo run e2e",
+    "clean": "npx rimraf node_modules/ packages/**/node_modules packages/**/build packages/**/dist packages/extension/dev"
   },
   "devDependencies": {
-    "concurrently": "^7.0.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.7",
     "prettier": "^2.6.1",
-    "turbo": "^1.1.10"
+    "turbo": "^1.2.1"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,css,md,json}": "prettier --write"

@@ -70,13 +70,7 @@ jobs:
         # CI!=true so that build warnings aren't treated like errors (for now)
         env:
           CI: ""
-        # this should be `yarn workspaces build` but there is an issue with the
-        # order in which things get built because of some complex build logic
-        # in packages/extension/package.json
-        # TODO: simplify this task
-        run: yarn workspace @200ms/common build &&
-          yarn workspace @200ms/ledger-core build &&
-          yarn workspace @200ms/extension build
+        run: yarn build
 
       - name: run puppeteer e2e tests
         uses: mujo-code/puppeteer-headful@v2
