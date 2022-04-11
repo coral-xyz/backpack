@@ -5,6 +5,7 @@
   "dependencies": {
     "@200ms/common": "1.0.0",
     "@200ms/ledger-core": "1.0.0",
+    "@200ms/provider-injection": "1.0.0",
     "@fontsource/inter": "^4.5.5",
     "@jup-ag/core": "^1.0.0-beta.19",
     "@jup-ag/react-hook": "^1.0.0-beta.19",
@@ -34,10 +35,8 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "build:provider": "cd ../provider-injection && yarn && yarn build && cp dist/browser/index.js ../extension/public/injected.js && cd ../",
-    "build:ledger": "cd ../ledger-injection && yarn && yarn build && cd ../",
-    "start": "yarn build:provider && yarn build:ledger && react-scripts start",
-    "build": "yarn build:provider && yarn build:ledger && react-scripts build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "e2e": "jest"

@@ -37,6 +37,8 @@ After building via `yarn start` or `yarn build`, you can install the extension l
 turning on **developer mode** and clicking **load unpacked**, where you can load the build artifacts above. Once done, optionally pin the extension to your
 browser's toolbar and you're good to go.
 
+Note: if run one of the tasks above but get the error `Could not load JavaScript 'contentScript.bundle.js' for content script.`, try waiting for 30s as the build might not yet be fully complete.
+
 ## License
 
 Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion by you shall be licensed at the discretion of the repository maintainers without any additional terms or conditions.

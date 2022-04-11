@@ -1,0 +1,1 @@
+../../provider-injection/dist/browser/index.js

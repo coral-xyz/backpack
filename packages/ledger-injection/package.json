@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rm -rf dist && rollup --config && cp ./index.html dist/browser/index.html",
-    "test": "echo 'no tests'"
+    "build": "rm -rf dist && rollup --config && cp ./index.html dist/browser/index.html"
   },
   "author": "",
   "license": "ISC",

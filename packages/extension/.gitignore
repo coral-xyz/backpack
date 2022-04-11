@@ -27,5 +27,3 @@ ignore.ts
 
 dist
 .rollup.cache
-
-public/injected.js
