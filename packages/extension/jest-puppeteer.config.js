@@ -24,13 +24,17 @@ module.exports = {
       "--disable-setuid-sandbox",
       `--disable-extensions-except=${BUILD_OUTPUT_DIR}`,
       `--load-extension=${BUILD_OUTPUT_DIR}`,
+      "--disable-infobars",
+      "--hide-scrollbars",
       // add 150px to height to account for menus and toolbar
       `--window-size=${width},${height + 150}`,
       // memory optimizations below
+      "--disable-dev-shm-usage",
       "--disable-features=AudioServiceOutOfProcess",
       "--disable-gpu",
-      "--disable-software-rasterize",
-      "--disable-dev-shm-usage",
+      "--disable-software-rasterizer",
+      "--no-first-run",
+      "--no-zygote",
     ],
     defaultViewport: {
       width,
