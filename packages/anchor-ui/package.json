@@ -1,23 +1,17 @@
 {
-  "name": "@200ms/provider-injection",
+  "name": "@200ms/anchor-ui",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
   "scripts": {
-    "preinstall": "yarn link @project-serum/anchor",
-    "build": "rollup --config",
-    "start": "rollup --config --watch"
+    "build": "tsc",
+    "start": "tsc --watch"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@solana/web3.js": "^1.36.0",
-    "bs58": "^5.0.0",
-    "eventemitter3": "^4.0.7"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@200ms/common": "1.0.0",
-    "@200ms/anchor-ui": "1.0.0",
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.6",

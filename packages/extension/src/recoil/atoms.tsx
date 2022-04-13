@@ -9,3 +9,4 @@ export * from "./wallet";
 export * from "./blockchains";
 export * from "./price-data";
 export * from "./jupiter";
+export * from "./plugins";

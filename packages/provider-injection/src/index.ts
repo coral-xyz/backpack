@@ -13,6 +13,9 @@ import {
 import * as bs58 from "bs58";
 import { EventEmitter } from "eventemitter3";
 import {
+  debug,
+  Event,
+  ResponseHandler,
   CHANNEL_RPC_REQUEST,
   CHANNEL_RPC_RESPONSE,
   CHANNEL_NOTIFICATION,
@@ -27,18 +30,15 @@ import {
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
 } from "@200ms/common";
+import { __ViewManager, View, App, AppDelegate } from "@200ms/anchor-ui";
 
 const POST_MESSAGE_ORIGIN = "*";
 
-type Event = any;
-type EventHandler = (notif: any) => void;
-type ResponseHandler = [Function, Function];
-
 // Script entry.
 function main() {
-  console.log("anchor: starting injected script");
+  debug("starting injected script");
   initProvider();
-  console.log("anchor: provider ready");
+  debug("provider ready");
 }
 
 function initProvider() {
@@ -56,6 +56,7 @@ class ProviderInjection extends EventEmitter implements Provider {
   public isConnected: boolean;
   public publicKey?: PublicKey;
   public connection: Connection;
+  public _ui: ProviderUi;
 
   constructor() {
     super();
@@ -69,6 +70,7 @@ class ProviderInjection extends EventEmitter implements Provider {
     this.isConnected = false;
     this.publicKey = undefined;
     this.connection = this.defaultConnection();
+    this._ui = new ProviderUi();
   }
 
   defaultConnection(): Connection {
@@ -117,9 +119,16 @@ class ProviderInjection extends EventEmitter implements Provider {
   }
 
   _handleNotificationConnected(event: Event) {
+    this._connect(
+      event.data.detail.data.publicKey,
+      event.data.detail.data.connectionUrl
+    );
+  }
+
+  _connect(publicKey: string, connectionUrl: string) {
     this.isConnected = true;
-    this.publicKey = new PublicKey(event.data.detail.data.publicKey);
-    this.connection = new Connection(event.data.detail.data.connectionUrl);
+    this.publicKey = new PublicKey(publicKey);
+    this.connection = new Connection(connectionUrl);
   }
 
   _handleNotificationDisconnected(event: Event) {
@@ -299,6 +308,27 @@ class ProviderInjection extends EventEmitter implements Provider {
     });
     this._responseResolvers[requestId] = [resolve, reject];
     return [prom, resolve, reject];
+  }
+
+  launchUi(d: AppDelegate) {
+    this._ui.launch(d);
+  }
+}
+
+class ProviderUi {
+  private app?: App;
+
+  public launch(delegate: AppDelegate) {
+    if (this.app) {
+      throw new Error("app already launched");
+    }
+    this.app = new App();
+    this.app.setDelegate(delegate);
+    this.app.launch();
+  }
+
+  public render(view: View) {
+    this.app?.render(view);
   }
 }
 

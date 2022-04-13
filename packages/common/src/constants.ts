@@ -1,6 +1,18 @@
 export const CHANNEL_RPC_REQUEST = "anchor-rpc-request";
 export const CHANNEL_RPC_RESPONSE = "anchor-rpc-response";
 export const CHANNEL_NOTIFICATION = "anchor-notification";
+export const CHANNEL_PLUGIN_RPC_REQUEST = "anchor-plugin-request";
+export const CHANNEL_PLUGIN_RPC_RESPONSE = "anchor-plugin-response";
+export const CHANNEL_PLUGIN_RENDER_REQUEST =
+  "anchor-channel-plugin-render-request";
+export const CHANNEL_PLUGIN_ON_CLICK_REQUEST =
+  "anchor-channel-plugin-on-click-request";
+export const CHANNEL_PLUGIN_LAUNCH_REQUEST =
+  "anchor-channel-plugin-launch-request";
+
+export const PLUGIN_RPC_METHOD_LAYOUT = "layout";
+export const PLUGIN_RPC_METHOD_DID_LAUNCH = "did-launch";
+export const PLUGIN_RPC_METHOD_WILL_APPEAR = "will-appear";
 
 export const RPC_METHOD_CONNECT = "connect";
 export const RPC_METHOD_DISCONNECT = "disconnect";
@@ -128,5 +140,10 @@ export const TAB_BRIDGE = "bridge";
 export const TAB_FRIENDS = "friends";
 export const NAV_COMPONENT_BALANCES_NETWORK = "balancesNetwork";
 export const NAV_COMPONENT_TOKEN = "token";
+export const NAV_COMPONENT_PLUGINS = "plugins";
 
 export const BACKEND_EVENT = "backend-event";
+
+export type Event = any;
+export type EventHandler = (notif: any) => void;
+export type ResponseHandler = [Function, Function];

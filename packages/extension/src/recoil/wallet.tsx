@@ -126,6 +126,7 @@ export const anchorContext = selector({
     const tokenClient = Spl.token(provider);
     return {
       connection,
+      connectionUrl: connectionUrlStr,
       provider,
       tokenClient,
     };

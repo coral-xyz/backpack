@@ -1,4 +1,5 @@
 import {
+  useTheme,
   makeStyles,
   Typography,
   Card,
@@ -7,8 +8,9 @@ import {
   List,
   ListItem,
   ListItemIcon,
+  IconButton,
 } from "@material-ui/core";
-import { ArrowForwardIos } from "@material-ui/icons";
+import { Settings, ArrowForwardIos, Extension } from "@material-ui/icons";
 import {
   useBlockchains,
   useBlockchainLogo,
@@ -19,6 +21,7 @@ import { useNavigation } from "../../../hooks/useNavigation";
 import {
   NAV_COMPONENT_BALANCES_NETWORK,
   NAV_COMPONENT_TOKEN,
+  NAV_COMPONENT_PLUGINS,
 } from "../../../common";
 
 const useStyles = makeStyles((theme: any) => ({
@@ -76,6 +79,7 @@ const useStyles = makeStyles((theme: any) => ({
   },
   blockchainLogo: {
     width: "12px",
+    color: theme.custom.colors.secondary,
   },
   cardHeaderRoot: {
     padding: "6px",
@@ -169,6 +173,9 @@ const useStyles = makeStyles((theme: any) => ({
     fontSize: "12px",
     lineHeight: "24px",
   },
+  cardAvatar: {
+    display: "flex",
+  },
 }));
 
 export function Balances() {
@@ -176,6 +183,7 @@ export function Balances() {
   return (
     <div>
       <BalancesHeader />
+      <PluginCard />
       {blockchains.map((b) => (
         <BlockchainCard
           key={b}
@@ -226,6 +234,7 @@ export function BlockchainCard({
   const classes = useStyles();
   const blockchainLogo = useBlockchainLogo(blockchain);
   const tokenAccountsSorted = useBlockchainTokensSorted(blockchain);
+  const { push } = useNavigation();
   return (
     <Card className={classes.blockchainCard} elevation={0}>
       <CardHeader
@@ -254,7 +263,13 @@ export function BlockchainCard({
             ))}
           {tokenAccountsSorted.length > 3 && limit && (
             <BlockchainCardFooter
-              blockchain={blockchain}
+              onClick={() => {
+                push({
+                  title: toTitleCase(blockchain),
+                  componentId: NAV_COMPONENT_BALANCES_NETWORK,
+                  componentProps: { blockchain },
+                });
+              }}
               tokenCount={tokenAccountsSorted.length}
             />
           )}
@@ -338,21 +353,13 @@ function TokenListItem({
 }
 
 function BlockchainCardFooter({
-  blockchain,
+  onClick,
   tokenCount,
 }: {
-  blockchain: string;
+  onClick: () => void;
   tokenCount: number;
 }) {
   const classes = useStyles();
-  const { push } = useNavigation();
-  const onClick = () => {
-    push({
-      title: toTitleCase(blockchain),
-      componentId: NAV_COMPONENT_BALANCES_NETWORK,
-      componentProps: { blockchain },
-    });
-  };
   return (
     <ListItem
       button
@@ -387,5 +394,59 @@ function BlockchainCardFooter({
 export function toTitleCase(blockchain: string) {
   return (
     blockchain.slice(0, 1).toUpperCase() + blockchain.toLowerCase().slice(1)
+  );
+}
+
+function PluginCard() {
+  const pluginCount = 3;
+  const classes = useStyles();
+  const { push } = useNavigation();
+  const onClick = () => {
+    push({
+      title: "Plugins",
+      componentId: NAV_COMPONENT_PLUGINS,
+      componentProps: {},
+    });
+  };
+  return (
+    <Card className={classes.blockchainCard} elevation={0}>
+      <CardHeader
+        avatar={<Extension className={classes.blockchainLogo} />}
+        title={<CardTitle />}
+        classes={{
+          root: classes.cardHeaderRoot,
+          content: classes.cardHeaderContent,
+          title: classes.cardHeaderTitle,
+          avatar: classes.cardAvatar,
+        }}
+      />
+      <CardContent classes={{ root: classes.cardContentRoot }}>
+        <BlockchainCardFooter onClick={onClick} tokenCount={pluginCount} />
+      </CardContent>
+    </Card>
+  );
+}
+
+function CardTitle({ title }: any) {
+  const classes = useStyles();
+  const theme = useTheme() as any;
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+      }}
+    >
+      <Typography className={classes.cardHeaderTitle}>Apps</Typography>
+      <IconButton style={{ padding: 0 }}>
+        <Settings
+          style={{
+            color: theme.custom.colors.secondary,
+            width: "14px",
+            height: "14px",
+          }}
+        />
+      </IconButton>
+    </div>
   );
 }

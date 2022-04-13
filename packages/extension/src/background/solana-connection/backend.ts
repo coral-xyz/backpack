@@ -102,6 +102,7 @@ export class Backend {
   //
   private setupEventListeners() {
     Io.events.addListener(BACKEND_EVENT, (notif: Notification) => {
+      console.log("solana-connection-backend notification", notif);
       switch (notif.name) {
         case NOTIFICATION_KEYRING_STORE_UNLOCKED:
           handleKeyringStoreUnlocked(notif);
