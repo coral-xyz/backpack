@@ -14,6 +14,8 @@ import {
   Window,
   RpcRequest,
   RpcResponse,
+  withContext,
+  Context,
   RPC_METHOD_CONNECT,
   RPC_METHOD_DISCONNECT,
   RPC_METHOD_SIGN_AND_SEND_TX,
@@ -24,7 +26,7 @@ import {
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
 } from "../../common";
-import { BACKEND, Context, SUCCESS_RESPONSE } from "../backend";
+import { BACKEND, SUCCESS_RESPONSE } from "../backend";
 import { Io } from "../io";
 
 export function start() {
@@ -285,16 +287,6 @@ class RequestManager {
   private static removeResponseResolver(requestId: number) {
     delete RequestManager._responseResolvers[requestId];
   }
-}
-
-// Utility to transform the handler API into something a little more friendly.
-function withContext(
-  handler: (ctx: Context, req: RpcRequest) => Promise<RpcResponse>
-): ({ data }: { data: RpcRequest }, sender: any) => Promise<RpcResponse> {
-  return async ({ data }: { data: RpcRequest }, sender: any) => {
-    const ctx = { sender };
-    return await handler(ctx, data);
-  };
 }
 
 async function handlePopupUiResponse(msg: RpcResponse): Promise<string> {

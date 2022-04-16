@@ -1,4 +1,4 @@
-import { POST_MESSAGE_ORIGIN } from "@200ms/common";
+import { Event, POST_MESSAGE_ORIGIN } from "@200ms/common";
 import { BrowserRuntime } from "./browser";
 import { debug } from "./logging";
 import { RpcRequest, RpcResponse, Notification } from "./rpc";
@@ -61,6 +61,14 @@ export class Channel {
   public static server(name: string): ChannelServer {
     return new ChannelServer(name);
   }
+
+  public static serverPostMessage(
+    window: any,
+    reqChannel: string,
+    respChannel?: string
+  ): PostMessageServer {
+    return new PostMessageServer(window, reqChannel, respChannel);
+  }
 }
 
 export class ChannelClient {
@@ -105,6 +113,36 @@ export class ChannelServer {
         }
       }
     );
+  }
+}
+
+export class PostMessageServer {
+  constructor(
+    private window: any,
+    private requestChannel: string,
+    private responseChannel?: string
+  ) {}
+
+  public handler(handlerFn: (event: Event) => Promise<RpcResponse>) {
+    window.addEventListener("message", async (event: Event) => {
+      if (event.data.type !== this.requestChannel) {
+        return;
+      }
+      const id = event.data.detail.id;
+      const [result, error] = await handlerFn(event);
+
+      if (this.responseChannel) {
+        const msg = {
+          type: this.responseChannel,
+          detail: {
+            id,
+            result,
+            error,
+          },
+        };
+        this.window.postMessage(msg, "*");
+      }
+    });
   }
 }
 

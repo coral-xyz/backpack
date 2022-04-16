@@ -1,7 +1,7 @@
 const path = require("path");
 
 module.exports = {
-  entry: "./src/index.ts",
+  entry: "./src/index.tsx",
   module: {
     rules: [
       {
@@ -20,5 +20,8 @@ module.exports = {
   },
   node: {
     fs: "empty",
+  },
+  optimization: {
+    minimize: false,
   },
 };

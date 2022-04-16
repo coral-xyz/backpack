@@ -5,7 +5,7 @@ import {
   Transaction,
   SendOptions,
 } from "@solana/web3.js";
-import { DerivationPath } from "@200ms/common";
+import { Context, DerivationPath } from "@200ms/common";
 import {
   BLOCKCHAIN_SOLANA,
   KeyringStore,
@@ -428,10 +428,6 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 }
-
-export type Context = {
-  sender: any;
-};
 
 // type MessageSignature = string;
 export type NamedPublicKey = {

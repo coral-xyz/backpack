@@ -5,14 +5,18 @@ export const CHANNEL_PLUGIN_RPC_REQUEST = "anchor-plugin-request";
 export const CHANNEL_PLUGIN_RPC_RESPONSE = "anchor-plugin-response";
 export const CHANNEL_PLUGIN_RENDER_REQUEST =
   "anchor-channel-plugin-render-request";
-export const CHANNEL_PLUGIN_ON_CLICK_REQUEST =
-  "anchor-channel-plugin-on-click-request";
 export const CHANNEL_PLUGIN_LAUNCH_REQUEST =
   "anchor-channel-plugin-launch-request";
+export const CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE =
+  "anchor-channel-plugin-react-reconciler-bridge";
+export const CHANNEL_PLUGIN_NOTIFICATION = "anchor-channel-plugin-notification";
+export const RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE =
+  "reconciler-bridge-method-commit-update";
+export const RECONCILER_BRIDGE_METHOD_INITIAL_RENDER =
+  "reconciler-bridge-method-initial-render";
 
-export const PLUGIN_RPC_METHOD_LAYOUT = "layout";
-export const PLUGIN_RPC_METHOD_DID_LAUNCH = "did-launch";
-export const PLUGIN_RPC_METHOD_WILL_APPEAR = "will-appear";
+export const PLUGIN_NOTIFICATION_ON_CLICK = "on-click";
+export const PLUGIN_RPC_METHOD_CONNECT = "connect";
 
 export const RPC_METHOD_CONNECT = "connect";
 export const RPC_METHOD_DISCONNECT = "disconnect";
@@ -143,7 +147,3 @@ export const NAV_COMPONENT_TOKEN = "token";
 export const NAV_COMPONENT_PLUGINS = "plugins";
 
 export const BACKEND_EVENT = "backend-event";
-
-export type Event = any;
-export type EventHandler = (notif: any) => void;
-export type ResponseHandler = [Function, Function];

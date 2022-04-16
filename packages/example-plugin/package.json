@@ -4,20 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rm -rf dist && webpack && cp ./index.html dist/browser/index.html",
-    "start": "rm -rf dist && mkdir -p dist/browser/ && cp ./index.html dist/browser/index.html && webpack watch"
+    "build": "rm -rf dist && NODE_ENV=production webpack && cp ./index.html dist/browser/index.html",
+    "start": "rm -rf dist && mkdir -p dist/browser/ && cp ./index.html dist/browser/index.html && NODE_ENV=development webpack watch"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@200ms/common": "1.0.0",
     "@200ms/anchor-ui": "1.0.0",
+    "@200ms/common": "1.0.0",
     "@project-serum/serum": "^0.13.64",
     "@solana/web3.js": "^1.36.0",
     "@types/rollup-plugin-node-builtins": "^2.1.2",
     "bs58": "^5.0.0",
     "buffer": "^6.0.3",
-    "eventemitter3": "^4.0.7"
+    "eventemitter3": "^4.0.7",
+    "react": "^17.0.0"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.1",
