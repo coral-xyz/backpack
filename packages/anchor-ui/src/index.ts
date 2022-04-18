@@ -3,7 +3,13 @@ import { AnchorUi } from "./reconciler";
 
 export * from "./elements";
 export default AnchorUi;
-export { Element } from "./reconciler";
+export {
+  UpdateDiff,
+  Element,
+  ElementPointer,
+  TextSerialized,
+  NodeSerialized,
+} from "./reconciler";
 
 export interface AppContext {
   connection: Connection;

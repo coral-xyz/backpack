@@ -4,28 +4,42 @@ import { Provider } from "@project-serum/anchor";
 import { bootstrap } from "./bootstrap";
 import { anchorContext } from "./wallet";
 import { BackgroundSolanaConnection } from "../background/solana-connection/client";
+import { selectorFamily } from "recoil";
 
 export const recentTransactions = atomFamily<any | null, string>({
   key: "recentTransactionsMap",
-  default: null,
+  default: selectorFamily({
+    key: "recentTransactionsMapDefault",
+    get:
+      (address: string) =>
+      async ({ get }: any) => {
+        const b = get(bootstrap);
+        if (b.walletPublicKey.toString() === address) {
+          return b.recentTransactions;
+        } else {
+          const { provider } = get(anchorContext);
+          return await fetchRecentTransactions(
+            new PublicKey(address),
+            provider
+          );
+        }
+      },
+  }),
+});
+
+/*
   effects: (address: string) => [
     ({ setSelf, getPromise }: any) => {
       // TODO: This won't reload individual tokens unless we poll in the background.
       //       Easier thing to do would be to just fetch everytime on component mount.
       setSelf(
         getPromise(bootstrap).then((b: any) => {
-          if (b.walletPublicKey.toString() === address) {
-            return b.recentTransactions;
-          } else {
-            return getPromise(anchorContext).then(({ provider }: any) => {
-              return fetchRecentTransactions(new PublicKey(address), provider);
-            });
-          }
+
         })
       );
     },
   ],
-});
+	*/
 
 export const recentBlockhash = atom<Blockhash | null>({
   key: "recentBlockhash",
@@ -42,9 +56,14 @@ export async function fetchRecentTransactions(
   publicKey: PublicKey,
   provider: Provider
 ) {
+  const connection = new BackgroundSolanaConnection(
+    "https://solana-mainnet.phantom.tech"
+  );
+  /*
   const connection = process.env.RPC_WITH_TX_HISTORY
     ? new BackgroundSolanaConnection(process.env.RPC_WITH_TX_HISTORY)
-    : provider.connection;
+									 : provider.connection;
+	*/
 
   const resp = await connection.getConfirmedSignaturesForAddress2(publicKey, {
     limit: 15,

@@ -12,7 +12,12 @@ import {
 import * as anchor from "@project-serum/anchor";
 
 export function App() {
-  return <Count />;
+  return (
+    <View>
+      <Count />
+      <OpenOrdersAccounts />
+    </View>
+  );
 }
 
 function Count() {
@@ -30,14 +35,14 @@ function Count() {
   return <Text style={{ backgroundColor: "red" }}>{count}</Text>;
 }
 
-function OpenOrdersComponent() {
+function OpenOrdersAccounts() {
   const [openOrders, setOpenOrders] = useState<Array<OpenOrders> | null>(null);
   const [marketMap, setMarketMap] = useState(new Map());
 
   useEffect(() => {
-    fetchOpenOrdersData().then(([openOrders, marketMap]) => {
-      setOpenOrders(openOrders);
-      setMarketMap(marketMap);
+    fetchOpenOrdersData().then(([newOpenOrders, marketMap]) => {
+      setOpenOrders(newOpenOrders);
+      //      setMarketMap(marketMap);
     });
   }, [setOpenOrders, setMarketMap]);
 
@@ -48,7 +53,7 @@ function OpenOrdersComponent() {
   return (
     <View>
       {openOrders.map((oo) => {
-        return <Text>JSON.stringify(oo)</Text>;
+        return <Text key={oo.address.toString()}>{JSON.stringify(oo)}</Text>;
       })}
     </View>
   );
@@ -74,7 +79,7 @@ async function fetchOpenOrdersData(): Promise<
   const marketMap = await (async () => {
     const markets = (() => {
       const markets = new Set<string>();
-      this.openOrders.forEach((oo) => {
+      openOrders.forEach((oo) => {
         markets.add(oo.market.toString());
       });
       return markets;

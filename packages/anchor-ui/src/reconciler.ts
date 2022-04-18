@@ -1,5 +1,20 @@
 import ReactReconciler, { HostConfig, OpaqueHandle } from "react-reconciler";
-import { debug } from "@200ms/common";
+import {
+  getLogger,
+  RECONCILER_BRIDGE_METHOD_MOUNT,
+  RECONCILER_BRIDGE_METHOD_CREATE_INSTANCE,
+  RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
+  RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
+  RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
+  RECONCILER_BRIDGE_METHOD_APPEND_INITIAL_CHILD,
+  RECONCILER_BRIDGE_METHOD_APPEND_CHILD,
+  RECONCILER_BRIDGE_METHOD_INSERT_IN_CONTAINER_BEFORE,
+  RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
+  RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
+  RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
+} from "@200ms/common";
+
+const logger = getLogger("anchor-ui-reconciler");
 
 export const AnchorUi = {
   render(reactNode: any) {
@@ -31,7 +46,7 @@ const reconciler = ReactReconciler({
   // Host context configuration.
   //
   getRootHostContext: (root: RootContainer): Host => {
-    debug("getRootHostContext");
+    logger.debug("getRootHostContext");
     return root.host;
   },
   getChildHostContext: (
@@ -39,7 +54,7 @@ const reconciler = ReactReconciler({
     kind: NodeKind,
     root: RootContainer
   ) => {
-    debug("getChildHostContext");
+    logger.debug("getChildHostContext");
     return parentHost;
   },
 
@@ -53,10 +68,9 @@ const reconciler = ReactReconciler({
     h: Host,
     _o: OpaqueHandle
   ): NodeSerialized => {
-    debug("createInstance", kind, props);
+    logger.debug("createInstance", kind, props);
     switch (kind) {
       case NodeKind.View:
-        // TODO: props.
         return {
           id: h.nextId(),
           kind: NodeKind.View,
@@ -68,7 +82,6 @@ const reconciler = ReactReconciler({
           children: [],
         };
       case NodeKind.Table:
-        // TODO: props.
         return {
           id: h.nextId(),
           kind: NodeKind.Table,
@@ -80,7 +93,6 @@ const reconciler = ReactReconciler({
           children: [],
         };
       case NodeKind.TableRow:
-        // TODO: props.
         return {
           id: h.nextId(),
           kind: NodeKind.TableRow,
@@ -92,7 +104,6 @@ const reconciler = ReactReconciler({
           children: [],
         };
       case NodeKind.Text:
-        // TODO: props.
         return {
           id: h.nextId(),
           kind: NodeKind.Text,
@@ -104,7 +115,6 @@ const reconciler = ReactReconciler({
           children: [],
         };
       case NodeKind.Image:
-        // TODO: props.
         return {
           id: h.nextId(),
           kind: NodeKind.Image,
@@ -125,64 +135,19 @@ const reconciler = ReactReconciler({
     h: Host,
     _o: OpaqueHandle
   ): TextSerialized => {
-    debug("createTextInstance", text);
-    return {
+    logger.debug("createTextInstance", text);
+    const instance = {
       id: h.nextId(),
-      kind: "raw",
+      kind: "raw" as "raw", // ts wtf?
       text,
       props: undefined,
       style: undefined,
     };
-  },
-
-  //
-  // Mutation.
-  //
-  appendChildToContainer: (c: RootContainer, child: Element) => {
-    debug("appendChildToContainer", c, child);
-    c.children.push(child);
+    return instance;
   },
   appendInitialChild: (parent: NodeSerialized, child: Element) => {
-    debug("appendInitialChild", parent, child);
+    logger.debug("appendInitialChild", parent, child);
     parent.children.push(child);
-  },
-  appendChild: (parent: NodeSerialized, child: Element) => {
-    debug("appendChild", parent, child);
-    parent.children.push(child);
-  },
-  insertInContainerBefore: (
-    root: RootContainer,
-    child: Element,
-    before: Element
-  ) => {
-    debug("insertInContainerBefore");
-    const idx = root.children.indexOf(before);
-    if (idx === -1) {
-      throw new Error("child not found");
-    }
-    root.children = root.children
-      .slice(0, idx)
-      .concat([child])
-      .concat(root.children.slice(idx));
-  },
-  insertBefore: (parent: NodeSerialized, child: Element, before: Element) => {
-    debug("insertBefore");
-    const idx = parent.children.indexOf(before);
-    if (idx === -1) {
-      throw new Error("child not found");
-    }
-    parent.children = parent.children
-      .slice(0, idx)
-      .concat([child])
-      .concat(parent.children.slice(idx));
-  },
-  removeChild: (parent: NodeSerialized, child: Element) => {
-    debug("removeChild");
-    parent.children = parent.children.filter((c) => c !== child);
-  },
-  removeChildFromContainer: (root: RootContainer, child: Element) => {
-    debug("removeChildFromContainer");
-    root.children = root.children.filter((c) => c !== child);
   },
 
   //
@@ -196,7 +161,7 @@ const reconciler = ReactReconciler({
     root: RootContainer,
     host: Host
   ): UpdateDiff => {
-    debug("prepareUpdate", instance, type, oldProps, newProps);
+    logger.debug("prepareUpdate", instance, type, oldProps, newProps);
     switch (type) {
       case NodeKind.View:
         return null;
@@ -219,7 +184,14 @@ const reconciler = ReactReconciler({
     _root: RootContainer,
     _host: Host
   ): boolean => {
-    debug("finalizeInitialChildren", _parent, _kind, _props, _root, _host);
+    logger.debug(
+      "finalizeInitialChildren",
+      _parent,
+      _kind,
+      _props,
+      _root,
+      _host
+    );
     return false;
   },
 
@@ -227,7 +199,7 @@ const reconciler = ReactReconciler({
   // Commit phase.
   //
   prepareForCommit: (_c: RootContainer) => {
-    debug("prepareForCommit", _c);
+    logger.debug("prepareForCommit", _c);
     return null;
   },
   commitUpdate: (
@@ -238,7 +210,14 @@ const reconciler = ReactReconciler({
     newProps: NodeProps,
     internalInstanceHandle: OpaqueHandle
   ) => {
-    debug("commitUpdate", instance, type, updatePayload, oldProps, newProps);
+    logger.debug(
+      "commitUpdate",
+      instance,
+      type,
+      updatePayload,
+      oldProps,
+      newProps
+    );
 
     //
     // If there's no update payload, then don't rerender!
@@ -263,51 +242,138 @@ const reconciler = ReactReconciler({
     }
 
     // @ts-ignore
-    window.anchorUi.render(instance);
+    window.anchorUi.request({
+      method: RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
+      params: [instance.id, updatePayload],
+    });
   },
   commitTextUpdate: (
     textInstance: TextSerialized,
     oldText: string,
     nextText: string
   ) => {
-    debug("commitTextUpdate");
+    logger.debug("commitTextUpdate");
     textInstance.text = nextText;
-    // @ts-ignore
-    window.anchorUi.render(textInstance);
-  },
-  resetAfterCommit: (root: RootContainer) => {
-    debug("resetAfterCommit", root);
 
-    //
-    // Perform the initial render exactly once.
-    //
-    if (!root.host.didRenderInit) {
-      root.host.didRenderInit = true;
-      // @ts-ignore
-      window.anchorUi.renderInit(root.children);
+    // @ts-ignore
+    window.anchorUi.request({
+      method: RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
+      params: [textInstance.id, nextText],
+    });
+  },
+  appendChildToContainer: (c: RootContainer, child: Element) => {
+    logger.debug("appendChildToContainer", c, child);
+    c.children.push(child);
+
+    // @ts-ignore
+    window.anchorUi.request({
+      method: RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
+      params: [child],
+    });
+  },
+  appendChild: (parent: NodeSerialized, child: Element) => {
+    logger.debug("appendChild", parent, child);
+    parent.children.push(child);
+
+    // @ts-ignore
+    window.anchorUi.request({
+      method: RECONCILER_BRIDGE_METHOD_APPEND_CHILD,
+      params: [parent.id, child],
+    });
+  },
+  insertInContainerBefore: (
+    root: RootContainer,
+    child: Element,
+    before: Element
+  ) => {
+    logger.debug("insertInContainerBefore");
+
+    const newChildren = root.children.filter((c: Element) => c.id !== child.id);
+
+    const idx = root.children.indexOf(before);
+    if (idx === -1) {
+      throw new Error("child not found");
     }
+
+    root.children = newChildren
+      .slice(0, idx)
+      .concat([child])
+      .concat(root.children.slice(idx));
+
+    // @ts-ignore
+    window.anchorUi.request({
+      method: RECONCILER_BRIDGE_METHOD_INSERT_IN_CONTAINER_BEFORE,
+      params: [child, before.id],
+    });
+  },
+  insertBefore: (parent: NodeSerialized, child: Element, before: Element) => {
+    logger.debug("insertBefore");
+    const newChildren = parent.children.filter(
+      (c: Element) => c.id !== child.id
+    );
+
+    const idx = parent.children.indexOf(before);
+    if (idx === -1) {
+      throw new Error("child not found");
+    }
+
+    parent.children = newChildren
+      .slice(0, idx)
+      .concat([child])
+      .concat(parent.children.slice(idx));
+
+    // @ts-ignore
+    window.anchorUi.request({
+      method: RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
+      params: [parent.id, child, before.id],
+    });
+  },
+  removeChild: (parent: NodeSerialized, child: Element) => {
+    logger.debug("removeChild", parent, child);
+
+    parent.children = parent.children.filter((c) => c !== child);
+
+    // @ts-ignore
+    window.anchorUi.request({
+      method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
+      params: [parent.id, child.id],
+    });
+  },
+  removeChildFromContainer: (root: RootContainer, child: Element) => {
+    logger.debug("removeChildFromContainer", root, child);
+
+    root.children = root.children.filter((c) => c !== child);
+
+    // @ts-ignore
+    window.anchorUi.request({
+      method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
+      params: [child.id],
+    });
   },
 
   //
   // Misc.
   //
   getPublicInstance: (instance: Element) => {
-    debug("getPublicInstance");
+    logger.debug("getPublicInstance");
     return instance;
   },
   shouldSetTextContent: () => {
-    debug("shouldSetTextContent");
+    logger.debug("shouldSetTextContent");
     return false;
   },
+  resetAfterCommit: (root: RootContainer) => {
+    logger.debug("resetAfterCommit", root);
+  },
   clearContainer: (root: RootContainer) => {
-    debug("clearContainer", root);
+    logger.debug("clearContainer", root);
     root.children = [];
   },
   shouldDeleteUnhydratedTailInstances: () => {
-    debug("shouldDeleteUnhydratedTailInstances");
+    logger.debug("shouldDeleteUnhydratedTailInstances");
   },
   scheduleTimeout: (fn: () => void, delay: number) => {
-    debug("scheduleTimeout");
+    logger.debug("scheduleTimeout");
     return setTimeout(fn, delay);
   },
 });
@@ -434,6 +500,11 @@ export type TextSerialized = {
 //
 export type Element = NodeSerialized | TextSerialized;
 
+export type ElementPointer = {
+  id: number;
+  children?: Array<ElementPointer>;
+};
+
 type DefNodeSerialized<K, P> = {
   id: number;
   kind: K;
@@ -442,7 +513,7 @@ type DefNodeSerialized<K, P> = {
   children: Array<Element>;
 };
 
-type UpdateDiff = any;
+export type UpdateDiff = any;
 
 type HydratableInstance = never;
 type ChildSet = never;

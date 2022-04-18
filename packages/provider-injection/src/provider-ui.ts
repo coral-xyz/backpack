@@ -1,4 +1,5 @@
 import {
+  RpcRequest,
   RequestManager,
   Event,
   CHANNEL_PLUGIN_NOTIFICATION,
@@ -6,7 +7,7 @@ import {
   CHANNEL_PLUGIN_RPC_RESPONSE,
   CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
   RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
-  RECONCILER_BRIDGE_METHOD_INITIAL_RENDER,
+  RECONCILER_BRIDGE_METHOD_MOUNT,
   PLUGIN_NOTIFICATION_ON_CLICK,
   PLUGIN_RPC_METHOD_CONNECT,
 } from "@200ms/common";
@@ -68,28 +69,15 @@ export class ProviderUiInjection {
     });
   }
 
-  renderInit(rootChildren: Array<Element>) {
-    const req = {
+  request(req: RpcRequest) {
+    const msg = {
       type: CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
       detail: {
         renderId: this._nextRenderId(),
-        method: RECONCILER_BRIDGE_METHOD_INITIAL_RENDER,
-        params: [rootChildren],
+        ...req,
       },
     };
-    window.parent.postMessage(req, "*");
-  }
-
-  render(instance: Element) {
-    const req = {
-      type: CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
-      detail: {
-        renderId: this._nextRenderId(),
-        method: RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
-        params: [instance],
-      },
-    };
-    window.parent.postMessage(req, "*");
+    window.parent.postMessage(msg, "*");
   }
 
   private _nextRenderId(): number {
