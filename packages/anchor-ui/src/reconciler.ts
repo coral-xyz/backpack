@@ -197,11 +197,20 @@ const reconciler = ReactReconciler({
     host: Host
   ): UpdateDiff => {
     debug("prepareUpdate", instance, type, oldProps, newProps);
-    // TODO.
-    return {
-      old: oldProps,
-      new: newProps,
-    };
+    switch (type) {
+      case NodeKind.View:
+        return null;
+      case NodeKind.Table:
+        return null;
+      case NodeKind.TableRow:
+        return null;
+      case NodeKind.Text:
+        return null;
+      case NodeKind.Image:
+        return null;
+      default:
+        throw new Error("unexpected node kind");
+    }
   },
   finalizeInitialChildren: (
     _parent: NodeSerialized,
@@ -230,12 +239,31 @@ const reconciler = ReactReconciler({
     internalInstanceHandle: OpaqueHandle
   ) => {
     debug("commitUpdate", instance, type, updatePayload, oldProps, newProps);
-    // TODO.
+
     //
-    // - give a unique id to the update diff
-    // - assert ordering on the receiving end
-    // - if the order is not correct, store away the request and
-    //   batch process once the next seqno is received
+    // If there's no update payload, then don't rerender!
+    //
+    if (updatePayload === null) {
+      return;
+    }
+
+    switch (type) {
+      case NodeKind.View:
+        break;
+      case NodeKind.Table:
+        break;
+      case NodeKind.TableRow:
+        break;
+      case NodeKind.Text:
+        break;
+      case NodeKind.Image:
+        break;
+      default:
+        throw new Error("unexpected node kind");
+    }
+
+    // @ts-ignore
+    window.anchorUi.render(instance);
   },
   commitTextUpdate: (
     textInstance: TextSerialized,
@@ -243,6 +271,9 @@ const reconciler = ReactReconciler({
     nextText: string
   ) => {
     debug("commitTextUpdate");
+    textInstance.text = nextText;
+    // @ts-ignore
+    window.anchorUi.render(textInstance);
   },
   resetAfterCommit: (root: RootContainer) => {
     debug("resetAfterCommit", root);
@@ -251,10 +282,9 @@ const reconciler = ReactReconciler({
     // Perform the initial render exactly once.
     //
     if (!root.host.didRenderInit) {
-      console.log("INIT RENDER HERE!!!!!!!!!");
       root.host.didRenderInit = true;
       // @ts-ignore
-      window.anchorUi.initRender(root.children);
+      window.anchorUi.renderInit(root.children);
     }
   },
 
@@ -412,10 +442,7 @@ type DefNodeSerialized<K, P> = {
   children: Array<Element>;
 };
 
-type UpdateDiff = {
-  old: NodeProps;
-  new: NodeProps;
-};
+type UpdateDiff = any;
 
 type HydratableInstance = never;
 type ChildSet = never;

@@ -68,7 +68,7 @@ export class ProviderUiInjection {
     });
   }
 
-  initRender(rootChildren: Array<Element>) {
+  renderInit(rootChildren: Array<Element>) {
     const req = {
       type: CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
       detail: {
@@ -80,7 +80,7 @@ export class ProviderUiInjection {
     window.parent.postMessage(req, "*");
   }
 
-  updateDom(instance: Element) {
+  render(instance: Element) {
     const req = {
       type: CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
       detail: {

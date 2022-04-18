@@ -80,6 +80,7 @@ function ViewRenderer({ initViewData }: any) {
   //
   useEffect(() => {
     plugin.onRender(viewData.id, (newViewData: Element) => {
+      console.log("rerendering", viewData.id, newViewData);
       setViewData(newViewData);
     });
   }, [plugin, setViewData]);
