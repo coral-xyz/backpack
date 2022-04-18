@@ -5,10 +5,6 @@ import { context, Text, Table, TableHead, TableRow } from "@200ms/anchor-ui";
 import * as anchor from "@project-serum/anchor";
 
 export function App() {
-  return <_App />;
-}
-
-function _App() {
   const [count, setCount] = useState(0);
 
   useEffect(() => {

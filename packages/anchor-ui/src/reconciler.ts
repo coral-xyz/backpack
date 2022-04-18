@@ -1,6 +1,5 @@
 import ReactReconciler, { HostConfig, OpaqueHandle } from "react-reconciler";
-
-let ONCE = true;
+import { debug } from "@200ms/common";
 
 export const AnchorUi = {
   render(reactNode: any) {
@@ -32,7 +31,7 @@ const reconciler = ReactReconciler({
   // Host context configuration.
   //
   getRootHostContext: (root: RootContainer): Host => {
-    console.log("getRootHostContext");
+    debug("getRootHostContext");
     return root.host;
   },
   getChildHostContext: (
@@ -40,7 +39,7 @@ const reconciler = ReactReconciler({
     kind: NodeKind,
     root: RootContainer
   ) => {
-    console.log("getChildHostContext");
+    debug("getChildHostContext");
     return parentHost;
   },
 
@@ -54,13 +53,37 @@ const reconciler = ReactReconciler({
     h: Host,
     _o: OpaqueHandle
   ): NodeSerialized => {
-    console.log("createInstance", kind, props);
+    debug("createInstance", kind, props);
     switch (kind) {
+      case NodeKind.View:
+        // TODO: props.
+        return {
+          id: h.nextId(),
+          kind: NodeKind.View,
+          props: {
+            ...props,
+            children: undefined,
+          },
+          style: props.style || {},
+          children: [],
+        };
       case NodeKind.Table:
         // TODO: props.
         return {
           id: h.nextId(),
           kind: NodeKind.Table,
+          props: {
+            ...props,
+            children: undefined,
+          },
+          style: props.style || {},
+          children: [],
+        };
+      case NodeKind.TableRow:
+        // TODO: props.
+        return {
+          id: h.nextId(),
+          kind: NodeKind.TableRow,
           props: {
             ...props,
             children: undefined,
@@ -77,12 +100,21 @@ const reconciler = ReactReconciler({
             ...props,
             children: undefined,
           },
-          style: {},
+          style: props.style || {},
           children: [],
         };
       case NodeKind.Image:
-      case NodeKind.View:
-      case NodeKind.TableRow:
+        // TODO: props.
+        return {
+          id: h.nextId(),
+          kind: NodeKind.Image,
+          props: {
+            ...props,
+            children: undefined,
+          },
+          style: props.style || {},
+          children: [],
+        };
       default:
         throw new Error("unexpected node kind");
     }
@@ -93,44 +125,37 @@ const reconciler = ReactReconciler({
     h: Host,
     _o: OpaqueHandle
   ): TextSerialized => {
-    console.log("createTextInstance", text);
+    debug("createTextInstance", text);
     return {
       id: h.nextId(),
       kind: "raw",
       text,
+      props: undefined,
+      style: undefined,
     };
   },
 
   //
   // Mutation.
   //
-  appendChildToContainer: (
-    c: RootContainer,
-    child: NodeSerialized | TextSerialized
-  ) => {
-    console.log("appendChildToContainer", c, child);
+  appendChildToContainer: (c: RootContainer, child: Element) => {
+    debug("appendChildToContainer", c, child);
     c.children.push(child);
   },
-  appendInitialChild: (
-    parent: NodeSerialized,
-    child: NodeSerialized | TextSerialized
-  ) => {
-    console.log("appendInitialChild", parent, child);
+  appendInitialChild: (parent: NodeSerialized, child: Element) => {
+    debug("appendInitialChild", parent, child);
     parent.children.push(child);
   },
-  appendChild: (
-    parent: NodeSerialized,
-    child: NodeSerialized | TextSerialized
-  ) => {
-    console.log("appendChild", parent, child);
+  appendChild: (parent: NodeSerialized, child: Element) => {
+    debug("appendChild", parent, child);
     parent.children.push(child);
   },
   insertInContainerBefore: (
     root: RootContainer,
-    child: NodeSerialized | TextSerialized,
-    before: NodeSerialized | TextSerialized
+    child: Element,
+    before: Element
   ) => {
-    console.log("insertInContainerBefore");
+    debug("insertInContainerBefore");
     const idx = root.children.indexOf(before);
     if (idx === -1) {
       throw new Error("child not found");
@@ -140,12 +165,8 @@ const reconciler = ReactReconciler({
       .concat([child])
       .concat(root.children.slice(idx));
   },
-  insertBefore: (
-    parent: NodeSerialized,
-    child: NodeSerialized | TextSerialized,
-    before: NodeSerialized | TextSerialized
-  ) => {
-    console.log("insertBefore");
+  insertBefore: (parent: NodeSerialized, child: Element, before: Element) => {
+    debug("insertBefore");
     const idx = parent.children.indexOf(before);
     if (idx === -1) {
       throw new Error("child not found");
@@ -155,18 +176,12 @@ const reconciler = ReactReconciler({
       .concat([child])
       .concat(parent.children.slice(idx));
   },
-  removeChild: (
-    parent: NodeSerialized,
-    child: NodeSerialized | TextSerialized
-  ) => {
-    console.log("removeChild");
+  removeChild: (parent: NodeSerialized, child: Element) => {
+    debug("removeChild");
     parent.children = parent.children.filter((c) => c !== child);
   },
-  removeChildFromContainer: (
-    root: RootContainer,
-    child: NodeSerialized | TextSerialized
-  ) => {
-    console.log("removeChildFromContainer");
+  removeChildFromContainer: (root: RootContainer, child: Element) => {
+    debug("removeChildFromContainer");
     root.children = root.children.filter((c) => c !== child);
   },
 
@@ -181,7 +196,7 @@ const reconciler = ReactReconciler({
     root: RootContainer,
     host: Host
   ): UpdateDiff => {
-    console.log("prepareUpdate", instance, type, oldProps, newProps);
+    debug("prepareUpdate", instance, type, oldProps, newProps);
     // TODO.
     return {
       old: oldProps,
@@ -195,14 +210,7 @@ const reconciler = ReactReconciler({
     _root: RootContainer,
     _host: Host
   ): boolean => {
-    console.log(
-      "finalizeInitialChildren",
-      _parent,
-      _kind,
-      _props,
-      _root,
-      _host
-    );
+    debug("finalizeInitialChildren", _parent, _kind, _props, _root, _host);
     return false;
   },
 
@@ -210,7 +218,7 @@ const reconciler = ReactReconciler({
   // Commit phase.
   //
   prepareForCommit: (_c: RootContainer) => {
-    console.log("prepareForCommit", _c);
+    debug("prepareForCommit", _c);
     return null;
   },
   commitUpdate: (
@@ -221,14 +229,7 @@ const reconciler = ReactReconciler({
     newProps: NodeProps,
     internalInstanceHandle: OpaqueHandle
   ) => {
-    console.log(
-      "commitUpdate",
-      instance,
-      type,
-      updatePayload,
-      oldProps,
-      newProps
-    );
+    debug("commitUpdate", instance, type, updatePayload, oldProps, newProps);
     // TODO.
     //
     // - give a unique id to the update diff
@@ -241,12 +242,17 @@ const reconciler = ReactReconciler({
     oldText: string,
     nextText: string
   ) => {
-    console.log("commitTextUpdate");
+    debug("commitTextUpdate");
   },
   resetAfterCommit: (root: RootContainer) => {
-    console.log("resetAfterCommit", root);
-    if (ONCE) {
-      ONCE = false;
+    debug("resetAfterCommit", root);
+
+    //
+    // Perform the initial render exactly once.
+    //
+    if (!root.host.didRenderInit) {
+      console.log("INIT RENDER HERE!!!!!!!!!");
+      root.host.didRenderInit = true;
       // @ts-ignore
       window.anchorUi.initRender(root.children);
     }
@@ -255,39 +261,39 @@ const reconciler = ReactReconciler({
   //
   // Misc.
   //
-  getPublicInstance: (instance: NodeSerialized | TextSerialized) => {
-    console.log("getPublicInstance");
+  getPublicInstance: (instance: Element) => {
+    debug("getPublicInstance");
     return instance;
   },
   shouldSetTextContent: () => {
-    console.log("shouldSetTextContent");
+    debug("shouldSetTextContent");
     return false;
   },
   clearContainer: (root: RootContainer) => {
-    console.log("clearContainer", root);
+    debug("clearContainer", root);
     root.children = [];
   },
   shouldDeleteUnhydratedTailInstances: () => {
-    console.log("shouldDeleteUnhydratedTailInstances");
+    debug("shouldDeleteUnhydratedTailInstances");
   },
   scheduleTimeout: (fn: () => void, delay: number) => {
-    console.log("scheduleTimeout");
+    debug("scheduleTimeout");
     return setTimeout(fn, delay);
   },
 });
 
 export type RootContainer = {
   host: Host;
-  children: (NodeSerialized | TextSerialized)[];
+  children: Element[];
 };
 
 export type Host = {
-  commit: (instance: NodeSerialized | TextSerialized) => void;
+  didRenderInit: boolean;
   nextId: () => number;
 };
 
 export const HOST: Host = {
-  commit: (instance: NodeSerialized | TextSerialized) => {},
+  didRenderInit: false,
   nextId: (() => {
     let id = 0;
     return () => id++;
@@ -301,7 +307,7 @@ type _HostConfig = HostConfig<
   NodeSerialized,
   TextSerialized,
   HydratableInstance,
-  NodeSerialized | TextSerialized,
+  Element,
   Host,
   UpdateDiff,
   ChildSet,
@@ -314,8 +320,18 @@ type Style = any;
 //
 // All node types.
 //
-export type NodeSerialized = TableNodeSerialized | TextNodeSerialized;
-type NodeProps = TableProps | TextProps;
+export type NodeSerialized =
+  | TableNodeSerialized
+  | TableRowNodeSerialized
+  | TextNodeSerialized
+  | ImageNodeSerialized
+  | ViewNodeSerialized;
+type NodeProps =
+  | TableProps
+  | TableRowProps
+  | TextProps
+  | ImageProps
+  | ViewProps;
 enum NodeKind {
   Table = "Table",
   TableRow = "TableRow",
@@ -327,14 +343,20 @@ enum NodeKind {
 //
 // Table.
 //
-type TableNodeSerialized = {
-  id: number;
-  kind: NodeKind.Table;
-  props: TableProps;
-  style: Style;
-  children: Array<NodeSerialized | TextSerialized>;
-};
+type TableNodeSerialized = DefNodeSerialized<NodeKind.Table, TableProps>;
 type TableProps = {
+  style: Style;
+  children: undefined;
+};
+
+//
+// TableRow.
+//
+type TableRowNodeSerialized = DefNodeSerialized<
+  NodeKind.TableRow,
+  TableRowProps
+>;
+type TableRowProps = {
   style: Style;
   children: undefined;
 };
@@ -342,14 +364,26 @@ type TableProps = {
 //
 // Text.
 //
-type TextNodeSerialized = {
-  id: number;
-  kind: NodeKind.Text;
-  props: TextProps;
-  style: Style;
-  children: Array<NodeSerialized | TextSerialized>;
-};
+type TextNodeSerialized = DefNodeSerialized<NodeKind.Text, TextProps>;
 type TextProps = {
+  style: Style;
+  children: undefined;
+};
+
+//
+// Image.
+//
+type ImageNodeSerialized = DefNodeSerialized<NodeKind.Image, ImageProps>;
+type ImageProps = {
+  style: Style;
+  children: undefined;
+};
+
+//
+// View.
+//
+type ViewNodeSerialized = DefNodeSerialized<NodeKind.View, ViewProps>;
+type ViewProps = {
   style: Style;
   children: undefined;
 };
@@ -361,6 +395,21 @@ export type TextSerialized = {
   id: number;
   kind: "raw";
   text: string | number;
+  props: undefined;
+  style: undefined;
+};
+
+//
+// Any element that can be placed in the Anchor App DOM.
+//
+export type Element = NodeSerialized | TextSerialized;
+
+type DefNodeSerialized<K, P> = {
+  id: number;
+  kind: K;
+  props: P;
+  style: Style;
+  children: Array<Element>;
 };
 
 type UpdateDiff = {

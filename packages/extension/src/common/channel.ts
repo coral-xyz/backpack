@@ -63,11 +63,10 @@ export class Channel {
   }
 
   public static serverPostMessage(
-    window: any,
     reqChannel: string,
     respChannel?: string
   ): PostMessageServer {
-    return new PostMessageServer(window, reqChannel, respChannel);
+    return new PostMessageServer(reqChannel, respChannel);
   }
 }
 
@@ -117,20 +116,24 @@ export class ChannelServer {
 }
 
 export class PostMessageServer {
+  private window?: any;
   constructor(
-    private window: any,
     private requestChannel: string,
     private responseChannel?: string
   ) {}
 
+  public setWindow(window: any) {
+    this.window = window;
+  }
+
   public handler(handlerFn: (event: Event) => Promise<RpcResponse>) {
-    window.addEventListener("message", async (event: Event) => {
+    return window.addEventListener("message", async (event: Event) => {
       if (event.data.type !== this.requestChannel) {
         return;
       }
       const id = event.data.detail.id;
       const [result, error] = await handlerFn(event);
-
+      console.log("result error", result, error);
       if (this.responseChannel) {
         const msg = {
           type: this.responseChannel,
@@ -140,6 +143,9 @@ export class PostMessageServer {
             error,
           },
         };
+        if (!this.window) {
+          throw new Error("post message window not found");
+        }
         this.window.postMessage(msg, "*");
       }
     });

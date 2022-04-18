@@ -1,5 +1,5 @@
 import { PublicKey } from "@solana/web3.js";
-import { NodeSerialized, TextSerialized } from "@200ms/anchor-ui";
+import { Element } from "@200ms/anchor-ui";
 import { debug, Event } from "@200ms/common";
 import {
   CHANNEL_PLUGIN_RPC_REQUEST,
@@ -19,14 +19,15 @@ import {
 export class Plugin {
   private _activeWallet: PublicKey;
   private _connectionUrl: string;
-  private _renderFn: Map<number, (data: any) => void>;
+  private _initRenderFn?: (data: Array<Element>) => void;
+  private _renderFn: Map<number, (data: Element) => void>;
   private _rpcServer: PostMessageServer;
   private _bridgeServer: PostMessageServer;
   private _iframe: any;
   private _iframeUrl: string;
-  private _didFinishSetup: Promise<void>;
+  private _didFinishSetup?: Promise<void>;
   private _didFinishSetupResolver?: () => void;
-  private _nextRenderId: number;
+  private _nextRenderId?: number;
   private _pendingBridgeRequests: Array<any>;
 
   constructor(url: string, activeWallet: PublicKey, connectionUrl: string) {
@@ -41,8 +42,33 @@ export class Plugin {
     // components that update.
     //
     this._renderFn = new Map();
-    this._nextRenderId = 0;
     this._pendingBridgeRequests = [];
+
+    //
+    // Inject the plugin iframe.
+    //
+    this._iframeUrl = url;
+
+    //
+    // RPC Server channel.
+    //
+    this._rpcServer = Channel.serverPostMessage(
+      CHANNEL_PLUGIN_RPC_REQUEST,
+      CHANNEL_PLUGIN_RPC_RESPONSE
+    );
+    this._rpcServer.handler(this._handleRpc.bind(this));
+
+    //
+    // React reconciler bridge messages for app rendering.
+    //
+    this._bridgeServer = Channel.serverPostMessage(
+      CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE
+    );
+    this._bridgeServer.handler(this._handleBridge.bind(this));
+  }
+
+  public create() {
+    debug("creating iframe element");
 
     //
     // Promise resolves when the constructor finishes. This prevents a
@@ -53,31 +79,31 @@ export class Plugin {
     this._didFinishSetup = new Promise((resolve) => {
       this._didFinishSetupResolver = resolve;
     });
-    //
-    // Inject the plugin iframe.
-    //
-    this._iframeUrl = url;
+
+    this._nextRenderId = 0;
     this._iframe = document.createElement("iframe");
     this._iframe.src = this._iframeUrl;
     this._iframe.allow = `'src'`;
     document.head.appendChild(this._iframe);
+    this._rpcServer.setWindow(this._iframe.contentWindow);
+    this._bridgeServer.setWindow(this._iframe.contentWindow);
 
     //
-    // Setup app-plugin -> extension-plugin request handlers.
+    // Done.
     //
-    this._rpcServer = Channel.serverPostMessage(
-      this._iframe.contentWindow,
-      CHANNEL_PLUGIN_RPC_REQUEST,
-      CHANNEL_PLUGIN_RPC_RESPONSE
-    );
-    this._rpcServer.handler(this._handleRpc.bind(this));
-    this._bridgeServer = Channel.serverPostMessage(
-      this._iframe.contentWindow,
-      CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE
-    );
-    this._bridgeServer.handler(this._handleBridge.bind(this));
-
     this._didFinishSetupResolver!();
+  }
+
+  public destroy() {
+    debug("destroying iframe element");
+    document.head.removeChild(this._iframe);
+    this._iframe.remove();
+    this._iframe = undefined;
+    this._rpcServer.setWindow(undefined);
+    this._bridgeServer.setWindow(undefined);
+    this._didFinishSetup = undefined;
+    this._didFinishSetupResolver = undefined;
+    this._nextRenderId = undefined;
   }
 
   private async _handleRpc(event: Event): Promise<RpcResponse> {
@@ -86,7 +112,7 @@ export class Plugin {
     const { method, params } = req;
     switch (method) {
       case PLUGIN_RPC_METHOD_CONNECT:
-        return this._handleConnect();
+        return await this._handleConnect();
       default:
         console.error(method);
         throw new Error("unexpected method");
@@ -121,6 +147,9 @@ export class Plugin {
   }
 
   private _needsBridgeProcessing(): boolean {
+    if (this._nextRenderId === undefined) {
+      throw new Error("render id not set");
+    }
     if (this._pendingBridgeRequests.length === 0) {
       return false;
     }
@@ -129,6 +158,10 @@ export class Plugin {
   }
 
   private _processNextBridgeRequest() {
+    if (this._nextRenderId === undefined) {
+      throw new Error("render id not set");
+    }
+
     const nextReq = this._pendingBridgeRequests[0];
     this._pendingBridgeRequests = this._pendingBridgeRequests.slice(1);
     const { method, params } = nextReq;
@@ -147,18 +180,22 @@ export class Plugin {
     this._nextRenderId += 1;
   }
 
-  private _handleInitialRender(
-    instances: Array<NodeSerialized | TextSerialized>
-  ) {
-    // todo
-    console.log("handling init render", instances);
+  private _handleInitialRender(instances: Array<Element>) {
+    if (!this._initRenderFn) {
+      throw new Error("init render function not set");
+    }
+    this._initRenderFn(instances);
   }
 
-  private _handleCommitUpdate(instance: NodeSerialized | TextSerialized) {
-    // todo
+  private _handleCommitUpdate(instance: Element) {
+    this._renderFn.get(instance.id)!(instance);
   }
 
-  onRender(viewId: number, fn: (data: any) => void) {
+  onInitRender(fn: (data: Array<Element>) => void) {
+    this._initRenderFn = fn;
+  }
+
+  onRender(viewId: number, fn: (data: Element) => void) {
     this._renderFn.set(viewId, fn);
   }
 }

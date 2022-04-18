@@ -10,7 +10,7 @@ import {
   PLUGIN_NOTIFICATION_ON_CLICK,
   PLUGIN_RPC_METHOD_CONNECT,
 } from "@200ms/common";
-import { NodeSerialized, TextSerialized } from "@200ms/anchor-ui";
+import { Element } from "@200ms/anchor-ui";
 
 //
 // Injected provider for UI plugins. Using this from a non approved plugins
@@ -68,7 +68,7 @@ export class ProviderUiInjection {
     });
   }
 
-  initRender(rootChildren: Array<NodeSerialized | TextSerialized>) {
+  initRender(rootChildren: Array<Element>) {
     const req = {
       type: CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
       detail: {
@@ -80,7 +80,7 @@ export class ProviderUiInjection {
     window.parent.postMessage(req, "*");
   }
 
-  updateDom(instance: NodeSerialized | TextSerialized) {
+  updateDom(instance: Element) {
     const req = {
       type: CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
       detail: {

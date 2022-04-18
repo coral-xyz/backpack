@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@200ms/common": "1.0.0",
     "react-reconciler": "^0.26.0"
   },
   "devDependencies": {

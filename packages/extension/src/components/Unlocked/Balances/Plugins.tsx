@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTheme, makeStyles, Typography } from "@material-ui/core";
-import { NodeSerialized } from "@200ms/anchor-ui";
+import { Element } from "@200ms/anchor-ui";
 import { usePluginContext, usePlugins } from "../../../hooks/usePlugins";
 import { PluginProvider } from "../../../context/Plugin";
 
@@ -26,21 +26,47 @@ function PluginRenderer({ plugin }: any) {
   return (
     <PluginProvider plugin={plugin}>
       <div className={classes.pluginView}>
-        <ViewRenderer viewId={0} />
+        <RootRenderer />
       </div>
     </PluginProvider>
   );
 }
 
-function ViewRenderer({ initViewData, viewId }: any) {
+function RootRenderer() {
+  const { plugin } = usePluginContext();
+  const [children, setChildren] = useState<Array<Element>>([]);
+
+  //
+  // Wait for the initial render. Should be called exactly once per plugin.
+  //
+  useEffect(() => {
+    plugin.create();
+
+    plugin.onInitRender((elements: Array<Element>) => {
+      setChildren(elements);
+    });
+
+    return () => {
+      plugin.destroy();
+    };
+  }, [plugin]);
+
+  return (
+    <>
+      {children.map((n) => (
+        <ViewRenderer key={n.id} initViewData={n} />
+      ))}
+    </>
+  );
+}
+
+function ViewRenderer({ initViewData }: any) {
   const { plugin } = usePluginContext();
 
   //
   // Force rerender the view whenever the plugin asks for it.
   //
-  const [viewData, setViewData] = useState<NodeSerialized | undefined>(
-    initViewData
-  );
+  const [viewData, setViewData] = useState<Element>(initViewData);
 
   //
   // Reload state on props change.
@@ -53,28 +79,31 @@ function ViewRenderer({ initViewData, viewId }: any) {
   // Rerender whenever the plugin asks for it.
   //
   useEffect(() => {
-    plugin.onRender(viewId, (newViewData: NodeSerialized) => {
+    plugin.onRender(viewData.id, (newViewData: Element) => {
       setViewData(newViewData);
     });
-  }, [plugin, setViewData, viewId]);
+  }, [plugin, setViewData]);
 
-  //
-  // The view hasn't rendered yet.
-  //
-  if (!viewData) {
-    return <></>;
-  }
-
-  const { id, props, style, children, kind } = viewData;
+  const { props, style, kind } = viewData;
   switch (kind) {
-    //    case "Div":
-    //      return <DivView props={props} style={style} children={children} />;
+    case "View":
+      return (
+        <DivView props={props} style={style} children={viewData.children} />
+      );
     case "Text":
-      return <TypographyView props={props} style={style} />;
+      return (
+        <TypographyView
+          props={props}
+          style={style}
+          children={viewData.children}
+        />
+      );
     case "Table":
       return <></>; // todo
-    //    case "Image":
-    //      return <ImageView props={props} style={style} />;
+    case "Image":
+      return <ImageView props={props} style={style} />;
+    case "raw":
+      return <>{viewData.text}</>;
     default:
       console.error(viewData);
       throw new Error("unexpected view data");
@@ -84,21 +113,27 @@ function ViewRenderer({ initViewData, viewId }: any) {
 function DivView({ props, style, children }: any) {
   return (
     <div style={style}>
-      {children.map((c: NodeSerialized) => (
-        <ViewRenderer key={c.id} initViewData={c} viewId={c.id} />
+      {children.map((c: Element) => (
+        <ViewRenderer key={c.id} initViewData={c} />
       ))}
     </div>
   );
 }
 
-function TypographyView({ props, style }: any) {
+function TypographyView({ props, children, style }: any) {
   const theme = useTheme() as any;
   style = {
     color: theme.custom.colors.fontColor,
     fontWeight: 500,
     ...style,
   };
-  return <Typography style={style}>{props.text}</Typography>;
+  return (
+    <Typography style={style}>
+      {children.map((c: Element) => (
+        <ViewRenderer key={c.id} initViewData={c} />
+      ))}
+    </Typography>
+  );
 }
 
 function ImageView({ props, style }: any) {
