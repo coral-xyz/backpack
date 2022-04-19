@@ -1,7 +1,7 @@
 import { selector } from "recoil";
 import * as atoms from "./atoms";
 
-const EXAMPLE_PLUGIN_URL = "https://localhost:4444/dist/browser";
+const EXAMPLE_PLUGIN_URL = "https://localhost:4444";
 
 export const plugins = selector({
   key: "plugins",
