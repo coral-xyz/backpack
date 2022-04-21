@@ -1,7 +1,8 @@
 import { selector } from "recoil";
 import * as atoms from "./atoms";
 
-const EXAMPLE_PLUGIN_URL = "https://localhost:4444";
+// full path to HTML is currently required, will be fixed in future
+const EXAMPLE_PLUGIN_URL = "https://localhost:4444/index.html";
 
 export const plugins = selector({
   key: "plugins",
