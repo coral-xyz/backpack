@@ -8,14 +8,12 @@
     "build": "parcel build src/index.html",
     "start": "parcel --https --port 4444 src/index.html"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@200ms/anchor-ui": "1.0.0",
+    "@200ms/anchor-ui": "*",
     "@project-serum/anchor": "^0.23.0",
     "@project-serum/serum": "^0.13.64",
     "@solana/web3.js": "^1.36.0",
-    "react": "^18.0.0"
+    "react": "^17.0.2"
   },
   "devDependencies": {
     "parcel": "^2.4.1",
