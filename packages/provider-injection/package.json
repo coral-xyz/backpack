@@ -16,8 +16,8 @@
     "eventemitter3": "^4.0.7"
   },
   "devDependencies": {
-    "@200ms/common": "1.0.0",
-    "@200ms/anchor-ui": "1.0.0",
+    "@200ms/common": "*",
+    "@200ms/anchor-ui": "*",
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.6",
