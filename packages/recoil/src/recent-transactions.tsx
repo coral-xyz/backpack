@@ -54,14 +54,9 @@ export async function fetchRecentTransactions(
   publicKey: PublicKey,
   provider: Provider
 ) {
-  const connection = new BackgroundSolanaConnection(
-    "https://solana-mainnet.phantom.tech"
-  );
-  /*
   const connection = process.env.RPC_WITH_TX_HISTORY
     ? new BackgroundSolanaConnection(process.env.RPC_WITH_TX_HISTORY)
-									 : provider.connection;
-	*/
+    : provider.connection;
 
   const resp = await connection.getConfirmedSignaturesForAddress2(publicKey, {
     limit: 15,
