@@ -29,7 +29,7 @@ export const plugins = selector({
       {
         url: COUNTER_PLUGIN_URL,
         iconUrl: COUNTER_ICON_URL,
-        title: "Open Orders",
+        title: "Counter",
         activeWallet,
         connectionUrl,
       },

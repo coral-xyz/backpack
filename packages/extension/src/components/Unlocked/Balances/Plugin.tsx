@@ -1,4 +1,4 @@
-import { makeStyles, Button } from "@material-ui/core";
+import { makeStyles, Button, Typography } from "@material-ui/core";
 import { Plugin, PluginRenderer } from "@200ms/anchor-ui-renderer";
 import { usePlugins } from "../../../hooks/usePlugins";
 import { useNavigation } from "../../../hooks/useNavigation";
@@ -16,6 +16,13 @@ const useStyles = makeStyles((theme: any) => ({
     borderRadius: "10px",
     backgroundColor: theme.custom.colors.nav,
     padding: 0,
+  },
+  pluginTitle: {
+    fontWeight: 500,
+    color: theme.custom.colors.fontColor,
+    fontSize: "10px",
+    textAlign: "center",
+    marginTop: "4px",
   },
 }));
 
@@ -58,24 +65,27 @@ function PluginIcon({ plugin }: { plugin: Plugin }) {
     });
   };
   return (
-    <Button
-      variant="contained"
-      disableElevation
-      className={classes.pluginIconButton}
-      onClick={() => onClick()}
-      classes={{
-        root: classes.pluginIconRoot,
-      }}
-    >
-      <img
-        src={plugin.iconUrl}
-        style={{
-          borderRadius: "10px",
-          width: ICON_WIDTH,
-          height: ICON_WIDTH,
+    <div>
+      <Button
+        variant="contained"
+        disableElevation
+        className={classes.pluginIconButton}
+        onClick={() => onClick()}
+        classes={{
+          root: classes.pluginIconRoot,
         }}
-      />
-    </Button>
+      >
+        <img
+          src={plugin.iconUrl}
+          style={{
+            borderRadius: "10px",
+            width: ICON_WIDTH,
+            height: ICON_WIDTH,
+          }}
+        />
+      </Button>
+      <Typography className={classes.pluginTitle}>{plugin.title}</Typography>
+    </div>
   );
 }
 

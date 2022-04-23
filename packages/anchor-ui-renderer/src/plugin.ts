@@ -392,8 +392,6 @@ class Dom {
     parent.children = parent.children.filter((c: Element) => c.id !== childId);
     this._removeFromDom(this._vdom.get(childId)!);
     this._render(parentId);
-
-    console.log("removed", childId, parent);
   }
 
   _handleRemoveChildFromContainer(childId: number) {
