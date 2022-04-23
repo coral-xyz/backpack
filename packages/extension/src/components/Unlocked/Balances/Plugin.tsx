@@ -41,7 +41,6 @@ export class Plugin {
   private _rpcServer: PostMessageServer;
   private _bridgeServer: PostMessageServer;
   private _iframe: any;
-  private _iframeUrl: string;
   private _nextRenderId?: number;
   private _pendingBridgeRequests?: Array<any>;
   private _dom?: Dom;
@@ -49,13 +48,25 @@ export class Plugin {
   private _didFinishSetup?: Promise<void>;
   private _didFinishSetupResolver?: () => void;
 
-  constructor(url: string, activeWallet: PublicKey, connectionUrl: string) {
+  readonly iframeUrl: string;
+  readonly iconUrl: string;
+  readonly title: string;
+
+  constructor(
+    url: string,
+    iconUrl: string,
+    title: string,
+    activeWallet: PublicKey,
+    connectionUrl: string
+  ) {
     //
     // Provide connection for the plugin.
     //
     this._activeWallet = activeWallet;
     this._connectionUrl = connectionUrl;
-    this._iframeUrl = url;
+    this.title = title;
+    this.iframeUrl = url;
+    this.iconUrl = iconUrl;
 
     //
     // RPC Server channel from plugin -> extension-ui.
@@ -93,7 +104,7 @@ export class Plugin {
 
     this._nextRenderId = 0;
     this._iframe = document.createElement("iframe");
-    this._iframe.src = this._iframeUrl;
+    this._iframe.src = this.iframeUrl;
     this._iframe.allow = `'src'`;
     document.head.appendChild(this._iframe);
     this._rpcServer.setWindow(this._iframe.contentWindow);

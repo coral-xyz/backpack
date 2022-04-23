@@ -35,7 +35,7 @@ function OpenOrdersAccounts() {
   useEffect(() => {
     fetchOpenOrdersData().then(([newOpenOrders, marketMap]) => {
       setOpenOrders(newOpenOrders);
-      //      setMarketMap(marketMap);
+      setMarketMap(marketMap);
     });
   }, [setOpenOrders, setMarketMap]);
 

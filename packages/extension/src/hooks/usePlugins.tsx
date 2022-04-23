@@ -7,10 +7,16 @@ import { _PluginContext } from "../context/Plugin";
 export function usePlugins(): Array<Plugin> {
   const pluginData = useRecoilValue(atoms.plugins);
   return pluginData.map((p) => {
-    let plug = PLUGIN_CACHE.get(p.url);
+    let plug = PLUGIN_CACHE.get(p.iconUrl); // TODO: should be the full url not icon.
     if (!plug) {
-      plug = new Plugin(p.url, p.activeWallet, p.connectionUrl);
-      PLUGIN_CACHE.set(p.url, plug);
+      plug = new Plugin(
+        p.url,
+        p.iconUrl,
+        p.title,
+        p.activeWallet,
+        p.connectionUrl
+      );
+      PLUGIN_CACHE.set(p.iconUrl, plug);
     }
     return plug;
   });
