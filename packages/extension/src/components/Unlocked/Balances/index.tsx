@@ -20,7 +20,7 @@ import {
   NAV_COMPONENT_BALANCES_NETWORK,
   NAV_COMPONENT_TOKEN,
 } from "../../../common";
-import { PluginGrid } from "./Plugins";
+import { PluginGrid } from "./Plugin";
 
 const useStyles = makeStyles((theme: any) => ({
   logoIcon: {

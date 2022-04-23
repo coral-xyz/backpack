@@ -19,7 +19,7 @@ import { Settings } from "./../components/Unlocked/Settings";
 import { Network } from "../components/Unlocked/Balances/Network";
 import { Token } from "../components/Unlocked/Balances/Token";
 import { bootstrapFast } from "./bootstrap";
-import { Plugins } from "../components/Unlocked/Balances/Plugins";
+import { PluginDisplay } from "../components/Unlocked/Balances/Plugin";
 
 /**
  * Effective view model for each tab's navigation controller.
@@ -128,7 +128,7 @@ export const navigationComponentMap = selectorFamily({
       case NAV_COMPONENT_TOKEN:
         return (props: any) => <Token {...props} />;
       case NAV_COMPONENT_PLUGINS:
-        return (props: any) => <Plugins {...props} />;
+        return (props: any) => <PluginDisplay {...props} />;
       default:
         throw new Error("invariant violation");
     }

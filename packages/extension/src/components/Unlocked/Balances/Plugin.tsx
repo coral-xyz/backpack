@@ -1,4 +1,4 @@
-import { useTheme, makeStyles, Button } from "@material-ui/core";
+import { makeStyles, Button } from "@material-ui/core";
 import { Plugin, PluginRenderer } from "@200ms/anchor-ui-renderer";
 import { usePlugins } from "../../../hooks/usePlugins";
 import { useNavigation } from "../../../hooks/useNavigation";
@@ -47,18 +47,8 @@ export function PluginGrid() {
   );
 }
 
-export function Plugins({ pluginUrl }: { pluginUrl: string }) {
-  const plugins = usePlugins();
-  const p = plugins.find((p) => p.iframeUrl === pluginUrl);
-  if (p === undefined) {
-    throw new Error("unable to find plugin");
-  }
-  return <PluginRenderer key={p.iframeUrl} plugin={p} />;
-}
-
 function PluginIcon({ plugin }: { plugin: Plugin }) {
   const classes = useStyles();
-  const theme = useTheme() as any;
   const { push } = useNavigation();
   const onClick = () => {
     push({
@@ -87,4 +77,13 @@ function PluginIcon({ plugin }: { plugin: Plugin }) {
       />
     </Button>
   );
+}
+
+export function PluginDisplay({ pluginUrl }: { pluginUrl: string }) {
+  const plugins = usePlugins();
+  const p = plugins.find((p) => p.iframeUrl === pluginUrl);
+  if (p === undefined) {
+    throw new Error("unable to find plugin");
+  }
+  return <PluginRenderer key={p.iframeUrl} plugin={p} />;
 }
