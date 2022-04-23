@@ -1,5 +1,5 @@
 import { useRecoilValue } from "recoil";
-import * as atoms from "@200ms/recoil";
+import * as atoms from "../atoms";
 
 export function useBlockchains(): Array<string> {
   const blockchains = useRecoilValue(atoms.blockchainKeys);

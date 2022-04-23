@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { makeStyles, Button, Typography } from "@material-ui/core";
-import { useBlockchainTokenAccount } from "../../../hooks/useBlockchainBalances";
+import { useBlockchainTokenAccount } from "@200ms/recoil";
 import { RecentActivitySmall } from "./Network/RecentActivity";
 import { SendButton } from "./Send";
 import { DepositButton } from "./Deposit";

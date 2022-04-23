@@ -1,24 +1,11 @@
 import { atom, atomFamily, selector, selectorFamily } from "recoil";
-import { getBackgroundClient, bootstrapFast } from "@200ms/recoil";
+import { getBackgroundClient } from "../background";
+import { bootstrapFast } from "../atoms";
 import {
   UI_RPC_METHOD_NAVIGATION_UPDATE,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
-  NAV_COMPONENT_BALANCES_NETWORK,
-  NAV_COMPONENT_TOKEN,
-  NAV_COMPONENT_PLUGINS,
-  TAB_BALANCES,
-  TAB_BRIDGE,
-  TAB_QUEST,
-  TAB_FRIENDS,
 } from "@200ms/common";
-import { Balances } from "./../components/Unlocked/Balances";
-import { Quests } from "./../components/Unlocked/Quests";
-import { Bridge } from "./../components/Unlocked/Bridge";
-import { Settings } from "./../components/Unlocked/Settings";
-import { Network } from "../components/Unlocked/Balances/Network";
-import { Token } from "../components/Unlocked/Balances/Token";
-import { PluginDisplay } from "../components/Unlocked/Balances/Plugin";
 
 /**
  * Effective view model for each tab's navigation controller.
@@ -96,42 +83,24 @@ export const navigationDataMap = atomFamily<any, string>({
   ],
 });
 
+export const navigationBorderBottom = atom<boolean>({
+  key: "navigationBorderBottom",
+  default: true,
+});
+
+export const navigationRightButton = atom<any | null>({
+  key: "navigationRightButton",
+  default: null,
+});
+
 // Returns the root of the navigation stack for a given tab.
 export const navigationTabRootRenderer = selectorFamily({
   key: "navigationTabRoot",
   get:
     (tab: string) =>
     ({ get }: any) => {
-      return () => {
-        return (
-          <>
-            {tab === TAB_BALANCES && <Balances />}
-            {tab === TAB_QUEST && <Quests />}
-            {tab === TAB_BRIDGE && <Bridge />}
-            {tab === TAB_FRIENDS && <Settings />}
-          </>
-        );
-      };
+      return _TAB_COMPONENTS!(tab);
     },
-});
-
-/**
- * Maps component stringified label to an actual component constructor.
- */
-export const navigationComponentMap = selectorFamily({
-  key: "navigationStack",
-  get: (navId: string) => () => {
-    switch (navId) {
-      case NAV_COMPONENT_BALANCES_NETWORK:
-        return (props: any) => <Network {...props} />;
-      case NAV_COMPONENT_TOKEN:
-        return (props: any) => <Token {...props} />;
-      case NAV_COMPONENT_PLUGINS:
-        return (props: any) => <PluginDisplay {...props} />;
-      default:
-        throw new Error("invariant violation");
-    }
-  },
 });
 
 /**
@@ -158,12 +127,29 @@ export const navigationRenderer = selectorFamily({
     },
 });
 
-export const navigationBorderBottom = atom<boolean>({
-  key: "navigationBorderBottom",
-  default: true,
+/**
+ * Maps component stringified label to an actual component constructor.
+ */
+export const navigationComponentMap = selectorFamily({
+  key: "navigationStack",
+  get: (navId: string) => () => {
+    return _NAVIGATION_MAP!(navId);
+  },
 });
 
-export const navigationRightButton = atom<any | null>({
-  key: "navigationRightButton",
-  default: null,
-});
+////////////////////////////////////////////////////////////////////////////////
+//
+// Below is boilerplate that must be invoked by the extension immediately on
+// setup. A bit of a hack, but this allows us to remove recoil as a depdendency
+// from the extension ui.
+//
+////////////////////////////////////////////////////////////////////////////////
+
+let _NAVIGATION_MAP: Function | null = null;
+let _TAB_COMPONENTS: Function | null = null;
+export function setupNavigationMap(fn: Function) {
+  _NAVIGATION_MAP = fn;
+}
+export function setupTabComponents(components: Function) {
+  _TAB_COMPONENTS = components;
+}

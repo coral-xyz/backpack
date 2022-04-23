@@ -1,6 +1,12 @@
 import React, { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
-import { getBackgroundClient, BackgroundSolanaConnection } from "@200ms/recoil";
+import {
+  getBackgroundClient,
+  KeyringStoreStateEnum,
+  BackgroundSolanaConnection,
+  useUpdateRecentBlockhash,
+  useUpdateAllSplTokenAccounts,
+} from "@200ms/recoil";
 import * as atoms from "@200ms/recoil";
 import {
   debug,
@@ -20,9 +26,6 @@ import {
   NOTIFICATION_BLOCKHASH_DID_UPDATE,
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
 } from "../common";
-import { KeyringStoreStateEnum } from "../keyring/store";
-import { useUpdateAllSplTokenAccounts } from "../hooks/useLoadSplTokens";
-import { useUpdateRecentBlockhash } from "../hooks/useRecentBlockhash";
 
 // The Notifications provider is used to subscribe and handle notifications
 // from the background script.

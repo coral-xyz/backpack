@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { makeStyles, Typography } from "@material-ui/core";
 import * as bip39 from "bip39";
-import { getBackgroundClient } from "../../background/client";
+import { getBackgroundClient } from "@200ms/recoil";
 import { WithContinue, Stepper, Done, CreatePassword } from "./CreateNewWallet";
 import {
   BrowserRuntime,

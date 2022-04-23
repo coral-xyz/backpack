@@ -1,5 +1,5 @@
 import { createTheme, CssBaseline, MuiThemeProvider } from "@material-ui/core";
-import { useDarkMode } from "../hooks/useDarkMode";
+import { useDarkMode } from "@200ms/recoil";
 
 export const lightTheme = createTheme({
   palette: {},

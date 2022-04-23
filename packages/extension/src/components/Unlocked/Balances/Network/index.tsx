@@ -8,7 +8,7 @@ import {
   Tab,
 } from "@material-ui/core";
 import { OfflineBolt as Bolt } from "@material-ui/icons";
-import { useNavigation } from "../../../../hooks/useNavigation";
+import { useNavigation } from "@200ms/recoil";
 import { WithDrawer } from "../../../Layout/Drawer";
 import { Nfts } from "./Nfts";
 import { Swap } from "./Swap";

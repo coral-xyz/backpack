@@ -1,7 +1,6 @@
 import { makeStyles, Button, Typography } from "@material-ui/core";
 import { Plugin, PluginRenderer } from "@200ms/anchor-ui-renderer";
-import { usePlugins } from "../../../hooks/usePlugins";
-import { useNavigation } from "../../../hooks/useNavigation";
+import { usePlugins, useNavigation } from "@200ms/recoil";
 import { NAV_COMPONENT_PLUGINS } from "../../../common";
 
 const ICON_WIDTH = "60px";

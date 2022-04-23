@@ -2,11 +2,10 @@ import { useEffect } from "react";
 import * as bs58 from "bs58";
 import { Message } from "@solana/web3.js";
 import { useTheme, makeStyles, Typography, Button } from "@material-ui/core";
+import { useApproveOrigin, useActiveWallet } from "@200ms/recoil";
 import { BottomCard } from "./Unlocked/Balances/Send";
-import { useActiveWallet } from "../hooks/useWallet";
 import { walletAddressDisplay } from "../components/common";
 import { WithEphemeralNav } from "../components/Layout/NavEphemeral";
-import { useApproveOrigin } from "../hooks/useKeyringStoreState";
 
 const useStyles = makeStyles((theme: any) => ({
   activeWallet: {

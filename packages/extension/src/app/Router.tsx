@@ -2,14 +2,15 @@ import { Suspense } from "react";
 import { makeStyles } from "@material-ui/core";
 import { openOnboarding, debug } from "../common";
 
-import { KeyringStoreStateEnum } from "../keyring/store";
-import { Locked } from "../components/Locked";
-import { Unlocked } from "../components/Unlocked";
 import {
+  getBackgroundResponseClient,
+  KeyringStoreStateEnum,
   useKeyringStoreState,
   useApprovedOrigins,
-} from "../hooks/useKeyringStoreState";
-import { useBootstrapFast } from "../hooks/useWallet";
+  useBootstrapFast,
+} from "@200ms/recoil";
+import { Locked } from "../components/Locked";
+import { Unlocked } from "../components/Unlocked";
 import {
   QUERY_LOCKED,
   QUERY_APPROVAL,
@@ -22,7 +23,6 @@ import {
   ApproveTransaction,
   ApproveMessage,
 } from "../components/Approval";
-import { getBackgroundResponseClient } from "../background/client";
 import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../common";
 import "./App.css";
 import "@fontsource/inter";

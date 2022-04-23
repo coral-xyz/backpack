@@ -7,7 +7,7 @@ import * as anchor from "@project-serum/anchor";
 import { metadata } from "@project-serum/token";
 import { bootstrap } from "./bootstrap";
 import { priceData } from "./price-data";
-import { TokenAccountWithKey } from ".";
+import { TokenAccountWithKey } from "../types";
 
 const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
   "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"

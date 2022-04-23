@@ -3,9 +3,15 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
 } from "@200ms/common";
-import { getBackgroundClient } from ".";
+import { getBackgroundClient } from "../background";
 
 export type KeyringStoreState = "locked" | "unlocked" | "needs-onboarding";
+
+export const KeyringStoreStateEnum: { [key: string]: KeyringStoreState } = {
+  Locked: "locked",
+  Unlocked: "unlocked",
+  NeedsOnboarding: "needs-onboarding",
+};
 
 /**
  * Status of the keyring store.

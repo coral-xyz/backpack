@@ -1,5 +1,5 @@
 import { useRecoilValue, useRecoilState } from "recoil";
-import * as atoms from "../recoil/atoms";
+import * as atoms from "../atoms";
 
 type NavigationContext = {
   isRoot: boolean;

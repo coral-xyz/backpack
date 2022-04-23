@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@200ms/anchor-ui-renderer": "*",
     "recoil": "^0.6.1"
   },
   "peerDependencies": {

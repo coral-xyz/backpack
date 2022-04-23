@@ -5,14 +5,14 @@ import {
   Loadable,
 } from "recoil";
 import { PublicKey, Connection } from "@solana/web3.js";
-import * as atoms from "@200ms/recoil";
-import { KeyringStoreStateEnum } from "../keyring/store";
-import { useNavigation, useNavigationRoot } from "../hooks/useNavigation";
-import { useTab } from "../hooks/useTab";
-import { useKeyringStoreState } from "../hooks/useKeyringStoreState";
+import * as atoms from "../atoms";
+import { KeyringStoreStateEnum } from "../atoms/keyring-store";
+import { useNavigation, useNavigationRoot } from "./useNavigation";
+import { useTab } from "./useTab";
+import { useKeyringStoreState } from "./useKeyringStoreState";
 import { useCommitment, useRecentBlockhash } from "./useRecentBlockhash";
 import { useSplTokenRegistry } from "./useSplTokenRegistry";
-import { SolanaContext } from "../common/solana";
+import { SolanaContext } from "../types";
 
 // Bootstrap data for the initial load.
 export function useBootstrap() {

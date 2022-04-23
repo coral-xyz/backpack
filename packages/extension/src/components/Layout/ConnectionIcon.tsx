@@ -10,9 +10,11 @@ import {
   ListItemText,
 } from "@material-ui/core";
 import { CheckBox } from "@material-ui/icons";
-import { KeyringStoreStateEnum } from "../../keyring/store";
-import { useKeyringStoreState } from "../../hooks/useKeyringStoreState";
-import { useSolanaConnection } from "../../hooks/useSolanaConnection";
+import {
+  KeyringStoreStateEnum,
+  useKeyringStoreState,
+  useSolanaConnection,
+} from "@200ms/recoil";
 
 const useStyles = makeStyles((theme: any) => ({
   menuButtonContainer: {

@@ -1,14 +1,7 @@
 import { useState } from "react";
-import { Lock } from "@material-ui/icons";
-import {
-  makeStyles,
-  Divider,
-  Typography,
-  Button,
-  ButtonBase,
-} from "@material-ui/core";
+import { makeStyles, Divider, Typography, Button } from "@material-ui/core";
+import { getBackgroundClient } from "@200ms/recoil";
 import { TextField } from "./common";
-import { getBackgroundClient } from "../background/client";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "../common";
 import { OnboardButton } from "./common";
 

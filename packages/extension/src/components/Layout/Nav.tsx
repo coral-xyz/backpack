@@ -8,10 +8,13 @@ import {
 import { ArrowBack } from "@material-ui/icons";
 import { SidebarButton } from "./Sidebar";
 import { Scrollbar } from "./Scrollbar";
-import { useNavigation, useNavigationRender } from "../../hooks/useNavigation";
+import {
+  useBootstrap,
+  useNavigation,
+  useNavigationRender,
+} from "@200ms/recoil";
 import { Loading } from "../common";
 import { WithTabs } from "./Tab";
-import { useBootstrap } from "../../hooks/useWallet";
 
 export const NAV_BAR_HEIGHT = 56;
 export const NAV_BUTTON_WIDTH = 38;

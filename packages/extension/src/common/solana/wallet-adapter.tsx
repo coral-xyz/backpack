@@ -6,7 +6,7 @@ import {
   TransactionSignature,
 } from "@solana/web3.js";
 import { SendTransactionOptions } from "@solana/wallet-adapter-base";
-import { SolanaContext } from ".";
+import { SolanaContext } from "@200ms/recoil";
 import { SolanaProvider } from "./provider";
 
 // Exposes a variant of the `@solana/wallet-adapter` interface (for jupiter).

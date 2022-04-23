@@ -1,8 +1,8 @@
 import { makeStyles, useTheme, Button, Typography } from "@material-ui/core";
+import { useActiveWallet } from "@200ms/recoil";
 import { WithHeaderButton } from "./Token";
 import { BottomCard } from "./Send";
 import { TextField, TextFieldLabel, walletAddressDisplay } from "../../common";
-import { useActiveWallet } from "../../../hooks/useWallet";
 
 const useStyles = makeStyles((theme: any) => ({
   headerButton: {

@@ -8,8 +8,7 @@ import {
 } from "@material-ui/core";
 import { Check, Clear } from "@material-ui/icons";
 import { explorerUrl } from "../../../../common/solana/explorer";
-import { useActiveWallet } from "../../../../hooks/useWallet";
-import { useRecentTransactions } from "../../../../hooks/useRecentTransactions";
+import { useActiveWallet, useRecentTransactions } from "@200ms/recoil";
 import { Loading } from "../../../common";
 
 const useStyles = makeStyles((theme: any) => ({

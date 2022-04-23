@@ -14,12 +14,12 @@ import {
   useBlockchainLogo,
   useTotal,
   useBlockchainTokensSorted,
-} from "../../../hooks/useBlockchainBalances";
-import { useNavigation } from "../../../hooks/useNavigation";
+  useNavigation,
+} from "@200ms/recoil";
 import {
   NAV_COMPONENT_BALANCES_NETWORK,
   NAV_COMPONENT_TOKEN,
-} from "../../../common";
+} from "@200ms/common";
 import { PluginGrid } from "./Plugin";
 
 const useStyles = makeStyles((theme: any) => ({

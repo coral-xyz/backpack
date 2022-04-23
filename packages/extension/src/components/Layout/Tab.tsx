@@ -5,7 +5,7 @@ import {
   PriorityHigh,
   AttachMoney as Money,
 } from "@material-ui/icons";
-import { useTab } from "../../hooks/useTab";
+import { useTab } from "@200ms/recoil";
 import { TAB_BALANCES, TAB_QUEST, TAB_BRIDGE, TAB_FRIENDS } from "../../common";
 
 const useStyles = makeStyles((theme: any) => ({

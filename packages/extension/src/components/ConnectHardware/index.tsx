@@ -12,16 +12,14 @@ import Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
 import * as anchor from "@project-serum/anchor";
 import * as ledgerCore from "@200ms/ledger-core";
-import { DerivationPath } from "@200ms/common";
-import { useAnchorContext } from "../../hooks/useWallet";
-import { Stepper, WithContinue } from "../Onboarding/CreateNewWallet";
 import {
+  DerivationPath,
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
   UI_RPC_METHOD_LEDGER_IMPORT,
-} from "../../common";
-import * as crypto from "../../keyring/crypto";
-import { getBackgroundClient } from "../../background/client";
+} from "@200ms/common";
+import { getBackgroundClient, useAnchorContext } from "@200ms/recoil";
+import { Stepper, WithContinue } from "../Onboarding/CreateNewWallet";
 
 const STEP_COUNT = 3;
 let TRANSPORT: Transport | null = null;

@@ -7,15 +7,15 @@ import {
   Typography,
 } from "@material-ui/core";
 import { MenuBook } from "@material-ui/icons";
-import { TextField } from "../common";
-import { HdKeyring, SolanaHdKeyringFactory } from "../../keyring";
-import { getBackgroundClient } from "../../background/client";
+import { getBackgroundClient } from "@200ms/recoil";
 import {
   BrowserRuntime,
+  DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
-} from "../../common";
-import { DerivationPath } from "@200ms/common";
+} from "@200ms/common";
+import { TextField } from "../common";
 import { OnboardButton } from "../common";
+import { HdKeyring, SolanaHdKeyringFactory } from "../../keyring";
 import { _NavBackButton, DummyButton } from "../Layout/Nav";
 
 export const useStyles = makeStyles((theme: any) => ({

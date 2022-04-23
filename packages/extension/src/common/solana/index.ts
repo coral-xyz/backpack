@@ -1,16 +1,13 @@
 import BN from "bn.js";
 import {
-  Commitment,
-  Blockhash,
   PublicKey,
   Transaction,
   TransactionInstruction,
   SystemProgram,
 } from "@solana/web3.js";
 import { Token } from "@solana/spl-token";
-import { TokenInfo } from "@solana/spl-token-registry";
-import { Program, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
+import { SolanaContext } from "@200ms/recoil";
 import { associatedTokenAddress } from "./programs/token";
 import * as assertOwner from "./programs/assert-owner";
 import { SolanaProvider } from "./provider";
@@ -139,12 +136,4 @@ export type TransferSolRequest = {
   destination: string;
   //
   amount: number;
-};
-
-export type SolanaContext = {
-  walletPublicKey: PublicKey;
-  recentBlockhash: Blockhash;
-  tokenClient: Program<SplToken>;
-  registry: Map<string, TokenInfo>;
-  commitment: Commitment;
 };

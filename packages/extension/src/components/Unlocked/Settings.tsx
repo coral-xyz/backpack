@@ -8,12 +8,11 @@ import {
   ListItem,
   ListItemText,
 } from "@material-ui/core";
-import { useActiveWallet } from "../../hooks/useWallet";
-import { getBackgroundClient } from "../../background/client";
+import { getBackgroundClient, useActiveWallet } from "@200ms/recoil";
 import {
   UI_RPC_METHOD_KEYNAME_UPDATE,
   UI_RPC_METHOD_PASSWORD_UPDATE,
-} from "../../common";
+} from "@200ms/common";
 import { WithDrawer } from "../Layout/Drawer";
 
 const useStyles = makeStyles((theme: any) => ({

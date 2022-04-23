@@ -1,8 +1,5 @@
 import { makeStyles } from "@material-ui/core";
-import {
-  useNftMetadata,
-  useNftMetadataAddresses,
-} from "../../../../hooks/useBlockchainBalances";
+import { useNftMetadata, useNftMetadataAddresses } from "@200ms/recoil";
 
 const useStyles = makeStyles((theme: any) => ({
   nftImage: {

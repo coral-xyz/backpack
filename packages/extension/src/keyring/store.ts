@@ -1,6 +1,6 @@
 import * as bs58 from "bs58";
 import { DerivationPath } from "@200ms/common";
-import { KeyringStoreState } from "@200ms/recoil";
+import { KeyringStoreState, KeyringStoreStateEnum } from "@200ms/recoil";
 import { BrowserRuntime } from "../common/browser";
 import * as crypto from "./crypto";
 import {
@@ -25,12 +25,6 @@ export const BLOCKCHAIN_SOLANA = "solana";
 const BLOCKCHAIN_DEFAULT = BLOCKCHAIN_SOLANA;
 
 const DEFAULT_SOLANA_CONNECTION_URL = "https://solana-api.projectserum.com";
-
-export const KeyringStoreStateEnum: { [key: string]: KeyringStoreState } = {
-  Locked: "locked",
-  Unlocked: "unlocked",
-  NeedsOnboarding: "needs-onboarding",
-};
 
 // Manages all key data for all blockchains.
 export class KeyringStore {

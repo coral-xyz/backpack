@@ -15,15 +15,17 @@ import {
 import { Add, Menu, Close, Lock, Help, FlashOn } from "@material-ui/icons";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import {
+  getBackgroundClient,
+  useKeyringStoreState,
+  KeyringStoreStateEnum,
+  useWalletPublicKeys,
+} from "@200ms/recoil";
+import {
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
 } from "../../common";
-import { getBackgroundClient } from "../../background/client";
-import { useKeyringStoreState } from "../../hooks/useKeyringStoreState";
-import { useWalletPublicKeys } from "../../hooks/useWallet";
-import { KeyringStoreStateEnum } from "../../keyring/store";
 import { WalletAddress } from "../../components/common";
 import { WithDrawerNoHeader } from "./Drawer";
 import { openConnectHardware } from "../../common";

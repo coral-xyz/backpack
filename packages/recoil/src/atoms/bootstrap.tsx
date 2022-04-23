@@ -4,8 +4,9 @@ import {
   UI_RPC_METHOD_NAVIGATION_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
 } from "@200ms/common";
-import { getBackgroundClient, TokenAccountWithKey, anchorContext } from ".";
-import { TABS } from "./types";
+import { TokenAccountWithKey, TABS } from "../types";
+import { getBackgroundClient } from "../background";
+import { anchorContext } from "../atoms/wallet";
 import { fetchRecentTransactions } from "./recent-transactions";
 import { splTokenRegistry } from "./token";
 import { fetchPriceData } from "./price-data";

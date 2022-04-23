@@ -1,5 +1,5 @@
 import { useRecoilState } from "recoil";
-import { navigationActiveTab } from "../recoil/atoms";
+import * as atoms from "../atoms";
 
 type TabContext = {
   tab: string;
@@ -7,9 +7,9 @@ type TabContext = {
 };
 
 export function useTab(): TabContext {
-  const [tab, setTab] = useRecoilState(navigationActiveTab);
+  const [tab, setTab] = useRecoilState(atoms.navigationActiveTab);
   return {
-    tab: tab!,
+    tab: tab! as string, // ts wtf?
     setTab,
   };
 }

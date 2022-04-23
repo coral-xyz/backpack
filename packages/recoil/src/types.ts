@@ -1,5 +1,7 @@
 import BN from "bn.js";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, Blockhash, Commitment } from "@solana/web3.js";
+import { TokenInfo } from "@solana/spl-token-registry";
+import { Program, SplToken } from "@project-serum/anchor";
 import {
   TAB_BALANCES,
   TAB_QUEST,
@@ -67,3 +69,11 @@ export function makeDefaultNav() {
   });
   return defaultNav;
 }
+
+export type SolanaContext = {
+  walletPublicKey: PublicKey;
+  recentBlockhash: Blockhash;
+  tokenClient: Program<SplToken>;
+  registry: Map<string, TokenInfo>;
+  commitment: Commitment;
+};

@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { makeStyles, useTheme, Typography } from "@material-ui/core";
 import { SystemProgram, PublicKey } from "@solana/web3.js";
+import { useAnchorContext, useSolanaCtx } from "@200ms/recoil";
 import { TextField, TextFieldLabel } from "../../common";
 import { WithHeaderButton } from "./Token";
-import { useAnchorContext, useSolanaCtx } from "../../../hooks/useWallet";
 import { OnboardButton } from "../../common";
 import { WithMiniDrawer } from "../../Layout/Drawer";
 import { walletAddressDisplay } from "../../common";

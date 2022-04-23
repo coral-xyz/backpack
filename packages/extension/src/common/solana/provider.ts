@@ -5,8 +5,7 @@ import {
   UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS,
   UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
 } from "../";
-import { getBackgroundClient } from "../../background/client";
-import { SolanaContext } from ".";
+import { getBackgroundClient, SolanaContext } from "@200ms/recoil";
 
 // Provider api used by the app UI. Spiritually the same as the injected
 // provider with a slightly different API. Eventually it would be nice to
