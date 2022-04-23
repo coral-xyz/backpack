@@ -1,6 +1,6 @@
 import { Blockhash, Commitment } from "@solana/web3.js";
 import { useRecoilValue, useRecoilCallback } from "recoil";
-import * as atoms from "../recoil/atoms";
+import * as atoms from "@200ms/recoil";
 
 export function useRecentBlockhash(): Blockhash {
   const bh = useRecoilValue(atoms.recentBlockhash);

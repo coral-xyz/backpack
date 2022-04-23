@@ -8,10 +8,9 @@ import {
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
-} from "../common";
-import { getBackgroundClient } from "../background/client";
-import { BackgroundSolanaConnection } from "../background/solana-connection/client";
+} from "@200ms/common";
 import { WalletPublicKeys } from "./types";
+import { getBackgroundClient, BackgroundSolanaConnection } from "./background";
 
 /**
  * List of all public keys for the wallet along with associated nicknames.

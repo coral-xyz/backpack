@@ -1,6 +1,6 @@
 import { useRecoilValue } from "recoil";
-import * as atoms from "../recoil/atoms";
 import { Plugin } from "@200ms/anchor-ui-renderer";
+import * as atoms from "@200ms/recoil";
 
 export function usePlugins(): Array<Plugin> {
   const pluginData = useRecoilValue(atoms.plugins);

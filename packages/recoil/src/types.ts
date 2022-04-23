@@ -1,6 +1,11 @@
 import BN from "bn.js";
 import { PublicKey } from "@solana/web3.js";
-import { NamedPublicKey } from "../background/backend";
+import {
+  TAB_BALANCES,
+  TAB_QUEST,
+  TAB_BRIDGE,
+  TAB_FRIENDS,
+} from "@200ms/common";
 
 export interface TokenAccount {
   amount: BN;
@@ -32,3 +37,33 @@ export type TokenDisplay = {
   logo: string;
   priceData: any;
 };
+
+export type NamedPublicKey = {
+  publicKey: string;
+  name: string;
+};
+
+export const TABS = [
+  [TAB_BALANCES, "Balances"],
+  [TAB_BRIDGE, "Bridge"],
+  [TAB_QUEST, "Quest"],
+  [TAB_FRIENDS, "Friends"],
+];
+
+export function makeDefaultNav() {
+  const defaultNav: any = {
+    activeTab: TAB_BALANCES,
+    data: {},
+  };
+  TABS.forEach(([tabName, tabTitle]) => {
+    defaultNav.data[tabName] = {
+      id: tabName,
+      title: tabTitle,
+      components: [],
+      props: [],
+      titles: [],
+      transition: "init",
+    };
+  });
+  return defaultNav;
+}

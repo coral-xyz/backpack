@@ -1,8 +1,7 @@
 import { atomFamily, selectorFamily } from "recoil";
 import { TokenInfo } from "@solana/spl-token-registry";
-import { TokenAccountWithKey } from "./types";
+import { TokenAccountWithKey, TokenDisplay } from ".";
 import { bootstrap } from "./bootstrap";
-import { TokenDisplay } from "./types";
 
 export const priceData = atomFamily<TokenDisplay | null, string>({
   key: "priceData",

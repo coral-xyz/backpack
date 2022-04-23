@@ -1,6 +1,6 @@
 import * as bs58 from "bs58";
-import { EventEmitter } from "eventemitter3";
 import { DerivationPath } from "@200ms/common";
+import { KeyringStoreState } from "@200ms/recoil";
 import { BrowserRuntime } from "../common/browser";
 import * as crypto from "./crypto";
 import {
@@ -31,7 +31,6 @@ export const KeyringStoreStateEnum: { [key: string]: KeyringStoreState } = {
   Unlocked: "unlocked",
   NeedsOnboarding: "needs-onboarding",
 };
-export type KeyringStoreState = "locked" | "unlocked" | "needs-onboarding";
 
 // Manages all key data for all blockchains.
 export class KeyringStore {

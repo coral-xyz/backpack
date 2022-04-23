@@ -5,7 +5,7 @@ import {
   Loadable,
 } from "recoil";
 import { PublicKey, Connection } from "@solana/web3.js";
-import * as atoms from "../recoil/atoms";
+import * as atoms from "@200ms/recoil";
 import { KeyringStoreStateEnum } from "../keyring/store";
 import { useNavigation, useNavigationRoot } from "../hooks/useNavigation";
 import { useTab } from "../hooks/useTab";
@@ -80,19 +80,19 @@ export function useWalletPublicKeys(): {
       : atoms.walletPublicKeys
   );
   return {
-    hdPublicKeys: keys.hdPublicKeys.map((k) => {
+    hdPublicKeys: keys.hdPublicKeys.map((k: any) => {
       return {
         publicKey: new PublicKey(k.publicKey),
         name: k.name,
       };
     }),
-    importedPublicKeys: keys.importedPublicKeys.map((k) => {
+    importedPublicKeys: keys.importedPublicKeys.map((k: any) => {
       return {
         publicKey: new PublicKey(k.publicKey),
         name: k.name,
       };
     }),
-    ledgerPublicKeys: keys.ledgerPublicKeys.map((k) => {
+    ledgerPublicKeys: keys.ledgerPublicKeys.map((k: any) => {
       return {
         publicKey: new PublicKey(k.publicKey),
         name: k.name,

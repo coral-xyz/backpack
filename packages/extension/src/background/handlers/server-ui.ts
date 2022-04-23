@@ -1,11 +1,11 @@
 // All RPC request handlers for requests that can be sent from the trusted
 // extension UI to the background script.
 
-import { DerivationPath } from "@200ms/common";
 import {
   debug,
   RpcRequest,
   RpcResponse,
+  DerivationPath,
   UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
@@ -44,8 +44,8 @@ import {
   UI_RPC_METHOD_LEDGER_CONNECT,
   UI_RPC_METHOD_LEDGER_IMPORT,
   NOTIFICATION_CONNECTION_URL_UPDATED,
-} from "../../common";
-import { KeyringStoreState } from "../../keyring/store";
+} from "@200ms/common";
+import { KeyringStoreState } from "@200ms/recoil";
 import { BACKEND, SUCCESS_RESPONSE } from "../backend";
 import { Io } from "../io";
 

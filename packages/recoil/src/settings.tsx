@@ -1,9 +1,4 @@
 import { atom } from "recoil";
-import { getBackgroundClient } from "../background/client";
-import {
-  UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
-  UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
-} from "../common";
 
 /**
  * Toggle for darkmode.

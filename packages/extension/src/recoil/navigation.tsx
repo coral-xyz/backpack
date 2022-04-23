@@ -1,4 +1,5 @@
 import { atom, atomFamily, selector, selectorFamily } from "recoil";
+import { getBackgroundClient, bootstrapFast } from "@200ms/recoil";
 import {
   UI_RPC_METHOD_NAVIGATION_UPDATE,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
@@ -10,15 +11,13 @@ import {
   TAB_BRIDGE,
   TAB_QUEST,
   TAB_FRIENDS,
-} from "../common";
-import { getBackgroundClient } from "../background/client";
+} from "@200ms/common";
 import { Balances } from "./../components/Unlocked/Balances";
 import { Quests } from "./../components/Unlocked/Quests";
 import { Bridge } from "./../components/Unlocked/Bridge";
 import { Settings } from "./../components/Unlocked/Settings";
 import { Network } from "../components/Unlocked/Balances/Network";
 import { Token } from "../components/Unlocked/Balances/Token";
-import { bootstrapFast } from "./bootstrap";
 import { PluginDisplay } from "../components/Unlocked/Balances/Plugin";
 
 /**

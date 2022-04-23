@@ -204,7 +204,7 @@ export class PortChannelNotifications {
   }
 }
 
-export class PortChannelClient {
+export class PortChannelClient implements BackgroundClient {
   private _requestId: number;
   private _responseResolvers: any;
   readonly _port: Port;
@@ -264,6 +264,11 @@ export class PortChannelClient {
   }: RpcResponse): Promise<RpcResponse<T>> {
     this._port.postMessage({ id, result });
   }
+}
+
+export interface BackgroundClient {
+  request<T = any>({ method, params }: RpcRequest): Promise<RpcResponse<T>>;
+  response<T = any>({ id, result }: RpcResponse): Promise<RpcResponse<T>>;
 }
 
 export class NotificationsClient {

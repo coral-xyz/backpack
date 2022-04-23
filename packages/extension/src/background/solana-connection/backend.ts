@@ -74,12 +74,12 @@ import {
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_BLOCKHASH_DID_UPDATE,
 } from "../../common";
-import { TokenAccountWithKey } from "../../recoil/types";
 import {
+  TokenAccountWithKey,
   fetchTokens,
   fetchSplMetadata,
   fetchSplMetadataUri,
-} from "../../recoil/token";
+} from "@200ms/recoil";
 
 export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
 export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;

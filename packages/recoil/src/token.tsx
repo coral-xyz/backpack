@@ -1,13 +1,13 @@
-import { atom, atomFamily, selector, selectorFamily } from "recoil";
 import BN from "bn.js";
+import { atom, atomFamily, selector, selectorFamily } from "recoil";
 import { PublicKey } from "@solana/web3.js";
 import { TokenListProvider, TokenInfo } from "@solana/spl-token-registry";
 import { Provider, Program, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { metadata } from "@project-serum/token";
-import { TokenAccountWithKey } from "./types";
 import { bootstrap } from "./bootstrap";
 import { priceData } from "./price-data";
+import { TokenAccountWithKey } from ".";
 
 const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
   "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"

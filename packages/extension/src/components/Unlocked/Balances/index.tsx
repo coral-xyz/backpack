@@ -301,7 +301,6 @@ function TokenListItem({
       disableRipple
       className={classes.tokenListItem}
       onClick={() => {
-        console.log("token", token, blockchain);
         pushNavigation({
           title: `${toTitleCase(blockchain)} / ${token.ticker}`,
           componentId: NAV_COMPONENT_TOKEN,

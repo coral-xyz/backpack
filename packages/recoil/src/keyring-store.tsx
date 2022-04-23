@@ -2,9 +2,10 @@ import { atom } from "recoil";
 import {
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
-} from "../common";
-import { getBackgroundClient } from "../background/client";
-import { KeyringStoreState } from "../keyring/store";
+} from "@200ms/common";
+import { getBackgroundClient } from ".";
+
+export type KeyringStoreState = "locked" | "unlocked" | "needs-onboarding";
 
 /**
  * Status of the keyring store.

@@ -1,8 +1,7 @@
 import { useRecoilState, useRecoilValue } from "recoil";
-import { KeyringStoreState } from "../keyring/store";
-import * as atoms from "../recoil/atoms";
-import { UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE } from "../common";
-import { getBackgroundClient } from "../background/client";
+import { getBackgroundClient, KeyringStoreState } from "@200ms/recoil";
+import * as atoms from "@200ms/recoil";
+import { UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE } from "@200ms/common";
 
 export function useKeyringStoreState(): KeyringStoreState {
   return useRecoilState(atoms.keyringStoreState)[0]!;

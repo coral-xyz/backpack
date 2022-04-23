@@ -1,7 +1,7 @@
-import { Connection } from "@solana/web3.js";
 import { useRecoilState } from "recoil";
-import * as atoms from "../recoil/atoms";
-import { BackgroundSolanaConnection } from "../background/solana-connection/client";
+import { Connection } from "@solana/web3.js";
+import { BackgroundSolanaConnection } from "@200ms/recoil";
+import * as atoms from "@200ms/recoil";
 
 export function useSolanaConnection(): SolanaConnectionContext {
   const [connectionUrl, setConnectionUrl] = useRecoilState(atoms.connectionUrl);

@@ -1,19 +1,18 @@
-import { PortChannelClient } from "../common";
 import {
   debug,
+  BackgroundClient,
   PortChannel,
+  PortChannelClient,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_RESPONSE,
-} from "../common";
-import * as solanaConnection from "./solana-connection/client";
-
-let _backgroundClient: PortChannelClient | null = null;
-let _backgroundResponseClient: PortChannelClient | null = null;
+} from "@200ms/common";
+import * as recoil from "@200ms/recoil";
+import { setupSolanaConnectionBackgroundClient } from "@200ms/recoil";
 
 export function setupBackgroundClients() {
   debug("setting up core background clients");
-  solanaConnection.setupBackgroundClient();
+  setupSolanaConnectionBackgroundClient();
   coreSetupBackgroundClient();
 }
 
@@ -45,24 +44,22 @@ function coreSetupBackgroundClient() {
   }, 5 * 60 * 1000);
 }
 
+//
+// TODO: can remove these functions and just the recoil package directly.
+//
+
 export function setBackgroundClient(c: PortChannelClient) {
-  _backgroundClient = c;
+  recoil.setBackgroundClient(c);
 }
 
 export function setBackgroundResponseClient(c: PortChannelClient) {
-  _backgroundResponseClient = c;
+  recoil.setBackgroundResponseClient(c);
 }
 
-export function getBackgroundClient(): PortChannelClient {
-  if (_backgroundClient === null) {
-    throw new Error("_backgroundClient not initialized");
-  }
-  return _backgroundClient;
+export function getBackgroundClient(): BackgroundClient {
+  return recoil.getBackgroundClient();
 }
 
-export function getBackgroundResponseClient(): PortChannelClient {
-  if (_backgroundResponseClient === null) {
-    throw new Error("_backgroundClient not initialized");
-  }
-  return _backgroundResponseClient;
+export function getBackgroundResponseClient(): BackgroundClient {
+  return recoil.getBackgroundResponseClient();
 }

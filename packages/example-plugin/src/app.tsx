@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Market, OpenOrders } from "@project-serum/serum";
 import { PublicKey } from "@solana/web3.js";
-import { context, Text, View } from "@200ms/anchor-ui";
+import { Text, View } from "@200ms/anchor-ui";
 import * as anchor from "@project-serum/anchor";
 
 export function App() {
@@ -33,7 +33,9 @@ function OpenOrdersAccounts() {
   const [marketMap, setMarketMap] = useState(new Map());
 
   useEffect(() => {
+    console.log("fetchign open orders");
     fetchOpenOrdersData().then(([newOpenOrders, marketMap]) => {
+      console.log("got em", newOpenOrders);
       setOpenOrders(newOpenOrders);
       setMarketMap(marketMap);
     });
@@ -55,14 +57,14 @@ function OpenOrdersAccounts() {
 async function fetchOpenOrdersData(): Promise<
   [Array<OpenOrders>, Map<string, Market>]
 > {
-  const ctx = context();
-
   //
   // All open orders accounts for this wallet.
   //
   const openOrders = await OpenOrders.findForOwner(
-    ctx.connection,
-    ctx.publicKey,
+    // @ts-ignore
+    window.anchor.connection,
+    // @ts-ignore
+    window.anchor.publicKey,
     PID
   );
 
@@ -79,7 +81,8 @@ async function fetchOpenOrdersData(): Promise<
     })();
 
     const multipleMarkets = await anchor.utils.rpc.getMultipleAccounts(
-      ctx.connection,
+      // @ts-ignore
+      window.anchor.connection,
       Array.from(markets.values()).map((m) => new PublicKey(m))
     );
     return new Map(

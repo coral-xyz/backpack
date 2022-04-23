@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
-import * as atoms from "../recoil/atoms";
+import { getBackgroundClient, BackgroundSolanaConnection } from "@200ms/recoil";
+import * as atoms from "@200ms/recoil";
 import {
   debug,
   PortChannel,
@@ -19,11 +20,9 @@ import {
   NOTIFICATION_BLOCKHASH_DID_UPDATE,
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
 } from "../common";
-import { getBackgroundClient } from "../background/client";
 import { KeyringStoreStateEnum } from "../keyring/store";
 import { useUpdateAllSplTokenAccounts } from "../hooks/useLoadSplTokens";
 import { useUpdateRecentBlockhash } from "../hooks/useRecentBlockhash";
-import { BackgroundSolanaConnection } from "../background/solana-connection/client";
 
 // The Notifications provider is used to subscribe and handle notifications
 // from the background script.
@@ -95,14 +94,14 @@ export function NotificationsProvider(props: any) {
       // todo
     };
     const handleKeynameUpdate = (notif: Notification) => {
-      setWalletPublicKeys((current) => {
+      setWalletPublicKeys((current: any) => {
         const next = {
-          hdPublicKeys: [...current.hdPublicKeys.map((pk) => ({ ...pk }))],
+          hdPublicKeys: [...current.hdPublicKeys.map((pk: any) => ({ ...pk }))],
           importedPublicKeys: [
-            ...current.importedPublicKeys.map((pk) => ({ ...pk })),
+            ...current.importedPublicKeys.map((pk: any) => ({ ...pk })),
           ],
           ledgerPublicKeys: [
-            ...current.ledgerPublicKeys.map((pk) => ({ ...pk })),
+            ...current.ledgerPublicKeys.map((pk: any) => ({ ...pk })),
           ],
         };
 
@@ -128,7 +127,7 @@ export function NotificationsProvider(props: any) {
       });
     };
     const handleKeyringDerivedWallet = (notif: Notification) => {
-      setWalletPublicKeys((current) => {
+      setWalletPublicKeys((current: any) => {
         const next = {
           ...current,
           hdPublicKeys: current.hdPublicKeys.concat([notif.data]),
@@ -140,7 +139,7 @@ export function NotificationsProvider(props: any) {
       setActiveWallet(notif.data.activeWallet);
     };
     const handleKeyringImportedSecretKey = (notif: Notification) => {
-      setWalletPublicKeys((current) => {
+      setWalletPublicKeys((current: any) => {
         const next = {
           ...current,
           importedPublicKeys: current.importedPublicKeys.concat([notif.data]),

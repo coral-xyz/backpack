@@ -1,6 +1,6 @@
 import { useRecoilValue, useRecoilCallback } from "recoil";
-import { TokenAccountWithKey } from "../recoil/types";
-import * as atoms from "../recoil/atoms";
+import { TokenAccountWithKey } from "@200ms/recoil";
+import * as atoms from "@200ms/recoil";
 
 export function useTokenAddresses(): string[] {
   return useRecoilValue(atoms.solanaTokenAccountKeys)!;

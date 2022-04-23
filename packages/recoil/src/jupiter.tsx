@@ -1,6 +1,6 @@
 import { atom, selector, selectorFamily } from "recoil";
 import { TOKEN_LIST_URL } from "@jup-ag/core";
-import * as atoms from "./atoms";
+import * as atoms from ".";
 
 // All tokens tradeable on jupiter.
 export const jupiterTokenList = selector({

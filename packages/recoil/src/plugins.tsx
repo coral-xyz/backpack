@@ -1,5 +1,5 @@
 import { selector } from "recoil";
-import * as atoms from "./atoms";
+import * as atoms from ".";
 
 // full path to HTML is currently required, will be fixed in future
 const OPEN_ORDERS_PLUGIN_URL = "https://localhost:4444/index.html";

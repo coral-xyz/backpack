@@ -3,20 +3,13 @@ import { PublicKey } from "@solana/web3.js";
 import {
   UI_RPC_METHOD_NAVIGATION_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
-} from "../common";
-import { getBackgroundClient } from "../background/client";
-import { TABS } from "../background/backend";
+} from "@200ms/common";
+import { getBackgroundClient, TokenAccountWithKey, anchorContext } from ".";
+import { TABS } from "./types";
 import { fetchRecentTransactions } from "./recent-transactions";
-import { anchorContext } from "./wallet";
-import {
-  splTokenRegistry,
-  fetchTokens,
-  fetchSplMetadata,
-  fetchSplMetadataUri,
-} from "./token";
+import { splTokenRegistry } from "./token";
 import { fetchPriceData } from "./price-data";
-import * as atoms from "./atoms";
-import { TokenAccountWithKey } from "./types";
+import { activeWallet } from "./wallet";
 
 /**
  * Defines the initial app load fetch.
@@ -28,8 +21,8 @@ export const bootstrap = atom<any>({
     get: async ({ get }: any) => {
       const tokenRegistry = get(splTokenRegistry);
       const { provider } = get(anchorContext);
-      const activeWallet = get(atoms.activeWallet);
-      const walletPublicKey = new PublicKey(activeWallet);
+      const _activeWallet = get(activeWallet);
+      const walletPublicKey = new PublicKey(_activeWallet);
 
       //
       // Perform data fetch.

@@ -5,18 +5,14 @@ import {
   Transaction,
   SendOptions,
 } from "@solana/web3.js";
-import { Context, DerivationPath } from "@200ms/common";
 import {
-  BLOCKCHAIN_SOLANA,
-  KeyringStore,
+  NamedPublicKey,
   KeyringStoreState,
-  getNavData,
-  setNavData,
-  setNav,
-  getNav,
-  NavData,
-} from "../keyring/store";
+  makeDefaultNav,
+} from "@200ms/recoil";
 import {
+  Context,
+  DerivationPath,
   BACKEND_EVENT,
   NOTIFICATION_KEYRING_KEY_DELETE,
   NOTIFICATION_KEYNAME_UPDATE,
@@ -27,11 +23,16 @@ import {
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_CONNECTION_URL_UPDATED,
-  TAB_BALANCES,
-  TAB_QUEST,
-  TAB_BRIDGE,
-  TAB_FRIENDS,
-} from "../common";
+} from "@200ms/common";
+import {
+  BLOCKCHAIN_SOLANA,
+  KeyringStore,
+  getNavData,
+  setNavData,
+  setNav,
+  getNav,
+  NavData,
+} from "../keyring/store";
 import { Io } from "./io";
 import { BACKEND as SOLANA_CONNECTION_BACKEND } from "./solana-connection/backend";
 
@@ -429,41 +430,11 @@ export class Backend {
   }
 }
 
-// type MessageSignature = string;
-export type NamedPublicKey = {
-  publicKey: string;
-  name: string;
-};
-
-export const TABS = [
-  [TAB_BALANCES, "Balances"],
-  [TAB_BRIDGE, "Bridge"],
-  [TAB_QUEST, "Quest"],
-  [TAB_FRIENDS, "Friends"],
-];
-const defaultNav = makeDefaultNav();
-
-function makeDefaultNav() {
-  const defaultNav: any = {
-    activeTab: TAB_BALANCES,
-    data: {},
-  };
-  TABS.forEach(([tabName, tabTitle]) => {
-    defaultNav.data[tabName] = {
-      id: tabName,
-      title: tabTitle,
-      components: [],
-      props: [],
-      titles: [],
-      transition: "init",
-    };
-  });
-  return defaultNav;
-}
-
 export const SUCCESS_RESPONSE = "success";
 
 //
 // Backend singleton.
 //
 export const BACKEND = new Backend();
+
+const defaultNav = makeDefaultNav();

@@ -1,10 +1,8 @@
-import { atom, atomFamily, selector } from "recoil";
-import { Blockhash, PublicKey, Connection } from "@solana/web3.js";
+import { atom, atomFamily, selector, selectorFamily } from "recoil";
+import { Blockhash, PublicKey } from "@solana/web3.js";
 import { Provider } from "@project-serum/anchor";
+import { anchorContext, BackgroundSolanaConnection } from ".";
 import { bootstrap } from "./bootstrap";
-import { anchorContext } from "./wallet";
-import { BackgroundSolanaConnection } from "../background/solana-connection/client";
-import { selectorFamily } from "recoil";
 
 export const recentTransactions = atomFamily<any | null, string>({
   key: "recentTransactionsMap",
