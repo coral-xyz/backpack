@@ -3,9 +3,9 @@
 
 import * as bs58 from "bs58";
 import { Transaction, SendOptions, Commitment } from "@solana/web3.js";
+import { BrowserRuntime } from "@200ms/common";
 import {
   debug,
-  BrowserRuntime,
   openLockedPopupWindow,
   openApprovalPopupWindow,
   openLockedApprovalPopupWindow,

@@ -1,0 +1,28 @@
+{
+  "name": "@200ms/anchor-ui-renderer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@200ms/anchor-ui": "1.0.0",
+    "@200ms/common": "1.0.0",
+    "@solana/web3.js": "^1.35.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.0.6",
+    "@rollup/plugin-replace": "^3.0.0",
+    "@rollup/plugin-typescript": "^8.3.0",
+    "rollup": "^2.70.1",
+    "rollup-plugin-terser": "^7.0.2",
+    "typescript": "^4.6.3"
+  }
+}

@@ -5,16 +5,15 @@ import {
   TextSerialized,
   NodeSerialized,
 } from "@200ms/anchor-ui";
-import { getLogger, Event } from "@200ms/common";
 import {
+  getLogger,
+  Event,
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
   CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
-  RECONCILER_BRIDGE_METHOD_CREATE_INSTANCE,
   RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
   RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
   RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
-  RECONCILER_BRIDGE_METHOD_APPEND_INITIAL_CHILD,
   RECONCILER_BRIDGE_METHOD_APPEND_CHILD,
   RECONCILER_BRIDGE_METHOD_INSERT_IN_CONTAINER_BEFORE,
   RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
@@ -22,18 +21,18 @@ import {
   RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
   Channel,
   PostMessageServer,
-  Context,
-  withContext,
-  RpcRequest,
   RpcResponse,
   PLUGIN_RPC_METHOD_CONNECT,
-} from "../../../common";
+} from "@200ms/common";
 
 const logger = getLogger("plugin");
 
 //
 // A plugin is a react bundle served from a given URL, using the anchor ui
 // framework + protocol to render its views inside the native wallet interface.
+//
+// This class is effectively the model. To display a plugin, create one of
+// these objects and then pass it into the renderer component.
 //
 export class Plugin {
   private _activeWallet: PublicKey;

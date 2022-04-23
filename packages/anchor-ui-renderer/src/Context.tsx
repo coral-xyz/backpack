@@ -1,5 +1,5 @@
-import React from "react";
-import { Plugin } from "../components/Unlocked/Balances/Plugin";
+import React, { useContext } from "react";
+import { Plugin } from "./plugin";
 
 type PluginContext = {
   plugin: Plugin;
@@ -16,4 +16,12 @@ export function PluginProvider(props: any) {
       {props.children}
     </_PluginContext.Provider>
   );
+}
+
+export function usePluginContext(): { plugin: Plugin } {
+  const ctx = useContext(_PluginContext);
+  if (!ctx) {
+    throw new Error("context not found");
+  }
+  return ctx;
 }

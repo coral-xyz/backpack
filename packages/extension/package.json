@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@200ms/anchor-ui-renderer": "1.0.0",
     "@200ms/common": "1.0.0",
     "@200ms/ledger-core": "1.0.0",
     "@200ms/provider-injection": "1.0.0",

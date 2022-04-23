@@ -1,8 +1,6 @@
-import { useContext } from "react";
 import { useRecoilValue } from "recoil";
 import * as atoms from "../recoil/atoms";
-import { Plugin } from "../components/Unlocked/Balances/Plugin";
-import { _PluginContext } from "../context/Plugin";
+import { Plugin } from "@200ms/anchor-ui-renderer";
 
 export function usePlugins(): Array<Plugin> {
   const pluginData = useRecoilValue(atoms.plugins);
@@ -20,14 +18,6 @@ export function usePlugins(): Array<Plugin> {
     }
     return plug;
   });
-}
-
-export function usePluginContext(): { plugin: Plugin } {
-  const ctx = useContext(_PluginContext);
-  if (!ctx) {
-    throw new Error("context not found");
-  }
-  return ctx;
 }
 
 const PLUGIN_CACHE = new Map<string, Plugin>();

@@ -1,4 +1,8 @@
-import { BrowserRuntime, EXTENSION_WIDTH, EXTENSION_HEIGHT } from ".";
+import {
+  BrowserRuntime,
+  EXTENSION_WIDTH,
+  EXTENSION_HEIGHT,
+} from "@200ms/common";
 
 const POPUP_HTML = "popup.html";
 const EXPANDED_HTML = "options.html";

@@ -2,6 +2,8 @@ export * from "./constants";
 export * from "./crypto";
 export * from "./logging";
 export * from "./request-manager";
+export * from "./channel";
+export * from "./browser";
 
 // Utility to transform the handler API into something a little more friendly.
 export function withContext(
