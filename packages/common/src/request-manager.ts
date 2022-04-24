@@ -1,4 +1,4 @@
-import { Event, ResponseHandler } from "."; ///channel";
+import type { Event, ResponseHandler } from "./types";
 import { error } from "./logging";
 
 export class RequestManager {

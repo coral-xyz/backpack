@@ -1,12 +1,7 @@
-import {
-  Event,
-  POST_MESSAGE_ORIGIN,
-  RpcRequest,
-  RpcResponse,
-  Notification,
-} from ".";
+import type { Event, RpcRequest, RpcResponse, Notification } from "./types";
 import { BrowserRuntime } from "./browser";
 import { debug } from "./logging";
+import { POST_MESSAGE_ORIGIN } from "./constants";
 
 // Channel is a class that establishes communication channel from a
 // content/injected script to a background script.
