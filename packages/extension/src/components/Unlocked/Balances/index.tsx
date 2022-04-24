@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   makeStyles,
   Typography,
@@ -7,8 +8,9 @@ import {
   List,
   ListItem,
   ListItemIcon,
+  IconButton,
 } from "@material-ui/core";
-import { ArrowForwardIos } from "@material-ui/icons";
+import { ArrowForwardIos, OfflineBolt as Bolt } from "@material-ui/icons";
 import {
   useBlockchains,
   useBlockchainLogo,
@@ -17,10 +19,12 @@ import {
   useNavigation,
 } from "@200ms/recoil";
 import {
+  toTitleCase,
   NAV_COMPONENT_BALANCES_NETWORK,
   NAV_COMPONENT_TOKEN,
 } from "@200ms/common";
-import { PluginGrid } from "./Plugin";
+import { WithDrawer } from "../../Layout/Drawer";
+import { RecentActivity } from "./RecentActivity";
 
 const useStyles = makeStyles((theme: any) => ({
   logoIcon: {
@@ -174,23 +178,69 @@ const useStyles = makeStyles((theme: any) => ({
   cardAvatar: {
     display: "flex",
   },
+  networkSettingsButtonContainer: {
+    display: "flex",
+    flexDirection: "row-reverse",
+    width: "38px",
+  },
+  networkSettingsButton: {
+    padding: 0,
+    "&:hover": {
+      background: "transparent",
+    },
+  },
+  networkSettingsIcon: {
+    color: theme.custom.colors.nav,
+    backgroundColor: theme.custom.colors.secondary,
+    borderRadius: "12px",
+  },
 }));
 
 export function Balances() {
-  const blockchains = useBlockchains();
+  const { setNavButtonRight } = useNavigation();
+  useEffect(() => {
+    setNavButtonRight(<RecentActivityButton />);
+  }, [setNavButtonRight]);
   return (
     <div>
-      <BalancesHeader />
-      <PluginGrid />
-      {blockchains.map((b) => (
-        <BlockchainCard
-          key={b}
-          blockchain={b}
-          title={toTitleCase(b)}
-          limit={3}
-          avatar={true}
-        />
-      ))}
+      <SolanaBalances />
+    </div>
+  );
+}
+
+function RecentActivityButton() {
+  const classes = useStyles();
+  const [openDrawer, setOpenDrawer] = useState(false);
+  return (
+    <div className={classes.networkSettingsButtonContainer}>
+      <IconButton
+        disableRipple
+        className={classes.networkSettingsButton}
+        onClick={() => setOpenDrawer(true)}
+      >
+        <Bolt className={classes.networkSettingsIcon} />
+      </IconButton>
+      <WithDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
+        title={"Recent Activity"}
+      >
+        <RecentActivity />
+      </WithDrawer>
+    </div>
+  );
+}
+
+export function SolanaBalances() {
+  return (
+    <div>
+      <BalancesHeader blockchain={"solana"} />
+      <BlockchainCard
+        blockchain={"solana"}
+        title={"Tokens"}
+        limit={3}
+        avatar={true}
+      />
     </div>
   );
 }
@@ -232,7 +282,7 @@ export function BlockchainCard({
   const classes = useStyles();
   const blockchainLogo = useBlockchainLogo(blockchain);
   const tokenAccountsSorted = useBlockchainTokensSorted(blockchain);
-  const { push } = useNavigation();
+  const [showAll, setShowAll] = useState(false);
   return (
     <Card className={classes.blockchainCard} elevation={0}>
       <CardHeader
@@ -251,7 +301,7 @@ export function BlockchainCard({
       <CardContent classes={{ root: classes.cardContentRoot }}>
         <List classes={{ root: classes.cardListRoot }}>
           {tokenAccountsSorted
-            .slice(0, limit ?? tokenAccountsSorted.length)
+            .slice(0, limit && !showAll ? limit : tokenAccountsSorted.length)
             .map((token: any) => (
               <TokenListItem
                 key={token.address}
@@ -259,15 +309,10 @@ export function BlockchainCard({
                 token={token}
               />
             ))}
-          {tokenAccountsSorted.length > 3 && limit && (
+          {limit && tokenAccountsSorted.length > limit && (
             <BlockchainCardFooter
-              onClick={() => {
-                push({
-                  title: toTitleCase(blockchain),
-                  componentId: NAV_COMPONENT_BALANCES_NETWORK,
-                  componentProps: { blockchain },
-                });
-              }}
+              showAll={showAll}
+              onClick={() => setShowAll((showAll) => !showAll)}
               tokenCount={tokenAccountsSorted.length}
             />
           )}
@@ -350,9 +395,11 @@ function TokenListItem({
 }
 
 function BlockchainCardFooter({
+  showAll,
   onClick,
   tokenCount,
 }: {
+  showAll: boolean;
   onClick: () => void;
   tokenCount: number;
 }) {
@@ -372,7 +419,7 @@ function BlockchainCardFooter({
         }}
       >
         <Typography className={classes.footerLabel}>
-          Show all {tokenCount}
+          {showAll ? `Hide ${tokenCount}` : `Show all ${tokenCount}`}
         </Typography>
       </div>
       <div
@@ -385,11 +432,5 @@ function BlockchainCardFooter({
         <ArrowForwardIos className={classes.footerArrowIcon} />
       </div>
     </ListItem>
-  );
-}
-
-export function toTitleCase(blockchain: string) {
-  return (
-    blockchain.slice(0, 1).toUpperCase() + blockchain.toLowerCase().slice(1)
   );
 }

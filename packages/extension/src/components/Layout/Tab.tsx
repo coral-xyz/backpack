@@ -1,17 +1,15 @@
 import { makeStyles, Tabs, Tab } from "@material-ui/core";
 import {
+  SwapHoriz,
   SwapCalls as Bridge,
   Person,
   PriorityHigh,
   AttachMoney as Money,
+  Image,
+  Apps,
 } from "@material-ui/icons";
 import { useTab } from "@200ms/recoil";
-import {
-  TAB_BALANCES,
-  TAB_QUEST,
-  TAB_BRIDGE,
-  TAB_FRIENDS,
-} from "@200ms/common";
+import { TAB_NFTS, TAB_APPS, TAB_BALANCES, TAB_SWAP } from "@200ms/common";
 
 const useStyles = makeStyles((theme: any) => ({
   container: {
@@ -83,25 +81,23 @@ function TabBar() {
         icon={<Money className={className(TAB_BALANCES)} />}
       />
       <Tab
-        value={TAB_BRIDGE}
+        value={TAB_NFTS}
         disableRipple
         className={classes.tab}
-        icon={<Bridge className={className(TAB_BRIDGE)} />}
-      />
-      {/*
-      <Tab
-        value={TAB_QUEST}
-        disableRipple
-        className={classes.tab}
-        icon={<PriorityHigh className={className(TAB_QUEST)} />}
+        icon={<Image className={className(TAB_NFTS)} />}
       />
       <Tab
-        value={TAB_FRIENDS}
+        value={TAB_SWAP}
         disableRipple
         className={classes.tab}
-        icon={<Person className={className(TAB_FRIENDS)} />}
+        icon={<SwapHoriz className={className(TAB_SWAP)} />}
       />
-			*/}
+      <Tab
+        value={TAB_APPS}
+        disableRipple
+        className={classes.tab}
+        icon={<Apps className={className(TAB_APPS)} />}
+      />
     </Tabs>
   );
 }

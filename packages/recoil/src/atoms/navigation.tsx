@@ -65,12 +65,13 @@ export const navigationDataMap = atomFamily<any, string>({
       ({ get }: any) => {
         const { tabs } = get(bootstrapFast);
         // @ts-ignore
-        return tabs.filter((t) => t.id === navKey)[0];
+        return tabs.filter((t) => t && t.id === navKey)[0];
       },
   }),
   effects: (_nav: string) => [
     ({ onSet }) => {
       onSet((navData) => {
+        console.log("nav data here", navData);
         const background = getBackgroundClient();
         background
           .request({
@@ -133,6 +134,7 @@ export const navigationRenderer = selectorFamily({
 export const navigationComponentMap = selectorFamily({
   key: "navigationStack",
   get: (navId: string) => () => {
+    console.log("nav id", navId);
     return _NAVIGATION_MAP!(navId);
   },
 });

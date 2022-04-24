@@ -4,8 +4,8 @@ import {
   UI_RPC_METHOD_SIGN_TRANSACTION,
   UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS,
   UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
-} from "@200ms/common";
-import { getBackgroundClient, SolanaContext } from "@200ms/recoil";
+} from "../";
+import { SolanaContext } from ".";
 
 // Provider api used by the app UI. Spiritually the same as the injected
 // provider with a slightly different API. Eventually it would be nice to
@@ -15,11 +15,10 @@ export class SolanaProvider {
     ctx: SolanaContext,
     tx: Transaction
   ): Promise<Transaction> {
-    const { walletPublicKey } = ctx;
+    const { walletPublicKey, backgroundClient } = ctx;
     const txSerialized = tx.serializeMessage();
     const message = bs58.encode(txSerialized);
-    const background = getBackgroundClient();
-    const respSignature = await background.request({
+    const respSignature = await backgroundClient.request({
       method: UI_RPC_METHOD_SIGN_TRANSACTION,
       params: [message, walletPublicKey.toString()],
     });
@@ -40,8 +39,7 @@ export class SolanaProvider {
     });
 
     // Get signatures from the background script.
-    const background = getBackgroundClient();
-    const signatures: Array<string> = await background.request({
+    const signatures: Array<string> = await ctx.backgroundClient.request({
       method: UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS,
       params: [messages, walletPublicKey.toString()],
     });
@@ -62,7 +60,7 @@ export class SolanaProvider {
     ctx: SolanaContext,
     tx: Transaction
   ): Promise<TransactionSignature> {
-    const { walletPublicKey, recentBlockhash } = ctx;
+    const { walletPublicKey, recentBlockhash, backgroundClient } = ctx;
 
     tx.feePayer = walletPublicKey;
     tx.recentBlockhash = recentBlockhash;
@@ -71,8 +69,7 @@ export class SolanaProvider {
     });
     const message = bs58.encode(txSerialize);
 
-    const background = getBackgroundClient();
-    const sig = await background.request({
+    const sig = await backgroundClient.request({
       method: UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
       params: [message, walletPublicKey!.toString()],
     });

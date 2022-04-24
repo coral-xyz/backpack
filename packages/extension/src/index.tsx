@@ -6,21 +6,20 @@ import {
   NAV_COMPONENT_TOKEN,
   NAV_COMPONENT_PLUGINS,
   TAB_BALANCES,
-  TAB_BRIDGE,
-  TAB_QUEST,
-  TAB_FRIENDS,
+  TAB_SWAP,
+  TAB_NFTS,
+  TAB_APPS,
 } from "@200ms/common";
 import "./index.css";
 import App from "./app/App";
 import reportWebVitals from "./reportWebVitals";
 import * as background from "./background/client";
 import { Balances } from "./components/Unlocked/Balances";
-import { Quests } from "./components/Unlocked/Quests";
-import { Bridge } from "./components/Unlocked/Bridge";
-import { Settings } from "./components/Unlocked/Settings";
-import { Network } from "./components/Unlocked/Balances/Network";
 import { Token } from "./components/Unlocked/Balances/Token";
-import { PluginDisplay } from "./components/Unlocked/Balances/Plugin";
+import { PluginDisplay } from "./components/Unlocked/Apps";
+import { Swap } from "./components/Unlocked/Swap";
+import { Nfts } from "./components/Unlocked/Nfts";
+import { Apps } from "./components/Unlocked/Apps";
 
 async function main() {
   //
@@ -34,20 +33,19 @@ async function main() {
   //
   recoil.setupTabComponents((tab: string) => {
     return () => {
+      console.log("rendering tab", tab);
       return (
         <>
           {tab === TAB_BALANCES && <Balances />}
-          {tab === TAB_QUEST && <Quests />}
-          {tab === TAB_BRIDGE && <Bridge />}
-          {tab === TAB_FRIENDS && <Settings />}
+          {tab === TAB_NFTS && <Nfts />}
+          {tab === TAB_SWAP && <Swap />}
+          {tab === TAB_APPS && <Apps />}
         </>
       );
     };
   });
   recoil.setupNavigationMap((navId: string) => {
     switch (navId) {
-      case NAV_COMPONENT_BALANCES_NETWORK:
-        return (props: any) => <Network {...props} />;
       case NAV_COMPONENT_TOKEN:
         return (props: any) => <Token {...props} />;
       case NAV_COMPONENT_PLUGINS:

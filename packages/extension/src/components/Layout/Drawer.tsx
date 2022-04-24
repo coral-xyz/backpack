@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import { makeStyles, Drawer, Button, IconButton } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { EXTENSION_HEIGHT } from "@200ms/common";
+import { useEphemeralNav } from "@200ms/recoil";
+import { WithEphemeralNav } from "../Layout/NavEphemeral";
 import { NAV_BAR_HEIGHT, NAV_BUTTON_WIDTH } from "./Nav";
-import { WithEphemeralNav } from "./NavEphemeral";
-import { useEphemeralNav } from "../../context/NavEphemeral";
 
 const MINI_DRAWER_HEIGHT = 295;
 

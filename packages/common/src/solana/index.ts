@@ -4,15 +4,35 @@ import {
   Transaction,
   TransactionInstruction,
   SystemProgram,
+  Commitment,
+  Blockhash,
 } from "@solana/web3.js";
 import { Token } from "@solana/spl-token";
+import { TokenInfo } from "@solana/spl-token-registry";
 import * as anchor from "@project-serum/anchor";
-import { SolanaContext } from "@200ms/recoil";
+import { Program, SplToken } from "@project-serum/anchor";
 import { associatedTokenAddress } from "./programs/token";
 import * as assertOwner from "./programs/assert-owner";
 import { SolanaProvider } from "./provider";
+import { BackgroundClient } from "../";
 
+export * from "./wallet-adapter";
+export * from "./explorer";
+export * from "./provider";
+export * from "./programs";
+
+export type SolanaContext = {
+  walletPublicKey: PublicKey;
+  recentBlockhash: Blockhash;
+  tokenClient: Program<SplToken>;
+  registry: Map<string, TokenInfo>;
+  commitment: Commitment;
+  backgroundClient: BackgroundClient;
+};
+
+//
 // API for performing solana actions.
+//
 export class Solana {
   public static async transferToken(
     ctx: SolanaContext,

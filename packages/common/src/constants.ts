@@ -156,9 +156,9 @@ export const EXTENSION_HEIGHT = 600;
 // UI View Model Constants.
 //
 export const TAB_BALANCES = "balances";
-export const TAB_QUEST = "quest";
-export const TAB_BRIDGE = "bridge";
-export const TAB_FRIENDS = "friends";
+export const TAB_SWAP = "swap";
+export const TAB_NFTS = "nfts";
+export const TAB_APPS = "apps";
 export const NAV_COMPONENT_BALANCES_NETWORK = "balancesNetwork";
 export const NAV_COMPONENT_TOKEN = "token";
 export const NAV_COMPONENT_PLUGINS = "plugins";

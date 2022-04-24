@@ -1,14 +1,6 @@
 import React, { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 import {
-  getBackgroundClient,
-  KeyringStoreStateEnum,
-  BackgroundSolanaConnection,
-  useUpdateRecentBlockhash,
-  useUpdateAllSplTokenAccounts,
-} from "@200ms/recoil";
-import * as atoms from "@200ms/recoil";
-import {
   getLogger,
   PortChannel,
   UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE,
@@ -26,6 +18,14 @@ import {
   NOTIFICATION_BLOCKHASH_DID_UPDATE,
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
 } from "@200ms/common";
+import {
+  getBackgroundClient,
+  KeyringStoreStateEnum,
+  BackgroundSolanaConnection,
+  useUpdateRecentBlockhash,
+  useUpdateAllSplTokenAccounts,
+} from "../";
+import * as atoms from "../atoms";
 
 const logger = getLogger("notifications-provider");
 

@@ -7,7 +7,11 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-export function Nfts({ blockchain }: any) {
+export function Nfts() {
+  return <_Nfts blockchain={"solana"} />;
+}
+
+export function _Nfts({ blockchain }: any) {
   const nftMetadataAddresses = useNftMetadataAddresses(blockchain);
   return (
     <div style={{ flexWrap: "wrap", display: "flex" }}>

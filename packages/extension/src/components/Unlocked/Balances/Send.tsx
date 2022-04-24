@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import { makeStyles, useTheme, Typography } from "@material-ui/core";
 import { SystemProgram, PublicKey } from "@solana/web3.js";
 import { useAnchorContext, useSolanaCtx } from "@200ms/recoil";
-import { TextField, TextFieldLabel } from "../../common";
+import { Solana } from "@200ms/common";
+import {
+  TextField,
+  TextFieldLabel,
+  walletAddressDisplay,
+  OnboardButton,
+} from "../../common";
 import { WithHeaderButton } from "./Token";
-import { OnboardButton } from "../../common";
 import { WithMiniDrawer } from "../../Layout/Drawer";
-import { walletAddressDisplay } from "../../common";
-import { Solana } from "../../../common/solana";
 
 const useStyles = makeStyles((theme: any) => ({
   container: {

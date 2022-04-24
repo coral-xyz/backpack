@@ -2,16 +2,16 @@ import React, { useContext, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import { JupiterProvider, useJupiter } from "@jup-ag/react-hook";
 import {
-  useAnchorContext,
-  useActiveWallet,
-  useSplTokenRegistry,
-} from "@200ms/recoil";
-import {
   associatedTokenAddress,
   USDC_MINT,
   WSOL_MINT,
-} from "../common/solana/programs/token";
-import { SolanaWalletAdapter } from "../common/solana/wallet-adapter";
+  SolanaWalletAdapter,
+} from "@200ms/common";
+import {
+  useAnchorContext,
+  useActiveWallet,
+  useSplTokenRegistry,
+} from "../hooks";
 
 const DEFAULT_SLIPPAGE_PERCENT = 1;
 

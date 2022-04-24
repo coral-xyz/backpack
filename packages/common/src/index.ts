@@ -7,6 +7,8 @@ export * from "./request-manager";
 export * from "./channel";
 export * from "./browser";
 export * from "./types";
+export * from "./solana";
+export * from "./utils";
 
 // Utility to transform the handler API into something a little more friendly.
 export function withContext(

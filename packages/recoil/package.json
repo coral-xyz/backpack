@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@200ms/anchor-ui-renderer": "*",
+    "@200ms/common": "*",
     "recoil": "^0.6.1"
   },
   "peerDependencies": {

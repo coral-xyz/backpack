@@ -1,5 +1,5 @@
 import { RecoilRoot } from "recoil";
-import { NotificationsProvider } from "../context/Notifications";
+import { NotificationsProvider } from "@200ms/recoil";
 import { WithTheme } from "./theme";
 import { Router } from "./Router";
 import "./App.css";

@@ -7,9 +7,9 @@ import {
   ListItem,
 } from "@material-ui/core";
 import { Check, Clear } from "@material-ui/icons";
-import { explorerUrl } from "../../../../common/solana/explorer";
+import { explorerUrl } from "@200ms/common";
 import { useActiveWallet, useRecentTransactions } from "@200ms/recoil";
-import { Loading } from "../../../common";
+import { Loading } from "../../common";
 
 const useStyles = makeStyles((theme: any) => ({
   recentActivityLabel: {

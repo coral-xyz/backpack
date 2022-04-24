@@ -14,13 +14,12 @@ import {
   useBlockchainTokenAccount,
   useSplTokenRegistry,
   useSwapTokenList,
+  useSwapContext,
+  SwapProvider,
 } from "@200ms/recoil";
-import { TextField, TextFieldLabel } from "../../../common";
-import { NetworkFeeInfo } from "../Send";
-import { SwapProvider, useSwapContext } from "../../../../context/Swap";
-import { WithDrawer } from "../../../../components/Layout/Drawer";
-import { WithMiniDrawer } from "../../../Layout/Drawer";
-import { BottomCard } from "../Send";
+import { TextField, TextFieldLabel } from "../common";
+import { BottomCard, NetworkFeeInfo } from "./Balances/Send";
+import { WithMiniDrawer, WithDrawer } from "../Layout/Drawer";
 
 const useStyles = makeStyles((theme: any) => ({
   container: {
@@ -78,7 +77,7 @@ const useStyles = makeStyles((theme: any) => ({
     height: "44px",
     zIndex: 2,
     position: "fixed",
-    top: "222px",
+    top: "175px",
     left: "24px",
     display: "flex",
     justifyContent: "center",
@@ -169,7 +168,7 @@ const useStyles = makeStyles((theme: any) => ({
     backgroundColor: theme.custom.colors.nav,
   },
   paperAnchorBottom: {
-    height: "354px",
+    height: "402px",
   },
   confirmationTitle: {
     color: theme.custom.colors.secondary,
@@ -209,7 +208,11 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-export function Swap({ blockchain, cancel, onCancel }: any) {
+export function Swap() {
+  return <SwapInner blockchain={"solana"} />;
+}
+
+function SwapInner({ blockchain, cancel, onCancel }: any) {
   return (
     <SwapProvider>
       <_Swap blockchain={blockchain} cancel={cancel} onCancel={onCancel} />

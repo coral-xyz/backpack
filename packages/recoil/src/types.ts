@@ -1,13 +1,6 @@
 import BN from "bn.js";
-import { PublicKey, Blockhash, Commitment } from "@solana/web3.js";
-import { TokenInfo } from "@solana/spl-token-registry";
-import { Program, SplToken } from "@project-serum/anchor";
-import {
-  TAB_BALANCES,
-  TAB_QUEST,
-  TAB_BRIDGE,
-  TAB_FRIENDS,
-} from "@200ms/common";
+import { PublicKey } from "@solana/web3.js";
+import { TAB_BALANCES, TAB_SWAP, TAB_NFTS, TAB_APPS } from "@200ms/common";
 
 export interface TokenAccount {
   amount: BN;
@@ -47,9 +40,9 @@ export type NamedPublicKey = {
 
 export const TABS = [
   [TAB_BALANCES, "Balances"],
-  [TAB_BRIDGE, "Bridge"],
-  [TAB_QUEST, "Quest"],
-  [TAB_FRIENDS, "Friends"],
+  [TAB_NFTS, "NFTs"],
+  [TAB_SWAP, "Swap"],
+  [TAB_APPS, "Apps"],
 ];
 
 export function makeDefaultNav() {
@@ -69,11 +62,3 @@ export function makeDefaultNav() {
   });
   return defaultNav;
 }
-
-export type SolanaContext = {
-  walletPublicKey: PublicKey;
-  recentBlockhash: Blockhash;
-  tokenClient: Program<SplToken>;
-  registry: Map<string, TokenInfo>;
-  commitment: Commitment;
-};

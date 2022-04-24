@@ -25,7 +25,11 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-export function PluginGrid() {
+export function Apps() {
+  return <PluginGrid />;
+}
+
+function PluginGrid() {
   const plugins = usePlugins();
   return (
     <div
@@ -34,6 +38,7 @@ export function PluginGrid() {
         flexWrap: "wrap",
         marginLeft: "12px",
         marginRight: "12px",
+        marginTop: "16px",
         marginBottom: "16px",
       }}
     >

@@ -1,11 +1,8 @@
 import { Suspense } from "react";
 import { makeStyles } from "@material-ui/core";
+import { NavEphemeralProvider, useEphemeralNav } from "@200ms/recoil";
 import { Scrollbar } from "./Scrollbar";
 import { Loading } from "../common";
-import {
-  NavEphemeralProvider,
-  useEphemeralNav,
-} from "../../context/NavEphemeral";
 import {
   DummyButton,
   NAV_BAR_HEIGHT,

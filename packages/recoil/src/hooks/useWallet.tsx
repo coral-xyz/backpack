@@ -12,7 +12,8 @@ import { useTab } from "./useTab";
 import { useKeyringStoreState } from "./useKeyringStoreState";
 import { useCommitment, useRecentBlockhash } from "./useRecentBlockhash";
 import { useSplTokenRegistry } from "./useSplTokenRegistry";
-import { SolanaContext } from "../types";
+import { SolanaContext } from "@200ms/common";
+import { getBackgroundClient } from "..";
 
 // Bootstrap data for the initial load.
 export function useBootstrap() {
@@ -44,12 +45,14 @@ export function useSolanaCtx(): SolanaContext {
   const { tokenClient } = useAnchorContext();
   const registry = useSplTokenRegistry();
   const commitment = useCommitment();
+  const backgroundClient = getBackgroundClient();
   return {
     walletPublicKey,
     recentBlockhash,
     tokenClient,
     registry,
     commitment,
+    backgroundClient,
   };
 }
 
