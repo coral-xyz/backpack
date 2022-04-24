@@ -3,7 +3,7 @@ import { error } from "./logging";
 
 export class RequestManager {
   private _responseResolvers: { [requestId: number]: ResponseHandler } = {};
-  private _requestId: number = 0;
+  private _requestId = 0;
   private _requestChannel: string;
   private _responseChannel: string;
   private _parent?: boolean;

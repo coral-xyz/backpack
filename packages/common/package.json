@@ -6,7 +6,8 @@
   "types": "dist/esm/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "start": "tsc --watch"
+    "start": "tsc --watch",
+    "lint:fix": "eslint ./src --ext .js,.jsx,.ts,.tsx --fix"
   },
   "author": "",
   "license": "ISC",
@@ -21,6 +22,10 @@
     "eventemitter3": "^4.0.7"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.20.0",
+    "@typescript-eslint/parser": "^5.20.0",
+    "eslint": "^8.14.0",
+    "eslint-plugin-import": "^2.26.0",
     "typescript": "^4.6.3"
   }
 }

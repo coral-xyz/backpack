@@ -1,0 +1,25 @@
+module.exports = {
+  root: true,
+  parser: "@typescript-eslint/parser",
+  plugins: ["@typescript-eslint"],
+  rules: {
+    "@typescript-eslint/ban-ts-comment": 0,
+    "@typescript-eslint/no-empty-function": 0,
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/no-unused-vars": 0,
+    "import/default": 2,
+    "import/export": 2,
+    "import/named": 2,
+    "import/namespace": 2,
+    "import/no-cycle": 2,
+    "import/no-unresolved": 2,
+    "no-undef": 0,
+    "no-unused-vars": 0,
+  },
+  extends: [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+  ],
+};
