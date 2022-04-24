@@ -12,11 +12,18 @@ import {
 } from "@material-ui/core";
 import { ArrowForwardIos, OfflineBolt as Bolt } from "@material-ui/icons";
 import {
+  BalancesTable,
+  BalancesTableHead,
+  BalancesTableContent,
+  PluginRenderer,
+} from "@200ms/anchor-ui-renderer";
+import {
   useBlockchains,
   useBlockchainLogo,
   useTotal,
   useBlockchainTokensSorted,
   useNavigation,
+  useTablePlugins,
 } from "@200ms/recoil";
 import {
   toTitleCase,
@@ -49,14 +56,6 @@ const useStyles = makeStyles((theme: any) => ({
   tokenListItemIconRoot: {
     minWidth: "44px",
   },
-  blockchainCard: {
-    backgroundColor: theme.custom.colors.nav,
-    marginBottom: "12px",
-    marginLeft: "12px",
-    marginRight: "12px",
-    borderRadius: "12px",
-    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
-  },
   blockchainFooter: {
     borderTop: `solid 1pt ${theme.custom.colors.border}`,
     display: "flex",
@@ -74,29 +73,6 @@ const useStyles = makeStyles((theme: any) => ({
   footerLabel: {
     fontSize: "14px",
     weight: 500,
-    color: theme.custom.colors.fontColor,
-  },
-  cardContentRoot: {
-    padding: "0 !important",
-  },
-  blockchainLogo: {
-    width: "12px",
-    color: theme.custom.colors.secondary,
-  },
-  cardHeaderRoot: {
-    padding: "6px",
-    paddingLeft: "16px",
-    paddingRight: "16px",
-    height: "36px",
-  },
-  cardHeaderTitle: {
-    fontWeight: 500,
-    fontSize: "14px",
-  },
-  cardListRoot: {
-    padding: "0 !important",
-  },
-  cardHeaderContent: {
     color: theme.custom.colors.fontColor,
   },
   tokenListItemContent: {
@@ -148,10 +124,15 @@ const useStyles = makeStyles((theme: any) => ({
   balancesHeaderContainer: {
     display: "flex",
     justifyContent: "space-between",
-    paddingLeft: "24px",
-    paddingRight: "24px",
-    paddingTop: "16px",
-    paddingBottom: "16px",
+    paddingLeft: "12px",
+    paddingRight: "12px",
+    marginLeft: "12px",
+    marginRight: "12px",
+    paddingTop: "12px",
+    paddingBottom: "12px",
+    borderRadius: "12px",
+    backgroundColor: theme.custom.colors.nav,
+    marginBottom: "12px",
   },
   headerLabel: {
     fontSize: "12px",
@@ -197,13 +178,10 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export function Balances() {
-  const { setNavButtonRight } = useNavigation();
-  useEffect(() => {
-    setNavButtonRight(<RecentActivityButton />);
-  }, [setNavButtonRight]);
   return (
     <div>
       <SolanaBalances />
+      <PluginTables />
     </div>
   );
 }
@@ -235,13 +213,19 @@ export function SolanaBalances() {
   return (
     <div>
       <BalancesHeader blockchain={"solana"} />
-      <BlockchainCard
-        blockchain={"solana"}
-        title={"Tokens"}
-        limit={3}
-        avatar={true}
-      />
+      <BlockchainCard blockchain={"solana"} title={"Tokens"} limit={3} />
     </div>
+  );
+}
+
+function PluginTables() {
+  const tablePlugins = useTablePlugins();
+  return (
+    <>
+      {tablePlugins.map((plugin: any) => {
+        return <PluginRenderer key={plugin.iframeUrl} plugin={plugin} />;
+      })}
+    </>
   );
 }
 
@@ -272,53 +256,46 @@ export function BlockchainCard({
   blockchain,
   title,
   limit,
-  avatar = false,
 }: {
   blockchain: string;
   title: string;
   limit?: number;
-  avatar?: boolean;
 }) {
-  const classes = useStyles();
   const blockchainLogo = useBlockchainLogo(blockchain);
   const tokenAccountsSorted = useBlockchainTokensSorted(blockchain);
   const [showAll, setShowAll] = useState(false);
   return (
-    <Card className={classes.blockchainCard} elevation={0}>
-      <CardHeader
-        avatar={
-          avatar ? (
-            <img className={classes.blockchainLogo} src={blockchainLogo} />
-          ) : undefined
-        }
-        title={title}
-        classes={{
-          root: classes.cardHeaderRoot,
-          content: classes.cardHeaderContent,
-          title: classes.cardHeaderTitle,
-        }}
+    <BalancesTable>
+      <BalancesTableHead props={{ title, iconUrl: blockchainLogo }} />
+      <BalancesTableContent>
+        {tokenAccountsSorted
+          .slice(0, limit && !showAll ? limit : tokenAccountsSorted.length)
+          .map((token: any) => (
+            <BalancesTableRow token={token} blockchain={blockchain} />
+          ))}
+      </BalancesTableContent>
+      <BalancesTableFooter
+        count={tokenAccountsSorted.length}
+        showAll={showAll}
+        setShowAll={setShowAll}
       />
-      <CardContent classes={{ root: classes.cardContentRoot }}>
-        <List classes={{ root: classes.cardListRoot }}>
-          {tokenAccountsSorted
-            .slice(0, limit && !showAll ? limit : tokenAccountsSorted.length)
-            .map((token: any) => (
-              <TokenListItem
-                key={token.address}
-                blockchain={blockchain}
-                token={token}
-              />
-            ))}
-          {limit && tokenAccountsSorted.length > limit && (
-            <BlockchainCardFooter
-              showAll={showAll}
-              onClick={() => setShowAll((showAll) => !showAll)}
-              tokenCount={tokenAccountsSorted.length}
-            />
-          )}
-        </List>
-      </CardContent>
-    </Card>
+    </BalancesTable>
+  );
+}
+
+export function BalancesTableFooter({ count, showAll, setShowAll }: any) {
+  return (
+    <BlockchainCardFooter
+      showAll={showAll}
+      onClick={() => setShowAll((showAll: boolean) => !showAll)}
+      count={count}
+    />
+  );
+}
+
+export function BalancesTableRow({ token, blockchain }: any) {
+  return (
+    <TokenListItem key={token.address} blockchain={blockchain} token={token} />
   );
 }
 
@@ -397,11 +374,11 @@ function TokenListItem({
 function BlockchainCardFooter({
   showAll,
   onClick,
-  tokenCount,
+  count,
 }: {
   showAll: boolean;
   onClick: () => void;
-  tokenCount: number;
+  count: number;
 }) {
   const classes = useStyles();
   return (
@@ -419,7 +396,7 @@ function BlockchainCardFooter({
         }}
       >
         <Typography className={classes.footerLabel}>
-          {showAll ? `Hide ${tokenCount}` : `Show all ${tokenCount}`}
+          {showAll ? `Hide ${count}` : `Show all ${count}`}
         </Typography>
       </div>
       <div

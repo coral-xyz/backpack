@@ -133,7 +133,6 @@ export class PostMessageServer {
       }
       const id = event.data.detail.id;
       const [result, error] = await handlerFn(event);
-      console.log("result error", result, error);
       if (this.responseChannel) {
         const msg = {
           type: this.responseChannel,

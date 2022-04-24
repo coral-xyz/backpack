@@ -10,6 +10,8 @@ const COUNTER_PLUGIN_URL = OPEN_ORDERS_PLUGIN_URL;
 const COUNTER_ICON_URL =
   "https://pbs.twimg.com/profile_images/1514417507175735301/STVALJof_400x400.jpg";
 
+const MANGO_TABLE_PLUGIN_URL = "https://localhost:4445/index.html";
+
 //
 // For now we just provide some default apps.
 //
@@ -30,6 +32,23 @@ export const plugins = selector({
         url: COUNTER_PLUGIN_URL,
         iconUrl: COUNTER_ICON_URL,
         title: "Counter",
+        activeWallet,
+        connectionUrl,
+      },
+    ];
+  },
+});
+
+export const tablePlugins = selector({
+  key: "tablePlugins",
+  get: ({ get }: any) => {
+    const activeWallet = get(atoms.activeWallet);
+    const connectionUrl = get(atoms.connectionUrl);
+    return [
+      {
+        url: MANGO_TABLE_PLUGIN_URL,
+        iconUrl: "",
+        title: "Margin Accounts",
         activeWallet,
         connectionUrl,
       },

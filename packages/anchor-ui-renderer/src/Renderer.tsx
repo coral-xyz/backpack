@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Element } from "@200ms/anchor-ui";
+import {
+  makeStyles,
+  Card,
+  CardContent,
+  CardHeader,
+  List,
+} from "@material-ui/core";
+import { Element, NodeKind } from "@200ms/anchor-ui";
 import { PluginProvider, usePluginContext } from "./Context";
 
 export function PluginRenderer({ plugin }: any) {
@@ -73,16 +80,57 @@ function ViewRenderer({ element }: { element: Element }) {
     });
   }, [plugin, setViewData]);
 
-  const { props, style, kind } = viewData;
+  const { id, props, style, kind } = viewData;
   switch (kind) {
-    case "View":
-      return <View props={props} style={style} children={viewData.children} />;
-    case "Text":
+    case NodeKind.View:
+      return (
+        <View
+          id={id}
+          props={props}
+          style={style}
+          children={viewData.children}
+        />
+      );
+    case NodeKind.Text:
       return <Text props={props} style={style} children={viewData.children} />;
-    case "Table":
+    case NodeKind.Table:
       return <Table props={props} style={style} />;
-    case "Image":
+    case NodeKind.Image:
       return <Image props={props} style={style} children={viewData.children} />;
+    case NodeKind.BalancesTable:
+      return (
+        <BalancesTable
+          props={props}
+          style={style}
+          childrenRenderer={viewData.children}
+        />
+      );
+    case NodeKind.BalancesTableHead:
+      return <BalancesTableHead props={props} style={style} />;
+    case NodeKind.BalancesTableContent:
+      return (
+        <BalancesTableContent
+          props={props}
+          style={style}
+          childrenRenderer={viewData.children}
+        />
+      );
+    case NodeKind.BalancesTableRow:
+      return (
+        <BalancesTableRow
+          props={props}
+          style={style}
+          children={viewData.children}
+        />
+      );
+    case NodeKind.BalancesTableFooter:
+      return (
+        <BalancesTableFooter
+          props={props}
+          style={style}
+          children={viewData.children}
+        />
+      );
     case "raw":
       return <Raw text={viewData.text} />;
     default:
@@ -91,9 +139,125 @@ function ViewRenderer({ element }: { element: Element }) {
   }
 }
 
-function View({ props, style, children }: any) {
+const useStyles = makeStyles((theme: any) => ({
+  blockchainLogo: {
+    width: "12px",
+    color: theme.custom.colors.secondary,
+  },
+  blockchainCard: {
+    backgroundColor: theme.custom.colors.nav,
+    marginBottom: "12px",
+    marginLeft: "12px",
+    marginRight: "12px",
+    borderRadius: "12px",
+    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
+  },
+  cardHeaderRoot: {
+    padding: "6px",
+    paddingLeft: "16px",
+    paddingRight: "16px",
+    height: "36px",
+  },
+  cardHeaderTitle: {
+    fontWeight: 500,
+    fontSize: "14px",
+  },
+  cardHeaderContent: {
+    color: theme.custom.colors.fontColor,
+  },
+  cardContentRoot: {
+    padding: "0 !important",
+  },
+  cardListRoot: {
+    padding: "0 !important",
+  },
+}));
+
+export function BalancesTable({
+  props,
+  style,
+  children,
+  childrenRenderer,
+}: any) {
+  const classes = useStyles();
+  return (
+    <Card className={classes.blockchainCard} elevation={0}>
+      {children ??
+        childrenRenderer.map((c: Element) => (
+          <ViewRenderer key={c.id} element={c} />
+        ))}
+    </Card>
+  );
+}
+
+export function BalancesTableHead({ props, style }: any) {
+  const { title, iconUrl } = props;
+  const classes = useStyles();
+  return (
+    <CardHeader
+      avatar={
+        iconUrl ? (
+          <img className={classes.blockchainLogo} src={iconUrl} />
+        ) : undefined
+      }
+      title={title}
+      classes={{
+        root: classes.cardHeaderRoot,
+        content: classes.cardHeaderContent,
+        title: classes.cardHeaderTitle,
+      }}
+    />
+  );
+}
+
+export function BalancesTableContent({
+  props,
+  style,
+  children,
+  childrenRenderer,
+}: any) {
+  const classes = useStyles();
+  return (
+    <CardContent classes={{ root: classes.cardContentRoot }}>
+      <List classes={{ root: classes.cardListRoot }}>
+        {children ??
+          childrenRenderer.map((c: Element) => (
+            <ViewRenderer key={c.id} element={c} />
+          ))}
+      </List>
+    </CardContent>
+  );
+}
+
+export function BalancesTableRow({ props, style, children }: any) {
   return (
     <div style={style}>
+      {children.map((c: Element) => (
+        <ViewRenderer key={c.id} element={c} />
+      ))}
+    </div>
+  );
+}
+
+export function BalancesTableFooter({ props, style, children }: any) {
+  return (
+    <div style={style}>
+      {children.map((c: Element) => (
+        <ViewRenderer key={c.id} element={c} />
+      ))}
+    </div>
+  );
+}
+
+function View({ id, props, style, children }: any) {
+  const { plugin } = usePluginContext();
+  const onClick = !props.onClick
+    ? undefined
+    : (_event) => {
+        plugin.didClick(id);
+      };
+  return (
+    <div style={style} onClick={onClick}>
       {children.map((c: Element) => (
         <ViewRenderer key={c.id} element={c} />
       ))}

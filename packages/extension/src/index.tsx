@@ -33,7 +33,6 @@ async function main() {
   //
   recoil.setupTabComponents((tab: string) => {
     return () => {
-      console.log("rendering tab", tab);
       return (
         <>
           {tab === TAB_BALANCES && <Balances />}

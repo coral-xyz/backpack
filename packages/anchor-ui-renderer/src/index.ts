@@ -1,2 +1,9 @@
 export * from "./plugin";
-export { PluginRenderer } from "./Renderer";
+export {
+  BalancesTable,
+  BalancesTableHead,
+  BalancesTableContent,
+  BalancesTableRow,
+  BalancesTableFooter,
+  PluginRenderer,
+} from "./Renderer";

@@ -14,8 +14,13 @@ export function App() {
 }
 
 function Count() {
+  const [backgroundColor, setBackgroundColor] = useState("blue");
   const [count, setCount] = useState(0);
-
+  const onClick = async () => {
+    setBackgroundColor((backgroundColor) =>
+      backgroundColor === "blue" ? "red" : "blue"
+    );
+  };
   useEffect(() => {
     const t = setTimeout(() => {
       setCount((c) => c + 1);
@@ -25,7 +30,11 @@ function Count() {
     };
   }, [count]);
 
-  return <Text style={{ backgroundColor: "red" }}>{count}</Text>;
+  return (
+    <View style={{ backgroundColor }} onClick={onClick}>
+      <Text>{count}</Text>
+    </View>
+  );
 }
 
 function OpenOrdersAccounts() {
@@ -33,9 +42,7 @@ function OpenOrdersAccounts() {
   const [marketMap, setMarketMap] = useState(new Map());
 
   useEffect(() => {
-    console.log("fetchign open orders");
     fetchOpenOrdersData().then(([newOpenOrders, marketMap]) => {
-      console.log("got em", newOpenOrders);
       setOpenOrders(newOpenOrders);
       setMarketMap(marketMap);
     });

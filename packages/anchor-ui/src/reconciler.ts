@@ -1,12 +1,10 @@
 import ReactReconciler, { HostConfig, OpaqueHandle } from "react-reconciler";
 import {
   getLogger,
-  RECONCILER_BRIDGE_METHOD_MOUNT,
-  RECONCILER_BRIDGE_METHOD_CREATE_INSTANCE,
+  Event,
   RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
   RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
   RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
-  RECONCILER_BRIDGE_METHOD_APPEND_INITIAL_CHILD,
   RECONCILER_BRIDGE_METHOD_APPEND_CHILD,
   RECONCILER_BRIDGE_METHOD_INSERT_IN_CONTAINER_BEFORE,
   RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
@@ -16,10 +14,21 @@ import {
 
 const logger = getLogger("anchor-ui-reconciler");
 
+const CLICK_HANDLERS = new Map<number, () => void>();
+
 export const AnchorUi = {
   render(reactNode: any) {
     const cb = () => {};
     window.onload = () => {
+      // @ts-ignore
+      window.anchorUi.onClick((event: Event) => {
+        const { viewId } = event;
+        const handler = CLICK_HANDLERS.get(viewId);
+        if (!handler) {
+          throw new Error("handler not found");
+        }
+        handler();
+      });
       // @ts-ignore
       window.anchorUi.connect().then(() => {
         const root: RootContainer = {
@@ -71,11 +80,19 @@ const reconciler = ReactReconciler({
     logger.debug("createInstance", kind, props);
     switch (kind) {
       case NodeKind.View:
+        const id = h.nextId();
+        let onClick = false;
+        const vProps = props as ViewProps;
+        if (vProps.onClick && typeof vProps.onClick === "function") {
+          CLICK_HANDLERS.set(id, vProps.onClick);
+          onClick = true;
+        }
         return {
-          id: h.nextId(),
+          id,
           kind: NodeKind.View,
           props: {
             ...props,
+            onClick,
             children: undefined,
           },
           style: props.style || {},
@@ -125,6 +142,62 @@ const reconciler = ReactReconciler({
           style: props.style || {},
           children: [],
         };
+      case NodeKind.BalancesTable:
+        return {
+          id: h.nextId(),
+          kind: NodeKind.BalancesTable,
+          props: {
+            ...props,
+            children: undefined,
+          },
+          style: props.style || {},
+          children: [],
+        };
+      case NodeKind.BalancesTableHead:
+        // @ts-ignore
+        return {
+          id: h.nextId(),
+          kind: NodeKind.BalancesTableHead,
+          props: {
+            ...props,
+            children: undefined,
+          },
+          style: props.style || {},
+          children: [],
+        };
+      case NodeKind.BalancesTableContent:
+        return {
+          id: h.nextId(),
+          kind: NodeKind.BalancesTableContent,
+          props: {
+            ...props,
+            children: undefined,
+          },
+          style: props.style || {},
+          children: [],
+        };
+      case NodeKind.BalancesTableRow:
+        return {
+          id: h.nextId(),
+          kind: NodeKind.BalancesTableRow,
+          props: {
+            ...props,
+            children: undefined,
+          },
+          style: props.style || {},
+          children: [],
+        };
+      case NodeKind.BalancesTableFooter:
+        return {
+          id: h.nextId(),
+          kind: NodeKind.BalancesTableFooter,
+          props: {
+            ...props,
+            children: undefined,
+          },
+          style: props.style || {},
+          children: [],
+        };
       default:
         throw new Error("unexpected node kind");
     }
@@ -164,7 +237,11 @@ const reconciler = ReactReconciler({
     logger.debug("prepareUpdate", instance, type, oldProps, newProps);
     switch (type) {
       case NodeKind.View:
-        return null;
+        let payload: UpdateDiff | null = null;
+        if (oldProps.style !== newProps.style) {
+          payload = { style: newProps.style };
+        }
+        return payload;
       case NodeKind.Table:
         return null;
       case NodeKind.TableRow:
@@ -228,6 +305,9 @@ const reconciler = ReactReconciler({
 
     switch (type) {
       case NodeKind.View:
+        if (updatePayload.style) {
+          instance.style = updatePayload.style;
+        }
         break;
       case NodeKind.Table:
         break;
@@ -421,19 +501,34 @@ export type NodeSerialized =
   | TableRowNodeSerialized
   | TextNodeSerialized
   | ImageNodeSerialized
-  | ViewNodeSerialized;
+  | ViewNodeSerialized
+  | BalancesTableNodeSerialized
+  | BalancesTableHeadNodeSerialized
+  | BalancesTableContentNodeSerialized
+  | BalancesTableRowNodeSerialized
+  | BalancesTableFooterNodeSerialized;
 type NodeProps =
   | TableProps
   | TableRowProps
   | TextProps
   | ImageProps
-  | ViewProps;
-enum NodeKind {
+  | ViewProps
+  | BalancesTableProps
+  | BalancesTableHeadProps
+  | BalancesTableContentProps
+  | BalancesTableRowProps
+  | BalancesTableFooterProps;
+export enum NodeKind {
   Table = "Table",
   TableRow = "TableRow",
   Text = "Text",
   Image = "Image",
   View = "View",
+  BalancesTable = "BalancesTable",
+  BalancesTableHead = "BalancesTableHead",
+  BalancesTableContent = "BalancesTableContent",
+  BalancesTableRow = "BalancesTableRow",
+  BalancesTableFooter = "BalancesTableFooter",
 }
 
 //
@@ -480,6 +575,7 @@ type ImageProps = {
 //
 type ViewNodeSerialized = DefNodeSerialized<NodeKind.View, ViewProps>;
 type ViewProps = {
+  onClick?: (() => Promise<void>) | boolean;
   style: Style;
   children: undefined;
 };
@@ -493,6 +589,52 @@ export type TextSerialized = {
   text: string | number;
   props: undefined;
   style: undefined;
+};
+
+//
+// BalancesTable.
+//
+type BalancesTableNodeSerialized = DefNodeSerialized<
+  NodeKind.BalancesTable,
+  BalancesTableProps
+>;
+type BalancesTableProps = {
+  style: Style;
+  children: undefined;
+};
+type BalancesTableHeadNodeSerialized = DefNodeSerialized<
+  NodeKind.BalancesTableHead,
+  BalancesTableHeadProps
+>;
+type BalancesTableHeadProps = {
+  style: Style;
+  title: string;
+  iconUrl: string;
+  children: undefined;
+};
+type BalancesTableContentNodeSerialized = DefNodeSerialized<
+  NodeKind.BalancesTableContent,
+  BalancesTableContentProps
+>;
+type BalancesTableContentProps = {
+  style: Style;
+  children: undefined;
+};
+type BalancesTableRowNodeSerialized = DefNodeSerialized<
+  NodeKind.BalancesTableRow,
+  BalancesTableRowProps
+>;
+type BalancesTableRowProps = {
+  style: Style;
+  children: undefined;
+};
+type BalancesTableFooterNodeSerialized = DefNodeSerialized<
+  NodeKind.BalancesTableFooter,
+  BalancesTableFooterProps
+>;
+type BalancesTableFooterProps = {
+  style: Style;
+  children: undefined;
 };
 
 //

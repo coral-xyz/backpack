@@ -1,5 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 import {
+  NodeKind,
   UpdateDiff,
   Element,
   TextSerialized,
@@ -10,7 +11,9 @@ import {
   Event,
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
+  CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
+  PLUGIN_NOTIFICATION_ON_CLICK,
   RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
   RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
   RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
@@ -154,6 +157,17 @@ export class Plugin {
       throw new Error("dom not found");
     }
     this._dom.onRender(viewId, fn);
+  }
+
+  public didClick(viewId: number) {
+    const event = {
+      type: CHANNEL_PLUGIN_NOTIFICATION,
+      detail: {
+        name: PLUGIN_NOTIFICATION_ON_CLICK,
+        viewId,
+      },
+    };
+    this._iframe.contentWindow.postMessage(event, "*");
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -300,7 +314,15 @@ class Dom {
 
   _handleCommitUpdate(instanceId: number, updatePayload: UpdateDiff) {
     const instance = this._vdom.get(instanceId) as NodeSerialized;
-    // todo
+    switch (instance.kind) {
+      case NodeKind.View:
+        if (updatePayload.style) {
+          instance.style = updatePayload.style;
+        }
+        break;
+      default:
+        throw new Error("invariant violation");
+    }
     this._render(instanceId);
   }
 

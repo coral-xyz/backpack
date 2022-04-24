@@ -6,12 +6,9 @@ import {
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
   CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
-  RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
-  RECONCILER_BRIDGE_METHOD_MOUNT,
   PLUGIN_NOTIFICATION_ON_CLICK,
   PLUGIN_RPC_METHOD_CONNECT,
 } from "@200ms/common";
-import { Element } from "@200ms/anchor-ui";
 
 //
 // Injected provider for UI plugins. Using this from a non approved plugins
@@ -20,6 +17,7 @@ import { Element } from "@200ms/anchor-ui";
 export class ProviderUiInjection {
   private _renderId: number;
   private _requestManager: RequestManager;
+  private _onClickFn?: (event: Event) => void;
 
   constructor() {
     this._renderId = 0;
@@ -44,7 +42,7 @@ export class ProviderUiInjection {
     const { name } = event.data.detail;
     switch (name) {
       case PLUGIN_NOTIFICATION_ON_CLICK:
-        this._handleOnClick(event);
+        this._handleOnClick(event.data.detail);
         break;
       default:
         throw new Error("invalid notification");
@@ -52,8 +50,14 @@ export class ProviderUiInjection {
   }
 
   private _handleOnClick(event: Event) {
-    // todo
-    console.log("handling on click event", event);
+    if (!this._onClickFn) {
+      throw new Error("click handler not found");
+    }
+    this._onClickFn(event);
+  }
+
+  public onClick(fn: (event: Event) => void) {
+    this._onClickFn = fn;
   }
 
   public async connect() {

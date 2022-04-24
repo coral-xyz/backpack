@@ -26,20 +26,6 @@ export const recentTransactions = atomFamily<any | null, string>({
   }),
 });
 
-/*
-  effects: (address: string) => [
-    ({ setSelf, getPromise }: any) => {
-      // TODO: This won't reload individual tokens unless we poll in the background.
-      //       Easier thing to do would be to just fetch everytime on component mount.
-      setSelf(
-        getPromise(bootstrap).then((b: any) => {
-
-        })
-      );
-    },
-  ],
-	*/
-
 export const recentBlockhash = atom<Blockhash | null>({
   key: "recentBlockhash",
   default: selector({

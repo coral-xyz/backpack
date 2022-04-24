@@ -33,7 +33,6 @@ const useStyles = makeStyles((theme: any) => ({
     paddingRight: "16px",
     paddingTop: "10px",
     paddingBottom: "10px",
-    backgroundColor: theme.custom.colors.nav,
   },
   menuButtonContainer: {
     width: `${NAV_BUTTON_WIDTH}px`,
@@ -113,11 +112,11 @@ function NavBar() {
 function _NavBar() {
   const classes = useStyles();
   const theme = useTheme() as any;
-  const { navBorderBottom } = useNavigation();
+  const { isRoot } = useNavigation();
   return (
     <div
       style={{
-        borderBottom: navBorderBottom
+        borderBottom: !isRoot
           ? `solid 1pt ${theme.custom.colors.border}`
           : undefined,
         height: `${NAV_BAR_HEIGHT}px`,
@@ -189,17 +188,18 @@ function CenterDisplay() {
 }
 
 function _CenterDisplay() {
-  const { title } = useNavigation();
-  return <__CenterDisplay title={title} />;
+  const { title, isRoot } = useNavigation();
+  return <__CenterDisplay title={title} isRoot={isRoot} />;
 }
 
-export function __CenterDisplay({ title }: any) {
+export function __CenterDisplay({ title, isRoot }: any) {
   return (
     <div
       style={{
         display: "flex",
         justifyContent: "center",
         flexDirection: "column",
+        visibility: isRoot ? "hidden" : undefined,
       }}
     >
       <NavTitleLabel title={title} />

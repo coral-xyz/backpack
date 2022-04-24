@@ -13,6 +13,7 @@
   "dependencies": {
     "@200ms/anchor-ui": "*",
     "@200ms/common": "*",
+    "@material-ui/core": "^4.12.3",
     "@solana/web3.js": "^1.35.1"
   },
   "devDependencies": {
