@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { makeStyles, Divider, Typography, Button } from "@material-ui/core";
 import { getBackgroundClient } from "@200ms/recoil";
+import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@200ms/common";
 import { TextField } from "./common";
-import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "../common";
 import { OnboardButton } from "./common";
 
 export const NAV_BAR_HEIGHT = 56;

@@ -3,15 +3,9 @@
 
 import * as bs58 from "bs58";
 import { Transaction, SendOptions, Commitment } from "@solana/web3.js";
-import { BrowserRuntime } from "@200ms/common";
 import {
-  debug,
-  openLockedPopupWindow,
-  openApprovalPopupWindow,
-  openLockedApprovalPopupWindow,
-  openApproveTransactionPopupWindow,
-  openApproveMessagePopupWindow,
-  Window,
+  getLogger,
+  BrowserRuntime,
   RpcRequest,
   RpcResponse,
   withContext,
@@ -25,9 +19,19 @@ import {
   RPC_METHOD_SIMULATE,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
+} from "@200ms/common";
+import {
+  Window,
+  openLockedPopupWindow,
+  openApprovalPopupWindow,
+  openLockedApprovalPopupWindow,
+  openApproveTransactionPopupWindow,
+  openApproveMessagePopupWindow,
 } from "../../common";
 import { BACKEND, SUCCESS_RESPONSE } from "../backend";
 import { Io } from "../io";
+
+const logger = getLogger("server-injected");
 
 export function start() {
   Io.rpcServerInjected.handler(withContext(handle));
@@ -38,7 +42,7 @@ async function handle<T = any>(
   ctx: Context,
   req: RpcRequest
 ): Promise<RpcResponse<T>> {
-  debug(`handle rpc ${req.method}`);
+  logger.debug(`handle rpc ${req.method}`);
 
   const { method, params } = req;
   switch (method) {
@@ -80,7 +84,7 @@ async function handleConnect(
   // Use the UI to ask the user if it should connect.
   if (keyringStoreState === "unlocked") {
     if (await BACKEND.isApprovedOrigin(origin)) {
-      debug("already approved so automatically connecting");
+      logger.debug("already approved so automatically connecting");
       didApprove = true;
     } else {
       const resp = await RequestManager.requestUiAction((requestId: number) => {
@@ -291,7 +295,7 @@ class RequestManager {
 
 async function handlePopupUiResponse(msg: RpcResponse): Promise<string> {
   const { id, result, error } = msg;
-  debug("handle popup ui response");
+  logger.debug("handle popup ui response");
   RequestManager.resolveResponse(id, result, error);
   return SUCCESS_RESPONSE;
 }

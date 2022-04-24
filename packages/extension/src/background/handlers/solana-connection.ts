@@ -7,7 +7,7 @@ import {
   ConfirmedSignaturesForAddress2Options,
 } from "@solana/web3.js";
 import {
-  debug,
+  getLogger,
   RpcRequest,
   RpcResponse,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
@@ -19,16 +19,18 @@ import {
   SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION,
   SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2,
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
-} from "../../common";
+} from "@200ms/common";
 import { Io } from "../io";
 import { BACKEND } from "../solana-connection/backend";
+
+const logger = getLogger("solana-connection");
 
 export function start() {
   Io.solanaConnection.handler(handle);
 }
 
 async function handle<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
-  debug(`handle solana connection ${msg.method}`);
+  logger.debug(`handle solana connection ${msg.method}`);
   const { method, params } = msg;
   switch (method) {
     case SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO:

@@ -1,7 +1,11 @@
 import * as bs58 from "bs58";
-import { DerivationPath } from "@200ms/common";
 import { KeyringStoreState, KeyringStoreStateEnum } from "@200ms/recoil";
-import { BrowserRuntime } from "../common/browser";
+import {
+  DerivationPath,
+  BrowserRuntime,
+  NOTIFICATION_KEYRING_STORE_LOCKED,
+  BACKEND_EVENT,
+} from "@200ms/common";
 import * as crypto from "./crypto";
 import {
   SolanaHdKeyringFactory,
@@ -15,7 +19,6 @@ import {
   KeyringFactory,
   Keyring,
 } from ".";
-import { NOTIFICATION_KEYRING_STORE_LOCKED, BACKEND_EVENT } from "../common";
 import { Io } from "../background/io";
 
 const LOCK_INTERVAL_SECS = 15 * 60 * 1000;

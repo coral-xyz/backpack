@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { makeStyles } from "@material-ui/core";
-import { openOnboarding, debug } from "../common";
-
+import { getLogger, EXTENSION_WIDTH, EXTENSION_HEIGHT } from "@200ms/common";
 import {
   getBackgroundResponseClient,
   KeyringStoreStateEnum,
@@ -9,6 +8,7 @@ import {
   useApprovedOrigins,
   useBootstrapFast,
 } from "@200ms/recoil";
+import { openOnboarding } from "../common";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
 import {
@@ -23,9 +23,10 @@ import {
   ApproveTransaction,
   ApproveMessage,
 } from "../components/Approval";
-import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "../common";
 import "./App.css";
 import "@fontsource/inter";
+
+const logger = getLogger("router");
 
 export function Router() {
   return (
@@ -77,7 +78,7 @@ function _Router() {
 //    First we provide the ability to unlock the wallet, and then approve.
 //
 function PopupRouter() {
-  debug("app router search", window.location.search);
+  logger.debug("app router search", window.location.search);
 
   //
   // Extract the url query parameters for routing dispatch.
@@ -106,14 +107,14 @@ function PopupRouter() {
 }
 
 function QueryLockedApproval() {
-  debug("query locked approval");
+  logger.debug("query locked approval");
   const keyringStoreState = useKeyringStoreState();
   const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
   return isLocked ? <LockedBootstrap /> : <QueryApproval />;
 }
 
 function QueryLocked() {
-  debug("query locked");
+  logger.debug("query locked");
   const url = new URL(window.location.href);
   const requestId = parseInt(url.searchParams.get("requestId")!);
 
@@ -130,7 +131,7 @@ function QueryLocked() {
 }
 
 function QueryApproval() {
-  debug("query approval");
+  logger.debug("query approval");
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
   const requestId = parseInt(url.searchParams.get("requestId")!);
@@ -153,7 +154,7 @@ function QueryApproval() {
 }
 
 function QueryApproveTransaction() {
-  debug("query approve transaction");
+  logger.debug("query approve transaction");
 
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
@@ -172,7 +173,7 @@ function QueryApproveTransaction() {
 }
 
 function QueryApproveMessage() {
-  debug("query approve transaction");
+  logger.debug("query approve transaction");
 
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
@@ -191,7 +192,7 @@ function QueryApproveMessage() {
 }
 
 function FullApp() {
-  debug("full app");
+  logger.debug("full app");
   const keyringStoreState = useKeyringStoreState();
   const needsOnboarding =
     keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;

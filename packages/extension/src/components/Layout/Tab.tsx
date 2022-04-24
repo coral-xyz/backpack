@@ -6,7 +6,12 @@ import {
   AttachMoney as Money,
 } from "@material-ui/icons";
 import { useTab } from "@200ms/recoil";
-import { TAB_BALANCES, TAB_QUEST, TAB_BRIDGE, TAB_FRIENDS } from "../../common";
+import {
+  TAB_BALANCES,
+  TAB_QUEST,
+  TAB_BRIDGE,
+  TAB_FRIENDS,
+} from "@200ms/common";
 
 const useStyles = makeStyles((theme: any) => ({
   container: {

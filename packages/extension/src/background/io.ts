@@ -10,7 +10,7 @@ import {
   CONNECTION_POPUP_RESPONSE,
   CONNECTION_POPUP_NOTIFICATIONS,
   SOLANA_CONNECTION_RPC_UI,
-} from "../common";
+} from "@200ms/common";
 
 //
 // All communication channels for sending data in/out of the background script

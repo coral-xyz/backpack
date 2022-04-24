@@ -73,7 +73,7 @@ import {
   NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_BLOCKHASH_DID_UPDATE,
-} from "../../common";
+} from "@200ms/common";
 import {
   TokenAccountWithKey,
   fetchTokens,

@@ -9,7 +9,7 @@ import {
 } from "@200ms/recoil";
 import * as atoms from "@200ms/recoil";
 import {
-  debug,
+  getLogger,
   PortChannel,
   UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE,
   CONNECTION_POPUP_NOTIFICATIONS,
@@ -25,7 +25,9 @@ import {
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_BLOCKHASH_DID_UPDATE,
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
-} from "../common";
+} from "@200ms/common";
+
+const logger = getLogger("notifications-provider");
 
 // The Notifications provider is used to subscribe and handle notifications
 // from the background script.
@@ -44,7 +46,7 @@ export function NotificationsProvider(props: any) {
     // Notification dispatch.
     //
     const notificationsHandler = (notif: Notification) => {
-      debug(`received notification ${notif.name}`, notif);
+      logger.debug(`received notification ${notif.name}`, notif);
       switch (notif.name) {
         case NOTIFICATION_KEYRING_STORE_LOCKED:
           handleKeyringStoreLocked(notif);

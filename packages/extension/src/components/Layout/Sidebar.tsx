@@ -25,7 +25,7 @@ import {
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-} from "../../common";
+} from "@200ms/common";
 import { WalletAddress } from "../../components/common";
 import { WithDrawerNoHeader } from "./Drawer";
 import { openConnectHardware } from "../../common";

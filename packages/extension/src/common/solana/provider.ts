@@ -4,7 +4,7 @@ import {
   UI_RPC_METHOD_SIGN_TRANSACTION,
   UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS,
   UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
-} from "../";
+} from "@200ms/common";
 import { getBackgroundClient, SolanaContext } from "@200ms/recoil";
 
 // Provider api used by the app UI. Spiritually the same as the injected

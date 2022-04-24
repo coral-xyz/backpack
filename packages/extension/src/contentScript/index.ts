@@ -1,20 +1,22 @@
 import {
-  log,
+  getLogger,
   Channel,
   BrowserRuntime,
   CHANNEL_RPC_REQUEST,
   CHANNEL_RPC_RESPONSE,
   CHANNEL_NOTIFICATION,
-} from "../common";
+} from "@200ms/common";
+
+const logger = getLogger("content-script");
 
 // Script entry.
 function main() {
-  log("starting content script");
+  logger.debug("starting content script");
   injectScript("injected.js");
-  log("provider injected");
-  log("creating content channel");
+  logger.debug("provider injected");
+  logger.debug("creating content channel");
   initChannels();
-  log("content channel created");
+  logger.debug("content channel created");
 }
 
 // Inserts a <script> tag into the DOM.

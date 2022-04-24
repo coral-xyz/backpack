@@ -2,13 +2,13 @@ import { useState } from "react";
 import { makeStyles, Typography } from "@material-ui/core";
 import * as bip39 from "bip39";
 import { getBackgroundClient } from "@200ms/recoil";
-import { WithContinue, Stepper, Done, CreatePassword } from "./CreateNewWallet";
 import {
+  DerivationPath,
   BrowserRuntime,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
-} from "../../common";
-import { DerivationPath } from "@200ms/common";
+} from "@200ms/common";
 import { TextField } from "../common";
+import { WithContinue, Stepper, Done, CreatePassword } from "./CreateNewWallet";
 import { OnboardHeader } from "./CreateNewWallet";
 
 const STEP_COUNT = 4;

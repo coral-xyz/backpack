@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { makeStyles, Drawer, Button, IconButton } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
-import { EXTENSION_HEIGHT } from "../../common";
+import { EXTENSION_HEIGHT } from "@200ms/common";
 import { NAV_BAR_HEIGHT, NAV_BUTTON_WIDTH } from "./Nav";
 import { WithEphemeralNav } from "./NavEphemeral";
 import { useEphemeralNav } from "../../context/NavEphemeral";
