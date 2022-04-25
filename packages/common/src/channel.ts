@@ -2,7 +2,6 @@ import type { Event, RpcRequest, RpcResponse, Notification } from "./types";
 import { BrowserRuntime } from "./browser";
 import { debug } from "./logging";
 import { POST_MESSAGE_ORIGIN } from "./constants";
-import browser from "webextension-polyfill";
 
 // Channel is a class that establishes communication channel from a
 // content/injected script to a background script.
@@ -172,7 +171,8 @@ export class PortChannelServer {
   constructor(private name: string) {}
 
   public handler(handlerFn: (req: RpcRequest) => Promise<RpcResponse>) {
-    browser.runtime.onConnect.addListener((port) => {
+    // @ts-ignore
+    chrome.runtime.onConnect.addListener((port) => {
       debug(`on connect for server port ${port.name}`);
       if (port.name === this.name) {
         port.onMessage.addListener((req) => {
@@ -191,7 +191,8 @@ export class PortChannelNotifications {
   constructor(private name: string) {}
 
   public onNotification(handlerFn: (notif: Notification) => void) {
-    browser.runtime.onConnect.addListener((port) => {
+    // @ts-ignore
+    chrome.runtime.onConnect.addListener((port) => {
       debug(`on connect for notification port ${port.name}`);
       if (port.name === this.name) {
         port.onMessage.addListener((req) => {

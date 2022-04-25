@@ -3,7 +3,6 @@ import {
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
 } from "@200ms/common";
-import browser from "webextension-polyfill";
 
 const POPUP_HTML = "popup.html";
 const EXPANDED_HTML = "options.html";
@@ -85,12 +84,12 @@ async function openPopupWindow(ctx: Context, url: string): Promise<Window> {
 
 export function openOnboarding() {
   const url = `${EXPANDED_HTML}?${QUERY_ONBOARDING}`;
-  window.open(browser.runtime.getURL(url), "_blank");
+  window.open(chrome.extension.getURL(url), "_blank");
 }
 
 export function openConnectHardware() {
   const url = `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}`;
-  window.open(browser.runtime.getURL(url), "_blank");
+  window.open(chrome.extension.getURL(url), "_blank");
 }
 
 export function isExtensionPopup() {
@@ -104,7 +103,7 @@ export function isExtensionPopup() {
 
 function getOs() {
   const os = ["Windows", "Linux", "Mac"];
-  return os.find((v) => navigator.userAgent.indexOf(v) >= 0);
+  return os.find((v) => navigator.appVersion.indexOf(v) >= 0);
 }
 
 function isMacOs(): boolean {

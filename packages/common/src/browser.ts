@@ -1,39 +1,70 @@
-import browser from "webextension-polyfill";
-
+// Chrome or firefox specific apis.
 export class BrowserRuntime {
   public static sendMessage(msg: any, cb?: any) {
-    return browser.runtime.sendMessage(msg).then(cb);
+    // @ts-ignore
+    chrome
+      ? // @ts-ignore
+        chrome.runtime.sendMessage(msg, cb)
+      : // @ts-ignore
+        browser.runtime.sendMessage(msg).then(cb);
   }
 
   public static addEventListener(listener: any): any {
-    return browser.runtime.onMessage.addListener(listener);
+    // @ts-ignore
+    return chrome
+      ? // @ts-ignore
+        chrome.runtime.onMessage.addListener(listener)
+      : // @ts-ignore
+        browser.runtime.onmessage.addListener(listener);
   }
 
   public static getUrl(scriptName: string) {
-    return browser.runtime.getURL(scriptName);
+    // @ts-ignore
+    return chrome
+      ? // @ts-ignore
+        chrome.runtime.getURL(scriptName)
+      : // @ts-ignore
+        browser.runtime.getURL(scriptName);
   }
 
   public static sendMessageActiveTab(msg: any) {
-    return browser.tabs
-      .query({ active: true, currentWindow: true })
-      .then((tabs) => {
-        if (tabs[0]?.id) browser.tabs.sendMessage(tabs[0].id, msg);
-      });
+    // @ts-ignore
+    return chrome
+      ? // @ts-ignore
+        chrome.tabs.query(
+          { active: true, currentWindow: true },
+          (tabs: any) => {
+            // @ts-ignore
+            chrome.tabs.sendMessage(tabs[0].id, msg);
+          }
+        )
+      : // @ts-ignore
+        browser.tabs.query(
+          { active: true, currentWindow: true },
+          (tabs: any) => {
+            // @ts-ignore
+            browser.tabs.sendMessage(tabs[0].id, msg);
+          }
+        );
   }
 
   public static sendMessageTab(tabId: number, msg: any) {
-    browser.tabs.sendMessage(tabId, msg);
+    // @ts-ignore
+    chrome.tabs.sendMessage(tabId, msg);
   }
 
   public static sendMessageWindow(windowId: number, msg: any) {
-    browser.windows.get(windowId).then((window) => {
+    // @ts-ignore
+    chrome.windows.get(windowId, (window) => {
       console.log("got window now send message", window, msg);
     });
   }
 
   public static async openWindow(options: any) {
     return new Promise((resolve, reject) => {
-      browser.windows.create(options).then((newWindow) => {
+      // @ts-ignore
+      chrome.windows.create(options, (newWindow) => {
+        // todo: firefox
         const error = BrowserRuntime.checkForError();
         if (error) {
           return reject(error);
@@ -44,26 +75,37 @@ export class BrowserRuntime {
   }
 
   public static checkForError() {
-    const { lastError } = browser.runtime;
-    // if (lastError.stack && lastError.message) {
-    //   return lastError;
-    // }
-    return lastError ? new Error(lastError.message) : undefined;
+    // @ts-ignore
+    const { lastError } = chrome ? chrome.runtime : browser.runtime;
+    if (!lastError) {
+      return undefined;
+    }
+    if (lastError.stack && lastError.message) {
+      return lastError;
+    }
+    return new Error(lastError.message);
   }
 
   public static async getLastFocusedWindow(): Promise<Window> {
     return new Promise((resolve) => {
-      browser.windows.getLastFocused().then(resolve);
+      // @ts-ignore
+      chrome.windows.getLastFocused(resolve);
     });
   }
 
   public static connect(connectInfo: any): Port {
-    return browser.runtime.connect(connectInfo);
+    // @ts-ignore
+    return chrome
+      ? // @ts-ignore
+        chrome.runtime.connect(connectInfo)
+      : // @ts-ignore
+        browser.runtime.connect(connectInfo);
   }
 
   public static async getLocalStorage(key: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      return browser.storage.local.get(key).then((result) => {
+      // @ts-ignore
+      return chrome.storage.local.get(key, (result) => {
         const err = BrowserRuntime.checkForError();
         if (err) {
           reject(err);
@@ -78,8 +120,8 @@ export class BrowserRuntime {
     return new Promise((resolve, reject) => {
       const obj: any = {};
       obj[key] = value;
-
-      browser.storage.local.set(obj).then(() => {
+      // @ts-ignore
+      chrome.storage.local.set(obj, () => {
         const err = BrowserRuntime.checkForError();
         if (err) {
           reject(err);
@@ -91,18 +133,19 @@ export class BrowserRuntime {
   }
 
   public static closeActiveTab() {
-    browser.tabs.getCurrent().then((tab) => {
-      if (tab.id) browser.tabs.remove(tab.id);
+    // @ts-ignore
+    chrome.tabs.getCurrent((tab: any) => {
+      // @ts-ignore
+      chrome.tabs.remove(tab.id, function () {});
     });
   }
 
   public static activeTab(): Promise<any> {
     return new Promise((resolve) => {
-      browser.tabs
-        .query({ active: true, currentWindow: true })
-        .then(([tab]) => {
-          resolve(tab);
-        });
+      // @ts-ignore
+      chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+        resolve(tab);
+      });
     });
   }
 }
