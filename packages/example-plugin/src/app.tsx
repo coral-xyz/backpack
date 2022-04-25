@@ -68,9 +68,7 @@ async function fetchOpenOrdersData(): Promise<
   // All open orders accounts for this wallet.
   //
   const openOrders = await OpenOrders.findForOwner(
-    // @ts-ignore
     window.anchor.connection,
-    // @ts-ignore
     window.anchor.publicKey,
     PID
   );
@@ -88,7 +86,6 @@ async function fetchOpenOrdersData(): Promise<
     })();
 
     const multipleMarkets = await anchor.utils.rpc.getMultipleAccounts(
-      // @ts-ignore
       window.anchor.connection,
       Array.from(markets.values()).map((m) => new PublicKey(m))
     );

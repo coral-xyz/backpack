@@ -18,7 +18,6 @@ export const AnchorUi = {
   render(reactNode: any) {
     const cb = () => {};
     window.onload = () => {
-      // @ts-ignore
       window.anchorUi.onClick((event: Event) => {
         const { viewId } = event;
         const handler = CLICK_HANDLERS.get(viewId);
@@ -27,7 +26,6 @@ export const AnchorUi = {
         }
         handler();
       });
-      // @ts-ignore
       window.anchorUi.connect().then(() => {
         const root: RootContainer = {
           host: HOST,
@@ -341,7 +339,6 @@ const reconciler = ReactReconciler({
         throw new Error("unexpected node kind");
     }
 
-    // @ts-ignore
     window.anchorUi.request({
       method: RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
       params: [instance.id, updatePayload],
@@ -355,7 +352,6 @@ const reconciler = ReactReconciler({
     logger.debug("commitTextUpdate");
     textInstance.text = nextText;
 
-    // @ts-ignore
     window.anchorUi.request({
       method: RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
       params: [textInstance.id, nextText],
@@ -365,7 +361,6 @@ const reconciler = ReactReconciler({
     logger.debug("appendChildToContainer", c, child);
     c.children.push(child);
 
-    // @ts-ignore
     window.anchorUi.request({
       method: RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
       params: [child],
@@ -375,7 +370,6 @@ const reconciler = ReactReconciler({
     logger.debug("appendChild", parent, child);
     parent.children.push(child);
 
-    // @ts-ignore
     window.anchorUi.request({
       method: RECONCILER_BRIDGE_METHOD_APPEND_CHILD,
       params: [parent.id, child],
@@ -400,7 +394,6 @@ const reconciler = ReactReconciler({
       .concat([child])
       .concat(root.children.slice(idx));
 
-    // @ts-ignore
     window.anchorUi.request({
       method: RECONCILER_BRIDGE_METHOD_INSERT_IN_CONTAINER_BEFORE,
       params: [child, before.id],
@@ -422,7 +415,6 @@ const reconciler = ReactReconciler({
       .concat([child])
       .concat(parent.children.slice(idx));
 
-    // @ts-ignore
     window.anchorUi.request({
       method: RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
       params: [parent.id, child, before.id],
@@ -434,7 +426,6 @@ const reconciler = ReactReconciler({
     parent.children = parent.children.filter((c) => c !== child);
     deleteClickHandlers(child);
 
-    // @ts-ignore
     window.anchorUi.request({
       method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
       params: [parent.id, child.id],
@@ -446,7 +437,6 @@ const reconciler = ReactReconciler({
     root.children = root.children.filter((c) => c !== child);
     deleteClickHandlers(child);
 
-    // @ts-ignore
     window.anchorUi.request({
       method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
       params: [child.id],
