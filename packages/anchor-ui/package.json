@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@200ms/common": "*",
+    "@200ms/provider-injection": "*",
     "react-reconciler": "^0.26.0"
   },
   "devDependencies": {
