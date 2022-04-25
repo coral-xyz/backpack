@@ -13,6 +13,7 @@
   "dependencies": {
     "@200ms/anchor-ui-renderer": "*",
     "@200ms/common": "*",
+    "@jup-ag/react-hook": "^1.0.0-beta.19",
     "recoil": "^0.6.1"
   },
   "peerDependencies": {
