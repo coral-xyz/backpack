@@ -1,10 +1,12 @@
 export * from "./plugin";
+
+export { PluginRenderer } from "./Renderer";
+
 export {
   BalancesTable,
-  BalancesTableHead,
-  BalancesTableContent,
-  BalancesTableRow,
   BalancesTableCell,
+  BalancesTableContent,
   BalancesTableFooter,
-  PluginRenderer,
-} from "./Renderer";
+  BalancesTableHead,
+  BalancesTableRow,
+} from "./Component";
