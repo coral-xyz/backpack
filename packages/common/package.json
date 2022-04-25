@@ -19,11 +19,13 @@
     "@solana/spl-token-registry": "^0.2.3225",
     "@solana/web3.js": "^1.37.1",
     "bs58": "^5.0.0",
-    "eventemitter3": "^4.0.7"
+    "eventemitter3": "^4.0.7",
+    "webextension-polyfill": "^0.9.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
+    "@types/webextension-polyfill": "^0.8.3",
     "eslint": "^8.14.0",
     "eslint-plugin-import": "^2.26.0",
     "typescript": "^4.6.3"
