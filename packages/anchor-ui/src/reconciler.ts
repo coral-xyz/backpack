@@ -14,8 +14,6 @@ import {
 
 const logger = getLogger("anchor-ui-reconciler");
 
-const CLICK_HANDLERS = new Map<number, () => void>();
-
 export const AnchorUi = {
   render(reactNode: any) {
     const cb = () => {};
@@ -412,6 +410,7 @@ const reconciler = ReactReconciler({
     logger.debug("removeChild", parent, child);
 
     parent.children = parent.children.filter((c) => c !== child);
+    deleteClickHandlers(child);
 
     // @ts-ignore
     window.anchorUi.request({
@@ -423,6 +422,7 @@ const reconciler = ReactReconciler({
     logger.debug("removeChildFromContainer", root, child);
 
     root.children = root.children.filter((c) => c !== child);
+    deleteClickHandlers(child);
 
     // @ts-ignore
     window.anchorUi.request({
@@ -662,3 +662,18 @@ type ChildSet = never;
 type TimeoutHandle = number;
 const noTimeout = -1;
 type NoTimeout = typeof noTimeout;
+
+const CLICK_HANDLERS = new Map<number, () => void>();
+
+//
+// Garbage collects all click handlers from the given element being removed
+// from the DOM.
+//
+function deleteClickHandlers(element: Element) {
+  CLICK_HANDLERS.delete(element.id);
+  // @ts-ignore
+  if (element.children) {
+    // @ts-ignore
+    element.children.forEach((c) => deleteClickHandlers(c));
+  }
+}
