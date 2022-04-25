@@ -50,6 +50,7 @@ export const bootstrap = atom<any>({
         // Get the transaction data for the wallet's recent transactions.
         //
         const recentTransactions = await fetchRecentTransactions(
+          provider.connection,
           walletPublicKey,
           provider
         );

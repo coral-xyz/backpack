@@ -5,9 +5,119 @@ import {
   CardContent,
   CardHeader,
   List,
+  ListItem,
+  ListItemIcon,
+  Typography,
 } from "@material-ui/core";
 import { Element, NodeKind } from "@200ms/anchor-ui";
 import { PluginProvider, usePluginContext } from "./Context";
+
+const useStyles = makeStyles((theme: any) => ({
+  blockchainLogo: {
+    width: "12px",
+    color: theme.custom.colors.secondary,
+  },
+  blockchainCard: {
+    backgroundColor: theme.custom.colors.nav,
+    marginBottom: "12px",
+    marginLeft: "12px",
+    marginRight: "12px",
+    borderRadius: "12px",
+    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
+  },
+  cardHeaderRoot: {
+    padding: "6px",
+    paddingLeft: "16px",
+    paddingRight: "16px",
+    height: "36px",
+  },
+  cardHeaderTitle: {
+    fontWeight: 500,
+    fontSize: "14px",
+  },
+  cardHeaderContent: {
+    color: theme.custom.colors.fontColor,
+  },
+  cardContentRoot: {
+    padding: "0 !important",
+  },
+  cardListRoot: {
+    padding: "0 !important",
+  },
+  tokenListItem: {
+    borderTop: `solid 1pt ${theme.custom.colors.border}`,
+    paddingTop: 0,
+    paddingBottom: 0,
+    paddingLeft: "12px",
+    paddingRight: "12px",
+    padding: 0,
+    height: "68px",
+  },
+  balancesTableCellContainer: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+  },
+  tokenListItemContent: {
+    color: theme.custom.colors.fontColor,
+    flex: 1,
+    paddingTop: "10px",
+    paddingBottom: "10px",
+  },
+  tokenListItemRow: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  logoIcon: {
+    borderRadius: "22px",
+    width: "44px",
+    height: "44px",
+  },
+  tokenListItemIcon: {
+    paddingTop: "12px",
+    paddingBottom: "12px",
+    marginRight: "12px",
+  },
+  tokenName: {
+    height: "24px",
+    fontWeight: 500,
+    fontSize: "16px",
+    maxWidth: "200px",
+    overflow: "hidden",
+    color: theme.custom.colors.fontColor,
+  },
+  tokenAmount: {
+    fontWeight: 500,
+    fontSize: "12px",
+    color: theme.custom.colors.secondary,
+  },
+  tokenBalance: {
+    fontWeight: 500,
+    fontSize: "16px",
+    color: theme.custom.colors.fontColor,
+  },
+  tokenBalanceChangeNeutral: {
+    fontWeight: 500,
+    fontSize: "12px",
+    color: theme.custom.colors.secondary,
+    float: "right",
+  },
+  tokenBalanceChangePositive: {
+    fontWeight: 500,
+    fontSize: "12px",
+    color: theme.custom.colors.positive,
+    float: "right",
+  },
+  tokenBalanceChangeNegative: {
+    fontWeight: 500,
+    fontSize: "12px",
+    color: theme.custom.colors.negative,
+    float: "right",
+  },
+  tokenListItemIconRoot: {
+    minWidth: "44px",
+  },
+}));
 
 export function PluginRenderer({ plugin }: any) {
   return (
@@ -120,9 +230,11 @@ function ViewRenderer({ element }: { element: Element }) {
         <BalancesTableRow
           props={props}
           style={style}
-          children={viewData.children}
+          childrenRenderer={viewData.children}
         />
       );
+    case NodeKind.BalancesTableCell:
+      return <BalancesTableCell props={props} style={style} />;
     case NodeKind.BalancesTableFooter:
       return (
         <BalancesTableFooter
@@ -138,40 +250,6 @@ function ViewRenderer({ element }: { element: Element }) {
       throw new Error("unexpected view data");
   }
 }
-
-const useStyles = makeStyles((theme: any) => ({
-  blockchainLogo: {
-    width: "12px",
-    color: theme.custom.colors.secondary,
-  },
-  blockchainCard: {
-    backgroundColor: theme.custom.colors.nav,
-    marginBottom: "12px",
-    marginLeft: "12px",
-    marginRight: "12px",
-    borderRadius: "12px",
-    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
-  },
-  cardHeaderRoot: {
-    padding: "6px",
-    paddingLeft: "16px",
-    paddingRight: "16px",
-    height: "36px",
-  },
-  cardHeaderTitle: {
-    fontWeight: 500,
-    fontSize: "14px",
-  },
-  cardHeaderContent: {
-    color: theme.custom.colors.fontColor,
-  },
-  cardContentRoot: {
-    padding: "0 !important",
-  },
-  cardListRoot: {
-    padding: "0 !important",
-  },
-}));
 
 export function BalancesTable({
   props,
@@ -229,12 +307,71 @@ export function BalancesTableContent({
   );
 }
 
-export function BalancesTableRow({ props, style, children }: any) {
+export function BalancesTableRow({
+  props,
+  style,
+  children,
+  childrenRenderer,
+  onClick,
+}: any) {
+  const classes = useStyles();
   return (
-    <div style={style}>
-      {children.map((c: Element) => (
-        <ViewRenderer key={c.id} element={c} />
-      ))}
+    <ListItem
+      button
+      disableRipple
+      className={classes.tokenListItem}
+      onClick={onClick}
+    >
+      {children ??
+        childrenRenderer.map((c: Element) => (
+          <ViewRenderer key={c.id} element={c} />
+        ))}
+    </ListItem>
+  );
+}
+
+export function BalancesTableCell({ props, style }: any) {
+  const { icon, title, subtitle, usdValue, percentChange } = props;
+  const classes = useStyles();
+
+  const positive = percentChange && percentChange > 0 ? true : false;
+  const negative = percentChange && percentChange < 0 ? true : false;
+  const neutral = percentChange && percentChange === 0 ? true : false;
+
+  return (
+    <div className={classes.balancesTableCellContainer}>
+      <ListItemIcon
+        className={classes.tokenListItemIcon}
+        classes={{ root: classes.tokenListItemIconRoot }}
+      >
+        <img src={icon} className={classes.logoIcon} />
+      </ListItemIcon>
+      <div className={classes.tokenListItemContent}>
+        <div className={classes.tokenListItemRow}>
+          <Typography className={classes.tokenName}>{title}</Typography>
+          <Typography className={classes.tokenBalance}>
+            ${usdValue.toLocaleString()}
+          </Typography>
+        </div>
+        <div className={classes.tokenListItemRow}>
+          <Typography className={classes.tokenAmount}>{subtitle}</Typography>
+          {percentChange !== undefined && positive && (
+            <Typography className={classes.tokenBalanceChangePositive}>
+              $+{percentChange.toLocaleString()}
+            </Typography>
+          )}
+          {percentChange !== undefined && negative && (
+            <Typography className={classes.tokenBalanceChangeNegative}>
+              ${percentChange.toLocaleString()}
+            </Typography>
+          )}
+          {percentChange !== undefined && neutral && (
+            <Typography className={classes.tokenBalanceChangeNeutral}>
+              ${percentChange.toLocaleString()}
+            </Typography>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

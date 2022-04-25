@@ -14,4 +14,5 @@ export const BalancesTable = c("BalancesTable");
 export const BalancesTableContent = c("BalancesTableContent");
 export const BalancesTableHead = c("BalancesTableHead");
 export const BalancesTableRow = c("BalancesTableRow");
+export const BalancesTableCell = c("BalancesTableCell");
 export const BalancesTableFooter = c("BalancesTableFooter");

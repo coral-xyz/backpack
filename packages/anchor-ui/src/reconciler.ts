@@ -185,6 +185,17 @@ const reconciler = ReactReconciler({
           style: props.style || {},
           children: [],
         };
+      case NodeKind.BalancesTableCell:
+        return {
+          id: h.nextId(),
+          kind: NodeKind.BalancesTableCell,
+          props: {
+            ...props,
+            children: undefined,
+          },
+          style: props.style || {},
+          children: [],
+        };
       case NodeKind.BalancesTableFooter:
         return {
           id: h.nextId(),
@@ -197,6 +208,7 @@ const reconciler = ReactReconciler({
           children: [],
         };
       default:
+        logger.error("unexpected node kind", kind);
         throw new Error("unexpected node kind");
     }
   },
@@ -241,6 +253,16 @@ const reconciler = ReactReconciler({
         }
         return payload;
       case NodeKind.Table:
+        return null;
+      case NodeKind.BalancesTable:
+        return null;
+      case NodeKind.BalancesTableHead:
+        return null;
+      case NodeKind.BalancesTableContent:
+        return null;
+      case NodeKind.BalancesTableRow:
+        return null;
+      case NodeKind.BalancesTableCell:
         return null;
       case NodeKind.TableRow:
         return null;
@@ -506,6 +528,7 @@ export type NodeSerialized =
   | BalancesTableHeadNodeSerialized
   | BalancesTableContentNodeSerialized
   | BalancesTableRowNodeSerialized
+  | BalancesTableCellNodeSerialized
   | BalancesTableFooterNodeSerialized;
 type NodeProps =
   | TableProps
@@ -517,6 +540,7 @@ type NodeProps =
   | BalancesTableHeadProps
   | BalancesTableContentProps
   | BalancesTableRowProps
+  | BalancesTableCellProps
   | BalancesTableFooterProps;
 export enum NodeKind {
   Table = "Table",
@@ -528,6 +552,7 @@ export enum NodeKind {
   BalancesTableHead = "BalancesTableHead",
   BalancesTableContent = "BalancesTableContent",
   BalancesTableRow = "BalancesTableRow",
+  BalancesTableCell = "BalancesTableCell",
   BalancesTableFooter = "BalancesTableFooter",
 }
 
@@ -625,6 +650,19 @@ type BalancesTableRowNodeSerialized = DefNodeSerialized<
   BalancesTableRowProps
 >;
 type BalancesTableRowProps = {
+  style: Style;
+  children: undefined;
+};
+type BalancesTableCellNodeSerialized = DefNodeSerialized<
+  NodeKind.BalancesTableCell,
+  BalancesTableCellProps
+>;
+type BalancesTableCellProps = {
+  icon?: string;
+  title?: string;
+  subtitle?: string;
+  usdValue?: number;
+  percentChange?: number;
   style: Style;
   children: undefined;
 };

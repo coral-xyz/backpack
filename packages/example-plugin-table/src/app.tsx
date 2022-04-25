@@ -7,58 +7,89 @@ import {
   BalancesTableContent,
   BalancesTableFooter,
   BalancesTableRow,
+  BalancesTableCell,
 } from "@200ms/anchor-ui";
-import { MangoClient } from "@blockworks-foundation/mango-client";
+import { MangoClient, Config } from "@blockworks-foundation/mango-client";
 
 export function App() {
   return <MangoTable />;
 }
 
 function MangoTable() {
-  const [mangoAccounts, setMangoAccounts] = useState<Array<any> | null>(null);
-
+  const [rowData, setRowData] = useState<Array<any> | null>(null);
   useEffect(() => {
     (async () => {
-      const client = new MangoClient(
-        // @ts-ignore
-        window.anchor.connection,
-        MANGO_PID
-      );
-      const mangoGroup = await client.getMangoGroup(MANGO_GROUP);
-      const mangoAccounts = await client.getMangoAccountsForOwner(
-        mangoGroup,
-        // @ts-ignore
-        window.anchor.publicKey
-      );
-      setMangoAccounts(mangoAccounts);
+      const rowData = await fetchRowData();
+      setRowData(rowData);
     })();
-  }, [setMangoAccounts]);
-
-  if (mangoAccounts === null) {
-    return <Text>Loading...</Text>;
-  }
+  }, []);
 
   return (
     <BalancesTable>
       <BalancesTableHead
-        title={"Margin Accounts"}
+        title={"Mango Markets"}
         iconUrl={"https://trade.mango.markets/assets/icons/logo.svg"}
       />
-      <BalancesTableContent>
-        {mangoAccounts.map((ma: any) => {
-          return (
-            <BalancesTableRow>
-              <Text>{JSON.stringify(ma)}</Text>
-            </BalancesTableRow>
-          );
-        })}
-      </BalancesTableContent>
-      <BalancesTableFooter></BalancesTableFooter>
+      {rowData && (
+        <>
+          <BalancesTableContent>
+            {rowData.map((row) => {
+              return (
+                <BalancesTableRow>
+                  <BalancesTableCell
+                    title={row.title}
+                    subtitle={row.subtitle}
+                    icon={row.icon}
+                    usdValue={row.usdValue}
+                  />
+                </BalancesTableRow>
+              );
+            })}
+          </BalancesTableContent>
+          <BalancesTableFooter></BalancesTableFooter>
+        </>
+      )}
     </BalancesTable>
   );
 }
 
-const MANGO_GROUP = new PublicKey(
-  "98pjRuQjK3qA6gXts96PqZT4Ze5QmnCmt3QYjhbUSPue"
-);
+async function fetchRowData(): Promise<Array<any>> {
+  const client = new MangoClient(
+    // @ts-ignore
+    window.anchor.connection,
+    MANGO_PID
+  );
+  const config = Config.ids().getGroupWithName("mainnet.1");
+  if (!config) {
+    throw new Error("config not found");
+  }
+  const mangoGroup = await client.getMangoGroup(config.publicKey);
+  const mangoAccounts = await client.getMangoAccountsForOwner(
+    mangoGroup,
+    // @ts-ignore
+    window.anchor.publicKey
+  );
+  // @ts-ignore
+  const mangoCache = await mangoGroup.loadCache(window.anchor.connection);
+
+  const rowData = await Promise.all(
+    mangoAccounts.map(async (ma) => {
+      const d = {
+        equityUi: (ma.getEquityUi(mangoGroup, mangoCache) * 10 ** 6).toFixed(1),
+        leverage: ma.getLeverage(mangoGroup, mangoCache),
+        health: `${ma
+          .getHealthRatio(mangoGroup, mangoCache, "Maint")
+          .toString()}%`,
+      };
+      return {
+        title: "Margin Account",
+        subtitle: `Health Ratio: ${d.health}`,
+        icon: "https://trade.mango.markets/assets/icons/logo.svg",
+        usdValue: d.equityUi,
+      };
+    })
+  );
+  return rowData;
+}
+
 const MANGO_PID = new PublicKey("mv3ekLzLbnVPNxjSKvqBpU3ZeZXPQdEC3bp5MDEBG68");

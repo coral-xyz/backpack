@@ -4,6 +4,7 @@ export {
   BalancesTableHead,
   BalancesTableContent,
   BalancesTableRow,
+  BalancesTableCell,
   BalancesTableFooter,
   PluginRenderer,
 } from "./Renderer";
