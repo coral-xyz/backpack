@@ -16,7 +16,6 @@ const logger = getLogger("anchor-ui-reconciler");
 
 export const AnchorUi = {
   render(reactNode: any) {
-    const cb = () => {};
     window.onload = () => {
       window.anchorUi.onClick((event: Event) => {
         const { viewId } = event;
@@ -27,18 +26,23 @@ export const AnchorUi = {
         handler();
       });
       window.anchorUi.connect().then(() => {
-        const root: RootContainer = {
-          host: HOST,
-          children: [],
-        };
-        const container = reconciler.createContainer(root, false, false);
-        reconciler.updateContainer(reactNode, container, null, cb);
+        reconcilerRender(reactNode);
       });
     };
   },
 };
 
-const reconciler = ReactReconciler({
+function reconcilerRender(reactNode: any) {
+  const cb = () => {};
+  const root: RootContainer = {
+    host: HOST,
+    children: [],
+  };
+  const container = RECONCILER.createContainer(root, false, false);
+  RECONCILER.updateContainer(reactNode, container, null, cb);
+}
+
+const RECONCILER = ReactReconciler({
   isPrimaryRenderer: true,
   supportsMutation: true,
   supportsHydration: false,
@@ -58,7 +62,7 @@ const reconciler = ReactReconciler({
     parentHost: Host,
     kind: NodeKind,
     root: RootContainer
-  ) => {
+  ): Host => {
     logger.debug("getChildHostContext");
     return parentHost;
   },
@@ -69,142 +73,34 @@ const reconciler = ReactReconciler({
   createInstance: (
     kind: NodeKind,
     props: NodeProps,
-    _r: RootContainer,
+    r: RootContainer,
     h: Host,
-    _o: OpaqueHandle
+    o: OpaqueHandle
   ): NodeSerialized => {
     logger.debug("createInstance", kind, props);
     switch (kind) {
       case NodeKind.View:
-        const id = h.nextId();
-        let onClick = false;
-        const vProps = props as ViewProps;
-        if (vProps.onClick && typeof vProps.onClick === "function") {
-          CLICK_HANDLERS.set(id, vProps.onClick);
-          onClick = true;
-        }
-        return {
-          id,
-          kind: NodeKind.View,
-          props: {
-            ...props,
-            onClick,
-            children: undefined,
-          },
-          style: props.style || {},
-          children: [],
-        };
+        return createViewInstance(kind, props, r, h, o);
       case NodeKind.Table:
-        return {
-          id: h.nextId(),
-          kind: NodeKind.Table,
-          props: {
-            ...props,
-            children: undefined,
-          },
-          style: props.style || {},
-          children: [],
-        };
+        return createTableInstance(kind, props, r, h, o);
       case NodeKind.TableRow:
-        return {
-          id: h.nextId(),
-          kind: NodeKind.TableRow,
-          props: {
-            ...props,
-            children: undefined,
-          },
-          style: props.style || {},
-          children: [],
-        };
+        return createTableRowInstance(kind, props, r, h, o);
       case NodeKind.Text:
-        return {
-          id: h.nextId(),
-          kind: NodeKind.Text,
-          props: {
-            ...props,
-            children: undefined,
-          },
-          style: props.style || {},
-          children: [],
-        };
+        return createTextLabelInstance(kind, props, r, h, o);
       case NodeKind.Image:
-        return {
-          id: h.nextId(),
-          kind: NodeKind.Image,
-          props: {
-            ...props,
-            children: undefined,
-          },
-          style: props.style || {},
-          children: [],
-        };
+        return createImageInstance(kind, props, r, h, o);
       case NodeKind.BalancesTable:
-        return {
-          id: h.nextId(),
-          kind: NodeKind.BalancesTable,
-          props: {
-            ...props,
-            children: undefined,
-          },
-          style: props.style || {},
-          children: [],
-        };
+        return createBalancesTableInstance(kind, props, r, h, o);
       case NodeKind.BalancesTableHead:
-        // @ts-ignore
-        return {
-          id: h.nextId(),
-          kind: NodeKind.BalancesTableHead,
-          props: {
-            ...props,
-            children: undefined,
-          },
-          style: props.style || {},
-          children: [],
-        };
+        return createBalancesTableHeadInstance(kind, props, r, h, o);
       case NodeKind.BalancesTableContent:
-        return {
-          id: h.nextId(),
-          kind: NodeKind.BalancesTableContent,
-          props: {
-            ...props,
-            children: undefined,
-          },
-          style: props.style || {},
-          children: [],
-        };
+        return createBalancesTableContentInstance(kind, props, r, h, o);
       case NodeKind.BalancesTableRow:
-        return {
-          id: h.nextId(),
-          kind: NodeKind.BalancesTableRow,
-          props: {
-            ...props,
-            children: undefined,
-          },
-          style: props.style || {},
-          children: [],
-        };
+        return createBalancesTableRowInstance(kind, props, r, h, o);
       case NodeKind.BalancesTableCell:
-        return {
-          id: h.nextId(),
-          kind: NodeKind.BalancesTableCell,
-          props: {
-            ...props,
-            children: undefined,
-          },
-          style: props.style || {},
-          children: [],
-        };
+        return createBalancesTableCellInstance(kind, props, r, h, o);
       case NodeKind.BalancesTableFooter:
-        return {
-          id: h.nextId(),
-          kind: NodeKind.BalancesTableFooter,
-          props: {
-            ...props,
-            children: undefined,
-          },
-          style: props.style || {},
-          children: [],
-        };
+        return createBalancesTableFooterInstance(kind, props, r, h, o);
       default:
         logger.error("unexpected node kind", kind);
         throw new Error("unexpected node kind");
@@ -250,7 +146,13 @@ const reconciler = ReactReconciler({
           payload = { style: newProps.style };
         }
         return payload;
+      case NodeKind.Text:
+        return null;
+      case NodeKind.Image:
+        return null;
       case NodeKind.Table:
+        return null;
+      case NodeKind.TableRow:
         return null;
       case NodeKind.BalancesTable:
         return null;
@@ -262,11 +164,7 @@ const reconciler = ReactReconciler({
         return null;
       case NodeKind.BalancesTableCell:
         return null;
-      case NodeKind.TableRow:
-        return null;
-      case NodeKind.Text:
-        return null;
-      case NodeKind.Image:
+      case NodeKind.BalancesTableFooter:
         return null;
       default:
         throw new Error("unexpected node kind");
@@ -470,18 +368,243 @@ const reconciler = ReactReconciler({
   },
 });
 
+function createViewInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): ViewNodeSerialized {
+  const id = h.nextId();
+  let onClick = false;
+  const vProps = props as ViewProps;
+  if (vProps.onClick && typeof vProps.onClick === "function") {
+    CLICK_HANDLERS.set(id, vProps.onClick);
+    onClick = true;
+  }
+  return {
+    id,
+    kind: NodeKind.View,
+    props: {
+      ...props,
+      onClick,
+      children: undefined,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
+function createTableInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): TableNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.Table,
+    props: {
+      ...props,
+      children: undefined,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
+function createTableRowInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): TableRowNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.TableRow,
+    props: {
+      ...props,
+      children: undefined,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
+function createTextLabelInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): TextNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.Text,
+    props: {
+      ...props,
+      children: undefined,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
+function createImageInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): ImageNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.Image,
+    props: {
+      ...props,
+      children: undefined,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
+function createBalancesTableInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): BalancesTableNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.BalancesTable,
+    props: {
+      ...props,
+      children: undefined,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
+function createBalancesTableHeadInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): BalancesTableHeadNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.BalancesTableHead,
+    // @ts-ignore
+    props: {
+      ...props,
+      children: undefined,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
+function createBalancesTableContentInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): BalancesTableContentNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.BalancesTableContent,
+    props: {
+      ...props,
+      children: undefined,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
+function createBalancesTableRowInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): BalancesTableRowNodeSerialized {
+  const id = h.nextId();
+  let onClick = false;
+  const vProps = props as BalancesTableRowProps;
+  if (vProps.onClick && typeof vProps.onClick === "function") {
+    CLICK_HANDLERS.set(id, vProps.onClick);
+    onClick = true;
+  }
+  console.log("wtf here", props, onClick);
+  return {
+    id,
+    kind: NodeKind.BalancesTableRow,
+    props: {
+      ...props,
+      onClick,
+      children: undefined,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
+function createBalancesTableCellInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): BalancesTableCellNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.BalancesTableCell,
+    props: {
+      ...props,
+      children: undefined,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
+function createBalancesTableFooterInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): BalancesTableFooterNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.BalancesTableFooter,
+    props: {
+      ...props,
+      children: undefined,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
 export type RootContainer = {
   host: Host;
   children: Element[];
 };
 
 export type Host = {
-  didRenderInit: boolean;
   nextId: () => number;
 };
 
 export const HOST: Host = {
-  didRenderInit: false,
   nextId: (() => {
     let id = 0;
     return () => id++;
@@ -640,6 +763,7 @@ type BalancesTableRowNodeSerialized = DefNodeSerialized<
   BalancesTableRowProps
 >;
 type BalancesTableRowProps = {
+  onClick?: (() => Promise<void>) | boolean;
   style: Style;
   children: undefined;
 };

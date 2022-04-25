@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import {
+  useNavigation,
   Text,
+  View,
   BalancesTable,
   BalancesTableHead,
   BalancesTableContent,
@@ -16,14 +18,14 @@ export function App() {
 }
 
 function MangoTable() {
+  const nav = useNavigation();
   const [rowData, setRowData] = useState<Array<any> | null>(null);
   useEffect(() => {
     (async () => {
-      const rowData = await fetchRowData();
+      const { rowData, mangoGroup, mangoCache } = await fetchRowData();
       setRowData(rowData);
     })();
   }, []);
-
   return (
     <BalancesTable>
       <BalancesTableHead
@@ -35,7 +37,9 @@ function MangoTable() {
           <BalancesTableContent>
             {rowData.map((row) => {
               return (
-                <BalancesTableRow>
+                <BalancesTableRow
+                  onClick={() => nav.push(<MangoAccountDetail />)}
+                >
                   <BalancesTableCell
                     title={row.title}
                     subtitle={row.subtitle}
@@ -53,12 +57,12 @@ function MangoTable() {
   );
 }
 
-async function fetchRowData(): Promise<Array<any>> {
-  const client = new MangoClient(
-    // @ts-ignore
-    window.anchor.connection,
-    MANGO_PID
-  );
+function MangoAccountDetail({}: any) {
+  return <Text>This is a detail view</Text>;
+}
+
+async function fetchRowData(): Promise<any> {
+  const client = new MangoClient(window.anchor.connection, MANGO_PID);
   const config = Config.ids().getGroupWithName("mainnet.1");
   if (!config) {
     throw new Error("config not found");
@@ -66,10 +70,9 @@ async function fetchRowData(): Promise<Array<any>> {
   const mangoGroup = await client.getMangoGroup(config.publicKey);
   const mangoAccounts = await client.getMangoAccountsForOwner(
     mangoGroup,
-    // @ts-ignore
     window.anchor.publicKey
   );
-  // @ts-ignore
+
   const mangoCache = await mangoGroup.loadCache(window.anchor.connection);
 
   const rowData = await Promise.all(
@@ -82,6 +85,7 @@ async function fetchRowData(): Promise<Array<any>> {
           .toString()}%`,
       };
       return {
+        mangoAccount: ma,
         title: "Margin Account",
         subtitle: `Health Ratio: ${d.health}`,
         icon: "https://trade.mango.markets/assets/icons/logo.svg",
@@ -89,7 +93,11 @@ async function fetchRowData(): Promise<Array<any>> {
       };
     })
   );
-  return rowData;
+  return {
+    rowData,
+    mangoGroup,
+    mangoCache,
+  };
 }
 
 const MANGO_PID = new PublicKey("mv3ekLzLbnVPNxjSKvqBpU3ZeZXPQdEC3bp5MDEBG68");

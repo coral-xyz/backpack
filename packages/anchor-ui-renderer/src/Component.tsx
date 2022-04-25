@@ -120,7 +120,7 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-export const Component = ({ viewData }) => {
+export function Component({ viewData }) {
   const { id, props, style, kind } = viewData;
   switch (kind) {
     case NodeKind.View:
@@ -158,7 +158,8 @@ export const Component = ({ viewData }) => {
       );
     case NodeKind.BalancesTableRow:
       return (
-        <BalancesTableRow
+        <_BalancesTableRow
+          id={id}
           props={props}
           style={style}
           childrenRenderer={viewData.children}
@@ -180,7 +181,7 @@ export const Component = ({ viewData }) => {
       console.error(viewData);
       throw new Error("unexpected view data");
   }
-};
+}
 
 export function BalancesTable({
   props,
@@ -239,6 +240,48 @@ export function BalancesTableContent({
 }
 
 export function BalancesTableRow({
+  id,
+  props,
+  style,
+  children,
+  childrenRenderer,
+  onClick,
+}: any) {
+  return (
+    <__BalancesTableRow
+      id={id}
+      props={props}
+      style={style}
+      children={children}
+      childrenRenderer={childrenRenderer}
+      onClick={onClick}
+    />
+  );
+}
+
+function _BalancesTableRow({
+  id,
+  props,
+  style,
+  children,
+  childrenRenderer,
+}: any) {
+  const { plugin } = usePluginContext();
+  const clickHandler = !props.onClick ? undefined : (_) => plugin.didClick(id);
+  return (
+    <__BalancesTableRow
+      id={id}
+      props={props}
+      style={style}
+      children={children}
+      childrenRenderer={childrenRenderer}
+      onClick={clickHandler}
+    />
+  );
+}
+
+function __BalancesTableRow({
+  id,
   props,
   style,
   children,

@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import * as recoil from "@200ms/recoil";
 import {
-  NAV_COMPONENT_BALANCES_NETWORK,
   NAV_COMPONENT_TOKEN,
   NAV_COMPONENT_PLUGINS,
   TAB_BALANCES,

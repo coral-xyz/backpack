@@ -1,15 +1,17 @@
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import {
   makeStyles,
   useTheme,
   Typography,
   List,
   ListItem,
+  IconButton,
 } from "@material-ui/core";
-import { Check, Clear } from "@material-ui/icons";
+import { Check, Clear, OfflineBolt as Bolt } from "@material-ui/icons";
 import { explorerUrl } from "@200ms/common";
 import { useActiveWallet, useRecentTransactions } from "@200ms/recoil";
 import { Loading } from "../../common";
+import { WithDrawer } from "../../Layout/Drawer";
 
 const useStyles = makeStyles((theme: any) => ({
   recentActivityLabel: {
@@ -70,7 +72,46 @@ const useStyles = makeStyles((theme: any) => ({
     fontWeight: 500,
     lineHeight: "24px",
   },
+  networkSettingsButtonContainer: {
+    display: "flex",
+    flexDirection: "row-reverse",
+    width: "38px",
+  },
+  networkSettingsButton: {
+    padding: 0,
+    "&:hover": {
+      background: "transparent",
+    },
+  },
+  networkSettingsIcon: {
+    color: theme.custom.colors.nav,
+    backgroundColor: theme.custom.colors.secondary,
+    borderRadius: "12px",
+  },
 }));
+
+export function RecentActivityButton() {
+  const classes = useStyles();
+  const [openDrawer, setOpenDrawer] = useState(false);
+  return (
+    <div className={classes.networkSettingsButtonContainer}>
+      <IconButton
+        disableRipple
+        className={classes.networkSettingsButton}
+        onClick={() => setOpenDrawer(true)}
+      >
+        <Bolt className={classes.networkSettingsIcon} />
+      </IconButton>
+      <WithDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
+        title={"Recent Activity"}
+      >
+        <RecentActivity />
+      </WithDrawer>
+    </div>
+  );
+}
 
 export function RecentActivity() {
   const wallet = useActiveWallet();
