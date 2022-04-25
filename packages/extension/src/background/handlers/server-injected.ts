@@ -1,6 +1,7 @@
 // All RPC request handlers for requests that can be sent from the injected
 // provider script to the background script.
 
+import browser from "webextension-polyfill";
 import * as bs58 from "bs58";
 import { Transaction, SendOptions, Commitment } from "@solana/web3.js";
 import {
@@ -231,7 +232,7 @@ class RequestManager {
     return new Promise(async (resolve, reject) => {
       const requestId = RequestManager.addResponseResolver(resolve, reject);
       const window = await popupFn(requestId);
-      chrome.windows.onRemoved.addListener((windowId) => {
+      browser.windows.onRemoved.addListener((windowId) => {
         if (windowId === window.id) {
           RequestManager.removeResponseResolver(requestId);
           resolve({
