@@ -62,7 +62,6 @@ export class ProviderUiInjection {
 
   public async connect() {
     const [publicKey, connectionUrl] = await this._connect();
-    // @ts-ignore
     window.anchor._connect(publicKey, connectionUrl);
   }
 

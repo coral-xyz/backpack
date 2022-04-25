@@ -10,9 +10,7 @@ function main() {
 }
 
 function initProvider() {
-  // @ts-ignore
   window.anchor = new ProviderInjection();
-  // @ts-ignore
   window.anchorUi = new ProviderUiInjection();
 }
 

@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist/esm/",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "types": ["../anchor-ui/types"]
   }
 }
