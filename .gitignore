@@ -27,3 +27,4 @@ ledger-injection.js
 .rollup.cache
 dist/
 .turbo
+.env

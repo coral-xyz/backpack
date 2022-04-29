@@ -7,13 +7,14 @@
   "scripts": {
     "lint:fix": "prettier packages/**/*.{ts,tsx,css,md,json} --write",
     "prepare": "husky install",
-    "start": "turbo run start --filter=@200ms/extension --filter=@200ms/example-client --filter=@200ms/example-plugin --filter=@200ms/example-plugin-table",
-    "test": "turbo run test -- --passWithNoTests --watchAll=false",
-    "build": "turbo run build",
-    "e2e": "turbo run e2e",
+    "start": "env-cmd turbo run start --filter=@200ms/extension --filter=@200ms/example-client --filter=@200ms/example-plugin --filter=@200ms/example-plugin-table",
+    "test": "env-cmd turbo run test -- --passWithNoTests --watchAll=false",
+    "build": "env-cmd turbo run build",
+    "e2e": "env-cmd turbo run e2e",
     "clean": "npx rimraf .turbo node_modules/ packages/**/node_modules packages/**/.turbo packages/**/build packages/**/dist packages/extension/dev"
   },
   "devDependencies": {
+    "env-cmd": "^10.1.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.7",
     "prettier": "^2.6.1",

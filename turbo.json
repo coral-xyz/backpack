@@ -17,5 +17,6 @@
       "outputs": ["packages/extension/dev"],
       "cache": false
     }
-  }
+  },
+  "globalDependencies": [".env"]
 }
