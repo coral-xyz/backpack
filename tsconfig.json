@@ -12,15 +12,11 @@
     "module": "es2022",
     "moduleResolution": "node",
     "noImplicitAny": false,
-    "paths": {
-      "@solana/web3.js": ["./node_modules/@solana/web3.js/lib"],
-      "bs58": ["./node_modules/bs58"]
-    },
     "resolveJsonModule": true,
+    "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "strictNullChecks": true,
-    "target": "es2019",
-    "typeRoots": ["types/", "node_modules/@types"]
+    "target": "es2019"
   }
 }
