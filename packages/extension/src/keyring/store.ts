@@ -28,8 +28,8 @@ export const BLOCKCHAIN_SOLANA = "solana";
 const BLOCKCHAIN_DEFAULT = BLOCKCHAIN_SOLANA;
 
 const DEFAULT_SOLANA_CONNECTION_URL =
+  process.env.DEFAULT_SOLANA_CONNECTION_URL ||
   "http://tx-validator-1.wirelesstable.net:8899";
-//const DEFAULT_SOLANA_CONNECTION_URL = "https://solana-api.projectserum.com";
 
 // Manages all key data for all blockchains.
 export class KeyringStore {

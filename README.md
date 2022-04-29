@@ -8,6 +8,8 @@ Ensure that an Anchor Wallet compatible `@solana/wallet-adapter-wallets` has bee
 
 Check the [.github/workflows/pull_request.yml](.github/workflows/pull_request.yml) for an example of how to do that.
 
+You can also optionally rename `.env.example` to `.env` and set your own variables.
+
 #### 1. Install dependencies
 
 `yarn install`
@@ -17,20 +19,6 @@ Check the [.github/workflows/pull_request.yml](.github/workflows/pull_request.ym
 `yarn start`
 
 _If you run into issues with builds try running `yarn clean` and then start again._
-
-## Packages
-
-### [Browser Extension](packages/extension)
-
-`yarn start:wallet`
-
-The chrome browser extension
-
-### [Example Client](packages/example-client)
-
-`yarn start:client`
-
-A react app that can interact with the browser extension
 
 ## License
 
