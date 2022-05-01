@@ -12,12 +12,15 @@
     "test": "env-cmd --silent turbo run test -- --passWithNoTests --watchAll=false",
     "build": "env-cmd --silent turbo run build",
     "e2e": "env-cmd --silent turbo run e2e",
-    "clean": "npx rimraf .turbo node_modules/ packages/**/node_modules packages/**/.turbo packages/**/build packages/**/dist packages/extension/dev"
+    "clean": "npx rimraf .turbo node_modules/ packages/**/node_modules packages/**/.turbo packages/**/build packages/**/dist packages/extension/dev",
+    "postinstall": "yarn patch-package"
   },
   "devDependencies": {
     "env-cmd": "^10.1.0",
     "husky": "^8.0.1",
     "lint-staged": "^12.4.1",
+    "patch-package": "^6.4.7",
+    "postinstall-postinstall": "^2.1.0",
     "prettier": "^2.6.2",
     "turbo": "^1.2.9"
   },

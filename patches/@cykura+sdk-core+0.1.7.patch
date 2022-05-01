@@ -1,0 +1,13 @@
+diff --git a/node_modules/@cykura/sdk-core/package.json b/node_modules/@cykura/sdk-core/package.json
+index bd6a13f..ae545a0 100644
+--- a/node_modules/@cykura/sdk-core/package.json
++++ b/node_modules/@cykura/sdk-core/package.json
+@@ -13,7 +13,7 @@
+     "cykura",
+     "solana"
+   ],
+-  "module": "dist/sdk-core.esm.js",
++  "module": "dist/cykura-sdk-core.esm.js",
+   "scripts": {
+     "build": "tsdx build",
+     "start": "tsdx watch",

@@ -11,9 +11,7 @@
   "dependencies": {
     "@200ms/anchor-ui": "*",
     "@blockworks-foundation/mango-client": "^3.4.4",
-    "@project-serum/anchor": "^0.23.0",
-    "@project-serum/serum": "^0.13.64",
-    "@solana/web3.js": "^1.36.0",
+    "@solana/web3.js": "^1.40.1",
     "react": "^17.0.2"
   },
   "devDependencies": {

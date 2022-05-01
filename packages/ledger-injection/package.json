@@ -9,15 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@200ms/ledger-core": "*",
     "@200ms/common": "*",
+    "@200ms/ledger-core": "*",
     "@ledgerhq/hw-transport": "^6.24.1",
     "@ledgerhq/hw-transport-webhid": "^6.24.1",
-    "@solana/web3.js": "^1.36.0",
-    "@types/rollup-plugin-node-builtins": "^2.1.2",
-    "bs58": "^5.0.0",
-    "buffer": "^6.0.3",
-    "eventemitter3": "^4.0.7"
+    "bs58": "^5.0.0"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.1",

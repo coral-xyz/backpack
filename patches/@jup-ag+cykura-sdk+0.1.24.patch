@@ -1,0 +1,13 @@
+diff --git a/node_modules/@jup-ag/cykura-sdk/package.json b/node_modules/@jup-ag/cykura-sdk/package.json
+index 8049178..8d04268 100644
+--- a/node_modules/@jup-ag/cykura-sdk/package.json
++++ b/node_modules/@jup-ag/cykura-sdk/package.json
+@@ -16,7 +16,7 @@
+     "cykura",
+     "solana"
+   ],
+-  "module": "dist/v3-sdk.esm.js",
++  "module": "dist/cykura-sdk.esm.js",
+   "scripts": {
+     "build": "tsdx build",
+     "start": "tsdx watch",
