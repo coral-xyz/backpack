@@ -1,9 +1,6 @@
 import { makeStyles, Tabs, Tab } from "@material-ui/core";
 import {
   SwapHoriz,
-  SwapCalls as Bridge,
-  Person,
-  PriorityHigh,
   AttachMoney as Money,
   Image,
   Apps,

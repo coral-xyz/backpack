@@ -6,19 +6,14 @@ type NavigationContext = {
   title: string;
   push: any;
   pop: any;
-  navBorderBottom: boolean;
   navButtonRight: any | null;
   setNavButtonRight: (b: null | any) => void;
-  setNavBorderBottom: any;
 };
 
 export function useNavigation(): NavigationContext {
   const activeTab = useRecoilValue(atoms.navigationActiveTab)!;
   const [navData, setNavData] = useRecoilState(
     atoms.navigationDataMap(activeTab)
-  );
-  const [navBorderBottom, setNavBorderBottom] = useRecoilState(
-    atoms.navigationBorderBottom
   );
   const [navButtonRight, setNavButtonRight] = useRecoilState(
     atoms.navigationRightButton
@@ -64,8 +59,6 @@ export function useNavigation(): NavigationContext {
     isRoot,
     push,
     pop,
-    navBorderBottom,
-    setNavBorderBottom,
     navButtonRight,
     setNavButtonRight,
   };

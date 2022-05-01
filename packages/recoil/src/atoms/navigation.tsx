@@ -4,30 +4,7 @@ import { bootstrapFast } from "../atoms";
 import {
   UI_RPC_METHOD_NAVIGATION_UPDATE,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-  UI_RPC_METHOD_CONNECTION_URL_UPDATE,
 } from "@200ms/common";
-
-/**
- * Effective view model for each tab's navigation controller.
- */
-export const navigation = atom({
-  key: "navigation",
-  default: "balances",
-  effects: [
-    ({ onSet }) => {
-      onSet((cluster) => {
-        // TODO: do we want to handle this via notification instead?
-        const background = getBackgroundClient();
-        background
-          .request({
-            method: UI_RPC_METHOD_CONNECTION_URL_UPDATE,
-            params: [cluster],
-          })
-          .catch(console.error);
-      });
-    },
-  ],
-});
 
 export const navigationActiveTab = atom<string>({
   key: "navigationActiveTab",
@@ -71,7 +48,6 @@ export const navigationDataMap = atomFamily<any, string>({
   effects: (_nav: string) => [
     ({ onSet }) => {
       onSet((navData) => {
-        console.log("nav data here", navData);
         const background = getBackgroundClient();
         background
           .request({
@@ -82,16 +58,6 @@ export const navigationDataMap = atomFamily<any, string>({
       });
     },
   ],
-});
-
-export const navigationBorderBottom = atom<boolean>({
-  key: "navigationBorderBottom",
-  default: true,
-});
-
-export const navigationRightButton = atom<any | null>({
-  key: "navigationRightButton",
-  default: null,
 });
 
 // Returns the root of the navigation stack for a given tab.
@@ -128,13 +94,17 @@ export const navigationRenderer = selectorFamily({
     },
 });
 
+export const navigationRightButton = atom<any | null>({
+  key: "navigationRightButton",
+  default: null,
+});
+
 /**
  * Maps component stringified label to an actual component constructor.
  */
 export const navigationComponentMap = selectorFamily({
   key: "navigationStack",
   get: (navId: string) => () => {
-    console.log("nav id", navId);
     return _NAVIGATION_MAP!(navId);
   },
 });
