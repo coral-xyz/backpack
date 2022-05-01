@@ -1,6 +1,6 @@
 import { atom, selector } from "recoil";
 import { Commitment } from "@solana/web3.js";
-import { Spl, Provider } from "@project-serum/anchor";
+import { Spl, AnchorProvider } from "@project-serum/anchor";
 import {
   UI_RPC_METHOD_CONNECTION_URL_READ,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
@@ -113,7 +113,7 @@ export const anchorContext = selector({
     // Note: this provider is *read-only*.
     //
     // @ts-ignore
-    const provider = new Provider(connection, undefined, {
+    const provider = new AnchorProvider(connection, undefined, {
       skipPreflight: false,
       commitment: _commitment,
       preflightCommitment: _commitment,

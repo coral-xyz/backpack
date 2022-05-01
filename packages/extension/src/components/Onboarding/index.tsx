@@ -3,6 +3,7 @@ import { makeStyles, useTheme, Card } from "@material-ui/core";
 import { CreateNewWallet } from "./CreateNewWallet";
 import { ImportWallet } from "./ImportWallet";
 import { OnboardButton } from "../common";
+import URL from "url:../../../public/anchor.png";
 
 const useStyles = makeStyles((theme: any) => ({
   logo: {
@@ -143,7 +144,6 @@ function Welcome({
 
 export function Logo() {
   const classes = useStyles();
-  const URL = "anchor.png";
   return (
     <div className={classes.logoContainer}>
       <img

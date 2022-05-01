@@ -2,8 +2,8 @@ import { useState } from "react";
 import { makeStyles, Divider, Typography, Button } from "@material-ui/core";
 import { getBackgroundClient } from "@200ms/recoil";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@200ms/common";
-import { TextField } from "./common";
-import { OnboardButton } from "./common";
+import { TextField, OnboardButton } from "./common";
+import LOGO from "url:../../public/anchor.png";
 
 export const NAV_BAR_HEIGHT = 56;
 
@@ -140,7 +140,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
       </div>
       <div className={classes.header}>
         {/*<Lock className={classes.lockIcon} />*/}
-        <img src="/anchor.png" className={classes.lockIcon} alt="logo" />
+        <img src={LOGO} className={classes.lockIcon} alt="logo" />
         {/*
         <Typography className={classes.headerTitle}>Unlock Wallet</Typography>
         <Typography className={classes.headerSubtitle}>

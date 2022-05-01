@@ -3,9 +3,18 @@ import {
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
 } from "@200ms/common";
+import type manifest from "../manifest.json";
 
-const POPUP_HTML = "popup.html";
-const EXPANDED_HTML = "options.html";
+// temporarily get HTML URLs from manifest, due to hashes in filenames
+let POPUP_HTML: string;
+let EXPANDED_HTML: string;
+(async () => {
+  const result = await fetch("manifest.json");
+  const json: typeof manifest = await result.json();
+  POPUP_HTML = json.browser_action.default_popup;
+  EXPANDED_HTML = json.options_ui.page;
+})();
+
 export const QUERY_LOCKED = "locked=true";
 export const QUERY_APPROVAL = "approval=true";
 export const QUERY_LOCKED_APPROVAL = "locked-approval=true";
@@ -26,6 +35,9 @@ export async function openLockedApprovalPopupWindow(
   ctx: Context,
   requestId: number
 ): Promise<Window> {
+  // const url = `${(await URLS).POPUP_HTML}?${QUERY_LOCKED_APPROVAL}&origin=${
+  //   ctx.sender.origin
+  // }&requestId=${requestId}`;
   const url = `${POPUP_HTML}?${QUERY_LOCKED_APPROVAL}&origin=${ctx.sender.origin}&requestId=${requestId}`;
   return openPopupWindow(ctx, url);
 }
@@ -83,13 +95,23 @@ async function openPopupWindow(ctx: Context, url: string): Promise<Window> {
 }
 
 export function openOnboarding() {
-  const url = `${EXPANDED_HTML}?${QUERY_ONBOARDING}`;
-  window.open(chrome.extension.getURL(url), "_blank");
+  window.open(
+    chrome.extension.getURL(
+      // `${EXPANDED_HTML}?${QUERY_ONBOARDING}`
+      `${EXPANDED_HTML}?${QUERY_ONBOARDING}`
+    ),
+    "_blank"
+  );
 }
 
 export function openConnectHardware() {
-  const url = `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}`;
-  window.open(chrome.extension.getURL(url), "_blank");
+  window.open(
+    chrome.extension.getURL(
+      // `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}`
+      `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}`
+    ),
+    "_blank"
+  );
 }
 
 export function isExtensionPopup() {

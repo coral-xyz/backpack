@@ -1,4 +1,4 @@
-import { Spl, Provider } from "@project-serum/anchor";
+import { Spl, AnchorProvider } from "@project-serum/anchor";
 import {
   Connection,
   ConnectionConfig,

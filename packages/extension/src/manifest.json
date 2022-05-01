@@ -7,24 +7,29 @@
     "default_popup": "popup.html",
     "default_title": "Anchor"
   },
-  "web_accessible_resources": ["injected.js"],
+  "web_accessible_resources": [
+    "../../provider-injection/dist/browser/index.js",
+    "../public/solana.png"
+  ],
   "background": {
     "persistent": true,
-    "scripts": ["background.bundle.js"]
+    "scripts": ["background/index.ts"]
   },
   "content_scripts": [
     {
-      "matches": ["file://*/*", "http://*/*", "https://*/*"],
-      "js": ["contentScript.bundle.js"],
+      "matches": ["*://*/*"],
+      "js": ["contentScript/index.ts"],
       "run_at": "document_start",
       "all_frames": true
     }
   ],
   "icons": {
-    "16": "anchor.png",
-    "192": "anchor.png",
-    "512": "anchor.png"
+    "16": "../public/anchor.png",
+    "192": "../public/anchor.png",
+    "512": "../public/anchor.png"
   },
   "permissions": ["storage"],
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+  "options_ui": {
+    "page": "options.html"
+  }
 }

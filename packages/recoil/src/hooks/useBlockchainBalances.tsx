@@ -20,7 +20,7 @@ export function useBlockchainBalance(blockchain: string, address: string) {
 export function useBlockchainLogo(blockchain: string): string {
   switch (blockchain) {
     case "solana":
-      return "/solana.png";
+      return "up_/public/solana.png";
     default:
       throw new Error("invariant violation");
   }

@@ -1,0 +1,13 @@
+diff --git a/node_modules/@mercurial-finance/optimist/package.json b/node_modules/@mercurial-finance/optimist/package.json
+index f9c08fe..4bbb92d 100644
+--- a/node_modules/@mercurial-finance/optimist/package.json
++++ b/node_modules/@mercurial-finance/optimist/package.json
+@@ -16,7 +16,7 @@
+     }
+   },
+   "author": "zhengyutay",
+-  "module": "dist/core.esm.js",
++  "module": "dist/optimist.esm.js",
+   "peerDependencies": {
+     "@solana/web3.js": ">=1.15.0",
+     "@solana/spl-token": "<0.2.0",
