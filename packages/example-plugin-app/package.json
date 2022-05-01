@@ -1,5 +1,5 @@
 {
-  "name": "@200ms/example-plugin",
+  "name": "@200ms/example-plugin-app",
   "version": "1.0.0",
   "description": "",
   "source": "src/index.tsx",
