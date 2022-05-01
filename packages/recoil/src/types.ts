@@ -40,7 +40,7 @@ export type NamedPublicKey = {
 
 export const TABS = [
   [TAB_BALANCES, "Balances"],
-  [TAB_NFTS, "NFTs"],
+  [TAB_NFTS, "Nfts"],
   [TAB_SWAP, "Swap"],
   [TAB_APPS, "Apps"],
 ];
@@ -53,11 +53,7 @@ export function makeDefaultNav() {
   TABS.forEach(([tabName, tabTitle]) => {
     defaultNav.data[tabName] = {
       id: tabName,
-      title: tabTitle,
-      components: [],
-      props: [],
-      titles: [],
-      transition: "init",
+      urls: [`/${tabName}?props=${JSON.stringify({})}&title=${tabTitle}`],
     };
   });
   return defaultNav;

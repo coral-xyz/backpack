@@ -96,11 +96,11 @@ export function TokenTable() {
 }
 
 function TokenRow({ token, blockchain }: { token: any; blockchain: string }) {
-  const { push: pushNavigation } = useNavigation();
+  const { push } = useNavigation();
   return (
     <BalancesTableRow
       onClick={() => {
-        pushNavigation({
+        push({
           title: `${toTitleCase(blockchain)} / ${token.ticker}`,
           componentId: NAV_COMPONENT_TOKEN,
           componentProps: {

@@ -1,10 +1,11 @@
 import { atom, atomFamily, selector, selectorFamily } from "recoil";
-import { getBackgroundClient } from "../background";
-import { bootstrapFast } from "../atoms";
 import {
   UI_RPC_METHOD_NAVIGATION_UPDATE,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
 } from "@200ms/common";
+import { getBackgroundClient } from "../background";
+import { bootstrapFast } from "../atoms";
+import { TABS } from "../types";
 
 export const navigationActiveTab = atom<string>({
   key: "navigationActiveTab",
@@ -60,68 +61,18 @@ export const navigationDataMap = atomFamily<any, string>({
   ],
 });
 
-// Returns the root of the navigation stack for a given tab.
-export const navigationTabRootRenderer = selectorFamily({
-  key: "navigationTabRoot",
-  get:
-    (tab: string) =>
-    ({ get }: any) => {
-      return _TAB_COMPONENTS!(tab);
-    },
-});
-
-/**
- * Returns the function to render the component on the given navigation stack.
- */
-export const navigationRenderer = selectorFamily({
-  key: "navigationRenderer",
-  get:
-    (navKey: string) =>
-    ({ get }) => {
-      const navData = get(navigationDataMap(navKey));
-      const componentStr =
-        navData.components.length > 0
-          ? navData.components[navData.components.length - 1]
-          : undefined;
-      const props =
-        navData.props.length > 0
-          ? navData.props[navData.props.length - 1]
-          : undefined;
-      if (!componentStr) {
-        return undefined;
-      }
-      return () => get(navigationComponentMap(componentStr))(props);
-    },
+export const navigationData = selector({
+  key: "navigationData",
+  get: ({ get }) => {
+    const tabData = {};
+    TABS.forEach(([tab]) => {
+      tabData[tab] = get(navigationDataMap(tab));
+    });
+    return tabData;
+  },
 });
 
 export const navigationRightButton = atom<any | null>({
   key: "navigationRightButton",
   default: null,
 });
-
-/**
- * Maps component stringified label to an actual component constructor.
- */
-export const navigationComponentMap = selectorFamily({
-  key: "navigationStack",
-  get: (navId: string) => () => {
-    return _NAVIGATION_MAP!(navId);
-  },
-});
-
-////////////////////////////////////////////////////////////////////////////////
-//
-// Below is boilerplate that must be invoked by the extension immediately on
-// setup. A bit of a hack, but this allows us to remove recoil as a depdendency
-// from the extension ui.
-//
-////////////////////////////////////////////////////////////////////////////////
-
-let _NAVIGATION_MAP: Function | null = null;
-let _TAB_COMPONENTS: Function | null = null;
-export function setupNavigationMap(fn: Function) {
-  _NAVIGATION_MAP = fn;
-}
-export function setupTabComponents(components: Function) {
-  _TAB_COMPONENTS = components;
-}

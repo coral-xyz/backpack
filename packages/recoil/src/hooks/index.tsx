@@ -10,5 +10,4 @@ export * from "./useSolanaConnection";
 export * from "./useRecentTransactions";
 export * from "./useWallet";
 export * from "./useLocalStorage";
-export * from "./useTab";
 export * from "./useNavigation";

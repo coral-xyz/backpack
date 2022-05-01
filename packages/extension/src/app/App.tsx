@@ -1,4 +1,5 @@
 import { RecoilRoot } from "recoil";
+import { BrowserRouter } from "react-router-dom";
 import { NotificationsProvider } from "@200ms/recoil";
 import { WithTheme } from "./theme";
 import { Router } from "./Router";
@@ -7,9 +8,11 @@ import "@fontsource/inter";
 
 export default function App() {
   return (
-    <RecoilRoot>
-      <_App />
-    </RecoilRoot>
+    <BrowserRouter basename={"/popup.html"}>
+      <RecoilRoot>
+        <_App />
+      </RecoilRoot>
+    </BrowserRouter>
   );
 }
 

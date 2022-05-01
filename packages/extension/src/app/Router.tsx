@@ -198,7 +198,11 @@ function FullApp() {
     keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
   const isLocked =
     !needsOnboarding && keyringStoreState === KeyringStoreStateEnum.Locked;
-  return isLocked ? <LockedBootstrap /> : <Unlocked />;
+
+  if (isLocked) {
+    return <LockedBootstrap />;
+  }
+  return <Unlocked />;
 }
 
 function LockedBootstrap({ onUnlock }: any) {

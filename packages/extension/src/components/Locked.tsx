@@ -140,7 +140,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
       </div>
       <div className={classes.header}>
         {/*<Lock className={classes.lockIcon} />*/}
-        <img src="anchor.png" className={classes.lockIcon} alt="logo" />
+        <img src="/anchor.png" className={classes.lockIcon} alt="logo" />
         {/*
         <Typography className={classes.headerTitle}>Unlock Wallet</Typography>
         <Typography className={classes.headerSubtitle}>

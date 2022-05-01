@@ -7,8 +7,7 @@ import {
 import { PublicKey, Connection } from "@solana/web3.js";
 import * as atoms from "../atoms";
 import { KeyringStoreStateEnum } from "../atoms/keyring-store";
-import { useNavigation, useNavigationRoot } from "./useNavigation";
-import { useTab } from "./useTab";
+import { useNavigation, useTab } from "./useNavigation";
 import { useKeyringStoreState } from "./useKeyringStoreState";
 import { useCommitment, useRecentBlockhash } from "./useRecentBlockhash";
 import { useSplTokenRegistry } from "./useSplTokenRegistry";
@@ -26,7 +25,6 @@ export function useBootstrapFast() {
   // Hack: load all the navigation atoms to prevent UI flickering.
   //       TODO: can batch these into a single request to the background script.
   const { tab } = useTab();
-  useNavigationRoot(tab);
   useNavigation();
   useKeyringStoreState();
   useCommitment();

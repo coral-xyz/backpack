@@ -1,9 +1,11 @@
 import { useRecoilValue, useRecoilState } from "recoil";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import * as atoms from "../atoms";
 
 type NavigationContext = {
   isRoot: boolean;
   title: string;
+  url: string;
   push: any;
   pop: any;
   navButtonRight: any | null;
@@ -11,6 +13,8 @@ type NavigationContext = {
 };
 
 export function useNavigation(): NavigationContext {
+  const navigate = useNavigate();
+  const [params] = useSearchParams() as any;
   const activeTab = useRecoilValue(atoms.navigationActiveTab)!;
   const [navData, setNavData] = useRecoilState(
     atoms.navigationDataMap(activeTab)
@@ -18,10 +22,9 @@ export function useNavigation(): NavigationContext {
   const [navButtonRight, setNavButtonRight] = useRecoilState(
     atoms.navigationRightButton
   );
-  const isRoot = navData.components.length === 0;
-  const title = isRoot
-    ? navData.title
-    : navData.titles[navData.titles.length - 1];
+  const title = params.get("title") ?? "";
+  const isRoot = navData.urls.length === 1;
+  const url = navData.urls[navData.urls.length - 1];
   const push = ({
     title,
     componentId,
@@ -31,32 +34,28 @@ export function useNavigation(): NavigationContext {
     componentId: string;
     componentProps: any;
   }) => {
+    const url = `/${componentId}?props=${JSON.stringify(
+      componentProps
+    )}&title=${title}`;
     setNavData({
       ...navData,
-      transition: "push",
-      components: [...navData.components, componentId],
-      props: [...navData.props, componentProps],
-      titles: [...navData.titles, title],
+      urls: [...navData.urls, url],
     });
+    navigate(url);
   };
   const pop = () => {
-    const components = [...navData.components];
-    const componentProps = [...navData.props];
-    const titles = [...navData.titles];
-    components.pop();
-    componentProps.pop();
-    titles.pop();
+    const urls = [...navData.urls];
+    urls.pop();
     setNavData({
       ...navData,
-      transition: "pop",
-      components,
-      titles,
-      props: componentProps,
+      urls,
     });
+    navigate(urls[urls.length - 1]);
   };
   return {
-    title,
     isRoot,
+    url,
+    title,
     push,
     pop,
     navButtonRight,
@@ -64,16 +63,18 @@ export function useNavigation(): NavigationContext {
   };
 }
 
-export function useNavigationRender(): () => any {
-  const activeTab = useRecoilValue(atoms.navigationActiveTab)!;
-  const root = useNavigationRoot(activeTab);
-  const renderer = useRecoilValue(atoms.navigationRenderer(activeTab));
-  if (!renderer) {
-    return () => root();
-  }
-  return renderer;
-}
-
-export function useNavigationRoot(tab: string) {
-  return useRecoilValue(atoms.navigationTabRootRenderer(tab));
+export function useTab(): { tab: string; setTab: (tab: string) => void } {
+  const navigate = useNavigate();
+  const [tab, setTabRecoil] = useRecoilState(atoms.navigationActiveTab);
+  const allNavData = useRecoilValue(atoms.navigationData);
+  const setTab = (tab: string) => {
+    const navData = allNavData[tab];
+    const url = navData.urls[navData.urls.length - 1];
+    navigate(url);
+    setTabRecoil(tab);
+  };
+  return {
+    tab,
+    setTab,
+  };
 }

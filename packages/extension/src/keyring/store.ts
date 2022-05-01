@@ -29,7 +29,7 @@ const BLOCKCHAIN_DEFAULT = BLOCKCHAIN_SOLANA;
 
 const DEFAULT_SOLANA_CONNECTION_URL =
   process.env.DEFAULT_SOLANA_CONNECTION_URL ||
-  "http://tx-validator-1.wirelesstable.net:8899";
+  "https://solana-api.projectserum.com";
 
 // Manages all key data for all blockchains.
 export class KeyringStore {
@@ -695,8 +695,5 @@ export type Nav = { activeTab: string; data: { [navId: string]: NavData } };
 
 export type NavData = {
   id: string;
-  title: string;
-  components: Array<string>;
-  props: Array<any>;
-  transition: string;
+  urls: Array<any>;
 };

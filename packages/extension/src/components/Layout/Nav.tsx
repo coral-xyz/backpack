@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+import { useSearchParams, Routes, Route, Navigate } from "react-router-dom";
+import { useBootstrap, useNavigation } from "@200ms/recoil";
 import {
   makeStyles,
   useTheme,
@@ -8,13 +10,14 @@ import {
 import { ArrowBack } from "@material-ui/icons";
 import { SidebarButton } from "./Sidebar";
 import { Scrollbar } from "./Scrollbar";
-import {
-  useBootstrap,
-  useNavigation,
-  useNavigationRender,
-} from "@200ms/recoil";
 import { Loading } from "../common";
 import { WithTabs } from "./Tab";
+import { Balances } from "../Unlocked/Balances";
+import { Token } from "../Unlocked/Balances/Token";
+import { PluginDisplay } from "../Unlocked/Apps";
+import { Swap } from "../Unlocked/Swap";
+import { Nfts } from "../Unlocked/Nfts";
+import { Apps } from "../Unlocked/Apps";
 
 export const NAV_BAR_HEIGHT = 56;
 export const NAV_BUTTON_WIDTH = 38;
@@ -175,8 +178,54 @@ function NavContent() {
 
 function _NavContent() {
   useBootstrap();
-  const render = useNavigationRender();
-  return render();
+  return <_NavContentRouter />;
+}
+
+function _NavContentRouter() {
+  return (
+    <Routes>
+      <Route path="/balances" element={<BalancesPage />} />
+      <Route path="/nfts" element={<NftsPage />} />
+      <Route path="/swap" element={<SwapPage />} />
+      <Route path="/apps" element={<AppsPage />} />
+      <Route path="/token" element={<TokenPage />} />
+      <Route path="/plugins" element={<PluginPage />} />
+      <Route path="*" element={<Redirect />} />
+    </Routes>
+  );
+}
+
+function Redirect() {
+  const { url } = useNavigation();
+  return <Navigate to={url} replace />;
+}
+
+function BalancesPage() {
+  return <Balances />;
+}
+
+function NftsPage() {
+  return <Nfts />;
+}
+
+function SwapPage() {
+  return <Swap />;
+}
+
+function AppsPage() {
+  return <Apps />;
+}
+
+function TokenPage() {
+  const [searchParams] = useSearchParams() as any;
+  const { blockchain, address } = JSON.parse(searchParams.get("props"));
+  return <Token blockchain={blockchain} address={address} />;
+}
+
+function PluginPage() {
+  const [searchParams] = useSearchParams() as any;
+  const { pluginUrl } = JSON.parse(searchParams.get("props"));
+  return <PluginDisplay pluginUrl={pluginUrl} />;
 }
 
 function CenterDisplay() {
