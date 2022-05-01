@@ -40,15 +40,13 @@ export class Io {
 
   // Client to send notifications from the background script to the extension UI.
   // This should only be created *after* the UI explicitly asks for it.
-  public static notificationsUi = startNotificationsUi();
-}
-
-function startNotificationsUi(): NotificationsClient {
-  const notificationsUi = new NotificationsClient(
-    CONNECTION_POPUP_NOTIFICATIONS
-  );
-  Io.events.on(BACKEND_EVENT, (notification) => {
-    notificationsUi.pushNotification(notification);
-  });
-  return notificationsUi;
+  public static notificationsUi = ((): NotificationsClient => {
+    const notificationsUi = new NotificationsClient(
+      CONNECTION_POPUP_NOTIFICATIONS
+    );
+    this.events.on(BACKEND_EVENT, (notification) => {
+      notificationsUi.pushNotification(notification);
+    });
+    return notificationsUi;
+  })();
 }
