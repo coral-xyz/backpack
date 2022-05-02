@@ -97,7 +97,6 @@ async function openPopupWindow(ctx: Context, url: string): Promise<Window> {
 export function openOnboarding() {
   window.open(
     chrome.extension.getURL(
-      // `${EXPANDED_HTML}?${QUERY_ONBOARDING}`
       `${EXPANDED_HTML}?${QUERY_ONBOARDING}`
     ),
     "_blank"
