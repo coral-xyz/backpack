@@ -4,6 +4,7 @@ import nacl from "tweetnacl";
 import * as bs58 from "bs58";
 import { deriveKeypairs, deriveKeypair } from "./crypto";
 import {
+  ImportedDerivationPath,
   Keyring,
   KeyringFactory,
   KeyringJson,
@@ -12,7 +13,7 @@ import {
   HdKeyringJson,
   LedgerKeyringJson,
   LedgerKeyring,
-} from ".";
+} from "./types";
 import {
   LEDGER_IFRAME_URL,
   LEDGER_INJECTED_CHANNEL_REQUEST,
@@ -214,12 +215,6 @@ export class SolanaLedgerKeyringFactory {
     return new SolanaLedgerKeyring(obj.derivationPaths);
   }
 }
-
-export type ImportedDerivationPath = {
-  path: string;
-  account: number;
-  publicKey: string;
-};
 
 export class SolanaLedgerKeyring implements LedgerKeyring {
   private derivationPaths: Array<ImportedDerivationPath>;

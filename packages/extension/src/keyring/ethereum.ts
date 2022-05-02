@@ -5,7 +5,7 @@ import {
   HdKeyring,
   HdKeyringFactory,
   HdKeyringJson,
-} from ".";
+} from "./types";
 import { DerivationPath } from "@200ms/common";
 
 export class EthereumKeyringFactory implements KeyringFactory {
