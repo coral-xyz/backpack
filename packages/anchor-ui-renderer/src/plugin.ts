@@ -9,11 +9,21 @@ import {
 import {
   getLogger,
   Event,
+  Channel,
+  PostMessageServer,
+  RpcResponse,
+  NAV_COMPONENT_PLUGIN_TABLE_DETAIL,
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
+  PLUGIN_RPC_METHOD_NAV_PUSH,
+  PLUGIN_RPC_METHOD_NAV_POP,
+  PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ON_CLICK,
+  PLUGIN_NOTIFICATION_MOUNT,
+  PLUGIN_NOTIFICATION_UNMOUNT,
+  PLUGIN_NOTIFICATION_NAVIGATION_POP,
   RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
   RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
   RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
@@ -22,10 +32,6 @@ import {
   RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
   RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
   RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
-  Channel,
-  PostMessageServer,
-  RpcResponse,
-  PLUGIN_RPC_METHOD_CONNECT,
 } from "@200ms/common";
 
 const logger = getLogger("plugin");
@@ -46,6 +52,7 @@ export class Plugin {
   private _nextRenderId?: number;
   private _pendingBridgeRequests?: Array<any>;
   private _dom?: Dom;
+  private _navPushFn?: (args: any) => void;
 
   private _didFinishSetup?: Promise<void>;
   private _didFinishSetupResolver?: () => void;
@@ -91,14 +98,9 @@ export class Plugin {
   //
   // Loads the plugin javascript code inside the iframe.
   //
-  public create() {
-    logger.debug("creating iframe element");
-
+  public createIframe() {
     //
-    // Promise resolves when the constructor finishes. This prevents a
-    // race condition between this constructor and the injected iframe,
-    // since we first create the iframe and then setup the rpc request
-    // handlers.
+    // Effectively take a lock that's held until the setup is complete.
     //
     this._didFinishSetup = new Promise((resolve) => {
       this._didFinishSetupResolver = resolve;
@@ -107,34 +109,60 @@ export class Plugin {
     this._nextRenderId = 0;
     this._iframe = document.createElement("iframe");
     this._iframe.src = this.iframeUrl;
-    this._iframe.allow = `'src'`;
-    document.head.appendChild(this._iframe);
-    this._rpcServer.setWindow(this._iframe.contentWindow);
-    this._bridgeServer.setWindow(this._iframe.contentWindow);
-    this._dom = new Dom();
-    this._pendingBridgeRequests = [];
+    this._iframe.onload = async () => {
+      this._rpcServer.setWindow(this._iframe.contentWindow);
+      this._bridgeServer.setWindow(this._iframe.contentWindow);
+      this._dom = new Dom();
+      this._pendingBridgeRequests = [];
+      this.pushConnectNotification();
 
-    //
-    // Done.
-    //
-    this._didFinishSetupResolver!();
+      //
+      // Done.
+      //
+      this._didFinishSetupResolver!();
+    };
+    document.head.appendChild(this._iframe);
   }
 
   //
   // Cleanup the plugin iframe and garbage collect all associated data.
   //
-  public destroy() {
+  public destroyIframe() {
     logger.debug("destroying iframe element");
+
     document.head.removeChild(this._iframe);
     this._iframe.remove();
     this._iframe = undefined;
     this._rpcServer.setWindow(undefined);
     this._bridgeServer.setWindow(undefined);
-    this._didFinishSetup = undefined;
-    this._didFinishSetupResolver = undefined;
     this._nextRenderId = undefined;
     this._dom = undefined;
     this._pendingBridgeRequests = undefined;
+  }
+
+  //
+  // Register the push navigation component with this plugin object.
+  //
+  public setSegue({ push, pop }: any) {
+    this._navPushFn = push;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Rendering.
+  //////////////////////////////////////////////////////////////////////////////
+
+  public mount() {
+    if (this._didFinishSetup === undefined) {
+      throw new Error("plugin not setup");
+    }
+    this._didFinishSetup.then(() => {
+      this.pushMountNotification();
+    });
+  }
+
+  public unmount() {
+    this._dom?.clear();
+    this.pushUnmountNotification();
   }
 
   //
@@ -143,7 +171,7 @@ export class Plugin {
   //
   public onRenderRoot(fn: (children: Array<Element>) => void) {
     if (!this._dom) {
-      throw new Error("dom not found");
+      throw new Error("on render root dom not found");
     }
     this._dom.onRenderRoot(fn);
   }
@@ -154,17 +182,80 @@ export class Plugin {
   //
   public onRender(viewId: number, fn: (data: Element) => void) {
     if (!this._dom) {
-      throw new Error("dom not found");
+      throw new Error("on render dom not found");
     }
     this._dom.onRender(viewId, fn);
   }
 
-  public didClick(viewId: number) {
+  //////////////////////////////////////////////////////////////////////////////
+  // Push Notifications to Plugin iFrame.
+  //
+  // TODO: serialize ordering of  notification delivery.
+  //////////////////////////////////////////////////////////////////////////////
+
+  public pushNotification(notif: any) {
+    const event = {
+      type: CHANNEL_PLUGIN_NOTIFICATION,
+      detail: notif,
+    };
+    this._iframe.contentWindow.postMessage(event, "*");
+  }
+
+  public pushClickNotification(viewId: number) {
     const event = {
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: {
         name: PLUGIN_NOTIFICATION_ON_CLICK,
-        viewId,
+        data: {
+          viewId,
+        },
+      },
+    };
+    this._iframe.contentWindow.postMessage(event, "*");
+  }
+
+  public pushConnectNotification() {
+    const event = {
+      type: CHANNEL_PLUGIN_NOTIFICATION,
+      detail: {
+        name: PLUGIN_NOTIFICATION_CONNECT,
+        data: {
+          publicKey: this._activeWallet.toString(),
+          connectionUrl: this._connectionUrl,
+        },
+      },
+    };
+    this._iframe.contentWindow.postMessage(event, "*");
+  }
+
+  public pushMountNotification() {
+    const event = {
+      type: CHANNEL_PLUGIN_NOTIFICATION,
+      detail: {
+        name: PLUGIN_NOTIFICATION_MOUNT,
+        data: {},
+      },
+    };
+    this._iframe.contentWindow.postMessage(event, "*");
+  }
+
+  public pushUnmountNotification() {
+    const event = {
+      type: CHANNEL_PLUGIN_NOTIFICATION,
+      detail: {
+        name: PLUGIN_NOTIFICATION_UNMOUNT,
+        data: {},
+      },
+    };
+    this._iframe.contentWindow.postMessage(event, "*");
+  }
+
+  public pushNavigationPopNotification() {
+    const event = {
+      type: CHANNEL_PLUGIN_NOTIFICATION,
+      detail: {
+        name: PLUGIN_NOTIFICATION_NAVIGATION_POP,
+        data: {},
       },
     };
     this._iframe.contentWindow.postMessage(event, "*");
@@ -175,22 +266,40 @@ export class Plugin {
   //////////////////////////////////////////////////////////////////////////////
 
   private async _handleRpc(event: Event): Promise<RpcResponse> {
+    const url = new URL(this.iframeUrl);
+    if (event.origin !== url.origin) {
+      return;
+    }
+
     const req = event.data.detail;
     logger.debug(`plugin rpc: ${JSON.stringify(req)}`);
+
     const { method, params } = req;
     switch (method) {
-      case PLUGIN_RPC_METHOD_CONNECT:
-        return await this._handleConnect();
+      case PLUGIN_RPC_METHOD_NAV_PUSH:
+        return await this._handleNavPush();
+      case PLUGIN_RPC_METHOD_NAV_POP:
+        return await this._handleNavPop();
       default:
         logger.error(method);
         throw new Error("unexpected method");
     }
   }
 
-  private async _handleConnect(): Promise<RpcResponse> {
-    await this._didFinishSetup;
-    const resp = [this._activeWallet.toString(), this._connectionUrl];
-    return [resp];
+  private async _handleNavPush(): Promise<RpcResponse> {
+    this._navPushFn!({
+      title: this.iframeUrl,
+      componentId: NAV_COMPONENT_PLUGIN_TABLE_DETAIL,
+      componentProps: {
+        pluginUrl: this.iframeUrl,
+      },
+    });
+    return ["success"];
+  }
+
+  private async _handleNavPop(): Promise<RpcResponse> {
+    // todo
+    return ["success"];
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -203,6 +312,10 @@ export class Plugin {
   // and do nothing until the next ordered request comes in.
   //
   private _handleBridge(event: Event): RpcResponse {
+    const url = new URL(this.iframeUrl);
+    if (event.origin !== url.origin) {
+      return;
+    }
     const req = event.data.detail;
 
     this._enqueueBridgeRequest(req);
@@ -245,28 +358,28 @@ export class Plugin {
     const { method, params } = nextReq;
     switch (method) {
       case RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE:
-        this._dom._handleCommitUpdate(params[0], params[1]);
+        this._dom.commitUpdate(params[0], params[1]);
         break;
       case RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE:
-        this._dom._handleCommitTextUpdate(params[0], params[1]);
+        this._dom.commitTextUpdate(params[0], params[1]);
         break;
       case RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER:
-        this._dom._handleAppendChildToContainer(params[0]);
+        this._dom.appendChildToContainer(params[0]);
         break;
       case RECONCILER_BRIDGE_METHOD_APPEND_CHILD:
-        this._dom._handleAppendChild(params[0], params[1]);
+        this._dom.appendChild(params[0], params[1]);
         break;
       case RECONCILER_BRIDGE_METHOD_INSERT_IN_CONTAINER_BEFORE:
-        this._dom._handleInsertInContainerBefore(params[0], params[1]);
+        this._dom.insertInContainerBefore(params[0], params[1]);
         break;
       case RECONCILER_BRIDGE_METHOD_INSERT_BEFORE:
-        this._dom._handleInsertBefore(params[0], params[1], params[2]);
+        this._dom.insertBefore(params[0], params[1], params[2]);
         break;
       case RECONCILER_BRIDGE_METHOD_REMOVE_CHILD:
-        this._dom._handleRemoveChild(params[0], params[1]);
+        this._dom.removeChild(params[0], params[1]);
         break;
       case RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER:
-        this._dom._handleRemoveChildFromContainer(params[0]);
+        this._dom.removeChildFromContainer(params[0]);
         break;
       default:
         logger.error(method);
@@ -297,8 +410,16 @@ class Dom {
   // Rerenders the root component.
   //
   private _renderRootFn?: (data: Array<Element>) => void;
+  //
+  // True when render root was called before setup was complete.
+  //
+  private _needsRenderRoot: boolean;
 
   constructor() {
+    this.clear();
+  }
+
+  clear() {
     this._vdomRoot = { children: [] };
     this._vdom = new Map();
     this._renderFns = new Map();
@@ -310,9 +431,13 @@ class Dom {
 
   onRenderRoot(fn: (data: Array<Element>) => void) {
     this._renderRootFn = fn;
+    if (this._needsRenderRoot) {
+      this._needsRenderRoot = false;
+      this._renderRoot();
+    }
   }
 
-  _handleCommitUpdate(instanceId: number, updatePayload: UpdateDiff) {
+  commitUpdate(instanceId: number, updatePayload: UpdateDiff) {
     const instance = this._vdom.get(instanceId) as NodeSerialized;
     switch (instance.kind) {
       case NodeKind.View:
@@ -326,20 +451,20 @@ class Dom {
     this._render(instanceId);
   }
 
-  _handleCommitTextUpdate(textInstanceId: number, newText: string) {
+  commitTextUpdate(textInstanceId: number, newText: string) {
     const textInstance = this._vdom.get(textInstanceId) as TextSerialized;
     textInstance.text = newText;
     this._render(textInstanceId);
   }
 
-  _handleAppendChildToContainer(child: Element) {
+  appendChildToContainer(child: Element) {
     this._vdomRoot.children.push(child);
 
     this._saveToDom(child);
     this._renderRoot();
   }
 
-  _handleAppendChild(parentId: number, child: Element) {
+  appendChild(parentId: number, child: Element) {
     const instance = this._vdom.get(parentId) as NodeSerialized;
     instance.children.push(child);
 
@@ -351,7 +476,7 @@ class Dom {
   // This method can be called for insertions as well as reordering, so we
   // remove the new child and do an insertion each time.
   //
-  _handleInsertInContainerBefore(child: Element, beforeId: number) {
+  insertInContainerBefore(child: Element, beforeId: number) {
     const element = this._vdomRoot.children.find((e) => e.id === beforeId);
     if (!element) {
       throw new Error("element not found");
@@ -376,7 +501,7 @@ class Dom {
   // This method can be called for insertions as well as reordering, so we
   // remove the new child and do an insertion each time.
   //
-  _handleInsertBefore(parentId: number, child: Element, beforeId: number) {
+  insertBefore(parentId: number, child: Element, beforeId: number) {
     const parent = this._vdom.get(parentId) as NodeSerialized;
     if (!parent) {
       throw new Error("parent not found");
@@ -406,7 +531,7 @@ class Dom {
     this._render(parentId);
   }
 
-  _handleRemoveChild(parentId: number, childId: number) {
+  removeChild(parentId: number, childId: number) {
     const parent = this._vdom.get(parentId) as NodeSerialized;
     if (!parent) {
       throw new Error("parent not found");
@@ -416,7 +541,7 @@ class Dom {
     this._render(parentId);
   }
 
-  _handleRemoveChildFromContainer(childId: number) {
+  removeChildFromContainer(childId: number) {
     this._vdomRoot.children = this._vdomRoot.children.filter(
       (c) => c.id !== childId
     );
@@ -424,7 +549,7 @@ class Dom {
     this._renderRoot();
   }
 
-  private _renderRoot() {
+  _renderRoot() {
     if (!this._renderRootFn) {
       throw new Error("render root fn not found");
     }

@@ -4,6 +4,12 @@ import { PluginProvider, usePluginContext } from "./Context";
 import { ViewRenderer } from "./ViewRenderer";
 
 export function PluginRenderer({ plugin }: any) {
+  useEffect(() => {
+    plugin.mount();
+    return () => {
+      plugin.unmount();
+    };
+  }, [plugin]);
   return (
     <PluginProvider plugin={plugin}>
       <RootRenderer />
@@ -16,28 +22,13 @@ function RootRenderer() {
   const [children, setChildren] = useState<Array<Element>>([]);
 
   //
-  // Wait for the initial render. Should be called exactly once per plugin.
+  // Rerender when needed.
   //
   useEffect(() => {
-    //
-    // Create the iframe plugin.
-    //
-    plugin.create();
-
-    //
-    // Register the root renderer.
-    //
     plugin.onRenderRoot((c: Array<Element>) => {
       setChildren([...c]);
     });
-
-    //
-    // Remove the iframe and cleanup all state on shut down.
-    //
-    return () => {
-      plugin.destroy();
-    };
-  }, [plugin]);
+  }, [plugin, setChildren]);
 
   return (
     <>

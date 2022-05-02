@@ -5,10 +5,31 @@ type AnchorContext = {
 };
 const _AnchorContext = createContext<AnchorContext | null>(null);
 
+export const NAV_STACK: any = [];
+
 export function AnchorProvider(props: any) {
   const navigation = {
     push: (reactNode: any) => {
-      console.log("pushing here");
+      //
+      // Push onto the stack to position for the next rerender.
+      //
+      NAV_STACK.push(reactNode);
+
+      //
+      // Tell the host to push and rerender.
+      //
+      window.anchorUi.navigationPush();
+    },
+    pop: () => {
+      //
+      // Pop off the stack to position for the next rerender.
+      //
+      NAV_STACK.pop();
+
+      //
+      // Tell the host to pop and rerender.
+      //
+      window.anchorUi.navigationPop();
     },
   };
   return (

@@ -34,7 +34,8 @@ export class Io {
   // e.g., the approval of a transaction.
   public static popupUiResponse = PortChannel.server(CONNECTION_POPUP_RESPONSE);
 
-  // Main event emitter for the
+  // Main event emitter to send notifications from the background script to the
+  // extension UI.
   public static events = new EventEmitter();
 
   // Client to send notifications from the background script to the extension UI.

@@ -2,7 +2,7 @@
 // extension UI to the background script.
 
 import {
-  debug,
+  getLogger,
   RpcRequest,
   RpcResponse,
   DerivationPath,
@@ -49,12 +49,14 @@ import { KeyringStoreState } from "@200ms/recoil";
 import { BACKEND, SUCCESS_RESPONSE } from "../backend";
 import { Io } from "../io";
 
+const logger = getLogger("background-server-ui");
+
 export function start() {
   Io.rpcServerUi.handler(handle);
 }
 
 async function handle<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
-  debug(`handle rpc ${msg.method}`);
+  logger.debug(`handle rpc ${msg.method}`);
 
   const { method, params } = msg;
   switch (method) {

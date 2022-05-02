@@ -7,7 +7,7 @@
   "scripts": {
     "lint:fix": "prettier packages/**/*.{ts,tsx,css,md,json} --write",
     "prepare": "husky install",
-    "start": "env-cmd --silent turbo run start --filter=@200ms/extension --filter=@200ms/example-client --filter=@200ms/example-plugin-app --filter=@200ms/example-plugin-table",
+    "start": "env-cmd --silent turbo run start --filter=@200ms/extension --filter=@200ms/example-client --filter=@200ms/example-plugin-app --filter=@200ms/example-plugin-table-mango --filter=@200ms/example-plugin-table-cmc",
     "test": "env-cmd --silent turbo run test -- --passWithNoTests --watchAll=false",
     "build": "env-cmd --silent turbo run build",
     "e2e": "env-cmd --silent turbo run e2e",

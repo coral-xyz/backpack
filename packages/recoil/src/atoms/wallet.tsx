@@ -79,7 +79,7 @@ export const activeWalletWithName = selector({
 // TODO: this needs to be an atom family keyed on blockchain label.
 const DEFAULT_CONNECTION_URL =
   process.env.DEFAULT_SOLANA_CONNECTION_URL ||
-  "http://tx-validator-1.wirelesstable.net:8899";
+  "https://solana-api.projectserum.com";
 
 export const connectionUrl = atom<string>({
   key: "clusterConnection",

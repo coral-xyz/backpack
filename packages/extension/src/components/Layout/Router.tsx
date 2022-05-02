@@ -2,7 +2,7 @@ import { useSearchParams, Routes, Route, Navigate } from "react-router-dom";
 import { useBootstrap, useNavigation } from "@200ms/recoil";
 import { Balances } from "../Unlocked/Balances";
 import { Token } from "../Unlocked/Balances/Token";
-import { PluginDisplay } from "../Unlocked/Apps";
+import { PluginDisplay, PluginTableDetailDisplay } from "../Unlocked/Apps";
 import { Swap } from "../Unlocked/Swap";
 import { Nfts } from "../Unlocked/Nfts";
 import { Apps } from "../Unlocked/Apps";
@@ -17,6 +17,7 @@ export function Router() {
       <Route path="/apps" element={<AppsPage />} />
       <Route path="/token" element={<TokenPage />} />
       <Route path="/plugins" element={<PluginPage />} />
+      <Route path="/plugin-table-detail" element={<PluginTableDetailPage />} />
       <Route path="*" element={<Redirect />} />
     </Routes>
   );
@@ -53,4 +54,10 @@ function PluginPage() {
   const [searchParams] = useSearchParams() as any;
   const { pluginUrl } = JSON.parse(searchParams.get("props"));
   return <PluginDisplay pluginUrl={pluginUrl} />;
+}
+
+function PluginTableDetailPage() {
+  const [searchParams] = useSearchParams() as any;
+  const { pluginUrl } = JSON.parse(searchParams.get("props"));
+  return <PluginTableDetailDisplay pluginUrl={pluginUrl} />;
 }

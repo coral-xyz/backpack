@@ -1,5 +1,5 @@
-import { useRecoilValue, useRecoilState } from "recoil";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useRecoilValue, useRecoilState, useSetRecoilState } from "recoil";
+import { useSearchParams } from "react-router-dom";
 import * as atoms from "../atoms";
 
 type NavigationContext = {
@@ -13,18 +13,32 @@ type NavigationContext = {
 };
 
 export function useNavigation(): NavigationContext {
-  const navigate = useNavigate();
   const [params] = useSearchParams() as any;
   const activeTab = useRecoilValue(atoms.navigationActiveTab)!;
-  const [navData, setNavData] = useRecoilState(
-    atoms.navigationDataMap(activeTab)
-  );
+  const navData = useRecoilValue(atoms.navigationDataMap(activeTab));
   const [navButtonRight, setNavButtonRight] = useRecoilState(
     atoms.navigationRightButton
   );
+  const { push, pop } = useNavigationSegue();
   const title = params.get("title") ?? "";
   const isRoot = navData.urls.length === 1;
   const url = navData.urls[navData.urls.length - 1];
+
+  return {
+    isRoot,
+    url,
+    title,
+    push,
+    pop,
+    navButtonRight,
+    setNavButtonRight,
+  };
+}
+
+export function useNavigationSegue() {
+  const pushUrl = useSetRecoilState(atoms.navigationUrlPush);
+  const popUrl = useSetRecoilState(atoms.navigationUrlPop);
+
   const push = ({
     title,
     componentId,
@@ -37,42 +51,20 @@ export function useNavigation(): NavigationContext {
     const url = `/${componentId}?props=${JSON.stringify(
       componentProps
     )}&title=${title}`;
-    setNavData({
-      ...navData,
-      urls: [...navData.urls, url],
-    });
-    navigate(url);
+    pushUrl(url);
   };
   const pop = () => {
-    const urls = [...navData.urls];
-    urls.pop();
-    setNavData({
-      ...navData,
-      urls,
-    });
-    navigate(urls[urls.length - 1]);
+    popUrl();
   };
+
   return {
-    isRoot,
-    url,
-    title,
     push,
     pop,
-    navButtonRight,
-    setNavButtonRight,
   };
 }
 
 export function useTab(): { tab: string; setTab: (tab: string) => void } {
-  const navigate = useNavigate();
-  const [tab, setTabRecoil] = useRecoilState(atoms.navigationActiveTab);
-  const allNavData = useRecoilValue(atoms.navigationData);
-  const setTab = (tab: string) => {
-    const navData = allNavData[tab];
-    const url = navData.urls[navData.urls.length - 1];
-    navigate(url);
-    setTabRecoil(tab);
-  };
+  const [tab, setTab] = useRecoilState(atoms.navigationActiveTab);
   return {
     tab,
     setTab,

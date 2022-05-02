@@ -1,6 +1,6 @@
 import { makeStyles, Button, Typography } from "@material-ui/core";
 import { Plugin, PluginRenderer } from "@200ms/anchor-ui-renderer";
-import { usePlugins, useNavigation } from "@200ms/recoil";
+import { usePlugins, useTablePlugins, useNavigation } from "@200ms/recoil";
 import { NAV_COMPONENT_PLUGINS } from "@200ms/common";
 
 const ICON_WIDTH = "60px";
@@ -95,6 +95,15 @@ function PluginIcon({ plugin }: { plugin: Plugin }) {
 
 export function PluginDisplay({ pluginUrl }: { pluginUrl: string }) {
   const plugins = usePlugins();
+  const p = plugins.find((p) => p.iframeUrl === pluginUrl);
+  if (p === undefined) {
+    throw new Error("unable to find plugin");
+  }
+  return <PluginRenderer key={p.iframeUrl} plugin={p} />;
+}
+
+export function PluginTableDetailDisplay({ pluginUrl }: { pluginUrl: string }) {
+  const plugins = useTablePlugins();
   const p = plugins.find((p) => p.iframeUrl === pluginUrl);
   if (p === undefined) {
     throw new Error("unable to find plugin");

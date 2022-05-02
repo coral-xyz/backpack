@@ -1,8 +1,6 @@
 import { AnchorUi } from "./reconciler";
 
 export default AnchorUi;
-export * from "./Dom";
-export * from "./elements";
 export {
   NodeKind,
   UpdateDiff,
@@ -12,3 +10,5 @@ export {
   NodeSerialized,
 } from "./reconciler";
 export { useNavigation } from "./Context";
+export * from "./Dom";
+export * from "./elements";

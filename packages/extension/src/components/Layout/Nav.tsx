@@ -60,13 +60,6 @@ const useStyles = makeStyles((theme: any) => ({
     justifyContent: "center",
     flexDirection: "column",
   },
-  connectionButton: {
-    padding: 0,
-  },
-  connectionMenu: {
-    backgroundColor: theme.custom.colors.offText,
-    color: theme.custom.colors.fontColor,
-  },
   overviewLabel: {
     fontSize: "18px",
     fontWeight: 500,

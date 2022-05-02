@@ -11,28 +11,43 @@ import {
   RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
   RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
 } from "@200ms/common";
+import { NAV_STACK } from "./Context";
 
 const logger = getLogger("anchor-ui-reconciler");
 
 export const AnchorUi = {
   render(reactNode: any) {
     window.onload = () => {
-      window.anchorUi.onClick((event: Event) => {
-        const { viewId } = event;
-        const handler = CLICK_HANDLERS.get(viewId);
-        if (!handler) {
-          throw new Error("handler not found");
-        }
+      window.anchorUi.on("click", (event: Event) => {
+        const { viewId } = event.data;
+        const handler = getClickHandler(viewId);
         handler();
       });
-      window.anchorUi.connect().then(() => {
-        reconcilerRender(reactNode);
+
+      window.anchorUi.on("connect", () => {
+        NAV_STACK.push(reactNode);
+      });
+
+      window.anchorUi.on("mount", () => {
+        const node = NAV_STACK[NAV_STACK.length - 1];
+        reconcilerRender(node);
+      });
+
+      window.anchorUi.on("unmount", () => {
+        CLICK_HANDLERS = new Map();
+      });
+
+      window.anchorUi.on("pop", () => {
+        NAV_STACK.pop();
       });
     };
   },
 };
 
-function reconcilerRender(reactNode: any) {
+//
+// Renders the dom in the hosted environment.
+//
+export function reconcilerRender(reactNode: any) {
   const cb = () => {};
   const root: RootContainer = {
     host: HOST,
@@ -237,7 +252,7 @@ const RECONCILER = ReactReconciler({
         throw new Error("unexpected node kind");
     }
 
-    window.anchorUi.request({
+    window.anchorUi.bridge({
       method: RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
       params: [instance.id, updatePayload],
     });
@@ -250,7 +265,7 @@ const RECONCILER = ReactReconciler({
     logger.debug("commitTextUpdate");
     textInstance.text = nextText;
 
-    window.anchorUi.request({
+    window.anchorUi.bridge({
       method: RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
       params: [textInstance.id, nextText],
     });
@@ -259,7 +274,7 @@ const RECONCILER = ReactReconciler({
     logger.debug("appendChildToContainer", c, child);
     c.children.push(child);
 
-    window.anchorUi.request({
+    window.anchorUi.bridge({
       method: RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
       params: [child],
     });
@@ -268,7 +283,7 @@ const RECONCILER = ReactReconciler({
     logger.debug("appendChild", parent, child);
     parent.children.push(child);
 
-    window.anchorUi.request({
+    window.anchorUi.bridge({
       method: RECONCILER_BRIDGE_METHOD_APPEND_CHILD,
       params: [parent.id, child],
     });
@@ -292,7 +307,7 @@ const RECONCILER = ReactReconciler({
       .concat([child])
       .concat(root.children.slice(idx));
 
-    window.anchorUi.request({
+    window.anchorUi.bridge({
       method: RECONCILER_BRIDGE_METHOD_INSERT_IN_CONTAINER_BEFORE,
       params: [child, before.id],
     });
@@ -313,7 +328,7 @@ const RECONCILER = ReactReconciler({
       .concat([child])
       .concat(parent.children.slice(idx));
 
-    window.anchorUi.request({
+    window.anchorUi.bridge({
       method: RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
       params: [parent.id, child, before.id],
     });
@@ -324,7 +339,7 @@ const RECONCILER = ReactReconciler({
     parent.children = parent.children.filter((c) => c !== child);
     deleteClickHandlers(child);
 
-    window.anchorUi.request({
+    window.anchorUi.bridge({
       method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
       params: [parent.id, child.id],
     });
@@ -335,7 +350,7 @@ const RECONCILER = ReactReconciler({
     root.children = root.children.filter((c) => c !== child);
     deleteClickHandlers(child);
 
-    window.anchorUi.request({
+    window.anchorUi.bridge({
       method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
       params: [child.id],
     });
@@ -543,7 +558,6 @@ function createBalancesTableRowInstance(
     CLICK_HANDLERS.set(id, vProps.onClick);
     onClick = true;
   }
-  console.log("wtf here", props, onClick);
   return {
     id,
     kind: NodeKind.BalancesTableRow,
@@ -601,10 +615,12 @@ export type RootContainer = {
 };
 
 export type Host = {
+  navStack: Array<any>;
   nextId: () => number;
 };
 
 export const HOST: Host = {
+  navStack: [],
   nextId: (() => {
     let id = 0;
     return () => id++;
@@ -815,7 +831,7 @@ type TimeoutHandle = number;
 const noTimeout = -1;
 type NoTimeout = typeof noTimeout;
 
-const CLICK_HANDLERS = new Map<number, () => void>();
+let CLICK_HANDLERS = new Map<number, () => void>();
 
 //
 // Garbage collects all click handlers from the given element being removed
@@ -828,4 +844,12 @@ function deleteClickHandlers(element: Element) {
     // @ts-ignore
     element.children.forEach((c) => deleteClickHandlers(c));
   }
+}
+
+function getClickHandler(viewId: number): () => void {
+  const handler = CLICK_HANDLERS.get(viewId);
+  if (!handler) {
+    throw new Error("handler not found");
+  }
+  return handler;
 }

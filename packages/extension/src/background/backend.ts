@@ -14,6 +14,7 @@ import {
   Context,
   DerivationPath,
   BACKEND_EVENT,
+  NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_KEYRING_KEY_DELETE,
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
@@ -349,6 +350,16 @@ export class Backend {
       throw new Error("invariant violation");
     }
     await setNavData(navData.id, navData);
+    if (d.urls.length !== navData.urls.length) {
+      const oldUrl = d.urls[d.urls.length - 1];
+      Io.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+        data: {
+          url: navData.urls[navData.urls.length - 1],
+          oldUrl,
+        },
+      });
+    }
     return SUCCESS_RESPONSE;
   }
 
@@ -381,6 +392,14 @@ export class Backend {
       ...nav,
       activeTab,
     });
+    const navData = nav.data[activeTab];
+    Io.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+      data: {
+        url: navData.urls[navData.urls.length - 1],
+      },
+    });
+
     return SUCCESS_RESPONSE;
   }
 

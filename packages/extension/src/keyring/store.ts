@@ -672,12 +672,12 @@ class LocalStorageDb {
   }
 }
 
-export async function getNavData(navKey: string): Promise<Nav | undefined> {
+export async function getNavData(navKey: string): Promise<NavData | undefined> {
   const nav = await LocalStorageDb.get(KEY_NAV);
   return nav.data[navKey];
 }
 
-export async function setNavData(navKey: string, data: any) {
+export async function setNavData(navKey: string, data: NavData) {
   const nav = await LocalStorageDb.get(KEY_NAV);
   nav.data[navKey] = data;
   await LocalStorageDb.set(KEY_NAV, nav);

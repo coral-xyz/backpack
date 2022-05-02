@@ -1,9 +1,9 @@
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { makeStyles } from "@material-ui/core";
 import { getLogger, EXTENSION_WIDTH, EXTENSION_HEIGHT } from "@200ms/common";
 import {
-  getBackgroundResponseClient,
   KeyringStoreStateEnum,
+  getBackgroundResponseClient,
   useKeyringStoreState,
   useApprovedOrigins,
   useBootstrapFast,

@@ -5,7 +5,7 @@ import * as atoms from "../atoms";
 export function usePlugins(): Array<Plugin> {
   const pluginData = useRecoilValue(atoms.plugins);
   return pluginData.map((p) => {
-    let plug = PLUGIN_CACHE.get(p.iconUrl); // TODO: should be the full url not icon.
+    let plug = PLUGIN_CACHE.get(p.url);
     if (!plug) {
       plug = new Plugin(
         p.url,
@@ -14,7 +14,7 @@ export function usePlugins(): Array<Plugin> {
         p.activeWallet,
         p.connectionUrl
       );
-      PLUGIN_CACHE.set(p.iconUrl, plug);
+      PLUGIN_CACHE.set(p.url, plug);
     }
     return plug;
   });
@@ -23,7 +23,7 @@ export function usePlugins(): Array<Plugin> {
 export function useTablePlugins(): Array<Plugin> {
   const pluginData = useRecoilValue(atoms.tablePlugins);
   return pluginData.map((p) => {
-    let plug = PLUGIN_CACHE.get(p.iconUrl); // TODO: should be the full url not icon.
+    let plug = PLUGIN_CACHE.get(p.url);
     if (!plug) {
       plug = new Plugin(
         p.url,
@@ -32,10 +32,14 @@ export function useTablePlugins(): Array<Plugin> {
         p.activeWallet,
         p.connectionUrl
       );
-      PLUGIN_CACHE.set(p.iconUrl, plug);
+      PLUGIN_CACHE.set(p.url, plug);
     }
     return plug;
   });
+}
+
+export function getPlugin(pluginData: any): Plugin {
+  return PLUGIN_CACHE.get(pluginData.url)!;
 }
 
 const PLUGIN_CACHE = new Map<string, Plugin>();

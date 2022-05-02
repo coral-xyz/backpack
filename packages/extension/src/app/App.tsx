@@ -18,10 +18,10 @@ export default function App() {
 
 function _App() {
   return (
-    <NotificationsProvider>
-      <WithTheme>
+    <WithTheme>
+      <NotificationsProvider>
         <Router />
-      </WithTheme>
-    </NotificationsProvider>
+      </NotificationsProvider>
+    </WithTheme>
   );
 }

@@ -38,6 +38,7 @@ function MangoTable() {
             {rowData.map((row) => {
               return (
                 <BalancesTableRow
+                  key={row.mangoAccount.publicKey.toString()}
                   onClick={() => nav.push(<MangoAccountDetail />)}
                 >
                   <BalancesTableCell
@@ -58,7 +59,11 @@ function MangoTable() {
 }
 
 function MangoAccountDetail({}: any) {
-  return <Text>This is a detail view</Text>;
+  return (
+    <View>
+      <Text>Inside plugin: This is a detail view</Text>
+    </View>
+  );
 }
 
 async function fetchRowData(): Promise<any> {

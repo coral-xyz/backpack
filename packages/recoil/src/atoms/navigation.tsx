@@ -5,8 +5,10 @@ import {
 } from "@200ms/common";
 import { getBackgroundClient } from "../background";
 import { bootstrapFast } from "../atoms";
-import { TABS } from "../types";
 
+//
+// The tab currently selected.
+//
 export const navigationActiveTab = atom<string>({
   key: "navigationActiveTab",
   default: selector({
@@ -61,17 +63,43 @@ export const navigationDataMap = atomFamily<any, string>({
   ],
 });
 
-export const navigationData = selector({
-  key: "navigationData",
-  get: ({ get }) => {
-    const tabData = {};
-    TABS.forEach(([tab]) => {
-      tabData[tab] = get(navigationDataMap(tab));
+//
+// Push a new url onto the nav stack.
+//
+export const navigationUrlPush = selector({
+  key: "navigationDataPush",
+  get: ({ get }) => {},
+  set: ({ get, set }: any, url: any) => {
+    const activeTab = get(navigationActiveTab);
+    const navData = get(navigationDataMap(activeTab));
+    set(navigationDataMap(activeTab), {
+      ...navData,
+      urls: [...navData.urls, url],
     });
-    return tabData;
   },
 });
 
+//
+// Pop a new url onto the nav stack.
+//
+export const navigationUrlPop = selector({
+  key: "navigationDataPop",
+  get: ({ get }) => {},
+  set: ({ get, set }: any) => {
+    const activeTab = get(navigationActiveTab);
+    const navData = get(navigationDataMap(activeTab));
+    const urls = [...navData.urls];
+    urls.pop();
+    set(navigationDataMap(activeTab), {
+      ...navData,
+      urls,
+    });
+  },
+});
+
+//
+// React component to place on the right nav button.
+//
 export const navigationRightButton = atom<any | null>({
   key: "navigationRightButton",
   default: null,

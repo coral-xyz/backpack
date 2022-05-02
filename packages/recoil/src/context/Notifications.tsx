@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
+import { useNavigate } from "react-router-dom";
 import {
   getLogger,
   PortChannel,
@@ -17,6 +18,8 @@ import {
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_BLOCKHASH_DID_UPDATE,
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
+  NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+  PLUGIN_NOTIFICATION_NAVIGATION_POP,
 } from "@200ms/common";
 import {
   getBackgroundClient,
@@ -29,8 +32,11 @@ import * as atoms from "../atoms";
 
 const logger = getLogger("notifications-provider");
 
+//
 // The Notifications provider is used to subscribe and handle notifications
-// from the background script.
+// from the background script. Among other things, this is useful to enforce
+// a unidirectional data flow: app -> background script -> notifications.
+//
 export function NotificationsProvider(props: any) {
   const setWalletPublicKeys = useSetRecoilState(atoms.walletPublicKeys);
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
@@ -38,6 +44,10 @@ export function NotificationsProvider(props: any) {
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   const updateRecentBlockhash = useUpdateRecentBlockhash();
+  const pushTablePluginNotification = useSetRecoilState(
+    atoms.pushTablePluginNotification
+  );
+  const navigate = useNavigate();
 
   useEffect(() => {
     const backgroundClient = getBackgroundClient();
@@ -47,6 +57,7 @@ export function NotificationsProvider(props: any) {
     //
     const notificationsHandler = (notif: Notification) => {
       logger.debug(`received notification ${notif.name}`, notif);
+
       switch (notif.name) {
         case NOTIFICATION_KEYRING_STORE_LOCKED:
           handleKeyringStoreLocked(notif);
@@ -80,6 +91,9 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_SPL_TOKENS_DID_UPDATE:
           handleSplTokensDidUpdate(notif);
+          break;
+        case NOTIFICATION_NAVIGATION_URL_DID_CHANGE:
+          handleUrlDidChange(notif);
           break;
         default:
           break;
@@ -171,6 +185,26 @@ export function NotificationsProvider(props: any) {
         tokenAccounts: result.tokenAccountsMap.map((t: any) => t[1]),
         nftMetadata: new Map(result.nftMetadata),
       });
+    };
+    const handleUrlDidChange = (notif: Notification) => {
+      //
+      // If we've popped the table detail view, then we need to notify
+      // the plugin to update its internal state.
+      //
+      const oldUrl = notif.data.oldUrl;
+      if (oldUrl && oldUrl.startsWith("/plugin-table-detail")) {
+        const search = new URLSearchParams(oldUrl.split("?")[1]);
+        const props = JSON.parse(search.get("props")!);
+        const url = props.pluginUrl;
+        pushTablePluginNotification({
+          url,
+          notification: {
+            name: PLUGIN_NOTIFICATION_NAVIGATION_POP,
+            data: {},
+          },
+        });
+      }
+      navigate(notif.data.url);
     };
 
     //

@@ -19,7 +19,7 @@ export function ViewRenderer({ element }: { element: Element }) {
   }, [element]);
 
   //
-  // Rerender the component when needed.
+  // Rerender when needed.
   //
   useEffect(() => {
     plugin.onRender(viewData.id, (newViewData: Element) => {

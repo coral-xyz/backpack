@@ -31,9 +31,18 @@ export const RECONCILER_BRIDGE_METHOD_REMOVE_CHILD =
   "reconciler-bridge-method-remove-child";
 export const RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER =
   "reconciler-bridge-method-remove-child-from-container";
+export const RECONCILER_BRIDGE_METHOD_RENDER_ROOT =
+  "reconciler-bridge-method-render-root";
 
+export const PLUGIN_NOTIFICATION_CONNECT = "connect";
 export const PLUGIN_NOTIFICATION_ON_CLICK = "on-click";
+export const PLUGIN_NOTIFICATION_RENDER = "render";
 export const PLUGIN_RPC_METHOD_CONNECT = "connect";
+export const PLUGIN_RPC_METHOD_NAV_PUSH = "nav-push";
+export const PLUGIN_RPC_METHOD_NAV_POP = "nav-pop";
+export const PLUGIN_NOTIFICATION_MOUNT = "mount";
+export const PLUGIN_NOTIFICATION_UNMOUNT = "unmount";
+export const PLUGIN_NOTIFICATION_NAVIGATION_POP = "nav-pop";
 
 export const RPC_METHOD_CONNECT = "connect";
 export const RPC_METHOD_DISCONNECT = "disconnect";
@@ -114,6 +123,8 @@ export const NOTIFICATION_APPROVED_ORIGINS_UPDATE =
 export const NOTIFICATION_BLOCKHASH_DID_UPDATE = "anchor-blockhash-did-update";
 export const NOTIFICATION_SPL_TOKENS_DID_UPDATE =
   "anchor-spl-tokens-did-update";
+export const NOTIFICATION_NAVIGATION_URL_DID_CHANGE =
+  "anchor-navigation-url-did-change";
 
 export const SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO = "solana-get-account-info";
 export const SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH =
@@ -162,5 +173,6 @@ export const TAB_APPS = "apps";
 export const NAV_COMPONENT_BALANCES_NETWORK = "balancesNetwork";
 export const NAV_COMPONENT_TOKEN = "token";
 export const NAV_COMPONENT_PLUGINS = "plugins";
+export const NAV_COMPONENT_PLUGIN_TABLE_DETAIL = "plugin-table-detail";
 
 export const BACKEND_EVENT = "backend-event";

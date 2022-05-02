@@ -63,7 +63,6 @@ import {
   SignatureStatus,
   PerfSample,
 } from "@solana/web3.js";
-import { Io } from "../io";
 import {
   Notification,
   BACKEND_EVENT,
@@ -80,6 +79,7 @@ import {
   fetchSplMetadata,
   fetchSplMetadataUri,
 } from "@200ms/recoil";
+import { Io } from "../io";
 
 export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
 export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;
@@ -102,7 +102,6 @@ export class Backend {
   //
   private setupEventListeners() {
     Io.events.addListener(BACKEND_EVENT, (notif: Notification) => {
-      console.log("solana-connection-backend notification", notif);
       switch (notif.name) {
         case NOTIFICATION_KEYRING_STORE_UNLOCKED:
           handleKeyringStoreUnlocked(notif);

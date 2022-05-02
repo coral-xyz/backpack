@@ -16,6 +16,7 @@ import { ViewRenderer } from "./ViewRenderer";
 const useStyles = makeStyles((theme: any) => ({
   blockchainLogo: {
     width: "12px",
+    borderRadius: "6px",
     color: theme.custom.colors.secondary,
   },
   blockchainCard: {
@@ -267,7 +268,9 @@ function _BalancesTableRow({
   childrenRenderer,
 }: any) {
   const { plugin } = usePluginContext();
-  const clickHandler = !props.onClick ? undefined : (_) => plugin.didClick(id);
+  const clickHandler = !props.onClick
+    ? undefined
+    : (_) => plugin.pushClickNotification(id);
   return (
     <__BalancesTableRow
       id={id}
@@ -323,12 +326,16 @@ export function BalancesTableCell({ props, style }: any) {
       <div className={classes.tokenListItemContent}>
         <div className={classes.tokenListItemRow}>
           <Typography className={classes.tokenName}>{title}</Typography>
-          <Typography className={classes.tokenBalance}>
-            ${usdValue.toLocaleString()}
-          </Typography>
+          {usdValue && (
+            <Typography className={classes.tokenBalance}>
+              ${usdValue.toLocaleString()}
+            </Typography>
+          )}
         </div>
         <div className={classes.tokenListItemRow}>
-          <Typography className={classes.tokenAmount}>{subtitle}</Typography>
+          {subtitle && (
+            <Typography className={classes.tokenAmount}>{subtitle}</Typography>
+          )}
           {percentChange !== undefined && positive && (
             <Typography className={classes.tokenBalanceChangePositive}>
               $+{percentChange.toLocaleString()}
@@ -365,7 +372,7 @@ function View({ id, props, style, children }: any) {
   const onClick = !props.onClick
     ? undefined
     : (_event) => {
-        plugin.didClick(id);
+        plugin.pushClickNotification(id);
       };
   return (
     <div style={style} onClick={onClick}>
