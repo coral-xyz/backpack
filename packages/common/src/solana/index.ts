@@ -1,20 +1,18 @@
 import BN from "bn.js";
-import {
-  PublicKey,
-  Transaction,
+import type {
   TransactionInstruction,
-  SystemProgram,
   Commitment,
   Blockhash,
 } from "@solana/web3.js";
+import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { Token } from "@solana/spl-token";
-import { TokenInfo } from "@solana/spl-token-registry";
+import type { TokenInfo } from "@solana/spl-token-registry";
 import * as anchor from "@project-serum/anchor";
-import { Program, SplToken } from "@project-serum/anchor";
+import type { Program, SplToken } from "@project-serum/anchor";
 import { associatedTokenAddress } from "./programs/token";
 import * as assertOwner from "./programs/assert-owner";
 import { SolanaProvider } from "./provider";
-import { BackgroundClient } from "../";
+import type { BackgroundClient } from "../";
 
 export * from "./wallet-adapter";
 export * from "./explorer";
@@ -76,7 +74,7 @@ export class Solana {
     }
 
     // Instructions to execute prior to the transfer.
-    let preInstructions: Array<TransactionInstruction> = [];
+    const preInstructions: Array<TransactionInstruction> = [];
     if (!destinationAtaAccount) {
       preInstructions.push(
         assertOwner.assertOwnerInstruction({

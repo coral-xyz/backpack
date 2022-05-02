@@ -5,9 +5,9 @@
   "main": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "yarn lint && tsc",
     "start": "tsc --watch",
-    "lint:fix": "eslint ./src --ext .js,.jsx,.ts,.tsx --fix"
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
   },
   "author": "",
   "license": "ISC",
