@@ -106,7 +106,6 @@ export function openOnboarding() {
 export function openConnectHardware() {
   window.open(
     chrome.extension.getURL(
-      // `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}`
       `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}`
     ),
     "_blank"

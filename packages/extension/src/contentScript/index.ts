@@ -12,7 +12,6 @@ const logger = getLogger("content-script");
 // Script entry.
 function main() {
   logger.debug("starting content script");
-  // injectScript("injected.js");
   injectScript("up_/up_/provider-injection/dist/browser/index.js");
   logger.debug("provider injected");
   logger.debug("creating content channel");
