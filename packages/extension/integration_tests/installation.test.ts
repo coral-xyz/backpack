@@ -1,6 +1,6 @@
 import { generateMnemonic } from "bip39";
 import type { Page } from "puppeteer";
-import manifest from "../public/manifest.json";
+import manifest from "../dist/manifest.json";
 
 let extensionPopupPage: Page;
 let setupPage: Page;

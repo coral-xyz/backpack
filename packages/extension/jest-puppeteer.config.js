@@ -1,5 +1,5 @@
 // directory that contains output of `yarn build`
-const BUILD_OUTPUT_DIR = "./build";
+const BUILD_OUTPUT_DIR = "./dist";
 
 // approx width/height of the browser extension popup
 const [width, height] = [380, 600];
