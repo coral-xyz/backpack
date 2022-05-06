@@ -2,15 +2,16 @@
   "name": "Anchor",
   "version": "0.1.0",
   "description": "Anchor Wallet",
-  "manifest_version": 2,
-  "browser_action": {
+  "manifest_version": 3,
+  "action": {
     "default_popup": "popup.html",
     "default_title": "Anchor"
   },
-  "web_accessible_resources": ["injected.js"],
+  "web_accessible_resources": {
+    "resources": ["injected.js"]
+  },
   "background": {
-    "persistent": true,
-    "scripts": ["background.bundle.js"]
+    "service_worker": "background.bundle.js"
   },
   "content_scripts": [
     {
@@ -25,6 +26,5 @@
     "192": "anchor.png",
     "512": "anchor.png"
   },
-  "permissions": ["storage"],
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+  "permissions": ["storage"]
 }
