@@ -7,9 +7,12 @@
     "default_popup": "popup.html",
     "default_title": "Anchor"
   },
-  "web_accessible_resources": {
-    "resources": ["injected.js"]
-  },
+  "web_accessible_resources": [
+    {
+      "resources": ["injected.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "background": {
     "service_worker": "background.bundle.js"
   },
