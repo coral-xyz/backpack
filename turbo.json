@@ -14,7 +14,7 @@
     },
     "start": {
       "dependsOn": ["^build"],
-      "outputs": ["packages/extension/dev"],
+      "outputs": ["packages/extension/dev", "**/.next"],
       "cache": false
     }
   },

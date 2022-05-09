@@ -2,12 +2,13 @@
   "name": "anchor-wallet",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "scripts": {
     "lint:fix": "prettier packages/**/*.{ts,tsx,css,md,json} --write",
     "prepare": "husky install",
-    "start": "env-cmd --silent turbo run start --filter=@200ms/extension --filter=@200ms/example-client --filter=@200ms/example-plugin-app --filter=@200ms/example-plugin-table-mango --filter=@200ms/example-plugin-table-cmc --filter=@200ms/example-plugin-table-degods",
+    "start": "env-cmd --silent turbo run start --filter=@200ms/appstore-web --filter=@200ms/extension --filter=@200ms/example-client --filter=@200ms/example-plugin-app --filter=@200ms/example-plugin-table-mango --filter=@200ms/example-plugin-table-cmc --filter=@200ms/example-plugin-table-degods --parallel",
     "test": "env-cmd --silent turbo run test -- --passWithNoTests --watchAll=false",
     "build": "env-cmd --silent turbo run build",
     "e2e": "env-cmd --silent turbo run e2e",
@@ -15,10 +16,10 @@
   },
   "devDependencies": {
     "env-cmd": "^10.1.0",
-    "husky": "^7.0.4",
-    "lint-staged": "^12.3.7",
-    "prettier": "^2.6.1",
-    "turbo": "^1.2.1"
+    "husky": "^8.0.1",
+    "lint-staged": "^12.4.1",
+    "prettier": "^2.6.2",
+    "turbo": "^1.2.9"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,css,md,json}": "prettier --write"
