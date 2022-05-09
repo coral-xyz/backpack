@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { usePlugins, useTablePlugins, useNavigationSegue } from "../hooks";
 
 export function PluginManager(props: any) {
-  //const plugins = usePlugins();
+  const plugins = usePlugins();
   const tablePlugins = useTablePlugins();
   const segue = useNavigationSegue();
 
@@ -10,8 +10,7 @@ export function PluginManager(props: any) {
   // Bootup all the plugins on the initial render.
   //
   useEffect(() => {
-    //    const allPlugins = plugins.concat(tablePlugins);
-    const allPlugins = tablePlugins;
+    const allPlugins = plugins.concat(tablePlugins);
     allPlugins.forEach((plugin) => {
       //
       // Register the navigation component.
@@ -27,7 +26,7 @@ export function PluginManager(props: any) {
     return () => {
       allPlugins.forEach((p) => p.destroyIframe());
     };
-  }, [/*plugins, */ tablePlugins]);
+  }, [plugins, tablePlugins]);
 
   return (
     <_PluginsContext.Provider value={{}}>
