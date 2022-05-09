@@ -73,12 +73,7 @@ import {
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_BLOCKHASH_DID_UPDATE,
 } from "@200ms/common";
-import {
-  TokenAccountWithKey,
-  fetchTokens,
-  fetchSplMetadata,
-  fetchSplMetadataUri,
-} from "@200ms/recoil";
+import { TokenAccountWithKey, customSplTokenAccounts } from "@200ms/recoil";
 import { Io } from "../io";
 
 export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
@@ -150,7 +145,7 @@ export class Backend {
   private async startPolling(activeWallet: PublicKey) {
     this.pollIntervals.push(
       setInterval(async () => {
-        const data = await this._customSplTokenAccounts(activeWallet);
+        const data = await customSplTokenAccounts(activeWallet);
         const key = JSON.stringify({
           method: "customSplTokenAccounts",
           args: [activeWallet.toString()],
@@ -212,49 +207,9 @@ export class Backend {
     if (value) {
       return value;
     }
-    const resp = await this._customSplTokenAccounts(publicKey);
+    const resp = await customSplTokenAccounts(publicKey);
     this.cache.set(key, resp);
     return resp;
-  }
-
-  async _customSplTokenAccounts(publicKey: PublicKey): Promise<any> {
-    // Unhooked connection.
-    // @ts-ignore
-    const tokenClient = Spl.token(new Provider(new Connection(this.url!)));
-    //
-    // Fetch tokens.
-    //
-    const tokenAccounts = await fetchTokens(publicKey, tokenClient);
-    const tokenAccountsArray = Array.from(tokenAccounts.values());
-
-    //
-    // Fetch metadata.
-    //
-    const tokenMetadata = await fetchSplMetadata(
-      tokenClient.provider,
-      tokenAccountsArray
-    );
-
-    //
-    // Fetch the metadata uri and interpert as NFTs.
-    //
-    const nftMetadata = await fetchSplMetadataUri(
-      tokenAccountsArray,
-      tokenMetadata
-    );
-
-    return {
-      tokenAccountsMap: Array.from(removeNfts(tokenAccounts, nftMetadata)).map(
-        (t) => {
-          // Convert BN to string for response.
-          // @ts-ignore
-          t[1].amount = t[1].amount.toString();
-          return t;
-        }
-      ),
-      tokenMetadata,
-      nftMetadata: Array.from(nftMetadata),
-    };
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -834,14 +789,3 @@ export class Backend {
 }
 
 export const BACKEND = new Backend();
-
-function removeNfts(
-  splTokenAccounts: Map<string, TokenAccountWithKey>,
-  splNftMetadata: Map<string, any>
-): Map<string, TokenAccountWithKey> {
-  // @ts-ignore
-  for (let key of splNftMetadata.keys()) {
-    splTokenAccounts.delete(key);
-  }
-  return splTokenAccounts;
-}

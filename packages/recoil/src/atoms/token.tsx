@@ -188,6 +188,48 @@ export const splTokenRegistry = atom<Map<string, TokenInfo> | null>({
   ],
 });
 
+export async function customSplTokenAccounts(
+  publicKey: PublicKey
+): Promise<any> {
+  // Unhooked connection.
+  // @ts-ignore
+  const tokenClient = Spl.token(new Provider(new Connection(this.url!)));
+  //
+  // Fetch tokens.
+  //
+  const tokenAccounts = await fetchTokens(publicKey, tokenClient);
+  const tokenAccountsArray = Array.from(tokenAccounts.values());
+
+  //
+  // Fetch metadata.
+  //
+  const tokenMetadata = await fetchSplMetadata(
+    tokenClient.provider,
+    tokenAccountsArray
+  );
+
+  //
+  // Fetch the metadata uri and interpert as NFTs.
+  //
+  const nftMetadata = await fetchSplMetadataUri(
+    tokenAccountsArray,
+    tokenMetadata
+  );
+
+  return {
+    tokenAccountsMap: Array.from(removeNfts(tokenAccounts, nftMetadata)).map(
+      (t) => {
+        // Convert BN to string for response.
+        // @ts-ignore
+        t[1].amount = t[1].amount.toString();
+        return t;
+      }
+    ),
+    tokenMetadata,
+    nftMetadata: Array.from(nftMetadata),
+  };
+}
+
 export async function fetchSplMetadata(
   provider: Provider,
   tokens: Array<TokenAccountWithKey>
@@ -326,4 +368,15 @@ export async function fetchTokens(
   // Done.
   //
   return new Map(validTokens);
+}
+
+function removeNfts(
+  splTokenAccounts: Map<string, TokenAccountWithKey>,
+  splNftMetadata: Map<string, any>
+): Map<string, TokenAccountWithKey> {
+  // @ts-ignore
+  for (let key of splNftMetadata.keys()) {
+    splTokenAccounts.delete(key);
+  }
+  return splTokenAccounts;
 }
