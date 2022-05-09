@@ -170,10 +170,12 @@ export class Plugin {
   // DOM element.
   //
   public onRenderRoot(fn: (children: Array<Element>) => void) {
-    if (!this._dom) {
-      throw new Error("on render root dom not found");
-    }
-    this._dom.onRenderRoot(fn);
+    this._didFinishSetup!.then(() => {
+      if (!this._dom) {
+        throw new Error("on render root dom not found");
+      }
+      this._dom.onRenderRoot(fn);
+    });
   }
 
   //
@@ -181,10 +183,12 @@ export class Plugin {
   // DOM element (and all children).
   //
   public onRender(viewId: number, fn: (data: Element) => void) {
-    if (!this._dom) {
-      throw new Error("on render dom not found");
-    }
-    this._dom.onRender(viewId, fn);
+    this._didFinishSetup!.then(() => {
+      if (!this._dom) {
+        throw new Error("on render dom not found");
+      }
+      this._dom.onRender(viewId, fn);
+    });
   }
 
   //////////////////////////////////////////////////////////////////////////////
