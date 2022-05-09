@@ -9,6 +9,7 @@ const OPEN_ORDERS_ICON_URL =
 
 const MANGO_TABLE_PLUGIN_URL = "https://localhost:4445/index.html";
 const CMC_TABLE_PLUGIN_URL = "https://localhost:4446/index.html";
+const DEGODS_TABLE_PLUGIN_URL = "https://localhost:4447/index.html";
 
 //
 // For now we just provide some default apps.
@@ -40,6 +41,13 @@ export const tablePlugins = selector({
         url: MANGO_TABLE_PLUGIN_URL,
         iconUrl: "",
         title: "Margin Accounts",
+        activeWallet,
+        connectionUrl,
+      },
+      {
+        url: DEGODS_TABLE_PLUGIN_URL,
+        iconUrl: "",
+        title: "Staked Degods",
         activeWallet,
         connectionUrl,
       },

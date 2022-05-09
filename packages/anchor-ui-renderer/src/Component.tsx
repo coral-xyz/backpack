@@ -16,7 +16,7 @@ import { ViewRenderer } from "./ViewRenderer";
 const useStyles = makeStyles((theme: any) => ({
   blockchainLogo: {
     width: "12px",
-    borderRadius: "6px",
+    borderRadius: "2px",
     color: theme.custom.colors.secondary,
   },
   blockchainCard: {
@@ -26,6 +26,11 @@ const useStyles = makeStyles((theme: any) => ({
     marginRight: "12px",
     borderRadius: "12px",
     boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
+  },
+  cardHeaderAvatar: {
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
   },
   cardHeaderRoot: {
     padding: "6px",
@@ -216,6 +221,7 @@ export function BalancesTableHead({ props, style }: any) {
         root: classes.cardHeaderRoot,
         content: classes.cardHeaderContent,
         title: classes.cardHeaderTitle,
+        avatar: classes.cardHeaderAvatar,
       }}
     />
   );
