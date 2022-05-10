@@ -6,6 +6,7 @@ const moduleExports = withPlausibleProxy()({
   reactStrictMode: true,
   experimental: {
     runtime: "nodejs",
+    esmExternals: "loose",
   },
 });
 

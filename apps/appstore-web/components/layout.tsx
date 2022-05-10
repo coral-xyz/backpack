@@ -1,12 +1,9 @@
 import dynamic from "next/dynamic";
 import Head from "next/head";
+import { ContextProvider } from "../context/ContextProvider";
 import { metaTags } from "../types";
 
 const Nav = dynamic(() => import("./nav"));
-
-function classNames(...classes: any) {
-  return classes.filter(Boolean).join(" ");
-}
 
 export default function Layout({ children, metaTags }: LayoutProps) {
   return (
@@ -48,9 +45,13 @@ export default function Layout({ children, metaTags }: LayoutProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Nav />
+      <ContextProvider>
+        <div>
+          <Nav />
 
-      <div className="min-h-screen bg-gray-800 px-5 py-10">{children}</div>
+          <div className="min-h-screen bg-gray-800 px-5 py-10">{children}</div>
+        </div>
+      </ContextProvider>
     </>
   );
 }
