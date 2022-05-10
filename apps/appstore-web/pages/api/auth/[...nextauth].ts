@@ -6,6 +6,7 @@ const bs58 = require("bs58");
 
 const nextAuthOptions = (req, res) => {
   return {
+    secret: "LlKq6ZtYbr+hTC073mAmAh9/h2HwMfsFo4hrfCx5mLg=",
     providers: [
       CredentialsProvider({
         credentials: undefined,
