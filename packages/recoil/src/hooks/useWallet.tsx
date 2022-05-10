@@ -4,31 +4,10 @@ import {
   constSelector,
   Loadable,
 } from "recoil";
-import { PublicKey, Connection } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import * as atoms from "../atoms";
 import { KeyringStoreStateEnum } from "../atoms/keyring-store";
-import { useNavigation, useTab } from "./useNavigation";
 import { useKeyringStoreState } from "./useKeyringStoreState";
-import { useCommitment, useRecentBlockhash } from "./useRecentBlockhash";
-import { useSplTokenRegistry } from "./useSplTokenRegistry";
-import { SolanaContext } from "@200ms/common";
-import { getBackgroundClient } from "..";
-
-// Bootstrap data for the initial load.
-export function useBootstrap() {
-  return useRecoilValue(atoms.bootstrap);
-}
-
-export function useBootstrapFast() {
-  useRecoilValue(atoms.bootstrapFast);
-
-  // Hack: load all the navigation atoms to prevent UI flickering.
-  //       TODO: can batch these into a single request to the background script.
-  const { tab } = useTab();
-  useNavigation();
-  useKeyringStoreState();
-  useCommitment();
-}
 
 export function useActiveWalletLoadable(): Loadable<{
   publicKey: string;
@@ -37,20 +16,11 @@ export function useActiveWalletLoadable(): Loadable<{
   return useRecoilValueLoadable(atoms.activeWalletWithName)! as Loadable<any>;
 }
 
-export function useSolanaCtx(): SolanaContext {
-  const { publicKey: walletPublicKey } = useActiveWallet();
-  const recentBlockhash = useRecentBlockhash();
-  const { tokenClient } = useAnchorContext();
-  const registry = useSplTokenRegistry();
-  const commitment = useCommitment();
-  const backgroundClient = getBackgroundClient();
+export function useActiveWallet(): { publicKey: PublicKey; name: string } {
+  const { publicKey, name } = useRecoilValue(atoms.activeWalletWithName)!;
   return {
-    walletPublicKey,
-    recentBlockhash,
-    tokenClient,
-    registry,
-    commitment,
-    backgroundClient,
+    publicKey: new PublicKey(publicKey),
+    name,
   };
 }
 
@@ -101,25 +71,3 @@ export function useWalletPublicKeys(): {
     }),
   };
 }
-
-export function useActiveWallet(): { publicKey: PublicKey; name: string } {
-  const { publicKey, name } = useRecoilValue(atoms.activeWalletWithName)!;
-  return {
-    publicKey: new PublicKey(publicKey),
-    name,
-  };
-}
-
-export function useAnchorContext() {
-  return useRecoilValue(atoms.anchorContext);
-}
-
-export function useAnchorContextLoadable(): Loadable<any> {
-  return useRecoilValueLoadable(atoms.anchorContext);
-}
-
-export type ConnectionContext = {
-  connection: Connection;
-  connectionUrl: string;
-  setConnectionUrl: (url: string) => void;
-};

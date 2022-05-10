@@ -64,6 +64,7 @@ import {
   PerfSample,
 } from "@solana/web3.js";
 import {
+  customSplTokenAccounts,
   Notification,
   BACKEND_EVENT,
   NOTIFICATION_ACTIVE_WALLET_UPDATED,
@@ -73,7 +74,6 @@ import {
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_BLOCKHASH_DID_UPDATE,
 } from "@200ms/common";
-import { TokenAccountWithKey, customSplTokenAccounts } from "@200ms/recoil";
 import { Io } from "../io";
 
 export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;

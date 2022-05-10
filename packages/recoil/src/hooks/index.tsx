@@ -11,3 +11,4 @@ export * from "./useRecentTransactions";
 export * from "./useWallet";
 export * from "./useLocalStorage";
 export * from "./useNavigation";
+export * from "./useBootstrap";

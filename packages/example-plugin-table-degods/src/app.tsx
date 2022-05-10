@@ -12,7 +12,7 @@ import {
 } from "@200ms/anchor-ui";
 import { GemFarm, IDL as IDL_GEM_FARM } from "./idl-gem-farm";
 import { GemBank, IDL as IDL_GEM_BANK } from "./idl-gem-bank";
-import { customSplTokenAccounts } from "./utils";
+import { customSplTokenAccounts } from "@200ms/common";
 
 export function App() {
   return <DegodsTable />;

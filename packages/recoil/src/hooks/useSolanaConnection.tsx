@@ -1,15 +1,34 @@
-import { useRecoilState } from "recoil";
+import { useRecoilValue, useRecoilValueLoadable, Loadable } from "recoil";
 import { Connection } from "@solana/web3.js";
-import { BackgroundSolanaConnection } from "../background";
+import { SolanaContext } from "@200ms/common";
+import { useCommitment, useRecentBlockhash } from "./useRecentBlockhash";
 import * as atoms from "../atoms";
+import { useSplTokenRegistry } from "./useSplTokenRegistry";
+import { getBackgroundClient } from "..";
+import { useActiveWallet } from "./useWallet";
 
-export function useSolanaConnection(): SolanaConnectionContext {
-  const [connectionUrl, setConnectionUrl] = useRecoilState(atoms.connectionUrl);
-  const connection = new BackgroundSolanaConnection(connectionUrl);
+export function useAnchorContext() {
+  return useRecoilValue(atoms.anchorContext);
+}
+
+export function useAnchorContextLoadable(): Loadable<any> {
+  return useRecoilValueLoadable(atoms.anchorContext);
+}
+
+export function useSolanaCtx(): SolanaContext {
+  const { publicKey: walletPublicKey } = useActiveWallet();
+  const recentBlockhash = useRecentBlockhash();
+  const { tokenClient } = useAnchorContext();
+  const registry = useSplTokenRegistry();
+  const commitment = useCommitment();
+  const backgroundClient = getBackgroundClient();
   return {
-    connection,
-    connectionUrl,
-    setConnectionUrl,
+    walletPublicKey,
+    recentBlockhash,
+    tokenClient,
+    registry,
+    commitment,
+    backgroundClient,
   };
 }
 

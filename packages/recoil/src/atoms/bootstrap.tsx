@@ -51,8 +51,7 @@ export const bootstrap = atom<any>({
         //
         const recentTransactions = await fetchRecentTransactions(
           provider.connection,
-          walletPublicKey,
-          provider
+          walletPublicKey
         );
 
         //

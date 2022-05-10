@@ -1,7 +1,5 @@
 import { atom, atomFamily, selector, selectorFamily } from "recoil";
 import { Connection, Blockhash, PublicKey } from "@solana/web3.js";
-import { Provider } from "@project-serum/anchor";
-import { BackgroundSolanaConnection } from "../background";
 import { anchorContext } from "../";
 import { bootstrap } from "./bootstrap";
 
@@ -17,11 +15,9 @@ export const recentTransactions = atomFamily<any | null, string>({
         if (b.walletPublicKey.toString() === address) {
           return b.recentTransactions;
         } else {
-          const { provider } = get(anchorContext);
           return await fetchRecentTransactions(
             connection,
-            new PublicKey(address),
-            provider
+            new PublicKey(address)
           );
         }
       },
@@ -41,8 +37,7 @@ export const recentBlockhash = atom<Blockhash | null>({
 
 export async function fetchRecentTransactions(
   connection: Connection,
-  publicKey: PublicKey,
-  provider: Provider
+  publicKey: PublicKey
 ) {
   const resp = await connection.getConfirmedSignaturesForAddress2(publicKey, {
     limit: 15,
