@@ -13,17 +13,20 @@ describe("Installing Anchor Wallet", () => {
   // then we can open a URL like chrome-extension://EXTENSION_ID/popup.html
   beforeAll(async () => {
     const extensionID = await (async () => {
-      const targets: any = await browser.targets();
+      const targets = await browser.targets();
       const extensionTarget = targets.find(
-        ({ _targetInfo: { title, type } }) =>
-          title === manifest.name && type === "background_page"
+        (target) => target.type() === "service_worker"
       );
-      const extensionUrl = extensionTarget._targetInfo.url;
-      return extensionUrl.split("/")[2];
+
+      // @ts-ignore
+      const partialExtensionUrl = extensionTarget._targetInfo.url;
+      const [, , id] = partialExtensionUrl.split("/");
+      return id;
     })();
 
     extensionPopupPage = await browser.newPage();
 
+    // @ts-ignore
     const popupFile = manifest.browser_action.default_popup;
     const popupURL = `chrome-extension://${extensionID}/${popupFile}`;
 
