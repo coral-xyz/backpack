@@ -28,7 +28,7 @@ import {
 } from "@200ms/common";
 import { WalletAddress } from "../../components/common";
 import { WithDrawerNoHeader } from "./Drawer";
-import { openConnectHardware } from "../../common";
+import { openConnectHardware } from "../../background/popup";
 
 const useStyles = makeStyles((theme: any) => ({
   sidebarContainer: {

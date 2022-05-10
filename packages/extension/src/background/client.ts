@@ -1,8 +1,6 @@
 import {
   debug,
-  BackgroundClient,
   PortChannel,
-  PortChannelClient,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_RESPONSE,

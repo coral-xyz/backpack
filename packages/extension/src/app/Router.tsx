@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 import { makeStyles } from "@material-ui/core";
 import { getLogger, EXTENSION_WIDTH, EXTENSION_HEIGHT } from "@200ms/common";
 import {
@@ -8,7 +8,7 @@ import {
   useApprovedOrigins,
   useBootstrapFast,
 } from "@200ms/recoil";
-import { openOnboarding } from "../common";
+import { openOnboarding } from "../background/popup";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
 import {
@@ -17,7 +17,7 @@ import {
   QUERY_LOCKED_APPROVAL,
   QUERY_APPROVE_TRANSACTION,
   QUERY_APPROVE_MESSAGE,
-} from "../common";
+} from "../background/popup";
 import {
   Approval,
   ApproveTransaction,

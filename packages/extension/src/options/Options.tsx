@@ -5,7 +5,7 @@ import { WithSuspense } from "../app/Router";
 import { WithTheme } from "../app/theme";
 import { ConnectHardware } from "../components/ConnectHardware";
 import { Onboarding } from "../components/Onboarding";
-import { QUERY_CONNECT_HARDWARE, QUERY_ONBOARDING } from "../common";
+import { QUERY_CONNECT_HARDWARE, QUERY_ONBOARDING } from "../background/popup";
 import "../app/App.css";
 import "@fontsource/inter";
 

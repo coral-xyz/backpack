@@ -53,13 +53,6 @@ export class BrowserRuntime {
     chrome.tabs.sendMessage(tabId, msg);
   }
 
-  public static sendMessageWindow(windowId: number, msg: any) {
-    // @ts-ignore
-    chrome.windows.get(windowId, (window) => {
-      console.log("got window now send message", window, msg);
-    });
-  }
-
   public static async openWindow(options: any) {
     return new Promise((resolve, reject) => {
       // @ts-ignore
