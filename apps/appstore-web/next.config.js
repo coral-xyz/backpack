@@ -5,7 +5,6 @@ const moduleExports = withPlausibleProxy()({
   swcMinify: true,
   reactStrictMode: true,
   experimental: {
-    runtime: "nodejs",
     esmExternals: "loose",
   },
 });

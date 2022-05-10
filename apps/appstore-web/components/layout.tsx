@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import Head from "next/head";
 import { ContextProvider } from "../context/ContextProvider";
 import { metaTags } from "../types";
+import { SessionProvider } from "next-auth/react";
 
 const Nav = dynamic(() => import("./nav"));
 
@@ -46,11 +47,15 @@ export default function Layout({ children, metaTags }: LayoutProps) {
       </Head>
 
       <ContextProvider>
-        <div>
-          <Nav />
+        <SessionProvider>
+          <>
+            <Nav />
 
-          <div className="min-h-screen bg-gray-800 px-5 py-10">{children}</div>
-        </div>
+            <div className="min-h-screen bg-gray-800 px-5 py-10">
+              {children}
+            </div>
+          </>
+        </SessionProvider>
       </ContextProvider>
     </>
   );
