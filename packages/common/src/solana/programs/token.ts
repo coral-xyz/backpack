@@ -34,7 +34,15 @@ export async function customSplTokenAccounts(
   // @ts-ignore
   const provider = new Provider(connection);
 
-  // Unhooked connection.
+  //
+  // Fetch native sol data.
+  //
+  const accountInfo = await provider.connection.getAccountInfo(publicKey);
+  const nativeSol = {
+    key: publicKey,
+    mint: PublicKey.default,
+    amount: accountInfo ? accountInfo.lamports.toString() : "0",
+  };
   const tokenClient = Spl.token(provider);
   //
   // Fetch tokens.
@@ -58,15 +66,17 @@ export async function customSplTokenAccounts(
     tokenMetadata
   );
 
+  const tokenAccountsMap = Array.from(removeNfts(tokenAccounts, nftMetadata))
+    .map((t) => {
+      // Convert BN to string for response.
+      // @ts-ignore
+      t[1].amount = t[1].amount.toString();
+      return t;
+    })
+    .concat([[nativeSol.key.toString(), nativeSol]]);
+
   return {
-    tokenAccountsMap: Array.from(removeNfts(tokenAccounts, nftMetadata)).map(
-      (t) => {
-        // Convert BN to string for response.
-        // @ts-ignore
-        t[1].amount = t[1].amount.toString();
-        return t;
-      }
-    ),
+    tokenAccountsMap,
     tokenMetadata,
     nftMetadata: Array.from(nftMetadata),
   };
@@ -122,9 +132,9 @@ export async function fetchSplMetadataUri(
         try {
           // @ts-ignore
           const resp = await fetch(t.account.data.uri);
-          return resp.json();
+          return await resp.json();
         } catch (err) {
-          console.log(err);
+          console.log(`error fetching: ${t.account.data.uri}`, err);
         }
       })
   );

@@ -1,8 +1,7 @@
-import BN from "bn.js";
 import { atom, atomFamily, selector, selectorFamily } from "recoil";
-import { TokenListProvider, TokenInfo } from "@solana/spl-token-registry";
 import { bootstrap } from "./bootstrap";
 import { priceData } from "./price-data";
+import { splTokenRegistry } from "./token-registry";
 import { TokenAccountWithKey } from "../types";
 
 /**
@@ -55,20 +54,24 @@ export const blockchainTokenAccounts = selectorFamily({
           if (!tokenAccount) {
             return null;
           }
+          console.log("token account", tokenAccount);
+          //
+          // Token registry metadata.
+          //
           const tokenRegistry = get(splTokenRegistry);
-          const price = get(priceData(tokenAccount.mint.toString()));
           const tokenMetadata =
             tokenRegistry.get(tokenAccount.mint.toString()) ?? {};
           const ticker = tokenMetadata.symbol;
           const logo = tokenMetadata.logoURI;
           const name = tokenMetadata.name;
-          const nativeBalance = tokenAccount.amount
-            .div(
-              tokenMetadata.decimals
-                ? new BN(10 ** tokenMetadata.decimals)
-                : new BN(1)
-            )
-            .toNumber();
+
+          //
+          // Price data.
+          //
+          const price = get(priceData(tokenAccount.mint.toString()));
+          const nativeBalance = tokenMetadata.decimals
+            ? tokenAccount.amount.toNumber() / 10 ** tokenMetadata.decimals
+            : tokenAccount.amount.toNumber();
           const currentUsdBalance =
             price && price.usd ? price.usd * nativeBalance : 0;
           const oldUsdBalance =
@@ -77,6 +80,10 @@ export const blockchainTokenAccounts = selectorFamily({
               : currentUsdBalance / (1 + price.usd_24h_change);
           const recentUsdBalanceChange =
             (currentUsdBalance - oldUsdBalance) / oldUsdBalance;
+          const recentPercentChange = price
+            ? parseFloat(price.usd_24h_change.toFixed(2))
+            : undefined;
+
           return {
             name,
             nativeBalance,
@@ -85,9 +92,7 @@ export const blockchainTokenAccounts = selectorFamily({
             address,
             mint: tokenAccount.mint.toString(),
             usdBalance: currentUsdBalance,
-            recentPercentChange: price
-              ? parseFloat(price.usd_24h_change.toFixed(2))
-              : undefined,
+            recentPercentChange,
             recentUsdBalanceChange,
             priceData: price,
           };
@@ -158,24 +163,4 @@ export const solanaNftMetadataMap = atomFamily<any, string>({
         return b.splNftMetadata.get(tokenAddress);
       },
   }),
-});
-
-export const splTokenRegistry = atom<Map<string, TokenInfo> | null>({
-  key: "splTokenRegistry",
-  default: null,
-  effects: [
-    ({ setSelf }) => {
-      setSelf(
-        new TokenListProvider().resolve().then((tokens) => {
-          const tokenList = tokens
-            .filterByClusterSlug("mainnet-beta") // TODO: get network atom.
-            .getList();
-          return tokenList.reduce((map, item) => {
-            map.set(item.address, item);
-            return map;
-          }, new Map());
-        })
-      );
-    },
-  ],
 });

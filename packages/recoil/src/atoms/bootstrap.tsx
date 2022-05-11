@@ -8,7 +8,7 @@ import { TokenAccountWithKey, TABS } from "../types";
 import { getBackgroundClient } from "../background";
 import { anchorContext } from "../atoms/wallet";
 import { fetchRecentTransactions } from "./recent-transactions";
-import { splTokenRegistry } from "./token";
+import { splTokenRegistry } from "./token-registry";
 import { fetchPriceData } from "./price-data";
 import { activeWallet } from "./wallet";
 
@@ -37,7 +37,6 @@ export const bootstrap = atom<any>({
         const splTokenAccounts = new Map<string, TokenAccountWithKey>(
           tokenAccountsMap
         );
-
         //
         // Fetch the price data.
         //

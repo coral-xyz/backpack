@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme: any) => ({
     height: "64px",
     minHeight: "64px",
     backgroundColor: theme.custom.colors.nav,
+    display: "none",
   },
   tabIndicator: {
     color: "none",
