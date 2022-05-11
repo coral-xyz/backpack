@@ -27,7 +27,7 @@ describe("Installing Anchor Wallet", () => {
     extensionPopupPage = await browser.newPage();
 
     // @ts-ignore
-    const popupFile = manifest.browser_action.default_popup;
+    const popupFile = manifest.action.default_popup;
     const popupURL = `chrome-extension://${extensionID}/${popupFile}`;
 
     await extensionPopupPage.goto(popupURL);
