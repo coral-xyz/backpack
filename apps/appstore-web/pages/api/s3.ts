@@ -16,14 +16,20 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     let { name, type } = JSON.parse(req.body);
 
-    const fileParams = {
+    // Setting up S3 upload parameters
+    const params = {
       Bucket: process.env.AWS_S3_BUCKET,
-      Key: name,
-      Expires: 600,
-      ContentType: type,
+      Key: "cat.jpg", // File name you want to save as in S3
+      Body: fileContent,
     };
 
-    const url = await s3.getSignedUrlPromise("putObject", fileParams);
+    // Uploading files to the bucket
+    s3.upload(params, function (err, data) {
+      if (err) {
+        throw err;
+      }
+      console.log(`File uploaded successfully. ${data.Location}`);
+    });
 
     res.status(200).json({ url });
   } catch (err) {

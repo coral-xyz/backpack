@@ -1,44 +1,93 @@
-import { memo, useState } from "react";
+import { memo, useReducer, useState } from "react";
 import dynamic from "next/dynamic";
 import { ArrowSmRightIcon } from "@heroicons/react/outline";
-import fetch from "isomorphic-unfetch";
+import useAuth from "../../hooks/useAuth";
+import { uploadToS3 } from "../../utils/s3";
 
 const Tabs = dynamic(() => import("./tabs"));
-const DeployApp = dynamic(() => import("./deploy-app"));
+const UploadApp = dynamic(() => import("./upload-app"));
 
 const BUCKET_URL = "https://xnfts.s3.us-west-2.amazonaws.com/";
 
+function uploadReducer(state, action) {
+  switch (action.type) {
+    case "field": {
+      return {
+        ...state,
+        [action.field]: action.value,
+      };
+    }
+    case "file": {
+      return {
+        ...state,
+        [action.field]: action.value,
+      };
+    }
+  }
+}
+
+const uploadInitialState = {
+  title: "",
+  description: "",
+  publisher: "",
+  discord: "",
+  twitter: "",
+  bundle: {},
+  icon: {},
+  screenshots: {},
+};
+
 function Publish() {
-  const [selectedTab, setSelectedTab] = useState("Deploy App");
+  const { session, status } = useAuth(true);
+  const [selectedTab, setSelectedTab] = useState("Upload App");
+  const [uploadState, uploadDispatch] = useReducer(
+    uploadReducer,
+    uploadInitialState
+  );
   const [file, setFile] = useState<any>();
-  const [uploadedFile, setUploadedFile] = useState("");
+  const [uploadedFiles, setUploadedFiles] = useState("");
 
   async function uploadBundle() {
-    const resp = await fetch("/api/s3", {
-      method: "POST",
-      body: JSON.stringify({
-        name: file.name,
-        type: file.type,
-      }),
-    });
+    //
+    // let folderName = `${session.user.name}/${uploadState.title}`;
+    // let count = 0;
+    //
+    // for await (const file of files) {
+    //   console.log("File", file);
+    //   if (count === 0) {
+    //     folderName = `${folderName}/bundle`;
+    //     count++;
+    //   } else if (count === 1) {
+    //     folderName = `${folderName}/icon`;
+    //     count++;
+    //   } else {
+    //     folderName = `${folderName}/screenshots`;
+    //     count++;
+    //   }
 
-    let data = await resp.json();
-
-    const url = data.url;
-
-    const resp2 = await fetch(url, {
-      method: "PUT",
-      headers: {
-        "Content-type": file.type,
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: file,
-    });
-
-    const data2 = await resp2.json();
-
-    setUploadedFile(BUCKET_URL + data2.name);
-    setFile(null);
+    // let { url } = await uploadToS3(uploadState.bundle);
+    // console.log("url", url);
+    // const content = {
+    //   title: uploadState.title,
+    //   publicKey: session.user.name,
+    // };
+    //
+    // let formData = new FormData();
+    //
+    // formData.append("data", JSON.stringify(content));
+    // formData.append("bundle", uploadState.bundle);
+    // formData.append("icon", uploadState.icon);
+    //
+    // await fetch("/api/s3", {
+    //   method: "POST",
+    //   body: formData,
+    // });
+    await uploadToS3(uploadState.bundle);
+    // try {
+    //
+    // } catch (err) {
+    //   console.error("Error saving file in S3", err);
+    // }
   }
 
   return (
@@ -56,17 +105,28 @@ function Publish() {
         </button>
 
         {/* Tabs */}
-        <div className="mt-20 flex flex-col gap-2">
+        <div className="mt-10 flex flex-col gap-2">
           <Tabs selected={selectedTab} setSelected={setSelectedTab} />
-          {selectedTab === "Deploy App" && <DeployApp setFile={setFile} />}
-
-          <button
-            type="button"
-            className="mx-auto mt-10 flex w-32 justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 font-medium tracking-wide text-gray-50 shadow-sm hover:bg-indigo-700"
-            onClick={() => uploadBundle()}
+          <form
+            action="#"
+            method="POST"
+            onSubmit={selectedTab === "Upload App" ? uploadBundle : () => {}}
           >
-            Next <ArrowSmRightIcon className="h-6 w-6" />
-          </button>
+            {selectedTab === "Upload App" && (
+              <UploadApp
+                uploadState={uploadState}
+                uploadDispatch={uploadDispatch}
+              />
+            )}
+
+            <button
+              type="submit"
+              className="mx-auto mt-10 flex w-32 justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 font-medium tracking-wide text-gray-50 shadow-sm hover:bg-indigo-700"
+              disabled={status !== "authenticated"}
+            >
+              Next <ArrowSmRightIcon className="h-6 w-6" />
+            </button>
+          </form>
         </div>
       </div>
     </div>

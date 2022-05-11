@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-const tabs = [{ name: "Deploy App" }, { name: "Review & Mint" }];
+const tabs = [{ name: "Upload App" }, { name: "Review & Mint" }];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
