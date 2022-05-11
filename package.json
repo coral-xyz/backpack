@@ -22,5 +22,11 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,css,md,json}": "prettier --write"
+  },
+  "resolutions": {
+    "react-dom": "^17.0.0",
+    "react": "^17.0.0",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0"
   }
 }
