@@ -1,10 +1,6 @@
 import { memo } from "react";
 
-const tabs = [
-  { name: "Upload bundle" },
-  { name: "Details" },
-  { name: "Review & Mint" },
-];
+const tabs = [{ name: "Deploy App" }, { name: "Review & Mint" }];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -12,7 +8,7 @@ function classNames(...classes) {
 
 function Tabs({ selected, setSelected }: TabsProps) {
   return (
-    <nav className="flex justify-between space-x-4" aria-label="Tabs">
+    <nav className="flex justify-around space-x-4" aria-label="Tabs">
       {tabs.map((tab) => (
         <button
           key={tab.name}

@@ -40,9 +40,7 @@ function Nav() {
 
   async function fetchNonce() {
     const response = await fetch("/api/login");
-
     if (response.status != 200) throw new Error("nonce could not be retrieved");
-
     const { nonce } = await response.json();
 
     return nonce;
