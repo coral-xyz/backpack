@@ -1,12 +1,12 @@
 const BUCKET_URL = "https://xnfts.s3.us-west-2.amazonaws.com/";
 
 /**
- * S3 Data Uploader
+ * Input Files S3 Uploader
  * @param uploadState
  * @param uploadDispatch
  * @param session
  */
-export default async function uploadToS3(
+export async function filesS3Uploader(
   uploadState: any,
   uploadDispatch: any,
   session: any
@@ -61,7 +61,7 @@ export default async function uploadToS3(
 
       let { url } = await resp.json();
 
-      const a = await fetch(url, {
+      await fetch(url, {
         method: "PUT",
         headers: {
           "Content-type": file.type,
@@ -69,10 +69,49 @@ export default async function uploadToS3(
         },
         body: file,
       });
-
-      console.log("URL? ", a);
     } catch (err) {
       console.log("Error saving file in S3", err);
     }
+  }
+}
+
+export async function metadataS3Uploader(
+  uploadState: any,
+  uploadDispatch: any,
+  session: any,
+  metadata: any
+) {
+  try {
+    const fileName = `${session.user.name}/${uploadState.title}/metadata.json`;
+
+    const resp = await fetch("/api/s3", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: fileName,
+        type: "application/json",
+      }),
+    });
+
+    let { url } = await resp.json();
+
+    await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: metadata,
+    });
+
+    uploadDispatch({
+      type: "s3",
+      field: "s3UrlMetadata",
+      value: `${BUCKET_URL}${fileName}`,
+    });
+  } catch (err) {
+    console.log("Error saving file in S3", err);
   }
 }

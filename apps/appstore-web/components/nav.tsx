@@ -8,15 +8,20 @@ import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { signIn, signOut, useSession } from "next-auth/react";
 import bs58 from "bs58";
 import Link from "next/link";
+import { useAutoConnect } from "../context/AutoConnectProvider";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
 function Nav() {
-  const { wallet, publicKey, signMessage, connected } = useWallet();
+  const { publicKey, signMessage, connected } = useWallet();
   const { data: session, status } = useSession();
   const { setVisible } = useWalletModal();
+  const { autoConnect, setAutoConnect } = useAutoConnect();
+
+  setAutoConnect(true);
+  console.log("connected", connected);
 
   useEffect(() => {
     async function login() {
@@ -37,7 +42,7 @@ function Nav() {
     }
 
     if (connected && status === "unauthenticated") login();
-  }, [wallet, status, publicKey, connected, signMessage]);
+  }, [status, publicKey, connected, signMessage]);
 
   async function fetchNonce() {
     const response = await fetch("/api/login");
@@ -55,9 +60,11 @@ function Nav() {
             <div className="relative flex h-16 items-center justify-between">
               <div className="flex items-center px-2 lg:px-0">
                 {/* Logo */}
-                <div className="flex-shrink-0">
-                  <Image src="/logo.png" width="120px" height="40px" />
-                </div>
+                <Link href="/">
+                  <div className="flex-shrink-0">
+                    <Image src="/logo.png" width="120px" height="40px" />
+                  </div>
+                </Link>
               </div>
               {/* Search  */}
               <div className="flex flex-1 justify-center px-2 lg:ml-6">

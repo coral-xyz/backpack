@@ -61,23 +61,22 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
       {/*  Publisher */}
       <div>
         <label
-          htmlFor="publisher"
+          htmlFor="website"
           className="block text-sm  font-medium tracking-wide text-gray-300"
         >
-          Publisher
+          Website
         </label>
         <div className="mt-1">
           <input
-            required
-            type="text"
-            name="publisher"
-            id="publisher"
+            type="url"
+            name="website"
+            id="website"
             className="block w-full rounded-md border-gray-900 bg-gray-900 text-sm text-gray-300"
             value={uploadState.publisher}
             onChange={(e) =>
               uploadDispatch({
                 type: "field",
-                field: "publisher",
+                field: "website",
                 value: e.currentTarget.value,
               })
             }

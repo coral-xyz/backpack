@@ -2,12 +2,15 @@ import { memo, useReducer, useState } from "react";
 import dynamic from "next/dynamic";
 import { ArrowSmRightIcon } from "@heroicons/react/outline";
 import useAuth from "../../hooks/useAuth";
-import uploadToS3 from "../../utils/s3";
-import MintApp from "./mint-app";
+import { filesS3Uploader, metadataS3Uploader } from "../../utils/s3";
 import generateMetadata from "../../utils/generate-nft-metadata";
+import { clusterApiUrl, Connection } from "@solana/web3.js";
+import { Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js-next";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 const Tabs = dynamic(() => import("./tabs"));
 const UploadApp = dynamic(() => import("./upload-app"));
+const MintApp = dynamic(() => import("./mint-app"));
 
 function uploadReducer(state, action) {
   switch (action.type) {
@@ -38,16 +41,19 @@ function uploadReducer(state, action) {
 const uploadInitialState = {
   title: "",
   description: "",
-  publisher: "",
+  website: "",
   discord: "",
   twitter: "",
   bundle: {},
   icon: {},
   screenshots: {},
-  urls: {},
+  s3UrlBundle: "",
+  s3UrlIcon: "",
+  s3UrlMetadata: "",
 };
 
 function Publish() {
+  const { wallet, connected } = useWallet();
   const { session, status } = useAuth(true);
   const [selectedTab, setSelectedTab] = useState("Upload App");
   const [uploadState, uploadDispatch] = useReducer(
@@ -55,20 +61,35 @@ function Publish() {
     uploadInitialState
   );
 
+  console.log("connected", connected);
+
   async function uploadBundle(e) {
     e.preventDefault();
 
     // Upload Data to S3
-    await uploadToS3(uploadState, uploadDispatch, session);
+    await filesS3Uploader(uploadState, uploadDispatch, session);
 
-    uploadDispatch({ type: "reset" });
+    const metadata = generateMetadata(uploadState);
+    await metadataS3Uploader(uploadState, uploadDispatch, session, metadata);
+
+    // uploadDispatch({ type: "reset" });
     setSelectedTab("Review & Mint");
   }
 
   async function mintApp(e) {
     e.preventDefault();
 
-    generateMetadata(uploadState);
+    const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+    const metaplex = Metaplex.make(connection);
+    if (wallet) {
+      metaplex.use(walletAdapterIdentity(wallet));
+    }
+
+    const { nft } = await metaplex.nfts().create({
+      uri: uploadState.s3UrlMetadata,
+    });
+
+    console.log(nft);
   }
 
   return (
