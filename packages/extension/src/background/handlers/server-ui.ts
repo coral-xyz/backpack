@@ -320,7 +320,7 @@ function handleKeyringResetMnemonic(password: string): RpcResponse<string> {
 }
 
 async function handleKeyringAutolockUpdate(
-  autolockSecs: number
+  autolockSecs = 0
 ): Promise<RpcResponse<string>> {
   const resp = await BACKEND.keyringAutolockUpdate(autolockSecs);
   return [resp];
