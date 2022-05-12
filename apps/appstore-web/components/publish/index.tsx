@@ -2,12 +2,12 @@ import { memo, useReducer, useState } from "react";
 import dynamic from "next/dynamic";
 import { ArrowSmRightIcon } from "@heroicons/react/outline";
 import useAuth from "../../hooks/useAuth";
-import { uploadToS3 } from "../../utils/s3";
+import uploadToS3 from "../../utils/s3";
+import MintApp from "./mint-app";
+import generateMetadata from "../../utils/generate-nft-metadata";
 
 const Tabs = dynamic(() => import("./tabs"));
 const UploadApp = dynamic(() => import("./upload-app"));
-
-const BUCKET_URL = "https://xnfts.s3.us-west-2.amazonaws.com/";
 
 function uploadReducer(state, action) {
   switch (action.type) {
@@ -23,6 +23,15 @@ function uploadReducer(state, action) {
         [action.field]: action.value,
       };
     }
+    case "s3": {
+      return {
+        ...state,
+        [action.field]: action.value,
+      };
+    }
+    case "reset": {
+      return uploadInitialState;
+    }
   }
 }
 
@@ -35,6 +44,7 @@ const uploadInitialState = {
   bundle: {},
   icon: {},
   screenshots: {},
+  urls: {},
 };
 
 function Publish() {
@@ -44,50 +54,21 @@ function Publish() {
     uploadReducer,
     uploadInitialState
   );
-  const [file, setFile] = useState<any>();
-  const [uploadedFiles, setUploadedFiles] = useState("");
 
-  async function uploadBundle() {
-    //
-    // let folderName = `${session.user.name}/${uploadState.title}`;
-    // let count = 0;
-    //
-    // for await (const file of files) {
-    //   console.log("File", file);
-    //   if (count === 0) {
-    //     folderName = `${folderName}/bundle`;
-    //     count++;
-    //   } else if (count === 1) {
-    //     folderName = `${folderName}/icon`;
-    //     count++;
-    //   } else {
-    //     folderName = `${folderName}/screenshots`;
-    //     count++;
-    //   }
+  async function uploadBundle(e) {
+    e.preventDefault();
 
-    // let { url } = await uploadToS3(uploadState.bundle);
-    // console.log("url", url);
-    // const content = {
-    //   title: uploadState.title,
-    //   publicKey: session.user.name,
-    // };
-    //
-    // let formData = new FormData();
-    //
-    // formData.append("data", JSON.stringify(content));
-    // formData.append("bundle", uploadState.bundle);
-    // formData.append("icon", uploadState.icon);
-    //
-    // await fetch("/api/s3", {
-    //   method: "POST",
-    //   body: formData,
-    // });
-    await uploadToS3(uploadState.bundle);
-    // try {
-    //
-    // } catch (err) {
-    //   console.error("Error saving file in S3", err);
-    // }
+    // Upload Data to S3
+    await uploadToS3(uploadState, uploadDispatch, session);
+
+    uploadDispatch({ type: "reset" });
+    setSelectedTab("Review & Mint");
+  }
+
+  async function mintApp(e) {
+    e.preventDefault();
+
+    generateMetadata(uploadState);
   }
 
   return (
@@ -108,24 +89,37 @@ function Publish() {
         <div className="mt-10 flex flex-col gap-2">
           <Tabs selected={selectedTab} setSelected={setSelectedTab} />
           <form
-            action="#"
-            method="POST"
-            onSubmit={selectedTab === "Upload App" ? uploadBundle : () => {}}
+            onSubmit={selectedTab === "Upload App" ? uploadBundle : mintApp}
           >
             {selectedTab === "Upload App" && (
-              <UploadApp
-                uploadState={uploadState}
-                uploadDispatch={uploadDispatch}
-              />
+              <>
+                <UploadApp
+                  uploadState={uploadState}
+                  uploadDispatch={uploadDispatch}
+                />
+                <button
+                  type="submit"
+                  className="mx-auto mt-10 flex w-32 justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 font-medium tracking-wide text-gray-50 shadow-sm hover:bg-indigo-700"
+                  disabled={status !== "authenticated"}
+                >
+                  Next <ArrowSmRightIcon className="h-6 w-6" />
+                </button>
+              </>
             )}
-
-            <button
-              type="submit"
-              className="mx-auto mt-10 flex w-32 justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 font-medium tracking-wide text-gray-50 shadow-sm hover:bg-indigo-700"
-              disabled={status !== "authenticated"}
-            >
-              Next <ArrowSmRightIcon className="h-6 w-6" />
-            </button>
+            {selectedTab === "Review & Mint" && (
+              <>
+                <MintApp
+                  uploadState={uploadState}
+                  uploadDispatch={uploadDispatch}
+                />
+                <button
+                  type="submit"
+                  className="mx-auto mt-10 flex justify-center rounded-lg bg-gradient-to-br from-pink-500 to-orange-400 px-6 py-3 text-center text-sm font-medium tracking-wide text-white shadow-lg shadow-red-800/80 hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-pink-800"
+                >
+                  Mint Executable NFT
+                </button>
+              </>
+            )}
           </form>
         </div>
       </div>

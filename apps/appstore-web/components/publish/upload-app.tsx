@@ -41,6 +41,7 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
         </label>
         <div className="mt-1">
           <textarea
+            required
             id="description"
             name="description"
             rows={5}
@@ -67,6 +68,7 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
         </label>
         <div className="mt-1">
           <input
+            required
             type="text"
             name="publisher"
             id="publisher"
@@ -155,6 +157,7 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
                   required
                   id="bundle"
                   name="bundle"
+                  accept=".js,.ts"
                   type="file"
                   className="sr-only hidden"
                   onChange={(e) =>
@@ -195,6 +198,7 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
                   id="icon"
                   name="icon"
                   type="file"
+                  accept="image/*"
                   className="sr-only hidden"
                   onChange={(e) =>
                     uploadDispatch({
@@ -232,6 +236,7 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
                   name="screenshots"
                   type="file"
                   multiple
+                  accept="image/*"
                   className="sr-only hidden"
                   onChange={(e) =>
                     uploadDispatch({
