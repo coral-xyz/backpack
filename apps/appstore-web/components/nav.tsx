@@ -8,7 +8,6 @@ import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { signIn, signOut, useSession } from "next-auth/react";
 import bs58 from "bs58";
 import Link from "next/link";
-import { useAutoConnect } from "../context/AutoConnectProvider";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -18,10 +17,6 @@ function Nav() {
   const { publicKey, signMessage, connected } = useWallet();
   const { data: session, status } = useSession();
   const { setVisible } = useWalletModal();
-  const { autoConnect, setAutoConnect } = useAutoConnect();
-
-  setAutoConnect(true);
-  console.log("connected", connected);
 
   useEffect(() => {
     async function login() {

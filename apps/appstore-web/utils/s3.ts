@@ -1,3 +1,5 @@
+import generateMetadata from "./generate-nft-metadata";
+
 const BUCKET_URL = "https://xnfts.s3.us-west-2.amazonaws.com/";
 
 /**
@@ -78,10 +80,10 @@ export async function filesS3Uploader(
 export async function metadataS3Uploader(
   uploadState: any,
   uploadDispatch: any,
-  session: any,
-  metadata: any
+  session: any
 ) {
   try {
+    const metadata = generateMetadata(uploadState);
     const fileName = `${session.user.name}/${uploadState.title}/metadata.json`;
 
     const resp = await fetch("/api/s3", {

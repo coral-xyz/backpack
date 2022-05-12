@@ -39,7 +39,6 @@
     "isomorphic-unfetch": "^3.1.0",
     "next-compose-plugins": "^2.2.1",
     "next-plausible": "^3.1.9",
-    "next-sitemap": "^2.5.20",
     "next-transpile-modules": "^9.0.0",
     "postcss": "^8.4.13",
     "prettier-plugin-tailwindcss": "^0.1.10",

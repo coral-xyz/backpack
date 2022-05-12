@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 import { ArrowSmRightIcon } from "@heroicons/react/outline";
 import useAuth from "../../hooks/useAuth";
 import { filesS3Uploader, metadataS3Uploader } from "../../utils/s3";
-import generateMetadata from "../../utils/generate-nft-metadata";
 import { clusterApiUrl, Connection } from "@solana/web3.js";
 import { Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js-next";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -47,9 +46,6 @@ const uploadInitialState = {
   bundle: {},
   icon: {},
   screenshots: {},
-  s3UrlBundle: "",
-  s3UrlIcon: "",
-  s3UrlMetadata: "",
 };
 
 function Publish() {
@@ -61,16 +57,13 @@ function Publish() {
     uploadInitialState
   );
 
-  console.log("connected", connected);
-
   async function uploadBundle(e) {
     e.preventDefault();
 
     // Upload Data to S3
     await filesS3Uploader(uploadState, uploadDispatch, session);
 
-    const metadata = generateMetadata(uploadState);
-    await metadataS3Uploader(uploadState, uploadDispatch, session, metadata);
+    await metadataS3Uploader(uploadState, uploadDispatch, session);
 
     // uploadDispatch({ type: "reset" });
     setSelectedTab("Review & Mint");
@@ -81,15 +74,20 @@ function Publish() {
 
     const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
     const metaplex = Metaplex.make(connection);
-    if (wallet) {
-      metaplex.use(walletAdapterIdentity(wallet));
-    }
 
-    const { nft } = await metaplex.nfts().create({
+    metaplex.use(walletAdapterIdentity(wallet.adapter));
+
+    const transaction = await metaplex.nfts().create({
+      name: uploadState.title,
       uri: uploadState.s3UrlMetadata,
+      isMutable: true,
     });
 
-    console.log(nft);
+    uploadDispatch({
+      type: "field",
+      field: "transaction",
+      value: `https://explorer.solana.com/tx/${transaction.transactionId}?cluster=devnet`,
+    });
   }
 
   return (

@@ -4,11 +4,11 @@
  * @return {String} JSON.stringify
  */
 export default function generateMetadata(data: any): string {
-  console.log("Data", data);
   const metadata = {
     name: data.title,
     description: data.description,
     external_url: data.website,
+    image: data.s3UrlIcon,
     properties: {
       icon: data.s3UrlIcon,
       bundle: data.s3UrlBundle,
