@@ -56,9 +56,9 @@ function Publish() {
     e.preventDefault();
 
     // Upload Data to S3
-    await filesS3Uploader(uploadState, uploadDispatch, publicKey.toBase58());
+    await filesS3Uploader(uploadState, uploadDispatch, publicKey!.toBase58());
 
-    await metadataS3Uploader(uploadState, uploadDispatch, publicKey.toBase58());
+    await metadataS3Uploader(uploadState, uploadDispatch, publicKey!.toBase58());
 
     // uploadDispatch({ type: "reset" });
     setSelectedTab('Review & Mint');
@@ -70,7 +70,7 @@ function Publish() {
     const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
     const metaplex = Metaplex.make(connection);
 
-    metaplex.use(walletAdapterIdentity(wallet.adapter));
+    metaplex.use(walletAdapterIdentity(wallet!.adapter));
 
     const transaction = await metaplex.nfts().create({
       name: uploadState.title,

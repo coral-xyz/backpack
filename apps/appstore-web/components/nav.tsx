@@ -1,10 +1,8 @@
-import { Fragment, memo } from 'react';
+import { Fragment, memo, useState } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { SearchIcon } from '@heroicons/react/solid';
+import { SearchIcon, UserIcon } from '@heroicons/react/solid';
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import Image from 'next/image';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import Link from 'next/link';
 
 function classNames(...classes: any) {
@@ -12,8 +10,25 @@ function classNames(...classes: any) {
 }
 
 function Nav() {
-  const { connected, disconnect } = useWallet();
-  const { setVisible } = useWalletModal();
+  const [connected, setConnected] = useState(false);
+
+  async function connect() {
+    if (window && window.anchor) {
+      await window.anchor.connect();
+      setConnected(window.anchor.isConnected);
+    } else {
+      throw new Error('window.anchor not found');
+    }
+  }
+
+  async function disconnect() {
+    if (window && window.anchor) {
+      await window.anchor.disconnect();
+      setConnected(false);
+    } else {
+      throw new Error('window.anchor not found');
+    }
+  }
 
   return (
     <Disclosure as="nav" className="bg-gray-900">
@@ -25,7 +40,7 @@ function Nav() {
                 {/* Logo */}
                 <Link href="/">
                   <div className="flex-shrink-0">
-                    <Image src="/logo.png" width="120px" height="40px" />
+                    <Image alt="logo" src="/logo.png" width="120px" height="40px" />
                   </div>
                 </Link>
               </div>
@@ -77,7 +92,7 @@ function Nav() {
                       className="items-center rounded-md bg-gradient-to-r
                       from-pink-400 to-yellow-500 px-4 py-2 text-sm font-medium
                       text-white shadow-sm hover:from-green-500 hover:to-blue-500"
-                      onClick={() => setVisible(true)}
+                      onClick={() => connect()}
                     >
                       Login with Wallet
                     </button>
@@ -108,17 +123,13 @@ function Nav() {
                     <Menu as="div" className="relative ml-4 flex-shrink-0">
                       <div>
                         <Menu.Button
-                          className="flex rounded-full
-                        bg-gray-800 text-sm text-white focus:outline-none
+                          className="flex rounded-full bg-gray-800
+                        p-1 text-sm text-white focus:outline-none
                         focus:ring-2 focus:ring-white focus:ring-offset-2
                         focus:ring-offset-gray-800"
                         >
                           <span className="sr-only">Open user menu</span>
-                          <img
-                            className="h-8 w-8 rounded-full"
-                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                            alt=""
-                          />
+                          <UserIcon className="h-7 w-7" />
                         </Menu.Button>
                       </div>
                       <Transition
