@@ -1,25 +1,23 @@
-import { memo } from "react";
+import { memo } from 'react';
 
-const tabs = [{ name: "Upload App" }, { name: "Review & Mint" }];
+const tabs = [{ name: 'Upload App' }, { name: 'Review & Mint' }];
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
+  return classes.filter(Boolean).join(' ');
 }
 
 function Tabs({ selected, setSelected }: TabsProps) {
   return (
     <nav className="flex justify-around space-x-4" aria-label="Tabs">
-      {tabs.map((tab) => (
+      {tabs.map(tab => (
         <button
           key={tab.name}
           onClick={() => setSelected(tab.name)}
           className={classNames(
-            tab.name === selected
-              ? "text-red-400"
-              : "text-gray-400 hover:text-gray-500",
-            "rounded-md px-3 py-2 font-medium tracking-wide"
+            tab.name === selected ? 'text-red-400' : 'text-gray-400 hover:text-gray-500',
+            'rounded-md px-3 py-2 font-medium tracking-wide'
           )}
-          aria-current={tab.name === selected ? "page" : undefined}
+          aria-current={tab.name === selected ? 'page' : undefined}
         >
           {tab.name}
         </button>

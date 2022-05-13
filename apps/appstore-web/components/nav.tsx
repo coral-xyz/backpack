@@ -1,16 +1,16 @@
-import { Fragment, memo, useEffect } from "react";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { SearchIcon } from "@heroicons/react/solid";
-import { MenuIcon, XIcon } from "@heroicons/react/outline";
-import Image from "next/image";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { signIn, signOut, useSession } from "next-auth/react";
-import bs58 from "bs58";
-import Link from "next/link";
+import { Fragment, memo, useEffect } from 'react';
+import { Disclosure, Menu, Transition } from '@headlessui/react';
+import { SearchIcon } from '@heroicons/react/solid';
+import { MenuIcon, XIcon } from '@heroicons/react/outline';
+import Image from 'next/image';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+import { signIn, signOut, useSession } from 'next-auth/react';
+import bs58 from 'bs58';
+import Link from 'next/link';
 
 function classNames(...classes: any) {
-  return classes.filter(Boolean).join(" ");
+  return classes.filter(Boolean).join(' ');
 }
 
 function Nav() {
@@ -26,22 +26,22 @@ function Nav() {
       try {
         const signedMessage = await signMessage(encodedMessage);
 
-        signIn("credentials", {
+        signIn('credentials', {
           publicKey: publicKey,
           signature: bs58.encode(signedMessage),
-          callbackUrl: `${window.location.origin}/`,
+          callbackUrl: `${window.location.origin}/`
         });
       } catch (error) {
         console.error(error);
       }
     }
 
-    if (connected && status === "unauthenticated") login();
+    if (connected && status === 'unauthenticated') login();
   }, [status, publicKey, connected, signMessage]);
 
   async function fetchNonce() {
-    const response = await fetch("/api/login");
-    if (response.status != 200) throw new Error("nonce could not be retrieved");
+    const response = await fetch('/api/login');
+    if (response.status != 200) throw new Error('nonce could not be retrieved');
     const { nonce } = await response.json();
 
     return nonce;
@@ -69,10 +69,7 @@ function Nav() {
                   </label>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                      <SearchIcon
-                        className="h-5 w-5 text-gray-100"
-                        aria-hidden="true"
-                      />
+                      <SearchIcon className="h-5 w-5 text-gray-100" aria-hidden="true" />
                     </div>
                     <input
                       id="search"
@@ -95,7 +92,7 @@ function Nav() {
                   <a className="cursor-no-drop rounded-md px-3 py-2 text-sm font-medium text-gray-50 hover:bg-gray-700 hover:text-white">
                     Docs
                   </a>
-                  {status === "unauthenticated" && (
+                  {status === 'unauthenticated' && (
                     <button
                       type="button"
                       className="items-center rounded-md bg-gradient-to-r from-pink-400 to-yellow-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:from-green-500 hover:to-blue-500"
@@ -119,7 +116,7 @@ function Nav() {
                 </Disclosure.Button>
               </div>
 
-              {status === "authenticated" && (
+              {status === 'authenticated' && (
                 <div className="hidden lg:ml-4 lg:block">
                   <div className="flex items-center">
                     {/* Auth or Profile */}
@@ -149,8 +146,8 @@ function Nav() {
                               <Link
                                 href="/publish"
                                 className={classNames(
-                                  active ? "bg-gray-100" : "",
-                                  "block px-4 py-2 text-sm text-gray-900"
+                                  active ? 'bg-gray-100' : '',
+                                  'block px-4 py-2 text-sm text-gray-900'
                                 )}
                               >
                                 Publish a new App
@@ -163,8 +160,8 @@ function Nav() {
                               <button
                                 onClick={() => signOut()}
                                 className={classNames(
-                                  active ? "bg-gray-100" : "",
-                                  "block min-w-full px-4 py-2 text-left text-sm text-gray-900"
+                                  active ? 'bg-gray-100' : '',
+                                  'block min-w-full px-4 py-2 text-left text-sm text-gray-900'
                                 )}
                               >
                                 Sign out
@@ -207,12 +204,8 @@ function Nav() {
                 </div>
                 <div className="ml-3">
                   {/* TODO: Address */}
-                  <div className="text-base font-medium text-white">
-                    Tom Cook
-                  </div>
-                  <div className="text-sm font-medium text-gray-100">
-                    tom@example.com
-                  </div>
+                  <div className="text-base font-medium text-white">Tom Cook</div>
+                  <div className="text-sm font-medium text-gray-100">tom@example.com</div>
                 </div>
               </div>
               <div className="mt-3 space-y-1 px-2">

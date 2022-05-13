@@ -1,6 +1,6 @@
-import generateMetadata from "./generate-nft-metadata";
+import generateMetadata from './generate-nft-metadata';
 
-const BUCKET_URL = "https://xnfts.s3.us-west-2.amazonaws.com/";
+const BUCKET_URL = 'https://xnfts.s3.us-west-2.amazonaws.com/';
 
 /**
  * Input Files S3 Uploader
@@ -8,11 +8,7 @@ const BUCKET_URL = "https://xnfts.s3.us-west-2.amazonaws.com/";
  * @param uploadDispatch
  * @param session
  */
-export async function filesS3Uploader(
-  uploadState: any,
-  uploadDispatch: any,
-  session: any
-) {
+export async function filesS3Uploader(uploadState: any, uploadDispatch: any, session: any) {
   const files = [].concat(
     uploadState.bundle,
     uploadState.icon
@@ -26,94 +22,90 @@ export async function filesS3Uploader(
     if (count === 0) {
       folderName = `${folderName}/bundle`;
       uploadDispatch({
-        type: "s3",
-        field: "s3UrlBundle",
-        value: `${BUCKET_URL}${file.name}`,
+        type: 's3',
+        field: 's3UrlBundle',
+        value: `${BUCKET_URL}${file.name}`
       });
       count++;
     } else if (count === 1) {
       folderName = `${folderName}/icon`;
       uploadDispatch({
-        type: "s3",
-        field: "s3UrlIcon",
-        value: `${BUCKET_URL}${file.name}`,
+        type: 's3',
+        field: 's3UrlIcon',
+        value: `${BUCKET_URL}${file.name}`
       });
       count++;
     } else {
       folderName = `${folderName}/screenshots`;
       uploadDispatch({
-        type: "s3",
-        field: "s3UrlScreenshots",
-        value: `${BUCKET_URL}${file.name}`,
+        type: 's3',
+        field: 's3UrlScreenshots',
+        value: `${BUCKET_URL}${file.name}`
       });
       count++;
     }
 
     try {
-      const resp = await fetch("/api/s3", {
-        method: "POST",
+      const resp = await fetch('/api/s3', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           name: `${folderName}/${file.name}`,
-          type: file.type,
-        }),
+          type: file.type
+        })
       });
 
       let { url } = await resp.json();
 
       await fetch(url, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
-          "Content-type": file.type,
-          "Access-Control-Allow-Origin": "*",
+          'Content-type': file.type,
+          'Access-Control-Allow-Origin': '*'
         },
-        body: file,
+        body: file
       });
     } catch (err) {
-      console.log("Error saving file in S3", err);
+      console.log('Error saving file in S3', err);
     }
   }
 }
 
-export async function metadataS3Uploader(
-  uploadState: any,
-  uploadDispatch: any,
-  session: any
-) {
+export async function metadataS3Uploader(uploadState: any, uploadDispatch: any, session: any) {
   try {
     const metadata = generateMetadata(uploadState);
     const fileName = `${session.user.name}/${uploadState.title}/metadata.json`;
 
-    const resp = await fetch("/api/s3", {
-      method: "POST",
+    const resp = await fetch('/api/s3', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         name: fileName,
-        type: "application/json",
-      }),
+        type: 'application/json'
+      })
     });
 
     let { url } = await resp.json();
 
     await fetch(url, {
-      method: "PUT",
+      method: 'PUT',
       headers: {
-        "Content-type": "application/json",
-        "Access-Control-Allow-Origin": "*",
+        'Content-type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
       },
-      body: metadata,
+      body: metadata
     });
 
     uploadDispatch({
-      type: "s3",
-      field: "s3UrlMetadata",
-      value: `${BUCKET_URL}${fileName}`,
+      type: 's3',
+      field: 's3UrlMetadata',
+      value: `${BUCKET_URL}${fileName}`
     });
   } catch (err) {
-    console.log("Error saving file in S3", err);
+    console.log('Error saving file in S3', err);
   }
 }

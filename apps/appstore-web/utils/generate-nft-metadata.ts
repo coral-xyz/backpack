@@ -11,8 +11,8 @@ export default function generateMetadata(data: any): string {
     image: data.s3UrlIcon,
     properties: {
       icon: data.s3UrlIcon,
-      bundle: data.s3UrlBundle,
-    },
+      bundle: data.s3UrlBundle
+    }
   };
 
   return JSON.stringify(metadata);

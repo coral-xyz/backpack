@@ -1,4 +1,4 @@
 module.exports = {
-  siteUrl: "domain",
-  generateRobotsTxt: true,
+  siteUrl: 'domain',
+  generateRobotsTxt: true
 };

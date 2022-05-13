@@ -1,12 +1,12 @@
-import "../styles/globals.css";
-import type { AppProps } from "next/app";
-import PlausibleProvider from "next-plausible";
-import Head from "next/head";
-import { SessionProvider } from "next-auth/react";
-import { ContextProvider } from "../context/ContextProvider";
-import Nav from "../components/nav";
+import '../styles/globals.css';
+import type { AppProps } from 'next/app';
+import PlausibleProvider from 'next-plausible';
+import Head from 'next/head';
+import { SessionProvider } from 'next-auth/react';
+import { ContextProvider } from '../context/ContextProvider';
+import Nav from '../components/nav';
 
-require("@solana/wallet-adapter-react-ui/styles.css");
+require('@solana/wallet-adapter-react-ui/styles.css');
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
