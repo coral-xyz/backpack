@@ -1,10 +1,8 @@
-import { Fragment, memo } from 'react';
+import { Fragment, memo, useState } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { SearchIcon } from '@heroicons/react/solid';
+import { SearchIcon, UserIcon } from '@heroicons/react/solid';
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import Image from 'next/image';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import Link from 'next/link';
 
 function classNames(...classes: any) {
@@ -12,8 +10,25 @@ function classNames(...classes: any) {
 }
 
 function Nav() {
-  const { connected, disconnect } = useWallet();
-  const { setVisible } = useWalletModal();
+  const [connected, setConnected] = useState(false);
+
+  async function connect() {
+    if (window && window.anchor) {
+      await window.anchor.connect();
+      setConnected(window.anchor.isConnected);
+    } else {
+      throw new Error('window.anchor not found');
+    }
+  }
+
+  async function disconnect() {
+    if (window && window.anchor) {
+      await window.anchor.disconnect();
+      setConnected(false);
+    } else {
+      throw new Error('window.anchor not found');
+    }
+  }
 
   return (
     <Disclosure as="nav" className="bg-gray-900">
@@ -77,7 +92,7 @@ function Nav() {
                       className="items-center rounded-md bg-gradient-to-r
                       from-pink-400 to-yellow-500 px-4 py-2 text-sm font-medium
                       text-white shadow-sm hover:from-green-500 hover:to-blue-500"
-                      onClick={() => setVisible(true)}
+                      onClick={() => connect()}
                     >
                       Login with Wallet
                     </button>
@@ -106,6 +121,17 @@ function Nav() {
                   <div className="flex items-center">
                     {/* Auth or Profile */}
                     <Menu as="div" className="relative ml-4 flex-shrink-0">
+                      <div>
+                        <Menu.Button
+                          className="flex rounded-full bg-gray-800
+                        p-1 text-sm text-white focus:outline-none
+                        focus:ring-2 focus:ring-white focus:ring-offset-2
+                        focus:ring-offset-gray-800"
+                        >
+                          <span className="sr-only">Open user menu</span>
+                          <UserIcon className="h-7 w-7" />
+                        </Menu.Button>
+                      </div>
                       <Transition
                         as={Fragment}
                         enter="transition ease-out duration-100"
@@ -157,17 +183,16 @@ function Nav() {
 
           <Disclosure.Panel className="lg:hidden">
             <div className="space-y-1 px-2 pt-2 pb-3">
+              {/* Current: "bg-gray-900 text-white", Default: "text-gray-50 hover:bg-gray-700 hover:text-white" */}
               <Disclosure.Button
                 as="a"
-                className="block cursor-no-drop rounded-md px-3 py-2 
-                text-base font-medium text-gray-50 hover:bg-gray-700 hover:text-white"
+                className="block cursor-no-drop rounded-md px-3 py-2 text-base font-medium text-gray-50 hover:bg-gray-700 hover:text-white"
               >
                 Get Backpack
               </Disclosure.Button>
               <Disclosure.Button
                 as="a"
-                className="block cursor-no-drop rounded-md px-3 py-2 
-                text-base font-medium text-gray-50 hover:bg-gray-700 hover:text-white"
+                className="block cursor-no-drop rounded-md px-3 py-2 text-base font-medium text-gray-50 hover:bg-gray-700 hover:text-white"
               >
                 Docs
               </Disclosure.Button>
