@@ -76,26 +76,16 @@ export const activeWalletWithName = selector({
 /**
  * URL to the cluster to communicate with.
  */
-// TODO: this needs to be an atom family keyed on blockchain label.
-const DEFAULT_CONNECTION_URL =
-  process.env.DEFAULT_SOLANA_CONNECTION_URL ||
-  "https://solana-api.projectserum.com";
-
 export const connectionUrl = atom<string | null>({
   key: "clusterConnection",
   default: selector({
     key: "clusterConnectionDefault",
     get: ({ get }) => {
       const background = getBackgroundClient();
-      return background
-        .request({
-          method: UI_RPC_METHOD_CONNECTION_URL_READ,
-          params: [],
-        })
-        .then((url) => {
-          console.log("HEREconnection url", url);
-          return url;
-        });
+      return background.request({
+        method: UI_RPC_METHOD_CONNECTION_URL_READ,
+        params: [],
+      });
     },
   }),
   effects: [

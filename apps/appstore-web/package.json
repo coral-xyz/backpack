@@ -6,8 +6,7 @@
     "start": "next dev --port 3001",
     "build": "next build",
     "prod-start": "next start",
-    "lint": "next lint",
-    "preinstall": "yarn link @solana/wallet-adapter-wallets"
+    "lint": "next lint"
   },
   "dependencies": {
     "next": "^12.1.6",
