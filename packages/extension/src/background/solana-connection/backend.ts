@@ -145,7 +145,10 @@ export class Backend {
   private async startPolling(activeWallet: PublicKey) {
     this.pollIntervals.push(
       setInterval(async () => {
-        const data = await customSplTokenAccounts(activeWallet);
+        const data = await customSplTokenAccounts(
+          this.connection!,
+          activeWallet
+        );
         const key = JSON.stringify({
           method: "customSplTokenAccounts",
           args: [activeWallet.toString()],
@@ -207,7 +210,7 @@ export class Backend {
     if (value) {
       return value;
     }
-    const resp = await customSplTokenAccounts(publicKey);
+    const resp = await customSplTokenAccounts(this.connection!, publicKey);
     this.cache.set(key, resp);
     return resp;
   }

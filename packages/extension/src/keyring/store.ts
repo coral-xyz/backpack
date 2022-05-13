@@ -208,7 +208,9 @@ export class KeyringStore {
 
   public async connectionUrlUpdate(url: string): Promise<boolean> {
     return this.withUnlock(async () => {
-      return await this.activeBlockchain().connectionUrlUpdate(url);
+      const result = await this.activeBlockchain().connectionUrlUpdate(url);
+      await this.persist();
+      return result;
     });
   }
 

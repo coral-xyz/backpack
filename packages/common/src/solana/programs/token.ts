@@ -1,7 +1,7 @@
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, Connection } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
-import { Spl } from "@project-serum/anchor";
-import type { Provider, Program, SplToken } from "@project-serum/anchor";
+import { Provider, Spl } from "@project-serum/anchor";
+import type { Program, SplToken } from "@project-serum/anchor";
 import { metadata } from "@project-serum/token";
 
 export const TOKEN_PROGRAM_ID = new PublicKey(
@@ -27,11 +27,14 @@ export function associatedTokenAddress(
 }
 
 export async function customSplTokenAccounts(
+  connection: Connection,
   publicKey: PublicKey
 ): Promise<any> {
-  // Unhooked connection.
   // @ts-ignore
-  const tokenClient = Spl.token(window.anchor);
+  const provider = new Provider(connection);
+
+  // Unhooked connection.
+  const tokenClient = Spl.token(provider);
   //
   // Fetch tokens.
   //

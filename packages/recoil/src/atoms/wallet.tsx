@@ -81,21 +81,24 @@ const DEFAULT_CONNECTION_URL =
   process.env.DEFAULT_SOLANA_CONNECTION_URL ||
   "https://solana-api.projectserum.com";
 
-export const connectionUrl = atom<string>({
+export const connectionUrl = atom<string | null>({
   key: "clusterConnection",
-  default: DEFAULT_CONNECTION_URL,
-  effects: [
-    ({ setSelf }) => {
+  default: selector({
+    key: "clusterConnectionDefault",
+    get: ({ get }) => {
       const background = getBackgroundClient();
-      setSelf(
-        background
-          .request({
-            method: UI_RPC_METHOD_CONNECTION_URL_READ,
-            params: [],
-          })
-          .then((result) => result ?? DEFAULT_CONNECTION_URL)
-      );
+      return background
+        .request({
+          method: UI_RPC_METHOD_CONNECTION_URL_READ,
+          params: [],
+        })
+        .then((url) => {
+          console.log("HEREconnection url", url);
+          return url;
+        });
     },
+  }),
+  effects: [
     ({ onSet }) => {
       onSet((cluster) => {
         // TODO: do we want to handle this via notification instead?

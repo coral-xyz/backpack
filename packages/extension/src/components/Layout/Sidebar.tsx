@@ -29,6 +29,7 @@ import {
 import { WalletAddress } from "../../components/common";
 import { WithDrawerNoHeader } from "./Drawer";
 import { openConnectHardware } from "../../background/popup";
+import { ConnectionSwitch } from "./ConnectionSwitch";
 
 const useStyles = makeStyles((theme: any) => ({
   sidebarContainer: {
@@ -251,6 +252,9 @@ function _SidebarContent({ close }: { close: () => void }) {
             <Typography>Lock Wallet</Typography>
           </ListItem>
         )}
+        <ListItem>
+          <ConnectionSwitch />
+        </ListItem>
       </List>
       <WithDrawerNoHeader openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         {drawerView === "recent-activity" && <RecentActivity />}
