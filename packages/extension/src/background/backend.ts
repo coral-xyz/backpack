@@ -240,9 +240,7 @@ export class Backend {
   }
 
   async connectionUrlUpdate(url: string): Promise<boolean> {
-    console.log("here: connection", url);
     const didChange = await this.keyringStore.connectionUrlUpdate(url);
-    console.log("here: up[dated this", this);
     if (didChange) {
       Io.events.emit(BACKEND_EVENT, {
         name: NOTIFICATION_CONNECTION_URL_UPDATED,
