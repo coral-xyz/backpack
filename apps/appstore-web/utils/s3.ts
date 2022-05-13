@@ -1,6 +1,6 @@
 import generateMetadata from './generate-nft-metadata';
 
-const BUCKET_URL = 'https://xnfts.s3.us-west-2.amazonaws.com/';
+const BUCKET_URL = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/`;
 
 /**
  * Input Files S3 Uploader
