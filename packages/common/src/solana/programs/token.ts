@@ -1,4 +1,5 @@
-import { PublicKey, Connection } from "@solana/web3.js";
+import type { Connection } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { Provider, Spl } from "@project-serum/anchor";
 import type { Program, SplToken } from "@project-serum/anchor";
