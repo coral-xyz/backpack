@@ -7,7 +7,7 @@ module.exports = {
   rules: {
     "@typescript-eslint/ban-ts-comment": IGNORE,
     "@typescript-eslint/ban-types": WARNING,
-    "@typescript-eslint/consistent-type-imports": ERROR, // `yarn lint --fix` to autofix these errors
+    "@typescript-eslint/consistent-type-imports": WARNING,
     "@typescript-eslint/explicit-module-boundary-types": IGNORE,
     "@typescript-eslint/no-empty-function": IGNORE,
     "@typescript-eslint/no-explicit-any": IGNORE,
