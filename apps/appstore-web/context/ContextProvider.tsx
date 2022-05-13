@@ -9,12 +9,11 @@ import { AutoConnectProvider, useAutoConnect } from './AutoConnectProvider';
 const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { autoConnect } = useAutoConnect();
 
-  // const network =
-  //   process.env.NODE_ENV === 'development'
-  //     ? WalletAdapterNetwork.Devnet
-  //     : WalletAdapterNetwork.Mainnet;
+  const network =
+    process.env.NODE_ENV === 'development'
+      ? WalletAdapterNetwork.Devnet
+      : WalletAdapterNetwork.Mainnet;
 
-  const network = WalletAdapterNetwork.Devnet;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
 
   const wallets = useMemo(() => [new PhantomWalletAdapter(), new AnchorWalletAdapter()], []);

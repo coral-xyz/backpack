@@ -15,8 +15,6 @@ function Nav() {
   const { connected, disconnect } = useWallet();
   const { setVisible } = useWalletModal();
 
-  console.log(connected);
-
   return (
     <Disclosure as="nav" className="bg-gray-900">
       {({ open }) => (
