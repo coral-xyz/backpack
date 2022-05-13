@@ -56,9 +56,9 @@ function Publish() {
     e.preventDefault();
 
     // Upload Data to S3
-    await filesS3Uploader(uploadState, uploadDispatch, publicKey);
+    await filesS3Uploader(uploadState, uploadDispatch, publicKey.toBase58());
 
-    await metadataS3Uploader(uploadState, uploadDispatch, publicKey);
+    await metadataS3Uploader(uploadState, uploadDispatch, publicKey.toBase58());
 
     // uploadDispatch({ type: "reset" });
     setSelectedTab('Review & Mint');
