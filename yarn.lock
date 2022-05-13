@@ -2120,11 +2120,6 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@corex/deepmerge@^2.6.148":
-  version "2.6.148"
-  resolved "https://registry.yarnpkg.com/@corex/deepmerge/-/deepmerge-2.6.148.tgz#8fa825d53ffd1cbcafce1b6a830eefd3dcc09dd5"
-  integrity sha512-6QMz0/2h5C3ua51iAnXMPWFbb1QOU1UvSM4bKBw5mzdT+WtLgjbETBBIQZ+Sh9WvEcGwlAt/DEdRpIC3XlDBMA==
-
 "@cspotcode/source-map-consumer@0.8.0":
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/@cspotcode/source-map-consumer/-/source-map-consumer-0.8.0.tgz#33bf4b7b39c178821606f669bbc447a6a629786b"
@@ -9603,6 +9598,11 @@ eslint-config-next@12.1.6:
     eslint-plugin-react "^7.29.4"
     eslint-plugin-react-hooks "^4.5.0"
 
+eslint-config-prettier@^8.5.0:
+  version "8.5.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.5.0.tgz#5a81680ec934beca02c7b1a61cf8ca34b66feab1"
+  integrity sha512-obmWKLUNCnhtQRKc+tmnYuQl0pFU1ibYJQ5BGhTVB08bHe9wC8qUeG7c08dj9XX+AuPj1YSGSQIHl1pnDHZR0Q==
+
 eslint-config-react-app@^6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/eslint-config-react-app/-/eslint-config-react-app-6.0.0.tgz#ccff9fc8e36b322902844cbd79197982be355a0e"
@@ -14360,14 +14360,6 @@ next-plausible@^3.1.9:
   version "3.1.9"
   resolved "https://registry.yarnpkg.com/next-plausible/-/next-plausible-3.1.9.tgz#4795df2e83a6ca14495d2fa0d31a92649c42425f"
   integrity sha512-6Ro6lVnuXAtqbbBQfuKuu0cpZHWWvJWbOE1G+Rx6i42T6lLYtbQzbu09Cutv3vc/wD/4ySHzJkuTnxsqnlArGA==
-
-next-sitemap@^2.5.20:
-  version "2.5.20"
-  resolved "https://registry.yarnpkg.com/next-sitemap/-/next-sitemap-2.5.20.tgz#7124e138506c2f10e460c3dc77907baf4d134478"
-  integrity sha512-Qbm4N2WGA6VHemFN0C9PNWQav9RKwMEbVrNgVvDQhG0sDBmNBgKii54WklOjCvVJVHgQPgtXLBhlNaJGS+RVQA==
-  dependencies:
-    "@corex/deepmerge" "^2.6.148"
-    minimist "^1.2.6"
 
 next-tick@^1.1.0:
   version "1.1.0"
