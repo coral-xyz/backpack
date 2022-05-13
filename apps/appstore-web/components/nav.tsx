@@ -15,6 +15,8 @@ function Nav() {
   const { connected, disconnect } = useWallet();
   const { setVisible } = useWalletModal();
 
+  console.log(connected);
+
   return (
     <Disclosure as="nav" className="bg-gray-900">
       {({ open }) => (
@@ -25,7 +27,7 @@ function Nav() {
                 {/* Logo */}
                 <Link href="/">
                   <div className="flex-shrink-0">
-                    <Image src="/logo.png" width="120px" height="40px" />
+                    <Image alt="logo" src="/logo.png" width="120px" height="40px" />
                   </div>
                 </Link>
               </div>
@@ -106,21 +108,6 @@ function Nav() {
                   <div className="flex items-center">
                     {/* Auth or Profile */}
                     <Menu as="div" className="relative ml-4 flex-shrink-0">
-                      <div>
-                        <Menu.Button
-                          className="flex rounded-full
-                        bg-gray-800 text-sm text-white focus:outline-none
-                        focus:ring-2 focus:ring-white focus:ring-offset-2
-                        focus:ring-offset-gray-800"
-                        >
-                          <span className="sr-only">Open user menu</span>
-                          <img
-                            className="h-8 w-8 rounded-full"
-                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                            alt=""
-                          />
-                        </Menu.Button>
-                      </div>
                       <Transition
                         as={Fragment}
                         enter="transition ease-out duration-100"
@@ -172,16 +159,17 @@ function Nav() {
 
           <Disclosure.Panel className="lg:hidden">
             <div className="space-y-1 px-2 pt-2 pb-3">
-              {/* Current: "bg-gray-900 text-white", Default: "text-gray-50 hover:bg-gray-700 hover:text-white" */}
               <Disclosure.Button
                 as="a"
-                className="block cursor-no-drop rounded-md px-3 py-2 text-base font-medium text-gray-50 hover:bg-gray-700 hover:text-white"
+                className="block cursor-no-drop rounded-md px-3 py-2 
+                text-base font-medium text-gray-50 hover:bg-gray-700 hover:text-white"
               >
                 Get Backpack
               </Disclosure.Button>
               <Disclosure.Button
                 as="a"
-                className="block cursor-no-drop rounded-md px-3 py-2 text-base font-medium text-gray-50 hover:bg-gray-700 hover:text-white"
+                className="block cursor-no-drop rounded-md px-3 py-2 
+                text-base font-medium text-gray-50 hover:bg-gray-700 hover:text-white"
               >
                 Docs
               </Disclosure.Button>
