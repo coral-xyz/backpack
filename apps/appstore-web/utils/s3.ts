@@ -6,9 +6,9 @@ const BUCKET_URL = 'https://xnfts.s3.us-west-2.amazonaws.com/';
  * Input Files S3 Uploader
  * @param uploadState
  * @param uploadDispatch
- * @param session
+ * @param publicKey
  */
-export async function filesS3Uploader(uploadState: any, uploadDispatch: any, session: any) {
+export async function filesS3Uploader(uploadState: any, uploadDispatch: any, publicKey: string) {
   const files = [].concat(
     uploadState.bundle,
     uploadState.icon
@@ -17,7 +17,7 @@ export async function filesS3Uploader(uploadState: any, uploadDispatch: any, ses
 
   let count = 0;
   for await (const file of files) {
-    let folderName = `${session.user.name}/${uploadState.title}`;
+    let folderName = `${publicKey}/${uploadState.title}`;
 
     if (count === 0) {
       folderName = `${folderName}/bundle`;
@@ -73,10 +73,10 @@ export async function filesS3Uploader(uploadState: any, uploadDispatch: any, ses
   }
 }
 
-export async function metadataS3Uploader(uploadState: any, uploadDispatch: any, session: any) {
+export async function metadataS3Uploader(uploadState: any, uploadDispatch: any, publicKey: string) {
   try {
     const metadata = generateMetadata(uploadState);
-    const fileName = `${session.user.name}/${uploadState.title}/metadata.json`;
+    const fileName = `${publicKey}/${uploadState.title}/metadata.json`;
 
     const resp = await fetch('/api/s3', {
       method: 'POST',

@@ -3,7 +3,10 @@ import { DocumentAddIcon, PhotographIcon } from '@heroicons/react/outline';
 
 function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
   return (
-    <div className="flex cursor-pointer flex-col gap-8 rounded-xl bg-gray-700 px-14 py-10 hover:bg-gray-700/80">
+    <div
+      className="flex cursor-pointer flex-col gap-8 rounded-xl bg-gray-700 px-14 py-10
+    hover:bg-gray-700/80"
+    >
       {/*  Title */}
       <div>
         <label htmlFor="title" className="block text-sm font-medium tracking-wide text-gray-300">
@@ -130,7 +133,10 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
           Upload bundle
         </label>
         <label htmlFor="bundle" className="relative cursor-pointer">
-          <div className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-500 px-6 pt-5 pb-6">
+          <div
+            className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-500
+          px-6 pt-5 pb-6"
+          >
             <div className="space-y-1 text-center">
               <DocumentAddIcon className="mx-auto h-12 w-12 text-gray-400" />
               <div className="text-sm text-gray-600">
@@ -163,7 +169,10 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
           App Icon
         </label>
         <label htmlFor="icon" className="relative cursor-pointer">
-          <div className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-500 px-6 pt-5 pb-6">
+          <div
+            className="mt-1 flex justify-center rounded-md border-2 border-dashed
+          border-gray-500 px-6 pt-5 pb-6"
+          >
             <div className="space-y-1 text-center">
               <PhotographIcon className="mx-auto h-12 w-12 text-gray-400" />
               <div className="text-sm text-gray-600">
@@ -199,7 +208,10 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
           App Screenshots
         </label>
         <label htmlFor="screenshots" className="relative cursor-pointer">
-          <div className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-500 px-6 pt-5 pb-6">
+          <div
+            className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-500
+          px-6 pt-5 pb-6"
+          >
             <div className="space-y-1 text-center">
               <PhotographIcon className="mx-auto h-12 w-12 text-gray-400" />
               <div className="text-sm text-gray-600">

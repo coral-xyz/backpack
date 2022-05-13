@@ -1,7 +1,6 @@
 import { memo, useReducer, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { ArrowSmRightIcon } from '@heroicons/react/outline';
-import useAuth from '../../hooks/useAuth';
 import { filesS3Uploader, metadataS3Uploader } from '../../utils/s3';
 import { clusterApiUrl, Connection } from '@solana/web3.js';
 import { Metaplex, walletAdapterIdentity } from '@metaplex-foundation/js-next';
@@ -49,8 +48,7 @@ const uploadInitialState = {
 };
 
 function Publish() {
-  const { wallet, connected } = useWallet();
-  const { session, status } = useAuth(true);
+  const { wallet, connected, publicKey } = useWallet();
   const [selectedTab, setSelectedTab] = useState('Upload App');
   const [uploadState, uploadDispatch] = useReducer(uploadReducer, uploadInitialState);
 
@@ -58,9 +56,9 @@ function Publish() {
     e.preventDefault();
 
     // Upload Data to S3
-    await filesS3Uploader(uploadState, uploadDispatch, session);
+    await filesS3Uploader(uploadState, uploadDispatch, publicKey);
 
-    await metadataS3Uploader(uploadState, uploadDispatch, session);
+    await metadataS3Uploader(uploadState, uploadDispatch, publicKey);
 
     // uploadDispatch({ type: "reset" });
     setSelectedTab('Review & Mint');
@@ -96,7 +94,10 @@ function Publish() {
 
         <button
           type="button"
-          className="mx-auto inline-flex w-32 cursor-no-drop items-center rounded-md border border-transparent bg-gray-700 px-4 py-2 font-medium tracking-wide text-gray-50 shadow-sm hover:bg-gray-500"
+          className="mx-auto inline-flex w-32 cursor-no-drop
+          items-center rounded-md border border-transparent
+          bg-gray-700 px-4 py-2 font-medium tracking-wide
+          text-gray-50 shadow-sm hover:bg-gray-500"
         >
           Learn more
         </button>
@@ -110,8 +111,10 @@ function Publish() {
                 <UploadApp uploadState={uploadState} uploadDispatch={uploadDispatch} />
                 <button
                   type="submit"
-                  className="mx-auto mt-10 flex w-32 justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 font-medium tracking-wide text-gray-50 shadow-sm hover:bg-indigo-700"
-                  disabled={status !== 'authenticated'}
+                  className="mx-auto mt-10 flex w-32 justify-center rounded-md
+                  border border-transparent bg-indigo-600 px-4 py-2 font-medium
+                  tracking-wide text-gray-50 shadow-sm hover:bg-indigo-700"
+                  disabled={!connected}
                 >
                   Next <ArrowSmRightIcon className="h-6 w-6" />
                 </button>
@@ -122,7 +125,11 @@ function Publish() {
                 <MintApp uploadState={uploadState} uploadDispatch={uploadDispatch} />
                 <button
                   type="submit"
-                  className="mx-auto mt-10 flex justify-center rounded-lg bg-gradient-to-br from-pink-500 to-orange-400 px-6 py-3 text-center text-sm font-medium tracking-wide text-white shadow-lg shadow-red-800/80 hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-pink-800"
+                  className="mx-auto mt-10 flex justify-center rounded-lg
+                  bg-gradient-to-br from-pink-500 to-orange-400 px-6 py-3
+                  text-center text-sm font-medium tracking-wide text-white
+                  shadow-lg shadow-red-800/80 hover:bg-gradient-to-bl
+                  focus:outline-none focus:ring-4 focus:ring-pink-800"
                 >
                   Mint Executable NFT
                 </button>
