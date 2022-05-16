@@ -54,7 +54,6 @@ export const blockchainTokenAccounts = selectorFamily({
           if (!tokenAccount) {
             return null;
           }
-          console.log("token account", tokenAccount);
           //
           // Token registry metadata.
           //
