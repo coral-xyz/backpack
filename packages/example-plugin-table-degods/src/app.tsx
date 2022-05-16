@@ -63,7 +63,10 @@ function DegodsTable() {
       }
 
       const vault = await gemBank.account.vault.fetch(farmer.account.vault);
-      const tokenAccounts = await customSplTokenAccounts(vault.authority);
+      const tokenAccounts = await customSplTokenAccounts(
+        window.anchor.connection,
+        vault.authority
+      );
 
       setTokenAccounts(tokenAccounts.nftMetadata.map((m) => m[1]));
     })();
