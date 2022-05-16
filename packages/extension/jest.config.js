@@ -3,4 +3,5 @@ module.exports = {
   transform: {
     "^.+\\.tsx?$": ["esbuild-jest"],
   },
+  setupFilesAfterEnv: ["./jest.setup.js"],
 };
