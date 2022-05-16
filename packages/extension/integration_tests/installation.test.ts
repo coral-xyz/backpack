@@ -1,5 +1,4 @@
 import { generateMnemonic } from "bip39";
-import "expect-puppeteer";
 import type { Page } from "puppeteer";
 import manifest from "../public/manifest.json";
 
@@ -135,17 +134,19 @@ describe("Installing Anchor Wallet", () => {
 
       await expect(setupPage).toMatch("all done");
 
-      // Clicking 'Finish' closes the page, which removes setupPage as
-      // explained above. It's worth testing though to check that the
-      // main wallet screen can load properly after setup.
-
       await expect(setupPage).toClick("button", { text: "Finish" });
 
       await extensionPopupPage.reload({ waitUntil: "networkidle2" });
 
-      // skip this for now as Balances isn't shown anymore
-      // TODO: add a useful check here
-      // await expect(extensionPopupPage).toMatch("Balances");
-    });
+      // Check that we can unlock the wallet with the password we just used
+      await expect(extensionPopupPage).toFill(
+        "input[type=password]",
+        "validpassword"
+      );
+      await expect(extensionPopupPage).toClick("button", { text: "Unlock" });
+
+      // Ensure the wallet is unlocked and the balance page loads
+      await expect(extensionPopupPage).toMatch("Total Balance");
+    }, 30_000 /** allow 30s for test to run due to loading external data */);
   });
 });

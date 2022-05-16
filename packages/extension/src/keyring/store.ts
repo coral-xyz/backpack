@@ -107,18 +107,16 @@ export class KeyringStore {
     derivationPath: DerivationPath,
     password: string
   ) {
-    return this.withLock(async () => {
-      // Initialize keyrings.
-      this.password = password;
-      this.activeBlockchainLabel = BLOCKCHAIN_DEFAULT;
-      this.activeBlockchainUnchecked().init(mnemonic, derivationPath);
+    // Initialize keyrings.
+    this.password = password;
+    this.activeBlockchainLabel = BLOCKCHAIN_DEFAULT;
+    this.activeBlockchainUnchecked().init(mnemonic, derivationPath);
 
-      // Persist the initial wallet ui metadata.
-      await initWalletData();
+    // Persist the initial wallet ui metadata.
+    await initWalletData();
 
-      // Persist the encrypted data to then store.
-      this.persist();
-    });
+    // Persist the encrypted data to then store.
+    this.persist(true);
   }
 
   public async deriveNextKey(): Promise<[string, string]> {
@@ -270,8 +268,8 @@ export class KeyringStore {
     );
   }
 
-  private async persist() {
-    if (!this.isUnlocked()) {
+  private async persist(forceBecauseCalledFromInit = false) {
+    if (!forceBecauseCalledFromInit && !this.isUnlocked()) {
       throw new Error("invariant violation");
     }
     const plaintext = JSON.stringify(this.toJson());
