@@ -23,7 +23,7 @@ export const splTokenRegistry = atom<Map<string, TokenInfo> | null>({
             decimals: 9,
             symbol: "SOL",
             logoURI:
-              "https://solana.com/_next/static/media/solanaLogoMark.17260911.svg",
+              "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
             extensions: {
               coingeckoId: "solana",
             },
