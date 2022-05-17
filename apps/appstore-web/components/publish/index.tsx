@@ -52,6 +52,7 @@ function Publish() {
   const [selectedTab, setSelectedTab] = useState('Upload App');
   const [uploadState, uploadDispatch] = useReducer(uploadReducer, uploadInitialState);
 
+  // Upload metadata, bundle.js and images
   async function uploadBundle(e) {
     e.preventDefault();
 
@@ -64,6 +65,7 @@ function Publish() {
     setSelectedTab('Review & Mint');
   }
 
+  // Mint xNFT
   async function mintApp(e) {
     e.preventDefault();
 
