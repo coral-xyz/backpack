@@ -2,53 +2,17 @@ import { memo, useReducer, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { ArrowSmRightIcon } from '@heroicons/react/outline';
 import { filesS3Uploader, metadataS3Uploader } from '../../utils/s3';
-import { clusterApiUrl, Connection } from '@solana/web3.js';
-import { Metaplex, walletAdapterIdentity } from '@metaplex-foundation/js-next';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
+import { uploadInitialState, uploadReducer } from '../../reducers/upload';
+import { xNFTMint } from 'apps/appstore-web/utils/xnft-client';
 
 const Tabs = dynamic(() => import('./tabs'));
 const UploadApp = dynamic(() => import('./upload-app'));
 const MintApp = dynamic(() => import('./mint-app'));
 
-function uploadReducer(state, action) {
-  switch (action.type) {
-    case 'field': {
-      return {
-        ...state,
-        [action.field]: action.value
-      };
-    }
-    case 'file': {
-      return {
-        ...state,
-        [action.field]: action.value
-      };
-    }
-    case 's3': {
-      return {
-        ...state,
-        [action.field]: action.value
-      };
-    }
-    case 'reset': {
-      return uploadInitialState;
-    }
-  }
-}
-
-const uploadInitialState = {
-  title: '',
-  description: '',
-  website: '',
-  discord: '',
-  twitter: '',
-  bundle: {},
-  icon: {},
-  screenshots: {}
-};
-
 function Publish() {
-  const { wallet, connected, publicKey } = useWallet();
+  const { connected, publicKey } = useWallet();
+  const anchorWallet = useAnchorWallet();
   const [selectedTab, setSelectedTab] = useState('Upload App');
   const [uploadState, uploadDispatch] = useReducer(uploadReducer, uploadInitialState);
 
@@ -61,30 +25,14 @@ function Publish() {
 
     await metadataS3Uploader(uploadState, uploadDispatch, publicKey!.toBase58());
 
-    // uploadDispatch({ type: "reset" });
     setSelectedTab('Review & Mint');
   }
 
   // Mint xNFT
-  async function mintApp(e) {
+  async function mintXNF(e) {
     e.preventDefault();
 
-    const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
-    const metaplex = Metaplex.make(connection);
-
-    metaplex.use(walletAdapterIdentity(wallet!.adapter));
-
-    const transaction = await metaplex.nfts().create({
-      name: uploadState.title,
-      uri: uploadState.s3UrlMetadata,
-      isMutable: true
-    });
-
-    uploadDispatch({
-      type: 'field',
-      field: 'transaction',
-      value: `https://explorer.solana.com/tx/${transaction.transactionId}?cluster=devnet`
-    });
+    await xNFTMint(uploadState, anchorWallet, publicKey);
   }
 
   return (
@@ -107,7 +55,7 @@ function Publish() {
         {/* Tabs */}
         <div className="mt-10 flex flex-col gap-2">
           <Tabs selected={selectedTab} setSelected={setSelectedTab} />
-          <form onSubmit={selectedTab === 'Upload App' ? uploadBundle : mintApp}>
+          <form onSubmit={selectedTab === 'Upload App' ? uploadBundle : mintXNF}>
             {selectedTab === 'Upload App' && (
               <>
                 <UploadApp uploadState={uploadState} uploadDispatch={uploadDispatch} />

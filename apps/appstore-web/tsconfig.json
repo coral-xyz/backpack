@@ -12,6 +12,7 @@
     "module": "esnext",
     "isolatedModules": true,
     "jsx": "preserve",
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "composite": false
   }
 }

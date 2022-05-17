@@ -17,7 +17,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     let { name, type } = req.body;
 
     const fileParams = {
-      Bucket: process.env.AWS_S3_BUCKET,
+      Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET,
       Key: name,
       Expires: 600,
       ContentType: type
