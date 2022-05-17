@@ -223,22 +223,22 @@ export class SolanaLedgerKeyring implements LedgerKeyring {
   private responseResolvers: { [reqId: number]: [Function, Function] };
 
   private iframe: any;
-  private iframeUrl: string;
+  // private iframeUrl: string;
 
   constructor(derivationPaths: Array<ImportedDerivationPath>) {
     this.derivationPaths = derivationPaths;
     this.requestId = 0;
     this.responseResolvers = {};
 
-    // Responses from the iframe.
-    this._setupResponseChannel();
+    // // Responses from the iframe.
+    // this._setupResponseChannel();
 
-    // Inject the iframe.
-    this.iframeUrl = LEDGER_IFRAME_URL;
-    this.iframe = document.createElement("iframe");
-    this.iframe.src = this.iframeUrl;
-    this.iframe.allow = `hid 'src'`;
-    document.head.appendChild(this.iframe);
+    // // Inject the iframe.
+    // this.iframeUrl = LEDGER_IFRAME_URL;
+    // this.iframe = document.createElement("iframe");
+    // this.iframe.src = this.iframeUrl;
+    // this.iframe.allow = `hid 'src'`;
+    // document.head.appendChild(this.iframe);
   }
 
   public keyCount(): number {
@@ -338,23 +338,23 @@ export class SolanaLedgerKeyring implements LedgerKeyring {
     return id;
   }
 
-  private _setupResponseChannel() {
-    window.addEventListener("message", (event) => {
-      if (event.data.type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
-        return;
-      }
-      const { id, result, error } = event.data.detail;
-      const resolver = this.responseResolvers[id];
-      if (!resolver) {
-        // Why does this get thrown?
-        throw new Error(`resolver not found for request id: ${id}`);
-      }
-      const [resolve, reject] = resolver;
-      delete this.responseResolvers[id];
-      if (error) {
-        reject(error);
-      }
-      resolve(result);
-    });
-  }
+  // private _setupResponseChannel() {
+  //   window.addEventListener("message", (event) => {
+  //     if (event.data.type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
+  //       return;
+  //     }
+  //     const { id, result, error } = event.data.detail;
+  //     const resolver = this.responseResolvers[id];
+  //     if (!resolver) {
+  //       // Why does this get thrown?
+  //       throw new Error(`resolver not found for request id: ${id}`);
+  //     }
+  //     const [resolve, reject] = resolver;
+  //     delete this.responseResolvers[id];
+  //     if (error) {
+  //       reject(error);
+  //     }
+  //     resolve(result);
+  //   });
+  // }
 }
