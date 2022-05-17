@@ -33,21 +33,23 @@ export async function customSplTokenAccounts(
 ): Promise<any> {
   // @ts-ignore
   const provider = new Provider(connection);
+  const tokenClient = Spl.token(provider);
 
-  //
-  // Fetch native sol data.
-  //
-  const accountInfo = await provider.connection.getAccountInfo(publicKey);
+  const [accountInfo, tokenAccounts] = await Promise.all([
+    //
+    // Fetch native sol data.
+    //
+    provider.connection.getAccountInfo(publicKey),
+    //
+    // Fetch tokens.
+    //
+    fetchTokens(publicKey, tokenClient),
+  ]);
   const nativeSol = {
     key: publicKey,
     mint: PublicKey.default,
     amount: accountInfo ? accountInfo.lamports.toString() : "0",
   };
-  const tokenClient = Spl.token(provider);
-  //
-  // Fetch tokens.
-  //
-  const tokenAccounts = await fetchTokens(publicKey, tokenClient);
   const tokenAccountsArray = Array.from(tokenAccounts.values());
 
   //

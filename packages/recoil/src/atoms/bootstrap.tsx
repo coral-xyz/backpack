@@ -37,26 +37,22 @@ export const bootstrap = atom<any>({
         const splTokenAccounts = new Map<string, TokenAccountWithKey>(
           tokenAccountsMap
         );
-        //
-        // Fetch the price data.
-        //
-        const coingeckoData = await fetchPriceData(
-          splTokenAccounts,
-          tokenRegistry
-        );
 
-        //
-        // Get the transaction data for the wallet's recent transactions.
-        //
-        const recentTransactions = await fetchRecentTransactions(
-          provider.connection,
-          walletPublicKey
-        );
-
-        //
-        // Get the recent blockhash for transaction construction.
-        //
-        const { blockhash } = await provider.connection.getLatestBlockhash();
+        const [coingeckoData, recentTransactions, recentBlockhash] =
+          await Promise.all([
+            //
+            // Fetch the price data.
+            //
+            fetchPriceData(splTokenAccounts, tokenRegistry),
+            //
+            // Get the transaction data for the wallet's recent transactions.
+            //
+            fetchRecentTransactions(provider.connection, walletPublicKey),
+            //
+            // Get the recent blockhash for transaction construction.
+            //
+            provider.connection.getLatestBlockhash(),
+          ]);
 
         //
         // Done.
@@ -67,7 +63,7 @@ export const bootstrap = atom<any>({
           splNftMetadata: new Map(nftMetadata),
           coingeckoData,
           recentTransactions,
-          recentBlockhash: blockhash,
+          recentBlockhash: recentBlockhash.blockhash,
           walletPublicKey,
         };
       } catch (err) {
