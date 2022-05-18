@@ -72,6 +72,11 @@ const useStyles = makeStyles((theme: any) => ({
   overviewLabel: {
     color: theme.custom.colors.fontColor,
   },
+  connectionListItem: {
+    flexDirection: "column",
+    alignItems: "start",
+    marginTop: "10px",
+  },
 }));
 
 export function SidebarButton() {
@@ -252,7 +257,7 @@ function _SidebarContent({ close }: { close: () => void }) {
             <Typography>Lock Wallet</Typography>
           </ListItem>
         )}
-        <ListItem>
+        <ListItem className={classes.connectionListItem}>
           <ConnectionSwitch />
         </ListItem>
       </List>
