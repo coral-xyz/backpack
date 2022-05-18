@@ -2,6 +2,8 @@ import React, { useMemo, useState, useEffect } from "react";
 import { PublicKey } from "@solana/web3.js";
 import { Program } from "@project-serum/anchor";
 import {
+  useNavigation,
+  Text,
   BalancesTable,
   BalancesTableHead,
   BalancesTableContent,
@@ -18,7 +20,8 @@ export function App() {
 }
 
 function DegodsTable() {
-  const [tokenAccounts, setTokenAccounts] = useState<any>([]);
+  const nav = useNavigation();
+  const [tokenAccounts, setTokenAccounts] = useState<any>(null);
   const gemFarm = useMemo(() => {
     return new Program<GemFarm>(IDL_GEM_FARM, PID_GEM_FARM, window.anchor);
   }, []);
@@ -36,22 +39,43 @@ function DegodsTable() {
   return (
     <BalancesTable>
       <BalancesTableHead title={"Staked Degods"} iconUrl={DEGODS_ICON_DATA} />
-      <BalancesTableContent>
-        {tokenAccounts.map((t) => {
-          return (
-            <BalancesTableRow>
-              <BalancesTableCell
-                title={t.tokenMetaUriData.name}
-                icon={t.tokenMetaUriData.image}
-                subtitle={t.tokenMetaUriData.collection.family}
-              />
-            </BalancesTableRow>
-          );
-        })}
-      </BalancesTableContent>
+      {tokenAccounts === null ? (
+        <BalancesTableContent></BalancesTableContent>
+      ) : tokenAccounts.length === 0 ? (
+        <BalancesTableContent>
+          <BalancesTableRow onClick={() => nav.push(<StakeDetail />)}>
+            <BalancesTableCell
+              title={"Stake your Degods"}
+              icon={
+                "https://uploads-ssl.webflow.com/61f2155bfe47bd05cae702bb/61f21670d6560ecc93050888_New%20Logo.png"
+              }
+              subtitle={"Earn $DUST now"}
+              usdValue={0}
+            />
+          </BalancesTableRow>
+        </BalancesTableContent>
+      ) : (
+        <BalancesTableContent>
+          {tokenAccounts.map((t) => {
+            return (
+              <BalancesTableRow onClick={() => nav.push(<StakeDetail />)}>
+                <BalancesTableCell
+                  title={t.tokenMetaUriData.name}
+                  icon={t.tokenMetaUriData.image}
+                  subtitle={t.tokenMetaUriData.collection.family}
+                />
+              </BalancesTableRow>
+            );
+          })}
+        </BalancesTableContent>
+      )}
       <BalancesTableFooter></BalancesTableFooter>
     </BalancesTable>
   );
+}
+
+function StakeDetail() {
+  return <Text>Stake Detail Here</Text>;
 }
 
 async function fetchTokenAccounts(
@@ -83,7 +107,7 @@ async function fetchTokenAccounts(
     },
   ]);
   if (farmers.length === 0) {
-    return;
+    return [];
   }
   const farmer = farmers[0];
   const receipts = await gemBank.account.gemDepositReceipt.all([
@@ -96,7 +120,7 @@ async function fetchTokenAccounts(
   ]);
 
   if (receipts.length === 0) {
-    return;
+    return [];
   }
 
   const vault = await gemBank.account.vault.fetch(farmer.account.vault);
