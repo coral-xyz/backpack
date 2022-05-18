@@ -2,7 +2,6 @@
   "name": "@200ms/ledger-injection",
   "version": "1.0.0",
   "description": "",
-  "source": "src/index.ts",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "parcel build src/index.html",
@@ -15,11 +14,8 @@
     "@200ms/common": "*",
     "@ledgerhq/hw-transport": "^6.24.1",
     "@ledgerhq/hw-transport-webhid": "^6.24.1",
-    "@solana/web3.js": "^1.36.0",
-    "@types/rollup-plugin-node-builtins": "^2.1.2",
     "bs58": "^5.0.0",
-    "buffer": "^6.0.3",
-    "eventemitter3": "^4.0.7"
+    "buffer": "^6.0.3"
   },
   "devDependencies": {
     "parcel": "^2.4.1",
