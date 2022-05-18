@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { PublicKey } from "@solana/web3.js";
 import { Program } from "@project-serum/anchor";
-import * as anchor from "@project-serum/anchor";
 import {
   BalancesTable,
   BalancesTableHead,
@@ -29,46 +28,8 @@ function DegodsTable() {
 
   useEffect(() => {
     (async () => {
-      const farmers = await gemFarm.account.farmer.all([
-        // Farm pubkey.
-        {
-          memcmp: {
-            bytes: FARM.toString(),
-            offset: 8,
-          },
-        },
-        // Farmer authority
-        {
-          memcmp: {
-            bytes: window.anchor.publicKey.toString(),
-            offset: 8 + 32,
-          },
-        },
-      ]);
-      if (farmers.length === 0) {
-        return;
-      }
-      const farmer = farmers[0];
-      const receipts = await gemBank.account.gemDepositReceipt.all([
-        {
-          memcmp: {
-            bytes: farmer.account.vault.toString(),
-            offset: 8,
-          },
-        },
-      ]);
-
-      if (receipts.length === 0) {
-        return;
-      }
-
-      const vault = await gemBank.account.vault.fetch(farmer.account.vault);
-      const tokenAccounts = await customSplTokenAccounts(
-        window.anchor.connection,
-        vault.authority
-      );
-
-      setTokenAccounts(tokenAccounts.nftMetadata.map((m) => m[1]));
+      const ta = await fetchTokenAccounts(gemFarm, gemBank);
+      setTokenAccounts(ta);
     })();
   }, [gemFarm, gemBank]);
 
@@ -93,6 +54,62 @@ function DegodsTable() {
   );
 }
 
+async function fetchTokenAccounts(
+  gemFarm: Program<GemFarm>,
+  gemBank: Program<GemBank>
+): Promise<any> {
+  //
+  // If we have a cached response, then use it.
+  //
+  const resp = CACHE.get(window.anchor.publicKey.toString());
+  if (resp) {
+    return resp;
+  }
+
+  const farmers = await gemFarm.account.farmer.all([
+    // Farm pubkey.
+    {
+      memcmp: {
+        bytes: FARM.toString(),
+        offset: 8,
+      },
+    },
+    // Farmer authority
+    {
+      memcmp: {
+        bytes: window.anchor.publicKey.toString(),
+        offset: 8 + 32,
+      },
+    },
+  ]);
+  if (farmers.length === 0) {
+    return;
+  }
+  const farmer = farmers[0];
+  const receipts = await gemBank.account.gemDepositReceipt.all([
+    {
+      memcmp: {
+        bytes: farmer.account.vault.toString(),
+        offset: 8,
+      },
+    },
+  ]);
+
+  if (receipts.length === 0) {
+    return;
+  }
+
+  const vault = await gemBank.account.vault.fetch(farmer.account.vault);
+  const tokenAccounts = await customSplTokenAccounts(
+    window.anchor.connection,
+    vault.authority
+  );
+
+  const newResp = tokenAccounts.nftMetadata.map((m) => m[1]);
+  CACHE.set(window.anchor.publicKey.toString(), newResp);
+  return newResp;
+}
+
 const DEGODS_ICON_DATA =
   "https://content.solsea.io/files/thumbnail/1632882828551-880453087-25B1476B-32ED-496E-AA86-35B687255916.jpeg";
 const PID_GEM_FARM = new PublicKey(
@@ -102,3 +119,8 @@ const PID_GEM_BANK = new PublicKey(
   "6VJpeYFy87Wuv4KvwqD5gyFBTkohqZTqs6LgbCJ8tDBA"
 );
 const FARM = new PublicKey("G9nFryoG6Cn2BexRquWa2AKTwcJfumWoDNLUwWkhXcij");
+
+//
+// Caches requests.
+//
+const CACHE = new Map<string, any>();

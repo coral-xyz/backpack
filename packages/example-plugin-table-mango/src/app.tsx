@@ -67,6 +67,13 @@ function MangoAccountDetail({}: any) {
 }
 
 async function fetchRowData(): Promise<any> {
+  //
+  // If we have a cached response, then use it.
+  //
+  let resp = CACHE.get(window.anchor.publicKey.toString());
+  if (resp) {
+    return resp;
+  }
   const client = new MangoClient(window.anchor.connection, MANGO_PID);
   const config = Config.ids().getGroupWithName("mainnet.1");
   if (!config) {
@@ -98,11 +105,19 @@ async function fetchRowData(): Promise<any> {
       };
     })
   );
-  return {
+  const newResp = {
     rowData,
     mangoGroup,
     mangoCache,
   };
+
+  CACHE.set(window.anchor.publicKey.toString(), newResp);
+  return newResp;
 }
 
 const MANGO_PID = new PublicKey("mv3ekLzLbnVPNxjSKvqBpU3ZeZXPQdEC3bp5MDEBG68");
+
+//
+// Caches requests.
+//
+const CACHE = new Map<string, any>();
