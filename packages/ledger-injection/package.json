@@ -2,7 +2,6 @@
   "name": "@200ms/ledger-injection",
   "version": "1.0.0",
   "description": "",
-  "source": "src/index.ts",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "parcel build src/index.html",
