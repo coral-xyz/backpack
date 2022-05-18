@@ -38,7 +38,7 @@ function DegodsTable() {
       ]);
       setTokenAccounts(dead.concat(alive));
     })();
-  }, []);
+  }, [window.anchor.publicKey]);
 
   return (
     <BalancesTable>
@@ -87,7 +87,9 @@ async function fetchTokenAccounts(
   //
   // If we have a cached response, then use it.
   //
-  const resp = CACHE.get(window.anchor.publicKey.toString());
+  const cacheKey = `${isDead}:${window.anchor.publicKey.toString()}`;
+  console.log("cache", CACHE);
+  const resp = CACHE.get(cacheKey);
   if (resp) {
     return resp;
   }
@@ -111,7 +113,7 @@ async function fetchTokenAccounts(
   );
 
   const newResp = tokenAccounts.nftMetadata.map((m) => m[1]);
-  CACHE.set(window.anchor.publicKey.toString(), newResp);
+  CACHE.set(cacheKey, newResp);
   return newResp;
 }
 
