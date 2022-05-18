@@ -31,10 +31,14 @@ function DegodsTable() {
 
   useEffect(() => {
     (async () => {
-      const ta = await fetchTokenAccounts(gemFarm, gemBank);
-      setTokenAccounts(ta);
+      const wallet = window.anchor.publicKey;
+      const [dead, alive] = await Promise.all([
+        fetchTokenAccounts(true, wallet),
+        fetchTokenAccounts(false, wallet),
+      ]);
+      setTokenAccounts(dead.concat(alive));
     })();
-  }, [gemFarm, gemBank]);
+  }, []);
 
   return (
     <BalancesTable>
@@ -46,9 +50,7 @@ function DegodsTable() {
           <BalancesTableRow onClick={() => nav.push(<StakeDetail />)}>
             <BalancesTableCell
               title={"Stake your Degods"}
-              icon={
-                "https://uploads-ssl.webflow.com/61f2155bfe47bd05cae702bb/61f21670d6560ecc93050888_New%20Logo.png"
-              }
+              icon={EMPTY_DEGODS_ICON}
               subtitle={"Earn $DUST now"}
               usdValue={0}
             />
@@ -79,8 +81,8 @@ function StakeDetail() {
 }
 
 async function fetchTokenAccounts(
-  gemFarm: Program<GemFarm>,
-  gemBank: Program<GemBank>
+  isDead: boolean,
+  wallet: PublicKey
 ): Promise<any> {
   //
   // If we have a cached response, then use it.
@@ -90,43 +92,22 @@ async function fetchTokenAccounts(
     return resp;
   }
 
-  const farmers = await gemFarm.account.farmer.all([
-    // Farm pubkey.
-    {
-      memcmp: {
-        bytes: FARM.toString(),
-        offset: 8,
-      },
-    },
-    // Farmer authority
-    {
-      memcmp: {
-        bytes: window.anchor.publicKey.toString(),
-        offset: 8 + 32,
-      },
-    },
-  ]);
-  if (farmers.length === 0) {
-    return [];
-  }
-  const farmer = farmers[0];
-  const receipts = await gemBank.account.gemDepositReceipt.all([
-    {
-      memcmp: {
-        bytes: farmer.account.vault.toString(),
-        offset: 8,
-      },
-    },
-  ]);
+  const [vaultPubkey] = await PublicKey.findProgramAddress(
+    [
+      Buffer.from("vault"),
+      isDead ? DEAD_BANK.toBuffer() : BANK.toBuffer(),
+      wallet.toBuffer(),
+    ],
+    PID_GEM_BANK
+  );
 
-  if (receipts.length === 0) {
-    return [];
-  }
-
-  const vault = await gemBank.account.vault.fetch(farmer.account.vault);
+  const [vaultAuthority] = await PublicKey.findProgramAddress(
+    [vaultPubkey.toBuffer()],
+    PID_GEM_BANK
+  );
   const tokenAccounts = await customSplTokenAccounts(
     window.anchor.connection,
-    vault.authority
+    vaultAuthority
   );
 
   const newResp = tokenAccounts.nftMetadata.map((m) => m[1]);
@@ -134,6 +115,8 @@ async function fetchTokenAccounts(
   return newResp;
 }
 
+const EMPTY_DEGODS_ICON =
+  "https://uploads-ssl.webflow.com/61f2155bfe47bd05cae702bb/61f21670d6560ecc93050888_New%20Logo.png";
 const DEGODS_ICON_DATA =
   "https://content.solsea.io/files/thumbnail/1632882828551-880453087-25B1476B-32ED-496E-AA86-35B687255916.jpeg";
 const PID_GEM_FARM = new PublicKey(
@@ -143,6 +126,10 @@ const PID_GEM_BANK = new PublicKey(
   "6VJpeYFy87Wuv4KvwqD5gyFBTkohqZTqs6LgbCJ8tDBA"
 );
 const FARM = new PublicKey("G9nFryoG6Cn2BexRquWa2AKTwcJfumWoDNLUwWkhXcij");
+const DEAD_FARM = new PublicKey("8LbL9wfddTWo9vFf5CWoH979KowdV7JUfbBrnNdmPpk8");
+
+const BANK = new PublicKey("EhRihAPeaR2jC9PKtyRcKzVwXRisykjt72ieYS232ERM");
+const DEAD_BANK = new PublicKey("4iDK8akg8RHg7PguBTTsJcQbHo5iHKzkBJLk8MSvnENA");
 
 //
 // Caches requests.
