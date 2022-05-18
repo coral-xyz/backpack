@@ -30,6 +30,7 @@ export const uploadInitialState = {
   website: '',
   discord: '',
   twitter: '',
+  price: 0,
   bundle: {},
   icon: {},
   screenshots: {}

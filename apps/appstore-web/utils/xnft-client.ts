@@ -4,6 +4,7 @@ import { Xnft, IDL } from '../programs/xnft/types';
 import BN from 'bn.js';
 import xnftIdl from '../programs/xnft/idl.json';
 
+// TODO:
 const connection = new Connection('http://127.0.0.1:8899');
 
 // xNFT Program ID

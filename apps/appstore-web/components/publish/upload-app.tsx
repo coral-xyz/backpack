@@ -127,6 +127,29 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
         </div>
       </div>
 
+      {/*  Price */}
+      <div>
+        <label htmlFor="price" className="block text-sm  font-medium tracking-wide text-gray-300">
+          Price
+        </label>
+        <div className="mt-1">
+          <input
+            type="text"
+            name="price"
+            id="price"
+            className="block w-full rounded-md border-gray-900 bg-gray-900 text-sm text-gray-300"
+            value={uploadState.price}
+            onChange={e =>
+              uploadDispatch({
+                type: 'field',
+                field: 'price',
+                value: e.currentTarget.value
+              })
+            }
+          />
+        </div>
+      </div>
+
       {/*  Bundle */}
       <div>
         <label htmlFor="bundle" className="block text-sm  font-medium tracking-wide text-gray-300">
