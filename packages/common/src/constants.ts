@@ -150,7 +150,7 @@ export const CONNECTION_POPUP_NOTIFICATIONS = "anchor-popup-notifications";
 export const SOLANA_CONNECTION_RPC_UI = "solana-connection-rpc-ui";
 
 //const LEDGER_IFRAME_URL = "https://200ms-labs.github.io/anchor-wallet";
-export const LEDGER_IFRAME_URL = "https://localhost:4443/dist/browser";
+export const LEDGER_IFRAME_URL = "https://localhost:4443/dist";
 export const LEDGER_INJECTED_CHANNEL_REQUEST = "ledger-injected-request";
 export const LEDGER_INJECTED_CHANNEL_RESPONSE = "ledger-injected-response";
 export const LEDGER_METHOD_UNLOCK = "ledger-method-unlock";
