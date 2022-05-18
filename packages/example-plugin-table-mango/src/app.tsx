@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import {
   useNavigation,
+  useDidLoad,
   Text,
   View,
   BalancesTable,
@@ -19,11 +20,13 @@ export function App() {
 
 function MangoTable() {
   const nav = useNavigation();
+  const didLoad = useDidLoad();
   const [rowData, setRowData] = useState<Array<any> | null>(null);
   useEffect(() => {
     (async () => {
       const { rowData, mangoGroup, mangoCache } = await fetchRowData();
       setRowData(rowData);
+      didLoad();
     })();
   }, []);
   return (

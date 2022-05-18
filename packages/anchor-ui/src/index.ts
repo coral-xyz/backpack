@@ -9,6 +9,6 @@ export {
   TextSerialized,
   NodeSerialized,
 } from "./reconciler";
-export { useNavigation } from "./Context";
+export { useNavigation, useDidLoad } from "./Context";
 export * from "./Dom";
 export * from "./elements";

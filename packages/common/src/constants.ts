@@ -40,6 +40,7 @@ export const PLUGIN_NOTIFICATION_RENDER = "render";
 export const PLUGIN_RPC_METHOD_CONNECT = "connect";
 export const PLUGIN_RPC_METHOD_NAV_PUSH = "nav-push";
 export const PLUGIN_RPC_METHOD_NAV_POP = "nav-pop";
+export const PLUGIN_RPC_METHOD_DID_LOAD = "did-load";
 export const PLUGIN_NOTIFICATION_MOUNT = "mount";
 export const PLUGIN_NOTIFICATION_UNMOUNT = "unmount";
 export const PLUGIN_NOTIFICATION_NAVIGATION_POP = "nav-pop";
