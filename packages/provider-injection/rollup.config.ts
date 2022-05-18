@@ -30,6 +30,9 @@ export default {
       values: {
         "process.env.NODE_ENV": JSON.stringify(env),
         "process.env.BROWSER": JSON.stringify(true),
+        "process.env.DEFAULT_SOLANA_CONNECTION_URL": JSON.stringify(
+          process.env.DEFAULT_SOLANA_CONNECTION_URL || ""
+        ),
       },
     }),
     terser(),

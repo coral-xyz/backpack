@@ -58,7 +58,11 @@ export class ProviderInjection extends EventEmitter implements Provider {
   }
 
   defaultConnection(): Connection {
-    return new Connection("https://solana-api.projectserum.com");
+    return new Connection(
+      // check rollup.config.ts for this env var
+      process.env.DEFAULT_SOLANA_CONNECTION_URL ||
+        "https://solana-api.projectserum.com"
+    );
   }
 
   // Setup channels with the content script.
