@@ -175,6 +175,7 @@ export class BackgroundSolanaConnection extends Connection {
       return resp;
     }
     resp.data = Buffer.from(resp.data);
+    resp.owner = new PublicKey(resp.owner);
     return resp;
   }
 

@@ -16,6 +16,11 @@ export const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
 );
 export const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 export const WSOL_MINT = "So11111111111111111111111111111111111111112";
+//
+// App's dummy representation of native sol as an SPL token. This is *not*
+// wrapped SOL. We treat native sol in the same way as we do SPL tokens.
+//
+export const SOL_NATIVE_MINT = PublicKey.default.toString();
 
 export function associatedTokenAddress(
   mint: PublicKey,

@@ -149,9 +149,9 @@ export type TransferTokenRequest = {
 
 export type TransferSolRequest = {
   // SOL address.
-  source: string;
+  source: PublicKey;
   // SOL address.
-  destination: string;
+  destination: PublicKey;
   //
   amount: number;
 };

@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme: any) => ({
   },
   miniDrawerRoot: {
     background: "transparent",
-    zIndex: "1 !important" as any,
+    zIndex: "1301 !important" as any,
     flex: 1,
   },
   miniDrawerPaper: {

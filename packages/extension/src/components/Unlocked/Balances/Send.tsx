@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { makeStyles, useTheme, Typography } from "@material-ui/core";
 import { SystemProgram, PublicKey } from "@solana/web3.js";
 import { useAnchorContext, useSolanaCtx } from "@200ms/recoil";
-import { Solana } from "@200ms/common";
+import { Solana, SOL_NATIVE_MINT } from "@200ms/common";
 import {
   TextField,
   TextFieldLabel,
@@ -288,11 +288,20 @@ function SendConfirmation({ token, address, amount, close }: any) {
   const theme = useTheme() as any;
   const ctx = useSolanaCtx();
   const onConfirm = async () => {
-    const txSig = await Solana.transferToken(ctx, {
-      destination: new PublicKey(address),
-      mint: new PublicKey(token.mint),
-      amount,
-    });
+    let txSig;
+    if (token.mint === SOL_NATIVE_MINT.toString()) {
+      txSig = await Solana.transferSol(ctx, {
+        source: ctx.walletPublicKey,
+        destination: new PublicKey(address),
+        amount,
+      });
+    } else {
+      txSig = await Solana.transferToken(ctx, {
+        destination: new PublicKey(address),
+        mint: new PublicKey(token.mint),
+        amount,
+      });
+    }
     console.log("tx sig received", txSig);
     close();
   };
