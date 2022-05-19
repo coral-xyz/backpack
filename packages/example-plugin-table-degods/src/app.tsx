@@ -63,7 +63,10 @@ function DegodsTable() {
         <BalancesTableContent>
           {tokenAccounts.map((t) => {
             return (
-              <BalancesTableRow onClick={() => nav.push(<StakeDetail />)}>
+              <BalancesTableRow
+                key={t.publicKey.toString()}
+                onClick={() => nav.push(<StakeDetail />)}
+              >
                 <BalancesTableCell
                   title={t.tokenMetaUriData.name}
                   icon={t.tokenMetaUriData.image}
