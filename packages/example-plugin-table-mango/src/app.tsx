@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import AnchorUi, {
   useNavigation,
@@ -29,9 +29,7 @@ function MangoTable() {
   const [rowData, setRowData] = useState<Array<any> | null>(null);
   useEffect(() => {
     (async () => {
-      const { rowData, mangoGroup, mangoCache } = await fetchRowData(
-        window.anchor.publicKey
-      );
+      const { rowData } = await fetchRowData(window.anchor.publicKey);
       setRowData(rowData);
     })();
   }, [window.anchor.publicKey]);
