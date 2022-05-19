@@ -1,5 +1,4 @@
-import { useState, Suspense } from "react";
-import Sidebar from "react-sidebar";
+import { useEffect, useState, Suspense } from "react";
 import * as bs58 from "bs58";
 import {
   useTheme,
@@ -16,6 +15,7 @@ import { Add, Menu, Close, Lock, Help, FlashOn } from "@material-ui/icons";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import {
   getBackgroundClient,
+  useEphemeralNav,
   useKeyringStoreState,
   KeyringStoreStateEnum,
   useWalletPublicKeys,
@@ -34,7 +34,6 @@ import { ConnectionSwitch } from "./ConnectionSwitch";
 
 const useStyles = makeStyles((theme: any) => ({
   sidebarContainer: {
-    //    backgroundColor: theme.custom.colors.nav,
     height: "100%",
   },
   menuButtonContainer: {
@@ -128,16 +127,8 @@ function _SidebarContent({ close }: { close: () => void }) {
   const activeWallet = useActiveWallet();
   const namedPublicKeys = useWalletPublicKeys();
   const keyringStoreState = useKeyringStoreState();
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const [drawerView, setDrawerView] = useState("recent-activity");
-  const _setOpenRecentActivity = (openDrawer: boolean) => {
-    setDrawerView("recent-activity");
-    setOpenDrawer(openDrawer);
-  };
-  const _setOpenAddConnect = (openDrawer: boolean) => {
-    setDrawerView("add-connect");
-    setOpenDrawer(openDrawer);
-  };
+  const nav = useEphemeralNav();
+
   const lockWallet = () => {
     const background = getBackgroundClient();
     background
@@ -217,8 +208,7 @@ function _SidebarContent({ close }: { close: () => void }) {
             button
             className={classes.sidebarContentListItem}
             onClick={() => {
-              close();
-              _setOpenAddConnect(true);
+              nav.push(<AddConnectWallet closeDrawer={() => {}} />);
             }}
           >
             <Add
@@ -262,17 +252,22 @@ function _SidebarContent({ close }: { close: () => void }) {
           <ConnectionSwitch />
         </ListItem>
       </List>
-      <WithDrawerNoHeader openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        {drawerView === "add-connect" && (
-          <AddConnectWallet closeDrawer={() => setOpenDrawer(false)} />
-        )}
-      </WithDrawerNoHeader>
     </div>
   );
 }
 
 function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
   const [importPrivateKey, setImportPrivateKey] = useState(false);
+  const nav = useEphemeralNav();
+
+  useEffect(() => {
+    const navButton = nav.navButtonRight;
+    nav.setNavButtonRight(undefined);
+    return () => {
+      nav.setNavButtonRight(navButton);
+    };
+  }, []);
+
   return (
     <div>
       {importPrivateKey && <ImportPrivateKey closeDrawer={closeDrawer} />}

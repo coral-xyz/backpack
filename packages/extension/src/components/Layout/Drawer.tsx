@@ -24,6 +24,8 @@ const useStyles = makeStyles((theme: any) => ({
   },
   withDrawerContent: {
     flex: 1,
+    display: "flex",
+    flexDirection: "column",
   },
   drawerRoot: {
     top: `${NAV_BAR_HEIGHT}px !important`,
