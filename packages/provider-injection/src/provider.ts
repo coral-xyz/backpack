@@ -13,7 +13,7 @@ import {
 import * as bs58 from "bs58";
 import { EventEmitter } from "eventemitter3";
 import {
-  log,
+  getLogger,
   Event,
   RequestManager,
   CHANNEL_RPC_REQUEST,
@@ -30,6 +30,8 @@ import {
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
 } from "@200ms/common";
+
+const logger = getLogger("provider-injection");
 
 export class ProviderInjection extends EventEmitter implements Provider {
   private _url?: string;
@@ -72,7 +74,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
 
   _handleNotification(event: Event) {
     if (event.data.type !== CHANNEL_NOTIFICATION) return;
-    log("notification", event);
+    logger.debug("notification", event);
 
     switch (event.data.detail.name) {
       case NOTIFICATION_CONNECTED:
