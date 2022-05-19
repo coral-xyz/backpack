@@ -19,6 +19,7 @@ import {
   useKeyringStoreState,
   KeyringStoreStateEnum,
   useWalletPublicKeys,
+  useActiveWallet,
 } from "@200ms/recoil";
 import {
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
@@ -79,6 +80,9 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
+const AVATAR_URL =
+  "https://pbs.twimg.com/profile_images/1527030737731571713/7qMzHeBv_400x400.jpg";
+
 export function SidebarButton() {
   const classes = useStyles();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -90,7 +94,7 @@ export function SidebarButton() {
         onClick={() => setSidebarOpen(!sidebarOpen)}
       >
         <img
-          src="https://pbs.twimg.com/profile_images/1527030737731571713/7qMzHeBv_400x400.jpg"
+          src={AVATAR_URL}
           style={{
             width: "32px",
             height: "32px",
@@ -121,6 +125,7 @@ function SidebarContent({ close }: { close: () => void }) {
 function _SidebarContent({ close }: { close: () => void }) {
   const classes = useStyles();
   const theme = useTheme() as any;
+  const activeWallet = useActiveWallet();
   const namedPublicKeys = useWalletPublicKeys();
   const keyringStoreState = useKeyringStoreState();
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -153,40 +158,49 @@ function _SidebarContent({ close }: { close: () => void }) {
       .then((_resp) => close())
       .catch(console.error);
   };
+  const listStyle = {
+    color: theme.custom.colors.fontColor,
+    background: theme.custom.colors.nav,
+    paddingLeft: "16px",
+    paddingRight: "16px",
+    marginLeft: "16px",
+    marginRight: "16px",
+    borderRadius: "8px",
+  };
+
+  const keys = namedPublicKeys.hdPublicKeys
+    .concat(namedPublicKeys.importedPublicKeys)
+    .concat(namedPublicKeys.ledgerPublicKeys);
+
   return (
     <div className={classes.sidebarContainer}>
-      <List
-        style={{
-          color: theme.custom.colors.fontColor,
-          paddingLeft: "16px",
-          paddingRight: "16px",
-        }}
-      >
-        {namedPublicKeys.hdPublicKeys.map(({ name, publicKey }) => {
-          return (
-            <ListItem
-              key={publicKey.toString()}
-              button
-              className={classes.sidebarContentListItem}
-              onClick={() => clickWallet(publicKey)}
-            >
-              <WalletAddress name={name} publicKey={publicKey} />
-            </ListItem>
-          );
-        })}
-        {namedPublicKeys.importedPublicKeys.map(({ name, publicKey }) => {
-          return (
-            <ListItem
-              key={publicKey.toString()}
-              button
-              className={classes.sidebarContentListItem}
-              onClick={() => clickWallet(publicKey)}
-            >
-              <WalletAddress name={name} publicKey={publicKey} />
-            </ListItem>
-          );
-        })}
-        {namedPublicKeys.ledgerPublicKeys.map(({ name, publicKey }) => {
+      <div>
+        <img
+          src={AVATAR_URL}
+          style={{
+            width: "64px",
+            height: "64px",
+            borderRadius: "32px",
+            marginLeft: "auto",
+            marginRight: "auto",
+            display: "block",
+          }}
+        />
+        <Typography
+          style={{
+            textAlign: "center",
+            color: theme.custom.colors.fontColor,
+            fontWeight: 500,
+            fontSize: "18px",
+            lineHeight: "28px",
+            marginBottom: "40px",
+          }}
+        >
+          {activeWallet.name}
+        </Typography>
+      </div>
+      <List style={listStyle}>
+        {keys.map(({ name, publicKey }) => {
           return (
             <ListItem
               key={publicKey.toString()}
@@ -199,42 +213,30 @@ function _SidebarContent({ close }: { close: () => void }) {
           );
         })}
         {keyringStoreState === KeyringStoreStateEnum.Unlocked && (
-          <>
-            <ListItem
-              button
-              className={classes.sidebarContentListItem}
-              onClick={() => {
-                close();
-                _setOpenAddConnect(true);
+          <ListItem
+            button
+            className={classes.sidebarContentListItem}
+            onClick={() => {
+              close();
+              _setOpenAddConnect(true);
+            }}
+          >
+            <Add
+              style={{
+                color: theme.custom.colors.offText,
+                marginRight: "12px",
               }}
-            >
-              <Add
-                style={{
-                  color: theme.custom.colors.offText,
-                  marginRight: "12px",
-                }}
-              />
-              <Typography>Add / Connect Wallet</Typography>
-            </ListItem>
-            <Divider className={classes.sidebarDivider} />
-            <ListItem
-              button
-              className={classes.sidebarContentListItem}
-              onClick={() => {
-                close();
-                _setOpenRecentActivity(true);
-              }}
-            >
-              <FlashOn
-                style={{
-                  color: theme.custom.colors.offText,
-                  marginRight: "12px",
-                }}
-              />
-              <Typography>Recent Activity</Typography>
-            </ListItem>
-          </>
+            />
+            <Typography>Add / Connect Wallet</Typography>
+          </ListItem>
         )}
+      </List>
+      <List
+        style={{
+          ...listStyle,
+          marginTop: "40px",
+        }}
+      >
         <ListItem button className={classes.sidebarContentListItem}>
           <Help
             style={{ color: theme.custom.colors.offText, marginRight: "12px" }}
@@ -261,18 +263,12 @@ function _SidebarContent({ close }: { close: () => void }) {
         </ListItem>
       </List>
       <WithDrawerNoHeader openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        {drawerView === "recent-activity" && <RecentActivity />}
         {drawerView === "add-connect" && (
           <AddConnectWallet closeDrawer={() => setOpenDrawer(false)} />
         )}
       </WithDrawerNoHeader>
     </div>
   );
-}
-
-function RecentActivity() {
-  const classes = useStyles();
-  return <div>TODO: RECENT ACTIVITY</div>;
 }
 
 function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
