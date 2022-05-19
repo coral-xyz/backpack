@@ -27,13 +27,13 @@ import {
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
 } from "@200ms/common";
 import { WalletAddress } from "../../components/common";
-import { WithDrawerNoHeader } from "./Drawer";
+import { WithDrawer, WithDrawerNoHeader } from "./Drawer";
 import { openConnectHardware } from "../../background/popup";
 import { ConnectionSwitch } from "./ConnectionSwitch";
 
 const useStyles = makeStyles((theme: any) => ({
   sidebarContainer: {
-    backgroundColor: theme.custom.colors.nav,
+    //    backgroundColor: theme.custom.colors.nav,
     height: "100%",
   },
   menuButtonContainer: {
@@ -81,31 +81,31 @@ const useStyles = makeStyles((theme: any) => ({
 
 export function SidebarButton() {
   const classes = useStyles();
-  const theme = useTheme() as any;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
     <div className={classes.menuButtonContainer}>
-      <Sidebar
-        contentClassName={classes.sidebarContent}
-        sidebar={<SidebarContent close={() => setSidebarOpen(false)} />}
-        open={sidebarOpen}
-        onSetOpen={setSidebarOpen}
-        styles={{
-          sidebar: {
-            width: "300px",
-            position: "fixed",
-            backgroundColor: theme.custom.colors.background,
-          },
-        }}
+      <IconButton
+        disableRipple
+        className={classes.menuButton}
+        onClick={() => setSidebarOpen(!sidebarOpen)}
       >
-        <IconButton
-          disableRipple
-          className={classes.menuButton}
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-        >
-          <Menu className={classes.menuButtonIcon} />
-        </IconButton>
-      </Sidebar>
+        <img
+          src="https://pbs.twimg.com/profile_images/1527030737731571713/7qMzHeBv_400x400.jpg"
+          style={{
+            width: "32px",
+            height: "32px",
+            borderRadius: "16px",
+          }}
+        />
+      </IconButton>
+      <WithDrawer
+        openDrawer={sidebarOpen}
+        setOpenDrawer={setSidebarOpen}
+        title={""}
+        navbarStyle={{ borderBottom: undefined }}
+      >
+        <SidebarContent close={() => setSidebarOpen(false)} />
+      </WithDrawer>
     </div>
   );
 }
@@ -155,7 +155,6 @@ function _SidebarContent({ close }: { close: () => void }) {
   };
   return (
     <div className={classes.sidebarContainer}>
-      <SidebarHeader close={close} />
       <List
         style={{
           color: theme.custom.colors.fontColor,
@@ -267,52 +266,6 @@ function _SidebarContent({ close }: { close: () => void }) {
           <AddConnectWallet closeDrawer={() => setOpenDrawer(false)} />
         )}
       </WithDrawerNoHeader>
-    </div>
-  );
-}
-
-function SidebarHeader({ close }: { close: () => void }) {
-  const theme = useTheme() as any;
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        height: "46px",
-        borderBottom: `solid 1pt ${theme.custom.colors.offText}`,
-        paddingLeft: "16px",
-        paddingRight: "16px",
-        paddingTop: "10px",
-        paddingBottom: "10px",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "column",
-        }}
-      >
-        <Typography
-          style={{
-            color: theme.custom.colors.fontColor,
-            fontWeight: "bold",
-          }}
-        >
-          200ms
-        </Typography>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "column",
-        }}
-      >
-        <IconButton onClick={close} style={{ padding: 0 }}>
-          <Close style={{ color: theme.custom.colors.secondary }} />
-        </IconButton>
-      </div>
     </div>
   );
 }

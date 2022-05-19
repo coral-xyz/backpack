@@ -7,7 +7,6 @@ import {
   IconButton,
 } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
-import { SidebarButton } from "./Sidebar";
 import { Scrollbar } from "./Scrollbar";
 import { Loading } from "../common";
 import { WithTabs } from "./Tab";
@@ -22,7 +21,6 @@ const useStyles = makeStyles((theme: any) => ({
     flexDirection: "column",
     height: "100%",
   },
-  navBarSuspense: {},
   navBarContainer: {
     display: "flex",
     justifyContent: "space-between",
@@ -91,9 +89,8 @@ export function TabNavStack() {
 }
 
 function NavBar() {
-  const classes = useStyles();
   return (
-    <Suspense fallback={<div className={classes.navBarSuspense}></div>}>
+    <Suspense fallback={<div></div>}>
       <_NavBar />
     </Suspense>
   );
@@ -122,7 +119,7 @@ function _NavBar() {
 
 function LeftNavButton() {
   const { isRoot } = useNavigation();
-  return isRoot ? <SidebarButton /> : <NavBackButton />;
+  return isRoot ? <DummyButton /> : <NavBackButton />;
 }
 
 function RightNavButton() {
