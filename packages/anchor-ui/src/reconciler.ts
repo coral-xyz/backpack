@@ -30,7 +30,7 @@ export const AnchorUi = {
 
       window.anchorUi.on("connect", () => {
         NAV_STACK.push(reactNode);
-        events.emit("connect", window.anchor.publicKey);
+        events.emit("connect");
       });
 
       window.anchorUi.on("mount", () => {
