@@ -1,6 +1,6 @@
 import { Fragment, memo } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { SearchIcon } from '@heroicons/react/solid';
+import { SearchIcon, UserCircleIcon } from '@heroicons/react/solid';
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import Image from 'next/image';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -12,7 +12,7 @@ function classNames(...classes: any) {
 }
 
 function Nav() {
-  const { connected, disconnect } = useWallet();
+  const { connected, disconnect, publicKey } = useWallet();
   const { setVisible } = useWalletModal();
 
   return (
@@ -105,7 +105,7 @@ function Nav() {
                 <div className="hidden lg:ml-4 lg:block">
                   <div className="flex items-center">
                     {/* Auth or Profile */}
-                    <Menu as="div" className="relative ml-4 flex-shrink-0">
+                    <Menu as="div" className="relative  flex-shrink-0">
                       <div>
                         <Menu.Button
                           className="flex rounded-full
@@ -114,11 +114,7 @@ function Nav() {
                         focus:ring-offset-gray-800"
                         >
                           <span className="sr-only">Open user menu</span>
-                          <img
-                            className="h-8 w-8 rounded-full"
-                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                            alt=""
-                          />
+                          <UserCircleIcon className="h-8 w-8" />
                         </Menu.Button>
                       </div>
                       <Transition
@@ -186,38 +182,21 @@ function Nav() {
                 Docs
               </Disclosure.Button>
             </div>
-            <div className="border-t border-gray-700 pt-4 pb-3">
-              <div className="flex items-center px-5">
-                <div className="flex-shrink-0">
-                  <img
-                    className="h-10 w-10 rounded-full"
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt=""
-                  />
-                </div>
-                <div className="ml-3">
-                  {/* TODO: Address */}
-                  <div className="text-base font-medium text-white">Tom Cook</div>
-                  <div className="text-sm font-medium text-gray-100">tom@example.com</div>
+            {connected && (
+              <div className="border-t border-gray-700 pt-4 pb-3">
+                <div className="mt-3 space-y-1 px-2">
+                  <Disclosure.Button className="block w-full rounded-md px-3 py-2 text-left text-base font-medium text-gray-100 hover:bg-gray-700 hover:text-white">
+                    <Link href="/publish">Publish a new App</Link>
+                  </Disclosure.Button>
+                  <Disclosure.Button
+                    onClick={() => disconnect()}
+                    className="block w-full rounded-md px-3 py-2 text-left text-base font-medium text-gray-100 hover:bg-gray-700 hover:text-white"
+                  >
+                    Sign out
+                  </Disclosure.Button>
                 </div>
               </div>
-              <div className="mt-3 space-y-1 px-2">
-                <Disclosure.Button
-                  as="a"
-                  href="#"
-                  className="block rounded-md px-3 py-2 text-base font-medium text-gray-100 hover:bg-gray-700 hover:text-white"
-                >
-                  My Applications
-                </Disclosure.Button>
-                <Disclosure.Button
-                  as="a"
-                  href="#"
-                  className="block rounded-md px-3 py-2 text-base font-medium text-gray-100 hover:bg-gray-700 hover:text-white"
-                >
-                  Sign out
-                </Disclosure.Button>
-              </div>
-            </div>
+            )}
           </Disclosure.Panel>
         </>
       )}

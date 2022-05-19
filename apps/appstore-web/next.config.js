@@ -7,6 +7,9 @@ const moduleExports = withPlausibleProxy()({
   experimental: {
     esmExternals: 'loose',
     newNextLinkBehavior: true
+  },
+  images: {
+    domains: ['xnfts-dev.s3.us-west-2.amazonaws.com', 'xnfts.s3.us-west-2.amazonaws.com']
   }
 });
 

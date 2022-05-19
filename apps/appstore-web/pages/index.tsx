@@ -1,26 +1,14 @@
-import { getAllXNTs } from '../utils/xnft-client';
-import { useEffect, useState } from 'react';
-import { useAnchorWallet } from '@solana/wallet-adapter-react';
 import Gallery from '../components/gallery';
+import useXNFTs from '../hooks/useXNFTs';
 
 function Home() {
-  const anchorWallet = useAnchorWallet();
-  const [xfnts, setXNFTs] = useState<any>();
+  const { xnfts, loading } = useXNFTs();
 
-  useEffect(() => {
-    async function getAllXNFTs() {
-      const data = await getAllXNTs(anchorWallet);
-      setXNFTs(data);
-    }
-
-    if (anchorWallet) getAllXNFTs();
-  }, [anchorWallet]);
-
-  console.log('nfts', xfnts);
+  if (loading) return <></>;
 
   return (
     <div>
-      <Gallery />
+      <Gallery xnfts={xnfts} />
     </div>
   );
 }

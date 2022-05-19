@@ -4,6 +4,7 @@ import { Xnft, IDL } from '../programs/xnft/types';
 import BN from 'bn.js';
 import xnftIdl from '../programs/xnft/idl.json';
 import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
+import fetch from './fetcher';
 
 // TODO:
 const connection = new Connection('http://127.0.0.1:8899');
@@ -47,17 +48,24 @@ export async function xNFTMint(data: any, anchorWallet: any, publicKey: any) {
 export async function getAllXNTs(anchorWallet: any): Promise<Array<any>> {
   const provider = new AnchorProvider(connection, anchorWallet, { commitment: 'confirmed' });
   const program = new Program<Xnft>(IDL, programID, provider);
-  const xnfts = [];
+  const response = [];
 
   const data = await program.account.xnft.all();
 
   for await (const item of data) {
+    // Find metadata account data
     const metadataAccount = await Metadata.fromAccountAddress(
       program.provider.connection,
       item.account.masterMetadata
     );
-    xnfts.push(metadataAccount);
+
+    // Find Metadata data
+    const metadata = await fetch(metadataAccount.data.uri);
+
+    metadataAccount.data['metadata'] = metadata;
+
+    response.push(metadataAccount);
   }
 
-  return xnfts;
+  return response;
 }
