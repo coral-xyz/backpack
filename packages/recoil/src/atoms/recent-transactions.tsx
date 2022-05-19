@@ -45,5 +45,5 @@ export async function fetchRecentTransactions(
 
   const signatures = resp.map((s) => s.signature);
   const transactions = await connection.getParsedTransactions(signatures);
-  return transactions;
+  return transactions.filter((tx) => tx !== null);
 }
