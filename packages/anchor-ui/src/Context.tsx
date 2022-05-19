@@ -2,7 +2,6 @@ import React, { useContext, createContext } from "react";
 
 type AnchorContext = {
   navigation: Navigation;
-  didLoad: () => void;
 };
 const _AnchorContext = createContext<AnchorContext | null>(null);
 
@@ -33,14 +32,10 @@ export function AnchorProvider(props: any) {
       window.anchorUi.navigationPop();
     },
   };
-  const didLoad = () => {
-    window.anchorUi.didLoad();
-  };
   return (
     <_AnchorContext.Provider
       value={{
         navigation,
-        didLoad,
       }}
     >
       {props.children}
@@ -59,11 +54,6 @@ function useAnchorContext() {
 export function useNavigation() {
   const { navigation } = useAnchorContext();
   return navigation;
-}
-
-export function useDidLoad() {
-  const { didLoad } = useAnchorContext();
-  return didLoad;
 }
 
 type Navigation = any;

@@ -19,7 +19,6 @@ import {
   CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
   PLUGIN_RPC_METHOD_NAV_PUSH,
   PLUGIN_RPC_METHOD_NAV_POP,
-  PLUGIN_RPC_METHOD_DID_LOAD,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ON_CLICK,
   PLUGIN_NOTIFICATION_MOUNT,
@@ -100,7 +99,6 @@ export class Plugin {
   // Loads the plugin javascript code inside the iframe.
   //
   public createIframe() {
-    console.log("ahhh iframe being created");
     //
     // Effectively take a lock that's held until the setup is complete.
     //
@@ -286,8 +284,6 @@ export class Plugin {
         return await this._handleNavPush();
       case PLUGIN_RPC_METHOD_NAV_POP:
         return await this._handleNavPop();
-      case PLUGIN_RPC_METHOD_DID_LOAD:
-        return await this._handleDidLoad();
       default:
         logger.error(method);
         throw new Error("unexpected method");
@@ -306,11 +302,6 @@ export class Plugin {
   }
 
   private async _handleNavPop(): Promise<RpcResponse> {
-    // todo
-    return ["success"];
-  }
-
-  private async _handleDidLoad(): Promise<RpcResponse> {
     // todo
     return ["success"];
   }

@@ -14,7 +14,6 @@ import {
   PLUGIN_RPC_METHOD_CONNECT,
   PLUGIN_RPC_METHOD_NAV_PUSH,
   PLUGIN_RPC_METHOD_NAV_POP,
-  PLUGIN_RPC_METHOD_DID_LOAD,
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
 } from "@200ms/common";
 
@@ -102,13 +101,6 @@ export class ProviderUiInjection extends EventEmitter {
   public async navigationPop() {
     await this._requestManager.request({
       method: PLUGIN_RPC_METHOD_NAV_POP,
-      params: [],
-    });
-  }
-
-  public async didLoad() {
-    await this._requestManager.request({
-      method: PLUGIN_RPC_METHOD_DID_LOAD,
       params: [],
     });
   }

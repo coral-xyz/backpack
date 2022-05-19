@@ -1,6 +1,3 @@
-import React, { useEffect } from "react";
-import { usePlugins, useTablePlugins, useNavigationSegue } from "../hooks";
-
 import { useRecoilValue } from "recoil";
 import { useNavigation, useTab } from "./useNavigation";
 import * as atoms from "../atoms";
