@@ -127,29 +127,6 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
         </div>
       </div>
 
-      {/*  Price */}
-      <div>
-        <label htmlFor="price" className="block text-sm  font-medium tracking-wide text-gray-300">
-          Price
-        </label>
-        <div className="mt-1">
-          <input
-            type="text"
-            name="price"
-            id="price"
-            className="block w-full rounded-md border-gray-900 bg-gray-900 text-sm text-gray-300"
-            value={uploadState.price}
-            onChange={e =>
-              uploadDispatch({
-                type: 'field',
-                field: 'price',
-                value: e.currentTarget.value
-              })
-            }
-          />
-        </div>
-      </div>
-
       {/*  Bundle */}
       <div>
         <label htmlFor="bundle" className="block text-sm  font-medium tracking-wide text-gray-300">
@@ -226,14 +203,14 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
       <div>
         <label
           htmlFor="screenshots"
-          className="block text-sm font-medium tracking-wide text-gray-300"
+          className="block  text-sm font-medium tracking-wide text-gray-300"
         >
           App Screenshots
         </label>
-        <label htmlFor="screenshots" className="relative cursor-pointer">
+        <label htmlFor="screenshots" className="relative cursor-pointer ">
           <div
-            className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-500
-          px-6 pt-5 pb-6"
+            className="mt-1 flex justify-center rounded-md border-2 border-dashed
+            border-gray-500 px-6 pt-5 pb-6 blur-sm"
           >
             <div className="space-y-1 text-center">
               <PhotographIcon className="mx-auto h-12 w-12 text-gray-400" />
@@ -242,6 +219,7 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
                 <input
                   id="screenshots"
                   name="screenshots"
+                  disabled
                   type="file"
                   multiple
                   accept="image/*"

@@ -1,4 +1,4 @@
-import { memo, useReducer, useState } from 'react';
+import { memo, useEffect, useReducer, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { ArrowSmRightIcon } from '@heroicons/react/outline';
 import { filesS3Uploader, metadataS3Uploader } from '../../utils/s3';
