@@ -118,10 +118,14 @@ export function WithMiniDrawer(props: any) {
 
 function WithDrawerContent({ children, setOpenDrawer }: any) {
   const classes = useStyles();
-  const { setNavButtonRight } = useEphemeralNav();
+  const nav = useEphemeralNav();
   useEffect(() => {
-    setNavButtonRight(<RightButton onClick={() => setOpenDrawer(false)} />);
-  }, [setNavButtonRight]);
+    let previous = nav.navButtonRight;
+    nav.setNavButtonRight(<RightButton onClick={() => setOpenDrawer(false)} />);
+    return () => {
+      nav.setNavButtonRight(previous);
+    };
+  }, [nav]);
   return (
     <div className={classes.withDrawer}>
       <div className={classes.withDrawerContent}>{children}</div>

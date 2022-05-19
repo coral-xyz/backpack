@@ -208,7 +208,7 @@ function _SidebarContent({ close }: { close: () => void }) {
             button
             className={classes.sidebarContentListItem}
             onClick={() => {
-              nav.push(<AddConnectWallet closeDrawer={() => {}} />);
+              nav.push(<AddConnectWallet closeDrawer={() => close()} />);
             }}
           >
             <Add
@@ -270,7 +270,6 @@ function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
 
   return (
     <div>
-      {importPrivateKey && <ImportPrivateKey closeDrawer={closeDrawer} />}
       {!importPrivateKey && (
         <AddConnectWalletMenu
           setImportPrivateKey={setImportPrivateKey}
