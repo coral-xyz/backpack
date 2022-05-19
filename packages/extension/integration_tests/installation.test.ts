@@ -157,6 +157,6 @@ describe("Installing Anchor Wallet", () => {
 
       // Ensure the wallet is unlocked and the balance page loads
       await expect(extensionPopupPage).toMatch("Total Balance");
-    }, 30_000 /** allow 30s for test to run due to loading external data */);
+    }, 120_000 /** allow 2 mins for test to run due to loading external data */);
   });
 });
