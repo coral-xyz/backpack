@@ -10,42 +10,50 @@ describe("Installing Anchor Wallet", () => {
   // see jest-puppeteer.config.js for details about that.
   // Now we need to get the unique ID of the browser extension and
   // then we can open a URL like chrome-extension://EXTENSION_ID/popup.html
-  beforeAll(async () => {
-    const extensionID = await (async () => {
-      const targets: any = await browser.targets();
-      const extensionTarget = targets.find(
-        ({ _targetInfo: { title, type } }) =>
-          title === manifest.name && type === "background_page"
-      );
-      const extensionUrl = extensionTarget._targetInfo.url;
-      return extensionUrl.split("/")[2];
+  beforeAll((done) => {
+    (async () => {
+      const extensionID = await (async () => {
+        const targets: any = await browser.targets();
+        const extensionTarget = targets.find(
+          ({ _targetInfo: { title, type } }) =>
+            title === manifest.name && type === "background_page"
+        );
+        const extensionUrl = extensionTarget._targetInfo.url;
+        return extensionUrl.split("/")[2];
+      })();
+
+      extensionPopupPage = await browser.newPage();
+
+      const popupFile = manifest.browser_action.default_popup;
+      const popupURL = `chrome-extension://${extensionID}/${popupFile}`;
+
+      await extensionPopupPage.goto(popupURL);
+
+      setupPage = await (
+        await browser.waitForTarget(
+          (target) => target.opener() === extensionPopupPage.target()
+        )
+      ).page();
+
+      // using callback for now, because of issues with flaky tests
+      // see: https://github.com/200ms-labs/anchor-wallet/issues/57
+      done();
     })();
-
-    extensionPopupPage = await browser.newPage();
-
-    const popupFile = manifest.browser_action.default_popup;
-    const popupURL = `chrome-extension://${extensionID}/${popupFile}`;
-
-    await extensionPopupPage.goto(popupURL);
-
-    setupPage = await (
-      await browser.waitForTarget(
-        (target) => target.opener() === extensionPopupPage.target()
-      )
-    ).page();
   });
 
   // A hacky way to start each test from the same place, because state isn't
   // currently stored between refreshes and there's no router, we can reset
   // the state by reloading the page
-  beforeEach(async () => {
-    await setupPage.reload();
+  beforeEach((done) => {
+    setupPage.reload().then(() => done());
   });
 
   describe("setting up a new wallet", () => {
     // Click the 'Create wallet' button before each test in this block
-    beforeEach(async () => {
-      await expect(setupPage).toClick("button", { text: "Create" });
+    beforeEach((done) => {
+      expect(setupPage)
+        .toClick("button", { text: "Create" })
+        .then(() => done());
     });
 
     test("succeeds with a valid password and confirmation", async () => {
@@ -99,8 +107,10 @@ describe("Installing Anchor Wallet", () => {
 
   describe("importing an existing wallet", () => {
     // Click the 'Import seed phrase' button before each test in this block
-    beforeEach(async () => {
-      await expect(setupPage).toClick("button", { text: "Import" });
+    beforeEach((done) => {
+      expect(setupPage)
+        .toClick("button", { text: "Import" })
+        .then(() => done());
     });
 
     // TODO: Make 'happy path' test run first.
@@ -147,6 +157,6 @@ describe("Installing Anchor Wallet", () => {
 
       // Ensure the wallet is unlocked and the balance page loads
       await expect(extensionPopupPage).toMatch("Total Balance");
-    }, 30_000 /** allow 30s for test to run due to loading external data */);
+    }, 120_000 /** allow 2 mins for test to run due to loading external data */);
   });
 });
