@@ -99,6 +99,8 @@ export class Plugin {
   // Loads the plugin javascript code inside the iframe.
   //
   public createIframe() {
+    logger.debug("creating iframe element");
+
     //
     // Effectively take a lock that's held until the setup is complete.
     //

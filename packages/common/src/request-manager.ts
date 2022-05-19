@@ -1,5 +1,7 @@
 import type { Event, ResponseHandler } from "./types";
-import { error } from "./logging";
+import { getLogger } from "./logging";
+
+const logger = getLogger("request-manager");
 
 export class RequestManager {
   private _responseResolvers: { [requestId: number]: ResponseHandler } = {};
@@ -31,7 +33,7 @@ export class RequestManager {
     const { id, result } = event.data.detail;
     const resolver = this._responseResolvers[id];
     if (!resolver) {
-      error("unexpected event", event);
+      logger.error("unexpected event", event);
       throw new Error("unexpected event");
     }
     delete this._responseResolvers[id];

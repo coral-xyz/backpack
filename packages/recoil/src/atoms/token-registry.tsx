@@ -1,6 +1,9 @@
 import { atom } from "recoil";
 import { TokenListProvider, TokenInfo } from "@solana/spl-token-registry";
-import { PublicKey } from "@solana/web3.js";
+import { SOL_NATIVE_MINT } from "@200ms/common";
+
+const SOL_LOGO_URI =
+  "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png";
 
 export const splTokenRegistry = atom<Map<string, TokenInfo> | null>({
   key: "splTokenRegistry",
@@ -16,14 +19,13 @@ export const splTokenRegistry = atom<Map<string, TokenInfo> | null>({
             map.set(item.address, item);
             return map;
           }, new Map());
-          tokenMap.set(PublicKey.default.toString(), {
+          tokenMap.set(SOL_NATIVE_MINT, {
             name: "Solana",
-            address: PublicKey.default.toString(),
+            address: SOL_NATIVE_MINT,
             chainId: 101,
             decimals: 9,
             symbol: "SOL",
-            logoURI:
-              "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
+            logoURI: SOL_LOGO_URI,
             extensions: {
               coingeckoId: "solana",
             },

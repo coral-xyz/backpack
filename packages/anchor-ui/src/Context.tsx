@@ -43,12 +43,17 @@ export function AnchorProvider(props: any) {
   );
 }
 
-export function useNavigation() {
+function useAnchorContext() {
   const ctx = useContext(_AnchorContext);
   if (ctx === null) {
     throw new Error("Context not available");
   }
-  return ctx.navigation;
+  return ctx;
+}
+
+export function useNavigation() {
+  const { navigation } = useAnchorContext();
+  return navigation;
 }
 
 type Navigation = any;

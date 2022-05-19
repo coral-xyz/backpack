@@ -1,12 +1,14 @@
-import { debug } from "@200ms/common";
+import { getLogger } from "@200ms/common";
 import { ProviderInjection } from "./provider";
 import { ProviderUiInjection } from "./provider-ui";
 
+const logger = getLogger("provider-injection");
+
 // Script entry.
 function main() {
-  debug("starting injected script");
+  logger.debug("starting injected script");
   initProvider();
-  debug("provider ready");
+  logger.debug("provider ready");
 }
 
 function initProvider() {

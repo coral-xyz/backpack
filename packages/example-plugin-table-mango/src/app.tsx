@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
-import {
+import AnchorUi, {
   useNavigation,
   Text,
   View,
@@ -13,6 +13,13 @@ import {
 } from "@200ms/anchor-ui";
 import { MangoClient, Config } from "@blockworks-foundation/mango-client";
 
+//
+// On connection to the host environment, warm the cache.
+//
+AnchorUi.events.on("connect", () => {
+  fetchRowData(window.anchor.publicKey);
+});
+
 export function App() {
   return <MangoTable />;
 }
@@ -22,10 +29,10 @@ function MangoTable() {
   const [rowData, setRowData] = useState<Array<any> | null>(null);
   useEffect(() => {
     (async () => {
-      const { rowData, mangoGroup, mangoCache } = await fetchRowData();
+      const { rowData } = await fetchRowData(window.anchor.publicKey);
       setRowData(rowData);
     })();
-  }, []);
+  }, [window.anchor.publicKey]);
   return (
     <BalancesTable>
       <BalancesTableHead
@@ -66,14 +73,17 @@ function MangoAccountDetail({}: any) {
   );
 }
 
-async function fetchRowData(): Promise<any> {
-  //
-  // If we have a cached response, then use it.
-  //
-  let resp = CACHE.get(window.anchor.publicKey.toString());
+async function fetchRowData(wallet: PublicKey): Promise<any> {
+  let resp = CACHE.get(wallet.toString());
   if (resp) {
-    return resp;
+    return await resp;
   }
+  const newResp = fetchRowDataInner(wallet);
+  CACHE.set(wallet.toString(), newResp);
+  return await newResp;
+}
+
+async function fetchRowDataInner(wallet: PublicKey) {
   const client = new MangoClient(window.anchor.connection, MANGO_PID);
   const config = Config.ids().getGroupWithName("mainnet.1");
   if (!config) {
@@ -82,7 +92,7 @@ async function fetchRowData(): Promise<any> {
   const mangoGroup = await client.getMangoGroup(config.publicKey);
   const mangoAccounts = await client.getMangoAccountsForOwner(
     mangoGroup,
-    window.anchor.publicKey
+    wallet
   );
 
   const mangoCache = await mangoGroup.loadCache(window.anchor.connection);
@@ -105,14 +115,11 @@ async function fetchRowData(): Promise<any> {
       };
     })
   );
-  const newResp = {
+  return {
     rowData,
     mangoGroup,
     mangoCache,
   };
-
-  CACHE.set(window.anchor.publicKey.toString(), newResp);
-  return newResp;
 }
 
 const MANGO_PID = new PublicKey("mv3ekLzLbnVPNxjSKvqBpU3ZeZXPQdEC3bp5MDEBG68");
@@ -120,4 +127,4 @@ const MANGO_PID = new PublicKey("mv3ekLzLbnVPNxjSKvqBpU3ZeZXPQdEC3bp5MDEBG68");
 //
 // Caches requests.
 //
-const CACHE = new Map<string, any>();
+const CACHE = new Map<string, Promise<any>>();

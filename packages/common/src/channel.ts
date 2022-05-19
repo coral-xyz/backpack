@@ -1,7 +1,9 @@
 import type { Event, RpcRequest, RpcResponse, Notification } from "./types";
 import { BrowserRuntime } from "./browser";
-import { debug } from "./logging";
+import { getLogger } from "./logging";
 import { POST_MESSAGE_ORIGIN } from "./constants";
+
+const logger = getLogger("common/channel");
 
 // Channel is a class that establishes communication channel from a
 // content/injected script to a background script.
@@ -173,7 +175,7 @@ export class PortChannelServer {
   public handler(handlerFn: (req: RpcRequest) => Promise<RpcResponse>) {
     // @ts-ignore
     chrome.runtime.onConnect.addListener((port) => {
-      debug(`on connect for server port ${port.name}`);
+      logger.debug(`on connect for server port ${port.name}`);
       if (port.name === this.name) {
         port.onMessage.addListener((req) => {
           const id = req.id;
@@ -193,7 +195,7 @@ export class PortChannelNotifications {
   public onNotification(handlerFn: (notif: Notification) => void) {
     // @ts-ignore
     chrome.runtime.onConnect.addListener((port) => {
-      debug(`on connect for notification port ${port.name}`);
+      logger.debug(`on connect for notification port ${port.name}`);
       if (port.name === this.name) {
         port.onMessage.addListener((req) => {
           handlerFn(req);
@@ -277,7 +279,7 @@ export class NotificationsClient {
 
   public connect() {
     if (this.sink !== null) {
-      debug("already connected exiting function");
+      logger.debug("already connected exiting function");
     }
     this.sink = PortChannel.client(this.name);
     this.sink._port.onDisconnect.addListener(() => (this.sink = null));
@@ -285,7 +287,7 @@ export class NotificationsClient {
 
   public pushNotification(notif: Notification) {
     if (this.sink === null) {
-      debug("sink is null skipping notification");
+      logger.debug("sink is null skipping notification");
       return;
     }
     this.sink._port.postMessage(notif);

@@ -1,5 +1,5 @@
 import {
-  debug,
+  getLogger,
   PortChannel,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   CONNECTION_POPUP_RPC,
@@ -7,8 +7,10 @@ import {
 } from "@200ms/common";
 import * as recoil from "@200ms/recoil";
 
+const logger = getLogger("extension/background/client");
+
 export function setupClient() {
-  debug("setting up core background clients");
+  logger.debug("setting up core background clients");
   recoil.setupSolanaConnectionBackgroundClient();
   coreSetupBackgroundClient();
 }
