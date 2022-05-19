@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export function WithDrawer(props: any) {
-  const { children, openDrawer, title, setOpenDrawer } = props;
+  const { children, openDrawer, title, navbarStyle, setOpenDrawer } = props;
   const classes = useStyles();
   return (
     <Drawer
@@ -80,7 +80,7 @@ export function WithDrawer(props: any) {
         paper: classes.drawerPaper,
       }}
     >
-      <WithEphemeralNav title={title}>
+      <WithEphemeralNav title={title} navbarStyle={navbarStyle}>
         <WithDrawerContent setOpenDrawer={setOpenDrawer}>
           {children}
         </WithDrawerContent>

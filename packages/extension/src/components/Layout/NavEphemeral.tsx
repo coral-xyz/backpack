@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, useTheme } from "@material-ui/core";
 import { NavEphemeralProvider, useEphemeralNav } from "@200ms/recoil";
 import { Scrollbar } from "./Scrollbar";
 import { Loading } from "../common";
@@ -24,9 +24,8 @@ const useStyles = makeStyles((theme: any) => ({
     paddingRight: "16px",
     paddingTop: "10px",
     paddingBottom: "10px",
-    backgroundColor: theme.custom.colors.nav,
+    backgroundColor: theme.custom.colors.background,
     //
-    borderBottom: `solid 1pt ${theme.custom.colors.border}`,
     height: `${NAV_BAR_HEIGHT}px`,
   },
   menuButtonContainer: {
@@ -86,19 +85,24 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-export function WithEphemeralNav({ title, children }: any) {
+export function WithEphemeralNav({ title, children, navbarStyle }: any) {
   return (
     <NavEphemeralProvider title={title} root={children}>
-      <NavBar />
+      <NavBar style={navbarStyle} />
       <NavContent />
     </NavEphemeralProvider>
   );
 }
 
-function NavBar() {
+function NavBar({ style }: any) {
   const classes = useStyles();
+  const theme = useTheme() as any;
+  const navbarStyle = {
+    borderBottom: `solid 1pt ${theme.custom.colors.border}`,
+    ...(style ?? {}),
+  };
   return (
-    <div className={classes.navBarContainer}>
+    <div className={classes.navBarContainer} style={navbarStyle}>
       <LeftNavButton />
       <CenterDisplay />
       <RightNavButton />
