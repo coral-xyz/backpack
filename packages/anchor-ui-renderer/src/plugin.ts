@@ -100,6 +100,7 @@ export class Plugin {
   // Loads the plugin javascript code inside the iframe.
   //
   public createIframe() {
+    console.log("ahhh iframe being created");
     //
     // Effectively take a lock that's held until the setup is complete.
     //
@@ -111,6 +112,7 @@ export class Plugin {
     this._iframe = document.createElement("iframe");
     this._iframe.src = this.iframeUrl;
     this._iframe.onload = async () => {
+      console.log("ahhh iframe loaded");
       this._rpcServer.setWindow(this._iframe.contentWindow);
       this._bridgeServer.setWindow(this._iframe.contentWindow);
       this._dom = new Dom();

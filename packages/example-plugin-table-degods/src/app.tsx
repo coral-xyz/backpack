@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { PublicKey } from "@solana/web3.js";
 import { Program } from "@project-serum/anchor";
-import {
+import AnchorUi, {
   useNavigation,
   Text,
   BalancesTable,
@@ -14,6 +14,13 @@ import {
 import { GemFarm, IDL as IDL_GEM_FARM } from "./idl-gem-farm";
 import { GemBank, IDL as IDL_GEM_BANK } from "./idl-gem-bank";
 import { customSplTokenAccounts } from "@200ms/common";
+
+//
+// On connection to the host environment, warm the cache.
+//
+AnchorUi.events.on("connect", () => {
+  fetchRowData(window.anchor.publicKey);
+});
 
 export function App() {
   return <DegodsTable />;
@@ -31,12 +38,8 @@ function DegodsTable() {
 
   useEffect(() => {
     (async () => {
-      const wallet = window.anchor.publicKey;
-      const [dead, alive] = await Promise.all([
-        fetchTokenAccounts(true, wallet),
-        fetchTokenAccounts(false, wallet),
-      ]);
-      setTokenAccounts(dead.concat(alive));
+      const tas = await fetchRowData(window.anchor.publicKey);
+      setTokenAccounts(tas);
     })();
   }, [window.anchor.publicKey]);
 
@@ -80,20 +83,29 @@ function StakeDetail() {
   return <Text>Stake Detail Here</Text>;
 }
 
+export async function fetchRowData(wallet: PublicKey) {
+  const [dead, alive] = await Promise.all([
+    fetchTokenAccounts(true, wallet),
+    fetchTokenAccounts(false, wallet),
+  ]);
+  return dead.concat(alive);
+}
+
 async function fetchTokenAccounts(
   isDead: boolean,
   wallet: PublicKey
 ): Promise<any> {
-  //
-  // If we have a cached response, then use it.
-  //
   const cacheKey = `${isDead}:${window.anchor.publicKey.toString()}`;
-  console.log("cache", CACHE);
   const resp = CACHE.get(cacheKey);
   if (resp) {
-    return resp;
+    return await resp;
   }
+  const newResp = fetchTokenAccountsInner(isDead, wallet);
+  CACHE.set(cacheKey, newResp);
+  return await newResp;
+}
 
+async function fetchTokenAccountsInner(isDead: boolean, wallet: PublicKey) {
   const [vaultPubkey] = await PublicKey.findProgramAddress(
     [
       Buffer.from("vault"),
@@ -111,9 +123,8 @@ async function fetchTokenAccounts(
     window.anchor.connection,
     vaultAuthority
   );
-
   const newResp = tokenAccounts.nftMetadata.map((m) => m[1]);
-  CACHE.set(cacheKey, newResp);
+
   return newResp;
 }
 
@@ -136,4 +147,4 @@ const DEAD_BANK = new PublicKey("4iDK8akg8RHg7PguBTTsJcQbHo5iHKzkBJLk8MSvnENA");
 //
 // Caches requests.
 //
-const CACHE = new Map<string, any>();
+const CACHE = new Map<string, Promise<any>>();

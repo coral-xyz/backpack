@@ -1,4 +1,5 @@
 import ReactReconciler, { HostConfig, OpaqueHandle } from "react-reconciler";
+import { EventEmitter } from "eventemitter3";
 import {
   getLogger,
   Event,
@@ -15,7 +16,10 @@ import { NAV_STACK } from "./Context";
 
 const logger = getLogger("anchor-ui-reconciler");
 
+const events = new EventEmitter();
+
 export const AnchorUi = {
+  events,
   render(reactNode: any) {
     window.onload = () => {
       window.anchorUi.on("click", (event: Event) => {
@@ -26,6 +30,7 @@ export const AnchorUi = {
 
       window.anchorUi.on("connect", () => {
         NAV_STACK.push(reactNode);
+        events.emit("connect", window.anchor.publicKey);
       });
 
       window.anchorUi.on("mount", () => {
