@@ -1,4 +1,4 @@
-import { useState, Suspense } from "react";
+import { useState } from "react";
 import {
   makeStyles,
   Button,
@@ -21,6 +21,11 @@ const useStyles = makeStyles((theme: any) => ({
     backgroundColor: theme.custom.colors.offText,
     color: theme.custom.colors.fontColor,
   },
+  url: {
+    color: theme.custom.colors.fontColor,
+    opacity: 0.5,
+    textDecoration: "none",
+  },
 }));
 
 export function ConnectionSwitch() {
@@ -40,82 +45,71 @@ export function ConnectionSwitch() {
   );
 }
 
+const endpoints = {
+  "Mainnet (Beta)":
+    process.env.DEFAULT_SOLANA_CONNECTION_URL ||
+    "https://solana-api.projectserum.com",
+  Devnet: "https://api.devnet.solana.com",
+  Localnet: "http://localhost:8899",
+  Custom: () =>
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    new URL(prompt("Enter your custom endpoint")!.trim()).toString(),
+};
+
 function ConnectionMenu({ openPopper, setOpenPopper }: any) {
   const classes = useStyles();
   const [connectionUrl, setConnectionUrl] = useSolanaConnectionUrl();
-  console.log("CONNECTION URL HERE", connectionUrl);
-  const MAINNET_BETA = "https://solana-api.projectserum.com";
-  const DEVNET = "https://api.devnet.solana.com";
-  const LOCALNET = "http://localhost:8899";
 
-  const clickMainnet = () => {
-    setConnectionUrl(MAINNET_BETA);
-    setOpenPopper(null);
-  };
-  const clickDevnet = () => {
-    setConnectionUrl(DEVNET);
-    setOpenPopper(null);
-  };
-  const clickLocalnet = () => {
-    setConnectionUrl(LOCALNET);
-    setOpenPopper(null);
-  };
-  const clickCustomEndpoint = () => {
-    setOpenPopper(null);
-  };
+  const urls = Object.values(endpoints).filter((v) => typeof v === "string");
 
-  return (
+  const close = () => setOpenPopper(null);
+
+  return openPopper ? (
     <Popper
-      open={openPopper !== null}
+      open
       anchorEl={openPopper}
+      title={connectionUrl || undefined}
       transition
       disablePortal
     >
-      <ClickAwayListener onClickAway={() => setOpenPopper(null)}>
+      <ClickAwayListener onClickAway={close}>
         <MenuList className={classes.connectionMenu}>
-          <MenuItem onClick={() => clickMainnet()}>
-            <ListItemIcon
-              style={{
-                visibility:
-                  connectionUrl !== MAINNET_BETA ? "hidden" : undefined,
+          {Object.entries(endpoints).map(([key, val]) => (
+            <MenuItem
+              key={key}
+              onClick={() => {
+                try {
+                  const url = typeof val === "string" ? val : val();
+                  setConnectionUrl(url);
+                } catch (err) {
+                  console.error(err);
+                }
+                close();
               }}
             >
-              <CheckBox />
-            </ListItemIcon>
-            <ListItemText>Mainnet Beta</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={() => clickDevnet()}>
-            <ListItemIcon
-              style={{
-                visibility: connectionUrl !== DEVNET ? "hidden" : undefined,
-              }}
-            >
-              <CheckBox />
-            </ListItemIcon>
-            <ListItemText>Devnet</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={() => clickLocalnet()}>
-            <ListItemIcon
-              style={{
-                visibility: connectionUrl !== LOCALNET ? "hidden" : undefined,
-              }}
-            >
-              <CheckBox />
-            </ListItemIcon>
-            <ListItemText>Localnet</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={() => clickCustomEndpoint()}>
-            <ListItemIcon
-              style={{
-                visibility: "hidden",
-              }}
-            >
-              <CheckBox />
-            </ListItemIcon>
-            <ListItemText>Add Custom Endpoint</ListItemText>
-          </MenuItem>
+              <ListItemIcon
+                style={{
+                  visibility:
+                    typeof val === "string"
+                      ? connectionUrl === val
+                        ? undefined
+                        : "hidden"
+                      : connectionUrl && urls.includes(connectionUrl)
+                      ? "hidden"
+                      : undefined,
+                }}
+              >
+                <CheckBox />
+              </ListItemIcon>
+              <ListItemText>{key}</ListItemText>
+            </MenuItem>
+          ))}
         </MenuList>
       </ClickAwayListener>
     </Popper>
-  );
+  ) : connectionUrl ? (
+    <a href={connectionUrl} className={classes.url} target="_blank">
+      {new URL(connectionUrl).host}
+    </a>
+  ) : null;
 }
