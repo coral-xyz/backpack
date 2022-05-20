@@ -2753,10 +2753,10 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
-"@headlessui/react@^1.6.1":
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-1.6.1.tgz#d822792e589aac005462491dd62f86095e0c3bef"
-  integrity sha512-gMd6uIs1U4Oz718Z5gFoV0o/vD43/4zvbyiJN9Dt7PK9Ubxn+TmJwTmYwyNJc5KxxU1t0CmgTNgwZX9+4NjCnQ==
+"@headlessui/react@^1.6.2":
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-1.6.2.tgz#0ba779a648e822d7478ac58b9bcb112a08a7565b"
+  integrity sha512-x+kbTjJ+ixgsignqUU9MluoZYBJAlIYMeya4w7dk/Mo13vIdI/mSnzJAVgHhHKzE/hX//+rXylr4jUVThuQq/A==
 
 "@heroicons/react@^1.0.6":
   version "1.0.6"
@@ -4849,6 +4849,14 @@
     "@solana/wallet-adapter-react" "^0.15.3"
     "@solana/web3.js" "^1.36.0"
 
+"@solana/wallet-adapter-react-ui@^0.9.7":
+  version "0.9.7"
+  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-react-ui/-/wallet-adapter-react-ui-0.9.7.tgz#20fc903a5ef1b5a5f59890f931b435d36bdda194"
+  integrity sha512-kcypuHK+wRkxdu4dXVS8O4tV1QkrC3OnFpx6/ejQTi0ZLZJF8AA/+j/MnLZoNJzzkHLZKLg2lEpEKVdJ4Xf+eg==
+  dependencies:
+    "@solana/wallet-adapter-base" "^0.9.4"
+    "@solana/wallet-adapter-react" "^0.15.3"
+
 "@solana/wallet-adapter-react@^0.15.3", "@solana/wallet-adapter-react@^0.15.4":
   version "0.15.4"
   resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-react/-/wallet-adapter-react-0.15.4.tgz#413c3fa6893e9d809e5a6dd4730695fba942967b"
@@ -4857,7 +4865,78 @@
     "@solana/wallet-adapter-base" "^0.9.4"
     "@solana/web3.js" "^1.36.0"
 
+<<<<<<< HEAD
 "@solana/web3.js@1.31.0", "@solana/web3.js@1.41.6", "@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0", "@solana/web3.js@^1.30.2", "@solana/web3.js@^1.31.0", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.35.1", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.37.0", "@solana/web3.js@^1.37.1", "@solana/web3.js@^1.41.9":
+=======
+"@solana/wallet-adapter-react@^0.15.5":
+  version "0.15.5"
+  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-react/-/wallet-adapter-react-0.15.5.tgz#20fa5d1044b24778cc2c504ff9668d353b4bcc92"
+  integrity sha512-R5VVrJE4RYAF0d8EAAOtWTRCNoMM76ocmLl3SjORCpkCvNq5x7mh3yKBjKNv/kcihkVnDi1kgCtMiJuDX/x+lQ==
+  dependencies:
+    "@solana/wallet-adapter-base" "^0.9.4"
+
+"@solana/web3.js@1.31.0":
+  version "1.31.0"
+  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.31.0.tgz#7a313d4c1a90b77f27ddbfe845a10d6883e06452"
+  integrity sha512-7nHHx1JNFnrt15e9y8m38I/EJCbaB+bFC3KZVM1+QhybCikFxGMtGA5r7PDC3GEL1R2RZA8yKoLkDKo3vzzqnw==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@ethersproject/sha2" "^5.5.0"
+    "@solana/buffer-layout" "^3.0.0"
+    bn.js "^5.0.0"
+    borsh "^0.4.0"
+    bs58 "^4.0.1"
+    buffer "6.0.1"
+    cross-fetch "^3.1.4"
+    jayson "^3.4.4"
+    js-sha3 "^0.8.0"
+    rpc-websockets "^7.4.2"
+    secp256k1 "^4.0.2"
+    superstruct "^0.14.2"
+    tweetnacl "^1.0.0"
+
+"@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0", "@solana/web3.js@^1.30.2", "@solana/web3.js@^1.35.1", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.37.1":
+  version "1.37.1"
+  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.37.1.tgz#5a4d30a4cf79c4598e0a437e841c7942e31be74c"
+  integrity sha512-1zm1blRU6ANb8bOfONibKkNKoMyzE1e0Z88MagyRLF1AmfHc+18lFvqxSQKUdazLMHcioZ28h+GfyAaeCT63iA==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@ethersproject/sha2" "^5.5.0"
+    "@solana/buffer-layout" "^4.0.0"
+    bn.js "^5.0.0"
+    borsh "^0.7.0"
+    bs58 "^4.0.1"
+    buffer "6.0.1"
+    cross-fetch "^3.1.4"
+    jayson "^3.4.4"
+    js-sha3 "^0.8.0"
+    rpc-websockets "^7.4.2"
+    secp256k1 "^4.0.2"
+    superstruct "^0.14.2"
+    tweetnacl "^1.0.0"
+
+"@solana/web3.js@^1.31.0":
+  version "1.39.1"
+  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.39.1.tgz#858ecd42ff2a5bcba3a4bb642a50194d77e2a578"
+  integrity sha512-Q7XnWTAiU7n7GcoINDAAMLO7CJHpm5kPK46HKwJi2x0cusHQ3WFa7QEp6aPzH7tuf7yl/Kw1lYitcwTVOvqARA==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@ethersproject/sha2" "^5.5.0"
+    "@solana/buffer-layout" "^4.0.0"
+    bn.js "^5.0.0"
+    borsh "^0.7.0"
+    bs58 "^4.0.1"
+    buffer "6.0.1"
+    cross-fetch "^3.1.4"
+    jayson "^3.4.4"
+    js-sha3 "^0.8.0"
+    rpc-websockets "^7.4.2"
+    secp256k1 "^4.0.2"
+    superstruct "^0.14.2"
+    tweetnacl "^1.0.0"
+
+"@solana/web3.js@^1.32.0", "@solana/web3.js@^1.37.0":
+>>>>>>> db16cef (progress)
   version "1.41.6"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.41.6.tgz#120a45b758de5efd3c17d635fdf869a5f2a95c0a"
   integrity sha512-4uGXNxFMdS/Sk1WRoZ0hbkL1/fo7XoaYlBZEFHawQwTGsM5FxDuXKqfRzhQCiMzOPf2DBKgM67sdpzDuHk4uKw==
@@ -4879,15 +4958,15 @@
     superstruct "^0.14.2"
     tweetnacl "^1.0.0"
 
-"@solana/web3.js@^1.42.0":
-  version "1.42.0"
-  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.42.0.tgz#296e4bbab1fbfc198b3e9c3d94016c3876eb6a2c"
-  integrity sha512-QqGh5DWzrgsWRx4sCPDQIm3390b7buPR16tZI61slQaQwJ2ymrSXPQCe4PPTJEIlzGjCV3dkn2vpT2R32BfK2Q==
+"@solana/web3.js@^1.43.1":
+  version "1.43.1"
+  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.43.1.tgz#f0cfffe7feb798563440f9ca0b0e9ba099e13967"
+  integrity sha512-s6TRcWz3rYvxM8gg1eQmUAUJQeoXIFMG9MbSWb/uRrLU0q7Xd9Ic1PNbACp1n1O0wyCogTAyFWXXPK476aIVSg==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@ethersproject/sha2" "^5.5.0"
     "@solana/buffer-layout" "^4.0.0"
-    "@solana/buffer-layout-utils" "^0.2.0"
+    bigint-buffer "^1.1.5"
     bn.js "^5.0.0"
     borsh "^0.7.0"
     bs58 "^4.0.1"
@@ -5037,10 +5116,10 @@
   resolved "https://registry.yarnpkg.com/@tailwindcss/aspect-ratio/-/aspect-ratio-0.4.0.tgz#c635dd7331cbcc1b111cebdc2647dd3493ebdd3e"
   integrity sha512-WJu0I4PpqNPuutpaA9zDUq2JXR+lorZ7PbLcKNLmb6GL9/HLfC7w3CRsMhJF4BbYd/lkY6CfXOvkYpuGnZfkpQ==
 
-"@tailwindcss/forms@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@tailwindcss/forms/-/forms-0.5.1.tgz#7fe86b9b67e6d91cb902e2d3f4ebe561cc057a13"
-  integrity sha512-QSwsFORnC2BAP0lRzQkz1pw+EzIiiPdk4e27vGQjyXkwJPeC7iLIRVndJzf9CJVbcrrIcirb/TfxF3gRTyFEVA==
+"@tailwindcss/forms@^0.5.2":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@tailwindcss/forms/-/forms-0.5.2.tgz#4ef45f9916dcb37838cbe7fecdcc4ba7a7c2ab59"
+  integrity sha512-pSrFeJB6Bg1Mrg9CdQW3+hqZXAKsBrSG9MAfFLKy1pVA4Mb4W7C0k7mEhlmS2Dfo/otxrQOET7NJiJ9RrS563w==
   dependencies:
     mini-svg-data-uri "^1.2.3"
 
@@ -5463,10 +5542,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.47.tgz#ca9237d51f2a2557419688511dab1c8daf475188"
   integrity sha512-BzcaRsnFuznzOItW1WpQrDHM7plAa7GIDMZ6b5pnMbkqEtM/6WCOhvZar39oeMQP79gwvFUWjjptE7/KGcNqFg==
 
-"@types/node@^17.0.34":
-  version "17.0.34"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.34.tgz#3b0b6a50ff797280b8d000c6281d229f9c538cef"
-  integrity sha512-XImEz7XwTvDBtzlTnm8YvMqGW/ErMWBsKZ+hMTvnDIjGCKxwK5Xpc+c/oQjOauwq8M4OS11hEkpjX8rrI/eEgA==
+"@types/node@^17.0.35":
+  version "17.0.35"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.35.tgz#635b7586086d51fb40de0a2ec9d1014a5283ba4a"
+  integrity sha512-vu1SrqBjbbZ3J6vwY17jBs8Sr/BKA+/a/WtjRG+whKg1iuLFOosq872EXS0eXWILdO36DHQQeku/ZcL6hz2fpg==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.1"
@@ -6974,10 +7053,10 @@ available-typed-arrays@^1.0.5:
   version "5.4.7"
   resolved "https://github.com/Bundlr-Network/avsc#a730cc8018b79e114b6a3381bbb57760a24c6cef"
 
-aws-sdk@^2.1134.0:
-  version "2.1135.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1135.0.tgz#8c14aa6894be529cb5fb7b6d19f3dc70e4f35816"
-  integrity sha512-bl9n4QgrEh52hmQ+Jo76BgJXM/p+PwfVZvImEQHFeel/33H/PDLcTJquEw5bzxM1HRNI24iH+FNPwyWLMrttTw==
+aws-sdk@^2.1139.0:
+  version "2.1139.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1139.0.tgz#8800d6cff33663f5d226f1cc51cdd83bd46d7ffe"
+  integrity sha512-aLmdIhIQuOdbf6F/QJCHm3xfr+9Esh9vWxZmOi54iEOcfHuO48VEEfa2A6NXb2JmUtWGB5AX80ssp6F90bhA6g==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -15041,7 +15120,7 @@ nan@^2.12.1, nan@^2.14.2:
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.15.0.tgz#3f34a473ff18e15c1b5626b62903b5ad6e665fee"
   integrity sha512-8ZtvEnA2c5aYCZYd1cvgdnU6cqwixRoYg70xPLWUws5ORTa/lnw+u4amixRS/Ac5U5mQVgp9pnlSUnbNWFaWZQ==
 
-nanoid@^3.1.30, nanoid@^3.3.3:
+nanoid@^3.1.30, nanoid@^3.3.3, nanoid@^3.3.4:
   version "3.3.4"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.4.tgz#730b67e3cd09e2deacf03c027c81c9d9dbc5e8ab"
   integrity sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==
@@ -17192,12 +17271,21 @@ postcss@^8.1.0, postcss@^8.3.5, postcss@^8.4.4, postcss@^8.4.6, postcss@^8.4.7:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-postcss@^8.4.12, postcss@^8.4.13:
+postcss@^8.4.12:
   version "8.4.13"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.13.tgz#7c87bc268e79f7f86524235821dfdf9f73e5d575"
   integrity sha512-jtL6eTBrza5MPzy8oJLFuUscHDXTV5KcLlqAWHl5q5WYRfnNRGSmOZmOZ1T6Gy7A99mOZfqungmZMpMmCVJ8ZA==
   dependencies:
     nanoid "^3.3.3"
+    picocolors "^1.0.0"
+    source-map-js "^1.0.2"
+
+postcss@^8.4.14:
+  version "8.4.14"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.14.tgz#ee9274d5622b4858c1007a74d76e42e56fd21caf"
+  integrity sha512-E398TUmfAYFPBSdzgeieK2Y1+1cpdxJx8yXbK/m57nRhKSmk1GB2tO4lbLBtlkfPQTDKfe4Xqv1ASWPpayPEig==
+  dependencies:
+    nanoid "^3.3.4"
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
