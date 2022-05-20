@@ -17,31 +17,16 @@ export async function filesS3Uploader(uploadState: any, uploadDispatch: any, pub
 
   let count = 0;
   for await (const file of files) {
-    let folderName = `${publicKey}/${uploadState.title}`;
+    let filePath = `${publicKey}/${uploadState.title}`;
 
     if (count === 0) {
-      folderName = `${folderName}/bundle`;
-      uploadDispatch({
-        type: 's3',
-        field: 's3UrlBundle',
-        value: `${BUCKET_URL}${file.name}`
-      });
+      filePath = `${filePath}/bundle/${file.name}`;
       count++;
     } else if (count === 1) {
-      folderName = `${folderName}/icon`;
-      uploadDispatch({
-        type: 's3',
-        field: 's3UrlIcon',
-        value: `${BUCKET_URL}${file.name}`
-      });
+      filePath = `${filePath}/icon/${file.name}`;
       count++;
     } else {
-      folderName = `${folderName}/screenshots`;
-      uploadDispatch({
-        type: 's3',
-        field: 's3UrlScreenshots',
-        value: `${BUCKET_URL}${file.name}`
-      });
+      filePath = `${filePath}/screenshots/${file.name}`;
       count++;
     }
 
@@ -52,7 +37,7 @@ export async function filesS3Uploader(uploadState: any, uploadDispatch: any, pub
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          name: `${folderName}/${file.name}`,
+          name: filePath,
           type: file.type
         })
       });
@@ -75,7 +60,7 @@ export async function filesS3Uploader(uploadState: any, uploadDispatch: any, pub
 
 export async function metadataS3Uploader(uploadState: any, uploadDispatch: any, publicKey: string) {
   try {
-    const metadata = generateMetadata(uploadState);
+    const metadata = generateMetadata(uploadState, uploadDispatch, publicKey);
     const fileName = `${publicKey}/${uploadState.title}/metadata.json`;
 
     const resp = await fetch('/api/s3', {
@@ -101,7 +86,7 @@ export async function metadataS3Uploader(uploadState: any, uploadDispatch: any, 
     });
 
     uploadDispatch({
-      type: 's3',
+      type: 'field',
       field: 's3UrlMetadata',
       value: `${BUCKET_URL}${fileName}`
     });

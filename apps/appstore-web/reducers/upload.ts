@@ -12,12 +12,6 @@ export function uploadReducer(state, action) {
         [action.field]: action.value
       };
     }
-    case 's3': {
-      return {
-        ...state,
-        [action.field]: action.value
-      };
-    }
     case 'reset': {
       return uploadInitialState;
     }
@@ -33,5 +27,8 @@ export const uploadInitialState = {
   price: 0,
   bundle: {},
   icon: {},
-  screenshots: {}
+  screenshots: {},
+  s3UrlBundle: '',
+  s3UrlIcon: '',
+  s3UrlScreenshots: ''
 };
