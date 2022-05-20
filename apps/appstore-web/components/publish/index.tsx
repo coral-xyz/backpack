@@ -20,9 +20,10 @@ function Publish() {
   async function uploadBundle(e) {
     e.preventDefault();
 
-    // Upload Data to S3
+    // Upload Data
     await filesS3Uploader(uploadState, uploadDispatch, publicKey!.toBase58());
 
+    // Create and Upload metadata
     await metadataS3Uploader(uploadState, uploadDispatch, publicKey!.toBase58());
 
     setSelectedTab('Review & Mint');
@@ -54,7 +55,7 @@ function Publish() {
 
         {/* Tabs */}
         <div className="mt-10 flex flex-col gap-2">
-          <Tabs selected={selectedTab} setSelected={setSelectedTab} />
+          <Tabs selected={selectedTab} />
           <form onSubmit={selectedTab === 'Upload App' ? uploadBundle : mintXNF}>
             {selectedTab === 'Upload App' && (
               <>
