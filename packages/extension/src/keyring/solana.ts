@@ -22,7 +22,7 @@ import {
   LedgerKeyringJson,
   LedgerKeyring,
 } from "./types";
-import { v4 } from "uuid";
+import { v1 } from "uuid";
 
 export class SolanaKeyringFactory implements KeyringFactory {
   public fromJson(payload: KeyringJson): SolanaKeyring {
@@ -311,7 +311,7 @@ export class SolanaLedgerKeyring implements LedgerKeyring {
     params: Array<any>;
   }): Promise<T> {
     return new Promise((resolve, reject) => {
-      const id = v4();
+      const id = v1(); // using v1 in case we need the timestamp when debugging
       responseResolvers[id] = { resolve, reject };
       const msg = {
         type: LEDGER_INJECTED_CHANNEL_REQUEST,
