@@ -12,6 +12,9 @@ const executablePath =
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 module.exports = {
+  server: {
+    command: "serve -p 3333 ../example-client/build",
+  },
   launch: {
     headless: false,
     executablePath,

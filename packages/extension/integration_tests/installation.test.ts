@@ -2,31 +2,37 @@ import { generateMnemonic } from "bip39";
 import type { Page } from "puppeteer";
 import manifest from "../public/manifest.json";
 
+let clientPage: Page;
 let extensionPopupPage: Page;
 let setupPage: Page;
 
 describe("Installing Anchor Wallet", () => {
   // Our test browser has already installed the extension code in ./build
   // see jest-puppeteer.config.js for details about that.
-  // Now we need to get the unique ID of the browser extension and
-  // then we can open a URL like chrome-extension://EXTENSION_ID/popup.html
   beforeAll((done) => {
     (async () => {
+      clientPage = await browser.newPage();
+
+      // We need to load a webpage here for some reason, maybe for code injection?
+      await clientPage.goto("http://localhost:3333");
+
+      // Now we need to get the unique ID of the browser extension and
+      // then we can open a URL like chrome-extension://EXTENSION_ID/popup.html
+
       const extensionID = await (async () => {
-        const targets: any = await browser.targets();
+        const targets = await browser.targets();
         const extensionTarget = targets.find(
-          ({ _targetInfo: { title, type } }) =>
-            title === manifest.name && type === "background_page"
+          (target) => target.type() === "service_worker"
         );
-        const extensionUrl = extensionTarget._targetInfo.url;
-        return extensionUrl.split("/")[2];
+        // @ts-ignore
+        const partialExtensionUrl = extensionTarget._targetInfo.url;
+        const [, , id] = partialExtensionUrl.split("/");
+        return id;
       })();
 
-      extensionPopupPage = await browser.newPage();
-
-      const popupFile = manifest.browser_action.default_popup;
+      const popupFile = manifest.action.default_popup;
       const popupURL = `chrome-extension://${extensionID}/${popupFile}`;
-
+      extensionPopupPage = await browser.newPage();
       await extensionPopupPage.goto(popupURL);
 
       setupPage = await (
@@ -35,8 +41,6 @@ describe("Installing Anchor Wallet", () => {
         )
       ).page();
 
-      // using callback for now, because of issues with flaky tests
-      // see: https://github.com/200ms-labs/anchor-wallet/issues/57
       done();
     })();
   });
@@ -157,6 +161,37 @@ describe("Installing Anchor Wallet", () => {
 
       // Ensure the wallet is unlocked and the balance page loads
       await expect(extensionPopupPage).toMatch("Total Balance");
-    }, 120_000 /** allow 2 mins for test to run due to loading external data */);
+
+      await extensionPopupPage.close();
+
+      await clientPage.bringToFront();
+
+      await expect(clientPage).toClick("button", {
+        text: "Select Wallet",
+      });
+
+      await expect(clientPage).toClick("button", {
+        text: "Anchor",
+      });
+
+      // XXX: this is a hack to wait for the popup to open
+      await sleep(500);
+
+      const browserPages = await browser.pages();
+      const approvePopup = browserPages[browserPages.length - 1];
+
+      await expect(approvePopup).toMatch("Connect Wallet to localhost");
+      await expect(approvePopup).toClick("button", { text: "Approve" });
+
+      // Wallet is now connected
+      await expect(clientPage).toClick("button", {
+        text: "Disconnect",
+      });
+
+      // Wallet is now disconnected, expect to see 'Select Wallet' button
+      await expect(clientPage).toMatch("Select Wallet");
+    }, 30_000 /** allow 30s for test to run due to loading external data */);
   });
 });
+
+const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));

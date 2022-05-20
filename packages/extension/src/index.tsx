@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./app/App";
 import reportWebVitals from "./reportWebVitals";
 import * as background from "./background/client";
+import LedgerIframe from "./components/LedgerIframe";
 
 async function main() {
   //
@@ -21,6 +22,7 @@ function render() {
   ReactDOM.render(
     <React.StrictMode>
       <App />
+      <LedgerIframe />
     </React.StrictMode>,
     document.getElementById("root")
   );

@@ -84,12 +84,12 @@ async function openPopupWindow(ctx: Context, url: string): Promise<Window> {
 
 export function openOnboarding() {
   const url = `${EXPANDED_HTML}?${QUERY_ONBOARDING}`;
-  window.open(chrome.extension.getURL(url), "_blank");
+  window.open(chrome.runtime.getURL(url), "_blank");
 }
 
 export function openConnectHardware() {
   const url = `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}`;
-  window.open(chrome.extension.getURL(url), "_blank");
+  window.open(chrome.runtime.getURL(url), "_blank");
 }
 
 export function isExtensionPopup() {
