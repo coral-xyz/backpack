@@ -3,9 +3,7 @@ import { Keypair, PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import * as bs58 from "bs58";
 import {
-  LEDGER_IFRAME_URL,
   LEDGER_INJECTED_CHANNEL_REQUEST,
-  LEDGER_INJECTED_CHANNEL_RESPONSE,
   LEDGER_METHOD_CONNECT,
   LEDGER_METHOD_SIGN_TRANSACTION,
   LEDGER_METHOD_SIGN_MESSAGE,

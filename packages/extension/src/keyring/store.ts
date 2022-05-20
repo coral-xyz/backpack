@@ -7,10 +7,10 @@ import {
   BACKEND_EVENT,
 } from "@200ms/common";
 import * as crypto from "./crypto";
+import type { SolanaLedgerKeyring } from "./solana";
 import {
   SolanaHdKeyringFactory,
   SolanaKeyringFactory,
-  SolanaLedgerKeyring,
   SolanaLedgerKeyringFactory,
   EthereumHdKeyringFactory,
   EthereumKeyringFactory,
