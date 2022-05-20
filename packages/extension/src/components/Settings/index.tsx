@@ -128,22 +128,55 @@ function SettingsContent({ close }: { close: () => void }) {
 
 function _SettingsContent({ close }: { close: () => void }) {
   const classes = useStyles();
-  const theme = useTheme() as any;
-  const activeWallet = useActiveWallet();
-  const namedPublicKeys = useWalletPublicKeys();
   const keyringStoreState = useKeyringStoreState();
+
+  return (
+    <div className={classes.settingsContainer}>
+      <AvatarHeader />
+      {keyringStoreState === KeyringStoreStateEnum.Unlocked && <WalletList />}
+      <SettingsList />
+    </div>
+  );
+}
+
+function AvatarHeader() {
+  const activeWallet = useActiveWallet();
+  const theme = useTheme() as any;
+  return (
+    <div>
+      <img
+        src={AVATAR_URL}
+        style={{
+          width: "64px",
+          height: "64px",
+          borderRadius: "32px",
+          marginLeft: "auto",
+          marginRight: "auto",
+          display: "block",
+        }}
+      />
+      <Typography
+        style={{
+          textAlign: "center",
+          color: theme.custom.colors.fontColor,
+          fontWeight: 500,
+          fontSize: "18px",
+          lineHeight: "28px",
+          marginBottom: "40px",
+        }}
+      >
+        {activeWallet.name}
+      </Typography>
+    </div>
+  );
+}
+
+function WalletList() {
+  const classes = useStyles();
+  const theme = useTheme() as any;
+  const namedPublicKeys = useWalletPublicKeys();
   const nav = useEphemeralNav();
 
-  const lockWallet = () => {
-    const background = getBackgroundClient();
-    background
-      .request({
-        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-        params: [],
-      })
-      .catch(console.error)
-      .then(() => close());
-  };
   const clickWallet = (publicKey: PublicKey) => {
     const background = getBackgroundClient();
     background
@@ -162,92 +195,39 @@ function _SettingsContent({ close }: { close: () => void }) {
     marginRight: "16px",
     borderRadius: "8px",
   };
-
   const keys = namedPublicKeys.hdPublicKeys
     .concat(namedPublicKeys.importedPublicKeys)
     .concat(namedPublicKeys.ledgerPublicKeys);
-
-  const settingsMenu = [
-    {
-      id: 0,
-      label: "Help & Support",
-      onClick: () => console.log("help and support"),
-      icon: (props: any) => <Help {...props} />,
-      detailIcon: (props: any) => <Launch {...props} />,
-    },
-    {
-      id: 1,
-      label: "Connection",
-      onClick: () => nav.push(<ConnectionMenu />),
-      icon: (props: any) => <Public {...props} />,
-      detailIcon: (props: any) => <ArrowForwardIos {...props} />,
-    },
-    {
-      id: 2,
-      label: "Lock Wallet",
-      onClick: () => lockWallet(),
-      icon: (props: any) => <Lock {...props} />,
-      detailIcon: (props: any) => <></>,
-    },
-  ];
-
   return (
-    <div className={classes.settingsContainer}>
-      <div>
-        <img
-          src={AVATAR_URL}
-          style={{
-            width: "64px",
-            height: "64px",
-            borderRadius: "32px",
-            marginLeft: "auto",
-            marginRight: "auto",
-            display: "block",
-          }}
-        />
-        <Typography
-          style={{
-            textAlign: "center",
-            color: theme.custom.colors.fontColor,
-            fontWeight: 500,
-            fontSize: "18px",
-            lineHeight: "28px",
-            marginBottom: "40px",
-          }}
-        >
-          {activeWallet.name}
-        </Typography>
-      </div>
-      {keyringStoreState === KeyringStoreStateEnum.Unlocked && (
-        <List style={listStyle}>
-          {keys.map(({ name, publicKey }, idx: number) => {
-            return (
-              <ListItem
-                key={publicKey.toString()}
-                button
-                className={classes.settingsContentListItem}
-                onClick={() => clickWallet(publicKey)}
+    <>
+      <List style={listStyle}>
+        {keys.map(({ name, publicKey }, idx: number) => {
+          return (
+            <ListItem
+              key={publicKey.toString()}
+              button
+              className={classes.settingsContentListItem}
+              onClick={() => clickWallet(publicKey)}
+              style={{
+                borderBottom:
+                  idx === keys.length - 1
+                    ? undefined
+                    : `solid 1pt ${theme.custom.colors.border}`,
+              }}
+            >
+              <WalletAddress
+                name={name}
+                publicKey={publicKey}
                 style={{
-                  borderBottom:
-                    idx === keys.length - 1
-                      ? undefined
-                      : `solid 1pt ${theme.custom.colors.border}`,
+                  fontWeight: 500,
+                  lineHeight: "24px",
+                  fontSize: "16px",
                 }}
-              >
-                <WalletAddress
-                  name={name}
-                  publicKey={publicKey}
-                  style={{
-                    fontWeight: 500,
-                    lineHeight: "24px",
-                    fontSize: "16px",
-                  }}
-                />
-              </ListItem>
-            );
-          })}
-        </List>
-      )}
+              />
+            </ListItem>
+          );
+        })}
+      </List>
       <List
         style={{
           ...listStyle,
@@ -288,70 +268,122 @@ function _SettingsContent({ close }: { close: () => void }) {
           <Typography>Add / Connect Wallet</Typography>
         </ListItem>
       </List>
-      <List
-        style={{
-          ...listStyle,
-          marginTop: "24px",
-          marginBottom: "16px",
-        }}
-      >
-        {settingsMenu.map((s, idx) => {
-          return (
-            <ListItem
-              key={s.id}
-              button
-              className={classes.settingsContentListItem}
+    </>
+  );
+}
+
+function SettingsList() {
+  const classes = useStyles();
+  const theme = useTheme() as any;
+  const nav = useEphemeralNav();
+
+  const lockWallet = () => {
+    const background = getBackgroundClient();
+    background
+      .request({
+        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+        params: [],
+      })
+      .catch(console.error)
+      .then(() => close());
+  };
+
+  const listStyle = {
+    color: theme.custom.colors.fontColor,
+    background: theme.custom.colors.nav,
+    padding: 0,
+    marginLeft: "16px",
+    marginRight: "16px",
+    borderRadius: "8px",
+  };
+  const settingsMenu = [
+    {
+      id: 0,
+      label: "Help & Support",
+      onClick: () => console.log("help and support"),
+      icon: (props: any) => <Help {...props} />,
+      detailIcon: (props: any) => <Launch {...props} />,
+    },
+    {
+      id: 1,
+      label: "Connection",
+      onClick: () => nav.push(<ConnectionMenu />),
+      icon: (props: any) => <Public {...props} />,
+      detailIcon: (props: any) => <ArrowForwardIos {...props} />,
+    },
+    {
+      id: 2,
+      label: "Lock Wallet",
+      onClick: () => lockWallet(),
+      icon: (props: any) => <Lock {...props} />,
+      detailIcon: (props: any) => <></>,
+    },
+  ];
+
+  return (
+    <List
+      style={{
+        ...listStyle,
+        marginTop: "24px",
+        marginBottom: "16px",
+      }}
+    >
+      {settingsMenu.map((s, idx) => {
+        return (
+          <ListItem
+            key={s.id}
+            button
+            className={classes.settingsContentListItem}
+            style={{
+              borderBottom:
+                idx !== settingsMenu.length - 1
+                  ? `solid 1pt ${theme.custom.colors.border}`
+                  : undefined,
+            }}
+            onClick={s.onClick}
+          >
+            <div
               style={{
-                borderBottom:
-                  idx !== settingsMenu.length - 1
-                    ? `solid 1pt ${theme.custom.colors.border}`
-                    : undefined,
+                display: "flex",
+                flex: 1,
               }}
-              onClick={s.onClick}
             >
-              <div
+              {s.icon({
+                style: {
+                  color: theme.custom.colors.secondary,
+                  marginRight: "8px",
+                  height: "24px",
+                  width: "24px",
+                },
+              })}
+              <Typography
                 style={{
-                  display: "flex",
-                  flex: 1,
+                  fontWeight: 500,
+                  fontSize: "16px",
+                  lineHeight: "24px",
                 }}
               >
-                {s.icon({
-                  style: {
-                    color: theme.custom.colors.secondary,
-                    marginRight: "8px",
-                    height: "24px",
-                    width: "24px",
-                  },
-                })}
-                <Typography
-                  style={{
-                    fontWeight: 500,
-                    fontSize: "16px",
-                    lineHeight: "24px",
-                  }}
-                >
-                  {s.label}
-                </Typography>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                {s.detailIcon({
-                  style: {
-                    color: theme.custom.colors.secondary,
-                    fontSize: "14px",
-                  },
-                })}
-              </div>
-            </ListItem>
-          );
-        })}
-      </List>
-    </div>
+                {s.label}
+              </Typography>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              {s.detailIcon({
+                style: {
+                  color: theme.custom.colors.secondary,
+                  fontSize: "14px",
+                },
+              })}
+            </div>
+          </ListItem>
+        );
+      })}
+    </List>
   );
 }
 
