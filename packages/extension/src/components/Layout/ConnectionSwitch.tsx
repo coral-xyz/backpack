@@ -30,14 +30,6 @@ export function ConnectionSwitch() {
   const classes = useStyles();
   const nav = useEphemeralNav();
 
-  useEffect(() => {
-    const navButton = nav.navButtonRight;
-    nav.setNavButtonRight(undefined);
-    return () => {
-      nav.setNavButtonRight(navButton);
-    };
-  }, []);
-
   return (
     <Button
       className={classes.connectionButton}
@@ -63,7 +55,16 @@ const endpoints = {
 function ConnectionMenu() {
   const classes = useStyles();
   const [connectionUrl, setConnectionUrl] = useSolanaConnectionUrl();
+  const nav = useEphemeralNav();
   const urls = Object.values(endpoints).filter((v) => typeof v === "string");
+
+  useEffect(() => {
+    const navButton = nav.navButtonRight;
+    nav.setNavButtonRight(null);
+    return () => {
+      nav.setNavButtonRight(navButton);
+    };
+  }, []);
 
   return (
     <MenuList className={classes.connectionMenu}>
