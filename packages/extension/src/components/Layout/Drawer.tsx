@@ -125,7 +125,7 @@ function WithDrawerContent({ children, setOpenDrawer }: any) {
     return () => {
       nav.setNavButtonRight(previous);
     };
-  }, [nav]);
+  }, []);
   return (
     <div className={classes.withDrawer}>
       <div className={classes.withDrawerContent}>{children}</div>
