@@ -5,7 +5,7 @@ import {
 import { useEffect, useRef } from "react";
 
 /**
- * A React component that renders an iframe used to communicate with the ledger
+ * A hidden iframe that's used to communicate (as a proxy) with a Ledger
  */
 const LedgerIframe = () => {
   const iframe = useRef<HTMLIFrameElement>(null);
@@ -13,22 +13,18 @@ const LedgerIframe = () => {
     let handleMessage: (event: MessageEvent) => void;
 
     navigator.serviceWorker.ready.then((_registration) => {
-      handleMessage = ({ data: { type, detail } }) => {
-        if (type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
+      handleMessage = ({ data }) => {
+        if (data.type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
           return;
         }
-        navigator.serviceWorker.controller?.postMessage(detail);
+        navigator.serviceWorker.controller?.postMessage(data);
       };
-
       window.addEventListener("message", handleMessage);
 
-      navigator.serviceWorker.onmessage = (event) => {
-        console.log({
-          receivedAndPosting: event.data,
-          iframe: iframe.current,
-          contentWindow: iframe.current!.contentWindow,
-        });
-        iframe.current!.contentWindow!.postMessage(event.data, "*");
+      navigator.serviceWorker.onmessage = ({ data }) => {
+        // Forward the message to be sent from the iframe so that it has
+        // permissions to communicate with the ledger
+        iframe.current!.contentWindow!.postMessage(data, "*");
       };
     });
 

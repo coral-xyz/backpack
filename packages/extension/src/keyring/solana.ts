@@ -8,6 +8,7 @@ import {
   LEDGER_METHOD_SIGN_TRANSACTION,
   LEDGER_METHOD_SIGN_MESSAGE,
   DerivationPath,
+  LEDGER_INJECTED_CHANNEL_RESPONSE,
 } from "@200ms/common";
 import { deriveKeypairs, deriveKeypair } from "./crypto";
 import {
@@ -215,20 +216,6 @@ const responseResolvers: {
   };
 } = {};
 
-self.addEventListener("message", ({ data: { id, result, error } }) => {
-  const resolver = responseResolvers[id];
-  if (!resolver) {
-    // Why does this get thrown?
-    throw new Error(`resolver not found for request id: ${id}`);
-  }
-  const { resolve, reject } = resolver;
-  delete responseResolvers[id];
-  if (error) {
-    reject(error);
-  }
-  resolve(result);
-});
-
 export class SolanaLedgerKeyringFactory {
   public init(): SolanaLedgerKeyring {
     return new SolanaLedgerKeyring([]);
@@ -338,6 +325,33 @@ export class SolanaLedgerKeyring implements LedgerKeyring {
   }
 }
 
+// Handle receiving postMessages
+self.addEventListener(
+  "message",
+  ({
+    data: {
+      type,
+      detail: { id, result, error },
+    },
+  }) => {
+    if (type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
+      return;
+    }
+    const resolver = responseResolvers[id];
+    if (!resolver) {
+      // Why does this get thrown?
+      throw new Error(`resolver not found for request id: ${id}`);
+    }
+    const { resolve, reject } = resolver;
+    delete responseResolvers[id];
+    if (error) {
+      reject(error);
+    }
+    resolve(result);
+  }
+);
+
+// Handle sending postMessages
 const postMessageToIframe = (message: any) => {
   (self as any).clients
     .matchAll({

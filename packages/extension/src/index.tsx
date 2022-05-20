@@ -22,7 +22,6 @@ function render() {
   ReactDOM.render(
     <React.StrictMode>
       <App />
-      {/* A hidden iframe used to communicate with a Ledger device */}
       <LedgerIframe />
     </React.StrictMode>,
     document.getElementById("root")
