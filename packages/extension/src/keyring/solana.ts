@@ -40,7 +40,7 @@ export class SolanaKeyringFactory implements KeyringFactory {
   }
 }
 
-export class SolanaKeyring implements Keyring {
+class SolanaKeyring implements Keyring {
   constructor(readonly keypairs: Array<Keypair>) {}
 
   public publicKeys(): Array<string> {
@@ -144,7 +144,7 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
   }
 }
 
-export class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
+class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   readonly mnemonic: string;
   private seed: Buffer;
   private numberOfAccounts: number;
