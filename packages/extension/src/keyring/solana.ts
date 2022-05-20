@@ -21,6 +21,7 @@ import {
   LedgerKeyringJson,
   LedgerKeyring,
 } from "./types";
+import { v4 } from "uuid";
 
 export class SolanaKeyringFactory implements KeyringFactory {
   public fromJson(payload: KeyringJson): SolanaKeyring {
@@ -204,6 +205,30 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   }
 }
 
+// This code runs inside a ServiceWorker, so the message listener below must be
+// created immediately. That's why `responseResolvers` is in the file's global scope.
+
+const responseResolvers: {
+  [reqId: string]: {
+    resolve: (value: any) => void;
+    reject: (reason?: string) => void;
+  };
+} = {};
+
+self.addEventListener("message", ({ data: { id, result, error } }) => {
+  const resolver = responseResolvers[id];
+  if (!resolver) {
+    // Why does this get thrown?
+    throw new Error(`resolver not found for request id: ${id}`);
+  }
+  const { resolve, reject } = resolver;
+  delete responseResolvers[id];
+  if (error) {
+    reject(error);
+  }
+  resolve(result);
+});
+
 export class SolanaLedgerKeyringFactory {
   public init(): SolanaLedgerKeyring {
     return new SolanaLedgerKeyring([]);
@@ -217,26 +242,8 @@ export class SolanaLedgerKeyringFactory {
 export class SolanaLedgerKeyring implements LedgerKeyring {
   private derivationPaths: Array<ImportedDerivationPath>;
 
-  private requestId: number;
-  private responseResolvers: { [reqId: number]: [Function, Function] };
-
-  private iframe: any;
-  // private iframeUrl: string;
-
   constructor(derivationPaths: Array<ImportedDerivationPath>) {
     this.derivationPaths = derivationPaths;
-    this.requestId = 0;
-    this.responseResolvers = {};
-
-    // // Responses from the iframe.
-    // this._setupResponseChannel();
-
-    // // Inject the iframe.
-    // this.iframeUrl = LEDGER_IFRAME_URL;
-    // this.iframe = document.createElement("iframe");
-    // this.iframe.src = this.iframeUrl;
-    // this.iframe.allow = `hid 'src'`;
-    // document.head.appendChild(this.iframe);
   }
 
   public keyCount(): number {
@@ -317,8 +324,8 @@ export class SolanaLedgerKeyring implements LedgerKeyring {
     params: Array<any>;
   }): Promise<T> {
     return new Promise((resolve, reject) => {
-      const id = this.nextRequestId();
-      this.responseResolvers[id] = [resolve, reject];
+      const id = v4();
+      responseResolvers[id] = { resolve, reject };
       const msg = {
         type: LEDGER_INJECTED_CHANNEL_REQUEST,
         detail: {
@@ -326,33 +333,22 @@ export class SolanaLedgerKeyring implements LedgerKeyring {
           ...req,
         },
       };
-      this.iframe.contentWindow.postMessage(msg, "*");
+      postMessageToIframe(msg);
     });
   }
-
-  private nextRequestId(): number {
-    const id = this.requestId;
-    this.requestId += 1;
-    return id;
-  }
-
-  // private _setupResponseChannel() {
-  //   window.addEventListener("message", (event) => {
-  //     if (event.data.type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
-  //       return;
-  //     }
-  //     const { id, result, error } = event.data.detail;
-  //     const resolver = this.responseResolvers[id];
-  //     if (!resolver) {
-  //       // Why does this get thrown?
-  //       throw new Error(`resolver not found for request id: ${id}`);
-  //     }
-  //     const [resolve, reject] = resolver;
-  //     delete this.responseResolvers[id];
-  //     if (error) {
-  //       reject(error);
-  //     }
-  //     resolve(result);
-  //   });
-  // }
 }
+
+const postMessageToIframe = (message: any) => {
+  (self as any).clients
+    .matchAll({
+      frameType: "top-level",
+      includeUncontrolled: true,
+      type: "window",
+      visibilityState: "visible",
+    })
+    .then((clients: any) => {
+      clients.forEach((client: any) => {
+        client.postMessage(message);
+      });
+    });
+};
