@@ -41,7 +41,15 @@ const LedgerIframe = () => {
 
   // allow="hid 'src'" is why this component is necessary, because it allows
   // us to communicate with a ledger using the Human Interface Device API
-  return <iframe ref={iframe} src={LEDGER_IFRAME_URL} allow="hid 'src'" />;
+  return (
+    <iframe
+      ref={iframe}
+      src={LEDGER_IFRAME_URL}
+      allow="hid 'src'"
+      tabIndex={-1}
+      style={{ display: "none" }}
+    />
+  );
 };
 
 export default LedgerIframe;
