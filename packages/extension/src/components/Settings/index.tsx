@@ -10,7 +10,14 @@ import {
   Button,
   TextField,
 } from "@material-ui/core";
-import { Add, Lock, Help, Public } from "@material-ui/icons";
+import {
+  Add,
+  Lock,
+  Help,
+  Public,
+  ArrowForwardIos,
+  Launch,
+} from "@material-ui/icons";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import {
   getBackgroundClient,
@@ -54,6 +61,7 @@ const useStyles = makeStyles((theme: any) => ({
   settingsContentListItem: {
     padding: "8px",
     height: "56px",
+    display: "flex",
   },
   settingsDivider: {
     marginTop: "8px",
@@ -165,18 +173,21 @@ function _SettingsContent({ close }: { close: () => void }) {
       label: "Help & Support",
       onClick: () => console.log("help and support"),
       icon: (props: any) => <Help {...props} />,
+      detailIcon: (props: any) => <Launch {...props} />,
     },
     {
       id: 1,
-      label: "Lock Wallet",
-      onClick: () => lockWallet(),
-      icon: (props: any) => <Lock {...props} />,
-    },
-    {
-      id: 2,
       label: "Connection",
       onClick: () => nav.push(<ConnectionMenu />),
       icon: (props: any) => <Public {...props} />,
+      detailIcon: (props: any) => <ArrowForwardIos {...props} />,
+    },
+    {
+      id: 2,
+      label: "Lock Wallet",
+      onClick: () => lockWallet(),
+      icon: (props: any) => <Lock {...props} />,
+      detailIcon: (props: any) => <></>,
     },
   ];
 
@@ -246,6 +257,7 @@ function _SettingsContent({ close }: { close: () => void }) {
       >
         <ListItem
           button
+          disableRipple
           className={classes.settingsContentListItem}
           onClick={() => {
             nav.push(<AddConnectWallet closeDrawer={() => close()} />);
@@ -269,6 +281,7 @@ function _SettingsContent({ close }: { close: () => void }) {
                 display: "block",
                 marginLeft: "auto",
                 marginRight: "auto",
+                fontSize: "14px",
               }}
             />
           </div>
@@ -296,23 +309,44 @@ function _SettingsContent({ close }: { close: () => void }) {
               }}
               onClick={s.onClick}
             >
-              {s.icon({
-                style: {
-                  color: theme.custom.colors.secondary,
-                  marginRight: "8px",
-                  height: "24px",
-                  width: "24px",
-                },
-              })}
-              <Typography
+              <div
                 style={{
-                  fontWeight: 500,
-                  fontSize: "16px",
-                  lineHeight: "24px",
+                  display: "flex",
+                  flex: 1,
                 }}
               >
-                {s.label}
-              </Typography>
+                {s.icon({
+                  style: {
+                    color: theme.custom.colors.secondary,
+                    marginRight: "8px",
+                    height: "24px",
+                    width: "24px",
+                  },
+                })}
+                <Typography
+                  style={{
+                    fontWeight: 500,
+                    fontSize: "16px",
+                    lineHeight: "24px",
+                  }}
+                >
+                  {s.label}
+                </Typography>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                }}
+              >
+                {s.detailIcon({
+                  style: {
+                    color: theme.custom.colors.secondary,
+                    fontSize: "14px",
+                  },
+                })}
+              </div>
             </ListItem>
           );
         })}
