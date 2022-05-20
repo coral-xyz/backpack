@@ -73,17 +73,14 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-export function WalletAddress({
-  publicKey,
-  name,
-}: {
-  publicKey: PublicKey;
-  name: string;
-}) {
+export function WalletAddress({ publicKey, name, style }: any) {
+  const theme = useTheme() as any;
   return (
-    <Typography>
-      <b style={{ marginRight: "8px" }}>{name}</b>(
-      {walletAddressDisplay(publicKey)})
+    <Typography style={style}>
+      <b style={{ marginRight: "8px" }}>{name}</b>
+      <span style={{ color: theme.custom.colors.secondary }}>
+        ({walletAddressDisplay(publicKey)})
+      </span>
     </Typography>
   );
 }

@@ -1,9 +1,8 @@
-import React from "react";
 import { RecoilRoot } from "recoil";
 import * as background from "../background/client";
 import { WithSuspense } from "../app/Router";
 import { WithTheme } from "../app/theme";
-import { ConnectHardware } from "../components/ConnectHardware";
+import { ConnectHardware } from "../components/Settings/ConnectHardware";
 import { Onboarding } from "../components/Onboarding";
 import { QUERY_CONNECT_HARDWARE, QUERY_ONBOARDING } from "../background/popup";
 import "../app/App.css";

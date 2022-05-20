@@ -19,7 +19,7 @@ import {
   UI_RPC_METHOD_LEDGER_IMPORT,
 } from "@200ms/common";
 import { getBackgroundClient, useAnchorContext } from "@200ms/recoil";
-import { Stepper, WithContinue } from "../Onboarding/CreateNewWallet";
+import { Stepper, WithContinue } from "../../Onboarding/CreateNewWallet";
 
 const STEP_COUNT = 3;
 let TRANSPORT: Transport | null = null;

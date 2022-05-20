@@ -3,7 +3,7 @@ import { makeStyles, Typography } from "@material-ui/core";
 import { PluginRenderer } from "@200ms/anchor-ui-renderer";
 import { useNavigation, useTotal, useTablePlugins } from "@200ms/recoil";
 import { TokenTable } from "./TokenTable";
-import { SidebarButton } from "../../Layout/Sidebar";
+import { SettingsButton } from "../../Settings";
 
 const useStyles = makeStyles((theme: any) => ({
   balancesHeaderContainer: {
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme: any) => ({
 export function Balances() {
   const { setNavButtonRight } = useNavigation();
   useEffect(() => {
-    setNavButtonRight(<SidebarButton />);
+    setNavButtonRight(<SettingsButton />);
     return () => {
       setNavButtonRight(null);
     };

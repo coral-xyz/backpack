@@ -8,10 +8,9 @@ import {
   List,
   ListItem,
   Button,
-  Divider,
   TextField,
 } from "@material-ui/core";
-import { Add, Menu, Close, Lock, Help, FlashOn } from "@material-ui/icons";
+import { Add, Lock, Help, Public } from "@material-ui/icons";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import {
   getBackgroundClient,
@@ -28,12 +27,12 @@ import {
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
 } from "@200ms/common";
 import { WalletAddress } from "../../components/common";
-import { WithDrawer, WithDrawerNoHeader } from "./Drawer";
 import { openConnectHardware } from "../../background/popup";
-import { ConnectionSwitch } from "./ConnectionSwitch";
+import { WithDrawer } from "../Layout/Drawer";
+import { ConnectionMenu } from "./ConnectionSwitch";
 
 const useStyles = makeStyles((theme: any) => ({
-  sidebarContainer: {
+  settingsContainer: {
     height: "100%",
   },
   menuButtonContainer: {
@@ -52,13 +51,11 @@ const useStyles = makeStyles((theme: any) => ({
   menuButtonIcon: {
     color: theme.custom.colors.hamburger,
   },
-  sidebarContentListItem: {
-    paddingLeft: 0,
-    paddingRight: 0,
-    paddingTop: "5px",
-    paddingBottom: "5px",
+  settingsContentListItem: {
+    padding: "8px",
+    height: "56px",
   },
-  sidebarDivider: {
+  settingsDivider: {
     marginTop: "8px",
     marginBottom: "8px",
     backgroundColor: theme.custom.colors.offText,
@@ -66,7 +63,7 @@ const useStyles = makeStyles((theme: any) => ({
   addConnectWalletLabel: {
     color: theme.custom.colors.fontColor,
   },
-  sidebarContent: {
+  settingsContent: {
     display: "flex",
   },
   overviewLabel: {
@@ -82,15 +79,15 @@ const useStyles = makeStyles((theme: any) => ({
 const AVATAR_URL =
   "https://pbs.twimg.com/profile_images/1527030737731571713/7qMzHeBv_400x400.jpg";
 
-export function SidebarButton() {
+export function SettingsButton() {
   const classes = useStyles();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   return (
     <div className={classes.menuButtonContainer}>
       <IconButton
         disableRipple
         className={classes.menuButton}
-        onClick={() => setSidebarOpen(!sidebarOpen)}
+        onClick={() => setSettingsOpen(!settingsOpen)}
       >
         <img
           src={AVATAR_URL}
@@ -102,26 +99,26 @@ export function SidebarButton() {
         />
       </IconButton>
       <WithDrawer
-        openDrawer={sidebarOpen}
-        setOpenDrawer={setSidebarOpen}
+        openDrawer={settingsOpen}
+        setOpenDrawer={setSettingsOpen}
         title={""}
         navbarStyle={{ borderBottom: undefined }}
       >
-        <SidebarContent close={() => setSidebarOpen(false)} />
+        <SettingsContent close={() => setSettingsOpen(false)} />
       </WithDrawer>
     </div>
   );
 }
 
-function SidebarContent({ close }: { close: () => void }) {
+function SettingsContent({ close }: { close: () => void }) {
   return (
     <Suspense fallback={<div></div>}>
-      <_SidebarContent close={close} />
+      <_SettingsContent close={close} />
     </Suspense>
   );
 }
 
-function _SidebarContent({ close }: { close: () => void }) {
+function _SettingsContent({ close }: { close: () => void }) {
   const classes = useStyles();
   const theme = useTheme() as any;
   const activeWallet = useActiveWallet();
@@ -152,8 +149,7 @@ function _SidebarContent({ close }: { close: () => void }) {
   const listStyle = {
     color: theme.custom.colors.fontColor,
     background: theme.custom.colors.nav,
-    paddingLeft: "16px",
-    paddingRight: "16px",
+    padding: 0,
     marginLeft: "16px",
     marginRight: "16px",
     borderRadius: "8px",
@@ -163,8 +159,29 @@ function _SidebarContent({ close }: { close: () => void }) {
     .concat(namedPublicKeys.importedPublicKeys)
     .concat(namedPublicKeys.ledgerPublicKeys);
 
+  const settingsMenu = [
+    {
+      id: 0,
+      label: "Help & Support",
+      onClick: () => console.log("help and support"),
+      icon: (props: any) => <Help {...props} />,
+    },
+    {
+      id: 1,
+      label: "Lock Wallet",
+      onClick: () => lockWallet(),
+      icon: (props: any) => <Lock {...props} />,
+    },
+    {
+      id: 2,
+      label: "Connection",
+      onClick: () => nav.push(<ConnectionMenu />),
+      icon: (props: any) => <Public {...props} />,
+    },
+  ];
+
   return (
-    <div className={classes.sidebarContainer}>
+    <div className={classes.settingsContainer}>
       <div>
         <img
           src={AVATAR_URL}
@@ -190,67 +207,115 @@ function _SidebarContent({ close }: { close: () => void }) {
           {activeWallet.name}
         </Typography>
       </div>
-      <List style={listStyle}>
-        {keys.map(({ name, publicKey }) => {
-          return (
-            <ListItem
-              key={publicKey.toString()}
-              button
-              className={classes.sidebarContentListItem}
-              onClick={() => clickWallet(publicKey)}
-            >
-              <WalletAddress name={name} publicKey={publicKey} />
-            </ListItem>
-          );
-        })}
-        {keyringStoreState === KeyringStoreStateEnum.Unlocked && (
-          <ListItem
-            button
-            className={classes.sidebarContentListItem}
-            onClick={() => {
-              nav.push(<AddConnectWallet closeDrawer={() => close()} />);
+      {keyringStoreState === KeyringStoreStateEnum.Unlocked && (
+        <List style={listStyle}>
+          {keys.map(({ name, publicKey }, idx: number) => {
+            return (
+              <ListItem
+                key={publicKey.toString()}
+                button
+                className={classes.settingsContentListItem}
+                onClick={() => clickWallet(publicKey)}
+                style={{
+                  borderBottom:
+                    idx === keys.length - 1
+                      ? undefined
+                      : `solid 1pt ${theme.custom.colors.border}`,
+                }}
+              >
+                <WalletAddress
+                  name={name}
+                  publicKey={publicKey}
+                  style={{
+                    fontWeight: 500,
+                    lineHeight: "24px",
+                    fontSize: "16px",
+                  }}
+                />
+              </ListItem>
+            );
+          })}
+        </List>
+      )}
+      <List
+        style={{
+          ...listStyle,
+          background: theme.custom.colors.background,
+          color: theme.custom.colors.secondary,
+        }}
+      >
+        <ListItem
+          button
+          className={classes.settingsContentListItem}
+          onClick={() => {
+            nav.push(<AddConnectWallet closeDrawer={() => close()} />);
+          }}
+        >
+          <div
+            style={{
+              border: `solid ${theme.custom.colors.nav}`,
+              borderRadius: "40px",
+              width: "40px",
+              height: "40px",
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "column",
+              marginRight: "12px",
             }}
           >
             <Add
               style={{
-                color: theme.custom.colors.offText,
-                marginRight: "12px",
+                color: theme.custom.colors.secondary,
+                display: "block",
+                marginLeft: "auto",
+                marginRight: "auto",
               }}
             />
-            <Typography>Add / Connect Wallet</Typography>
-          </ListItem>
-        )}
+          </div>
+          <Typography>Add / Connect Wallet</Typography>
+        </ListItem>
       </List>
       <List
         style={{
           ...listStyle,
-          marginTop: "40px",
+          marginTop: "24px",
+          marginBottom: "16px",
         }}
       >
-        <ListItem button className={classes.sidebarContentListItem}>
-          <Help
-            style={{ color: theme.custom.colors.offText, marginRight: "12px" }}
-          />
-          <Typography>Help & Support</Typography>
-        </ListItem>
-        {keyringStoreState === KeyringStoreStateEnum.Unlocked && (
-          <ListItem
-            button
-            className={classes.sidebarContentListItem}
-            onClick={() => lockWallet()}
-          >
-            <Lock
+        {settingsMenu.map((s, idx) => {
+          return (
+            <ListItem
+              key={s.id}
+              button
+              className={classes.settingsContentListItem}
               style={{
-                color: theme.custom.colors.offText,
-                marginRight: "12px",
+                borderBottom:
+                  idx !== settingsMenu.length - 1
+                    ? `solid 1pt ${theme.custom.colors.border}`
+                    : undefined,
               }}
-            />
-            <Typography>Lock Wallet</Typography>
-          </ListItem>
-        )}
-        <ListItem className={classes.connectionListItem}>
-          <ConnectionSwitch />
-        </ListItem>
+              onClick={s.onClick}
+            >
+              {s.icon({
+                style: {
+                  color: theme.custom.colors.secondary,
+                  marginRight: "8px",
+                  height: "24px",
+                  width: "24px",
+                },
+              })}
+              <Typography
+                style={{
+                  fontWeight: 500,
+                  fontSize: "16px",
+                  lineHeight: "24px",
+                }}
+              >
+                {s.label}
+              </Typography>
+            </ListItem>
+          );
+        })}
       </List>
     </div>
   );
@@ -270,6 +335,7 @@ function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
 
   return (
     <div>
+      {importPrivateKey && <ImportPrivateKey closeDrawer={closeDrawer} />}
       {!importPrivateKey && (
         <AddConnectWalletMenu
           setImportPrivateKey={setImportPrivateKey}

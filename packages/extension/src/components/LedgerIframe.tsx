@@ -13,6 +13,10 @@ const LedgerIframe = () => {
     let handleMessage: (event: MessageEvent) => void;
 
     navigator.serviceWorker.ready.then((_registration) => {
+      //
+      // Response: relays message from the injected ledger iframe to the
+      //           background script.
+      //
       handleMessage = ({ data }) => {
         if (data.type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
           return;
@@ -21,9 +25,11 @@ const LedgerIframe = () => {
       };
       window.addEventListener("message", handleMessage);
 
+      //
+      // Request: relays the message from the background script to the
+      //          iframe so that it has permissions to communicate with
+      //          the ledger.
       navigator.serviceWorker.onmessage = ({ data }) => {
-        // Forward the message to be sent from the iframe so that it has
-        // permissions to communicate with the ledger
         iframe.current!.contentWindow!.postMessage(data, "*");
       };
     });
@@ -36,7 +42,7 @@ const LedgerIframe = () => {
   }, []);
 
   // allow="hid 'src'" is why this component is necessary, because it allows
-  // us to communicate with a ledger using the Human Interface Device API
+  // us to communicate with a ledger using the Human Interface Device API.
   return (
     <iframe
       ref={iframe}

@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import {
   makeStyles,
-  Button,
   MenuList,
   MenuItem,
   ListItemIcon,
@@ -26,21 +25,6 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-export function ConnectionSwitch() {
-  const classes = useStyles();
-  const nav = useEphemeralNav();
-
-  return (
-    <Button
-      className={classes.connectionButton}
-      disableRipple
-      onClick={(e) => nav.push(<ConnectionMenu />)}
-    >
-      Cluster Menu
-    </Button>
-  );
-}
-
 const endpoints = {
   "Mainnet (Beta)":
     process.env.DEFAULT_SOLANA_CONNECTION_URL ||
@@ -52,7 +36,7 @@ const endpoints = {
     new URL(prompt("Enter your custom endpoint")!.trim()).toString(),
 };
 
-function ConnectionMenu() {
+export function ConnectionMenu() {
   const classes = useStyles();
   const [connectionUrl, setConnectionUrl] = useSolanaConnectionUrl();
   const nav = useEphemeralNav();
