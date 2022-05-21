@@ -8,6 +8,8 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 
+export * from "./List";
+
 const useStyles = makeStyles((theme: any) => ({
   passwordField: {
     fontSize: "14px",
@@ -77,7 +79,7 @@ export function WalletAddress({ publicKey, name, style }: any) {
   const theme = useTheme() as any;
   return (
     <Typography style={style}>
-      <b style={{ marginRight: "8px" }}>{name}</b>
+      <span style={{ marginRight: "8px" }}>{name}</span>
       <span style={{ color: theme.custom.colors.secondary }}>
         ({walletAddressDisplay(publicKey)})
       </span>

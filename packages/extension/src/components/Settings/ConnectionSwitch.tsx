@@ -1,13 +1,8 @@
 import { useEffect } from "react";
-import {
-  makeStyles,
-  MenuList,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-} from "@material-ui/core";
+import { makeStyles, ListItemIcon, ListItemText } from "@material-ui/core";
 import { CheckBox } from "@material-ui/icons";
 import { useEphemeralNav, useSolanaConnectionUrl } from "@200ms/recoil";
+import { List, ListItem } from "../common";
 
 const useStyles = makeStyles((theme: any) => ({
   connectionButton: {
@@ -50,11 +45,13 @@ export function ConnectionMenu() {
     };
   }, []);
 
+  const endpointKvs = Object.entries(endpoints);
   return (
-    <MenuList className={classes.connectionMenu}>
-      {Object.entries(endpoints).map(([key, val]) => (
-        <MenuItem
+    <List className={classes.connectionMenu}>
+      {endpointKvs.map(([key, val], idx) => (
+        <ListItem
           key={key}
+          isLast={idx === endpointKvs.length - 1}
           onClick={() => {
             try {
               const url = typeof val === "string" ? val : val();
@@ -79,8 +76,8 @@ export function ConnectionMenu() {
             <CheckBox />
           </ListItemIcon>
           <ListItemText>{key}</ListItemText>
-        </MenuItem>
+        </ListItem>
       ))}
-    </MenuList>
+    </List>
   );
 }

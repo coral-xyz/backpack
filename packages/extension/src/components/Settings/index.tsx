@@ -5,8 +5,6 @@ import {
   makeStyles,
   Typography,
   IconButton,
-  List,
-  ListItem,
   Button,
   TextField,
 } from "@material-ui/core";
@@ -33,7 +31,7 @@ import {
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
 } from "@200ms/common";
-import { WalletAddress } from "../../components/common";
+import { WalletAddress, List, ListItem } from "../../components/common";
 import { openConnectHardware } from "../../background/popup";
 import { WithDrawer } from "../Layout/Drawer";
 import { ConnectionMenu } from "./ConnectionSwitch";
@@ -187,33 +185,18 @@ function WalletList() {
       .then((_resp) => close())
       .catch(console.error);
   };
-  const listStyle = {
-    color: theme.custom.colors.fontColor,
-    background: theme.custom.colors.nav,
-    padding: 0,
-    marginLeft: "16px",
-    marginRight: "16px",
-    borderRadius: "8px",
-  };
   const keys = namedPublicKeys.hdPublicKeys
     .concat(namedPublicKeys.importedPublicKeys)
     .concat(namedPublicKeys.ledgerPublicKeys);
   return (
     <>
-      <List style={listStyle}>
+      <List>
         {keys.map(({ name, publicKey }, idx: number) => {
           return (
             <ListItem
               key={publicKey.toString()}
-              button
-              className={classes.settingsContentListItem}
               onClick={() => clickWallet(publicKey)}
-              style={{
-                borderBottom:
-                  idx === keys.length - 1
-                    ? undefined
-                    : `solid 1pt ${theme.custom.colors.border}`,
-              }}
+              isLast={idx === keys.length - 1}
             >
               <WalletAddress
                 name={name}
@@ -230,15 +213,12 @@ function WalletList() {
       </List>
       <List
         style={{
-          ...listStyle,
           background: theme.custom.colors.background,
           color: theme.custom.colors.secondary,
         }}
       >
         <ListItem
-          button
-          disableRipple
-          className={classes.settingsContentListItem}
+          isLast={true}
           onClick={() => {
             nav.push(<AddConnectWallet closeDrawer={() => close()} />);
           }}
@@ -288,14 +268,6 @@ function SettingsList() {
       .then(() => close());
   };
 
-  const listStyle = {
-    color: theme.custom.colors.fontColor,
-    background: theme.custom.colors.nav,
-    padding: 0,
-    marginLeft: "16px",
-    marginRight: "16px",
-    borderRadius: "8px",
-  };
   const settingsMenu = [
     {
       id: 0,
@@ -323,7 +295,6 @@ function SettingsList() {
   return (
     <List
       style={{
-        ...listStyle,
         marginTop: "24px",
         marginBottom: "16px",
       }}
@@ -332,14 +303,7 @@ function SettingsList() {
         return (
           <ListItem
             key={s.id}
-            button
-            className={classes.settingsContentListItem}
-            style={{
-              borderBottom:
-                idx !== settingsMenu.length - 1
-                  ? `solid 1pt ${theme.custom.colors.border}`
-                  : undefined,
-            }}
+            isLast={idx === settingsMenu.length - 1}
             onClick={s.onClick}
           >
             <div
@@ -440,17 +404,17 @@ function AddConnectWalletMenu({
   };
   return (
     <List>
-      <ListItem button onClick={() => createNewWallet()}>
+      <ListItem onClick={() => createNewWallet()}>
         <Typography className={classes.addConnectWalletLabel}>
           Create a new wallet
         </Typography>
       </ListItem>
-      <ListItem button onClick={() => setImportPrivateKey(true)}>
+      <ListItem onClick={() => setImportPrivateKey(true)}>
         <Typography className={classes.addConnectWalletLabel}>
           Import a private key
         </Typography>
       </ListItem>
-      <ListItem button onClick={() => openConnectHardware()}>
+      <ListItem onClick={() => openConnectHardware()} isLast={true}>
         <Typography className={classes.addConnectWalletLabel}>
           Connect hardware wallet
         </Typography>
