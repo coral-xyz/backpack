@@ -109,6 +109,8 @@ const RECONCILER = ReactReconciler({
         return createTextLabelInstance(kind, props, r, h, o);
       case NodeKind.Image:
         return createImageInstance(kind, props, r, h, o);
+      case NodeKind.Button:
+        return createButtonInstance(kind, props, r, h, o);
       case NodeKind.BalancesTable:
         return createBalancesTableInstance(kind, props, r, h, o);
       case NodeKind.BalancesTableHead:
@@ -173,6 +175,8 @@ const RECONCILER = ReactReconciler({
       case NodeKind.Table:
         return null;
       case NodeKind.TableRow:
+        return null;
+      case NodeKind.Button:
         return null;
       case NodeKind.BalancesTable:
         return null;
@@ -252,6 +256,8 @@ const RECONCILER = ReactReconciler({
       case NodeKind.Text:
         break;
       case NodeKind.Image:
+        break;
+      case NodeKind.Button:
         break;
       default:
         throw new Error("unexpected node kind");
@@ -491,6 +497,33 @@ function createImageInstance(
   };
 }
 
+function createButtonInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): ButtonNodeSerialized {
+  const id = h.nextId();
+  let onClick = false;
+  const vProps = props as ButtonProps;
+  if (vProps.onClick && typeof vProps.onClick === "function") {
+    CLICK_HANDLERS.set(id, vProps.onClick);
+    onClick = true;
+  }
+  return {
+    id,
+    kind: NodeKind.Button,
+    props: {
+      ...props,
+      onClick,
+      children: undefined,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
 function createBalancesTableInstance(
   _kind: NodeKind,
   props: NodeProps,
@@ -658,6 +691,7 @@ export type NodeSerialized =
   | TextNodeSerialized
   | ImageNodeSerialized
   | ViewNodeSerialized
+  | ButtonNodeSerialized
   | BalancesTableNodeSerialized
   | BalancesTableHeadNodeSerialized
   | BalancesTableContentNodeSerialized
@@ -670,6 +704,7 @@ type NodeProps =
   | TextProps
   | ImageProps
   | ViewProps
+  | ButtonProps
   | BalancesTableProps
   | BalancesTableHeadProps
   | BalancesTableContentProps
@@ -682,6 +717,7 @@ export enum NodeKind {
   Text = "Text",
   Image = "Image",
   View = "View",
+  Button = "Button",
   BalancesTable = "BalancesTable",
   BalancesTableHead = "BalancesTableHead",
   BalancesTableContent = "BalancesTableContent",
@@ -740,7 +776,17 @@ type ViewProps = {
 };
 
 //
-// Text.
+// Button.
+//
+type ButtonNodeSerialized = DefNodeSerialized<NodeKind.Button, ButtonProps>;
+type ButtonProps = {
+  onClick?: (() => Promise<void>) | boolean;
+  style: Style;
+  children: undefined;
+};
+
+//
+// Raw Text.
 //
 export type TextSerialized = {
   id: number;

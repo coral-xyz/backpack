@@ -1,6 +1,7 @@
 export * from "./plugin";
 export { PluginRenderer } from "./Renderer";
 export {
+  Button,
   BalancesTable,
   BalancesTableCell,
   BalancesTableContent,
