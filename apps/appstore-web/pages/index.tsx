@@ -1,9 +1,9 @@
 import useXNFTs from '../hooks/useXNFTs';
 import dynamic from 'next/dynamic';
+import AppPlaceholder from '../components/gallery/app-placeholder';
 
 const Posts = dynamic(() => import('../components/gallery/posts'));
-const App = dynamic(() => import('../components/gallery/app'));
-const AppPlaceholder = dynamic(() => import('../components/gallery/app-placeholder'));
+const App = dynamic(() => import('../components/gallery/app'), { loading: AppPlaceholder });
 
 function Home() {
   const { xnfts, isLoading } = useXNFTs();
