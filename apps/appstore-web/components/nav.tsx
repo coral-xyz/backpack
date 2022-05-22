@@ -25,7 +25,7 @@ function Nav() {
                 {/* Logo */}
                 <Link href="/">
                   <div className="flex-shrink-0">
-                    <Image src="/logo.png" width="120px" height="40px" />
+                    <Image alt="" src="/logo.png" width="120px" height="40px" />
                   </div>
                 </Link>
               </div>
@@ -60,14 +60,14 @@ function Nav() {
               <div className="hidden lg:ml-6 lg:block">
                 <div className="flex space-x-4">
                   <a
-                    className="cursor-no-drop rounded-md px-3 py-2 text-sm
-                  font-medium text-gray-50 hover:bg-gray-700 hover:text-white"
+                    className="cursor-no-drop rounded-md bg-gray-700 px-3 py-2
+                  text-sm font-medium text-gray-50 hover:text-white"
                   >
                     Get Backpack
                   </a>
                   <a
-                    className="cursor-no-drop rounded-md px-3 py-2 text-sm
-                  font-medium text-gray-50 hover:bg-gray-700 hover:text-white"
+                    className="cursor-no-drop rounded-md bg-gray-700 px-3 py-2
+                  text-sm font-medium text-gray-50 hover:text-white"
                   >
                     Docs
                   </a>
