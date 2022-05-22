@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { makeStyles, Button, Typography } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
+import { Button } from "@200ms/anchor-ui-renderer";
 import { useBlockchainTokenAccount } from "@200ms/recoil";
 import { RecentActivitySmall } from "./RecentActivity";
 import { SendButton } from "./Send";
@@ -42,21 +43,11 @@ const useStyles = makeStyles((theme: any) => ({
     marginTop: "6px",
     lineHeight: "24px",
   },
-  headerButton: {
-    borderRadius: "12px",
-    width: "100px",
-    height: "40px",
-    backgroundColor: theme.custom.colors.nav,
-    "&:hover": {
-      backgroundColor: theme.custom.colors.nav,
-    },
-  },
   headerButtonLabel: {
     color: theme.custom.colors.fontColor,
     fontSize: "14px",
     lineHeight: "24px",
     fontWeight: 500,
-    textTransform: "none",
   },
 }));
 
@@ -101,13 +92,7 @@ export function WithHeaderButton({ label, dialog, dialogTitle }: any) {
   const [openDrawer, setOpenDrawer] = useState(false);
   return (
     <>
-      <Button
-        disableElevation
-        variant="contained"
-        className={classes.headerButton}
-        disableRipple
-        onClick={() => setOpenDrawer(true)}
-      >
+      <Button onClick={() => setOpenDrawer(true)}>
         <Typography className={classes.headerButtonLabel}>{label}</Typography>
       </Button>
       <WithDrawer

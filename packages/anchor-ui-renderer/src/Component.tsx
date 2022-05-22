@@ -2,6 +2,8 @@ import type { Element } from "@200ms/anchor-ui";
 import { NodeKind } from "@200ms/anchor-ui";
 import {
   makeStyles,
+  useTheme,
+  Button as MuiButton,
   Card,
   CardContent,
   CardHeader,
@@ -124,6 +126,16 @@ const useStyles = makeStyles((theme: any) => ({
   tokenListItemIconRoot: {
     minWidth: "44px",
   },
+  button: {
+    borderRadius: "12px",
+    width: "100px",
+    height: "40px",
+    textTransform: "none",
+    backgroundColor: theme.custom.colors.nav,
+    "&:hover": {
+      backgroundColor: theme.custom.colors.nav,
+    },
+  },
 }));
 
 export function Component({ viewData }) {
@@ -144,6 +156,15 @@ export function Component({ viewData }) {
       return <Table props={props} style={style} />;
     case NodeKind.Image:
       return <Image props={props} style={style} children={viewData.children} />;
+    case NodeKind.Button:
+      return (
+        <_Button
+          id={id}
+          props={props}
+          style={style}
+          childrenRenderer={viewData.children}
+        />
+      );
     case NodeKind.BalancesTable:
       return (
         <BalancesTable
@@ -410,6 +431,63 @@ function Text({ props, children, style }: any) {
 
 function Image({ props, style }: any) {
   return <img src={props.src} style={style} />;
+}
+
+export function Button({ id, props, style, onClick, children }: any) {
+  return (
+    <__Button
+      id={id}
+      props={props}
+      style={style}
+      children={children}
+      onClick={onClick}
+    />
+  );
+}
+
+export function _Button({ id, props, style, childrenRenderer }: any) {
+  const { plugin } = usePluginContext();
+  const onClick = !props.onClick
+    ? undefined
+    : (_event) => {
+        plugin.pushClickNotification(id);
+      };
+
+  return (
+    <__Button
+      id={id}
+      props={props}
+      style={style}
+      childrenRenderer={childrenRenderer}
+      onClick={onClick}
+    />
+  );
+}
+
+export function __Button({
+  id,
+  onClick,
+  props,
+  style,
+  children,
+  childrenRenderer,
+}: any) {
+  const classes = useStyles();
+  return (
+    <MuiButton
+      disableElevation
+      variant="contained"
+      className={classes.button}
+      disableRipple
+      style={style}
+      onClick={onClick}
+    >
+      {children ??
+        childrenRenderer.map((c: Element) => (
+          <ViewRenderer key={c.id} element={c} />
+        ))}
+    </MuiButton>
+  );
 }
 
 function Raw({ text }: any) {

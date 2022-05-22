@@ -3,7 +3,10 @@ import { PublicKey } from "@solana/web3.js";
 import { Program } from "@project-serum/anchor";
 import AnchorUi, {
   useNavigation,
+  View,
+  Image,
   Text,
+  Button,
   BalancesTable,
   BalancesTableHead,
   BalancesTableContent,
@@ -65,7 +68,7 @@ function DegodsTable() {
             return (
               <BalancesTableRow
                 key={t.publicKey.toString()}
-                onClick={() => nav.push(<StakeDetail />)}
+                onClick={() => nav.push(<StakeDetail token={t} />)}
               >
                 <BalancesTableCell
                   title={t.tokenMetaUriData.name}
@@ -82,8 +85,44 @@ function DegodsTable() {
   );
 }
 
-function StakeDetail() {
-  return <Text>Stake Detail Here</Text>;
+function StakeDetail({ token }: any) {
+  return (
+    <View>
+      <Image
+        src={token.tokenMetaUriData.image}
+        style={{
+          width: "343px",
+          height: "343px",
+          marginLeft: "auto",
+          marginRight: "auto",
+          marginTop: "16px",
+          display: "block",
+          borderRadius: "8px",
+        }}
+      />
+      <View
+        style={{
+          marginTop: "16px",
+          display: "flex",
+          justifyContent: "space-between",
+          width: "343px",
+          marginLeft: "auto",
+          marginRight: "auto",
+        }}
+      >
+        <Button
+          onClick={() => console.log("we are one test")}
+          style={{
+            width: "100%",
+            height: "48px",
+            borderRadius: "12px",
+          }}
+        >
+          <Text>Unstake</Text>
+        </Button>
+      </View>
+    </View>
+  );
 }
 
 export async function fetchRowData(wallet: PublicKey) {
