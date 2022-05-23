@@ -7,7 +7,7 @@ import { OnboardButton } from "./common";
 
 export const NAV_BAR_HEIGHT = 56;
 
-export const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles((theme: any) => ({
   container: {
     backgroundColor: theme.custom.colors.background,
     textAlign: "center",

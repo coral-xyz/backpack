@@ -18,7 +18,7 @@ import { OnboardButton } from "../common";
 import { HdKeyring, SolanaHdKeyringFactory } from "../../keyring";
 import { _NavBackButton, DummyButton } from "../Layout/Nav";
 
-export const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles((theme: any) => ({
   stepper: {
     backgroundColor: theme.custom.colors.nav,
     borderBottom: `solid 1pt ${theme.custom.colors.border}`,
