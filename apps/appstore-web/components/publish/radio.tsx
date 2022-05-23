@@ -36,7 +36,7 @@ export default function Radio() {
               classNames(
                 checked ? 'border-transparent' : 'border-gray-900',
                 active ? 'border-indigo-500 ring-2 ring-indigo-500' : '',
-                'relative flex cursor-pointer rounded-lg border bg-gray-900 p-4 shadow-sm focus:outline-none'
+                'relative flex cursor-pointer rounded-lg border bg-gray-900 p-4'
               )
             }
           >
@@ -45,7 +45,15 @@ export default function Radio() {
                 <span className="flex flex-1">
                   <span className="flex flex-col">
                     <RadioGroup.Label as="span" className="block text-sm font-medium text-gray-300">
-                      {option.title}
+                      {option.title}{' '}
+                      {option.id === 2 && (
+                        <span
+                          className="inline-flex items-center rounded-full bg-red-500
+                         px-2.5 py-0.5 text-xs tracking-wide text-red-100"
+                        >
+                          Soon
+                        </span>
+                      )}
                     </RadioGroup.Label>
                     <RadioGroup.Description
                       as="span"

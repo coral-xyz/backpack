@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { DocumentAddIcon, PhotographIcon } from '@heroicons/react/outline';
 import Radio from './radio';
 
-function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
+function MintForm({ uploadState, uploadDispatch }: MintFormProps) {
   return (
     <div
       className="flex cursor-pointer flex-col gap-8 rounded-xl bg-gray-700 px-14 py-10
@@ -133,8 +133,17 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
 
       {/* Royalties */}
       <div>
-        <label htmlFor="twitter" className="block text-sm  font-medium tracking-wide text-gray-300">
-          Royalties
+        <label
+          htmlFor="twitter"
+          className="mb-2 block text-sm font-medium tracking-wide text-gray-300"
+        >
+          Royalties{' '}
+          <span
+            className="inline-flex items-center rounded-full bg-red-500
+                         px-2.5 py-0.5 text-xs tracking-wide text-red-100"
+          >
+            Soon
+          </span>
         </label>
         <div className="flex max-w-lg rounded-md shadow-sm blur-sm">
           <input
@@ -277,9 +286,9 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
   );
 }
 
-interface UploadAppProps {
+interface MintFormProps {
   uploadState: any;
   uploadDispatch: any;
 }
 
-export default memo(UploadApp);
+export default memo(MintForm);
