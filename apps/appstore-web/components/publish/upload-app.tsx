@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { DocumentAddIcon, PhotographIcon } from '@heroicons/react/outline';
+import Radio from './radio';
 
 function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
   return (
@@ -83,7 +84,7 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
 
       {/*  Discord */}
       <div>
-        <label htmlFor="discord" className="block text-sm  font-medium tracking-wide text-gray-300">
+        <label htmlFor="discord" className="block text-sm font-medium tracking-wide text-gray-300">
           Discord
         </label>
         <div className="mt-1">
@@ -124,6 +125,40 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
               })
             }
           />
+        </div>
+      </div>
+
+      {/* Supply Type */}
+      <Radio />
+
+      {/* Royalties */}
+      <div>
+        <label htmlFor="twitter" className="block text-sm  font-medium tracking-wide text-gray-300">
+          Royalties
+        </label>
+        <div className="flex max-w-lg rounded-md shadow-sm blur-sm">
+          <input
+            type="text"
+            name="royalties"
+            id="royalties"
+            disabled
+            value={uploadState.royalties}
+            onChange={e =>
+              uploadDispatch({
+                type: 'field',
+                field: 'royalties',
+                value: e.currentTarget.value
+              })
+            }
+            className="block w-full min-w-0 flex-1 rounded-none rounded-l-md
+            border-gray-900 bg-gray-900 text-right text-gray-300 sm:text-sm"
+          />
+          <span
+            className="inline-flex items-center rounded-r-md border
+          border-r-0 border-gray-900 bg-gray-900 px-3 text-gray-300 sm:text-sm"
+          >
+            %
+          </span>
         </div>
       </div>
 

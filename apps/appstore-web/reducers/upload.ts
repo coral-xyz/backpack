@@ -26,6 +26,8 @@ export const uploadInitialState = {
   twitter: '',
   price: 0,
   bundle: {},
+  royalties: 0,
+  supply: false,
   icon: {},
   screenshots: {},
   s3UrlBundle: '',
