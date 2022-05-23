@@ -17,7 +17,7 @@ const programID = new PublicKey(xnftIdl.metadata.address);
  * @param anchorWallet
  * @param publicKey
  */
-export async function xNFTMint(data: any, anchorWallet: any, publicKey: any) {
+export async function xNFTMint(data: any, anchorWallet: any, publicKey: any, medataUrl: string) {
   const provider = new AnchorProvider(connection, anchorWallet, { commitment: 'confirmed' });
   const program = new Program<Xnft>(IDL, programID, provider);
 
@@ -25,7 +25,7 @@ export async function xNFTMint(data: any, anchorWallet: any, publicKey: any) {
   const seller_fee_basis_points = 1; // TODO:
   const name = data.title;
   const symbol = data.title.slice(0, 3);
-  const uri = data.s3UrlMetadata;
+  const uri = medataUrl;
 
   try {
     const tx = await program.methods

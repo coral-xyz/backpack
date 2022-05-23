@@ -74,7 +74,7 @@ export async function metadataS3Uploader(uploadState: any, uploadDispatch: any, 
       })
     });
 
-    let { url } = await resp.json();
+    const { url } = await resp.json();
 
     await fetch(url, {
       method: 'PUT',
@@ -90,6 +90,8 @@ export async function metadataS3Uploader(uploadState: any, uploadDispatch: any, 
       field: 's3UrlMetadata',
       value: `${BUCKET_URL}${fileName}`
     });
+
+    return `${BUCKET_URL}${fileName}`;
   } catch (err) {
     console.log('Error saving file in S3', err);
   }
