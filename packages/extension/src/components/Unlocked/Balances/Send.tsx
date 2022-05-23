@@ -351,7 +351,6 @@ export function BottomCard({
       <div
         style={{
           marginBottom: "24px",
-          marginTop: "24px",
           marginLeft: "12px",
           marginRight: "12px",
           display: "flex",

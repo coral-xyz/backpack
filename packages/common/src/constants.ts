@@ -9,7 +9,13 @@ export const CHANNEL_PLUGIN_LAUNCH_REQUEST =
   "anchor-channel-plugin-launch-request";
 export const CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE =
   "anchor-channel-plugin-react-reconciler-bridge";
+// Notifications from the extension UI -> plugin.
 export const CHANNEL_PLUGIN_NOTIFICATION = "anchor-channel-plugin-notification";
+// Notifications from the plugin -> extension UI.
+export const CHANNEL_PLUGIN_EXTENSION_NOTIFICATION =
+  "anchor-channel-plugin-extension-notification";
+export const CHANNEL_PLUGIN_EXTENSION_NOTIFICATION_RESPONSE =
+  "anchor-channel-plugin-extension-notification-response";
 export const RECONCILER_BRIDGE_METHOD_CREATE_INSTANCE =
   "anchor-reconciler-method-create-instance";
 export const RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE =
@@ -43,6 +49,18 @@ export const PLUGIN_RPC_METHOD_NAV_POP = "nav-pop";
 export const PLUGIN_NOTIFICATION_MOUNT = "mount";
 export const PLUGIN_NOTIFICATION_UNMOUNT = "unmount";
 export const PLUGIN_NOTIFICATION_NAVIGATION_POP = "nav-pop";
+
+//
+// Notifications from plugin -> extension ui.
+//
+export const PLUGIN_OUT_NOTIFICATION_SHOW_TRANSACTION_APPROVAL =
+  "show-tx-approval";
+
+//
+// Notifications from extension ui -> plugin in response.
+//
+export const PLUGIN_OUT_RESPONSE_NOTIFICATION_SHOW_TRANSACTION_APPROVAL =
+  "show-tx-approval-response";
 
 export const RPC_METHOD_CONNECT = "connect";
 export const RPC_METHOD_DISCONNECT = "disconnect";

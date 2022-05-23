@@ -1,6 +1,5 @@
 import { selector } from "recoil";
 import * as atoms from ".";
-import { getPlugin } from "../hooks/usePlugins";
 
 // full path to HTML is currently required, will be fixed in future
 const OPEN_ORDERS_PLUGIN_URL = "https://localhost:4444/index.html";
@@ -59,19 +58,5 @@ export const tablePlugins = selector({
         connectionUrl,
       },
     ];
-  },
-});
-
-export const pushTablePluginNotification = selector({
-  key: "tablePluginNotification",
-  get:
-    (_notif: any) =>
-    ({ get }: any) => {
-      throw new Error("can only set this selector");
-    },
-  set: ({ get }: any, { url, notification }: any) => {
-    const plugins = get(tablePlugins);
-    const p = getPlugin(plugins.find((t) => t.url === url));
-    p.pushNotification(notification);
   },
 });

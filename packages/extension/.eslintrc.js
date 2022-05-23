@@ -3,9 +3,8 @@ const [IGNORE, WARNING, ERROR] = [0, 1, 2];
 module.exports = {
   root: true,
   parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint", "mui-unused-classes"],
+  plugins: ["@typescript-eslint"],
   rules: {
-    "mui-unused-classes/unused-classes": WARNING,
     "@typescript-eslint/ban-ts-comment": IGNORE,
     "@typescript-eslint/ban-types": WARNING,
     "@typescript-eslint/consistent-type-imports": IGNORE,

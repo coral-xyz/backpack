@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, Transaction, SystemProgram } from "@solana/web3.js";
 import { Program } from "@project-serum/anchor";
 import AnchorUi, {
   useNavigation,
@@ -64,6 +64,7 @@ function DegodsTable() {
         </BalancesTableContent>
       ) : (
         <BalancesTableContent>
+          {/* TODO: Add estimated DUST */}
           {tokenAccounts.map((t) => {
             return (
               <BalancesTableRow
@@ -86,6 +87,23 @@ function DegodsTable() {
 }
 
 function StakeDetail({ token }: any) {
+  const unstake = async () => {
+    const tx = new Transaction();
+    tx.add(
+      SystemProgram.transfer({
+        fromPubkey: window.anchor.publicKey,
+        toPubkey: window.anchor.publicKey,
+        lamports: 1000000,
+      })
+    );
+    const { blockhash } = await window.anchor.connection!.getLatestBlockhash(
+      "recent"
+    );
+    tx.recentBlockhash = blockhash;
+    console.log("stake detail: signing tx", tx);
+    const signed = await window.anchorUi.signTransaction(tx);
+    console.log("test: got signed transaction here", signed);
+  };
   return (
     <View>
       <Image
@@ -111,7 +129,7 @@ function StakeDetail({ token }: any) {
         }}
       >
         <Button
-          onClick={() => console.log("we are one test")}
+          onClick={() => unstake()}
           style={{
             width: "100%",
             height: "48px",

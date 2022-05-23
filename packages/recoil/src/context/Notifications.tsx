@@ -4,9 +4,11 @@ import { useNavigate } from "react-router-dom";
 import {
   getLogger,
   PortChannel,
+  Notification,
+  CHANNEL_PLUGIN_EXTENSION_NOTIFICATION,
+  CHANNEL_PLUGIN_EXTENSION_NOTIFICATION_RESPONSE,
   UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE,
   CONNECTION_POPUP_NOTIFICATIONS,
-  Notification,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_KEY_DELETE,
@@ -20,6 +22,8 @@ import {
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
+  PLUGIN_OUT_NOTIFICATION_SHOW_TRANSACTION_APPROVAL,
+  PLUGIN_OUT_RESPONSE_NOTIFICATION_SHOW_TRANSACTION_APPROVAL,
 } from "@200ms/common";
 import {
   getBackgroundClient,
@@ -29,6 +33,7 @@ import {
   useUpdateAllSplTokenAccounts,
 } from "../";
 import * as atoms from "../atoms";
+import { getPlugin } from "../hooks";
 
 const logger = getLogger("notifications-provider");
 
@@ -42,15 +47,17 @@ export function NotificationsProvider(props: any) {
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveWallet = useSetRecoilState(atoms.activeWallet);
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
+  const setTransactionRequest = useSetRecoilState(atoms.transactionRequest);
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   const updateRecentBlockhash = useUpdateRecentBlockhash();
-  const pushTablePluginNotification = useSetRecoilState(
-    atoms.pushTablePluginNotification
-  );
   const navigate = useNavigate();
 
   useEffect(() => {
     const backgroundClient = getBackgroundClient();
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Notifications from background script.
+    ////////////////////////////////////////////////////////////////////////////
 
     //
     // Notification dispatch.
@@ -195,13 +202,10 @@ export function NotificationsProvider(props: any) {
       if (oldUrl && oldUrl.startsWith("/plugin-table-detail")) {
         const search = new URLSearchParams(oldUrl.split("?")[1]);
         const props = JSON.parse(search.get("props")!);
-        const url = props.pluginUrl;
-        pushTablePluginNotification({
-          url,
-          notification: {
-            name: PLUGIN_NOTIFICATION_NAVIGATION_POP,
-            data: {},
-          },
+        const plugin = getPlugin({ url: props.pluginUrl });
+        plugin.pushNotification({
+          name: PLUGIN_NOTIFICATION_NAVIGATION_POP,
+          data: {},
         });
       }
       navigate(notif.data.url);
@@ -219,6 +223,63 @@ export function NotificationsProvider(props: any) {
         params: [],
       })
       .catch(console.error);
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Notifications from the plugin.
+    ////////////////////////////////////////////////////////////////////////////
+
+    const pluginNotificationsHandler = (notif: Notification) => {
+      logger.debug(`received plugin notification ${notif.name}`, notif);
+
+      switch (notif.name) {
+        case PLUGIN_OUT_NOTIFICATION_SHOW_TRANSACTION_APPROVAL:
+          handleShowTransactionApproval(notif);
+          break;
+        default:
+          break;
+      }
+    };
+    const handleShowTransactionApproval = (notif: Notification) => {
+      const { request } = notif.data;
+      setTransactionRequest(request);
+    };
+    window.addEventListener("message", (event) => {
+      if (event.data.type !== CHANNEL_PLUGIN_EXTENSION_NOTIFICATION) {
+        return;
+      }
+      pluginNotificationsHandler(event.data.detail);
+    });
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Notifications from the UI.
+    ////////////////////////////////////////////////////////////////////////////
+
+    const pluginNotificationResponse = (notif: Notification) => {
+      logger.debug(
+        `received plugin response notification ${notif.name}`,
+        notif
+      );
+
+      switch (notif.name) {
+        case PLUGIN_OUT_RESPONSE_NOTIFICATION_SHOW_TRANSACTION_APPROVAL:
+          handleShowTransactionApprovalResponse(notif);
+          break;
+        default:
+          break;
+      }
+    };
+
+    const handleShowTransactionApprovalResponse = (notif: Notification) => {
+      const plugin = getPlugin({ url: notif.data.request.pluginUrl });
+      const { request, signature } = notif.data;
+      plugin.handleResponseTransactionApproval(request, signature);
+    };
+    window.addEventListener("message", (event) => {
+      if (event.data.type !== CHANNEL_PLUGIN_EXTENSION_NOTIFICATION_RESPONSE) {
+        return;
+      }
+      pluginNotificationResponse(event.data.detail);
+    });
   }, []);
 
   return (
