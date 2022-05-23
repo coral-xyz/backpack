@@ -168,16 +168,17 @@ function Nav() {
 
           <Disclosure.Panel className="lg:hidden">
             <div className="space-y-1 px-2 pt-2 pb-3">
-              {/* Current: "bg-gray-900 text-white", Default: "text-gray-50 hover:bg-gray-700 hover:text-white" */}
               <Disclosure.Button
                 as="a"
-                className="block cursor-no-drop rounded-md px-3 py-2 text-base font-medium text-gray-50 hover:bg-gray-700 hover:text-white"
+                className="block cursor-no-drop rounded-md px-3 py-2 text-base font-medium 
+                text-gray-50 hover:bg-gray-700 hover:text-white"
               >
                 Get Backpack
               </Disclosure.Button>
               <Disclosure.Button
                 as="a"
-                className="block cursor-no-drop rounded-md px-3 py-2 text-base font-medium text-gray-50 hover:bg-gray-700 hover:text-white"
+                className="block cursor-no-drop rounded-md px-3 py-2 text-base font-medium 
+                text-gray-50 hover:bg-gray-700 hover:text-white"
               >
                 Docs
               </Disclosure.Button>
@@ -185,12 +186,16 @@ function Nav() {
             {connected && (
               <div className="border-t border-gray-700 pt-4 pb-3">
                 <div className="mt-3 space-y-1 px-2">
-                  <Disclosure.Button className="block w-full rounded-md px-3 py-2 text-left text-base font-medium text-gray-100 hover:bg-gray-700 hover:text-white">
+                  <Disclosure.Button
+                    className="block w-full rounded-md px-3 py-2 text-left 
+                  text-base font-medium text-gray-100 hover:bg-gray-700 hover:text-white"
+                  >
                     <Link href="/publish">Publish a new App</Link>
                   </Disclosure.Button>
                   <Disclosure.Button
                     onClick={() => disconnect()}
-                    className="block w-full rounded-md px-3 py-2 text-left text-base font-medium text-gray-100 hover:bg-gray-700 hover:text-white"
+                    className="block w-full rounded-md px-3 py-2 text-left text-base font-medium
+                     text-gray-100 hover:bg-gray-700 hover:text-white"
                   >
                     Sign out
                   </Disclosure.Button>
