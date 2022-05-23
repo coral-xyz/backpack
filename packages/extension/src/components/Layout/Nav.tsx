@@ -36,28 +36,6 @@ const useStyles = makeStyles((theme: any) => ({
     flexDirection: "column",
     position: "relative",
   },
-  connectedIcon: {
-    width: "12px",
-    height: "12px",
-    borderRadius: "6px",
-    backgroundColor: theme.custom.colors.connected,
-    position: "absolute",
-    right: 0,
-  },
-  disconnectedIcon: {
-    width: "12px",
-    height: "12px",
-    borderRadius: "6px",
-    backgroundColor: theme.custom.colors.disconnected,
-    position: "absolute",
-    right: 0,
-  },
-  centerDisplayContainer: {
-    color: theme.custom.colors.fontColor,
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-  },
   overviewLabel: {
     fontSize: "18px",
     fontWeight: 500,

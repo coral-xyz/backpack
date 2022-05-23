@@ -18,31 +18,9 @@ const useStyles = makeStyles((theme: any) => ({
     flexDirection: "column",
     height: "100%",
   },
-  headerButton: {
-    borderRadius: "12px",
-    width: "100px",
-    height: "40px",
-    backgroundColor: theme.custom.colors.nav,
-    "&:hover": {
-      backgroundColor: theme.custom.colors.nav,
-    },
-  },
-  headerButtonLabel: {
-    color: theme.custom.colors.fontColor,
-    fontSize: "14px",
-    lineHeight: "24px",
-    fontWeight: 500,
-    textTransform: "none",
-  },
   topHalf: {
     paddingTop: "24px",
     flex: 1,
-  },
-  bottomHalf: {
-    borderTopLeftRadius: "12px",
-    borderTopRightRadius: "12px",
-    background: theme.custom.colors.sendGradient,
-    height: "194px",
   },
   buttonContainer: {
     display: "flex",
@@ -51,13 +29,6 @@ const useStyles = makeStyles((theme: any) => ({
     paddingBottom: "24px",
     paddingTop: "25px",
     justifyContent: "space-between",
-  },
-  buttonLabel: {
-    color: theme.custom.colors.fontColor,
-    textTransform: "none",
-    fontWeight: 500,
-    fontSize: "16px",
-    lineHeight: "24px",
   },
   button: {
     background: "transparent",

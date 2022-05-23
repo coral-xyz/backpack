@@ -35,32 +35,6 @@ const useStyles = makeStyles((theme: any) => ({
     weight: 500,
     color: theme.custom.colors.fontColor,
   },
-  balancesHeaderContainer: {
-    display: "flex",
-    justifyContent: "space-between",
-    paddingLeft: "12px",
-    paddingRight: "12px",
-    marginLeft: "12px",
-    marginRight: "12px",
-    paddingTop: "12px",
-    paddingBottom: "12px",
-    borderRadius: "12px",
-    backgroundColor: theme.custom.colors.nav,
-    marginBottom: "12px",
-  },
-  positive: {
-    color: theme.custom.colors.positive,
-    fontSize: "12px",
-    lineHeight: "24px",
-  },
-  negative: {
-    color: theme.custom.colors.negative,
-    fontSize: "12px",
-    lineHeight: "24px",
-  },
-  cardAvatar: {
-    display: "flex",
-  },
 }));
 
 export function TokenTable() {

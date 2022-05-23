@@ -53,33 +53,6 @@ const useStyles = makeStyles((theme: any) => ({
       background: "transparent",
     },
   },
-  menuButtonIcon: {
-    color: theme.custom.colors.hamburger,
-  },
-  settingsContentListItem: {
-    padding: "8px",
-    height: "56px",
-    display: "flex",
-  },
-  settingsDivider: {
-    marginTop: "8px",
-    marginBottom: "8px",
-    backgroundColor: theme.custom.colors.offText,
-  },
-  addConnectWalletLabel: {
-    color: theme.custom.colors.fontColor,
-  },
-  settingsContent: {
-    display: "flex",
-  },
-  overviewLabel: {
-    color: theme.custom.colors.fontColor,
-  },
-  connectionListItem: {
-    flexDirection: "column",
-    alignItems: "start",
-    marginTop: "10px",
-  },
 }));
 
 const AVATAR_URL =

@@ -35,18 +35,6 @@ export const useStyles = makeStyles((theme: any) => ({
   stepperDotActive: {
     background: theme.custom.colors.tabIconSelected,
   },
-  progressButton: {
-    color: "#fff",
-    padding: 0,
-  },
-  progressButtonLeftLabel: {
-    background: "#333333",
-    borderRadius: "20px",
-  },
-  progressButtonRightLabel: {
-    background: "#333333",
-    borderRadius: "20px",
-  },
   buttonRoot: {
     minWidth: "5px",
   },
@@ -62,9 +50,6 @@ export const useStyles = makeStyles((theme: any) => ({
   termsContainer: {
     display: "flex",
     marginTop: "8px",
-  },
-  passwordField: {
-    background: "#333333",
   },
   checkBox: {
     padding: 0,

@@ -5,18 +5,9 @@ import { useEphemeralNav, useSolanaConnectionUrl } from "@200ms/recoil";
 import { List, ListItem } from "../common";
 
 const useStyles = makeStyles((theme: any) => ({
-  connectionButton: {
-    padding: 0,
-    color: theme.custom.colors.fontColor,
-  },
   connectionMenu: {
     backgroundColor: theme.custom.colors.offText,
     color: theme.custom.colors.fontColor,
-  },
-  url: {
-    color: theme.custom.colors.fontColor,
-    opacity: 0.5,
-    textDecoration: "none",
   },
 }));
 

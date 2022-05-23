@@ -48,11 +48,6 @@ const useStyles = makeStyles((theme: any) => ({
     backgroundColor: theme.custom.colors,
     width: "100%",
   },
-  rightButton: {
-    "&:hover": {
-      backgroundColor: "transparent",
-    },
-  },
   rightButtonIcon: {
     color: theme.custom.colors.secondary,
   },
@@ -60,12 +55,6 @@ const useStyles = makeStyles((theme: any) => ({
     display: "flex",
     flexDirection: "row-reverse",
     justifyContent: "end",
-  },
-  navContainer: {
-    display: "flex",
-    justifyContent: "space-between",
-    background: theme.custom.colors.nav,
-    borderBottom: `solid 1pt ${theme.custom.colors.border}`,
   },
 }));
 
