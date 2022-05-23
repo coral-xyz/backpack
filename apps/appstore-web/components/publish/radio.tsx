@@ -34,9 +34,8 @@ export default function Radio() {
             disabled={option.id === 2}
             className={({ checked, active }) =>
               classNames(
-                checked ? 'border-transparent' : 'border-gray-300',
+                checked ? 'border-transparent' : 'border-gray-900',
                 active ? 'border-indigo-500 ring-2 ring-indigo-500' : '',
-
                 'relative flex cursor-pointer rounded-lg border bg-gray-900 p-4 shadow-sm focus:outline-none'
               )
             }

@@ -45,7 +45,7 @@ function UploadApp({ uploadState, uploadDispatch }: UploadAppProps) {
             required
             id="description"
             name="description"
-            rows={5}
+            rows={2}
             className="block w-full rounded-md border-gray-900 bg-gray-900 text-sm text-gray-300"
             value={uploadState.description}
             onChange={e =>
