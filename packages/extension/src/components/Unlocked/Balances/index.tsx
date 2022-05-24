@@ -78,8 +78,8 @@ export function BalanceSummary({ blockchain }: { blockchain?: string }) {
           <Typography
             className={totalChange > 0 ? classes.positive : classes.negative}
           >
-            {formatUSD(totalChange.toLocaleString())}{" "}
-            {`${percentChange.toFixed(2)}%`}
+            {formatUSD(totalChange.toLocaleString())} (
+            {`${percentChange.toFixed(2)}%`})
           </Typography>
         </div>
       )}
