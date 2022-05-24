@@ -71,14 +71,17 @@ export function BalanceSummary({ blockchain }: { blockchain?: string }) {
           {formatUSD(totalBalance.toLocaleString())}
         </Typography>
       </div>
-      <div>
-        <Typography className={classes.headerLabel}>Last 24 hrs</Typography>
-        <Typography
-          className={totalChange > 0 ? classes.positive : classes.negative}
-        >
-          {formatUSD(totalChange.toLocaleString())} ({percentChange}%)
-        </Typography>
-      </div>
+      {!isNaN(percentChange) && (
+        <div>
+          <Typography className={classes.headerLabel}>Last 24 hrs</Typography>
+          <Typography
+            className={totalChange > 0 ? classes.positive : classes.negative}
+          >
+            {formatUSD(totalChange.toLocaleString())}{" "}
+            {`${percentChange.toFixed(2)}%`}
+          </Typography>
+        </div>
+      )}
     </div>
   );
 }
