@@ -68,7 +68,7 @@ export function BalanceSummary({ blockchain }: { blockchain?: string }) {
       <div>
         <Typography className={classes.headerLabel}>Total Balance</Typography>
         <Typography className={classes.totalBalance}>
-          ${totalBalance.toLocaleString()}
+          {formatUSD(totalBalance.toLocaleString())}
         </Typography>
       </div>
       <div>
@@ -76,7 +76,7 @@ export function BalanceSummary({ blockchain }: { blockchain?: string }) {
         <Typography
           className={totalChange > 0 ? classes.positive : classes.negative}
         >
-          ${totalChange.toLocaleString()} ({percentChange}%)
+          {formatUSD(totalChange.toLocaleString())} ({percentChange}%)
         </Typography>
       </div>
     </div>
@@ -92,4 +92,12 @@ function PluginTables() {
       })}
     </>
   );
+}
+
+function formatUSD(amount: number | string) {
+  const amountNumber = typeof amount === "string" ? Number(amount) : amount;
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(Number(String(amountNumber)));
 }
