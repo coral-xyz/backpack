@@ -6,7 +6,7 @@
   "scripts": {
     "preinstall": "yarn link @project-serum/anchor",
     "build": "rollup --config",
-    "start": "rollup --config --watch"
+    "dev": "rollup --config --watch"
   },
   "author": "",
   "license": "ISC",
