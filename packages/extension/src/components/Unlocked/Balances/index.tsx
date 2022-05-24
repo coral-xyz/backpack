@@ -4,6 +4,7 @@ import { PluginRenderer } from "@200ms/anchor-ui-renderer";
 import { useNavigation, useTotal, useTablePlugins } from "@200ms/recoil";
 import { TokenTable } from "./TokenTable";
 import { SettingsButton } from "../../Settings";
+import { formatUSD } from "@200ms/common";
 
 const useStyles = makeStyles((theme: any) => ({
   balancesHeaderContainer: {
@@ -95,12 +96,4 @@ function PluginTables() {
       })}
     </>
   );
-}
-
-function formatUSD(amount: number | string) {
-  const amountNumber = typeof amount === "string" ? Number(amount) : amount;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(Number(String(amountNumber)));
 }

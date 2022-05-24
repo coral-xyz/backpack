@@ -1,8 +1,8 @@
 import type { Element } from "@200ms/anchor-ui";
 import { NodeKind } from "@200ms/anchor-ui";
+import { formatUSD } from "@200ms/common";
 import {
   makeStyles,
-  useTheme,
   Button as MuiButton,
   Card,
   CardContent,
@@ -355,7 +355,7 @@ export function BalancesTableCell({ props, style }: any) {
           <Typography className={classes.tokenName}>{title}</Typography>
           {usdValue && (
             <Typography className={classes.tokenBalance}>
-              ${usdValue.toLocaleString()}
+              {formatUSD(usdValue)}
             </Typography>
           )}
         </div>
@@ -365,17 +365,17 @@ export function BalancesTableCell({ props, style }: any) {
           )}
           {percentChange !== undefined && positive && (
             <Typography className={classes.tokenBalanceChangePositive}>
-              $+{percentChange.toLocaleString()}
+              +{formatUSD(percentChange.toLocaleString())}
             </Typography>
           )}
           {percentChange !== undefined && negative && (
             <Typography className={classes.tokenBalanceChangeNegative}>
-              ${percentChange.toLocaleString()}
+              {formatUSD(percentChange.toLocaleString())}
             </Typography>
           )}
           {percentChange !== undefined && neutral && (
             <Typography className={classes.tokenBalanceChangeNeutral}>
-              ${percentChange.toLocaleString()}
+              {formatUSD(percentChange.toLocaleString())}
             </Typography>
           )}
         </div>
