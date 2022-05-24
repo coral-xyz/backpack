@@ -71,7 +71,7 @@ export function BalanceSummary({ blockchain }: { blockchain?: string }) {
           {formatUSD(totalBalance.toLocaleString())}
         </Typography>
       </div>
-      {!isNaN(percentChange) && (
+      {Number.isFinite(percentChange) && (
         <div>
           <Typography className={classes.headerLabel}>Last 24 hrs</Typography>
           <Typography
