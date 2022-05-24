@@ -13,7 +13,7 @@
     "test": "env-cmd --silent turbo run test -- --passWithNoTests --watchAll=false",
     "build": "env-cmd --silent turbo run build",
     "e2e": "env-cmd --silent turbo run e2e",
-    "clean": "npx rimraf .turbo node_modules/ packages/**/node_modules packages/**/.turbo packages/**/build packages/**/dist packages/extension/dev",
+    "clean": "npx rimraf .turbo .parcel-cache node_modules/ packages/**/node_modules packages/**/.turbo packages/**/build packages/**/dist packages/extension/dev",
     "postinstall": "patch-package"
   },
   "devDependencies": {
