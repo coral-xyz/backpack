@@ -76,7 +76,6 @@
     "crypto-browserify": "^3.12.0",
     "esbuild": "^0.14.38",
     "esbuild-jest": "^0.5.0",
-    "eslint": "^8.16.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-mui-unused-classes": "^1.0.3",
     "expect-puppeteer": "^6.1.0",
