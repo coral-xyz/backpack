@@ -8,7 +8,7 @@ import { PublicKey } from '@solana/web3.js';
 export default function useXNFT() {
   const router = useRouter();
   const anchorWallet = useAnchorWallet();
-  const [xnft, setXNFT] = useState<Metadata>();
+  const [xnft, setXNFT] = useState<any>();
 
   const { app } = router.query;
 

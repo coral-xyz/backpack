@@ -5,7 +5,7 @@ import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
 
 export default function useXNFTs() {
   const anchorWallet = useAnchorWallet();
-  const [xnfts, setXNFTs] = useState<Metadata[]>([]);
+  const [xnfts, setXNFTs] = useState<any[]>([]);
 
   useEffect(() => {
     async function get() {
