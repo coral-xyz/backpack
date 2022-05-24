@@ -5,16 +5,6 @@ import { ImportWallet } from "./ImportWallet";
 import { OnboardButton } from "../common";
 
 const useStyles = makeStyles((theme: any) => ({
-  logo: {
-    width: "150px",
-    height: "150px",
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
-  button: {
-    width: "100%",
-    height: "48px",
-  },
   card: {
     width: "375px",
     height: "600px",
@@ -31,50 +21,11 @@ const useStyles = makeStyles((theme: any) => ({
     flexDirection: "column-reverse",
     flex: 1,
   },
-  buttonContainer: {},
-  header: {
-    position: "absolute",
-    left: 0,
-    top: 0,
-    width: "100%",
-    padding: "20px",
-    display: "flex",
-    justifyContent: "space-between",
-  },
-  headerButton: {
-    borderRadius: "20px",
-    padding: "10px",
-    display: "flex",
-  },
-  headerLabel: {
-    display: "flex",
-    background: theme.custom.colors.background,
-    color: theme.custom.colors.fontColor,
-    borderRadius: "20px",
-    padding: "10px",
-  },
-  headerLogoContainer: {
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-  },
-  headerLogo: {
-    width: "20px",
-    height: "20px",
-    marginRight: "8px",
-  },
   logoContainer: {
     flex: 1,
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
-  },
-  helpIcon: {
-    marginRight: "8px",
-    color: theme.custom.colors.background,
-  },
-  helpText: {
-    color: theme.custom.colors.background,
   },
 }));
 
@@ -119,7 +70,7 @@ function Welcome({
   const theme = useTheme() as any;
   return (
     <div className={classes.content}>
-      <div className={classes.buttonContainer}>
+      <div>
         <OnboardButton
           onClick={() => didSelectContent("create-new-wallet")}
           label={"Create New Wallet"}

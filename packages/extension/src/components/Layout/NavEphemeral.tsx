@@ -11,12 +11,6 @@ import {
 } from "./Nav";
 
 const useStyles = makeStyles((theme: any) => ({
-  withNavContainer: {
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-  },
-  navBarSuspense: {},
   navBarContainer: {
     display: "flex",
     justifyContent: "space-between",
@@ -27,57 +21,6 @@ const useStyles = makeStyles((theme: any) => ({
     backgroundColor: theme.custom.colors.background,
     //
     height: `${NAV_BAR_HEIGHT}px`,
-  },
-  menuButtonContainer: {
-    width: "38px",
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-    position: "relative",
-  },
-  connectedIcon: {
-    width: "12px",
-    height: "12px",
-    borderRadius: "6px",
-    backgroundColor: theme.custom.colors.connected,
-    position: "absolute",
-    right: 0,
-  },
-  disconnectedIcon: {
-    width: "12px",
-    height: "12px",
-    borderRadius: "6px",
-    backgroundColor: theme.custom.colors.disconnected,
-    position: "absolute",
-    right: 0,
-  },
-  centerDisplayContainer: {
-    color: theme.custom.colors.fontColor,
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-  },
-  connectionButton: {
-    padding: 0,
-  },
-  connectionMenu: {
-    backgroundColor: theme.custom.colors.offText,
-    color: theme.custom.colors.fontColor,
-  },
-  overviewLabel: {
-    fontSize: "18px",
-    fontWeight: 500,
-    lineHeight: "24px",
-    color: theme.custom.colors.fontColor,
-  },
-  overviewLabelPrefix: {
-    color: theme.custom.colors.secondary,
-  },
-  backButton: {
-    padding: 0,
-    "&:hover": {
-      background: "transparent",
-    },
   },
   navContentContainer: {
     flex: 1,

@@ -7,7 +7,7 @@ import { OnboardButton } from "./common";
 
 export const NAV_BAR_HEIGHT = 56;
 
-export const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles((theme: any) => ({
   container: {
     backgroundColor: theme.custom.colors.background,
     textAlign: "center",
@@ -37,38 +37,11 @@ export const useStyles = makeStyles((theme: any) => ({
     justifyContent: "center",
     flexDirection: "column",
   },
-  passwordRootNegative: {
-    "& .MuiOutlinedInput-root": {
-      border: `solid 1pt ${theme.custom.colors.negative}`,
-    },
-  },
-  passwordLabel: {
-    textAlign: "center",
-  },
-  errorLabel: {
-    color: theme.custom.colors.negative,
-  },
   content: {
     borderTopLeftRadius: "12px",
     borderTopRightRadius: "12px",
     background: "linear-gradient(180deg, #292C33 0%, rgba(41, 44, 51, 0) 100%)",
     height: "258px",
-  },
-  headerIcon: {
-    color: theme.custom.colors.onboardButton,
-  },
-  headerTitle: {
-    color: theme.custom.colors.fontColor,
-    fontSize: "20px",
-    fontWeight: 500,
-    marginTop: "10px",
-    marginBottom: "3px",
-  },
-  headerSubtitle: {
-    lineHeight: "20px",
-    color: theme.custom.colors.secondary,
-    fontSize: "14px",
-    fontWeight: 500,
   },
   lockIcon: {
     color: theme.custom.colors.activeNavButton,

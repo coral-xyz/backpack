@@ -22,9 +22,9 @@
     "eventemitter3": "^4.0.7"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.20.0",
-    "@typescript-eslint/parser": "^5.20.0",
-    "eslint": "^8.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.25.0",
+    "@typescript-eslint/parser": "^5.25.0",
+    "eslint": "^8.16.0",
     "eslint-plugin-import": "^2.26.0",
     "typescript": "^4.6.3"
   }

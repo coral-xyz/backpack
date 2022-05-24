@@ -5,22 +5,6 @@ import { BottomCard } from "./Send";
 import { TextField, TextFieldLabel, walletAddressDisplay } from "../../common";
 
 const useStyles = makeStyles((theme: any) => ({
-  headerButton: {
-    borderRadius: "12px",
-    width: "100px",
-    height: "40px",
-    backgroundColor: theme.custom.colors.nav,
-    "&:hover": {
-      backgroundColor: theme.custom.colors.nav,
-    },
-  },
-  headerButtonLabel: {
-    color: theme.custom.colors.fontColor,
-    fontSize: "14px",
-    lineHeight: "24px",
-    fontWeight: 500,
-    textTransform: "none",
-  },
   subtext: {
     width: "264px",
     marginLeft: "auto",
