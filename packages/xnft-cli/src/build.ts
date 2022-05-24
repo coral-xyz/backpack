@@ -20,11 +20,6 @@ export const build = async (args: { input: string; output: string }) => {
           varName: "window.libs.React",
           type: "cjs",
         },
-        "react-dom": {
-          varName: "window.libs.ReactDOM",
-          type: "esm",
-          namedExports: ["render"],
-        },
         "@200ms/anchor-ui": {
           varName: "window.libs.AnchorUI",
           type: "cjs",
@@ -32,7 +27,6 @@ export const build = async (args: { input: string; output: string }) => {
         "@solana/web3.js": {
           varName: "window.libs.Solana",
           type: "cjs",
-          // namedExports: ["Keypair"],
         },
         "@project-serum/anchor": {
           varName: "window.libs.Anchor",
