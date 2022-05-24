@@ -7,8 +7,7 @@ import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
 import fetch from './fetcher';
 import { AnchorWallet } from '@solana/wallet-adapter-react';
 
-// TODO:
-const connection = new Connection('http://127.0.0.1:8899');
+const connection = new Connection(process.env.NEXT_PUBLIC_CONNECTION);
 
 // xNFT Program ID
 const programID = new PublicKey(xnftIdl.metadata.address);
