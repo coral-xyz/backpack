@@ -111,7 +111,6 @@ export class Plugin {
     this._nextRenderId = 0;
     this._iframe = document.createElement("iframe");
     this._iframe!.src = this.iframeUrl;
-    this._iframe.sandbox.add("allow-modals");
     this._iframe.sandbox.add("allow-same-origin");
     this._iframe.sandbox.add("allow-scripts");
     this._iframe!.onload = async () => {
