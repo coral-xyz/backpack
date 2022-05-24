@@ -37,6 +37,9 @@ import { WithDrawer } from "../Layout/Drawer";
 import { ConnectionMenu } from "./ConnectionSwitch";
 
 const useStyles = makeStyles((theme: any) => ({
+  addConnectWalletLabel: {
+    color: theme.custom.colors.fontColor,
+  },
   settingsContainer: {
     height: "100%",
   },
