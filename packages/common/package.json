@@ -6,7 +6,7 @@
   "types": "dist/esm/index.d.ts",
   "scripts": {
     "build": "yarn lint && tsc",
-    "start": "tsc --watch",
+    "dev": "tsc --watch",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
   },
   "author": "",
