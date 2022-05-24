@@ -4,6 +4,7 @@ import { PluginRenderer } from "@200ms/anchor-ui-renderer";
 import { useNavigation, useTotal, useTablePlugins } from "@200ms/recoil";
 import { TokenTable } from "./TokenTable";
 import { SettingsButton } from "../../Settings";
+import { formatUSD } from "@200ms/common";
 
 const useStyles = makeStyles((theme: any) => ({
   balancesHeaderContainer: {
@@ -68,17 +69,20 @@ export function BalanceSummary({ blockchain }: { blockchain?: string }) {
       <div>
         <Typography className={classes.headerLabel}>Total Balance</Typography>
         <Typography className={classes.totalBalance}>
-          ${totalBalance.toLocaleString()}
+          {formatUSD(totalBalance.toLocaleString())}
         </Typography>
       </div>
-      <div>
-        <Typography className={classes.headerLabel}>Last 24 hrs</Typography>
-        <Typography
-          className={totalChange > 0 ? classes.positive : classes.negative}
-        >
-          ${totalChange.toLocaleString()} ({percentChange}%)
-        </Typography>
-      </div>
+      {Number.isFinite(percentChange) && (
+        <div>
+          <Typography className={classes.headerLabel}>Last 24 hrs</Typography>
+          <Typography
+            className={totalChange > 0 ? classes.positive : classes.negative}
+          >
+            {formatUSD(totalChange.toLocaleString())} (
+            {`${percentChange.toFixed(2)}%`})
+          </Typography>
+        </div>
+      )}
     </div>
   );
 }
