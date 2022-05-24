@@ -1,0 +1,22 @@
+{
+  "name": "@200ms/xnft-cli",
+  "version": "0.0.1",
+  "type": "module",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "dependencies": {
+    "@fal-works/esbuild-plugin-global-externals": "^2.1.2",
+    "commander": "^9.2.0",
+    "esbuild": "^0.14.39"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2",
+    "typescript": "^4.7.2"
+  },
+  "scripts": {
+    "build": "rimraf dist && tsc && npm i -g ."
+  },
+  "bin": {
+    "xnft": "./dist/index.js"
+  }
+}
