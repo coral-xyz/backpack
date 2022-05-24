@@ -1,12 +1,16 @@
 import useXNFTs from '../hooks/useXNFTs';
 import dynamic from 'next/dynamic';
 import AppPlaceholder from '../components/gallery/app-placeholder';
+import { useAnchorWallet } from '@solana/wallet-adapter-react';
 
 const Posts = dynamic(() => import('../components/gallery/posts'));
 const App = dynamic(() => import('../components/gallery/app'), { loading: AppPlaceholder });
 
 function Home() {
+  const anchorWallet = useAnchorWallet();
   const { xnfts, isLoading } = useXNFTs();
+
+  console.log('xnfts', xnfts);
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-10 md:px-10">
@@ -26,25 +30,10 @@ function Home() {
               {xnfts.map((xnft, index) => (
                 <App
                   key={index}
-                  iconUrl={xnft.data.metadata.properties.icon}
-                  name={xnft.data.name}
-                  description={xnft.data.metadata.description}
-                />
-              ))}
-              {xnfts.map((xnft, index) => (
-                <App
-                  key={index}
-                  iconUrl={xnft.data.metadata.properties.icon}
-                  name={xnft.data.name}
-                  description={xnft.data.metadata.description}
-                />
-              ))}
-              {xnfts.map((xnft, index) => (
-                <App
-                  key={index}
-                  iconUrl={xnft.data.metadata.properties.icon}
-                  name={xnft.data.name}
-                  description={xnft.data.metadata.description}
+                  iconUrl={xnft.metadata.properties.icon}
+                  name={xnft.metadata.name}
+                  description={xnft.metadata.description}
+                  publicKey={xnft.accounts.masterMetadata.toBase58()}
                 />
               ))}
             </>

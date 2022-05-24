@@ -1,18 +1,19 @@
 import { useAnchorWallet } from '@solana/wallet-adapter-react';
-import { getAllXNTs } from '../utils/xnft-client';
+import { getAllXNFTs } from '../utils/xnft-client';
 import { useEffect, useState } from 'react';
+import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
 
 export default function useXNFTs() {
   const anchorWallet = useAnchorWallet();
-  const [xnfts, setXNFTs] = useState<any[]>([]);
+  const [xnfts, setXNFTs] = useState<Metadata[]>([]);
 
   useEffect(() => {
-    async function getAllXNFTs() {
-      const data = await getAllXNTs(anchorWallet);
+    async function get() {
+      const data = await getAllXNFTs(anchorWallet);
       setXNFTs(data);
     }
 
-    if (anchorWallet) getAllXNFTs();
+    if (anchorWallet) get();
   }, [anchorWallet]);
 
   return {

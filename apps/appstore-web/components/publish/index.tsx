@@ -16,7 +16,7 @@ function Publish() {
   const [showMintedNotification, setShowMintedNotification] = useState<boolean>(false);
 
   // Upload metadata, bundle.js and images
-  async function uploadBundle(e) {
+  async function submitForm(e) {
     e.preventDefault();
 
     setLoading(true);
@@ -34,8 +34,8 @@ function Publish() {
     // Mint xNFT
     await xNFTMint(uploadState, anchorWallet, publicKey, metadataUrl);
 
-    setLoading(false);
     setShowMintedNotification(true);
+    setLoading(false);
 
     // TODO: If fails, send a notification
   }
@@ -59,7 +59,7 @@ function Publish() {
 
         {/* Tabs */}
         <div className="mt-4 flex flex-col gap-2">
-          <form onSubmit={uploadBundle}>
+          <form onSubmit={submitForm}>
             <>
               <MintForm uploadState={uploadState} uploadDispatch={uploadDispatch} />
               <button
