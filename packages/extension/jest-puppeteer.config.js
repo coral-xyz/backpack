@@ -13,7 +13,7 @@ const executablePath =
 
 module.exports = {
   server: {
-    command: "serve -p 3333 ../example-client/build",
+    command: "serve -p 3333 ../../examples/clients/simple/build",
   },
   launch: {
     headless: false,

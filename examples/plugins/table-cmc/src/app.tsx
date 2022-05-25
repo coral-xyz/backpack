@@ -1,9 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { PublicKey } from "@solana/web3.js";
 import {
-  useNavigation,
-  Text,
-  View,
   BalancesTable,
   BalancesTableHead,
   BalancesTableContent,
