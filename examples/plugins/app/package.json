@@ -6,7 +6,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "parcel build src/index.html",
-    "start": "parcel --port 4444 src/index.html"
+    "start": "parcel --https --port 4444 src/index.html"
   },
   "dependencies": {
     "@200ms/anchor-ui": "*",
