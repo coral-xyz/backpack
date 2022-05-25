@@ -1378,18 +1378,6 @@
   dependencies:
     postcss-value-parser "^4.2.0"
 
-"@cykura/sdk-core@npm:@jup-ag/cykura-sdk-core@0.1.7", "@jup-ag/cykura-sdk-core@0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@jup-ag/cykura-sdk-core/-/cykura-sdk-core-0.1.7.tgz#995a446fb8b9134fed3e7fe0c0a58557f9fc9939"
-  integrity sha512-lA5UXUaauLdBYTmMY0eO9O6HrhBrnaX8vfk6Dbx3OhdfFzIKPrTB8i4d6aRyzU7tgka2ibZZnPaX+B6cj1nsrA==
-  dependencies:
-    "@project-serum/anchor" "^0.22.0"
-    big.js "^5.2.2"
-    decimal.js "^10.3.1"
-    jsbi "^4.1.0"
-    tiny-invariant "^1.1.0"
-    toformat "^2.0.0"
-
 "@emotion/hash@^0.8.0":
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/@emotion/hash/-/hash-0.8.0.tgz#bbbff68978fefdbe68ccb533bc8cbe1d1afb5413"
@@ -2126,27 +2114,26 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@jup-ag/core@1.0.0-beta.24", "@jup-ag/core@^1.0.0-beta.24":
-  version "1.0.0-beta.24"
-  resolved "https://registry.yarnpkg.com/@jup-ag/core/-/core-1.0.0-beta.24.tgz#78df095af3c8ad3d99f09f12e6cbecca89c638cf"
-  integrity sha512-Qpor5UTZL/q403yvgXTJygZQXJggmxI1Tpg+lXemDU55VKP+fluuFkcnwpo1blDJi7Ropgn4rdv7ISqNiJyeDg==
+"@jup-ag/core@1.0.0-beta.19", "@jup-ag/core@1.0.0-beta.24", "@jup-ag/core@^1.0.0-beta.24":
+  version "1.0.0-beta.19"
+  resolved "https://registry.yarnpkg.com/@jup-ag/core/-/core-1.0.0-beta.19.tgz#fa461d20cf35391360a04fe24dcc8306aeae5b37"
+  integrity sha512-FDfwl0iTlabZBbW1E6Ox8kzlQsh8i+5jPl0DouDQBT3necvaqfvQ1j2Cm5Ceu5aF92uhpfep6uv4QBtLiSMqRw==
   dependencies:
     "@jup-ag/crema-sdk" "~1.1.10"
-    "@jup-ag/cykura-sdk" "0.1.24"
-    "@jup-ag/cykura-sdk-core" "0.1.7"
     "@jup-ag/lifinity-sdk" "~0.1.16"
-    "@jup-ag/math" "1.0.0-beta.24"
-    "@jup-ag/whirlpool-sdk" "0.1.1"
-    "@mercurial-finance/optimist" "~0.1.4"
+    "@jup-ag/math" "1.0.0-beta.19"
+    "@mercurial-finance/optimist" "~0.1.2"
     "@project-serum/anchor" "~0.23.0"
-    "@project-serum/serum" "~0.13.64"
-    "@saberhq/stableswap-sdk" "~1.12.67"
+    "@project-serum/serum" "~0.13.61"
+    "@saberhq/stableswap-sdk" "~1.12.55"
     "@solana/spl-token" "~0.1.8"
+    "@solana/web3.js" "1.31.0"
     bn.js "~5.2.0"
-    cross-fetch "^3.1.5"
+    cross-fetch "3.1.4"
     decimal.js "~10.3.1"
-    jsbi "~4.3.0"
+    jsbi "~4.1.0"
     promise-retry "~2.0.1"
+    tiny-invariant "~1.2.0"
 
 "@jup-ag/crema-sdk@~1.1.10":
   version "1.1.10"
@@ -2157,16 +2144,6 @@
     "@solana/spl-token" "^0.1.8"
     decimal.js "^10.3.1"
     tiny-invariant "^1.2.0"
-
-"@jup-ag/cykura-sdk@0.1.24":
-  version "0.1.24"
-  resolved "https://registry.yarnpkg.com/@jup-ag/cykura-sdk/-/cykura-sdk-0.1.24.tgz#6f8cc6092d859f8642881dbae8211dd5ac134101"
-  integrity sha512-9DFN47D6UP8+pZJHlUxve626u73sjXrhIGblHqnTkmCJZ7GicbXBV+lBcfex8xqin/u0xZSoHSfEOir63JFgIg==
-  dependencies:
-    "@cykura/sdk-core" "npm:@jup-ag/cykura-sdk-core@0.1.7"
-    "@project-serum/anchor" "^0.22.1"
-    "@solana/web3.js" "^1.32.0"
-    tiny-invariant "^1.1.0"
 
 "@jup-ag/lifinity-sdk@~0.1.16":
   version "0.1.16"
@@ -2181,13 +2158,16 @@
     "@solana/web3.js" "1.31.0"
     decimal.js "^10.3.1"
 
-"@jup-ag/math@1.0.0-beta.24":
-  version "1.0.0-beta.24"
-  resolved "https://registry.yarnpkg.com/@jup-ag/math/-/math-1.0.0-beta.24.tgz#5458c151907b3a189b3732a5f3f648b6daad6ef3"
-  integrity sha512-qI0MdaTlKVcbpjBtZVmHeuf3PordLC+pP699cDV1RxBxQtg1+0aCrDxtuRc/iohvMbpYqt3UiWWdEIj1LhHrwQ==
+"@jup-ag/math@1.0.0-beta.19":
+  version "1.0.0-beta.19"
+  resolved "https://registry.yarnpkg.com/@jup-ag/math/-/math-1.0.0-beta.19.tgz#ad5b54d393daa2383c8154e88ee858a44cc6c34a"
+  integrity sha512-0A7NCCVa29OCxfXI7T2kZu++iRmhpm0lmuGjqmThJIWRlC5W0tl+ILjOAOssqbbqMtSbekV0f07NJou464WqZQ==
   dependencies:
+    "@solana/spl-token-registry" "~0.2.1105"
+    "@solana/web3.js" "1.31.0"
+    builder-pattern "~1.3.0"
     decimal.js "~10.3.1"
-    jsbi "~4.3.0"
+    jsbi "~4.1.0"
 
 "@jup-ag/react-hook@^1.0.0-beta.24":
   version "1.0.0-beta.24"
@@ -2195,19 +2175,6 @@
   integrity sha512-HvUEiRQt4iAU54Q503nt2JCiKjU0BXZHpSZoW0ZBfLLyBPjDQkkAE9dnXkW3lzVyljuWenbvfZFJYl2SJrZpaA==
   dependencies:
     "@jup-ag/core" "1.0.0-beta.24"
-
-"@jup-ag/whirlpool-sdk@0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@jup-ag/whirlpool-sdk/-/whirlpool-sdk-0.1.1.tgz#f305bea2cf205994b87358ee5ad667d3c84c320e"
-  integrity sha512-GaEnG+T4ltQ3eKLVEnBRpatrRsR1v6t6epnp/hlXDTxiHyfFaVK/gmfi6ckCXs+npL/y39OtwsO0QV2zkOJdcg==
-  dependencies:
-    "@orca-so/whirlpool-client-sdk" "npm:@jup-ag/whirlpool-client-sdk@0.0.8"
-    "@project-serum/anchor" "~0.23.0"
-    "@solana/spl-token" "~0.1.8"
-    axios "^0.25.0"
-    bn.js "~5.2.0"
-    decimal.js "~10.3.1"
-    tiny-invariant "~1.2.0"
 
 "@ledgerhq/devices@^6.24.1":
   version "6.24.1"
@@ -2336,7 +2303,7 @@
     prop-types "^15.7.2"
     react-is "^16.8.0 || ^17.0.0"
 
-"@mercurial-finance/optimist@~0.1.4":
+"@mercurial-finance/optimist@~0.1.2":
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/@mercurial-finance/optimist/-/optimist-0.1.4.tgz#3ed5155fe94d5df0f86d2f47a3506460109eed4a"
   integrity sha512-m8QuyPx9j7fGd2grw0mD5WcYtBb8l7+OQI5aHdeIlxPg3QoPrbSdCHyFOuipYbvB0EY5YDbOmyeFwiTcBkBBSw==
@@ -2386,17 +2353,6 @@
   dependencies:
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
-
-"@orca-so/whirlpool-client-sdk@npm:@jup-ag/whirlpool-client-sdk@0.0.8":
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/@jup-ag/whirlpool-client-sdk/-/whirlpool-client-sdk-0.0.8.tgz#d3715266e0a76ab699078ce1f5525f80e09dd825"
-  integrity sha512-nlAE/huKAWNxJ9g9BhD7nWGqTg/s0kGjWYqccsYM1Nv6CjesvWdtl8N4k81enmYYU2jgjm6f4XYKA8zTLHsBsA==
-  dependencies:
-    "@project-serum/anchor" "~0.23.0"
-    "@solana/spl-token" "~0.1.8"
-    bn.js "~5.2.0"
-    decimal.js "~10.3.1"
-    lru-cache "^7.9.0"
 
 "@parcel/bundler-default@2.5.0":
   version "2.5.0"
@@ -3086,27 +3042,6 @@
     snake-case "^3.0.4"
     toml "^3.0.0"
 
-"@project-serum/anchor@^0.22.0", "@project-serum/anchor@^0.22.1":
-  version "0.22.1"
-  resolved "https://registry.yarnpkg.com/@project-serum/anchor/-/anchor-0.22.1.tgz#698a9620f94691de0a12bbc650a5c8380e2f0e8a"
-  integrity sha512-5pHeyvQhzLahIQ8aZymmDMZJAJFklN0joZdI+YIqFkK2uU/mlKr6rBLQjxysf/j1mLLiNG00tdyLfUtTAdQz7w==
-  dependencies:
-    "@project-serum/borsh" "^0.2.5"
-    "@solana/web3.js" "^1.17.0"
-    base64-js "^1.5.1"
-    bn.js "^5.1.2"
-    bs58 "^4.0.1"
-    buffer-layout "^1.2.2"
-    camelcase "^5.3.1"
-    cross-fetch "^3.1.5"
-    crypto-hash "^1.3.0"
-    eventemitter3 "^4.0.7"
-    find "^0.3.0"
-    js-sha256 "^0.9.0"
-    pako "^2.0.3"
-    snake-case "^3.0.4"
-    toml "^3.0.0"
-
 "@project-serum/anchor@^0.23.0", "@project-serum/anchor@~0.23.0":
   version "0.23.0"
   resolved "https://registry.yarnpkg.com/@project-serum/anchor/-/anchor-0.23.0.tgz#2b2eb6b51601b073e8db26663aa2d6c2f2841771"
@@ -3197,7 +3132,7 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
-"@project-serum/serum@~0.13.64":
+"@project-serum/serum@~0.13.61":
   version "0.13.65"
   resolved "https://registry.yarnpkg.com/@project-serum/serum/-/serum-0.13.65.tgz#6d3cf07912f13985765237f053cca716fe84b0b0"
   integrity sha512-BHRqsTqPSfFB5p+MgI2pjvMBAQtO8ibTK2fYY96boIFkCI3TTwXDt2gUmspeChKO2pqHr5aKevmexzAcXxrSRA==
@@ -3347,7 +3282,7 @@
     tiny-invariant "^1.2.0"
     tslib "^2.4.0"
 
-"@saberhq/stableswap-sdk@~1.12.67":
+"@saberhq/stableswap-sdk@~1.12.55":
   version "1.12.72"
   resolved "https://registry.yarnpkg.com/@saberhq/stableswap-sdk/-/stableswap-sdk-1.12.72.tgz#6b4567e86e53bdb0383b75d13f072f954d209bc4"
   integrity sha512-W4Z1LFIvzkhlg+Xpy5SFNJ7dhJD0CG9e3IhuN0+uvVZBSZvhmznaPfL4zp31tWbbTzVEzzUU649jsxdMc2PNGQ==
@@ -3442,6 +3377,13 @@
   version "0.2.3225"
   resolved "https://registry.yarnpkg.com/@solana/spl-token-registry/-/spl-token-registry-0.2.3225.tgz#2c83d2d5819ea11b9107a05f5f37aac177726e67"
   integrity sha512-5l46rGEjqFPtACXEJg8PxTN+/sj/EWe+fB3ndT5njlKE8tGA0nczzVN2ORSzp4wa60zYReo0usktqtfISPt1TA==
+  dependencies:
+    cross-fetch "3.0.6"
+
+"@solana/spl-token-registry@~0.2.1105":
+  version "0.2.4130"
+  resolved "https://registry.yarnpkg.com/@solana/spl-token-registry/-/spl-token-registry-0.2.4130.tgz#9d7c9b89be3eeb5c6b8a61c0fcd00b6d9ffb73cb"
+  integrity sha512-H5iylUFYJ5/PV+ZFptuvJ2adWsz1S5aSrtdAa38wGXIki667E4x1/j70B1sKQ2Gn+RHRUGr1VUqA3v8di/5osQ==
   dependencies:
     cross-fetch "3.0.6"
 
@@ -6002,6 +5944,11 @@ bufferutil@^4.0.1:
   dependencies:
     node-gyp-build "^4.3.0"
 
+builder-pattern@~1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/builder-pattern/-/builder-pattern-1.3.0.tgz#a70dd297340a630cc88bc987e2fd80c85b8455c2"
+  integrity sha512-Et/hsZtdEQig6744zDzkkhFnnb/i2H/3d1iAb46cIIcFQnmLVw2Hes5JIMiPe/Jh4dovDJO+x88yC0Omd2OcRw==
+
 builtin-modules@^3.1.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/builtin-modules/-/builtin-modules-3.2.0.tgz#45d5db99e7ee5e6bc4f362e008bf917ab5049887"
@@ -6781,6 +6728,13 @@ cross-fetch@3.0.6:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.0.6.tgz#3a4040bc8941e653e0e9cf17f29ebcd177d3365c"
   integrity sha512-KBPUbqgFjzWlVcURG+Svp9TlhA5uliYtiNx/0r8nv0pdypeQCRJ9IaSIc3q/x3q8t3F75cHuwxVql1HFGHCNJQ==
+  dependencies:
+    node-fetch "2.6.1"
+
+cross-fetch@3.1.4:
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.4.tgz#9723f3a3a247bf8b89039f3a380a9244e8fa2f39"
+  integrity sha512-1eAtFWdIubi6T4XPy6ei9iUFoKpUkIF971QLN8lIvvvwueI65+Nw5haMNKUwfJxabqlIIDODJKGrQ66gxC0PbQ==
   dependencies:
     node-fetch "2.6.1"
 
@@ -11835,10 +11789,10 @@ js-yaml@^4.1.0:
   dependencies:
     argparse "^2.0.1"
 
-jsbi@^4.1.0, jsbi@~4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/jsbi/-/jsbi-4.3.0.tgz#b54ee074fb6fcbc00619559305c8f7e912b04741"
-  integrity sha512-SnZNcinB4RIcnEyZqFPdGPVgrg2AcnykiBy0sHVJQKHYeaLUvi3Exj+iaPpLnFVkDPZIV4U0yvgC9/R4uEAZ9g==
+jsbi@~4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/jsbi/-/jsbi-4.1.0.tgz#f0c25ed8881bc09891334b03a3952efaa7add337"
+  integrity sha512-384Z4keIsJtYpnVggsxaB255MZctILbxv+ihtwoWPF7KNOlYHn1LFpRnUw5qsAspUAA2+I7qzjVJxVYtHVjxNw==
 
 jsdom@^16.4.0, jsdom@^16.6.0:
   version "16.7.0"
@@ -12386,11 +12340,6 @@ lru-cache@^6.0.0:
   integrity sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==
   dependencies:
     yallist "^4.0.0"
-
-lru-cache@^7.9.0:
-  version "7.10.1"
-  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-7.10.1.tgz#db577f42a94c168f676b638d15da8fb073448cab"
-  integrity sha512-BQuhQxPuRl79J5zSXRP+uNzPOyZw2oFI9JLRQ80XswSvg21KMKNtQza9eF42rfI/3Z40RvzBdXgziEkudzjo8A==
 
 lz-string@^1.4.4:
   version "1.4.4"
@@ -17353,7 +17302,7 @@ timsort@^0.3.0:
   resolved "https://registry.yarnpkg.com/timsort/-/timsort-0.3.0.tgz#405411a8e7e6339fe64db9a234de11dc31e02bd4"
   integrity sha1-QFQRqOfmM5/mTbmiNN4R3DHgK9Q=
 
-tiny-invariant@^1.1.0, tiny-invariant@^1.2.0, tiny-invariant@~1.2.0:
+tiny-invariant@^1.2.0, tiny-invariant@~1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/tiny-invariant/-/tiny-invariant-1.2.0.tgz#a1141f86b672a9148c72e978a19a73b9b94a15a9"
   integrity sha512-1Uhn/aqw5C6RI4KejVeTg6mIS7IqxnLJ8Mv2tV5rTc0qWobay7pDUz6Wi392Cnc8ak1H0F2cjoRzb2/AW4+Fvg==
