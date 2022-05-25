@@ -2,17 +2,19 @@
   "name": "anchor-wallet",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "examples/clients/*",
+    "examples/plugins/*"
   ],
   "scripts": {
-    "lint:fix": "prettier packages/**/*.{ts,tsx,css,md,json} --write",
+    "lint:fix": "prettier {examples,packages}/**/*.{ts,tsx,css,md,json} --write",
     "prepare": "husky install",
     "start": "env-cmd --silent turbo run start",
     "start:fresh": "yarn install && yarn clean && yarn install && yarn start",
     "test": "env-cmd --silent turbo run test -- --passWithNoTests --watchAll=false",
     "build": "env-cmd --silent turbo run build",
     "e2e": "env-cmd --silent turbo run e2e",
-    "clean": "npx rimraf .turbo .parcel-cache node_modules/ packages/**/node_modules packages/**/.turbo packages/**/build packages/**/dist packages/extension/dev",
+    "clean": "npx rimraf .turbo .parcel-cache node_modules {examples,packages}/**/{.turbo,build,dist,node_modules} packages/extension/dev",
     "postinstall": "patch-package"
   },
   "devDependencies": {
