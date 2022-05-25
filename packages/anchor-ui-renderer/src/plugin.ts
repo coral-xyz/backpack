@@ -48,7 +48,7 @@ export class Plugin {
   private _connectionUrl: string;
   private _rpcServer: PostMessageServer;
   private _bridgeServer: PostMessageServer;
-  private _iframe: any;
+  private _iframe?: HTMLIFrameElement;
   private _nextRenderId?: number;
   private _pendingBridgeRequests?: Array<any>;
   private _dom?: Dom;
@@ -110,10 +110,12 @@ export class Plugin {
 
     this._nextRenderId = 0;
     this._iframe = document.createElement("iframe");
-    this._iframe.src = this.iframeUrl;
-    this._iframe.onload = async () => {
-      this._rpcServer.setWindow(this._iframe.contentWindow);
-      this._bridgeServer.setWindow(this._iframe.contentWindow);
+    this._iframe!.src = this.iframeUrl;
+    this._iframe.sandbox.add("allow-same-origin");
+    this._iframe.sandbox.add("allow-scripts");
+    this._iframe!.onload = async () => {
+      this._rpcServer.setWindow(this._iframe!.contentWindow);
+      this._bridgeServer.setWindow(this._iframe!.contentWindow);
       this._dom = new Dom();
       this._pendingBridgeRequests = [];
       this.pushConnectNotification();
@@ -132,8 +134,8 @@ export class Plugin {
   public destroyIframe() {
     logger.debug("destroying iframe element");
 
-    document.head.removeChild(this._iframe);
-    this._iframe.remove();
+    document.head.removeChild(this._iframe!);
+    this._iframe!.remove();
     this._iframe = undefined;
     this._rpcServer.setWindow(undefined);
     this._bridgeServer.setWindow(undefined);
@@ -204,7 +206,7 @@ export class Plugin {
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: notif,
     };
-    this._iframe.contentWindow.postMessage(event, "*");
+    this._iframe!.contentWindow!.postMessage(event, "*");
   }
 
   public pushClickNotification(viewId: number) {
@@ -217,7 +219,7 @@ export class Plugin {
         },
       },
     };
-    this._iframe.contentWindow.postMessage(event, "*");
+    this._iframe!.contentWindow!.postMessage(event, "*");
   }
 
   public pushConnectNotification() {
@@ -231,7 +233,7 @@ export class Plugin {
         },
       },
     };
-    this._iframe.contentWindow.postMessage(event, "*");
+    this._iframe!.contentWindow!.postMessage(event, "*");
   }
 
   public pushMountNotification() {
@@ -242,7 +244,7 @@ export class Plugin {
         data: {},
       },
     };
-    this._iframe.contentWindow.postMessage(event, "*");
+    this._iframe!.contentWindow!.postMessage(event, "*");
   }
 
   public pushUnmountNotification() {
@@ -253,7 +255,7 @@ export class Plugin {
         data: {},
       },
     };
-    this._iframe.contentWindow.postMessage(event, "*");
+    this._iframe!.contentWindow!.postMessage(event, "*");
   }
 
   public pushNavigationPopNotification() {
@@ -264,7 +266,7 @@ export class Plugin {
         data: {},
       },
     };
-    this._iframe.contentWindow.postMessage(event, "*");
+    this._iframe!.contentWindow!.postMessage(event, "*");
   }
 
   //////////////////////////////////////////////////////////////////////////////
