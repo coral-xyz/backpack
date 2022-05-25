@@ -178,6 +178,10 @@ function ApproveTransactionRequest() {
   );
 }
 
+function SignAndSendTransaction({ transaction, plugin }: any) {
+  return <SignTransaction transaction={transaction} plugin={plugin} />;
+}
+
 function SignTransaction({ transaction, plugin }: any) {
   const theme = useTheme() as any;
   const classes = useStyles();
@@ -253,11 +257,6 @@ function SignTransaction({ transaction, plugin }: any) {
 }
 
 function SignMessage({ message }: any) {
-  // todo
-  return <></>;
-}
-
-function SignAndSendTransaction({ transaction }: any) {
   // todo
   return <></>;
 }
