@@ -162,7 +162,6 @@ async function handleSignTx(
   txMsg: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
-  console.log("test: handling sign transaction with ctx", ctx);
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(ctx, requestId, txMsg);
   });
