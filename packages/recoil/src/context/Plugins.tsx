@@ -15,7 +15,7 @@ export function PluginManager(props: any) {
   useEffect(() => {
     const allPlugins = plugins.concat(tablePlugins);
     allPlugins.forEach((plugin) => {
-      plugin.setHostApis({
+      plugin.setHostApi({
         push: segue.push,
         pop: segue.pop,
         request: setTransactionRequest,

@@ -43,7 +43,6 @@ export function NotificationsProvider(props: any) {
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveWallet = useSetRecoilState(atoms.activeWallet);
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
-  const setTransactionRequest = useSetRecoilState(atoms.transactionRequest);
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   const updateRecentBlockhash = useUpdateRecentBlockhash();
   const navigate = useNavigate();

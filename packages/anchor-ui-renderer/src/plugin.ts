@@ -162,7 +162,7 @@ export class Plugin {
   //
   // Apis set from the outside host.
   //
-  public setHostApis({ push, pop, request }) {
+  public setHostApi({ push, pop, request }) {
     this._navPushFn = push;
     this._requestTxApprovalFn = request;
   }
