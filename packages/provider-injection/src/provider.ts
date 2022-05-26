@@ -22,7 +22,6 @@ import {
   RPC_METHOD_CONNECT,
   RPC_METHOD_DISCONNECT,
   RPC_METHOD_SIGN_AND_SEND_TX,
-  RPC_METHOD_SIGN_TX,
   RPC_METHOD_SIGN_ALL_TXS,
   RPC_METHOD_SIGN_MESSAGE,
   RPC_METHOD_SIMULATE,
@@ -30,6 +29,7 @@ import {
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
 } from "@200ms/common";
+import * as cmn from "./common";
 
 const logger = getLogger("provider-injection");
 
@@ -139,17 +139,17 @@ export class ProviderInjection extends EventEmitter implements Provider {
     signers?: Signer[],
     options?: ConfirmOptions
   ): Promise<TransactionSignature> {
-    const sig = await this.send(tx, signers, options);
-    const resp = await this.connection?.confirmTransaction(
-      sig,
-      options?.commitment
-    );
-    if (resp?.value.err) {
-      throw new Error(
-        `error confirming transaction: ${resp.value.err.toString()}`
-      );
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
     }
-    return sig;
+    return await cmn.sendAndConfirm(
+      this.publicKey,
+      this._requestManager,
+      this.connection,
+      tx,
+      signers,
+      options
+    );
   }
 
   async send(
@@ -160,24 +160,14 @@ export class ProviderInjection extends EventEmitter implements Provider {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
-    if (signers) {
-      signers.forEach((s: Signer) => {
-        tx.partialSign(s);
-      });
-    }
-    const { blockhash } = await this.connection!.getLatestBlockhash(
-      options?.preflightCommitment
+    return await cmn.send(
+      this.publicKey,
+      this._requestManager,
+      this.connection,
+      tx,
+      signers,
+      options
     );
-    tx.feePayer = this.publicKey;
-    tx.recentBlockhash = blockhash;
-    const txSerialize = tx.serialize({
-      requireAllSignatures: false,
-    });
-    const message = bs58.encode(txSerialize);
-    return await this._requestManager.request({
-      method: RPC_METHOD_SIGN_AND_SEND_TX,
-      params: [message, this.publicKey!.toString(), options],
-    });
   }
 
   async sendAll(
@@ -195,72 +185,38 @@ export class ProviderInjection extends EventEmitter implements Provider {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
-    if (signers) {
-      signers.forEach((s: Signer) => {
-        tx.partialSign(s);
-      });
-    }
-    const { blockhash } = await this.connection!.getLatestBlockhash(commitment);
-    tx.feePayer = this.publicKey;
-    tx.recentBlockhash = blockhash;
-    const txSerialize = tx.serialize({
-      requireAllSignatures: false,
-    });
-    const message = bs58.encode(txSerialize);
-    return await this._requestManager.request({
-      method: RPC_METHOD_SIMULATE,
-      params: [message, this.publicKey!.toString(), commitment],
-    });
+    return await cmn.simulate(
+      this.publicKey,
+      this._requestManager,
+      this.connection,
+      tx,
+      signers,
+      commitment
+    );
   }
 
   async signTransaction(tx: Transaction): Promise<Transaction> {
-    tx.feePayer = this.publicKey;
-    const message = bs58.encode(tx.serializeMessage());
-    const signature = await this._requestManager.request({
-      method: RPC_METHOD_SIGN_TX,
-      params: [message, this.publicKey!.toString()],
-    });
-    tx.addSignature(this.publicKey!, Buffer.from(bs58.decode(signature)));
-    return tx;
+    return await cmn.signTransaction(this.publicKey!, this._requestManager, tx);
   }
 
   async signAllTransactions(
     txs: Array<Transaction>
   ): Promise<Array<Transaction>> {
-    // Serialize messages.
-    const messages = txs.map((tx) => {
-      const txSerialized = tx.serializeMessage();
-      const message = bs58.encode(txSerialized);
-      return message;
-    });
-
-    // Get signatures from the background script.
-    const signatures: Array<string> = await this._requestManager.request({
-      method: RPC_METHOD_SIGN_ALL_TXS,
-      params: [messages, this.publicKey!.toString()],
-    });
-
-    // Add the signatures to the transactions.
-    txs.forEach((t, idx) => {
-      t.addSignature(
-        this.publicKey!,
-        Buffer.from(bs58.decode(signatures[idx]))
-      );
-    });
-
-    return txs;
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    return await cmn.signAllTransactions(
+      this.publicKey,
+      this._requestManager,
+      txs
+    );
   }
 
   async signMessage(msg: Uint8Array): Promise<Uint8Array | null> {
-    const msgStr = bs58.encode(msg);
-    const signature = await this._requestManager.request({
-      method: RPC_METHOD_SIGN_MESSAGE,
-      params: [msgStr, this.publicKey!.toString()],
-    });
-    if (!signature) {
-      return signature;
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
     }
-    return bs58.decode(signature);
+    return await cmn.signMessage(this.publicKey, this._requestManager, msg);
   }
 }
 

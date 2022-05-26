@@ -19,6 +19,9 @@ import {
   CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
   PLUGIN_RPC_METHOD_NAV_PUSH,
   PLUGIN_RPC_METHOD_NAV_POP,
+  RPC_METHOD_SIGN_TX as PLUGIN_RPC_METHOD_SIGN_TX,
+  RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_RPC_METHOD_SIGN_AND_SEND_TX,
+  RPC_METHOD_SIMULATE as PLUGIN_RPC_METHOD_SIMULATE_TX,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ON_CLICK,
   PLUGIN_NOTIFICATION_MOUNT,
@@ -52,10 +55,22 @@ export class Plugin {
   private _nextRenderId?: number;
   private _pendingBridgeRequests?: Array<any>;
   private _dom?: Dom;
-  private _navPushFn?: (args: any) => void;
 
   private _didFinishSetup?: Promise<void>;
   private _didFinishSetupResolver?: () => void;
+
+  //
+  // Host APIs.
+  //
+  private _navPushFn?: (args: any) => void;
+  private _requestTxApprovalFn?: (request: any) => void;
+
+  //
+  // The last time a click event was handled for the plugin. This is used as an
+  // approximation to ensure the trusted transaction signing view can only be
+  // displayed in the context of a click handler.
+  //
+  private _lastClickTsMs?: number;
 
   readonly iframeUrl: string;
   readonly iconUrl: string;
@@ -145,10 +160,11 @@ export class Plugin {
   }
 
   //
-  // Register the push navigation component with this plugin object.
+  // Apis set from the outside host.
   //
-  public setSegue({ push, pop }: any) {
+  public setHostApi({ push, pop, request }) {
     this._navPushFn = push;
+    this._requestTxApprovalFn = request;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -210,6 +226,7 @@ export class Plugin {
   }
 
   public pushClickNotification(viewId: number) {
+    this._lastClickTsMs = Date.now();
     const event = {
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: {
@@ -288,6 +305,12 @@ export class Plugin {
         return await this._handleNavPush();
       case PLUGIN_RPC_METHOD_NAV_POP:
         return await this._handleNavPop();
+      case PLUGIN_RPC_METHOD_SIGN_TX:
+        return await this._handleSignTransaction(params[0], params[1]);
+      case PLUGIN_RPC_METHOD_SIGN_AND_SEND_TX:
+        return await this._handleSignAndSendTransaction(params[0], params[1]);
+      case PLUGIN_RPC_METHOD_SIMULATE_TX:
+        return await this._handleSimulate(params[0], params[1]);
       default:
         logger.error(method);
         throw new Error("unexpected method");
@@ -308,6 +331,87 @@ export class Plugin {
   private async _handleNavPop(): Promise<RpcResponse> {
     // todo
     return ["success"];
+  }
+
+  private async _handleSignTransaction(
+    transaction: string,
+    pubkey: string
+  ): Promise<RpcResponse> {
+    const err = this.clickHandlerError();
+    if (err) {
+      return err;
+    }
+
+    try {
+      const signature = await this._requestTransactionApproval(
+        "sign-tx",
+        transaction,
+        pubkey
+      );
+      return [signature];
+    } catch (err) {
+      return [null, err.toString()];
+    }
+  }
+
+  private async _handleSignAndSendTransaction(
+    transaction: string,
+    pubkey: string
+  ): Promise<RpcResponse> {
+    const err = this.clickHandlerError();
+    if (err) {
+      return err;
+    }
+
+    try {
+      const signature = await this._requestTransactionApproval(
+        "sign-and-send-tx",
+        transaction,
+        pubkey
+      );
+      return [signature];
+    } catch (err) {
+      return [null, err.toString()];
+    }
+  }
+
+  private async _handleSimulate(
+    transaction: string,
+    pubkey: string
+  ): Promise<RpcResponse> {
+    // todo
+    return ["success"];
+  }
+
+  private clickHandlerError(): RpcResponse | null {
+    if (!this._lastClickTsMs) {
+      return ["error"];
+    }
+    const timeLapsed = Date.now() - this._lastClickTsMs;
+    if (timeLapsed >= 1000) {
+      return ["error"];
+    }
+    return null;
+  }
+
+  //
+  // Asks the extension UI to sign the transaction.
+  //
+  private async _requestTransactionApproval(
+    kind: string,
+    transaction: string,
+    publicKey: string
+  ): Promise<string | null> {
+    return new Promise<string | null>((resolve, reject) => {
+      this._requestTxApprovalFn!({
+        kind,
+        data: transaction,
+        pluginUrl: this.iframeUrl,
+        publicKey,
+        resolve,
+        reject,
+      });
+    });
   }
 
   //////////////////////////////////////////////////////////////////////////////

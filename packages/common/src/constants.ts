@@ -37,7 +37,6 @@ export const RECONCILER_BRIDGE_METHOD_RENDER_ROOT =
 export const PLUGIN_NOTIFICATION_CONNECT = "connect";
 export const PLUGIN_NOTIFICATION_ON_CLICK = "on-click";
 export const PLUGIN_NOTIFICATION_RENDER = "render";
-export const PLUGIN_RPC_METHOD_CONNECT = "connect";
 export const PLUGIN_RPC_METHOD_NAV_PUSH = "nav-push";
 export const PLUGIN_RPC_METHOD_NAV_POP = "nav-pop";
 export const PLUGIN_NOTIFICATION_MOUNT = "mount";

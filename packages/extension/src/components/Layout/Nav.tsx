@@ -11,6 +11,7 @@ import { Scrollbar } from "./Scrollbar";
 import { Loading } from "../common";
 import { WithTabs } from "./Tab";
 import { Router } from "./Router";
+import { ApproveTransactionRequest } from "../Unlocked/ApproveTransactionRequest";
 
 export const NAV_BAR_HEIGHT = 56;
 export const NAV_BUTTON_WIDTH = 38;
@@ -61,6 +62,7 @@ export function TabNavStack() {
       <div className={classes.withNavContainer}>
         <NavBar />
         <NavContent />
+        <ApproveTransactionRequest />
       </div>
     </WithTabs>
   );

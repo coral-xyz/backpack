@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 import {
   getLogger,
   PortChannel,
+  Notification,
   UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE,
   CONNECTION_POPUP_NOTIFICATIONS,
-  Notification,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_KEY_DELETE,
@@ -29,6 +29,7 @@ import {
   useUpdateAllSplTokenAccounts,
 } from "../";
 import * as atoms from "../atoms";
+import { getPlugin } from "../hooks";
 
 const logger = getLogger("notifications-provider");
 
@@ -44,13 +45,14 @@ export function NotificationsProvider(props: any) {
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   const updateRecentBlockhash = useUpdateRecentBlockhash();
-  const pushTablePluginNotification = useSetRecoilState(
-    atoms.pushTablePluginNotification
-  );
   const navigate = useNavigate();
 
   useEffect(() => {
     const backgroundClient = getBackgroundClient();
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Notifications from background script.
+    ////////////////////////////////////////////////////////////////////////////
 
     //
     // Notification dispatch.
@@ -195,13 +197,10 @@ export function NotificationsProvider(props: any) {
       if (oldUrl && oldUrl.startsWith("/plugin-table-detail")) {
         const search = new URLSearchParams(oldUrl.split("?")[1]);
         const props = JSON.parse(search.get("props")!);
-        const url = props.pluginUrl;
-        pushTablePluginNotification({
-          url,
-          notification: {
-            name: PLUGIN_NOTIFICATION_NAVIGATION_POP,
-            data: {},
-          },
+        const plugin = getPlugin({ url: props.pluginUrl });
+        plugin.pushNotification({
+          name: PLUGIN_NOTIFICATION_NAVIGATION_POP,
+          data: {},
         });
       }
       navigate(notif.data.url);

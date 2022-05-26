@@ -3,6 +3,8 @@ import { EventEmitter } from "eventemitter3";
 import {
   getLogger,
   Event,
+  RpcRequest,
+  CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
   RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
   RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
   RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
@@ -15,7 +17,6 @@ import {
 import { NAV_STACK } from "./Context";
 
 const logger = getLogger("anchor-ui-reconciler");
-
 const events = new EventEmitter();
 
 export const AnchorUi = {
@@ -263,7 +264,7 @@ const RECONCILER = ReactReconciler({
         throw new Error("unexpected node kind");
     }
 
-    window.anchorUi.bridge({
+    ReconcilerBridgeManager.bridge({
       method: RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
       params: [instance.id, updatePayload],
     });
@@ -276,7 +277,7 @@ const RECONCILER = ReactReconciler({
     logger.debug("commitTextUpdate");
     textInstance.text = nextText;
 
-    window.anchorUi.bridge({
+    ReconcilerBridgeManager.bridge({
       method: RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
       params: [textInstance.id, nextText],
     });
@@ -285,7 +286,7 @@ const RECONCILER = ReactReconciler({
     logger.debug("appendChildToContainer", c, child);
     c.children.push(child);
 
-    window.anchorUi.bridge({
+    ReconcilerBridgeManager.bridge({
       method: RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
       params: [child],
     });
@@ -294,7 +295,7 @@ const RECONCILER = ReactReconciler({
     logger.debug("appendChild", parent, child);
     parent.children.push(child);
 
-    window.anchorUi.bridge({
+    ReconcilerBridgeManager.bridge({
       method: RECONCILER_BRIDGE_METHOD_APPEND_CHILD,
       params: [parent.id, child],
     });
@@ -318,7 +319,7 @@ const RECONCILER = ReactReconciler({
       .concat([child])
       .concat(root.children.slice(idx));
 
-    window.anchorUi.bridge({
+    ReconcilerBridgeManager.bridge({
       method: RECONCILER_BRIDGE_METHOD_INSERT_IN_CONTAINER_BEFORE,
       params: [child, before.id],
     });
@@ -339,7 +340,7 @@ const RECONCILER = ReactReconciler({
       .concat([child])
       .concat(parent.children.slice(idx));
 
-    window.anchorUi.bridge({
+    ReconcilerBridgeManager.bridge({
       method: RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
       params: [parent.id, child, before.id],
     });
@@ -350,7 +351,7 @@ const RECONCILER = ReactReconciler({
     parent.children = parent.children.filter((c) => c !== child);
     deleteClickHandlers(child);
 
-    window.anchorUi.bridge({
+    ReconcilerBridgeManager.bridge({
       method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
       params: [parent.id, child.id],
     });
@@ -361,7 +362,7 @@ const RECONCILER = ReactReconciler({
     root.children = root.children.filter((c) => c !== child);
     deleteClickHandlers(child);
 
-    window.anchorUi.bridge({
+    ReconcilerBridgeManager.bridge({
       method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
       params: [child.id],
     });
@@ -903,4 +904,28 @@ function getClickHandler(viewId: number): () => void {
     throw new Error("handler not found");
   }
   return handler;
+}
+
+export class ReconcilerBridgeManager {
+  private static _renderId: number = 0;
+
+  //
+  // Send a message from the plugin-ui to the host- over the reconciler bridge.
+  //
+  public static bridge(req: RpcRequest) {
+    const msg = {
+      type: CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
+      detail: {
+        renderId: ReconcilerBridgeManager._nextRenderId(),
+        ...req,
+      },
+    };
+    window.parent.postMessage(msg, "*");
+  }
+
+  private static _nextRenderId(): number {
+    const id = ReconcilerBridgeManager._renderId;
+    ReconcilerBridgeManager._renderId += 1;
+    return id;
+  }
 }

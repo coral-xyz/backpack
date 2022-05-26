@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, Transaction, SystemProgram } from "@solana/web3.js";
 import { Program } from "@project-serum/anchor";
 import AnchorUi, {
   useNavigation,
@@ -22,7 +22,7 @@ import { customSplTokenAccounts } from "@200ms/common";
 // On connection to the host environment, warm the cache.
 //
 AnchorUi.events.on("connect", () => {
-  fetchRowData(window.anchor.publicKey);
+  fetchRowData(window.anchorUi.publicKey);
 });
 
 export function App() {
@@ -41,10 +41,10 @@ function DegodsTable() {
 
   useEffect(() => {
     (async () => {
-      const tas = await fetchRowData(window.anchor.publicKey);
+      const tas = await fetchRowData(window.anchorUi.publicKey);
       setTokenAccounts(tas);
     })();
-  }, [window.anchor.publicKey]);
+  }, [window.anchorUi.publicKey]);
 
   return (
     <BalancesTable>
@@ -64,6 +64,7 @@ function DegodsTable() {
         </BalancesTableContent>
       ) : (
         <BalancesTableContent>
+          {/* TODO: Add estimated DUST */}
           {tokenAccounts.map((t) => {
             return (
               <BalancesTableRow
@@ -86,6 +87,22 @@ function DegodsTable() {
 }
 
 function StakeDetail({ token }: any) {
+  const unstake = async () => {
+    const tx = new Transaction();
+    tx.add(
+      SystemProgram.transfer({
+        fromPubkey: window.anchorUi.publicKey,
+        toPubkey: window.anchorUi.publicKey,
+        lamports: 1000000,
+      })
+    );
+    const { blockhash } = await window.anchorUi.connection!.getLatestBlockhash(
+      "recent"
+    );
+    tx.recentBlockhash = blockhash;
+    const signature = await window.anchorUi.send(tx);
+    console.log("test: got signed transaction here", signature);
+  };
   return (
     <View>
       <Image
@@ -111,7 +128,7 @@ function StakeDetail({ token }: any) {
         }}
       >
         <Button
-          onClick={() => console.log("we are one test")}
+          onClick={() => unstake()}
           style={{
             width: "100%",
             height: "48px",
@@ -137,7 +154,7 @@ async function fetchTokenAccounts(
   isDead: boolean,
   wallet: PublicKey
 ): Promise<any> {
-  const cacheKey = `${isDead}:${window.anchor.publicKey.toString()}`;
+  const cacheKey = `${isDead}:${window.anchorUi.publicKey.toString()}`;
   const resp = CACHE.get(cacheKey);
   if (resp) {
     return await resp;
@@ -162,7 +179,7 @@ async function fetchTokenAccountsInner(isDead: boolean, wallet: PublicKey) {
     PID_GEM_BANK
   );
   const tokenAccounts = await customSplTokenAccounts(
-    window.anchor.connection,
+    window.anchorUi.connection,
     vaultAuthority
   );
   const newResp = tokenAccounts.nftMetadata.map((m) => m[1]);

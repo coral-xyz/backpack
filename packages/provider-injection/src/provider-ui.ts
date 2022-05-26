@@ -1,39 +1,130 @@
 import { EventEmitter } from "eventemitter3";
 import {
-  RpcRequest,
+  PublicKey,
+  Connection,
+  Transaction,
+  Signer,
+  SendOptions,
+  TransactionSignature,
+  ConfirmOptions,
+  Commitment,
+  SimulatedTransactionResponse,
+} from "@solana/web3.js";
+import { Provider } from "@project-serum/anchor";
+import {
   RequestManager,
   Event,
   CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
-  CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ON_CLICK,
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_UNMOUNT,
-  PLUGIN_RPC_METHOD_CONNECT,
   PLUGIN_RPC_METHOD_NAV_PUSH,
   PLUGIN_RPC_METHOD_NAV_POP,
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
 } from "@200ms/common";
+import * as cmn from "./common";
 
 //
-// Injected provider for UI plugins. Using this from a non approved plugins
-// will fail.
+// Injected provider for UI plugins.
 //
-export class ProviderUiInjection extends EventEmitter {
-  private _renderId: number;
+export class ProviderUiInjection extends EventEmitter implements Provider {
   private _requestManager: RequestManager;
 
   constructor() {
     super();
-    this._renderId = 0;
     this._requestManager = new RequestManager(
       CHANNEL_PLUGIN_RPC_REQUEST,
       CHANNEL_PLUGIN_RPC_RESPONSE,
       true
     );
     this._setupChannels();
+  }
+
+  get publicKey(): PublicKey {
+    return window.anchor.publicKey;
+  }
+
+  get connection(): Connection {
+    return window.anchor.connection;
+  }
+
+  async sendAndConfirm(
+    tx: Transaction,
+    signers?: Signer[],
+    options?: ConfirmOptions
+  ): Promise<TransactionSignature> {
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    return await cmn.sendAndConfirm(
+      this.publicKey,
+      this._requestManager,
+      this.connection,
+      tx,
+      signers,
+      options
+    );
+  }
+
+  async send(
+    tx: Transaction,
+    signers?: Signer[],
+    options?: SendOptions
+  ): Promise<TransactionSignature> {
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    return await cmn.send(
+      this.publicKey,
+      this._requestManager,
+      this.connection,
+      tx,
+      signers,
+      options
+    );
+  }
+
+  public async signTransaction(tx: Transaction): Promise<Transaction> {
+    return await cmn.signTransaction(
+      window.anchor.publicKey,
+      this._requestManager,
+      tx
+    );
+  }
+
+  public async simulate(
+    tx: Transaction,
+    signers?: Signer[],
+    commitment?: Commitment
+  ): Promise<SimulatedTransactionResponse> {
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    return await cmn.simulate(
+      this.publicKey,
+      this._requestManager,
+      this.connection,
+      tx,
+      signers,
+      commitment
+    );
+  }
+
+  public async navigationPush() {
+    await this._requestManager.request({
+      method: PLUGIN_RPC_METHOD_NAV_PUSH,
+      params: [],
+    });
+  }
+
+  public async navigationPop() {
+    await this._requestManager.request({
+      method: PLUGIN_RPC_METHOD_NAV_POP,
+      params: [],
+    });
   }
 
   private _setupChannels() {
@@ -89,46 +180,5 @@ export class ProviderUiInjection extends EventEmitter {
 
   private _handleNavigationPop(event: Event) {
     this.emit("pop", event.data.detail);
-  }
-
-  public async navigationPush() {
-    await this._requestManager.request({
-      method: PLUGIN_RPC_METHOD_NAV_PUSH,
-      params: [],
-    });
-  }
-
-  public async navigationPop() {
-    await this._requestManager.request({
-      method: PLUGIN_RPC_METHOD_NAV_POP,
-      params: [],
-    });
-  }
-
-  async _connect(): Promise<[string, string]> {
-    return await this._requestManager.request({
-      method: PLUGIN_RPC_METHOD_CONNECT,
-      params: [],
-    });
-  }
-
-  //
-  // Send a message from the plugin-ui to the host- over the reconciler bridge.
-  //
-  bridge(req: RpcRequest) {
-    const msg = {
-      type: CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
-      detail: {
-        renderId: this._nextRenderId(),
-        ...req,
-      },
-    };
-    window.parent.postMessage(msg, "*");
-  }
-
-  private _nextRenderId(): number {
-    const id = this._renderId;
-    this._renderId += 1;
-    return id;
   }
 }

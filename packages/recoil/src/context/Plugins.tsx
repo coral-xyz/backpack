@@ -1,10 +1,13 @@
 import React, { useEffect } from "react";
+import { useSetRecoilState } from "recoil";
+import * as atoms from "../atoms";
 import { usePlugins, useTablePlugins, useNavigationSegue } from "../hooks";
 
 export function PluginManager(props: any) {
   const plugins = usePlugins();
   const tablePlugins = useTablePlugins();
   const segue = useNavigationSegue();
+  const setTransactionRequest = useSetRecoilState(atoms.transactionRequest);
 
   //
   // Bootup all the plugins on the initial render.
@@ -13,16 +16,19 @@ export function PluginManager(props: any) {
     const allPlugins = plugins.concat(tablePlugins);
     allPlugins.forEach((plugin) => {
       //
-      // Register the navigation component.
+      // Register host API.
       //
-      plugin.setSegue(segue);
+      plugin.setHostApi({
+        push: segue.push,
+        pop: segue.pop,
+        request: setTransactionRequest,
+      });
 
       //
       // Setup the plugin.
       //
       plugin.createIframe();
     });
-
     return () => {
       allPlugins.forEach((p) => p.destroyIframe());
     };
