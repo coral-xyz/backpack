@@ -80,7 +80,6 @@ export function ApproveTransactionRequest() {
     sendTransactionApprovalResponse(request, null);
     setRequest(undefined);
   };
-  console.log("armani: request here", request, plugin);
   return (
     <WithMiniDrawer
       openDrawer={request !== undefined}
