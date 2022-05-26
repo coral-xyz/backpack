@@ -139,6 +139,9 @@ export class ProviderInjection extends EventEmitter implements Provider {
     signers?: Signer[],
     options?: ConfirmOptions
   ): Promise<TransactionSignature> {
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
     return await cmn.sendAndConfirm(
       this.publicKey,
       this._requestManager,

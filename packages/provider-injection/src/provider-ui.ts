@@ -8,6 +8,7 @@ import {
   TransactionSignature,
   ConfirmOptions,
 } from "@solana/web3.js";
+import { Provider } from "@project-serum/anchor";
 import {
   RpcRequest,
   RequestManager,
@@ -20,7 +21,6 @@ import {
   PLUGIN_NOTIFICATION_ON_CLICK,
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_UNMOUNT,
-  PLUGIN_RPC_METHOD_CONNECT,
   PLUGIN_RPC_METHOD_NAV_PUSH,
   PLUGIN_RPC_METHOD_NAV_POP,
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
@@ -31,7 +31,7 @@ import * as cmn from "./common";
 // Injected provider for UI plugins. Using this from a non approved plugins
 // will fail.
 //
-export class ProviderUiInjection extends EventEmitter {
+export class ProviderUiInjection extends EventEmitter implements Provider {
   private _renderId: number;
   private _requestManager: RequestManager;
 
@@ -165,13 +165,6 @@ export class ProviderUiInjection extends EventEmitter {
       this._requestManager,
       tx
     );
-  }
-
-  async _connect(): Promise<[string, string]> {
-    return await this._requestManager.request({
-      method: PLUGIN_RPC_METHOD_CONNECT,
-      params: [],
-    });
   }
 
   //
