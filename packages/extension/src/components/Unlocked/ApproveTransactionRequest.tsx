@@ -117,8 +117,23 @@ export function ApproveTransactionRequest() {
   );
 }
 
-function SignAndSendTransaction({ transaction, plugin }: any) {
-  return <SignTransaction transaction={transaction} plugin={plugin} />;
+function SignAndSendTransaction({
+  transaction,
+  plugin,
+}: {
+  transaction: string;
+  plugin: Plugin;
+}) {
+  const deserializedTx = useMemo(() => {
+    return Transaction.from(bs58.decode(transaction));
+  }, [transaction]);
+  return (
+    <_SignTransaction
+      deserializedTx={deserializedTx}
+      transaction={transaction}
+      plugin={plugin}
+    />
+  );
 }
 
 function SignTransaction({
@@ -128,15 +143,30 @@ function SignTransaction({
   transaction: string;
   plugin: Plugin;
 }) {
-  const theme = useTheme() as any;
-  const classes = useStyles();
   const deserializedTx = useMemo(() => {
-    if (!transaction) {
-      return undefined;
-    }
     return Transaction.populate(Message.from(bs58.decode(transaction!)));
   }, [transaction]);
-  console.log("armani: here", deserializedTx);
+
+  return (
+    <_SignTransaction
+      deserializedTx={deserializedTx}
+      transaction={transaction}
+      plugin={plugin}
+    />
+  );
+}
+
+function _SignTransaction({
+  transaction,
+  plugin,
+  deserializedTx,
+}: {
+  transaction: string;
+  deserializedTx: Transaction;
+  plugin: Plugin;
+}) {
+  const theme = useTheme() as any;
+  const classes = useStyles();
   return (
     <>
       <Typography
