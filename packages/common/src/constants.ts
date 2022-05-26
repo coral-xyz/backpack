@@ -9,7 +9,6 @@ export const CHANNEL_PLUGIN_LAUNCH_REQUEST =
   "anchor-channel-plugin-launch-request";
 export const CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE =
   "anchor-channel-plugin-react-reconciler-bridge";
-// Notifications from the extension UI -> plugin.
 export const CHANNEL_PLUGIN_NOTIFICATION = "anchor-channel-plugin-notification";
 export const RECONCILER_BRIDGE_METHOD_CREATE_INSTANCE =
   "anchor-reconciler-method-create-instance";
