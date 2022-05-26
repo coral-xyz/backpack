@@ -395,7 +395,7 @@ export class Plugin {
   }
 
   //
-  // Sends a request to the plugin UI via a notification.
+  // Asks the extension UI to sign the transaction.
   //
   private async _requestTransactionApproval(
     kind: string,
