@@ -100,8 +100,9 @@ function StakeDetail({ token }: any) {
       "recent"
     );
     tx.recentBlockhash = blockhash;
-    console.log("stake detail: signing tx", tx);
-    const signed = await window.anchorUi.send(tx);
+    console.log("stake detail: signing tx22234", tx);
+    //const signed = await window.anchorUi.send(tx);
+    const signed = await window.anchorUi.signTransaction(tx);
     console.log("test: got signed transaction here", signed);
   };
   return (

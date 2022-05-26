@@ -6,6 +6,7 @@ import {
   Signer,
   Commitment,
   SendOptions,
+  ConfirmOptions,
   TransactionSignature,
   SimulatedTransactionResponse,
 } from "@solana/web3.js";
@@ -17,6 +18,59 @@ import {
   RPC_METHOD_SIGN_ALL_TXS,
   RPC_METHOD_SIGN_AND_SEND_TX,
 } from "@200ms/common";
+
+export async function sendAndConfirm(
+  publicKey: PublicKey,
+  requestManager: RequestManager,
+  connection: Connection,
+  tx: Transaction,
+  signers?: Signer[],
+  options?: ConfirmOptions
+): Promise<TransactionSignature> {
+  const sig = await send(
+    publicKey,
+    requestManager,
+    connection,
+    tx,
+    signers,
+    options
+  );
+  const resp = await connection.confirmTransaction(sig, options?.commitment);
+  if (resp?.value.err) {
+    throw new Error(
+      `error confirming transaction: ${resp.value.err.toString()}`
+    );
+  }
+  return sig;
+}
+
+export async function send(
+  publicKey: PublicKey,
+  requestManager: RequestManager,
+  connection: Connection,
+  tx: Transaction,
+  signers?: Signer[],
+  options?: SendOptions
+): Promise<TransactionSignature> {
+  if (signers) {
+    signers.forEach((s: Signer) => {
+      tx.partialSign(s);
+    });
+  }
+  const { blockhash } = await connection!.getLatestBlockhash(
+    options?.preflightCommitment
+  );
+  tx.feePayer = publicKey;
+  tx.recentBlockhash = blockhash;
+  const txSerialize = tx.serialize({
+    requireAllSignatures: false,
+  });
+  const message = bs58.encode(txSerialize);
+  return await requestManager.request({
+    method: RPC_METHOD_SIGN_AND_SEND_TX,
+    params: [message, publicKey!.toString(), options],
+  });
+}
 
 export async function signTransaction(
   publicKey: PublicKey,
@@ -58,34 +112,6 @@ export async function signAllTransactions(
   });
 
   return txs;
-}
-
-export async function send(
-  publicKey: PublicKey,
-  requestManager: RequestManager,
-  connection: Connection,
-  tx: Transaction,
-  signers?: Signer[],
-  options?: SendOptions
-): Promise<TransactionSignature> {
-  if (signers) {
-    signers.forEach((s: Signer) => {
-      tx.partialSign(s);
-    });
-  }
-  const { blockhash } = await connection!.getLatestBlockhash(
-    options?.preflightCommitment
-  );
-  tx.feePayer = publicKey;
-  tx.recentBlockhash = blockhash;
-  const txSerialize = tx.serialize({
-    requireAllSignatures: false,
-  });
-  const message = bs58.encode(txSerialize);
-  return await requestManager.request({
-    method: RPC_METHOD_SIGN_AND_SEND_TX,
-    params: [message, publicKey!.toString(), options],
-  });
 }
 
 export async function simulate(

@@ -128,17 +128,17 @@ export class ProviderUiInjection extends EventEmitter {
     signers?: Signer[],
     options?: ConfirmOptions
   ): Promise<TransactionSignature> {
-    const sig = await this.send(tx, signers, options);
-    const resp = await this.connection?.confirmTransaction(
-      sig,
-      options?.commitment
-    );
-    if (resp?.value.err) {
-      throw new Error(
-        `error confirming transaction: ${resp.value.err.toString()}`
-      );
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
     }
-    return sig;
+    return await cmn.sendAndConfirm(
+      this.publicKey,
+      this._requestManager,
+      this.connection,
+      tx,
+      signers,
+      options
+    );
   }
 
   async send(

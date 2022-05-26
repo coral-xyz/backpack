@@ -139,17 +139,14 @@ export class ProviderInjection extends EventEmitter implements Provider {
     signers?: Signer[],
     options?: ConfirmOptions
   ): Promise<TransactionSignature> {
-    const sig = await this.send(tx, signers, options);
-    const resp = await this.connection?.confirmTransaction(
-      sig,
-      options?.commitment
+    return await cmn.sendAndConfirm(
+      this.publicKey,
+      this._requestManager,
+      this.connection,
+      tx,
+      signers,
+      options
     );
-    if (resp?.value.err) {
-      throw new Error(
-        `error confirming transaction: ${resp.value.err.toString()}`
-      );
-    }
-    return sig;
   }
 
   async send(
