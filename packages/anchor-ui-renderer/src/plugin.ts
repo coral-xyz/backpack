@@ -22,6 +22,7 @@ import {
   PLUGIN_RPC_METHOD_NAV_POP,
   RPC_METHOD_SIGN_TX as PLUGIN_RPC_METHOD_SIGN_TX,
   RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_RPC_METHOD_SIGN_AND_SEND_TX,
+  RPC_METHOD_SIMULATE as PLUGIN_RPC_METHOD_SIMULATE_TX,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ON_CLICK,
   PLUGIN_NOTIFICATION_MOUNT,
@@ -308,6 +309,8 @@ export class Plugin {
         return await this._handleSignTransaction(params[0], params[1]);
       case PLUGIN_RPC_METHOD_SIGN_AND_SEND_TX:
         return await this._handleSignAndSendTransaction(params[0], params[1]);
+      case PLUGIN_RPC_METHOD_SIMULATE_TX:
+        return await this._handleSimulate(params[0], params[1]);
       default:
         logger.error(method);
         throw new Error("unexpected method");
@@ -362,6 +365,14 @@ export class Plugin {
       pubkey
     );
     return [signature];
+  }
+
+  private async _handleSimulate(
+    transaction: string,
+    pubkey: string
+  ): Promise<RpcResponse> {
+    // todo
+    return ["success"];
   }
 
   private clickHandlerError(): RpcResponse | null {
