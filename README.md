@@ -18,7 +18,7 @@ You can also optionally rename `.env.example` to `.env` and set your own variabl
 
 `yarn start`
 
-_If you run into issues with builds try running `yarn clean` and then start again._
+_If you run into issues with builds try running `yarn start:fresh`_
 
 ## License
 
