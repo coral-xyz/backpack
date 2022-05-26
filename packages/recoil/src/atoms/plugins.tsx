@@ -50,13 +50,6 @@ export const tablePlugins = selector({
         activeWallet,
         connectionUrl,
       },
-      {
-        url: CMC_TABLE_PLUGIN_URL,
-        iconUrl: "",
-        title: "Coin Market Cap",
-        activeWallet,
-        connectionUrl,
-      },
     ];
   },
 });
