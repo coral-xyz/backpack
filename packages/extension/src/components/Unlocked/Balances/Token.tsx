@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme: any) => ({
     marginTop: "24px",
   },
   tokenHeaderButtonContainer: {
-    width: "316px",
+    width: "208px",
     display: "flex",
     justifyContent: "space-between",
     marginLeft: "auto",
@@ -81,7 +81,6 @@ function TokenHeader({ blockchain, address }: any) {
       <div className={classes.tokenHeaderButtonContainer}>
         <DepositButton token={token} />
         <SendButton token={token} />
-        <CheckButton token={token} />
       </div>
     </div>
   );
@@ -104,20 +103,4 @@ export function WithHeaderButton({ label, dialog, dialogTitle }: any) {
       </WithDrawer>
     </>
   );
-}
-
-function CheckButton({ token }: any) {
-  return (
-    <WithHeaderButton
-      label={"Check"}
-      dialogTitle={`${token.ticker} / Check`}
-      dialog={(setOpenDrawer: any) => (
-        <Check onCancel={() => setOpenDrawer(false)} token={token} />
-      )}
-    />
-  );
-}
-
-function Check({ onCancel, token }: any) {
-  return <div>this is a check</div>;
 }
