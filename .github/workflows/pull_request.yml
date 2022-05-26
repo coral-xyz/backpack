@@ -108,6 +108,10 @@ jobs:
         run: yarn build
 
       - name: run puppeteer e2e tests
-        uses: mujo-code/puppeteer-headful@v2
+        uses: Wandalen/wretry.action@v1.0.11
         with:
-          args: yarn workspace @200ms/extension e2e
+          action: mujo-code/puppeteer-headful@v2
+          with: |
+            args: yarn workspace @200ms/extension e2e
+          attempt_limit: 3
+          attempt_delay: 30000
