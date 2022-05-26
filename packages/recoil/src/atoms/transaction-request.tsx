@@ -13,4 +13,6 @@ export type TransactionRequest = {
   data: string;
   publicKey: string;
   kind: "sign-tx" | "sign-msg" | "sign-and-send-tx";
+  resolve: (signature: string) => void;
+  reject: (error: any) => void;
 };

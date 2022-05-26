@@ -8,8 +8,6 @@ import {
   useActiveWallet,
 } from "@200ms/recoil";
 import {
-  CHANNEL_PLUGIN_EXTENSION_NOTIFICATION_RESPONSE,
-  PLUGIN_OUT_RESPONSE_NOTIFICATION_SHOW_TRANSACTION_APPROVAL,
   UI_RPC_METHOD_SIGN_TRANSACTION,
   UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
 } from "@200ms/common";
@@ -72,12 +70,12 @@ export function ApproveTransactionRequest() {
       });
     }
 
-    sendTransactionApprovalResponse(request, signature);
+    request!.resolve(signature);
     setRequest(undefined);
   };
 
   const onReject = async () => {
-    sendTransactionApprovalResponse(request, null);
+    request!.reject(new Error("user rejected transaction"));
     setRequest(undefined);
   };
   return (
@@ -233,21 +231,4 @@ function _SignTransaction({
 function SignMessage({ message }: any) {
   // todo
   return <></>;
-}
-
-function sendTransactionApprovalResponse(
-  request: any,
-  signature: string | null
-) {
-  const event = {
-    type: CHANNEL_PLUGIN_EXTENSION_NOTIFICATION_RESPONSE,
-    detail: {
-      name: PLUGIN_OUT_RESPONSE_NOTIFICATION_SHOW_TRANSACTION_APPROVAL,
-      data: {
-        request,
-        signature,
-      },
-    },
-  };
-  window.postMessage(event, "*");
 }

@@ -17,7 +17,6 @@ import {
   CHANNEL_PLUGIN_RPC_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
-  CHANNEL_PLUGIN_EXTENSION_NOTIFICATION,
   PLUGIN_RPC_METHOD_NAV_PUSH,
   PLUGIN_RPC_METHOD_NAV_POP,
   RPC_METHOD_SIGN_TX as PLUGIN_RPC_METHOD_SIGN_TX,
@@ -28,7 +27,6 @@ import {
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_UNMOUNT,
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
-  PLUGIN_OUT_NOTIFICATION_SHOW_TRANSACTION_APPROVAL,
   RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
   RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
   RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
@@ -57,12 +55,15 @@ export class Plugin {
   private _nextRenderId?: number;
   private _pendingBridgeRequests?: Array<any>;
   private _dom?: Dom;
-  private _navPushFn?: (args: any) => void;
 
   private _didFinishSetup?: Promise<void>;
   private _didFinishSetupResolver?: () => void;
 
-  private _transactionRequests: Map<string, (resp: string | null) => void>;
+  //
+  // Host APIs.
+  //
+  private _navPushFn?: (args: any) => void;
+  private _requestTxApprovalFn?: (request: any) => void;
 
   //
   // The last time a click event was handled for the plugin. This is used as an
@@ -107,8 +108,6 @@ export class Plugin {
       CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE
     );
     this._bridgeServer.handler(this._handleBridge.bind(this));
-
-    this._transactionRequests = new Map();
   }
 
   //
@@ -161,10 +160,11 @@ export class Plugin {
   }
 
   //
-  // Register the push navigation component with this plugin object.
+  // Apis set from the outside host.
   //
-  public setSegue({ push, pop }: any) {
+  public setHostApis({ push, pop, request }) {
     this._navPushFn = push;
+    this._requestTxApprovalFn = request;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -342,12 +342,16 @@ export class Plugin {
       return err;
     }
 
-    const signature = await this._requestTransactionApproval(
-      "sign-tx",
-      transaction,
-      pubkey
-    );
-    return [signature];
+    try {
+      const signature = await this._requestTransactionApproval(
+        "sign-tx",
+        transaction,
+        pubkey
+      );
+      return [signature];
+    } catch (err) {
+      return [null, err.toString()];
+    }
   }
 
   private async _handleSignAndSendTransaction(
@@ -359,12 +363,16 @@ export class Plugin {
       return err;
     }
 
-    const signature = await this._requestTransactionApproval(
-      "sign-and-send-tx",
-      transaction,
-      pubkey
-    );
-    return [signature];
+    try {
+      const signature = await this._requestTransactionApproval(
+        "sign-and-send-tx",
+        transaction,
+        pubkey
+      );
+      return [signature];
+    } catch (err) {
+      return [null, err.toString()];
+    }
   }
 
   private async _handleSimulate(
@@ -386,10 +394,6 @@ export class Plugin {
     return null;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Request and response from the plugin <-> extension UI.
-  //////////////////////////////////////////////////////////////////////////////
-
   //
   // Sends a request to the plugin UI via a notification.
   //
@@ -398,43 +402,16 @@ export class Plugin {
     transaction: string,
     publicKey: string
   ): Promise<string | null> {
-    const promise = new Promise<string | null>((resolve) => {
-      this._transactionRequests.set(transaction, resolve);
+    return new Promise<string | null>((resolve, reject) => {
+      this._requestTxApprovalFn!({
+        kind,
+        data: transaction,
+        pluginUrl: this.iframeUrl,
+        publicKey,
+        resolve,
+        reject,
+      });
     });
-
-    const event = {
-      type: CHANNEL_PLUGIN_EXTENSION_NOTIFICATION,
-      detail: {
-        name: PLUGIN_OUT_NOTIFICATION_SHOW_TRANSACTION_APPROVAL,
-        data: {
-          request: {
-            kind,
-            data: transaction,
-            pluginUrl: this.iframeUrl,
-            publicKey,
-          },
-        },
-      },
-    };
-    window.postMessage(event, "*");
-
-    return promise;
-  }
-
-  //
-  // Receive a response from the plugin UI. Should correspond
-  // to a request from _requestTransactionApproval.
-  //
-  async handleResponseTransactionApproval(
-    request: any,
-    signature: string | null
-  ) {
-    const resolver = this._transactionRequests.get(request.data);
-    if (!resolver) {
-      throw new Error("resolver not found");
-    }
-    this._transactionRequests.delete(request.data);
-    resolver(signature);
   }
 
   //////////////////////////////////////////////////////////////////////////////
