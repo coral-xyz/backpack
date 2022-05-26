@@ -97,17 +97,23 @@ jobs:
 
       # END [anchor] tasks >>>
 
-      - run: yarn install
+      - run: yarn install --frozen-lockfile
 
-      - run: yarn test
+      - name: Turborepo local server
+        uses: felixmosh/turborepo-gh-artifacts@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
 
-      - name: build extension (for e2e tests)
+      - name: build extension (for tests)
         # CI!=true so that build warnings aren't treated like errors (for now)
         env:
           CI: ""
-        run: yarn build
+        run: yarn build --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team="foo"
+
+      - run: yarn test --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team="foo"
 
       - name: run puppeteer e2e tests
         uses: mujo-code/puppeteer-headful@v2
         with:
-          args: yarn workspace @200ms/extension e2e
+          args: yarn e2e --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team="foo"
