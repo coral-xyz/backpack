@@ -17,7 +17,7 @@ import { MangoClient, Config } from "@blockworks-foundation/mango-client";
 // On connection to the host environment, warm the cache.
 //
 AnchorUi.events.on("connect", () => {
-  fetchRowData(window.anchor.publicKey);
+  fetchRowData(window.anchorUi.publicKey);
 });
 
 export function App() {
@@ -29,10 +29,10 @@ function MangoTable() {
   const [rowData, setRowData] = useState<Array<any> | null>(null);
   useEffect(() => {
     (async () => {
-      const { rowData } = await fetchRowData(window.anchor.publicKey);
+      const { rowData } = await fetchRowData(window.anchorUi.publicKey);
       setRowData(rowData);
     })();
-  }, [window.anchor.publicKey]);
+  }, [window.anchorUi.publicKey]);
   return (
     <BalancesTable>
       <BalancesTableHead
@@ -84,7 +84,7 @@ async function fetchRowData(wallet: PublicKey): Promise<any> {
 }
 
 async function fetchRowDataInner(wallet: PublicKey) {
-  const client = new MangoClient(window.anchor.connection, MANGO_PID);
+  const client = new MangoClient(window.anchorUi.connection, MANGO_PID);
   const config = Config.ids().getGroupWithName("mainnet.1");
   if (!config) {
     throw new Error("config not found");
@@ -95,7 +95,7 @@ async function fetchRowDataInner(wallet: PublicKey) {
     wallet
   );
 
-  const mangoCache = await mangoGroup.loadCache(window.anchor.connection);
+  const mangoCache = await mangoGroup.loadCache(window.anchorUi.connection);
 
   const rowData = await Promise.all(
     mangoAccounts.map(async (ma) => {
