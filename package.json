@@ -23,8 +23,6 @@
     "env-cmd": "^10.1.0",
     "husky": "^8.0.1",
     "lint-staged": "^12.4.1",
-    "patch-package": "^6.4.7",
-    "postinstall-postinstall": "^2.1.0",
     "prettier": "^2.6.2",
     "rimraf": "^3.0.2",
     "turbo": "^1.2.9"
@@ -33,7 +31,7 @@
     "*.{ts,tsx,js,jsx,css,md,json}": "prettier --write"
   },
   "resolutions": {
-    "@solana/web3.js": "1.41.6",
+    "@solana/web3.js": "1.43.2",
     "@types/react-dom": "^17.0.0",
     "@types/react": "^17.0.0",
     "parcel": "2.6.1",
