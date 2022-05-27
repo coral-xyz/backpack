@@ -19,6 +19,7 @@ import {
   CHANNEL_PLUGIN_RPC_RESPONSE,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ON_CLICK,
+  PLUGIN_NOTIFICATION_ON_CHANGE,
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_UNMOUNT,
   PLUGIN_RPC_METHOD_NAV_PUSH,
@@ -151,6 +152,9 @@ export class ProviderUiInjection extends EventEmitter implements Provider {
       case PLUGIN_NOTIFICATION_ON_CLICK:
         this._handleOnClick(event);
         break;
+      case PLUGIN_NOTIFICATION_ON_CHANGE:
+        this._handleOnChange(event);
+        break;
       case PLUGIN_NOTIFICATION_NAVIGATION_POP:
         this._handleNavigationPop(event);
         break;
@@ -176,6 +180,10 @@ export class ProviderUiInjection extends EventEmitter implements Provider {
 
   private _handleOnClick(event: Event) {
     this.emit("click", event.data.detail);
+  }
+
+  private _handleOnChange(event: Event) {
+    this.emit("change", event.data.detail);
   }
 
   private _handleNavigationPop(event: Event) {

@@ -2,40 +2,15 @@ import type { PublicKey } from "@solana/web3.js";
 import {
   makeStyles,
   useTheme,
-  TextField as MuiTextField,
   Typography,
   Button,
   CircularProgress,
 } from "@material-ui/core";
 
 export * from "./List";
+export { TextField } from "@200ms/anchor-ui-renderer";
 
 const useStyles = makeStyles((theme: any) => ({
-  passwordField: {
-    fontSize: "14px",
-    lineHeight: "24px",
-    fontWeight: 500,
-    borderRadius: "12px",
-    color: theme.custom.colors.secondary,
-    width: "351px",
-  },
-  passwordFieldContainer: {},
-  passwordRoot: {
-    marginLeft: "12px",
-    marginRight: "12px",
-    marginTop: "24px",
-    marginBottom: "24px",
-    width: "351px",
-    "& .MuiOutlinedInput-root": {
-      border: `solid 1pt ${theme.custom.colors.border}`,
-      backgroundColor: theme.custom.colors.background,
-      borderRadius: "12px",
-      height: "56px",
-      "& fieldset": {
-        border: "none",
-      },
-    },
-  },
   sendTo: {
     color: theme.custom.colors.fontColor,
     fontSize: "12px",
@@ -68,11 +43,6 @@ const useStyles = makeStyles((theme: any) => ({
     lineHeight: "24px",
     textTransform: "none",
   },
-  textRootError: {
-    "& .MuiOutlinedInput-root": {
-      borderColor: `${theme.custom.colors.negative} !important`,
-    },
-  },
 }));
 
 export function WalletAddress({ publicKey, name, style }: any) {
@@ -90,55 +60,6 @@ export function WalletAddress({ publicKey, name, style }: any) {
 export function walletAddressDisplay(publicKey: PublicKey) {
   const pubkeyStr = publicKey.toString();
   return `${pubkeyStr.slice(0, 4)}...${pubkeyStr.slice(pubkeyStr.length - 4)}`;
-}
-
-export function TextField({
-  placeholder,
-  type,
-  value,
-  setValue,
-  rootClass,
-  endAdornment,
-  isError,
-  inputProps,
-  disabled,
-}: any) {
-  const classes = useStyles();
-  inputProps = Object.assign(
-    {
-      className: classes.passwordField,
-    },
-    inputProps
-  );
-  return (
-    <MuiTextField
-      disabled={disabled}
-      placeholder={placeholder}
-      variant="outlined"
-      margin="dense"
-      required
-      fullWidth
-      type={type}
-      className={classes.passwordFieldContainer}
-      inputProps={inputProps}
-      classes={{
-        root: `${isError ? classes.textRootError : ""} ${
-          classes.passwordRoot
-        } ${rootClass ?? ""}`,
-      }}
-      InputLabelProps={{
-        shrink: false,
-        style: {
-          borderRadius: "12px",
-        },
-      }}
-      InputProps={{
-        endAdornment,
-      }}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-    />
-  );
 }
 
 export function TextFieldLabel({ leftLabel, rightLabel }: any) {

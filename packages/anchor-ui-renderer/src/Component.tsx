@@ -11,6 +11,7 @@ import {
   ListItem,
   ListItemIcon,
   Typography,
+  TextField as MuiTextField,
 } from "@material-ui/core";
 import { usePluginContext } from "./Context";
 import { ViewRenderer } from "./ViewRenderer";
@@ -136,6 +137,35 @@ const useStyles = makeStyles((theme: any) => ({
       backgroundColor: theme.custom.colors.nav,
     },
   },
+  passwordField: {
+    fontSize: "14px",
+    lineHeight: "24px",
+    fontWeight: 500,
+    borderRadius: "12px",
+    color: theme.custom.colors.secondary,
+    width: "351px",
+  },
+  passwordRoot: {
+    marginLeft: "12px",
+    marginRight: "12px",
+    marginTop: "24px",
+    marginBottom: "24px",
+    width: "351px",
+    "& .MuiOutlinedInput-root": {
+      border: `solid 1pt ${theme.custom.colors.border}`,
+      backgroundColor: theme.custom.colors.background,
+      borderRadius: "12px",
+      height: "56px",
+      "& fieldset": {
+        border: "none",
+      },
+    },
+  },
+  textRootError: {
+    "& .MuiOutlinedInput-root": {
+      borderColor: `${theme.custom.colors.negative} !important`,
+    },
+  },
 }));
 
 export function Component({ viewData }) {
@@ -152,6 +182,10 @@ export function Component({ viewData }) {
       );
     case NodeKind.Text:
       return <Text props={props} style={style} children={viewData.children} />;
+    case NodeKind.TextField:
+      return (
+        <TextField props={props} style={style} children={viewData.children} />
+      );
     case NodeKind.Table:
       return <Table props={props} style={style} />;
     case NodeKind.Image:
@@ -426,6 +460,70 @@ function Text({ props, children, style }: any) {
         <ViewRenderer key={c.id} element={c} />
       ))}
     </p>
+  );
+}
+
+function _TextField({ id, props, children, style }: any) {
+  const { plugin } = usePluginContext();
+  const onChange = !props.onClick
+    ? undefined
+    : (event) => {
+        plugin.pushOnChangeNotification(id, event.target.value);
+      };
+  return (
+    <TextField
+      placeholer={props.placeholder}
+      value={props.value}
+      setValue={onChange}
+    />
+  );
+}
+
+export function TextField({
+  placeholder,
+  type,
+  value,
+  setValue,
+  rootClass,
+  endAdornment,
+  isError,
+  inputProps,
+  disabled,
+}: any) {
+  const classes = useStyles();
+  inputProps = Object.assign(
+    {
+      className: classes.passwordField,
+    },
+    inputProps
+  );
+  return (
+    <MuiTextField
+      disabled={disabled}
+      placeholder={placeholder}
+      variant="outlined"
+      margin="dense"
+      required
+      fullWidth
+      type={type}
+      inputProps={inputProps}
+      classes={{
+        root: `${isError ? classes.textRootError : ""} ${
+          classes.passwordRoot
+        } ${rootClass ?? ""}`,
+      }}
+      InputLabelProps={{
+        shrink: false,
+        style: {
+          borderRadius: "12px",
+        },
+      }}
+      InputProps={{
+        endAdornment,
+      }}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+    />
   );
 }
 
