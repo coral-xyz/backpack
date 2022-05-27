@@ -29,6 +29,12 @@ export const AnchorUi = {
         handler();
       });
 
+      window.anchorUi.on("change", (event: Event) => {
+        const { viewId } = event.data;
+        const handler = getOnChangeHandler(viewId);
+        handler(event);
+      });
+
       window.anchorUi.on("connect", () => {
         NAV_STACK.push(reactNode);
         events.emit("connect");
@@ -41,6 +47,7 @@ export const AnchorUi = {
 
       window.anchorUi.on("unmount", () => {
         CLICK_HANDLERS = new Map();
+        ON_CHANGE_HANDLERS = new Map();
       });
 
       window.anchorUi.on("pop", () => {
@@ -108,6 +115,8 @@ const RECONCILER = ReactReconciler({
         return createTableRowInstance(kind, props, r, h, o);
       case NodeKind.Text:
         return createTextLabelInstance(kind, props, r, h, o);
+      case NodeKind.TextField:
+        return createTextFieldInstance(kind, props, r, h, o);
       case NodeKind.Image:
         return createImageInstance(kind, props, r, h, o);
       case NodeKind.Button:
@@ -350,6 +359,7 @@ const RECONCILER = ReactReconciler({
 
     parent.children = parent.children.filter((c) => c !== child);
     deleteClickHandlers(child);
+    deleteOnChangeHandlers(child);
 
     ReconcilerBridgeManager.bridge({
       method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
@@ -361,6 +371,7 @@ const RECONCILER = ReactReconciler({
 
     root.children = root.children.filter((c) => c !== child);
     deleteClickHandlers(child);
+    deleteOnChangeHandlers(child);
 
     ReconcilerBridgeManager.bridge({
       method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
@@ -472,6 +483,33 @@ function createTextLabelInstance(
     kind: NodeKind.Text,
     props: {
       ...props,
+      children: undefined,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
+function createTextFieldInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): TextFieldNodeSerialized {
+  const id = h.nextId();
+  let onChange = false;
+  const tfProps = props as TextFieldProps;
+  if (tfProps.onChange && typeof tfProps.onChange === "function") {
+    ON_CHANGE_HANDLERS.set(id, tfProps.onChange);
+    onChange = true;
+  }
+  return {
+    id,
+    kind: NodeKind.TextField,
+    props: {
+      ...props,
+      onChange,
       children: undefined,
     },
     style: props.style || {},
@@ -690,6 +728,7 @@ export type NodeSerialized =
   | TableNodeSerialized
   | TableRowNodeSerialized
   | TextNodeSerialized
+  | TextFieldNodeSerialized
   | ImageNodeSerialized
   | ViewNodeSerialized
   | ButtonNodeSerialized
@@ -703,6 +742,7 @@ type NodeProps =
   | TableProps
   | TableRowProps
   | TextProps
+  | TextFieldProps
   | ImageProps
   | ViewProps
   | ButtonProps
@@ -716,6 +756,7 @@ export enum NodeKind {
   Table = "Table",
   TableRow = "TableRow",
   Text = "Text",
+  TextField = "TextField",
   Image = "Image",
   View = "View",
   Button = "Button",
@@ -753,6 +794,19 @@ type TableRowProps = {
 //
 type TextNodeSerialized = DefNodeSerialized<NodeKind.Text, TextProps>;
 type TextProps = {
+  style: Style;
+  children: undefined;
+};
+
+//
+// TextField.
+//
+type TextFieldNodeSerialized = DefNodeSerialized<
+  NodeKind.TextField,
+  TextFieldProps
+>;
+type TextFieldProps = {
+  onChange?: ((event: Event) => void) | boolean;
   style: Style;
   children: undefined;
 };
@@ -884,6 +938,7 @@ const noTimeout = -1;
 type NoTimeout = typeof noTimeout;
 
 let CLICK_HANDLERS = new Map<number, () => void>();
+let ON_CHANGE_HANDLERS = new Map<number, (event: Event) => void>();
 
 //
 // Garbage collects all click handlers from the given element being removed
@@ -898,8 +953,25 @@ function deleteClickHandlers(element: Element) {
   }
 }
 
+function deleteOnChangeHandlers(element: Element) {
+  ON_CHANGE_HANDLERS.delete(element.id);
+  // @ts-ignore
+  if (element.children) {
+    // @ts-ignore
+    element.children.forEach((c) => deleteOnChangeHandlers(c));
+  }
+}
+
 function getClickHandler(viewId: number): () => void {
   const handler = CLICK_HANDLERS.get(viewId);
+  if (!handler) {
+    throw new Error("handler not found");
+  }
+  return handler;
+}
+
+function getOnChangeHandler(viewId: number): (event: any) => void {
+  const handler = ON_CHANGE_HANDLERS.get(viewId);
   if (!handler) {
     throw new Error("handler not found");
   }

@@ -3,6 +3,7 @@ import React from "react";
 const c = (name: string) => (props: any) => React.createElement(name, props);
 
 export const Text = c("Text");
+export const TextField = c("TextField");
 export const Image = c("Image");
 export const Table = c("Table");
 export const TableHead = c("TableHead");
