@@ -1,0 +1,10 @@
+{
+  "name": "plugins",
+  "version": "0.0.0",
+  "scripts": {
+    "start": "ws --https"
+  },
+  "devDependencies": {
+    "local-web-server": "^5.2.0"
+  }
+}

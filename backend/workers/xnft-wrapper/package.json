@@ -1,0 +1,12 @@
+{
+  "name": "@200ms/backend-worker-xnft-wrapper",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "wrangler dev src/index.ts --port 9999 --local-protocol https",
+    "dev": "miniflare build/index.mjs"
+  },
+  "devDependencies": {
+    "miniflare": "^2.4.0",
+    "wrangler": "^2.0.7"
+  }
+}

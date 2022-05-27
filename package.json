@@ -2,7 +2,9 @@
   "name": "anchor-wallet",
   "private": true,
   "workspaces": [
+    "backend/workers/*",
     "examples/clients/*",
+    "examples/plugins",
     "examples/plugins/*",
     "packages/*"
   ],
@@ -14,10 +16,11 @@
     "test": "env-cmd --silent turbo run test -- --passWithNoTests --watchAll=false",
     "build": "env-cmd --silent turbo run build",
     "e2e": "env-cmd --silent turbo run e2e",
-    "clean": "npx rimraf .turbo .parcel-cache node_modules {examples,packages}/**/{.turbo,build,dist,node_modules} packages/extension/dev",
+    "clean": "npx rimraf .turbo .parcel-cache node_modules {backend,examples,packages}/**/{.turbo,build,dist,node_modules} packages/extension/dev",
     "postinstall": "patch-package"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^3.11.0",
     "env-cmd": "^10.1.0",
     "husky": "^8.0.1",
     "lint-staged": "^12.4.1",

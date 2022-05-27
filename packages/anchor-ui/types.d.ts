@@ -7,5 +7,6 @@ declare global {
   interface Window {
     anchor: ProviderInjection;
     anchorUi: ProviderUiInjection;
+    libs: Record<string, any>;
   }
 }

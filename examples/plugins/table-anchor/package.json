@@ -4,9 +4,7 @@
   "description": "",
   "source": "src/index.tsx",
   "scripts": {
-    "prebuild": "rimraf dist",
-    "build": "parcel build src/index.html",
-    "start": "parcel --https --port 4446 src/index.html"
+    "build": "xnft build src/index.tsx"
   },
   "dependencies": {
     "@200ms/anchor-ui": "*",
@@ -15,11 +13,6 @@
     "react": "^17.0.2"
   },
   "devDependencies": {
-    "parcel": "^2.5.0",
-    "rimraf": "^3.0.2",
-    "typescript": "^4.6.3"
-  },
-  "browserslist": [
-    "last 2 chrome versions"
-  ]
+    "@200ms/xnft-cli": "*"
+  }
 }
