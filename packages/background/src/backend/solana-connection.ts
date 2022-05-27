@@ -58,6 +58,7 @@ import type {
   InflationReward,
   SignatureStatus,
   PerfSample,
+  BlockheightBasedTransactionConfirmationStrategy,
 } from "@solana/web3.js";
 import type { Notification, EventEmitter } from "@coral-xyz/common";
 import {
@@ -298,10 +299,10 @@ export class Backend {
   }
 
   async confirmTransaction(
-    signature: TransactionSignature,
+    strategy: BlockheightBasedTransactionConfirmationStrategy,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<SignatureResult>> {
-    return await this.connection!.confirmTransaction(signature, commitment);
+    return await this.connection!.confirmTransaction(strategy, commitment);
   }
 
   async simulateTransaction(

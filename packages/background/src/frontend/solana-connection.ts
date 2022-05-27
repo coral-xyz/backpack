@@ -1,21 +1,23 @@
-import {
+import type {
   Commitment,
-  PublicKey,
   TransactionSignature,
   SendOptions,
   Finality,
-  ConfirmedSignaturesForAddress2Options,
+  ConfirmedSignaturesForAddress2Options} from "@solana/web3.js";
+import {
+  PublicKey
 } from "@solana/web3.js";
+import type {
+  RpcRequest,
+  RpcResponse,
+  Context,
+  EventEmitter} from "@200ms/common";
 import {
   getLogger,
   withContext,
   withContextPort,
-  RpcRequest,
-  RpcResponse,
-  Context,
   PortChannel,
   Channel,
-  EventEmitter,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   SOLANA_CONNECTION_RPC_UI,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
@@ -29,8 +31,8 @@ import {
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION,
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
 } from "@coral-xyz/common";
-import { Backend } from "../backend/solana-connection";
-import { Handle } from "../types";
+import type { Backend } from "../backend/solana-connection";
+import type { Handle } from "../types";
 
 const logger = getLogger("solana-connection");
 
@@ -163,7 +165,19 @@ async function handleConfirmTransaction(
   signature: TransactionSignature,
   commitment?: Commitment
 ) {
-  const resp = await ctx.backend!.confirmTransaction(signature, commitment);
+  const [{ blockhash }, lastValidBlockHeight] = await Promise.all([
+    ctx.backend!.getRecentBlockhash(),
+    ctx.backend!.getBlockHeight(),
+  ]);
+
+  const resp = await ctx.backend!.confirmTransaction(
+    {
+      signature,
+      blockhash,
+      lastValidBlockHeight,
+    },
+    commitment
+  );
   return [resp];
 }
 

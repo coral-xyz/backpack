@@ -27,21 +27,26 @@ export async function sendAndConfirm(
   signers?: Signer[],
   options?: ConfirmOptions
 ): Promise<TransactionSignature> {
-  const sig = await send(
-    publicKey,
-    requestManager,
-    connection,
-    tx,
-    signers,
-    options
+  const [signature, { blockhash }, lastValidBlockHeight] = await Promise.all([
+    send(publicKey, requestManager, connection, tx, signers, options),
+    connection!.getLatestBlockhash(options?.preflightCommitment),
+    connection!.getBlockHeight(options?.preflightCommitment),
+  ]);
+
+  const resp = await connection.confirmTransaction(
+    {
+      signature,
+      blockhash,
+      lastValidBlockHeight,
+    },
+    options?.commitment
   );
-  const resp = await connection.confirmTransaction(sig, options?.commitment);
   if (resp?.value.err) {
     throw new Error(
       `error confirming transaction: ${resp.value.err.toString()}`
     );
   }
-  return sig;
+  return signature;
 }
 
 export async function send(

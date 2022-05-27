@@ -61,6 +61,8 @@ import type {
   InflationReward,
   SignatureStatus,
   PerfSample,
+  BlockheightBasedTransactionConfirmationStrategy,
+  ParsedTransactionWithMeta,
 } from "@solana/web3.js";
 import {
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
@@ -219,12 +221,12 @@ export class BackgroundSolanaConnection extends Connection {
   }
 
   async confirmTransaction(
-    signature: TransactionSignature,
+    strategy: BlockheightBasedTransactionConfirmationStrategy | string,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<SignatureResult>> {
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION,
-      params: [signature, commitment],
+      params: [strategy, commitment],
     });
   }
 
