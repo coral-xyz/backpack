@@ -8,4 +8,5 @@ export {
   BalancesTableFooter,
   BalancesTableHead,
   BalancesTableRow,
+  TextField,
 } from "./Component";
