@@ -21,12 +21,7 @@ export default {
           return `<script type="text/javascript" type="text/javascript">${js}</script>`;
         } else {
           // TODO: add integrity hash https://www.srihash.org
-          return `
-            <script
-              type="module"
-              charset="utf-8"
-              crossorigin="anonymous"
-              src="${bundle}"></script>`;
+          return `<script type="module" src="${bundle}"></script>`;
         }
       })(searchParams.has("inline"));
 
@@ -35,9 +30,8 @@ export default {
         <html lang="en">
           <head>
             <meta charset="utf-8"/>
-            ${script}
           </head>
-          <body></body>
+          <body>${script}</body>
         </html>
       `);
     } catch (err) {

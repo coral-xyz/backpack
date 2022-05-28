@@ -2,10 +2,6 @@
   "name": "@200ms/example-plugin-app",
   "version": "1.0.0",
   "description": "",
-  "source": "src/index.tsx",
-  "scripts": {
-    "build": "xnft build src/index.tsx"
-  },
   "dependencies": {
     "@200ms/anchor-ui": "*",
     "@project-serum/anchor": "^0.23.0",
@@ -14,6 +10,14 @@
     "react": "^17.0.2"
   },
   "devDependencies": {
-    "@200ms/xnft-cli": "*"
-  }
+    "@200ms/xnft-cli": "*",
+    "parcel": "^2.6.0"
+  },
+  "source": "src/index.tsx",
+  "default": "dist/bundle.js",
+  "scripts": {
+    "watch": "parcel watch",
+    "build": "parcel build"
+  },
+  "targets": { "default": {} }
 }

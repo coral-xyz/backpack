@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Market, OpenOrders } from "@project-serum/serum";
 import { PublicKey } from "@solana/web3.js";
 import { Text, View } from "@200ms/anchor-ui";
