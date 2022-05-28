@@ -2,9 +2,8 @@
   "name": "@200ms/example-plugin-table-degods",
   "version": "1.0.0",
   "description": "",
-  "source": "src/index.tsx",
   "scripts": {
-    "build": "xnft build src/index.tsx"
+    "build": "parcel build src/bundle.tsx"
   },
   "dependencies": {
     "@200ms/anchor-ui": "*",
@@ -15,6 +14,7 @@
     "react": "^17.0.2"
   },
   "devDependencies": {
-    "@200ms/xnft-cli": "*"
+    "@200ms/xnft-cli": "*",
+    "parcel": "^2.6.0"
   }
 }
