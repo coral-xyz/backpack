@@ -148,8 +148,6 @@ const useStyles = makeStyles((theme: any) => ({
   passwordRoot: {
     marginLeft: "12px",
     marginRight: "12px",
-    marginTop: "24px",
-    marginBottom: "24px",
     width: "351px",
     "& .MuiOutlinedInput-root": {
       border: `solid 1pt ${theme.custom.colors.border}`,
@@ -460,11 +458,11 @@ function Text({ props, children, style }: any) {
     ...style,
   };
   return (
-    <p style={style}>
+    <Typography style={style}>
       {children.map((c: Element) => (
         <ViewRenderer key={c.id} element={c} />
       ))}
-    </p>
+    </Typography>
   );
 }
 

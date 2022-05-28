@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import AnchorUi, {
   useNavigation,
+  Text,
   TextField,
   View,
   BalancesTable,
@@ -48,11 +49,11 @@ function AnchorDetail({}: any) {
   const [val, setVal] = useState("");
   return (
     <View>
+      <Text>Program ID</Text>
       <TextField
-        onChange={(e) => {
-          setVal(e.data.value);
-        }}
+        onChange={(e) => setVal(e.data.value)}
         value={val}
+        placeholder={"Enter your program ID..."}
       />
     </View>
   );

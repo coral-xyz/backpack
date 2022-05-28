@@ -84,6 +84,10 @@ const useStyles = makeStyles((theme: any) => ({
     textTransform: "none",
     fontSize: "16px",
   },
+  passwordRoot: {
+    marginTop: "24px",
+    marginBottom: "24px",
+  },
 }));
 
 export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
@@ -112,14 +116,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         <Typography className={classes.navTitle}>Backpack</Typography>
       </div>
       <div className={classes.header}>
-        {/*<Lock className={classes.lockIcon} />*/}
         <img src="/anchor.png" className={classes.lockIcon} alt="logo" />
-        {/*
-        <Typography className={classes.headerTitle}>Unlock Wallet</Typography>
-        <Typography className={classes.headerSubtitle}>
-          Enter your password to unlock wallet.
-        </Typography>
-				*/}
       </div>
       <div className={classes.content}>
         <form onSubmit={_onUnlock}>
@@ -129,6 +126,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
             type={"password"}
             value={password}
             setValue={setPassword}
+            rootClass={classes.passwordRoot}
           />
           <div style={{ marginLeft: "12px", marginRight: "12px" }}>
             <OnboardButton label="Unlock" type="submit" />
