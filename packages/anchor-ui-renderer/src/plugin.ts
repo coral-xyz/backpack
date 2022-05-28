@@ -24,6 +24,7 @@ import {
   RPC_METHOD_SIMULATE as PLUGIN_RPC_METHOD_SIMULATE_TX,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ON_CLICK,
+  PLUGIN_NOTIFICATION_ON_CHANGE,
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_UNMOUNT,
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
@@ -233,6 +234,21 @@ export class Plugin {
         name: PLUGIN_NOTIFICATION_ON_CLICK,
         data: {
           viewId,
+        },
+      },
+    };
+    this._iframe!.contentWindow!.postMessage(event, "*");
+  }
+
+  public pushOnChangeNotification(viewId: number, value: any) {
+    this._lastClickTsMs = Date.now();
+    const event = {
+      type: CHANNEL_PLUGIN_NOTIFICATION,
+      detail: {
+        name: PLUGIN_NOTIFICATION_ON_CHANGE,
+        data: {
+          viewId,
+          value,
         },
       },
     };
@@ -551,10 +567,18 @@ class Dom {
 
   commitUpdate(instanceId: number, updatePayload: UpdateDiff) {
     const instance = this._vdom.get(instanceId) as NodeSerialized;
+
+    logger.debug("commitUpdate", instance);
+
     switch (instance.kind) {
       case NodeKind.View:
         if (updatePayload.style) {
           instance.style = updatePayload.style;
+        }
+        break;
+      case NodeKind.TextField:
+        if (updatePayload.value !== undefined && updatePayload.value !== null) {
+          instance.props.value = updatePayload.value;
         }
         break;
       default:

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import AnchorUi, {
   useNavigation,
   Text,
+  TextField,
   View,
   BalancesTable,
   BalancesTableHead,
@@ -22,10 +23,10 @@ AnchorUi.events.on("connect", () => {
 });
 
 export function App() {
-  return <MangoTable />;
+  return <AnchorTable />;
 }
 
-function MangoTable() {
+function AnchorTable() {
   const nav = useNavigation();
   return (
     <BalancesTable>
@@ -45,9 +46,15 @@ function MangoTable() {
 }
 
 function AnchorDetail({}: any) {
+  const [val, setVal] = useState("");
   return (
     <View>
-      <Text>Inside plugin: This is a detail view</Text>
+      <Text>Program ID</Text>
+      <TextField
+        onChange={(e) => setVal(e.data.value)}
+        value={val}
+        placeholder={"Enter your program ID..."}
+      />
     </View>
   );
 }
