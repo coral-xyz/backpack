@@ -475,7 +475,7 @@ function _TextField({ id, props, children, style }: any) {
       };
   return (
     <TextField
-      placeholer={props.placeholder}
+      placeholder={props.placeholder}
       value={props.value}
       setValue={onChange}
     />
