@@ -567,10 +567,18 @@ class Dom {
 
   commitUpdate(instanceId: number, updatePayload: UpdateDiff) {
     const instance = this._vdom.get(instanceId) as NodeSerialized;
+
+    logger.debug("commitUpdate", instance);
+
     switch (instance.kind) {
       case NodeKind.View:
         if (updatePayload.style) {
           instance.style = updatePayload.style;
+        }
+        break;
+      case NodeKind.TextField:
+        if (updatePayload.value !== undefined && updatePayload.value !== null) {
+          instance.props.value = updatePayload.value;
         }
         break;
       default:

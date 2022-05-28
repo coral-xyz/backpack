@@ -184,7 +184,12 @@ export function Component({ viewData }) {
       return <Text props={props} style={style} children={viewData.children} />;
     case NodeKind.TextField:
       return (
-        <TextField props={props} style={style} children={viewData.children} />
+        <_TextField
+          id={id}
+          props={props}
+          style={style}
+          children={viewData.children}
+        />
       );
     case NodeKind.Table:
       return <Table props={props} style={style} />;
@@ -465,10 +470,10 @@ function Text({ props, children, style }: any) {
 
 function _TextField({ id, props, children, style }: any) {
   const { plugin } = usePluginContext();
-  const onChange = !props.onClick
+  const onChange = !props.onChange
     ? undefined
-    : (event) => {
-        plugin.pushOnChangeNotification(id, event.target.value);
+    : (value: any) => {
+        plugin.pushOnChangeNotification(id, value);
       };
   return (
     <TextField

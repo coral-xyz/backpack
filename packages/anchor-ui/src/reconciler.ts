@@ -24,12 +24,14 @@ export const AnchorUi = {
   render(reactNode: any) {
     window.onload = () => {
       window.anchorUi.on("click", (event: Event) => {
+        logger.debug("on click event", event);
         const { viewId } = event.data;
         const handler = getClickHandler(viewId);
         handler();
       });
 
       window.anchorUi.on("change", (event: Event) => {
+        logger.debug("on change event", event);
         const { viewId } = event.data;
         const handler = getOnChangeHandler(viewId);
         handler(event);
@@ -180,6 +182,14 @@ const RECONCILER = ReactReconciler({
         return payload;
       case NodeKind.Text:
         return null;
+      case NodeKind.TextField:
+        let pload: UpdateDiff | null = null;
+        // @ts-ignore
+        if (oldProps.value !== newProps.value) {
+          // @ts-ignore
+          pload = { value: newProps.value };
+        }
+        return pload;
       case NodeKind.Image:
         return null;
       case NodeKind.Table:
@@ -257,6 +267,12 @@ const RECONCILER = ReactReconciler({
       case NodeKind.View:
         if (updatePayload.style) {
           instance.style = updatePayload.style;
+        }
+        break;
+      case NodeKind.TextField:
+        if (updatePayload.value !== undefined && updatePayload.value !== null) {
+          // @ts-ignore
+          instance.props.value = updatePayload.value;
         }
         break;
       case NodeKind.Table:
@@ -807,6 +823,7 @@ type TextFieldNodeSerialized = DefNodeSerialized<
 >;
 type TextFieldProps = {
   onChange?: ((event: Event) => void) | boolean;
+  value?: any;
   style: Style;
   children: undefined;
 };
@@ -965,7 +982,7 @@ function deleteOnChangeHandlers(element: Element) {
 function getClickHandler(viewId: number): () => void {
   const handler = CLICK_HANDLERS.get(viewId);
   if (!handler) {
-    throw new Error("handler not found");
+    throw new Error("click handler not found");
   }
   return handler;
 }
@@ -973,7 +990,7 @@ function getClickHandler(viewId: number): () => void {
 function getOnChangeHandler(viewId: number): (event: any) => void {
   const handler = ON_CHANGE_HANDLERS.get(viewId);
   if (!handler) {
-    throw new Error("handler not found");
+    throw new Error("change handler not found");
   }
   return handler;
 }

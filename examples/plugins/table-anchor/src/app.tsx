@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import AnchorUi, {
   useNavigation,
-  Text,
+  TextField,
   View,
   BalancesTable,
   BalancesTableHead,
@@ -45,9 +45,15 @@ function MangoTable() {
 }
 
 function AnchorDetail({}: any) {
+  const [val, setVal] = useState("");
   return (
     <View>
-      <Text>Inside plugin: This is a detail view</Text>
+      <TextField
+        onChange={(e) => {
+          setVal(e.data.value);
+        }}
+        value={val}
+      />
     </View>
   );
 }
