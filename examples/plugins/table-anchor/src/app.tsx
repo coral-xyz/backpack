@@ -23,10 +23,10 @@ AnchorUi.events.on("connect", () => {
 });
 
 export function App() {
-  return <MangoTable />;
+  return <AnchorTable />;
 }
 
-function MangoTable() {
+function AnchorTable() {
   const nav = useNavigation();
   return (
     <BalancesTable>
