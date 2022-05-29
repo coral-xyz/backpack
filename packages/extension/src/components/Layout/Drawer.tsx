@@ -127,9 +127,7 @@ function RightButton({ onClick }: any) {
   const classes = useStyles();
   return (
     <IconButton
-      classes={{
-        label: classes.rightButtonLabel,
-      }}
+      classes={classes.rightButtonLabel}
       disableRipple
       style={{ padding: 0, width: `${NAV_BUTTON_WIDTH}px` }}
       onClick={onClick}
