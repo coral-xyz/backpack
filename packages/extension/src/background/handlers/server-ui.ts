@@ -167,7 +167,7 @@ async function handle<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
 }
 
 function handleNotificationsSubscribe(): RpcResponse<string> {
-  Io.notificationsUi.connect();
+  // TODO: remove this
   return [SUCCESS_RESPONSE];
 }
 

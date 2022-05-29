@@ -225,7 +225,6 @@ export class PortChannelClient implements BackgroundClient {
         if (msg.channel !== this.name) {
           return;
         }
-        //    this._port.onMessage.addListener((msg: any) => {
         const { id, result, error } = msg;
         const resolver = this._responseResolvers[id];
         if (!resolver) {
@@ -299,10 +298,6 @@ export class NotificationsClient {
   private sink: PortChannelClient | null = null;
 
   constructor(private name: string) {}
-
-  public connect() {
-    // todo: remove me
-  }
 
   public pushNotification(notif: Notification) {
     if (this.sink === null) {
