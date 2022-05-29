@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { PublicKey } from "@solana/web3.js";
+import { Program } from "@project-serum/anchor";
 import AnchorUi, {
   useNavigation,
   Text,
   TextField,
   View,
+  Button,
   BalancesTable,
   BalancesTableHead,
   BalancesTableContent,
@@ -47,6 +50,16 @@ function AnchorTable() {
 
 function AnchorDetail({}: any) {
   const [val, setVal] = useState("");
+  const fetchIdl = async () => {
+    console.log("fetching idl here");
+    try {
+      const programId = new PublicKey(val);
+      const idl = await Program.fetchIdl(programId, window.anchor);
+      console.log("idl here", idl);
+    } catch (err) {
+      console.error("error fetching IDL", err);
+    }
+  };
   return (
     <View>
       <Text>Program ID</Text>
@@ -55,6 +68,7 @@ function AnchorDetail({}: any) {
         value={val}
         placeholder={"Enter your program ID..."}
       />
+      <Button onClick={() => fetchIdl()}>Fetch IDL</Button>
     </View>
   );
 }

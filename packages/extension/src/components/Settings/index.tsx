@@ -107,8 +107,10 @@ function _SettingsContent({ close }: { close: () => void }) {
   return (
     <div className={classes.settingsContainer}>
       <AvatarHeader />
-      {keyringStoreState === KeyringStoreStateEnum.Unlocked && <WalletList />}
-      <SettingsList />
+      {keyringStoreState === KeyringStoreStateEnum.Unlocked && (
+        <WalletList close={close} />
+      )}
+      <SettingsList close={close} />
     </div>
   );
 }
@@ -145,8 +147,7 @@ function AvatarHeader() {
   );
 }
 
-function WalletList() {
-  const classes = useStyles();
+function WalletList({ close }: { close: () => void }) {
   const theme = useTheme() as any;
   const namedPublicKeys = useWalletPublicKeys();
   const nav = useEphemeralNav();
@@ -228,8 +229,7 @@ function WalletList() {
   );
 }
 
-function SettingsList() {
-  const classes = useStyles();
+function SettingsList({ close }: { close: () => void }) {
   const theme = useTheme() as any;
   const nav = useEphemeralNav();
 
@@ -255,7 +255,7 @@ function SettingsList() {
     {
       id: 1,
       label: "Connection",
-      onClick: () => nav.push(<ConnectionMenu />),
+      onClick: () => nav.push(<ConnectionMenu close={close} />),
       icon: (props: any) => <Public {...props} />,
       detailIcon: (props: any) => <ArrowForwardIos {...props} />,
     },

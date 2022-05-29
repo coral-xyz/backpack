@@ -22,7 +22,7 @@ const endpoints = {
     new URL(prompt("Enter your custom endpoint")!.trim()).toString(),
 };
 
-export function ConnectionMenu() {
+export function ConnectionMenu({ close }: { close: () => void }) {
   const classes = useStyles();
   const [connectionUrl, setConnectionUrl] = useSolanaConnectionUrl();
   const nav = useEphemeralNav();
@@ -47,6 +47,7 @@ export function ConnectionMenu() {
             try {
               const url = typeof val === "string" ? val : val();
               setConnectionUrl(url);
+              close();
             } catch (err) {
               console.error(err);
             }
