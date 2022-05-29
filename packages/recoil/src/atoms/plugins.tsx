@@ -9,6 +9,7 @@ const OPEN_ORDERS_ICON_URL =
 const MANGO_TABLE_PLUGIN_URL = "https://localhost:4445/index.html";
 const DEGODS_TABLE_PLUGIN_URL = "https://localhost:4447/index.html";
 const ANCHOR_TABLE_PLUGIN_URL = "https://localhost:4446/index.html";
+const PSYFI_TABLE_PLUGIN_URL = "https://localhost:6969/index.html";
 
 //
 // For now we just provide some default apps.
@@ -54,6 +55,13 @@ export const tablePlugins = selector({
         title: "Anchor Dev Tools",
         activeWallet: _activeWallet,
         connectionUrl: _connectionUrl,
+      },
+      {
+        url: PSYFI_TABLE_PLUGIN_URL,
+        iconUrl: "",
+        title: "PsyFinance Vaults",
+        activeWallet,
+        connectionUrl,
       },
     ];
   },

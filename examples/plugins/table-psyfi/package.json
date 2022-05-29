@@ -1,0 +1,25 @@
+{
+  "name": "@200ms/example-plugin-table-psyfi",
+  "version": "1.0.0",
+  "description": "Display user's PsyFinance vault balances",
+  "source": "src/index.tsx",
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "parcel build src/index.html",
+    "start": "parcel --https --port 6969 src/index.html"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@200ms/anchor-ui": "*",
+    "@solana/web3.js": "^1.43.2",
+    "react": "^18.1.0"
+  },
+  "browserslist": [
+    "last 2 chrome versions"
+  ],
+  "devDependencies": {
+    "parcel": "^2.6.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.7.2"
+  }
+}

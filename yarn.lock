@@ -3229,9 +3229,9 @@
     buffer "~6.0.3"
 
 "@solana/spl-token-registry@^0.2.3225":
-  version "0.2.4196"
-  resolved "https://registry.yarnpkg.com/@solana/spl-token-registry/-/spl-token-registry-0.2.4196.tgz#e0eb10778616c71a58542b9e51e05aa112ae2d77"
-  integrity sha512-KI3nqpQQnj0TILesfI0LGpd2EOs1i1NKOPTDtj0eVEnsYQ8tt2BcnEhmqvs+oeUWcHw4014SHo59ZMlmtXvQeA==
+  version "0.2.3225"
+  resolved "https://registry.yarnpkg.com/@solana/spl-token-registry/-/spl-token-registry-0.2.3225.tgz#2c83d2d5819ea11b9107a05f5f37aac177726e67"
+  integrity sha512-5l46rGEjqFPtACXEJg8PxTN+/sj/EWe+fB3ndT5njlKE8tGA0nczzVN2ORSzp4wa60zYReo0usktqtfISPt1TA==
   dependencies:
     cross-fetch "3.0.6"
 
@@ -3270,7 +3270,7 @@
   dependencies:
     "@solana/wallet-adapter-base" "^0.9.4"
 
-"@solana/web3.js@1.41.6", "@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.35.1", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.37.1":
+"@solana/web3.js@1.41.6", "@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.35.1", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.37.1", "@solana/web3.js@^1.43.2":
   version "1.41.6"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.41.6.tgz#120a45b758de5efd3c17d635fdf869a5f2a95c0a"
   integrity sha512-4uGXNxFMdS/Sk1WRoZ0hbkL1/fo7XoaYlBZEFHawQwTGsM5FxDuXKqfRzhQCiMzOPf2DBKgM67sdpzDuHk4uKw==
@@ -12992,7 +12992,7 @@ param-case@^3.0.3, param-case@^3.0.4:
     dot-case "^3.0.4"
     tslib "^2.0.3"
 
-parcel@2.5.0, parcel@^2.5.0:
+parcel@2.5.0, parcel@^2.5.0, parcel@^2.6.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/parcel/-/parcel-2.5.0.tgz#b6f01c665b6085e4eb58957ff11bc8f4027bd8f7"
   integrity sha512-er0mj/BaMjWyzQ/jedLUi/LNAuQcFT8lCvoNqANF+jTaX9rohaBwxIvKVJVAZgyCnmyfbbldp496wPMW0R0+CA==
@@ -14962,10 +14962,15 @@ react-dom@^17.0.0, react-dom@^17.0.2:
     object-assign "^4.1.1"
     scheduler "^0.20.2"
 
-react-error-overlay@^6.0.11, react-error-overlay@^6.0.9:
+react-error-overlay@^6.0.11:
   version "6.0.11"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.11.tgz#92835de5841c5cf08ba00ddd2d677b6d17ff9adb"
   integrity sha512-/6UZ2qgEyH2aqzYZgQPxEnz33NJ2gNsnHA2o5+o4wW9bLM/JYQitNP9xPhsXwC08hMMovfGe/8retsdDsczPRg==
+
+react-error-overlay@^6.0.9:
+  version "6.0.10"
+  resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.10.tgz#0fe26db4fa85d9dbb8624729580e90e7159a59a6"
+  integrity sha512-mKR90fX7Pm5seCOfz8q9F+66VCc1PGsWSBxKbITjfKVQHMNF2zudxHnMdJiB1fRCb+XsbQV9sO9DCkgsMQgBIA==
 
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
@@ -15081,7 +15086,7 @@ react-transition-group@^4.4.2:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react@^17.0.0, react@^17.0.2:
+react@^17.0.0, react@^17.0.2, react@^18.1.0:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react/-/react-17.0.2.tgz#d0b5cc516d29eb3eee383f75b62864cfb6800037"
   integrity sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==
@@ -17267,7 +17272,7 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^4.6.3:
+typescript@^4.6.3, typescript@^4.7.2:
   version "4.7.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.7.2.tgz#1f9aa2ceb9af87cca227813b4310fff0b51593c4"
   integrity sha512-Mamb1iX2FDUpcTRzltPxgWMKy3fhg0TN378ylbktPGPK/99KbDtMQ4W1hwgsbPAsG3a0xKa1vmw4VKZQbkvz5A==

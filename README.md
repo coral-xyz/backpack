@@ -4,7 +4,9 @@
 
 #### 0. Temporary preliminary step
 
-Ensure that an Anchor Wallet compatible `@solana/wallet-adapter-wallets` has been `yarn link`ed.
+Ensure that an Anchor Wallet compatible `@solana/wallet-adapter-wallets` and `@project-serum/anchor` have been `yarn link`ed.
+
+run `yarn && yarn build` from root of `@solana/wallet-adapter-wallets`.
 
 Check the [.github/workflows/pull_request.yml](.github/workflows/pull_request.yml) for an example of how to do that.
 
