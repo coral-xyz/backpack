@@ -5,7 +5,6 @@ import {
   getLogger,
   PortChannel,
   Notification,
-  UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE,
   CONNECTION_POPUP_NOTIFICATIONS,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
@@ -22,7 +21,6 @@ import {
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
 } from "@200ms/common";
 import {
-  getBackgroundClient,
   KeyringStoreStateEnum,
   BackgroundSolanaConnection,
   useUpdateRecentBlockhash,
@@ -48,8 +46,6 @@ export function NotificationsProvider(props: any) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const backgroundClient = getBackgroundClient();
-
     ////////////////////////////////////////////////////////////////////////////
     // Notifications from background script.
     ////////////////////////////////////////////////////////////////////////////
@@ -212,12 +208,6 @@ export function NotificationsProvider(props: any) {
     PortChannel.notifications(CONNECTION_POPUP_NOTIFICATIONS).onNotification(
       notificationsHandler
     );
-    backgroundClient
-      .request({
-        method: UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE,
-        params: [],
-      })
-      .catch(console.error);
   }, []);
 
   return (
