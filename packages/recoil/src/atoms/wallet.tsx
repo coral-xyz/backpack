@@ -54,6 +54,9 @@ export const activeWalletWithName = selector({
   get: ({ get }) => {
     const active = get(activeWallet);
     const pks = get(walletPublicKeys);
+
+    console.log("active pks here", active, pks);
+
     let result = pks.hdPublicKeys.find(
       (pk) => pk.publicKey.toString() === active
     );

@@ -103,13 +103,20 @@ export class ChannelServer {
       (msg: any, sender: any, sendResponse: any) => {
         if (msg.channel === this.name) {
           const id = msg.data.id;
-          handlerFn(msg, sender).then(([result, error]) => {
-            sendResponse({
-              id,
-              result,
-              error,
+          handlerFn(msg, sender)
+            .then(([result, error]) => {
+              sendResponse({
+                id,
+                result,
+                error,
+              });
+            })
+            .catch((err) => {
+              sendResponse({
+                id,
+                error: err.toString(),
+              });
             });
-          });
           return true;
         }
       }
@@ -185,7 +192,7 @@ export class PortChannelServer {
             sendResponse({ id, result, error });
           })
           .catch((err) => {
-            console.error("error here", err);
+            sendResponse({ id, error: err.toString() });
           });
         return true;
       }
@@ -227,8 +234,11 @@ export class PortChannelClient implements BackgroundClient {
           channel: this.name,
           data: { id, method, params },
         },
-        (response: any) => {
-          resolve(response);
+        ({ id, result, error }: any) => {
+          if (error) {
+            return reject(error);
+          }
+          return resolve(result);
         }
       );
     });
@@ -258,15 +268,9 @@ export interface BackgroundClient {
 }
 
 export class NotificationsClient {
-  private sink: PortChannelClient | null = null;
-
   constructor(private name: string) {}
 
   public pushNotification(notif: Notification) {
-    if (this.sink === null) {
-      logger.debug("sink is null skipping notification");
-      return;
-    }
     BrowserRuntime.sendMessage({
       channel: this.name,
       data: notif,
