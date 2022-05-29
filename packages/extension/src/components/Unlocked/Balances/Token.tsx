@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { Button } from "@200ms/anchor-ui-renderer";
 import { useBlockchainTokenAccount } from "@200ms/recoil";
 import { RecentActivitySmall } from "./RecentActivity";

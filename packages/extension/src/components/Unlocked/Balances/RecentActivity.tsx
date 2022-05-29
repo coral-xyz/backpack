@@ -1,13 +1,13 @@
 import { Suspense, useState } from "react";
 import {
-  makeStyles,
   useTheme,
   Typography,
   List,
   ListItem,
   IconButton,
-} from "@material-ui/core";
-import { Check, Clear, OfflineBolt as Bolt } from "@material-ui/icons";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import { Check, Clear, OfflineBolt as Bolt } from "@mui/icons-material";
 import { explorerUrl } from "@200ms/common";
 import { useActiveWallet, useRecentTransactions } from "@200ms/recoil";
 import { Loading } from "../../common";
@@ -99,6 +99,7 @@ export function RecentActivityButton() {
         disableRipple
         className={classes.networkSettingsButton}
         onClick={() => setOpenDrawer(true)}
+        size="large"
       >
         <Bolt className={classes.networkSettingsIcon} />
       </IconButton>

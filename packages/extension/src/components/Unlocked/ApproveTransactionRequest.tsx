@@ -12,7 +12,8 @@ import {
   UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
 } from "@200ms/common";
 import { Plugin } from "@200ms/anchor-ui-renderer";
-import { makeStyles, useTheme, Typography } from "@material-ui/core";
+import { useTheme, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { walletAddressDisplay } from "../common";
 import { Scrollbar } from "../Layout/Scrollbar";
 import { WithMiniDrawer } from "../Layout/Drawer";

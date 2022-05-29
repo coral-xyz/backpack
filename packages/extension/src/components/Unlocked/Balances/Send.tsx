@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { makeStyles, useTheme, Typography } from "@material-ui/core";
+import { useTheme, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { SystemProgram, PublicKey } from "@solana/web3.js";
 import { useAnchorContext, useSolanaCtx } from "@200ms/recoil";
 import { Solana, SOL_NATIVE_MINT } from "@200ms/common";

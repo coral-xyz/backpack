@@ -1,12 +1,7 @@
 import React, { useState, useMemo } from "react";
-import {
-  makeStyles,
-  MobileStepper,
-  Button,
-  Checkbox,
-  Typography,
-} from "@material-ui/core";
-import { MenuBook } from "@material-ui/icons";
+import { MobileStepper, Button, Checkbox, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import { MenuBook } from "@mui/icons-material";
 import { getBackgroundClient } from "@200ms/recoil";
 import {
   BrowserRuntime,

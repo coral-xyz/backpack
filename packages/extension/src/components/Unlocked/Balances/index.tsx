@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { PluginRenderer } from "@200ms/anchor-ui-renderer";
 import { useNavigation, useTotal, useTablePlugins } from "@200ms/recoil";
 import { TokenTable } from "./TokenTable";

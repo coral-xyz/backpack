@@ -1,4 +1,5 @@
-import { makeStyles, Button, Typography } from "@material-ui/core";
+import { Button, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { Plugin, PluginRenderer } from "@200ms/anchor-ui-renderer";
 import { usePlugins, useTablePlugins, useNavigation } from "@200ms/recoil";
 import { NAV_COMPONENT_PLUGINS } from "@200ms/common";

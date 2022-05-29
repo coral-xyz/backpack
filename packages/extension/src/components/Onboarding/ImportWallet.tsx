@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import * as bip39 from "bip39";
 import { getBackgroundClient } from "@200ms/recoil";
 import {

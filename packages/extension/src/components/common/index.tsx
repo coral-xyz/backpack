@@ -1,11 +1,7 @@
 import type { PublicKey } from "@solana/web3.js";
-import {
-  makeStyles,
-  useTheme,
-  Typography,
-  Button,
-  CircularProgress,
-} from "@material-ui/core";
+import { useTheme, Typography, Button, CircularProgress } from "@mui/material";
+
+import makeStyles from "@mui/styles/makeStyles";
 
 export * from "./List";
 export { TextField } from "@200ms/anchor-ui-renderer";

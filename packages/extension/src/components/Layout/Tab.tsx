@@ -1,10 +1,11 @@
-import { makeStyles, Tabs, Tab } from "@material-ui/core";
+import { Tabs, Tab } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import {
   SwapHoriz,
   AttachMoney as Money,
   Image,
   Apps,
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 import { useTab } from "@200ms/recoil";
 import { TAB_NFTS, TAB_APPS, TAB_BALANCES, TAB_SWAP } from "@200ms/common";
 

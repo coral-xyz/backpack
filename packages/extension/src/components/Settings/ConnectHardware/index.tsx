@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import {
   useTheme,
-  makeStyles,
   Select,
   MenuItem,
   Typography,
   CircularProgress,
-} from "@material-ui/core";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { PublicKey } from "@solana/web3.js";
 import Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";

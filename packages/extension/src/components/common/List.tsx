@@ -1,9 +1,10 @@
 import {
-  makeStyles,
   useTheme,
   List as MuiList,
   ListItem as MuiListItem,
-} from "@material-ui/core";
+} from "@mui/material";
+
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles((theme: any) => ({
   settingsContentListItem: {

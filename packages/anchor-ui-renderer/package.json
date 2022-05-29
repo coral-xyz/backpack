@@ -13,8 +13,12 @@
   "dependencies": {
     "@200ms/anchor-ui": "*",
     "@200ms/common": "*",
-    "@material-ui/core": "^4.12.3",
-    "@solana/web3.js": "^1.35.1"
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1",
+    "@mui/material": "^5.8.1",
+    "@mui/styles": "^5.8.0",
+    "@solana/web3.js": "^1.35.1",
+    "react": "^17.0.0"
   },
   "devDependencies": {
     "typescript": "^4.6.3"
