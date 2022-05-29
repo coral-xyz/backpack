@@ -1,6 +1,5 @@
 export * from "./useBlockchainBalances";
 export * from "./useDarkMode";
-export * from "./useJupiter";
 export * from "./useKeyringStoreState";
 export * from "./useLoadSplTokens";
 export * from "./usePlugins";

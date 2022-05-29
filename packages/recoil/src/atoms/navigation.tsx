@@ -4,7 +4,7 @@ import {
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
 } from "@200ms/common";
 import { getBackgroundClient } from "../background";
-import { bootstrapFast } from "../atoms";
+import { bootstrapFast } from "./bootstrap";
 
 //
 // The tab currently selected.

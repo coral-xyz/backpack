@@ -1,6 +1,6 @@
 import { atom, selector } from "recoil";
 import { Commitment } from "@solana/web3.js";
-import { Spl, Provider } from "@project-serum/anchor";
+import { Provider, Spl } from "@project-serum/anchor";
 import {
   UI_RPC_METHOD_CONNECTION_URL_READ,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
