@@ -211,81 +211,44 @@ export class PortChannelNotifications {
 
 export class PortChannelClient implements BackgroundClient {
   private _requestId: number;
-  private _responseResolvers: any;
 
   constructor(private name: string) {
     this._requestId = 0;
-    this._responseResolvers = {};
-    this._setupResponseResolvers();
-  }
-
-  private _setupResponseResolvers() {
-    BrowserRuntime.addEventListener(
-      (msg: any, _sender: any, sendResponse: any) => {
-        if (msg.channel !== this.name) {
-          return;
-        }
-        const { id, result, error } = msg;
-        const resolver = this._responseResolvers[id];
-        if (!resolver) {
-          error("unexpected message", msg);
-          throw new Error("unexpected message");
-        }
-        delete this._responseResolvers[id];
-        const [resolve, reject] = resolver;
-        if (error) {
-          reject(error);
-        }
-        resolve(result);
-        sendResponse({ result: "success" });
-      }
-    );
-  }
-
-  private _addResponseResolver(requestId: number): [Promise<any>, any, any] {
-    let resolve, reject;
-    const prom = new Promise((_resolve, _reject) => {
-      resolve = _resolve;
-      reject = _reject;
-    });
-    this._responseResolvers[requestId] = [resolve, reject];
-    return [prom, resolve, reject];
   }
 
   public async request<T = any>({
     method,
     params,
   }: RpcRequest): Promise<RpcResponse<T>> {
-    const id = this._requestId;
-    this._requestId += 1;
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [prom, resolve, reject] = this._addResponseResolver(id);
-    BrowserRuntime.sendMessage(
-      {
-        channel: this.name,
-        data: { id, method, params },
-      },
-      (response: any) => {
-        // todo
-      }
-    );
-    return await prom;
+    const id = this._requestId++;
+    return new Promise((resolve, reject) => {
+      BrowserRuntime.sendMessage(
+        {
+          channel: this.name,
+          data: { id, method, params },
+        },
+        (response: any) => {
+          resolve(response);
+        }
+      );
+    });
   }
 
   public async response<T = any>({
     id,
     result,
   }: RpcResponse): Promise<RpcResponse<T>> {
-    BrowserRuntime.sendMessage(
-      {
-        channel: this.name,
-        data: { id, result },
-      },
-      (response: any) => {
-        //
-      }
-    );
+    return new Promise((resolve, reject) => {
+      BrowserRuntime.sendMessage(
+        {
+          channel: this.name,
+          data: { id, result },
+        },
+        (response: any) => {
+          resolve(response);
+        }
+      );
+    });
   }
 }
 
@@ -310,5 +273,3 @@ export class NotificationsClient {
     });
   }
 }
-
-type Port = any;
