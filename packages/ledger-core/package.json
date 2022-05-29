@@ -13,10 +13,9 @@
   "dependencies": {
     "@200ms/common": "*",
     "@ledgerhq/hw-transport": "^6.24.1",
-    "@ledgerhq/hw-transport-webhid": "^6.24.1",
     "@solana/web3.js": "^1.36.0",
     "bs58": "^5.0.0",
-    "eventemitter3": "^4.0.7"
+    "buffer": "^6.0.3"
   },
   "devDependencies": {
     "typescript": "^4.6.3"

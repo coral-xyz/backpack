@@ -2,9 +2,9 @@
   "name": "anchor-wallet",
   "private": true,
   "workspaces": [
-    "packages/*",
     "examples/clients/*",
-    "examples/plugins/*"
+    "examples/plugins/*",
+    "packages/*"
   ],
   "scripts": {
     "lint:fix": "prettier {examples,packages}/**/*.{ts,tsx,css,md,json} --write",
@@ -24,17 +24,18 @@
     "patch-package": "^6.4.7",
     "postinstall-postinstall": "^2.1.0",
     "prettier": "^2.6.2",
+    "rimraf": "^3.0.2",
     "turbo": "^1.2.9"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,css,md,json}": "prettier --write"
   },
   "resolutions": {
+    "@solana/web3.js": "1.41.6",
+    "@types/react-dom": "^17.0.0",
+    "@types/react": "^17.0.0",
     "parcel": "2.5.0",
     "react-dom": "^17.0.0",
-    "react": "^17.0.0",
-    "@solana/web3.js": "1.41.6",
-    "@types/react": "^17.0.0",
-    "@types/react-dom": "^17.0.0"
+    "react": "^17.0.0"
   }
 }

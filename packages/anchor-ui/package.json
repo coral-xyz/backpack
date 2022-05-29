@@ -14,6 +14,7 @@
     "@200ms/common": "*",
     "@200ms/provider-injection": "*",
     "eventemitter3": "^4.0.7",
+    "react": "^17.0.0",
     "react-reconciler": "^0.26.0"
   },
   "devDependencies": {
