@@ -51,16 +51,6 @@ export const bootstrap = selector<any>({
           provider.connection.getLatestBlockhash(),
         ]);
 
-      const results = {
-        splTokenAccounts,
-        splTokenMetadata: tokenMetadata,
-        splNftMetadata: new Map(nftMetadata),
-        coingeckoData,
-        recentTransactions,
-        recentBlockhash: recentBlockhash.blockhash,
-        walletPublicKey,
-      };
-      console.log("bootstrapping", walletPublicKey.toString(), results);
       //
       // Done.
       //

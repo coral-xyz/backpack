@@ -160,8 +160,8 @@ export class PostMessageServer {
   }
 }
 
-// PortChannel is like Channel, but with a persistent connection, using the
-// browser's port API.
+// Note that this doesn't actually use the port API anymore and so is
+// poorly name.
 export class PortChannel {
   public static client(name: string): PortChannelClient {
     return new PortChannelClient(name);
