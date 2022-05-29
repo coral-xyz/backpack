@@ -66,6 +66,15 @@ export const bootstrap = selector<any>({
     } catch (err) {
       // TODO: show error notification.
       console.error(err);
+      return {
+        splTokenAccounts: [],
+        splTokenMetadata: [],
+        splNftMetadata: new Map(),
+        coingeckoData: new Map(),
+        recentTransactions: [],
+        recentBlockhash: undefined,
+        walletPublicKey,
+      };
     }
   },
 });

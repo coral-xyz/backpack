@@ -46,13 +46,15 @@ export function TokenTable() {
   const blockchainLogo = useBlockchainLogo(blockchain);
   const tokenAccountsSorted = useBlockchainTokensSorted(blockchain);
   const [showAll, setShowAll] = useState(false);
+  const tokenAccountsFiltered = tokenAccountsSorted.filter(
+    (t: any) => t.nativeBalance !== 0
+  );
   return (
     <BalancesTable>
       <BalancesTableHead props={{ title, iconUrl: blockchainLogo }} />
       <BalancesTableContent>
-        {tokenAccountsSorted
+        {tokenAccountsFiltered
           .slice(0, limit && !showAll ? limit : tokenAccountsSorted.length)
-          .filter((t: any) => t.nativeBalance !== 0)
           .map((token: any) => (
             <TokenRow
               key={token.address}
@@ -61,11 +63,14 @@ export function TokenTable() {
             />
           ))}
       </BalancesTableContent>
-      <BalancesTableFooter
-        count={tokenAccountsSorted.length}
-        showAll={showAll}
-        setShowAll={setShowAll}
-      />
+      {tokenAccountsFiltered.length > 0 &&
+        tokenAccountsFiltered.length > limit && (
+          <BalancesTableFooter
+            count={tokenAccountsFiltered.length}
+            showAll={showAll}
+            setShowAll={setShowAll}
+          />
+        )}
     </BalancesTable>
   );
 }
