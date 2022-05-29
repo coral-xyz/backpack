@@ -13,12 +13,10 @@
   "dependencies": {
     "@200ms/anchor-ui-renderer": "*",
     "@200ms/common": "*",
-    "@jup-ag/react-hook": "^1.0.0-beta.24",
     "recoil": "^0.6.1"
   },
   "peerDependencies": {
-    "@solana/web3.js": "^1.35.1",
-    "@jup-ag/core": "^1.0.0-beta.24"
+    "@solana/web3.js": "^1.35.1"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.1",

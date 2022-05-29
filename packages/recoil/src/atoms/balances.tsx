@@ -1,5 +1,6 @@
 import { selector, selectorFamily } from "recoil";
-import { blockchainKeys, blockchainTokensSorted } from ".";
+import { blockchainKeys } from "./blockchains";
+import { blockchainTokensSorted } from "./token";
 
 export const total = selector({
   key: "total",

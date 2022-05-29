@@ -3,7 +3,6 @@ import { useBootstrap, useNavigation } from "@200ms/recoil";
 import { Balances } from "../Unlocked/Balances";
 import { Token } from "../Unlocked/Balances/Token";
 import { PluginDisplay, PluginTableDetailDisplay } from "../Unlocked/Apps";
-import { Swap } from "../Unlocked/Swap";
 import { Nfts } from "../Unlocked/Nfts";
 import { Apps } from "../Unlocked/Apps";
 
@@ -13,7 +12,6 @@ export function Router() {
     <Routes>
       <Route path="/balances" element={<BalancesPage />} />
       <Route path="/nfts" element={<NftsPage />} />
-      <Route path="/swap" element={<SwapPage />} />
       <Route path="/apps" element={<AppsPage />} />
       <Route path="/token" element={<TokenPage />} />
       <Route path="/plugins" element={<PluginPage />} />
@@ -34,10 +32,6 @@ function BalancesPage() {
 
 function NftsPage() {
   return <Nfts />;
-}
-
-function SwapPage() {
-  return <Swap />;
 }
 
 function AppsPage() {
