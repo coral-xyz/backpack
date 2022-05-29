@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { makeStyles } from "@material-ui/core";
+import makeStyles from "@mui/styles/makeStyles";
 import { getLogger, EXTENSION_WIDTH, EXTENSION_HEIGHT } from "@200ms/common";
 import {
   KeyringStoreStateEnum,

@@ -1,14 +1,16 @@
 import { useRecoilValue } from "recoil";
-import { Plugin } from "@200ms/anchor-ui-renderer";
-import * as atoms from "../atoms";
+import { plugins, tablePlugins } from "../atoms";
+// XXX: this full path is currently necessary as it avoids loading the jsx in
+//      anchor-ui-renderer/src/Component.tsx in the background service worker
+import { Plugin } from "@200ms/anchor-ui-renderer/dist/esm/plugin";
 
 export function usePlugins(): Array<Plugin> {
-  const pluginData = useRecoilValue(atoms.plugins);
+  const pluginData = useRecoilValue(plugins);
   return pluginData.map((p) => getPlugin(p));
 }
 
 export function useTablePlugins(): Array<Plugin> {
-  const pluginData = useRecoilValue(atoms.tablePlugins);
+  const pluginData = useRecoilValue(tablePlugins);
   return pluginData.map((p) => getPlugin(p));
 }
 

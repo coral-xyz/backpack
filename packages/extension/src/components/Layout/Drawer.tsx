@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import { makeStyles, Drawer, Button, IconButton } from "@material-ui/core";
-import { Close } from "@material-ui/icons";
+import { Drawer, Button, IconButton } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import { Close } from "@mui/icons-material";
 import { EXTENSION_HEIGHT } from "@200ms/common";
 import { useEphemeralNav } from "@200ms/recoil";
 import { WithEphemeralNav } from "../Layout/NavEphemeral";
@@ -126,12 +127,11 @@ function RightButton({ onClick }: any) {
   const classes = useStyles();
   return (
     <IconButton
-      classes={{
-        label: classes.rightButtonLabel,
-      }}
+      classes={classes.rightButtonLabel}
       disableRipple
       style={{ padding: 0, width: `${NAV_BUTTON_WIDTH}px` }}
       onClick={onClick}
+      size="large"
     >
       <Close className={classes.rightButtonIcon} />
     </IconButton>

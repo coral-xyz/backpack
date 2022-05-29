@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import { makeStyles, ListItemIcon, ListItemText } from "@material-ui/core";
-import { CheckBox } from "@material-ui/icons";
+import { ListItemIcon, ListItemText } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import { CheckBox } from "@mui/icons-material";
 import { useEphemeralNav, useSolanaConnectionUrl } from "@200ms/recoil";
 import { List, ListItem } from "../common";
 

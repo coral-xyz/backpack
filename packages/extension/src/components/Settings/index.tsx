@@ -2,12 +2,12 @@ import { useEffect, useState, Suspense } from "react";
 import * as bs58 from "bs58";
 import {
   useTheme,
-  makeStyles,
   Typography,
   IconButton,
   Button,
   TextField,
-} from "@material-ui/core";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import {
   Add,
   Lock,
@@ -15,7 +15,7 @@ import {
   Public,
   ArrowForwardIos,
   Launch,
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import {
   getBackgroundClient,
@@ -70,6 +70,7 @@ export function SettingsButton() {
         disableRipple
         className={classes.menuButton}
         onClick={() => setSettingsOpen(!settingsOpen)}
+        size="large"
       >
         <img
           src={AVATAR_URL}

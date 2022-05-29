@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { makeStyles, useTheme, Card } from "@material-ui/core";
+import { useTheme, Card } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { CreateNewWallet } from "./CreateNewWallet";
 import { ImportWallet } from "./ImportWallet";
 import { OnboardButton } from "../common";

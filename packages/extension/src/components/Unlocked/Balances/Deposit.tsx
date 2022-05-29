@@ -1,4 +1,5 @@
-import { makeStyles, useTheme, Button, Typography } from "@material-ui/core";
+import { useTheme, Button, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { useActiveWallet } from "@200ms/recoil";
 import { WithHeaderButton } from "./Token";
 import { BottomCard } from "./Send";

@@ -2,7 +2,6 @@ import type { Element } from "@200ms/anchor-ui";
 import { NodeKind } from "@200ms/anchor-ui";
 import { formatUSD } from "@200ms/common";
 import {
-  makeStyles,
   Button as MuiButton,
   Card,
   CardContent,
@@ -12,7 +11,8 @@ import {
   ListItemIcon,
   Typography,
   TextField as MuiTextField,
-} from "@material-ui/core";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { usePluginContext } from "./Context";
 import { ViewRenderer } from "./ViewRenderer";
 

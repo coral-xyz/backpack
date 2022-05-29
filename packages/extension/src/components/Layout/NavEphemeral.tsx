@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import { makeStyles, useTheme } from "@material-ui/core";
+import { useTheme } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { NavEphemeralProvider, useEphemeralNav } from "@200ms/recoil";
 import { Scrollbar } from "./Scrollbar";
 import { Loading } from "../common";

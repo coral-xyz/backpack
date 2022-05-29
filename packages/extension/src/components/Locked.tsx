@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { makeStyles, Divider, Typography, Button } from "@material-ui/core";
+import { Divider, Typography, Button } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { getBackgroundClient } from "@200ms/recoil";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@200ms/common";
 import { TextField } from "./common";

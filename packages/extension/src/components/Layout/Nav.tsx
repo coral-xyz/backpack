@@ -1,12 +1,8 @@
 import { Suspense } from "react";
 import { useNavigation } from "@200ms/recoil";
-import {
-  makeStyles,
-  useTheme,
-  Typography,
-  IconButton,
-} from "@material-ui/core";
-import { ArrowBack } from "@material-ui/icons";
+import { useTheme, Typography, IconButton } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import { ArrowBack } from "@mui/icons-material";
 import { Scrollbar } from "./Scrollbar";
 import { Loading } from "../common";
 import { WithTabs } from "./Tab";
@@ -121,6 +117,7 @@ export function _NavBackButton({ pop }: any) {
         disableRipple
         onClick={() => pop()}
         className={classes.backButton}
+        size="large"
       >
         <ArrowBack style={{ color: theme.custom.colors.secondary }} />
       </IconButton>
