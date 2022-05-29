@@ -52,7 +52,6 @@ export const RPC_METHOD_SIGN_ALL_TXS = "sign-all-txs";
 export const RPC_METHOD_SIGN_MESSAGE = "sign-message";
 export const RPC_METHOD_SIMULATE = "simulate";
 
-export const UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE = "notifications-subscribe";
 export const UI_RPC_METHOD_KEYRING_STORE_CREATE = "keyring-store-create";
 export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS =
   "keyring-read-all-pubkeys";

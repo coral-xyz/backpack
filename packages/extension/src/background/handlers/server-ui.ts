@@ -6,7 +6,6 @@ import {
   RpcRequest,
   RpcResponse,
   DerivationPath,
-  UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
@@ -156,19 +155,9 @@ async function handle<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
       return await handleSolanaCommitmentRead();
     case UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE:
       return await handleSolanaCommitmentUpdate(params[0]);
-    //
-    // Subscriptions.
-    //
-    case UI_RPC_METHOD_NOTIFICATIONS_SUBSCRIBE:
-      return handleNotificationsSubscribe();
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
-}
-
-function handleNotificationsSubscribe(): RpcResponse<string> {
-  Io.notificationsUi.connect();
-  return [SUCCESS_RESPONSE];
 }
 
 async function handleKeyringStoreCreate(
