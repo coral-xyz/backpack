@@ -15,63 +15,69 @@ import { activeWallet } from "./wallet";
 /**
  * Defines the initial app load fetch.
  */
-export const bootstrap = atom<any>({
+export const bootstrap = selector<any>({
   key: "bootstrap",
-  default: selector({
-    key: "bootstrapSelector",
-    get: async ({ get }: any) => {
-      const tokenRegistry = get(splTokenRegistry);
-      const { provider } = get(anchorContext);
-      const _activeWallet = get(activeWallet);
-      const walletPublicKey = new PublicKey(_activeWallet);
+  get: async ({ get }: any) => {
+    const tokenRegistry = get(splTokenRegistry);
+    const { provider } = get(anchorContext);
+    const walletPublicKey = new PublicKey(get(activeWallet));
 
+    //
+    // Perform data fetch.
+    //
+    try {
       //
-      // Perform data fetch.
+      // Fetch token data.
       //
-      try {
-        //
-        // Fetch token data.
-        //
-        const { tokenAccountsMap, tokenMetadata, nftMetadata } =
-          await provider.connection.customSplTokenAccounts(walletPublicKey);
-        const splTokenAccounts = new Map<string, TokenAccountWithKey>(
-          tokenAccountsMap
-        );
+      const { tokenAccountsMap, tokenMetadata, nftMetadata } =
+        await provider.connection.customSplTokenAccounts(walletPublicKey);
+      const splTokenAccounts = new Map<string, TokenAccountWithKey>(
+        tokenAccountsMap
+      );
 
-        const [coingeckoData, recentTransactions, recentBlockhash] =
-          await Promise.all([
-            //
-            // Fetch the price data.
-            //
-            fetchPriceData(splTokenAccounts, tokenRegistry),
-            //
-            // Get the transaction data for the wallet's recent transactions.
-            //
-            fetchRecentTransactions(provider.connection, walletPublicKey),
-            //
-            // Get the recent blockhash for transaction construction.
-            //
-            provider.connection.getLatestBlockhash(),
-          ]);
+      const [coingeckoData, recentTransactions, recentBlockhash] =
+        await Promise.all([
+          //
+          // Fetch the price data.
+          //
+          fetchPriceData(splTokenAccounts, tokenRegistry),
+          //
+          // Get the transaction data for the wallet's recent transactions.
+          //
+          fetchRecentTransactions(provider.connection, walletPublicKey),
+          //
+          // Get the recent blockhash for transaction construction.
+          //
+          provider.connection.getLatestBlockhash(),
+        ]);
 
-        //
-        // Done.
-        //
-        return {
-          splTokenAccounts,
-          splTokenMetadata: tokenMetadata,
-          splNftMetadata: new Map(nftMetadata),
-          coingeckoData,
-          recentTransactions,
-          recentBlockhash: recentBlockhash.blockhash,
-          walletPublicKey,
-        };
-      } catch (err) {
-        // TODO: show error notification.
-        console.error(err);
-      }
-    },
-  }),
+      const results = {
+        splTokenAccounts,
+        splTokenMetadata: tokenMetadata,
+        splNftMetadata: new Map(nftMetadata),
+        coingeckoData,
+        recentTransactions,
+        recentBlockhash: recentBlockhash.blockhash,
+        walletPublicKey,
+      };
+      console.log("bootstrapping", walletPublicKey.toString(), results);
+      //
+      // Done.
+      //
+      return {
+        splTokenAccounts,
+        splTokenMetadata: tokenMetadata,
+        splNftMetadata: new Map(nftMetadata),
+        coingeckoData,
+        recentTransactions,
+        recentBlockhash: recentBlockhash.blockhash,
+        walletPublicKey,
+      };
+    } catch (err) {
+      // TODO: show error notification.
+      console.error(err);
+    }
+  },
 });
 
 // Version of bootstrap for very fast data on load. This shouldn't block the load
