@@ -2,51 +2,25 @@
   "name": "@200ms/example-client",
   "version": "0.1.0",
   "private": true,
+  "source": "src/index.html",
   "dependencies": {
     "@solana/wallet-adapter-base": "^0.9.5",
     "@solana/wallet-adapter-react": "^0.15.4",
     "@solana/wallet-adapter-react-ui": "^0.9.6",
     "@solana/web3.js": "^1.36.0",
     "react": "^17.0.2",
-    "react-app-rewired": "^2.2.1",
-    "react-dom": "^17.0.2",
-    "react-scripts": "5.0.0",
-    "web-vitals": "^2.1.4"
+    "react-dom": "^17.0.2"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.16.3",
-    "@testing-library/react": "^12.1.4",
-    "@types/jest": "^27.4.1",
     "@types/react": "^17.0.43",
     "@types/react-dom": "^17.0.14",
-    "process": "^0.11.10",
-    "source-map-loader": "^3.0.1",
-    "stream-browserify": "^3.0.0",
+    "parcel": "2.5.0",
+    "rimraf": "^3.0.2",
     "typescript": "^4.6.3"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
-    "eject": "react-scripts eject",
+    "start": "rimraf dist && parcel",
+    "build": "rimraf dist && parcel build",
     "preinstall": "yarn link @solana/wallet-adapter-wallets"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   }
 }
