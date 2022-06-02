@@ -18,10 +18,8 @@
   },
   "content_scripts": [
     {
-      "matches": ["file://*/*", "http://*/*", "https://*/*"],
-      "js": ["contentScript.bundle.js"],
-      "run_at": "document_start",
-      "all_frames": true
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.bundle.js"]
     }
   ],
   "icons": {
