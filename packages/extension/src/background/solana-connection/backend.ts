@@ -72,7 +72,6 @@ import {
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
-  NOTIFICATION_BLOCKHASH_DID_UPDATE,
 } from "@200ms/common";
 import { Io } from "../io";
 
@@ -167,10 +166,6 @@ export class Backend {
         const data = await conn.getLatestBlockhash();
         const key = JSON.stringify({ method: "getLatestBlockhash", args: [] });
         this.cache.set(key, data);
-        Io.events.emit(BACKEND_EVENT, {
-          name: NOTIFICATION_BLOCKHASH_DID_UPDATE,
-          data,
-        });
       }, RECENT_BLOCKHASH_REFRESH_INTERVAL)
     );
   }

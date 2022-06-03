@@ -45,7 +45,7 @@ import {
   NOTIFICATION_CONNECTION_URL_UPDATED,
 } from "@200ms/common";
 import { KeyringStoreState } from "@200ms/recoil";
-import { BACKEND, SUCCESS_RESPONSE } from "../backend";
+import { BACKEND } from "../backend";
 import { Io } from "../io";
 
 const logger = getLogger("background-server-ui");

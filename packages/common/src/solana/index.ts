@@ -1,10 +1,11 @@
 import BN from "bn.js";
-import type {
-  TransactionInstruction,
-  Commitment,
-  Blockhash,
+import type { TransactionInstruction, Commitment } from "@solana/web3.js";
+import {
+  Connection,
+  PublicKey,
+  SystemProgram,
+  Transaction,
 } from "@solana/web3.js";
-import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { Token } from "@solana/spl-token";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import * as anchor from "@project-serum/anchor";
@@ -21,8 +22,8 @@ export * from "./programs";
 
 export type SolanaContext = {
   walletPublicKey: PublicKey;
-  recentBlockhash: Blockhash;
   tokenClient: Program<SplToken>;
+  connection: Connection;
   registry: Map<string, TokenInfo>;
   commitment: Commitment;
   backgroundClient: BackgroundClient;
@@ -36,13 +37,7 @@ export class Solana {
     ctx: SolanaContext,
     req: TransferTokenRequest
   ): Promise<string> {
-    const {
-      walletPublicKey,
-      registry,
-      recentBlockhash,
-      tokenClient,
-      commitment,
-    } = ctx;
+    const { walletPublicKey, registry, tokenClient, commitment } = ctx;
     const { mint, destination, amount } = req;
 
     const tokenInfo = registry.get(mint.toString());
@@ -63,7 +58,7 @@ export class Solana {
       );
 
     //
-    // Require the count to either be a system program account or a brand new
+    // Require the account to either be a system program account or a brand new
     // account.
     //
     if (
@@ -105,7 +100,9 @@ export class Solana {
       .preInstructions(preInstructions)
       .transaction();
     tx.feePayer = walletPublicKey;
-    tx.recentBlockhash = recentBlockhash;
+    tx.recentBlockhash = (
+      await tokenClient.provider.connection.getLatestBlockhash(commitment)
+    ).blockhash;
     const signedTx = await SolanaProvider.signTransaction(ctx, tx);
     const rawTx = signedTx.serialize();
 
@@ -119,7 +116,7 @@ export class Solana {
     ctx: SolanaContext,
     req: TransferSolRequest
   ): Promise<string> {
-    const { walletPublicKey } = ctx;
+    const { walletPublicKey, tokenClient, commitment } = ctx;
     const tx = new Transaction();
     tx.add(
       SystemProgram.transfer({
@@ -129,7 +126,9 @@ export class Solana {
       })
     );
     tx.feePayer = walletPublicKey;
-    tx.recentBlockhash = ctx.recentBlockhash;
+    tx.recentBlockhash = (
+      await tokenClient.provider.connection.getLatestBlockhash(commitment)
+    ).blockhash;
     const signedTx = await SolanaProvider.signTransaction(ctx, tx);
     const rawTx = signedTx.serialize();
 

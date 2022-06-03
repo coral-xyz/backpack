@@ -2,7 +2,7 @@ import { useRecoilValue } from "recoil";
 import { useNavigation, useTab } from "./useNavigation";
 import * as atoms from "../atoms";
 import { useKeyringStoreState } from "./useKeyringStoreState";
-import { useCommitment } from "./useRecentBlockhash";
+import { useCommitment } from "./useSolanaConnection";
 
 // Bootstrap data for the initial load.
 export function useBootstrap() {
