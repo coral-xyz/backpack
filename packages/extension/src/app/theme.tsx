@@ -43,6 +43,13 @@ export const lightTheme = createTheme(
   })
 );
 
+const BRAND_COLOR = "#13b8a6";
+const BACKGROUND_COLOR_0 = "#18181b";
+const BACKGROUND_COLOR_1 = "#27272a";
+const FONT_COLOR = "#FFFFFF";
+const FONT_COLOR_1 = "#71717A";
+const FONT_COLOR_2 = "#D4D4D8";
+
 export const darkTheme = createTheme(
   adaptV4Theme({
     palette: {},
@@ -52,33 +59,27 @@ export const darkTheme = createTheme(
     // @ts-ignore
     custom: {
       colors: {
-        background: "#1B1D23",
-        nav: "#292C33",
-        fontColor: "#FFFFFF",
+        background: BACKGROUND_COLOR_0,
+        nav: BACKGROUND_COLOR_1,
+        fontColor: FONT_COLOR,
         border: "#393C43",
-        //activeNavButton: "#24B0D0",
-        activeNavButton: "#EF5DA8",
-        hamburger: "#99A4B4",
+        activeNavButton: BRAND_COLOR,
+        hamburger: FONT_COLOR_1,
         scrollbarThumb: "rgb(153 164 180)",
-        tabIconBackground: "#99A4B4",
-        //tabIconSelected: "#24B0D0",
-        tabIconSelected: "#EF5DA8",
-        secondary: "#99A4B4",
+        tabIconBackground: FONT_COLOR_1,
+        tabIconSelected: BRAND_COLOR,
+        secondary: FONT_COLOR_1,
         positive: "#35A63A",
         negative: "#E95050",
-        //onboardButton: "#07758E",
-        onboardButton: "#EF5DA8",
-        onboardButtonDisabled: "##99A4B4",
-        buttonFontColor: "#1B1D23",
-        sendGradient:
-          "linear-gradient(180deg, #1B1D23 0%, rgba(27, 29, 35, 0) 100%)",
-        swapGradient:
-          "linear-gradient(180deg, #292C33 0%, rgba(41, 44, 51, 0) 100%)",
-        //      interactiveIconsActive: "#1196B5",
-        interactiveIconsActive: "#EF5DA8",
+        onboardButton: BRAND_COLOR,
+        onboardButtonDisabled: FONT_COLOR_1,
+        buttonFontColor: FONT_COLOR,
+        sendGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_0} 0%, rgba(27, 29, 35, 0) 100%)`,
+        swapGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
+        interactiveIconsActive: BRAND_COLOR,
         interactiveIconsHover: "#67758B",
-        drawerGradient:
-          "linear-gradient(180deg, #292C33 0%, rgba(41, 44, 51, 0) 100%)",
+        drawerGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
+        alpha: FONT_COLOR_2,
       },
     },
   })

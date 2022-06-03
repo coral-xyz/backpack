@@ -233,7 +233,7 @@ function Step1({ next }: any) {
       );
 
       const bip44Root = combinedAccounts.slice(0, 1);
-      const bip44 = combinedAccounts.slice(0, 11);
+      const bip44 = combinedAccounts.slice(1, 11);
       const bip44Change = combinedAccounts.slice(11);
 
       setDerivationAccounts({
@@ -257,9 +257,7 @@ function Step1({ next }: any) {
         <DerivationSelection
           derivationAccounts={derivationAccounts}
           pathType={pathType}
-          setPathType={setPathType}
           pathIndex={pathIndex}
-          setPathIndex={setPathIndex}
           onPathTypeChange={onPathTypeChange}
           onpathIndexChange={onPathIndexChange}
         />
@@ -271,9 +269,7 @@ function Step1({ next }: any) {
 function DerivationSelection({
   derivationAccounts,
   pathType,
-  setPathType,
   pathIndex,
-  setPathIndex,
   onPathTypeChange,
   onPathIndexChange,
 }: any) {
