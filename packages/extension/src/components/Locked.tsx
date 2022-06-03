@@ -124,7 +124,7 @@ export function BackpackHeader() {
         <AlphaLabel />
       </div>
       <img
-        src="backpack.svg"
+        src="/backpack.svg"
         style={{
           width: "200px",
           display: "block",
