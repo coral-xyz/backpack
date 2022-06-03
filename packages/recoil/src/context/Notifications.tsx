@@ -15,7 +15,6 @@ import {
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
   NOTIFICATION_KEYRING_RESET_MNEMONIC,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
-  NOTIFICATION_BLOCKHASH_DID_UPDATE,
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
@@ -23,7 +22,6 @@ import {
 import {
   KeyringStoreStateEnum,
   BackgroundSolanaConnection,
-  useUpdateRecentBlockhash,
   useUpdateAllSplTokenAccounts,
 } from "../";
 import * as atoms from "../atoms";
@@ -42,7 +40,6 @@ export function NotificationsProvider(props: any) {
   const setActiveWallet = useSetRecoilState(atoms.activeWallet);
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
-  const updateRecentBlockhash = useUpdateRecentBlockhash();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -83,9 +80,6 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_APPROVED_ORIGINS_UPDATE:
           handleApprovedOriginsUpdate(notif);
-          break;
-        case NOTIFICATION_BLOCKHASH_DID_UPDATE:
-          handleBlockhashDidUpdate(notif);
           break;
         case NOTIFICATION_SPL_TOKENS_DID_UPDATE:
           handleSplTokensDidUpdate(notif);
@@ -169,10 +163,6 @@ export function NotificationsProvider(props: any) {
     };
     const handleApprovedOriginsUpdate = (notif: Notification) => {
       setApprovedOrigins(notif.data.approvedOrigins);
-    };
-    const handleBlockhashDidUpdate = (notif: Notification) => {
-      const { blockhash } = notif.data;
-      updateRecentBlockhash(blockhash);
     };
     const handleSplTokensDidUpdate = (notif: Notification) => {
       const result = BackgroundSolanaConnection.customSplTokenAccountsFromJson(

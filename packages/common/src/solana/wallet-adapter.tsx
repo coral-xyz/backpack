@@ -16,7 +16,7 @@ export class SolanaWalletAdapter {
   // @override
   async sendTransaction(
     tx: Transaction,
-    _conn: Connection,
+    connection: Connection,
     options?: SendTransactionOptions
   ): Promise<TransactionSignature> {
     if (options?.signers) {
@@ -24,7 +24,10 @@ export class SolanaWalletAdapter {
         tx.partialSign(s);
       });
     }
-    const ctx = { walletPublicKey: this.publicKey } as SolanaContext;
+    const ctx = {
+      walletPublicKey: this.publicKey,
+      connection,
+    } as SolanaContext;
     return await SolanaProvider.signAndSendTransaction(ctx, tx);
   }
 

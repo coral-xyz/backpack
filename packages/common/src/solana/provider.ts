@@ -60,10 +60,12 @@ export class SolanaProvider {
     ctx: SolanaContext,
     tx: Transaction
   ): Promise<TransactionSignature> {
-    const { walletPublicKey, recentBlockhash, backgroundClient } = ctx;
+    const { walletPublicKey, connection, commitment, backgroundClient } = ctx;
 
     tx.feePayer = walletPublicKey;
-    tx.recentBlockhash = recentBlockhash;
+    tx.recentBlockhash = (
+      await connection.getLatestBlockhash(commitment)
+    ).blockhash;
     const txSerialize = tx.serialize({
       requireAllSignatures: false,
     });

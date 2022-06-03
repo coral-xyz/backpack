@@ -35,21 +35,16 @@ export const bootstrap = selector<any>({
         tokenAccountsMap
       );
 
-      const [coingeckoData, recentTransactions, recentBlockhash] =
-        await Promise.all([
-          //
-          // Fetch the price data.
-          //
-          fetchPriceData(splTokenAccounts, tokenRegistry),
-          //
-          // Get the transaction data for the wallet's recent transactions.
-          //
-          fetchRecentTransactions(provider.connection, walletPublicKey),
-          //
-          // Get the recent blockhash for transaction construction.
-          //
-          provider.connection.getLatestBlockhash(),
-        ]);
+      const [coingeckoData, recentTransactions] = await Promise.all([
+        //
+        // Fetch the price data.
+        //
+        fetchPriceData(splTokenAccounts, tokenRegistry),
+        //
+        // Get the transaction data for the wallet's recent transactions.
+        //
+        fetchRecentTransactions(provider.connection, walletPublicKey),
+      ]);
 
       //
       // Done.
@@ -60,7 +55,6 @@ export const bootstrap = selector<any>({
         splNftMetadata: new Map(nftMetadata),
         coingeckoData,
         recentTransactions,
-        recentBlockhash: recentBlockhash.blockhash,
         walletPublicKey,
       };
     } catch (err) {
@@ -72,7 +66,6 @@ export const bootstrap = selector<any>({
         splNftMetadata: new Map(),
         coingeckoData: new Map(),
         recentTransactions: [],
-        recentBlockhash: undefined,
         walletPublicKey,
       };
     }

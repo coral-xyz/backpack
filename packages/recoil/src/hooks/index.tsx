@@ -3,7 +3,6 @@ export * from "./useDarkMode";
 export * from "./useKeyringStoreState";
 export * from "./useLoadSplTokens";
 export * from "./usePlugins";
-export * from "./useRecentBlockhash";
 export * from "./useSplTokenRegistry";
 export * from "./useSolanaConnection";
 export * from "./useRecentTransactions";

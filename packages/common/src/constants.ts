@@ -119,7 +119,6 @@ export const NOTIFICATION_KEYRING_RESET_MNEMONIC =
 export const NOTIFICATION_KEYRING_CREATED = "anchor-keyring-created";
 export const NOTIFICATION_APPROVED_ORIGINS_UPDATE =
   "anchor-approved-origins-update";
-export const NOTIFICATION_BLOCKHASH_DID_UPDATE = "anchor-blockhash-did-update";
 export const NOTIFICATION_SPL_TOKENS_DID_UPDATE =
   "anchor-spl-tokens-did-update";
 export const NOTIFICATION_NAVIGATION_URL_DID_CHANGE =

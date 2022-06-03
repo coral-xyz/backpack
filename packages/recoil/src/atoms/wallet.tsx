@@ -50,7 +50,7 @@ export const activeWallet = atom<string | null>({
  * Currently selected wallet with display data.
  */
 export const activeWalletWithName = selector({
-  key: "filteredTodoListState",
+  key: "activeWalletWithName",
   get: ({ get }) => {
     const active = get(activeWallet);
     const pks = get(walletPublicKeys);

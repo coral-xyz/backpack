@@ -1,5 +1,5 @@
-import { atom, atomFamily, selector, selectorFamily } from "recoil";
-import { Connection, Blockhash, PublicKey } from "@solana/web3.js";
+import { atomFamily, selectorFamily } from "recoil";
+import { Connection, PublicKey } from "@solana/web3.js";
 import { anchorContext } from "../";
 import { bootstrap } from "./bootstrap";
 
@@ -21,17 +21,6 @@ export const recentTransactions = atomFamily<any | null, string>({
           );
         }
       },
-  }),
-});
-
-export const recentBlockhash = atom<Blockhash | null>({
-  key: "recentBlockhash",
-  default: selector({
-    key: "recentBlockhashDefault",
-    get: ({ get }) => {
-      const bs = get(bootstrap);
-      return bs.recentBlockhash;
-    },
   }),
 });
 
