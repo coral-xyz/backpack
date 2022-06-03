@@ -43,12 +43,14 @@ export const lightTheme = createTheme(
   })
 );
 
-const BRAND_COLOR = "#13b8a6";
 const BACKGROUND_COLOR_0 = "#18181b";
 const BACKGROUND_COLOR_1 = "#27272a";
 const FONT_COLOR = "#FFFFFF";
 const FONT_COLOR_1 = "#71717A";
 const FONT_COLOR_2 = "#D4D4D8";
+const BRAND_COLOR = FONT_COLOR_2;
+const BUTTON_FONT_COLOR = BACKGROUND_COLOR_1;
+const BORDER_COLOR = "#393C43";
 
 export const darkTheme = createTheme(
   adaptV4Theme({
@@ -62,7 +64,7 @@ export const darkTheme = createTheme(
         background: BACKGROUND_COLOR_0,
         nav: BACKGROUND_COLOR_1,
         fontColor: FONT_COLOR,
-        border: "#393C43",
+        border: BORDER_COLOR,
         activeNavButton: BRAND_COLOR,
         hamburger: FONT_COLOR_1,
         scrollbarThumb: "rgb(153 164 180)",
@@ -73,7 +75,7 @@ export const darkTheme = createTheme(
         negative: "#E95050",
         onboardButton: BRAND_COLOR,
         onboardButtonDisabled: FONT_COLOR_1,
-        buttonFontColor: FONT_COLOR,
+        buttonFontColor: BUTTON_FONT_COLOR,
         sendGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_0} 0%, rgba(27, 29, 35, 0) 100%)`,
         swapGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
         interactiveIconsActive: BRAND_COLOR,

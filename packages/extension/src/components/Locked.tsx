@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme: any) => ({
     height: "100%",
   },
   forgotContainer: {
-    marginTop: "24px",
+    marginTop: "12px",
   },
   forgotButtonTitle: {
     color: theme.custom.colors.secondary,
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme: any) => ({
   },
   passwordRoot: {
     marginTop: 0,
-    marginBottom: "24px",
+    marginBottom: "12px",
   },
   content: {
     position: "absolute",
