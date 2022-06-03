@@ -78,7 +78,56 @@ import { Io } from "../io";
 export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
 export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;
 
-export class Backend {
+export interface ConnectionBackend {
+  getAccountInfo(
+    publicKey: PublicKey,
+    commitment?: Commitment
+  ): Promise<AccountInfo<Buffer> | null>;
+  getLatestBlockhash(commitment?: Commitment): Promise<{
+    blockhash: Blockhash;
+    lastValidBlockHeight: number;
+  }>;
+  getTokenAccountsByOwner(
+    ownerAddress: PublicKey,
+    filter: TokenAccountsFilter,
+    commitment?: Commitment
+  ): Promise<
+    RpcResponseAndContext<
+      Array<{
+        pubkey: PublicKey;
+        account: AccountInfo<Buffer>;
+      }>
+    >
+  >;
+  sendRawTransaction(
+    rawTransaction: Buffer | Uint8Array | Array<number>,
+    options?: SendOptions
+  ): Promise<TransactionSignature>;
+  confirmTransaction(
+    signature: TransactionSignature,
+    commitment?: Commitment
+  ): Promise<RpcResponseAndContext<SignatureResult>>;
+  simulateTransaction(
+    transactionOrMessage: Transaction | Message,
+    signers?: Array<Signer>,
+    includeAccounts?: boolean | Array<PublicKey>
+  ): Promise<RpcResponseAndContext<SimulatedTransactionResponse>>;
+  getMultipleAccountsInfo(
+    publicKeys: PublicKey[],
+    commitment?: Commitment
+  ): Promise<(AccountInfo<Buffer> | null)[]>;
+  getConfirmedSignaturesForAddress2(
+    address: PublicKey,
+    options?: ConfirmedSignaturesForAddress2Options,
+    commitment?: Finality
+  ): Promise<Array<ConfirmedSignatureInfo>>;
+  getParsedTransactions(
+    signatures: TransactionSignature[],
+    commitment?: Finality
+  ): Promise<(ParsedConfirmedTransaction | null)[]>;
+}
+
+export class Backend implements ConnectionBackend {
   private cache = new Map<string, any>();
   private connection?: Connection;
   private url?: string;

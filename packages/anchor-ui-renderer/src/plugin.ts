@@ -52,6 +52,7 @@ export class Plugin {
   private _connectionUrl: string;
   private _rpcServer: PostMessageServer;
   private _bridgeServer: PostMessageServer;
+  private _connectionBridge: PostMessageServer;
   private _iframe?: HTMLIFrameElement;
   private _nextRenderId?: number;
   private _pendingBridgeRequests?: Array<any>;
@@ -109,6 +110,18 @@ export class Plugin {
       CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE
     );
     this._bridgeServer.handler(this._handleBridge.bind(this));
+
+    /*
+		//
+		// Bridges messages for the solana connection object from the plugin
+		// to the background script.
+		//
+    this._connectionBridge = Channel.serverPostMessage(
+      CHANNEL_PLUGIN_CONNECTION_BRIDGE,
+      CHANNEL_PLUGIN_CONNECTION_BRIDGE,
+    );
+    this._connectionBridge.handler(this._handleConnectionBridge.bind(this));
+		*/
   }
 
   //
@@ -428,6 +441,24 @@ export class Plugin {
         reject,
       });
     });
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Solana Connection Bridge.
+  //////////////////////////////////////////////////////////////////////////////
+
+  private _handleConnectionBridge(event: Event): RpcResponse {
+    const url = new URL(this.iframeUrl);
+    if (event.origin !== url.origin) {
+      return;
+    }
+
+    const { method, params } = event.data.detail;
+    switch (method) {
+      default:
+        console.error(event);
+        throw new Error("method not found");
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
