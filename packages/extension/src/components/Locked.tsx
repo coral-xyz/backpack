@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Divider, Typography, Button } from "@mui/material";
+import { Typography, useTheme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { getBackgroundClient } from "@200ms/recoil";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@200ms/common";
@@ -10,65 +10,22 @@ export const NAV_BAR_HEIGHT = 56;
 
 const useStyles = makeStyles((theme: any) => ({
   container: {
-    backgroundColor: theme.custom.colors.background,
+    backgroundColor: theme.custom.colors.nav,
     textAlign: "center",
     display: "flex",
     flexDirection: "column",
     height: "100%",
   },
-  nav: {
-    backgroundColor: theme.custom.colors.nav,
-    height: `${NAV_BAR_HEIGHT}px`,
-    borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-  },
-  navTitle: {
-    fontSize: "18px",
-    lineHeight: "24px",
-    color: theme.custom.colors.fontColor,
-    fontWeight: 500,
-    textAlign: "center",
-  },
-  header: {
-    lineHeight: "24px",
-    height: "188px",
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-  },
-  content: {
-    borderTopLeftRadius: "12px",
-    borderTopRightRadius: "12px",
-    background: "linear-gradient(180deg, #292C33 0%, rgba(41, 44, 51, 0) 100%)",
-    height: "258px",
-  },
-  lockIcon: {
-    color: theme.custom.colors.activeNavButton,
-    marginLeft: "auto",
-    marginRight: "auto",
-    height: "120px",
-    width: "120px",
-    borderRadius: "30px",
-  },
-  divider: {
-    backgroundColor: theme.custom.colors.border,
-    width: "91.5px",
-  },
   forgotContainer: {
-    display: "flex",
-    marginLeft: "12px",
-    marginRight: "12px",
-    marginTop: "38px",
+    marginTop: "24px",
   },
   forgotButtonTitle: {
     color: theme.custom.colors.secondary,
     textTransform: "none",
     fontSize: "12px",
     fontWeight: 500,
-    marginLeft: "18px",
-    marginRight: "18px",
+    width: "100%",
+    textAlign: "center",
   },
   recoverButton: {
     position: "absolute",
@@ -86,8 +43,12 @@ const useStyles = makeStyles((theme: any) => ({
     fontSize: "16px",
   },
   passwordRoot: {
-    marginTop: "24px",
+    marginTop: 0,
     marginBottom: "24px",
+  },
+  content: {
+    position: "absolute",
+    top: "400px",
   },
 }));
 
@@ -113,12 +74,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   };
   return (
     <div className={classes.container}>
-      <div className={classes.nav}>
-        <Typography className={classes.navTitle}>Backpack</Typography>
-      </div>
-      <div className={classes.header}>
-        <img src="/anchor.png" className={classes.lockIcon} alt="logo" />
-      </div>
+      <BackpackHeader />
       <div className={classes.content}>
         <form onSubmit={_onUnlock}>
           <TextField
@@ -135,39 +91,86 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         </form>
         <div style={{ visibility: error ? undefined : "hidden" }}>
           <div className={classes.forgotContainer}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                flexDirection: "column",
-              }}
-            >
-              <Divider className={classes.divider} />
-            </div>
             <Typography className={classes.forgotButtonTitle}>
               Forgot your password?
             </Typography>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                flexDirection: "column",
-              }}
-            >
-              <Divider className={classes.divider} />
-            </div>
           </div>
-          <Button
-            disableRipple
-            disableElevation
-            className={classes.recoverButton}
-          >
-            <Typography className={classes.recoverTitle}>
-              Recover Wallet with Secret Phrase
-            </Typography>
-          </Button>
         </div>
       </div>
+    </div>
+  );
+}
+
+export function BackpackHeader() {
+  const theme = useTheme() as any;
+  return (
+    <div
+      style={{
+        marginTop: "66px",
+        marginLeft: "auto",
+        marginRight: "auto",
+        display: "block",
+        position: "relative",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row-reverse",
+          marginBottom: "4px",
+          marginRight: "-30px",
+        }}
+      >
+        <AlphaLabel />
+      </div>
+      <img
+        src="backpack.svg"
+        style={{
+          width: "200px",
+          display: "block",
+        }}
+      />
+      <Typography
+        style={{
+          textAlign: "center",
+          lineHeight: "24px",
+          fontSize: "16px",
+          fontWeight: "500",
+          color: theme.custom.colors.secondary,
+          marginTop: "16px",
+        }}
+      >
+        Backpack.app
+      </Typography>
+    </div>
+  );
+}
+
+function AlphaLabel() {
+  const theme = useTheme() as any;
+  return (
+    <div
+      style={{
+        borderRadius: "10px",
+        border: `solid 1pt ${theme.custom.colors.alpha}`,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        height: "20px",
+        width: "53px",
+      }}
+    >
+      <Typography
+        style={{
+          color: theme.custom.colors.alpha,
+          fontSize: "12px",
+          lineHeight: "16px",
+          textAlign: "center",
+          fontWeight: 500,
+        }}
+      >
+        Alpha
+      </Typography>
     </div>
   );
 }

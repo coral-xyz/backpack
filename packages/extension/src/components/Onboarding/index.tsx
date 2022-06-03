@@ -4,6 +4,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import { CreateNewWallet } from "./CreateNewWallet";
 import { ImportWallet } from "./ImportWallet";
 import { OnboardButton } from "../common";
+import { BackpackHeader } from "../Locked";
 
 const useStyles = makeStyles((theme: any) => ({
   card: {
@@ -70,25 +71,35 @@ function Welcome({
   const classes = useStyles();
   const theme = useTheme() as any;
   return (
-    <div className={classes.content}>
-      <div>
-        <OnboardButton
-          onClick={() => didSelectContent("create-new-wallet")}
-          label={"Create New Wallet"}
-        />
-        <OnboardButton
-          style={{
-            marginTop: "10px",
-            backgroundColor: theme.custom.colors.nav,
-          }}
-          buttonLabelStyle={{
-            color: theme.custom.colors.fontColor,
-          }}
-          onClick={() => didSelectContent("import-wallet")}
-          label={"Import Wallet"}
-        />
+    <div
+      style={{
+        background: theme.custom.colors.nav,
+        display: "flex",
+        justifyContent: "space-between",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
+      <BackpackHeader />
+      <div className={classes.content}>
+        <div>
+          <OnboardButton
+            onClick={() => didSelectContent("create-new-wallet")}
+            label={"Create New Wallet"}
+          />
+          <OnboardButton
+            style={{
+              marginTop: "10px",
+              backgroundColor: theme.custom.colors.nav,
+            }}
+            buttonLabelStyle={{
+              color: theme.custom.colors.fontColor,
+            }}
+            onClick={() => didSelectContent("import-wallet")}
+            label={"Import Wallet"}
+          />
+        </div>
       </div>
-      <Logo />
     </div>
   );
 }
