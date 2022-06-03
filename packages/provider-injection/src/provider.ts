@@ -10,7 +10,6 @@ import {
   SimulatedTransactionResponse,
   Commitment,
 } from "@solana/web3.js";
-import * as bs58 from "bs58";
 import { EventEmitter } from "eventemitter3";
 import {
   getLogger,
@@ -21,10 +20,6 @@ import {
   CHANNEL_NOTIFICATION,
   RPC_METHOD_CONNECT,
   RPC_METHOD_DISCONNECT,
-  RPC_METHOD_SIGN_AND_SEND_TX,
-  RPC_METHOD_SIGN_ALL_TXS,
-  RPC_METHOD_SIGN_MESSAGE,
-  RPC_METHOD_SIMULATE,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,

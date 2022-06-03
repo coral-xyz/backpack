@@ -4,6 +4,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_RESPONSE,
+  SOLANA_CONNECTION_RPC_UI,
 } from "@200ms/common";
 import * as recoil from "@200ms/recoil";
 
@@ -11,32 +12,34 @@ const logger = getLogger("extension/background/client");
 
 export function setupClient() {
   logger.debug("setting up core background clients");
-  recoil.setupSolanaConnectionBackgroundClient();
-  coreSetupBackgroundClient();
-}
 
-function coreSetupBackgroundClient() {
+  //
+  // Client to communicate from the UI to the background script for the
+  // solana Connection API.
+  //
+  recoil.setupSolanaConnectionBackgroundClient(
+    PortChannel.client(SOLANA_CONNECTION_RPC_UI)
+  );
+
   //
   // Client to communicate from the UI to the background script.
   //
-  const backgroundClient = PortChannel.client(CONNECTION_POPUP_RPC);
-  recoil.setBackgroundClient(backgroundClient);
+  recoil.setBackgroundClient(PortChannel.client(CONNECTION_POPUP_RPC));
 
   //
   // Client to send responses from the UI to the background script.
   // Used when the background script asks the UI to do something, e.g.,
   // approve a transaction.
   //
-  const backgroundResponseClient = PortChannel.client(
-    CONNECTION_POPUP_RESPONSE
+  recoil.setBackgroundResponseClient(
+    PortChannel.client(CONNECTION_POPUP_RESPONSE)
   );
-  recoil.setBackgroundResponseClient(backgroundResponseClient);
 
   //
   // Keep the keyring store unlocked with a continuous poll.
   //
   setInterval(() => {
-    backgroundClient.request({
+    recoil.getBackgroundClient().request({
       method: UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
       params: [],
     });

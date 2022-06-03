@@ -66,7 +66,6 @@ import {
 import {
   BackgroundClient,
   PortChannel,
-  PortChannelClient,
   SOLANA_CONNECTION_RPC_UI,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH,
@@ -112,16 +111,15 @@ export function getBackgroundResponseClient(): BackgroundClient {
 // Background Connection API.
 /////////////////////////////////////////////////////////////////////////////////
 
+//
+// Client to communicate from the UI to the background script for the
+// solana Connection API.
+//
 let _backgroundSolanaConnectionClient: BackgroundClient | null = null;
-
-export function setupSolanaConnectionBackgroundClient() {
-  //
-  // Client to communicate from the UI to the background script for the
-  // solana Connection API.
-  //
-  _backgroundSolanaConnectionClient = PortChannel.client(
-    SOLANA_CONNECTION_RPC_UI
-  );
+export function setupSolanaConnectionBackgroundClient(
+  client: BackgroundClient
+) {
+  _backgroundSolanaConnectionClient = client;
 }
 
 function getSolanaConnectionBackgroundClient(): BackgroundClient {
