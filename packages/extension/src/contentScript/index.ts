@@ -5,6 +5,8 @@ import {
   CHANNEL_RPC_REQUEST,
   CHANNEL_RPC_RESPONSE,
   CHANNEL_NOTIFICATION,
+  CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
+  CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
 } from "@200ms/common";
 
 const logger = getLogger("content-script");
@@ -41,8 +43,12 @@ function initChannels() {
 // Initialize all communication channels from the client to the background
 // script.
 function initClientChannels() {
-  // Forward all rpc requests from the injceted script to the background page.
+  // Forward all rpc requests from the injected script to the background page.
   Channel.proxy(CHANNEL_RPC_REQUEST, CHANNEL_RPC_RESPONSE);
+  Channel.proxy(
+    CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
+    CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
+  );
 }
 
 // Initialize all communication channels from the background script to the

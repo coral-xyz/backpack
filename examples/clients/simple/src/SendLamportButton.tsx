@@ -4,11 +4,16 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Keypair, SystemProgram, Transaction } from "@solana/web3.js";
 
 export const SendLamportButton: FC = () => {
+  console.log("wtf here");
   const { connection } = useConnection();
   const wallet = useWallet();
   const onClick = useCallback(async () => {
     if (!wallet.publicKey) throw new WalletNotConnectedError();
-
+    // @ts-ignore
+    console.log("wallet here", window.anchor);
+    // @ts-ignore
+    const bh = await window.anchor.connection.getLatestBlockhash();
+    console.log("got blockhash here", bh);
     const transaction = new Transaction().add(
       SystemProgram.transfer({
         fromPubkey: wallet.publicKey,

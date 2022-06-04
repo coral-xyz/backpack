@@ -19,6 +19,8 @@ import {
   CHANNEL_RPC_REQUEST,
   CHANNEL_RPC_RESPONSE,
   CHANNEL_NOTIFICATION,
+  CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
+  CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
   RPC_METHOD_CONNECT,
   RPC_METHOD_DISCONNECT,
   NOTIFICATION_CONNECTED,
@@ -32,7 +34,14 @@ const logger = getLogger("provider-injection");
 export class ProviderInjection extends EventEmitter implements Provider {
   private _url?: string;
   private _options?: ConfirmOptions;
+
+  //
+  // Channel to send extension specfici RPC requests to the extension.
+  //
   private _requestManager: RequestManager;
+  //
+  // Channel to send Solana Connection API requests to the extension.
+  //
   private _connectionRequestManager?: RequestManager;
 
   public isAnchor: boolean;
@@ -49,8 +58,8 @@ export class ProviderInjection extends EventEmitter implements Provider {
       CHANNEL_RPC_RESPONSE
     );
     this._connectionRequestManager = new RequestManager(
-      CHANNEL_RPC_REQUEST,
-      CHANNEL_RPC_RESPONSE
+      CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
+      CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
     );
     this._initChannels();
 

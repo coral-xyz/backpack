@@ -12,6 +12,11 @@ export const CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE =
 export const CHANNEL_PLUGIN_NOTIFICATION = "anchor-channel-plugin-notification";
 export const CHANNEL_PLUGIN_CONNECTION_BRIDGE =
   "anchor-channel-plugin-connection-bridge";
+export const CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST =
+  "solana-connection-injected-request";
+export const CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE =
+  "solana-connection-injected-response";
+
 export const RECONCILER_BRIDGE_METHOD_CREATE_INSTANCE =
   "anchor-reconciler-method-create-instance";
 export const RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE =
