@@ -34,6 +34,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
   private _url?: string;
   private _options?: ConfirmOptions;
   private _requestManager: RequestManager;
+  private _connectionRequestManager?: RequestManager;
 
   public isAnchor: boolean;
   public isConnected: boolean;
@@ -45,6 +46,10 @@ export class ProviderInjection extends EventEmitter implements Provider {
     this._url = undefined;
     this._options = undefined;
     this._requestManager = new RequestManager(
+      CHANNEL_RPC_REQUEST,
+      CHANNEL_RPC_RESPONSE
+    );
+    this._connectionRequestManager = new RequestManager(
       CHANNEL_RPC_REQUEST,
       CHANNEL_RPC_RESPONSE
     );
@@ -98,7 +103,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
   }
 
   private _connect(publicKey: string, connectionUrl: string) {
-    setupSolanaConnectionBackgroundClient(this._requestManager);
+    setupSolanaConnectionBackgroundClient(this._connectionRequestManager);
     this.isConnected = true;
     this.publicKey = new PublicKey(publicKey);
     this.connection = new BackgroundSolanaConnection(connectionUrl);
