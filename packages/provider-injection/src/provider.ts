@@ -12,7 +12,6 @@ import {
 } from "@solana/web3.js";
 import { EventEmitter } from "eventemitter3";
 import {
-  setupSolanaConnectionBackgroundClient,
   getLogger,
   Event,
   RequestManager,
@@ -103,19 +102,24 @@ export class ProviderInjection extends EventEmitter implements Provider {
   }
 
   private _connect(publicKey: string, connectionUrl: string) {
-    setupSolanaConnectionBackgroundClient(this._connectionRequestManager);
     this.isConnected = true;
     this.publicKey = new PublicKey(publicKey);
-    this.connection = new BackgroundSolanaConnection(connectionUrl);
+    this.connection = new BackgroundSolanaConnection(
+      this._connectionRequestManager,
+      connectionUrl
+    );
   }
 
   _handleNotificationDisconnected(event: Event) {
-    setupSolanaConnectionBackgroundClient(null);
     this.isConnected = false;
+    this.connection = this.defaultConnection();
   }
 
   _handleNotificationConnectionUrlUpdated(event: Event) {
-    this.connection = new BackgroundSolanaConnection(event.data.detail.data);
+    this.connection = new BackgroundSolanaConnection(
+      this._connectionRequestManager,
+      event.data.detail.data
+    );
   }
 
   async connect(onlyIfTrustedMaybe: boolean) {

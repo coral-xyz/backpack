@@ -4,7 +4,6 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_RESPONSE,
-  SOLANA_CONNECTION_RPC_UI,
 } from "@200ms/common";
 import * as cmn from "@200ms/common";
 
@@ -12,14 +11,6 @@ const logger = getLogger("extension/background/client");
 
 export function setupClient() {
   logger.debug("setting up core background clients");
-
-  //
-  // Client to communicate from the UI to the background script for the
-  // solana Connection API.
-  //
-  cmn.setupSolanaConnectionBackgroundClient(
-    PortChannel.client(SOLANA_CONNECTION_RPC_UI)
-  );
 
   //
   // Client to communicate from the UI to the background script.

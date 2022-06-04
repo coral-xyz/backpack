@@ -7,8 +7,8 @@ import {
   NodeSerialized,
 } from "@200ms/anchor-ui";
 import {
-  getSolanaConnectionBackgroundClient,
   getLogger,
+  BackgroundClient,
   Event,
   Channel,
   PostMessageServer,
@@ -68,6 +68,7 @@ export class Plugin {
   //
   private _navPushFn?: (args: any) => void;
   private _requestTxApprovalFn?: (request: any) => void;
+  private _connectionBackgroundClient: BackgroundClient;
 
   //
   // The last time a click event was handled for the plugin. This is used as an
@@ -175,9 +176,10 @@ export class Plugin {
   //
   // Apis set from the outside host.
   //
-  public setHostApi({ push, pop, request }) {
+  public setHostApi({ push, pop, request, connectionBackgroundClient }) {
     this._navPushFn = push;
     this._requestTxApprovalFn = request;
+    this._connectionBackgroundClient = connectionBackgroundClient;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -446,17 +448,16 @@ export class Plugin {
   // Solana Connection Bridge.
   //////////////////////////////////////////////////////////////////////////////
 
+  //
+  // Relay all requests to the background service worker.
+  //
   private async _handleConnectionBridge(event: Event): Promise<RpcResponse> {
     const url = new URL(this.iframeUrl);
     if (event.origin !== url.origin) {
       return;
     }
     logger.debug(`handle connection bridge`, event);
-    //
-    // Relay all requests to the background service worker.
-    //
-    const backgroundClient = getSolanaConnectionBackgroundClient();
-    return await backgroundClient.request(event.data.detail);
+    return await this._connectionBackgroundClient.request(event.data.detail);
   }
 
   //////////////////////////////////////////////////////////////////////////////

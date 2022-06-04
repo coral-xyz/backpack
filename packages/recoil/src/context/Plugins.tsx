@@ -1,13 +1,19 @@
 import React, { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 import * as atoms from "../atoms";
-import { usePlugins, useTablePlugins, useNavigationSegue } from "../hooks";
+import {
+  usePlugins,
+  useTablePlugins,
+  useNavigationSegue,
+  useConnectionBackgroundClient,
+} from "../hooks";
 
 export function PluginManager(props: any) {
   const plugins = usePlugins();
   const tablePlugins = useTablePlugins();
   const segue = useNavigationSegue();
   const setTransactionRequest = useSetRecoilState(atoms.transactionRequest);
+  const connectionBackgroundClient = useConnectionBackgroundClient();
 
   //
   // Bootup all the plugins on the initial render.
@@ -22,6 +28,7 @@ export function PluginManager(props: any) {
         push: segue.push,
         pop: segue.pop,
         request: setTransactionRequest,
+        connectionBackgroundClient,
       });
 
       //

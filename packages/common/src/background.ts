@@ -64,7 +64,6 @@ import {
   PerfSample,
 } from "@solana/web3.js";
 import {
-  SOLANA_CONNECTION_RPC_UI,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH,
   SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNTS_BY_OWNER,
@@ -75,7 +74,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
 } from "./constants";
-import { BackgroundClient, PortChannel } from "./channel";
+import { BackgroundClient } from "./channel";
 
 let _backgroundClient: BackgroundClient | null = null;
 let _backgroundResponseClient: BackgroundClient | null = null;
@@ -110,34 +109,20 @@ export function getBackgroundResponseClient(): BackgroundClient {
 // Background Connection API.
 /////////////////////////////////////////////////////////////////////////////////
 
-//
-// Client to communicate from the UI to the background script for the
-// solana Connection API.
-//
-let _backgroundSolanaConnectionClient: BackgroundClient | null = null;
-export function setupSolanaConnectionBackgroundClient(
-  client: BackgroundClient | null
-) {
-  _backgroundSolanaConnectionClient = client;
-}
-
-export function getSolanaConnectionBackgroundClient(): BackgroundClient {
-  if (_backgroundSolanaConnectionClient === null) {
-    throw new Error("_backgroundClient not initialized");
-  }
-  return _backgroundSolanaConnectionClient;
-}
-
 export class BackgroundSolanaConnection extends Connection {
+  private _backgroundClient: BackgroundClient;
+
   // Note that this constructor is actually meaningless.
   // We only use it so that we can subclass Connection.
   // In reality, the params here are actually read in the context of the
   // background script.
   constructor(
+    backgroundClient: BackgroundClient,
     endpoint: string,
     commitmentOrConfig?: Commitment | ConnectionConfig
   ) {
     super(endpoint, commitmentOrConfig);
+    this._backgroundClient = backgroundClient;
   }
 
   async customSplTokenAccounts(publicKey: PublicKey): Promise<{
@@ -145,7 +130,7 @@ export class BackgroundSolanaConnection extends Connection {
     tokenMetadata: any;
     nftMetadata: any;
   }> {
-    const resp = await getSolanaConnectionBackgroundClient().request({
+    const resp = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
       params: [publicKey.toString()],
     });
@@ -164,7 +149,7 @@ export class BackgroundSolanaConnection extends Connection {
     publicKey: PublicKey,
     commitment?: Commitment
   ): Promise<AccountInfo<Buffer> | null> {
-    const resp = await getSolanaConnectionBackgroundClient().request({
+    const resp = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
       params: [publicKey.toString(), commitment],
     });
@@ -179,7 +164,7 @@ export class BackgroundSolanaConnection extends Connection {
     blockhash: Blockhash;
     lastValidBlockHeight: number;
   }> {
-    return await getSolanaConnectionBackgroundClient().request({
+    return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH,
       params: [commitment],
     });
@@ -206,7 +191,7 @@ export class BackgroundSolanaConnection extends Connection {
       // @ts-ignore
       _filter = { programId: filter.programId.toString() };
     }
-    const resp = await getSolanaConnectionBackgroundClient().request({
+    const resp = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNTS_BY_OWNER,
       params: [ownerAddress.toString(), _filter, commitment],
     });
@@ -221,7 +206,7 @@ export class BackgroundSolanaConnection extends Connection {
     rawTransaction: Buffer | Uint8Array | Array<number>,
     options?: SendOptions
   ): Promise<TransactionSignature> {
-    return await getSolanaConnectionBackgroundClient().request({
+    return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION,
       params: [rawTransaction, options],
     });
@@ -231,7 +216,7 @@ export class BackgroundSolanaConnection extends Connection {
     publicKeys: PublicKey[],
     commitment?: Commitment
   ): Promise<(AccountInfo<Buffer> | null)[]> {
-    const resp = await getSolanaConnectionBackgroundClient().request({
+    const resp = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
       params: [publicKeys.map((pk) => pk.toString()), commitment],
     });
@@ -249,7 +234,7 @@ export class BackgroundSolanaConnection extends Connection {
     options?: ConfirmedSignaturesForAddress2Options,
     commitment?: Finality
   ): Promise<Array<ConfirmedSignatureInfo>> {
-    return await getSolanaConnectionBackgroundClient().request({
+    return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2,
       params: [address.toString(), options, commitment],
     });
@@ -259,7 +244,7 @@ export class BackgroundSolanaConnection extends Connection {
     signatures: TransactionSignature[],
     commitment?: Finality
   ): Promise<(ParsedConfirmedTransaction | null)[]> {
-    return await getSolanaConnectionBackgroundClient().request({
+    return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
       params: [signatures, commitment],
     });
@@ -269,7 +254,7 @@ export class BackgroundSolanaConnection extends Connection {
     signature: TransactionSignature,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<SignatureResult>> {
-    return await getSolanaConnectionBackgroundClient().request({
+    return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION,
       params: [signature, commitment],
     });
