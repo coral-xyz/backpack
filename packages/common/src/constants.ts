@@ -10,6 +10,8 @@ export const CHANNEL_PLUGIN_LAUNCH_REQUEST =
 export const CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE =
   "anchor-channel-plugin-react-reconciler-bridge";
 export const CHANNEL_PLUGIN_NOTIFICATION = "anchor-channel-plugin-notification";
+export const CHANNEL_PLUGIN_CONNECTION_BRIDGE =
+  "anchor-channel-plugin-connection-bridge";
 export const RECONCILER_BRIDGE_METHOD_CREATE_INSTANCE =
   "anchor-reconciler-method-create-instance";
 export const RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE =

@@ -7,6 +7,7 @@ import {
   NodeSerialized,
 } from "@200ms/anchor-ui";
 import {
+  getSolanaConnectionBackgroundClient,
   getLogger,
   Event,
   Channel,
@@ -17,6 +18,7 @@ import {
   CHANNEL_PLUGIN_RPC_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
+  CHANNEL_PLUGIN_CONNECTION_BRIDGE,
   PLUGIN_RPC_METHOD_NAV_PUSH,
   PLUGIN_RPC_METHOD_NAV_POP,
   RPC_METHOD_SIGN_TX as PLUGIN_RPC_METHOD_SIGN_TX,
@@ -111,17 +113,14 @@ export class Plugin {
     );
     this._bridgeServer.handler(this._handleBridge.bind(this));
 
-    /*
-		//
-		// Bridges messages for the solana connection object from the plugin
-		// to the background script.
-		//
+    //
+    // Bridges messages for the solana connection object from the plugin
+    // to the background script.
+    //
     this._connectionBridge = Channel.serverPostMessage(
-      CHANNEL_PLUGIN_CONNECTION_BRIDGE,
-      CHANNEL_PLUGIN_CONNECTION_BRIDGE,
+      CHANNEL_PLUGIN_CONNECTION_BRIDGE
     );
     this._connectionBridge.handler(this._handleConnectionBridge.bind(this));
-		*/
   }
 
   //
@@ -447,18 +446,17 @@ export class Plugin {
   // Solana Connection Bridge.
   //////////////////////////////////////////////////////////////////////////////
 
-  private _handleConnectionBridge(event: Event): RpcResponse {
+  private async _handleConnectionBridge(event: Event): Promise<RpcResponse> {
     const url = new URL(this.iframeUrl);
     if (event.origin !== url.origin) {
       return;
     }
-
-    const { method, params } = event.data.detail;
-    switch (method) {
-      default:
-        console.error(event);
-        throw new Error("method not found");
-    }
+    logger.debug(`handle connection bridge`, event);
+    //
+    // Relay all requests to the background service worker.
+    //
+    const backgroundClient = getSolanaConnectionBackgroundClient();
+    return await backgroundClient.request(event.data.detail);
   }
 
   //////////////////////////////////////////////////////////////////////////////

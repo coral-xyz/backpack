@@ -18,7 +18,6 @@ import {
 } from "@mui/icons-material";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import {
-  getBackgroundClient,
   useEphemeralNav,
   useKeyringStoreState,
   KeyringStoreStateEnum,
@@ -26,6 +25,7 @@ import {
   useActiveWallet,
 } from "@200ms/recoil";
 import {
+  getBackgroundClient,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,

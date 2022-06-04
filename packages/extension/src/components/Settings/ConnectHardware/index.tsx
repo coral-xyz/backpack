@@ -13,12 +13,13 @@ import TransportWebHid from "@ledgerhq/hw-transport-webhid";
 import * as anchor from "@project-serum/anchor";
 import * as ledgerCore from "@200ms/ledger-core";
 import {
+  getBackgroundClient,
   DerivationPath,
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
   UI_RPC_METHOD_LEDGER_IMPORT,
 } from "@200ms/common";
-import { getBackgroundClient, useAnchorContext } from "@200ms/recoil";
+import { useAnchorContext } from "@200ms/recoil";
 import { Stepper, WithContinue } from "../../Onboarding/CreateNewWallet";
 
 const STEP_COUNT = 3;

@@ -96,9 +96,11 @@ function StakeDetail({ token }: any) {
         lamports: 1000000,
       })
     );
+    console.log("plugin fetching most recent blockhash");
     const { blockhash } = await window.anchorUi.connection!.getLatestBlockhash(
       "recent"
     );
+    console.log("plugin got recent blockhash", blockhash);
     tx.recentBlockhash = blockhash;
     const signature = await window.anchorUi.send(tx);
     console.log("test: got signed transaction here", signature);

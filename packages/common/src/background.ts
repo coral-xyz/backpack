@@ -64,8 +64,6 @@ import {
   PerfSample,
 } from "@solana/web3.js";
 import {
-  BackgroundClient,
-  PortChannel,
   SOLANA_CONNECTION_RPC_UI,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH,
@@ -76,7 +74,8 @@ import {
   SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
-} from "@200ms/common";
+} from "./constants";
+import { BackgroundClient, PortChannel } from "./channel";
 
 let _backgroundClient: BackgroundClient | null = null;
 let _backgroundResponseClient: BackgroundClient | null = null;
@@ -117,12 +116,12 @@ export function getBackgroundResponseClient(): BackgroundClient {
 //
 let _backgroundSolanaConnectionClient: BackgroundClient | null = null;
 export function setupSolanaConnectionBackgroundClient(
-  client: BackgroundClient
+  client: BackgroundClient | null
 ) {
   _backgroundSolanaConnectionClient = client;
 }
 
-function getSolanaConnectionBackgroundClient(): BackgroundClient {
+export function getSolanaConnectionBackgroundClient(): BackgroundClient {
   if (_backgroundSolanaConnectionClient === null) {
     throw new Error("_backgroundClient not initialized");
   }

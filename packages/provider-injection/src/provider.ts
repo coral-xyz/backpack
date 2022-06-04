@@ -12,9 +12,11 @@ import {
 } from "@solana/web3.js";
 import { EventEmitter } from "eventemitter3";
 import {
+  setupSolanaConnectionBackgroundClient,
   getLogger,
   Event,
   RequestManager,
+  BackgroundSolanaConnection,
   CHANNEL_RPC_REQUEST,
   CHANNEL_RPC_RESPONSE,
   CHANNEL_NOTIFICATION,
@@ -96,29 +98,31 @@ export class ProviderInjection extends EventEmitter implements Provider {
   }
 
   private _connect(publicKey: string, connectionUrl: string) {
+    setupSolanaConnectionBackgroundClient(this._requestManager);
     this.isConnected = true;
     this.publicKey = new PublicKey(publicKey);
-    this.connection = new Connection(connectionUrl);
+    this.connection = new BackgroundSolanaConnection(connectionUrl);
   }
 
   _handleNotificationDisconnected(event: Event) {
+    setupSolanaConnectionBackgroundClient(null);
     this.isConnected = false;
   }
 
   _handleNotificationConnectionUrlUpdated(event: Event) {
-    this.connection = new Connection(event.data.detail.data);
+    this.connection = new BackgroundSolanaConnection(event.data.detail.data);
   }
 
   async connect(onlyIfTrustedMaybe: boolean) {
     if (this.isConnected) {
       throw new Error("provider already connected");
     }
-
     // Send request to the RPC api.
-    return await this._requestManager.request({
+    const resp = await this._requestManager.request({
       method: RPC_METHOD_CONNECT,
       params: [onlyIfTrustedMaybe],
     });
+    return resp;
   }
 
   async disconnect() {

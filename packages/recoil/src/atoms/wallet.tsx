@@ -2,6 +2,8 @@ import { atom, selector } from "recoil";
 import { Commitment } from "@solana/web3.js";
 import { Provider, Spl } from "@project-serum/anchor";
 import {
+  getBackgroundClient,
+  BackgroundSolanaConnection,
   UI_RPC_METHOD_CONNECTION_URL_READ,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
@@ -10,7 +12,6 @@ import {
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
 } from "@200ms/common";
 import { WalletPublicKeys } from "../types";
-import { getBackgroundClient, BackgroundSolanaConnection } from "../background";
 
 /**
  * List of all public keys for the wallet along with associated nicknames.
