@@ -4,7 +4,6 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Keypair, SystemProgram, Transaction } from "@solana/web3.js";
 
 export const SendLamportButton: FC = () => {
-  console.log("wtf here");
   const { connection } = useConnection();
   const wallet = useWallet();
   const onClick = useCallback(async () => {
