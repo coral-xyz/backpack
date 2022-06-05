@@ -160,17 +160,14 @@ export class BackgroundSolanaConnection extends Connection {
       // @ts-ignore
       _filter = { programId: filter.programId.toString() };
     }
-    console.log("armani: wtf here");
     const resp = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNTS_BY_OWNER,
       params: [ownerAddress.toString(), _filter, commitment],
     });
-    console.log("armani: resp hereinside custom", resp);
     resp.value = resp.value.map((token: any) => {
       token.account.data = Buffer.from(token.account.data);
       return token;
     });
-    console.log("armani: resp here2", resp);
     return resp;
   }
 

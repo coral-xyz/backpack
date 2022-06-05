@@ -201,14 +201,12 @@ export async function fetchTokens(
   //
   // Fetch the accounts.
   //
-  console.log("armani: asdf fetching here", tokenClient.provider.connection);
   const resp = await tokenClient.provider.connection.getTokenAccountsByOwner(
     walletPublicKey,
     {
       programId: tokenClient.programId,
     }
   );
-  console.log("armani: resp here", resp);
   //
   // Decode the data.
   //

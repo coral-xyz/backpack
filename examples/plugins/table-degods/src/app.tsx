@@ -145,11 +145,6 @@ function StakeDetail({ token }: any) {
 }
 
 export async function fetchRowData(wallet: PublicKey) {
-  const { blockhash } = await window.anchorUi.connection!.getLatestBlockhash(
-    "recent"
-  );
-  console.log("here: plugin got recent blockhash", blockhash);
-
   const [dead, alive] = await Promise.all([
     fetchTokenAccounts(true, wallet),
     fetchTokenAccounts(false, wallet),
@@ -185,7 +180,6 @@ async function fetchTokenAccountsInner(isDead: boolean, wallet: PublicKey) {
     [vaultPubkey.toBuffer()],
     PID_GEM_BANK
   );
-  console.log("armani: inside degods here", window.anchorUi.connection);
   const tokenAccounts = await customSplTokenAccounts(
     window.anchorUi.connection,
     vaultAuthority
