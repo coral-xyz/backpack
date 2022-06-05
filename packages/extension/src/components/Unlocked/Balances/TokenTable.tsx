@@ -50,8 +50,6 @@ export function TokenTable() {
     (t: any) => t.nativeBalance !== 0
   );
 
-  console.log("token accounts sorted", tokenAccountsSorted);
-
   return (
     <BalancesTable>
       <BalancesTableHead props={{ title, iconUrl: blockchainLogo }} />
