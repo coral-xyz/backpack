@@ -9,11 +9,13 @@ export const SendLamportButton: FC = () => {
   const wallet = useWallet();
   const onClick = useCallback(async () => {
     if (!wallet.publicKey) throw new WalletNotConnectedError();
-    // @ts-ignore
-    console.log("wallet here", window.anchor);
+    //
+    // Test the pass through connection works.
+    //
     // @ts-ignore
     const bh = await window.anchor.connection.getLatestBlockhash();
-    console.log("got blockhash here", bh);
+    console.log("got latest blockhash", bh);
+
     const transaction = new Transaction().add(
       SystemProgram.transfer({
         fromPubkey: wallet.publicKey,

@@ -8,6 +8,7 @@ import {
 } from "@solana/web3.js";
 import {
   getLogger,
+  withContext,
   RpcRequest,
   RpcResponse,
   Context,
@@ -28,19 +29,19 @@ const logger = getLogger("solana-connection");
 
 export function start() {
   Io.solanaConnection.handler(handle);
-  Io.solanaConnectionInjected.handler(handleInjected);
+  Io.solanaConnectionInjected.handler(withContext(handleInjected));
 }
 
 async function handleInjected<T = any>(
   ctx: Context,
   msg: RpcRequest
 ): Promise<RpcResponse<T>> {
-  logger.debug(`handle solana connection injected ${msg.method}`);
+  logger.debug(`handle solana connection injection ${msg.method}`, ctx, msg);
   return await handle(msg);
 }
 
 async function handle<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
-  logger.debug(`handle solana connection ${msg.method}`, msg);
+  logger.debug(`handle solana connection extension ui ${msg.method}`, msg);
   return await handleImpl(msg);
 }
 

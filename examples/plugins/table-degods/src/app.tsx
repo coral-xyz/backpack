@@ -145,6 +145,11 @@ function StakeDetail({ token }: any) {
 }
 
 export async function fetchRowData(wallet: PublicKey) {
+  const { blockhash } = await window.anchorUi.connection!.getLatestBlockhash(
+    "recent"
+  );
+  console.log("here: plugin got recent blockhash", blockhash);
+
   const [dead, alive] = await Promise.all([
     fetchTokenAccounts(true, wallet),
     fetchTokenAccounts(false, wallet),
