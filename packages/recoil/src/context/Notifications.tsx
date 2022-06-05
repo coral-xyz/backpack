@@ -162,13 +162,15 @@ export function NotificationsProvider(props: any) {
       setApprovedOrigins(notif.data.approvedOrigins);
     };
     const handleSplTokensDidUpdate = (notif: Notification) => {
+      const publicKey = notif.data.publicKey;
       const result = BackgroundSolanaConnection.customSplTokenAccountsFromJson(
-        notif.data
+        notif.data.customSplTokenAccounts
       );
       updateAllSplTokenAccounts({
-        ...result,
+        ...result.customSplTokenAccounts,
         tokenAccounts: result.tokenAccountsMap.map((t: any) => t[1]),
         nftMetadata: new Map(result.nftMetadata),
+        publicKey,
       });
     };
     const handleUrlDidChange = (notif: Notification) => {

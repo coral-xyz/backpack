@@ -155,7 +155,10 @@ export class Backend {
         this.cache.set(key, data);
         Io.events.emit(BACKEND_EVENT, {
           name: NOTIFICATION_SPL_TOKENS_DID_UPDATE,
-          data,
+          data: {
+            publicKey: activeWallet.toString(),
+            customSplTokenAccounts: data,
+          },
         });
       }, LOAD_SPL_TOKENS_REFRESH_INTERVAL)
     );

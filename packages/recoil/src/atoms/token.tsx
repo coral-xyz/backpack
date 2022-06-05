@@ -3,6 +3,7 @@ import { bootstrap } from "./bootstrap";
 import { priceData } from "./price-data";
 import { splTokenRegistry } from "./token-registry";
 import { TokenAccountWithKey } from "../types";
+import { activeWallet } from "./wallet";
 
 /**
  * Returns the token accounts sorted by usd notional balances.
@@ -36,7 +37,8 @@ export const blockchainTokens = selectorFamily({
     ({ get }: any) => {
       switch (b) {
         case "solana":
-          return get(solanaTokenAccountKeys);
+          const aw = get(activeWallet);
+          return get(solanaTokenAccountKeys(aw));
         default:
           throw new Error("invariant violation");
       }
@@ -104,14 +106,16 @@ export const blockchainTokenAccounts = selectorFamily({
 /**
  * List of all stored token accounts within tokenAccountsMap.
  */
-export const solanaTokenAccountKeys = atom<Array<string>>({
+export const solanaTokenAccountKeys = atomFamily<Array<string>, string>({
   key: "solanaTokenAccountKeys",
-  default: selector({
+  default: selectorFamily({
     key: "solanaTokenAccountKeysDefault",
-    get: ({ get }: any) => {
-      const data = get(bootstrap);
-      return Array.from(data.splTokenAccounts.keys()) as string[];
-    },
+    get:
+      (walletAddress: string) =>
+      ({ get }: any) => {
+        const data = get(bootstrap);
+        return Array.from(data.splTokenAccounts.keys()) as string[];
+      },
   }),
 });
 
