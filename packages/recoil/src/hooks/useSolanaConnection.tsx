@@ -5,10 +5,13 @@ import {
   Loadable,
 } from "recoil";
 import { Commitment, Connection } from "@solana/web3.js";
-import { SolanaContext } from "@200ms/common";
+import {
+  getBackgroundClient,
+  SolanaContext,
+  BackgroundClient,
+} from "@200ms/common";
 import * as atoms from "../atoms";
 import { useSplTokenRegistry } from "./useSplTokenRegistry";
-import { getBackgroundClient } from "..";
 import { useActiveWallet } from "./useWallet";
 
 export function useSolanaConnectionUrl() {
@@ -41,6 +44,10 @@ export function useSolanaCtx(): SolanaContext {
 
 export function useCommitment(): Commitment {
   return useRecoilValue(atoms.commitment);
+}
+
+export function useConnectionBackgroundClient(): BackgroundClient {
+  return useRecoilValue(atoms.connectionBackgroundClient);
 }
 
 export type SolanaConnectionContext = {

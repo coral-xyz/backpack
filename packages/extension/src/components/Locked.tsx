@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Typography, useTheme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import { getBackgroundClient } from "@200ms/recoil";
-import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@200ms/common";
+import {
+  getBackgroundClient,
+  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+} from "@200ms/common";
 import { TextField } from "./common";
 import { OnboardButton } from "./common";
 

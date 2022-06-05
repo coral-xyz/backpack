@@ -8,6 +8,7 @@ import {
 } from "@200ms/anchor-ui";
 import {
   getLogger,
+  BackgroundClient,
   Event,
   Channel,
   PostMessageServer,
@@ -17,6 +18,7 @@ import {
   CHANNEL_PLUGIN_RPC_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
+  CHANNEL_PLUGIN_CONNECTION_BRIDGE,
   PLUGIN_RPC_METHOD_NAV_PUSH,
   PLUGIN_RPC_METHOD_NAV_POP,
   RPC_METHOD_SIGN_TX as PLUGIN_RPC_METHOD_SIGN_TX,
@@ -52,6 +54,7 @@ export class Plugin {
   private _connectionUrl: string;
   private _rpcServer: PostMessageServer;
   private _bridgeServer: PostMessageServer;
+  private _connectionBridge: PostMessageServer;
   private _iframe?: HTMLIFrameElement;
   private _nextRenderId?: number;
   private _pendingBridgeRequests?: Array<any>;
@@ -65,6 +68,7 @@ export class Plugin {
   //
   private _navPushFn?: (args: any) => void;
   private _requestTxApprovalFn?: (request: any) => void;
+  private _connectionBackgroundClient: BackgroundClient;
 
   //
   // The last time a click event was handled for the plugin. This is used as an
@@ -109,6 +113,15 @@ export class Plugin {
       CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE
     );
     this._bridgeServer.handler(this._handleBridge.bind(this));
+
+    //
+    // Bridges messages for the solana connection object from the plugin
+    // to the background script.
+    //
+    this._connectionBridge = Channel.serverPostMessage(
+      CHANNEL_PLUGIN_CONNECTION_BRIDGE
+    );
+    this._connectionBridge.handler(this._handleConnectionBridge.bind(this));
   }
 
   //
@@ -163,9 +176,10 @@ export class Plugin {
   //
   // Apis set from the outside host.
   //
-  public setHostApi({ push, pop, request }) {
+  public setHostApi({ push, pop, request, connectionBackgroundClient }) {
     this._navPushFn = push;
     this._requestTxApprovalFn = request;
+    this._connectionBackgroundClient = connectionBackgroundClient;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -428,6 +442,22 @@ export class Plugin {
         reject,
       });
     });
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Solana Connection Bridge.
+  //////////////////////////////////////////////////////////////////////////////
+
+  //
+  // Relay all requests to the background service worker.
+  //
+  private async _handleConnectionBridge(event: Event): Promise<RpcResponse> {
+    const url = new URL(this.iframeUrl);
+    if (event.origin !== url.origin) {
+      return;
+    }
+    logger.debug(`handle connection bridge`, event);
+    return await this._connectionBackgroundClient.request(event.data.detail);
   }
 
   //////////////////////////////////////////////////////////////////////////////

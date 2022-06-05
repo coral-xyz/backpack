@@ -5,6 +5,8 @@ import {
   CHANNEL_RPC_REQUEST,
   CHANNEL_RPC_RESPONSE,
   CHANNEL_NOTIFICATION,
+  CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
+  CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
 } from "@200ms/common";
 
 const logger = getLogger("content-script");
@@ -38,11 +40,20 @@ function initChannels() {
   initBackgroundChannels();
 }
 
-// Initialize all communication channels from the client to the background
+// Initialize all proxy communication channels from the client to the background
 // script.
 function initClientChannels() {
-  // Forward all rpc requests from the injceted script to the background page.
+  //
+  // Wallet specific rpc requests.
+  //
   Channel.proxy(CHANNEL_RPC_REQUEST, CHANNEL_RPC_RESPONSE);
+  //
+  // Solana Connection forwarding.
+  //
+  Channel.proxy(
+    CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
+    CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
+  );
 }
 
 // Initialize all communication channels from the background script to the

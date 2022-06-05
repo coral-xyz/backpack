@@ -1,9 +1,9 @@
 import { atom, atomFamily, selector, selectorFamily } from "recoil";
 import {
+  getBackgroundClient,
   UI_RPC_METHOD_NAVIGATION_UPDATE,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
 } from "@200ms/common";
-import { getBackgroundClient } from "../background";
 import { bootstrapFast } from "./bootstrap";
 
 //

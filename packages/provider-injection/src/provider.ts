@@ -1,3 +1,4 @@
+import { EventEmitter } from "eventemitter3";
 import { Provider } from "@project-serum/anchor";
 import {
   TransactionSignature,
@@ -10,21 +11,19 @@ import {
   SimulatedTransactionResponse,
   Commitment,
 } from "@solana/web3.js";
-import * as bs58 from "bs58";
-import { EventEmitter } from "eventemitter3";
+
 import {
   getLogger,
   Event,
   RequestManager,
+  BackgroundSolanaConnection,
   CHANNEL_RPC_REQUEST,
   CHANNEL_RPC_RESPONSE,
   CHANNEL_NOTIFICATION,
+  CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
+  CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
   RPC_METHOD_CONNECT,
   RPC_METHOD_DISCONNECT,
-  RPC_METHOD_SIGN_AND_SEND_TX,
-  RPC_METHOD_SIGN_ALL_TXS,
-  RPC_METHOD_SIGN_MESSAGE,
-  RPC_METHOD_SIMULATE,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
@@ -36,7 +35,15 @@ const logger = getLogger("provider-injection");
 export class ProviderInjection extends EventEmitter implements Provider {
   private _url?: string;
   private _options?: ConfirmOptions;
+
+  //
+  // Channel to send extension specfici RPC requests to the extension.
+  //
   private _requestManager: RequestManager;
+  //
+  // Channel to send Solana Connection API requests to the extension.
+  //
+  private _connectionRequestManager: RequestManager;
 
   public isAnchor: boolean;
   public isConnected: boolean;
@@ -50,6 +57,10 @@ export class ProviderInjection extends EventEmitter implements Provider {
     this._requestManager = new RequestManager(
       CHANNEL_RPC_REQUEST,
       CHANNEL_RPC_RESPONSE
+    );
+    this._connectionRequestManager = new RequestManager(
+      CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
+      CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
     );
     this._initChannels();
 
@@ -103,22 +114,28 @@ export class ProviderInjection extends EventEmitter implements Provider {
   private _connect(publicKey: string, connectionUrl: string) {
     this.isConnected = true;
     this.publicKey = new PublicKey(publicKey);
-    this.connection = new Connection(connectionUrl);
+    this.connection = new BackgroundSolanaConnection(
+      this._connectionRequestManager,
+      connectionUrl
+    );
   }
 
   _handleNotificationDisconnected(event: Event) {
     this.isConnected = false;
+    this.connection = this.defaultConnection();
   }
 
   _handleNotificationConnectionUrlUpdated(event: Event) {
-    this.connection = new Connection(event.data.detail.data);
+    this.connection = new BackgroundSolanaConnection(
+      this._connectionRequestManager,
+      event.data.detail.data
+    );
   }
 
   async connect(onlyIfTrustedMaybe: boolean) {
     if (this.isConnected) {
       throw new Error("provider already connected");
     }
-
     // Send request to the RPC api.
     return await this._requestManager.request({
       method: RPC_METHOD_CONNECT,

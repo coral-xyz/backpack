@@ -6,6 +6,7 @@ import {
   BACKEND_EVENT,
   CHANNEL_RPC_REQUEST,
   CHANNEL_NOTIFICATION,
+  CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_RESPONSE,
   CONNECTION_POPUP_NOTIFICATIONS,
@@ -28,6 +29,11 @@ export class Io {
 
   // Server receiving Connection API requests from the extension UI.
   public static solanaConnection = PortChannel.server(SOLANA_CONNECTION_RPC_UI);
+
+  // Server receiving Connection API requests from the injected script.
+  public static solanaConnectionInjected = Channel.server(
+    CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST
+  );
 
   // Server receiving responses from the extension UI. This is used when the
   // background script wants to request some type of user action from the UI,

@@ -8,8 +8,10 @@ import {
 } from "@solana/web3.js";
 import {
   getLogger,
+  withContext,
   RpcRequest,
   RpcResponse,
+  Context,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
   SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
@@ -27,10 +29,23 @@ const logger = getLogger("solana-connection");
 
 export function start() {
   Io.solanaConnection.handler(handle);
+  Io.solanaConnectionInjected.handler(withContext(handleInjected));
+}
+
+async function handleInjected<T = any>(
+  ctx: Context,
+  msg: RpcRequest
+): Promise<RpcResponse<T>> {
+  logger.debug(`handle solana connection injection ${msg.method}`, ctx, msg);
+  return await handle(msg);
 }
 
 async function handle<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
-  logger.debug(`handle solana connection ${msg.method}`);
+  logger.debug(`handle solana connection extension ui ${msg.method}`, msg);
+  return await handleImpl(msg);
+}
+
+async function handleImpl<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
   const { method, params } = msg;
   switch (method) {
     case SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO:

@@ -5,6 +5,7 @@ import {
   getLogger,
   PortChannel,
   Notification,
+  BackgroundSolanaConnection,
   CONNECTION_POPUP_NOTIFICATIONS,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
@@ -19,11 +20,7 @@ import {
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
 } from "@200ms/common";
-import {
-  KeyringStoreStateEnum,
-  BackgroundSolanaConnection,
-  useUpdateAllSplTokenAccounts,
-} from "../";
+import { KeyringStoreStateEnum, useUpdateAllSplTokenAccounts } from "../";
 import * as atoms from "../atoms";
 import { getPlugin } from "../hooks";
 

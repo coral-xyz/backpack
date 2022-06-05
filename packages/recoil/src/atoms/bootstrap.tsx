@@ -1,11 +1,11 @@
 import { atom, selector } from "recoil";
 import { PublicKey } from "@solana/web3.js";
 import {
+  getBackgroundClient,
   UI_RPC_METHOD_NAVIGATION_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
 } from "@200ms/common";
 import { TokenAccountWithKey, TABS } from "../types";
-import { getBackgroundClient } from "../background";
 import { anchorContext } from "../atoms/wallet";
 import { fetchRecentTransactions } from "./recent-transactions";
 import { splTokenRegistry } from "./token-registry";

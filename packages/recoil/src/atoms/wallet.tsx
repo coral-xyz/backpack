@@ -2,6 +2,10 @@ import { atom, selector } from "recoil";
 import { Commitment } from "@solana/web3.js";
 import { Provider, Spl } from "@project-serum/anchor";
 import {
+  getBackgroundClient,
+  BackgroundSolanaConnection,
+  PortChannel,
+  SOLANA_CONNECTION_RPC_UI,
   UI_RPC_METHOD_CONNECTION_URL_READ,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
@@ -10,7 +14,6 @@ import {
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
 } from "@200ms/common";
 import { WalletPublicKeys } from "../types";
-import { getBackgroundClient, BackgroundSolanaConnection } from "../background";
 
 /**
  * List of all public keys for the wallet along with associated nicknames.
@@ -74,6 +77,13 @@ export const activeWalletWithName = selector({
   },
 });
 
+export const connectionBackgroundClient = selector({
+  key: "connectionBackgroundClient",
+  get: ({ get }) => {
+    return PortChannel.client(SOLANA_CONNECTION_RPC_UI);
+  },
+});
+
 /**
  * URL to the cluster to communicate with.
  */
@@ -108,8 +118,12 @@ export const connectionUrl = atom<string | null>({
 export const anchorContext = selector({
   key: "anchorContext",
   get: async ({ get }: any) => {
-    const connectionUrlStr = get(connectionUrl);
-    const connection = new BackgroundSolanaConnection(connectionUrlStr);
+    const _connectionUrl = get(connectionUrl);
+    const _connectionBackgroundClient = get(connectionBackgroundClient);
+    const connection = new BackgroundSolanaConnection(
+      _connectionBackgroundClient,
+      _connectionUrl
+    );
     const _commitment = get(commitment);
     // Note: this provider is *read-only*.
     //
@@ -122,7 +136,7 @@ export const anchorContext = selector({
     const tokenClient = Spl.token(provider);
     return {
       connection,
-      connectionUrl: connectionUrlStr,
+      connectionUrl: _connectionUrl,
       provider,
       tokenClient,
     };

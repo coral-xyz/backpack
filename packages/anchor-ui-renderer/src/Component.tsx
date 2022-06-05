@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import type { Element } from "@200ms/anchor-ui";
 import { NodeKind } from "@200ms/anchor-ui";
 import { formatUSD } from "@200ms/common";
@@ -255,20 +256,52 @@ export function BalancesTable({
 }: any) {
   const classes = useStyles();
   return (
-    <Card className={classes.blockchainCard} elevation={0}>
-      {children ??
-        childrenRenderer.map((c: Element) => (
-          <ViewRenderer key={c.id} element={c} />
-        ))}
-    </Card>
+    <BalancesTableProvider>
+      <Card className={classes.blockchainCard} elevation={0}>
+        {children ??
+          childrenRenderer.map((c: Element) => (
+            <ViewRenderer key={c.id} element={c} />
+          ))}
+      </Card>
+    </BalancesTableProvider>
   );
+}
+
+function BalancesTableProvider(props: any) {
+  const [showContent, setShowContent] = useState(true);
+  return (
+    <_BalancesTableContext.Provider
+      value={{
+        showContent,
+        setShowContent,
+      }}
+    >
+      {props.children}
+    </_BalancesTableContext.Provider>
+  );
+}
+
+type BalancesContext = {
+  showContent: boolean;
+  setShowContent: (b: boolean) => void;
+};
+const _BalancesTableContext = React.createContext<BalancesContext | null>(null);
+
+function useBalancesContext() {
+  const ctx = React.useContext(_BalancesTableContext);
+  if (ctx === null) {
+    throw new Error("Context not available");
+  }
+  return ctx;
 }
 
 export function BalancesTableHead({ props, style }: any) {
   const { title, iconUrl } = props;
   const classes = useStyles();
+  const { showContent, setShowContent } = useBalancesContext();
   return (
     <CardHeader
+      onClick={() => setShowContent(!showContent)}
       avatar={
         iconUrl ? (
           <img className={classes.blockchainLogo} src={iconUrl} />
@@ -292,9 +325,15 @@ export function BalancesTableContent({
   childrenRenderer,
 }: any) {
   const classes = useStyles();
+  const { showContent } = useBalancesContext();
   return (
     <CardContent classes={{ root: classes.cardContentRoot }}>
-      <List classes={{ root: classes.cardListRoot }}>
+      <List
+        style={{
+          display: !showContent ? "none" : undefined,
+        }}
+        classes={{ root: classes.cardListRoot }}
+      >
         {children ??
           childrenRenderer.map((c: Element) => (
             <ViewRenderer key={c.id} element={c} />

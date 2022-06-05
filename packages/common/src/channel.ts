@@ -1,9 +1,6 @@
 import type { Event, RpcRequest, RpcResponse, Notification } from "./types";
 import { BrowserRuntime } from "./browser";
-import { getLogger } from "./logging";
 import { POST_MESSAGE_ORIGIN } from "./constants";
-
-const logger = getLogger("common/channel");
 
 // Channel is a class that establishes communication channel from a
 // content/injected script to a background script.

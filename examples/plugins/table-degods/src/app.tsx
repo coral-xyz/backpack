@@ -14,9 +14,9 @@ import AnchorUi, {
   BalancesTableRow,
   BalancesTableCell,
 } from "@200ms/anchor-ui";
+import { customSplTokenAccounts } from "@200ms/common";
 import { GemFarm, IDL as IDL_GEM_FARM } from "./idl-gem-farm";
 import { GemBank, IDL as IDL_GEM_BANK } from "./idl-gem-bank";
-import { customSplTokenAccounts } from "@200ms/common";
 
 //
 // On connection to the host environment, warm the cache.
@@ -96,9 +96,11 @@ function StakeDetail({ token }: any) {
         lamports: 1000000,
       })
     );
+    console.log("plugin fetching most recent blockhash");
     const { blockhash } = await window.anchorUi.connection!.getLatestBlockhash(
       "recent"
     );
+    console.log("plugin got recent blockhash", blockhash);
     tx.recentBlockhash = blockhash;
     const signature = await window.anchorUi.send(tx);
     console.log("test: got signed transaction here", signature);
