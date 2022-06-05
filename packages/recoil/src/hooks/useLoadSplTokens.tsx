@@ -3,10 +3,10 @@ import { TokenAccountWithKey } from "../types";
 import * as atoms from "../atoms";
 
 export function useTokenAddresses(): string[] {
-  const walletAddress = useRecoilValue(atoms.activeWallet)!;
+  const publicKey = useRecoilValue(atoms.activeWallet)!;
   const connectionUrl = useRecoilValue(atoms.connectionUrl)!;
   return useRecoilValue(
-    atoms.solanaTokenAccountKeys({ connectionUrl, walletAddress })
+    atoms.solanaTokenAccountKeys({ connectionUrl, publicKey })
   )!;
 }
 
@@ -43,7 +43,7 @@ export const useUpdateAllSplTokenAccounts = () =>
         set(
           atoms.solanaTokenAccountKeys({
             connectionUrl,
-            walletAddress: publicKey,
+            publicKey,
           }),
           customSplTokenAccounts.tokenAccounts.map((a) => a.key.toString())
         );

@@ -15,7 +15,14 @@ import { fetchPriceData } from "./price-data";
  * Defines the initial app load fetch.
  */
 export const bootstrap = selectorFamily<
-  any,
+  {
+    splTokenAccounts: Map<string, TokenAccountWithKey>;
+    splTokenMetadata: Array<any>;
+    splNftMetadata: Map<string, any>;
+    coingeckoData: Map<string, any>;
+    recentTransactions: Array<any>;
+    walletPublicKey: PublicKey;
+  },
   { publicKey: string; connectionUrl: string }
 >({
   key: "bootstrap",
@@ -71,7 +78,7 @@ export const bootstrap = selectorFamily<
         // TODO: show error notification.
         console.error(err);
         return {
-          splTokenAccounts: [],
+          splTokenAccounts: new Map(),
           splTokenMetadata: [],
           splNftMetadata: new Map(),
           coingeckoData: new Map(),

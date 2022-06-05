@@ -13,7 +13,13 @@ export const blockchainTokensSorted = selectorFamily({
   get:
     (blockchain: string) =>
     ({ get }: any) => {
-      const tokenAddresses = get(blockchainTokens(blockchain));
+      const tokenAddresses = get(
+        blockchainTokens({
+          publicKey: get(activeWallet),
+          connectionUrl: get(connectionUrl),
+          blockchain,
+        })
+      );
       const tokenAccounts = tokenAddresses.map((address: string) =>
         get(
           blockchainTokenAccounts({
@@ -33,15 +39,19 @@ export const blockchainTokensSorted = selectorFamily({
 export const blockchainTokens = selectorFamily({
   key: "blockchainTokens",
   get:
-    (b: string) =>
+    ({
+      blockchain,
+      connectionUrl,
+      publicKey,
+    }: {
+      blockchain: string;
+      connectionUrl: string;
+      publicKey: string;
+    }) =>
     ({ get }: any) => {
-      switch (b) {
+      switch (blockchain) {
         case "solana":
-          const aw = get(activeWallet);
-          const cu = get(connectionUrl);
-          return get(
-            solanaTokenAccountKeys({ connectionUrl: cu, walletAddress: aw })
-          );
+          return get(solanaTokenAccountKeys({ connectionUrl, publicKey }));
         default:
           throw new Error("invariant violation");
       }
@@ -111,7 +121,7 @@ export const blockchainTokenAccounts = selectorFamily({
  */
 export const solanaTokenAccountKeys = atomFamily<
   Array<string>,
-  { connectionUrl: string; walletAddress: string }
+  { connectionUrl: string; publicKey: string }
 >({
   key: "solanaTokenAccountKeys",
   default: selectorFamily({
@@ -119,15 +129,13 @@ export const solanaTokenAccountKeys = atomFamily<
     get:
       ({
         connectionUrl,
-        walletAddress,
+        publicKey,
       }: {
         connectionUrl: string;
-        walletAddress: string;
+        publicKey: string;
       }) =>
       ({ get }: any) => {
-        const data = get(
-          bootstrap({ connectionUrl, publicKey: walletAddress })
-        );
+        const data = get(bootstrap({ connectionUrl, publicKey }));
         return Array.from(data.splTokenAccounts.keys()) as string[];
       },
   }),
