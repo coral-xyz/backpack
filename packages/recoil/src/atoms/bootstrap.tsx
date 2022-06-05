@@ -1,75 +1,85 @@
-import { atom, selector } from "recoil";
+import { atom, selectorFamily } from "recoil";
 import { PublicKey } from "@solana/web3.js";
 import {
   getBackgroundClient,
   UI_RPC_METHOD_NAVIGATION_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
 } from "@200ms/common";
-import { TokenAccountWithKey, TABS } from "../types";
 import { anchorContext } from "../atoms/wallet";
+import { TokenAccountWithKey, TABS } from "../types";
 import { fetchRecentTransactions } from "./recent-transactions";
 import { splTokenRegistry } from "./token-registry";
 import { fetchPriceData } from "./price-data";
-import { activeWallet } from "./wallet";
 
 /**
  * Defines the initial app load fetch.
  */
-export const bootstrap = selector<any>({
+export const bootstrap = selectorFamily<
+  any,
+  { publicKey: string; connectionUrl: string }
+>({
   key: "bootstrap",
-  get: async ({ get }: any) => {
-    const tokenRegistry = get(splTokenRegistry);
-    const { provider } = get(anchorContext);
-    const walletPublicKey = new PublicKey(get(activeWallet));
-
-    //
-    // Perform data fetch.
-    //
-    try {
-      //
-      // Fetch token data.
-      //
-      const { tokenAccountsMap, tokenMetadata, nftMetadata } =
-        await provider.connection.customSplTokenAccounts(walletPublicKey);
-      const splTokenAccounts = new Map<string, TokenAccountWithKey>(
-        tokenAccountsMap
-      );
-
-      const [coingeckoData, recentTransactions] = await Promise.all([
-        //
-        // Fetch the price data.
-        //
-        fetchPriceData(splTokenAccounts, tokenRegistry),
-        //
-        // Get the transaction data for the wallet's recent transactions.
-        //
-        fetchRecentTransactions(provider.connection, walletPublicKey),
-      ]);
+  get:
+    ({
+      publicKey,
+      connectionUrl,
+    }: {
+      publicKey: string;
+      connectionUrl: string;
+    }) =>
+    async ({ get }: any) => {
+      const tokenRegistry = get(splTokenRegistry);
+      const { provider } = get(anchorContext);
+      const walletPublicKey = new PublicKey(publicKey);
 
       //
-      // Done.
+      // Perform data fetch.
       //
-      return {
-        splTokenAccounts,
-        splTokenMetadata: tokenMetadata,
-        splNftMetadata: new Map(nftMetadata),
-        coingeckoData,
-        recentTransactions,
-        walletPublicKey,
-      };
-    } catch (err) {
-      // TODO: show error notification.
-      console.error(err);
-      return {
-        splTokenAccounts: [],
-        splTokenMetadata: [],
-        splNftMetadata: new Map(),
-        coingeckoData: new Map(),
-        recentTransactions: [],
-        walletPublicKey,
-      };
-    }
-  },
+      try {
+        //
+        // Fetch token data.
+        //
+        const { tokenAccountsMap, tokenMetadata, nftMetadata } =
+          await provider.connection.customSplTokenAccounts(walletPublicKey);
+        const splTokenAccounts = new Map<string, TokenAccountWithKey>(
+          tokenAccountsMap
+        );
+
+        const [coingeckoData, recentTransactions] = await Promise.all([
+          //
+          // Fetch the price data.
+          //
+          fetchPriceData(splTokenAccounts, tokenRegistry),
+          //
+          // Get the transaction data for the wallet's recent transactions.
+          //
+          fetchRecentTransactions(provider.connection, walletPublicKey),
+        ]);
+
+        //
+        // Done.
+        //
+        return {
+          splTokenAccounts,
+          splTokenMetadata: tokenMetadata,
+          splNftMetadata: new Map(nftMetadata),
+          coingeckoData,
+          recentTransactions,
+          walletPublicKey,
+        };
+      } catch (err) {
+        // TODO: show error notification.
+        console.error(err);
+        return {
+          splTokenAccounts: [],
+          splTokenMetadata: [],
+          splNftMetadata: new Map(),
+          coingeckoData: new Map(),
+          recentTransactions: [],
+          walletPublicKey,
+        };
+      }
+    },
 });
 
 // Version of bootstrap for very fast data on load. This shouldn't block the load

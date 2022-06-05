@@ -1,7 +1,7 @@
 import { atomFamily, selectorFamily } from "recoil";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { anchorContext } from "../";
 import { bootstrap } from "./bootstrap";
+import { activeWallet, anchorContext } from "./wallet";
 
 export const recentTransactions = atomFamily<any | null, string>({
   key: "recentTransactionsMap",
@@ -10,7 +10,9 @@ export const recentTransactions = atomFamily<any | null, string>({
     get:
       (address: string) =>
       async ({ get }: any) => {
-        const b = get(bootstrap);
+        const publicKey = get(activeWallet);
+        const { connectionUrl } = get(anchorContext);
+        const b = get(bootstrap({ publicKey, connectionUrl }));
         const { connection } = get(anchorContext);
         if (b.walletPublicKey.toString() === address) {
           return b.recentTransactions;

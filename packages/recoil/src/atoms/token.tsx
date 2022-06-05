@@ -3,7 +3,7 @@ import { bootstrap } from "./bootstrap";
 import { priceData } from "./price-data";
 import { splTokenRegistry } from "./token-registry";
 import { TokenAccountWithKey } from "../types";
-import { activeWallet } from "./wallet";
+import { connectionUrl, activeWallet, anchorContext } from "./wallet";
 
 /**
  * Returns the token accounts sorted by usd notional balances.
@@ -38,7 +38,10 @@ export const blockchainTokens = selectorFamily({
       switch (b) {
         case "solana":
           const aw = get(activeWallet);
-          return get(solanaTokenAccountKeys(aw));
+          const cu = get(connectionUrl);
+          return get(
+            solanaTokenAccountKeys({ connectionUrl: cu, walletAddress: aw })
+          );
         default:
           throw new Error("invariant violation");
       }
@@ -106,14 +109,25 @@ export const blockchainTokenAccounts = selectorFamily({
 /**
  * List of all stored token accounts within tokenAccountsMap.
  */
-export const solanaTokenAccountKeys = atomFamily<Array<string>, string>({
+export const solanaTokenAccountKeys = atomFamily<
+  Array<string>,
+  { connectionUrl: string; walletAddress: string }
+>({
   key: "solanaTokenAccountKeys",
   default: selectorFamily({
     key: "solanaTokenAccountKeysDefault",
     get:
-      (walletAddress: string) =>
+      ({
+        connectionUrl,
+        walletAddress,
+      }: {
+        connectionUrl: string;
+        walletAddress: string;
+      }) =>
       ({ get }: any) => {
-        const data = get(bootstrap);
+        const data = get(
+          bootstrap({ connectionUrl, publicKey: walletAddress })
+        );
         return Array.from(data.splTokenAccounts.keys()) as string[];
       },
   }),
@@ -132,7 +146,9 @@ export const solanaTokenAccountsMap = atomFamily<
     get:
       (address: string) =>
       ({ get }: any) => {
-        const data = get(bootstrap);
+        const publicKey = get(activeWallet);
+        const { connectionUrl } = get(anchorContext);
+        const data = get(bootstrap({ connectionUrl, publicKey }));
         return data.splTokenAccounts.get(address);
       },
   }),
@@ -146,7 +162,9 @@ export const solanaNftMetadataKeys = atom<Array<string>>({
   default: selector({
     key: "solanaNftKeysDefault",
     get: ({ get }: any) => {
-      const b = get(bootstrap);
+      const publicKey = get(activeWallet);
+      const { connectionUrl } = get(anchorContext);
+      const b = get(bootstrap({ publicKey, connectionUrl }));
       return Array.from(b.splNftMetadata.keys());
     },
   }),
@@ -162,7 +180,9 @@ export const solanaNftMetadataMap = atomFamily<any, string>({
     get:
       (tokenAddress: string) =>
       ({ get }: any) => {
-        const b = get(bootstrap);
+        const publicKey = get(activeWallet);
+        const { connectionUrl } = get(anchorContext);
+        const b = get(bootstrap({ publicKey, connectionUrl }));
         return b.splNftMetadata.get(tokenAddress);
       },
   }),

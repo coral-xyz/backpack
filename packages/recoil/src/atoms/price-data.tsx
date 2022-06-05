@@ -2,6 +2,7 @@ import { atomFamily, selectorFamily } from "recoil";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { TokenAccountWithKey, TokenDisplay } from "../types";
 import { bootstrap } from "./bootstrap";
+import { activeWallet, anchorContext } from "./wallet";
 
 export const priceData = atomFamily<TokenDisplay | null, string>({
   key: "priceData",
@@ -10,7 +11,9 @@ export const priceData = atomFamily<TokenDisplay | null, string>({
     get:
       (address: string) =>
       ({ get }: any) => {
-        const data = get(bootstrap);
+        const publicKey = get(activeWallet);
+        const { connectionUrl } = get(anchorContext);
+        const data = get(bootstrap({ publicKey, connectionUrl }));
         return data.coingeckoData.get(address);
       },
   }),

@@ -156,6 +156,7 @@ export class Backend {
         Io.events.emit(BACKEND_EVENT, {
           name: NOTIFICATION_SPL_TOKENS_DID_UPDATE,
           data: {
+            connectionUrl: this.url,
             publicKey: activeWallet.toString(),
             customSplTokenAccounts: data,
           },

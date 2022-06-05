@@ -3,8 +3,11 @@ import { TokenAccountWithKey } from "../types";
 import * as atoms from "../atoms";
 
 export function useTokenAddresses(): string[] {
-  const wallet = useRecoilValue(atoms.activeWallet);
-  return useRecoilValue(atoms.solanaTokenAccountKeys(wallet!))!;
+  const walletAddress = useRecoilValue(atoms.activeWallet)!;
+  const connectionUrl = useRecoilValue(atoms.connectionUrl)!;
+  return useRecoilValue(
+    atoms.solanaTokenAccountKeys({ connectionUrl, walletAddress })
+  )!;
 }
 
 /**
@@ -18,11 +21,13 @@ export const useUpdateAllSplTokenAccounts = () =>
   useRecoilCallback(
     ({ set }: any) =>
       async ({
+        connectionUrl,
         publicKey,
         tokenAccounts,
         tokenMetadata,
         nftMetadata,
       }: {
+        connectionUrl: string;
         publicKey: string;
         tokenAccounts: TokenAccountWithKey[];
         tokenMetadata: Array<null | any>;
@@ -36,7 +41,10 @@ export const useUpdateAllSplTokenAccounts = () =>
         // Regular tokens.
         //
         set(
-          atoms.solanaTokenAccountKeys(publicKey),
+          atoms.solanaTokenAccountKeys({
+            connectionUrl,
+            walletAddress: publicKey,
+          }),
           tokenAccounts.map((a) => a.key.toString())
         );
         tokenAccounts.forEach((tokenAccount) => {

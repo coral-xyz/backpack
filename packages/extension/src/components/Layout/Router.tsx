@@ -1,5 +1,10 @@
 import { useSearchParams, Routes, Route, Navigate } from "react-router-dom";
-import { useBootstrap, useNavigation } from "@200ms/recoil";
+import {
+  useBootstrap,
+  useNavigation,
+  useActiveWallet,
+  useAnchorContext,
+} from "@200ms/recoil";
 import { Balances } from "../Unlocked/Balances";
 import { Token } from "../Unlocked/Balances/Token";
 import { PluginDisplay, PluginTableDetailDisplay } from "../Unlocked/Apps";
@@ -7,7 +12,9 @@ import { Nfts } from "../Unlocked/Nfts";
 import { Apps } from "../Unlocked/Apps";
 
 export function Router() {
-  useBootstrap();
+  const { publicKey } = useActiveWallet();
+  const { connectionUrl } = useAnchorContext();
+  useBootstrap({ publicKey: publicKey.toString(), connectionUrl });
   return (
     <Routes>
       <Route path="/balances" element={<BalancesPage />} />

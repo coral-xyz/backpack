@@ -163,6 +163,7 @@ export function NotificationsProvider(props: any) {
     };
     const handleSplTokensDidUpdate = (notif: Notification) => {
       const publicKey = notif.data.publicKey;
+      const connectionUrl = notif.data.connectionUrl;
       const result = BackgroundSolanaConnection.customSplTokenAccountsFromJson(
         notif.data.customSplTokenAccounts
       );
@@ -171,6 +172,7 @@ export function NotificationsProvider(props: any) {
         tokenAccounts: result.tokenAccountsMap.map((t: any) => t[1]),
         nftMetadata: new Map(result.nftMetadata),
         publicKey,
+        connectionUrl,
       });
     };
     const handleUrlDidChange = (notif: Notification) => {
