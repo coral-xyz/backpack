@@ -14,9 +14,9 @@ import AnchorUi, {
   BalancesTableRow,
   BalancesTableCell,
 } from "@200ms/anchor-ui";
+import { customSplTokenAccounts } from "@200ms/common";
 import { GemFarm, IDL as IDL_GEM_FARM } from "./idl-gem-farm";
 import { GemBank, IDL as IDL_GEM_BANK } from "./idl-gem-bank";
-import { customSplTokenAccounts } from "@200ms/common";
 
 //
 // On connection to the host environment, warm the cache.
@@ -185,6 +185,7 @@ async function fetchTokenAccountsInner(isDead: boolean, wallet: PublicKey) {
     [vaultPubkey.toBuffer()],
     PID_GEM_BANK
   );
+  console.log("armani: inside degods here", window.anchorUi.connection);
   const tokenAccounts = await customSplTokenAccounts(
     window.anchorUi.connection,
     vaultAuthority

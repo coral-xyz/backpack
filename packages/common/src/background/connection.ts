@@ -1,4 +1,5 @@
 import BN from "bn.js";
+import { Buffer } from "buffer";
 import {
   Connection,
   ConnectionConfig,
@@ -73,41 +74,8 @@ import {
   SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
-} from "./constants";
-import { BackgroundClient } from "./channel";
-
-let _backgroundClient: BackgroundClient | null = null;
-let _backgroundResponseClient: BackgroundClient | null = null;
-
-/////////////////////////////////////////////////////////////////////////////////
-// Background API.
-/////////////////////////////////////////////////////////////////////////////////
-
-export function setBackgroundClient(c: BackgroundClient) {
-  _backgroundClient = c;
-}
-
-export function setBackgroundResponseClient(c: BackgroundClient) {
-  _backgroundResponseClient = c;
-}
-
-export function getBackgroundClient(): BackgroundClient {
-  if (_backgroundClient === null) {
-    throw new Error("_backgroundClient not initialized");
-  }
-  return _backgroundClient;
-}
-
-export function getBackgroundResponseClient(): BackgroundClient {
-  if (_backgroundResponseClient === null) {
-    throw new Error("_backgroundClient not initialized");
-  }
-  return _backgroundResponseClient;
-}
-
-/////////////////////////////////////////////////////////////////////////////////
-// Background Connection API.
-/////////////////////////////////////////////////////////////////////////////////
+} from "../constants";
+import { BackgroundClient } from "../channel";
 
 export class BackgroundSolanaConnection extends Connection {
   private _backgroundClient: BackgroundClient;
@@ -192,14 +160,17 @@ export class BackgroundSolanaConnection extends Connection {
       // @ts-ignore
       _filter = { programId: filter.programId.toString() };
     }
+    console.log("armani: wtf here");
     const resp = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNTS_BY_OWNER,
       params: [ownerAddress.toString(), _filter, commitment],
     });
+    console.log("armani: resp hereinside custom", resp);
     resp.value = resp.value.map((token: any) => {
       token.account.data = Buffer.from(token.account.data);
       return token;
     });
+    console.log("armani: resp here2", resp);
     return resp;
   }
 
