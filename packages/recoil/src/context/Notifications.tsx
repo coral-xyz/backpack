@@ -168,11 +168,13 @@ export function NotificationsProvider(props: any) {
         notif.data.customSplTokenAccounts
       );
       updateAllSplTokenAccounts({
-        ...result.customSplTokenAccounts,
-        tokenAccounts: result.tokenAccountsMap.map((t: any) => t[1]),
-        nftMetadata: new Map(result.nftMetadata),
         publicKey,
         connectionUrl,
+        customSplTokenAccounts: {
+          ...result.customSplTokenAccounts,
+          tokenAccounts: result.tokenAccountsMap.map((t: any) => t[1]),
+          nftMetadata: new Map(result.nftMetadata),
+        },
       });
     };
     const handleUrlDidChange = (notif: Notification) => {

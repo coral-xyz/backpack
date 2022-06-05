@@ -23,15 +23,15 @@ export const useUpdateAllSplTokenAccounts = () =>
       async ({
         connectionUrl,
         publicKey,
-        tokenAccounts,
-        tokenMetadata,
-        nftMetadata,
+        customSplTokenAccounts,
       }: {
         connectionUrl: string;
         publicKey: string;
-        tokenAccounts: TokenAccountWithKey[];
-        tokenMetadata: Array<null | any>;
-        nftMetadata: Map<string, any>;
+        customSplTokenAccounts: {
+          tokenAccounts: TokenAccountWithKey[];
+          tokenMetadata: Array<null | any>;
+          nftMetadata: Map<string, any>;
+        };
       }) => {
         // TODO: Do we want to check if the atoms have changed before setting
         //       them? Probably since we don't have a recoil transaction and
@@ -45,9 +45,9 @@ export const useUpdateAllSplTokenAccounts = () =>
             connectionUrl,
             walletAddress: publicKey,
           }),
-          tokenAccounts.map((a) => a.key.toString())
+          customSplTokenAccounts.tokenAccounts.map((a) => a.key.toString())
         );
-        tokenAccounts.forEach((tokenAccount) => {
+        customSplTokenAccounts.tokenAccounts.forEach((tokenAccount) => {
           set(
             atoms.solanaTokenAccountsMap(tokenAccount.key.toString()),
             tokenAccount
@@ -57,7 +57,10 @@ export const useUpdateAllSplTokenAccounts = () =>
         //
         // Nfts.
         //
-        set(atoms.solanaNftMetadataKeys, Array.from(nftMetadata.keys()));
+        set(
+          atoms.solanaNftMetadataKeys,
+          Array.from(customSplTokenAccounts.nftMetadata.keys())
+        );
         // @ts-ignore
         for (let [key, value] of nftMetadata) {
           set(atoms.solanaNftMetadataMap(key), value);
