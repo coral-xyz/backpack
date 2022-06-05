@@ -10,6 +10,7 @@ import {
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_RESPONSE,
   CONNECTION_POPUP_NOTIFICATIONS,
+  SOLANA_CONNECTION_RPC_UI,
 } from "@200ms/common";
 
 //
@@ -27,9 +28,7 @@ export class Io {
   public static rpcServerUi = PortChannel.server(CONNECTION_POPUP_RPC);
 
   // Server receiving Connection API requests from the extension UI.
-  public static solanaConnection = PortChannel.server(
-    CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST
-  );
+  public static solanaConnection = PortChannel.server(SOLANA_CONNECTION_RPC_UI);
 
   // Server receiving Connection API requests from the injected script.
   public static solanaConnectionInjected = Channel.server(

@@ -55,7 +55,7 @@ export function start() {
 }
 
 async function handle<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
-  logger.debug(`handle rpc ${msg.method}`);
+  logger.debug(`handle rpc ${msg.method}`, msg);
 
   const { method, params } = msg;
   switch (method) {

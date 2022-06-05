@@ -1,3 +1,4 @@
+import { EventEmitter } from "eventemitter3";
 import { Provider } from "@project-serum/anchor";
 import {
   TransactionSignature,
@@ -10,7 +11,7 @@ import {
   SimulatedTransactionResponse,
   Commitment,
 } from "@solana/web3.js";
-import { EventEmitter } from "eventemitter3";
+
 import {
   getLogger,
   Event,
@@ -42,7 +43,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
   //
   // Channel to send Solana Connection API requests to the extension.
   //
-  private _connectionRequestManager?: RequestManager;
+  private _connectionRequestManager: RequestManager;
 
   public isAnchor: boolean;
   public isConnected: boolean;
@@ -136,11 +137,10 @@ export class ProviderInjection extends EventEmitter implements Provider {
       throw new Error("provider already connected");
     }
     // Send request to the RPC api.
-    const resp = await this._requestManager.request({
+    return await this._requestManager.request({
       method: RPC_METHOD_CONNECT,
       params: [onlyIfTrustedMaybe],
     });
-    return resp;
   }
 
   async disconnect() {

@@ -40,7 +40,7 @@ async function handleInjected<T = any>(
 }
 
 async function handle<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
-  logger.debug(`handle solana connection ${msg.method}`);
+  logger.debug(`handle solana connection ${msg.method}`, msg);
   return await handleImpl(msg);
 }
 

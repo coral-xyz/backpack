@@ -156,6 +156,7 @@ export class BackgroundSolanaConnection extends Connection {
     if (resp === null) {
       return resp;
     }
+    resp.data = Buffer.from(resp.data);
     resp.owner = new PublicKey(resp.owner);
     return resp;
   }
@@ -196,7 +197,7 @@ export class BackgroundSolanaConnection extends Connection {
       params: [ownerAddress.toString(), _filter, commitment],
     });
     resp.value = resp.value.map((token: any) => {
-      //token.account.data = Buffer.from(token.account.data);
+      token.account.data = Buffer.from(token.account.data);
       return token;
     });
     return resp;
@@ -224,7 +225,7 @@ export class BackgroundSolanaConnection extends Connection {
       if (a === null) {
         return a;
       }
-      //      a.data = Buffer.from(a.data);
+      a.data = Buffer.from(a.data);
       return a;
     });
   }

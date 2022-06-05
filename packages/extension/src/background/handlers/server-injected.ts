@@ -42,7 +42,7 @@ async function handle<T = any>(
   ctx: Context,
   req: RpcRequest
 ): Promise<RpcResponse<T>> {
-  logger.debug(`handle rpc ${req.method}`);
+  logger.debug(`handle rpc ${req.method}`, req);
 
   const { method, params } = req;
   switch (method) {
@@ -295,7 +295,7 @@ class RequestManager {
 
 async function handlePopupUiResponse(msg: RpcResponse): Promise<string> {
   const { id, result, error } = msg;
-  logger.debug("handle popup ui response");
+  logger.debug("handle popup ui response", msg);
   RequestManager.resolveResponse(id, result, error);
   return SUCCESS_RESPONSE;
 }
