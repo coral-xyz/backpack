@@ -1,92 +1,83 @@
-import { atom, selectorFamily } from "recoil";
+import { atom, selector, selectorFamily } from "recoil";
 import { PublicKey } from "@solana/web3.js";
 import {
-  BackgroundSolanaConnection,
   getBackgroundClient,
   UI_RPC_METHOD_NAVIGATION_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
 } from "@200ms/common";
-import { anchorContext, connectionBackgroundClient } from "../atoms/wallet";
+import { anchorContext } from "../atoms/wallet";
 import { TokenAccountWithKey, TABS } from "../types";
 import { fetchRecentTransactions } from "./recent-transactions";
 import { splTokenRegistry } from "./token-registry";
 import { fetchPriceData } from "./price-data";
+import { activeWallet } from "./wallet";
 
 /**
  * Defines the initial app load fetch.
  */
-export const bootstrap = selectorFamily<
-  {
-    splTokenAccounts: Map<string, TokenAccountWithKey>;
-    splTokenMetadata: Array<any>;
-    splNftMetadata: Map<string, any>;
-    coingeckoData: Map<string, any>;
-    recentTransactions: Array<any>;
-    walletPublicKey: PublicKey;
-  },
-  { publicKey: string; connectionUrl: string }
->({
+export const bootstrap = selector<{
+  splTokenAccounts: Map<string, TokenAccountWithKey>;
+  splTokenMetadata: Array<any>;
+  splNftMetadata: Map<string, any>;
+  coingeckoData: Map<string, any>;
+  recentTransactions: Array<any>;
+  walletPublicKey: PublicKey;
+}>({
   key: "bootstrap",
-  get:
-    ({
-      publicKey,
-      connectionUrl,
-    }: {
-      publicKey: string;
-      connectionUrl: string;
-    }) =>
-    async ({ get }: any) => {
-      const tokenRegistry = get(splTokenRegistry);
-      const { provider } = get(anchorContext);
-      const walletPublicKey = new PublicKey(publicKey);
+  get: async ({ get }: any) => {
+    const tokenRegistry = get(splTokenRegistry);
+    const { provider } = get(anchorContext);
+    const publicKey = get(activeWallet);
+    const { connectionUrl: c } = get(anchorContext);
+    const walletPublicKey = new PublicKey(publicKey);
+    //
+    // Perform data fetch.
+    //
+    try {
       //
-      // Perform data fetch.
+      // Fetch token data.
       //
-      try {
-        //
-        // Fetch token data.
-        //
-        const { tokenAccountsMap, tokenMetadata, nftMetadata } =
-          await provider.connection.customSplTokenAccounts(walletPublicKey);
-        const splTokenAccounts = new Map<string, TokenAccountWithKey>(
-          tokenAccountsMap
-        );
+      const { tokenAccountsMap, tokenMetadata, nftMetadata } =
+        await provider.connection.customSplTokenAccounts(walletPublicKey);
+      const splTokenAccounts = new Map<string, TokenAccountWithKey>(
+        tokenAccountsMap
+      );
 
-        const [coingeckoData, recentTransactions] = await Promise.all([
-          //
-          // Fetch the price data.
-          //
-          fetchPriceData(splTokenAccounts, tokenRegistry),
-          //
-          // Get the transaction data for the wallet's recent transactions.
-          //
-          fetchRecentTransactions(provider.connection, walletPublicKey),
-        ]);
+      const [coingeckoData, recentTransactions] = await Promise.all([
+        //
+        // Fetch the price data.
+        //
+        fetchPriceData(splTokenAccounts, tokenRegistry),
+        //
+        // Get the transaction data for the wallet's recent transactions.
+        //
+        fetchRecentTransactions(provider.connection, walletPublicKey),
+      ]);
 
-        //
-        // Done.
-        //
-        return {
-          splTokenAccounts,
-          splTokenMetadata: tokenMetadata,
-          splNftMetadata: new Map(nftMetadata),
-          coingeckoData,
-          recentTransactions,
-          walletPublicKey,
-        };
-      } catch (err) {
-        // TODO: show error notification.
-        console.error(err);
-        return {
-          splTokenAccounts: new Map(),
-          splTokenMetadata: [],
-          splNftMetadata: new Map(),
-          coingeckoData: new Map(),
-          recentTransactions: [],
-          walletPublicKey,
-        };
-      }
-    },
+      //
+      // Done.
+      //
+      return {
+        splTokenAccounts,
+        splTokenMetadata: tokenMetadata,
+        splNftMetadata: new Map(nftMetadata),
+        coingeckoData,
+        recentTransactions,
+        walletPublicKey,
+      };
+    } catch (err) {
+      // TODO: show error notification.
+      console.error(err);
+      return {
+        splTokenAccounts: new Map(),
+        splTokenMetadata: [],
+        splNftMetadata: new Map(),
+        coingeckoData: new Map(),
+        recentTransactions: [],
+        walletPublicKey,
+      };
+    }
+  },
 });
 
 // Version of bootstrap for very fast data on load. This shouldn't block the load

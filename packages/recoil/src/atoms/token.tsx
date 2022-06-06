@@ -146,7 +146,7 @@ export const solanaTokenAccountKeys = atomFamily<
         publicKey: string;
       }) =>
       ({ get }: any) => {
-        const data = get(bootstrap({ connectionUrl, publicKey }));
+        const data = get(bootstrap);
         return Array.from(data.splTokenAccounts.keys()) as string[];
       },
   }),
@@ -171,8 +171,7 @@ export const solanaTokenAccountsMap = atomFamily<
         tokenAddress: string;
       }) =>
       ({ get }: any) => {
-        const publicKey = get(activeWallet);
-        const data = get(bootstrap({ connectionUrl, publicKey }));
+        const data = get(bootstrap);
         return data.splTokenAccounts.get(tokenAddress);
       },
   }),
@@ -186,9 +185,7 @@ export const solanaNftMetadataKeys = atom<Array<string>>({
   default: selector({
     key: "solanaNftKeysDefault",
     get: ({ get }: any) => {
-      const publicKey = get(activeWallet);
-      const { connectionUrl } = get(anchorContext);
-      const b = get(bootstrap({ publicKey, connectionUrl }));
+      const b = get(bootstrap);
       return Array.from(b.splNftMetadata.keys());
     },
   }),
@@ -204,9 +201,7 @@ export const solanaNftMetadataMap = atomFamily<any, string>({
     get:
       (tokenAddress: string) =>
       ({ get }: any) => {
-        const publicKey = get(activeWallet);
-        const { connectionUrl } = get(anchorContext);
-        const b = get(bootstrap({ publicKey, connectionUrl }));
+        const b = get(bootstrap);
         return b.splNftMetadata.get(tokenAddress);
       },
   }),

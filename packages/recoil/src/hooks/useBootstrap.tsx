@@ -5,11 +5,8 @@ import { useKeyringStoreState } from "./useKeyringStoreState";
 import { useCommitment } from "./useSolanaConnection";
 
 // Bootstrap data for the initial load.
-export function useBootstrap(req: {
-  publicKey: string;
-  connectionUrl: string;
-}) {
-  return useRecoilValue(atoms.bootstrap(req));
+export function useBootstrap() {
+  return useRecoilValue(atoms.bootstrap);
 }
 
 export function useBootstrapFast() {
