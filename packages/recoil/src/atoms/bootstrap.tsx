@@ -37,11 +37,7 @@ export const bootstrap = selectorFamily<
     }) =>
     async ({ get }: any) => {
       const tokenRegistry = get(splTokenRegistry);
-      const _connectionBackgroundClient = get(connectionBackgroundClient);
-      const connection = new BackgroundSolanaConnection(
-        _connectionBackgroundClient,
-        connectionUrl
-      );
+      const { provider } = get(anchorContext);
       const walletPublicKey = new PublicKey(publicKey);
       //
       // Perform data fetch.
@@ -51,7 +47,7 @@ export const bootstrap = selectorFamily<
         // Fetch token data.
         //
         const { tokenAccountsMap, tokenMetadata, nftMetadata } =
-          await connection.customSplTokenAccounts(walletPublicKey);
+          await provider.connection.customSplTokenAccounts(walletPublicKey);
         const splTokenAccounts = new Map<string, TokenAccountWithKey>(
           tokenAccountsMap
         );
@@ -64,7 +60,7 @@ export const bootstrap = selectorFamily<
           //
           // Get the transaction data for the wallet's recent transactions.
           //
-          fetchRecentTransactions(connection, walletPublicKey),
+          fetchRecentTransactions(provider.connection, walletPublicKey),
         ]);
 
         //
