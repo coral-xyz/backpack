@@ -197,6 +197,7 @@ function QueryApproveMessage() {
 
 function FullApp() {
   logger.debug("full app");
+
   const keyringStoreState = useKeyringStoreState();
   const needsOnboarding =
     keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
@@ -253,5 +254,6 @@ const useStyles = makeStyles((theme: any) => ({
     backgroundColor: theme.custom.colors.background,
     display: "flex",
     flexDirection: "column",
+    overflow: "hidden",
   },
 }));
