@@ -1,9 +1,4 @@
-import {
-  useRecoilState,
-  useRecoilValue,
-  useRecoilValueLoadable,
-  Loadable,
-} from "recoil";
+import { useRecoilValue, useRecoilValueLoadable, Loadable } from "recoil";
 import { Commitment, Connection } from "@solana/web3.js";
 import {
   getBackgroundClient,
@@ -14,8 +9,8 @@ import * as atoms from "../atoms";
 import { useSplTokenRegistry } from "./useSplTokenRegistry";
 import { useActiveWallet } from "./useWallet";
 
-export function useSolanaConnectionUrl() {
-  return useRecoilState(atoms.connectionUrl);
+export function useSolanaConnectionUrl(): string {
+  return useRecoilValue(atoms.connectionUrl)!;
 }
 
 export function useAnchorContext() {

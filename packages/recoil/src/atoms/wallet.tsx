@@ -99,20 +99,6 @@ export const connectionUrl = atom<string | null>({
       });
     },
   }),
-  effects: [
-    ({ onSet }) => {
-      onSet((cluster) => {
-        // TODO: do we want to handle this via notification instead?
-        const background = getBackgroundClient();
-        background
-          .request({
-            method: UI_RPC_METHOD_CONNECTION_URL_UPDATE,
-            params: [cluster],
-          })
-          .catch(console.error);
-      });
-    },
-  ],
 });
 
 export const anchorContext = selector({

@@ -18,6 +18,7 @@ import {
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
 } from "@200ms/common";
 import { KeyringStoreStateEnum, useUpdateAllSplTokenAccounts } from "../";
@@ -36,6 +37,7 @@ export function NotificationsProvider(props: any) {
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveWallet = useSetRecoilState(atoms.activeWallet);
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
+  const setConnectionUrl = useSetRecoilState(atoms.connectionUrl);
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   const navigate = useNavigate();
 
@@ -84,6 +86,9 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_NAVIGATION_URL_DID_CHANGE:
           handleUrlDidChange(notif);
           break;
+        case NOTIFICATION_CONNECTION_URL_UPDATED:
+          handleConnectionUrlUpdated(notif);
+          break;
         default:
           break;
       }
@@ -92,6 +97,9 @@ export function NotificationsProvider(props: any) {
     //
     // Notification handlers.
     //
+    const handleConnectionUrlUpdated = (notif: Notification) => {
+      setConnectionUrl(notif.data.url);
+    };
     const handleKeyringStoreLocked = (_notif: Notification) => {
       setKeyringStoreState(KeyringStoreStateEnum.Locked);
     };
