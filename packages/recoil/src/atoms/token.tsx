@@ -18,7 +18,6 @@ export const blockchainTokensSorted = selectorFamily({
         get(
           blockchainTokenAccounts({
             address,
-            connectionUrl: get(connectionUrl),
             blockchain,
           })
         )
@@ -50,20 +49,15 @@ export const blockchainTokens = selectorFamily({
 export const blockchainTokenAccounts = selectorFamily({
   key: "blockchainTokenAccountsMap",
   get:
-    ({
-      address,
-      connectionUrl,
-      blockchain,
-    }: {
-      address: string;
-      connectionUrl: string;
-      blockchain: string;
-    }) =>
+    ({ address, blockchain }: { address: string; blockchain: string }) =>
     ({ get }: any) => {
       switch (blockchain) {
         case "solana":
           const tokenAccount = get(
-            solanaTokenAccountsMap({ connectionUrl, tokenAddress: address })
+            solanaTokenAccountsMap({
+              connectionUrl: get(connectionUrl),
+              tokenAddress: address,
+            })
           );
           if (!tokenAccount) {
             return null;
