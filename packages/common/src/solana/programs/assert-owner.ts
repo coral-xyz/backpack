@@ -1,5 +1,5 @@
 import { PublicKey, TransactionInstruction } from "@solana/web3.js";
-import * as BufferLayout from "@solana/buffer-layout";
+import { Blob, struct } from "@solana/buffer-layout";
 
 export function assertOwnerInstruction({ account, owner }: any) {
   const keys = [{ pubkey: account, isSigner: false, isWritable: false }];
@@ -20,7 +20,7 @@ function publicKeyLayout(property: string) {
   return new PublicKeyLayout(property);
 }
 
-class PublicKeyLayout extends BufferLayout.Blob {
+class PublicKeyLayout extends Blob {
   constructor(property: string) {
     super(32, property);
   }
@@ -40,7 +40,7 @@ const OWNER_VALIDATION_PROGRAM_ID = new PublicKey(
   "4MNPdKu9wFMvEeZBMt3Eipfs5ovVWTJb31pEXDJAAxX5"
 );
 
-const OWNER_VALIDATION_LAYOUT = BufferLayout.struct([
+const OWNER_VALIDATION_LAYOUT = struct([
   // @ts-ignore
   publicKeyLayout("account"),
 ]);

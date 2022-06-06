@@ -1,5 +1,5 @@
 import { EventEmitter } from "eventemitter3";
-import {
+import type {
   PublicKey,
   Connection,
   Transaction,
@@ -10,10 +10,10 @@ import {
   Commitment,
   SimulatedTransactionResponse,
 } from "@solana/web3.js";
-import { Provider } from "@project-serum/anchor";
+import type { Provider } from "@project-serum/anchor";
+import type { Event } from "@200ms/common";
 import {
   RequestManager,
-  Event,
   CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
