@@ -38,21 +38,25 @@ export const AnchorUi = {
       });
 
       window.anchorUi.on("connect", () => {
+        logger.debug("connect");
         NAV_STACK.push(reactNode);
         events.emit("connect");
       });
 
       window.anchorUi.on("mount", () => {
+        logger.debug("mount");
         const node = NAV_STACK[NAV_STACK.length - 1];
         reconcilerRender(node);
       });
 
       window.anchorUi.on("unmount", () => {
+        logger.debug("unmount");
         CLICK_HANDLERS = new Map();
         ON_CHANGE_HANDLERS = new Map();
       });
 
       window.anchorUi.on("pop", () => {
+        logger.debug("pop");
         NAV_STACK.pop();
       });
     };

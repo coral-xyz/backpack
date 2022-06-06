@@ -63,10 +63,11 @@ export class Channel {
   }
 
   public static serverPostMessage(
+    url: string,
     reqChannel: string,
     respChannel?: string
   ): PostMessageServer {
-    return new PostMessageServer(reqChannel, respChannel);
+    return new PostMessageServer(url, reqChannel, respChannel);
   }
 }
 
@@ -125,6 +126,7 @@ export class ChannelServer {
 export class PostMessageServer {
   private window?: any;
   constructor(
+    private url: string,
     private requestChannel: string,
     private responseChannel?: string
   ) {}
@@ -135,6 +137,10 @@ export class PostMessageServer {
 
   public handler(handlerFn: (event: Event) => Promise<RpcResponse>) {
     return window.addEventListener("message", async (event: Event) => {
+      const url = new URL(this.url);
+      if (event.origin !== url.origin) {
+        return;
+      }
       if (event.data.type !== this.requestChannel) {
         return;
       }
