@@ -1,7 +1,7 @@
 import { atomFamily, selectorFamily } from "recoil";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { anchorContext } from "../";
 import { bootstrap } from "./bootstrap";
+import { anchorContext } from "./wallet";
 
 export const recentTransactions = atomFamily<any | null, string>({
   key: "recentTransactionsMap",

@@ -242,10 +242,12 @@ export class Backend {
   async connectionUrlUpdate(url: string): Promise<boolean> {
     const didChange = await this.keyringStore.connectionUrlUpdate(url);
     if (didChange) {
+      const activeWallet = await this.activeWallet();
       Io.events.emit(BACKEND_EVENT, {
         name: NOTIFICATION_CONNECTION_URL_UPDATED,
         data: {
           url,
+          activeWallet,
         },
       });
     }

@@ -41,6 +41,9 @@ const useStyles = makeStyles((theme: any) => ({
     paddingLeft: "16px",
     paddingRight: "16px",
     height: "36px",
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
   cardHeaderTitle: {
     fontWeight: 500,
@@ -461,7 +464,10 @@ export function BalancesTableCell({ props, style }: any) {
 }
 
 export function BalancesTableFooter({ props, style, children }: any) {
-  return (
+  const { showContent } = useBalancesContext();
+  return !showContent ? (
+    <></>
+  ) : (
     <div style={style}>
       {children.map((c: Element) => (
         <ViewRenderer key={c.id} element={c} />

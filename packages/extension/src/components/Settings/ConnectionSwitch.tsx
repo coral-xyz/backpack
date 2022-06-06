@@ -2,6 +2,10 @@ import { useEffect } from "react";
 import { ListItemIcon, ListItemText } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { CheckBox } from "@mui/icons-material";
+import {
+  getBackgroundClient,
+  UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+} from "@200ms/common";
 import { useEphemeralNav, useSolanaConnectionUrl } from "@200ms/recoil";
 import { List, ListItem } from "../common";
 
@@ -25,7 +29,7 @@ const endpoints = {
 
 export function ConnectionMenu({ close }: { close: () => void }) {
   const classes = useStyles();
-  const [connectionUrl, setConnectionUrl] = useSolanaConnectionUrl();
+  const connectionUrl = useSolanaConnectionUrl();
   const nav = useEphemeralNav();
   const urls = Object.values(endpoints).filter((v) => typeof v === "string");
 
@@ -47,8 +51,14 @@ export function ConnectionMenu({ close }: { close: () => void }) {
           onClick={() => {
             try {
               const url = typeof val === "string" ? val : val();
-              setConnectionUrl(url);
-              close();
+              const background = getBackgroundClient();
+              background
+                .request({
+                  method: UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+                  params: [url],
+                })
+                .then(close)
+                .catch(console.error);
             } catch (err) {
               console.error(err);
             }
