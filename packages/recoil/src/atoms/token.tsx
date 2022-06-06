@@ -13,11 +13,6 @@ export const blockchainTokensSorted = selectorFamily({
   get:
     (blockchain: string) =>
     ({ get }: any) => {
-      console.log("recoil here", {
-        publicKey: get(activeWallet),
-        connectionUrl: get(connectionUrl),
-        blockchain,
-      });
       const tokenAddresses = get(
         blockchainTokens({
           publicKey: get(activeWallet),

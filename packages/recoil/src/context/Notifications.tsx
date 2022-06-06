@@ -162,13 +162,11 @@ export function NotificationsProvider(props: any) {
       setApprovedOrigins(notif.data.approvedOrigins);
     };
     const handleSplTokensDidUpdate = (notif: Notification) => {
-      console.log("tokens did update", notif);
       const publicKey = notif.data.publicKey;
       const connectionUrl = notif.data.connectionUrl;
       const result = BackgroundSolanaConnection.customSplTokenAccountsFromJson(
         notif.data.customSplTokenAccounts
       );
-      console.log("tokens idd upate", result);
       updateAllSplTokenAccounts({
         publicKey,
         connectionUrl,

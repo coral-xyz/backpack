@@ -43,7 +43,6 @@ export const bootstrap = selectorFamily<
         connectionUrl
       );
       const walletPublicKey = new PublicKey(publicKey);
-      console.log("fetching with a new connection", connectionUrl);
       //
       // Perform data fetch.
       //
