@@ -987,7 +987,6 @@ function deleteOnChangeHandlers(element: Element) {
 function getClickHandler(viewId: number): () => void {
   const handler = CLICK_HANDLERS.get(viewId);
   if (!handler) {
-    console.log("armani: ", viewId, CLICK_HANDLERS);
     throw new Error("click handler not found");
   }
   return handler;
