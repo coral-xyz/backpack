@@ -1,20 +1,18 @@
 import { EventEmitter } from "eventemitter3";
 import { Provider } from "@project-serum/anchor";
-import {
+import type {
   TransactionSignature,
-  PublicKey,
   ConfirmOptions,
   Transaction,
-  Connection,
   Signer,
   SendOptions,
   SimulatedTransactionResponse,
   Commitment,
 } from "@solana/web3.js";
-
+import { Connection, PublicKey } from "@solana/web3.js";
+import type { Event } from "@200ms/common";
 import {
   getLogger,
-  Event,
   RequestManager,
   BackgroundSolanaConnection,
   CHANNEL_RPC_REQUEST,

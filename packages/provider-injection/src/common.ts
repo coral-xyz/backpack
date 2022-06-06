@@ -1,5 +1,5 @@
-import * as bs58 from "bs58";
-import {
+import { decode, encode } from "bs58";
+import type {
   Connection,
   PublicKey,
   Transaction,
@@ -10,13 +10,13 @@ import {
   TransactionSignature,
   SimulatedTransactionResponse,
 } from "@solana/web3.js";
+import type { RequestManager } from "@200ms/common";
 import {
-  RequestManager,
+  RPC_METHOD_SIGN_ALL_TXS,
+  RPC_METHOD_SIGN_AND_SEND_TX,
   RPC_METHOD_SIGN_MESSAGE,
   RPC_METHOD_SIGN_TX,
   RPC_METHOD_SIMULATE,
-  RPC_METHOD_SIGN_ALL_TXS,
-  RPC_METHOD_SIGN_AND_SEND_TX,
 } from "@200ms/common";
 
 export async function sendAndConfirm(
@@ -65,7 +65,7 @@ export async function send(
   const txSerialize = tx.serialize({
     requireAllSignatures: false,
   });
-  const message = bs58.encode(txSerialize);
+  const message = encode(txSerialize);
   return await requestManager.request({
     method: RPC_METHOD_SIGN_AND_SEND_TX,
     params: [message, publicKey!.toString(), options],
@@ -78,13 +78,13 @@ export async function signTransaction(
   tx: Transaction
 ): Promise<Transaction> {
   tx.feePayer = publicKey;
-  const message = bs58.encode(tx.serializeMessage());
+  const message = encode(tx.serializeMessage());
   const signature = await requestManager.request({
     method: RPC_METHOD_SIGN_TX,
     params: [message, publicKey!.toString()],
   });
   // @ts-ignore
-  tx.addSignature(publicKey, bs58.decode(signature));
+  tx.addSignature(publicKey, decode(signature));
   return tx;
 }
 
@@ -96,7 +96,7 @@ export async function signAllTransactions(
   // Serialize messages.
   const messages = txs.map((tx) => {
     const txSerialized = tx.serializeMessage();
-    const message = bs58.encode(txSerialized);
+    const message = encode(txSerialized);
     return message;
   });
 
@@ -108,7 +108,7 @@ export async function signAllTransactions(
 
   // Add the signatures to the transactions.
   txs.forEach((t, idx) => {
-    t.addSignature(publicKey!, Buffer.from(bs58.decode(signatures[idx])));
+    t.addSignature(publicKey!, Buffer.from(decode(signatures[idx])));
   });
 
   return txs;
@@ -133,7 +133,7 @@ export async function simulate(
   const txSerialize = tx.serialize({
     requireAllSignatures: false,
   });
-  const message = bs58.encode(txSerialize);
+  const message = encode(txSerialize);
   return await requestManager.request({
     method: RPC_METHOD_SIMULATE,
     params: [message, publicKey!.toString(), commitment],
@@ -145,7 +145,7 @@ export async function signMessage(
   requestManager: RequestManager,
   msg: Uint8Array
 ): Promise<Uint8Array | null> {
-  const msgStr = bs58.encode(msg);
+  const msgStr = encode(msg);
   const signature = await requestManager.request({
     method: RPC_METHOD_SIGN_MESSAGE,
     params: [msgStr, publicKey!.toString()],
@@ -153,5 +153,5 @@ export async function signMessage(
   if (!signature) {
     return signature;
   }
-  return bs58.decode(signature);
+  return decode(signature);
 }
