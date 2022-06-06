@@ -15,8 +15,9 @@ export function useBlockchainTokens(blockchain: string): Array<string> {
 }
 
 export function useBlockchainBalance(blockchain: string, address: string) {
+  const connectionUrl = useRecoilValue(atoms.connectionUrl)!;
   const balance = useRecoilValue(
-    atoms.blockchainTokenAccounts({ blockchain, address })
+    atoms.blockchainTokenAccounts({ connectionUrl, blockchain, address })
   );
   return balance;
 }
@@ -44,7 +45,10 @@ export function useBlockchainTokenAccount(
   blockchain: string,
   address: string
 ): any {
-  return useRecoilValue(atoms.blockchainTokenAccounts({ blockchain, address }));
+  const connectionUrl = useRecoilValue(atoms.connectionUrl)!;
+  return useRecoilValue(
+    atoms.blockchainTokenAccounts({ connectionUrl, blockchain, address })
+  );
 }
 
 export function useBlockchainTokensSorted(blockchain: string) {

@@ -13,6 +13,11 @@ export const blockchainTokensSorted = selectorFamily({
   get:
     (blockchain: string) =>
     ({ get }: any) => {
+      console.log("recoil here", {
+        publicKey: get(activeWallet),
+        connectionUrl: get(connectionUrl),
+        blockchain,
+      });
       const tokenAddresses = get(
         blockchainTokens({
           publicKey: get(activeWallet),
@@ -24,6 +29,7 @@ export const blockchainTokensSorted = selectorFamily({
         get(
           blockchainTokenAccounts({
             address,
+            connectionUrl: get(connectionUrl),
             blockchain,
           })
         )
@@ -61,11 +67,21 @@ export const blockchainTokens = selectorFamily({
 export const blockchainTokenAccounts = selectorFamily({
   key: "blockchainTokenAccountsMap",
   get:
-    ({ address, blockchain }: { address: string; blockchain: string }) =>
+    ({
+      address,
+      connectionUrl,
+      blockchain,
+    }: {
+      address: string;
+      connectionUrl: string;
+      blockchain: string;
+    }) =>
     ({ get }: any) => {
       switch (blockchain) {
         case "solana":
-          const tokenAccount = get(solanaTokenAccountsMap(address));
+          const tokenAccount = get(
+            solanaTokenAccountsMap({ connectionUrl, tokenAddress: address })
+          );
           if (!tokenAccount) {
             return null;
           }
@@ -146,18 +162,23 @@ export const solanaTokenAccountKeys = atomFamily<
  */
 export const solanaTokenAccountsMap = atomFamily<
   TokenAccountWithKey | null,
-  string
+  { connectionUrl: string; tokenAddress: string }
 >({
   key: "solanaTokenAccountsMap",
   default: selectorFamily({
     key: "solanaTokenAccountsMapDefault",
     get:
-      (address: string) =>
+      ({
+        connectionUrl,
+        tokenAddress,
+      }: {
+        connectionUrl: string;
+        tokenAddress: string;
+      }) =>
       ({ get }: any) => {
         const publicKey = get(activeWallet);
-        const { connectionUrl } = get(anchorContext);
         const data = get(bootstrap({ connectionUrl, publicKey }));
-        return data.splTokenAccounts.get(address);
+        return data.splTokenAccounts.get(tokenAddress);
       },
   }),
 });

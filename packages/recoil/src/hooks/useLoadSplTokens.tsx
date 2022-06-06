@@ -30,7 +30,7 @@ export const useUpdateAllSplTokenAccounts = () =>
         customSplTokenAccounts: {
           tokenAccounts: TokenAccountWithKey[];
           tokenMetadata: Array<null | any>;
-          nftMetadata: Map<string, any>;
+          nftMetadata: Array<[string, any]>;
         };
       }) => {
         // TODO: Do we want to check if the atoms have changed before setting
@@ -49,7 +49,10 @@ export const useUpdateAllSplTokenAccounts = () =>
         );
         customSplTokenAccounts.tokenAccounts.forEach((tokenAccount) => {
           set(
-            atoms.solanaTokenAccountsMap(tokenAccount.key.toString()),
+            atoms.solanaTokenAccountsMap({
+              connectionUrl,
+              tokenAddress: tokenAccount.key.toString(),
+            }),
             tokenAccount
           );
         });
@@ -59,11 +62,10 @@ export const useUpdateAllSplTokenAccounts = () =>
         //
         set(
           atoms.solanaNftMetadataKeys,
-          Array.from(customSplTokenAccounts.nftMetadata.keys())
+          customSplTokenAccounts.nftMetadata.map((c) => c[0])
         );
-        // @ts-ignore
-        for (let [key, value] of nftMetadata) {
+        customSplTokenAccounts.nftMetadata.forEach(([key, value]) => {
           set(atoms.solanaNftMetadataMap(key), value);
-        }
+        });
       }
   );

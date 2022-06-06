@@ -1,11 +1,12 @@
 import { atom, selectorFamily } from "recoil";
 import { PublicKey } from "@solana/web3.js";
 import {
+  BackgroundSolanaConnection,
   getBackgroundClient,
   UI_RPC_METHOD_NAVIGATION_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
 } from "@200ms/common";
-import { anchorContext } from "../atoms/wallet";
+import { anchorContext, connectionBackgroundClient } from "../atoms/wallet";
 import { TokenAccountWithKey, TABS } from "../types";
 import { fetchRecentTransactions } from "./recent-transactions";
 import { splTokenRegistry } from "./token-registry";
@@ -36,9 +37,13 @@ export const bootstrap = selectorFamily<
     }) =>
     async ({ get }: any) => {
       const tokenRegistry = get(splTokenRegistry);
-      const { provider } = get(anchorContext);
+      const _connectionBackgroundClient = get(connectionBackgroundClient);
+      const connection = new BackgroundSolanaConnection(
+        _connectionBackgroundClient,
+        connectionUrl
+      );
       const walletPublicKey = new PublicKey(publicKey);
-
+      console.log("fetching with a new connection", connectionUrl);
       //
       // Perform data fetch.
       //
@@ -47,7 +52,7 @@ export const bootstrap = selectorFamily<
         // Fetch token data.
         //
         const { tokenAccountsMap, tokenMetadata, nftMetadata } =
-          await provider.connection.customSplTokenAccounts(walletPublicKey);
+          await connection.customSplTokenAccounts(walletPublicKey);
         const splTokenAccounts = new Map<string, TokenAccountWithKey>(
           tokenAccountsMap
         );
@@ -60,7 +65,7 @@ export const bootstrap = selectorFamily<
           //
           // Get the transaction data for the wallet's recent transactions.
           //
-          fetchRecentTransactions(provider.connection, walletPublicKey),
+          fetchRecentTransactions(connection, walletPublicKey),
         ]);
 
         //

@@ -64,6 +64,7 @@ import {
   PerfSample,
 } from "@solana/web3.js";
 import {
+  getLogger,
   customSplTokenAccounts,
   Notification,
   BACKEND_EVENT,
@@ -74,6 +75,8 @@ import {
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
 } from "@200ms/common";
 import { Io } from "../io";
+
+const logger = getLogger("solana-connection-backend");
 
 export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
 export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;
@@ -86,6 +89,9 @@ export class Backend {
 
   constructor() {
     this.pollIntervals = [];
+  }
+
+  public start() {
     this.setupEventListeners();
   }
 
@@ -96,6 +102,8 @@ export class Backend {
   //
   private setupEventListeners() {
     Io.events.addListener(BACKEND_EVENT, (notif: Notification) => {
+      logger.debug(`received notification: ${notif.name}`, notif);
+
       switch (notif.name) {
         case NOTIFICATION_KEYRING_STORE_UNLOCKED:
           handleKeyringStoreUnlocked(notif);
@@ -129,11 +137,12 @@ export class Backend {
       this.startPolling(new PublicKey(activeWallet));
     };
     const handleConnectionUrlUpdated = (notif: Notification) => {
-      const { url } = notif.data;
-      this.cache = new Map();
+      const { activeWallet, url } = notif.data;
       this.connection = new Connection(url, this.connection!.commitment);
       this.url = url;
+      this.stopPolling();
       this.hookRpcRequest();
+      this.startPolling(new PublicKey(activeWallet));
     };
   }
 
@@ -149,6 +158,7 @@ export class Backend {
           activeWallet
         );
         const key = JSON.stringify({
+          url: this.url,
           method: "customSplTokenAccounts",
           args: [activeWallet.toString()],
         });
@@ -158,7 +168,9 @@ export class Backend {
           data: {
             connectionUrl: this.url,
             publicKey: activeWallet.toString(),
-            customSplTokenAccounts: data,
+            customSplTokenAccounts: {
+              ...data,
+            },
           },
         });
       }, LOAD_SPL_TOKENS_REFRESH_INTERVAL)
@@ -168,7 +180,11 @@ export class Backend {
       setInterval(async () => {
         const conn = new Connection(this.url!); // Unhooked connection.
         const data = await conn.getLatestBlockhash();
-        const key = JSON.stringify({ method: "getLatestBlockhash", args: [] });
+        const key = JSON.stringify({
+          url: this.url,
+          method: "getLatestBlockhash",
+          args: [],
+        });
         this.cache.set(key, data);
       }, RECENT_BLOCKHASH_REFRESH_INTERVAL)
     );
@@ -185,7 +201,11 @@ export class Backend {
     const _rpcRequest = this.connection._rpcRequest;
     // @ts-ignore
     this.connection._rpcRequest = async (method: string, args: any[]) => {
-      const key = JSON.stringify({ method, args });
+      const key = JSON.stringify({
+        url: this.url,
+        method,
+        args,
+      });
       const value = this.cache.get(key);
       if (value) {
         return value;
@@ -202,6 +222,7 @@ export class Backend {
 
   async customSplTokenAccounts(publicKey: PublicKey): Promise<any> {
     const key = JSON.stringify({
+      url: this.url,
       method: "customSplTokenAccounts",
       args: [publicKey.toString()],
     });

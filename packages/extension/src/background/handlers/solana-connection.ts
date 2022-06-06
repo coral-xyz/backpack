@@ -28,6 +28,7 @@ import { BACKEND } from "../solana-connection/backend";
 const logger = getLogger("solana-connection");
 
 export function start() {
+  BACKEND.start();
   Io.solanaConnection.handler(handle);
   Io.solanaConnectionInjected.handler(withContext(handleInjected));
 }

@@ -94,7 +94,7 @@ export class BackgroundSolanaConnection extends Connection {
   }
 
   async customSplTokenAccounts(publicKey: PublicKey): Promise<{
-    tokenAccounts: any;
+    tokenAccountsMap: any;
     tokenMetadata: any;
     nftMetadata: any;
   }> {
