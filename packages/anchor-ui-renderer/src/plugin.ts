@@ -129,6 +129,10 @@ export class Plugin {
     this._connectionBridge.handler(this._handleConnectionBridge.bind(this));
   }
 
+  public get needsLoad() {
+    return this._navPushFn === undefined;
+  }
+
   //
   // Loads the plugin javascript code inside the iframe.
   //
