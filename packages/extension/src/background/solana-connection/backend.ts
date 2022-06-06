@@ -227,7 +227,6 @@ export class Backend {
       args: [publicKey.toString()],
     });
     const value = this.cache.get(key);
-    console.log("custom spl token accounts fetch here", key, value);
     if (value) {
       return value;
     }
