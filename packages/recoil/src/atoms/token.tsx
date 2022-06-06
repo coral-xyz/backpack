@@ -3,7 +3,7 @@ import { bootstrap } from "./bootstrap";
 import { priceData } from "./price-data";
 import { splTokenRegistry } from "./token-registry";
 import { TokenAccountWithKey } from "../types";
-import { connectionUrl, activeWallet, anchorContext } from "./wallet";
+import { connectionUrl, activeWallet } from "./wallet";
 
 /**
  * Returns the token accounts sorted by usd notional balances.
@@ -13,13 +13,7 @@ export const blockchainTokensSorted = selectorFamily({
   get:
     (blockchain: string) =>
     ({ get }: any) => {
-      const tokenAddresses = get(
-        blockchainTokens({
-          publicKey: get(activeWallet),
-          connectionUrl: get(connectionUrl),
-          blockchain,
-        })
-      );
+      const tokenAddresses = get(blockchainTokens(blockchain));
       const tokenAccounts = tokenAddresses.map((address: string) =>
         get(
           blockchainTokenAccounts({
@@ -40,19 +34,13 @@ export const blockchainTokensSorted = selectorFamily({
 export const blockchainTokens = selectorFamily({
   key: "blockchainTokens",
   get:
-    ({
-      blockchain,
-      connectionUrl,
-      publicKey,
-    }: {
-      blockchain: string;
-      connectionUrl: string;
-      publicKey: string;
-    }) =>
+    (blockchain: string) =>
     ({ get }: any) => {
+      const url = get(connectionUrl);
+      const publicKey = get(activeWallet);
       switch (blockchain) {
         case "solana":
-          return get(solanaTokenAccountKeys({ connectionUrl, publicKey }));
+          return get(solanaTokenAccountKeys({ connectionUrl: url, publicKey }));
         default:
           throw new Error("invariant violation");
       }

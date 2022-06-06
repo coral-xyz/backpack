@@ -7,11 +7,7 @@ export function useBlockchains(): Array<string> {
 }
 
 export function useBlockchainTokens(blockchain: string): Array<string> {
-  const connectionUrl = useRecoilValue(atoms.connectionUrl)!;
-  const publicKey = useRecoilValue(atoms.activeWallet)!;
-  return useRecoilValue(
-    atoms.blockchainTokens({ blockchain, connectionUrl, publicKey })
-  );
+  return useRecoilValue(atoms.blockchainTokens(blockchain));
 }
 
 export function useBlockchainBalance(blockchain: string, address: string) {
