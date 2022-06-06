@@ -35,11 +35,14 @@ export const blockchainTokens = selectorFamily({
   get:
     (blockchain: string) =>
     ({ get }: any) => {
-      const url = get(connectionUrl);
-      const publicKey = get(activeWallet);
       switch (blockchain) {
         case "solana":
-          return get(solanaTokenAccountKeys({ connectionUrl: url, publicKey }));
+          return get(
+            solanaTokenAccountKeys({
+              connectionUrl: get(connectionUrl),
+              publicKey: get(activeWallet),
+            })
+          );
         default:
           throw new Error("invariant violation");
       }
