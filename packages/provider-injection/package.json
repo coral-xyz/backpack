@@ -12,10 +12,8 @@
     "@200ms/common": "*",
     "@project-serum/anchor": "^0.23.0",
     "@solana/web3.js": "^1.36.0",
-    "@swc/helpers": "^0.3.17",
     "bs58": "^5.0.0",
-    "eventemitter3": "^4.0.7",
-    "regenerator-runtime": "^0.13.9"
+    "eventemitter3": "^4.0.7"
   },
   "devDependencies": {
     "esbuild": "^0.14.42",
