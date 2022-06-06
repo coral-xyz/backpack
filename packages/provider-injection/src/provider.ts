@@ -126,7 +126,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
   _handleNotificationConnectionUrlUpdated(event: Event) {
     this.connection = new BackgroundSolanaConnection(
       this._connectionRequestManager,
-      event.data.detail.data
+      event.data.detail.data.url
     );
   }
 

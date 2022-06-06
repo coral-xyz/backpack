@@ -23,7 +23,7 @@ import {
 } from "@200ms/common";
 import { KeyringStoreStateEnum, useUpdateAllSplTokenAccounts } from "../";
 import * as atoms from "../atoms";
-import { getPlugin } from "../hooks";
+import { getPlugin, allPlugins } from "../hooks";
 
 const logger = getLogger("notifications-provider");
 
@@ -84,7 +84,7 @@ export function NotificationsProvider(props: any) {
           handleSplTokensDidUpdate(notif);
           break;
         case NOTIFICATION_NAVIGATION_URL_DID_CHANGE:
-          handleUrlDidChange(notif);
+          handleNavigationUrlDidChange(notif);
           break;
         case NOTIFICATION_CONNECTION_URL_UPDATED:
           handleConnectionUrlUpdated(notif);
@@ -99,6 +99,9 @@ export function NotificationsProvider(props: any) {
     //
     const handleConnectionUrlUpdated = (notif: Notification) => {
       setConnectionUrl(notif.data.url);
+      allPlugins().forEach((p) => {
+        p.pushConnectionChangedNotification(notif.data.url);
+      });
     };
     const handleKeyringStoreLocked = (_notif: Notification) => {
       setKeyringStoreState(KeyringStoreStateEnum.Locked);
@@ -184,7 +187,7 @@ export function NotificationsProvider(props: any) {
         },
       });
     };
-    const handleUrlDidChange = (notif: Notification) => {
+    const handleNavigationUrlDidChange = (notif: Notification) => {
       //
       // If we've popped the table detail view, then we need to notify
       // the plugin to update its internal state.

@@ -30,6 +30,8 @@ import {
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_UNMOUNT,
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
+  PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
+  PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
   RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
   RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
   RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
@@ -311,6 +313,32 @@ export class Plugin {
       detail: {
         name: PLUGIN_NOTIFICATION_NAVIGATION_POP,
         data: {},
+      },
+    };
+    this._iframe!.contentWindow!.postMessage(event, "*");
+  }
+
+  public pushConnectionChangedNotification(url: string) {
+    const event = {
+      type: CHANNEL_PLUGIN_NOTIFICATION,
+      detail: {
+        name: PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
+        data: {
+          url,
+        },
+      },
+    };
+    this._iframe!.contentWindow!.postMessage(event, "*");
+  }
+
+  public pushPublicKeyChangedNotification(publicKey: string) {
+    const event = {
+      type: CHANNEL_PLUGIN_NOTIFICATION,
+      detail: {
+        name: PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
+        data: {
+          publicKey,
+        },
       },
     };
     this._iframe!.contentWindow!.postMessage(event, "*");

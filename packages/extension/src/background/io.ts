@@ -11,6 +11,7 @@ import {
   CONNECTION_POPUP_RESPONSE,
   CONNECTION_POPUP_NOTIFICATIONS,
   SOLANA_CONNECTION_RPC_UI,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
 } from "@200ms/common";
 
 //
@@ -54,7 +55,22 @@ function startNotificationsUi(): NotificationsClient {
     CONNECTION_POPUP_NOTIFICATIONS
   );
   Io.events.on(BACKEND_EVENT, (notification) => {
+    //
+    // Dispatch all notifications to the extension popup UI. This channel
+    // will also handle plugins in an additional routing step.
+    //
     notificationsUi.pushNotification(notification);
+
+    //
+    // Dispatch a subset of notifications to injected web apps.
+    //
+    switch (notification.name) {
+      case NOTIFICATION_CONNECTION_URL_UPDATED:
+        Io.notificationsInjected.sendMessageActiveTab(notification);
+        break;
+      default:
+        break;
+    }
   });
   return notificationsUi;
 }
