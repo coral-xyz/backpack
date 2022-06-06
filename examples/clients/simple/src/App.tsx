@@ -1,8 +1,6 @@
-import React from "react";
 import { Wallet } from "./Wallet";
 import { SendLamportButton } from "./SendLamportButton";
 import { SignMessageButton } from "./SignMessageButton";
-import "./App.css";
 
 function App() {
   return (
