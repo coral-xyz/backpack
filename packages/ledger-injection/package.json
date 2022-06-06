@@ -14,8 +14,7 @@
     "@200ms/ledger-core": "*",
     "@ledgerhq/hw-transport": "^6.24.1",
     "@ledgerhq/hw-transport-webhid": "^6.24.1",
-    "bs58": "^5.0.0",
-    "buffer": "^6.0.3"
+    "bs58": "^5.0.0"
   },
   "devDependencies": {
     "parcel": "^2.5.0",
