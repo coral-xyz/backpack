@@ -1,30 +1,27 @@
 {
   "name": "@200ms/provider-injection",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.1.0",
+  "app": "dist/browser/index.js",
+  "source": "src/index.ts",
   "scripts": {
     "preinstall": "yarn link @project-serum/anchor",
-    "build": "rollup --config",
-    "dev": "rollup --config --watch"
+    "build": "BROWSER=true parcel build",
+    "dev": "parcel"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
+    "@200ms/common": "*",
     "@project-serum/anchor": "^0.23.0",
     "@solana/web3.js": "^1.36.0",
     "bs58": "^5.0.0",
     "eventemitter3": "^4.0.7"
   },
   "devDependencies": {
-    "@200ms/common": "*",
-    "@rollup/plugin-commonjs": "^21.0.1",
-    "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-node-resolve": "^13.0.6",
-    "@rollup/plugin-replace": "^3.0.0",
-    "@rollup/plugin-typescript": "^8.3.0",
-    "rollup": "^2.70.1",
-    "rollup-plugin-terser": "^7.0.2",
+    "esbuild": "^0.14.42",
+    "parcel": "^2.6.0",
     "typescript": "^4.6.3"
+  },
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "targets": {
+    "app": {}
   }
 }
