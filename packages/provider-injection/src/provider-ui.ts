@@ -204,10 +204,16 @@ export class ProviderUiInjection extends EventEmitter implements Provider {
   }
 
   private _handleConnectionUrlUpdated(event: Event) {
-    console.log("armani: connection url updated", event);
+    const publicKey = window.anchor.publicKey.toString();
+    const connectionUrl = event.data.detail.data.url;
+    window.anchor._connect(publicKey, connectionUrl);
+    this.emit("connectionUpdate", event.data.detail);
   }
 
   private _handlePublicKeyUpdated(event: Event) {
-    console.log("armani: pubkey updated", event);
+    const publicKey = event.data.detail.data.publicKey;
+    const connectionUrl = window.anchor.connection.rpcEndpoint;
+    window.anchor._connect(publicKey, connectionUrl);
+    this.emit("publicKeyUpdate", event.data.detail);
   }
 }

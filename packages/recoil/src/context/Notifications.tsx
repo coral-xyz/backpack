@@ -156,6 +156,9 @@ export function NotificationsProvider(props: any) {
     };
     const handleActiveWalletUpdated = (notif: Notification) => {
       setActiveWallet(notif.data.activeWallet);
+      allPlugins().forEach((p) => {
+        p.pushPublicKeyChangedNotification(notif.data.activeWallet);
+      });
     };
     const handleKeyringImportedSecretKey = (notif: Notification) => {
       setWalletPublicKeys((current: any) => {
