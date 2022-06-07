@@ -1,8 +1,14 @@
-import { useMemo, useState, useEffect } from "react";
-import { PublicKey, Transaction, SystemProgram } from "@solana/web3.js";
-import { Program } from "@project-serum/anchor";
+import { useState, useEffect } from "react";
+import {
+  PublicKey,
+  Transaction,
+  SystemProgram,
+  Connection,
+} from "@solana/web3.js";
 import AnchorUi, {
   useNavigation,
+  usePublicKey,
+  useConnection,
   View,
   Image,
   Text,
@@ -15,14 +21,12 @@ import AnchorUi, {
   BalancesTableCell,
 } from "@200ms/anchor-ui";
 import { customSplTokenAccounts } from "@200ms/common";
-import { GemFarm, IDL as IDL_GEM_FARM } from "./idl-gem-farm";
-import { GemBank, IDL as IDL_GEM_BANK } from "./idl-gem-bank";
 
 //
 // On connection to the host environment, warm the cache.
 //
 AnchorUi.events.on("connect", () => {
-  fetchRowData(window.anchorUi.publicKey);
+  fetchRowData(window.anchorUi.publicKey, window.anchorUi.connection);
 });
 
 export function App() {
@@ -31,20 +35,17 @@ export function App() {
 
 function DegodsTable() {
   const nav = useNavigation();
+  const publicKey = usePublicKey();
+  const connection = useConnection();
   const [tokenAccounts, setTokenAccounts] = useState<any>(null);
-  const gemFarm = useMemo(() => {
-    return new Program<GemFarm>(IDL_GEM_FARM, PID_GEM_FARM, window.anchor);
-  }, []);
-  const gemBank = useMemo(() => {
-    return new Program<GemBank>(IDL_GEM_BANK, PID_GEM_BANK, window.anchor);
-  }, []);
 
   useEffect(() => {
     (async () => {
-      const tas = await fetchRowData(window.anchorUi.publicKey);
+      setTokenAccounts(null);
+      const tas = await fetchRowData(publicKey, connection);
       setTokenAccounts(tas);
     })();
-  }, [window.anchorUi.publicKey]);
+  }, [publicKey, connection]);
 
   return (
     <BalancesTable>
@@ -87,19 +88,19 @@ function DegodsTable() {
 }
 
 function StakeDetail({ token }: any) {
+  const publicKey = usePublicKey();
+  const connection = useConnection();
   const unstake = async () => {
     const tx = new Transaction();
     tx.add(
       SystemProgram.transfer({
-        fromPubkey: window.anchorUi.publicKey,
-        toPubkey: window.anchorUi.publicKey,
+        fromPubkey: publicKey,
+        toPubkey: publicKey,
         lamports: 1000000,
       })
     );
     console.log("plugin fetching most recent blockhash");
-    const { blockhash } = await window.anchorUi.connection!.getLatestBlockhash(
-      "recent"
-    );
+    const { blockhash } = await connection!.getLatestBlockhash("recent");
     console.log("plugin got recent blockhash", blockhash);
     tx.recentBlockhash = blockhash;
     const signature = await window.anchorUi.send(tx);
@@ -144,29 +145,35 @@ function StakeDetail({ token }: any) {
   );
 }
 
-export async function fetchRowData(wallet: PublicKey) {
+export async function fetchRowData(wallet: PublicKey, connection: Connection) {
   const [dead, alive] = await Promise.all([
-    fetchTokenAccounts(true, wallet),
-    fetchTokenAccounts(false, wallet),
+    fetchTokenAccounts(true, wallet, connection),
+    fetchTokenAccounts(false, wallet, connection),
   ]);
   return dead.concat(alive);
 }
 
 async function fetchTokenAccounts(
   isDead: boolean,
-  wallet: PublicKey
+  wallet: PublicKey,
+  connection: Connection
 ): Promise<any> {
-  const cacheKey = `${isDead}:${window.anchorUi.publicKey.toString()}`;
+  const url = connection.rpcEndpoint;
+  const cacheKey = `${url}:${isDead}:${wallet.toString()}`;
   const resp = CACHE.get(cacheKey);
   if (resp) {
     return await resp;
   }
-  const newResp = fetchTokenAccountsInner(isDead, wallet);
+  const newResp = fetchTokenAccountsInner(isDead, wallet, connection);
   CACHE.set(cacheKey, newResp);
   return await newResp;
 }
 
-async function fetchTokenAccountsInner(isDead: boolean, wallet: PublicKey) {
+async function fetchTokenAccountsInner(
+  isDead: boolean,
+  wallet: PublicKey,
+  connection: Connection
+) {
   const [vaultPubkey] = await PublicKey.findProgramAddress(
     [
       Buffer.from("vault"),
@@ -181,7 +188,7 @@ async function fetchTokenAccountsInner(isDead: boolean, wallet: PublicKey) {
     PID_GEM_BANK
   );
   const tokenAccounts = await customSplTokenAccounts(
-    window.anchorUi.connection,
+    connection,
     vaultAuthority
   );
   const newResp = tokenAccounts.nftMetadata.map((m) => m[1]);

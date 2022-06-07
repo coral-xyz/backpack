@@ -38,21 +38,25 @@ export const AnchorUi = {
       });
 
       window.anchorUi.on("connect", () => {
+        logger.debug("connect");
         NAV_STACK.push(reactNode);
         events.emit("connect");
       });
 
       window.anchorUi.on("mount", () => {
+        logger.debug("mount");
         const node = NAV_STACK[NAV_STACK.length - 1];
         reconcilerRender(node);
       });
 
       window.anchorUi.on("unmount", () => {
+        logger.debug("unmount");
         CLICK_HANDLERS = new Map();
         ON_CHANGE_HANDLERS = new Map();
       });
 
       window.anchorUi.on("pop", () => {
+        logger.debug("pop");
         NAV_STACK.pop();
       });
     };
@@ -708,12 +712,10 @@ export type RootContainer = {
 };
 
 export type Host = {
-  navStack: Array<any>;
   nextId: () => number;
 };
 
 export const HOST: Host = {
-  navStack: [],
   nextId: (() => {
     let id = 0;
     return () => id++;
@@ -1000,7 +1002,7 @@ export class ReconcilerBridgeManager {
   private static _renderId: number = 0;
 
   //
-  // Send a message from the plugin-ui to the host- over the reconciler bridge.
+  // Send a message from the plugin-ui to the host over the reconciler bridge.
   //
   public static bridge(req: RpcRequest) {
     const msg = {

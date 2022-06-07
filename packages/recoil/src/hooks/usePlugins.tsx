@@ -35,4 +35,8 @@ export function getPlugin(p: any): Plugin {
   return plug;
 }
 
+export function allPlugins(): Array<Plugin> {
+  return Array.from(PLUGIN_CACHE.values());
+}
+
 const PLUGIN_CACHE = new Map<string, Plugin>();

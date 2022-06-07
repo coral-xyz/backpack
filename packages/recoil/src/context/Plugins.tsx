@@ -20,25 +20,24 @@ export function PluginManager(props: any) {
   //
   useEffect(() => {
     const allPlugins = plugins.concat(tablePlugins);
-    allPlugins.forEach((plugin) => {
-      //
-      // Register host API.
-      //
-      plugin.setHostApi({
-        push: segue.push,
-        pop: segue.pop,
-        request: setTransactionRequest,
-        connectionBackgroundClient,
-      });
+    allPlugins
+      .filter((p) => p.needsLoad)
+      .forEach((plugin) => {
+        //
+        // Register host API.
+        //
+        plugin.setHostApi({
+          push: segue.push,
+          pop: segue.pop,
+          request: setTransactionRequest,
+          connectionBackgroundClient,
+        });
 
-      //
-      // Setup the plugin.
-      //
-      plugin.createIframe();
-    });
-    return () => {
-      allPlugins.forEach((p) => p.destroyIframe());
-    };
+        //
+        // Setup the plugin.
+        //
+        plugin.createIframe();
+      });
   }, [plugins, tablePlugins]);
 
   return (

@@ -42,7 +42,6 @@ import {
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
   UI_RPC_METHOD_LEDGER_CONNECT,
   UI_RPC_METHOD_LEDGER_IMPORT,
-  NOTIFICATION_CONNECTION_URL_UPDATED,
 } from "@200ms/common";
 import { KeyringStoreState } from "@200ms/recoil";
 import { BACKEND } from "../backend";
@@ -222,12 +221,6 @@ async function handleConnectionUrlUpdate(
   url: string
 ): Promise<RpcResponse<boolean>> {
   const didChange = await BACKEND.connectionUrlUpdate(url);
-  if (didChange) {
-    Io.notificationsInjected.sendMessageActiveTab({
-      name: NOTIFICATION_CONNECTION_URL_UPDATED,
-      data: url,
-    });
-  }
   return [didChange];
 }
 

@@ -14,19 +14,24 @@ import type { Provider } from "@project-serum/anchor";
 import type { Event } from "@200ms/common";
 import {
   RequestManager,
+  getLogger,
   CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
+  PLUGIN_RPC_METHOD_NAV_PUSH,
+  PLUGIN_RPC_METHOD_NAV_POP,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ON_CLICK,
   PLUGIN_NOTIFICATION_ON_CHANGE,
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_UNMOUNT,
-  PLUGIN_RPC_METHOD_NAV_PUSH,
-  PLUGIN_RPC_METHOD_NAV_POP,
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
+  PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
+  PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
 } from "@200ms/common";
 import * as cmn from "./common";
+
+const logger = getLogger("provider-ui-injection");
 
 //
 // Injected provider for UI plugins.
@@ -133,10 +138,12 @@ export class ProviderUiInjection extends EventEmitter implements Provider {
   }
 
   //
-  // Notifications the extension UI -> plugin.
+  // Notifications from the extension UI -> plugin.
   //
   private async _handleNotifications(event: Event) {
     if (event.data.type !== CHANNEL_PLUGIN_NOTIFICATION) return;
+
+    logger.debug("handle notification", event);
 
     const { name } = event.data.detail;
     switch (name) {
@@ -157,6 +164,12 @@ export class ProviderUiInjection extends EventEmitter implements Provider {
         break;
       case PLUGIN_NOTIFICATION_NAVIGATION_POP:
         this._handleNavigationPop(event);
+        break;
+      case PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED:
+        this._handleConnectionUrlUpdated(event);
+        break;
+      case PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED:
+        this._handlePublicKeyUpdated(event);
         break;
       default:
         console.error(event);
@@ -188,5 +201,19 @@ export class ProviderUiInjection extends EventEmitter implements Provider {
 
   private _handleNavigationPop(event: Event) {
     this.emit("pop", event.data.detail);
+  }
+
+  private _handleConnectionUrlUpdated(event: Event) {
+    const publicKey = window.anchor.publicKey.toString();
+    const connectionUrl = event.data.detail.data.url;
+    window.anchor._connect(publicKey, connectionUrl);
+    this.emit("connectionUpdate", event.data.detail);
+  }
+
+  private _handlePublicKeyUpdated(event: Event) {
+    const publicKey = event.data.detail.data.publicKey;
+    const connectionUrl = window.anchor.connection.rpcEndpoint;
+    window.anchor._connect(publicKey, connectionUrl);
+    this.emit("publicKeyUpdate", event.data.detail);
   }
 }

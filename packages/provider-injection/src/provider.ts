@@ -31,7 +31,6 @@ import * as cmn from "./common";
 const logger = getLogger("provider-injection");
 
 export class ProviderInjection extends EventEmitter implements Provider {
-  private _url?: string;
   private _options?: ConfirmOptions;
 
   //
@@ -50,7 +49,6 @@ export class ProviderInjection extends EventEmitter implements Provider {
 
   constructor() {
     super();
-    this._url = undefined;
     this._options = undefined;
     this._requestManager = new RequestManager(
       CHANNEL_RPC_REQUEST,
@@ -126,7 +124,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
   _handleNotificationConnectionUrlUpdated(event: Event) {
     this.connection = new BackgroundSolanaConnection(
       this._connectionRequestManager,
-      event.data.detail.data
+      event.data.detail.data.url
     );
   }
 

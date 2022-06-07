@@ -30,6 +30,8 @@ import {
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_UNMOUNT,
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
+  PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
+  PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
   RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
   RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
   RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
@@ -101,6 +103,7 @@ export class Plugin {
     // RPC Server channel from plugin -> extension-ui.
     //
     this._rpcServer = Channel.serverPostMessage(
+      url,
       CHANNEL_PLUGIN_RPC_REQUEST,
       CHANNEL_PLUGIN_RPC_RESPONSE
     );
@@ -110,6 +113,7 @@ export class Plugin {
     // React reconciler bridge messages for custom React rendering.
     //
     this._bridgeServer = Channel.serverPostMessage(
+      url,
       CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE
     );
     this._bridgeServer.handler(this._handleBridge.bind(this));
@@ -119,9 +123,14 @@ export class Plugin {
     // to the background script.
     //
     this._connectionBridge = Channel.serverPostMessage(
+      url,
       CHANNEL_PLUGIN_CONNECTION_BRIDGE
     );
     this._connectionBridge.handler(this._handleConnectionBridge.bind(this));
+  }
+
+  public get needsLoad() {
+    return this._navPushFn === undefined;
   }
 
   //
@@ -316,16 +325,37 @@ export class Plugin {
     this._iframe!.contentWindow!.postMessage(event, "*");
   }
 
+  public pushConnectionChangedNotification(url: string) {
+    const event = {
+      type: CHANNEL_PLUGIN_NOTIFICATION,
+      detail: {
+        name: PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
+        data: {
+          url,
+        },
+      },
+    };
+    this._iframe!.contentWindow!.postMessage(event, "*");
+  }
+
+  public pushPublicKeyChangedNotification(publicKey: string) {
+    const event = {
+      type: CHANNEL_PLUGIN_NOTIFICATION,
+      detail: {
+        name: PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
+        data: {
+          publicKey,
+        },
+      },
+    };
+    this._iframe!.contentWindow!.postMessage(event, "*");
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   // RPC Requests.
   //////////////////////////////////////////////////////////////////////////////
 
   private async _handleRpc(event: Event): Promise<RpcResponse> {
-    const url = new URL(this.iframeUrl);
-    if (event.origin !== url.origin) {
-      return;
-    }
-
     const req = event.data.detail;
     logger.debug(`plugin rpc: ${JSON.stringify(req)}`);
 
@@ -452,10 +482,6 @@ export class Plugin {
   // Relay all requests to the background service worker.
   //
   private async _handleConnectionBridge(event: Event): Promise<RpcResponse> {
-    const url = new URL(this.iframeUrl);
-    if (event.origin !== url.origin) {
-      return;
-    }
     logger.debug(`handle connection bridge`, event);
     return await this._connectionBackgroundClient.request(event.data.detail);
   }
@@ -470,10 +496,6 @@ export class Plugin {
   // and do nothing until the next ordered request comes in.
   //
   private _handleBridge(event: Event): RpcResponse {
-    const url = new URL(this.iframeUrl);
-    if (event.origin !== url.origin) {
-      return;
-    }
     const req = event.data.detail;
 
     this._enqueueBridgeRequest(req);
@@ -597,8 +619,11 @@ class Dom {
 
   commitUpdate(instanceId: number, updatePayload: UpdateDiff) {
     const instance = this._vdom.get(instanceId) as NodeSerialized;
+    logger.debug("commitUpdate", instanceId, updatePayload, instance);
 
-    logger.debug("commitUpdate", instance);
+    if (!instance) {
+      throw new Error("element not found");
+    }
 
     switch (instance.kind) {
       case NodeKind.View:
