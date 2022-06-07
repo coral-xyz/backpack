@@ -619,8 +619,11 @@ class Dom {
 
   commitUpdate(instanceId: number, updatePayload: UpdateDiff) {
     const instance = this._vdom.get(instanceId) as NodeSerialized;
+    logger.debug("commitUpdate", instanceId, updatePayload, instance);
 
-    logger.debug("commitUpdate", instance);
+    if (!instance) {
+      throw new Error("element not found");
+    }
 
     switch (instance.kind) {
       case NodeKind.View:

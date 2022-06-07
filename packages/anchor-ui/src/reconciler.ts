@@ -712,12 +712,10 @@ export type RootContainer = {
 };
 
 export type Host = {
-  navStack: Array<any>;
   nextId: () => number;
 };
 
 export const HOST: Host = {
-  navStack: [],
   nextId: (() => {
     let id = 0;
     return () => id++;
@@ -1004,7 +1002,7 @@ export class ReconcilerBridgeManager {
   private static _renderId: number = 0;
 
   //
-  // Send a message from the plugin-ui to the host- over the reconciler bridge.
+  // Send a message from the plugin-ui to the host over the reconciler bridge.
   //
   public static bridge(req: RpcRequest) {
     const msg = {
