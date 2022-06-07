@@ -3,6 +3,7 @@ import { Keypair, PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import * as bs58 from "bs58";
 import {
+  generateUniqueId,
   LEDGER_INJECTED_CHANNEL_REQUEST,
   LEDGER_METHOD_CONNECT,
   LEDGER_METHOD_SIGN_TRANSACTION,
@@ -22,7 +23,6 @@ import {
   LedgerKeyringJson,
   LedgerKeyring,
 } from "./types";
-import { v1 } from "uuid";
 
 export class SolanaKeyringFactory implements KeyringFactory {
   public fromJson(payload: KeyringJson): SolanaKeyring {
@@ -311,7 +311,7 @@ export class SolanaLedgerKeyring implements LedgerKeyring {
     params: Array<any>;
   }): Promise<T> {
     return new Promise((resolve, reject) => {
-      const id = v1(); // using v1 in case we need the timestamp when debugging
+      const id = generateUniqueId();
       responseResolvers[id] = { resolve, reject };
       const msg = {
         type: LEDGER_INJECTED_CHANNEL_REQUEST,
