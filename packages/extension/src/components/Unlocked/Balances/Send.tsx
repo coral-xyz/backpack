@@ -97,12 +97,13 @@ function Send({ onCancel, token }: any) {
   const classes = useStyles() as any;
   const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState("");
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState<number>(0.0);
   const [addressError, setAddressError] = useState<boolean>(false);
   const [amountError, setAmountError] = useState<boolean>(false);
   const [_isFreshAccount, setIsFreshAccount] = useState<boolean>(false); // Not used for now.
   const [accountValidated, setAccountValidated] = useState<boolean>(false);
   const { provider } = useAnchorContext();
+  const amountFloat = parseFloat(amount.toString());
 
   // This effect validates the account address given.
   useEffect(() => {
@@ -141,7 +142,19 @@ function Send({ onCancel, token }: any) {
   // On click handler.
   const onNext = () => {
     let didAmountError = false;
-    if (amount <= 0) {
+    if (amountFloat <= 0) {
+      didAmountError = true;
+    }
+
+    //
+    // When sending SOL, account for the tx fee.
+    //
+    let lamportsOffset = 0.0;
+    if (token.mint === SOL_NATIVE_MINT) {
+      lamportsOffset = 0.000005;
+    }
+
+    if (token.nativeBalance < amountFloat + lamportsOffset) {
       didAmountError = true;
     }
 
@@ -162,6 +175,9 @@ function Send({ onCancel, token }: any) {
     if (!accountValidated) {
       return;
     }
+
+    setAddressError(false);
+    setAmountError(false);
     setOpenDrawer(true);
   };
 
@@ -203,7 +219,7 @@ function Send({ onCancel, token }: any) {
           <SendConfirmation
             token={token}
             address={address}
-            amount={amount}
+            amount={amountFloat}
             close={() => onCancel()}
           />
         </WithMiniDrawer>
