@@ -1,3 +1,5 @@
+import { v1 } from "uuid";
+
 export function toTitleCase(blockchain: string) {
   return (
     blockchain.slice(0, 1).toUpperCase() + blockchain.toLowerCase().slice(1)
@@ -15,4 +17,13 @@ export function formatUSD(amount: number | string) {
     style: "currency",
     currency: "USD",
   }).format(Number(String(amountNumber)));
+}
+
+/**
+ * A globally unique ID generator, useful for stateless or readonly things
+ * @returns
+ * uuid/v1, in case we need to extract the timestamp when debugging
+ */
+export function generateUniqueId() {
+  return v1();
 }
