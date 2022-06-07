@@ -1,6 +1,7 @@
 import type { Event, RpcRequest, RpcResponse, Notification } from "./types";
 import { BrowserRuntime } from "./browser";
 import { POST_MESSAGE_ORIGIN } from "./constants";
+import { v1 } from "uuid";
 
 // Channel is a class that establishes communication channel from a
 // content/injected script to a background script.
@@ -214,17 +215,13 @@ export class PortChannelNotifications {
 }
 
 export class PortChannelClient implements BackgroundClient {
-  private _requestId: number;
-
-  constructor(private name: string) {
-    this._requestId = 0;
-  }
+  constructor(private name: string) {}
 
   public async request<T = any>({
     method,
     params,
   }: RpcRequest): Promise<RpcResponse<T>> {
-    const id = this._requestId++;
+    const id = v1();
     return new Promise((resolve, reject) => {
       BrowserRuntime.sendMessage(
         {
