@@ -3,7 +3,13 @@ import { useTheme, Typography, Link } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { SystemProgram, PublicKey } from "@solana/web3.js";
 import { useAnchorContext, useSolanaCtx } from "@200ms/recoil";
-import { getLogger, explorerUrl, Solana, SOL_NATIVE_MINT } from "@200ms/common";
+import {
+  confirmTransaction,
+  getLogger,
+  explorerUrl,
+  Solana,
+  SOL_NATIVE_MINT,
+} from "@200ms/common";
 import { WithHeaderButton } from "./Token";
 import {
   TextField,
@@ -299,7 +305,11 @@ function SendConfirmationCard({ token, address, amount, close }: any) {
     }
     setTxSignature(txSig);
     try {
-      await ctx.connection.confirmTransaction(txSig, ctx.commitment);
+      await confirmTransaction(
+        ctx.connection,
+        txSig,
+        ctx.commitment === "processed" ? "confirmed" : ctx.commitment
+      );
       setCardType("complete");
     } catch (err) {
       logger.error("unable to confirm", err);
