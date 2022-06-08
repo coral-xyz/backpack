@@ -330,6 +330,17 @@ export class Backend {
     );
   }
 
+  async getParsedTransaction(
+    signature: TransactionSignature,
+    commitment?: Finality
+  ): Promise<ParsedConfirmedTransaction | null> {
+    const conn = new Connection(this.url!); // Unhooked connection.
+    return await conn.getParsedTransaction(
+      signature,
+      commitment ?? "confirmed"
+    );
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Methods below not used currently.
   ///////////////////////////////////////////////////////////////////////////////
@@ -609,13 +620,6 @@ export class Backend {
       commitment?: Finality;
     }
   ): Promise<TransactionResponse | null> {
-    throw new Error("not implemented");
-  }
-
-  getParsedTransaction(
-    signature: TransactionSignature,
-    commitment?: Finality
-  ): Promise<ParsedConfirmedTransaction | null> {
     throw new Error("not implemented");
   }
 

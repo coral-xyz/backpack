@@ -145,6 +145,8 @@ export const SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION =
   "solana-confirm-transaction";
 export const SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS =
   "solana-get-parsed-transactions";
+export const SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION =
+  "solana-get-parsed-transaction";
 export const SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO =
   "solana-get-multiple-accounts-info";
 export const SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2 =

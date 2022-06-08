@@ -70,6 +70,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNTS_BY_OWNER,
   SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION,
   SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION,
+  SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION,
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
   SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2,
@@ -225,6 +226,16 @@ export class BackgroundSolanaConnection extends Connection {
   ): Promise<RpcResponseAndContext<SignatureResult>> {
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION,
+      params: [signature, commitment],
+    });
+  }
+
+  async getParsedTransaction(
+    signature: TransactionSignature,
+    commitment?: Finality
+  ): Promise<ParsedConfirmedTransaction | null> {
+    return await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION,
       params: [signature, commitment],
     });
   }
@@ -519,13 +530,6 @@ export class BackgroundSolanaConnection extends Connection {
     throw new Error("not implemented");
   }
 
-  getParsedTransaction(
-    signature: TransactionSignature,
-    commitment?: Finality
-  ): Promise<ParsedConfirmedTransaction | null> {
-    throw new Error("not implemented");
-  }
-
   getConfirmedBlock(
     slot: number,
     commitment?: Finality
@@ -715,5 +719,18 @@ export class BackgroundSolanaConnection extends Connection {
 
   removeRootChangeListener(id: number): Promise<void> {
     throw new Error("not implemented");
+  }
+}
+
+export async function confirmTransaction(
+  c: Connection,
+  txSig: string,
+  commitment: Finality
+) {
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+  let tx = await c.getParsedTransaction(txSig, commitment);
+  while (tx === null) {
+    tx = await c.getParsedTransaction(txSig, commitment);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 }

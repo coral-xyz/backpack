@@ -20,6 +20,7 @@ import {
   SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION,
   SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION,
   SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2,
+  SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION,
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
 } from "@200ms/common";
 import { Io } from "../io";
@@ -71,6 +72,8 @@ async function handleImpl<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
         params[1],
         params[2]
       );
+    case SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION:
+      return await handleGetParsedTransaction(params[0], params[1]);
     case SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS:
       return await handleGetParsedTransactions(params[0], params[1]);
     case SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS:
@@ -149,6 +152,14 @@ async function handleGetConfirmedSignaturesForAddress2(
     options,
     commitment
   );
+  return [resp];
+}
+
+async function handleGetParsedTransaction(
+  signature: TransactionSignature,
+  commitment?: Finality
+) {
+  const resp = await BACKEND!.getParsedTransaction(signature, commitment);
   return [resp];
 }
 
