@@ -132,7 +132,6 @@ export function CreateNewWallet() {
     setActiveState(activeStep - 1);
   };
   const handleDone = () => {
-    console.log("clicked handle done");
     const background = getBackgroundClient();
     background
       .request({
