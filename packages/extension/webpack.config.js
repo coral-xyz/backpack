@@ -38,7 +38,7 @@ const {
           directory: path.join(__dirname, "../dev"),
         },
         client: {
-          logging: "info",
+          // logging: "info",
           progress: true,
           reconnect: false,
           overlay: {
