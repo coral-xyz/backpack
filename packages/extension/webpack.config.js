@@ -37,14 +37,6 @@ const {
         static: {
           directory: path.join(__dirname, "../dev"),
         },
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-        },
-        host: "localhost",
-        allowedHosts: "all",
-        https: false,
-        port: 3333,
-        hot: true,
         client: {
           logging: "info",
           progress: true,
@@ -118,10 +110,10 @@ const options = {
         },
       },
       {
-        test: /\.(t|j)sx?$/,
+        test: /\.[jt]sx?$/,
         exclude: /node_modules/,
         use: {
-          loader: "swc-loader",
+          loader: require.resolve("swc-loader"),
           options: {
             sourceMap: process.env.NODE_ENV === "development",
             jsc: {
@@ -135,7 +127,6 @@ const options = {
                 react: {
                   development: process.env.NODE_ENV === "development",
                   refresh: process.env.NODE_ENV === "development",
-                  runtime: "automatic",
                 },
               },
             },
