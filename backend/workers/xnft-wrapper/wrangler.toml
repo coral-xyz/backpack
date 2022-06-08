@@ -1,0 +1,6 @@
+name = "xnft-wrapper"
+main = "src/index.ts"
+compatibility_date = "2022-06-08"
+
+[build]
+command = "npm run build"

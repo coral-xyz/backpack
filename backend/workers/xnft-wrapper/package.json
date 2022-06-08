@@ -1,0 +1,18 @@
+{
+  "name": "@200ms/backend-worker-xnft-wrapper",
+  "version": "0.0.1",
+  "type": "module",
+  "source": "./src/index.js",
+  "module": "./dist/index.mjs",
+  "scripts": {
+    "start": "miniflare --live-reload --debug --modules dist/index.mjs --https --port 9999",
+    "dev:remote": "wrangler dev --port 9999 --local-protocol https",
+    "build": "node build.js",
+    "deploy": "wrangler publish"
+  },
+  "devDependencies": {
+    "esbuild": "^0.14.43",
+    "miniflare": "^2.5.0",
+    "wrangler": "^2.0.8"
+  }
+}
