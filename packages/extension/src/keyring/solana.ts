@@ -326,14 +326,10 @@ export class SolanaLedgerKeyring implements LedgerKeyring {
 }
 
 // Handle receiving postMessages
-self.addEventListener(
-  "message",
-  ({
-    data: {
-      type,
-      detail: { id, result, error },
-    },
-  }) => {
+self.addEventListener("message", ({ data: { type, detail } }) => {
+  try {
+    const { id, result, error } = detail;
+
     if (type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
       return;
     }
@@ -344,12 +340,15 @@ self.addEventListener(
     }
     const { resolve, reject } = resolver;
     delete responseResolvers[id];
+
     if (error) {
       reject(error);
     }
     resolve(result);
+  } catch (err) {
+    console.error(err);
   }
-);
+});
 
 // Handle sending postMessages
 const postMessageToIframe = (message: any) => {
