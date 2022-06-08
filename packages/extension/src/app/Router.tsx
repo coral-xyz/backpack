@@ -12,10 +12,10 @@ import {
   useApprovedOrigins,
   useBootstrapFast,
 } from "@200ms/recoil";
-import { openOnboarding } from "../background/popup";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
 import {
+  openOnboarding,
   QUERY_LOCKED,
   QUERY_APPROVAL,
   QUERY_LOCKED_APPROVAL,
@@ -28,7 +28,6 @@ import {
   ApproveMessage,
 } from "../components/Approval";
 import "./App.css";
-import "@fontsource/inter";
 
 const logger = getLogger("router");
 
@@ -48,6 +47,7 @@ function _Router() {
   //
   const needsOnboarding =
     useKeyringStoreState() === KeyringStoreStateEnum.NeedsOnboarding;
+
   if (needsOnboarding) {
     openOnboarding();
     return <></>;
@@ -255,5 +255,6 @@ const useStyles = makeStyles((theme: any) => ({
     display: "flex",
     flexDirection: "column",
     overflow: "hidden",
+    position: "relative",
   },
 }));

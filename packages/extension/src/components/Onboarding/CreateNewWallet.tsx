@@ -8,8 +8,7 @@ import {
   DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
 } from "@200ms/common";
-import { TextField } from "../common";
-import { OnboardButton } from "../common";
+import { TextField, OnboardButton } from "../common";
 import { HdKeyring, SolanaHdKeyringFactory } from "../../keyring";
 import { _NavBackButton, DummyButton } from "../Layout/Nav";
 
