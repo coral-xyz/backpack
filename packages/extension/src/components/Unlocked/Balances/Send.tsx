@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { useTheme, Button, Typography, Link } from "@mui/material";
+import { useTheme, Typography, Link } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { SystemProgram, PublicKey } from "@solana/web3.js";
 import { useAnchorContext, useSolanaCtx } from "@200ms/recoil";
 import { getLogger, explorerUrl, Solana, SOL_NATIVE_MINT } from "@200ms/common";
+import { WithHeaderButton } from "./Token";
 import {
   TextField,
   TextFieldLabel,
@@ -11,7 +12,6 @@ import {
   OnboardButton,
   Loading,
 } from "../../common";
-import { WithHeaderButton } from "./Token";
 import { WithMiniDrawer } from "../../Layout/Drawer";
 
 const logger = getLogger("send-component");

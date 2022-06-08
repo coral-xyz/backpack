@@ -3,9 +3,9 @@ import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { PluginRenderer } from "@200ms/anchor-ui-renderer";
 import { useNavigation, useTotal, useTablePlugins } from "@200ms/recoil";
+import { formatUSD } from "@200ms/common";
 import { TokenTable } from "./TokenTable";
 import { SettingsButton } from "../../Settings";
-import { formatUSD } from "@200ms/common";
 
 const useStyles = makeStyles((theme: any) => ({
   balancesHeaderContainer: {
@@ -70,7 +70,7 @@ export function BalanceSummary({ blockchain }: { blockchain?: string }) {
       <div>
         <Typography className={classes.headerLabel}>Total Balance</Typography>
         <Typography className={classes.totalBalance}>
-          {formatUSD(totalBalance.toLocaleString())}
+          {formatUSD(totalBalance)}
         </Typography>
       </div>
       {Number.isFinite(percentChange) && (
@@ -79,8 +79,7 @@ export function BalanceSummary({ blockchain }: { blockchain?: string }) {
           <Typography
             className={totalChange > 0 ? classes.positive : classes.negative}
           >
-            {formatUSD(totalChange.toLocaleString())} (
-            {`${percentChange.toFixed(2)}%`})
+            {formatUSD(totalChange)} ({`${percentChange.toFixed(2)}%`})
           </Typography>
         </div>
       )}
