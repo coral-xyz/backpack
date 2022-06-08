@@ -1,11 +1,7 @@
 {
-  "name": "Anchor",
-  "version": "0.1.0",
-  "description": "Anchor Wallet",
   "manifest_version": 3,
   "action": {
-    "default_popup": "popup.html",
-    "default_title": "Anchor"
+    "default_popup": "popup.html"
   },
   "web_accessible_resources": [
     {
@@ -14,13 +10,13 @@
     }
   ],
   "background": {
-    "service_worker": "background.bundle.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
-      "matches": ["file://*/*", "http://*/*", "https://*/*"],
-      "js": ["contentScript.bundle.js"],
-      "run_at": "document_start",
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.js"],
       "all_frames": true
     }
   ],

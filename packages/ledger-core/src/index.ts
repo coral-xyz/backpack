@@ -1,7 +1,6 @@
 import Transport from "@ledgerhq/hw-transport";
 import { Transaction, PublicKey } from "@solana/web3.js";
 import * as bs58 from "bs58";
-import { Buffer } from "buffer";
 import { DerivationPath } from "@200ms/common";
 
 const INS_GET_PUBKEY = 0x05;

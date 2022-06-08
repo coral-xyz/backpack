@@ -1,5 +1,4 @@
 import * as bs58 from "bs58";
-import { Buffer } from "buffer";
 import Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
 import * as core from "@200ms/ledger-core";

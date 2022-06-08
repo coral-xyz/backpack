@@ -13,35 +13,33 @@ declare module "@mui/styles/defaultTheme" {
   interface DefaultTheme extends Theme {}
 }
 
-export const lightTheme = createTheme(
-  adaptV4Theme({
-    palette: {},
-    typography: {
-      fontFamily: "Inter, sans-serif",
+export const lightTheme = createTheme({
+  palette: {},
+  typography: {
+    fontFamily: "Inter, sans-serif",
+  },
+  // @ts-ignore
+  custom: {
+    colors: {
+      background: "#ECEFF3",
+      nav: "#ffffff",
+      fontColor: "#43546D",
+      border: "#DBDADB",
+      activeNavButton: "#00A2C7",
+      hamburger: "#99A4B4",
+      scrollbarThumb: "rgb(153 164 180)",
+      tabIconBackground: "#99A4B4",
+      tabIconSelected: "#1196B5",
+      secondary: "#67758B",
+      positive: "#19A51E",
+      negative: "#E31B1B",
+      onboardButton: "#07758E",
+      sendGradient:
+        "linear-gradient(180deg, #1B1D23 0%, rgba(27, 29, 35, 0) 100%)", // todo
+      interactiveIconsActive: "#1196B5",
     },
-    // @ts-ignore
-    custom: {
-      colors: {
-        background: "#ECEFF3",
-        nav: "#ffffff",
-        fontColor: "#43546D",
-        border: "#DBDADB",
-        activeNavButton: "#00A2C7",
-        hamburger: "#99A4B4",
-        scrollbarThumb: "rgb(153 164 180)",
-        tabIconBackground: "#99A4B4",
-        tabIconSelected: "#1196B5",
-        secondary: "#67758B",
-        positive: "#19A51E",
-        negative: "#E31B1B",
-        onboardButton: "#07758E",
-        sendGradient:
-          "linear-gradient(180deg, #1B1D23 0%, rgba(27, 29, 35, 0) 100%)", // todo
-        interactiveIconsActive: "#1196B5",
-      },
-    },
-  })
-);
+  },
+});
 
 const BACKGROUND_COLOR_0 = "#18181b";
 const BACKGROUND_COLOR_1 = "#27272a";

@@ -5,8 +5,7 @@ import {
   getBackgroundClient,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
 } from "@200ms/common";
-import { TextField } from "./common";
-import { OnboardButton } from "./common";
+import { TextField, OnboardButton } from "./common";
 
 export const NAV_BAR_HEIGHT = 56;
 
@@ -28,21 +27,6 @@ const useStyles = makeStyles((theme: any) => ({
     fontWeight: 500,
     width: "100%",
     textAlign: "center",
-  },
-  recoverButton: {
-    position: "absolute",
-    background: theme.custom.colors.nav,
-    width: "351px",
-    height: "48px",
-    left: "12px",
-    bottom: "80px",
-    borderRadius: "12px",
-  },
-  recoverTitle: {
-    color: theme.custom.colors.fontColor,
-    fontWeight: 500,
-    textTransform: "none",
-    fontSize: "16px",
   },
   passwordRoot: {
     marginTop: 0,

@@ -246,7 +246,7 @@ export class Plugin {
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: notif,
     };
-    this._iframe!.contentWindow!.postMessage(event, "*");
+    this._iframe?.contentWindow?.postMessage(event, "*");
   }
 
   public pushClickNotification(viewId: number) {
@@ -260,7 +260,7 @@ export class Plugin {
         },
       },
     };
-    this._iframe!.contentWindow!.postMessage(event, "*");
+    this._iframe?.contentWindow?.postMessage(event, "*");
   }
 
   public pushOnChangeNotification(viewId: number, value: any) {
@@ -275,7 +275,7 @@ export class Plugin {
         },
       },
     };
-    this._iframe!.contentWindow!.postMessage(event, "*");
+    this._iframe?.contentWindow?.postMessage(event, "*");
   }
 
   public pushConnectNotification() {
@@ -289,7 +289,7 @@ export class Plugin {
         },
       },
     };
-    this._iframe!.contentWindow!.postMessage(event, "*");
+    this._iframe?.contentWindow?.postMessage(event, "*");
   }
 
   public pushMountNotification() {
@@ -300,7 +300,7 @@ export class Plugin {
         data: {},
       },
     };
-    this._iframe!.contentWindow!.postMessage(event, "*");
+    this._iframe?.contentWindow?.postMessage(event, "*");
   }
 
   public pushUnmountNotification() {
@@ -311,7 +311,7 @@ export class Plugin {
         data: {},
       },
     };
-    this._iframe!.contentWindow!.postMessage(event, "*");
+    this._iframe?.contentWindow?.postMessage(event, "*");
   }
 
   public pushNavigationPopNotification() {
@@ -322,7 +322,7 @@ export class Plugin {
         data: {},
       },
     };
-    this._iframe!.contentWindow!.postMessage(event, "*");
+    this._iframe?.contentWindow?.postMessage(event, "*");
   }
 
   public pushConnectionChangedNotification(url: string) {

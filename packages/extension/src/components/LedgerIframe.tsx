@@ -30,7 +30,7 @@ const LedgerIframe = () => {
       //          iframe so that it has permissions to communicate with
       //          the ledger.
       navigator.serviceWorker.onmessage = ({ data }) => {
-        iframe.current!.contentWindow!.postMessage(data, "*");
+        iframe.current?.contentWindow?.postMessage(data, "*");
       };
     });
 
