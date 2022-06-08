@@ -219,7 +219,7 @@ function Send({ onCancel, token }: any) {
           label={"Send"}
         />
         <WithMiniDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-          <SendConfirmation
+          <SendConfirmationCard
             token={token}
             address={address}
             amount={amountFloat}
@@ -274,7 +274,7 @@ export function NetworkFeeInfo() {
   );
 }
 
-function SendConfirmation({ token, address, amount, close }: any) {
+function SendConfirmationCard({ token, address, amount, close }: any) {
   const ctx = useSolanaCtx();
   const [cardType, setCardType] = useState<
     "confirm" | "sending" | "complete" | "error"
@@ -299,7 +299,7 @@ function SendConfirmation({ token, address, amount, close }: any) {
     }
     setTxSignature(txSig);
     try {
-      await ctx.connection.confirmTransaction(txSig);
+      await ctx.connection.confirmTransaction(txSig, ctx.commitment);
       setCardType("complete");
     } catch (err) {
       logger.error("unable to confirm", err);
