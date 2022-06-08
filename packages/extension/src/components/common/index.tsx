@@ -1,6 +1,5 @@
 import type { PublicKey } from "@solana/web3.js";
 import { useTheme, Typography, Button, CircularProgress } from "@mui/material";
-
 import makeStyles from "@mui/styles/makeStyles";
 
 export * from "./List";

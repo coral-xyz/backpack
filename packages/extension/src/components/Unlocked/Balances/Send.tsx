@@ -1,17 +1,20 @@
 import { useState, useEffect } from "react";
-import { useTheme, Typography } from "@mui/material";
+import { useTheme, Button, Typography, Link } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { SystemProgram, PublicKey } from "@solana/web3.js";
 import { useAnchorContext, useSolanaCtx } from "@200ms/recoil";
-import { Solana, SOL_NATIVE_MINT } from "@200ms/common";
+import { getLogger, explorerUrl, Solana, SOL_NATIVE_MINT } from "@200ms/common";
 import {
   TextField,
   TextFieldLabel,
   walletAddressDisplay,
   OnboardButton,
+  Loading,
 } from "../../common";
 import { WithHeaderButton } from "./Token";
 import { WithMiniDrawer } from "../../Layout/Drawer";
+
+const logger = getLogger("send-component");
 
 const useStyles = makeStyles((theme: any) => ({
   container: {
@@ -272,10 +275,14 @@ export function NetworkFeeInfo() {
 }
 
 function SendConfirmation({ token, address, amount, close }: any) {
-  const classes = useStyles();
-  const theme = useTheme() as any;
   const ctx = useSolanaCtx();
+  const [cardType, setCardType] = useState<
+    "confirm" | "sending" | "complete" | "error"
+  >("confirm");
+  const [txSignature, setTxSignature] = useState<string | null>(null);
+
   const onConfirm = async () => {
+    setCardType("sending");
     let txSig;
     if (token.mint === SOL_NATIVE_MINT.toString()) {
       txSig = await Solana.transferSol(ctx, {
@@ -290,63 +297,187 @@ function SendConfirmation({ token, address, amount, close }: any) {
         amount,
       });
     }
-    // TODO: confirm transaction and update ui
-    console.log("tx sig received", txSig);
-    close();
+    setTxSignature(txSig);
+    try {
+      await ctx.connection.confirmTransaction(txSig);
+      setCardType("complete");
+    } catch (err) {
+      logger.error("unable to confirm", err);
+      setCardType("error");
+    }
   };
+
   return (
-    <BottomCard onButtonClick={onConfirm} buttonLabel={"Confirm"}>
-      <div style={{ padding: "24px" }}>
-        <Typography
-          style={{
-            color: theme.custom.colors.fontColor,
-            fontWeight: 500,
-            fontSize: "18px",
-            lineHeight: "24px",
-          }}
-        >
-          Confirm Send
-        </Typography>
-        <div
-          style={{
-            marginTop: "18px",
-          }}
-        >
-          <div className={classes.confirmRow}>
-            <Typography className={classes.confirmRowLabelLeft}>
-              Network
-            </Typography>
-            <Typography className={classes.confirmRowLabelRight}>
-              Solana
-            </Typography>
-          </div>
-          <div className={classes.confirmRow}>
-            <Typography className={classes.confirmRowLabelLeft}>
-              Network Fee
-            </Typography>
-            <Typography className={classes.confirmRowLabelRight}>
-              - SOL
-            </Typography>
-          </div>
-          <div className={classes.confirmRow}>
-            <Typography className={classes.confirmRowLabelLeft}>
-              Sending from
-            </Typography>
-            <Typography className={classes.confirmRowLabelRight}>
-              {walletAddressDisplay(ctx.walletPublicKey)}
-            </Typography>
-          </div>
-          <div className={classes.confirmRow}>
-            <Typography className={classes.confirmRowLabelLeft}>
-              Sending to
-            </Typography>
-            <Typography className={classes.confirmRowLabelRight}>
-              {walletAddressDisplay(new PublicKey(address))}
-            </Typography>
-          </div>
-        </div>
+    <BottomCard
+      onButtonClick={cardType === "confirm" ? onConfirm : close}
+      buttonLabel={cardType === "confirm" ? "Confirm" : "Close"}
+    >
+      <div style={{ padding: "24px", height: "100%" }}>
+        {cardType === "confirm" ? (
+          <ConfirmSend address={address} />
+        ) : cardType === "sending" ? (
+          <Sending signature={txSignature!} />
+        ) : cardType === "complete" ? (
+          <Complete signature={txSignature!} address={address} />
+        ) : (
+          <Error signature={txSignature!} />
+        )}
       </div>
     </BottomCard>
+  );
+}
+
+function ConfirmSend({ address }: { address: string }) {
+  const classes = useStyles();
+  const theme = useTheme() as any;
+  const ctx = useSolanaCtx();
+  return (
+    <div>
+      <Typography
+        style={{
+          color: theme.custom.colors.fontColor,
+          fontWeight: 500,
+          fontSize: "18px",
+          lineHeight: "24px",
+        }}
+      >
+        Confirm Send
+      </Typography>
+      <div
+        style={{
+          marginTop: "18px",
+        }}
+      >
+        <div className={classes.confirmRow}>
+          <Typography className={classes.confirmRowLabelLeft}>
+            Network
+          </Typography>
+          <Typography className={classes.confirmRowLabelRight}>
+            Solana
+          </Typography>
+        </div>
+        <div className={classes.confirmRow}>
+          <Typography className={classes.confirmRowLabelLeft}>
+            Network Fee
+          </Typography>
+          <Typography className={classes.confirmRowLabelRight}>
+            0.000005 SOL
+          </Typography>
+        </div>
+        <div className={classes.confirmRow}>
+          <Typography className={classes.confirmRowLabelLeft}>
+            Sending from
+          </Typography>
+          <Typography className={classes.confirmRowLabelRight}>
+            {walletAddressDisplay(ctx.walletPublicKey)}
+          </Typography>
+        </div>
+        <div className={classes.confirmRow}>
+          <Typography className={classes.confirmRowLabelLeft}>
+            Sending to
+          </Typography>
+          <Typography className={classes.confirmRowLabelRight}>
+            {walletAddressDisplay(new PublicKey(address))}
+          </Typography>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Sending({ signature }: { signature: string }) {
+  const theme = useTheme() as any;
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        height: "100%",
+      }}
+    >
+      <div style={{ height: "40px" }}>
+        <Loading />
+      </div>
+      <Typography
+        style={{ textAlign: "center", color: theme.custom.colors.secondary }}
+      >
+        Sending...
+      </Typography>
+      <Link
+        href={explorerUrl(signature)}
+        target="_blank"
+        style={{ textAlign: "center" }}
+      >
+        View Transaction
+      </Link>
+    </div>
+  );
+}
+
+function Complete({
+  signature,
+  address,
+}: {
+  signature: string;
+  address: string;
+}) {
+  const theme = useTheme() as any;
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        height: "100%",
+      }}
+    >
+      <Typography
+        style={{ textAlign: "center", color: theme.custom.colors.secondary }}
+      >
+        Sent!
+      </Typography>
+      <Typography
+        style={{ textAlign: "center", color: theme.custom.colors.secondary }}
+      >
+        Your tokens were successfully sent to{" "}
+        {walletAddressDisplay(new PublicKey(address))}
+      </Typography>
+      <Link
+        href={explorerUrl(signature)}
+        target="_blank"
+        style={{ textAlign: "center" }}
+      >
+        View Transaction
+      </Link>
+    </div>
+  );
+}
+
+function Error({ signature }: { signature: string }) {
+  const theme = useTheme() as any;
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        height: "100%",
+      }}
+    >
+      <Typography
+        style={{ textAlign: "center", color: theme.custom.colors.secondary }}
+      >
+        There was a problem confirming the transaction.
+      </Typography>
+      <Link
+        href={explorerUrl(signature)}
+        target="_blank"
+        style={{ textAlign: "center" }}
+      >
+        View Transaction
+      </Link>
+    </div>
   );
 }
 
