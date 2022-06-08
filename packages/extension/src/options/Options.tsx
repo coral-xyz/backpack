@@ -6,7 +6,6 @@ import { ConnectHardware } from "../components/Settings/ConnectHardware";
 import { Onboarding } from "../components/Onboarding";
 import { QUERY_CONNECT_HARDWARE, QUERY_ONBOARDING } from "../background/popup";
 import "../app/App.css";
-import "@fontsource/inter";
 
 //
 // Options provides the "expanded" extension app flows. Namely,
