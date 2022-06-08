@@ -290,6 +290,7 @@ function SendConfirmation({ token, address, amount, close }: any) {
         amount,
       });
     }
+    // TODO: confirm transaction and update ui
     console.log("tx sig received", txSig);
     close();
   };
