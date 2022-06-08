@@ -1,5 +1,5 @@
 import { atom, selector, selectorFamily } from "recoil";
-import { PublicKey } from "@solana/web3.js";
+import { ParsedConfirmedTransaction, PublicKey } from "@solana/web3.js";
 import {
   getBackgroundClient,
   UI_RPC_METHOD_NAVIGATION_READ,
@@ -20,7 +20,7 @@ export const bootstrap = selector<{
   splTokenMetadata: Array<any>;
   splNftMetadata: Map<string, any>;
   coingeckoData: Map<string, any>;
-  recentTransactions: Array<any>;
+  recentTransactions: Array<ParsedConfirmedTransaction>;
   walletPublicKey: PublicKey;
 }>({
   key: "bootstrap",
