@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@200ms/anchor-ui-renderer": "*",
+    "@200ms/background": "*",
     "@200ms/common": "*",
     "@200ms/ledger-core": "*",
     "@200ms/recoil": "*",
@@ -17,9 +18,7 @@
     "@mui/styles": "^5.8.0",
     "@project-serum/anchor": "^0.24.2",
     "@solana/web3.js": "^1.35.1",
-    "bip39": "^3.0.4",
     "bs58": "^5.0.0",
-    "ed25519-hd-key": "^1.2.0",
     "eventemitter3": "^4.0.7",
     "react": "^17.0.2",
     "react-browser-extension-scripts": "4.0.10",
@@ -27,7 +26,6 @@
     "react-dom": "^17.0.2",
     "react-router-dom": "^6.3.0",
     "recoil": "^0.6.1",
-    "tweetnacl": "^1.0.3",
     "uuid": "^8.3.2"
   },
   "scripts": {

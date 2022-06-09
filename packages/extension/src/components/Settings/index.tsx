@@ -31,8 +31,8 @@ import {
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
 } from "@200ms/common";
+import { openConnectHardware } from "@200ms/background";
 import { WalletAddress, List, ListItem } from "../../components/common";
-import { openConnectHardware } from "../../background/popup";
 import { WithDrawer } from "../Layout/Drawer";
 import { ConnectionMenu } from "./ConnectionSwitch";
 

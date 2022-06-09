@@ -8,8 +8,8 @@ import {
   DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
 } from "@200ms/common";
+import { HdKeyring, SolanaHdKeyringFactory } from "@200ms/background";
 import { TextField, OnboardButton } from "../common";
-import { HdKeyring, SolanaHdKeyringFactory } from "../../keyring";
 import { _NavBackButton, DummyButton } from "../Layout/Nav";
 
 const useStyles = makeStyles((theme: any) => ({

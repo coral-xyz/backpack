@@ -1,9 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
+import { setupClient } from "@200ms/background";
 import App from "./app/App";
-import { setupClient } from "./background/client";
 import LedgerIframe from "./components/LedgerIframe";
+import "./index.css";
 
 async function main() {
   //
