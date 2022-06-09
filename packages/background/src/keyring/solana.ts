@@ -11,8 +11,8 @@ import {
   DerivationPath,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
 } from "@200ms/common";
-import { deriveKeypairs, deriveKeypair } from "@200ms/common";
-import {
+import { deriveKeypairs, deriveKeypair } from "@200ms/common/dist/esm/derive";
+import type {
   ImportedDerivationPath,
   Keyring,
   KeyringFactory,
