@@ -1,0 +1,19 @@
+{
+  "name": "@200ms/xnft-cli",
+  "version": "0.0.1",
+  "source": "src/index.ts",
+  "dependencies": {
+    "@fal-works/esbuild-plugin-global-externals": "^2.1.2",
+    "commander": "^9.3.0",
+    "esbuild": "^0.14.43"
+  },
+  "devDependencies": {
+    "typescript": "^4.7.2"
+  },
+  "scripts": {
+    "build": "npx esbuild src/index.ts --bundle --outfile=dist/xnft-cli.js --platform=node --external:esbuild"
+  },
+  "bin": {
+    "xnft": "./dist/xnft-cli.js"
+  }
+}
