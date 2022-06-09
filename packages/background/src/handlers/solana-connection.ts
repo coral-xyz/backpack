@@ -29,7 +29,6 @@ import { BACKEND } from "../solana-connection/backend";
 const logger = getLogger("solana-connection");
 
 export function start() {
-  console.log("armani: solana-connection start");
   BACKEND.start();
   Io.solanaConnection.handler(handle);
   Io.solanaConnectionInjected.handler(withContext(handleInjected));
