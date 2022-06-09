@@ -12,13 +12,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@200ms/common": "*",
     "@200ms/recoil": "*",
+    "@200ms/common": "*",
     "@project-serum/anchor": "^0.23.0",
     "@solana/web3.js": "^1.37.1",
     "bip39": "^3.0.4",
+    "bn.js": "^5.2.1",
     "bs58": "^5.0.0",
-    "eventemitter3": "^4.0.7",
+    "ed25519-hd-key": "^1.2.0",
     "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
