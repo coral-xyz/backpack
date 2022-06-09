@@ -19,7 +19,7 @@ import {
   KeyringFactory,
   Keyring,
 } from ".";
-import { Io } from "../background/io";
+import { Io } from "../io";
 
 const LOCK_INTERVAL_SECS = 15 * 60 * 1000;
 

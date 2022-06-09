@@ -12,8 +12,6 @@ import {
   useApprovedOrigins,
   useBootstrapFast,
 } from "@200ms/recoil";
-import { Locked } from "../components/Locked";
-import { Unlocked } from "../components/Unlocked";
 import {
   openOnboarding,
   QUERY_LOCKED,
@@ -21,7 +19,9 @@ import {
   QUERY_LOCKED_APPROVAL,
   QUERY_APPROVE_TRANSACTION,
   QUERY_APPROVE_MESSAGE,
-} from "../background/popup";
+} from "@200ms/background";
+import { Locked } from "../components/Locked";
+import { Unlocked } from "../components/Unlocked";
 import {
   Approval,
   ApproveTransaction,

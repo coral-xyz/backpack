@@ -33,7 +33,7 @@ import {
   setNav,
   getNav,
   NavData,
-} from "../keyring/store";
+} from "./keyring/store";
 import { Io } from "./io";
 import { BACKEND as SOLANA_CONNECTION_BACKEND } from "./solana-connection/backend";
 

@@ -25,8 +25,8 @@ export function deriveKeypairs(
   seed: Buffer,
   dPath: DerivationPath,
   numberOfAccounts: number
-) {
-  const kps = [];
+): Array<Keypair> {
+  const kps: Array<Keypair> = [];
   const seedHex = seed.toString("hex");
   for (let k = 0; k < numberOfAccounts; k += 1) {
     const kp = deriveKeypair(seedHex, k, dPath);
