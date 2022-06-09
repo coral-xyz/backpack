@@ -82,7 +82,7 @@ export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
 export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;
 
 export class Backend {
-  private cache = new Map<string, any>();
+  private cache = new Map<string, CachedValue<any>>();
   private connection?: Connection;
   private url?: string;
   private pollIntervals: Array<any>;
@@ -162,7 +162,10 @@ export class Backend {
           method: "customSplTokenAccounts",
           args: [activeWallet.toString()],
         });
-        this.cache.set(key, data);
+        this.cache.set(key, {
+          ts: Date.now(),
+          value: data,
+        });
         Io.events.emit(BACKEND_EVENT, {
           name: NOTIFICATION_SPL_TOKENS_DID_UPDATE,
           data: {
@@ -185,7 +188,10 @@ export class Backend {
           method: "getLatestBlockhash",
           args: [],
         });
-        this.cache.set(key, data);
+        this.cache.set(key, {
+          ts: Date.now(),
+          value: data,
+        });
       }, RECENT_BLOCKHASH_REFRESH_INTERVAL)
     );
   }
@@ -206,12 +212,17 @@ export class Backend {
         method,
         args,
       });
+
+      // Only use cached values at most 15 seconds old.
       const value = this.cache.get(key);
-      if (value) {
-        return value;
+      if (value && value.ts + CACHE_EXPIRY > Date.now()) {
+        return value.value;
       }
       const resp = await _rpcRequest(method, args);
-      this.cache.set(key, resp);
+      this.cache.set(key, {
+        ts: Date.now(),
+        value: resp,
+      });
       return resp;
     };
   }
@@ -227,11 +238,14 @@ export class Backend {
       args: [publicKey.toString()],
     });
     const value = this.cache.get(key);
-    if (value) {
-      return value;
+    if (value && value.ts + CACHE_EXPIRY > Date.now()) {
+      return value.value;
     }
     const resp = await customSplTokenAccounts(this.connection!, publicKey);
-    this.cache.set(key, resp);
+    this.cache.set(key, {
+      ts: Date.now(),
+      value: resp,
+    });
     return resp;
   }
 
@@ -816,3 +830,11 @@ export class Backend {
 }
 
 export const BACKEND = new Backend();
+
+type CachedValue<T> = {
+  ts: number;
+  value: T;
+};
+
+// Time until cached values expire. This is arbitrary.
+const CACHE_EXPIRY = 15000;

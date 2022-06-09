@@ -81,7 +81,7 @@ function TokenHeader({ blockchain, address }: any) {
       </div>
       <div className={classes.tokenHeaderButtonContainer}>
         <DepositButton token={token} />
-        <SendButton token={token} />
+        <SendButton blockchain={blockchain} address={address} />
       </div>
     </div>
   );

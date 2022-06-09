@@ -2,7 +2,11 @@ import { useState, useEffect } from "react";
 import { useTheme, Typography, Link } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { SystemProgram, PublicKey } from "@solana/web3.js";
-import { useAnchorContext, useSolanaCtx } from "@200ms/recoil";
+import {
+  useAnchorContext,
+  useSolanaCtx,
+  useBlockchainTokenAccount,
+} from "@200ms/recoil";
 import {
   confirmTransaction,
   getLogger,
@@ -90,20 +94,34 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-export function SendButton({ token }: any) {
+export function SendButton({ blockchain, address }: any) {
+  const token = useBlockchainTokenAccount(blockchain, address);
   return (
     <WithHeaderButton
       label={"Send"}
       dialogTitle={`${token.ticker} / Send`}
       dialog={(setOpenDrawer: any) => (
-        <Send token={token} onCancel={() => setOpenDrawer(false)} />
+        <Send
+          blockchain={blockchain}
+          tokenAddress={address}
+          onCancel={() => setOpenDrawer(false)}
+        />
       )}
     />
   );
 }
 
-function Send({ onCancel, token }: any) {
+function Send({
+  onCancel,
+  blockchain,
+  tokenAddress,
+}: {
+  onCancel: () => void;
+  blockchain: string;
+  tokenAddress: string;
+}) {
   const classes = useStyles() as any;
+  const token = useBlockchainTokenAccount(blockchain, tokenAddress);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState<number>(0.0);
@@ -289,21 +307,35 @@ function SendConfirmationCard({ token, address, amount, close }: any) {
 
   const onConfirm = async () => {
     setCardType("sending");
+
+    //
+    // Send the tx.
+    //
     let txSig;
-    if (token.mint === SOL_NATIVE_MINT.toString()) {
-      txSig = await Solana.transferSol(ctx, {
-        source: ctx.walletPublicKey,
-        destination: new PublicKey(address),
-        amount,
-      });
-    } else {
-      txSig = await Solana.transferToken(ctx, {
-        destination: new PublicKey(address),
-        mint: new PublicKey(token.mint),
-        amount,
-      });
+    try {
+      if (token.mint === SOL_NATIVE_MINT.toString()) {
+        txSig = await Solana.transferSol(ctx, {
+          source: ctx.walletPublicKey,
+          destination: new PublicKey(address),
+          amount,
+        });
+      } else {
+        txSig = await Solana.transferToken(ctx, {
+          destination: new PublicKey(address),
+          mint: new PublicKey(token.mint),
+          amount,
+        });
+      }
+    } catch (err) {
+      logger.error("unable to send transaction", err);
+      setCardType("error");
+      return;
     }
     setTxSignature(txSig);
+
+    //
+    // Confirm the tx.
+    //
     try {
       await confirmTransaction(
         ctx.connection,
