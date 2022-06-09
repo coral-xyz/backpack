@@ -209,7 +209,13 @@ function Send({
   };
 
   return (
-    <div className={classes.container}>
+    <form
+      className={classes.container}
+      onSubmit={(e) => {
+        e.preventDefault();
+        onNext();
+      }}
+    >
       <div className={classes.topHalf}>
         <div style={{ marginBottom: "40px" }}>
           <TextFieldLabel leftLabel={"Send to"} rightLabel={"Address Book"} />
@@ -219,6 +225,9 @@ function Send({
             value={address}
             setValue={setAddress}
             isError={addressError}
+            inputProps={{
+              name: "to",
+            }}
           />
         </div>
         <div>
@@ -233,14 +242,18 @@ function Send({
             value={amount}
             setValue={setAmount}
             isError={amountError}
+            inputProps={{
+              name: "amount",
+            }}
           />
         </div>
       </div>
       <div className={classes.buttonContainer}>
         <OnboardButton
           className={classes.button}
-          onClick={onNext}
-          label={"Send"}
+          label="Send"
+          type="submit"
+          data-testid="Send"
         />
         <WithMiniDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
           <SendConfirmationCard
@@ -251,7 +264,7 @@ function Send({
           />
         </WithMiniDrawer>
       </div>
-    </div>
+    </form>
   );
 }
 

@@ -8,6 +8,9 @@ on:
     branches:
       - master
 
+env:
+  solana_verion: 1.10.24
+
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -101,13 +104,32 @@ jobs:
 
       - run: yarn test
 
-      - name: build extension (for e2e tests)
+      - name: "[solana] cache"
+        uses: actions/cache@v3
+        id: cache-solana
+        with:
+          path: |
+            ~/.cache/solana/
+            ~/.local/share/solana/
+          key: solana-${{ runner.os }}-${{ env.solana_verion }}
+
+      - name: "[solana] install solana"
+        if: steps.cache-solana.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config build-essential libudev-dev
+          sh -c "$(curl -sSfL https://release.solana.com/v${{ env.solana_verion }}/install)"
+
+      - name: "[solana] add to PATH"
+        run: echo "/home/runner/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+
+      - name: "[e2e] build extension"
         # CI!=true so that build warnings aren't treated like errors (for now)
         env:
           CI: ""
         run: yarn build
 
-      - name: run puppeteer e2e tests
-        uses: mujo-code/puppeteer-headful@v2
+      - name: "[e2e] run puppeteer tests"
+        uses: wentokay/hello-world-docker-action@v11
         with:
-          args: yarn workspace @200ms/extension e2e
+          command: yarn workspace @200ms/extension e2e

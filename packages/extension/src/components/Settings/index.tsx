@@ -71,6 +71,7 @@ export function SettingsButton() {
         className={classes.menuButton}
         onClick={() => setSettingsOpen(!settingsOpen)}
         size="large"
+        id="menu-button"
       >
         <img
           src={AVATAR_URL}
@@ -282,6 +283,7 @@ function SettingsList({ close }: { close: () => void }) {
             key={s.id}
             isLast={idx === settingsMenu.length - 1}
             onClick={s.onClick}
+            id={s.label}
           >
             <div
               style={{

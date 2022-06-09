@@ -1,6 +1,10 @@
-import { generateMnemonic } from "bip39";
+import expectPuppeteer from "expect-puppeteer";
+import { generateMnemonic, mnemonicToSeed } from "bip39";
 import type { Page } from "puppeteer";
-import manifest from "../build/manifest.json";
+import manifest from "../../build/manifest.json";
+import { walletAddressDisplay } from "../components/common";
+import { deriveKeypairs } from "../keyring/crypto";
+import { Connection, LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 let clientPage: Page;
 let extensionPopupPage: Page;
@@ -129,10 +133,19 @@ describe("Installing Anchor Wallet", () => {
     });
 
     test("succeeds with a valid mnemonic", async () => {
-      await expect(setupPage).toFill(
-        "input[name=mnemonic]",
-        generateMnemonic(256)
+      const connection = new Connection("http://localhost:8899", "confirmed");
+
+      const mnemonic = generateMnemonic(256);
+      const seed = await mnemonicToSeed(mnemonic);
+      const keypairs = deriveKeypairs(seed, "bip44-change", 2);
+      const [firstWallet, secondWallet] = keypairs;
+      const sig = await connection.requestAirdrop(
+        firstWallet.publicKey,
+        1.11 * LAMPORTS_PER_SOL
       );
+      await connection.confirmTransaction(sig);
+
+      await expect(setupPage).toFill("input[name=mnemonic]", mnemonic);
       await expect(setupPage).toClick("button", { text: "Continue" });
 
       await expect(setupPage).toMatch("Your first account will be imported");
@@ -159,8 +172,101 @@ describe("Installing Anchor Wallet", () => {
       );
       await expect(extensionPopupPage).toClick("button", { text: "Unlock" });
 
-      // Ensure the wallet is unlocked and the balance page loads
-      await expect(extensionPopupPage).toMatch("Total Balance");
+      console.log({
+        mnemonic,
+        keypairs: keypairs.map((k) => k.publicKey.toString()),
+      });
+
+      await sleep(100);
+
+      await expectPuppeteer(extensionPopupPage).toClick("#menu-button");
+
+      await sleep(100);
+
+      await expect(extensionPopupPage).toMatch(
+        walletAddressDisplay(firstWallet.publicKey)
+      );
+
+      await expectPuppeteer(extensionPopupPage).toClick("p", {
+        text: "Connection",
+      });
+
+      await sleep(100);
+
+      await expectPuppeteer(extensionPopupPage).toClick("span", {
+        text: "Localnet",
+      });
+
+      await sleep(300);
+      await expectPuppeteer(extensionPopupPage).toClick("p", {
+        text: "1.11 SOL",
+      });
+
+      await sleep(100);
+      await expectPuppeteer(extensionPopupPage).toClick("button", {
+        text: "Send",
+      });
+
+      await sleep(100);
+      await expect(extensionPopupPage).toFillForm("form", {
+        to: secondWallet.publicKey.toString(),
+        amount: "0.5",
+      });
+
+      await expect(extensionPopupPage).toClick("[data-testid='Send']");
+
+      await sleep(100);
+
+      await expect(extensionPopupPage).toClick("button", {
+        text: "Confirm",
+      });
+
+      await expectPuppeteer(extensionPopupPage).toMatch("Sent!");
+
+      await expect(extensionPopupPage).toClick("button", {
+        text: "Close",
+      });
+
+      await sleep(300);
+
+      await expect(extensionPopupPage).toClick("[data-testid='back-button']");
+
+      await sleep(100);
+
+      await expectPuppeteer(extensionPopupPage).toClick("#menu-button");
+
+      await sleep(100);
+
+      await expectPuppeteer(extensionPopupPage).toClick("p", {
+        text: "Add / Connect Wallet",
+      });
+
+      await sleep(100);
+
+      await expectPuppeteer(extensionPopupPage).toClick("p", {
+        text: "Create a new wallet",
+      });
+
+      await sleep(300);
+
+      await expectPuppeteer(extensionPopupPage).toClick("#menu-button");
+
+      await sleep(100);
+
+      await expect(extensionPopupPage).toMatch(
+        walletAddressDisplay(secondWallet.publicKey)
+      );
+
+      // check balances directly because UI doesn't update immediately, change
+      // once https://github.com/200ms-labs/anchor-wallet/issues/111 is fixed
+
+      const [firstBalance, secondBalance] = await Promise.all([
+        connection.getBalance(firstWallet.publicKey),
+        connection.getBalance(secondWallet.publicKey),
+      ]);
+
+      expect(firstBalance).toEqual(609_995_000);
+      expect(secondBalance).toEqual(500_000_000);
 
       await extensionPopupPage.close();
 
@@ -174,7 +280,6 @@ describe("Installing Anchor Wallet", () => {
         text: "Anchor",
       });
 
-      // XXX: this is a hack to wait for the popup to open
       await sleep(500);
 
       const browserPages = await browser.pages();
@@ -190,7 +295,7 @@ describe("Installing Anchor Wallet", () => {
 
       // Wallet is now disconnected, expect to see 'Select Wallet' button
       await expect(clientPage).toMatch("Select Wallet");
-    }, 30_000 /** allow 30s for test to run due to loading external data */);
+    }, 60_000 /** allow 60s for test to run due to loading external data */);
   });
 });
 

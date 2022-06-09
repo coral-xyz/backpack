@@ -33,11 +33,12 @@ export function List({ style, children }: any) {
   );
 }
 
-export function ListItem({ key, style, children, onClick, isLast }: any) {
+export function ListItem({ key, style, children, onClick, isLast, id }: any) {
   const classes = useStyles();
   const theme = useTheme() as any;
   return (
     <MuiListItem
+      data-testid={id}
       key={key}
       button
       className={classes.settingsContentListItem}

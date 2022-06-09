@@ -1,7 +1,8 @@
 module.exports = {
   preset: "jest-puppeteer",
   transform: {
-    "^.+\\.tsx?$": ["esbuild-jest"],
+    "^.+\\.[jt]sx?$": ["esbuild-jest"],
   },
   setupFilesAfterEnv: ["./jest.setup.js"],
+  transformIgnorePatterns: ["node_modules/(?!uuid/)"],
 };
