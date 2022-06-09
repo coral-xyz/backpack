@@ -21,6 +21,8 @@
     "@solana/web3.js": "^1.37.1",
     "bn.js": "^5.2.1",
     "bs58": "^5.0.0",
+    "ed25519-hd-key": "^1.2.0",
+    "tweetnacl": "^1.0.3",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
