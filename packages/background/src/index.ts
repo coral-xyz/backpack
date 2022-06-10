@@ -12,6 +12,7 @@ export * from "./client";
 export function start() {
   const solanaB = solanaBackend.start();
   const b = backend.start(solanaB);
+
   Io.start();
   serverInjected.start(b);
   serverUi.start(b);

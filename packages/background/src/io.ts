@@ -51,16 +51,22 @@ export class Io {
   public static notificationsUi: NotificationsClient;
 
   public static start() {
-    Io.notificationsInjected = Channel.client(CHANNEL_NOTIFICATION);
-    Io.rpcServerInjected = Channel.server(CHANNEL_RPC_REQUEST);
+    // Extension UI server.
     Io.rpcServerUi = PortChannel.server(CONNECTION_POPUP_RPC);
+    Io.notificationsUi = startNotificationsUi();
+
+    // Injected client server.
+    Io.rpcServerInjected = Channel.server(CHANNEL_RPC_REQUEST);
+    Io.popupUiResponse = PortChannel.server(CONNECTION_POPUP_RESPONSE);
+    Io.notificationsInjected = Channel.client(CHANNEL_NOTIFICATION);
+
+    // Solana connection proxy server.
     Io.solanaConnection = PortChannel.server(SOLANA_CONNECTION_RPC_UI);
     Io.solanaConnectionInjected = Channel.server(
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST
     );
-    Io.popupUiResponse = PortChannel.server(CONNECTION_POPUP_RESPONSE);
+
     Io.events = new EventEmitter();
-    Io.notificationsUi = startNotificationsUi();
   }
 }
 
