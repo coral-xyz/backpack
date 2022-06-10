@@ -37,6 +37,10 @@ import {
 import { Io } from "./io";
 import { BACKEND as SOLANA_CONNECTION_BACKEND } from "./solana-connection/backend";
 
+export function start() {
+  BACKEND = new Backend();
+}
+
 export class Backend {
   private keyringStore: KeyringStore;
 
@@ -452,10 +456,8 @@ export class Backend {
 }
 
 export const SUCCESS_RESPONSE = "success";
-
+const defaultNav = makeDefaultNav();
 //
 // Backend singleton.
 //
-export const BACKEND = new Backend();
-
-const defaultNav = makeDefaultNav();
+export let BACKEND: Backend;
