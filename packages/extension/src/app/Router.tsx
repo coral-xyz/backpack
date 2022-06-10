@@ -19,7 +19,7 @@ import {
   QUERY_LOCKED_APPROVAL,
   QUERY_APPROVE_TRANSACTION,
   QUERY_APPROVE_MESSAGE,
-} from "@200ms/background";
+} from "@200ms/common";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
 import {

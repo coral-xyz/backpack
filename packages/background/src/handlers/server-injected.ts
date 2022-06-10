@@ -27,7 +27,7 @@ import {
   openLockedApprovalPopupWindow,
   openApproveTransactionPopupWindow,
   openApproveMessagePopupWindow,
-} from "../popup";
+} from "@200ms/common";
 import { BACKEND, SUCCESS_RESPONSE } from "../backend";
 import { Io } from "../io";
 

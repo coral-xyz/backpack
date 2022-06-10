@@ -1,6 +1,6 @@
 import { RecoilRoot } from "recoil";
-import { QUERY_CONNECT_HARDWARE, QUERY_ONBOARDING } from "@200ms/background";
-import * as background from "@200ms/background";
+import { QUERY_CONNECT_HARDWARE, QUERY_ONBOARDING } from "@200ms/common";
+import { setupClient } from "@200ms/background";
 import { WithSuspense } from "../app/Router";
 import { WithTheme } from "../app/theme";
 import { ConnectHardware } from "../components/Settings/ConnectHardware";
@@ -14,7 +14,7 @@ import "../app/App.css";
 // - Connect to hardware
 //
 function Options() {
-  background.setupClient();
+  setupClient();
   return (
     <RecoilRoot>
       <_Options />

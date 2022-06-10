@@ -5,7 +5,6 @@
   "private": true,
   "dependencies": {
     "@200ms/anchor-ui-renderer": "*",
-    "@200ms/background": "*",
     "@200ms/common": "*",
     "@200ms/ledger-core": "*",
     "@200ms/recoil": "*",

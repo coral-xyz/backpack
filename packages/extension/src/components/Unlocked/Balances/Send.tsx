@@ -340,7 +340,9 @@ function SendConfirmationCard({ token, address, amount, close }: any) {
       await confirmTransaction(
         ctx.connection,
         txSig,
-        ctx.commitment === "processed" ? "confirmed" : ctx.commitment
+        ctx.commitment !== "confirmed" && ctx.commitment !== "finalized"
+          ? "confirmed"
+          : ctx.commitment
       );
       setCardType("complete");
     } catch (err) {

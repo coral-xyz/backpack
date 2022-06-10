@@ -118,6 +118,7 @@ export class Backend {
           handleConnectionUrlUpdated(notif);
           break;
         default:
+          break;
       }
     });
 

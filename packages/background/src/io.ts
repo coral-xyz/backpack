@@ -1,7 +1,10 @@
 import { EventEmitter } from "eventemitter3";
 import {
   Channel,
+  ChannelClient,
+  ChannelServer,
   PortChannel,
+  PortChannelServer,
   NotificationsClient,
   BACKEND_EVENT,
   CHANNEL_RPC_REQUEST,
@@ -20,34 +23,45 @@ import {
 //
 export class Io {
   // Channel to send notifications from the background to the injected script.
-  public static notificationsInjected = Channel.client(CHANNEL_NOTIFICATION);
+  public static notificationsInjected: ChannelClient;
 
   // Server receiving rpc requests from the injected script.
-  public static rpcServerInjected = Channel.server(CHANNEL_RPC_REQUEST);
+  public static rpcServerInjected: ChannelServer;
 
   // Server rceiving rpc requests from the extension UI.
-  public static rpcServerUi = PortChannel.server(CONNECTION_POPUP_RPC);
+  public static rpcServerUi: PortChannelServer;
 
   // Server receiving Connection API requests from the extension UI.
-  public static solanaConnection = PortChannel.server(SOLANA_CONNECTION_RPC_UI);
+  public static solanaConnection: PortChannelServer;
 
   // Server receiving Connection API requests from the injected script.
-  public static solanaConnectionInjected = Channel.server(
-    CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST
-  );
+  public static solanaConnectionInjected: ChannelServer;
 
   // Server receiving responses from the extension UI. This is used when the
   // background script wants to request some type of user action from the UI,
   // e.g., the approval of a transaction.
-  public static popupUiResponse = PortChannel.server(CONNECTION_POPUP_RESPONSE);
+  public static popupUiResponse: PortChannelServer;
 
   // Main event emitter to send notifications from the background script to the
   // extension UI.
-  public static events = new EventEmitter();
+  public static events: any;
 
   // Client to send notifications from the background script to the extension UI.
   // This should only be created *after* the UI explicitly asks for it.
-  public static notificationsUi = startNotificationsUi();
+  public static notificationsUi: NotificationsClient;
+
+  public static start() {
+    Io.notificationsInjected = Channel.client(CHANNEL_NOTIFICATION);
+    Io.rpcServerInjected = Channel.server(CHANNEL_RPC_REQUEST);
+    Io.rpcServerUi = PortChannel.server(CONNECTION_POPUP_RPC);
+    Io.solanaConnection = PortChannel.server(SOLANA_CONNECTION_RPC_UI);
+    Io.solanaConnectionInjected = Channel.server(
+      CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST
+    );
+    Io.popupUiResponse = PortChannel.server(CONNECTION_POPUP_RESPONSE);
+    Io.events = new EventEmitter();
+    Io.notificationsUi = startNotificationsUi();
+  }
 }
 
 function startNotificationsUi(): NotificationsClient {
