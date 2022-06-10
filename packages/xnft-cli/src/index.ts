@@ -7,7 +7,7 @@ program.description("The xNFT CLI").name("xnft");
 
 program
   .command("build")
-  .argument("<input-file>")
+  .argument("[input-file]")
   .option("-o, --output <string>", "output file")
   .description("create a javascript bundle")
   .action(build);

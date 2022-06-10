@@ -1,13 +1,39 @@
 import esbuild from "esbuild";
 import { globalExternals } from "@fal-works/esbuild-plugin-global-externals";
-import { existsSync, statSync } from "fs";
+import { existsSync, mkdirSync, readFileSync, statSync } from "fs";
 import path from "path";
 
-export const build = async (inputFile: string, args?: { output?: string }) => {
-  const infile = path.join(path.resolve(), inputFile);
-  const outfile = args?.output || "dist/bundle.js";
+const dirName = path.resolve();
 
-  if (!existsSync(infile)) throw new Error(`(${infile}) not found`);
+export const build = async (inputFile: string, args?: { output?: string }) => {
+  const pkg = readFileSync(path.join(dirName, "package.json"));
+  const { main, source } = JSON.parse(pkg.toString());
+
+  const infile = (() => {
+    if (inputFile) {
+      const file = path.join(dirName, inputFile);
+      if (existsSync(file)) {
+        return file;
+      } else {
+        throw new Error(`(${file}) not found`);
+      }
+    } else {
+      return path.join(dirName, source);
+      // return source;
+    }
+  })();
+
+  const outfile = (() => {
+    let fullPath = args?.output;
+
+    if (!fullPath) {
+      fullPath = path.join(dirName, main);
+    }
+
+    mkdirSync(fullPath!.split("/").slice(0, -1).join("/"), { recursive: true });
+
+    return fullPath;
+  })();
 
   await esbuild.build({
     outfile,
@@ -16,6 +42,7 @@ export const build = async (inputFile: string, args?: { output?: string }) => {
     minify: true,
     format: "esm",
     platform: "browser",
+    target: "chrome100",
     plugins: [
       globalExternals({
         // react: {
@@ -41,8 +68,6 @@ export const build = async (inputFile: string, args?: { output?: string }) => {
   });
 
   console.info(
-    `🎉 bundled ${outfile} (${(
-      statSync(path.join(path.resolve(), outfile)).size / 1024
-    ).toFixed(3)} KB)`
+    `🎉 bundled ${outfile} (${(statSync(outfile).size / 1024).toFixed(3)} KB)`
   );
 };
