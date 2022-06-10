@@ -24,12 +24,14 @@ import {
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
 } from "@200ms/common";
 import { Io } from "../io";
-import { BACKEND } from "../solana-connection/backend";
+import { Backend } from "../solana-connection/backend";
 
 const logger = getLogger("solana-connection");
 
-export function start() {
-  BACKEND.start();
+let BACKEND: Backend;
+
+export function start(b: Backend) {
+  BACKEND = b;
   Io.solanaConnection.handler(handle);
   Io.solanaConnectionInjected.handler(withContext(handleInjected));
 }

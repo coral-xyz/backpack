@@ -28,12 +28,16 @@ import {
   openApproveTransactionPopupWindow,
   openApproveMessagePopupWindow,
 } from "@200ms/common";
-import { BACKEND, SUCCESS_RESPONSE } from "../backend";
+import { Backend, SUCCESS_RESPONSE } from "../backend";
 import { Io } from "../io";
 
 const logger = getLogger("server-injected");
 
-export function start() {
+let BACKEND: Backend;
+
+export function start(b: Backend) {
+  BACKEND = b;
+
   Io.rpcServerInjected.handler(withContext(handle));
   Io.popupUiResponse.handler(handlePopupUiResponse);
 }

@@ -44,12 +44,16 @@ import {
   UI_RPC_METHOD_LEDGER_IMPORT,
 } from "@200ms/common";
 import { KeyringStoreState } from "@200ms/recoil";
-import { BACKEND } from "../backend";
+import { Backend } from "../backend";
 import { Io } from "../io";
 
 const logger = getLogger("background-server-ui");
 
-export function start() {
+let BACKEND: Backend;
+
+export function start(b: Backend) {
+  BACKEND = b;
+
   Io.rpcServerUi.handler(handle);
 }
 

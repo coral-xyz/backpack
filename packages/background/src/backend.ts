@@ -35,17 +35,19 @@ import {
   NavData,
 } from "./keyring/store";
 import { Io } from "./io";
-import { BACKEND as SOLANA_CONNECTION_BACKEND } from "./solana-connection/backend";
+import { Backend as SolanaConnectionBackend } from "./solana-connection/backend";
 
-export function start() {
-  BACKEND = new Backend();
+export function start(solanaB: SolanaConnectionBackend) {
+  return new Backend(solanaB);
 }
 
 export class Backend {
   private keyringStore: KeyringStore;
+  private solanaConnectionBackend: SolanaConnectionBackend;
 
-  constructor() {
+  constructor(solanaB: SolanaConnectionBackend) {
     this.keyringStore = new KeyringStore();
+    this.solanaConnectionBackend = solanaB;
   }
 
   async isApprovedOrigin(origin: string): Promise<boolean> {
@@ -71,7 +73,7 @@ export class Backend {
 
     // Send it to the network.
     const commitment = await this.solanaCommitmentRead();
-    return await SOLANA_CONNECTION_BACKEND.sendRawTransaction(
+    return await this.solanaConnectionBackend.sendRawTransaction(
       tx.serialize(),
       options ?? {
         skipPreflight: false,
@@ -119,11 +121,11 @@ export class Backend {
     const pubkey = new PublicKey(walletAddress);
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
 
-    return await SOLANA_CONNECTION_BACKEND.simulateTransaction(tx);
+    return await this.solanaConnectionBackend.simulateTransaction(tx);
   }
 
   async recentBlockhash(commitment?: Commitment): Promise<string> {
-    const { blockhash } = await SOLANA_CONNECTION_BACKEND.getLatestBlockhash(
+    const { blockhash } = await this.solanaConnectionBackend.getLatestBlockhash(
       commitment
     );
     return blockhash;
@@ -457,7 +459,3 @@ export class Backend {
 
 export const SUCCESS_RESPONSE = "success";
 const defaultNav = makeDefaultNav();
-//
-// Backend singleton.
-//
-export let BACKEND: Backend;

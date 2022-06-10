@@ -81,6 +81,12 @@ const logger = getLogger("solana-connection-backend");
 export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
 export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;
 
+export function start(): Backend {
+  const b = new Backend();
+  b.start();
+  return b;
+}
+
 export class Backend {
   private cache = new Map<string, CachedValue<any>>();
   private connection?: Connection;
@@ -829,8 +835,6 @@ export class Backend {
     throw new Error("not implemented");
   }
 }
-
-export const BACKEND = new Backend();
 
 type CachedValue<T> = {
   ts: number;
