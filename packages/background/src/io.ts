@@ -51,6 +51,8 @@ export class Io {
   public static notificationsUi: NotificationsClient;
 
   public static start() {
+    Io.events = new EventEmitter();
+
     // Extension UI server.
     Io.rpcServerUi = PortChannel.server(CONNECTION_POPUP_RPC);
     Io.notificationsUi = startNotificationsUi();
@@ -65,8 +67,6 @@ export class Io {
     Io.solanaConnectionInjected = Channel.server(
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST
     );
-
-    Io.events = new EventEmitter();
   }
 }
 
