@@ -136,9 +136,6 @@ export function CreateNewWallet() {
   if (mnemonic === null) {
     return <BlankApp />;
   }
-
-  console.log("armani mnem", mnemonic);
-
   return <_CreateNewWallet mnemonic={mnemonic} />;
 }
 
