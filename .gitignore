@@ -29,3 +29,4 @@ dist/
 .turbo
 .env
 .idea
+deptool-report.html

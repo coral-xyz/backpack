@@ -85,6 +85,7 @@
     "webpack-dev-server": "^4.9.2"
   },
   "peerDependencies": {
+    "@200ms/deptool": "*",
     "@200ms/provider-injection": "*"
   }
 }
