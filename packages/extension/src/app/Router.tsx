@@ -243,7 +243,7 @@ export function WithSuspense(props: any) {
   return <Suspense fallback={<BlankApp />}>{props.children}</Suspense>;
 }
 
-function BlankApp() {
+export function BlankApp() {
   const classes = useStyles();
   return <div className={classes.appContainer}></div>;
 }
