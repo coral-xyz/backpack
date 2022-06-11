@@ -1,7 +1,6 @@
 // All RPC request handlers for requests that can be sent from the trusted
 // extension UI to the background script.
 
-import type { EventEmitter } from "eventemitter3";
 import {
   getLogger,
   withContextPort,
@@ -10,6 +9,8 @@ import {
   DerivationPath,
   PortChannel,
   NotificationsClient,
+  Context,
+  EventEmitter,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
@@ -70,7 +71,7 @@ export function start(events: EventEmitter, b: Backend): Handle {
     notificationsUi.pushNotification(notification);
   });
 
-  rpcServerUi.handler(withContextPort(b, handle));
+  rpcServerUi.handler(withContextPort(b, events, handle));
 
   return {
     rpcServerUi,
@@ -89,98 +90,108 @@ async function handle<T = any>(
     // Keyring.
     //
     case UI_RPC_METHOD_KEYRING_STORE_CREATE:
-      return await handleKeyringStoreCreate(params[0], params[1], params[2]);
+      return await handleKeyringStoreCreate(
+        ctx,
+        params[0],
+        params[1],
+        params[2]
+      );
     case UI_RPC_METHOD_KEYRING_STORE_UNLOCK:
-      return await handleKeyringStoreUnlock(params[0]);
+      return await handleKeyringStoreUnlock(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_STORE_LOCK:
-      return await handleKeyringStoreLock();
+      return await handleKeyringStoreLock(ctx);
     case UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS:
-      return await handleKeyringStoreReadAllPubkeys();
+      return await handleKeyringStoreReadAllPubkeys(ctx);
     case UI_RPC_METHOD_HD_KEYRING_CREATE:
-      return await handleHdKeyringCreate(params[0]);
+      return await handleHdKeyringCreate(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_CREATE:
-      return await handleKeyringCreate(params[0]);
+      return await handleKeyringCreate(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_KEY_DELETE:
-      return await handleKeyringKeyDelete(params[0]);
+      return await handleKeyringKeyDelete(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_STORE_STATE:
-      return await handleKeyringStoreState();
+      return await handleKeyringStoreState(ctx);
     case UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE:
-      return handleKeyringStoreKeepAlive();
+      return handleKeyringStoreKeepAlive(ctx);
     case UI_RPC_METHOD_KEYRING_DERIVE_WALLET:
-      return await handleKeyringDeriveWallet();
+      return await handleKeyringDeriveWallet(ctx);
     case UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY:
-      return await handleKeyringImportSecretKey(params[0], params[1]);
+      return await handleKeyringImportSecretKey(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY:
-      return handleKeyringExportSecretKey(params[0], params[1]);
+      return handleKeyringExportSecretKey(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC:
-      return handleKeyringExportMnemonic(params[0]);
+      return handleKeyringExportMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_RESET_MNEMONIC:
-      return handleKeyringResetMnemonic(params[0]);
+      return handleKeyringResetMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE:
-      return await handleKeyringAutolockUpdate(params[0]);
+      return await handleKeyringAutolockUpdate(ctx, params[0]);
     //
     // Ledger.
     //
     case UI_RPC_METHOD_LEDGER_CONNECT:
-      return await handleLedgerConnect();
+      return await handleLedgerConnect(ctx);
     case UI_RPC_METHOD_LEDGER_IMPORT:
-      return await handleKeyringLedgerImport(params[0], params[1], params[2]);
+      return await handleKeyringLedgerImport(
+        ctx,
+        params[0],
+        params[1],
+        params[2]
+      );
     //
     // Wallet signing.
     //
     case UI_RPC_METHOD_SIGN_TRANSACTION:
-      return await handleSignTransaction(params[0], params[1]);
+      return await handleSignTransaction(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS:
-      return await handleSignAllTransactions(params[0], params[1]);
+      return await handleSignAllTransactions(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION:
-      return await handleSignAndSendTransaction(params[0], params[1]);
+      return await handleSignAndSendTransaction(ctx, params[0], params[1]);
     //
     // Connection URL.
     //
     case UI_RPC_METHOD_CONNECTION_URL_READ:
-      return await handleConnectionUrlRead();
+      return await handleConnectionUrlRead(ctx);
     case UI_RPC_METHOD_CONNECTION_URL_UPDATE:
-      return await handleConnectionUrlUpdate(params[0]);
+      return await handleConnectionUrlUpdate(ctx, params[0]);
     //
     // Navigation.
     //
     case UI_RPC_METHOD_NAVIGATION_UPDATE:
-      return await handleNavigationUpdate(params[0]);
+      return await handleNavigationUpdate(ctx, params[0]);
     case UI_RPC_METHOD_NAVIGATION_READ:
-      return await handleNavigationRead(params[0]);
+      return await handleNavigationRead(ctx, params[0]);
     case UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ:
-      return await handleNavigationActiveTabRead();
+      return await handleNavigationActiveTabRead(ctx);
     case UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE:
-      return await handleNavigationActiveTabUpdate(params[0]);
+      return await handleNavigationActiveTabUpdate(ctx, params[0]);
     //
     // Wallet app settings.
     //
     case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET:
-      return await handleWalletDataActiveWallet();
+      return await handleWalletDataActiveWallet(ctx);
     case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE:
-      return await handleWalletDataActiveWalletUpdate(params[0]);
+      return await handleWalletDataActiveWalletUpdate(ctx, params[0]);
     case UI_RPC_METHOD_SETTINGS_DARK_MODE_READ:
-      return await handleDarkModeRead();
+      return await handleDarkModeRead(ctx);
     case UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE:
-      return await handleDarkModeUpdate(params[0]);
+      return await handleDarkModeUpdate(ctx, params[0]);
     case UI_RPC_METHOD_APPROVED_ORIGINS_READ:
-      return await handleApprovedOriginsRead();
+      return await handleApprovedOriginsRead(ctx);
     case UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE:
-      return await handleApprovedOriginsUpdate(params[0]);
+      return await handleApprovedOriginsUpdate(ctx, params[0]);
     //
     // Nicknames for keys.
     //
     case UI_RPC_METHOD_KEYNAME_UPDATE:
-      return await handleKeynameUpdate(params[0], params[1]);
+      return await handleKeynameUpdate(ctx, params[0], params[1]);
     case UI_RPC_METHOD_PASSWORD_UPDATE:
-      return await handlePasswordUpdate(params[0], params[1]);
+      return await handlePasswordUpdate(ctx, params[0], params[1]);
     //
     // Solana.
     //
     case UI_RPC_METHOD_SOLANA_COMMITMENT_READ:
-      return await handleSolanaCommitmentRead();
+      return await handleSolanaCommitmentRead(ctx);
     case UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE:
-      return await handleSolanaCommitmentUpdate(params[0]);
+      return await handleSolanaCommitmentUpdate(ctx, params[0]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }

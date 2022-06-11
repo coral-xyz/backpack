@@ -1,5 +1,4 @@
 import * as bs58 from "bs58";
-//import { EventEmitter } from "eventemitter3";
 import {
   Commitment,
   PublicKey,
@@ -13,6 +12,7 @@ import {
 } from "@200ms/recoil";
 import {
   DerivationPath,
+  EventEmitter,
   BACKEND_EVENT,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_KEYRING_KEY_DELETE,
@@ -34,11 +34,10 @@ import {
   getNav,
   NavData,
 } from "../keyring/store";
-import { Io } from "../io";
 import { Backend as SolanaConnectionBackend } from "../backend/solana-connection";
 
-export function start(solanaB: SolanaConnectionBackend) {
-  return new Backend(solanaB);
+export function start(events: EventEmitter, solanaB: SolanaConnectionBackend) {
+  return new Backend(events, solanaB);
 }
 
 export class Backend {
@@ -46,9 +45,10 @@ export class Backend {
   private solanaConnectionBackend: SolanaConnectionBackend;
   private events: EventEmitter;
 
-  constructor(solanaB: SolanaConnectionBackend) {
-    this.keyringStore = new KeyringStore();
+  constructor(events: EventEmitter, solanaB: SolanaConnectionBackend) {
+    this.keyringStore = new KeyringStore(events);
     this.solanaConnectionBackend = solanaB;
+    this.events = events;
   }
 
   async isApprovedOrigin(origin: string): Promise<boolean> {
@@ -246,7 +246,7 @@ export class Backend {
     const didChange = await this.keyringStore.connectionUrlUpdate(url);
     if (didChange) {
       const activeWallet = await this.activeWallet();
-      Io.events.emit(BACKEND_EVENT, {
+      this.events.emit(BACKEND_EVENT, {
         name: NOTIFICATION_CONNECTION_URL_UPDATED,
         data: {
           url,
@@ -263,7 +263,7 @@ export class Backend {
 
   async activeWalletUpdate(newWallet: string): Promise<string> {
     await this.keyringStore.activeWalletUpdate(newWallet);
-    Io.events.emit(BACKEND_EVENT, {
+    this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_ACTIVE_WALLET_UPDATED,
       data: {
         activeWallet: newWallet,
@@ -274,7 +274,7 @@ export class Backend {
 
   async keyringDeriveWallet(): Promise<string> {
     const [pubkey, name] = await this.keyringStore.deriveNextKey();
-    Io.events.emit(BACKEND_EVENT, {
+    this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_DERIVED_WALLET,
       data: {
         publicKey: pubkey.toString(),
@@ -287,7 +287,7 @@ export class Backend {
 
   async keynameUpdate(publicKey: string, newName: string): Promise<string> {
     await this.keyringStore.setKeyname(publicKey, newName);
-    Io.events.emit(BACKEND_EVENT, {
+    this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYNAME_UPDATE,
       data: {
         publicKey,
@@ -299,7 +299,7 @@ export class Backend {
 
   async keyringKeyDelete(publicKey: string): Promise<string> {
     await this.keyringStore.keyDelete(publicKey);
-    Io.events.emit(BACKEND_EVENT, {
+    this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_KEY_DELETE,
       data: {
         publicKey,
@@ -321,7 +321,7 @@ export class Backend {
       secretKey,
       name
     );
-    Io.events.emit(BACKEND_EVENT, {
+    this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
       data: {
         publicKey,
@@ -357,7 +357,7 @@ export class Backend {
     await setNavData(navData.id, navData);
     if (d.urls.length !== navData.urls.length) {
       const oldUrl = d.urls[d.urls.length - 1];
-      Io.events.emit(BACKEND_EVENT, {
+      this.events.emit(BACKEND_EVENT, {
         name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
         data: {
           url: navData.urls[navData.urls.length - 1],
@@ -398,7 +398,7 @@ export class Backend {
       activeTab,
     });
     const navData = nav.data[activeTab];
-    Io.events.emit(BACKEND_EVENT, {
+    this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
       data: {
         url: navData.urls[navData.urls.length - 1],
@@ -434,7 +434,7 @@ export class Backend {
 
   async approvedOriginsUpdate(approvedOrigins: Array<string>): Promise<string> {
     await this.keyringStore.approvedOriginsUpdate(approvedOrigins);
-    Io.events.emit(BACKEND_EVENT, {
+    this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_APPROVED_ORIGINS_UPDATE,
       data: {
         approvedOrigins,

@@ -1,6 +1,7 @@
 export type Context<Backend> = {
   sender: any;
   backend: Backend;
+  events: EventEmitter;
 };
 
 export type RpcRequest = {
@@ -19,4 +20,5 @@ export type Notification = {
 
 export type Event = any;
 export type EventHandler = (notif: any) => void;
+export type EventEmitter = any;
 export type ResponseHandler = [Function, Function];

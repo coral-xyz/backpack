@@ -13,6 +13,7 @@ import {
   Context,
   Channel,
   PortChannel,
+  EventEmitter,
   RPC_METHOD_CONNECT,
   RPC_METHOD_DISCONNECT,
   RPC_METHOD_SIGN_AND_SEND_TX,
@@ -37,17 +38,16 @@ import {
   openApproveMessagePopupWindow,
 } from "@200ms/common";
 import { Backend, SUCCESS_RESPONSE } from "../backend/core";
-import { Io } from "../io";
 import { Handle } from "../types";
 
 const logger = getLogger("server-injected");
 
-export function start(b: Backend): Handle {
+export function start(events: EventEmitter, b: Backend): Handle {
   const rpcServerInjected = Channel.server(CHANNEL_RPC_REQUEST);
   const popupUiResponse = PortChannel.server(CONNECTION_POPUP_RESPONSE);
   const notificationsInjected = Channel.client(CHANNEL_NOTIFICATION);
 
-  Io.events.on(BACKEND_EVENT, (notification) => {
+  events.on(BACKEND_EVENT, (notification) => {
     //
     // Dispatch a subset of notifications to injected web apps.
     //
@@ -66,8 +66,8 @@ export function start(b: Backend): Handle {
     }
   });
 
-  rpcServerInjected.handler(withContext(b, handle));
-  popupUiResponse.handler(withContextPort(b, handlePopupUiResponse));
+  rpcServerInjected.handler(withContext(b, events, handle));
+  popupUiResponse.handler(withContextPort(b, events, handlePopupUiResponse));
 
   return {
     rpcServerInjected,
@@ -149,7 +149,7 @@ async function handleConnect(
   if (didApprove) {
     const activeWallet = await ctx.backend.activeWallet();
     const connectionUrl = await ctx.backend.solanaConnectionUrl();
-    Io.events.emit(BACKEND_EVENT, {
+    ctx.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_CONNECTED,
       data: {
         publicKey: activeWallet,
@@ -163,7 +163,7 @@ async function handleConnect(
 
 function handleDisconnect(ctx: Context<Backend>): RpcResponse<string> {
   const resp = ctx.backend.disconnect();
-  Io.events.emit(BACKEND_EVENT, {
+  ctx.events.emit(BACKEND_EVENT, {
     name: NOTIFICATION_DISCONNECTED,
   });
   return [resp];

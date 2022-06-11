@@ -67,6 +67,7 @@ import {
   getLogger,
   customSplTokenAccounts,
   Notification,
+  EventEmitter,
   BACKEND_EVENT,
   NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
@@ -74,15 +75,14 @@ import {
   NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
 } from "@200ms/common";
-import { Io } from "../io";
 
 const logger = getLogger("solana-connection-backend");
 
 export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
 export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;
 
-export function start(): Backend {
-  const b = new Backend();
+export function start(events: EventEmitter): Backend {
+  const b = new Backend(events);
   b.start();
   return b;
 }
@@ -92,9 +92,11 @@ export class Backend {
   private connection?: Connection;
   private url?: string;
   private pollIntervals: Array<any>;
+  private events: EventEmitter;
 
-  constructor() {
+  constructor(events: EventEmitter) {
     this.pollIntervals = [];
+    this.events = events;
   }
 
   public start() {
@@ -107,7 +109,7 @@ export class Backend {
   // need to stop polling.
   //
   private setupEventListeners() {
-    Io.events.addListener(BACKEND_EVENT, (notif: Notification) => {
+    this.events.addListener(BACKEND_EVENT, (notif: Notification) => {
       logger.debug(`received notification: ${notif.name}`, notif);
 
       switch (notif.name) {
@@ -173,7 +175,7 @@ export class Backend {
           ts: Date.now(),
           value: data,
         });
-        Io.events.emit(BACKEND_EVENT, {
+        this.events.emit(BACKEND_EVENT, {
           name: NOTIFICATION_SPL_TOKENS_DID_UPDATE,
           data: {
             connectionUrl: this.url,

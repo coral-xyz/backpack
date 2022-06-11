@@ -1,6 +1,7 @@
 import * as bs58 from "bs58";
 import { KeyringStoreState, KeyringStoreStateEnum } from "@200ms/recoil";
 import {
+  EventEmitter,
   DerivationPath,
   BrowserRuntime,
   NOTIFICATION_KEYRING_STORE_LOCKED,
@@ -19,7 +20,6 @@ import {
   KeyringFactory,
   Keyring,
 } from ".";
-import { Io } from "../io";
 
 const LOCK_INTERVAL_SECS = 15 * 60 * 1000;
 
@@ -38,13 +38,15 @@ export class KeyringStore {
   private password?: string;
   private autoLockInterval?: ReturnType<typeof setInterval>;
   private activeBlockchainLabel?: string;
+  private events: EventEmitter;
 
-  constructor() {
+  constructor(events: EventEmitter) {
     this.blockchains = new Map([
       [BLOCKCHAIN_SOLANA, BlockchainKeyring.solana()],
       //      [BLOCKCHAIN_ETHEREUM, BlockchainKeyring.ethereum()],
     ]);
     this.lastUsedTs = 0;
+    this.events = events;
   }
 
   public async state(): Promise<KeyringStoreState> {
@@ -293,7 +295,7 @@ export class KeyringStore {
         const currentTs = Date.now() / 1000;
         if (currentTs - this.lastUsedTs >= LOCK_INTERVAL_SECS) {
           this.lock();
-          Io.events.emit(BACKEND_EVENT, {
+          this.events.emit(BACKEND_EVENT, {
             name: NOTIFICATION_KEYRING_STORE_LOCKED,
           });
           clearInterval(this.autoLockInterval!);

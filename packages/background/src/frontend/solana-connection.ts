@@ -15,6 +15,7 @@ import {
   Context,
   PortChannel,
   Channel,
+  EventEmitter,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   SOLANA_CONNECTION_RPC_UI,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
@@ -33,14 +34,14 @@ import { Handle } from "../types";
 
 const logger = getLogger("solana-connection");
 
-export function start(b: Backend): Handle {
+export function start(events: EventEmitter, b: Backend): Handle {
   const solanaConnection = PortChannel.server(SOLANA_CONNECTION_RPC_UI);
   const solanaConnectionInjected = Channel.server(
     CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST
   );
 
-  solanaConnection.handler(withContextPort(b, handle));
-  solanaConnectionInjected.handler(withContext(b, handleInjected));
+  solanaConnection.handler(withContextPort(b, events, handle));
+  solanaConnectionInjected.handler(withContext(b, events, handleInjected));
 
   return {
     solanaConnection,
