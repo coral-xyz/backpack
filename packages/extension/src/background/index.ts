@@ -5,7 +5,7 @@ import { start } from "@200ms/background";
 //
 console.log("armani here testing!", navigator, navigator.serviceWorker);
 //if (navigator.serviceWorker === undefined) {
-start();
+const _handle = start();
 //}
 
 //import {} from "@200ms/common";

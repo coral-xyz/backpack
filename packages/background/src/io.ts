@@ -7,11 +7,8 @@ import {
   PortChannelServer,
   NotificationsClient,
   BACKEND_EVENT,
-  CHANNEL_RPC_REQUEST,
-  CHANNEL_NOTIFICATION,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CONNECTION_POPUP_RPC,
-  CONNECTION_POPUP_RESPONSE,
   CONNECTION_POPUP_NOTIFICATIONS,
   SOLANA_CONNECTION_RPC_UI,
   NOTIFICATION_CONNECTION_URL_UPDATED,
@@ -58,9 +55,6 @@ export class Io {
     Io.notificationsUi = startNotificationsUi();
 
     // Injected client server.
-    Io.rpcServerInjected = Channel.server(CHANNEL_RPC_REQUEST);
-    Io.popupUiResponse = PortChannel.server(CONNECTION_POPUP_RESPONSE);
-    Io.notificationsInjected = Channel.client(CHANNEL_NOTIFICATION);
 
     // Solana connection proxy server.
     Io.solanaConnection = PortChannel.server(SOLANA_CONNECTION_RPC_UI);
@@ -81,6 +75,7 @@ function startNotificationsUi(): NotificationsClient {
     //
     notificationsUi.pushNotification(notification);
 
+    /*
     //
     // Dispatch a subset of notifications to injected web apps.
     //
@@ -91,6 +86,7 @@ function startNotificationsUi(): NotificationsClient {
       default:
         break;
     }
+		*/
   });
   return notificationsUi;
 }

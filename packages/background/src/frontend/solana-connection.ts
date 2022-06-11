@@ -26,10 +26,11 @@ import {
 } from "@200ms/common";
 import { Io } from "../io";
 import { Backend } from "../backend/solana-connection";
+import { Handle } from "../types";
 
 const logger = getLogger("solana-connection");
 
-export function start(b: Backend) {
+export function start(b: Backend): Handle {
   Io.solanaConnection.handler(withContextPort(b, handle));
   Io.solanaConnectionInjected.handler(withContext(b, handleInjected));
 }

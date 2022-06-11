@@ -11,7 +11,6 @@ import {
   makeDefaultNav,
 } from "@200ms/recoil";
 import {
-  Context,
   DerivationPath,
   BACKEND_EVENT,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
@@ -54,7 +53,7 @@ export class Backend {
     return await this.keyringStore.isApprovedOrigin(origin);
   }
 
-  disconnect(ctx: Context) {
+  disconnect() {
     // todo
     return SUCCESS_RESPONSE;
   }
@@ -101,11 +100,7 @@ export class Backend {
     );
   }
 
-  async signMessage(
-    ctx: Context,
-    msg: string,
-    walletAddress: string
-  ): Promise<string> {
+  async signMessage(msg: string, walletAddress: string): Promise<string> {
     const blockchainKeyring = this.keyringStore.activeBlockchain();
     return await blockchainKeyring.signMessage(msg, walletAddress);
   }

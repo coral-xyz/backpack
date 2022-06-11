@@ -46,13 +46,18 @@ import {
 import { KeyringStoreState } from "@200ms/recoil";
 import { Backend } from "../backend/core";
 import { Io } from "../io";
+import { Handle } from "../types";
 
 const logger = getLogger("background-server-ui");
 
 let BACKEND: Backend;
 
-export function start(b: Backend) {
+export function start(b: Backend): Handle {
   BACKEND = b;
+
+  // Extension UI server.
+  //  Io.rpcServerUi = PortChannel.server(CONNECTION_POPUP_RPC);
+  //  Io.notificationsUi = startNotificationsUi();
 
   Io.rpcServerUi.handler(handle);
 }

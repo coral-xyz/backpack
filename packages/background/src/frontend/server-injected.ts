@@ -9,7 +9,10 @@ import {
   RpcRequest,
   RpcResponse,
   withContext,
+  withContextPort,
   Context,
+  Channel,
+  PortChannel,
   RPC_METHOD_CONNECT,
   RPC_METHOD_DISCONNECT,
   RPC_METHOD_SIGN_AND_SEND_TX,
@@ -19,6 +22,11 @@ import {
   RPC_METHOD_SIMULATE,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
+  CHANNEL_RPC_REQUEST,
+  CHANNEL_NOTIFICATION,
+  CONNECTION_POPUP_RESPONSE,
+  BACKEND_EVENT,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
 } from "@200ms/common";
 import {
   Window,
@@ -30,12 +38,41 @@ import {
 } from "@200ms/common";
 import { Backend, SUCCESS_RESPONSE } from "../backend/core";
 import { Io } from "../io";
+import { Handle } from "../types";
 
 const logger = getLogger("server-injected");
 
-export function start(b: Backend) {
-  Io.rpcServerInjected.handler(withContext(b, handle));
-  Io.popupUiResponse.handler(handlePopupUiResponse);
+export function start(b: Backend): Handle {
+  const rpcServerInjected = Channel.server(CHANNEL_RPC_REQUEST);
+  const popupUiResponse = PortChannel.server(CONNECTION_POPUP_RESPONSE);
+  const notificationsInjected = Channel.client(CHANNEL_NOTIFICATION);
+
+  Io.events.on(BACKEND_EVENT, (notification) => {
+    //
+    // Dispatch a subset of notifications to injected web apps.
+    //
+    switch (notification.name) {
+      case NOTIFICATION_CONNECTION_URL_UPDATED:
+        notificationsInjected.sendMessageActiveTab(notification);
+        break;
+      case NOTIFICATION_CONNECTED:
+        notificationsInjected.sendMessageActiveTab(notification);
+        break;
+      case NOTIFICATION_DISCONNECTED:
+        notificationsInjected.sendMessageActiveTab(notification);
+        break;
+      default:
+        break;
+    }
+  });
+
+  rpcServerInjected.handler(withContext(b, handle));
+  popupUiResponse.handler(withContextPort(b, handlePopupUiResponse));
+
+  return {
+    rpcServerInjected,
+    popupUiResponse,
+  };
 }
 
 async function handle<T = any>(
@@ -88,19 +125,19 @@ async function handleConnect(
       didApprove = true;
     } else {
       const resp = await RequestManager.requestUiAction((requestId: number) => {
-        return openApprovalPopupWindow(ctx, requestId);
+        return openApprovalPopupWindow(ctx.sender.origin, requestId);
       });
       didApprove = !resp.windowClosed && resp.result;
     }
   } else if (keyringStoreState === "locked") {
     if (await ctx.backend.isApprovedOrigin(origin)) {
       const resp = await RequestManager.requestUiAction((requestId: number) => {
-        return openLockedPopupWindow(ctx, requestId);
+        return openLockedPopupWindow(ctx.sender.origin, requestId);
       });
       didApprove = !resp.windowClosed && resp.result;
     } else {
       const resp = await RequestManager.requestUiAction((requestId: number) => {
-        return openLockedApprovalPopupWindow(ctx, requestId);
+        return openLockedApprovalPopupWindow(ctx.sender.origin, requestId);
       });
       didApprove = !resp.windowClosed && resp.result;
     }
@@ -112,7 +149,7 @@ async function handleConnect(
   if (didApprove) {
     const activeWallet = await ctx.backend.activeWallet();
     const connectionUrl = await ctx.backend.solanaConnectionUrl();
-    Io.notificationsInjected.sendMessageTab(activeTab.id, {
+    Io.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_CONNECTED,
       data: {
         publicKey: activeWallet,
@@ -125,8 +162,8 @@ async function handleConnect(
 }
 
 function handleDisconnect(ctx: Context<Backend>): RpcResponse<string> {
-  const resp = ctx.backend.disconnect(ctx);
-  Io.notificationsInjected.sendMessageActiveTab({
+  const resp = ctx.backend.disconnect();
+  Io.events.emit(BACKEND_EVENT, {
     name: NOTIFICATION_DISCONNECTED,
   });
   return [resp];
@@ -144,7 +181,11 @@ async function handleSignAndSendTx(
 
   // Get user approval.
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveTransactionPopupWindow(ctx, requestId, txMsg);
+    return openApproveTransactionPopupWindow(
+      ctx.sender.origin,
+      requestId,
+      txMsg
+    );
   });
   const didApprove = uiResp.result;
 
@@ -163,7 +204,11 @@ async function handleSignTx(
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveTransactionPopupWindow(ctx, requestId, txMsg);
+    return openApproveTransactionPopupWindow(
+      ctx.sender.origin,
+      requestId,
+      txMsg
+    );
   });
   const didApprove = uiResp.result;
 
@@ -191,12 +236,12 @@ async function handleSignMessage(
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveMessagePopupWindow(ctx, requestId, msg);
+    return openApproveMessagePopupWindow(ctx.sender.origin, requestId, msg);
   });
   const didApprove = uiResp.result;
 
   if (didApprove) {
-    const sig = ctx.backend.signMessage(ctx, msg, walletAddress);
+    const sig = ctx.backend.signMessage(msg, walletAddress);
     return [sig];
   }
 
@@ -293,7 +338,10 @@ class RequestManager {
   }
 }
 
-async function handlePopupUiResponse(msg: RpcResponse): Promise<string> {
+async function handlePopupUiResponse(
+  ctx: Context<Backend>,
+  msg: RpcResponse
+): Promise<string> {
   const { id, result, error } = msg;
   logger.debug("handle popup ui response", msg);
   RequestManager.resolveResponse(id, result, error);
