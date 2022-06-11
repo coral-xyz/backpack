@@ -9,6 +9,7 @@ import {
 import {
   getLogger,
   withContext,
+  withContextPort,
   RpcRequest,
   RpcResponse,
   Context,
@@ -28,74 +29,90 @@ import { Backend } from "../backend/solana-connection";
 
 const logger = getLogger("solana-connection");
 
-let BACKEND: Backend;
-
 export function start(b: Backend) {
-  BACKEND = b;
-  Io.solanaConnection.handler(handle);
-  Io.solanaConnectionInjected.handler(withContext(handleInjected));
+  Io.solanaConnection.handler(withContextPort(b, handle));
+  Io.solanaConnectionInjected.handler(withContext(b, handleInjected));
 }
 
 async function handleInjected<T = any>(
-  ctx: Context,
+  ctx: Context<Backend>,
   msg: RpcRequest
 ): Promise<RpcResponse<T>> {
   logger.debug(`handle solana connection injection ${msg.method}`, ctx, msg);
-  return await handle(msg);
+  return await handleImpl(ctx, msg);
 }
 
-async function handle<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
+async function handle<T = any>(
+  ctx: Context<Backend>,
+  msg: RpcRequest
+): Promise<RpcResponse<T>> {
   logger.debug(`handle solana connection extension ui ${msg.method}`, msg);
-  return await handleImpl(msg);
+  return await handleImpl(ctx, msg);
 }
 
-async function handleImpl<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
+async function handleImpl<T = any>(
+  ctx: Context<Backend>,
+  msg: RpcRequest
+): Promise<RpcResponse<T>> {
   const { method, params } = msg;
   switch (method) {
     case SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO:
-      return await handleGetAccountInfo(params[0], params[1]);
+      return await handleGetAccountInfo(ctx, params[0], params[1]);
     case SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH:
-      return await handleGetLatestBlockhash(params[1]);
+      return await handleGetLatestBlockhash(ctx, params[1]);
     case SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNTS_BY_OWNER:
       return await handleGetTokenAccountsByOwner(
+        ctx,
         params[0],
         params[1],
         params[2]
       );
     case SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION:
-      return await handleSendRawTransaction(params[0], params[1]);
+      return await handleSendRawTransaction(ctx, params[0], params[1]);
     case SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION:
-      return await handleConfirmTransaction(params[0], params[1]);
+      return await handleConfirmTransaction(ctx, params[0], params[1]);
     case SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO:
-      return await handleGetMultipleAccountsInfo(params[0], params[1]);
+      return await handleGetMultipleAccountsInfo(ctx, params[0], params[1]);
     case SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2:
       return await handleGetConfirmedSignaturesForAddress2(
+        ctx,
         params[0],
         params[1],
         params[2]
       );
     case SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION:
-      return await handleGetParsedTransaction(params[0], params[1]);
+      return await handleGetParsedTransaction(ctx, params[0], params[1]);
     case SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS:
-      return await handleGetParsedTransactions(params[0], params[1]);
+      return await handleGetParsedTransactions(ctx, params[0], params[1]);
     case SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS:
-      return await handleCustomSplTokenAccounts(params[0]);
+      return await handleCustomSplTokenAccounts(ctx, params[0]);
     default:
       throw new Error("invalid rpc method");
   }
 }
 
-async function handleGetAccountInfo(pubkey: string, commitment?: Commitment) {
-  const resp = await BACKEND!.getAccountInfo(new PublicKey(pubkey), commitment);
+async function handleGetAccountInfo(
+  ctx: Context<Backend>,
+  pubkey: string,
+  commitment?: Commitment
+) {
+  const resp = await ctx.backend!.getAccountInfo(
+    new PublicKey(pubkey),
+    commitment
+  );
   return [resp];
 }
 
-async function handleGetLatestBlockhash(commitment?: Commitment) {
-  const resp = await BACKEND!.getLatestBlockhash(commitment);
+async function handleGetLatestBlockhash(
+  ctx: Context<Backend>,
+  commitment?: Commitment
+) {
+  const resp = await ctx.backend!.getLatestBlockhash(commitment);
   return [resp];
 }
 
 async function handleGetTokenAccountsByOwner(
+  ctx: Context<Backend>,
   ownerAddress: string,
   filter: { mint: string } | { programId: string },
   commitment?: Commitment
@@ -109,7 +126,7 @@ async function handleGetTokenAccountsByOwner(
     // @ts-ignore
     _filter = { programId: new PublicKey(filter.programId) };
   }
-  const resp = await BACKEND!.getTokenAccountsByOwner(
+  const resp = await ctx.backend!.getTokenAccountsByOwner(
     new PublicKey(ownerAddress),
     _filter,
     commitment
@@ -118,26 +135,29 @@ async function handleGetTokenAccountsByOwner(
 }
 
 async function handleSendRawTransaction(
+  ctx: Context<Backend>,
   rawTransaction: Buffer | Uint8Array | Array<number>,
   options?: SendOptions
 ) {
-  const resp = await BACKEND!.sendRawTransaction(rawTransaction, options);
+  const resp = await ctx.backend!.sendRawTransaction(rawTransaction, options);
   return [resp];
 }
 
 async function handleConfirmTransaction(
+  ctx: Context<Backend>,
   signature: TransactionSignature,
   commitment?: Commitment
 ) {
-  const resp = await BACKEND!.confirmTransaction(signature, commitment);
+  const resp = await ctx.backend!.confirmTransaction(signature, commitment);
   return [resp];
 }
 
 async function handleGetMultipleAccountsInfo(
+  ctx: Context<Backend>,
   pubkeys: string[],
   commitment?: Commitment
 ) {
-  const resp = await BACKEND!.getMultipleAccountsInfo(
+  const resp = await ctx.backend!.getMultipleAccountsInfo(
     pubkeys.map((p) => new PublicKey(p)),
     commitment
   );
@@ -145,11 +165,12 @@ async function handleGetMultipleAccountsInfo(
 }
 
 async function handleGetConfirmedSignaturesForAddress2(
+  ctx: Context<Backend>,
   address: string,
   options?: ConfirmedSignaturesForAddress2Options,
   commitment?: Finality
 ) {
-  const resp = await BACKEND!.getConfirmedSignaturesForAddress2(
+  const resp = await ctx.backend!.getConfirmedSignaturesForAddress2(
     new PublicKey(address),
     options,
     commitment
@@ -158,22 +179,27 @@ async function handleGetConfirmedSignaturesForAddress2(
 }
 
 async function handleGetParsedTransaction(
+  ctx: Context<Backend>,
   signature: TransactionSignature,
   commitment?: Finality
 ) {
-  const resp = await BACKEND!.getParsedTransaction(signature, commitment);
+  const resp = await ctx.backend!.getParsedTransaction(signature, commitment);
   return [resp];
 }
 
 async function handleGetParsedTransactions(
+  ctx: Context<Backend>,
   signatures: TransactionSignature[],
   commitment?: Finality
 ) {
-  const resp = await BACKEND!.getParsedTransactions(signatures, commitment);
+  const resp = await ctx.backend!.getParsedTransactions(signatures, commitment);
   return [resp];
 }
 
-async function handleCustomSplTokenAccounts(pubkey: string) {
-  const resp = await BACKEND!.customSplTokenAccounts(new PublicKey(pubkey));
+async function handleCustomSplTokenAccounts(
+  ctx: Context<Backend>,
+  pubkey: string
+) {
+  const resp = await ctx.backend!.customSplTokenAccounts(new PublicKey(pubkey));
   return [resp];
 }

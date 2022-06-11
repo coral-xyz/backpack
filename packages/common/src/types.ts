@@ -1,5 +1,6 @@
-export type Context = {
+export type Context<Backend> = {
   sender: any;
+  backend: Backend;
 };
 
 export type RpcRequest = {

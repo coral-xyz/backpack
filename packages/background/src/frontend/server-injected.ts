@@ -33,17 +33,13 @@ import { Io } from "../io";
 
 const logger = getLogger("server-injected");
 
-let BACKEND: Backend;
-
 export function start(b: Backend) {
-  BACKEND = b;
-
-  Io.rpcServerInjected.handler(withContext(handle));
+  Io.rpcServerInjected.handler(withContext(b, handle));
   Io.popupUiResponse.handler(handlePopupUiResponse);
 }
 
 async function handle<T = any>(
-  ctx: Context,
+  ctx: Context<Backend>,
   req: RpcRequest
 ): Promise<RpcResponse<T>> {
   logger.debug(`handle rpc ${req.method}`, req);
@@ -77,17 +73,17 @@ async function handle<T = any>(
 // requests because it's both approved and unlocked. There is currently no
 // extra session state or connections that are maintained.
 async function handleConnect(
-  ctx: Context,
+  ctx: Context<Backend>,
   onlyIfTrustedMaybe: boolean
 ): Promise<RpcResponse<string>> {
   const origin = ctx.sender.origin;
-  const keyringStoreState = await BACKEND.keyringStoreState();
+  const keyringStoreState = await ctx.backend.keyringStoreState();
   const activeTab = await BrowserRuntime.activeTab();
   let didApprove = false;
 
   // Use the UI to ask the user if it should connect.
   if (keyringStoreState === "unlocked") {
-    if (await BACKEND.isApprovedOrigin(origin)) {
+    if (await ctx.backend.isApprovedOrigin(origin)) {
       logger.debug("already approved so automatically connecting");
       didApprove = true;
     } else {
@@ -97,7 +93,7 @@ async function handleConnect(
       didApprove = !resp.windowClosed && resp.result;
     }
   } else if (keyringStoreState === "locked") {
-    if (await BACKEND.isApprovedOrigin(origin)) {
+    if (await ctx.backend.isApprovedOrigin(origin)) {
       const resp = await RequestManager.requestUiAction((requestId: number) => {
         return openLockedPopupWindow(ctx, requestId);
       });
@@ -114,8 +110,8 @@ async function handleConnect(
 
   // If the user approved and unlocked, then we're connected.
   if (didApprove) {
-    const activeWallet = await BACKEND.activeWallet();
-    const connectionUrl = await BACKEND.solanaConnectionUrl();
+    const activeWallet = await ctx.backend.activeWallet();
+    const connectionUrl = await ctx.backend.solanaConnectionUrl();
     Io.notificationsInjected.sendMessageTab(activeTab.id, {
       name: NOTIFICATION_CONNECTED,
       data: {
@@ -128,8 +124,8 @@ async function handleConnect(
   return [SUCCESS_RESPONSE];
 }
 
-function handleDisconnect(ctx: Context): RpcResponse<string> {
-  const resp = BACKEND.disconnect(ctx);
+function handleDisconnect(ctx: Context<Backend>): RpcResponse<string> {
+  const resp = ctx.backend.disconnect(ctx);
   Io.notificationsInjected.sendMessageActiveTab({
     name: NOTIFICATION_DISCONNECTED,
   });
@@ -137,7 +133,7 @@ function handleDisconnect(ctx: Context): RpcResponse<string> {
 }
 
 async function handleSignAndSendTx(
-  ctx: Context,
+  ctx: Context<Backend>,
   tx: string,
   walletAddress: string,
   options?: SendOptions
@@ -154,7 +150,7 @@ async function handleSignAndSendTx(
 
   // Only sign if the user clicked approve.
   if (didApprove) {
-    const sig = await BACKEND.signAndSendTx(tx, walletAddress, options);
+    const sig = await ctx.backend.signAndSendTx(tx, walletAddress, options);
     return [sig];
   }
 
@@ -162,7 +158,7 @@ async function handleSignAndSendTx(
 }
 
 async function handleSignTx(
-  ctx: Context,
+  ctx: Context<Backend>,
   txMsg: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
@@ -173,7 +169,7 @@ async function handleSignTx(
 
   // Only sign if the user clicked approve.
   if (didApprove) {
-    const sig = await BACKEND.signTransaction(txMsg, walletAddress);
+    const sig = await ctx.backend.signTransaction(txMsg, walletAddress);
     return [sig];
   }
 
@@ -181,16 +177,16 @@ async function handleSignTx(
 }
 
 async function handleSignAllTxs(
-  ctx: Context,
+  ctx: Context<Backend>,
   txs: Array<string>,
   walletAddress: string
 ): Promise<RpcResponse<Array<string>>> {
-  const resp = BACKEND.signAllTransactions(txs, walletAddress);
+  const resp = ctx.backend.signAllTransactions(txs, walletAddress);
   return [resp];
 }
 
 async function handleSignMessage(
-  ctx: Context,
+  ctx: Context<Backend>,
   msg: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
@@ -200,7 +196,7 @@ async function handleSignMessage(
   const didApprove = uiResp.result;
 
   if (didApprove) {
-    const sig = BACKEND.signMessage(ctx, msg, walletAddress);
+    const sig = ctx.backend.signMessage(ctx, msg, walletAddress);
     return [sig];
   }
 
@@ -208,12 +204,12 @@ async function handleSignMessage(
 }
 
 async function handleSimulate(
-  ctx: Context,
+  ctx: Context<Backend>,
   txStr: string,
   walletAddress: string,
   commitment: Commitment
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.simulate(txStr, walletAddress, commitment);
+  const resp = await ctx.backend.simulate(txStr, walletAddress, commitment);
   return [resp];
 }
 
