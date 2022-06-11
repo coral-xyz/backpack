@@ -45,7 +45,6 @@ export class KeyringStore {
       //      [BLOCKCHAIN_ETHEREUM, BlockchainKeyring.ethereum()],
     ]);
     this.lastUsedTs = 0;
-    this.autoLockStart();
   }
 
   public async state(): Promise<KeyringStoreState> {
@@ -68,14 +67,28 @@ export class KeyringStore {
     });
   }
 
-  public lock() {
-    return this.withUnlock(() => {
-      this.blockchains.forEach((bc) => {
-        bc.lock();
-      });
-      this.lastUsedTs = 0;
-      this.activeBlockchainLabel = undefined;
+  // Initializes the keystore for the first time.
+  public async init(
+    mnemonic: string,
+    derivationPath: DerivationPath,
+    password: string
+  ) {
+    // Initialize keyrings.
+    this.password = password;
+    this.activeBlockchainLabel = BLOCKCHAIN_DEFAULT;
+    this.activeBlockchainUnchecked().init(mnemonic, derivationPath);
+
+    // Persist the initial wallet ui metadata.
+    await setWalletData({
+      autoLockSecs: LOCK_INTERVAL_SECS,
+      approvedOrigins: [],
     });
+
+    // Persist the encrypted data to then store.
+    this.persist(true);
+
+    // Automatically lock the store when idle.
+    this.autoLockStart();
   }
 
   public async tryUnlock(password: string) {
@@ -98,25 +111,20 @@ export class KeyringStore {
       this.activeBlockchainLabel = activeBlockchainLabel;
       this.activeBlockchainUnchecked().tryUnlock(solana);
       this.password = password;
+
+      // Automatically lock the store when idle.
+      this.autoLockStart();
     });
   }
 
-  // Initializes the keystore for the first time.
-  public async init(
-    mnemonic: string,
-    derivationPath: DerivationPath,
-    password: string
-  ) {
-    // Initialize keyrings.
-    this.password = password;
-    this.activeBlockchainLabel = BLOCKCHAIN_DEFAULT;
-    this.activeBlockchainUnchecked().init(mnemonic, derivationPath);
-
-    // Persist the initial wallet ui metadata.
-    await initWalletData();
-
-    // Persist the encrypted data to then store.
-    this.persist(true);
+  public lock() {
+    return this.withUnlock(() => {
+      this.blockchains.forEach((bc) => {
+        bc.lock();
+      });
+      this.lastUsedTs = 0;
+      this.activeBlockchainLabel = undefined;
+    });
   }
 
   public async deriveNextKey(): Promise<[string, string]> {
@@ -596,13 +604,6 @@ export type WalletData = {
   approvedOrigins: Array<string>;
 };
 
-async function initWalletData() {
-  await setWalletData({
-    autoLockSecs: LOCK_INTERVAL_SECS,
-    approvedOrigins: [],
-  });
-}
-
 async function walletDataSetAutoLock(autoLockSecs: number) {
   const data = await getWalletData();
   await setWalletData({
@@ -617,6 +618,9 @@ async function walletDataGetAutoLockSecs(): Promise<number> {
 
 async function getWalletData(): Promise<WalletData> {
   const data = await LocalStorageDb.get(KEY_WALLET_DATA);
+  if (data === undefined) {
+    throw new Error("wallet data is undefined");
+  }
   return data;
 }
 
