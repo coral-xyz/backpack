@@ -1,11 +1,15 @@
 // All RPC request handlers for requests that can be sent from the trusted
 // extension UI to the background script.
 
+import type { EventEmitter } from "eventemitter3";
 import {
   getLogger,
+  withContextPort,
   RpcRequest,
   RpcResponse,
   DerivationPath,
+  PortChannel,
+  NotificationsClient,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
@@ -42,27 +46,41 @@ import {
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
   UI_RPC_METHOD_LEDGER_CONNECT,
   UI_RPC_METHOD_LEDGER_IMPORT,
+  BACKEND_EVENT,
+  CONNECTION_POPUP_RPC,
+  CONNECTION_POPUP_NOTIFICATIONS,
 } from "@200ms/common";
 import { KeyringStoreState } from "@200ms/recoil";
 import { Backend } from "../backend/core";
-import { Io } from "../io";
 import { Handle } from "../types";
 
 const logger = getLogger("background-server-ui");
 
-let BACKEND: Backend;
+export function start(events: EventEmitter, b: Backend): Handle {
+  const rpcServerUi = PortChannel.server(CONNECTION_POPUP_RPC);
+  const notificationsUi = new NotificationsClient(
+    CONNECTION_POPUP_NOTIFICATIONS
+  );
 
-export function start(b: Backend): Handle {
-  BACKEND = b;
+  //
+  // Dispatch all notifications to the extension popup UI. This channel
+  // will also handle plugins in an additional routing step.
+  //
+  events.on(BACKEND_EVENT, (notification) => {
+    notificationsUi.pushNotification(notification);
+  });
 
-  // Extension UI server.
-  //  Io.rpcServerUi = PortChannel.server(CONNECTION_POPUP_RPC);
-  //  Io.notificationsUi = startNotificationsUi();
+  rpcServerUi.handler(withContextPort(b, handle));
 
-  Io.rpcServerUi.handler(handle);
+  return {
+    rpcServerUi,
+  };
 }
 
-async function handle<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
+async function handle<T = any>(
+  ctx: Context<Backend>,
+  msg: RpcRequest
+): Promise<RpcResponse<T>> {
   logger.debug(`handle rpc ${msg.method}`, msg);
 
   const { method, params } = msg;
@@ -169,11 +187,12 @@ async function handle<T = any>(msg: RpcRequest): Promise<RpcResponse<T>> {
 }
 
 async function handleKeyringStoreCreate(
+  ctx: Context<Backend>,
   mnemonic: string,
   derivationPath: DerivationPath,
   password: string
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.keyringStoreCreate(
+  const resp = await ctx.backend.keyringStoreCreate(
     mnemonic,
     derivationPath,
     password
@@ -181,103 +200,121 @@ async function handleKeyringStoreCreate(
   return [resp];
 }
 
-async function handleKeyringStoreUnlock(password: string) {
+async function handleKeyringStoreUnlock(
+  ctx: Context<Backend>,
+  password: string
+) {
   try {
-    const resp = await BACKEND.keyringStoreUnlock(password);
+    const resp = await ctx.backend.keyringStoreUnlock(password);
     return [resp];
   } catch (err) {
     return [undefined, String(err)];
   }
 }
 
-async function handleKeyringStoreLock() {
-  const resp = BACKEND.keyringStoreLock();
+async function handleKeyringStoreLock(ctx: Context<Backend>) {
+  const resp = ctx.backend.keyringStoreLock();
   return [resp];
 }
 
 async function handleHdKeyringCreate(
+  ctx: Context<Backend>,
   mnemonic: string
 ): Promise<RpcResponse<string>> {
-  const resp = BACKEND.hdKeyringCreate(mnemonic);
+  const resp = ctx.backend.hdKeyringCreate(mnemonic);
   return [resp];
 }
 
 async function handleKeyringCreate(
+  ctx: Context<Backend>,
   secretKey: string
 ): Promise<RpcResponse<string>> {
-  const resp = BACKEND.keyringCreate(secretKey);
+  const resp = ctx.backend.keyringCreate(secretKey);
   return [resp];
 }
 
-async function handleKeyringStoreState(): Promise<
-  RpcResponse<KeyringStoreState>
-> {
-  const resp = await BACKEND.keyringStoreState();
+async function handleKeyringStoreState(
+  ctx: Context<Backend>
+): Promise<RpcResponse<KeyringStoreState>> {
+  const resp = await ctx.backend.keyringStoreState();
   return [resp];
 }
 
-function handleKeyringStoreKeepAlive(): RpcResponse<string> {
-  const resp = BACKEND.keyringStoreKeepAlive();
+function handleKeyringStoreKeepAlive(
+  ctx: Context<Backend>
+): RpcResponse<string> {
+  const resp = ctx.backend.keyringStoreKeepAlive();
   return [resp];
 }
 
-async function handleConnectionUrlRead(): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.connectionUrlRead();
+async function handleConnectionUrlRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.connectionUrlRead();
   return [resp];
 }
 
 async function handleConnectionUrlUpdate(
+  ctx: Context<Backend>,
   url: string
 ): Promise<RpcResponse<boolean>> {
-  const didChange = await BACKEND.connectionUrlUpdate(url);
+  const didChange = await ctx.backend.connectionUrlUpdate(url);
   return [didChange];
 }
 
-async function handleWalletDataActiveWallet(): Promise<RpcResponse<string>> {
-  const pubkey = await BACKEND.activeWallet();
+async function handleWalletDataActiveWallet(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const pubkey = await ctx.backend.activeWallet();
   return [pubkey];
 }
 
 async function handleWalletDataActiveWalletUpdate(
+  ctx: Context<Backend>,
   newWallet: string
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.activeWalletUpdate(newWallet);
+  const resp = await ctx.backend.activeWalletUpdate(newWallet);
   return [resp];
 }
 
-async function handleKeyringStoreReadAllPubkeys(): Promise<
-  RpcResponse<Array<string>>
-> {
-  const resp = await BACKEND.keyringStoreReadAllPubkeys();
+async function handleKeyringStoreReadAllPubkeys(
+  ctx: Context<Backend>
+): Promise<RpcResponse<Array<string>>> {
+  const resp = await ctx.backend.keyringStoreReadAllPubkeys();
   return [resp];
 }
 
-async function handleKeyringDeriveWallet(): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.keyringDeriveWallet();
+async function handleKeyringDeriveWallet(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.keyringDeriveWallet();
   return [resp];
 }
 
 async function handleKeynameUpdate(
+  ctx: Context<Backend>,
   pubkey: string,
   newName: string
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.keynameUpdate(pubkey, newName);
+  const resp = await ctx.backend.keynameUpdate(pubkey, newName);
   return [resp];
 }
 
 async function handleKeyringKeyDelete(
+  ctx: Context<Backend>,
   pubkey: string
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.keyringKeyDelete(pubkey);
+  const resp = await ctx.backend.keyringKeyDelete(pubkey);
   return [resp];
 }
 
 async function handlePasswordUpdate(
+  ctx: Context<Backend>,
   currentPassword: string,
   newPassword: string
 ): Promise<RpcResponse<string>> {
   try {
-    const resp = await BACKEND.passwordUpdate(currentPassword, newPassword);
+    const resp = await ctx.backend.passwordUpdate(currentPassword, newPassword);
     return [resp];
   } catch (err: any) {
     return [undefined, String(err)];
@@ -285,134 +322,161 @@ async function handlePasswordUpdate(
 }
 
 async function handleKeyringImportSecretKey(
+  ctx: Context<Backend>,
   secretKey: string,
   name: string
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.importSecretKey(secretKey, name);
+  const resp = await ctx.backend.importSecretKey(secretKey, name);
   return [resp];
 }
 
 function handleKeyringExportSecretKey(
+  ctx: Context<Backend>,
   password: string,
   pubkey: string
 ): RpcResponse<string> {
-  const resp = BACKEND.keyringExportSecretKey(password, pubkey);
+  const resp = ctx.backend.keyringExportSecretKey(password, pubkey);
   return [resp];
 }
 
-function handleKeyringExportMnemonic(password: string): RpcResponse<string> {
-  const resp = BACKEND.keyringExportMnemonic(password);
+function handleKeyringExportMnemonic(
+  ctx: Context<Backend>,
+  password: string
+): RpcResponse<string> {
+  const resp = ctx.backend.keyringExportMnemonic(password);
   return [resp];
 }
 
-function handleKeyringResetMnemonic(password: string): RpcResponse<string> {
-  const resp = BACKEND.keyringResetMnemonic(password);
+function handleKeyringResetMnemonic(
+  ctx: Context<Backend>,
+  password: string
+): RpcResponse<string> {
+  const resp = ctx.backend.keyringResetMnemonic(password);
   return [resp];
 }
 
 async function handleKeyringAutolockUpdate(
+  ctx: Context<Backend>,
   autolockSecs: number
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.keyringAutolockUpdate(autolockSecs);
+  const resp = await ctx.backend.keyringAutolockUpdate(autolockSecs);
   return [resp];
 }
 
 async function handleNavigationUpdate(
+  ctx: Context<Backend>,
   navData: any
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.navigationUpdate(navData);
+  const resp = await ctx.backend.navigationUpdate(navData);
   return [resp];
 }
 
-async function handleNavigationRead(nav: string): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.navigationRead(nav);
+async function handleNavigationRead(
+  ctx: Context<Backend>,
+  nav: string
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.navigationRead(nav);
   return [resp];
 }
 
-async function handleNavigationActiveTabRead(): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.navigationActiveTabRead();
+async function handleNavigationActiveTabRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.navigationActiveTabRead();
   return [resp];
 }
 
 async function handleNavigationActiveTabUpdate(
+  ctx: Context<Backend>,
   tabKey: string
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.navigationActiveTabUpdate(tabKey);
+  const resp = await ctx.backend.navigationActiveTabUpdate(tabKey);
   return [resp];
 }
 
-async function handleDarkModeRead(): Promise<RpcResponse<boolean>> {
-  const resp = await BACKEND.darkModeRead();
+async function handleDarkModeRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<boolean>> {
+  const resp = await ctx.backend.darkModeRead();
   return [resp];
 }
 
 async function handleDarkModeUpdate(
+  ctx: Context<Backend>,
   darkMode: boolean
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.darkModeUpdate(darkMode);
+  const resp = await ctx.backend.darkModeUpdate(darkMode);
   return [resp];
 }
 
-async function handleSolanaCommitmentRead(): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.solanaCommitmentRead();
+async function handleSolanaCommitmentRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.solanaCommitmentRead();
   return [resp];
 }
 
 async function handleSolanaCommitmentUpdate(
+  ctx: Context<Backend>,
   commitment: string
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.solanaCommitmentUpdate(commitment);
+  const resp = await ctx.backend.solanaCommitmentUpdate(commitment);
   return [resp];
 }
 
 async function handleSignTransaction(
+  ctx: Context<Backend>,
   messageBs58: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.signTransaction(messageBs58, walletAddress);
+  const resp = await ctx.backend.signTransaction(messageBs58, walletAddress);
   return [resp];
 }
 
 async function handleSignAllTransactions(
+  ctx: Context<Backend>,
   txs: Array<string>,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.signAllTransactions(txs, walletAddress);
+  const resp = await ctx.backend.signAllTransactions(txs, walletAddress);
   return [resp];
 }
 
 async function handleSignAndSendTransaction(
+  ctx: Context<Backend>,
   tx: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.signAndSendTx(tx, walletAddress);
+  const resp = await ctx.backend.signAndSendTx(tx, walletAddress);
   return [resp];
 }
 
-async function handleApprovedOriginsRead(): Promise<
-  RpcResponse<Array<string>>
-> {
-  const resp = await BACKEND.approvedOriginsRead();
+async function handleApprovedOriginsRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<Array<string>>> {
+  const resp = await ctx.backend.approvedOriginsRead();
   return [resp];
 }
 
 async function handleApprovedOriginsUpdate(
+  ctx: Context<Backend>,
   approvedOrigins: Array<string>
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.approvedOriginsUpdate(approvedOrigins);
+  const resp = await ctx.backend.approvedOriginsUpdate(approvedOrigins);
   return [resp];
 }
 
-async function handleLedgerConnect() {
-  const resp = await BACKEND.ledgerConnect();
+async function handleLedgerConnect(ctx: Context<Backend>) {
+  const resp = await ctx.backend.ledgerConnect();
   return [resp];
 }
 
 async function handleKeyringLedgerImport(
+  ctx: Context<Backend>,
   dPath: string,
   account: number,
   pubkey: string
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.ledgerImport(dPath, account, pubkey);
+  const resp = await ctx.backend.ledgerImport(dPath, account, pubkey);
   return [resp];
 }

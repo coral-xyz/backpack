@@ -13,6 +13,10 @@ import {
   RpcRequest,
   RpcResponse,
   Context,
+  PortChannel,
+  Channel,
+  CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
+  SOLANA_CONNECTION_RPC_UI,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
   SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
@@ -24,15 +28,24 @@ import {
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION,
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
 } from "@200ms/common";
-import { Io } from "../io";
 import { Backend } from "../backend/solana-connection";
 import { Handle } from "../types";
 
 const logger = getLogger("solana-connection");
 
 export function start(b: Backend): Handle {
-  Io.solanaConnection.handler(withContextPort(b, handle));
-  Io.solanaConnectionInjected.handler(withContext(b, handleInjected));
+  const solanaConnection = PortChannel.server(SOLANA_CONNECTION_RPC_UI);
+  const solanaConnectionInjected = Channel.server(
+    CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST
+  );
+
+  solanaConnection.handler(withContextPort(b, handle));
+  solanaConnectionInjected.handler(withContext(b, handleInjected));
+
+  return {
+    solanaConnection,
+    solanaConnectionInjected,
+  };
 }
 
 async function handleInjected<T = any>(

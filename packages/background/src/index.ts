@@ -1,4 +1,4 @@
-import { Io } from "./io";
+import { EventEmitter } from "eventemitter3";
 import * as serverUi from "./frontend/server-ui";
 import * as serverInjected from "./frontend/server-injected";
 import * as solanaConnection from "./frontend/solana-connection";
@@ -11,10 +11,10 @@ export * from "./client";
 
 // Starts the background service.
 export function start(): Background {
-  Io.start();
+  const events = new EventEmitter();
 
-  const solanaB = solanaBackend.start();
-  const coreB = coreBackend.start(solanaB);
+  const solanaB = solanaBackend.start(events);
+  const coreB = coreBackend.start(events, solanaB);
 
   const _serverUi = serverInjected.start(coreB);
   const _serverInjected = serverUi.start(coreB);

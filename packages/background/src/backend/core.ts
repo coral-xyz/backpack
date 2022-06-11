@@ -1,4 +1,5 @@
 import * as bs58 from "bs58";
+//import { EventEmitter } from "eventemitter3";
 import {
   Commitment,
   PublicKey,
@@ -43,6 +44,7 @@ export function start(solanaB: SolanaConnectionBackend) {
 export class Backend {
   private keyringStore: KeyringStore;
   private solanaConnectionBackend: SolanaConnectionBackend;
+  private events: EventEmitter;
 
   constructor(solanaB: SolanaConnectionBackend) {
     this.keyringStore = new KeyringStore();
@@ -149,7 +151,7 @@ export class Backend {
     const activeWallet = await this.activeWallet();
     const commitment = await this.solanaCommitmentRead();
 
-    Io.events.emit(BACKEND_EVENT, {
+    this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
       data: {
         url,
@@ -163,7 +165,7 @@ export class Backend {
 
   keyringStoreLock() {
     this.keyringStore.lock();
-    Io.events.emit(BACKEND_EVENT, {
+    this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_LOCKED,
     });
     return SUCCESS_RESPONSE;
