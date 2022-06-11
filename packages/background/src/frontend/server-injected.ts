@@ -47,10 +47,10 @@ export function start(events: EventEmitter, b: Backend): Handle {
   const popupUiResponse = PortChannel.server(CONNECTION_POPUP_RESPONSE);
   const notificationsInjected = Channel.client(CHANNEL_NOTIFICATION);
 
+  //
+  // Dispatch notifications to injected web apps.
+  //
   events.on(BACKEND_EVENT, (notification) => {
-    //
-    // Dispatch a subset of notifications to injected web apps.
-    //
     switch (notification.name) {
       case NOTIFICATION_CONNECTION_URL_UPDATED:
         notificationsInjected.sendMessageActiveTab(notification);
