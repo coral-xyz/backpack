@@ -1,6 +1,7 @@
 import * as bs58 from "bs58";
 import { KeyringStoreState, KeyringStoreStateEnum } from "@200ms/recoil";
 import {
+  EventEmitter,
   DerivationPath,
   BrowserRuntime,
   NOTIFICATION_KEYRING_STORE_LOCKED,
@@ -19,7 +20,6 @@ import {
   KeyringFactory,
   Keyring,
 } from ".";
-import { Io } from "../io";
 
 const LOCK_INTERVAL_SECS = 15 * 60 * 1000;
 
@@ -38,14 +38,15 @@ export class KeyringStore {
   private password?: string;
   private autoLockInterval?: ReturnType<typeof setInterval>;
   private activeBlockchainLabel?: string;
+  private events: EventEmitter;
 
-  constructor() {
+  constructor(events: EventEmitter) {
     this.blockchains = new Map([
       [BLOCKCHAIN_SOLANA, BlockchainKeyring.solana()],
       //      [BLOCKCHAIN_ETHEREUM, BlockchainKeyring.ethereum()],
     ]);
     this.lastUsedTs = 0;
-    this.autoLockStart();
+    this.events = events;
   }
 
   public async state(): Promise<KeyringStoreState> {
@@ -68,14 +69,28 @@ export class KeyringStore {
     });
   }
 
-  public lock() {
-    return this.withUnlock(() => {
-      this.blockchains.forEach((bc) => {
-        bc.lock();
-      });
-      this.lastUsedTs = 0;
-      this.activeBlockchainLabel = undefined;
+  // Initializes the keystore for the first time.
+  public async init(
+    mnemonic: string,
+    derivationPath: DerivationPath,
+    password: string
+  ) {
+    // Initialize keyrings.
+    this.password = password;
+    this.activeBlockchainLabel = BLOCKCHAIN_DEFAULT;
+    this.activeBlockchainUnchecked().init(mnemonic, derivationPath);
+
+    // Persist the initial wallet ui metadata.
+    await setWalletData({
+      autoLockSecs: LOCK_INTERVAL_SECS,
+      approvedOrigins: [],
     });
+
+    // Persist the encrypted data to then store.
+    this.persist(true);
+
+    // Automatically lock the store when idle.
+    this.autoLockStart();
   }
 
   public async tryUnlock(password: string) {
@@ -98,25 +113,20 @@ export class KeyringStore {
       this.activeBlockchainLabel = activeBlockchainLabel;
       this.activeBlockchainUnchecked().tryUnlock(solana);
       this.password = password;
+
+      // Automatically lock the store when idle.
+      this.autoLockStart();
     });
   }
 
-  // Initializes the keystore for the first time.
-  public async init(
-    mnemonic: string,
-    derivationPath: DerivationPath,
-    password: string
-  ) {
-    // Initialize keyrings.
-    this.password = password;
-    this.activeBlockchainLabel = BLOCKCHAIN_DEFAULT;
-    this.activeBlockchainUnchecked().init(mnemonic, derivationPath);
-
-    // Persist the initial wallet ui metadata.
-    await initWalletData();
-
-    // Persist the encrypted data to then store.
-    this.persist(true);
+  public lock() {
+    return this.withUnlock(() => {
+      this.blockchains.forEach((bc) => {
+        bc.lock();
+      });
+      this.lastUsedTs = 0;
+      this.activeBlockchainLabel = undefined;
+    });
   }
 
   public async deriveNextKey(): Promise<[string, string]> {
@@ -285,7 +295,7 @@ export class KeyringStore {
         const currentTs = Date.now() / 1000;
         if (currentTs - this.lastUsedTs >= LOCK_INTERVAL_SECS) {
           this.lock();
-          Io.events.emit(BACKEND_EVENT, {
+          this.events.emit(BACKEND_EVENT, {
             name: NOTIFICATION_KEYRING_STORE_LOCKED,
           });
           clearInterval(this.autoLockInterval!);
@@ -596,13 +606,6 @@ export type WalletData = {
   approvedOrigins: Array<string>;
 };
 
-async function initWalletData() {
-  await setWalletData({
-    autoLockSecs: LOCK_INTERVAL_SECS,
-    approvedOrigins: [],
-  });
-}
-
 async function walletDataSetAutoLock(autoLockSecs: number) {
   const data = await getWalletData();
   await setWalletData({
@@ -617,6 +620,9 @@ async function walletDataGetAutoLockSecs(): Promise<number> {
 
 async function getWalletData(): Promise<WalletData> {
   const data = await LocalStorageDb.get(KEY_WALLET_DATA);
+  if (data === undefined) {
+    throw new Error("wallet data is undefined");
+  }
   return data;
 }
 

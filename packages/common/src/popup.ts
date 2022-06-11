@@ -1,8 +1,5 @@
-import {
-  BrowserRuntime,
-  EXTENSION_WIDTH,
-  EXTENSION_HEIGHT,
-} from "@200ms/common";
+import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "./constants";
+import { BrowserRuntime } from "./browser";
 
 const POPUP_HTML = "popup.html";
 const EXPANDED_HTML = "options.html";
@@ -23,48 +20,48 @@ export interface Window {
 type Context = any; // TODO: remove.
 
 export async function openLockedApprovalPopupWindow(
-  ctx: Context,
+  origin: string,
   requestId: number
 ): Promise<Window> {
-  const url = `${POPUP_HTML}?${QUERY_LOCKED_APPROVAL}&origin=${ctx.sender.origin}&requestId=${requestId}`;
-  return openPopupWindow(ctx, url);
+  const url = `${POPUP_HTML}?${QUERY_LOCKED_APPROVAL}&origin=${origin}&requestId=${requestId}`;
+  return openPopupWindow(url);
 }
 
 export async function openLockedPopupWindow(
-  ctx: Context,
+  origin: string,
   requestId: number
 ): Promise<Window> {
-  const url = `${POPUP_HTML}?${QUERY_LOCKED}&origin=${ctx.sender.origin}&requestId=${requestId}`;
-  return openPopupWindow(ctx, url);
+  const url = `${POPUP_HTML}?${QUERY_LOCKED}&origin=${origin}&requestId=${requestId}`;
+  return openPopupWindow(url);
 }
 
 export async function openApprovalPopupWindow(
-  ctx: Context,
+  origin: string,
   requestId: number
 ): Promise<Window> {
-  const url = `${POPUP_HTML}?${QUERY_APPROVAL}&origin=${ctx.sender.origin}&requestId=${requestId}`;
-  return openPopupWindow(ctx, url);
+  const url = `${POPUP_HTML}?${QUERY_APPROVAL}&origin=${origin}&requestId=${requestId}`;
+  return openPopupWindow(url);
 }
 
 export async function openApproveTransactionPopupWindow(
-  ctx: Context,
+  origin: string,
   requestId: number,
   tx: string
 ): Promise<Window> {
-  const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${ctx.sender.origin}&requestId=${requestId}&tx=${tx}`;
-  return await openPopupWindow(ctx, url);
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${origin}&requestId=${requestId}&tx=${tx}`;
+  return await openPopupWindow(url);
 }
 
 export async function openApproveMessagePopupWindow(
-  ctx: Context,
+  origin: string,
   requestId: number,
   message: string
 ): Promise<Window> {
-  const url = `${POPUP_HTML}?${QUERY_APPROVE_MESSAGE}&origin=${ctx.sender.origin}&requestId=${requestId}&message=${message}`;
-  return await openPopupWindow(ctx, url);
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_MESSAGE}&origin=${origin}&requestId=${requestId}&message=${message}`;
+  return await openPopupWindow(url);
 }
 
-async function openPopupWindow(ctx: Context, url: string): Promise<Window> {
+async function openPopupWindow(url: string): Promise<Window> {
   return new Promise((resolve, reject) => {
     BrowserRuntime.getLastFocusedWindow().then((window: any) => {
       BrowserRuntime.openWindow({

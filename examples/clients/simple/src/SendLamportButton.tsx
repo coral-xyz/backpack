@@ -19,7 +19,7 @@ export const SendLamportButton: FC = () => {
       SystemProgram.transfer({
         fromPubkey: wallet.publicKey,
         toPubkey: Keypair.generate().publicKey,
-        lamports: 1,
+        lamports: 1000000,
       })
     );
 

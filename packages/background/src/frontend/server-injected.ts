@@ -9,7 +9,11 @@ import {
   RpcRequest,
   RpcResponse,
   withContext,
+  withContextPort,
   Context,
+  Channel,
+  PortChannel,
+  EventEmitter,
   RPC_METHOD_CONNECT,
   RPC_METHOD_DISCONNECT,
   RPC_METHOD_SIGN_AND_SEND_TX,
@@ -19,6 +23,11 @@ import {
   RPC_METHOD_SIMULATE,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
+  CHANNEL_RPC_REQUEST,
+  CHANNEL_NOTIFICATION,
+  CONNECTION_POPUP_RESPONSE,
+  BACKEND_EVENT,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
 } from "@200ms/common";
 import {
   Window,
@@ -27,19 +36,48 @@ import {
   openLockedApprovalPopupWindow,
   openApproveTransactionPopupWindow,
   openApproveMessagePopupWindow,
-} from "../popup";
-import { BACKEND, SUCCESS_RESPONSE } from "../backend";
-import { Io } from "../io";
+} from "@200ms/common";
+import { Backend, SUCCESS_RESPONSE } from "../backend/core";
+import { Handle } from "../types";
 
 const logger = getLogger("server-injected");
 
-export function start() {
-  Io.rpcServerInjected.handler(withContext(handle));
-  Io.popupUiResponse.handler(handlePopupUiResponse);
+export function start(events: EventEmitter, b: Backend): Handle {
+  const rpcServerInjected = Channel.server(CHANNEL_RPC_REQUEST);
+  const popupUiResponse = PortChannel.server(CONNECTION_POPUP_RESPONSE);
+  const notificationsInjected = Channel.client(CHANNEL_NOTIFICATION);
+
+  //
+  // Dispatch notifications to injected web apps.
+  //
+  events.on(BACKEND_EVENT, (notification) => {
+    switch (notification.name) {
+      case NOTIFICATION_CONNECTION_URL_UPDATED:
+        notificationsInjected.sendMessageActiveTab(notification);
+        break;
+      case NOTIFICATION_CONNECTED:
+        notificationsInjected.sendMessageActiveTab(notification);
+        break;
+      case NOTIFICATION_DISCONNECTED:
+        notificationsInjected.sendMessageActiveTab(notification);
+        break;
+      default:
+        break;
+    }
+  });
+
+  rpcServerInjected.handler(withContext(b, events, handle));
+  popupUiResponse.handler(withContextPort(b, events, handlePopupUiResponse));
+
+  return {
+    rpcServerInjected,
+    popupUiResponse,
+    notificationsInjected,
+  };
 }
 
 async function handle<T = any>(
-  ctx: Context,
+  ctx: Context<Backend>,
   req: RpcRequest
 ): Promise<RpcResponse<T>> {
   logger.debug(`handle rpc ${req.method}`, req);
@@ -73,34 +111,34 @@ async function handle<T = any>(
 // requests because it's both approved and unlocked. There is currently no
 // extra session state or connections that are maintained.
 async function handleConnect(
-  ctx: Context,
+  ctx: Context<Backend>,
   onlyIfTrustedMaybe: boolean
 ): Promise<RpcResponse<string>> {
   const origin = ctx.sender.origin;
-  const keyringStoreState = await BACKEND.keyringStoreState();
+  const keyringStoreState = await ctx.backend.keyringStoreState();
   const activeTab = await BrowserRuntime.activeTab();
   let didApprove = false;
 
   // Use the UI to ask the user if it should connect.
   if (keyringStoreState === "unlocked") {
-    if (await BACKEND.isApprovedOrigin(origin)) {
+    if (await ctx.backend.isApprovedOrigin(origin)) {
       logger.debug("already approved so automatically connecting");
       didApprove = true;
     } else {
       const resp = await RequestManager.requestUiAction((requestId: number) => {
-        return openApprovalPopupWindow(ctx, requestId);
+        return openApprovalPopupWindow(ctx.sender.origin, requestId);
       });
       didApprove = !resp.windowClosed && resp.result;
     }
   } else if (keyringStoreState === "locked") {
-    if (await BACKEND.isApprovedOrigin(origin)) {
+    if (await ctx.backend.isApprovedOrigin(origin)) {
       const resp = await RequestManager.requestUiAction((requestId: number) => {
-        return openLockedPopupWindow(ctx, requestId);
+        return openLockedPopupWindow(ctx.sender.origin, requestId);
       });
       didApprove = !resp.windowClosed && resp.result;
     } else {
       const resp = await RequestManager.requestUiAction((requestId: number) => {
-        return openLockedApprovalPopupWindow(ctx, requestId);
+        return openLockedApprovalPopupWindow(ctx.sender.origin, requestId);
       });
       didApprove = !resp.windowClosed && resp.result;
     }
@@ -110,9 +148,9 @@ async function handleConnect(
 
   // If the user approved and unlocked, then we're connected.
   if (didApprove) {
-    const activeWallet = await BACKEND.activeWallet();
-    const connectionUrl = await BACKEND.solanaConnectionUrl();
-    Io.notificationsInjected.sendMessageTab(activeTab.id, {
+    const activeWallet = await ctx.backend.activeWallet();
+    const connectionUrl = await ctx.backend.solanaConnectionUrl();
+    ctx.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_CONNECTED,
       data: {
         publicKey: activeWallet,
@@ -124,16 +162,16 @@ async function handleConnect(
   return [SUCCESS_RESPONSE];
 }
 
-function handleDisconnect(ctx: Context): RpcResponse<string> {
-  const resp = BACKEND.disconnect(ctx);
-  Io.notificationsInjected.sendMessageActiveTab({
+function handleDisconnect(ctx: Context<Backend>): RpcResponse<string> {
+  const resp = ctx.backend.disconnect();
+  ctx.events.emit(BACKEND_EVENT, {
     name: NOTIFICATION_DISCONNECTED,
   });
   return [resp];
 }
 
 async function handleSignAndSendTx(
-  ctx: Context,
+  ctx: Context<Backend>,
   tx: string,
   walletAddress: string,
   options?: SendOptions
@@ -144,13 +182,17 @@ async function handleSignAndSendTx(
 
   // Get user approval.
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveTransactionPopupWindow(ctx, requestId, txMsg);
+    return openApproveTransactionPopupWindow(
+      ctx.sender.origin,
+      requestId,
+      txMsg
+    );
   });
   const didApprove = uiResp.result;
 
   // Only sign if the user clicked approve.
   if (didApprove) {
-    const sig = await BACKEND.signAndSendTx(tx, walletAddress, options);
+    const sig = await ctx.backend.signAndSendTx(tx, walletAddress, options);
     return [sig];
   }
 
@@ -158,18 +200,22 @@ async function handleSignAndSendTx(
 }
 
 async function handleSignTx(
-  ctx: Context,
+  ctx: Context<Backend>,
   txMsg: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveTransactionPopupWindow(ctx, requestId, txMsg);
+    return openApproveTransactionPopupWindow(
+      ctx.sender.origin,
+      requestId,
+      txMsg
+    );
   });
   const didApprove = uiResp.result;
 
   // Only sign if the user clicked approve.
   if (didApprove) {
-    const sig = await BACKEND.signTransaction(txMsg, walletAddress);
+    const sig = await ctx.backend.signTransaction(txMsg, walletAddress);
     return [sig];
   }
 
@@ -177,26 +223,26 @@ async function handleSignTx(
 }
 
 async function handleSignAllTxs(
-  ctx: Context,
+  ctx: Context<Backend>,
   txs: Array<string>,
   walletAddress: string
 ): Promise<RpcResponse<Array<string>>> {
-  const resp = BACKEND.signAllTransactions(txs, walletAddress);
+  const resp = ctx.backend.signAllTransactions(txs, walletAddress);
   return [resp];
 }
 
 async function handleSignMessage(
-  ctx: Context,
+  ctx: Context<Backend>,
   msg: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveMessagePopupWindow(ctx, requestId, msg);
+    return openApproveMessagePopupWindow(ctx.sender.origin, requestId, msg);
   });
   const didApprove = uiResp.result;
 
   if (didApprove) {
-    const sig = BACKEND.signMessage(ctx, msg, walletAddress);
+    const sig = ctx.backend.signMessage(msg, walletAddress);
     return [sig];
   }
 
@@ -204,12 +250,12 @@ async function handleSignMessage(
 }
 
 async function handleSimulate(
-  ctx: Context,
+  ctx: Context<Backend>,
   txStr: string,
   walletAddress: string,
   commitment: Commitment
 ): Promise<RpcResponse<string>> {
-  const resp = await BACKEND.simulate(txStr, walletAddress, commitment);
+  const resp = await ctx.backend.simulate(txStr, walletAddress, commitment);
   return [resp];
 }
 
@@ -293,7 +339,10 @@ class RequestManager {
   }
 }
 
-async function handlePopupUiResponse(msg: RpcResponse): Promise<string> {
+async function handlePopupUiResponse(
+  ctx: Context<Backend>,
+  msg: RpcResponse
+): Promise<string> {
   const { id, result, error } = msg;
   logger.debug("handle popup ui response", msg);
   RequestManager.resolveResponse(id, result, error);

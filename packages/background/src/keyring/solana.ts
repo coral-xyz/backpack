@@ -326,13 +326,17 @@ export class SolanaLedgerKeyring implements LedgerKeyring {
 }
 
 // Handle receiving postMessages
-self.addEventListener("message", ({ data: { type, detail } }) => {
+self.addEventListener("message", (msg) => {
   try {
-    const { id, result, error } = detail;
-
-    if (type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
+    if (msg.data.type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
       return;
     }
+
+    const {
+      data: { detail },
+    } = msg;
+    const { id, result, error } = detail;
+
     const resolver = responseResolvers[id];
     if (!resolver) {
       // Why does this get thrown?
