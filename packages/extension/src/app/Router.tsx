@@ -7,12 +7,6 @@ import {
   EXTENSION_HEIGHT,
 } from "@200ms/common";
 import {
-  KeyringStoreStateEnum,
-  useKeyringStoreState,
-  useApprovedOrigins,
-  useBootstrapFast,
-} from "@200ms/recoil";
-import {
   openOnboarding,
   QUERY_LOCKED,
   QUERY_APPROVAL,
@@ -20,6 +14,12 @@ import {
   QUERY_APPROVE_TRANSACTION,
   QUERY_APPROVE_MESSAGE,
 } from "@200ms/common";
+import {
+  KeyringStoreStateEnum,
+  useKeyringStoreState,
+  useApprovedOrigins,
+  useBootstrapFast,
+} from "@200ms/recoil";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
 import {
@@ -119,6 +119,7 @@ function QueryLockedApproval() {
 
 function QueryLocked() {
   logger.debug("query locked");
+
   const url = new URL(window.location.href);
   const requestId = parseInt(url.searchParams.get("requestId")!);
 
