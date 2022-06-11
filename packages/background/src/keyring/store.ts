@@ -251,6 +251,12 @@ export class KeyringStore {
     });
   }
 
+  public createMnemonic(): string {
+    const factory = new SolanaHdKeyringFactory();
+    const kr = factory.generate();
+    return kr.mnemonic;
+  }
+
   private toJson(): any {
     const json: any = {
       lastUsedTs: this.lastUsedTs,

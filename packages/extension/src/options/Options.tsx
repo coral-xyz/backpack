@@ -1,6 +1,9 @@
 import { RecoilRoot } from "recoil";
-import { QUERY_CONNECT_HARDWARE, QUERY_ONBOARDING } from "@200ms/common";
-import { setupClient } from "@200ms/background";
+import {
+  setupClient,
+  QUERY_CONNECT_HARDWARE,
+  QUERY_ONBOARDING,
+} from "@200ms/common";
 import { WithSuspense } from "../app/Router";
 import { WithTheme } from "../app/theme";
 import { ConnectHardware } from "../components/Settings/ConnectHardware";

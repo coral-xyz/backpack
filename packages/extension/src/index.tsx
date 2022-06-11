@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { setupClient } from "@200ms/background";
+import { setupClient } from "@200ms/common";
 import App from "./app/App";
 import LedgerIframe from "./components/LedgerIframe";
 import "./index.css";

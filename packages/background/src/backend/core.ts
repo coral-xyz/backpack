@@ -452,6 +452,10 @@ export class Backend {
     await this.keyringStore.ledgerImport(dPath, account, pubkey);
     return SUCCESS_RESPONSE;
   }
+
+  async mnemonicCreate(): Promise<string> {
+    return this.keyringStore.createMnemonic();
+  }
 }
 
 export const SUCCESS_RESPONSE = "success";
