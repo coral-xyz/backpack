@@ -33,9 +33,9 @@ import {
   setNav,
   getNav,
   NavData,
-} from "./keyring/store";
-import { Io } from "./io";
-import { Backend as SolanaConnectionBackend } from "./solana-connection/backend";
+} from "../keyring/store";
+import { Io } from "../io";
+import { Backend as SolanaConnectionBackend } from "../backend/solana-connection";
 
 export function start(solanaB: SolanaConnectionBackend) {
   return new Backend(solanaB);

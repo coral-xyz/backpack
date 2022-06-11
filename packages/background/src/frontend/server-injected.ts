@@ -28,7 +28,7 @@ import {
   openApproveTransactionPopupWindow,
   openApproveMessagePopupWindow,
 } from "@200ms/common";
-import { Backend, SUCCESS_RESPONSE } from "../backend";
+import { Backend, SUCCESS_RESPONSE } from "../backend/core";
 import { Io } from "../io";
 
 const logger = getLogger("server-injected");

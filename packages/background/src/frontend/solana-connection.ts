@@ -24,7 +24,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
 } from "@200ms/common";
 import { Io } from "../io";
-import { Backend } from "../solana-connection/backend";
+import { Backend } from "../backend/solana-connection";
 
 const logger = getLogger("solana-connection");
 

@@ -44,7 +44,7 @@ import {
   UI_RPC_METHOD_LEDGER_IMPORT,
 } from "@200ms/common";
 import { KeyringStoreState } from "@200ms/recoil";
-import { Backend } from "../backend";
+import { Backend } from "../backend/core";
 import { Io } from "../io";
 
 const logger = getLogger("background-server-ui");
