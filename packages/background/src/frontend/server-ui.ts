@@ -75,6 +75,7 @@ export function start(events: EventEmitter, b: Backend): Handle {
 
   return {
     rpcServerUi,
+    notificationsUi,
   };
 }
 

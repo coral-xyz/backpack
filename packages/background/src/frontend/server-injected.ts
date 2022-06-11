@@ -72,6 +72,7 @@ export function start(events: EventEmitter, b: Backend): Handle {
   return {
     rpcServerInjected,
     popupUiResponse,
+    notificationsInjected,
   };
 }
 
