@@ -21,8 +21,8 @@ import {
   walletAddressDisplay,
   OnboardButton,
   Loading,
-} from "../../common";
-import { WithMiniDrawer } from "../../Layout/Drawer";
+} from "../../../common";
+import { WithMiniDrawer } from "../../../Layout/Drawer";
 
 const logger = getLogger("send-component");
 

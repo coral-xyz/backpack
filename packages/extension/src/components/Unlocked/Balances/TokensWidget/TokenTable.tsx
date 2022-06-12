@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Typography, ListItem } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import { ArrowForwardIos, OfflineBolt as Bolt } from "@mui/icons-material";
+import { ArrowForwardIos } from "@mui/icons-material";
 import {
   BalancesTable,
   BalancesTableHead,

@@ -3,10 +3,10 @@ import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { Button } from "@200ms/anchor-ui-renderer";
 import { useBlockchainTokenAccount } from "@200ms/recoil";
-import { RecentActivitySmall } from "./RecentActivity";
+import { RecentActivitySmall } from "../RecentActivity";
 import { SendButton } from "./Send";
 import { DepositButton } from "./Deposit";
-import { WithDrawer } from "../../Layout/Drawer";
+import { WithDrawer } from "../../../Layout/Drawer";
 
 const useStyles = makeStyles((theme: any) => ({
   tokenHeaderContainer: {

@@ -3,7 +3,11 @@ import makeStyles from "@mui/styles/makeStyles";
 import { useActiveWallet } from "@200ms/recoil";
 import { WithHeaderButton } from "./Token";
 import { BottomCard } from "./Send";
-import { TextField, TextFieldLabel, walletAddressDisplay } from "../../common";
+import {
+  TextField,
+  TextFieldLabel,
+  walletAddressDisplay,
+} from "../../../common";
 
 const useStyles = makeStyles((theme: any) => ({
   subtext: {
