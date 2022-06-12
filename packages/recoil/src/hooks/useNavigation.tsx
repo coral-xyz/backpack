@@ -1,5 +1,4 @@
 import { useRecoilValue, useRecoilState, useSetRecoilState } from "recoil";
-import { useSearchParams } from "react-router-dom";
 import * as atoms from "../atoms";
 
 type NavigationContext = {
@@ -13,17 +12,16 @@ type NavigationContext = {
 };
 
 export function useNavigation(): NavigationContext {
-  const [params] = useSearchParams() as any;
   const activeTab = useRecoilValue(atoms.navigationActiveTab)!;
   const navData = useRecoilValue(atoms.navigationDataMap(activeTab));
   const [navButtonRight, setNavButtonRight] = useRecoilState(
     atoms.navigationRightButton
   );
   const { push, pop } = useNavigationSegue();
-  const title = params.get("title") ?? "";
   const isRoot = navData.urls.length === 1;
   const url = navData.urls[navData.urls.length - 1];
-
+  const params = new URLSearchParams(url);
+  const title = params.get("title") ?? "";
   return {
     isRoot,
     url,

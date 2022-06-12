@@ -152,6 +152,7 @@ function _CenterDisplay() {
 }
 
 export function __CenterDisplay({ title, isRoot }: any) {
+  console.log("armanmio title", title, isRoot);
   return (
     <div
       style={{
