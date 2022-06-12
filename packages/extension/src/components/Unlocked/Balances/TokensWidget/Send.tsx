@@ -94,7 +94,13 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-export function SendButton({ blockchain, address }: any) {
+export function SendButton({
+  blockchain,
+  address,
+}: {
+  blockchain: string;
+  address: string;
+}) {
   const token = useBlockchainTokenAccount(blockchain, address);
   return (
     <WithHeaderButton

@@ -15,7 +15,6 @@ const useStyles = makeStyles((theme: any) => ({
     paddingBottom: "12px",
     borderRadius: "12px",
     backgroundColor: theme.custom.colors.nav,
-    marginBottom: "32px",
   },
   headerLabel: {
     fontSize: "12px",

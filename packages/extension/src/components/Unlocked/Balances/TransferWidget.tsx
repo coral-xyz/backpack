@@ -8,10 +8,11 @@ export function TransferWidget() {
     <div
       style={{
         display: "flex",
-        marginBottom: "32px",
         width: "136px",
         marginLeft: "auto",
         marginRight: "auto",
+        marginTop: "20px",
+        marginBottom: "20px",
       }}
     >
       <ReceiveButton />
