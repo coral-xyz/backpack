@@ -1,7 +1,21 @@
+import { useState } from "react";
 import { useTheme, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
+import { TextField } from "@200ms/anchor-ui-renderer";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
+import { TokenTable } from "./TokensWidget/TokenTable";
+
+const useStyles = makeStyles((theme: any) => ({
+  searchField: {
+    marginTop: "16px",
+    marginBottom: "16px",
+    "& .MuiOutlinedInput-root": {
+      height: "48px !important",
+    },
+  },
+}));
 
 export function TransferWidget() {
   return (
@@ -36,9 +50,9 @@ function SendButton() {
         />
       }
       dialog={(setOpenDrawer: (b: boolean) => void) => {
-        return <Deposit close={() => setOpenDrawer(false)} />;
+        return <Send />;
       }}
-      dialogTitle={"Send"}
+      dialogTitle={"Select token"}
     />
   );
 }
@@ -111,6 +125,27 @@ function TransferButton({
       >
         {label}
       </Typography>
+    </div>
+  );
+}
+
+function Send() {
+  const classes = useStyles();
+  const [value, setValue] = useState("");
+  return (
+    <div>
+      <TextField
+        placeholder={"Search"}
+        value={value}
+        setValue={setValue}
+        rootClass={classes.searchField}
+        inputProps={{
+          style: {
+            height: "48px",
+          },
+        }}
+      />
+      <TokenTable />
     </div>
   );
 }
