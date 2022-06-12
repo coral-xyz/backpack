@@ -87,13 +87,23 @@ function TokenHeader({ blockchain, address }: any) {
   );
 }
 
-export function WithHeaderButton({ label, dialog, dialogTitle }: any) {
+export function WithHeaderButton({
+  style,
+  labelComponent,
+  label,
+  dialog,
+  dialogTitle,
+}: any) {
   const classes = useStyles();
   const [openDrawer, setOpenDrawer] = useState(false);
   return (
     <>
-      <Button onClick={() => setOpenDrawer(true)}>
-        <Typography className={classes.headerButtonLabel}>{label}</Typography>
+      <Button style={style} onClick={() => setOpenDrawer(true)}>
+        {labelComponent ? (
+          labelComponent
+        ) : (
+          <Typography className={classes.headerButtonLabel}>{label}</Typography>
+        )}
       </Button>
       <WithDrawer
         openDrawer={openDrawer}

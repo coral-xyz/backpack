@@ -40,13 +40,13 @@ export function DepositButton({ token }: any) {
       label={"Deposit"}
       dialogTitle={`${token.ticker} / Deposit`}
       dialog={(setOpenDrawer: any) => (
-        <Deposit token={token} close={() => setOpenDrawer(false)} />
+        <Deposit close={() => setOpenDrawer(false)} />
       )}
     />
   );
 }
 
-function Deposit({ token, close }: any) {
+export function Deposit({ close }: any) {
   const classes = useStyles();
   const theme = useTheme() as any;
   const activeWallet = useActiveWallet();
