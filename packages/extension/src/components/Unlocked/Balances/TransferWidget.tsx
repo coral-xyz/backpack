@@ -26,7 +26,7 @@ function SendButton() {
     <TransferButton
       label={"Send"}
       labelComponent={
-        <ArrowDownward
+        <ArrowUpward
           style={{
             display: "flex",
             marginLeft: "auto",
@@ -44,7 +44,7 @@ function ReceiveButton() {
     <TransferButton
       label={"Receive"}
       labelComponent={
-        <ArrowUpward
+        <ArrowDownward
           style={{
             display: "flex",
             marginLeft: "auto",
