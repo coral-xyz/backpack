@@ -35,6 +35,9 @@ function SendButton() {
           }}
         />
       }
+      dialog={(setOpenDrawer: (b: boolean) => void) => {
+        return <Deposit close={() => setOpenDrawer(false)} />;
+      }}
       dialogTitle={"Send"}
     />
   );
@@ -53,6 +56,9 @@ function ReceiveButton() {
           }}
         />
       }
+      dialog={(setOpenDrawer: (b: boolean) => void) => {
+        return <Deposit close={() => setOpenDrawer(false)} />;
+      }}
       dialogTitle={"Deposit"}
     />
   );
@@ -61,10 +67,12 @@ function ReceiveButton() {
 function TransferButton({
   label,
   labelComponent,
+  dialog,
   dialogTitle,
 }: {
   label: string;
   labelComponent: any;
+  dialog: (setOpenDrawer: (b: boolean) => void) => React.ReactNode;
   dialogTitle: string;
 }) {
   const theme = useTheme() as any;
@@ -89,9 +97,7 @@ function TransferButton({
         }}
         dialogTitle={dialogTitle}
         label={""}
-        dialog={(setOpenDrawer: (b: boolean) => void) => {
-          return <Deposit close={() => setOpenDrawer(false)} />;
-        }}
+        dialog={dialog}
         labelComponent={labelComponent}
       />
       <Typography
