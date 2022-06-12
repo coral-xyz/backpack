@@ -89,7 +89,7 @@ function TransferButton({
         dialogTitle={dialogTitle}
         label={""}
         dialog={(setOpenDrawer: (b: boolean) => void) => {
-          <Deposit close={() => setOpenDrawer(false)} />;
+          return <Deposit close={() => setOpenDrawer(false)} />;
         }}
         labelComponent={labelComponent}
       />
