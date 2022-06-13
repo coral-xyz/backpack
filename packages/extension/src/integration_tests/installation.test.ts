@@ -187,8 +187,6 @@ describe("Installing Anchor Wallet", () => {
         keypairs: keypairs.map((k) => k.publicKey.toString()),
       });
 
-      console.log("0");
-
       await run(
         () =>
           extensionPopupPage.waitForSelector("#menu-button", {
@@ -202,8 +200,6 @@ describe("Installing Anchor Wallet", () => {
         "click menu button"
       );
 
-      console.log("A");
-
       await run(
         () =>
           expect(extensionPopupPage).toMatch(
@@ -212,8 +208,6 @@ describe("Installing Anchor Wallet", () => {
         `check '${walletAddressDisplay(firstWallet.publicKey)}' is visible`
       );
 
-      console.log("B");
-
       await run(
         () =>
           expectPuppeteer(extensionPopupPage).toClick("p", {
@@ -221,8 +215,6 @@ describe("Installing Anchor Wallet", () => {
           }),
         "click connection button"
       );
-
-      console.log("C");
 
       // console.log(await extensionPopupPage.content());
 
@@ -234,12 +226,6 @@ describe("Installing Anchor Wallet", () => {
         "select localnet"
       );
 
-      console.log("D");
-      await run(
-        () => extensionPopupPage.waitForSelector("#drawer", { hidden: true }),
-        "wait for drawer to be open"
-      );
-
       await run(
         () =>
           expectPuppeteer(extensionPopupPage).toClick("p", {
@@ -248,10 +234,6 @@ describe("Installing Anchor Wallet", () => {
         "click 1.11 SOL"
       );
 
-      // await extensionPopupPage.waitForSelector("#drawer");
-
-      console.log("E");
-
       await run(
         () =>
           expectPuppeteer(extensionPopupPage).toClick("button", {
@@ -259,7 +241,6 @@ describe("Installing Anchor Wallet", () => {
           }),
         "click send button"
       );
-      console.log("f");
 
       await run(
         () =>
@@ -270,14 +251,10 @@ describe("Installing Anchor Wallet", () => {
         "fill out form"
       );
 
-      console.log("g");
-
       await run(
         () => expect(extensionPopupPage).toClick("[data-testid='Send']"),
         "click send button"
       );
-
-      console.log("h");
 
       await run(
         () =>
@@ -295,7 +272,6 @@ describe("Installing Anchor Wallet", () => {
         "wait for 'Sent!' message"
       );
 
-      console.log("i");
       await run(
         () =>
           expect(extensionPopupPage).toClick("button", {
@@ -304,24 +280,14 @@ describe("Installing Anchor Wallet", () => {
         "click close button"
       );
 
-      console.log("j");
-
       await run(
         () => expect(extensionPopupPage).toClick("[data-testid='back-button']"),
         "click back button"
       );
 
-      console.log("k");
-
       await run(
         () => expectPuppeteer(extensionPopupPage).toClick("#menu-button"),
         "click menu button"
-      );
-      console.log("l");
-
-      await run(
-        () => extensionPopupPage.waitForSelector("#drawer", { visible: true }),
-        "wait for drawer to be visible"
       );
 
       await run(
@@ -331,7 +297,6 @@ describe("Installing Anchor Wallet", () => {
           }),
         "click 'add / connect wallet'"
       );
-      console.log("m");
 
       await run(
         () =>
@@ -340,14 +305,11 @@ describe("Installing Anchor Wallet", () => {
           }),
         "click 'create a new wallet'"
       );
-      console.log("n");
 
       await run(
         () => expectPuppeteer(extensionPopupPage).toClick("#menu-button"),
         "click menu button"
       );
-
-      console.log("o");
 
       await run(
         () =>
@@ -356,8 +318,6 @@ describe("Installing Anchor Wallet", () => {
           ),
         `check '${walletAddressDisplay(secondWallet.publicKey)}' is visible`
       );
-
-      console.log("p");
 
       // check balances directly because UI doesn't update immediately, change
       // once https://github.com/200ms-labs/anchor-wallet/issues/111 is fixed
@@ -373,8 +333,6 @@ describe("Installing Anchor Wallet", () => {
       expect(secondBalance).toEqual(500_000_000);
 
       await extensionPopupPage.close();
-
-      console.log("closed");
 
       await clientPage.bringToFront();
 
@@ -416,7 +374,7 @@ describe("Installing Anchor Wallet", () => {
         () => expect(clientPage).toMatch("Select Wallet"),
         "check 'Select Wallet' is visible"
       );
-    }, 60_000 /** allow 60s for test to run due to loading external data */);
+    }, 120_000 /** allow 2 min for tests due to pauses */);
   });
 });
 
@@ -426,7 +384,7 @@ const run = (op: any, msg?: string) => {
   if (msg) console.debug("\x1b[2m", msg);
 
   return new Promise(async (res, rej) => {
-    await sleep(2000);
+    await sleep(3000);
     try {
       await op();
     } catch (err) {
