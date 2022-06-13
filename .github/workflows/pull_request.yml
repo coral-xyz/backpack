@@ -9,7 +9,7 @@ on:
       - master
 
 env:
-  solana_verion: 1.10.24
+  solana_version: 1.10.24
 
 jobs:
   tests:
@@ -111,14 +111,14 @@ jobs:
           path: |
             ~/.cache/solana/
             ~/.local/share/solana/
-          key: solana-${{ runner.os }}-${{ env.solana_verion }}
+          key: solana-${{ runner.os }}-${{ env.solana_version }}
 
       - name: "[solana] install solana"
         if: steps.cache-solana.outputs.cache-hit != 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y pkg-config build-essential libudev-dev
-          sh -c "$(curl -sSfL https://release.solana.com/v${{ env.solana_verion }}/install)"
+          sh -c "$(curl -sSfL https://release.solana.com/v${{ env.solana_version }}/install)"
 
       - name: "[solana] add to PATH"
         run: echo "/home/runner/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
