@@ -289,7 +289,8 @@ describe("Installing Anchor Wallet", () => {
         "click confirm button"
       );
 
-      console.log("h2");
+      // wait for transaction to happen
+      await sleep(10_000);
 
       await run(
         () => expectPuppeteer(extensionPopupPage).toMatch("Sent!"),
