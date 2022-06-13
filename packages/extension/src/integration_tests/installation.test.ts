@@ -4,12 +4,19 @@ import type { Page } from "puppeteer";
 import manifest from "../../build/manifest.json";
 import { walletAddressDisplay } from "../components/common";
 import { Connection, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import type { Keypair } from "@solana/web3.js";
 import { DerivationPath } from "@200ms/common";
 import { deriveKeypairs } from "@200ms/background/dist/esm/keyring/crypto";
 
 let clientPage: Page;
 let extensionPopupPage: Page;
 let setupPage: Page;
+
+const connection = new Connection("http://localhost:8899", "confirmed");
+
+let mnemonic: string;
+let firstWallet: Keypair;
+let secondWallet: Keypair;
 
 describe("Installing Anchor Wallet", () => {
   // afterAll(async () => {
@@ -20,6 +27,27 @@ describe("Installing Anchor Wallet", () => {
   // see jest-puppeteer.config.js for details about that.
   beforeAll((done) => {
     (async () => {
+      await run(async () => {
+        mnemonic = generateMnemonic(256);
+        const seed = await mnemonicToSeed(mnemonic);
+        const keypairs = deriveKeypairs(seed, DerivationPath.Bip44Change, 2);
+        firstWallet = keypairs[0];
+        secondWallet = keypairs[1];
+
+        console.log({
+          mnemonic,
+          keypairs: keypairs.map((k) => k.publicKey.toString()),
+        });
+      }, "generating keypairs");
+
+      await run(async () => {
+        const sig = await connection.requestAirdrop(
+          firstWallet.publicKey,
+          1.11 * LAMPORTS_PER_SOL
+        );
+        await connection.confirmTransaction(sig);
+      }, "airdropping solana");
+
       clientPage = await browser.newPage();
 
       await clientPage.goto("http://localhost:3333");
@@ -142,18 +170,6 @@ describe("Installing Anchor Wallet", () => {
     });
 
     test("succeeds with a valid mnemonic", async () => {
-      const connection = new Connection("http://localhost:8899", "confirmed");
-
-      const mnemonic = generateMnemonic(256);
-      const seed = await mnemonicToSeed(mnemonic);
-      const keypairs = deriveKeypairs(seed, DerivationPath.Bip44Change, 2);
-      const [firstWallet, secondWallet] = keypairs;
-      const sig = await connection.requestAirdrop(
-        firstWallet.publicKey,
-        1.11 * LAMPORTS_PER_SOL
-      );
-      await connection.confirmTransaction(sig, "finalized");
-
       await expect(setupPage).toFill("input[name=mnemonic]", mnemonic);
       await expect(setupPage).toClick("button", { text: "Continue" });
 
@@ -181,11 +197,6 @@ describe("Installing Anchor Wallet", () => {
       );
 
       await expect(extensionPopupPage).toClick("button", { text: "Unlock" });
-
-      console.log({
-        mnemonic,
-        keypairs: keypairs.map((k) => k.publicKey.toString()),
-      });
 
       await run(
         () =>

@@ -8,4 +8,5 @@ module.exports = {
   fakeTimers: {
     legacyFakeTimers: true,
   },
+  testTimeout: 60_000,
 };
