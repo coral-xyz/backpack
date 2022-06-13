@@ -1,19 +1,30 @@
-import { generateMnemonic } from "bip39";
+import expectPuppeteer, {
+  setDefaultOptions,
+  getDefaultOptions,
+} from "expect-puppeteer";
+import { generateMnemonic, mnemonicToSeed } from "bip39";
 import type { Page } from "puppeteer";
-import manifest from "../build/manifest.json";
+import manifest from "../../build/manifest.json";
+import { walletAddressDisplay } from "../components/common";
+import { Connection, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { DerivationPath } from "@200ms/common";
+import { deriveKeypairs } from "@200ms/background/dist/esm/keyring/crypto";
 
 let clientPage: Page;
 let extensionPopupPage: Page;
 let setupPage: Page;
 
 describe("Installing Anchor Wallet", () => {
+  // afterAll(async () => {
+  //   await extensionPopupPage?.screenshot({ path: "out.png" });
+  // });
+
   // Our test browser has already installed the extension code in ./build
   // see jest-puppeteer.config.js for details about that.
   beforeAll((done) => {
     (async () => {
       clientPage = await browser.newPage();
 
-      // We need to load a webpage here for some reason, maybe for code injection?
       await clientPage.goto("http://localhost:3333");
 
       // Now we need to get the unique ID of the browser extension and
@@ -34,6 +45,9 @@ describe("Installing Anchor Wallet", () => {
       const popupURL = `chrome-extension://${extensionID}/${popupFile}`;
       extensionPopupPage = await browser.newPage();
       await extensionPopupPage.goto(popupURL);
+
+      // extensionPopupPage.setDefaultNavigationTimeout(10_000);
+      // setDefaultOptions({ timeout: 15_000 });
 
       setupPage = await (
         await browser.waitForTarget(
@@ -129,10 +143,21 @@ describe("Installing Anchor Wallet", () => {
     });
 
     test("succeeds with a valid mnemonic", async () => {
-      await expect(setupPage).toFill(
-        "input[name=mnemonic]",
-        generateMnemonic(256)
+      const connection = new Connection("http://localhost:8899", "confirmed");
+
+      console.log({ getDefaultOptions: getDefaultOptions() });
+
+      const mnemonic = generateMnemonic(256);
+      const seed = await mnemonicToSeed(mnemonic);
+      const keypairs = deriveKeypairs(seed, DerivationPath.Bip44Change, 2);
+      const [firstWallet, secondWallet] = keypairs;
+      const sig = await connection.requestAirdrop(
+        firstWallet.publicKey,
+        1.11 * LAMPORTS_PER_SOL
       );
+      await connection.confirmTransaction(sig, "confirmed");
+
+      await expect(setupPage).toFill("input[name=mnemonic]", mnemonic);
       await expect(setupPage).toClick("button", { text: "Continue" });
 
       await expect(setupPage).toMatch("Your first account will be imported");
@@ -157,25 +182,191 @@ describe("Installing Anchor Wallet", () => {
         "input[type=password]",
         "validpassword"
       );
+
       await expect(extensionPopupPage).toClick("button", { text: "Unlock" });
 
-      // Ensure the wallet is unlocked and the balance page loads
-      await expect(extensionPopupPage).toMatch("Total Balance");
+      console.log({
+        mnemonic,
+        keypairs: keypairs.map((k) => k.publicKey.toString()),
+      });
+
+      // console.log("0");
+
+      await extensionPopupPage.waitForSelector("#menu-button", {
+        visible: true,
+      });
+
+      await run(() =>
+        expectPuppeteer(extensionPopupPage).toClick("#menu-button")
+      );
+
+      // console.log("A");
+
+      await sleep(1000);
+
+      await run(() =>
+        expect(extensionPopupPage).toMatch(
+          walletAddressDisplay(firstWallet.publicKey)
+        )
+      );
+
+      // console.log("B");
+
+      await run(() =>
+        expectPuppeteer(extensionPopupPage).toClick("p", {
+          text: "Connection",
+        })
+      );
+
+      // console.log("C");
+
+      // console.log(await extensionPopupPage.content());
+
+      await run(() =>
+        expectPuppeteer(extensionPopupPage).toClick("span", {
+          text: "Localnet",
+        })
+      );
+
+      // console.log("D");
+
+      await extensionPopupPage.waitForSelector("#drawer", { hidden: true });
+
+      await expectPuppeteer(extensionPopupPage).toClick("p", {
+        text: "1.11 SOL",
+      });
+
+      // await extensionPopupPage.waitForSelector("#drawer");
+
+      // console.log("E");
+
+      await run(() =>
+        expectPuppeteer(extensionPopupPage).toClick("button", {
+          text: "Send",
+        })
+      );
+      // console.log("f");
+
+      await run(() =>
+        expect(extensionPopupPage).toFillForm("form", {
+          to: secondWallet.publicKey.toString(),
+          amount: "0.5",
+        })
+      );
+      // console.log("g");
+
+      await run(() =>
+        expect(extensionPopupPage).toClick("[data-testid='Send']")
+      );
+
+      await sleep(1000);
+
+      await run(() =>
+        expect(extensionPopupPage).toClick("button", {
+          text: "Confirm",
+        })
+      );
+
+      // console.log("h");
+
+      await sleep(5000);
+
+      await run(() => expectPuppeteer(extensionPopupPage).toMatch("Sent!"));
+
+      // console.log("i");
+      await run(() =>
+        expect(extensionPopupPage).toClick("button", {
+          text: "Close",
+        })
+      );
+
+      await sleep(1000);
+
+      // console.log("j");
+
+      await run(() =>
+        expect(extensionPopupPage).toClick("[data-testid='back-button']")
+      );
+
+      // console.log("k");
+
+      await sleep(1000);
+
+      await run(() =>
+        expectPuppeteer(extensionPopupPage).toClick("#menu-button")
+      );
+      // console.log("l");
+
+      await sleep(1000);
+
+      await extensionPopupPage.waitForSelector("#drawer", { visible: true });
+
+      await run(() =>
+        expectPuppeteer(extensionPopupPage).toClick("p", {
+          text: "Add / Connect Wallet",
+        })
+      );
+      // console.log("m");
+
+      await run(() =>
+        expectPuppeteer(extensionPopupPage).toClick("p", {
+          text: "Create a new wallet",
+        })
+      );
+      // console.log("n");
+
+      await sleep(1000);
+
+      await run(() =>
+        expectPuppeteer(extensionPopupPage).toClick("#menu-button")
+      );
+
+      // console.log("o");
+
+      await sleep(1000);
+
+      await run(() =>
+        expect(extensionPopupPage).toMatch(
+          walletAddressDisplay(secondWallet.publicKey)
+        )
+      );
+
+      // console.log("p");
+
+      // check balances directly because UI doesn't update immediately, change
+      // once https://github.com/200ms-labs/anchor-wallet/issues/111 is fixed
+
+      const [firstBalance, secondBalance] = await Promise.all([
+        connection.getBalance(firstWallet.publicKey),
+        connection.getBalance(secondWallet.publicKey),
+      ]);
+      console.log({ firstBalance, secondBalance });
+
+      expect(firstBalance).toEqual(609_995_000);
+
+      expect(secondBalance).toEqual(500_000_000);
 
       await extensionPopupPage.close();
 
+      // console.log("closed");
+
       await clientPage.bringToFront();
+
+      // console.log("brought to front");
 
       await expect(clientPage).toClick("button", {
         text: "Select Wallet",
       });
 
+      // console.log("clicked select wallet");
+
       await expect(clientPage).toClick("button", {
         text: "Anchor",
       });
 
-      // XXX: this is a hack to wait for the popup to open
-      await sleep(500);
+      // console.log("chose anchor");
+
+      await sleep(1000);
 
       const browserPages = await browser.pages();
       const approvePopup = browserPages[browserPages.length - 1];
@@ -183,15 +374,42 @@ describe("Installing Anchor Wallet", () => {
       await expect(approvePopup).toMatch("Connect Wallet to localhost");
       await expect(approvePopup).toClick("button", { text: "Approve" });
 
+      // console.log("opened and approved wallet connection");
+
       // Wallet is now connected
       await expect(clientPage).toClick("button", {
         text: "Disconnect",
       });
 
+      await sleep(1000);
+
+      // console.log("disconnected");
+
       // Wallet is now disconnected, expect to see 'Select Wallet' button
       await expect(clientPage).toMatch("Select Wallet");
-    }, 30_000 /** allow 30s for test to run due to loading external data */);
+
+      // console.log("reset ui");
+    }, 60_000 /** allow 60s for test to run due to loading external data */);
   });
 });
 
 const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+const run = (op: any) => op(); //retryOperation(op, 500, 50);
+
+const retryOperation = (operation: any, delay: number, retries: number) =>
+  new Promise((resolve, reject) =>
+    operation()
+      .then(resolve)
+      .catch((reason: any) => {
+        console.log(reason.message);
+
+        if (retries > 0) {
+          return sleep(delay)
+            .then(retryOperation.bind(null, operation, delay, retries - 1))
+            .then(resolve)
+            .catch(reject);
+        }
+        return reject(reason);
+      })
+  );

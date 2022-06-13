@@ -118,6 +118,7 @@ export function _NavBackButton({ pop }: any) {
         onClick={() => pop()}
         className={classes.backButton}
         size="large"
+        data-testid="back-button"
       >
         <ArrowBack style={{ color: theme.custom.colors.secondary }} />
       </IconButton>

@@ -46,6 +46,7 @@ export function ConnectionMenu({ close }: { close: () => void }) {
     <List className={classes.connectionMenu}>
       {endpointKvs.map(([key, val], idx) => (
         <ListItem
+          id={key}
           key={key}
           isLast={idx === endpointKvs.length - 1}
           onClick={() => {
