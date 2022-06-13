@@ -3,7 +3,11 @@ import makeStyles from "@mui/styles/makeStyles";
 import { useActiveWallet } from "@200ms/recoil";
 import { WithHeaderButton } from "./Token";
 import { BottomCard } from "./Send";
-import { TextField, TextFieldLabel, walletAddressDisplay } from "../../common";
+import {
+  TextField,
+  TextFieldLabel,
+  walletAddressDisplay,
+} from "../../../common";
 
 const useStyles = makeStyles((theme: any) => ({
   subtext: {
@@ -40,13 +44,13 @@ export function DepositButton({ token }: any) {
       label={"Deposit"}
       dialogTitle={`${token.ticker} / Deposit`}
       dialog={(setOpenDrawer: any) => (
-        <Deposit token={token} close={() => setOpenDrawer(false)} />
+        <Deposit close={() => setOpenDrawer(false)} />
       )}
     />
   );
 }
 
-function Deposit({ token, close }: any) {
+export function Deposit({ close }: any) {
   const classes = useStyles();
   const theme = useTheme() as any;
   const activeWallet = useActiveWallet();

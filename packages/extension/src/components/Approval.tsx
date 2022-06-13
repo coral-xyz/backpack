@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import * as bs58 from "bs58";
 import { Message } from "@solana/web3.js";
-import { useTheme, Typography, Button } from "@mui/material";
+import { useTheme, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { useApproveOrigin, useActiveWallet } from "@200ms/recoil";
-import { BottomCard } from "./Unlocked/Balances/Send";
+import { BottomCard } from "./Unlocked/Balances/TokensWidget/Send";
 import { walletAddressDisplay } from "../components/common";
 import { WithEphemeralNav } from "../components/Layout/NavEphemeral";
 

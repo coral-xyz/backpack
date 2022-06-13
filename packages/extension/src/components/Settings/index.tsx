@@ -35,6 +35,7 @@ import {
 import { WalletAddress, List, ListItem } from "../../components/common";
 import { WithDrawer } from "../Layout/Drawer";
 import { ConnectionMenu } from "./ConnectionSwitch";
+import { RecentActivityButton } from "../Unlocked/Balances/RecentActivity";
 
 const useStyles = makeStyles((theme: any) => ({
   addConnectWalletLabel: {
@@ -44,7 +45,6 @@ const useStyles = makeStyles((theme: any) => ({
     height: "100%",
   },
   menuButtonContainer: {
-    width: "38px",
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
@@ -58,10 +58,19 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-const AVATAR_URL =
-  "https://pbs.twimg.com/profile_images/1527030737731571713/7qMzHeBv_400x400.jpg";
+const AVATAR_URL = "coral.png";
 
 export function SettingsButton() {
+  return (
+    <div style={{ display: "flex" }}>
+      <RecentActivityButton />
+      <div style={{ width: "16px" }} />
+      <AvatarButton />
+    </div>
+  );
+}
+
+function AvatarButton() {
   const classes = useStyles();
   const [settingsOpen, setSettingsOpen] = useState(false);
   return (
@@ -123,7 +132,7 @@ function AvatarHeader() {
   return (
     <div>
       <img
-        src={AVATAR_URL}
+        src={"coral.png"}
         style={{
           width: "64px",
           height: "64px",

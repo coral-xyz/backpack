@@ -17,7 +17,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import { walletAddressDisplay } from "../common";
 import { Scrollbar } from "../Layout/Scrollbar";
 import { WithMiniDrawer } from "../Layout/Drawer";
-import { BottomCard } from "../Unlocked/Balances/Send";
+import { BottomCard } from "../Unlocked/Balances/TokensWidget/Send";
 
 const useStyles = makeStyles((theme: any) => ({
   confirmRow: {

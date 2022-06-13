@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Typography, ListItem } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import { ArrowForwardIos, OfflineBolt as Bolt } from "@mui/icons-material";
 import {
   BalancesTable,
   BalancesTableHead,
@@ -141,15 +140,6 @@ function TokenTableFooter({
         <Typography className={classes.footerLabel}>
           {showAll ? `Hide ${count}` : `Show all ${count}`}
         </Typography>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "column",
-        }}
-      >
-        <ArrowForwardIos className={classes.footerArrowIcon} />
       </div>
     </ListItem>
   );

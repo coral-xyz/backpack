@@ -1,7 +1,7 @@
 import { useSearchParams, Routes, Route, Navigate } from "react-router-dom";
 import { useBootstrap, useNavigation } from "@200ms/recoil";
 import { Balances } from "../Unlocked/Balances";
-import { Token } from "../Unlocked/Balances/Token";
+import { Token } from "../Unlocked/Balances/TokensWidget/Token";
 import { PluginDisplay, PluginTableDetailDisplay } from "../Unlocked/Apps";
 import { Nfts } from "../Unlocked/Nfts";
 import { Apps } from "../Unlocked/Apps";

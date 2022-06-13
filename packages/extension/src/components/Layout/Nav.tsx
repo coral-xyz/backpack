@@ -86,21 +86,49 @@ function _NavBar() {
       }}
       className={classes.navBarContainer}
     >
-      <LeftNavButton />
-      <CenterDisplay />
-      <RightNavButton />
+      <div style={{ position: "relative", width: "100%", display: "flex" }}>
+        <LeftNavButton />
+        <CenterDisplay />
+        <RightNavButton />
+      </div>
     </div>
   );
 }
 
 function LeftNavButton() {
   const { isRoot } = useNavigation();
-  return isRoot ? <DummyButton /> : <NavBackButton />;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
+      {isRoot ? <DummyButton /> : <NavBackButton />}
+    </div>
+  );
 }
 
 function RightNavButton() {
   const { navButtonRight } = useNavigation();
-  return navButtonRight ? navButtonRight : <DummyButton />;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        right: 0,
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
+      {navButtonRight ? navButtonRight : <DummyButton />}
+    </div>
+  );
 }
 
 export function NavBackButton() {
@@ -159,6 +187,8 @@ export function __CenterDisplay({ title, isRoot }: any) {
         justifyContent: "center",
         flexDirection: "column",
         visibility: isRoot ? "hidden" : undefined,
+        marginLeft: "auto",
+        marginRight: "auto",
       }}
     >
       <NavTitleLabel title={title} />

@@ -7,7 +7,7 @@ import {
   IconButton,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import { Check, Clear, OfflineBolt as Bolt } from "@mui/icons-material";
+import { Check, Clear, Bolt } from "@mui/icons-material";
 import { explorerUrl } from "@200ms/common";
 import { useActiveWallet, useRecentTransactions } from "@200ms/recoil";
 import { Loading } from "../../common";
@@ -79,13 +79,14 @@ const useStyles = makeStyles((theme: any) => ({
   },
   networkSettingsButton: {
     padding: 0,
+    width: "24px",
     "&:hover": {
       background: "transparent",
     },
   },
   networkSettingsIcon: {
-    color: theme.custom.colors.nav,
-    backgroundColor: theme.custom.colors.secondary,
+    color: theme.custom.colors.secondary,
+    backgroundColor: "transparent",
     borderRadius: "12px",
   },
 }));

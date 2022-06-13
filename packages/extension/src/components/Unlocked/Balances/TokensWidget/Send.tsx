@@ -21,8 +21,8 @@ import {
   walletAddressDisplay,
   OnboardButton,
   Loading,
-} from "../../common";
-import { WithMiniDrawer } from "../../Layout/Drawer";
+} from "../../../common";
+import { WithMiniDrawer } from "../../../Layout/Drawer";
 
 const logger = getLogger("send-component");
 
@@ -94,7 +94,13 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-export function SendButton({ blockchain, address }: any) {
+export function SendButton({
+  blockchain,
+  address,
+}: {
+  blockchain: string;
+  address: string;
+}) {
   const token = useBlockchainTokenAccount(blockchain, address);
   return (
     <WithHeaderButton
@@ -111,7 +117,7 @@ export function SendButton({ blockchain, address }: any) {
   );
 }
 
-function Send({
+export function Send({
   onCancel,
   blockchain,
   tokenAddress,

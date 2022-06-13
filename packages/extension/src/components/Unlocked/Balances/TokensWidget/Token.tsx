@@ -3,10 +3,10 @@ import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { Button } from "@200ms/anchor-ui-renderer";
 import { useBlockchainTokenAccount } from "@200ms/recoil";
-import { RecentActivitySmall } from "./RecentActivity";
+import { RecentActivitySmall } from "../RecentActivity";
 import { SendButton } from "./Send";
 import { DepositButton } from "./Deposit";
-import { WithDrawer } from "../../Layout/Drawer";
+import { WithDrawer } from "../../../Layout/Drawer";
 
 const useStyles = makeStyles((theme: any) => ({
   tokenHeaderContainer: {
@@ -87,13 +87,23 @@ function TokenHeader({ blockchain, address }: any) {
   );
 }
 
-export function WithHeaderButton({ label, dialog, dialogTitle }: any) {
+export function WithHeaderButton({
+  style,
+  labelComponent,
+  label,
+  dialog,
+  dialogTitle,
+}: any) {
   const classes = useStyles();
   const [openDrawer, setOpenDrawer] = useState(false);
   return (
     <>
-      <Button onClick={() => setOpenDrawer(true)}>
-        <Typography className={classes.headerButtonLabel}>{label}</Typography>
+      <Button style={style} onClick={() => setOpenDrawer(true)}>
+        {labelComponent ? (
+          labelComponent
+        ) : (
+          <Typography className={classes.headerButtonLabel}>{label}</Typography>
+        )}
       </Button>
       <WithDrawer
         openDrawer={openDrawer}
