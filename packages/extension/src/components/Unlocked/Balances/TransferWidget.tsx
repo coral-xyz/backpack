@@ -1,11 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTheme, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
-import { TextField } from "@200ms/anchor-ui-renderer";
+import {
+  TextField,
+  BalancesTable,
+  BalancesTableHead,
+  BalancesTableContent,
+  BalancesTableRow,
+  BalancesTableCell,
+} from "@200ms/anchor-ui-renderer";
+import {
+  useBlockchainLogo,
+  useBlockchainTokensSorted,
+  useEphemeralNav,
+} from "@200ms/recoil";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
-import { TokenTable } from "./TokensWidget/TokenTable";
 
 const useStyles = makeStyles((theme: any) => ({
   searchField: {
@@ -131,13 +142,13 @@ function TransferButton({
 
 function Send() {
   const classes = useStyles();
-  const [value, setValue] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
   return (
     <div>
       <TextField
         placeholder={"Search"}
-        value={value}
-        setValue={setValue}
+        value={searchFilter}
+        setValue={setSearchFilter}
         rootClass={classes.searchField}
         inputProps={{
           style: {
@@ -145,7 +156,63 @@ function Send() {
           },
         }}
       />
-      <TokenTable />
+      <TokenTable searchFilter={searchFilter} />
     </div>
+  );
+}
+
+function TokenTable({ searchFilter }: { searchFilter?: string }) {
+  const blockchain = "solana";
+  const title = "Tokens";
+
+  const blockchainLogo = useBlockchainLogo(blockchain);
+  const tokenAccountsSorted = useBlockchainTokensSorted(blockchain);
+  const [search, setSearch] = useState(searchFilter ?? "");
+
+  const searchLower = search.toLowerCase();
+  const tokenAccountsFiltered = tokenAccountsSorted.filter(
+    (t: any) =>
+      t.nativeBalance !== 0 &&
+      t.name &&
+      (t.name.toLowerCase().startsWith(searchLower) ||
+        t.ticker.toLowerCase().startsWith(searchLower))
+  );
+
+  useEffect(() => {
+    setSearch(searchFilter);
+  }, [searchFilter]);
+
+  return (
+    <BalancesTable>
+      <BalancesTableHead
+        props={{ title, iconUrl: blockchainLogo, disableToggle: true }}
+      />
+      <BalancesTableContent>
+        {tokenAccountsFiltered.map((token: any) => (
+          <TokenRow key={token.address} token={token} blockchain={blockchain} />
+        ))}
+      </BalancesTableContent>
+    </BalancesTable>
+  );
+}
+
+function TokenRow({ token, blockchain }: { token: any; blockchain: string }) {
+  const { push } = useEphemeralNav();
+  return (
+    <BalancesTableRow
+      onClick={() => {
+        push(<div>Hello armani 2</div>);
+      }}
+    >
+      <BalancesTableCell
+        props={{
+          icon: token.logo,
+          title: token.ticker,
+          subtitle: `${token.nativeBalance.toLocaleString()} ${token.ticker}`,
+          usdValue: token.usdBalance,
+          percentChange: token.recentUsdBalanceChange,
+        }}
+      />
+    </BalancesTableRow>
   );
 }

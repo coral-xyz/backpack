@@ -304,12 +304,12 @@ function useBalancesContext() {
 }
 
 export function BalancesTableHead({ props, style }: any) {
-  const { title, iconUrl } = props;
+  const { title, iconUrl, disableToggle } = props;
   const classes = useStyles();
   const { showContent, setShowContent } = useBalancesContext();
   return (
     <CardHeader
-      onClick={() => setShowContent(!showContent)}
+      onClick={() => !disableToggle && setShowContent(!showContent)}
       avatar={
         iconUrl ? (
           <img className={classes.blockchainLogo} src={iconUrl} />
@@ -331,10 +331,14 @@ export function BalancesTableHead({ props, style }: any) {
           >
             {title}
           </Typography>
-          {showContent ? (
-            <ExpandMore className={classes.expand} />
-          ) : (
-            <ExpandLess className={classes.expand} />
+          {!disableToggle && (
+            <>
+              {showContent ? (
+                <ExpandMore className={classes.expand} />
+              ) : (
+                <ExpandLess className={classes.expand} />
+              )}
+            </>
           )}
         </div>
       }
