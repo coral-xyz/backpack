@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Typography, ListItem } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import {
+  useBalancesContext,
   BalancesTable,
   BalancesTableHead,
   BalancesTableRow,
@@ -104,12 +105,15 @@ function TokenRow({ token, blockchain }: { token: any; blockchain: string }) {
 }
 
 export function BalancesTableFooter({ count, showAll, setShowAll }: any) {
-  return (
+  const { showContent } = useBalancesContext();
+  return showContent ? (
     <TokenTableFooter
       showAll={showAll}
       onClick={() => setShowAll((showAll: boolean) => !showAll)}
       count={count}
     />
+  ) : (
+    <></>
   );
 }
 

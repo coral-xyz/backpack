@@ -297,7 +297,7 @@ type BalancesContext = {
 };
 const _BalancesTableContext = React.createContext<BalancesContext | null>(null);
 
-function useBalancesContext() {
+export function useBalancesContext() {
   const ctx = React.useContext(_BalancesTableContext);
   if (ctx === null) {
     throw new Error("Context not available");
@@ -497,20 +497,11 @@ export function BalancesTableCell({ props, style }: any) {
 }
 
 export function BalancesTableFooter({ props, style, children }: any) {
-  const { showContent } = useBalancesContext();
-  return !showContent ? (
-    <></>
-  ) : (
-    <div
-      style={{
-        display: !showContent ? "none" : undefined,
-      }}
-    >
-      <div style={style}>
-        {children.map((c: Element) => (
-          <ViewRenderer key={c.id} element={c} />
-        ))}
-      </div>
+  return (
+    <div style={style}>
+      {children.map((c: Element) => (
+        <ViewRenderer key={c.id} element={c} />
+      ))}
     </div>
   );
 }
