@@ -71,6 +71,7 @@ export function WithDrawer(props: any) {
         root: classes.drawerRoot,
         paper: classes.drawerPaper,
       }}
+      id="drawer"
     >
       <WithEphemeralNav title={title} navbarStyle={navbarStyle}>
         <WithDrawerContent setOpenDrawer={setOpenDrawer}>

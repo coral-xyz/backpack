@@ -52,7 +52,7 @@ jobs:
 
       - name: "[wallet-adapter] install deps"
         working-directory: wallet-adapter
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
       - name: "[wallet-adapter] build"
         if: steps.wallet-adapter-cache.outputs.cache-hit != 'true'
@@ -87,7 +87,7 @@ jobs:
 
       - name: "[anchor] install deps"
         working-directory: anchor/ts
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
       - name: "[anchor] build"
         if: steps.anchor-cache.outputs.cache-hit != 'true'
@@ -100,7 +100,7 @@ jobs:
 
       # END [anchor] tasks >>>
 
-      - run: yarn install
+      - run: yarn install --frozen-lockfile
 
       - run: yarn test
 
