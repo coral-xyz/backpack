@@ -94,7 +94,6 @@ describe("Installing Anchor Wallet", () => {
       await expect(setupPage).toClick("button", { text: "Finish" });
 
       // https://github.com/facebook/jest/issues/11607#issuecomment-1092012326
-      jest.runOnlyPendingTimers();
 
       // XXX: temporarily disabled so that setupPage can be used below
       // await extensionPopupPage.reload();
@@ -193,7 +192,7 @@ describe("Installing Anchor Wallet", () => {
         keypairs: keypairs.map((k) => k.publicKey.toString()),
       });
 
-      // console.log("0");
+      console.log("0");
 
       await run(() =>
         extensionPopupPage.waitForSelector("#menu-button", {
@@ -205,7 +204,7 @@ describe("Installing Anchor Wallet", () => {
         expectPuppeteer(extensionPopupPage).toClick("#menu-button")
       );
 
-      // console.log("A");
+      console.log("A");
 
       await run(() =>
         expect(extensionPopupPage).toMatch(
@@ -213,7 +212,7 @@ describe("Installing Anchor Wallet", () => {
         )
       );
 
-      // console.log("B");
+      console.log("B");
 
       await run(() =>
         expectPuppeteer(extensionPopupPage).toClick("p", {
@@ -221,9 +220,9 @@ describe("Installing Anchor Wallet", () => {
         })
       );
 
-      // console.log("C");
+      console.log("C");
 
-      // console.log(await extensionPopupPage.content());
+      console.log(await extensionPopupPage.content());
 
       await run(() =>
         expectPuppeteer(extensionPopupPage).toClick("span", {
@@ -231,7 +230,7 @@ describe("Installing Anchor Wallet", () => {
         })
       );
 
-      // console.log("D");
+      console.log("D");
       await run(() =>
         extensionPopupPage.waitForSelector("#drawer", { hidden: true })
       );
@@ -244,14 +243,14 @@ describe("Installing Anchor Wallet", () => {
 
       // await extensionPopupPage.waitForSelector("#drawer");
 
-      // console.log("E");
+      console.log("E");
 
       await run(() =>
         expectPuppeteer(extensionPopupPage).toClick("button", {
           text: "Send",
         })
       );
-      // console.log("f");
+      console.log("f");
 
       await run(() =>
         expect(extensionPopupPage).toFillForm("form", {
@@ -259,7 +258,7 @@ describe("Installing Anchor Wallet", () => {
           amount: "0.5",
         })
       );
-      // console.log("g");
+      console.log("g");
 
       await run(() =>
         expect(extensionPopupPage).toClick("[data-testid='Send']")
@@ -271,29 +270,29 @@ describe("Installing Anchor Wallet", () => {
         })
       );
 
-      // console.log("h");
+      console.log("h");
 
       await run(() => expectPuppeteer(extensionPopupPage).toMatch("Sent!"));
 
-      // console.log("i");
+      console.log("i");
       await run(() =>
         expect(extensionPopupPage).toClick("button", {
           text: "Close",
         })
       );
 
-      // console.log("j");
+      console.log("j");
 
       await run(() =>
         expect(extensionPopupPage).toClick("[data-testid='back-button']")
       );
 
-      // console.log("k");
+      console.log("k");
 
       await run(() =>
         expectPuppeteer(extensionPopupPage).toClick("#menu-button")
       );
-      // console.log("l");
+      console.log("l");
 
       await run(() =>
         extensionPopupPage.waitForSelector("#drawer", { visible: true })
@@ -304,20 +303,20 @@ describe("Installing Anchor Wallet", () => {
           text: "Add / Connect Wallet",
         })
       );
-      // console.log("m");
+      console.log("m");
 
       await run(() =>
         expectPuppeteer(extensionPopupPage).toClick("p", {
           text: "Create a new wallet",
         })
       );
-      // console.log("n");
+      console.log("n");
 
       await run(() =>
         expectPuppeteer(extensionPopupPage).toClick("#menu-button")
       );
 
-      // console.log("o");
+      console.log("o");
 
       await run(() =>
         expect(extensionPopupPage).toMatch(
@@ -325,7 +324,7 @@ describe("Installing Anchor Wallet", () => {
         )
       );
 
-      // console.log("p");
+      console.log("p");
 
       // check balances directly because UI doesn't update immediately, change
       // once https://github.com/200ms-labs/anchor-wallet/issues/111 is fixed
@@ -342,25 +341,25 @@ describe("Installing Anchor Wallet", () => {
 
       await extensionPopupPage.close();
 
-      // console.log("closed");
+      console.log("closed");
 
       await clientPage.bringToFront();
 
-      // console.log("brought to front");
+      console.log("brought to front");
       await run(() =>
         expect(clientPage).toClick("button", {
           text: "Select Wallet",
         })
       );
 
-      // console.log("clicked select wallet");
+      console.log("clicked select wallet");
       await run(() =>
         expect(clientPage).toClick("button", {
           text: "Anchor",
         })
       );
 
-      // console.log("chose anchor");
+      console.log("chose anchor");
 
       await sleep(1000);
 
@@ -370,7 +369,7 @@ describe("Installing Anchor Wallet", () => {
       await expect(approvePopup).toMatch("Connect Wallet to localhost");
       await expect(approvePopup).toClick("button", { text: "Approve" });
 
-      // console.log("opened and approved wallet connection");
+      console.log("opened and approved wallet connection");
 
       // Wallet is now connected
       await run(() =>
@@ -382,7 +381,7 @@ describe("Installing Anchor Wallet", () => {
       // Wallet is now disconnected, expect to see 'Select Wallet' button
       await run(() => expect(clientPage).toMatch("Select Wallet"));
 
-      // console.log("reset ui");
+      console.log("reset ui");
     }, 60_000 /** allow 60s for test to run due to loading external data */);
   });
 });
