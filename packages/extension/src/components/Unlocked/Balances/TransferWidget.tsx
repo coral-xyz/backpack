@@ -17,6 +17,7 @@ import {
 } from "@200ms/recoil";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
+import { Send } from "./TokensWidget/Send";
 
 const useStyles = makeStyles((theme: any) => ({
   searchField: {
@@ -61,7 +62,7 @@ function SendButton() {
         />
       }
       dialog={(setOpenDrawer: (b: boolean) => void) => {
-        return <Send />;
+        return <SendToken close={() => setOpenDrawer(false)} />;
       }}
       dialogTitle={"Select token"}
     />
@@ -140,7 +141,7 @@ function TransferButton({
   );
 }
 
-function Send() {
+function SendToken({ close }: { close: () => void }) {
   const classes = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
   return (
@@ -156,12 +157,18 @@ function Send() {
           },
         }}
       />
-      <TokenTable searchFilter={searchFilter} />
+      <TokenTable close={close} searchFilter={searchFilter} />
     </div>
   );
 }
 
-function TokenTable({ searchFilter }: { searchFilter?: string }) {
+function TokenTable({
+  close,
+  searchFilter,
+}: {
+  close: () => void;
+  searchFilter?: string;
+}) {
   const blockchain = "solana";
   const title = "Tokens";
 
@@ -179,7 +186,7 @@ function TokenTable({ searchFilter }: { searchFilter?: string }) {
   );
 
   useEffect(() => {
-    setSearch(searchFilter);
+    setSearch(searchFilter ?? "");
   }, [searchFilter]);
 
   return (
@@ -189,19 +196,32 @@ function TokenTable({ searchFilter }: { searchFilter?: string }) {
       />
       <BalancesTableContent>
         {tokenAccountsFiltered.map((token: any) => (
-          <TokenRow key={token.address} token={token} blockchain={blockchain} />
+          <TokenRow
+            key={token.address}
+            close={close}
+            token={token}
+            blockchain={blockchain}
+          />
         ))}
       </BalancesTableContent>
     </BalancesTable>
   );
 }
 
-function TokenRow({ token, blockchain }: { token: any; blockchain: string }) {
+function TokenRow({
+  close,
+  token,
+  blockchain,
+}: {
+  close: () => void;
+  token: any;
+  blockchain: string;
+}) {
   const { push } = useEphemeralNav();
   return (
     <BalancesTableRow
       onClick={() => {
-        push(<div>Hello armani 2</div>);
+        push(<_Send blockchain={blockchain} token={token} close={close} />);
       }}
     >
       <BalancesTableCell
@@ -214,5 +234,31 @@ function TokenRow({ token, blockchain }: { token: any; blockchain: string }) {
         }}
       />
     </BalancesTableRow>
+  );
+}
+
+function _Send({
+  close,
+  token,
+  blockchain,
+}: {
+  close: () => void;
+  token: any;
+  blockchain: string;
+}) {
+  const { title, setTitle } = useEphemeralNav();
+  useEffect(() => {
+    const prev = title;
+    setTitle(`Send ${token.ticker}`);
+    return () => {
+      setTitle(prev);
+    };
+  }, []);
+  return (
+    <Send
+      blockchain={blockchain}
+      tokenAddress={token.address}
+      onCancel={close}
+    />
   );
 }

@@ -58,8 +58,7 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-const AVATAR_URL =
-  "https://pbs.twimg.com/profile_images/1527030737731571713/7qMzHeBv_400x400.jpg";
+const AVATAR_URL = "coral.png";
 
 export function SettingsButton() {
   return (
@@ -133,7 +132,7 @@ function AvatarHeader() {
   return (
     <div>
       <img
-        src={AVATAR_URL}
+        src={"coral.png"}
         style={{
           width: "64px",
           height: "64px",

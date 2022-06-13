@@ -117,7 +117,7 @@ export function SendButton({
   );
 }
 
-function Send({
+export function Send({
   onCancel,
   blockchain,
   tokenAddress,

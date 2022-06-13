@@ -496,7 +496,6 @@ export function BalancesTableCell({ props, style }: any) {
 
 export function BalancesTableFooter({ props, style, children }: any) {
   const { showContent } = useBalancesContext();
-  console.log("show content here", showContent);
   return !showContent ? (
     <></>
   ) : (
