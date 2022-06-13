@@ -1,7 +1,4 @@
-import expectPuppeteer, {
-  setDefaultOptions,
-  getDefaultOptions,
-} from "expect-puppeteer";
+import expectPuppeteer from "expect-puppeteer";
 import { generateMnemonic, mnemonicToSeed } from "bip39";
 import type { Page } from "puppeteer";
 import manifest from "../../build/manifest.json";
@@ -147,8 +144,6 @@ describe("Installing Anchor Wallet", () => {
     test("succeeds with a valid mnemonic", async () => {
       const connection = new Connection("http://localhost:8899", "confirmed");
 
-      console.log({ getDefaultOptions: getDefaultOptions() });
-
       const mnemonic = generateMnemonic(256);
       const seed = await mnemonicToSeed(mnemonic);
       const keypairs = deriveKeypairs(seed, DerivationPath.Bip44Change, 2);
@@ -229,17 +224,20 @@ describe("Installing Anchor Wallet", () => {
 
       console.log("C");
 
-      console.log(await extensionPopupPage.content());
+      // console.log(await extensionPopupPage.content());
 
-      await run(() =>
-        expectPuppeteer(extensionPopupPage).toClick("span", {
-          text: "Localnet",
-        })
+      await run(
+        () =>
+          expectPuppeteer(extensionPopupPage).toClick("span", {
+            text: "Localnet",
+          }),
+        "select localnet"
       );
 
       console.log("D");
-      await run(() =>
-        extensionPopupPage.waitForSelector("#drawer", { hidden: true })
+      await run(
+        () => extensionPopupPage.waitForSelector("#drawer", { hidden: true }),
+        "wait for drawer to be open"
       );
 
       await run(
@@ -425,20 +423,22 @@ describe("Installing Anchor Wallet", () => {
 const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 const run = (op: any, msg?: string) => {
-  if (msg) console.debug("\x1b[36m%s\x1b[0m", msg);
+  if (msg) console.debug("\x1b[2m", msg);
 
   return new Promise(async (res, rej) => {
-    await sleep(1000);
+    await sleep(2000);
     try {
       await op();
     } catch (err) {
-      await sleep(3000);
+      await sleep(5000);
       try {
         await op();
       } catch (err) {
         rej(err);
       }
     }
+
+    if (msg) console.debug("\x1b[33m", `✅ ${msg}`);
     res(null);
   });
 };
