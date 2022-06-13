@@ -152,7 +152,7 @@ describe("Installing Anchor Wallet", () => {
         firstWallet.publicKey,
         1.11 * LAMPORTS_PER_SOL
       );
-      await connection.confirmTransaction(sig, "confirmed");
+      await connection.confirmTransaction(sig, "finalized");
 
       await expect(setupPage).toFill("input[name=mnemonic]", mnemonic);
       await expect(setupPage).toClick("button", { text: "Continue" });
@@ -231,7 +231,8 @@ describe("Installing Anchor Wallet", () => {
           expectPuppeteer(extensionPopupPage).toClick("p", {
             text: "1.11 SOL",
           }),
-        "click 1.11 SOL"
+        "click 1.11 SOL",
+        5000
       );
 
       await run(
@@ -265,11 +266,11 @@ describe("Installing Anchor Wallet", () => {
       );
 
       // wait for transaction to happen
-      await sleep(10_000);
 
       await run(
         () => expectPuppeteer(extensionPopupPage).toMatch("Sent!"),
-        "wait for 'Sent!' message"
+        "wait for 'Sent!' message",
+        10_000
       );
 
       await run(
@@ -374,17 +375,17 @@ describe("Installing Anchor Wallet", () => {
         () => expect(clientPage).toMatch("Select Wallet"),
         "check 'Select Wallet' is visible"
       );
-    }, 120_000 /** allow 2 min for tests due to pauses */);
+    }, 180_000 /** allow 3 min for tests due to pauses */);
   });
 });
 
 const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-const run = (op: any, msg?: string) => {
+const run = (op: any, msg?: string, delay = 3_000) => {
   if (msg) console.debug("\x1b[2m", msg);
 
   return new Promise(async (res, rej) => {
-    await sleep(3000);
+    await sleep(delay);
     try {
       await op();
     } catch (err) {
