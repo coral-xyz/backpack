@@ -42,6 +42,8 @@ const useStyles = makeStyles((theme: any) => ({
     paddingLeft: "16px",
     paddingRight: "16px",
     height: "36px",
+  },
+  hover: {
     "&:hover": {
       cursor: "pointer",
     },
@@ -343,7 +345,7 @@ export function BalancesTableHead({ props, style }: any) {
         </div>
       }
       classes={{
-        root: classes.cardHeaderRoot,
+        root: `${classes.cardHeaderRoot} ${disableToggle ? "" : classes.hover}`,
         content: classes.cardHeaderContent,
         title: classes.cardHeaderTitle,
         avatar: classes.cardHeaderAvatar,
