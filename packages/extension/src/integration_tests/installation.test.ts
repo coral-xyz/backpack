@@ -194,30 +194,37 @@ describe("Installing Anchor Wallet", () => {
 
       console.log("0");
 
-      await run(() =>
-        extensionPopupPage.waitForSelector("#menu-button", {
-          visible: true,
-        })
+      await run(
+        () =>
+          extensionPopupPage.waitForSelector("#menu-button", {
+            visible: true,
+          }),
+        "wait for menu button to be visible"
       );
 
-      await run(() =>
-        expectPuppeteer(extensionPopupPage).toClick("#menu-button")
+      await run(
+        () => expectPuppeteer(extensionPopupPage).toClick("#menu-button"),
+        "click menu button"
       );
 
       console.log("A");
 
-      await run(() =>
-        expect(extensionPopupPage).toMatch(
-          walletAddressDisplay(firstWallet.publicKey)
-        )
+      await run(
+        () =>
+          expect(extensionPopupPage).toMatch(
+            walletAddressDisplay(firstWallet.publicKey)
+          ),
+        `check '${walletAddressDisplay(firstWallet.publicKey)}' is visible`
       );
 
       console.log("B");
 
-      await run(() =>
-        expectPuppeteer(extensionPopupPage).toClick("p", {
-          text: "Connection",
-        })
+      await run(
+        () =>
+          expectPuppeteer(extensionPopupPage).toClick("p", {
+            text: "Connection",
+          }),
+        "click connection button"
       );
 
       console.log("C");
@@ -235,93 +242,120 @@ describe("Installing Anchor Wallet", () => {
         extensionPopupPage.waitForSelector("#drawer", { hidden: true })
       );
 
-      await run(() =>
-        expectPuppeteer(extensionPopupPage).toClick("p", {
-          text: "1.11 SOL",
-        })
+      await run(
+        () =>
+          expectPuppeteer(extensionPopupPage).toClick("p", {
+            text: "1.11 SOL",
+          }),
+        "click 1.11 SOL"
       );
 
       // await extensionPopupPage.waitForSelector("#drawer");
 
       console.log("E");
 
-      await run(() =>
-        expectPuppeteer(extensionPopupPage).toClick("button", {
-          text: "Send",
-        })
+      await run(
+        () =>
+          expectPuppeteer(extensionPopupPage).toClick("button", {
+            text: "Send",
+          }),
+        "click send button"
       );
       console.log("f");
 
-      await run(() =>
-        expect(extensionPopupPage).toFillForm("form", {
-          to: secondWallet.publicKey.toString(),
-          amount: "0.5",
-        })
+      await run(
+        () =>
+          expect(extensionPopupPage).toFillForm("form", {
+            to: secondWallet.publicKey.toString(),
+            amount: "0.5",
+          }),
+        "fill out form"
       );
+
       console.log("g");
 
-      await run(() =>
-        expect(extensionPopupPage).toClick("[data-testid='Send']")
-      );
-
-      await run(() =>
-        expect(extensionPopupPage).toClick("button", {
-          text: "Confirm",
-        })
+      await run(
+        () => expect(extensionPopupPage).toClick("[data-testid='Send']"),
+        "click send button"
       );
 
       console.log("h");
 
-      await run(() => expectPuppeteer(extensionPopupPage).toMatch("Sent!"));
+      await run(
+        () =>
+          expect(extensionPopupPage).toClick("button", {
+            text: "Confirm",
+          }),
+        "click confirm button"
+      );
+
+      console.log("h2");
+
+      await run(
+        () => expectPuppeteer(extensionPopupPage).toMatch("Sent!"),
+        "wait for 'Sent!' message"
+      );
 
       console.log("i");
-      await run(() =>
-        expect(extensionPopupPage).toClick("button", {
-          text: "Close",
-        })
+      await run(
+        () =>
+          expect(extensionPopupPage).toClick("button", {
+            text: "Close",
+          }),
+        "click close button"
       );
 
       console.log("j");
 
-      await run(() =>
-        expect(extensionPopupPage).toClick("[data-testid='back-button']")
+      await run(
+        () => expect(extensionPopupPage).toClick("[data-testid='back-button']"),
+        "click back button"
       );
 
       console.log("k");
 
-      await run(() =>
-        expectPuppeteer(extensionPopupPage).toClick("#menu-button")
+      await run(
+        () => expectPuppeteer(extensionPopupPage).toClick("#menu-button"),
+        "click menu button"
       );
       console.log("l");
 
-      await run(() =>
-        extensionPopupPage.waitForSelector("#drawer", { visible: true })
+      await run(
+        () => extensionPopupPage.waitForSelector("#drawer", { visible: true }),
+        "wait for drawer to be visible"
       );
 
-      await run(() =>
-        expectPuppeteer(extensionPopupPage).toClick("p", {
-          text: "Add / Connect Wallet",
-        })
+      await run(
+        () =>
+          expectPuppeteer(extensionPopupPage).toClick("p", {
+            text: "Add / Connect Wallet",
+          }),
+        "click 'add / connect wallet'"
       );
       console.log("m");
 
-      await run(() =>
-        expectPuppeteer(extensionPopupPage).toClick("p", {
-          text: "Create a new wallet",
-        })
+      await run(
+        () =>
+          expectPuppeteer(extensionPopupPage).toClick("p", {
+            text: "Create a new wallet",
+          }),
+        "click 'create a new wallet'"
       );
       console.log("n");
 
-      await run(() =>
-        expectPuppeteer(extensionPopupPage).toClick("#menu-button")
+      await run(
+        () => expectPuppeteer(extensionPopupPage).toClick("#menu-button"),
+        "click menu button"
       );
 
       console.log("o");
 
-      await run(() =>
-        expect(extensionPopupPage).toMatch(
-          walletAddressDisplay(secondWallet.publicKey)
-        )
+      await run(
+        () =>
+          expect(extensionPopupPage).toMatch(
+            walletAddressDisplay(secondWallet.publicKey)
+          ),
+        `check '${walletAddressDisplay(secondWallet.publicKey)}' is visible`
       );
 
       console.log("p");
@@ -345,21 +379,21 @@ describe("Installing Anchor Wallet", () => {
 
       await clientPage.bringToFront();
 
-      console.log("brought to front");
-      await run(() =>
-        expect(clientPage).toClick("button", {
-          text: "Select Wallet",
-        })
+      await run(
+        () =>
+          expect(clientPage).toClick("button", {
+            text: "Select Wallet",
+          }),
+        "click select wallet button"
       );
 
-      console.log("clicked select wallet");
-      await run(() =>
-        expect(clientPage).toClick("button", {
-          text: "Anchor",
-        })
+      await run(
+        () =>
+          expect(clientPage).toClick("button", {
+            text: "Anchor",
+          }),
+        "click Anchor button"
       );
-
-      console.log("chose anchor");
 
       await sleep(1000);
 
@@ -369,27 +403,30 @@ describe("Installing Anchor Wallet", () => {
       await expect(approvePopup).toMatch("Connect Wallet to localhost");
       await expect(approvePopup).toClick("button", { text: "Approve" });
 
-      console.log("opened and approved wallet connection");
-
       // Wallet is now connected
-      await run(() =>
-        expect(clientPage).toClick("button", {
-          text: "Disconnect",
-        })
+      await run(
+        () =>
+          expect(clientPage).toClick("button", {
+            text: "Disconnect",
+          }),
+        "click disconnect button"
       );
 
       // Wallet is now disconnected, expect to see 'Select Wallet' button
-      await run(() => expect(clientPage).toMatch("Select Wallet"));
-
-      console.log("reset ui");
+      await run(
+        () => expect(clientPage).toMatch("Select Wallet"),
+        "check 'Select Wallet' is visible"
+      );
     }, 60_000 /** allow 60s for test to run due to loading external data */);
   });
 });
 
 const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-const run = (op: any) =>
-  new Promise(async (res, rej) => {
+const run = (op: any, msg?: string) => {
+  if (msg) console.debug("\x1b[36m%s\x1b[0m", msg);
+
+  return new Promise(async (res, rej) => {
     await sleep(1000);
     try {
       await op();
@@ -403,3 +440,4 @@ const run = (op: any) =>
     }
     res(null);
   });
+};
