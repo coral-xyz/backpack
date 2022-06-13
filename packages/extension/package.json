@@ -47,7 +47,8 @@
   ],
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
-    "@swc/core": "^1.2.197",
+    "@swc/core": "^1.2.198",
+    "@swc/jest": "^0.2.21",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@types/chrome": "^0.0.190",
@@ -64,8 +65,6 @@
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "crypto-browserify": "^3.12.0",
-    "esbuild": "^0.14.42",
-    "esbuild-jest": "^0.5.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-mui-unused-classes": "^1.0.3",
     "expect-puppeteer": "^6.1.0",
