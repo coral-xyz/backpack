@@ -93,6 +93,9 @@ describe("Installing Anchor Wallet", () => {
 
       await expect(setupPage).toClick("button", { text: "Finish" });
 
+      // https://github.com/facebook/jest/issues/11607#issuecomment-1092012326
+      jest.runOnlyPendingTimers();
+
       // XXX: temporarily disabled so that setupPage can be used below
       // await extensionPopupPage.reload();
       // await expect(extensionPopupPage).toMatch("Balances");
