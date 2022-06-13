@@ -496,13 +496,20 @@ export function BalancesTableCell({ props, style }: any) {
 
 export function BalancesTableFooter({ props, style, children }: any) {
   const { showContent } = useBalancesContext();
+  console.log("show content here", showContent);
   return !showContent ? (
     <></>
   ) : (
-    <div style={style}>
-      {children.map((c: Element) => (
-        <ViewRenderer key={c.id} element={c} />
-      ))}
+    <div
+      style={{
+        display: !showContent ? "none" : undefined,
+      }}
+    >
+      <div style={style}>
+        {children.map((c: Element) => (
+          <ViewRenderer key={c.id} element={c} />
+        ))}
+      </div>
     </div>
   );
 }
