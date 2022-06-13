@@ -173,7 +173,7 @@ describe("Installing Anchor Wallet", () => {
 
       await expect(setupPage).toMatch("all done");
 
-      await expect(setupPage).toClick("button", { text: "Finish" });
+      await run(() => expect(setupPage).toClick("button", { text: "Finish" }));
 
       await extensionPopupPage.reload({ waitUntil: "networkidle2" });
 
@@ -192,17 +192,17 @@ describe("Installing Anchor Wallet", () => {
 
       // console.log("0");
 
-      await extensionPopupPage.waitForSelector("#menu-button", {
-        visible: true,
-      });
+      await run(() =>
+        extensionPopupPage.waitForSelector("#menu-button", {
+          visible: true,
+        })
+      );
 
       await run(() =>
         expectPuppeteer(extensionPopupPage).toClick("#menu-button")
       );
 
       // console.log("A");
-
-      await sleep(1000);
 
       await run(() =>
         expect(extensionPopupPage).toMatch(
@@ -229,12 +229,15 @@ describe("Installing Anchor Wallet", () => {
       );
 
       // console.log("D");
+      await run(() =>
+        extensionPopupPage.waitForSelector("#drawer", { hidden: true })
+      );
 
-      await extensionPopupPage.waitForSelector("#drawer", { hidden: true });
-
-      await expectPuppeteer(extensionPopupPage).toClick("p", {
-        text: "1.11 SOL",
-      });
+      await run(() =>
+        expectPuppeteer(extensionPopupPage).toClick("p", {
+          text: "1.11 SOL",
+        })
+      );
 
       // await extensionPopupPage.waitForSelector("#drawer");
 
@@ -259,8 +262,6 @@ describe("Installing Anchor Wallet", () => {
         expect(extensionPopupPage).toClick("[data-testid='Send']")
       );
 
-      await sleep(1000);
-
       await run(() =>
         expect(extensionPopupPage).toClick("button", {
           text: "Confirm",
@@ -268,8 +269,6 @@ describe("Installing Anchor Wallet", () => {
       );
 
       // console.log("h");
-
-      await sleep(5000);
 
       await run(() => expectPuppeteer(extensionPopupPage).toMatch("Sent!"));
 
@@ -280,8 +279,6 @@ describe("Installing Anchor Wallet", () => {
         })
       );
 
-      await sleep(1000);
-
       // console.log("j");
 
       await run(() =>
@@ -290,16 +287,14 @@ describe("Installing Anchor Wallet", () => {
 
       // console.log("k");
 
-      await sleep(1000);
-
       await run(() =>
         expectPuppeteer(extensionPopupPage).toClick("#menu-button")
       );
       // console.log("l");
 
-      await sleep(1000);
-
-      await extensionPopupPage.waitForSelector("#drawer", { visible: true });
+      await run(() =>
+        extensionPopupPage.waitForSelector("#drawer", { visible: true })
+      );
 
       await run(() =>
         expectPuppeteer(extensionPopupPage).toClick("p", {
@@ -315,15 +310,11 @@ describe("Installing Anchor Wallet", () => {
       );
       // console.log("n");
 
-      await sleep(1000);
-
       await run(() =>
         expectPuppeteer(extensionPopupPage).toClick("#menu-button")
       );
 
       // console.log("o");
-
-      await sleep(1000);
 
       await run(() =>
         expect(extensionPopupPage).toMatch(
@@ -353,16 +344,18 @@ describe("Installing Anchor Wallet", () => {
       await clientPage.bringToFront();
 
       // console.log("brought to front");
-
-      await expect(clientPage).toClick("button", {
-        text: "Select Wallet",
-      });
+      await run(() =>
+        expect(clientPage).toClick("button", {
+          text: "Select Wallet",
+        })
+      );
 
       // console.log("clicked select wallet");
-
-      await expect(clientPage).toClick("button", {
-        text: "Anchor",
-      });
+      await run(() =>
+        expect(clientPage).toClick("button", {
+          text: "Anchor",
+        })
+      );
 
       // console.log("chose anchor");
 
@@ -377,16 +370,14 @@ describe("Installing Anchor Wallet", () => {
       // console.log("opened and approved wallet connection");
 
       // Wallet is now connected
-      await expect(clientPage).toClick("button", {
-        text: "Disconnect",
-      });
-
-      await sleep(1000);
-
-      // console.log("disconnected");
+      await run(() =>
+        expect(clientPage).toClick("button", {
+          text: "Disconnect",
+        })
+      );
 
       // Wallet is now disconnected, expect to see 'Select Wallet' button
-      await expect(clientPage).toMatch("Select Wallet");
+      await run(() => expect(clientPage).toMatch("Select Wallet"));
 
       // console.log("reset ui");
     }, 60_000 /** allow 60s for test to run due to loading external data */);
@@ -395,21 +386,18 @@ describe("Installing Anchor Wallet", () => {
 
 const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-const run = (op: any) => op(); //retryOperation(op, 500, 50);
-
-const retryOperation = (operation: any, delay: number, retries: number) =>
-  new Promise((resolve, reject) =>
-    operation()
-      .then(resolve)
-      .catch((reason: any) => {
-        console.log(reason.message);
-
-        if (retries > 0) {
-          return sleep(delay)
-            .then(retryOperation.bind(null, operation, delay, retries - 1))
-            .then(resolve)
-            .catch(reject);
-        }
-        return reject(reason);
-      })
-  );
+const run = (op: any) =>
+  new Promise(async (res, rej) => {
+    await sleep(1000);
+    try {
+      await op();
+    } catch (err) {
+      await sleep(3000);
+      try {
+        await op();
+      } catch (err) {
+        rej(err);
+      }
+    }
+    res(null);
+  });
