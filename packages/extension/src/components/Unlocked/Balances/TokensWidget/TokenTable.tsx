@@ -142,15 +142,6 @@ function TokenTableFooter({
           {showAll ? `Hide ${count}` : `Show all ${count}`}
         </Typography>
       </div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "column",
-        }}
-      >
-        <ArrowForwardIos className={classes.footerArrowIcon} />
-      </div>
     </ListItem>
   );
 }

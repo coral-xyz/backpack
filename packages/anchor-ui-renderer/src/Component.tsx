@@ -13,6 +13,7 @@ import {
   Typography,
   TextField as MuiTextField,
 } from "@mui/material";
+import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import makeStyles from "@mui/styles/makeStyles";
 import { usePluginContext } from "./Context";
 import { ViewRenderer } from "./ViewRenderer";
@@ -168,6 +169,10 @@ const useStyles = makeStyles((theme: any) => ({
       borderColor: `${theme.custom.colors.negative} !important`,
     },
   },
+  expand: {
+    width: "18px",
+    color: theme.custom.colors.secondary,
+  },
 }));
 
 export function Component({ viewData }) {
@@ -310,7 +315,29 @@ export function BalancesTableHead({ props, style }: any) {
           <img className={classes.blockchainLogo} src={iconUrl} />
         ) : undefined
       }
-      title={title}
+      title={
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography
+            style={{
+              fontWeight: 500,
+              lineHeight: "24px",
+              fontSize: "14px",
+            }}
+          >
+            {title}
+          </Typography>
+          {showContent ? (
+            <ExpandMore className={classes.expand} />
+          ) : (
+            <ExpandLess className={classes.expand} />
+          )}
+        </div>
+      }
       classes={{
         root: classes.cardHeaderRoot,
         content: classes.cardHeaderContent,
