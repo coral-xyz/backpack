@@ -26,8 +26,6 @@ function RootRenderer() {
   //
   useEffect(() => {
     plugin.onRenderRoot((c: Array<Element>) => {
-      // TODO: c will often be children of a different iframe when
-      //       hosting them all from the same domain.
       setChildren([...c]);
     });
   }, [plugin, setChildren]);
