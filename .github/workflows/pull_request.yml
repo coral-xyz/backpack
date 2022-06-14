@@ -140,6 +140,7 @@ jobs:
 
       - name: "upload build artifacts"
         uses: actions/upload-artifact@v2
+        working-directory: packages/extension
         with:
           name: backpack-build
           path: build.zip
