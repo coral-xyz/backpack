@@ -174,7 +174,7 @@ describe("Installing Anchor Wallet", () => {
 
     test("succeeds with a valid mnemonic", async () => {
       try {
-        rmdir(SCREENSHOT_PATH);
+        await rmdir(SCREENSHOT_PATH, { recursive: true });
       } catch (err) {
         // no dir to remove
       } finally {

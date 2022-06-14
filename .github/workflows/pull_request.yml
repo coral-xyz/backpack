@@ -113,6 +113,7 @@ jobs:
           command: yarn workspace @200ms/extension e2e
 
       - name: "[e2e] upload screenshots"
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: e2e-screenshots
