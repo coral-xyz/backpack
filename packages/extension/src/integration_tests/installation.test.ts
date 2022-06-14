@@ -258,8 +258,12 @@ describe("Installing Anchor Wallet", () => {
             text: "1.11 SOL",
           }),
         "click 1.11 SOL",
-        5000
+        10_000
       );
+
+      await extensionPopupPage.screenshot({
+        path: `${SCREENSHOT_PATH}/clicked-sol.png`,
+      });
 
       await run(
         () =>
