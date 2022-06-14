@@ -7,7 +7,7 @@ import { Connection, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import type { Keypair } from "@solana/web3.js";
 import { DerivationPath } from "@200ms/common";
 import { deriveKeypairs } from "@200ms/background/dist/esm/keyring/crypto";
-import { mkdir, rmdir } from "fs/promises";
+import { mkdir, rm } from "fs/promises";
 
 let clientPage: Page;
 let extensionPopupPage: Page;
@@ -174,7 +174,7 @@ describe("Installing Anchor Wallet", () => {
 
     test("succeeds with a valid mnemonic", async () => {
       try {
-        await rmdir(SCREENSHOT_PATH, { recursive: true });
+        await rm(SCREENSHOT_PATH, { recursive: true });
       } catch (err) {
         // no dir to remove
       } finally {
@@ -296,7 +296,7 @@ describe("Installing Anchor Wallet", () => {
       await sleep(1_000);
 
       await run(
-        () => expect(extensionPopupPage).toClick("[data-testid='Send']"),
+        () => expect(extensionPopupPage).toClick("[data-testid='SendFinal']"),
         "click send button"
       );
 

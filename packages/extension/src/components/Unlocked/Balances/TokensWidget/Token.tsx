@@ -98,7 +98,7 @@ export function WithHeaderButton({
   const [openDrawer, setOpenDrawer] = useState(false);
   return (
     <>
-      <Button style={style} onClick={() => setOpenDrawer(true)}>
+      <Button style={style} onClick={() => setOpenDrawer(true)} id={label}>
         {labelComponent ? (
           labelComponent
         ) : (

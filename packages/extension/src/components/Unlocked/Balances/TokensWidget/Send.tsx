@@ -259,7 +259,7 @@ export function Send({
           className={classes.button}
           label="Send"
           type="submit"
-          data-testid="Send"
+          data-testid="SendFinal"
         />
         <WithMiniDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
           <SendConfirmationCard

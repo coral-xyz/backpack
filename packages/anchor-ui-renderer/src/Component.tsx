@@ -657,6 +657,8 @@ export function __Button({
       disableRipple
       style={style}
       onClick={onClick}
+      id={id}
+      data-testid={id}
     >
       {children ??
         childrenRenderer.map((c: Element) => (
