@@ -288,10 +288,7 @@ describe("Installing Anchor Wallet", () => {
       );
 
       await run(
-        () =>
-          expect(extensionPopupPage).toClick("button", {
-            text: "Confirm",
-          }),
+        () => expect(extensionPopupPage).toClick("[data-testid='Confirm']"),
         "click confirm button"
       );
 
@@ -419,6 +416,7 @@ const run = (op: any, msg?: string, delay = 3_000) => {
   if (msg) console.debug("\x1b[2m", msg);
 
   return new Promise(async (res, rej) => {
+    console.log({ delay });
     await sleep(delay);
 
     const time = Date.now();

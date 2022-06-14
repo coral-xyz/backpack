@@ -586,6 +586,7 @@ export function BottomCard({
           buttonLabelStyle={buttonLabelStyle}
           onClick={onButtonClick}
           label={buttonLabel}
+          data-testid={buttonLabel}
         />
       </div>
     </div>
