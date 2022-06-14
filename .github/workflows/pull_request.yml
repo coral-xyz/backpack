@@ -8,9 +8,6 @@ on:
     branches:
       - master
 
-env:
-  solana_version: 1.10.24
-
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -103,25 +100,6 @@ jobs:
       - run: yarn install --frozen-lockfile
 
       - run: yarn test
-
-      - name: "[solana] cache"
-        uses: actions/cache@v3
-        id: cache-solana
-        with:
-          path: |
-            ~/.cache/solana/
-            ~/.local/share/solana/
-          key: solana-${{ runner.os }}-${{ env.solana_version }}
-
-      - name: "[solana] install solana"
-        if: steps.cache-solana.outputs.cache-hit != 'true'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pkg-config build-essential libudev-dev
-          sh -c "$(curl -sSfL https://release.solana.com/v${{ env.solana_version }}/install)"
-
-      - name: "[solana] add to PATH"
-        run: echo "/home/runner/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
 
       - name: "[e2e] build extension"
         # CI!=true so that build warnings aren't treated like errors (for now)
