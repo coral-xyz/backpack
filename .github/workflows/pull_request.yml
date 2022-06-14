@@ -130,6 +130,6 @@ jobs:
         run: yarn build
 
       - name: "[e2e] run puppeteer tests"
-        uses: wentokay/hello-world-docker-action@v11
+        uses: wentokay/hello-world-docker-action@v12
         with:
           command: yarn workspace @200ms/extension e2e

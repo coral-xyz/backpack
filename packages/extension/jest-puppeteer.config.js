@@ -14,9 +14,6 @@ const executablePath =
 module.exports = {
   server: [
     {
-      command: "solana-test-validator",
-    },
-    {
       command: "serve -p 3333 ../../examples/clients/simple/dist",
     },
   ],
