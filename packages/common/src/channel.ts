@@ -138,10 +138,12 @@ export class PostMessageServer {
   public handler(handlerFn: (event: Event) => Promise<RpcResponse>) {
     return window.addEventListener("message", async (event: Event) => {
       const url = new URL(this.url);
-      if (event.origin !== url.origin) {
-        return;
-      }
-      if (event.data.type !== this.requestChannel) {
+      if (
+        // TODO: hardcode allowed origin(s)
+        event.origin !== url.origin ||
+        event.data.href !== url.href ||
+        event.data.type !== this.requestChannel
+      ) {
         return;
       }
       const id = event.data.detail.id;

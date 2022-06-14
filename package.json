@@ -4,6 +4,7 @@
   "workspaces": [
     "backend/workers/*",
     "examples/clients/*",
+    "examples/plugins",
     "examples/plugins/*",
     "packages/*"
   ],

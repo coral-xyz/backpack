@@ -5,8 +5,8 @@
   "source": "src/index.tsx",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "parcel build src/index.html",
-    "start": "parcel --https --port 4444 src/index.html"
+    "build": "parcel build src/index.html --public-url '.'",
+    "start": "parcel --https --port 4444 src/index.html --public-url '.'"
   },
   "dependencies": {
     "@200ms/anchor-ui": "*",

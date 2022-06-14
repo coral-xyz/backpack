@@ -2,13 +2,16 @@ import { selector } from "recoil";
 import { activeWallet, connectionUrl } from "./wallet";
 
 // full path to HTML is currently required, will be fixed in future
-const OPEN_ORDERS_PLUGIN_URL = "https://localhost:4444/index.html";
+const OPEN_ORDERS_PLUGIN_URL = "https://localhost:8001/app/dist/index.html";
 const OPEN_ORDERS_ICON_URL =
   "https://pbs.twimg.com/media/FQuhVHfWQAEHTWM?format=jpg&name=4096x4096";
 
-const MANGO_TABLE_PLUGIN_URL = "https://localhost:4445/index.html";
-const DEGODS_TABLE_PLUGIN_URL = "https://localhost:4447/index.html";
-const ANCHOR_TABLE_PLUGIN_URL = "https://localhost:4446/index.html";
+const MANGO_TABLE_PLUGIN_URL =
+  "https://localhost:8001/table-mango/dist/index.html";
+const DEGODS_TABLE_PLUGIN_URL =
+  "https://localhost:8001/table-degods/dist/index.html";
+const ANCHOR_TABLE_PLUGIN_URL =
+  "https://localhost:8001/table-anchor/dist/index.html";
 
 //
 // For now we just provide some default apps.
