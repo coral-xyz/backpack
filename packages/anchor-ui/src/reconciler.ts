@@ -1007,11 +1007,13 @@ export class ReconcilerBridgeManager {
   public static bridge(req: RpcRequest) {
     const msg = {
       type: CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
+      href: window.location.href,
       detail: {
         renderId: ReconcilerBridgeManager._nextRenderId(),
         ...req,
       },
     };
+
     window.parent.postMessage(msg, "*");
   }
 

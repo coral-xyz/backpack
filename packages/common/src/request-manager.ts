@@ -1,4 +1,4 @@
-import { BackgroundClient } from "./channel";
+import type { BackgroundClient } from "./channel";
 import type { RpcRequest, RpcResponse, Event, ResponseHandler } from "./types";
 import { getLogger } from "./logging";
 
@@ -54,7 +54,15 @@ export class RequestManager implements BackgroundClient {
     const [prom, resolve, reject] = this._addResponseResolver(id);
     if (this._parent) {
       window.parent.postMessage(
-        { type: this._requestChannel, detail: { id, method, params } },
+        {
+          type: this._requestChannel,
+          href: window.location.href,
+          detail: {
+            id,
+            method,
+            params,
+          },
+        },
         "*"
       );
     } else {
