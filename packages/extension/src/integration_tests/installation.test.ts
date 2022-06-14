@@ -240,6 +240,12 @@ describe("Installing Anchor Wallet", () => {
 
       // console.log(await extensionPopupPage.content());
 
+      await run(() =>
+        extensionPopupPage.screenshot({
+          path: `${SCREENSHOT_PATH}/connection.png`,
+        })
+      );
+
       await run(
         () =>
           expectPuppeteer(extensionPopupPage).toClick("span", {
@@ -248,9 +254,11 @@ describe("Installing Anchor Wallet", () => {
         "select localnet"
       );
 
-      await extensionPopupPage.screenshot({
-        path: `${SCREENSHOT_PATH}/local.png`,
-      });
+      await run(() =>
+        extensionPopupPage.screenshot({
+          path: `${SCREENSHOT_PATH}/local.png`,
+        })
+      );
 
       await run(
         () =>
@@ -259,6 +267,12 @@ describe("Installing Anchor Wallet", () => {
           }),
         "click 1.11 SOL",
         10_000
+      );
+
+      await run(() =>
+        extensionPopupPage.screenshot({
+          path: `${SCREENSHOT_PATH}/11.png`,
+        })
       );
 
       await extensionPopupPage.screenshot({
