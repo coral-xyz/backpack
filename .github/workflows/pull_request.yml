@@ -29,74 +29,74 @@ jobs:
 
       # <<< START [wallet-adapter] tasks
 
-      # - name: "[wallet-adapter] checkout"
-      #   uses: actions/checkout@v3
-      #   with:
-      #     repository: 200ms-labs/wallet-adapter
-      #     token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      #     path: wallet-adapter
+      - name: "[wallet-adapter] checkout"
+        uses: actions/checkout@v3
+        with:
+          repository: 200ms-labs/wallet-adapter
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: wallet-adapter
 
-      # - name: "[wallet-adapter] set env var"
-      #   run: echo "wallet_adapter_sha=$(
-      #     cd wallet-adapter && git rev-parse --short HEAD
-      #     )" >> $GITHUB_ENV
+      - name: "[wallet-adapter] set env var"
+        run: echo "wallet_adapter_sha=$(
+          cd wallet-adapter && git rev-parse --short HEAD
+          )" >> $GITHUB_ENV
 
-      # # cache `yarn build` output based on latest commit SHA as it takes 10+ mins
+      # cache `yarn build` output based on latest commit SHA as it takes 10+ mins
 
-      # - name: "[wallet-adapter] cache"
-      #   id: wallet-adapter-cache
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: wallet-adapter
-      #     key: ${{ runner.OS }}-wallet-adapter-cache-${{ env.wallet_adapter_sha }}
+      - name: "[wallet-adapter] cache"
+        id: wallet-adapter-cache
+        uses: actions/cache@v3
+        with:
+          path: wallet-adapter
+          key: ${{ runner.OS }}-wallet-adapter-cache-${{ env.wallet_adapter_sha }}
 
-      # - name: "[wallet-adapter] install deps"
-      #   working-directory: wallet-adapter
-      #   run: yarn install --frozen-lockfile
+      - name: "[wallet-adapter] install deps"
+        working-directory: wallet-adapter
+        run: yarn install --frozen-lockfile
 
-      # - name: "[wallet-adapter] build"
-      #   if: steps.wallet-adapter-cache.outputs.cache-hit != 'true'
-      #   working-directory: wallet-adapter
-      #   run: yarn build
+      - name: "[wallet-adapter] build"
+        if: steps.wallet-adapter-cache.outputs.cache-hit != 'true'
+        working-directory: wallet-adapter
+        run: yarn build
 
-      # - name: "[wallet-adapter] yarn link"
-      #   working-directory: wallet-adapter
-      #   run: npx lerna exec -- yarn link
+      - name: "[wallet-adapter] yarn link"
+        working-directory: wallet-adapter
+        run: npx lerna exec -- yarn link
 
-      # # END [wallet-adapter] tasks >>>
+      # END [wallet-adapter] tasks >>>
 
-      # # <<< START [anchor] tasks
+      # <<< START [anchor] tasks
 
-      # - name: "[anchor] checkout"
-      #   uses: actions/checkout@v3
-      #   with:
-      #     repository: project-serum/anchor
-      #     path: anchor
+      - name: "[anchor] checkout"
+        uses: actions/checkout@v3
+        with:
+          repository: project-serum/anchor
+          path: anchor
 
-      # - name: "[anchor] set env var"
-      #   run: echo "anchor_sha=$(
-      #     cd anchor && git rev-parse --short HEAD
-      #     )" >> $GITHUB_ENV
+      - name: "[anchor] set env var"
+        run: echo "anchor_sha=$(
+          cd anchor && git rev-parse --short HEAD
+          )" >> $GITHUB_ENV
 
-      # - name: "[anchor] cache"
-      #   id: anchor-cache
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: anchor
-      #     key: ${{ runner.OS }}-anchor-cache-${{ env.anchor_sha }}
+      - name: "[anchor] cache"
+        id: anchor-cache
+        uses: actions/cache@v3
+        with:
+          path: anchor
+          key: ${{ runner.OS }}-anchor-cache-${{ env.anchor_sha }}
 
-      # - name: "[anchor] install deps"
-      #   working-directory: anchor/ts
-      #   run: yarn install --frozen-lockfile
+      - name: "[anchor] install deps"
+        working-directory: anchor/ts
+        run: yarn install --frozen-lockfile
 
-      # - name: "[anchor] build"
-      #   if: steps.anchor-cache.outputs.cache-hit != 'true'
-      #   working-directory: anchor/ts
-      #   run: yarn build
+      - name: "[anchor] build"
+        if: steps.anchor-cache.outputs.cache-hit != 'true'
+        working-directory: anchor/ts
+        run: yarn build
 
-      # - name: "[anchor] yarn link"
-      #   working-directory: anchor/ts
-      #   run: yarn link
+      - name: "[anchor] yarn link"
+        working-directory: anchor/ts
+        run: yarn link
 
       # END [anchor] tasks >>>
 
