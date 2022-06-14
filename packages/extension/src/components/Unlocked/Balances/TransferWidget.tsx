@@ -34,7 +34,7 @@ export function TransferWidget() {
     <div
       style={{
         display: "flex",
-        width: "136px",
+        width: "120px",
         marginLeft: "auto",
         marginRight: "auto",
         marginTop: "20px",
@@ -42,7 +42,7 @@ export function TransferWidget() {
       }}
     >
       <ReceiveButton />
-      <div style={{ width: "27px" }} />
+      <div style={{ width: "16px" }} />
       <SendButton />
     </div>
   );
