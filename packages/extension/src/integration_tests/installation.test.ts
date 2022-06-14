@@ -280,9 +280,7 @@ describe("Installing Anchor Wallet", () => {
 
       await run(
         () =>
-          expectPuppeteer(extensionPopupPage).toClick("button", {
-            text: "Send",
-          }),
+          expectPuppeteer(extensionPopupPage).toClick("[data-testid='Send']"),
         "click send button"
       );
 
@@ -295,10 +293,14 @@ describe("Installing Anchor Wallet", () => {
         "fill out form"
       );
 
+      await sleep(1_000);
+
       await run(
         () => expect(extensionPopupPage).toClick("[data-testid='Send']"),
         "click send button"
       );
+
+      await sleep(1_000);
 
       await run(
         () => expect(extensionPopupPage).toClick("[data-testid='Confirm']"),
@@ -311,10 +313,12 @@ describe("Installing Anchor Wallet", () => {
 
       // wait for transaction to happen
 
+      await sleep(5_000);
+
       await run(
         () => expectPuppeteer(extensionPopupPage).toMatch("Sent!"),
         "wait for 'Sent!' message",
-        10_000
+        5_000
       );
 
       await run(
