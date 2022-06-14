@@ -235,6 +235,13 @@ export class Plugin {
     });
   }
 
+  private postMessage(event) {
+    this._iframe?.contentWindow?.postMessage(
+      { ...event, pathname: this._iframe?.contentWindow.location.pathname },
+      "*"
+    );
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   // Push Notifications to Plugin iFrame.
   //
@@ -242,16 +249,15 @@ export class Plugin {
   //////////////////////////////////////////////////////////////////////////////
 
   public pushNotification(notif: any) {
-    const event = {
+    this.postMessage({
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: notif,
-    };
-    this._iframe?.contentWindow?.postMessage(event, "*");
+    });
   }
 
   public pushClickNotification(viewId: number) {
     this._lastClickTsMs = Date.now();
-    const event = {
+    this.postMessage({
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: {
         name: PLUGIN_NOTIFICATION_ON_CLICK,
@@ -259,13 +265,12 @@ export class Plugin {
           viewId,
         },
       },
-    };
-    this._iframe?.contentWindow?.postMessage(event, "*");
+    });
   }
 
   public pushOnChangeNotification(viewId: number, value: any) {
     this._lastClickTsMs = Date.now();
-    const event = {
+    this.postMessage({
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: {
         name: PLUGIN_NOTIFICATION_ON_CHANGE,
@@ -274,12 +279,11 @@ export class Plugin {
           value,
         },
       },
-    };
-    this._iframe?.contentWindow?.postMessage(event, "*");
+    });
   }
 
   public pushConnectNotification() {
-    const event = {
+    this.postMessage({
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: {
         name: PLUGIN_NOTIFICATION_CONNECT,
@@ -288,45 +292,41 @@ export class Plugin {
           connectionUrl: this._connectionUrl,
         },
       },
-    };
-    this._iframe?.contentWindow?.postMessage(event, "*");
+    });
   }
 
   public pushMountNotification() {
-    const event = {
+    this.postMessage({
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: {
         name: PLUGIN_NOTIFICATION_MOUNT,
         data: {},
       },
-    };
-    this._iframe?.contentWindow?.postMessage(event, "*");
+    });
   }
 
   public pushUnmountNotification() {
-    const event = {
+    this.postMessage({
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: {
         name: PLUGIN_NOTIFICATION_UNMOUNT,
         data: {},
       },
-    };
-    this._iframe?.contentWindow?.postMessage(event, "*");
+    });
   }
 
   public pushNavigationPopNotification() {
-    const event = {
+    this.postMessage({
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: {
         name: PLUGIN_NOTIFICATION_NAVIGATION_POP,
         data: {},
       },
-    };
-    this._iframe?.contentWindow?.postMessage(event, "*");
+    });
   }
 
   public pushConnectionChangedNotification(url: string) {
-    const event = {
+    this.postMessage({
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: {
         name: PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
@@ -334,12 +334,11 @@ export class Plugin {
           url,
         },
       },
-    };
-    this._iframe!.contentWindow!.postMessage(event, "*");
+    });
   }
 
   public pushPublicKeyChangedNotification(publicKey: string) {
-    const event = {
+    this.postMessage({
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: {
         name: PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
@@ -347,8 +346,7 @@ export class Plugin {
           publicKey,
         },
       },
-    };
-    this._iframe!.contentWindow!.postMessage(event, "*");
+    });
   }
 
   //////////////////////////////////////////////////////////////////////////////

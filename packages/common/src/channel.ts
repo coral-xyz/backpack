@@ -138,6 +138,9 @@ export class PostMessageServer {
   public handler(handlerFn: (event: Event) => Promise<RpcResponse>) {
     return window.addEventListener("message", async (event: Event) => {
       const url = new URL(this.url);
+
+      // if (event.data.pathname !== url.pathname) return;
+
       if (event.origin !== url.origin) {
         return;
       }
