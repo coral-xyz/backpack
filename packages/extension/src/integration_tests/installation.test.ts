@@ -248,9 +248,9 @@ describe("Installing Anchor Wallet", () => {
 
       await run(
         () =>
-          expectPuppeteer(extensionPopupPage).toClick("span", {
-            text: "Localnet",
-          }),
+          expectPuppeteer(extensionPopupPage).toClick(
+            "[data-testid='Localnet']"
+          ),
         "select localnet"
       );
 
@@ -265,8 +265,7 @@ describe("Installing Anchor Wallet", () => {
           expectPuppeteer(extensionPopupPage).toClick("p", {
             text: "1.11 SOL",
           }),
-        "click 1.11 SOL",
-        10_000
+        "click 1.11 SOL"
       );
 
       await run(() =>
