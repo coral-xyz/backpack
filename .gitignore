@@ -31,3 +31,4 @@ dist/
 .idea
 deptool-report.html
 test-ledger/
+e2e-screenshots/

@@ -7,6 +7,7 @@ import { Connection, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import type { Keypair } from "@solana/web3.js";
 import { DerivationPath } from "@200ms/common";
 import { deriveKeypairs } from "@200ms/background/dist/esm/keyring/crypto";
+import { mkdir } from "fs/promises";
 
 let clientPage: Page;
 let extensionPopupPage: Page;
@@ -17,6 +18,8 @@ const connection = new Connection("http://localhost:8899", "confirmed");
 let mnemonic: string;
 let firstWallet: Keypair;
 let secondWallet: Keypair;
+
+const SCREENSHOT_PATH = "../../e2e-screenshots";
 
 describe("Installing Anchor Wallet", () => {
   // afterAll(async () => {
@@ -170,6 +173,8 @@ describe("Installing Anchor Wallet", () => {
     });
 
     test("succeeds with a valid mnemonic", async () => {
+      await mkdir(SCREENSHOT_PATH);
+
       await expect(setupPage).toFill("input[name=mnemonic]", mnemonic);
       await expect(setupPage).toClick("button", { text: "Continue" });
 
@@ -237,6 +242,10 @@ describe("Installing Anchor Wallet", () => {
         "select localnet"
       );
 
+      await extensionPopupPage.screenshot({
+        path: `${SCREENSHOT_PATH}/local.png`,
+      });
+
       await run(
         () =>
           expectPuppeteer(extensionPopupPage).toClick("p", {
@@ -275,6 +284,10 @@ describe("Installing Anchor Wallet", () => {
           }),
         "click confirm button"
       );
+
+      await extensionPopupPage.screenshot({
+        path: `${SCREENSHOT_PATH}/confirming.png`,
+      });
 
       // wait for transaction to happen
 
@@ -397,13 +410,25 @@ const run = (op: any, msg?: string, delay = 3_000) => {
 
   return new Promise(async (res, rej) => {
     await sleep(delay);
+
+    const time = Date.now();
+
     try {
       await op();
     } catch (err) {
       await sleep(5000);
+
+      await extensionPopupPage.screenshot({
+        path: `${SCREENSHOT_PATH}/error1-${time}.png`,
+      });
+
       try {
         await op();
       } catch (err) {
+        await extensionPopupPage.screenshot({
+          path: `${SCREENSHOT_PATH}/error2-${time}.png`,
+        });
+
         rej(err);
       }
     }
