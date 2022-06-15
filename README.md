@@ -1,7 +1,6 @@
 # Backpack
 
-
-## Running locally
+## Running locally
 
 https://user-images.githubusercontent.com/101902546/173857300-fc139113-0af5-46fc-baad-236a2ebf63f1.mp4
 
