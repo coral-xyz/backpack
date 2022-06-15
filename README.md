@@ -1,8 +1,18 @@
-# Anchor Wallet
+# Backpack
 
-## Local Development
 
-#### 0. Temporary preliminary step
+## Running locally
+
+https://user-images.githubusercontent.com/101902546/173857300-fc139113-0af5-46fc-baad-236a2ebf63f1.mp4
+
+
+### 0. Temporary preliminary steps
+
+#### Enable self-signed local SSL certs
+
+Go to chrome://flags/#allow-insecure-localhost and enable the toggle, then restart chrome
+
+#### Link local wallet-adapter
 
 Ensure that an Anchor Wallet compatible `@solana/wallet-adapter-wallets` has been `yarn link`ed.
 
@@ -10,15 +20,23 @@ Check the [.github/workflows/pull_request.yml](.github/workflows/pull_request.ym
 
 You can also optionally rename `.env.example` to `.env` and set your own variables.
 
-#### 1. Install dependencies
+### 1. Install dependencies
 
 `yarn install`
 
-#### 2. Start the [browser extension](packages/extension) and [example client](packages/example-client) simultaneously
+### 2. Start all the relevent packages simultaneously
 
 `yarn start`
 
 _If you run into issues with builds try running `yarn clean` and then start again._
+
+### 3a. Install the development version of the extension
+
+Go to chrome://extensions, enable developer mode (top right) and drag the `packages/extension/dev` dir into the window. This version will have (Dev) in the title and supports live-reloading.
+
+### 3b. Optionally install the built extension
+
+If you want to try the production build of the extension, run `yarn build` and drag the `packages/extension/build` dir into chrome://extensions as above. This version won't have hot-reloading and local plugins won't be visible unless you also run `yarn start`
 
 ## License
 
