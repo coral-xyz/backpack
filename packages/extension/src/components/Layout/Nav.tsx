@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme: any) => ({
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
+    textAlign: "center",
   },
   overviewLabelPrefix: {
     color: theme.custom.colors.secondary,
@@ -76,7 +77,7 @@ function NavBar() {
 function _NavBar() {
   const classes = useStyles();
   const theme = useTheme() as any;
-  const { isRoot, navButtonRight } = useNavigation();
+  const { isRoot } = useNavigation();
   return (
     <div
       style={{
@@ -93,7 +94,7 @@ function _NavBar() {
       <div style={{ position: "relative", width: "100%", display: "flex" }}>
         <LeftNavButton />
         <CenterDisplay />
-        {navButtonRight && <RightNavButton />}
+        <RightNavButton />
       </div>
     </div>
   );
@@ -105,11 +106,8 @@ function LeftNavButton() {
 }
 
 function RightNavButton() {
-  return (
-    <div>
-      <DummyButton />
-    </div>
-  );
+  const { navButtonRight } = useNavigation();
+  return <div>{navButtonRight ? navButtonRight : <DummyButton />}</div>;
 }
 
 export function NavBackButton() {
