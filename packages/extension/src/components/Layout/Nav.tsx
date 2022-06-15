@@ -31,13 +31,14 @@ const useStyles = makeStyles((theme: any) => ({
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
-    position: "relative",
   },
   overviewLabel: {
     fontSize: "18px",
     fontWeight: 500,
-    lineHeight: "24px",
     color: theme.custom.colors.fontColor,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   },
   overviewLabelPrefix: {
     color: theme.custom.colors.secondary,
@@ -75,7 +76,7 @@ function NavBar() {
 function _NavBar() {
   const classes = useStyles();
   const theme = useTheme() as any;
-  const { isRoot } = useNavigation();
+  const { isRoot, navButtonRight } = useNavigation();
   return (
     <div
       style={{
@@ -83,13 +84,16 @@ function _NavBar() {
           ? `solid 1pt ${theme.custom.colors.border}`
           : undefined,
         height: `${NAV_BAR_HEIGHT}px`,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
       className={classes.navBarContainer}
     >
       <div style={{ position: "relative", width: "100%", display: "flex" }}>
         <LeftNavButton />
         <CenterDisplay />
-        <RightNavButton />
+        {navButtonRight && <RightNavButton />}
       </div>
     </div>
   );
@@ -97,36 +101,13 @@ function _NavBar() {
 
 function LeftNavButton() {
   const { isRoot } = useNavigation();
-  return (
-    <div
-      style={{
-        position: "absolute",
-        left: 0,
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
-      }}
-    >
-      {isRoot ? <DummyButton /> : <NavBackButton />}
-    </div>
-  );
+  return <div>{isRoot ? <DummyButton /> : <NavBackButton />}</div>;
 }
 
 function RightNavButton() {
-  const { navButtonRight } = useNavigation();
   return (
-    <div
-      style={{
-        position: "absolute",
-        right: 0,
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
-      }}
-    >
-      {navButtonRight ? navButtonRight : <DummyButton />}
+    <div>
+      <DummyButton />
     </div>
   );
 }
@@ -183,12 +164,11 @@ export function __CenterDisplay({ title, isRoot }: any) {
   return (
     <div
       style={{
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
         visibility: isRoot ? "hidden" : undefined,
-        marginLeft: "auto",
-        marginRight: "auto",
+        flex: 1,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
       }}
     >
       <NavTitleLabel title={title} />
@@ -200,14 +180,16 @@ export function NavTitleLabel({ title }: any) {
   const classes = useStyles();
   const titleComponents = title.split("/");
   return titleComponents.length === 2 ? (
-    <Typography className={classes.overviewLabel}>
+    <Typography className={classes.overviewLabel} title={title}>
       <span className={classes.overviewLabelPrefix}>
         {titleComponents[0]} /
       </span>
       {titleComponents[1]}
     </Typography>
   ) : (
-    <Typography className={classes.overviewLabel}>{title}</Typography>
+    <Typography className={classes.overviewLabel} title={title}>
+      {title}
+    </Typography>
   );
 }
 

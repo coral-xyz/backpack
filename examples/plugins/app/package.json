@@ -1,12 +1,17 @@
 {
   "name": "@200ms/example-plugin-app",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
   "source": "src/index.tsx",
+  "app": "dist/bundle.js",
+  "browserslist": [
+    "last 2 chrome versions"
+  ],
+  "targets": {
+    "app": {}
+  },
   "scripts": {
-    "prebuild": "rimraf dist",
-    "build": "parcel build src/index.html --public-url '.'",
-    "start": "parcel --https --port 4444 src/index.html --public-url '.'"
+    "build": "parcel build",
+    "start": "parcel watch --port 9001"
   },
   "dependencies": {
     "@200ms/anchor-ui": "*",
@@ -17,10 +22,6 @@
   },
   "devDependencies": {
     "parcel": "^2.5.0",
-    "rimraf": "^3.0.2",
     "typescript": "^4.6.3"
-  },
-  "browserslist": [
-    "last 2 chrome versions"
-  ]
+  }
 }

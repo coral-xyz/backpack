@@ -21,7 +21,7 @@ export function useNavigation(): NavigationContext {
   const isRoot = navData.urls.length === 1;
   const url = navData.urls[navData.urls.length - 1];
   const params = new URLSearchParams(url);
-  const title = params.get("title") ?? "";
+  const title = decodeURIComponent(params.get("title") ?? "");
   return {
     isRoot,
     url,
@@ -46,9 +46,9 @@ export function useNavigationSegue() {
     componentId: string;
     componentProps: any;
   }) => {
-    const url = `/${componentId}?props=${JSON.stringify(
-      componentProps
-    )}&title=${title}`;
+    const url = `/${componentId}?props=${encodeURIComponent(
+      JSON.stringify(componentProps)
+    )}&title=${encodeURIComponent(title)}`;
     pushUrl(url);
   };
   const pop = () => {
