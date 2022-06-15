@@ -54,7 +54,7 @@ export function makeDefaultNav() {
   TABS.forEach(([tabName, tabTitle]) => {
     defaultNav.data[tabName] = {
       id: tabName,
-      urls: [makeUrl(`/${tabName}`, { title: tabTitle, props: {} })],
+      urls: [makeUrl(tabName, { title: tabTitle, props: {} })],
     };
   });
   return defaultNav;

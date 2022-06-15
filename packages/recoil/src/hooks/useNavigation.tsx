@@ -65,7 +65,7 @@ export function useNavigationSegue() {
     componentId: string;
     componentProps: any;
   }) => {
-    const url = makeUrl(`/${componentId}`, {
+    const url = makeUrl(componentId, {
       props: componentProps,
       title,
     });
@@ -109,7 +109,9 @@ export function useDecodedSearchParams<
 }
 
 export function makeUrl(path, params: ExtensionSearchParams) {
-  return [path, makeParams(params)].filter(Boolean).join("?");
+  return [`/${path}`.replace("//", "/"), makeParams(params)]
+    .filter(Boolean)
+    .join("?");
 }
 
 /**
