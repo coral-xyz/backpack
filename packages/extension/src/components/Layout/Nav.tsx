@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme: any) => ({
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
     textAlign: "center",
+    lineHeight: "24px",
   },
   overviewLabelPrefix: {
     color: theme.custom.colors.secondary,
@@ -68,7 +69,7 @@ export function TabNavStack() {
 
 function NavBar() {
   return (
-    <Suspense fallback={<div></div>}>
+    <Suspense fallback={null}>
       <_NavBar />
     </Suspense>
   );
@@ -85,9 +86,10 @@ function _NavBar() {
           ? `solid 1pt ${theme.custom.colors.border}`
           : undefined,
         height: `${NAV_BAR_HEIGHT}px`,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+        position: "relative",
+        // display: "flex",
+        // justifyContent: "center",
+        // alignItems: "center",
       }}
       className={classes.navBarContainer}
     >
@@ -102,12 +104,38 @@ function _NavBar() {
 
 function LeftNavButton() {
   const { isRoot } = useNavigation();
-  return <div>{isRoot ? <DummyButton /> : <NavBackButton />}</div>;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
+      {isRoot ? <DummyButton /> : <NavBackButton />}
+    </div>
+  );
 }
 
 function RightNavButton() {
   const { navButtonRight } = useNavigation();
-  return <div>{navButtonRight ? navButtonRight : <DummyButton />}</div>;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        right: 0,
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
+      {navButtonRight ? navButtonRight : <DummyButton />}
+    </div>
+  );
 }
 
 export function NavBackButton() {
@@ -119,7 +147,7 @@ export function _NavBackButton({ pop }: any) {
   const classes = useStyles();
   const theme = useTheme() as any;
   return (
-    <div style={{ display: "flex", width: `${NAV_BUTTON_WIDTH}px` }}>
+    <div style={{ width: `${NAV_BUTTON_WIDTH}px` }}>
       <IconButton
         disableRipple
         onClick={() => pop()}
@@ -163,10 +191,11 @@ export function __CenterDisplay({ title, isRoot }: any) {
     <div
       style={{
         visibility: isRoot ? "hidden" : undefined,
-        flex: 1,
         overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "nowrap",
+        maxWidth: `calc(100% - ${NAV_BUTTON_WIDTH * 2}px)`,
+        margin: "0 auto",
+        display: "flex",
+        alignItems: "center",
       }}
     >
       <NavTitleLabel title={title} />
