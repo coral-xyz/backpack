@@ -2,6 +2,7 @@ import { Button, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { Plugin, PluginRenderer } from "@200ms/anchor-ui-renderer";
 import { usePlugins, useTablePlugins, useNavigation } from "@200ms/recoil";
+import type { SearchParamsFor } from "@200ms/recoil";
 import { NAV_COMPONENT_PLUGINS } from "@200ms/common";
 
 const ICON_WIDTH = "60px";
@@ -94,7 +95,7 @@ function PluginIcon({ plugin }: { plugin: Plugin }) {
   );
 }
 
-export function PluginDisplay({ pluginUrl }: { pluginUrl: string }) {
+export function PluginDisplay({ pluginUrl }: SearchParamsFor.Plugin["props"]) {
   const plugins = usePlugins();
   const p = plugins.find((p) => p.iframeUrl === pluginUrl);
   if (p === undefined) {
@@ -103,7 +104,9 @@ export function PluginDisplay({ pluginUrl }: { pluginUrl: string }) {
   return <PluginRenderer key={p.iframeUrl} plugin={p} />;
 }
 
-export function PluginTableDetailDisplay({ pluginUrl }: { pluginUrl: string }) {
+export function PluginTableDetailDisplay({
+  pluginUrl,
+}: SearchParamsFor.Plugin["props"]) {
   const plugins = useTablePlugins();
   const p = plugins.find((p) => p.iframeUrl === pluginUrl);
   if (p === undefined) {
