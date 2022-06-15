@@ -1,11 +1,16 @@
-import { useSearchParams, Routes, Route, Navigate } from "react-router-dom";
-import { useBootstrap, useNavigation } from "@200ms/recoil";
+import { Routes, Route, Navigate } from "react-router-dom";
+import {
+  useDecodedSearchParams,
+  useBootstrap,
+  useNavigation,
+} from "@200ms/recoil";
+import type { SearchParamsFor } from "@200ms/recoil";
 import { Balances } from "../Unlocked/Balances";
 import { Token } from "../Unlocked/Balances/TokensWidget/Token";
 import {
   PluginDisplay,
-  PluginTableDetailDisplay,
   Apps,
+  PluginTableDetailDisplay,
 } from "../Unlocked/Apps";
 import { Nfts } from "../Unlocked/Nfts";
 
@@ -42,25 +47,17 @@ function AppsPage() {
 }
 
 function TokenPage() {
-  const [searchParams] = useSearchParams() as any;
-  const { blockchain, address } = JSON.parse(
-    decodeURIComponent(searchParams.get("props"))
-  );
-  return <Token blockchain={blockchain} address={address} />;
+  const { props } = useDecodedSearchParams<SearchParamsFor.Token>();
+  return <Token {...props} />;
 }
 
 function PluginPage() {
-  const [searchParams] = useSearchParams() as any;
-  const { pluginUrl } = JSON.parse(
-    decodeURIComponent(searchParams.get("props"))
-  );
-  return <PluginDisplay pluginUrl={pluginUrl} />;
+  const { props } = useDecodedSearchParams<SearchParamsFor.Plugin>();
+  console.log({ props });
+  return <PluginDisplay {...props} />;
 }
 
 function PluginTableDetailPage() {
-  const [searchParams] = useSearchParams() as any;
-  const { pluginUrl } = JSON.parse(
-    decodeURIComponent(searchParams.get("props"))
-  );
-  return <PluginTableDetailDisplay pluginUrl={pluginUrl} />;
+  const { props } = useDecodedSearchParams<SearchParamsFor.Plugin>();
+  return <PluginTableDetailDisplay {...props} />;
 }

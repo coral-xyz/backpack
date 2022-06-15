@@ -23,7 +23,8 @@ import {
 } from "@200ms/common";
 import { KeyringStoreStateEnum, useUpdateAllSplTokenAccounts } from "../";
 import * as atoms from "../atoms";
-import { getPlugin, allPlugins } from "../hooks";
+import { getPlugin, allPlugins, useDecodedSearchParams } from "../hooks";
+import type { SearchParamsFor } from "../hooks";
 
 const logger = getLogger("notifications-provider");
 
@@ -198,7 +199,8 @@ export function NotificationsProvider(props: any) {
       const oldUrl = notif.data.oldUrl;
       if (oldUrl && oldUrl.startsWith("/plugin-table-detail")) {
         const search = new URLSearchParams(oldUrl.split("?")[1]);
-        const props = JSON.parse(search.get("props")!);
+        const { props } =
+          useDecodedSearchParams<SearchParamsFor.Plugin>(search);
         const plugin = getPlugin({ url: props.pluginUrl });
         plugin.pushNotification({
           name: PLUGIN_NOTIFICATION_NAVIGATION_POP,
