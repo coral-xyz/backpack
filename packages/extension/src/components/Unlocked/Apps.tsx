@@ -97,7 +97,7 @@ function PluginIcon({ plugin }: { plugin: Plugin }) {
 
 export function PluginDisplay({ pluginUrl }: SearchParamsFor.Plugin["props"]) {
   const plugins = usePlugins();
-  const p = plugins.find((p) => p.iframeUrl === pluginUrl);
+  const p = plugins.find((p) => p.iframeUrl === encodeURI(pluginUrl));
   if (p === undefined) {
     throw new Error("unable to find plugin");
   }
@@ -108,7 +108,7 @@ export function PluginTableDetailDisplay({
   pluginUrl,
 }: SearchParamsFor.Plugin["props"]) {
   const plugins = useTablePlugins();
-  const p = plugins.find((p) => p.iframeUrl === pluginUrl);
+  const p = plugins.find((p) => p.iframeUrl === encodeURI(pluginUrl));
   if (p === undefined) {
     throw new Error("unable to find plugin");
   }
