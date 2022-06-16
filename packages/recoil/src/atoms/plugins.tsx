@@ -5,6 +5,9 @@ const OPEN_ORDERS_PLUGIN_URL = pluginURL("app");
 const OPEN_ORDERS_ICON_URL =
   "https://pbs.twimg.com/media/FQuhVHfWQAEHTWM?format=jpg&name=4096x4096";
 
+const HELLO_WORLD_PLUGIN_URL =
+  "https://embed.xnfts.dev/5r1jwBmveWJaJVtkFCUFcboqv4sfYheaoEoBicAiJmEJ";
+// "https://localhost:9999/5r1jwBmveWJaJVtkFCUFcboqv4sfYheaoEoBicAiJmEJ";
 const MANGO_TABLE_PLUGIN_URL = pluginURL("table-mango");
 const DEGODS_TABLE_PLUGIN_URL = pluginURL("table-degods");
 const ANCHOR_TABLE_PLUGIN_URL = pluginURL("table-anchor");
@@ -42,6 +45,13 @@ export const tablePlugins = selector({
     const _activeWallet = get(activeWallet);
     const _connectionUrl = get(connectionUrl);
     return [
+      {
+        url: HELLO_WORLD_PLUGIN_URL,
+        iconUrl: "",
+        title: "Hello World",
+        activeWallet: _activeWallet,
+        connectionUrl: _connectionUrl,
+      },
       {
         url: MANGO_TABLE_PLUGIN_URL,
         iconUrl: "",

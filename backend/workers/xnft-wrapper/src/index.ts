@@ -1,29 +1,55 @@
+const RPC = "https://api.devnet.solana.com";
+
 export default {
   async fetch(request: Request): Promise<Response> {
-    const { searchParams } = new URL(request.url);
-    const bundle = searchParams.get("bundle");
+    const { searchParams, pathname } = new URL(request.url);
 
-    if (!bundle) return json({ error: "bundle parameter is required" }, 404);
+    let bundle = searchParams.get("bundle");
 
-    try {
-      new URL(bundle);
-    } catch (err) {
-      return json({ error: "bundle is not a valid url" }, 500);
+    if (!bundle) {
+      const xnftMint = pathname.match(/^\/(\w{30,50})/)?.[1];
+      if (xnftMint) {
+        try {
+          const res = await fetch(
+            `https://metaplex-api.gootools.workers.dev/${xnftMint}?rpc=${RPC}`
+          );
+          const {
+            name,
+            description,
+            properties: { bundle: _bundle },
+          } = await res.json();
+          bundle = _bundle;
+        } catch (err) {
+          return json({ error: err.message }, 500);
+        }
+      }
+    }
+
+    if (bundle) {
+      try {
+        new URL(bundle);
+      } catch (err) {
+        return json({ error: "bundle is not a valid url" }, 500);
+      }
+    } else {
+      return json({ error: "bundle parameter is required" }, 404);
     }
 
     try {
-      const script = await (async (inline) => {
-        if (inline) {
-          const res = await fetch(bundle);
-          const js = await res.text();
-          // TODO: see if possible to check if valid JS without executing it,
-          //       because `new Function(js);` is not possible on a worker
-          return `<script type="text/javascript" type="text/javascript">${js}</script>`;
-        } else {
-          // TODO: add integrity hash? https://www.srihash.org
-          return `<script type="module" src="${bundle}"></script>`;
-        }
-      })(searchParams.has("inline"));
+      let innerHTML;
+
+      if (searchParams.has("external")) {
+        // TODO: add integrity hash? https://www.srihash.org
+        innerHTML = `<script type="module" src="${bundle}"></script>`;
+      } else {
+        const res = await fetch(bundle);
+        const js = await res.text();
+        // TODO: see if possible to check if valid JS without executing it,
+        //       because `new Function(js);` is not possible on a worker
+        innerHTML = `
+        <!-- code loaded from ${bundle} -->
+        <script type="module">${js}</script>`;
+      }
 
       return html(`
         <!DOCTYPE html>
@@ -31,7 +57,7 @@ export default {
           <head>
             <meta charset="utf-8"/>
           </head>
-          <body>${script}</body>
+          <body>${innerHTML}</body>
         </html>
       `);
     } catch (err) {
