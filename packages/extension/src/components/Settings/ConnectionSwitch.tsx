@@ -5,8 +5,8 @@ import { CheckBox } from "@mui/icons-material";
 import {
   getBackgroundClient,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
-} from "@200ms/common";
-import { useEphemeralNav, useSolanaConnectionUrl } from "@200ms/recoil";
+} from "@coral-xyz/common";
+import { useEphemeralNav, useSolanaConnectionUrl } from "@coral-xyz/recoil";
 import { List, ListItem } from "../common";
 
 const useStyles = makeStyles((theme: any) => ({

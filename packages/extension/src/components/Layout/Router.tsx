@@ -3,8 +3,8 @@ import {
   useDecodedSearchParams,
   useBootstrap,
   useNavigation,
-} from "@200ms/recoil";
-import type { SearchParamsFor } from "@200ms/recoil";
+} from "@coral-xyz/recoil";
+import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { Balances } from "../Unlocked/Balances";
 import { Token } from "../Unlocked/Balances/TokensWidget/Token";
 import {

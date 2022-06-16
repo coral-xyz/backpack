@@ -1,5 +1,5 @@
 {
-  "name": "@200ms/backend-worker-xnft-wrapper",
+  "name": "@coral-xyz/backend-worker-xnft-wrapper",
   "version": "0.0.1",
   "type": "module",
   "source": "./src/index.js",

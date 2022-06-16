@@ -9,12 +9,12 @@ import {
   BalancesTableContent,
   BalancesTableRow,
   BalancesTableCell,
-} from "@200ms/anchor-ui-renderer";
+} from "@coral-xyz/anchor-ui-renderer";
 import {
   useBlockchainLogo,
   useBlockchainTokensSorted,
   useEphemeralNav,
-} from "@200ms/recoil";
+} from "@coral-xyz/recoil";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
 import { Send } from "./TokensWidget/Send";

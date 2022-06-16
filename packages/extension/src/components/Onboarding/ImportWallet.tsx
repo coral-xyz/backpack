@@ -7,10 +7,15 @@ import {
   DerivationPath,
   BrowserRuntime,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { TextField } from "../common";
-import { WithContinue, Stepper, Done, CreatePassword } from "./CreateNewWallet";
-import { OnboardHeader } from "./CreateNewWallet";
+import {
+  WithContinue,
+  Stepper,
+  Done,
+  CreatePassword,
+  OnboardHeader,
+} from "./CreateNewWallet";
 
 const STEP_COUNT = 4;
 

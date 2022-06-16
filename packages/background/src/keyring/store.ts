@@ -1,12 +1,12 @@
 import * as bs58 from "bs58";
-import { KeyringStoreState, KeyringStoreStateEnum } from "@200ms/recoil";
+import { KeyringStoreState, KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import {
   EventEmitter,
   DerivationPath,
   BrowserRuntime,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   BACKEND_EVENT,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import * as crypto from "./crypto";
 import type { SolanaLedgerKeyring } from "./solana";
 import {

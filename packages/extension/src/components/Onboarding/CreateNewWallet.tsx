@@ -8,7 +8,7 @@ import {
   DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { TextField, OnboardButton } from "../common";
 import { _NavBackButton, DummyButton } from "../Layout/Nav";
 import { BlankApp } from "../../app/Router";

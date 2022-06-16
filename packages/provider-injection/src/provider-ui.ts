@@ -11,7 +11,7 @@ import type {
   SimulatedTransactionResponse,
 } from "@solana/web3.js";
 import type { Provider } from "@project-serum/anchor";
-import type { Event } from "@200ms/common";
+import type { Event } from "@coral-xyz/common";
 import {
   RequestManager,
   getLogger,
@@ -28,7 +28,7 @@ import {
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
   PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
   PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import * as cmn from "./common";
 
 const logger = getLogger("provider-ui-injection");

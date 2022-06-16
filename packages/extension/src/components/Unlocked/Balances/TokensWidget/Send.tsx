@@ -6,14 +6,14 @@ import {
   useAnchorContext,
   useSolanaCtx,
   useBlockchainTokenAccount,
-} from "@200ms/recoil";
+} from "@coral-xyz/recoil";
 import {
   confirmTransaction,
   getLogger,
   explorerUrl,
   Solana,
   SOL_NATIVE_MINT,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { WithHeaderButton } from "./Token";
 import {
   TextField,

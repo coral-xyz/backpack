@@ -74,7 +74,7 @@ import {
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 
 const logger = getLogger("solana-connection-backend");
 

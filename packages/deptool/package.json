@@ -1,5 +1,5 @@
 {
-  "name": "@200ms/deptool",
+  "name": "@coral-xyz/deptool",
   "private": true,
   "version": "0.1.0",
   "bin": {

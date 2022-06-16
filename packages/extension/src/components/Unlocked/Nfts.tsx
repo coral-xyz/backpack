@@ -1,5 +1,5 @@
 import makeStyles from "@mui/styles/makeStyles";
-import { useNftMetadata, useNftMetadataAddresses } from "@200ms/recoil";
+import { useNftMetadata, useNftMetadataAddresses } from "@coral-xyz/recoil";
 
 const useStyles = makeStyles((theme: any) => ({
   nftImage: {

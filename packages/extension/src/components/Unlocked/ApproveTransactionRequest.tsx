@@ -5,13 +5,13 @@ import {
   useTransactionRequest,
   useAllPlugins,
   useActiveWallet,
-} from "@200ms/recoil";
+} from "@coral-xyz/recoil";
 import {
   getBackgroundClient,
   UI_RPC_METHOD_SIGN_TRANSACTION,
   UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
-} from "@200ms/common";
-import { Plugin } from "@200ms/anchor-ui-renderer";
+} from "@coral-xyz/common";
+import { Plugin } from "@coral-xyz/anchor-ui-renderer";
 import { useTheme, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { walletAddressDisplay } from "../common";

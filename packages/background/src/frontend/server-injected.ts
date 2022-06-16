@@ -28,7 +28,7 @@ import {
   CONNECTION_POPUP_RESPONSE,
   BACKEND_EVENT,
   NOTIFICATION_CONNECTION_URL_UPDATED,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import {
   Window,
   openLockedPopupWindow,
@@ -36,7 +36,7 @@ import {
   openLockedApprovalPopupWindow,
   openApproveTransactionPopupWindow,
   openApproveMessagePopupWindow,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { Backend, SUCCESS_RESPONSE } from "../backend/core";
 import { Handle } from "../types";
 

@@ -5,7 +5,7 @@ import {
   Element,
   TextSerialized,
   NodeSerialized,
-} from "@200ms/anchor-ui";
+} from "@coral-xyz/anchor-ui";
 import {
   getLogger,
   BackgroundClient,
@@ -40,7 +40,7 @@ import {
   RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
   RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
   RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 
 const logger = getLogger("plugin");
 

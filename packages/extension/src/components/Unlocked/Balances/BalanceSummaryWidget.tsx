@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import { useTotal } from "@200ms/recoil";
-import { formatUSD } from "@200ms/common";
+import { useTotal } from "@coral-xyz/recoil";
+import { formatUSD } from "@coral-xyz/common";
 
 const useStyles = makeStyles((theme: any) => ({
   balancesHeaderContainer: {

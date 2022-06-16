@@ -19,8 +19,8 @@ import AnchorUi, {
   BalancesTableFooter,
   BalancesTableRow,
   BalancesTableCell,
-} from "@200ms/anchor-ui";
-import { customSplTokenAccounts } from "@200ms/common";
+} from "@coral-xyz/anchor-ui";
+import { customSplTokenAccounts } from "@coral-xyz/common";
 
 //
 // On connection to the host environment, warm the cache.

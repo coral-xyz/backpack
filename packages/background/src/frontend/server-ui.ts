@@ -51,8 +51,8 @@ import {
   BACKEND_EVENT,
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_NOTIFICATIONS,
-} from "@200ms/common";
-import { KeyringStoreState } from "@200ms/recoil";
+} from "@coral-xyz/common";
+import { KeyringStoreState } from "@coral-xyz/recoil";
 import { Backend } from "../backend/core";
 import { Handle } from "../types";
 

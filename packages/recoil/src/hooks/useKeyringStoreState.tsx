@@ -2,7 +2,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import {
   getBackgroundClient,
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { KeyringStoreState } from "../atoms/keyring-store";
 import * as atoms from "../atoms";
 

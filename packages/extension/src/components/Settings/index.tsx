@@ -23,7 +23,7 @@ import {
   KeyringStoreStateEnum,
   useWalletPublicKeys,
   useActiveWallet,
-} from "@200ms/recoil";
+} from "@coral-xyz/recoil";
 import {
   getBackgroundClient,
   openConnectHardware,
@@ -31,7 +31,7 @@ import {
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { WalletAddress, List, ListItem } from "../../components/common";
 import { WithDrawer } from "../Layout/Drawer";
 import { ConnectionMenu } from "./ConnectionSwitch";

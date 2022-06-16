@@ -9,7 +9,7 @@ import {
   NamedPublicKey,
   KeyringStoreState,
   makeDefaultNav,
-} from "@200ms/recoil";
+} from "@coral-xyz/recoil";
 import {
   DerivationPath,
   EventEmitter,
@@ -24,7 +24,7 @@ import {
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_CONNECTION_URL_UPDATED,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import {
   BLOCKCHAIN_SOLANA,
   KeyringStore,

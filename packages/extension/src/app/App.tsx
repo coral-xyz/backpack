@@ -1,6 +1,6 @@
 import { RecoilRoot } from "recoil";
 import { HashRouter } from "react-router-dom";
-import { NotificationsProvider } from "@200ms/recoil";
+import { NotificationsProvider } from "@coral-xyz/recoil";
 import { WithTheme } from "./theme";
 import { Router } from "./Router";
 import "./App.css";

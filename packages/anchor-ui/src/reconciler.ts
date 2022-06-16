@@ -13,7 +13,7 @@ import {
   RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
   RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
   RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { NAV_STACK } from "./Context";
 
 const logger = getLogger("anchor-ui-reconciler");

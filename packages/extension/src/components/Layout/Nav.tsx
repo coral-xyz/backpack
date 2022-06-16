@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { useNavigation } from "@200ms/recoil";
+import { useNavigation } from "@coral-xyz/recoil";
 import { useTheme, Typography, IconButton } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { ArrowBack } from "@mui/icons-material";

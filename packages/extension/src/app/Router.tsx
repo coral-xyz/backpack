@@ -5,7 +5,7 @@ import {
   getLogger,
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import {
   openOnboarding,
   QUERY_LOCKED,
@@ -13,13 +13,13 @@ import {
   QUERY_LOCKED_APPROVAL,
   QUERY_APPROVE_TRANSACTION,
   QUERY_APPROVE_MESSAGE,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import {
   KeyringStoreStateEnum,
   useKeyringStoreState,
   useApprovedOrigins,
   useBootstrapFast,
-} from "@200ms/recoil";
+} from "@coral-xyz/recoil";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
 import {

@@ -1,5 +1,5 @@
 {
-  "name": "@200ms/example-plugin-hello-world",
+  "name": "@coral-xyz/example-plugin-hello-world",
   "version": "0.1.0",
   "source": "src/index.tsx",
   "app": "dist/bundle.js",
@@ -14,7 +14,7 @@
     "start": "parcel watch --port 9005"
   },
   "dependencies": {
-    "@200ms/anchor-ui": "*",
+    "@coral-xyz/anchor-ui": "*",
     "react": "^17.0.2"
   },
   "devDependencies": {

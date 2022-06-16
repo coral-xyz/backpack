@@ -1,5 +1,5 @@
 {
-  "name": "@200ms/common",
+  "name": "@coral-xyz/common",
   "version": "1.0.0",
   "description": "",
   "main": "dist/esm/index.js",

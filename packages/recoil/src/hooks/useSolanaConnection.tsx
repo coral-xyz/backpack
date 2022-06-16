@@ -4,7 +4,7 @@ import {
   getBackgroundClient,
   SolanaContext,
   BackgroundClient,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import * as atoms from "../atoms";
 import { useSplTokenRegistry } from "./useSplTokenRegistry";
 import { useActiveWallet } from "./useWallet";

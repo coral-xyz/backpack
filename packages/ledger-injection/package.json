@@ -1,5 +1,5 @@
 {
-  "name": "@200ms/ledger-injection",
+  "name": "@coral-xyz/ledger-injection",
   "version": "1.0.0",
   "description": "",
   "scripts": {
@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@200ms/common": "*",
-    "@200ms/ledger-core": "*",
+    "@coral-xyz/common": "*",
+    "@coral-xyz/ledger-core": "*",
     "@ledgerhq/hw-transport": "^6.24.1",
     "@ledgerhq/hw-transport-webhid": "^6.24.1",
     "bs58": "^5.0.0"

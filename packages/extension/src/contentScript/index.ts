@@ -7,7 +7,7 @@ import {
   CHANNEL_NOTIFICATION,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 
 const logger = getLogger("content-script");
 

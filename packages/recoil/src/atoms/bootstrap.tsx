@@ -4,7 +4,7 @@ import {
   getBackgroundClient,
   UI_RPC_METHOD_NAVIGATION_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { anchorContext } from "../atoms/wallet";
 import { TokenAccountWithKey, TABS } from "../types";
 import { fetchRecentTransactions } from "./recent-transactions";

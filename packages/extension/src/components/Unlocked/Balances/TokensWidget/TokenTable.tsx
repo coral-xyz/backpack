@@ -8,13 +8,13 @@ import {
   BalancesTableRow,
   BalancesTableCell,
   BalancesTableContent,
-} from "@200ms/anchor-ui-renderer";
+} from "@coral-xyz/anchor-ui-renderer";
 import {
   useBlockchainLogo,
   useBlockchainTokensSorted,
   useNavigation,
-} from "@200ms/recoil";
-import { toTitleCase, NAV_COMPONENT_TOKEN } from "@200ms/common";
+} from "@coral-xyz/recoil";
+import { toTitleCase, NAV_COMPONENT_TOKEN } from "@coral-xyz/common";
 
 const useStyles = makeStyles((theme: any) => ({
   blockchainFooter: {

@@ -6,7 +6,7 @@ import {
   HdKeyringFactory,
   HdKeyringJson,
 } from "./types";
-import { DerivationPath } from "@200ms/common";
+import { DerivationPath } from "@coral-xyz/common";
 
 export class EthereumKeyringFactory implements KeyringFactory {
   // @ts-ignore
