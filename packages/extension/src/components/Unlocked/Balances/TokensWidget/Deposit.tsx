@@ -1,4 +1,5 @@
-import { useTheme, Button, Typography } from "@mui/material";
+import { useState } from "react";
+import { useTheme, Button, Tooltip, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import { WithHeaderButton } from "./Token";
@@ -147,9 +148,24 @@ export function QrCode() {
 
 function CopyButton({ onClick }: any) {
   const classes = useStyles();
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   return (
-    <Button className={classes.copyButton} onClick={onClick}>
-      <Typography className={classes.copyButtonLabel}>Copy</Typography>
-    </Button>
+    <Tooltip
+      title={"Address copied"}
+      open={tooltipOpen}
+      disableFocusListener
+      disableHoverListener
+    >
+      <Button
+        className={classes.copyButton}
+        onClick={(e) => {
+          setTooltipOpen(true);
+          setTimeout(() => setTooltipOpen(false), 1000);
+          onClick(e);
+        }}
+      >
+        <Typography className={classes.copyButtonLabel}>Copy</Typography>
+      </Button>
+    </Tooltip>
   );
 }
