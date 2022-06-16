@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import { Button } from "@200ms/anchor-ui-renderer";
-import type { SearchParamsFor } from "@200ms/recoil";
-import { useBlockchainTokenAccount } from "@200ms/recoil";
+import { Button } from "@coral-xyz/anchor-ui-renderer";
+import type { SearchParamsFor } from "@coral-xyz/recoil";
+import { useBlockchainTokenAccount } from "@coral-xyz/recoil";
 import { RecentActivitySmall } from "../RecentActivity";
 import { SendButton } from "./Send";
 import { DepositButton } from "./Deposit";

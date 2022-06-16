@@ -4,7 +4,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import {
   getBackgroundClient,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { TextField, OnboardButton } from "./common";
 
 export const NAV_BAR_HEIGHT = 56;

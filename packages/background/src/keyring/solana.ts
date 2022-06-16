@@ -10,7 +10,7 @@ import {
   LEDGER_METHOD_SIGN_MESSAGE,
   DerivationPath,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { deriveKeypairs, deriveKeypair } from "./crypto";
 import {
   ImportedDerivationPath,

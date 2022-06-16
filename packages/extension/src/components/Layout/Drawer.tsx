@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { Drawer, Button, IconButton } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { Close } from "@mui/icons-material";
-import { EXTENSION_HEIGHT } from "@200ms/common";
-import { useEphemeralNav } from "@200ms/recoil";
+import { EXTENSION_HEIGHT } from "@coral-xyz/common";
+import { useEphemeralNav } from "@coral-xyz/recoil";
 import { WithEphemeralNav } from "../Layout/NavEphemeral";
 import { NAV_BAR_HEIGHT, NAV_BUTTON_WIDTH } from "./Nav";
 

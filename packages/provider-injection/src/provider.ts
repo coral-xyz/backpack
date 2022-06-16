@@ -10,7 +10,7 @@ import type {
   Commitment,
 } from "@solana/web3.js";
 import { Connection, PublicKey } from "@solana/web3.js";
-import type { Event } from "@200ms/common";
+import type { Event } from "@coral-xyz/common";
 import {
   getLogger,
   RequestManager,
@@ -25,7 +25,7 @@ import {
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import * as cmn from "./common";
 
 const logger = getLogger("provider-injection");

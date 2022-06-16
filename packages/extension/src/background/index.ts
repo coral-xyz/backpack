@@ -1,3 +1,3 @@
-import { start } from "@200ms/background";
+import { start } from "@coral-xyz/background";
 
 const _handle = start();

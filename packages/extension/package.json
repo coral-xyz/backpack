@@ -1,14 +1,14 @@
 {
-  "name": "@200ms/extension",
+  "name": "@coral-xyz/extension",
   "version": "0.1.0",
   "description": "Solana wallet browser extension",
   "private": true,
   "dependencies": {
-    "@200ms/anchor-ui-renderer": "*",
-    "@200ms/background": "*",
-    "@200ms/common": "*",
-    "@200ms/ledger-core": "*",
-    "@200ms/recoil": "*",
+    "@coral-xyz/anchor-ui-renderer": "*",
+    "@coral-xyz/background": "*",
+    "@coral-xyz/common": "*",
+    "@coral-xyz/ledger-core": "*",
+    "@coral-xyz/recoil": "*",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@ledgerhq/hw-transport": "^6.24.1",
@@ -86,7 +86,7 @@
     "webpack-dev-server": "^4.9.2"
   },
   "peerDependencies": {
-    "@200ms/deptool": "*",
-    "@200ms/provider-injection": "*"
+    "@coral-xyz/deptool": "*",
+    "@coral-xyz/provider-injection": "*"
   }
 }

@@ -1,6 +1,6 @@
 import { useTheme, Button, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import { useActiveWallet } from "@200ms/recoil";
+import { useActiveWallet } from "@coral-xyz/recoil";
 import { WithHeaderButton } from "./Token";
 import { BottomCard } from "./Send";
 import {

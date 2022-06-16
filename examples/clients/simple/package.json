@@ -1,5 +1,5 @@
 {
-  "name": "@200ms/example-client",
+  "name": "@coral-xyz/example-client",
   "version": "0.1.0",
   "private": true,
   "source": "src/index.html",

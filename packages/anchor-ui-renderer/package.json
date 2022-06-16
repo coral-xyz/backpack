@@ -1,5 +1,5 @@
 {
-  "name": "@200ms/anchor-ui-renderer",
+  "name": "@coral-xyz/anchor-ui-renderer",
   "version": "1.0.0",
   "description": "",
   "main": "dist/esm/index.js",
@@ -11,8 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@200ms/anchor-ui": "*",
-    "@200ms/common": "*",
+    "@coral-xyz/anchor-ui": "*",
+    "@coral-xyz/common": "*",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@mui/material": "^5.8.1",

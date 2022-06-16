@@ -6,7 +6,7 @@ import {
   adaptV4Theme,
 } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
-import { useDarkMode } from "@200ms/recoil";
+import { useDarkMode } from "@coral-xyz/recoil";
 
 declare module "@mui/styles/defaultTheme" {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface

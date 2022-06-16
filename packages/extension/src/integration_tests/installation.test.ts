@@ -7,8 +7,8 @@ import type { Page } from "puppeteer";
 import manifest from "../../build/manifest.json";
 import { walletAddressDisplay } from "../components/common";
 import { Connection, LAMPORTS_PER_SOL } from "@solana/web3.js";
-import { DerivationPath } from "@200ms/common";
-import { deriveKeypairs } from "@200ms/background/dist/esm/keyring/crypto";
+import { DerivationPath } from "@coral-xyz/common";
+import { deriveKeypairs } from "@coral-xyz/background/dist/esm/keyring/crypto";
 
 let clientPage: Page;
 let extensionPopupPage: Page;
@@ -331,10 +331,8 @@ describe("Installing Anchor Wallet", () => {
         )
       );
 
-      // console.log("p");
-
       // check balances directly because UI doesn't update immediately, change
-      // once https://github.com/200ms-labs/anchor-wallet/issues/111 is fixed
+      // once https://github.com/coral-xyz/anchor-wallet/issues/111 is fixed
 
       const [firstBalance, secondBalance] = await Promise.all([
         connection.getBalance(firstWallet.publicKey),

@@ -3,7 +3,7 @@ import {
   getBackgroundClient,
   UI_RPC_METHOD_NAVIGATION_UPDATE,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { bootstrapFast } from "./bootstrap";
 
 //

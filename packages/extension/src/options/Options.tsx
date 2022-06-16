@@ -3,7 +3,7 @@ import {
   setupClient,
   QUERY_CONNECT_HARDWARE,
   QUERY_ONBOARDING,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { WithSuspense } from "../app/Router";
 import { WithTheme } from "../app/theme";
 import { ConnectHardware } from "../components/Settings/ConnectHardware";

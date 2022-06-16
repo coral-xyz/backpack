@@ -4,7 +4,7 @@ import { randomBytes, secretbox } from "tweetnacl";
 import * as bs58 from "bs58";
 import { derivePath } from "ed25519-hd-key";
 import { Keypair } from "@solana/web3.js";
-import { DerivationPath } from "@200ms/common";
+import { DerivationPath } from "@coral-xyz/common";
 
 // An encrypted secret wiht associated metadata required for decryption.
 export type SecretPayload = {

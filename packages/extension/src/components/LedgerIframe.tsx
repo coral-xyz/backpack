@@ -1,7 +1,7 @@
 import {
   LEDGER_IFRAME_URL,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { useEffect, useRef } from "react";
 
 /**

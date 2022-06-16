@@ -1,7 +1,7 @@
 import type {
   ProviderInjection,
   ProviderUiInjection,
-} from "@200ms/provider-injection";
+} from "@coral-xyz/provider-injection";
 
 declare global {
   interface Window {

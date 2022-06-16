@@ -9,7 +9,7 @@ import {
   BalancesTableFooter,
   BalancesTableRow,
   BalancesTableCell,
-} from "@200ms/anchor-ui";
+} from "@coral-xyz/anchor-ui";
 
 const icon = "https://aux.iconspalace.com/uploads/finder-circle-icon-256.png";
 

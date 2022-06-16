@@ -6,8 +6,8 @@ import {
   Image,
   Apps,
 } from "@mui/icons-material";
-import { useTab } from "@200ms/recoil";
-import { TAB_NFTS, TAB_APPS, TAB_BALANCES, TAB_SWAP } from "@200ms/common";
+import { useTab } from "@coral-xyz/recoil";
+import { TAB_NFTS, TAB_APPS, TAB_BALANCES, TAB_SWAP } from "@coral-xyz/common";
 
 const useStyles = makeStyles((theme: any) => ({
   container: {

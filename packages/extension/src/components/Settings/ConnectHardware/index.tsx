@@ -11,15 +11,15 @@ import { PublicKey } from "@solana/web3.js";
 import Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
 import * as anchor from "@project-serum/anchor";
-import * as ledgerCore from "@200ms/ledger-core";
+import * as ledgerCore from "@coral-xyz/ledger-core";
 import {
   getBackgroundClient,
   DerivationPath,
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
   UI_RPC_METHOD_LEDGER_IMPORT,
-} from "@200ms/common";
-import { useAnchorContext } from "@200ms/recoil";
+} from "@coral-xyz/common";
+import { useAnchorContext } from "@coral-xyz/recoil";
 import { Stepper, WithContinue } from "../../Onboarding/CreateNewWallet";
 
 const STEP_COUNT = 3;

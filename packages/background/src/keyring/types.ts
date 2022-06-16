@@ -1,4 +1,4 @@
-import type { DerivationPath } from "@200ms/common";
+import type { DerivationPath } from "@coral-xyz/common";
 
 export type KeyringJson = {
   keypairs: Array<string>;

@@ -1,5 +1,5 @@
 {
-  "name": "@200ms/background",
+  "name": "@coral-xyz/background",
   "version": "1.0.0",
   "description": "",
   "main": "dist/esm/index.js",
@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@200ms/recoil": "*",
-    "@200ms/common": "*",
+    "@coral-xyz/recoil": "*",
+    "@coral-xyz/common": "*",
     "@project-serum/anchor": "^0.23.0",
     "@solana/web3.js": "^1.37.1",
     "bip39": "^3.0.4",

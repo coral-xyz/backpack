@@ -12,7 +12,7 @@ import {
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { WalletPublicKeys } from "../types";
 
 /**

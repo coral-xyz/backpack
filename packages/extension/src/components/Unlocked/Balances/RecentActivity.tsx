@@ -8,8 +8,8 @@ import {
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { Check, Clear, Bolt } from "@mui/icons-material";
-import { explorerUrl } from "@200ms/common";
-import { useActiveWallet, useRecentTransactions } from "@200ms/recoil";
+import { explorerUrl } from "@coral-xyz/common";
+import { useActiveWallet, useRecentTransactions } from "@coral-xyz/recoil";
 import { Loading } from "../../common";
 import { WithDrawer } from "../../Layout/Drawer";
 

@@ -1,5 +1,5 @@
 {
-  "name": "@200ms/provider-injection",
+  "name": "@coral-xyz/provider-injection",
   "version": "0.1.0",
   "app": "dist/browser/index.js",
   "source": "src/index.ts",
@@ -8,7 +8,7 @@
     "build": "node build.js"
   },
   "dependencies": {
-    "@200ms/common": "*",
+    "@coral-xyz/common": "*",
     "@project-serum/anchor": "^0.23.0",
     "@solana/web3.js": "^1.36.0",
     "bs58": "^5.0.0",

@@ -1,5 +1,5 @@
 {
-  "name": "@200ms/example-plugin-table-degods",
+  "name": "@coral-xyz/example-plugin-table-degods",
   "version": "0.1.0",
   "source": "src/index.tsx",
   "app": "dist/bundle.js",
@@ -14,8 +14,8 @@
     "start": "parcel watch --port 9003"
   },
   "dependencies": {
-    "@200ms/anchor-ui": "*",
-    "@200ms/common": "*",
+    "@coral-xyz/anchor-ui": "*",
+    "@coral-xyz/common": "*",
     "@project-serum/anchor": "^0.23.0",
     "@project-serum/serum": "^0.13.64",
     "@solana/web3.js": "^1.36.0",

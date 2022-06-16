@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import type { Element } from "@200ms/anchor-ui";
-import { NodeKind } from "@200ms/anchor-ui";
-import { formatUSD } from "@200ms/common";
+import type { Element } from "@coral-xyz/anchor-ui";
+import { NodeKind } from "@coral-xyz/anchor-ui";
+import { formatUSD } from "@coral-xyz/common";
 import {
   Button as MuiButton,
   Card,

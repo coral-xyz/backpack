@@ -10,7 +10,7 @@ import AnchorUi, {
   BalancesTableFooter,
   BalancesTableRow,
   BalancesTableCell,
-} from "@200ms/anchor-ui";
+} from "@coral-xyz/anchor-ui";
 import { MangoClient, Config } from "@blockworks-foundation/mango-client";
 
 //

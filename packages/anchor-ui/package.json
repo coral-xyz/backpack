@@ -1,5 +1,5 @@
 {
-  "name": "@200ms/anchor-ui",
+  "name": "@coral-xyz/anchor-ui",
   "version": "1.0.0",
   "description": "",
   "main": "dist/esm/index.js",
@@ -11,8 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@200ms/common": "*",
-    "@200ms/provider-injection": "*",
+    "@coral-xyz/common": "*",
+    "@coral-xyz/provider-injection": "*",
     "eventemitter3": "^4.0.7",
     "react": "^17.0.0",
     "react-reconciler": "^0.26.0"

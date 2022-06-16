@@ -10,14 +10,14 @@ import type {
   TransactionSignature,
   SimulatedTransactionResponse,
 } from "@solana/web3.js";
-import type { RequestManager } from "@200ms/common";
+import type { RequestManager } from "@coral-xyz/common";
 import {
   RPC_METHOD_SIGN_ALL_TXS,
   RPC_METHOD_SIGN_AND_SEND_TX,
   RPC_METHOD_SIGN_MESSAGE,
   RPC_METHOD_SIGN_TX,
   RPC_METHOD_SIMULATE,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 
 export async function sendAndConfirm(
   publicKey: PublicKey,

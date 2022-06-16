@@ -1,7 +1,7 @@
 import Transport from "@ledgerhq/hw-transport";
 import { Transaction, PublicKey } from "@solana/web3.js";
 import * as bs58 from "bs58";
-import { DerivationPath } from "@200ms/common";
+import { DerivationPath } from "@coral-xyz/common";
 
 const INS_GET_PUBKEY = 0x05;
 const INS_SIGN_MESSAGE = 0x06;

@@ -28,7 +28,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2,
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION,
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { Backend } from "../backend/solana-connection";
 import { Handle } from "../types";
 

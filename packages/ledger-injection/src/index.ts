@@ -1,7 +1,7 @@
 import * as bs58 from "bs58";
 import Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
-import * as core from "@200ms/ledger-core";
+import * as core from "@coral-xyz/ledger-core";
 import {
   DerivationPath,
   LEDGER_INJECTED_CHANNEL_REQUEST,
@@ -9,7 +9,7 @@ import {
   LEDGER_METHOD_CONNECT,
   LEDGER_METHOD_SIGN_TRANSACTION,
   LEDGER_METHOD_SIGN_MESSAGE,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 
 // Script entry.
 function main() {

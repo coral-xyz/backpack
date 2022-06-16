@@ -1,5 +1,5 @@
 {
-  "name": "@200ms/recoil",
+  "name": "@coral-xyz/recoil",
   "version": "1.0.0",
   "description": "",
   "main": "dist/esm/index.js",
@@ -11,8 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@200ms/anchor-ui-renderer": "*",
-    "@200ms/common": "*",
+    "@coral-xyz/anchor-ui-renderer": "*",
+    "@coral-xyz/common": "*",
     "@project-serum/anchor": "^0.23.0",
     "@solana/spl-token-registry": "^0.2.3225",
     "bn.js": "^5.2.1",

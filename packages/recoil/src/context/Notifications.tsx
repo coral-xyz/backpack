@@ -20,7 +20,7 @@ import {
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_CONNECTION_URL_UPDATED,
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { KeyringStoreStateEnum, useUpdateAllSplTokenAccounts } from "../";
 import * as atoms from "../atoms";
 import { getPlugin, allPlugins, useDecodedSearchParams } from "../hooks";

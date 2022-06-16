@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { useTheme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import { NavEphemeralProvider, useEphemeralNav } from "@200ms/recoil";
+import { NavEphemeralProvider, useEphemeralNav } from "@coral-xyz/recoil";
 import { Scrollbar } from "./Scrollbar";
 import { Loading } from "../common";
 import {
