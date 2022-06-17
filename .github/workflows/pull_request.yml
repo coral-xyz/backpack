@@ -142,6 +142,11 @@ jobs:
       #   with:
       #     command: yarn workspace @200ms/extension e2e
 
+
+      ##########################################################################
+      # Release.
+      ##########################################################################
+
       - name: "zip build artifacts"
         working-directory: packages/extension
         run: zip -r build.zip build/
@@ -152,9 +157,7 @@ jobs:
           name: backpack-build
           path: packages/extension/build.zip
 
-  release:
-    runs-on: ubuntu-latest
-    steps:
+
       - uses: actions/download-artifact@v2
         with:
           name: backpack-build
