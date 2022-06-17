@@ -3,15 +3,15 @@ import type {
   TransactionSignature,
   SendOptions,
   Finality,
-  ConfirmedSignaturesForAddress2Options} from "@solana/web3.js";
-import {
-  PublicKey
+  ConfirmedSignaturesForAddress2Options,
 } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import type {
   RpcRequest,
   RpcResponse,
   Context,
-  EventEmitter} from "@200ms/common";
+  EventEmitter,
+} from "@coral-xyz/common";
 import {
   getLogger,
   withContext,
