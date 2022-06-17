@@ -3,10 +3,10 @@ on:
   pull_request:
     types: [opened, synchronize]
     branches:
-      - armani/build
+      - master
   push:
     branches:
-      - armani/build
+      - master
 
 env:
   solana_version: 1.10.24
