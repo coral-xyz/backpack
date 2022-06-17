@@ -157,18 +157,20 @@ jobs:
           name: backpack-build
           path: packages/extension/build.zip
 
-
       - uses: actions/download-artifact@v2
         with:
           name: backpack-build
           path: build/
+
       - uses: actions/create-release@v1
         name: Create Draft Release
         id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: latest
           release_name: latest
-          draft: true
+          draft: false
           prerelease: false
 
       - uses: actions/upload-release-asset@v1.0.1
