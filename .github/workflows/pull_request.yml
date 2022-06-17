@@ -137,22 +137,28 @@ jobs:
       # Release.
       ##########################################################################
 
+      #
+      # TODO: the master branch conditionson all these are bit hacky. Probably
+      #       a cleaner way of doing this.
+      #
+
       - name: "zip build artifacts"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         working-directory: packages/extension
         run: zip -r build.zip build/
-
       - name: "upload build artifacts"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v2
         with:
           name: backpack-build
           path: packages/extension/build.zip
-
       - uses: actions/download-artifact@v2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
           name: backpack-build
           path: ./
-
       - uses: actions/create-release@v1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         name: Create Draft Release
         id: create_release
         env:
@@ -162,8 +168,8 @@ jobs:
           release_name: latest-${{ github.run_number }}
           draft: false
           prerelease: false
-
       - uses: actions/upload-release-asset@v1.0.1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
