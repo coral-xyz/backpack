@@ -1,11 +1,12 @@
 {
   "name": "@coral-xyz/ledger-injection",
   "version": "1.0.0",
-  "description": "",
+  "source": "src/index.html",
+  "type": "module",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "parcel build src/index.html",
-    "start": "parcel --https --port 4443 src/index.html"
+    "build": "parcel build",
+    "start": "parcel --https --port 4443"
   },
   "author": "",
   "license": "ISC",
@@ -17,7 +18,7 @@
     "bs58": "^5.0.0"
   },
   "devDependencies": {
-    "parcel": "^2.5.0",
+    "parcel": "^2.6.1",
     "rimraf": "^3.0.2",
     "typescript": "^4.6.3"
   }
