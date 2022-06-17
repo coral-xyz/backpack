@@ -168,8 +168,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: latest
-          release_name: latest
+          tag_name: v${{ github.run_number }}-latest
+          release_name: v${{ github.run_number }}-latest
           draft: false
           prerelease: false
 
