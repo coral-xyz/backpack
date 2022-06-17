@@ -54,7 +54,6 @@ import type {
   Blockhash,
   FeeCalculator,
   SignatureStatusConfig,
-  SignatureStatusNotification,
   EpochSchedule,
   LeaderSchedule,
   EpochInfo,
