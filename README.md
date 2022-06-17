@@ -1,9 +1,13 @@
 # Backpack
 
-## Running locally
+## Installing the Latest Release
 
-https://user-images.githubusercontent.com/101902546/173857300-fc139113-0af5-46fc-baad-236a2ebf63f1.mp4
+If you'd like to install the latest dev release, grab the latest **build.zip** [here](https://github.com/coral-xyz/backpack/releases)
+and add it to your local chrome profile, using developer mode. See the video below.
 
+## Developing Locally
+
+https://user-images.githubusercontent.com/101902546/173857300-fc139113-0af5-46fc-baad-236a2ebf63f1.m4p
 
 ### 0. Temporary preliminary steps
 
