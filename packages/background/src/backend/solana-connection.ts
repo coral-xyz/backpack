@@ -1,8 +1,5 @@
-import { Spl, Provider } from "@project-serum/anchor";
-import {
-  Connection,
-  ConnectionConfig,
-  PublicKey,
+import { Connection, PublicKey } from "@solana/web3.js";
+import type {
   Commitment,
   GetSupplyConfig,
   RpcResponseAndContext,
@@ -54,7 +51,6 @@ import {
   Blockhash,
   FeeCalculator,
   SignatureStatusConfig,
-  SignatureStatusNotification,
   EpochSchedule,
   LeaderSchedule,
   EpochInfo,
@@ -63,11 +59,10 @@ import {
   SignatureStatus,
   PerfSample,
 } from "@solana/web3.js";
+import type { Notification, EventEmitter } from "@coral-xyz/common";
 import {
   getLogger,
   customSplTokenAccounts,
-  Notification,
-  EventEmitter,
   BACKEND_EVENT,
   NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
