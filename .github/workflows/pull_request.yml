@@ -17,7 +17,6 @@ jobs:
     name: Run tests
     steps:
       - uses: actions/checkout@v3
-
       - uses: actions/setup-node@v3
         with:
           node-version: 16
@@ -27,48 +26,44 @@ jobs:
       # Yarn link.
       ##########################################################################
 
+      #
+      # Wallet Adapter tasks.
+      #
       # The following [wallet-adapter] tasks are only necessary until
       # the 'anchor' branch in https://github.com/200ms-labs/wallet-adapter
       # gets merged upstream and deployed in @solana/wallet-adapter
-
+      #
       - name: "[wallet-adapter] checkout"
         uses: actions/checkout@v3
         with:
           repository: 200ms-labs/wallet-adapter
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           path: wallet-adapter
-
       - name: "[wallet-adapter] set env var"
         run: echo "wallet_adapter_sha=$(
           cd wallet-adapter && git rev-parse --short HEAD
           )" >> $GITHUB_ENV
-
       # cache `yarn build` output based on latest commit SHA as it takes 10+ mins
-
       - name: "[wallet-adapter] cache"
         id: wallet-adapter-cache
         uses: actions/cache@v3
         with:
           path: wallet-adapter
           key: ${{ runner.OS }}-wallet-adapter-cache-${{ env.wallet_adapter_sha }}
-
       - name: "[wallet-adapter] install deps"
         working-directory: wallet-adapter
         run: yarn install --frozen-lockfile
-
       - name: "[wallet-adapter] build"
         if: steps.wallet-adapter-cache.outputs.cache-hit != 'true'
         working-directory: wallet-adapter
         run: yarn build
-
       - name: "[wallet-adapter] yarn link"
         working-directory: wallet-adapter
         run: npx lerna exec -- yarn link
 
-      # END [wallet-adapter] tasks >>>
-
-      # <<< START [anchor] tasks
-
+      #
+      # Anchor tasks.
+      #
       - name: "[anchor] checkout"
         uses: actions/checkout@v3
         with:
@@ -168,12 +163,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.run_number }}-latest
-          release_name: v${{ github.run_number }}-latest
+          tag_name: latest:${{ github.run_number }}
+          release_name: latest:${{ github.run_number }}
           draft: false
           prerelease: false
 
       - uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./build.zip
