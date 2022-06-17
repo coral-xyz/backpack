@@ -160,7 +160,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: backpack-build
-          path: build/
+          path: ./
 
       - uses: actions/create-release@v1
         name: Create Draft Release
