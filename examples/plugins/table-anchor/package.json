@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "source": "src/index.tsx",
   "app": "dist/bundle.js",
+  "type": "module",
   "browserslist": [
     "last 2 chrome versions"
   ],
@@ -20,7 +21,7 @@
     "react": "^17.0.2"
   },
   "devDependencies": {
-    "parcel": "^2.5.0",
+    "parcel": "^2.6.1",
     "typescript": "^4.6.3"
   }
 }
