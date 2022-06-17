@@ -1,9 +1,8 @@
 import BN from "bn.js";
 import { Buffer } from "buffer";
-import {
-  Connection,
+import { Connection, PublicKey } from "@solana/web3.js";
+import type {
   ConnectionConfig,
-  PublicKey,
   Commitment,
   GetSupplyConfig,
   RpcResponseAndContext,
@@ -76,7 +75,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
 } from "../constants";
-import { BackgroundClient } from "../channel";
+import type { BackgroundClient } from "../channel";
 
 export class BackgroundSolanaConnection extends Connection {
   private _backgroundClient: BackgroundClient;
