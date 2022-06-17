@@ -23,11 +23,13 @@ jobs:
           node-version: 16
           cache: yarn
 
+      ##########################################################################
+      # Yarn link.
+      ##########################################################################
+
       # The following [wallet-adapter] tasks are only necessary until
       # the 'anchor' branch in https://github.com/200ms-labs/wallet-adapter
       # gets merged upstream and deployed in @solana/wallet-adapter
-
-      # <<< START [wallet-adapter] tasks
 
       - name: "[wallet-adapter] checkout"
         uses: actions/checkout@v3
@@ -98,9 +100,15 @@ jobs:
         working-directory: anchor/ts
         run: yarn link
 
-      # END [anchor] tasks >>>
+      ##########################################################################
+      # Yarn install.
+      ##########################################################################
 
       - run: yarn install --frozen-lockfile
+
+      ##########################################################################
+      # Yarn test.
+      ##########################################################################
 
       # - run: yarn test
 
@@ -143,27 +151,26 @@ jobs:
         with:
           name: backpack-build
           path: packages/extension/build.zip
-  # trigger2
-  #
-  # release:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/download-artifact@v2
-  #       with:
-  #         name: backpack-build
-  #         path: build/
-  #     - uses: actions/create-release@v1
-  #       name: Create Draft Release
-  #       id: create_release
-  #       with:
-  #         tag_name: latest
-  #         release_name: latest
-  #         draft: true
-  #         prerelease: false
 
-  #     - uses: actions/upload-release-asset@v1.0.1
-  #       with:
-  #         upload_url: ${{ steps.create_release.outputs.upload_url }}
-  #         asset_path: ./my-artifact.zip
-  #         asset_name: my-artifact.zip
-  #         asset_content_type: application/zip
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: backpack-build
+          path: build/
+      - uses: actions/create-release@v1
+        name: Create Draft Release
+        id: create_release
+        with:
+          tag_name: latest
+          release_name: latest
+          draft: true
+          prerelease: false
+
+      - uses: actions/upload-release-asset@v1.0.1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build.zip
+          asset_name: build.zip
+          asset_content_type: application/zip
