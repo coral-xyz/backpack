@@ -113,7 +113,7 @@ async function handleGetAccountInfo(
   pubkey: string,
   commitment?: Commitment
 ) {
-  const resp = await ctx.backend!.getAccountInfo(
+  const resp = await ctx.backend.getAccountInfo(
     new PublicKey(pubkey),
     commitment
   );
@@ -124,7 +124,7 @@ async function handleGetLatestBlockhash(
   ctx: Context<Backend>,
   commitment?: Commitment
 ) {
-  const resp = await ctx.backend!.getLatestBlockhash(commitment);
+  const resp = await ctx.backend.getLatestBlockhash(commitment);
   return [resp];
 }
 
@@ -143,7 +143,7 @@ async function handleGetTokenAccountsByOwner(
     // @ts-ignore
     _filter = { programId: new PublicKey(filter.programId) };
   }
-  const resp = await ctx.backend!.getTokenAccountsByOwner(
+  const resp = await ctx.backend.getTokenAccountsByOwner(
     new PublicKey(ownerAddress),
     _filter,
     commitment
@@ -156,7 +156,7 @@ async function handleSendRawTransaction(
   rawTransaction: Buffer | Uint8Array | Array<number>,
   options?: SendOptions
 ) {
-  const resp = await ctx.backend!.sendRawTransaction(rawTransaction, options);
+  const resp = await ctx.backend.sendRawTransaction(rawTransaction, options);
   return [resp];
 }
 
@@ -168,7 +168,7 @@ async function handleConfirmTransaction(
   const { blockhash, lastValidBlockHeight } =
     await ctx.backend.getLatestBlockhash();
 
-  const resp = await ctx.backend!.confirmTransaction(
+  const resp = await ctx.backend.confirmTransaction(
     {
       signature,
       blockhash,
@@ -184,7 +184,7 @@ async function handleGetMultipleAccountsInfo(
   pubkeys: string[],
   commitment?: Commitment
 ) {
-  const resp = await ctx.backend!.getMultipleAccountsInfo(
+  const resp = await ctx.backend.getMultipleAccountsInfo(
     pubkeys.map((p) => new PublicKey(p)),
     commitment
   );
@@ -197,7 +197,7 @@ async function handleGetConfirmedSignaturesForAddress2(
   options?: ConfirmedSignaturesForAddress2Options,
   commitment?: Finality
 ) {
-  const resp = await ctx.backend!.getConfirmedSignaturesForAddress2(
+  const resp = await ctx.backend.getConfirmedSignaturesForAddress2(
     new PublicKey(address),
     options,
     commitment
@@ -210,7 +210,7 @@ async function handleGetParsedTransaction(
   signature: TransactionSignature,
   commitment?: Finality
 ) {
-  const resp = await ctx.backend!.getParsedTransaction(signature, commitment);
+  const resp = await ctx.backend.getParsedTransaction(signature, commitment);
   return [resp];
 }
 
@@ -219,7 +219,7 @@ async function handleGetParsedTransactions(
   signatures: TransactionSignature[],
   commitment?: Finality
 ) {
-  const resp = await ctx.backend!.getParsedTransactions(signatures, commitment);
+  const resp = await ctx.backend.getParsedTransactions(signatures, commitment);
   return [resp];
 }
 
@@ -227,6 +227,6 @@ async function handleCustomSplTokenAccounts(
   ctx: Context<Backend>,
   pubkey: string
 ) {
-  const resp = await ctx.backend!.customSplTokenAccounts(new PublicKey(pubkey));
+  const resp = await ctx.backend.customSplTokenAccounts(new PublicKey(pubkey));
   return [resp];
 }
