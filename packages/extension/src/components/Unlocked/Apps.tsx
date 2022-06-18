@@ -4,7 +4,6 @@ import { Plugin, PluginRenderer } from "@coral-xyz/anchor-ui-renderer";
 import { usePlugins, useTablePlugins, useNavigation } from "@coral-xyz/recoil";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { NAV_COMPONENT_PLUGINS } from "@coral-xyz/common";
-import { useRootNav } from "../common/hooks";
 
 const ICON_WIDTH = "64px";
 
@@ -31,7 +30,6 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export function Apps() {
-  useRootNav();
   return <PluginGrid />;
 }
 

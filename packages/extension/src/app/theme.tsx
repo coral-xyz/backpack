@@ -46,8 +46,8 @@ const BACKGROUND_COLOR_1 = "#27272a";
 const FONT_COLOR = "#FFFFFF";
 const FONT_COLOR_1 = "#71717A";
 const FONT_COLOR_2 = "#D4D4D8";
-const BRAND_COLOR = FONT_COLOR_2;
-const BUTTON_FONT_COLOR = BACKGROUND_COLOR_1;
+const BRAND_COLOR = "#14B8A6";
+const BUTTON_FONT_COLOR = FONT_COLOR;
 const BORDER_COLOR = "#393C43";
 
 export const darkTheme = createTheme(

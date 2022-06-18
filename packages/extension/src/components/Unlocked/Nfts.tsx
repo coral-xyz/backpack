@@ -1,6 +1,5 @@
 import makeStyles from "@mui/styles/makeStyles";
 import { useNftMetadata, useNftMetadataAddresses } from "@coral-xyz/recoil";
-import { useRootNav } from "../common/hooks";
 
 const useStyles = makeStyles((theme: any) => ({
   nftImage: {
@@ -9,7 +8,6 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export function Nfts() {
-  useRootNav();
   return <_Nfts blockchain={"solana"} />;
 }
 
