@@ -99,7 +99,7 @@ jobs:
         run: yarn build
 
       - name: e2e tests
-        run: xvfb-run --auto-servernum --server-args='-screen 0, 1600x900x24' yarn workspace @200ms/extension e2e
+        run: xvfb-run --auto-servernum --server-args='-screen 0, 1600x900x24' yarn workspace @coral-xyz/extension e2e
 
 
       ##########################################################################
