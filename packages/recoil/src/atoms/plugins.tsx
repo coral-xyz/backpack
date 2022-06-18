@@ -29,37 +29,42 @@ export const plugins = selector({
   get: ({ get }: any) => {
     return [
       {
-        url: OPEN_ORDERS_PLUGIN_URL,
-        iconUrl: OPEN_ORDERS_ICON_URL,
-        title: "Orders",
+        url: MANGO_TABLE_PLUGIN_URL,
+        iconUrl:
+          "https://cdn.discordapp.com/attachments/987809528848461914/987811342763302942/Group_1914_2.png",
+        title: "Mango",
+        activeWallet: get(activeWallet),
+        connectionUrl: get(connectionUrl),
+      },
+      {
+        url: DEGODS_TABLE_PLUGIN_URL,
+        iconUrl:
+          "https://cdn.discordapp.com/attachments/987809528848461914/987810144446459954/Group_1913.png",
+        title: "Degods",
+        activeWallet: get(activeWallet),
+        connectionUrl: get(connectionUrl),
+      },
+      {
+        url: ANCHOR_TABLE_PLUGIN_URL,
+        iconUrl:
+          "https://cdn.discordapp.com/attachments/987809245707796480/987809273998360576/Group_1912.png",
+        title: "Anchor",
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
       },
       {
         url: OPEN_ORDERS_PLUGIN_URL,
-        iconUrl: OPEN_ORDERS_ICON_URL,
-        title: "Orders",
+        iconUrl:
+          "https://substackcdn.com/image/fetch/w_256,h_256,c_fill,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2Fdbf53918-04a8-40cf-b063-0769309bc98b_800x800.png",
+        title: "Magic Eden",
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
       },
       {
-        url: OPEN_ORDERS_PLUGIN_URL,
-        iconUrl: OPEN_ORDERS_ICON_URL,
-        title: "Orders",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(connectionUrl),
-      },
-      {
-        url: OPEN_ORDERS_PLUGIN_URL,
-        iconUrl: OPEN_ORDERS_ICON_URL,
-        title: "Orders",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(connectionUrl),
-      },
-      {
-        url: OPEN_ORDERS_PLUGIN_URL,
-        iconUrl: OPEN_ORDERS_ICON_URL,
-        title: "Orders",
+        url: "ttps://localhost:6969/index.html", // todo
+        iconUrl:
+          "https://cdn.discordapp.com/attachments/987809528848461914/987814314457055242/Group_1915.png",
+        title: "Psyoptions",
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
       },
