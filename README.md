@@ -17,9 +17,19 @@ Go to chrome://flags/#allow-insecure-localhost and enable the toggle, then resta
 
 #### Link local wallet-adapter
 
-Ensure that an Anchor Wallet compatible `@solana/wallet-adapter-wallets` has been `yarn link`ed.
+<details>
+  <summary>Ensure that Backpack-compatible @solana/wallet-adapter-wallets has been yarn link'd</summary>
 
-Check the [.github/workflows/pull_request.yml](.github/workflows/pull_request.yml) for an example of how to do that.
+```
+git clone https://github.com/coral-xyz/wallet-adapter
+cd wallet-adapter
+yarn
+yarn build
+npx lerna exec -- yarn link
+```
+</details>
+
+#### Environment variables
 
 You can also optionally rename `.env.example` to `.env` and set your own variables.
 
