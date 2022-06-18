@@ -165,10 +165,8 @@ async function handleConfirmTransaction(
   signature: TransactionSignature,
   commitment?: Commitment
 ) {
-  const [{ blockhash }, lastValidBlockHeight] = await Promise.all([
-    ctx.backend!.getRecentBlockhash(),
-    ctx.backend!.getBlockHeight(),
-  ]);
+  const { blockhash, lastValidBlockHeight } =
+    await ctx.backend.getLatestBlockhash();
 
   const resp = await ctx.backend!.confirmTransaction(
     {

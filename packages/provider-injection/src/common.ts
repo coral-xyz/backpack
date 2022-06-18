@@ -27,10 +27,9 @@ export async function sendAndConfirm(
   signers?: Signer[],
   options?: ConfirmOptions
 ): Promise<TransactionSignature> {
-  const [signature, { blockhash }, lastValidBlockHeight] = await Promise.all([
+  const [signature, { blockhash, lastValidBlockHeight }] = await Promise.all([
     send(publicKey, requestManager, connection, tx, signers, options),
-    connection!.getLatestBlockhash(options?.preflightCommitment),
-    connection!.getBlockHeight(options?.preflightCommitment),
+    connection.getLatestBlockhash(options?.preflightCommitment),
   ]);
 
   const resp = await connection.confirmTransaction(

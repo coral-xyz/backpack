@@ -25,10 +25,9 @@ export const SendLamportButton: FC = () => {
 
     console.log("sending transaction", transaction);
 
-    const [signature, { blockhash }, lastValidBlockHeight] = await Promise.all([
+    const [signature, { blockhash, lastValidBlockHeight }] = await Promise.all([
       wallet.sendTransaction(transaction, connection),
-      connection!.getLatestBlockhash(),
-      connection!.getBlockHeight(),
+      connection.getLatestBlockhash(),
     ]);
 
     console.log("signature", signature);
