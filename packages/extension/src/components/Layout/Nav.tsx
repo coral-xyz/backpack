@@ -8,7 +8,6 @@ import { Loading } from "../common";
 import { WithTabs } from "./Tab";
 import { Router } from "./Router";
 import { ApproveTransactionRequest } from "../Unlocked/ApproveTransactionRequest";
-import { SettingsButton } from "../Settings";
 
 export const NAV_BAR_HEIGHT = 56;
 export const NAV_BUTTON_WIDTH = 38;
@@ -170,14 +169,6 @@ export function _NavBackButton({ pop }: any) {
 }
 
 function NavContent() {
-  const { setNavButtonRight } = useNavigation();
-  useEffect(() => {
-    setNavButtonRight(<SettingsButton />);
-    return () => {
-      setNavButtonRight(null);
-    };
-  }, []);
-
   return (
     <div style={{ flex: 1 }}>
       <Scrollbar>
