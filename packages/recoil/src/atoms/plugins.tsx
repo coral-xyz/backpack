@@ -61,7 +61,7 @@ export const plugins = selector({
         connectionUrl: get(connectionUrl),
       },
       {
-        url: "ttps://localhost:6969/index.html", // todo
+        url: "https://localhost:6969/index.html", // todo
         iconUrl:
           "https://cdn.discordapp.com/attachments/987809528848461914/987814314457055242/Group_1915.png",
         title: "Psyoptions",
