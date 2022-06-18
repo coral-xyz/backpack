@@ -47,6 +47,8 @@ const useStyles = makeStyles((theme: any) => ({
   },
   backButton: {
     padding: 0,
+    position: "absolute",
+    left: 0,
     "&:hover": {
       background: "transparent",
     },
@@ -147,7 +149,15 @@ export function _NavBackButton({ pop }: any) {
   const classes = useStyles();
   const theme = useTheme() as any;
   return (
-    <div style={{ width: `${NAV_BUTTON_WIDTH}px` }}>
+    <div
+      style={{
+        width: `${NAV_BUTTON_WIDTH}px`,
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+        position: "relative",
+      }}
+    >
       <IconButton
         disableRipple
         onClick={() => pop()}
