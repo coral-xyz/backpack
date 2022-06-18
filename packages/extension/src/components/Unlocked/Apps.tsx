@@ -4,12 +4,15 @@ import { Plugin, PluginRenderer } from "@coral-xyz/anchor-ui-renderer";
 import { usePlugins, useTablePlugins, useNavigation } from "@coral-xyz/recoil";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { NAV_COMPONENT_PLUGINS } from "@coral-xyz/common";
+import { useRootNav } from "../common/hooks";
 
-const ICON_WIDTH = "60px";
+const ICON_WIDTH = "64px";
 
 const useStyles = makeStyles((theme: any) => ({
   pluginIconRoot: {
-    minWidth: "40px",
+    minWidth: "64px",
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   pluginIconButton: {
     width: ICON_WIDTH,
@@ -21,13 +24,14 @@ const useStyles = makeStyles((theme: any) => ({
   pluginTitle: {
     fontWeight: 500,
     color: theme.custom.colors.fontColor,
-    fontSize: "10px",
+    fontSize: "12px",
+    lineHeight: "16px",
     textAlign: "center",
-    marginTop: "4px",
   },
 }));
 
 export function Apps() {
+  useRootNav();
   return <PluginGrid />;
 }
 
@@ -38,10 +42,10 @@ function PluginGrid() {
       style={{
         display: "flex",
         flexWrap: "wrap",
-        marginLeft: "12px",
-        marginRight: "12px",
-        marginTop: "16px",
-        marginBottom: "16px",
+        marginLeft: "20px",
+        marginRight: "20px",
+        marginBottom: "24px",
+        justifyContent: "space-between",
       }}
     >
       {plugins.map((p: Plugin, idx: number) => {
@@ -49,7 +53,8 @@ function PluginGrid() {
           <div
             key={p.iframeUrl}
             style={{
-              marginRight: idx !== plugins.length - 1 ? "12px" : 0,
+              //              marginRight: idx !== plugins.length - 1 ? "15.67px" : 0,
+              marginTop: idx >= 4 ? "24px" : 0,
             }}
           >
             <PluginIcon plugin={p} />
@@ -71,7 +76,15 @@ function PluginIcon({ plugin }: { plugin: Plugin }) {
     });
   };
   return (
-    <div>
+    <div
+      style={{
+        width: "72px",
+        height: "88px",
+        display: "flex",
+        justifyContent: "space-between",
+        flexDirection: "column",
+      }}
+    >
       <Button
         variant="contained"
         disableElevation
@@ -84,7 +97,7 @@ function PluginIcon({ plugin }: { plugin: Plugin }) {
         <img
           src={plugin.iconUrl}
           style={{
-            borderRadius: "10px",
+            borderRadius: "8px",
             width: ICON_WIDTH,
             height: ICON_WIDTH,
           }}

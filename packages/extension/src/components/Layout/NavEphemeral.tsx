@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme: any) => ({
     paddingTop: "10px",
     paddingBottom: "10px",
     backgroundColor: theme.custom.colors.background,
-    //
     height: `${NAV_BAR_HEIGHT}px`,
   },
   navContentContainer: {

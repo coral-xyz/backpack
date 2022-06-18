@@ -89,9 +89,6 @@ function _NavBar() {
           : undefined,
         height: `${NAV_BAR_HEIGHT}px`,
         position: "relative",
-        // display: "flex",
-        // justifyContent: "center",
-        // alignItems: "center",
       }}
       className={classes.navBarContainer}
     >
