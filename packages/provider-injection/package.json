@@ -4,7 +4,6 @@
   "app": "dist/browser/index.js",
   "source": "src/index.ts",
   "scripts": {
-    "preinstall": "yarn link @project-serum/anchor",
     "build": "node build.js"
   },
   "dependencies": {
