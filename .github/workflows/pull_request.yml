@@ -33,8 +33,8 @@ jobs:
       #
       # Wallet Adapter tasks.
       #
-      # The following [wallet-adapter] tasks are only necessary until
-      # the 'anchor' branch in https://github.com/200ms-labs/wallet-adapter
+      # The following [wallet-adapter] tasks are only necessary until the
+      # default 'anchor' branch in https://github.com/200ms-labs/wallet-adapter
       # gets merged upstream and deployed in @solana/wallet-adapter
       #
       - name: "[wallet-adapter] checkout"
@@ -64,35 +64,6 @@ jobs:
       - name: "[wallet-adapter] yarn link"
         working-directory: wallet-adapter
         run: npx lerna exec -- yarn link
-
-      #
-      # Anchor tasks.
-      #
-      - name: "[anchor] checkout"
-        uses: actions/checkout@v3
-        with:
-          repository: project-serum/anchor
-          path: anchor
-      - name: "[anchor] set env var"
-        run: echo "anchor_sha=$(
-          cd anchor && git rev-parse --short HEAD
-          )" >> $GITHUB_ENV
-      - name: "[anchor] cache"
-        id: anchor-cache
-        uses: actions/cache@v3
-        with:
-          path: anchor
-          key: ${{ runner.OS }}-anchor-cache-${{ env.anchor_sha }}
-      - name: "[anchor] install deps"
-        working-directory: anchor/ts
-        run: yarn install --frozen-lockfile
-      - name: "[anchor] build"
-        if: steps.anchor-cache.outputs.cache-hit != 'true'
-        working-directory: anchor/ts
-        run: yarn build
-      - name: "[anchor] yarn link"
-        working-directory: anchor/ts
-        run: yarn link
 
       ##########################################################################
       # Yarn install.
