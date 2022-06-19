@@ -33,6 +33,10 @@ export function App() {
   return <DegodsTable />;
 }
 
+export function Widget() {
+  return <DeogdsTable />;
+}
+
 function DegodsTable() {
   const nav = useNavigation();
   const publicKey = usePublicKey();

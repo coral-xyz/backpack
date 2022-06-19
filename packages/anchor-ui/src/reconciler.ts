@@ -61,6 +61,10 @@ export const AnchorUi = {
       });
     };
   },
+
+  renderWidget(reactNode: any) {
+    //
+  },
 };
 
 //

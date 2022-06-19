@@ -6,3 +6,5 @@ AnchorUi.render(
     <App />
   </AnchorDom>
 );
+
+AnchorUi.renderWidget(<Widget />);
