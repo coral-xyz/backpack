@@ -1,7 +1,4 @@
-import expectPuppeteer, {
-  setDefaultOptions,
-  getDefaultOptions,
-} from "expect-puppeteer";
+import expectPuppeteer, { getDefaultOptions } from "expect-puppeteer";
 import { generateMnemonic, mnemonicToSeed } from "bip39";
 import type { Page } from "puppeteer";
 import manifest from "../../build/manifest.json";
@@ -14,50 +11,58 @@ let clientPage: Page;
 let extensionPopupPage: Page;
 let setupPage: Page;
 
+// afterAll(async () => {
+// await jestPuppeteer.debug()
+// browser.disconnect();
+// await browser.close();
+// });
+
+// Our test browser has already installed the extension code in ./build
+// see jest-puppeteer.config.js for details about that.
+beforeAll((done) => {
+  (async () => {
+    clientPage = await browser.newPage();
+
+    await clientPage.goto("http://localhost:3333");
+
+    // Now we need to get the unique ID of the browser extension and
+    // then we can open a URL like chrome-extension://EXTENSION_ID/popup.html
+
+    const extensionID = await (async () => {
+      const targets = await browser.targets();
+      const extensionTarget = targets.find(
+        (target) => target.type() === "service_worker"
+      );
+      // @ts-ignore
+      const partialExtensionUrl = extensionTarget._targetInfo.url;
+      const [, , id] = partialExtensionUrl.split("/");
+      return id;
+    })();
+
+    const popupFile = manifest.action.default_popup;
+    const popupURL = `chrome-extension://${extensionID}/${popupFile}`;
+    extensionPopupPage = await browser.newPage();
+    await extensionPopupPage.goto(popupURL);
+
+    // extensionPopupPage.setDefaultNavigationTimeout(10_000);
+    // setDefaultOptions({ timeout: 15_000 });
+
+    setupPage = await (
+      await browser.waitForTarget(
+        (target) => target.opener() === extensionPopupPage.target()
+      )
+    ).page();
+
+    done();
+  })();
+});
+
 describe("Installing Anchor Wallet", () => {
   // afterAll(async () => {
-  //   await extensionPopupPage?.screenshot({ path: "out.png" });
+  //   // await extensionPopupPage?.screenshot({ path: "out.png" });
+  //   browser.disconnect();
+  //   await browser.close();
   // });
-
-  // Our test browser has already installed the extension code in ./build
-  // see jest-puppeteer.config.js for details about that.
-  beforeAll((done) => {
-    (async () => {
-      clientPage = await browser.newPage();
-
-      await clientPage.goto("http://localhost:3333");
-
-      // Now we need to get the unique ID of the browser extension and
-      // then we can open a URL like chrome-extension://EXTENSION_ID/popup.html
-
-      const extensionID = await (async () => {
-        const targets = await browser.targets();
-        const extensionTarget = targets.find(
-          (target) => target.type() === "service_worker"
-        );
-        // @ts-ignore
-        const partialExtensionUrl = extensionTarget._targetInfo.url;
-        const [, , id] = partialExtensionUrl.split("/");
-        return id;
-      })();
-
-      const popupFile = manifest.action.default_popup;
-      const popupURL = `chrome-extension://${extensionID}/${popupFile}`;
-      extensionPopupPage = await browser.newPage();
-      await extensionPopupPage.goto(popupURL);
-
-      // extensionPopupPage.setDefaultNavigationTimeout(10_000);
-      // setDefaultOptions({ timeout: 15_000 });
-
-      setupPage = await (
-        await browser.waitForTarget(
-          (target) => target.opener() === extensionPopupPage.target()
-        )
-      ).page();
-
-      done();
-    })();
-  });
 
   // A hacky way to start each test from the same place, because state isn't
   // currently stored between refreshes and there's no router, we can reset
@@ -190,19 +195,21 @@ describe("Installing Anchor Wallet", () => {
         keypairs: keypairs.map((k) => k.publicKey.toString()),
       });
 
-      // console.log("0");
+      console.log("0");
 
       await extensionPopupPage.waitForSelector("#menu-button", {
         visible: true,
       });
 
+      console.log("1");
+
       await run(() =>
         expectPuppeteer(extensionPopupPage).toClick("#menu-button")
       );
 
-      // console.log("A");
+      console.log("2");
 
-      await sleep(1000);
+      await sleep(5_000);
 
       await run(() =>
         expect(extensionPopupPage).toMatch(
@@ -210,12 +217,8 @@ describe("Installing Anchor Wallet", () => {
         )
       );
 
-      // console.log("B");
-
       await run(() =>
-        expectPuppeteer(extensionPopupPage).toClick("p", {
-          text: "Connection",
-        })
+        expectPuppeteer(extensionPopupPage).toClick("[data-testid=Connection]")
       );
 
       // console.log("C");
@@ -346,33 +349,35 @@ describe("Installing Anchor Wallet", () => {
 
       await extensionPopupPage.close();
 
-      // console.log("closed");
+      console.log("closed");
 
       await clientPage.bringToFront();
 
-      // console.log("brought to front");
+      console.log("brought to front");
 
       await expect(clientPage).toClick("button", {
         text: "Select Wallet",
       });
 
-      // console.log("clicked select wallet");
+      console.log("clicked select wallet");
 
       await expect(clientPage).toClick("button", {
         text: "Anchor",
       });
 
-      // console.log("chose anchor");
+      console.log("chose anchor");
 
       await sleep(1000);
 
       const browserPages = await browser.pages();
       const approvePopup = browserPages[browserPages.length - 1];
 
+      console.log("another");
+
       await expect(approvePopup).toMatch("Connect Wallet to localhost");
       await expect(approvePopup).toClick("button", { text: "Approve" });
 
-      // console.log("opened and approved wallet connection");
+      console.log("opened and approved wallet connection");
 
       // Wallet is now connected
       await expect(clientPage).toClick("button", {
@@ -381,7 +386,7 @@ describe("Installing Anchor Wallet", () => {
 
       await sleep(1000);
 
-      // console.log("disconnected");
+      console.log("disconnected");
 
       // Wallet is now disconnected, expect to see 'Select Wallet' button
       await expect(clientPage).toMatch("Select Wallet");

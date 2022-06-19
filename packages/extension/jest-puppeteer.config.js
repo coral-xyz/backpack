@@ -21,6 +21,7 @@ module.exports = {
     },
   ],
   launch: {
+    dumpio: true,
     headless: false,
     executablePath,
     // slowMo adds a delay between each event such as a keystroke,

@@ -30,7 +30,7 @@
   "scripts": {
     "start": "NODE_ENV=development webpack serve",
     "build": "NODE_ENV=production webpack",
-    "e2e": "jest --maxWorkers 1 --detectOpenHandles --forceExit --verbose",
+    "e2e": "jest --forceExit --ci --verbose",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
   },
   "eslintConfig": {
