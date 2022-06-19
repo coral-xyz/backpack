@@ -16,94 +16,95 @@ jobs:
     runs-on: ubuntu-latest
     name: Run tests
     steps:
-      - uses: actions/checkout@v3
+      ##########################################################################
+      # Setup environment.
+      ##########################################################################
 
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 16
           cache: yarn
 
+      ##########################################################################
+      # Yarn link.
+      ##########################################################################
+
+      #
+      # Wallet Adapter tasks.
+      #
       # The following [wallet-adapter] tasks are only necessary until
       # the 'anchor' branch in https://github.com/200ms-labs/wallet-adapter
       # gets merged upstream and deployed in @solana/wallet-adapter
-
-      # <<< START [wallet-adapter] tasks
-
+      #
       - name: "[wallet-adapter] checkout"
         uses: actions/checkout@v3
         with:
           repository: 200ms-labs/wallet-adapter
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           path: wallet-adapter
-
       - name: "[wallet-adapter] set env var"
         run: echo "wallet_adapter_sha=$(
           cd wallet-adapter && git rev-parse --short HEAD
           )" >> $GITHUB_ENV
-
       # cache `yarn build` output based on latest commit SHA as it takes 10+ mins
-
       - name: "[wallet-adapter] cache"
         id: wallet-adapter-cache
         uses: actions/cache@v3
         with:
           path: wallet-adapter
           key: ${{ runner.OS }}-wallet-adapter-cache-${{ env.wallet_adapter_sha }}
-
       - name: "[wallet-adapter] install deps"
         working-directory: wallet-adapter
         run: yarn install --frozen-lockfile
-
       - name: "[wallet-adapter] build"
         if: steps.wallet-adapter-cache.outputs.cache-hit != 'true'
         working-directory: wallet-adapter
         run: yarn build
-
       - name: "[wallet-adapter] yarn link"
         working-directory: wallet-adapter
         run: npx lerna exec -- yarn link
 
-      # END [wallet-adapter] tasks >>>
-
-      # <<< START [anchor] tasks
-
+      #
+      # Anchor tasks.
+      #
       - name: "[anchor] checkout"
         uses: actions/checkout@v3
         with:
           repository: project-serum/anchor
           path: anchor
-
       - name: "[anchor] set env var"
         run: echo "anchor_sha=$(
           cd anchor && git rev-parse --short HEAD
           )" >> $GITHUB_ENV
-
       - name: "[anchor] cache"
         id: anchor-cache
         uses: actions/cache@v3
         with:
           path: anchor
           key: ${{ runner.OS }}-anchor-cache-${{ env.anchor_sha }}
-
       - name: "[anchor] install deps"
         working-directory: anchor/ts
         run: yarn install --frozen-lockfile
-
       - name: "[anchor] build"
         if: steps.anchor-cache.outputs.cache-hit != 'true'
         working-directory: anchor/ts
         run: yarn build
-
       - name: "[anchor] yarn link"
         working-directory: anchor/ts
         run: yarn link
 
-      # END [anchor] tasks >>>
+      ##########################################################################
+      # Yarn install.
+      ##########################################################################
 
       - run: yarn install --frozen-lockfile
 
-      - run: yarn test
+      ##########################################################################
+      # Yarn test.
+      ##########################################################################
 
+      - run: yarn test
       - name: "[solana] cache"
         uses: actions/cache@v3
         id: cache-solana
@@ -112,24 +113,68 @@ jobs:
             ~/.cache/solana/
             ~/.local/share/solana/
           key: solana-${{ runner.os }}-${{ env.solana_version }}
-
       - name: "[solana] install solana"
         if: steps.cache-solana.outputs.cache-hit != 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y pkg-config build-essential libudev-dev
           sh -c "$(curl -sSfL https://release.solana.com/v${{ env.solana_version }}/install)"
-
       - name: "[solana] add to PATH"
         run: echo "/home/runner/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
-
       - name: "[e2e] build extension"
         # CI!=true so that build warnings aren't treated like errors (for now)
         env:
           CI: ""
         run: yarn build
 
-      - name: "[e2e] run puppeteer tests"
-        uses: wentokay/hello-world-docker-action@v11
+      #
+      # - name: "[e2e] run puppeteer tests"
+      #   uses: wentokay/hello-world-docker-action@v11
+      #   with:
+      #     command: yarn workspace @200ms/extension e2e
+      #
+
+      ##########################################################################
+      # Release.
+      ##########################################################################
+
+      #
+      # TODO: the master branch conditionson all these are bit hacky. Probably
+      #       a cleaner way of doing this.
+      #
+
+      - name: "zip build artifacts"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        working-directory: packages/extension
+        run: zip -r build.zip build/
+      - name: "upload build artifacts"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v2
         with:
-          command: yarn workspace @200ms/extension e2e
+          name: backpack-build
+          path: packages/extension/build.zip
+      - uses: actions/download-artifact@v2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          name: backpack-build
+          path: ./
+      - uses: actions/create-release@v1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        name: Create Draft Release
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: latest-${{ github.run_number }}
+          release_name: latest-${{ github.run_number }}
+          draft: false
+          prerelease: false
+      - uses: actions/upload-release-asset@v1.0.1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build.zip
+          asset_name: build.zip
+          asset_content_type: application/zip
