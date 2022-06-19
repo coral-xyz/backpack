@@ -96,7 +96,7 @@ export function Deposit({ close }: any) {
               width: "168px",
             }}
           >
-            <QrCode />
+            <QrCode data={activeWallet.publicKey.toString()} />
           </div>
           <div style={{ marginTop: "163px" }}>
             <div>
@@ -127,20 +127,21 @@ export function Deposit({ close }: any) {
   );
 }
 
-export function QrCode() {
+export function QrCode({ data }: { data: string }) {
   return (
     <div
       style={{
         backgroundColor: "#fff",
         borderRadius: "8px",
         height: "168px",
-        width: "168px",
+        width: "169px",
         display: "flex",
         justifyContent: "center",
         flexDirection: "column",
+        padding: "8px",
       }}
     >
-      <Typography style={{ textAlign: "center" }}>QR Code</Typography>
+      <img src={`https://qr.warp.workers.dev/qz=0?${data}`} alt={data} />
     </div>
   );
 }
