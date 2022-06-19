@@ -134,7 +134,7 @@ export function QrCode({ data }: { data: string }) {
         backgroundColor: "#fff",
         borderRadius: "8px",
         height: "168px",
-        width: "169px",
+        width: "168px",
         display: "flex",
         justifyContent: "center",
         flexDirection: "column",
