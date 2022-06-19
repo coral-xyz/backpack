@@ -99,7 +99,7 @@ jobs:
         run: yarn build
 
       - name: "[e2e] run puppeteer tests"
-        uses: wentokay/solana-e2e-test-action@v0.2
+        uses: wentokay/solana-e2e-test-action@v0.3
         with:
           command: yarn workspace @coral-xyz/extension e2e
 
