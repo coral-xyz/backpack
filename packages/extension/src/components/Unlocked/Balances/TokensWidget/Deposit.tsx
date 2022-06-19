@@ -55,9 +55,6 @@ export function Deposit({ close }: any) {
   const classes = useStyles();
   const theme = useTheme() as any;
   const activeWallet = useActiveWallet();
-  const copy = () => {
-    navigator.clipboard.writeText(activeWallet.publicKey.toString());
-  };
   return (
     <div
       style={{
@@ -108,7 +105,9 @@ export function Deposit({ close }: any) {
                     activeWallet.publicKey
                   )})`}
                   rootClass={classes.depositTextFieldRoot}
-                  endAdornment={<CopyButton onClick={copy} />}
+                  endAdornment={
+                    <CopyButton publicKey={activeWallet.publicKey.toString()} />
+                  }
                   inputProps={{
                     readOnly: true,
                   }}
@@ -147,9 +146,14 @@ export function QrCode({ data }: { data: string }) {
   );
 }
 
-function CopyButton({ onClick }: any) {
+function CopyButton({ publicKey }: { publicKey: string }) {
   const classes = useStyles();
   const [tooltipOpen, setTooltipOpen] = useState(false);
+  const onCopy = () => {
+    setTooltipOpen(true);
+    setTimeout(() => setTooltipOpen(false), 1000);
+    navigator.clipboard.writeText(publicKey);
+  };
   return (
     <Tooltip
       title={"Copied"}
@@ -157,14 +161,7 @@ function CopyButton({ onClick }: any) {
       disableFocusListener
       disableHoverListener
     >
-      <Button
-        className={classes.copyButton}
-        onClick={(e) => {
-          setTooltipOpen(true);
-          setTimeout(() => setTooltipOpen(false), 1000);
-          onClick(e);
-        }}
-      >
+      <Button className={classes.copyButton} onClick={onCopy}>
         <Typography className={classes.copyButtonLabel}>Copy</Typography>
       </Button>
     </Tooltip>
