@@ -160,6 +160,7 @@ function CopyButton({ publicKey }: { publicKey: string }) {
       open={tooltipOpen}
       disableFocusListener
       disableHoverListener
+      disableTouchListener
     >
       <Button className={classes.copyButton} onClick={onCopy}>
         <Typography className={classes.copyButtonLabel}>Copy</Typography>
