@@ -28,7 +28,6 @@ const useStyles = makeStyles((theme: any) => ({
     height: "64px",
     minHeight: "64px",
     backgroundColor: theme.custom.colors.nav,
-    display: "none",
   },
   tabIndicator: {
     color: "none",
@@ -80,22 +79,16 @@ function TabBar() {
         icon={<Money className={className(TAB_BALANCES)} />}
       />
       <Tab
-        value={TAB_NFTS}
-        disableRipple
-        className={classes.tab}
-        icon={<Image className={className(TAB_NFTS)} />}
-      />
-      <Tab
-        value={TAB_SWAP}
-        disableRipple
-        className={classes.tab}
-        icon={<SwapHoriz className={className(TAB_SWAP)} />}
-      />
-      <Tab
         value={TAB_APPS}
         disableRipple
         className={classes.tab}
         icon={<Apps className={className(TAB_APPS)} />}
+      />
+      <Tab
+        value={TAB_NFTS}
+        disableRipple
+        className={classes.tab}
+        icon={<Image className={className(TAB_NFTS)} />}
       />
     </Tabs>
   );

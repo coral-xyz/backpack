@@ -1,8 +1,10 @@
+import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import {
   useDecodedSearchParams,
   useBootstrap,
   useNavigation,
+  useTab,
 } from "@coral-xyz/recoil";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { Balances } from "../Unlocked/Balances";
@@ -13,8 +15,42 @@ import {
   PluginTableDetailDisplay,
 } from "../Unlocked/Apps";
 import { Nfts } from "../Unlocked/Nfts";
+import { SettingsButton } from "../Settings";
 
 export function Router() {
+  const { url } = useNavigation();
+  const { navButtonRight, setNavButtonRight } = useNavigation();
+  const { tab } = useTab();
+
+  //
+  // We set the nav button at the top level instead of the bottom so that
+  // we can instantly render it, which makes for a nicer loading experience.
+  // Otherwise, we'd have to wait for the content to load, which requires
+  // the useBootstrap hook to finish.
+  //
+  useEffect(() => {
+    const previous = navButtonRight;
+    if (
+      url.startsWith("/balances") ||
+      url.startsWith("/apps") ||
+      url.startsWith("/nfts")
+    ) {
+      setNavButtonRight(<SettingsButton />);
+      return () => {
+        setNavButtonRight(previous);
+      };
+    }
+    if (url.startsWith("/token") || url.startsWith("/plugins")) {
+      setNavButtonRight(null);
+      return () => {
+        setNavButtonRight(previous);
+      };
+    }
+  }, [url, tab]);
+  return <_Router />;
+}
+
+function _Router() {
   useBootstrap();
   return (
     <Routes>
@@ -53,7 +89,6 @@ function TokenPage() {
 
 function PluginPage() {
   const { props } = useDecodedSearchParams<SearchParamsFor.Plugin>();
-  console.log({ props });
   return <PluginDisplay {...props} />;
 }
 

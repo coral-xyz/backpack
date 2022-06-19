@@ -127,15 +127,29 @@ function WithDrawerContent({ children, setOpenDrawer }: any) {
 function RightButton({ onClick }: any) {
   const classes = useStyles();
   return (
-    <IconButton
-      classes={classes.rightButtonLabel}
-      disableRipple
-      style={{ padding: 0, width: `${NAV_BUTTON_WIDTH}px` }}
-      onClick={onClick}
-      size="large"
+    <div
+      style={{
+        position: "relative",
+        width: `${NAV_BUTTON_WIDTH}px`,
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
     >
-      <Close className={classes.rightButtonIcon} />
-    </IconButton>
+      <IconButton
+        classes={classes.rightButtonLabel}
+        disableRipple
+        style={{
+          padding: 0,
+          position: "absolute",
+          right: 0,
+        }}
+        onClick={onClick}
+        size="large"
+      >
+        <Close className={classes.rightButtonIcon} />
+      </IconButton>
+    </div>
   );
 }
 

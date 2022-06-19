@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { useEffect, Suspense } from "react";
 import { useNavigation } from "@coral-xyz/recoil";
 import { useTheme, Typography, IconButton } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
@@ -47,6 +47,8 @@ const useStyles = makeStyles((theme: any) => ({
   },
   backButton: {
     padding: 0,
+    position: "absolute",
+    left: 0,
     "&:hover": {
       background: "transparent",
     },
@@ -87,9 +89,6 @@ function _NavBar() {
           : undefined,
         height: `${NAV_BAR_HEIGHT}px`,
         position: "relative",
-        // display: "flex",
-        // justifyContent: "center",
-        // alignItems: "center",
       }}
       className={classes.navBarContainer}
     >
@@ -147,7 +146,15 @@ export function _NavBackButton({ pop }: any) {
   const classes = useStyles();
   const theme = useTheme() as any;
   return (
-    <div style={{ width: `${NAV_BUTTON_WIDTH}px` }}>
+    <div
+      style={{
+        width: `${NAV_BUTTON_WIDTH}px`,
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+        position: "relative",
+      }}
+    >
       <IconButton
         disableRipple
         onClick={() => pop()}

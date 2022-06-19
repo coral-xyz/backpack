@@ -1,21 +1,23 @@
-import {
+import type {
   Commitment,
-  PublicKey,
   TransactionSignature,
   SendOptions,
   Finality,
   ConfirmedSignaturesForAddress2Options,
 } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
+import type {
+  RpcRequest,
+  RpcResponse,
+  Context,
+  EventEmitter,
+} from "@coral-xyz/common";
 import {
   getLogger,
   withContext,
   withContextPort,
-  RpcRequest,
-  RpcResponse,
-  Context,
   PortChannel,
   Channel,
-  EventEmitter,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   SOLANA_CONNECTION_RPC_UI,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
@@ -29,8 +31,8 @@ import {
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION,
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
 } from "@coral-xyz/common";
-import { Backend } from "../backend/solana-connection";
-import { Handle } from "../types";
+import type { Backend } from "../backend/solana-connection";
+import type { Handle } from "../types";
 
 const logger = getLogger("solana-connection");
 
@@ -111,7 +113,7 @@ async function handleGetAccountInfo(
   pubkey: string,
   commitment?: Commitment
 ) {
-  const resp = await ctx.backend!.getAccountInfo(
+  const resp = await ctx.backend.getAccountInfo(
     new PublicKey(pubkey),
     commitment
   );
@@ -122,7 +124,7 @@ async function handleGetLatestBlockhash(
   ctx: Context<Backend>,
   commitment?: Commitment
 ) {
-  const resp = await ctx.backend!.getLatestBlockhash(commitment);
+  const resp = await ctx.backend.getLatestBlockhash(commitment);
   return [resp];
 }
 
@@ -141,7 +143,7 @@ async function handleGetTokenAccountsByOwner(
     // @ts-ignore
     _filter = { programId: new PublicKey(filter.programId) };
   }
-  const resp = await ctx.backend!.getTokenAccountsByOwner(
+  const resp = await ctx.backend.getTokenAccountsByOwner(
     new PublicKey(ownerAddress),
     _filter,
     commitment
@@ -154,7 +156,7 @@ async function handleSendRawTransaction(
   rawTransaction: Buffer | Uint8Array | Array<number>,
   options?: SendOptions
 ) {
-  const resp = await ctx.backend!.sendRawTransaction(rawTransaction, options);
+  const resp = await ctx.backend.sendRawTransaction(rawTransaction, options);
   return [resp];
 }
 
@@ -163,7 +165,17 @@ async function handleConfirmTransaction(
   signature: TransactionSignature,
   commitment?: Commitment
 ) {
-  const resp = await ctx.backend!.confirmTransaction(signature, commitment);
+  const { blockhash, lastValidBlockHeight } =
+    await ctx.backend.getLatestBlockhash();
+
+  const resp = await ctx.backend.confirmTransaction(
+    {
+      signature,
+      blockhash,
+      lastValidBlockHeight,
+    },
+    commitment
+  );
   return [resp];
 }
 
@@ -172,7 +184,7 @@ async function handleGetMultipleAccountsInfo(
   pubkeys: string[],
   commitment?: Commitment
 ) {
-  const resp = await ctx.backend!.getMultipleAccountsInfo(
+  const resp = await ctx.backend.getMultipleAccountsInfo(
     pubkeys.map((p) => new PublicKey(p)),
     commitment
   );
@@ -185,7 +197,7 @@ async function handleGetConfirmedSignaturesForAddress2(
   options?: ConfirmedSignaturesForAddress2Options,
   commitment?: Finality
 ) {
-  const resp = await ctx.backend!.getConfirmedSignaturesForAddress2(
+  const resp = await ctx.backend.getConfirmedSignaturesForAddress2(
     new PublicKey(address),
     options,
     commitment
@@ -198,7 +210,7 @@ async function handleGetParsedTransaction(
   signature: TransactionSignature,
   commitment?: Finality
 ) {
-  const resp = await ctx.backend!.getParsedTransaction(signature, commitment);
+  const resp = await ctx.backend.getParsedTransaction(signature, commitment);
   return [resp];
 }
 
@@ -207,7 +219,7 @@ async function handleGetParsedTransactions(
   signatures: TransactionSignature[],
   commitment?: Finality
 ) {
-  const resp = await ctx.backend!.getParsedTransactions(signatures, commitment);
+  const resp = await ctx.backend.getParsedTransactions(signatures, commitment);
   return [resp];
 }
 
@@ -215,6 +227,6 @@ async function handleCustomSplTokenAccounts(
   ctx: Context<Backend>,
   pubkey: string
 ) {
-  const resp = await ctx.backend!.customSplTokenAccounts(new PublicKey(pubkey));
+  const resp = await ctx.backend.customSplTokenAccounts(new PublicKey(pubkey));
   return [resp];
 }
