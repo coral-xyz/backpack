@@ -151,7 +151,7 @@ function CopyButton({ onClick }: any) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   return (
     <Tooltip
-      title={"Address copied"}
+      title={"Copied"}
       open={tooltipOpen}
       disableFocusListener
       disableHoverListener
