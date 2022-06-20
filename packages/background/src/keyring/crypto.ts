@@ -1,12 +1,11 @@
 import { pbkdf2 } from "crypto";
-import nacl from "tweetnacl";
-import { randomBytes, secretbox } from "tweetnacl";
+import nacl, { randomBytes, secretbox } from "tweetnacl";
 import * as bs58 from "bs58";
 import { derivePath } from "ed25519-hd-key";
 import { Keypair } from "@solana/web3.js";
 import { DerivationPath } from "@coral-xyz/common";
 
-// An encrypted secret wiht associated metadata required for decryption.
+// An encrypted secret with associated metadata required for decryption.
 export type SecretPayload = {
   ciphertext: string;
   nonce: string;
