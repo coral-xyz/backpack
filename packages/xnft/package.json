@@ -1,0 +1,16 @@
+{
+  "name": "@coral-xyz/xnft",
+  "version": "0.0.1",
+  "source": "src/index.ts",
+  "dependencies": {
+    "@fal-works/esbuild-plugin-global-externals": "^2.1.2",
+    "commander": "^9.3.0",
+    "esbuild": "^0.14.46"
+  },
+  "scripts": {
+    "build": "npx esbuild src/index.ts --bundle --outfile=dist/xnft.js --platform=node --external:esbuild"
+  },
+  "bin": {
+    "xnft": "./dist/xnft.js"
+  }
+}

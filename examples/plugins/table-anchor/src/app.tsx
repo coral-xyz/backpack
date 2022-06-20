@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import { Program } from "@project-serum/anchor";
 import AnchorUi, {
