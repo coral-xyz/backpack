@@ -5956,6 +5956,11 @@ fd-slicer@~1.1.0:
   dependencies:
     pend "~1.2.0"
 
+figma-squircle@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/figma-squircle/-/figma-squircle-0.2.1.tgz#08002658420076f318d846a558ee21de37ab8b27"
+  integrity sha512-UePsOSdigugsBvGZJAzrLeYY43fXy6iGQ7rz7bpEPd9jf54WbWM3jmgAF6VU0HANte1+hBiWb0PK6KyXTvXQdw==
+
 file-entry-cache@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/file-entry-cache/-/file-entry-cache-6.0.1.tgz#211b2dd9659cb0394b073e7323ac3c933d522027"

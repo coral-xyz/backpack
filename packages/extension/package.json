@@ -20,6 +20,7 @@
     "@solana/web3.js": "^1.35.1",
     "bip39": "^3.0.4",
     "bs58": "^5.0.0",
+    "figma-squircle": "^0.2.1",
     "react": "^17.0.2",
     "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^17.0.2",
