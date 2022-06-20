@@ -40,7 +40,7 @@ export default {
 
       if (searchParams.has("external")) {
         // TODO: add integrity hash? https://www.srihash.org
-        innerHTML = `<script type="module" src="${bundle}"></script>`;
+        innerHTML = `<script type="module" src="${bundle}" defer></script>`;
       } else {
         const res = await fetch(bundle);
         const js = await res.text();
@@ -48,13 +48,17 @@ export default {
         //       because `new Function(js);` is not possible on a worker
         innerHTML = `
         <!-- code loaded from ${bundle} -->
-        <script type="module">${js}</script>`;
+        <script type="module" defer>${js}</script>`;
       }
 
       return html(`
         <!DOCTYPE html>
         <html lang="en">
           <head>
+            <script
+              type="application/javascript"
+              src="https://unpkg.com/@solana/web3.js@1.43.2/lib/index.iife.min.js"
+            ></script>
             <meta charset="utf-8"/>
           </head>
           <body>${innerHTML}</body>

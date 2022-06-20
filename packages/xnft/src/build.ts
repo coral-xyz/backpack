@@ -1,4 +1,5 @@
 import esbuild from "esbuild";
+import { globalExternals } from "@fal-works/esbuild-plugin-global-externals";
 import { existsSync, mkdirSync, readFileSync, statSync } from "fs";
 import path from "path";
 
@@ -27,6 +28,14 @@ export const build = async (watch: boolean = false) => {
     format: "esm",
     platform: "browser",
     target: "chrome100",
+    plugins: [
+      globalExternals({
+        "@solana/web3.js": {
+          varName: "globalThis.solanaWeb3",
+          type: "cjs",
+        },
+      }),
+    ],
     loader: { ".js": "jsx" },
     external: ["require", "fs", "path", "os", "process"],
     watch,
