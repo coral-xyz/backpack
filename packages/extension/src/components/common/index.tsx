@@ -1,5 +1,11 @@
 import type { PublicKey } from "@solana/web3.js";
-import { useTheme, Typography, Button, CircularProgress } from "@mui/material";
+import {
+  useTheme,
+  Typography,
+  Button,
+  CircularProgress,
+  Checkbox as _Checkbox,
+} from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 
 export * from "./List";
@@ -50,8 +56,22 @@ const useStyles = makeStyles((theme: any) => ({
     fontSize: "24px",
     fontWeight: 500,
   },
+  checkBox: {
+    padding: "9px",
+    color: theme.custom.colors.primaryButton,
+  },
+  checkboxContainer: {
+    display: "flex",
+    marginTop: "8px",
+  },
+  checkBoxChecked: {
+    color: `${theme.custom.colors.primaryButton} !important`,
+  },
   subtext: {
     color: theme.custom.colors.secondary,
+    fontSize: "12px",
+    lineHeight: "20px",
+    fontWeight: 500,
   },
 }));
 
@@ -216,4 +236,53 @@ export function SubtextParagraph({
 export function Header({ text }: { text: string }) {
   const classes = useStyles();
   return <Typography className={classes.header}>{text}</Typography>;
+}
+
+export function Checkbox({
+  checked,
+  setChecked = () => {},
+  ...checkboxProps
+}: {
+  checked: boolean;
+  setChecked?: (value: boolean) => void;
+} & React.ComponentProps<typeof _Checkbox>) {
+  const classes = useStyles();
+  return (
+    <_Checkbox
+      className={classes.checkBox}
+      checked={checked}
+      onChange={() => setChecked(!checked)}
+      classes={{
+        checked: classes.checkBoxChecked,
+      }}
+      {...checkboxProps}
+    />
+  );
+}
+
+export function CheckboxForm({
+  checked,
+  setChecked,
+  label,
+}: {
+  checked: boolean;
+  setChecked: (value: boolean) => void;
+  label: string;
+}) {
+  const classes = useStyles();
+  return (
+    <div className={classes.checkboxContainer}>
+      <Checkbox checked={checked} setChecked={setChecked} />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+          marginLeft: "10px",
+        }}
+      >
+        <Typography className={classes.subtext}>{label}</Typography>
+      </div>
+    </div>
+  );
 }
