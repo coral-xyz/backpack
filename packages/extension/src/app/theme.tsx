@@ -1,24 +1,22 @@
 import {
   ThemeProvider,
-  Theme,
   StyledEngineProvider,
   createTheme,
-  adaptV4Theme,
 } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
 import { useDarkMode } from "@coral-xyz/recoil";
 
-declare module "@mui/styles/defaultTheme" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
+export type CustomTheme = typeof lightTheme | typeof darkTheme;
 
-export const lightTheme = createTheme({
+const baseTheme = createTheme({
   palette: {},
   typography: {
     fontFamily: "Inter, sans-serif",
   },
-  // @ts-ignore
+});
+
+const lightTheme = {
+  ...baseTheme,
   custom: {
     colors: {
       background: "#ECEFF3",
@@ -39,7 +37,7 @@ export const lightTheme = createTheme({
       interactiveIconsActive: "#1196B5",
     },
   },
-});
+};
 
 const BACKGROUND_COLOR_0 = "#18181b";
 const BACKGROUND_COLOR_1 = "#27272a";
@@ -50,47 +48,41 @@ const BRAND_COLOR = "#14B8A6";
 const BUTTON_FONT_COLOR = FONT_COLOR;
 const BORDER_COLOR = "#393C43";
 
-export const darkTheme = createTheme(
-  adaptV4Theme({
-    palette: {},
-    typography: {
-      fontFamily: "Inter, sans-serif",
+const darkTheme = {
+  ...baseTheme,
+  custom: {
+    colors: {
+      background: BACKGROUND_COLOR_0,
+      nav: BACKGROUND_COLOR_1,
+      fontColor: FONT_COLOR,
+      border: BORDER_COLOR,
+      activeNavButton: BRAND_COLOR,
+      hamburger: FONT_COLOR_1,
+      scrollbarThumb: "rgb(153 164 180)",
+      tabIconBackground: FONT_COLOR_1,
+      tabIconSelected: BRAND_COLOR,
+      secondary: FONT_COLOR_1,
+      positive: "#35A63A",
+      negative: "#E95050",
+      onboardButton: BRAND_COLOR,
+      onboardButtonDisabled: FONT_COLOR_1,
+      buttonFontColor: BUTTON_FONT_COLOR,
+      sendGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_0} 0%, rgba(27, 29, 35, 0) 100%)`,
+      swapGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
+      interactiveIconsActive: BRAND_COLOR,
+      interactiveIconsHover: "#67758B",
+      drawerGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
+      alpha: FONT_COLOR_2,
     },
-    // @ts-ignore
-    custom: {
-      colors: {
-        background: BACKGROUND_COLOR_0,
-        nav: BACKGROUND_COLOR_1,
-        fontColor: FONT_COLOR,
-        border: BORDER_COLOR,
-        activeNavButton: BRAND_COLOR,
-        hamburger: FONT_COLOR_1,
-        scrollbarThumb: "rgb(153 164 180)",
-        tabIconBackground: FONT_COLOR_1,
-        tabIconSelected: BRAND_COLOR,
-        secondary: FONT_COLOR_1,
-        positive: "#35A63A",
-        negative: "#E95050",
-        onboardButton: BRAND_COLOR,
-        onboardButtonDisabled: FONT_COLOR_1,
-        buttonFontColor: BUTTON_FONT_COLOR,
-        sendGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_0} 0%, rgba(27, 29, 35, 0) 100%)`,
-        swapGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
-        interactiveIconsActive: BRAND_COLOR,
-        interactiveIconsHover: "#67758B",
-        drawerGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
-        alpha: FONT_COLOR_2,
-      },
-    },
-  })
-);
+  },
+};
 
 export function WithTheme(props: any) {
   const isDarkMode = useDarkMode();
   const theme = isDarkMode ? darkTheme : lightTheme;
   return (
     <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider<CustomTheme> theme={theme}>
         <CssBaseline />
         {props.children}
       </ThemeProvider>

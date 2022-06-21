@@ -6,10 +6,11 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
 } from "@coral-xyz/common";
 import { TextField, OnboardButton } from "./common";
+import type { CustomTheme } from "../app/theme";
 
 export const NAV_BAR_HEIGHT = 56;
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles<CustomTheme>((theme) => ({
   container: {
     backgroundColor: theme.custom.colors.nav,
     textAlign: "center",

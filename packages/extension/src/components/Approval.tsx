@@ -7,8 +7,9 @@ import { useApproveOrigin, useActiveWallet } from "@coral-xyz/recoil";
 import { BottomCard } from "./Unlocked/Balances/TokensWidget/Send";
 import { walletAddressDisplay } from "../components/common";
 import { WithEphemeralNav } from "../components/Layout/NavEphemeral";
+import type { CustomTheme } from "../app/theme";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles<CustomTheme>((theme) => ({
   activeWallet: {
     color: theme.custom.colors.secondary,
     fontSize: "12px",

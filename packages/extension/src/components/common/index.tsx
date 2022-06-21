@@ -1,11 +1,12 @@
 import type { PublicKey } from "@solana/web3.js";
 import { useTheme, Typography, Button, CircularProgress } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
+import type { CustomTheme } from "../../app/theme";
 
 export * from "./List";
 export { TextField } from "@coral-xyz/anchor-ui-renderer";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles<CustomTheme>((theme) => ({
   sendTo: {
     color: theme.custom.colors.fontColor,
     fontSize: "12px",

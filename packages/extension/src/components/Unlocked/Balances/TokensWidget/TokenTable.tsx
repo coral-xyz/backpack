@@ -15,8 +15,9 @@ import {
   useNavigation,
 } from "@coral-xyz/recoil";
 import { toTitleCase, NAV_COMPONENT_TOKEN } from "@coral-xyz/common";
+import type { CustomTheme } from "../../../../app/theme";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles<CustomTheme>((theme) => ({
   blockchainFooter: {
     borderTop: `solid 1pt ${theme.custom.colors.border}`,
     display: "flex",

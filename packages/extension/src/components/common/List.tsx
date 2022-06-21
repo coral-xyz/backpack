@@ -5,8 +5,9 @@ import {
 } from "@mui/material";
 
 import makeStyles from "@mui/styles/makeStyles";
+import type { CustomTheme } from "../../app/theme";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles<CustomTheme>(() => ({
   settingsContentListItem: {
     padding: "8px",
     height: "56px",

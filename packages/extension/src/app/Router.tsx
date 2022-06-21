@@ -5,8 +5,6 @@ import {
   getLogger,
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
-} from "@coral-xyz/common";
-import {
   openOnboarding,
   QUERY_LOCKED,
   QUERY_APPROVAL,
@@ -28,6 +26,7 @@ import {
   ApproveMessage,
 } from "../components/Approval";
 import "./App.css";
+import type { CustomTheme } from "./theme";
 
 const logger = getLogger("router");
 
@@ -248,7 +247,7 @@ export function BlankApp() {
   return <div className={classes.appContainer}></div>;
 }
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles<CustomTheme>((theme) => ({
   appContainer: {
     width: `${EXTENSION_WIDTH}px`,
     height: `${EXTENSION_HEIGHT}px`,

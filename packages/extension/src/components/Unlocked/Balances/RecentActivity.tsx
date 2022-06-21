@@ -12,8 +12,9 @@ import { explorerUrl } from "@coral-xyz/common";
 import { useActiveWallet, useRecentTransactions } from "@coral-xyz/recoil";
 import { Loading } from "../../common";
 import { WithDrawer } from "../../Layout/Drawer";
+import type { CustomTheme } from "../../../app/theme";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles<CustomTheme>((theme) => ({
   recentActivityLabel: {
     color: theme.custom.colors.fontColor,
     fontWeight: 500,

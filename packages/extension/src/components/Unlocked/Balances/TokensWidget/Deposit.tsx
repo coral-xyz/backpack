@@ -9,8 +9,9 @@ import {
   TextFieldLabel,
   walletAddressDisplay,
 } from "../../../common";
+import type { CustomTheme } from "../../../../app/theme";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles<CustomTheme>((theme) => ({
   subtext: {
     width: "264px",
     marginLeft: "auto",

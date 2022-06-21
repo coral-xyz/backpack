@@ -23,10 +23,11 @@ import {
   Loading,
 } from "../../../common";
 import { WithMiniDrawer } from "../../../Layout/Drawer";
+import type { CustomTheme } from "../../../../app/theme";
 
 const logger = getLogger("send-component");
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles<CustomTheme>((theme) => ({
   container: {
     display: "flex",
     flexDirection: "column",

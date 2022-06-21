@@ -8,8 +8,9 @@ import { RecentActivitySmall } from "../RecentActivity";
 import { SendButton } from "./Send";
 import { DepositButton } from "./Deposit";
 import { WithDrawer } from "../../../Layout/Drawer";
+import type { CustomTheme } from "../../../../app/theme";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles<CustomTheme>((theme) => ({
   tokenHeaderContainer: {
     marginBottom: "38px",
   },

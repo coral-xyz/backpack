@@ -18,8 +18,9 @@ import {
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
 import { Send } from "./TokensWidget/Send";
+import type { CustomTheme } from "../../../app/theme";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles<CustomTheme>((theme) => ({
   searchField: {
     marginTop: "16px",
     marginBottom: "16px",
