@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import { useEphemeralNav } from "@coral-xyz/recoil";
 import { Box, Grid, TextField, InputAdornment, Link } from "@mui/material";
@@ -58,13 +58,22 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
   const classes = useStyles();
   const nav = useEphemeralNav();
   const [mnemonicWordCount, setMnemonicWordCount] = useState(12);
-  const [mnemonicWords, setMnemonicWords] = useState<string[]>([""]);
+  const [mnemonicWords, setMnemonicWords] = useState<string[]>([
+    ...Array(mnemonicWordCount).fill(""),
+  ]);
+
+  useEffect(() => {
+    // Clear all inputs on change of mnemonic size. This is probably the cleanest way to handle
+    // all 24 inputs being full and the user switching to a 12 word mnemonic.
+    setMnemonicWords([...Array(mnemonicWordCount).fill("")]);
+  }, [mnemonicWordCount]);
 
   const nextEnabled =
     mnemonicWords.length === mnemonicWordCount &&
     mnemonicWords.find((w) => w === undefined || w.length < 3) === undefined;
 
   const next = () => {
+    // TODO validate mnemonic
     nav.push(
       <ImportAccounts
         mnemonic={mnemonicWords.map((f) => f.trim()).join(" ")}
@@ -73,12 +82,12 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
     );
   };
 
-  const random = () => {
+  const generateRandom = () => {
     const background = getBackgroundClient();
     background
       .request({
         method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
-        params: [],
+        params: [mnemonicWordCount === 12 ? 128 : 256],
       })
       .then((m: string) => {
         const words = m.split(" ");
@@ -138,7 +147,7 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
           </Link>
         </Box>
         <Box>
-          <Link className={classes.link} onClick={random}>
+          <Link className={classes.link} onClick={generateRandom}>
             Use a random mnemonic
           </Link>
         </Box>
