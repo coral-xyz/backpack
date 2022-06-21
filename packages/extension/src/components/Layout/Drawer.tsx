@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Drawer, Button, IconButton } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
+import { useTheme } from "@mui/material/styles";
 import { Close } from "@mui/icons-material";
 import { EXTENSION_HEIGHT } from "@coral-xyz/common";
 import { useEphemeralNav } from "@coral-xyz/recoil";
@@ -11,14 +12,12 @@ const MINI_DRAWER_HEIGHT = 295;
 
 const useStyles = makeStyles((theme: any) => ({
   withDrawer: {
-    backgroundColor: theme.custom.colors.background,
     height: "100%",
     display: "flex",
     flexDirection: "column",
   },
   withDrawerNoHeader: {
     height: EXTENSION_HEIGHT - NAV_BAR_HEIGHT,
-    backgroundColor: theme.custom.colors.background,
     padding: "20px",
     display: "flex",
     flexDirection: "column",
@@ -60,8 +59,16 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export function WithDrawer(props: any) {
-  const { children, openDrawer, title, navbarStyle, setOpenDrawer } = props;
   const classes = useStyles();
+  const theme = useTheme();
+  const {
+    children,
+    openDrawer,
+    title,
+    navbarStyle,
+    navContentStyle,
+    setOpenDrawer,
+  } = props;
   return (
     <Drawer
       anchor={"bottom"}
@@ -73,7 +80,19 @@ export function WithDrawer(props: any) {
       }}
       id="drawer"
     >
-      <WithEphemeralNav title={title} navbarStyle={navbarStyle}>
+      <WithEphemeralNav
+        title={title}
+        navbarStyle={{
+          // @ts-ignore
+          background: theme.custom.colors.background,
+          ...navbarStyle,
+        }}
+        navContentStyle={{
+          // @ts-ignore
+          background: theme.custom.colors.background,
+          ...navContentStyle,
+        }}
+      >
         <WithDrawerContent setOpenDrawer={setOpenDrawer}>
           {children}
         </WithDrawerContent>
@@ -137,7 +156,7 @@ function RightButton({ onClick }: any) {
       }}
     >
       <IconButton
-        classes={classes.rightButtonLabel}
+        classes={{ root: classes.rightButtonLabel }}
         disableRipple
         style={{
           padding: 0,
