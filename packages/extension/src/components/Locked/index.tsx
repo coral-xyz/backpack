@@ -5,7 +5,8 @@ import {
   getBackgroundClient,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
 } from "@coral-xyz/common";
-import { TextField, OnboardButton } from "./common";
+import { TextField, PrimaryButton } from "../common";
+import { LockedMenu } from "./LockedMenu";
 
 export const NAV_BAR_HEIGHT = 56;
 
@@ -60,6 +61,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   };
   return (
     <div className={classes.container}>
+      <LockedMenu />
       <BackpackHeader />
       <div className={classes.content}>
         <form onSubmit={_onUnlock}>
@@ -72,15 +74,13 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
             rootClass={classes.passwordRoot}
           />
           <div style={{ marginLeft: "12px", marginRight: "12px" }}>
-            <OnboardButton label="Unlock" type="submit" />
+            <PrimaryButton label="Unlock" type="submit" />
           </div>
         </form>
-        <div style={{ visibility: error ? undefined : "hidden" }}>
-          <div className={classes.forgotContainer}>
-            <Typography className={classes.forgotButtonTitle}>
-              Forgot your password?
-            </Typography>
-          </div>
+        <div className={classes.forgotContainer}>
+          <Typography className={classes.forgotButtonTitle}>
+            Forgot your password?
+          </Typography>
         </div>
       </div>
     </div>
