@@ -21,7 +21,7 @@ export interface Keyring {
 export type HdKeyringJson = {
   mnemonic: string;
   seed: string;
-  numberOfAccounts: number;
+  accountIndices: Array<number>;
   derivationPath: DerivationPath;
 };
 
@@ -30,7 +30,11 @@ export type LedgerKeyringJson = {
 };
 
 export interface HdKeyringFactory {
-  fromMnemonic(mnemonic: string, derivationPath?: DerivationPath): HdKeyring;
+  fromMnemonic(
+    mnemonic: string,
+    derivationPath?: DerivationPath,
+    accountIndices?: Array<number>
+  ): HdKeyring;
   generate(): HdKeyring;
   fromJson(obj: HdKeyringJson): HdKeyring;
 }

@@ -138,13 +138,19 @@ export class Backend {
   async keyringStoreCreate(
     mnemonic: string,
     derivationPath: DerivationPath,
-    password: string
+    password: string,
+    accountIndices: Array<number>
   ): Promise<string> {
-    await this.keyringStore.init(mnemonic, derivationPath, password);
+    await this.keyringStore.init(
+      mnemonic,
+      derivationPath,
+      password,
+      accountIndices
+    );
     return SUCCESS_RESPONSE;
   }
 
-  async keyringStoreUnlock(password: string): Promise<String> {
+  async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
 
     const url = await this.solanaConnectionUrl();

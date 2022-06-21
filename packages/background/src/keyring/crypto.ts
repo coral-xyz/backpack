@@ -23,12 +23,13 @@ type MnemonicSeed = {
 export function deriveKeypairs(
   seed: Buffer,
   dPath: DerivationPath,
-  numberOfAccounts: number
+  accountIndices: Array<number>
 ): Array<Keypair> {
   const kps: Array<Keypair> = [];
   const seedHex = seed.toString("hex");
-  for (let k = 0; k < numberOfAccounts; k += 1) {
-    const kp = deriveKeypair(seedHex, k, dPath);
+  for (const accountIndex of accountIndices) {
+    console.log(accountIndex);
+    const kp = deriveKeypair(seedHex, accountIndex, dPath);
     kps.push(kp);
   }
   return kps;

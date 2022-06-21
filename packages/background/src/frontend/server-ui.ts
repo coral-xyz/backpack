@@ -97,7 +97,8 @@ async function handle<T = any>(
         ctx,
         params[0],
         params[1],
-        params[2]
+        params[2],
+        params[3]
       );
     case UI_RPC_METHOD_KEYRING_STORE_UNLOCK:
       return await handleKeyringStoreUnlock(ctx, params[0]);
@@ -208,12 +209,14 @@ async function handleKeyringStoreCreate(
   ctx: Context<Backend>,
   mnemonic: string,
   derivationPath: DerivationPath,
-  password: string
+  password: string,
+  accountIndices = [0]
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.keyringStoreCreate(
     mnemonic,
     derivationPath,
-    password
+    password,
+    accountIndices
   );
   return [resp];
 }
