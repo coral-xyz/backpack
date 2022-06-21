@@ -459,8 +459,8 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async mnemonicCreate(): Promise<string> {
-    return this.keyringStore.createMnemonic();
+  async mnemonicCreate(strength): Promise<string> {
+    return this.keyringStore.createMnemonic(strength);
   }
 
   async previewPubkeys(

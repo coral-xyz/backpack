@@ -111,8 +111,8 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
     });
   }
 
-  public generate(): HdKeyring {
-    const mnemonic = generateMnemonic(256);
+  public generate(strength): HdKeyring {
+    const mnemonic = generateMnemonic(strength);
     const seed = mnemonicToSeedSync(mnemonic);
     const accountIndices = [0];
     const derivationPath = DerivationPath.Bip44;

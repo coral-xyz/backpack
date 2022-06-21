@@ -256,9 +256,9 @@ export class KeyringStore {
     });
   }
 
-  public createMnemonic(): string {
+  public createMnemonic(strength: number): string {
     const factory = new SolanaHdKeyringFactory();
-    const kr = factory.generate();
+    const kr = factory.generate(strength);
     return kr.mnemonic;
   }
 

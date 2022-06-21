@@ -129,7 +129,7 @@ async function handle<T = any>(
     case UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE:
       return await handleKeyringAutolockUpdate(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE:
-      return await handleMnemonicCreate(ctx);
+      return await handleMnemonicCreate(ctx, params[0]);
     case UI_RPC_METHOD_PREVIEW_PUBKEYS:
       return await handlePreviewPubkeys(ctx, params[0], params[1], params[2]);
     //
@@ -385,9 +385,10 @@ async function handleKeyringAutolockUpdate(
 }
 
 async function handleMnemonicCreate(
-  ctx: Context<Backend>
+  ctx: Context<Backend>,
+  strength = 256
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.mnemonicCreate();
+  const resp = await ctx.backend.mnemonicCreate(strength);
   return [resp];
 }
 

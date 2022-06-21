@@ -28,7 +28,6 @@ export function deriveKeypairs(
   const kps: Array<Keypair> = [];
   const seedHex = seed.toString("hex");
   for (const accountIndex of accountIndices) {
-    console.log(accountIndex);
     const kp = deriveKeypair(seedHex, accountIndex, dPath);
     kps.push(kp);
   }
