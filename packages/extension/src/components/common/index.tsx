@@ -30,13 +30,28 @@ const useStyles = makeStyles((theme: any) => ({
     marginRight: "auto",
     color: theme.custom.colors.activeNavButton,
   },
-  button: {},
+  button: {
+    width: "100%",
+    height: "48px",
+    borderRadius: "12px",
+    "&.Mui-disabled": {
+      opacity: 0.5,
+    },
+  },
   buttonLabel: {
     color: theme.custom.colors.buttonFontColor,
     weight: 500,
     fontSize: "16px",
     lineHeight: "24px",
     textTransform: "none",
+  },
+  header: {
+    color: theme.custom.colors.fontColor,
+    fontSize: "24px",
+    fontWeight: 500,
+  },
+  subtext: {
+    color: theme.custom.colors.secondary,
   },
 }));
 
@@ -87,7 +102,7 @@ export function Loading(props: any) {
   );
 }
 
-export function OnboardButton({
+export function PrimaryButton({
   buttonLabelStyle,
   label,
   ...buttonProps
@@ -99,10 +114,7 @@ export function OnboardButton({
   const theme = useTheme() as any;
   const buttonStyle = Object.assign(
     {
-      width: "100%",
-      backgroundColor: theme.custom.colors.onboardButton,
-      height: "48px",
-      borderRadius: "12px",
+      backgroundColor: theme.custom.colors.primaryButton,
     },
     buttonProps.style
   );
@@ -120,4 +132,88 @@ export function OnboardButton({
       </Typography>
     </Button>
   );
+}
+
+export function SecondaryButton({
+  buttonLabelStyle,
+  label,
+  ...buttonProps
+}: {
+  buttonLabelStyle?: React.CSSProperties;
+  label?: string;
+} & React.ComponentProps<typeof Button>) {
+  const classes = useStyles();
+  const theme = useTheme() as any;
+  const buttonStyle = Object.assign(
+    {
+      backgroundColor: theme.custom.colors.secondaryButton,
+    },
+    buttonProps.style
+  );
+  return (
+    <Button
+      disableRipple
+      disableElevation
+      className={classes.button}
+      variant="contained"
+      {...buttonProps}
+      style={buttonStyle}
+    >
+      <Typography style={buttonLabelStyle} className={classes.buttonLabel}>
+        {label}
+      </Typography>
+    </Button>
+  );
+}
+
+export function DangerButton({
+  buttonLabelStyle,
+  label,
+  ...buttonProps
+}: {
+  buttonLabelStyle?: React.CSSProperties;
+  label?: string;
+} & React.ComponentProps<typeof Button>) {
+  const classes = useStyles();
+  const theme = useTheme() as any;
+  const buttonStyle = Object.assign(
+    {
+      backgroundColor: theme.custom.colors.dangerButton,
+    },
+    buttonProps.style
+  );
+  return (
+    <Button
+      disableRipple
+      disableElevation
+      className={classes.button}
+      variant="contained"
+      {...buttonProps}
+      style={buttonStyle}
+    >
+      <Typography style={buttonLabelStyle} className={classes.buttonLabel}>
+        {label}
+      </Typography>
+    </Button>
+  );
+}
+
+export function SubtextParagraph({
+  children,
+  style,
+}: {
+  children: any;
+  style?: React.CSSProperties;
+}) {
+  const classes = useStyles();
+  return (
+    <p className={classes.subtext} style={style}>
+      {children}
+    </p>
+  );
+}
+
+export function Header({ text }: { text: string }) {
+  const classes = useStyles();
+  return <Typography className={classes.header}>{text}</Typography>;
 }
