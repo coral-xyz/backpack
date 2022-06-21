@@ -9,6 +9,7 @@
     "@coral-xyz/common": "*",
     "@coral-xyz/ledger-core": "*",
     "@coral-xyz/recoil": "*",
+    "@coral-xyz/themes": "*",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@ledgerhq/hw-transport": "^6.24.1",
