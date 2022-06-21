@@ -257,6 +257,20 @@ export class KeyringStore {
     return kr.mnemonic;
   }
 
+  public previewPubkeys(
+    mnemonic: string,
+    derivationPath: DerivationPath,
+    numberOfAccounts: number
+  ): string[] {
+    const factory = new SolanaHdKeyringFactory();
+    const hdKeyring = factory.fromMnemonic(mnemonic, derivationPath, [
+      ...Array(numberOfAccounts).keys(),
+    ]);
+    return [...Array(numberOfAccounts).keys()].map((i) =>
+      hdKeyring.getPublicKey(i)
+    );
+  }
+
   private toJson(): any {
     const json: any = {
       lastUsedTs: this.lastUsedTs,

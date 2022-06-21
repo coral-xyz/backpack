@@ -456,6 +456,18 @@ export class Backend {
   async mnemonicCreate(): Promise<string> {
     return this.keyringStore.createMnemonic();
   }
+
+  async previewPubkeys(
+    mnemonic: string,
+    derivationPath: DerivationPath,
+    numberOfAccounts: number
+  ) {
+    return this.keyringStore.previewPubkeys(
+      mnemonic,
+      derivationPath,
+      numberOfAccounts
+    );
+  }
 }
 
 export const SUCCESS_RESPONSE = "success";
