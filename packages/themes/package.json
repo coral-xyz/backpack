@@ -5,8 +5,7 @@
   "types": "dist/esm/index.d.ts",
   "dependencies": {
     "@mui/material": "^5.8.4",
-    "@mui/styles": "^5.8.4",
-    "esbuild": "^0.14.44"
+    "@mui/styles": "^5.8.4"
   },
   "scripts": {
     "build": "tsc"
