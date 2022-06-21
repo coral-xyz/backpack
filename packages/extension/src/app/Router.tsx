@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import makeStyles from "@mui/styles/makeStyles";
+import { styles } from "@coral-xyz/themes";
 import {
   getBackgroundResponseClient,
   getLogger,
@@ -26,7 +26,6 @@ import {
   ApproveMessage,
 } from "../components/Approval";
 import "./App.css";
-import type { CustomTheme } from "./theme";
 
 const logger = getLogger("router");
 
@@ -247,7 +246,7 @@ export function BlankApp() {
   return <div className={classes.appContainer}></div>;
 }
 
-const useStyles = makeStyles<CustomTheme>((theme) => ({
+const useStyles = styles((theme) => ({
   appContainer: {
     width: `${EXTENSION_WIDTH}px`,
     height: `${EXTENSION_HEIGHT}px`,

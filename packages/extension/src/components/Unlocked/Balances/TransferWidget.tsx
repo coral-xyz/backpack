@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useTheme, Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Typography } from "@mui/material";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import {
   TextField,
@@ -18,9 +18,8 @@ import {
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
 import { Send } from "./TokensWidget/Send";
-import type { CustomTheme } from "../../../app/theme";
 
-const useStyles = makeStyles<CustomTheme>((theme) => ({
+const useStyles = styles((theme) => ({
   searchField: {
     marginTop: "16px",
     marginBottom: "16px",
@@ -102,7 +101,7 @@ function TransferButton({
   dialog: (setOpenDrawer: (b: boolean) => void) => React.ReactNode;
   dialogTitle: string;
 }) {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <div
       style={{

@@ -1,16 +1,15 @@
 import { useState } from "react";
-import { Typography, useTheme } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Typography } from "@mui/material";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   getBackgroundClient,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
 } from "@coral-xyz/common";
 import { TextField, OnboardButton } from "./common";
-import type { CustomTheme } from "../app/theme";
 
 export const NAV_BAR_HEIGHT = 56;
 
-const useStyles = makeStyles<CustomTheme>((theme) => ({
+const useStyles = styles((theme) => ({
   container: {
     backgroundColor: theme.custom.colors.nav,
     textAlign: "center",
@@ -89,7 +88,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
 }
 
 export function BackpackHeader() {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <div
       style={{
@@ -134,7 +133,7 @@ export function BackpackHeader() {
 }
 
 function AlphaLabel() {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <div
       style={{

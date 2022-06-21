@@ -1,10 +1,9 @@
 import { Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styles } from "@coral-xyz/themes";
 import { useTotal } from "@coral-xyz/recoil";
 import { formatUSD } from "@coral-xyz/common";
-import type { CustomTheme } from "../../../app/theme";
 
-const useStyles = makeStyles<CustomTheme>((theme) => ({
+const useStyles = styles((theme) => ({
   balancesHeaderContainer: {
     display: "flex",
     justifyContent: "space-between",

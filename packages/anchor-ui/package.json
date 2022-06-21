@@ -13,6 +13,7 @@
   "dependencies": {
     "@coral-xyz/common": "*",
     "@coral-xyz/provider-injection": "*",
+    "@mui/styles": "^5.8.4",
     "eventemitter3": "^4.0.7",
     "react": "^17.0.0",
     "react-reconciler": "^0.26.0"

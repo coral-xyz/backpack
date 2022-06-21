@@ -1,0 +1,17 @@
+{
+  "name": "@coral-xyz/themes",
+  "version": "0.1.0",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "dependencies": {
+    "@mui/material": "^5.8.4",
+    "@mui/styles": "^5.8.4",
+    "esbuild": "^0.14.44"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^4.7.4"
+  }
+}

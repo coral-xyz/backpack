@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styles } from "@coral-xyz/themes";
 import { Button } from "@coral-xyz/anchor-ui-renderer";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { useBlockchainTokenAccount } from "@coral-xyz/recoil";
@@ -8,9 +8,8 @@ import { RecentActivitySmall } from "../RecentActivity";
 import { SendButton } from "./Send";
 import { DepositButton } from "./Deposit";
 import { WithDrawer } from "../../../Layout/Drawer";
-import type { CustomTheme } from "../../../../app/theme";
 
-const useStyles = makeStyles<CustomTheme>((theme) => ({
+const useStyles = styles((theme) => ({
   tokenHeaderContainer: {
     marginBottom: "38px",
   },

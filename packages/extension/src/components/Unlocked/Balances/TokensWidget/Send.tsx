@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useTheme, Typography, Link } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Typography, Link } from "@mui/material";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { SystemProgram, PublicKey } from "@solana/web3.js";
 import {
   useAnchorContext,
@@ -23,11 +23,10 @@ import {
   Loading,
 } from "../../../common";
 import { WithMiniDrawer } from "../../../Layout/Drawer";
-import type { CustomTheme } from "../../../../app/theme";
 
 const logger = getLogger("send-component");
 
-const useStyles = makeStyles<CustomTheme>((theme) => ({
+const useStyles = styles((theme) => ({
   container: {
     display: "flex",
     flexDirection: "column",
@@ -393,7 +392,7 @@ function SendConfirmationCard({ token, address, amount, close }: any) {
 
 function ConfirmSend({ address }: { address: string }) {
   const classes = useStyles();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   const ctx = useSolanaCtx();
   return (
     <div>
@@ -450,7 +449,7 @@ function ConfirmSend({ address }: { address: string }) {
 }
 
 function Sending({ signature }: { signature: string }) {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <div
       style={{
@@ -486,7 +485,7 @@ function Complete({
   signature: string;
   address: string;
 }) {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <div
       style={{
@@ -519,7 +518,7 @@ function Complete({
 }
 
 function Error({ signature }: { signature: string }) {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <div
       style={{
@@ -555,7 +554,7 @@ export function BottomCard({
   children,
 }: any) {
   const classes = useStyles();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <div className={classes.sendConfirmationContainer}>
       <div className={classes.sendConfirmationTopHalf} style={{ flex: 1 }}>

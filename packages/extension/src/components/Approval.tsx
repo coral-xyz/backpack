@@ -1,15 +1,14 @@
 import { useEffect } from "react";
 import * as bs58 from "bs58";
 import { Message } from "@solana/web3.js";
-import { useTheme, Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Typography } from "@mui/material";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useApproveOrigin, useActiveWallet } from "@coral-xyz/recoil";
 import { BottomCard } from "./Unlocked/Balances/TokensWidget/Send";
 import { walletAddressDisplay } from "../components/common";
 import { WithEphemeralNav } from "../components/Layout/NavEphemeral";
-import type { CustomTheme } from "../app/theme";
 
-const useStyles = makeStyles<CustomTheme>((theme) => ({
+const useStyles = styles((theme) => ({
   activeWallet: {
     color: theme.custom.colors.secondary,
     fontSize: "12px",
@@ -197,7 +196,7 @@ function WithApproval({ title, onApproval, onReject, origin, children }: any) {
 }
 
 function AppLogo({ origin }: any) {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <div
       style={{

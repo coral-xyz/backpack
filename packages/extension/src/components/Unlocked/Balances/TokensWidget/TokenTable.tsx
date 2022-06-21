@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Typography, ListItem } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styles } from "@coral-xyz/themes";
 import {
   useBalancesContext,
   BalancesTable,
@@ -15,9 +15,8 @@ import {
   useNavigation,
 } from "@coral-xyz/recoil";
 import { toTitleCase, NAV_COMPONENT_TOKEN } from "@coral-xyz/common";
-import type { CustomTheme } from "../../../../app/theme";
 
-const useStyles = makeStyles<CustomTheme>((theme) => ({
+const useStyles = styles((theme) => ({
   blockchainFooter: {
     borderTop: `solid 1pt ${theme.custom.colors.border}`,
     display: "flex",

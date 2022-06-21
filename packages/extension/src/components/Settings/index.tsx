@@ -1,13 +1,7 @@
 import { useEffect, useState, Suspense } from "react";
 import * as bs58 from "bs58";
-import {
-  useTheme,
-  Typography,
-  IconButton,
-  Button,
-  TextField,
-} from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Typography, IconButton, Button, TextField } from "@mui/material";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   Add,
   Lock,
@@ -37,7 +31,7 @@ import { WithDrawer } from "../Layout/Drawer";
 import { ConnectionMenu } from "./ConnectionSwitch";
 import { RecentActivityButton } from "../Unlocked/Balances/RecentActivity";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
     color: theme.custom.colors.fontColor,
   },
@@ -128,7 +122,7 @@ function _SettingsContent({ close }: { close: () => void }) {
 
 function AvatarHeader() {
   const activeWallet = useActiveWallet();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <div>
       <img
@@ -159,7 +153,7 @@ function AvatarHeader() {
 }
 
 function WalletList({ close }: { close: () => void }) {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   const namedPublicKeys = useWalletPublicKeys();
   const nav = useEphemeralNav();
 
@@ -241,7 +235,7 @@ function WalletList({ close }: { close: () => void }) {
 }
 
 function SettingsList({ close }: { close: () => void }) {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   const nav = useEphemeralNav();
 
   const lockWallet = () => {
