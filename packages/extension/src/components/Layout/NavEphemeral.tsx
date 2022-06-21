@@ -19,20 +19,23 @@ const useStyles = makeStyles((theme: any) => ({
     paddingRight: "16px",
     paddingTop: "10px",
     paddingBottom: "10px",
-    backgroundColor: theme.custom.colors.background,
     height: `${NAV_BAR_HEIGHT}px`,
   },
   navContentContainer: {
     flex: 1,
-    backgroundColor: theme.custom.colors.background,
   },
 }));
 
-export function WithEphemeralNav({ title, children, navbarStyle }: any) {
+export function WithEphemeralNav({
+  title,
+  children,
+  navbarStyle,
+  navContentStyle,
+}: any) {
   return (
     <NavEphemeralProvider title={title} root={children}>
       <NavBar style={navbarStyle} />
-      <NavContent />
+      <NavContent style={navContentStyle} />
     </NavEphemeralProvider>
   );
 }
@@ -53,10 +56,10 @@ function NavBar({ style }: any) {
   );
 }
 
-function NavContent() {
+function NavContent({ style = {} }) {
   const classes = useStyles();
   return (
-    <div className={classes.navContentContainer}>
+    <div className={classes.navContentContainer} style={style}>
       <Scrollbar>
         <Suspense fallback={<Loading />}>
           <_NavContent />
