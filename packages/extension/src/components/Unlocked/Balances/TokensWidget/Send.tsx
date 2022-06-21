@@ -19,7 +19,7 @@ import {
   TextField,
   TextFieldLabel,
   walletAddressDisplay,
-  OnboardButton,
+  PrimaryButton,
   Loading,
 } from "../../../common";
 import { WithMiniDrawer } from "../../../Layout/Drawer";
@@ -255,7 +255,7 @@ export function Send({
         </div>
       </div>
       <div className={classes.buttonContainer}>
-        <OnboardButton
+        <PrimaryButton
           className={classes.button}
           label="Send"
           type="submit"
@@ -570,7 +570,7 @@ export function BottomCard({
         }}
       >
         {cancelButton && (
-          <OnboardButton
+          <PrimaryButton
             style={{
               marginRight: "8px",
               backgroundColor: theme.custom.colors.nav,
@@ -581,7 +581,7 @@ export function BottomCard({
           />
         )}
 
-        <OnboardButton
+        <PrimaryButton
           style={buttonStyle}
           buttonLabelStyle={buttonLabelStyle}
           onClick={onButtonClick}

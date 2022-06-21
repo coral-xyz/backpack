@@ -9,7 +9,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
 } from "@coral-xyz/common";
-import { TextField, OnboardButton } from "../common";
+import { TextField, PrimaryButton } from "../common";
 import { _NavBackButton, DummyButton } from "../Layout/Nav";
 import { BlankApp } from "../../app/Router";
 
@@ -369,7 +369,7 @@ export function WithContinue({ buttonLabel = "Continue", ...props }: any) {
         {props.children}
       </div>
       <div className={classes.continueButtonContainer}>
-        <OnboardButton type="submit" label={buttonLabel} />
+        <PrimaryButton type="submit" label={buttonLabel} />
       </div>
     </form>
   );
