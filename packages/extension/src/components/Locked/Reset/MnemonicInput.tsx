@@ -1,8 +1,15 @@
 import { useState, useEffect } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import { useEphemeralNav } from "@coral-xyz/recoil";
-import { Box, Grid, TextField, InputAdornment, Link } from "@mui/material";
-import { Header, SubtextParagraph, PrimaryButton } from "../../common";
+import {
+  Box,
+  Button,
+  Grid,
+  TextField,
+  InputAdornment,
+  Link,
+} from "@mui/material";
+import { Header, SubtextParagraph } from "../../common";
 import { WarningLogo } from "./ResetWarning";
 import { ImportAccounts } from "./ImportAccounts";
 import {
@@ -152,7 +159,9 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
           </Link>
         </Box>
       </Box>
-      <PrimaryButton label="Import" onClick={next} disabled={!nextEnabled} />
+      <Button onClick={next} disabled={!nextEnabled}>
+        Import
+      </Button>
     </Box>
   );
 }

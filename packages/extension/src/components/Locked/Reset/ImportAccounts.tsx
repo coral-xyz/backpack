@@ -3,19 +3,15 @@ import makeStyles from "@mui/styles/makeStyles";
 import { useEphemeralNav } from "@coral-xyz/recoil";
 import {
   Box,
+  Button,
+  Checkbox,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
   ListItemIcon,
-  Checkbox,
 } from "@mui/material";
-import {
-  Header,
-  SubtextParagraph,
-  PrimaryButton,
-  walletAddressDisplay,
-} from "../../common";
+import { Header, SubtextParagraph, walletAddressDisplay } from "../../common";
 import {
   getBackgroundClient,
   DerivationPath,
@@ -111,7 +107,6 @@ export function ImportAccounts({
               >
                 <ListItemIcon>
                   <Checkbox
-                    edge="start"
                     checked={accountIndices.indexOf(index) !== -1}
                     tabIndex={-1}
                     disableRipple
@@ -128,7 +123,7 @@ export function ImportAccounts({
         </List>
       </Box>
       <Box>
-        <PrimaryButton label="Import Accounts" onClick={next} />
+        <Button onClick={next}>Import Accounts</Button>
       </Box>
     </Box>
   );
