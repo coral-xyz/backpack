@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { useTheme, Card } from "@mui/material";
+import { useTheme, Button, Card } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { CreateNewWallet } from "./CreateNewWallet";
 import { ImportWallet } from "./ImportWallet";
-import { PrimaryButton } from "../common";
 import { BackpackHeader } from "../Locked";
 
 const useStyles = makeStyles((theme: any) => ({
@@ -83,21 +82,18 @@ function Welcome({
       <BackpackHeader />
       <div className={classes.content}>
         <div>
-          <PrimaryButton
-            onClick={() => didSelectContent("create-new-wallet")}
-            label={"Create New Wallet"}
-          />
-          <PrimaryButton
+          <Button onClick={() => didSelectContent("create-new-wallet")}>
+            Create New Wallet
+          </Button>
+          <Button
             style={{
               marginTop: "10px",
-              backgroundColor: theme.custom.colors.nav,
             }}
-            buttonLabelStyle={{
-              color: theme.custom.colors.fontColor,
-            }}
+            color="secondary"
             onClick={() => didSelectContent("import-wallet")}
-            label={"Import Wallet"}
-          />
+          >
+            Import Wallet
+          </Button>
         </div>
       </div>
     </div>

@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import { useEphemeralNav } from "@coral-xyz/recoil";
-import { Box, Checkbox, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Typography } from "@mui/material";
 import {
   Header,
   SubtextParagraph,
-  PrimaryButton,
   TextField,
+  CheckboxForm,
 } from "../../common";
 import {
   getBackgroundClient,
@@ -27,17 +27,6 @@ const useStyles = makeStyles((theme: any) => ({
     margin: 0,
     width: "100%",
     marginBottom: "16px",
-  },
-  termsContainer: {
-    display: "flex",
-    marginTop: "8px",
-  },
-  checkBox: {
-    padding: 0,
-    color: theme.custom.colors.onboardButton,
-  },
-  checkBoxChecked: {
-    color: `${theme.custom.colors.onboardButton} !important`,
   },
   errorMsg: {
     color: "red",
@@ -106,29 +95,14 @@ export function CreatePassword({
           />
         </div>
         {error && <Typography className={classes.errorMsg}>{error}</Typography>}
-        <div className={classes.termsContainer}>
-          <Checkbox
-            className={classes.checkBox}
-            checked={checked}
-            onChange={() => setChecked(!checked)}
-            classes={{
-              checked: classes.checkBoxChecked,
-            }}
-          />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "column",
-              marginLeft: "10px",
-            }}
-          >
-            <SubtextParagraph>I agree to the terms of service</SubtextParagraph>
-          </div>
-        </div>
+        <CheckboxForm
+          checked={checked}
+          setChecked={setChecked}
+          label="I agree to the terms of service"
+        />
       </Box>
       <Box>
-        <PrimaryButton label="Next" onClick={next} />
+        <Button onClick={next}>Next</Button>
       </Box>
     </Box>
   );

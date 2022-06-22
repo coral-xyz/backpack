@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useTheme, Typography, Link } from "@mui/material";
+import { useTheme, Button, Link, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { SystemProgram, PublicKey } from "@solana/web3.js";
 import {
@@ -19,7 +19,6 @@ import {
   TextField,
   TextFieldLabel,
   walletAddressDisplay,
-  PrimaryButton,
   Loading,
 } from "../../../common";
 import { WithMiniDrawer } from "../../../Layout/Drawer";
@@ -43,11 +42,6 @@ const useStyles = makeStyles((theme: any) => ({
     paddingBottom: "24px",
     paddingTop: "25px",
     justifyContent: "space-between",
-  },
-  button: {
-    background: "transparent",
-    width: "100%",
-    height: "48px",
   },
   textRoot: {
     marginTop: "0 !important",
@@ -255,12 +249,9 @@ export function Send({
         </div>
       </div>
       <div className={classes.buttonContainer}>
-        <PrimaryButton
-          className={classes.button}
-          label="Send"
-          type="submit"
-          data-testid="Send"
-        />
+        <Button type="submit" data-testid="Send">
+          Send
+        </Button>
         <WithMiniDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
           <SendConfirmationCard
             token={token}
@@ -548,13 +539,11 @@ export function BottomCard({
   onButtonClick,
   onReject,
   buttonLabel,
-  buttonStyle,
+  buttonColor = "primary",
   cancelButton,
-  buttonLabelStyle,
   children,
 }: any) {
   const classes = useStyles();
-  const theme = useTheme() as any;
   return (
     <div className={classes.sendConfirmationContainer}>
       <div className={classes.sendConfirmationTopHalf} style={{ flex: 1 }}>
@@ -570,23 +559,20 @@ export function BottomCard({
         }}
       >
         {cancelButton && (
-          <PrimaryButton
+          <Button
             style={{
               marginRight: "8px",
-              backgroundColor: theme.custom.colors.nav,
             }}
-            buttonLabelStyle={{ color: theme.custom.colors.fontColor }}
             onClick={onReject}
-            label={"Cancel"}
-          />
+            color="secondary"
+          >
+            Cancel
+          </Button>
         )}
 
-        <PrimaryButton
-          style={buttonStyle}
-          buttonLabelStyle={buttonLabelStyle}
-          onClick={onButtonClick}
-          label={buttonLabel}
-        />
+        <Button color={buttonColor} onClick={onButtonClick}>
+          {buttonLabel}
+        </Button>
       </div>
     </div>
   );
