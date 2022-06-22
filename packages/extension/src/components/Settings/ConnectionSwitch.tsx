@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { ListItemIcon, ListItemText } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styles } from "@coral-xyz/themes";
 import { CheckBox } from "@mui/icons-material";
 import {
   getBackgroundClient,
@@ -9,9 +9,9 @@ import {
 import { useEphemeralNav, useSolanaConnectionUrl } from "@coral-xyz/recoil";
 import { List, ListItem } from "../common";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   connectionMenu: {
-    backgroundColor: theme.custom.colors.offText,
+    // backgroundColor: theme.custom.colors.offText,
     color: theme.custom.colors.fontColor,
   },
 }));

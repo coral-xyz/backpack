@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { MobileStepper, Button, Checkbox, Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styles } from "@coral-xyz/themes";
 import { MenuBook } from "@mui/icons-material";
 import {
   getBackgroundClient,
@@ -13,7 +13,7 @@ import { TextField, OnboardButton } from "../common";
 import { _NavBackButton, DummyButton } from "../Layout/Nav";
 import { BlankApp } from "../../app/Router";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   stepper: {
     backgroundColor: theme.custom.colors.nav,
     borderBottom: `solid 1pt ${theme.custom.colors.border}`,

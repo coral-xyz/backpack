@@ -1,11 +1,11 @@
 import type { PublicKey } from "@solana/web3.js";
-import { useTheme, Typography, Button, CircularProgress } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Typography, Button, CircularProgress } from "@mui/material";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 
 export * from "./List";
 export { TextField } from "@coral-xyz/anchor-ui-renderer";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   sendTo: {
     color: theme.custom.colors.fontColor,
     fontSize: "12px",
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export function WalletAddress({ publicKey, name, style }: any) {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <Typography style={style}>
       <span style={{ marginRight: "8px" }}>{name}</span>
@@ -96,7 +96,7 @@ export function OnboardButton({
   label?: string;
 } & React.ComponentProps<typeof Button>) {
   const classes = useStyles();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   const buttonStyle = Object.assign(
     {
       width: "100%",

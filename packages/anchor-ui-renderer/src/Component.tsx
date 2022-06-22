@@ -14,11 +14,11 @@ import {
   TextField as MuiTextField,
 } from "@mui/material";
 import { ExpandMore, ExpandLess } from "@mui/icons-material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styles } from "@coral-xyz/themes";
 import { usePluginContext } from "./Context";
 import { ViewRenderer } from "./ViewRenderer";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   blockchainLogo: {
     width: "12px",
     borderRadius: "2px",
