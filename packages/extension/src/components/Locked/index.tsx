@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Button, Typography, useTheme } from "@mui/material";
+import { Typography, useTheme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import {
   getBackgroundClient,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
 } from "@coral-xyz/common";
-import { TextField } from "../common";
+import { TextField, PrimaryButton } from "../common";
 import { LockedMenu } from "./LockedMenu";
 
 export const NAV_BAR_HEIGHT = 56;
@@ -74,7 +74,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
             rootClass={classes.passwordRoot}
           />
           <div style={{ marginLeft: "12px", marginRight: "12px" }}>
-            <Button type="submit">Unlock</Button>
+            <PrimaryButton label="Unlock" type="submit" />
           </div>
         </form>
         <div className={classes.forgotContainer}>

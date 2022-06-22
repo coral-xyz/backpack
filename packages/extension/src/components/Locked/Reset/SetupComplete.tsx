@@ -1,6 +1,11 @@
+import { useEffect, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
-import { Box, Button, Grid } from "@mui/material";
-import { Header, SubtextParagraph } from "../../common";
+import { Box, Grid } from "@mui/material";
+import { Header, SubtextParagraph, PrimaryButton } from "../../common";
+import {
+  getBackgroundClient,
+  UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+} from "@coral-xyz/common";
 
 const useStyles = makeStyles((theme: any) => ({
   root: {
@@ -22,10 +27,9 @@ export function SetupComplete({ closeDrawer }: { closeDrawer: () => void }) {
         <SubtextParagraph>
           Now get started exploring what your Backpack can do.
         </SubtextParagraph>
-        <Grid></Grid>
       </Box>
       <Box>
-        <Button onClick={closeDrawer}>Done</Button>
+        <PrimaryButton label="Done" onClick={closeDrawer} />
       </Box>
     </Box>
   );

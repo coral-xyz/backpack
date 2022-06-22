@@ -1,7 +1,12 @@
 import makeStyles from "@mui/styles/makeStyles";
 import { useEphemeralNav } from "@coral-xyz/recoil";
-import { Box, Button, Grid } from "@mui/material";
-import { Header, SubtextParagraph } from "../../common";
+import { Box } from "@mui/material";
+import {
+  Header,
+  SubtextParagraph,
+  SecondaryButton,
+  DangerButton,
+} from "../../common";
 import { ResetWarning } from "./ResetWarning";
 
 const useStyles = makeStyles(() => ({
@@ -26,21 +31,15 @@ export function Reset({ closeDrawer }: { closeDrawer: () => void }) {
           recovery phrase.
         </SubtextParagraph>
       </Box>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <Button onClick={closeDrawer} color="secondary">
-            Try More Passwords
-          </Button>
-        </Grid>
-        <Grid item xs={12}>
-          <Button
-            onClick={() => nav.push(<ResetWarning closeDrawer={closeDrawer} />)}
-            color="error"
-          >
-            Reset Secret Recovery Phrase
-          </Button>
-        </Grid>
-      </Grid>
+      <Box>
+        <div style={{ marginBottom: "12px" }}>
+          <SecondaryButton label="Try More Passwords" onClick={closeDrawer} />
+        </div>
+        <DangerButton
+          label="Reset Secret Recovery Phrase"
+          onClick={() => nav.push(<ResetWarning closeDrawer={closeDrawer} />)}
+        />
+      </Box>
     </Box>
   );
 }

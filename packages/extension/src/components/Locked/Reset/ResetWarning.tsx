@@ -1,7 +1,12 @@
 import makeStyles from "@mui/styles/makeStyles";
 import { useEphemeralNav } from "@coral-xyz/recoil";
-import { Box, Button, Grid } from "@mui/material";
-import { Header, SubtextParagraph } from "../../common";
+import { Box, Grid } from "@mui/material";
+import {
+  Header,
+  SubtextParagraph,
+  PrimaryButton,
+  SecondaryButton,
+} from "../../common";
 import { MnemonicInput } from "./MnemonicInput";
 
 const useStyles = makeStyles((theme: any) => ({
@@ -38,12 +43,10 @@ export function ResetWarning({ closeDrawer }: { closeDrawer: () => void }) {
       </Box>
       <Grid container spacing={2}>
         <Grid item xs={6}>
-          <Button onClick={closeDrawer} color="secondary">
-            Cancel
-          </Button>
+          <SecondaryButton label="Cancel" onClick={closeDrawer} />
         </Grid>
         <Grid item xs={6}>
-          <Button onClick={next}>Next</Button>
+          <PrimaryButton label="Next" onClick={next} />
         </Grid>
       </Grid>
     </Box>
