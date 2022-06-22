@@ -4,7 +4,7 @@ import {
   Typography,
   Button,
   CircularProgress,
-  Checkbox,
+  Checkbox as _Checkbox,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 
@@ -36,17 +36,42 @@ const useStyles = makeStyles((theme: any) => ({
     marginRight: "auto",
     color: theme.custom.colors.activeNavButton,
   },
+  button: {
+    width: "100%",
+    height: "48px",
+    borderRadius: "12px",
+    "&.Mui-disabled": {
+      opacity: 0.5,
+    },
+  },
+  buttonLabel: {
+    color: theme.custom.colors.buttonFontColor,
+    weight: 500,
+    fontSize: "16px",
+    lineHeight: "24px",
+    textTransform: "none",
+  },
   header: {
     color: theme.custom.colors.fontColor,
     fontSize: "24px",
     fontWeight: 500,
   },
+  checkBox: {
+    padding: "9px",
+    color: theme.custom.colors.primaryButton,
+  },
   checkboxContainer: {
     display: "flex",
     marginTop: "8px",
   },
+  checkBoxChecked: {
+    color: `${theme.custom.colors.primaryButton} !important`,
+  },
   subtext: {
     color: theme.custom.colors.secondary,
+    fontSize: "12px",
+    lineHeight: "20px",
+    fontWeight: 500,
   },
 }));
 
@@ -97,6 +122,102 @@ export function Loading(props: any) {
   );
 }
 
+export function PrimaryButton({
+  buttonLabelStyle,
+  label,
+  ...buttonProps
+}: {
+  buttonLabelStyle?: React.CSSProperties;
+  label?: string;
+} & React.ComponentProps<typeof Button>) {
+  const classes = useStyles();
+  const theme = useTheme() as any;
+  const buttonStyle = Object.assign(
+    {
+      backgroundColor: theme.custom.colors.primaryButton,
+    },
+    buttonProps.style
+  );
+  return (
+    <Button
+      disableRipple
+      disableElevation
+      className={classes.button}
+      variant="contained"
+      {...buttonProps}
+      style={buttonStyle}
+    >
+      <Typography style={buttonLabelStyle} className={classes.buttonLabel}>
+        {label}
+      </Typography>
+    </Button>
+  );
+}
+
+export function SecondaryButton({
+  buttonLabelStyle,
+  label,
+  ...buttonProps
+}: {
+  buttonLabelStyle?: React.CSSProperties;
+  label?: string;
+} & React.ComponentProps<typeof Button>) {
+  const classes = useStyles();
+  const theme = useTheme() as any;
+  const buttonStyle = Object.assign(
+    {
+      backgroundColor: theme.custom.colors.secondaryButton,
+    },
+    buttonProps.style
+  );
+  return (
+    <Button
+      disableRipple
+      disableElevation
+      className={classes.button}
+      variant="contained"
+      {...buttonProps}
+      style={buttonStyle}
+    >
+      <Typography style={buttonLabelStyle} className={classes.buttonLabel}>
+        {label}
+      </Typography>
+    </Button>
+  );
+}
+
+export function DangerButton({
+  buttonLabelStyle,
+  label,
+  ...buttonProps
+}: {
+  buttonLabelStyle?: React.CSSProperties;
+  label?: string;
+} & React.ComponentProps<typeof Button>) {
+  const classes = useStyles();
+  const theme = useTheme() as any;
+  const buttonStyle = Object.assign(
+    {
+      backgroundColor: theme.custom.colors.dangerButton,
+    },
+    buttonProps.style
+  );
+  return (
+    <Button
+      disableRipple
+      disableElevation
+      className={classes.button}
+      variant="contained"
+      {...buttonProps}
+      style={buttonStyle}
+    >
+      <Typography style={buttonLabelStyle} className={classes.buttonLabel}>
+        {label}
+      </Typography>
+    </Button>
+  );
+}
+
 export function SubtextParagraph({
   children,
   style,
@@ -117,6 +238,28 @@ export function Header({ text }: { text: string }) {
   return <Typography className={classes.header}>{text}</Typography>;
 }
 
+export function Checkbox({
+  checked,
+  setChecked = () => {},
+  ...checkboxProps
+}: {
+  checked: boolean;
+  setChecked?: (value: boolean) => void;
+} & React.ComponentProps<typeof _Checkbox>) {
+  const classes = useStyles();
+  return (
+    <_Checkbox
+      className={classes.checkBox}
+      checked={checked}
+      onChange={() => setChecked(!checked)}
+      classes={{
+        checked: classes.checkBoxChecked,
+      }}
+      {...checkboxProps}
+    />
+  );
+}
+
 export function CheckboxForm({
   checked,
   setChecked,
@@ -129,7 +272,7 @@ export function CheckboxForm({
   const classes = useStyles();
   return (
     <div className={classes.checkboxContainer}>
-      <Checkbox checked={checked} onChange={() => setChecked(!checked)} />
+      <Checkbox checked={checked} setChecked={setChecked} />
       <div
         style={{
           display: "flex",
