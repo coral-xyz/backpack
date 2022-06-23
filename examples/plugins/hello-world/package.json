@@ -1,25 +1,15 @@
 {
   "name": "@coral-xyz/example-plugin-hello-world",
   "version": "0.1.0",
-  "source": "src/index.tsx",
-  "app": "dist/bundle.js",
-  "type": "module",
-  "browserslist": [
-    "last 2 chrome versions"
-  ],
-  "targets": {
-    "app": {}
-  },
   "scripts": {
-    "build": "parcel build",
-    "start": "parcel watch --port 9005"
+    "build": "xnft build",
+    "start": "xnft watch --port 9005"
+  },
+  "devDependencies": {
+    "@coral-xyz/xnft": "*"
   },
   "dependencies": {
     "@coral-xyz/anchor-ui": "*",
     "react": "^17.0.2"
-  },
-  "devDependencies": {
-    "parcel": "^2.6.1",
-    "typescript": "^4.6.3"
   }
 }

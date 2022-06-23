@@ -1,18 +1,12 @@
 {
   "name": "@coral-xyz/example-plugin-table-degods",
   "version": "0.1.0",
-  "source": "src/index.tsx",
-  "app": "dist/bundle.js",
-  "type": "module",
-  "browserslist": [
-    "last 2 chrome versions"
-  ],
-  "targets": {
-    "app": {}
-  },
   "scripts": {
-    "build": "parcel build",
-    "start": "parcel watch --port 9003"
+    "build": "xnft build",
+    "start": "xnft watch --port 9003"
+  },
+  "devDependencies": {
+    "@coral-xyz/xnft": "*"
   },
   "dependencies": {
     "@coral-xyz/anchor-ui": "*",
@@ -21,9 +15,5 @@
     "@project-serum/serum": "^0.13.64",
     "@solana/web3.js": "^1.36.0",
     "react": "^17.0.2"
-  },
-  "devDependencies": {
-    "parcel": "^2.6.1",
-    "typescript": "^4.6.3"
   }
 }
