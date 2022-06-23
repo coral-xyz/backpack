@@ -68,9 +68,11 @@ export function LockedMenuList({ closeDrawer }: { closeDrawer: () => void }) {
           <ListItem
             onClick={o.onClick}
             key={o.text}
-            style={{ textAlign: "center" }}
+            sx={{
+              textAlign: "center",
+            }}
           >
-            <ListItemText primary={o.text} />
+            <ListItemText sx={{ cursor: "pointer" }} primary={o.text} />
           </ListItem>
         ))}
       </List>
