@@ -94,7 +94,7 @@ function TokenRow({ token, blockchain }: { token: any; blockchain: string }) {
       <BalancesTableCell
         props={{
           icon: token.logo,
-          title: token.ticker,
+          title: token.name,
           subtitle: `${token.nativeBalance.toLocaleString()} ${token.ticker}`,
           usdValue: token.usdBalance,
           percentChange: token.recentUsdBalanceChange,
