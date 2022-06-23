@@ -2,18 +2,22 @@
 // provider script to the background script.
 
 import * as bs58 from "bs58";
-import { Transaction, SendOptions, Commitment } from "@solana/web3.js";
+import type { SendOptions, Commitment } from "@solana/web3.js";
+import { Transaction } from "@solana/web3.js";
+import type {
+  RpcRequest,
+  RpcResponse,
+  Context,
+  EventEmitter,
+  Window,
+} from "@coral-xyz/common";
 import {
   getLogger,
   BrowserRuntime,
-  RpcRequest,
-  RpcResponse,
   withContext,
   withContextPort,
-  Context,
   Channel,
   PortChannel,
-  EventEmitter,
   RPC_METHOD_CONNECT,
   RPC_METHOD_DISCONNECT,
   RPC_METHOD_SIGN_AND_SEND_TX,
@@ -28,17 +32,15 @@ import {
   CONNECTION_POPUP_RESPONSE,
   BACKEND_EVENT,
   NOTIFICATION_CONNECTION_URL_UPDATED,
-} from "@coral-xyz/common";
-import {
-  Window,
   openLockedPopupWindow,
   openApprovalPopupWindow,
   openLockedApprovalPopupWindow,
   openApproveTransactionPopupWindow,
   openApproveMessagePopupWindow,
 } from "@coral-xyz/common";
-import { Backend, SUCCESS_RESPONSE } from "../backend/core";
-import { Handle } from "../types";
+import type { Backend } from "../backend/core";
+import { SUCCESS_RESPONSE } from "../backend/core";
+import type { Handle } from "../types";
 
 const logger = getLogger("server-injected");
 
