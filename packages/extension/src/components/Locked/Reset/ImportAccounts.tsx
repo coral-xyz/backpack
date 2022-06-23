@@ -50,6 +50,7 @@ export function ImportAccounts({
     } else {
       newAccountIndices.splice(currentIndex, 1);
     }
+    newAccountIndices.sort();
     setAccountIndices(newAccountIndices);
   };
 
