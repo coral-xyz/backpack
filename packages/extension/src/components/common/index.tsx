@@ -1,17 +1,16 @@
 import type { PublicKey } from "@solana/web3.js";
 import {
-  useTheme,
   Typography,
   Button,
   CircularProgress,
   Checkbox as _Checkbox,
 } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 
 export * from "./List";
 export { TextField } from "@coral-xyz/anchor-ui-renderer";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   sendTo: {
     color: theme.custom.colors.fontColor,
     fontSize: "12px",
@@ -69,14 +68,11 @@ const useStyles = makeStyles((theme: any) => ({
   },
   subtext: {
     color: theme.custom.colors.secondary,
-    fontSize: "12px",
-    lineHeight: "20px",
-    fontWeight: 500,
   },
 }));
 
 export function WalletAddress({ publicKey, name, style }: any) {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <Typography style={style}>
       <span style={{ marginRight: "8px" }}>{name}</span>
@@ -131,7 +127,7 @@ export function PrimaryButton({
   label?: string;
 } & React.ComponentProps<typeof Button>) {
   const classes = useStyles();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme() as any;
   const buttonStyle = Object.assign(
     {
       backgroundColor: theme.custom.colors.primaryButton,
@@ -162,8 +158,7 @@ export function SecondaryButton({
   buttonLabelStyle?: React.CSSProperties;
   label?: string;
 } & React.ComponentProps<typeof Button>) {
-  const classes = useStyles();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme() as any;
   const buttonStyle = Object.assign(
     {
       backgroundColor: theme.custom.colors.secondaryButton,
@@ -171,18 +166,12 @@ export function SecondaryButton({
     buttonProps.style
   );
   return (
-    <Button
-      disableRipple
-      disableElevation
-      className={classes.button}
-      variant="contained"
-      {...buttonProps}
+    <PrimaryButton
       style={buttonStyle}
-    >
-      <Typography style={buttonLabelStyle} className={classes.buttonLabel}>
-        {label}
-      </Typography>
-    </Button>
+      buttonLabelStyle={buttonLabelStyle}
+      label={label}
+      {...buttonProps}
+    />
   );
 }
 
@@ -194,8 +183,7 @@ export function DangerButton({
   buttonLabelStyle?: React.CSSProperties;
   label?: string;
 } & React.ComponentProps<typeof Button>) {
-  const classes = useStyles();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   const buttonStyle = Object.assign(
     {
       backgroundColor: theme.custom.colors.dangerButton,
@@ -203,18 +191,12 @@ export function DangerButton({
     buttonProps.style
   );
   return (
-    <Button
-      disableRipple
-      disableElevation
-      className={classes.button}
-      variant="contained"
-      {...buttonProps}
+    <PrimaryButton
       style={buttonStyle}
-    >
-      <Typography style={buttonLabelStyle} className={classes.buttonLabel}>
-        {label}
-      </Typography>
-    </Button>
+      buttonLabelStyle={buttonLabelStyle}
+      label={label}
+      {...buttonProps}
+    />
   );
 }
 

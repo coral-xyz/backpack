@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react";
-import {
-  useTheme,
-  Select,
-  MenuItem,
-  Typography,
-  CircularProgress,
-} from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Select, MenuItem, Typography, CircularProgress } from "@mui/material";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { PublicKey } from "@solana/web3.js";
 import Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
@@ -25,7 +19,7 @@ import { Stepper, WithContinue } from "../../Onboarding/CreateNewWallet";
 const STEP_COUNT = 3;
 let TRANSPORT: Transport | null = null;
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   menuPubkey: {
     fontWeight: 500,
     color: theme.custom.colors.fontColor,
@@ -41,7 +35,7 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export function ConnectHardware() {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   const [activeStep, setActiveState] = useState(0);
   const handleNext = () => {
     setActiveState(activeStep + 1);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { MobileStepper, Button, Checkbox, Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styles } from "@coral-xyz/themes";
 import { MenuBook } from "@mui/icons-material";
 import {
   getBackgroundClient,
@@ -9,11 +9,11 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
 } from "@coral-xyz/common";
-import { TextField, PrimaryButton } from "../common";
+import { TextField, PrimaryButton, CheckboxForm } from "../common";
 import { _NavBackButton, DummyButton } from "../Layout/Nav";
 import { BlankApp } from "../../app/Router";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   stepper: {
     backgroundColor: theme.custom.colors.nav,
     borderBottom: `solid 1pt ${theme.custom.colors.border}`,
@@ -41,17 +41,6 @@ const useStyles = makeStyles((theme: any) => ({
     padding: "20px",
     position: "relative",
     height: "100%",
-  },
-  termsContainer: {
-    display: "flex",
-    marginTop: "8px",
-  },
-  checkBox: {
-    padding: 0,
-    color: theme.custom.colors.onboardButton,
-  },
-  checkBoxChecked: {
-    color: `${theme.custom.colors.onboardButton} !important`,
   },
   subtext: {
     color: theme.custom.colors.secondary,
@@ -254,32 +243,6 @@ export function OnboardHeader({ text, subtext }: any) {
       <Symbol />
       <Typography className={classes.passwordHeader}>{text}</Typography>
       <Typography className={classes.passwordSubheader}>{subtext}</Typography>
-    </div>
-  );
-}
-
-function CheckboxForm({ checked, setChecked, label }: any) {
-  const classes = useStyles();
-  return (
-    <div className={classes.termsContainer}>
-      <Checkbox
-        className={classes.checkBox}
-        checked={checked}
-        onChange={() => setChecked(!checked)}
-        classes={{
-          checked: classes.checkBoxChecked,
-        }}
-      />
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "column",
-          marginLeft: "10px",
-        }}
-      >
-        <Typography className={classes.subtext}>{label}</Typography>
-      </div>
     </div>
   );
 }

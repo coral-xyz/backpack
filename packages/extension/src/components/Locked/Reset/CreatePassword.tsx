@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import { useEphemeralNav } from "@coral-xyz/recoil";
-import { Box, Checkbox, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import {
   Header,
   SubtextParagraph,
   PrimaryButton,
   TextField,
+  CheckboxForm,
 } from "../../common";
 import {
   getBackgroundClient,
@@ -16,33 +17,10 @@ import {
 import { SetupComplete } from "./SetupComplete";
 
 const useStyles = makeStyles((theme: any) => ({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-    justifyContent: "space-between",
-    color: theme.custom.colors.nav,
-  },
   passwordFieldRoot: {
     margin: 0,
     width: "100%",
     marginBottom: "16px",
-  },
-  termsContainer: {
-    display: "flex",
-    marginTop: "8px",
-  },
-  checkBox: {
-    padding: 0,
-    color: theme.custom.colors.onboardButton,
-  },
-  checkBoxChecked: {
-    color: `${theme.custom.colors.onboardButton} !important`,
-  },
-  errorMsg: {
-    color: "red",
-    textAlign: "left",
-    marginTop: "8px",
   },
 }));
 
@@ -81,13 +59,20 @@ export function CreatePassword({
   };
 
   return (
-    <Box className={classes.root}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        justifyContent: "space-between",
+      }}
+    >
       <Box>
         <Header text="Create a password" />
         <SubtextParagraph>
           You’ll need this to unlock Backpack.
         </SubtextParagraph>
-        <div>
+        <Box>
           <TextField
             inputProps={{ name: "password" }}
             placeholder="Enter your password..."
@@ -104,28 +89,15 @@ export function CreatePassword({
             setValue={setPasswordDup}
             rootClass={classes.passwordFieldRoot}
           />
-        </div>
-        {error && <Typography className={classes.errorMsg}>{error}</Typography>}
-        <div className={classes.termsContainer}>
-          <Checkbox
-            className={classes.checkBox}
-            checked={checked}
-            onChange={() => setChecked(!checked)}
-            classes={{
-              checked: classes.checkBoxChecked,
-            }}
-          />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "column",
-              marginLeft: "10px",
-            }}
-          >
-            <SubtextParagraph>I agree to the terms of service</SubtextParagraph>
-          </div>
-        </div>
+        </Box>
+        {error && (
+          <Typography sx={{ color: "red", mt: "8px" }}>{error}</Typography>
+        )}
+        <CheckboxForm
+          checked={checked}
+          setChecked={setChecked}
+          label="I agree to the terms of service"
+        />
       </Box>
       <Box>
         <PrimaryButton label="Next" onClick={next} />

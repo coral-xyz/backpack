@@ -8,32 +8,18 @@ import {
   IconButton,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import makeStyles from "@mui/styles/makeStyles";
-import { useTheme } from "@mui/material/styles";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { useEphemeralNav } from "@coral-xyz/recoil";
 import { WithDrawer } from "../Layout/Drawer";
 import { Reset } from "./Reset";
 
-const useStyles = makeStyles((theme: any) => ({
-  root: {
-    backgroundColor: theme.custom.colors.nav,
-  },
-  hamburgerRoot: {
-    color: theme.custom.colors.hamburger,
-  },
-  listContainer: {
-    color: theme.custom.colors.fontColor,
-  },
-}));
-
 export function LockedMenu() {
-  const classes = useStyles();
-  const theme = useTheme();
+  const theme = useCustomTheme();
   const [open, setOpen] = useState(false);
   return (
-    <Toolbar classes={{ root: classes.root }}>
+    <Toolbar sx={{ bgcolor: theme.custom.colors.nav }}>
       <IconButton color="inherit" onClick={() => setOpen(true)}>
-        <MenuIcon classes={{ root: classes.hamburgerRoot }} />
+        <MenuIcon sx={{ color: theme.custom.colors.hamburger }} />
       </IconButton>
 
       <WithDrawer
@@ -50,7 +36,6 @@ export function LockedMenu() {
           backgroundColor: theme.custom.colors.nav,
           padding: "24px",
         }}
-        className={classes.root}
       >
         <LockedMenuList closeDrawer={() => setOpen(false)} />
       </WithDrawer>
@@ -59,7 +44,7 @@ export function LockedMenu() {
 }
 
 export function LockedMenuList({ closeDrawer }: { closeDrawer: () => void }) {
-  const classes = useStyles();
+  const theme = useCustomTheme();
   const nav = useEphemeralNav();
 
   const options = [
@@ -78,7 +63,7 @@ export function LockedMenuList({ closeDrawer }: { closeDrawer: () => void }) {
   ];
 
   return (
-    <Box className={classes.listContainer}>
+    <Box sx={{ color: theme.custom.colors.fontColor }}>
       <List>
         {options.map((o) => (
           <ListItem

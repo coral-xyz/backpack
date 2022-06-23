@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { Drawer, Button, IconButton } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
-import { useTheme } from "@mui/material/styles";
 import { Close } from "@mui/icons-material";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { EXTENSION_HEIGHT } from "@coral-xyz/common";
 import { useEphemeralNav } from "@coral-xyz/recoil";
 import { WithEphemeralNav } from "../Layout/NavEphemeral";
@@ -10,7 +9,7 @@ import { NAV_BAR_HEIGHT, NAV_BUTTON_WIDTH } from "./Nav";
 
 const MINI_DRAWER_HEIGHT = 295;
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   withDrawer: {
     height: "100%",
     display: "flex",
@@ -45,7 +44,7 @@ const useStyles = makeStyles((theme: any) => ({
     background: "transparent",
   },
   closeDrawerButton: {
-    backgroundColor: theme.custom.colors,
+    backgroundColor: theme.custom.colors.background,
     width: "100%",
   },
   rightButtonIcon: {
@@ -60,7 +59,7 @@ const useStyles = makeStyles((theme: any) => ({
 
 export function WithDrawer(props: any) {
   const classes = useStyles();
-  const theme = useTheme();
+  const theme = useCustomTheme();
   const {
     children,
     openDrawer,

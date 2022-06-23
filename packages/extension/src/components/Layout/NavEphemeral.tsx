@@ -1,6 +1,5 @@
 import { Suspense } from "react";
-import { useTheme } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { NavEphemeralProvider, useEphemeralNav } from "@coral-xyz/recoil";
 import { Scrollbar } from "./Scrollbar";
 import { Loading } from "../common";
@@ -11,7 +10,7 @@ import {
   __CenterDisplay,
 } from "./Nav";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   navBarContainer: {
     display: "flex",
     justifyContent: "space-between",
@@ -42,7 +41,7 @@ export function WithEphemeralNav({
 
 function NavBar({ style }: any) {
   const classes = useStyles();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   const navbarStyle = {
     borderBottom: `solid 1pt ${theme.custom.colors.border}`,
     ...(style ?? {}),

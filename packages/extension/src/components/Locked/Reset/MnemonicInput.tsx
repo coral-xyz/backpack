@@ -1,13 +1,22 @@
 import { useState, useEffect } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import { useEphemeralNav } from "@coral-xyz/recoil";
-import { Box, Grid, TextField, InputAdornment, Link } from "@mui/material";
+import {
+  Box,
+  Grid,
+  TextField,
+  Typography,
+  InputAdornment,
+  Link,
+} from "@mui/material";
 import { Header, SubtextParagraph, PrimaryButton } from "../../common";
 import { WarningLogo } from "./ResetWarning";
 import { ImportAccounts } from "./ImportAccounts";
 import {
   getBackgroundClient,
+  DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
+  UI_RPC_METHOD_PREVIEW_PUBKEYS,
 } from "@coral-xyz/common";
 
 const useStyles = makeStyles((theme: any) => ({
@@ -52,6 +61,10 @@ const useStyles = makeStyles((theme: any) => ({
     color: theme.custom.colors.secondary,
     textDecoration: "none",
   },
+  errorMsg: {
+    color: "red",
+    marginBottom: "12px",
+  },
 }));
 
 export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
@@ -61,6 +74,7 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
   const [mnemonicWords, setMnemonicWords] = useState<string[]>([
     ...Array(mnemonicWordCount).fill(""),
   ]);
+  const [error, setError] = useState<null | string>(null);
 
   useEffect(() => {
     // Clear all inputs on change of mnemonic size. This is probably the cleanest way to handle
@@ -73,13 +87,29 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
     mnemonicWords.find((w) => w === undefined || w.length < 3) === undefined;
 
   const next = () => {
-    // TODO validate mnemonic
-    nav.push(
-      <ImportAccounts
-        mnemonic={mnemonicWords.map((f) => f.trim()).join(" ")}
-        closeDrawer={closeDrawer}
-      />
-    );
+    const mnemonic = mnemonicWords.map((f) => f.trim()).join(" ");
+    loadPublicKeys(mnemonic)
+      .then((publicKeys) => {
+        nav.push(
+          <ImportAccounts
+            mnemonic={mnemonic}
+            publicKeys={publicKeys}
+            closeDrawer={closeDrawer}
+          />
+        );
+      })
+      .catch(() => {
+        setError("Invalid mnemonic");
+      });
+  };
+
+  const loadPublicKeys = async (mnemonic: string) => {
+    const derivationPath = DerivationPath.Bip44Change;
+    const background = getBackgroundClient();
+    return await background.request({
+      method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
+      params: [mnemonic, derivationPath, 10],
+    });
   };
 
   const generateRandom = () => {
@@ -152,6 +182,7 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
           </Link>
         </Box>
       </Box>
+      {error && <Typography className={classes.errorMsg}>{error}</Typography>}
       <PrimaryButton label="Import" onClick={next} disabled={!nextEnabled} />
     </Box>
   );

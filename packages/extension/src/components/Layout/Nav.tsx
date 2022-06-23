@@ -1,7 +1,7 @@
-import { useEffect, Suspense } from "react";
+import { Suspense } from "react";
 import { useNavigation } from "@coral-xyz/recoil";
-import { useTheme, Typography, IconButton } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Typography, IconButton } from "@mui/material";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowBack } from "@mui/icons-material";
 import { Scrollbar } from "./Scrollbar";
 import { Loading } from "../common";
@@ -12,7 +12,7 @@ import { ApproveTransactionRequest } from "../Unlocked/ApproveTransactionRequest
 export const NAV_BAR_HEIGHT = 56;
 export const NAV_BUTTON_WIDTH = 38;
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   withNavContainer: {
     display: "flex",
     flexDirection: "column",
@@ -79,7 +79,7 @@ function NavBar() {
 
 function _NavBar() {
   const classes = useStyles();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   const { isRoot } = useNavigation();
   return (
     <div
@@ -144,7 +144,7 @@ export function NavBackButton() {
 
 export function _NavBackButton({ pop }: any) {
   const classes = useStyles();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <div
       style={{

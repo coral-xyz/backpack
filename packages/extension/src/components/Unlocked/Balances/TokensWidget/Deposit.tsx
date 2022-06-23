@@ -1,5 +1,6 @@
-import { useTheme, Button, Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { useState } from "react";
+import { Button, Tooltip, Typography } from "@mui/material";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import { WithHeaderButton } from "./Token";
 import { BottomCard } from "./Send";
@@ -9,7 +10,7 @@ import {
   walletAddressDisplay,
 } from "../../../common";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   subtext: {
     width: "264px",
     marginLeft: "auto",
@@ -52,11 +53,8 @@ export function DepositButton({ token }: any) {
 
 export function Deposit({ close }: any) {
   const classes = useStyles();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   const activeWallet = useActiveWallet();
-  const copy = () => {
-    navigator.clipboard.writeText(activeWallet.publicKey.toString());
-  };
   return (
     <div
       style={{
@@ -107,7 +105,9 @@ export function Deposit({ close }: any) {
                     activeWallet.publicKey
                   )})`}
                   rootClass={classes.depositTextFieldRoot}
-                  endAdornment={<CopyButton onClick={copy} />}
+                  endAdornment={
+                    <CopyButton publicKey={activeWallet.publicKey.toString()} />
+                  }
                   inputProps={{
                     readOnly: true,
                   }}
@@ -146,11 +146,25 @@ export function QrCode({ data }: { data: string }) {
   );
 }
 
-function CopyButton({ onClick }: any) {
+function CopyButton({ publicKey }: { publicKey: string }) {
   const classes = useStyles();
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const onCopy = () => {
+    setTooltipOpen(true);
+    setTimeout(() => setTooltipOpen(false), 1000);
+    navigator.clipboard.writeText(publicKey);
+  };
   return (
-    <Button className={classes.copyButton} onClick={onClick}>
-      <Typography className={classes.copyButtonLabel}>Copy</Typography>
-    </Button>
+    <Tooltip
+      title={"Copied"}
+      open={tooltipOpen}
+      disableFocusListener
+      disableHoverListener
+      disableTouchListener
+    >
+      <Button className={classes.copyButton} onClick={onCopy}>
+        <Typography className={classes.copyButtonLabel}>Copy</Typography>
+      </Button>
+    </Tooltip>
   );
 }

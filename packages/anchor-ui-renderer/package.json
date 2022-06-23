@@ -13,10 +13,10 @@
   "dependencies": {
     "@coral-xyz/anchor-ui": "*",
     "@coral-xyz/common": "*",
+    "@coral-xyz/themes": "*",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@mui/material": "^5.8.1",
-    "@mui/styles": "^5.8.0",
     "@solana/web3.js": "^1.35.1",
     "react": "^17.0.0"
   },

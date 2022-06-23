@@ -1,5 +1,6 @@
+import type { PublicKey } from "@solana/web3.js";
 import { useEffect, useState } from "react";
-import makeStyles from "@mui/styles/makeStyles";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useEphemeralNav } from "@coral-xyz/recoil";
 import {
   Box,
@@ -8,50 +9,27 @@ import {
   ListItemButton,
   ListItemText,
   ListItemIcon,
-  Checkbox,
 } from "@mui/material";
 import {
+  Checkbox,
   Header,
   SubtextParagraph,
   PrimaryButton,
   walletAddressDisplay,
 } from "../../common";
-import {
-  getBackgroundClient,
-  DerivationPath,
-  UI_RPC_METHOD_PREVIEW_PUBKEYS,
-} from "@coral-xyz/common";
 import { CreatePassword } from "./CreatePassword";
-
-const useStyles = makeStyles((theme: any) => ({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-    justifyContent: "space-between",
-    color: theme.custom.colors.nav,
-  },
-  accountList: {
-    color: theme.custom.colors.fontColor,
-    background: theme.custom.colors.background,
-    borderRadius: "12px",
-  },
-  balance: {
-    color: theme.custom.colors.secondary,
-    textAlign: "right",
-  },
-}));
 
 export function ImportAccounts({
   mnemonic,
+  publicKeys,
   closeDrawer,
 }: {
   mnemonic: string;
+  publicKeys: PublicKey[];
   closeDrawer: () => void;
 }) {
-  const classes = useStyles();
+  const theme = useCustomTheme();
   const nav = useEphemeralNav();
-  const [publicKeys, setPublicKeys] = useState([]);
   const [accountIndices, setAccountIndices] = useState<number[]>([]);
 
   const next = () => {
@@ -76,34 +54,37 @@ export function ImportAccounts({
   };
 
   useEffect(() => {
-    const loadPublicKeys = async () => {
-      const derivationPath = DerivationPath.Bip44Change;
-      const background = getBackgroundClient();
-      const publicKeys = await background.request({
-        method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-        params: [mnemonic, derivationPath, 10],
-      });
-      /*
+    /*
       TODO: query balances
       await Promise.all(publicKeys.map(async (publicKey) => {
         const balance = await background.request({})
       }));
       */
-      setPublicKeys(publicKeys);
-    };
-    loadPublicKeys();
   }, []);
 
   return (
-    <Box className={classes.root}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        justifyContent: "space-between",
+      }}
+    >
       <Box>
         <Header text="Import Accounts" />
         <SubtextParagraph>
           Select which accounts you'd like to import.
         </SubtextParagraph>
-        <List className={classes.accountList}>
+        <List
+          sx={{
+            color: theme.custom.colors.fontColor,
+            background: theme.custom.colors.background,
+            borderRadius: "12px",
+          }}
+        >
           {publicKeys.map((publicKey, index) => (
-            <ListItem key={publicKey} disablePadding>
+            <ListItem key={publicKey.toString()} disablePadding>
               <ListItemButton
                 role={undefined}
                 onClick={handleSelect(index)}
@@ -118,17 +99,27 @@ export function ImportAccounts({
                   />
                 </ListItemIcon>
                 <ListItemText
-                  id={publicKey}
+                  id={publicKey.toString()}
                   primary={walletAddressDisplay(publicKey)}
                 />
-                <ListItemText className={classes.balance} primary="0 SOL" />
+                <ListItemText
+                  sx={{
+                    color: theme.custom.colors.secondary,
+                    textAlign: "right",
+                  }}
+                  primary="0 SOL"
+                />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
       </Box>
       <Box>
-        <PrimaryButton label="Import Accounts" onClick={next} />
+        <PrimaryButton
+          label="Import Accounts"
+          onClick={next}
+          disabled={accountIndices.length === 0}
+        />
       </Box>
     </Box>
   );

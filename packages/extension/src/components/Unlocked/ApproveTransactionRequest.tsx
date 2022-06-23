@@ -12,14 +12,14 @@ import {
   UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
 } from "@coral-xyz/common";
 import { Plugin } from "@coral-xyz/anchor-ui-renderer";
-import { useTheme, Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Typography } from "@mui/material";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { walletAddressDisplay } from "../common";
 import { Scrollbar } from "../Layout/Scrollbar";
 import { WithMiniDrawer } from "../Layout/Drawer";
 import { BottomCard } from "../Unlocked/Balances/TokensWidget/Send";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   confirmRow: {
     display: "flex",
     justifyContent: "space-between",
@@ -163,7 +163,7 @@ function _SignTransaction({
   deserializedTx: Transaction;
   plugin: Plugin;
 }) {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   const classes = useStyles();
   return (
     <>

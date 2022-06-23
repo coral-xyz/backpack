@@ -1,4 +1,3 @@
-import makeStyles from "@mui/styles/makeStyles";
 import { useEphemeralNav } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
 import {
@@ -9,20 +8,17 @@ import {
 } from "../../common";
 import { ResetWarning } from "./ResetWarning";
 
-const useStyles = makeStyles(() => ({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-    justifyContent: "space-between",
-  },
-}));
-
 export function Reset({ closeDrawer }: { closeDrawer: () => void }) {
-  const classes = useStyles();
   const nav = useEphemeralNav();
   return (
-    <Box className={classes.root}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        justifyContent: "space-between",
+      }}
+    >
       <Box>
         <Header text="Forgot your password?" />
         <SubtextParagraph>
@@ -32,9 +28,9 @@ export function Reset({ closeDrawer }: { closeDrawer: () => void }) {
         </SubtextParagraph>
       </Box>
       <Box>
-        <div style={{ marginBottom: "12px" }}>
+        <Box sx={{ mb: "12px" }}>
           <SecondaryButton label="Try More Passwords" onClick={closeDrawer} />
-        </div>
+        </Box>
         <DangerButton
           label="Reset Secret Recovery Phrase"
           onClick={() => nav.push(<ResetWarning closeDrawer={closeDrawer} />)}
