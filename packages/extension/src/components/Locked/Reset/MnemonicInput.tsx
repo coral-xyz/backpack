@@ -109,7 +109,7 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
     const background = getBackgroundClient();
     return await background.request({
       method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-      params: [mnemonic, derivationPath, 10],
+      params: [mnemonic, derivationPath, 6],
     });
   };
 
