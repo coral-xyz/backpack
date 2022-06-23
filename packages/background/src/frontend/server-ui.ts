@@ -1,16 +1,18 @@
 // All RPC request handlers for requests that can be sent from the trusted
 // extension UI to the background script.
 
-import {
-  getLogger,
-  withContextPort,
+import type {
   RpcRequest,
   RpcResponse,
   DerivationPath,
-  PortChannel,
-  NotificationsClient,
   Context,
   EventEmitter,
+} from "@coral-xyz/common";
+import {
+  getLogger,
+  withContextPort,
+  PortChannel,
+  NotificationsClient,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
@@ -52,9 +54,9 @@ import {
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_NOTIFICATIONS,
 } from "@coral-xyz/common";
-import { KeyringStoreState } from "@coral-xyz/recoil";
-import { Backend } from "../backend/core";
-import { Handle } from "../types";
+import type { KeyringStoreState } from "@coral-xyz/recoil";
+import type { Backend } from "../backend/core";
+import type { Handle } from "../types";
 
 const logger = getLogger("background-server-ui");
 

@@ -1,24 +1,21 @@
 import * as bs58 from "bs58";
-import { KeyringStoreState, KeyringStoreStateEnum } from "@coral-xyz/recoil";
+import type { KeyringStoreState } from "@coral-xyz/recoil";
+import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
+import type { EventEmitter, DerivationPath } from "@coral-xyz/common";
 import {
-  EventEmitter,
-  DerivationPath,
   BrowserRuntime,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   BACKEND_EVENT,
 } from "@coral-xyz/common";
 import * as crypto from "./crypto";
 import type { SolanaLedgerKeyring } from "./solana";
+import type { HdKeyringFactory, HdKeyring, KeyringFactory, Keyring } from ".";
 import {
   SolanaHdKeyringFactory,
   SolanaKeyringFactory,
   SolanaLedgerKeyringFactory,
   EthereumHdKeyringFactory,
   EthereumKeyringFactory,
-  HdKeyringFactory,
-  HdKeyring,
-  KeyringFactory,
-  Keyring,
 } from ".";
 
 const LOCK_INTERVAL_SECS = 15 * 60 * 1000;

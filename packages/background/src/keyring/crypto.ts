@@ -1,6 +1,5 @@
 import { pbkdf2 } from "crypto";
-import nacl from "tweetnacl";
-import { randomBytes, secretbox } from "tweetnacl";
+import nacl, { randomBytes, secretbox } from "tweetnacl";
 import * as bs58 from "bs58";
 import { derivePath } from "ed25519-hd-key";
 import { Keypair } from "@solana/web3.js";

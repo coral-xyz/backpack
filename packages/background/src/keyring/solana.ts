@@ -12,7 +12,7 @@ import {
   LEDGER_INJECTED_CHANNEL_RESPONSE,
 } from "@coral-xyz/common";
 import { deriveKeypairs, deriveKeypair } from "./crypto";
-import {
+import type {
   ImportedDerivationPath,
   Keyring,
   KeyringFactory,
