@@ -38,25 +38,16 @@ program.command("build").action(async () => {
   }
 });
 
-program
-  .command("watch")
-  .option("-p, --port <port>", "Port to serve from", 1234)
-  .action(async ({ port }) => {
-    console.debug(`👀 watching on http://localhost:${port}`);
-    // https://parceljs.org/features/parcel-api/#watching
-    const bundler = new Parcel({
-      ...options,
-      mode: "development",
-      sourceMap: true,
-      optimize: false,
-      serveOptions: {
-        port,
-      },
-      hmrOptions: {
-        port,
-      },
-    });
-    await bundler.watch();
+program.command("watch").action(async ({ port }) => {
+  console.debug(`👀 watching on http://localhost:${port}`);
+  // https://parceljs.org/features/parcel-api/#watching
+  const bundler = new Parcel({
+    ...options,
+    mode: "development",
+    sourceMap: true,
+    optimize: false,
   });
+  await bundler.watch();
+});
 
 program.parse();
