@@ -13,18 +13,17 @@ import { useEphemeralNav } from "@coral-xyz/recoil";
 import { WithDrawer } from "../Layout/Drawer";
 import { Reset } from "./Reset";
 
-export function LockedMenu() {
+export function LockedMenu({ menuOpen, setMenuOpen }: any) {
   const theme = useCustomTheme();
-  const [open, setOpen] = useState(false);
   return (
     <Toolbar sx={{ bgcolor: theme.custom.colors.nav }}>
-      <IconButton color="inherit" onClick={() => setOpen(true)}>
+      <IconButton color="inherit" onClick={() => setMenuOpen(true)}>
         <MenuIcon sx={{ color: theme.custom.colors.hamburger }} />
       </IconButton>
 
       <WithDrawer
-        openDrawer={open}
-        setOpenDrawer={setOpen}
+        openDrawer={menuOpen}
+        setOpenDrawer={setMenuOpen}
         title={""}
         navbarStyle={{
           borderBottom: undefined,
@@ -37,7 +36,7 @@ export function LockedMenu() {
           padding: "24px",
         }}
       >
-        <LockedMenuList closeDrawer={() => setOpen(false)} />
+        <LockedMenuList closeDrawer={() => setMenuOpen(false)} />
       </WithDrawer>
     </Toolbar>
   );
