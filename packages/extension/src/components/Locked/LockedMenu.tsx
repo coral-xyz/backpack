@@ -33,7 +33,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
         navContentStyle={{
           // @ts-ignore
           backgroundColor: theme.custom.colors.nav,
-          padding: "24px",
+          padding: "0 24px 24px 24px",
         }}
       >
         <LockedMenuList closeDrawer={() => setMenuOpen(false)} />

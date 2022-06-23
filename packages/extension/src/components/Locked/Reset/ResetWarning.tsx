@@ -47,7 +47,7 @@ export function ResetWarning({ closeDrawer }: { closeDrawer: () => void }) {
 
 export function WarningLogo({ className }: { className?: string }) {
   return (
-    <Box sx={{ display: "block", textAlign: "center", mb: "24px" }}>
+    <Box sx={{ display: "block", textAlign: "center", mb: "12px" }}>
       <svg
         width="46"
         height="40"

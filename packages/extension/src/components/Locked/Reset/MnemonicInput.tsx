@@ -58,6 +58,7 @@ const useStyles = makeStyles((theme: any) => ({
     },
   },
   link: {
+    cursor: "pointer",
     color: theme.custom.colors.secondary,
     textDecoration: "none",
   },
@@ -164,7 +165,7 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
           </Grid>
         ))}
       </Grid>
-      <Box style={{ textAlign: "center", margin: "24px 0" }}>
+      <Box sx={{ textAlign: "center", margin: "24px 0" }}>
         <Box>
           <Link
             className={classes.link}

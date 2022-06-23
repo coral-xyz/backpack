@@ -115,7 +115,7 @@ export function ImportAccounts({
           ))}
         </List>
       </Box>
-      <Box>
+      <Box sx={{ mt: "12px" }}>
         <PrimaryButton
           label="Import Accounts"
           onClick={next}
