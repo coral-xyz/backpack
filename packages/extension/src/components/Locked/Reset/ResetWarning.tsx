@@ -29,7 +29,7 @@ export function ResetWarning({ closeDrawer }: { closeDrawer: () => void }) {
         <Header text="Reset your secret recovery phrase" />
         <SubtextParagraph>
           This will remove all wallets and replace them with a new wallet.
-          Ensure you have you existing secret recovery phrase and private keys
+          Ensure you have your existing secret recovery phrase and private keys
           saved.
         </SubtextParagraph>
       </Box>
