@@ -4,7 +4,7 @@ import * as serverInjected from "./frontend/server-injected";
 import * as solanaConnection from "./frontend/solana-connection";
 import * as coreBackend from "./backend/core";
 import * as solanaConnectionBackend from "./backend/solana-connection";
-import { Background } from "./types";
+import type { Background } from "./types";
 
 export * from "./keyring";
 
