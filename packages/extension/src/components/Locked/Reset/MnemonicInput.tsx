@@ -83,6 +83,19 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
     setMnemonicWords([...Array(mnemonicWordCount).fill("")]);
   }, [mnemonicWordCount]);
 
+  useEffect(() => {
+    const onPaste = (e: any) => {
+      const words = e.clipboardData.getData("text").split(" ");
+      if (words.length === mnemonicWordCount) {
+        setMnemonicWords(words);
+      }
+    };
+    window.addEventListener("paste", onPaste);
+    return () => {
+      window.removeEventListener("paste", onPaste);
+    };
+  }, []);
+
   const nextEnabled =
     mnemonicWords.length === mnemonicWordCount &&
     mnemonicWords.find((w) => w === undefined || w.length < 3) === undefined;
