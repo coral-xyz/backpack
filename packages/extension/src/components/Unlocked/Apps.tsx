@@ -1,5 +1,5 @@
 import { Button, Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styles } from "@coral-xyz/themes";
 import { Plugin, PluginRenderer } from "@coral-xyz/anchor-ui-renderer";
 import { usePlugins, useTablePlugins, useNavigation } from "@coral-xyz/recoil";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
@@ -15,7 +15,7 @@ const squircleIconPath = getSvgPath({
   cornerSmoothing: 0.8,
 });
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   pluginIconRoot: {
     minWidth: ICON_WIDTH,
     marginLeft: "auto",

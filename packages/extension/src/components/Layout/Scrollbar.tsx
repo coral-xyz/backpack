@@ -1,8 +1,8 @@
-import { useTheme } from "@mui/material";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { Scrollbars } from "react-custom-scrollbars";
 
 export function Scrollbar(props: any) {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <>
       <Scrollbars
@@ -35,12 +35,12 @@ export function Scrollbar(props: any) {
       </Scrollbars>
       <style>
         {`
-				.track-vertical {
-  background: ${theme.custom.colors.scrollbarTrack};
-				}
-.track-vertical .thumb-vertical {
-  background-color: ${theme.custom.colors.scrollbarThumb};
-}
+          .track-vertical {
+            background: ${theme.custom.colors.scrollbarTrack};
+          }
+          .track-vertical .thumb-vertical {
+            background-color: ${theme.custom.colors.scrollbarThumb};
+          }
 				`}
       </style>
     </>

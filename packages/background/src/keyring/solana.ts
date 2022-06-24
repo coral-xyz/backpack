@@ -12,7 +12,7 @@ import {
   LEDGER_INJECTED_CHANNEL_RESPONSE,
 } from "@coral-xyz/common";
 import { deriveKeypairs, deriveKeypair } from "./crypto";
-import {
+import type {
   ImportedDerivationPath,
   Keyring,
   KeyringFactory,
@@ -91,7 +91,8 @@ class SolanaKeyring implements Keyring {
 export class SolanaHdKeyringFactory implements HdKeyringFactory {
   public fromMnemonic(
     mnemonic: string,
-    derivationPath?: DerivationPath
+    derivationPath?: DerivationPath,
+    accountIndices: Array<number> = [0]
   ): HdKeyring {
     if (!derivationPath) {
       derivationPath = DerivationPath.Bip44Change;
@@ -100,42 +101,41 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
       throw new Error("Invalid seed words");
     }
     const seed = mnemonicToSeedSync(mnemonic);
-    const numberOfAccounts = 1;
-    const keypairs = deriveKeypairs(seed, derivationPath, numberOfAccounts);
+    const keypairs = deriveKeypairs(seed, derivationPath, accountIndices);
     return new SolanaHdKeyring({
       mnemonic,
       seed,
-      numberOfAccounts,
+      accountIndices,
       keypairs,
       derivationPath,
     });
   }
 
-  public generate(): HdKeyring {
-    const mnemonic = generateMnemonic(256);
+  public generate(strength): HdKeyring {
+    const mnemonic = generateMnemonic(strength);
     const seed = mnemonicToSeedSync(mnemonic);
-    const numberOfAccounts = 1;
+    const accountIndices = [0];
     const derivationPath = DerivationPath.Bip44;
-    const keypairs = deriveKeypairs(seed, derivationPath, numberOfAccounts);
+    const keypairs = deriveKeypairs(seed, derivationPath, accountIndices);
 
     return new SolanaHdKeyring({
       mnemonic,
       seed,
-      numberOfAccounts,
+      accountIndices,
       derivationPath,
       keypairs,
     });
   }
 
   public fromJson(obj: HdKeyringJson): HdKeyring {
-    const { mnemonic, seed: seedStr, numberOfAccounts, derivationPath } = obj;
+    const { mnemonic, seed: seedStr, accountIndices, derivationPath } = obj;
     const seed = Buffer.from(seedStr, "hex");
-    const keypairs = deriveKeypairs(seed, derivationPath, numberOfAccounts);
+    const keypairs = deriveKeypairs(seed, derivationPath, accountIndices);
 
     const kr = new SolanaHdKeyring({
       mnemonic,
       seed,
-      numberOfAccounts,
+      accountIndices,
       derivationPath,
       keypairs,
     });
@@ -147,52 +147,49 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
 class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   readonly mnemonic: string;
   private seed: Buffer;
-  private numberOfAccounts: number;
+  private accountIndices: Array<number>;
   private derivationPath: DerivationPath;
 
   constructor({
     mnemonic,
     seed,
-    numberOfAccounts,
+    accountIndices,
     keypairs,
     derivationPath,
   }: {
     mnemonic: string;
     seed: Buffer;
-    numberOfAccounts: number;
+    accountIndices: Array<number>;
     keypairs: Array<Keypair>;
     derivationPath: DerivationPath;
   }) {
     super(keypairs);
     this.mnemonic = mnemonic;
     this.seed = seed;
-    this.numberOfAccounts = numberOfAccounts;
+    this.accountIndices = accountIndices;
     this.derivationPath = derivationPath;
   }
 
   public deriveNext(): [string, number] {
+    // TODO: this may not be the desired behaviour, what about non-contiguous indices?
+    const nextAccountIndex = Math.max(...this.accountIndices) + 1;
     const kp = deriveKeypair(
       this.seed.toString("hex"),
-      this.numberOfAccounts,
+      nextAccountIndex,
       this.derivationPath
     );
     this.keypairs.push(kp);
-    this.numberOfAccounts += 1;
-    return [kp.publicKey.toString(), this.numberOfAccounts - 1];
+    this.accountIndices.push(nextAccountIndex);
+    return [kp.publicKey.toString(), nextAccountIndex];
   }
 
   public getPublicKey(accountIndex: number): string {
     // This might not be true once we implement account deletion.
     // One solution is to simply make that a UI detail.
-    if (this.keypairs.length !== this.numberOfAccounts) {
+    if (this.keypairs.length !== this.accountIndices.length) {
       throw new Error("invariant violation");
     }
-    if (accountIndex >= this.keypairs.length) {
-      throw new Error(
-        `cannot get public key for account index: ${accountIndex}`
-      );
-    }
-    const kp = this.keypairs[accountIndex];
+    const kp = this.keypairs[this.accountIndices.indexOf(accountIndex)];
     return kp.publicKey.toString();
   }
 
@@ -200,7 +197,7 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     return {
       mnemonic: this.mnemonic,
       seed: this.seed.toString("hex"),
-      numberOfAccounts: this.numberOfAccounts,
+      accountIndices: this.accountIndices,
       derivationPath: this.derivationPath,
     };
   }

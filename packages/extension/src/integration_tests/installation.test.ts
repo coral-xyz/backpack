@@ -149,7 +149,7 @@ describe("Installing Anchor Wallet", () => {
 
       const mnemonic = generateMnemonic(256);
       const seed = await mnemonicToSeed(mnemonic);
-      const keypairs = deriveKeypairs(seed, DerivationPath.Bip44Change, 2);
+      const keypairs = deriveKeypairs(seed, DerivationPath.Bip44Change, [0, 1]);
       const [firstWallet, secondWallet] = keypairs;
       const sig = await connection.requestAirdrop(
         firstWallet.publicKey,

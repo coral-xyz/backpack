@@ -5,10 +5,11 @@ import {
   QUERY_ONBOARDING,
 } from "@coral-xyz/common";
 import { WithSuspense } from "../app/Router";
-import { WithTheme } from "../app/theme";
+
 import { ConnectHardware } from "../components/Settings/ConnectHardware";
 import { Onboarding } from "../components/Onboarding";
 import "../app/App.css";
+import { WithTheme } from "../app/theme";
 
 //
 // Options provides the "expanded" extension app flows. Namely,

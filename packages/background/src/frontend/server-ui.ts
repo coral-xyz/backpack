@@ -1,16 +1,18 @@
 // All RPC request handlers for requests that can be sent from the trusted
 // extension UI to the background script.
 
-import {
-  getLogger,
-  withContextPort,
+import type {
   RpcRequest,
   RpcResponse,
   DerivationPath,
-  PortChannel,
-  NotificationsClient,
   Context,
   EventEmitter,
+} from "@coral-xyz/common";
+import {
+  getLogger,
+  withContextPort,
+  PortChannel,
+  NotificationsClient,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
@@ -48,13 +50,14 @@ import {
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
   UI_RPC_METHOD_LEDGER_CONNECT,
   UI_RPC_METHOD_LEDGER_IMPORT,
+  UI_RPC_METHOD_PREVIEW_PUBKEYS,
   BACKEND_EVENT,
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_NOTIFICATIONS,
 } from "@coral-xyz/common";
-import { KeyringStoreState } from "@coral-xyz/recoil";
-import { Backend } from "../backend/core";
-import { Handle } from "../types";
+import type { KeyringStoreState } from "@coral-xyz/recoil";
+import type { Backend } from "../backend/core";
+import type { Handle } from "../types";
 
 const logger = getLogger("background-server-ui");
 
@@ -96,7 +99,8 @@ async function handle<T = any>(
         ctx,
         params[0],
         params[1],
-        params[2]
+        params[2],
+        params[3]
       );
     case UI_RPC_METHOD_KEYRING_STORE_UNLOCK:
       return await handleKeyringStoreUnlock(ctx, params[0]);
@@ -127,7 +131,9 @@ async function handle<T = any>(
     case UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE:
       return await handleKeyringAutolockUpdate(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE:
-      return await handleMnemonicCreate(ctx);
+      return await handleMnemonicCreate(ctx, params[0]);
+    case UI_RPC_METHOD_PREVIEW_PUBKEYS:
+      return await handlePreviewPubkeys(ctx, params[0], params[1], params[2]);
     //
     // Ledger.
     //
@@ -205,12 +211,14 @@ async function handleKeyringStoreCreate(
   ctx: Context<Backend>,
   mnemonic: string,
   derivationPath: DerivationPath,
-  password: string
+  password: string,
+  accountIndices = [0]
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.keyringStoreCreate(
     mnemonic,
     derivationPath,
-    password
+    password,
+    accountIndices
   );
   return [resp];
 }
@@ -379,9 +387,10 @@ async function handleKeyringAutolockUpdate(
 }
 
 async function handleMnemonicCreate(
-  ctx: Context<Backend>
+  ctx: Context<Backend>,
+  strength = 256
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.mnemonicCreate();
+  const resp = await ctx.backend.mnemonicCreate(strength);
   return [resp];
 }
 
@@ -500,5 +509,19 @@ async function handleKeyringLedgerImport(
   pubkey: string
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.ledgerImport(dPath, account, pubkey);
+  return [resp];
+}
+
+async function handlePreviewPubkeys(
+  ctx: Context<Backend>,
+  mnemonic: string,
+  derivationPath: DerivationPath,
+  numberOfAccounts: number
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.previewPubkeys(
+    mnemonic,
+    derivationPath,
+    numberOfAccounts
+  );
   return [resp];
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useTheme, Button, Tooltip, Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Button, Tooltip, Typography } from "@mui/material";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import { WithHeaderButton } from "./Token";
 import { BottomCard } from "./Send";
@@ -10,7 +10,7 @@ import {
   walletAddressDisplay,
 } from "../../../common";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   subtext: {
     width: "264px",
     marginLeft: "auto",
@@ -53,7 +53,7 @@ export function DepositButton({ token }: any) {
 
 export function Deposit({ close }: any) {
   const classes = useStyles();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   const activeWallet = useActiveWallet();
   return (
     <div

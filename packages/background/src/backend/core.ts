@@ -1,18 +1,10 @@
 import * as bs58 from "bs58";
+import type { Commitment, SendOptions } from "@solana/web3.js";
+import { PublicKey, Transaction } from "@solana/web3.js";
+import type { NamedPublicKey, KeyringStoreState } from "@coral-xyz/recoil";
+import { makeDefaultNav } from "@coral-xyz/recoil";
+import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
 import {
-  Commitment,
-  PublicKey,
-  Transaction,
-  SendOptions,
-} from "@solana/web3.js";
-import {
-  NamedPublicKey,
-  KeyringStoreState,
-  makeDefaultNav,
-} from "@coral-xyz/recoil";
-import {
-  DerivationPath,
-  EventEmitter,
   BACKEND_EVENT,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_KEYRING_KEY_DELETE,
@@ -25,6 +17,7 @@ import {
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_CONNECTION_URL_UPDATED,
 } from "@coral-xyz/common";
+import type { NavData } from "../keyring/store";
 import {
   BLOCKCHAIN_SOLANA,
   KeyringStore,
@@ -32,9 +25,8 @@ import {
   setNavData,
   setNav,
   getNav,
-  NavData,
 } from "../keyring/store";
-import { Backend as SolanaConnectionBackend } from "../backend/solana-connection";
+import type { Backend as SolanaConnectionBackend } from "../backend/solana-connection";
 
 export function start(events: EventEmitter, solanaB: SolanaConnectionBackend) {
   return new Backend(events, solanaB);
@@ -138,13 +130,19 @@ export class Backend {
   async keyringStoreCreate(
     mnemonic: string,
     derivationPath: DerivationPath,
-    password: string
+    password: string,
+    accountIndices: Array<number>
   ): Promise<string> {
-    await this.keyringStore.init(mnemonic, derivationPath, password);
+    await this.keyringStore.init(
+      mnemonic,
+      derivationPath,
+      password,
+      accountIndices
+    );
     return SUCCESS_RESPONSE;
   }
 
-  async keyringStoreUnlock(password: string): Promise<String> {
+  async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
 
     const url = await this.solanaConnectionUrl();
@@ -453,8 +451,20 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async mnemonicCreate(): Promise<string> {
-    return this.keyringStore.createMnemonic();
+  async mnemonicCreate(strength): Promise<string> {
+    return this.keyringStore.createMnemonic(strength);
+  }
+
+  async previewPubkeys(
+    mnemonic: string,
+    derivationPath: DerivationPath,
+    numberOfAccounts: number
+  ) {
+    return this.keyringStore.previewPubkeys(
+      mnemonic,
+      derivationPath,
+      numberOfAccounts
+    );
   }
 }
 

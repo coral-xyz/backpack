@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Typography, ListItem } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styles } from "@coral-xyz/themes";
 import {
   useBalancesContext,
   BalancesTable,
@@ -16,7 +16,7 @@ import {
 } from "@coral-xyz/recoil";
 import { toTitleCase, NAV_COMPONENT_TOKEN } from "@coral-xyz/common";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   blockchainFooter: {
     borderTop: `solid 1pt ${theme.custom.colors.border}`,
     display: "flex",
@@ -94,7 +94,7 @@ function TokenRow({ token, blockchain }: { token: any; blockchain: string }) {
       <BalancesTableCell
         props={{
           icon: token.logo,
-          title: token.ticker,
+          title: token.name,
           subtitle: `${token.nativeBalance.toLocaleString()} ${token.ticker}`,
           usdValue: token.usdBalance,
           percentChange: token.recentUsdBalanceChange,

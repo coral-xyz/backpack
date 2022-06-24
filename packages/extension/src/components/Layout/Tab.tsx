@@ -1,15 +1,10 @@
 import { Tabs, Tab } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
-import {
-  SwapHoriz,
-  AttachMoney as Money,
-  Image,
-  Apps,
-} from "@mui/icons-material";
+import { styles } from "@coral-xyz/themes";
+import { AttachMoney as Money, Image, Apps } from "@mui/icons-material";
 import { useTab } from "@coral-xyz/recoil";
-import { TAB_NFTS, TAB_APPS, TAB_BALANCES, TAB_SWAP } from "@coral-xyz/common";
+import { TAB_NFTS, TAB_APPS, TAB_BALANCES } from "@coral-xyz/common";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   container: {
     display: "flex",
     flexDirection: "column",

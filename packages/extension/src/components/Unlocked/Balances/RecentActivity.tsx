@@ -1,19 +1,13 @@
 import { Suspense, useState } from "react";
-import {
-  useTheme,
-  Typography,
-  List,
-  ListItem,
-  IconButton,
-} from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Typography, List, ListItem, IconButton } from "@mui/material";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Check, Clear, Bolt } from "@mui/icons-material";
 import { explorerUrl } from "@coral-xyz/common";
 import { useActiveWallet, useRecentTransactions } from "@coral-xyz/recoil";
 import { Loading } from "../../common";
 import { WithDrawer } from "../../Layout/Drawer";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   recentActivityLabel: {
     color: theme.custom.colors.fontColor,
     fontWeight: 500,
@@ -125,7 +119,7 @@ export function RecentActivity() {
 }
 
 export function RecentActivitySmall({ address }: any) {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <div>
       <RecentActivitySmallHeader />
@@ -171,7 +165,7 @@ export function RecentActivityList({ address, style }: any) {
 
 function RecentActivityLoading() {
   const classes = useStyles();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <div
       className={classes.listItem}
