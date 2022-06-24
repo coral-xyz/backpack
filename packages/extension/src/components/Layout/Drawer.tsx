@@ -102,7 +102,13 @@ export function WithDrawer(props: any) {
 
 export function WithMiniDrawer(props: any) {
   const classes = useStyles();
-  const { children, openDrawer, setOpenDrawer, paperAnchorBottom } = props;
+  const {
+    children,
+    openDrawer,
+    setOpenDrawer,
+    paperAnchorBottom,
+    backdropProps,
+  } = props;
   return (
     <Drawer
       anchor={"bottom"}
@@ -116,6 +122,7 @@ export function WithMiniDrawer(props: any) {
       BackdropProps={{
         style: {
           background: "transparent",
+          ...backdropProps,
         },
       }}
       ModalProps={{ onBackdropClick: () => setOpenDrawer(false) }}

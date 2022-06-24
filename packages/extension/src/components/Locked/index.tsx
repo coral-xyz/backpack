@@ -1,20 +1,52 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme } from "@coral-xyz/themes";
 import {
   getBackgroundClient,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
 } from "@coral-xyz/common";
 import { TextField, PrimaryButton } from "../common";
 import { LockedMenu } from "./LockedMenu";
+import { WithEphemeralNav } from "../Layout/NavEphemeral";
+import { useEphemeralNav } from "@coral-xyz/recoil";
 
 export const NAV_BAR_HEIGHT = 56;
 
 export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const theme = useCustomTheme();
+  return (
+    <Box
+      sx={{
+        backgroundColor: theme.custom.colors.nav,
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
+      <WithEphemeralNav
+        title=""
+        navbarStyle={{
+          borderBottom: "none",
+        }}
+      >
+        <LockedInner />
+      </WithEphemeralNav>
+    </Box>
+  );
+}
+
+function LockedInner({ onUnlock }: { onUnlock?: () => Promise<void> }) {
+  const theme = useCustomTheme();
+  const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState<boolean>(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const { setNavButtonRight } = useEphemeralNav();
+
+  useEffect(() => {
+    setNavButtonRight(
+      <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+    );
+  }, [menuOpen, setMenuOpen]);
 
   const _onUnlock = async (e: any) => {
     e.preventDefault();
@@ -32,7 +64,6 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
       setError(true);
     }
   };
-
   return (
     <Box
       sx={{
@@ -40,12 +71,12 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         textAlign: "center",
         display: "flex",
         flexDirection: "column",
+        justifyContent: "space-between",
         height: "100%",
       }}
     >
-      <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
       <BackpackHeader />
-      <Box sx={{ position: "absolute", top: "400px" }}>
+      <Box sx={{ marginBottom: "84px" }}>
         <form onSubmit={_onUnlock}>
           <Box sx={{ mb: "12px " }}>
             <TextField
@@ -60,7 +91,14 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
             <PrimaryButton label="Unlock" type="submit" />
           </Box>
         </form>
-        <Box sx={{ display: error ? "block" : "none", mt: "12px" }}>
+        <Box
+          sx={{
+            position: "absolute",
+            width: "100%",
+            display: error ? "block" : "none",
+            mt: "12px",
+          }}
+        >
           <Typography
             sx={{
               color: theme.custom.colors.secondary,
@@ -83,7 +121,7 @@ export function BackpackHeader() {
   return (
     <Box
       sx={{
-        marginTop: "66px",
+        marginTop: "40px",
         marginLeft: "auto",
         marginRight: "auto",
         display: "block",
