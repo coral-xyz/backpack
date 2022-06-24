@@ -17,7 +17,7 @@ function pluginURL(pluginName: string) {
     // xnft wrapper
     "https://localhost:9999?inline=1&bundle=",
     // [pluginName]'s JS delivered by the local plugin server
-    `http://localhost:8001/${pluginName}/dist/bundle.js`,
+    `http://localhost:8001/${pluginName}/dist/index.js`,
   ].join("");
 }
 
