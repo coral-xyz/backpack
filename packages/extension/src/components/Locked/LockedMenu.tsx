@@ -16,8 +16,20 @@ import { Reset } from "./Reset";
 export function LockedMenu({ menuOpen, setMenuOpen }: any) {
   const theme = useCustomTheme();
   return (
-    <Toolbar sx={{ bgcolor: theme.custom.colors.nav }}>
-      <IconButton color="inherit" onClick={() => setMenuOpen(true)}>
+    <Toolbar
+      sx={{
+        bgcolor: theme.custom.colors.nav,
+        display: "flex",
+        flexDirection: "row-reverse",
+        paddingLeft: "16px",
+        paddingRight: "16px",
+      }}
+    >
+      <IconButton
+        color="inherit"
+        onClick={() => setMenuOpen(true)}
+        sx={{ padding: 0 }}
+      >
         <MenuIcon sx={{ color: theme.custom.colors.hamburger }} />
       </IconButton>
 
