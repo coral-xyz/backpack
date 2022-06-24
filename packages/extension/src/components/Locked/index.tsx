@@ -102,9 +102,11 @@ function LockedInner({ onUnlock }: { onUnlock?: () => Promise<void> }) {
           <Typography
             sx={{
               color: theme.custom.colors.secondary,
-              fontSize: "12px",
+              fontSize: "16px",
               textAlign: "center",
               cursor: "pointer",
+              lineHeight: "24px",
+              fontWeight: 500,
             }}
             onClick={() => setMenuOpen(true)}
           >
