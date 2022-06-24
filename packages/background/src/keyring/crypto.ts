@@ -5,7 +5,7 @@ import { derivePath } from "ed25519-hd-key";
 import { Keypair } from "@solana/web3.js";
 import { DerivationPath } from "@coral-xyz/common";
 
-// An encrypted secret wiht associated metadata required for decryption.
+// An encrypted secret with associated metadata required for decryption.
 export type SecretPayload = {
   ciphertext: string;
   nonce: string;
@@ -23,12 +23,12 @@ type MnemonicSeed = {
 export function deriveKeypairs(
   seed: Buffer,
   dPath: DerivationPath,
-  numberOfAccounts: number
+  accountIndices: Array<number>
 ): Array<Keypair> {
   const kps: Array<Keypair> = [];
   const seedHex = seed.toString("hex");
-  for (let k = 0; k < numberOfAccounts; k += 1) {
-    const kp = deriveKeypair(seedHex, k, dPath);
+  for (const accountIndex of accountIndices) {
+    const kp = deriveKeypair(seedHex, accountIndex, dPath);
     kps.push(kp);
   }
   return kps;

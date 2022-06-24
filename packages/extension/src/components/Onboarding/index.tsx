@@ -3,7 +3,7 @@ import { Card } from "@mui/material";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { CreateNewWallet } from "./CreateNewWallet";
 import { ImportWallet } from "./ImportWallet";
-import { OnboardButton } from "../common";
+import { PrimaryButton } from "../common";
 import { BackpackHeader } from "../Locked";
 
 const useStyles = styles((theme) => ({
@@ -83,11 +83,11 @@ function Welcome({
       <BackpackHeader />
       <div className={classes.content}>
         <div>
-          <OnboardButton
+          <PrimaryButton
             onClick={() => didSelectContent("create-new-wallet")}
             label={"Create New Wallet"}
           />
-          <OnboardButton
+          <PrimaryButton
             style={{
               marginTop: "10px",
               backgroundColor: theme.custom.colors.nav,

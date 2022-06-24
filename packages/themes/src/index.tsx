@@ -35,8 +35,9 @@ export const darkTheme = {
       secondary: FONT_COLOR_1,
       positive: "#35A63A",
       negative: "#E95050",
-      onboardButton: BRAND_COLOR,
-      onboardButtonDisabled: FONT_COLOR_1,
+      primaryButton: BRAND_COLOR,
+      secondaryButton: "#292C33",
+      dangerButton: "#DC2626",
       buttonFontColor: BUTTON_FONT_COLOR,
       sendGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_0} 0%, rgba(27, 29, 35, 0) 100%)`,
       swapGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
@@ -66,7 +67,9 @@ export const lightTheme = {
       secondary: "#67758B",
       positive: "#19A51E",
       negative: "#E31B1B",
-      onboardButton: "#07758E",
+      primaryButton: BRAND_COLOR,
+      secondaryButton: "#292C33",
+      dangerButton: "#DC2626",
       sendGradient:
         "linear-gradient(180deg, #1B1D23 0%, rgba(27, 29, 35, 0) 100%)", // todo
       interactiveIconsActive: "#1196B5",

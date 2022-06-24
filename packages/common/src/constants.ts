@@ -79,6 +79,7 @@ export const UI_RPC_METHOD_KEYRING_KEY_DELETE = "keyring-delete";
 export const UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY = "keyring-import-wallet";
 export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
   "keyring-mnemonic-create";
+export const UI_RPC_METHOD_PREVIEW_PUBKEYS = "keyring-preview-pubkeys";
 
 export const UI_RPC_METHOD_CONNECTION_URL_READ = "connection-url-read";
 export const UI_RPC_METHOD_CONNECTION_URL_UPDATE = "connection-url-update";

@@ -1,47 +1,21 @@
 import { useState } from "react";
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   getBackgroundClient,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
 } from "@coral-xyz/common";
-import { TextField, OnboardButton } from "./common";
+import { TextField, PrimaryButton } from "../common";
+import { LockedMenu } from "./LockedMenu";
 
 export const NAV_BAR_HEIGHT = 56;
 
-const useStyles = styles((theme) => ({
-  container: {
-    backgroundColor: theme.custom.colors.nav,
-    textAlign: "center",
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-  },
-  forgotContainer: {
-    marginTop: "12px",
-  },
-  forgotButtonTitle: {
-    color: theme.custom.colors.secondary,
-    textTransform: "none",
-    fontSize: "12px",
-    fontWeight: 500,
-    width: "100%",
-    textAlign: "center",
-  },
-  passwordRoot: {
-    marginTop: 0,
-    marginBottom: "12px",
-  },
-  content: {
-    position: "absolute",
-    top: "400px",
-  },
-}));
-
 export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
-  const classes = useStyles();
+  const theme = useCustomTheme();
   const [password, setPassword] = useState("");
   const [error, setError] = useState<boolean>(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const _onUnlock = async (e: any) => {
     e.preventDefault();
     try {
@@ -58,40 +32,57 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
       setError(true);
     }
   };
+
   return (
-    <div className={classes.container}>
+    <Box
+      sx={{
+        backgroundColor: theme.custom.colors.nav,
+        textAlign: "center",
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
+      <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
       <BackpackHeader />
-      <div className={classes.content}>
+      <Box sx={{ position: "absolute", top: "400px" }}>
         <form onSubmit={_onUnlock}>
-          <TextField
-            isError={error}
-            placeholder={"Password"}
-            type={"password"}
-            value={password}
-            setValue={setPassword}
-            rootClass={classes.passwordRoot}
-          />
-          <div style={{ marginLeft: "12px", marginRight: "12px" }}>
-            <OnboardButton label="Unlock" type="submit" />
-          </div>
+          <Box sx={{ mb: "12px " }}>
+            <TextField
+              isError={error}
+              placeholder={"Password"}
+              type={"password"}
+              value={password}
+              setValue={setPassword}
+            />
+          </Box>
+          <Box sx={{ mx: "12px" }}>
+            <PrimaryButton label="Unlock" type="submit" />
+          </Box>
         </form>
-        <div style={{ visibility: error ? undefined : "hidden" }}>
-          <div className={classes.forgotContainer}>
-            <Typography className={classes.forgotButtonTitle}>
-              Forgot your password?
-            </Typography>
-          </div>
-        </div>
-      </div>
-    </div>
+        <Box sx={{ display: error ? "block" : "none", mt: "12px" }}>
+          <Typography
+            sx={{
+              color: theme.custom.colors.secondary,
+              fontSize: "12px",
+              textAlign: "center",
+              cursor: "pointer",
+            }}
+            onClick={() => setMenuOpen(true)}
+          >
+            Forgot your password?
+          </Typography>
+        </Box>
+      </Box>
+    </Box>
   );
 }
 
 export function BackpackHeader() {
   const theme = useCustomTheme();
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         marginTop: "66px",
         marginLeft: "auto",
         marginRight: "auto",
@@ -99,8 +90,8 @@ export function BackpackHeader() {
         position: "relative",
       }}
     >
-      <div
-        style={{
+      <Box
+        sx={{
           display: "flex",
           flexDirection: "row-reverse",
           marginBottom: "4px",
@@ -108,16 +99,12 @@ export function BackpackHeader() {
         }}
       >
         <AlphaLabel />
-      </div>
-      <img
-        src="/backpack.svg"
-        style={{
-          width: "200px",
-          display: "block",
-        }}
-      />
+      </Box>
+      <Box sx={{ w: "200px", display: "block" }}>
+        <img src="/backpack.svg" />
+      </Box>
       <Typography
-        style={{
+        sx={{
           textAlign: "center",
           lineHeight: "24px",
           fontSize: "16px",
@@ -128,15 +115,15 @@ export function BackpackHeader() {
       >
         Backpack.app
       </Typography>
-    </div>
+    </Box>
   );
 }
 
 function AlphaLabel() {
   const theme = useCustomTheme();
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         borderRadius: "10px",
         border: `solid 1pt ${theme.custom.colors.alpha}`,
         display: "flex",
@@ -147,7 +134,7 @@ function AlphaLabel() {
       }}
     >
       <Typography
-        style={{
+        sx={{
           color: theme.custom.colors.alpha,
           fontSize: "12px",
           lineHeight: "16px",
@@ -157,6 +144,6 @@ function AlphaLabel() {
       >
         Alpha
       </Typography>
-    </div>
+    </Box>
   );
 }

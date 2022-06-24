@@ -130,9 +130,15 @@ export class Backend {
   async keyringStoreCreate(
     mnemonic: string,
     derivationPath: DerivationPath,
-    password: string
+    password: string,
+    accountIndices: Array<number>
   ): Promise<string> {
-    await this.keyringStore.init(mnemonic, derivationPath, password);
+    await this.keyringStore.init(
+      mnemonic,
+      derivationPath,
+      password,
+      accountIndices
+    );
     return SUCCESS_RESPONSE;
   }
 
@@ -445,8 +451,20 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async mnemonicCreate(): Promise<string> {
-    return this.keyringStore.createMnemonic();
+  async mnemonicCreate(strength): Promise<string> {
+    return this.keyringStore.createMnemonic(strength);
+  }
+
+  async previewPubkeys(
+    mnemonic: string,
+    derivationPath: DerivationPath,
+    numberOfAccounts: number
+  ) {
+    return this.keyringStore.previewPubkeys(
+      mnemonic,
+      derivationPath,
+      numberOfAccounts
+    );
   }
 }
 

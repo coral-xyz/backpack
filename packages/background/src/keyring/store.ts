@@ -70,12 +70,17 @@ export class KeyringStore {
   public async init(
     mnemonic: string,
     derivationPath: DerivationPath,
-    password: string
+    password: string,
+    accountIndices: Array<number>
   ) {
     // Initialize keyrings.
     this.password = password;
     this.activeBlockchainLabel = BLOCKCHAIN_DEFAULT;
-    this.activeBlockchainUnchecked().init(mnemonic, derivationPath);
+    this.activeBlockchainUnchecked().init(
+      mnemonic,
+      derivationPath,
+      accountIndices
+    );
 
     // Persist the initial wallet ui metadata.
     await setWalletData({
@@ -248,10 +253,24 @@ export class KeyringStore {
     });
   }
 
-  public createMnemonic(): string {
+  public createMnemonic(strength: number): string {
     const factory = new SolanaHdKeyringFactory();
-    const kr = factory.generate();
+    const kr = factory.generate(strength);
     return kr.mnemonic;
+  }
+
+  public previewPubkeys(
+    mnemonic: string,
+    derivationPath: DerivationPath,
+    numberOfAccounts: number
+  ): string[] {
+    const factory = new SolanaHdKeyringFactory();
+    const hdKeyring = factory.fromMnemonic(mnemonic, derivationPath, [
+      ...Array(numberOfAccounts).keys(),
+    ]);
+    return [...Array(numberOfAccounts).keys()].map((i) =>
+      hdKeyring.getPublicKey(i)
+    );
   }
 
   private toJson(): any {
@@ -446,21 +465,28 @@ class BlockchainKeyring {
     this.activeWallet = undefined;
   }
 
-  public async init(mnemonic: string, derivationPath: DerivationPath) {
+  public async init(
+    mnemonic: string,
+    derivationPath: DerivationPath,
+    accountIndices: Array<number>
+  ) {
     // Initialize keyrings.
     this.hdKeyring = this.hdKeyringFactory.fromMnemonic(
       mnemonic,
-      derivationPath
+      derivationPath,
+      accountIndices
     );
     this.importedKeyring = this.keyringFactory.fromSecretKeys([]);
     this.ledgerKeyring = this.ledgerKeyringFactory.init();
-    this.activeWallet = this.hdKeyring.getPublicKey(0);
+    this.activeWallet = this.hdKeyring.getPublicKey(accountIndices[0]);
     this.deletedWallets = [];
 
     // Persist a given name for this wallet.
-    const name = KeynameStore.defaultName(0);
-    const pubkey = this.hdKeyring.getPublicKey(0);
-    await KeynameStore.setName(pubkey, name);
+    for (const index of accountIndices) {
+      const name = KeynameStore.defaultName(index);
+      const pubkey = this.hdKeyring.getPublicKey(index);
+      await KeynameStore.setName(pubkey, name);
+    }
   }
 
   public exportSecretKey(pubkey: string): string {

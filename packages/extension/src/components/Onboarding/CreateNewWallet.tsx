@@ -9,7 +9,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
 } from "@coral-xyz/common";
-import { TextField, OnboardButton } from "../common";
+import { TextField, PrimaryButton, CheckboxForm } from "../common";
 import { _NavBackButton, DummyButton } from "../Layout/Nav";
 import { BlankApp } from "../../app/Router";
 
@@ -41,17 +41,6 @@ const useStyles = styles((theme) => ({
     padding: "20px",
     position: "relative",
     height: "100%",
-  },
-  termsContainer: {
-    display: "flex",
-    marginTop: "8px",
-  },
-  checkBox: {
-    padding: 0,
-    color: theme.custom.colors.onboardButton,
-  },
-  checkBoxChecked: {
-    color: `${theme.custom.colors.onboardButton} !important`,
   },
   subtext: {
     color: theme.custom.colors.secondary,
@@ -258,32 +247,6 @@ export function OnboardHeader({ text, subtext }: any) {
   );
 }
 
-function CheckboxForm({ checked, setChecked, label }: any) {
-  const classes = useStyles();
-  return (
-    <div className={classes.termsContainer}>
-      <Checkbox
-        className={classes.checkBox}
-        checked={checked}
-        onChange={() => setChecked(!checked)}
-        classes={{
-          checked: classes.checkBoxChecked,
-        }}
-      />
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "column",
-          marginLeft: "10px",
-        }}
-      >
-        <Typography className={classes.subtext}>{label}</Typography>
-      </div>
-    </div>
-  );
-}
-
 function ShowMnemonic({
   next,
   mnemonic,
@@ -369,7 +332,7 @@ export function WithContinue({ buttonLabel = "Continue", ...props }: any) {
         {props.children}
       </div>
       <div className={classes.continueButtonContainer}>
-        <OnboardButton type="submit" label={buttonLabel} />
+        <PrimaryButton type="submit" label={buttonLabel} />
       </div>
     </form>
   );
