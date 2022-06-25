@@ -22,6 +22,7 @@ export const App = () => {
   );
 };
 
+// TODO add footer to nav to page for vault discovery
 const VaultTable: React.VFC = () => {
   const vaults = useVaultMetadata();
   const tokenMap = useTokenMap();
@@ -47,6 +48,7 @@ const VaultTable: React.VFC = () => {
   );
 };
 
+// TODO improve holdings and value display
 const VaultBalanceRow: React.VFC<{ id: string }> = ({ id }) => {
   const tokenMap = useTokenMap();
   const vaults = useVaultMetadata();
