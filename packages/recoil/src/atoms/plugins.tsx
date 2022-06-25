@@ -11,6 +11,7 @@ const HELLO_WORLD_PLUGIN_URL =
 const MANGO_TABLE_PLUGIN_URL = pluginURL("table-mango");
 const DEGODS_TABLE_PLUGIN_URL = pluginURL("table-degods");
 const ANCHOR_TABLE_PLUGIN_URL = pluginURL("table-anchor");
+const PSYFI_TABLE_PLUGIN_URL = pluginURL("table-psyfi");
 
 function pluginURL(pluginName: string) {
   return [
@@ -61,10 +62,10 @@ export const plugins = selector({
         connectionUrl: get(connectionUrl),
       },
       {
-        url: "https://localhost:6969/index.html", // todo
+        url: PSYFI_TABLE_PLUGIN_URL,
         iconUrl:
-          "https://cdn.discordapp.com/attachments/987809528848461914/987814314457055242/Group_1915.png",
-        title: "Psyoptions",
+          "https://uploads-ssl.webflow.com/6158e3591ba06d14de4fd0df/61f900784e63439a5a052fed_PsyOptions.svg",
+        title: "PsyOptions",
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
       },
@@ -103,6 +104,13 @@ export const tablePlugins = selector({
         url: ANCHOR_TABLE_PLUGIN_URL,
         iconUrl: "",
         title: "Anchor Dev Tools",
+        activeWallet: _activeWallet,
+        connectionUrl: _connectionUrl,
+      },
+      {
+        url: PSYFI_TABLE_PLUGIN_URL,
+        iconUrl: "",
+        title: "PsyFinance Vaults",
         activeWallet: _activeWallet,
         connectionUrl: _connectionUrl,
       },
