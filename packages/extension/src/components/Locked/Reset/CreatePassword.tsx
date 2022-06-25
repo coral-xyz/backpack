@@ -67,12 +67,28 @@ export function CreatePassword({
         justifyContent: "space-between",
       }}
     >
-      <Box>
-        <Header text="Create a password" />
-        <SubtextParagraph>
-          You’ll need this to unlock Backpack.
-        </SubtextParagraph>
-        <Box>
+      <Box
+        sx={{
+          marginTop: "24px",
+        }}
+      >
+        <Box
+          sx={{
+            marginLeft: "24px",
+            marginRight: "24px",
+          }}
+        >
+          <Header text="Create a password" />
+          <SubtextParagraph>
+            You’ll need this to unlock Backpack.
+          </SubtextParagraph>
+        </Box>
+        <Box
+          sx={{
+            marginLeft: "16px",
+            marginRight: "16px",
+          }}
+        >
           <TextField
             inputProps={{ name: "password" }}
             placeholder="Enter your password..."
@@ -89,17 +105,23 @@ export function CreatePassword({
             setValue={setPasswordDup}
             rootClass={classes.passwordFieldRoot}
           />
+          {error && (
+            <Typography sx={{ color: "red", mt: "8px" }}>{error}</Typography>
+          )}
+          <CheckboxForm
+            checked={checked}
+            setChecked={setChecked}
+            label="I agree to the terms of service"
+          />
         </Box>
-        {error && (
-          <Typography sx={{ color: "red", mt: "8px" }}>{error}</Typography>
-        )}
-        <CheckboxForm
-          checked={checked}
-          setChecked={setChecked}
-          label="I agree to the terms of service"
-        />
       </Box>
-      <Box>
+      <Box
+        sx={{
+          marginLeft: "16px",
+          marginRight: "16px",
+          marginBottom: "16px",
+        }}
+      >
         <PrimaryButton label="Next" onClick={next} />
       </Box>
     </Box>

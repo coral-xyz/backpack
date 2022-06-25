@@ -1,5 +1,4 @@
 import { List as MuiList, ListItem as MuiListItem } from "@mui/material";
-
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 
 const useStyles = styles(() => ({

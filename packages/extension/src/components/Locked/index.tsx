@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme } from "@coral-xyz/themes";
 import {
   getBackgroundClient,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
@@ -12,9 +12,25 @@ export const NAV_BAR_HEIGHT = 56;
 
 export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const theme = useCustomTheme();
+  return (
+    <Box
+      sx={{
+        backgroundColor: theme.custom.colors.nav,
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
+      <LockedInner />
+    </Box>
+  );
+}
+
+function LockedInner({ onUnlock }: { onUnlock?: () => Promise<void> }) {
+  const theme = useCustomTheme();
+  const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState<boolean>(false);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   const _onUnlock = async (e: any) => {
     e.preventDefault();
@@ -32,7 +48,6 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
       setError(true);
     }
   };
-
   return (
     <Box
       sx={{
@@ -40,12 +55,15 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         textAlign: "center",
         display: "flex",
         flexDirection: "column",
+        justifyContent: "space-between",
         height: "100%",
       }}
     >
-      <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-      <BackpackHeader />
-      <Box sx={{ position: "absolute", top: "400px" }}>
+      <Box>
+        <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+        <BackpackHeader />
+      </Box>
+      <Box sx={{ marginBottom: "84px" }}>
         <form onSubmit={_onUnlock}>
           <Box sx={{ mb: "12px " }}>
             <TextField
@@ -60,17 +78,26 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
             <PrimaryButton label="Unlock" type="submit" />
           </Box>
         </form>
-        <Box sx={{ display: error ? "block" : "none", mt: "12px" }}>
+        <Box
+          sx={{
+            position: "absolute",
+            width: "100%",
+            display: error ? "block" : "none",
+            mt: "24px",
+          }}
+        >
           <Typography
             sx={{
               color: theme.custom.colors.secondary,
-              fontSize: "12px",
+              fontSize: "16px",
               textAlign: "center",
               cursor: "pointer",
+              lineHeight: "24px",
+              fontWeight: 500,
             }}
             onClick={() => setMenuOpen(true)}
           >
-            Forgot your password?
+            Forgot Password?
           </Typography>
         </Box>
       </Box>
@@ -83,7 +110,7 @@ export function BackpackHeader() {
   return (
     <Box
       sx={{
-        marginTop: "66px",
+        marginTop: "40px",
         marginLeft: "auto",
         marginRight: "auto",
         display: "block",
@@ -95,7 +122,7 @@ export function BackpackHeader() {
           display: "flex",
           flexDirection: "row-reverse",
           marginBottom: "4px",
-          marginRight: "-30px",
+          marginRight: "58px",
         }}
       >
         <AlphaLabel />
@@ -113,7 +140,7 @@ export function BackpackHeader() {
           marginTop: "16px",
         }}
       >
-        Backpack.app
+        A home for your xNFTs
       </Typography>
     </Box>
   );

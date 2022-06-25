@@ -63,6 +63,9 @@ const useStyles = styles((theme) => ({
     display: "flex",
     marginTop: "8px",
   },
+  checkBoxRoot: {
+    padding: 0,
+  },
   checkBoxChecked: {
     color: `${theme.custom.colors.primaryButton} !important`,
   },
@@ -236,6 +239,7 @@ export function Checkbox({
       onChange={() => setChecked(!checked)}
       classes={{
         checked: classes.checkBoxChecked,
+        root: classes.checkBoxRoot,
       }}
       {...checkboxProps}
     />
@@ -254,7 +258,7 @@ export function CheckboxForm({
   const classes = useStyles();
   return (
     <div className={classes.checkboxContainer}>
-      <Checkbox checked={checked} setChecked={setChecked} />
+      <Checkbox checked={checked} setChecked={setChecked} sx={{ padding: 0 }} />
       <div
         style={{
           display: "flex",

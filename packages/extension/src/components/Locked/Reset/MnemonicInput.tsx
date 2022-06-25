@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: any) => ({
   },
   icon: {
     display: "block",
-    margin: "0 auto 24px auto",
+    margin: "8 auto 24px auto",
   },
   mnemonicInputRoot: {
     color: theme.custom.colors.secondary,
@@ -122,7 +122,7 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
     const background = getBackgroundClient();
     return await background.request({
       method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-      params: [mnemonic, derivationPath, 6],
+      params: [mnemonic, derivationPath, 8],
     });
   };
 
@@ -142,62 +142,95 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
 
   return (
     <Box className={classes.root}>
+      <Box
+        sx={{
+          marginTop: "16px",
+          marginLeft: "24px",
+          marginRight: "24px",
+        }}
+      >
+        <Box>
+          <WarningLogo className={classes.icon} />
+          <Header text="Secret recovery phrase" />
+          <SubtextParagraph style={{ marginTop: "8px" }}>
+            Enter your 12 or 24-word secret recovery mnemonic to add an existing
+            wallet.
+          </SubtextParagraph>
+        </Box>
+        <Grid
+          container
+          rowSpacing={0}
+          columnSpacing={0.5}
+          sx={{ marginTop: "32px" }}
+        >
+          {Array.from(Array(mnemonicWordCount).keys()).map((i) => (
+            <Grid item xs={4} key={i}>
+              <TextField
+                className={classes.mnemonicInputRoot}
+                variant="outlined"
+                margin="dense"
+                size="small"
+                required
+                fullWidth
+                InputLabelProps={{
+                  shrink: false,
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">{i + 1}</InputAdornment>
+                  ),
+                }}
+                value={mnemonicWords[i]}
+                onChange={(e) => {
+                  const newMnemonicWords = [...mnemonicWords];
+                  newMnemonicWords[i] = e.target.value;
+                  setMnemonicWords(newMnemonicWords);
+                }}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
       <Box>
-        <WarningLogo className={classes.icon} />
-        <Header text="Secret recovery mnemonic" />
-        <SubtextParagraph>
-          Enter your 12 or 24-word secret recovery mnemonic to add an existing
-          wallet.
-        </SubtextParagraph>
-      </Box>
-      <Grid container rowSpacing={0} columnSpacing={0.5}>
-        {Array.from(Array(mnemonicWordCount).keys()).map((i) => (
-          <Grid item xs={4} key={i}>
-            <TextField
-              className={classes.mnemonicInputRoot}
-              variant="outlined"
-              margin="dense"
-              size="small"
-              required
-              fullWidth
-              InputLabelProps={{
-                shrink: false,
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">{i + 1}</InputAdornment>
-                ),
-              }}
-              value={mnemonicWords[i]}
-              onChange={(e) => {
-                const newMnemonicWords = [...mnemonicWords];
-                newMnemonicWords[i] = e.target.value;
-                setMnemonicWords(newMnemonicWords);
-              }}
-            />
-          </Grid>
-        ))}
-      </Grid>
-      <Box sx={{ textAlign: "center", margin: "24px 0" }}>
-        <Box>
-          <Link
-            className={classes.link}
-            onClick={() =>
-              setMnemonicWordCount(mnemonicWordCount === 12 ? 24 : 12)
-            }
-          >
-            Use a {mnemonicWordCount === 12 ? "24" : "12"}-word recovery
-            mnemonic
-          </Link>
+        <Box
+          sx={{
+            textAlign: "center",
+            marginTop: "27px",
+            marginBottom: "27px",
+          }}
+        >
+          <Box sx={{ flex: 1 }}>
+            <Link
+              className={classes.link}
+              onClick={() =>
+                setMnemonicWordCount(mnemonicWordCount === 12 ? 24 : 12)
+              }
+            >
+              Use a {mnemonicWordCount === 12 ? "24" : "12"}-word recovery
+              mnemonic
+            </Link>
+          </Box>
+          <Box>
+            <Link className={classes.link} onClick={generateRandom}>
+              Use a random mnemonic
+            </Link>
+          </Box>
         </Box>
-        <Box>
-          <Link className={classes.link} onClick={generateRandom}>
-            Use a random mnemonic
-          </Link>
+        {error && <Typography className={classes.errorMsg}>{error}</Typography>}
+        <Box
+          sx={{
+            marginLeft: "16px",
+            marginRight: "16px",
+            marginBottom: "16px",
+          }}
+        >
+          <PrimaryButton
+            label="Import"
+            onClick={next}
+            disabled={!nextEnabled}
+          />
         </Box>
       </Box>
-      {error && <Typography className={classes.errorMsg}>{error}</Typography>}
-      <PrimaryButton label="Import" onClick={next} disabled={!nextEnabled} />
     </Box>
   );
 }

@@ -102,7 +102,6 @@ export function useDecodedSearchParams<
     : useSearchParams();
   const ob = {};
   searchParams.forEach((v, k) => {
-    console.log({ k, v });
     ob[k as keyof ExtensionSearchParams] = JSON.parse(decodeURIComponent(v));
   });
   return ob as SearchParamsType;
