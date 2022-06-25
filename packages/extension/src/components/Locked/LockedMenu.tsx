@@ -3,16 +3,15 @@ import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LockIcon from "@mui/icons-material/Lock";
 import SupportIcon from "@mui/icons-material/Support";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { useEphemeralNav } from "@coral-xyz/recoil";
 import { List, ListItem } from "../common/List";
 import { WithDrawer } from "../Layout/Drawer";
-import { WithEphemeralNav } from "../Layout/NavEphemeral";
 import { Reset } from "./Reset";
 import { NAV_BAR_HEIGHT } from "../Layout/Nav";
 
 export function LockedMenu({ menuOpen, setMenuOpen }: any) {
-  const theme = useCustomTheme();
+  const theme = useCustomTheme() as any;
   return (
     <>
       <Box
@@ -34,15 +33,19 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
           <MenuIcon sx={{ color: theme.custom.colors.hamburger }} />
         </IconButton>
       </Box>
-      <WithDrawer openDrawer={menuOpen} setOpenDrawer={setMenuOpen}>
-        <WithEphemeralNav
-          title={"Settings"}
-          navbarStyle={{
-            borderBottom: "none",
-          }}
-        >
-          <LockedMenuList closeDrawer={() => setMenuOpen(false)} />
-        </WithEphemeralNav>
+      <WithDrawer
+        title=""
+        openDrawer={menuOpen}
+        setOpenDrawer={setMenuOpen}
+        navbarStyle={{
+          borderBottom: undefined,
+          backgroundColor: theme.custom.colors.nav,
+        }}
+        navContentStyle={{
+          backgroundColor: theme.custom.colors.nav,
+        }}
+      >
+        <LockedMenuList closeDrawer={() => setMenuOpen(false)} />
       </WithDrawer>
     </>
   );
@@ -58,10 +61,7 @@ export function LockedMenuList({ closeDrawer }: { closeDrawer: () => void }) {
         <AccountCircleIcon style={{ color: theme.custom.colors.secondary }} />
       ),
       text: "Reset Secret Recovery Phrase",
-      onClick: () => {
-        closeDrawer();
-        nav.push(<Reset closeDrawer={closeDrawer} />);
-      },
+      onClick: () => nav.push(<Reset closeDrawer={closeDrawer} />),
     },
     {
       icon: <SupportIcon style={{ color: theme.custom.colors.secondary }} />,
@@ -76,13 +76,7 @@ export function LockedMenuList({ closeDrawer }: { closeDrawer: () => void }) {
   ];
 
   return (
-    <Box
-      sx={{
-        color: theme.custom.colors.fontColor,
-        paddingTop: "40px",
-        paddingBottom: "40px",
-      }}
-    >
+    <Box sx={{ color: theme.custom.colors.fontColor }}>
       <List
         style={{
           background: "#3F3F46",

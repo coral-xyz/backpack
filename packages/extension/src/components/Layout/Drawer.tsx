@@ -82,12 +82,10 @@ export function WithDrawer(props: any) {
       <WithEphemeralNav
         title={title}
         navbarStyle={{
-          // @ts-ignore
           background: theme.custom.colors.background,
           ...navbarStyle,
         }}
         navContentStyle={{
-          // @ts-ignore
           background: theme.custom.colors.background,
           ...navContentStyle,
         }}
