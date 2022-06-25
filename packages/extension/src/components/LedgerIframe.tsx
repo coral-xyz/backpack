@@ -1,7 +1,7 @@
 import {
   LEDGER_IFRAME_URL,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { useEffect, useRef } from "react";
 
 /**
@@ -30,7 +30,7 @@ const LedgerIframe = () => {
       //          iframe so that it has permissions to communicate with
       //          the ledger.
       navigator.serviceWorker.onmessage = ({ data }) => {
-        iframe.current!.contentWindow!.postMessage(data, "*");
+        iframe.current?.contentWindow?.postMessage(data, "*");
       };
     });
 

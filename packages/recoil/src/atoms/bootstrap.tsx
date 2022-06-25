@@ -1,12 +1,12 @@
-import { atom, selector } from "recoil";
-import { PublicKey } from "@solana/web3.js";
+import { atom, selector, selectorFamily } from "recoil";
+import { ParsedConfirmedTransaction, PublicKey } from "@solana/web3.js";
 import {
+  getBackgroundClient,
   UI_RPC_METHOD_NAVIGATION_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
-} from "@200ms/common";
-import { TokenAccountWithKey, TABS } from "../types";
-import { getBackgroundClient } from "../background";
+} from "@coral-xyz/common";
 import { anchorContext } from "../atoms/wallet";
+import { TokenAccountWithKey, TABS } from "../types";
 import { fetchRecentTransactions } from "./recent-transactions";
 import { splTokenRegistry } from "./token-registry";
 import { fetchPriceData } from "./price-data";
@@ -15,13 +15,19 @@ import { activeWallet } from "./wallet";
 /**
  * Defines the initial app load fetch.
  */
-export const bootstrap = selector<any>({
+export const bootstrap = selector<{
+  splTokenAccounts: Map<string, TokenAccountWithKey>;
+  splTokenMetadata: Array<any>;
+  splNftMetadata: Map<string, any>;
+  coingeckoData: Map<string, any>;
+  recentTransactions: Array<ParsedConfirmedTransaction>;
+  walletPublicKey: PublicKey;
+}>({
   key: "bootstrap",
   get: async ({ get }: any) => {
     const tokenRegistry = get(splTokenRegistry);
     const { provider } = get(anchorContext);
     const walletPublicKey = new PublicKey(get(activeWallet));
-
     //
     // Perform data fetch.
     //
@@ -61,7 +67,7 @@ export const bootstrap = selector<any>({
       // TODO: show error notification.
       console.error(err);
       return {
-        splTokenAccounts: [],
+        splTokenAccounts: new Map(),
         splTokenMetadata: [],
         splNftMetadata: new Map(),
         coingeckoData: new Map(),

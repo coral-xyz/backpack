@@ -1,19 +1,19 @@
-import React, { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { MobileStepper, Button, Checkbox, Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styles } from "@coral-xyz/themes";
 import { MenuBook } from "@mui/icons-material";
-import { getBackgroundClient } from "@200ms/recoil";
 import {
+  getBackgroundClient,
   BrowserRuntime,
   DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
-} from "@200ms/common";
-import { TextField } from "../common";
-import { OnboardButton } from "../common";
-import { HdKeyring, SolanaHdKeyringFactory } from "../../keyring";
+  UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
+} from "@coral-xyz/common";
+import { TextField, PrimaryButton, CheckboxForm } from "../common";
 import { _NavBackButton, DummyButton } from "../Layout/Nav";
+import { BlankApp } from "../../app/Router";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   stepper: {
     backgroundColor: theme.custom.colors.nav,
     borderBottom: `solid 1pt ${theme.custom.colors.border}`,
@@ -41,17 +41,6 @@ const useStyles = makeStyles((theme: any) => ({
     padding: "20px",
     position: "relative",
     height: "100%",
-  },
-  termsContainer: {
-    display: "flex",
-    marginTop: "8px",
-  },
-  checkBox: {
-    padding: 0,
-    color: theme.custom.colors.onboardButton,
-  },
-  checkBoxChecked: {
-    color: `${theme.custom.colors.onboardButton} !important`,
   },
   subtext: {
     color: theme.custom.colors.secondary,
@@ -119,11 +108,28 @@ const useStyles = makeStyles((theme: any) => ({
 const STEP_COUNT = 3;
 
 export function CreateNewWallet() {
-  const [activeStep, setActiveState] = useState(0);
-  const hdKeyring = useMemo(() => {
-    const factory = new SolanaHdKeyringFactory();
-    return factory.generate();
+  const [mnemonic, setMnemonic] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const background = getBackgroundClient();
+      background
+        .request({
+          method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
+          params: [],
+        })
+        .then((m: string) => setMnemonic(m));
+    })();
   }, []);
+
+  if (mnemonic === null) {
+    return <BlankApp />;
+  }
+  return <_CreateNewWallet mnemonic={mnemonic} />;
+}
+
+export function _CreateNewWallet({ mnemonic }: { mnemonic: string }) {
+  const [activeStep, setActiveState] = useState(0);
   const [password, setPassword] = useState("");
   const derivationPath = DerivationPath.Bip44Change;
   const handleNext = () => {
@@ -133,15 +139,14 @@ export function CreateNewWallet() {
     setActiveState(activeStep - 1);
   };
   const handleDone = () => {
-    console.log("clicked handle done");
     const background = getBackgroundClient();
     background
       .request({
         method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-        params: [hdKeyring.mnemonic, derivationPath, password],
+        params: [mnemonic, derivationPath, password],
       })
       .catch(console.error)
-      .then((_) => BrowserRuntime.closeActiveTab());
+      .then(() => BrowserRuntime.closeActiveTab());
   };
   return (
     <div
@@ -172,7 +177,7 @@ export function CreateNewWallet() {
           />
         )}
         {activeStep === 1 && (
-          <ShowMnemonic keyring={hdKeyring} next={handleNext} />
+          <ShowMnemonic mnemonic={mnemonic} next={handleNext} />
         )}
         {activeStep === 2 && <Done done={handleDone} />}
       </div>
@@ -242,38 +247,12 @@ export function OnboardHeader({ text, subtext }: any) {
   );
 }
 
-function CheckboxForm({ checked, setChecked, label }: any) {
-  const classes = useStyles();
-  return (
-    <div className={classes.termsContainer}>
-      <Checkbox
-        className={classes.checkBox}
-        checked={checked}
-        onChange={() => setChecked(!checked)}
-        classes={{
-          checked: classes.checkBoxChecked,
-        }}
-      />
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "column",
-          marginLeft: "10px",
-        }}
-      >
-        <Typography className={classes.subtext}>{label}</Typography>
-      </div>
-    </div>
-  );
-}
-
 function ShowMnemonic({
   next,
-  keyring,
+  mnemonic,
 }: {
   next: () => void;
-  keyring: HdKeyring;
+  mnemonic: string;
 }) {
   const [checked, setChecked] = useState(true);
   const canContinue = checked;
@@ -285,7 +264,7 @@ function ShowMnemonic({
           "This phrase is the ONLY way to recover your wallet. Do not share it with anyone!"
         }
       />
-      <MnemonicDisplay keyring={keyring} />
+      <MnemonicDisplay mnemonic={mnemonic} />
       <CheckboxForm
         checked={checked}
         setChecked={setChecked}
@@ -295,15 +274,15 @@ function ShowMnemonic({
   );
 }
 
-function MnemonicDisplay({ keyring }: { keyring: HdKeyring }) {
+function MnemonicDisplay({ mnemonic }: { mnemonic: string }) {
   const classes = useStyles();
   const onClick = () => {
-    navigator.clipboard.writeText(keyring.mnemonic);
+    navigator.clipboard.writeText(mnemonic);
   };
   return (
     <div className={classes.mnemonicDisplayContainer}>
       <Typography className={classes.mnemonicDisplayText}>
-        {keyring.mnemonic}
+        {mnemonic}
       </Typography>
       <Button onClick={onClick} className={classes.mnemonicCopyButton}>
         <Typography className={classes.mnemonicCopyButtonText}>Copy</Typography>
@@ -353,7 +332,7 @@ export function WithContinue({ buttonLabel = "Continue", ...props }: any) {
         {props.children}
       </div>
       <div className={classes.continueButtonContainer}>
-        <OnboardButton type="submit" label={buttonLabel} />
+        <PrimaryButton type="submit" label={buttonLabel} />
       </div>
     </form>
   );

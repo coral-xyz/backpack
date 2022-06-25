@@ -10,6 +10,13 @@ export const CHANNEL_PLUGIN_LAUNCH_REQUEST =
 export const CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE =
   "anchor-channel-plugin-react-reconciler-bridge";
 export const CHANNEL_PLUGIN_NOTIFICATION = "anchor-channel-plugin-notification";
+export const CHANNEL_PLUGIN_CONNECTION_BRIDGE =
+  "anchor-channel-plugin-connection-bridge";
+export const CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST =
+  "solana-connection-injected-request";
+export const CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE =
+  "solana-connection-injected-response";
+
 export const RECONCILER_BRIDGE_METHOD_CREATE_INSTANCE =
   "anchor-reconciler-method-create-instance";
 export const RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE =
@@ -34,15 +41,18 @@ export const RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER =
 export const RECONCILER_BRIDGE_METHOD_RENDER_ROOT =
   "reconciler-bridge-method-render-root";
 
-export const PLUGIN_NOTIFICATION_CONNECT = "connect";
-export const PLUGIN_NOTIFICATION_ON_CLICK = "on-click";
-export const PLUGIN_NOTIFICATION_ON_CHANGE = "on-change";
 export const PLUGIN_NOTIFICATION_RENDER = "render";
 export const PLUGIN_RPC_METHOD_NAV_PUSH = "nav-push";
 export const PLUGIN_RPC_METHOD_NAV_POP = "nav-pop";
+export const PLUGIN_NOTIFICATION_CONNECT = "connect";
+export const PLUGIN_NOTIFICATION_ON_CLICK = "on-click";
+export const PLUGIN_NOTIFICATION_ON_CHANGE = "on-change";
 export const PLUGIN_NOTIFICATION_MOUNT = "mount";
 export const PLUGIN_NOTIFICATION_UNMOUNT = "unmount";
 export const PLUGIN_NOTIFICATION_NAVIGATION_POP = "nav-pop";
+export const PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED =
+  "connection-url-updated";
+export const PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED = "public-key-updated";
 
 export const RPC_METHOD_CONNECT = "connect";
 export const RPC_METHOD_DISCONNECT = "disconnect";
@@ -67,6 +77,9 @@ export const UI_RPC_METHOD_KEYRING_CREATE = "keyring-create";
 export const UI_RPC_METHOD_KEYRING_DERIVE_WALLET = "keyring-derive";
 export const UI_RPC_METHOD_KEYRING_KEY_DELETE = "keyring-delete";
 export const UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY = "keyring-import-wallet";
+export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
+  "keyring-mnemonic-create";
+export const UI_RPC_METHOD_PREVIEW_PUBKEYS = "keyring-preview-pubkeys";
 
 export const UI_RPC_METHOD_CONNECTION_URL_READ = "connection-url-read";
 export const UI_RPC_METHOD_CONNECTION_URL_UPDATE = "connection-url-update";
@@ -135,6 +148,8 @@ export const SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION =
   "solana-confirm-transaction";
 export const SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS =
   "solana-get-parsed-transactions";
+export const SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION =
+  "solana-get-parsed-transaction";
 export const SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO =
   "solana-get-multiple-accounts-info";
 export const SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2 =
@@ -147,7 +162,7 @@ export const CONNECTION_POPUP_RESPONSE = "anchor-popup-response";
 export const CONNECTION_POPUP_NOTIFICATIONS = "anchor-popup-notifications";
 export const SOLANA_CONNECTION_RPC_UI = "solana-connection-rpc-ui";
 
-//const LEDGER_IFRAME_URL = "https://200ms-labs.github.io/anchor-wallet";
+//const LEDGER_IFRAME_URL = "https://coral-xyz.github.io/anchor-wallet";
 export const LEDGER_IFRAME_URL = "https://localhost:4443/dist";
 export const LEDGER_INJECTED_CHANNEL_REQUEST = "ledger-injected-request";
 export const LEDGER_INJECTED_CHANNEL_RESPONSE = "ledger-injected-response";

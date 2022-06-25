@@ -8,19 +8,38 @@ export const SendLamportButton: FC = () => {
   const wallet = useWallet();
   const onClick = useCallback(async () => {
     if (!wallet.publicKey) throw new WalletNotConnectedError();
+    //
+    // Test the pass through connection works.
+    //
+    // @ts-ignore
+    const bh = await window.anchor.connection.getLatestBlockhash();
+    console.log("got latest blockhash", bh);
 
     const transaction = new Transaction().add(
       SystemProgram.transfer({
         fromPubkey: wallet.publicKey,
         toPubkey: Keypair.generate().publicKey,
-        lamports: 1,
+        lamports: 1000000,
       })
     );
 
     console.log("sending transaction", transaction);
-    const signature = await wallet.sendTransaction(transaction, connection);
+
+    const [signature, { blockhash, lastValidBlockHeight }] = await Promise.all([
+      wallet.sendTransaction(transaction, connection),
+      connection.getLatestBlockhash(),
+    ]);
+
     console.log("signature", signature);
-    await connection.confirmTransaction(signature, "processed");
+
+    await connection.confirmTransaction(
+      {
+        signature,
+        blockhash,
+        lastValidBlockHeight,
+      },
+      "processed"
+    );
   }, [wallet.publicKey, wallet.sendTransaction, connection]);
 
   return (

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Market, OpenOrders } from "@project-serum/serum";
 import { PublicKey } from "@solana/web3.js";
-import { Text, View } from "@200ms/anchor-ui";
+import { Text, View } from "@coral-xyz/anchor-ui";
 import * as anchor from "@project-serum/anchor";
 
 export function App() {

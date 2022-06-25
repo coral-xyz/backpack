@@ -1,30 +1,25 @@
 import { useState, useEffect } from "react";
-import {
-  useTheme,
-  Select,
-  MenuItem,
-  Typography,
-  CircularProgress,
-} from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Select, MenuItem, Typography, CircularProgress } from "@mui/material";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { PublicKey } from "@solana/web3.js";
 import Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
 import * as anchor from "@project-serum/anchor";
-import * as ledgerCore from "@200ms/ledger-core";
+import * as ledgerCore from "@coral-xyz/ledger-core";
 import {
+  getBackgroundClient,
   DerivationPath,
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
   UI_RPC_METHOD_LEDGER_IMPORT,
-} from "@200ms/common";
-import { getBackgroundClient, useAnchorContext } from "@200ms/recoil";
+} from "@coral-xyz/common";
+import { useAnchorContext } from "@coral-xyz/recoil";
 import { Stepper, WithContinue } from "../../Onboarding/CreateNewWallet";
 
 const STEP_COUNT = 3;
 let TRANSPORT: Transport | null = null;
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   menuPubkey: {
     fontWeight: 500,
     color: theme.custom.colors.fontColor,
@@ -40,7 +35,7 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export function ConnectHardware() {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   const [activeStep, setActiveState] = useState(0);
   const handleNext = () => {
     setActiveState(activeStep + 1);

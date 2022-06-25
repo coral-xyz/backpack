@@ -3,7 +3,11 @@ import { TokenAccountWithKey } from "../types";
 import * as atoms from "../atoms";
 
 export function useTokenAddresses(): string[] {
-  return useRecoilValue(atoms.solanaTokenAccountKeys)!;
+  const publicKey = useRecoilValue(atoms.activeWallet)!;
+  const connectionUrl = useRecoilValue(atoms.connectionUrl)!;
+  return useRecoilValue(
+    atoms.solanaTokenAccountKeys({ connectionUrl, publicKey })
+  )!;
 }
 
 /**
@@ -17,13 +21,17 @@ export const useUpdateAllSplTokenAccounts = () =>
   useRecoilCallback(
     ({ set }: any) =>
       async ({
-        tokenAccounts,
-        tokenMetadata,
-        nftMetadata,
+        connectionUrl,
+        publicKey,
+        customSplTokenAccounts,
       }: {
-        tokenAccounts: TokenAccountWithKey[];
-        tokenMetadata: Array<null | any>;
-        nftMetadata: Map<string, any>;
+        connectionUrl: string;
+        publicKey: string;
+        customSplTokenAccounts: {
+          tokenAccounts: TokenAccountWithKey[];
+          tokenMetadata: Array<null | any>;
+          nftMetadata: Array<[string, any]>;
+        };
       }) => {
         // TODO: Do we want to check if the atoms have changed before setting
         //       them? Probably since we don't have a recoil transaction and
@@ -33,12 +41,18 @@ export const useUpdateAllSplTokenAccounts = () =>
         // Regular tokens.
         //
         set(
-          atoms.solanaTokenAccountKeys,
-          tokenAccounts.map((a) => a.key.toString())
+          atoms.solanaTokenAccountKeys({
+            connectionUrl,
+            publicKey,
+          }),
+          customSplTokenAccounts.tokenAccounts.map((a) => a.key.toString())
         );
-        tokenAccounts.forEach((tokenAccount) => {
+        customSplTokenAccounts.tokenAccounts.forEach((tokenAccount) => {
           set(
-            atoms.solanaTokenAccountsMap(tokenAccount.key.toString()),
+            atoms.solanaTokenAccountsMap({
+              connectionUrl,
+              tokenAddress: tokenAccount.key.toString(),
+            }),
             tokenAccount
           );
         });
@@ -46,10 +60,12 @@ export const useUpdateAllSplTokenAccounts = () =>
         //
         // Nfts.
         //
-        set(atoms.solanaNftMetadataKeys, Array.from(nftMetadata.keys()));
-        // @ts-ignore
-        for (let [key, value] of nftMetadata) {
+        set(
+          atoms.solanaNftMetadataKeys,
+          customSplTokenAccounts.nftMetadata.map((c) => c[0])
+        );
+        customSplTokenAccounts.nftMetadata.forEach(([key, value]) => {
           set(atoms.solanaNftMetadataMap(key), value);
-        }
+        });
       }
   );

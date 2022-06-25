@@ -1,13 +1,7 @@
 import { useEffect, useState, Suspense } from "react";
 import * as bs58 from "bs58";
-import {
-  useTheme,
-  Typography,
-  IconButton,
-  Button,
-  TextField,
-} from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Typography, IconButton, Button, TextField } from "@mui/material";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   Add,
   Lock,
@@ -18,25 +12,26 @@ import {
 } from "@mui/icons-material";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import {
-  getBackgroundClient,
   useEphemeralNav,
   useKeyringStoreState,
   KeyringStoreStateEnum,
   useWalletPublicKeys,
   useActiveWallet,
-} from "@200ms/recoil";
+} from "@coral-xyz/recoil";
 import {
+  getBackgroundClient,
+  openConnectHardware,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { WalletAddress, List, ListItem } from "../../components/common";
-import { openConnectHardware } from "../../background/popup";
 import { WithDrawer } from "../Layout/Drawer";
 import { ConnectionMenu } from "./ConnectionSwitch";
+import { RecentActivityButton } from "../Unlocked/Balances/RecentActivity";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
     color: theme.custom.colors.fontColor,
   },
@@ -44,7 +39,6 @@ const useStyles = makeStyles((theme: any) => ({
     height: "100%",
   },
   menuButtonContainer: {
-    width: "38px",
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
@@ -58,10 +52,19 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-const AVATAR_URL =
-  "https://pbs.twimg.com/profile_images/1527030737731571713/7qMzHeBv_400x400.jpg";
+const AVATAR_URL = "coral.png";
 
 export function SettingsButton() {
+  return (
+    <div style={{ display: "flex" }}>
+      <RecentActivityButton />
+      <div style={{ width: "16px" }} />
+      <AvatarButton />
+    </div>
+  );
+}
+
+function AvatarButton() {
   const classes = useStyles();
   const [settingsOpen, setSettingsOpen] = useState(false);
   return (
@@ -71,6 +74,7 @@ export function SettingsButton() {
         className={classes.menuButton}
         onClick={() => setSettingsOpen(!settingsOpen)}
         size="large"
+        id="menu-button"
       >
         <img
           src={AVATAR_URL}
@@ -118,11 +122,11 @@ function _SettingsContent({ close }: { close: () => void }) {
 
 function AvatarHeader() {
   const activeWallet = useActiveWallet();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <div>
       <img
-        src={AVATAR_URL}
+        src={"coral.png"}
         style={{
           width: "64px",
           height: "64px",
@@ -149,7 +153,7 @@ function AvatarHeader() {
 }
 
 function WalletList({ close }: { close: () => void }) {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   const namedPublicKeys = useWalletPublicKeys();
   const nav = useEphemeralNav();
 
@@ -231,7 +235,7 @@ function WalletList({ close }: { close: () => void }) {
 }
 
 function SettingsList({ close }: { close: () => void }) {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   const nav = useEphemeralNav();
 
   const lockWallet = () => {
@@ -282,6 +286,7 @@ function SettingsList({ close }: { close: () => void }) {
             key={s.id}
             isLast={idx === settingsMenu.length - 1}
             onClick={s.onClick}
+            id={s.label}
           >
             <div
               style={{

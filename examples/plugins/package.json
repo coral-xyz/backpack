@@ -1,0 +1,10 @@
+{
+  "name": "plugins",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "ws --port 8001"
+  },
+  "devDependencies": {
+    "local-web-server": "^5.2.0"
+  }
+}

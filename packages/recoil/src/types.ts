@@ -1,6 +1,7 @@
 import BN from "bn.js";
 import { PublicKey } from "@solana/web3.js";
-import { TAB_BALANCES, TAB_SWAP, TAB_NFTS, TAB_APPS } from "@200ms/common";
+import { TAB_BALANCES, TAB_SWAP, TAB_NFTS, TAB_APPS } from "@coral-xyz/common";
+import { makeUrl } from "./hooks";
 
 export interface TokenAccount {
   amount: BN;
@@ -53,7 +54,7 @@ export function makeDefaultNav() {
   TABS.forEach(([tabName, tabTitle]) => {
     defaultNav.data[tabName] = {
       id: tabName,
-      urls: [`/${tabName}?props=${JSON.stringify({})}&title=${tabTitle}`],
+      urls: [makeUrl(tabName, { title: tabTitle, props: {} })],
     };
   });
   return defaultNav;

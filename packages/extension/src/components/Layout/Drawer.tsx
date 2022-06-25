@@ -1,24 +1,22 @@
 import { useEffect } from "react";
 import { Drawer, Button, IconButton } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 import { Close } from "@mui/icons-material";
-import { EXTENSION_HEIGHT } from "@200ms/common";
-import { useEphemeralNav } from "@200ms/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { EXTENSION_HEIGHT } from "@coral-xyz/common";
+import { useEphemeralNav } from "@coral-xyz/recoil";
 import { WithEphemeralNav } from "../Layout/NavEphemeral";
 import { NAV_BAR_HEIGHT, NAV_BUTTON_WIDTH } from "./Nav";
 
 const MINI_DRAWER_HEIGHT = 295;
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   withDrawer: {
-    backgroundColor: theme.custom.colors.background,
     height: "100%",
     display: "flex",
     flexDirection: "column",
   },
   withDrawerNoHeader: {
     height: EXTENSION_HEIGHT - NAV_BAR_HEIGHT,
-    backgroundColor: theme.custom.colors.background,
     padding: "20px",
     display: "flex",
     flexDirection: "column",
@@ -46,7 +44,7 @@ const useStyles = makeStyles((theme: any) => ({
     background: "transparent",
   },
   closeDrawerButton: {
-    backgroundColor: theme.custom.colors,
+    backgroundColor: theme.custom.colors.background,
     width: "100%",
   },
   rightButtonIcon: {
@@ -60,8 +58,16 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export function WithDrawer(props: any) {
-  const { children, openDrawer, title, navbarStyle, setOpenDrawer } = props;
   const classes = useStyles();
+  const theme = useCustomTheme();
+  const {
+    children,
+    openDrawer,
+    title,
+    navbarStyle,
+    navContentStyle,
+    setOpenDrawer,
+  } = props;
   return (
     <Drawer
       anchor={"bottom"}
@@ -71,8 +77,21 @@ export function WithDrawer(props: any) {
         root: classes.drawerRoot,
         paper: classes.drawerPaper,
       }}
+      id="drawer"
     >
-      <WithEphemeralNav title={title} navbarStyle={navbarStyle}>
+      <WithEphemeralNav
+        title={title}
+        navbarStyle={{
+          // @ts-ignore
+          background: theme.custom.colors.background,
+          ...navbarStyle,
+        }}
+        navContentStyle={{
+          // @ts-ignore
+          background: theme.custom.colors.background,
+          ...navContentStyle,
+        }}
+      >
         <WithDrawerContent setOpenDrawer={setOpenDrawer}>
           {children}
         </WithDrawerContent>
@@ -126,15 +145,29 @@ function WithDrawerContent({ children, setOpenDrawer }: any) {
 function RightButton({ onClick }: any) {
   const classes = useStyles();
   return (
-    <IconButton
-      classes={classes.rightButtonLabel}
-      disableRipple
-      style={{ padding: 0, width: `${NAV_BUTTON_WIDTH}px` }}
-      onClick={onClick}
-      size="large"
+    <div
+      style={{
+        position: "relative",
+        width: `${NAV_BUTTON_WIDTH}px`,
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
     >
-      <Close className={classes.rightButtonIcon} />
-    </IconButton>
+      <IconButton
+        classes={{ root: classes.rightButtonLabel }}
+        disableRipple
+        style={{
+          padding: 0,
+          position: "absolute",
+          right: 0,
+        }}
+        onClick={onClick}
+        size="large"
+      >
+        <Close className={classes.rightButtonIcon} />
+      </IconButton>
+    </div>
   );
 }
 

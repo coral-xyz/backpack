@@ -1,4 +1,4 @@
-import { getLogger } from "@200ms/common";
+import { getLogger } from "@coral-xyz/common";
 import { ProviderInjection } from "./provider";
 import { ProviderUiInjection } from "./provider-ui";
 

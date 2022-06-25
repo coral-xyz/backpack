@@ -1,30 +1,31 @@
 import { Suspense } from "react";
-import makeStyles from "@mui/styles/makeStyles";
-import { getLogger, EXTENSION_WIDTH, EXTENSION_HEIGHT } from "@200ms/common";
+import { styles } from "@coral-xyz/themes";
 import {
-  KeyringStoreStateEnum,
   getBackgroundResponseClient,
-  useKeyringStoreState,
-  useApprovedOrigins,
-  useBootstrapFast,
-} from "@200ms/recoil";
-import { openOnboarding } from "../background/popup";
-import { Locked } from "../components/Locked";
-import { Unlocked } from "../components/Unlocked";
-import {
+  getLogger,
+  EXTENSION_WIDTH,
+  EXTENSION_HEIGHT,
+  openOnboarding,
   QUERY_LOCKED,
   QUERY_APPROVAL,
   QUERY_LOCKED_APPROVAL,
   QUERY_APPROVE_TRANSACTION,
   QUERY_APPROVE_MESSAGE,
-} from "../background/popup";
+} from "@coral-xyz/common";
+import {
+  KeyringStoreStateEnum,
+  useKeyringStoreState,
+  useApprovedOrigins,
+  useBootstrapFast,
+} from "@coral-xyz/recoil";
+import { Locked } from "../components/Locked";
+import { Unlocked } from "../components/Unlocked";
 import {
   Approval,
   ApproveTransaction,
   ApproveMessage,
 } from "../components/Approval";
 import "./App.css";
-import "@fontsource/inter";
 
 const logger = getLogger("router");
 
@@ -44,6 +45,7 @@ function _Router() {
   //
   const needsOnboarding =
     useKeyringStoreState() === KeyringStoreStateEnum.NeedsOnboarding;
+
   if (needsOnboarding) {
     openOnboarding();
     return <></>;
@@ -115,6 +117,7 @@ function QueryLockedApproval() {
 
 function QueryLocked() {
   logger.debug("query locked");
+
   const url = new URL(window.location.href);
   const requestId = parseInt(url.searchParams.get("requestId")!);
 
@@ -193,6 +196,7 @@ function QueryApproveMessage() {
 
 function FullApp() {
   logger.debug("full app");
+
   const keyringStoreState = useKeyringStoreState();
   const needsOnboarding =
     keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
@@ -237,17 +241,19 @@ export function WithSuspense(props: any) {
   return <Suspense fallback={<BlankApp />}>{props.children}</Suspense>;
 }
 
-function BlankApp() {
+export function BlankApp() {
   const classes = useStyles();
   return <div className={classes.appContainer}></div>;
 }
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   appContainer: {
     width: `${EXTENSION_WIDTH}px`,
     height: `${EXTENSION_HEIGHT}px`,
     backgroundColor: theme.custom.colors.background,
     display: "flex",
     flexDirection: "column",
+    overflow: "hidden",
+    position: "relative",
   },
 }));

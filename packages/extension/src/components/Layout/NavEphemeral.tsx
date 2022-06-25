@@ -1,7 +1,6 @@
 import { Suspense } from "react";
-import { useTheme } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
-import { NavEphemeralProvider, useEphemeralNav } from "@200ms/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { NavEphemeralProvider, useEphemeralNav } from "@coral-xyz/recoil";
 import { Scrollbar } from "./Scrollbar";
 import { Loading } from "../common";
 import {
@@ -11,7 +10,7 @@ import {
   __CenterDisplay,
 } from "./Nav";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   navBarContainer: {
     display: "flex",
     justifyContent: "space-between",
@@ -19,28 +18,30 @@ const useStyles = makeStyles((theme: any) => ({
     paddingRight: "16px",
     paddingTop: "10px",
     paddingBottom: "10px",
-    backgroundColor: theme.custom.colors.background,
-    //
     height: `${NAV_BAR_HEIGHT}px`,
   },
   navContentContainer: {
     flex: 1,
-    backgroundColor: theme.custom.colors.background,
   },
 }));
 
-export function WithEphemeralNav({ title, children, navbarStyle }: any) {
+export function WithEphemeralNav({
+  title,
+  children,
+  navbarStyle,
+  navContentStyle,
+}: any) {
   return (
     <NavEphemeralProvider title={title} root={children}>
       <NavBar style={navbarStyle} />
-      <NavContent />
+      <NavContent style={navContentStyle} />
     </NavEphemeralProvider>
   );
 }
 
 function NavBar({ style }: any) {
   const classes = useStyles();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   const navbarStyle = {
     borderBottom: `solid 1pt ${theme.custom.colors.border}`,
     ...(style ?? {}),
@@ -54,10 +55,10 @@ function NavBar({ style }: any) {
   );
 }
 
-function NavContent() {
+function NavContent({ style = {} }) {
   const classes = useStyles();
   return (
-    <div className={classes.navContentContainer}>
+    <div className={classes.navContentContainer} style={style}>
       <Scrollbar>
         <Suspense fallback={<Loading />}>
           <_NavContent />

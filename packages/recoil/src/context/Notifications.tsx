@@ -5,6 +5,7 @@ import {
   getLogger,
   PortChannel,
   Notification,
+  BackgroundSolanaConnection,
   CONNECTION_POPUP_NOTIFICATIONS,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
@@ -17,15 +18,13 @@ import {
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
-} from "@200ms/common";
-import {
-  KeyringStoreStateEnum,
-  BackgroundSolanaConnection,
-  useUpdateAllSplTokenAccounts,
-} from "../";
+} from "@coral-xyz/common";
+import { KeyringStoreStateEnum, useUpdateAllSplTokenAccounts } from "../";
 import * as atoms from "../atoms";
-import { getPlugin } from "../hooks";
+import { getPlugin, allPlugins, useDecodedSearchParams } from "../hooks";
+import type { SearchParamsFor } from "../hooks";
 
 const logger = getLogger("notifications-provider");
 
@@ -39,6 +38,7 @@ export function NotificationsProvider(props: any) {
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveWallet = useSetRecoilState(atoms.activeWallet);
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
+  const setConnectionUrl = useSetRecoilState(atoms.connectionUrl);
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   const navigate = useNavigate();
 
@@ -85,7 +85,10 @@ export function NotificationsProvider(props: any) {
           handleSplTokensDidUpdate(notif);
           break;
         case NOTIFICATION_NAVIGATION_URL_DID_CHANGE:
-          handleUrlDidChange(notif);
+          handleNavigationUrlDidChange(notif);
+          break;
+        case NOTIFICATION_CONNECTION_URL_UPDATED:
+          handleConnectionUrlUpdated(notif);
           break;
         default:
           break;
@@ -95,6 +98,12 @@ export function NotificationsProvider(props: any) {
     //
     // Notification handlers.
     //
+    const handleConnectionUrlUpdated = (notif: Notification) => {
+      setConnectionUrl(notif.data.url);
+      allPlugins().forEach((p) => {
+        p.pushConnectionChangedNotification(notif.data.url);
+      });
+    };
     const handleKeyringStoreLocked = (_notif: Notification) => {
       setKeyringStoreState(KeyringStoreStateEnum.Locked);
     };
@@ -148,6 +157,9 @@ export function NotificationsProvider(props: any) {
     };
     const handleActiveWalletUpdated = (notif: Notification) => {
       setActiveWallet(notif.data.activeWallet);
+      allPlugins().forEach((p) => {
+        p.pushPublicKeyChangedNotification(notif.data.activeWallet);
+      });
     };
     const handleKeyringImportedSecretKey = (notif: Notification) => {
       setWalletPublicKeys((current: any) => {
@@ -165,16 +177,21 @@ export function NotificationsProvider(props: any) {
       setApprovedOrigins(notif.data.approvedOrigins);
     };
     const handleSplTokensDidUpdate = (notif: Notification) => {
+      const publicKey = notif.data.publicKey;
+      const connectionUrl = notif.data.connectionUrl;
       const result = BackgroundSolanaConnection.customSplTokenAccountsFromJson(
-        notif.data
+        notif.data.customSplTokenAccounts
       );
       updateAllSplTokenAccounts({
-        ...result,
-        tokenAccounts: result.tokenAccountsMap.map((t: any) => t[1]),
-        nftMetadata: new Map(result.nftMetadata),
+        publicKey,
+        connectionUrl,
+        customSplTokenAccounts: {
+          ...result,
+          tokenAccounts: result.tokenAccountsMap.map((t: any) => t[1]),
+        },
       });
     };
-    const handleUrlDidChange = (notif: Notification) => {
+    const handleNavigationUrlDidChange = (notif: Notification) => {
       //
       // If we've popped the table detail view, then we need to notify
       // the plugin to update its internal state.
@@ -182,7 +199,8 @@ export function NotificationsProvider(props: any) {
       const oldUrl = notif.data.oldUrl;
       if (oldUrl && oldUrl.startsWith("/plugin-table-detail")) {
         const search = new URLSearchParams(oldUrl.split("?")[1]);
-        const props = JSON.parse(search.get("props")!);
+        const { props } =
+          useDecodedSearchParams<SearchParamsFor.Plugin>(search);
         const plugin = getPlugin({ url: props.pluginUrl });
         plugin.pushNotification({
           name: PLUGIN_NOTIFICATION_NAVIGATION_POP,

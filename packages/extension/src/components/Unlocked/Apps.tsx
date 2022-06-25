@@ -1,28 +1,40 @@
 import { Button, Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
-import { Plugin, PluginRenderer } from "@200ms/anchor-ui-renderer";
-import { usePlugins, useTablePlugins, useNavigation } from "@200ms/recoil";
-import { NAV_COMPONENT_PLUGINS } from "@200ms/common";
+import { styles } from "@coral-xyz/themes";
+import { Plugin, PluginRenderer } from "@coral-xyz/anchor-ui-renderer";
+import { usePlugins, useTablePlugins, useNavigation } from "@coral-xyz/recoil";
+import type { SearchParamsFor } from "@coral-xyz/recoil";
+import { NAV_COMPONENT_PLUGINS } from "@coral-xyz/common";
+import { getSvgPath } from "figma-squircle";
 
-const ICON_WIDTH = "60px";
+const ICON_WIDTH = 64;
 
-const useStyles = makeStyles((theme: any) => ({
+const squircleIconPath = getSvgPath({
+  width: ICON_WIDTH,
+  height: ICON_WIDTH,
+  cornerRadius: 15,
+  cornerSmoothing: 0.8,
+});
+
+const useStyles = styles((theme) => ({
   pluginIconRoot: {
-    minWidth: "40px",
+    minWidth: ICON_WIDTH,
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   pluginIconButton: {
     width: ICON_WIDTH,
     height: ICON_WIDTH,
-    borderRadius: "10px",
-    backgroundColor: theme.custom.colors.nav,
+    overflow: "hidden",
+    clipPath: `path('${squircleIconPath}')`,
     padding: 0,
+    backgroundColor: theme.custom.colors.nav,
   },
   pluginTitle: {
     fontWeight: 500,
     color: theme.custom.colors.fontColor,
-    fontSize: "10px",
+    fontSize: "12px",
+    lineHeight: "16px",
     textAlign: "center",
-    marginTop: "4px",
   },
 }));
 
@@ -37,10 +49,10 @@ function PluginGrid() {
       style={{
         display: "flex",
         flexWrap: "wrap",
-        marginLeft: "12px",
-        marginRight: "12px",
-        marginTop: "16px",
-        marginBottom: "16px",
+        marginLeft: "20px",
+        marginRight: "20px",
+        marginBottom: "24px",
+        justifyContent: "space-between",
       }}
     >
       {plugins.map((p: Plugin, idx: number) => {
@@ -48,7 +60,8 @@ function PluginGrid() {
           <div
             key={p.iframeUrl}
             style={{
-              marginRight: idx !== plugins.length - 1 ? "12px" : 0,
+              //              marginRight: idx !== plugins.length - 1 ? "15.67px" : 0,
+              marginTop: idx >= 4 ? "24px" : 0,
             }}
           >
             <PluginIcon plugin={p} />
@@ -70,7 +83,15 @@ function PluginIcon({ plugin }: { plugin: Plugin }) {
     });
   };
   return (
-    <div>
+    <div
+      style={{
+        width: "72px",
+        height: "88px",
+        display: "flex",
+        justifyContent: "space-between",
+        flexDirection: "column",
+      }}
+    >
       <Button
         variant="contained"
         disableElevation
@@ -83,7 +104,6 @@ function PluginIcon({ plugin }: { plugin: Plugin }) {
         <img
           src={plugin.iconUrl}
           style={{
-            borderRadius: "10px",
             width: ICON_WIDTH,
             height: ICON_WIDTH,
           }}
@@ -94,18 +114,20 @@ function PluginIcon({ plugin }: { plugin: Plugin }) {
   );
 }
 
-export function PluginDisplay({ pluginUrl }: { pluginUrl: string }) {
+export function PluginDisplay({ pluginUrl }: SearchParamsFor.Plugin["props"]) {
   const plugins = usePlugins();
-  const p = plugins.find((p) => p.iframeUrl === pluginUrl);
+  const p = plugins.find((p) => p.iframeUrl === encodeURI(pluginUrl));
   if (p === undefined) {
     throw new Error("unable to find plugin");
   }
   return <PluginRenderer key={p.iframeUrl} plugin={p} />;
 }
 
-export function PluginTableDetailDisplay({ pluginUrl }: { pluginUrl: string }) {
+export function PluginTableDetailDisplay({
+  pluginUrl,
+}: SearchParamsFor.Plugin["props"]) {
   const plugins = useTablePlugins();
-  const p = plugins.find((p) => p.iframeUrl === pluginUrl);
+  const p = plugins.find((p) => p.iframeUrl === encodeURI(pluginUrl));
   if (p === undefined) {
     throw new Error("unable to find plugin");
   }

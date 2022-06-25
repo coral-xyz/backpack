@@ -1,20 +1,25 @@
 import { useState } from "react";
 import { Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styles } from "@coral-xyz/themes";
 import * as bip39 from "bip39";
-import { getBackgroundClient } from "@200ms/recoil";
 import {
+  getBackgroundClient,
   DerivationPath,
   BrowserRuntime,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 import { TextField } from "../common";
-import { WithContinue, Stepper, Done, CreatePassword } from "./CreateNewWallet";
-import { OnboardHeader } from "./CreateNewWallet";
+import {
+  WithContinue,
+  Stepper,
+  Done,
+  CreatePassword,
+  OnboardHeader,
+} from "./CreateNewWallet";
 
 const STEP_COUNT = 4;
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   importMnemonicRoot: {
     margin: 0,
     width: "100%",

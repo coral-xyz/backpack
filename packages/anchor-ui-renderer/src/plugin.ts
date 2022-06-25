@@ -5,9 +5,10 @@ import {
   Element,
   TextSerialized,
   NodeSerialized,
-} from "@200ms/anchor-ui";
+} from "@coral-xyz/anchor-ui";
 import {
   getLogger,
+  BackgroundClient,
   Event,
   Channel,
   PostMessageServer,
@@ -17,6 +18,7 @@ import {
   CHANNEL_PLUGIN_RPC_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
+  CHANNEL_PLUGIN_CONNECTION_BRIDGE,
   PLUGIN_RPC_METHOD_NAV_PUSH,
   PLUGIN_RPC_METHOD_NAV_POP,
   RPC_METHOD_SIGN_TX as PLUGIN_RPC_METHOD_SIGN_TX,
@@ -28,6 +30,8 @@ import {
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_UNMOUNT,
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
+  PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
+  PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
   RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
   RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
   RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
@@ -36,7 +40,7 @@ import {
   RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
   RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
   RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
-} from "@200ms/common";
+} from "@coral-xyz/common";
 
 const logger = getLogger("plugin");
 
@@ -52,6 +56,7 @@ export class Plugin {
   private _connectionUrl: string;
   private _rpcServer: PostMessageServer;
   private _bridgeServer: PostMessageServer;
+  private _connectionBridge: PostMessageServer;
   private _iframe?: HTMLIFrameElement;
   private _nextRenderId?: number;
   private _pendingBridgeRequests?: Array<any>;
@@ -65,6 +70,7 @@ export class Plugin {
   //
   private _navPushFn?: (args: any) => void;
   private _requestTxApprovalFn?: (request: any) => void;
+  private _connectionBackgroundClient: BackgroundClient;
 
   //
   // The last time a click event was handled for the plugin. This is used as an
@@ -97,6 +103,7 @@ export class Plugin {
     // RPC Server channel from plugin -> extension-ui.
     //
     this._rpcServer = Channel.serverPostMessage(
+      url,
       CHANNEL_PLUGIN_RPC_REQUEST,
       CHANNEL_PLUGIN_RPC_RESPONSE
     );
@@ -106,9 +113,24 @@ export class Plugin {
     // React reconciler bridge messages for custom React rendering.
     //
     this._bridgeServer = Channel.serverPostMessage(
+      url,
       CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE
     );
     this._bridgeServer.handler(this._handleBridge.bind(this));
+
+    //
+    // Bridges messages for the solana connection object from the plugin
+    // to the background script.
+    //
+    this._connectionBridge = Channel.serverPostMessage(
+      url,
+      CHANNEL_PLUGIN_CONNECTION_BRIDGE
+    );
+    this._connectionBridge.handler(this._handleConnectionBridge.bind(this));
+  }
+
+  public get needsLoad() {
+    return this._navPushFn === undefined;
   }
 
   //
@@ -126,6 +148,7 @@ export class Plugin {
 
     this._nextRenderId = 0;
     this._iframe = document.createElement("iframe");
+    this._iframe.setAttribute("fetchpriority", "low");
     this._iframe!.src = this.iframeUrl;
     this._iframe.sandbox.add("allow-same-origin");
     this._iframe.sandbox.add("allow-scripts");
@@ -163,9 +186,10 @@ export class Plugin {
   //
   // Apis set from the outside host.
   //
-  public setHostApi({ push, pop, request }) {
+  public setHostApi({ push, pop, request, connectionBackgroundClient }) {
     this._navPushFn = push;
     this._requestTxApprovalFn = request;
+    this._connectionBackgroundClient = connectionBackgroundClient;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -223,7 +247,7 @@ export class Plugin {
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: notif,
     };
-    this._iframe!.contentWindow!.postMessage(event, "*");
+    this._iframe?.contentWindow?.postMessage(event, "*");
   }
 
   public pushClickNotification(viewId: number) {
@@ -237,7 +261,7 @@ export class Plugin {
         },
       },
     };
-    this._iframe!.contentWindow!.postMessage(event, "*");
+    this._iframe?.contentWindow?.postMessage(event, "*");
   }
 
   public pushOnChangeNotification(viewId: number, value: any) {
@@ -252,7 +276,7 @@ export class Plugin {
         },
       },
     };
-    this._iframe!.contentWindow!.postMessage(event, "*");
+    this._iframe?.contentWindow?.postMessage(event, "*");
   }
 
   public pushConnectNotification() {
@@ -266,7 +290,7 @@ export class Plugin {
         },
       },
     };
-    this._iframe!.contentWindow!.postMessage(event, "*");
+    this._iframe?.contentWindow?.postMessage(event, "*");
   }
 
   public pushMountNotification() {
@@ -277,7 +301,7 @@ export class Plugin {
         data: {},
       },
     };
-    this._iframe!.contentWindow!.postMessage(event, "*");
+    this._iframe?.contentWindow?.postMessage(event, "*");
   }
 
   public pushUnmountNotification() {
@@ -288,7 +312,7 @@ export class Plugin {
         data: {},
       },
     };
-    this._iframe!.contentWindow!.postMessage(event, "*");
+    this._iframe?.contentWindow?.postMessage(event, "*");
   }
 
   public pushNavigationPopNotification() {
@@ -299,6 +323,32 @@ export class Plugin {
         data: {},
       },
     };
+    this._iframe?.contentWindow?.postMessage(event, "*");
+  }
+
+  public pushConnectionChangedNotification(url: string) {
+    const event = {
+      type: CHANNEL_PLUGIN_NOTIFICATION,
+      detail: {
+        name: PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
+        data: {
+          url,
+        },
+      },
+    };
+    this._iframe!.contentWindow!.postMessage(event, "*");
+  }
+
+  public pushPublicKeyChangedNotification(publicKey: string) {
+    const event = {
+      type: CHANNEL_PLUGIN_NOTIFICATION,
+      detail: {
+        name: PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
+        data: {
+          publicKey,
+        },
+      },
+    };
     this._iframe!.contentWindow!.postMessage(event, "*");
   }
 
@@ -307,11 +357,6 @@ export class Plugin {
   //////////////////////////////////////////////////////////////////////////////
 
   private async _handleRpc(event: Event): Promise<RpcResponse> {
-    const url = new URL(this.iframeUrl);
-    if (event.origin !== url.origin) {
-      return;
-    }
-
     const req = event.data.detail;
     logger.debug(`plugin rpc: ${JSON.stringify(req)}`);
 
@@ -431,6 +476,18 @@ export class Plugin {
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  // Solana Connection Bridge.
+  //////////////////////////////////////////////////////////////////////////////
+
+  //
+  // Relay all requests to the background service worker.
+  //
+  private async _handleConnectionBridge(event: Event): Promise<RpcResponse> {
+    logger.debug(`handle connection bridge`, event);
+    return await this._connectionBackgroundClient.request(event.data.detail);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   // React Reconciler Bridge.
   //////////////////////////////////////////////////////////////////////////////
 
@@ -440,10 +497,6 @@ export class Plugin {
   // and do nothing until the next ordered request comes in.
   //
   private _handleBridge(event: Event): RpcResponse {
-    const url = new URL(this.iframeUrl);
-    if (event.origin !== url.origin) {
-      return;
-    }
     const req = event.data.detail;
 
     this._enqueueBridgeRequest(req);
@@ -567,8 +620,11 @@ class Dom {
 
   commitUpdate(instanceId: number, updatePayload: UpdateDiff) {
     const instance = this._vdom.get(instanceId) as NodeSerialized;
+    logger.debug("commitUpdate", instanceId, updatePayload, instance);
 
-    logger.debug("commitUpdate", instance);
+    if (!instance) {
+      throw new Error("element not found");
+    }
 
     switch (instance.kind) {
       case NodeKind.View:

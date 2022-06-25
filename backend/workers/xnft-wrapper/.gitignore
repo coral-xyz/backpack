@@ -1,0 +1,4 @@
+.mf/
+dist/
+node_modules/
+.envrc

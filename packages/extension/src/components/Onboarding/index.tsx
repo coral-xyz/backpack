@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { useTheme, Card } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Card } from "@mui/material";
+import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { CreateNewWallet } from "./CreateNewWallet";
 import { ImportWallet } from "./ImportWallet";
-import { OnboardButton } from "../common";
+import { PrimaryButton } from "../common";
 import { BackpackHeader } from "../Locked";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   card: {
     width: "375px",
     height: "600px",
@@ -69,7 +69,7 @@ function Welcome({
   didSelectContent: (content: string) => void;
 }) {
   const classes = useStyles();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <div
       style={{
@@ -83,11 +83,11 @@ function Welcome({
       <BackpackHeader />
       <div className={classes.content}>
         <div>
-          <OnboardButton
+          <PrimaryButton
             onClick={() => didSelectContent("create-new-wallet")}
             label={"Create New Wallet"}
           />
-          <OnboardButton
+          <PrimaryButton
             style={{
               marginTop: "10px",
               backgroundColor: theme.custom.colors.nav,

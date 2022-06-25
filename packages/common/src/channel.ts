@@ -1,9 +1,7 @@
 import type { Event, RpcRequest, RpcResponse, Notification } from "./types";
 import { BrowserRuntime } from "./browser";
-import { getLogger } from "./logging";
 import { POST_MESSAGE_ORIGIN } from "./constants";
-
-const logger = getLogger("common/channel");
+import { generateUniqueId } from "./utils";
 
 // Channel is a class that establishes communication channel from a
 // content/injected script to a background script.
@@ -65,10 +63,11 @@ export class Channel {
   }
 
   public static serverPostMessage(
+    url: string,
     reqChannel: string,
     respChannel?: string
   ): PostMessageServer {
-    return new PostMessageServer(reqChannel, respChannel);
+    return new PostMessageServer(url, reqChannel, respChannel);
   }
 }
 
@@ -127,6 +126,7 @@ export class ChannelServer {
 export class PostMessageServer {
   private window?: any;
   constructor(
+    private url: string,
     private requestChannel: string,
     private responseChannel?: string
   ) {}
@@ -137,7 +137,13 @@ export class PostMessageServer {
 
   public handler(handlerFn: (event: Event) => Promise<RpcResponse>) {
     return window.addEventListener("message", async (event: Event) => {
-      if (event.data.type !== this.requestChannel) {
+      const url = new URL(this.url);
+      if (
+        // TODO: hardcode allowed origin(s)
+        event.origin !== url.origin ||
+        event.data.href !== url.href ||
+        event.data.type !== this.requestChannel
+      ) {
         return;
       }
       const id = event.data.detail.id;
@@ -217,17 +223,13 @@ export class PortChannelNotifications {
 }
 
 export class PortChannelClient implements BackgroundClient {
-  private _requestId: number;
-
-  constructor(private name: string) {
-    this._requestId = 0;
-  }
+  constructor(private name: string) {}
 
   public async request<T = any>({
     method,
     params,
   }: RpcRequest): Promise<RpcResponse<T>> {
-    const id = this._requestId++;
+    const id = generateUniqueId();
     return new Promise((resolve, reject) => {
       BrowserRuntime.sendMessage(
         {

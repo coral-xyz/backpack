@@ -1,13 +1,17 @@
 import { useEffect } from "react";
 import { ListItemIcon, ListItemText } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styles } from "@coral-xyz/themes";
 import { CheckBox } from "@mui/icons-material";
-import { useEphemeralNav, useSolanaConnectionUrl } from "@200ms/recoil";
+import {
+  getBackgroundClient,
+  UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+} from "@coral-xyz/common";
+import { useEphemeralNav, useSolanaConnectionUrl } from "@coral-xyz/recoil";
 import { List, ListItem } from "../common";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   connectionMenu: {
-    backgroundColor: theme.custom.colors.offText,
+    // backgroundColor: theme.custom.colors.offText,
     color: theme.custom.colors.fontColor,
   },
 }));
@@ -25,7 +29,7 @@ const endpoints = {
 
 export function ConnectionMenu({ close }: { close: () => void }) {
   const classes = useStyles();
-  const [connectionUrl, setConnectionUrl] = useSolanaConnectionUrl();
+  const connectionUrl = useSolanaConnectionUrl();
   const nav = useEphemeralNav();
   const urls = Object.values(endpoints).filter((v) => typeof v === "string");
 
@@ -42,13 +46,20 @@ export function ConnectionMenu({ close }: { close: () => void }) {
     <List className={classes.connectionMenu}>
       {endpointKvs.map(([key, val], idx) => (
         <ListItem
+          id={key}
           key={key}
           isLast={idx === endpointKvs.length - 1}
           onClick={() => {
             try {
               const url = typeof val === "string" ? val : val();
-              setConnectionUrl(url);
-              close();
+              const background = getBackgroundClient();
+              background
+                .request({
+                  method: UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+                  params: [url],
+                })
+                .then(close)
+                .catch(console.error);
             } catch (err) {
               console.error(err);
             }

@@ -1,9 +1,10 @@
-import type { Event, ResponseHandler } from "./types";
+import type { BackgroundClient } from "./channel";
+import type { RpcRequest, RpcResponse, Event, ResponseHandler } from "./types";
 import { getLogger } from "./logging";
 
 const logger = getLogger("request-manager");
 
-export class RequestManager {
+export class RequestManager implements BackgroundClient {
   private _responseResolvers: { [requestId: number]: ResponseHandler } = {};
   private _requestId = 0;
   private _requestChannel: string;
@@ -43,14 +44,25 @@ export class RequestManager {
 
   // Sends a request from this script to the content script across the
   // window.postMessage channel.
-  public async request({ method, params }) {
+  public async request<T = any>({
+    method,
+    params,
+  }: RpcRequest): Promise<RpcResponse<T>> {
     const id = this._requestId;
     this._requestId += 1;
 
     const [prom, resolve, reject] = this._addResponseResolver(id);
     if (this._parent) {
       window.parent.postMessage(
-        { type: this._requestChannel, detail: { id, method, params } },
+        {
+          type: this._requestChannel,
+          href: window.location.href,
+          detail: {
+            id,
+            method,
+            params,
+          },
+        },
         "*"
       );
     } else {
@@ -60,6 +72,10 @@ export class RequestManager {
       );
     }
     return await prom;
+  }
+
+  public async response<T = any>(resp: RpcResponse): Promise<RpcResponse<T>> {
+    throw new Error("response not implemented");
   }
 
   // This must be called before `window.dipsatchEvent`.

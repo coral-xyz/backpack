@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Element } from "@200ms/anchor-ui";
+import { Element } from "@coral-xyz/anchor-ui";
 import { PluginProvider, usePluginContext } from "./Context";
 import { ViewRenderer } from "./ViewRenderer";
 

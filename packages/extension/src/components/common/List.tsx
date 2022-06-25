@@ -1,12 +1,8 @@
-import {
-  useTheme,
-  List as MuiList,
-  ListItem as MuiListItem,
-} from "@mui/material";
+import { List as MuiList, ListItem as MuiListItem } from "@mui/material";
 
-import makeStyles from "@mui/styles/makeStyles";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles(() => ({
   settingsContentListItem: {
     padding: "8px",
     height: "56px",
@@ -15,7 +11,7 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export function List({ style, children }: any) {
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <MuiList
       style={{
@@ -33,11 +29,12 @@ export function List({ style, children }: any) {
   );
 }
 
-export function ListItem({ key, style, children, onClick, isLast }: any) {
+export function ListItem({ key, style, children, onClick, isLast, id }: any) {
   const classes = useStyles();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
     <MuiListItem
+      data-testid={id}
       key={key}
       button
       className={classes.settingsContentListItem}

@@ -35,7 +35,11 @@ export function associatedTokenAddress(
 export async function customSplTokenAccounts(
   connection: Connection,
   publicKey: PublicKey
-): Promise<any> {
+): Promise<{
+  tokenAccountsMap: Array<any>;
+  tokenMetadata: Array<null | { publicKey: PublicKey; account: any }>;
+  nftMetadata: Array<any>;
+}> {
   // @ts-ignore
   const provider = new Provider(connection);
   const tokenClient = Spl.token(provider);

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
-import { useNavigation } from "@200ms/recoil";
-import { useTheme, Typography, IconButton } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { useNavigation } from "@coral-xyz/recoil";
+import { Typography, IconButton } from "@mui/material";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowBack } from "@mui/icons-material";
 import { Scrollbar } from "./Scrollbar";
 import { Loading } from "../common";
@@ -12,7 +12,7 @@ import { ApproveTransactionRequest } from "../Unlocked/ApproveTransactionRequest
 export const NAV_BAR_HEIGHT = 56;
 export const NAV_BUTTON_WIDTH = 38;
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   withNavContainer: {
     display: "flex",
     flexDirection: "column",
@@ -31,19 +31,24 @@ const useStyles = makeStyles((theme: any) => ({
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
-    position: "relative",
   },
   overviewLabel: {
     fontSize: "18px",
     fontWeight: 500,
-    lineHeight: "24px",
     color: theme.custom.colors.fontColor,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    textAlign: "center",
+    lineHeight: "24px",
   },
   overviewLabelPrefix: {
     color: theme.custom.colors.secondary,
   },
   backButton: {
     padding: 0,
+    position: "absolute",
+    left: 0,
     "&:hover": {
       background: "transparent",
     },
@@ -66,7 +71,7 @@ export function TabNavStack() {
 
 function NavBar() {
   return (
-    <Suspense fallback={<div></div>}>
+    <Suspense fallback={null}>
       <_NavBar />
     </Suspense>
   );
@@ -74,7 +79,7 @@ function NavBar() {
 
 function _NavBar() {
   const classes = useStyles();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   const { isRoot } = useNavigation();
   return (
     <div
@@ -83,24 +88,53 @@ function _NavBar() {
           ? `solid 1pt ${theme.custom.colors.border}`
           : undefined,
         height: `${NAV_BAR_HEIGHT}px`,
+        position: "relative",
       }}
       className={classes.navBarContainer}
     >
-      <LeftNavButton />
-      <CenterDisplay />
-      <RightNavButton />
+      <div style={{ position: "relative", width: "100%", display: "flex" }}>
+        <LeftNavButton />
+        <CenterDisplay />
+        <RightNavButton />
+      </div>
     </div>
   );
 }
 
 function LeftNavButton() {
   const { isRoot } = useNavigation();
-  return isRoot ? <DummyButton /> : <NavBackButton />;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
+      {isRoot ? <DummyButton /> : <NavBackButton />}
+    </div>
+  );
 }
 
 function RightNavButton() {
   const { navButtonRight } = useNavigation();
-  return navButtonRight ? navButtonRight : <DummyButton />;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        right: 0,
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
+      {navButtonRight ? navButtonRight : <DummyButton />}
+    </div>
+  );
 }
 
 export function NavBackButton() {
@@ -110,14 +144,23 @@ export function NavBackButton() {
 
 export function _NavBackButton({ pop }: any) {
   const classes = useStyles();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
   return (
-    <div style={{ display: "flex", width: `${NAV_BUTTON_WIDTH}px` }}>
+    <div
+      style={{
+        width: `${NAV_BUTTON_WIDTH}px`,
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+        position: "relative",
+      }}
+    >
       <IconButton
         disableRipple
         onClick={() => pop()}
         className={classes.backButton}
         size="large"
+        data-testid="back-button"
       >
         <ArrowBack style={{ color: theme.custom.colors.secondary }} />
       </IconButton>
@@ -154,10 +197,12 @@ export function __CenterDisplay({ title, isRoot }: any) {
   return (
     <div
       style={{
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
         visibility: isRoot ? "hidden" : undefined,
+        overflow: "hidden",
+        maxWidth: `calc(100% - ${NAV_BUTTON_WIDTH * 2}px)`,
+        margin: "0 auto",
+        display: "flex",
+        alignItems: "center",
       }}
     >
       <NavTitleLabel title={title} />
@@ -169,14 +214,16 @@ export function NavTitleLabel({ title }: any) {
   const classes = useStyles();
   const titleComponents = title.split("/");
   return titleComponents.length === 2 ? (
-    <Typography className={classes.overviewLabel}>
+    <Typography className={classes.overviewLabel} title={title}>
       <span className={classes.overviewLabelPrefix}>
         {titleComponents[0]} /
       </span>
       {titleComponents[1]}
     </Typography>
   ) : (
-    <Typography className={classes.overviewLabel}>{title}</Typography>
+    <Typography className={classes.overviewLabel} title={title}>
+      {title}
+    </Typography>
   );
 }
 

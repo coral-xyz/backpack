@@ -1,9 +1,9 @@
-import { atom } from "recoil";
+import { atom, selector } from "recoil";
 import {
+  getBackgroundClient,
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
-} from "@200ms/common";
-import { getBackgroundClient } from "../background";
+} from "@coral-xyz/common";
 
 export type KeyringStoreState = "locked" | "unlocked" | "needs-onboarding";
 
@@ -18,18 +18,16 @@ export const KeyringStoreStateEnum: { [key: string]: KeyringStoreState } = {
  */
 export const keyringStoreState = atom<KeyringStoreState | null>({
   key: "keyringStoreState",
-  default: null,
-  effects: [
-    ({ setSelf }) => {
+  default: selector({
+    key: "keyringStoreStateDefault",
+    get: ({ get }) => {
       const background = getBackgroundClient();
-      setSelf(
-        background.request({
-          method: UI_RPC_METHOD_KEYRING_STORE_STATE,
-          params: [],
-        })
-      );
+      return background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_STATE,
+        params: [],
+      });
     },
-  ],
+  }),
 });
 
 export const approvedOrigins = atom<Array<string> | null>({

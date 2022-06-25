@@ -3,6 +3,7 @@ import { bootstrap } from "./bootstrap";
 import { priceData } from "./price-data";
 import { splTokenRegistry } from "./token-registry";
 import { TokenAccountWithKey } from "../types";
+import { connectionUrl, activeWallet } from "./wallet";
 
 /**
  * Returns the token accounts sorted by usd notional balances.
@@ -32,11 +33,16 @@ export const blockchainTokensSorted = selectorFamily({
 export const blockchainTokens = selectorFamily({
   key: "blockchainTokens",
   get:
-    (b: string) =>
+    (blockchain: string) =>
     ({ get }: any) => {
-      switch (b) {
+      switch (blockchain) {
         case "solana":
-          return get(solanaTokenAccountKeys);
+          return get(
+            solanaTokenAccountKeys({
+              connectionUrl: get(connectionUrl),
+              publicKey: get(activeWallet),
+            })
+          );
         default:
           throw new Error("invariant violation");
       }
@@ -50,7 +56,12 @@ export const blockchainTokenAccounts = selectorFamily({
     ({ get }: any) => {
       switch (blockchain) {
         case "solana":
-          const tokenAccount = get(solanaTokenAccountsMap(address));
+          const tokenAccount = get(
+            solanaTokenAccountsMap({
+              connectionUrl: get(connectionUrl),
+              tokenAddress: address,
+            })
+          );
           if (!tokenAccount) {
             return null;
           }
@@ -104,14 +115,25 @@ export const blockchainTokenAccounts = selectorFamily({
 /**
  * List of all stored token accounts within tokenAccountsMap.
  */
-export const solanaTokenAccountKeys = atom<Array<string>>({
+export const solanaTokenAccountKeys = atomFamily<
+  Array<string>,
+  { connectionUrl: string; publicKey: string }
+>({
   key: "solanaTokenAccountKeys",
-  default: selector({
+  default: selectorFamily({
     key: "solanaTokenAccountKeysDefault",
-    get: ({ get }: any) => {
-      const data = get(bootstrap);
-      return Array.from(data.splTokenAccounts.keys()) as string[];
-    },
+    get:
+      ({
+        connectionUrl,
+        publicKey,
+      }: {
+        connectionUrl: string;
+        publicKey: string;
+      }) =>
+      ({ get }: any) => {
+        const data = get(bootstrap);
+        return Array.from(data.splTokenAccounts.keys()) as string[];
+      },
   }),
 });
 
@@ -120,16 +142,22 @@ export const solanaTokenAccountKeys = atom<Array<string>>({
  */
 export const solanaTokenAccountsMap = atomFamily<
   TokenAccountWithKey | null,
-  string
+  { connectionUrl: string; tokenAddress: string }
 >({
   key: "solanaTokenAccountsMap",
   default: selectorFamily({
     key: "solanaTokenAccountsMapDefault",
     get:
-      (address: string) =>
+      ({
+        connectionUrl,
+        tokenAddress,
+      }: {
+        connectionUrl: string;
+        tokenAddress: string;
+      }) =>
       ({ get }: any) => {
         const data = get(bootstrap);
-        return data.splTokenAccounts.get(address);
+        return data.splTokenAccounts.get(tokenAddress);
       },
   }),
 });

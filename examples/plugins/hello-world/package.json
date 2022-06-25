@@ -1,0 +1,15 @@
+{
+  "name": "@coral-xyz/example-plugin-hello-world",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "xnft build",
+    "start": "xnft watch"
+  },
+  "devDependencies": {
+    "@coral-xyz/xnft": "*"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor-ui": "*",
+    "react": "^17.0.2"
+  }
+}

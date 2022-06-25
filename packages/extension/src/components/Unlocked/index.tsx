@@ -1,4 +1,4 @@
-import { PluginManager } from "@200ms/recoil";
+import { PluginManager } from "@coral-xyz/recoil";
 import { TabNavStack } from "../Layout/Nav";
 
 export function Unlocked() {

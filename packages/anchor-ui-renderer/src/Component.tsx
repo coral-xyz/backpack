@@ -1,6 +1,7 @@
-import type { Element } from "@200ms/anchor-ui";
-import { NodeKind } from "@200ms/anchor-ui";
-import { formatUSD } from "@200ms/common";
+import React, { useState } from "react";
+import type { Element } from "@coral-xyz/anchor-ui";
+import { NodeKind } from "@coral-xyz/anchor-ui";
+import { formatUSD } from "@coral-xyz/common";
 import {
   Button as MuiButton,
   Card,
@@ -12,11 +13,12 @@ import {
   Typography,
   TextField as MuiTextField,
 } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { ExpandMore, ExpandLess } from "@mui/icons-material";
+import { styles } from "@coral-xyz/themes";
 import { usePluginContext } from "./Context";
 import { ViewRenderer } from "./ViewRenderer";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme) => ({
   blockchainLogo: {
     width: "12px",
     borderRadius: "2px",
@@ -40,6 +42,11 @@ const useStyles = makeStyles((theme: any) => ({
     paddingLeft: "16px",
     paddingRight: "16px",
     height: "36px",
+  },
+  hover: {
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
   cardHeaderTitle: {
     fontWeight: 500,
@@ -164,6 +171,10 @@ const useStyles = makeStyles((theme: any) => ({
       borderColor: `${theme.custom.colors.negative} !important`,
     },
   },
+  expand: {
+    width: "18px",
+    color: theme.custom.colors.secondary,
+  },
 }));
 
 export function Component({ viewData }) {
@@ -255,28 +266,86 @@ export function BalancesTable({
 }: any) {
   const classes = useStyles();
   return (
-    <Card className={classes.blockchainCard} elevation={0}>
-      {children ??
-        childrenRenderer.map((c: Element) => (
-          <ViewRenderer key={c.id} element={c} />
-        ))}
-    </Card>
+    <BalancesTableProvider>
+      <Card className={classes.blockchainCard} elevation={0}>
+        {children ??
+          childrenRenderer.map((c: Element) => (
+            <ViewRenderer key={c.id} element={c} />
+          ))}
+      </Card>
+    </BalancesTableProvider>
   );
 }
 
+function BalancesTableProvider(props: any) {
+  const [showContent, setShowContent] = useState(true);
+  return (
+    <_BalancesTableContext.Provider
+      value={{
+        showContent,
+        setShowContent,
+      }}
+    >
+      {props.children}
+    </_BalancesTableContext.Provider>
+  );
+}
+
+type BalancesContext = {
+  showContent: boolean;
+  setShowContent: (b: boolean) => void;
+};
+const _BalancesTableContext = React.createContext<BalancesContext | null>(null);
+
+export function useBalancesContext() {
+  const ctx = React.useContext(_BalancesTableContext);
+  if (ctx === null) {
+    throw new Error("Context not available");
+  }
+  return ctx;
+}
+
 export function BalancesTableHead({ props, style }: any) {
-  const { title, iconUrl } = props;
+  const { title, iconUrl, disableToggle } = props;
   const classes = useStyles();
+  const { showContent, setShowContent } = useBalancesContext();
   return (
     <CardHeader
+      onClick={() => !disableToggle && setShowContent(!showContent)}
       avatar={
         iconUrl ? (
           <img className={classes.blockchainLogo} src={iconUrl} />
         ) : undefined
       }
-      title={title}
+      title={
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography
+            style={{
+              fontWeight: 500,
+              lineHeight: "24px",
+              fontSize: "14px",
+            }}
+          >
+            {title}
+          </Typography>
+          {!disableToggle && (
+            <>
+              {showContent ? (
+                <ExpandMore className={classes.expand} />
+              ) : (
+                <ExpandLess className={classes.expand} />
+              )}
+            </>
+          )}
+        </div>
+      }
       classes={{
-        root: classes.cardHeaderRoot,
+        root: `${classes.cardHeaderRoot} ${disableToggle ? "" : classes.hover}`,
         content: classes.cardHeaderContent,
         title: classes.cardHeaderTitle,
         avatar: classes.cardHeaderAvatar,
@@ -292,9 +361,15 @@ export function BalancesTableContent({
   childrenRenderer,
 }: any) {
   const classes = useStyles();
+  const { showContent } = useBalancesContext();
   return (
     <CardContent classes={{ root: classes.cardContentRoot }}>
-      <List classes={{ root: classes.cardListRoot }}>
+      <List
+        style={{
+          display: !showContent ? "none" : undefined,
+        }}
+        classes={{ root: classes.cardListRoot }}
+      >
         {children ??
           childrenRenderer.map((c: Element) => (
             <ViewRenderer key={c.id} element={c} />

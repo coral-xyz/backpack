@@ -12,9 +12,14 @@ const executablePath =
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 module.exports = {
-  server: {
-    command: "serve -p 3333 ../../examples/clients/simple/build",
-  },
+  server: [
+    {
+      command: "solana-test-validator",
+    },
+    {
+      command: "serve -p 3333 ../../examples/clients/simple/dist",
+    },
+  ],
   launch: {
     headless: false,
     executablePath,
