@@ -1,4 +1,3 @@
-import { instructions, PsyFiIdl, pdas } from "psyfi-euros-test";
 import { VaultsResponse } from "./types";
 
 /**
