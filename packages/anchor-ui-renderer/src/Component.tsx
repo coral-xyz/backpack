@@ -456,12 +456,14 @@ export function BalancesTableCell({ props, style }: any) {
 
   return (
     <div className={classes.balancesTableCellContainer}>
-      <ListItemIcon
-        className={classes.tokenListItemIcon}
-        classes={{ root: classes.tokenListItemIconRoot }}
-      >
-        <img src={icon} className={classes.logoIcon} />
-      </ListItemIcon>
+      {!!icon && (
+        <ListItemIcon
+          className={classes.tokenListItemIcon}
+          classes={{ root: classes.tokenListItemIconRoot }}
+        >
+          <img src={icon} className={classes.logoIcon} />
+        </ListItemIcon>
+      )}
       <div className={classes.tokenListItemContent}>
         <div className={classes.tokenListItemRow}>
           <Typography className={classes.tokenName}>{title}</Typography>
