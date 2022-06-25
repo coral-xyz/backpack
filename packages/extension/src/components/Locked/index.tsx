@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import {
@@ -7,8 +7,6 @@ import {
 } from "@coral-xyz/common";
 import { TextField, PrimaryButton } from "../common";
 import { LockedMenu } from "./LockedMenu";
-import { WithEphemeralNav } from "../Layout/NavEphemeral";
-import { useEphemeralNav } from "@coral-xyz/recoil";
 
 export const NAV_BAR_HEIGHT = 56;
 
@@ -23,14 +21,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         height: "100%",
       }}
     >
-      <WithEphemeralNav
-        title=""
-        navbarStyle={{
-          borderBottom: "none",
-        }}
-      >
-        <LockedInner />
-      </WithEphemeralNav>
+      <LockedInner />
     </Box>
   );
 }
@@ -40,13 +31,6 @@ function LockedInner({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState<boolean>(false);
-  const { setNavButtonRight } = useEphemeralNav();
-
-  useEffect(() => {
-    setNavButtonRight(
-      <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-    );
-  }, [menuOpen, setMenuOpen]);
 
   const _onUnlock = async (e: any) => {
     e.preventDefault();
@@ -75,7 +59,10 @@ function LockedInner({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         height: "100%",
       }}
     >
-      <BackpackHeader />
+      <Box>
+        <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+        <BackpackHeader />
+      </Box>
       <Box sx={{ marginBottom: "84px" }}>
         <form onSubmit={_onUnlock}>
           <Box sx={{ mb: "12px " }}>
@@ -96,7 +83,7 @@ function LockedInner({ onUnlock }: { onUnlock?: () => Promise<void> }) {
             position: "absolute",
             width: "100%",
             display: error ? "block" : "none",
-            mt: "12px",
+            mt: "24px",
           }}
         >
           <Typography
@@ -110,7 +97,7 @@ function LockedInner({ onUnlock }: { onUnlock?: () => Promise<void> }) {
             }}
             onClick={() => setMenuOpen(true)}
           >
-            Forgot your password?
+            Forgot Password?
           </Typography>
         </Box>
       </Box>
@@ -135,7 +122,7 @@ export function BackpackHeader() {
           display: "flex",
           flexDirection: "row-reverse",
           marginBottom: "4px",
-          marginRight: "-30px",
+          marginRight: "58px",
         }}
       >
         <AlphaLabel />
@@ -153,7 +140,7 @@ export function BackpackHeader() {
           marginTop: "16px",
         }}
       >
-        Backpack.app
+        A home for your xNFTs
       </Typography>
     </Box>
   );

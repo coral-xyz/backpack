@@ -6,40 +6,44 @@ import SupportIcon from "@mui/icons-material/Support";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useEphemeralNav } from "@coral-xyz/recoil";
 import { List, ListItem } from "../common/List";
-import { WithMiniDrawer } from "../Layout/Drawer";
+import { WithDrawer } from "../Layout/Drawer";
+import { WithEphemeralNav } from "../Layout/NavEphemeral";
 import { Reset } from "./Reset";
-
-const useStyles = styles((theme) => ({
-  miniDrawer: {
-    height: "214px",
-    background: theme.custom.colors.nav,
-    borderTopLeftRadius: "12px",
-    borderTopRightRadius: "12px",
-  },
-}));
+import { NAV_BAR_HEIGHT } from "../Layout/Nav";
 
 export function LockedMenu({ menuOpen, setMenuOpen }: any) {
-  const classes = useStyles();
   const theme = useCustomTheme();
   return (
     <>
-      <IconButton
-        color="inherit"
-        onClick={() => setMenuOpen(true)}
-        sx={{ padding: 0 }}
-      >
-        <MenuIcon sx={{ color: theme.custom.colors.hamburger }} />
-      </IconButton>
-      <WithMiniDrawer
-        openDrawer={menuOpen}
-        setOpenDrawer={setMenuOpen}
-        backdropProps={{
-          background: undefined,
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row-reverse",
+          paddingLeft: "16px",
+          paddingRight: "16px",
+          paddingTop: "10px",
+          paddingBottom: "10px",
+          height: NAV_BAR_HEIGHT,
         }}
-        paperAnchorBottom={classes.miniDrawer}
       >
-        <LockedMenuList closeDrawer={() => setMenuOpen(false)} />
-      </WithMiniDrawer>
+        <IconButton
+          color="inherit"
+          onClick={() => setMenuOpen(true)}
+          sx={{ padding: 0 }}
+        >
+          <MenuIcon sx={{ color: theme.custom.colors.hamburger }} />
+        </IconButton>
+      </Box>
+      <WithDrawer openDrawer={menuOpen} setOpenDrawer={setMenuOpen}>
+        <WithEphemeralNav
+          title={"Settings"}
+          navbarStyle={{
+            borderBottom: "none",
+          }}
+        >
+          <LockedMenuList closeDrawer={() => setMenuOpen(false)} />
+        </WithEphemeralNav>
+      </WithDrawer>
     </>
   );
 }
@@ -56,7 +60,7 @@ export function LockedMenuList({ closeDrawer }: { closeDrawer: () => void }) {
       text: "Reset Secret Recovery Phrase",
       onClick: () => {
         closeDrawer();
-        //				nav.push(<Reset closeDrawer={closeDrawer} />);
+        nav.push(<Reset closeDrawer={closeDrawer} />);
       },
     },
     {
