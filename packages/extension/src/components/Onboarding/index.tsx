@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card } from "@mui/material";
+import { Box, Card } from "@mui/material";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { CreateNewWallet } from "./CreateNewWallet";
 import { ImportWallet } from "./ImportWallet";
@@ -16,6 +16,9 @@ const useStyles = styles((theme) => ({
     flexDirection: "column",
     marginLeft: "auto",
     marginRight: "auto",
+    borderRadius: "12px",
+    boxShadow:
+      "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
   },
   content: {
     padding: "20px",
@@ -40,6 +43,7 @@ export function Onboarding() {
         flexDirection: "column",
         width: "100vw",
         height: "100vh",
+        backgroundImage: `url('coral-bg.png')`,
       }}
     >
       <ContentCard />
@@ -80,7 +84,9 @@ function Welcome({
         height: "100%",
       }}
     >
-      <BackpackHeader />
+      <Box>
+        <BackpackHeader />
+      </Box>
       <div className={classes.content}>
         <div>
           <PrimaryButton
