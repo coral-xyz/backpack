@@ -1,5 +1,5 @@
 {
-  "name": "@200ms/example-plugin-table-psyfi",
+  "name": "@coral-xyz/example-plugin-table-psyfi",
   "version": "1.0.0",
   "description": "Display user's PsyFinance vault balances",
   "source": "src/index.tsx",
@@ -10,7 +10,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@200ms/anchor-ui": "*",
+    "@coral-xyz/anchor-ui": "*",
     "@solana/web3.js": "^1.43.2",
     "react": "^18.1.0"
   },
