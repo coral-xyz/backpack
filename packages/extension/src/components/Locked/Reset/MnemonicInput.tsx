@@ -210,7 +210,6 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
             </Link>
           </Box>
         </Box>
-        {error && <Typography className={classes.errorMsg}>{error}</Typography>}
         <Box
           sx={{
             marginLeft: "16px",
@@ -218,6 +217,9 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
             marginBottom: "16px",
           }}
         >
+          {error && (
+            <Typography className={classes.errorMsg}>{error}</Typography>
+          )}
           <PrimaryButton
             label="Import"
             onClick={next}
