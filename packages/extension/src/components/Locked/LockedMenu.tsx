@@ -14,7 +14,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
   const theme = useCustomTheme() as any;
   return (
     <>
-      <Box
+      <Toolbar
         sx={{
           display: "flex",
           flexDirection: "row-reverse",
@@ -32,7 +32,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
         >
           <MenuIcon sx={{ color: theme.custom.colors.hamburger }} />
         </IconButton>
-      </Box>
+      </Toolbar>
       <WithDrawer
         title=""
         openDrawer={menuOpen}
