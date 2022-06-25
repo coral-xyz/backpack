@@ -36,7 +36,7 @@ export function Reset({ closeDrawer }: { closeDrawer: () => void }) {
         sx={{
           marginLeft: "16px",
           marginRight: "16px",
-          marginBottom: "20px",
+          marginBottom: "16px",
         }}
       >
         <Box sx={{ mb: "16px" }}>

@@ -13,43 +13,72 @@ export function SetupComplete({ closeDrawer }: { closeDrawer: () => void }) {
       }}
     >
       <Box>
-        <Header text="You’ve set up Backpack!" />
-        <SubtextParagraph>
-          Now get started exploring what your Backpack can do.
-        </SubtextParagraph>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <ActionCard
-              icon={<BackpackIcon />}
-              text="Fund your Backpack"
-              onClick={() => {}}
-            />
+        <Box
+          sx={{
+            mt: "24px",
+            ml: "24px",
+            mr: "24px",
+          }}
+        >
+          <Header text="You’ve set up Backpack!" />
+          <SubtextParagraph
+            style={{
+              marginTop: "8px",
+            }}
+          >
+            Now get started exploring what your Backpack can do.
+          </SubtextParagraph>
+        </Box>
+        <Box
+          sx={{
+            ml: "16px",
+            mr: "16px",
+          }}
+        >
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <ActionCard
+                icon={<BackpackIcon />}
+                text="Fund your Backpack"
+                onClick={() => {}}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <ActionCard
+                icon={<XNFTIcon />}
+                text="Browse the xNFT library"
+                onClick={() =>
+                  window.open("https://backpack.app/library", "_blank")
+                }
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <ActionCard
+                icon={<TwitterIcon />}
+                text="Follow us on Twitter"
+                onClick={() =>
+                  window.open("https://twitter.com/xNFT_Backpack", "_blank")
+                }
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <ActionCard
+                icon={<TwitterIcon />}
+                text="Join the Discord community"
+                onClick={() => {}}
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <ActionCard
-              icon={<XNFTIcon />}
-              text="Browse the xNFT library"
-              onClick={() => {}}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <ActionCard
-              icon={<TwitterIcon />}
-              text="Follow us on Twitter"
-              onClick={() => {}}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <ActionCard
-              icon={<TwitterIcon />}
-              text="Join the Discord community"
-              onClick={() => {}}
-            />
-          </Grid>
-        </Grid>
+        </Box>
       </Box>
-      <Box>
-        <PrimaryButton label="Done" onClick={closeDrawer} />
+      <Box
+        sx={{
+          ml: "16px",
+          mr: "16px",
+          mb: "16px",
+        }}
+      >
+        <PrimaryButton label="Finish" onClick={closeDrawer} />
       </Box>
     </Box>
   );
@@ -72,10 +101,11 @@ function ActionCard({
         borderRadius: "12px",
         color: "#fff",
         cursor: "pointer",
-        height: "100%",
+        height: "112px",
+        padding: "16px",
       }}
     >
-      <CardContent onClick={onClick}>
+      <CardContent onClick={onClick} style={{ padding: 0 }}>
         <Box sx={{ mb: 1 }}>{icon}</Box>
         <Box>{text}</Box>
       </CardContent>

@@ -43,7 +43,7 @@ export function ResetWarning({ closeDrawer }: { closeDrawer: () => void }) {
         sx={{
           marginLeft: "16px",
           marginRight: "16px",
-          marginBottom: "20px",
+          marginBottom: "16px",
           display: "flex",
           justifyContent: "space-between",
         }}
