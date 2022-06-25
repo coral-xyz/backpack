@@ -94,7 +94,7 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
     return () => {
       window.removeEventListener("paste", onPaste);
     };
-  }, []);
+  }, [mnemonicWordCount]);
 
   const nextEnabled =
     mnemonicWords.length === mnemonicWordCount &&
