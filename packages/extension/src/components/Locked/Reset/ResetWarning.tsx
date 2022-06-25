@@ -24,7 +24,13 @@ export function ResetWarning({ closeDrawer }: { closeDrawer: () => void }) {
         justifyContent: "space-between",
       }}
     >
-      <Box>
+      <Box
+        sx={{
+          marginTop: "16px",
+          marginLeft: "24px",
+          marginRight: "24px",
+        }}
+      >
         <WarningLogo />
         <Header text="Reset your secret recovery phrase" />
         <SubtextParagraph>
@@ -33,14 +39,22 @@ export function ResetWarning({ closeDrawer }: { closeDrawer: () => void }) {
           saved.
         </SubtextParagraph>
       </Box>
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
+      <Box
+        sx={{
+          marginLeft: "16px",
+          marginRight: "16px",
+          marginBottom: "20px",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <Box sx={{ width: "167.5px" }}>
           <SecondaryButton label="Cancel" onClick={closeDrawer} />
-        </Grid>
-        <Grid item xs={6}>
+        </Box>
+        <Box sx={{ width: "167.5px" }}>
           <PrimaryButton label="Next" onClick={next} />
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Box>
   );
 }

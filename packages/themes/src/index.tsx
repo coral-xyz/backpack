@@ -11,6 +11,7 @@ const baseTheme = createStyles({
 
 const BACKGROUND_COLOR_0 = "#18181b";
 const BACKGROUND_COLOR_1 = "#27272a";
+const BACKGROUND_COLOR_2 = "#3F3F46";
 const FONT_COLOR = "#FFFFFF";
 const FONT_COLOR_1 = "#71717A";
 const FONT_COLOR_2 = "#D4D4D8";
@@ -45,6 +46,7 @@ export const darkTheme = {
       interactiveIconsHover: "#67758B",
       drawerGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
       alpha: FONT_COLOR_2,
+      bg2: BACKGROUND_COLOR_2,
     },
   },
 };
@@ -73,6 +75,7 @@ export const lightTheme = {
       sendGradient:
         "linear-gradient(180deg, #1B1D23 0%, rgba(27, 29, 35, 0) 100%)", // todo
       interactiveIconsActive: "#1196B5",
+      bg2: BACKGROUND_COLOR_2,
     },
   },
 };

@@ -13,26 +13,24 @@ import { NAV_BAR_HEIGHT } from "../Layout/Nav";
 export function LockedMenu({ menuOpen, setMenuOpen }: any) {
   const theme = useCustomTheme() as any;
   return (
-    <>
-      <Toolbar
-        sx={{
-          display: "flex",
-          flexDirection: "row-reverse",
-          paddingLeft: "16px",
-          paddingRight: "16px",
-          paddingTop: "10px",
-          paddingBottom: "10px",
-          height: NAV_BAR_HEIGHT,
-        }}
+    <Toolbar
+      sx={{
+        display: "flex",
+        flexDirection: "row-reverse",
+        paddingLeft: "16px",
+        paddingRight: "16px",
+        paddingTop: "10px",
+        paddingBottom: "10px",
+        height: NAV_BAR_HEIGHT,
+      }}
+    >
+      <IconButton
+        color="inherit"
+        onClick={() => setMenuOpen(true)}
+        sx={{ padding: 0 }}
       >
-        <IconButton
-          color="inherit"
-          onClick={() => setMenuOpen(true)}
-          sx={{ padding: 0 }}
-        >
-          <MenuIcon sx={{ color: theme.custom.colors.hamburger }} />
-        </IconButton>
-      </Toolbar>
+        <MenuIcon sx={{ color: theme.custom.colors.hamburger }} />
+      </IconButton>
       <WithDrawer
         title=""
         openDrawer={menuOpen}
@@ -47,7 +45,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
       >
         <LockedMenuList closeDrawer={() => setMenuOpen(false)} />
       </WithDrawer>
-    </>
+    </Toolbar>
   );
 }
 
@@ -79,7 +77,9 @@ export function LockedMenuList({ closeDrawer }: { closeDrawer: () => void }) {
     <Box sx={{ color: theme.custom.colors.fontColor }}>
       <List
         style={{
-          background: "#3F3F46",
+          background: theme.custom.colors.bg2,
+          marginLeft: "16px",
+          marginRight: "16px",
         }}
       >
         {options.map((o, idx) => (
