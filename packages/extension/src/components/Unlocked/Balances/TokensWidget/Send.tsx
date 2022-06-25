@@ -48,6 +48,7 @@ const useStyles = styles((theme) => ({
     background: "transparent",
     width: "100%",
     height: "48px",
+    borderRadius: "12px",
   },
   textRoot: {
     marginTop: "0 !important",
