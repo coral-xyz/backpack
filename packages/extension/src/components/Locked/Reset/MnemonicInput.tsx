@@ -71,34 +71,27 @@ const useStyles = makeStyles((theme: any) => ({
 export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
   const classes = useStyles();
   const nav = useEphemeralNav();
-  const [mnemonicWordCount, setMnemonicWordCount] = useState(12);
   const [mnemonicWords, setMnemonicWords] = useState<string[]>([
-    ...Array(mnemonicWordCount).fill(""),
+    ...Array(12).fill(""),
   ]);
   const [error, setError] = useState<null | string>(null);
 
   useEffect(() => {
-    // Clear all inputs on change of mnemonic size. This is probably the cleanest way to handle
-    // all 24 inputs being full and the user switching to a 12 word mnemonic.
-    setMnemonicWords([...Array(mnemonicWordCount).fill("")]);
-  }, [mnemonicWordCount]);
-
-  useEffect(() => {
     const onPaste = (e: any) => {
       const words = e.clipboardData.getData("text").split(" ");
-      if (words.length === mnemonicWordCount) {
-        setMnemonicWords(words);
+      if (words.length !== 12 && words.length !== 24) {
+        // Not a valid mnemonic length
+        return;
       }
+      setMnemonicWords(words);
     };
     window.addEventListener("paste", onPaste);
     return () => {
       window.removeEventListener("paste", onPaste);
     };
-  }, [mnemonicWordCount]);
+  }, []);
 
-  const nextEnabled =
-    mnemonicWords.length === mnemonicWordCount &&
-    mnemonicWords.find((w) => w === undefined || w.length < 3) === undefined;
+  const nextEnabled = mnemonicWords.find((w) => w.length < 3) === undefined;
 
   const next = () => {
     const mnemonic = mnemonicWords.map((f) => f.trim()).join(" ");
@@ -131,12 +124,11 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
     background
       .request({
         method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
-        params: [mnemonicWordCount === 12 ? 128 : 256],
+        params: [mnemonicWords.length === 12 ? 128 : 256],
       })
       .then((m: string) => {
         const words = m.split(" ");
         setMnemonicWords(words);
-        setMnemonicWordCount(words.length);
       });
   };
 
@@ -163,7 +155,7 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
           columnSpacing={0.5}
           sx={{ marginTop: "32px" }}
         >
-          {Array.from(Array(mnemonicWordCount).keys()).map((i) => (
+          {Array.from(Array(mnemonicWords.length).keys()).map((i) => (
             <Grid item xs={4} key={i}>
               <TextField
                 className={classes.mnemonicInputRoot}
@@ -203,10 +195,12 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
             <Link
               className={classes.link}
               onClick={() =>
-                setMnemonicWordCount(mnemonicWordCount === 12 ? 24 : 12)
+                setMnemonicWords([
+                  ...Array(mnemonicWords.length === 12 ? 24 : 12).fill(""),
+                ])
               }
             >
-              Use a {mnemonicWordCount === 12 ? "24" : "12"}-word recovery
+              Use a {mnemonicWords.length === 12 ? "24" : "12"}-word recovery
               mnemonic
             </Link>
           </Box>
