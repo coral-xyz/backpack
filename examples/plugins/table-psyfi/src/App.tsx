@@ -1,26 +1,31 @@
-import AnchorUi, {
+import {
   BalancesTable,
   BalancesTableContent,
   BalancesTableHead,
   BalancesTableCell,
   BalancesTableRow,
 } from "@coral-xyz/anchor-ui";
-import { useEffect, useState } from "react";
-import { Vault } from "./types";
-import { fetchAllVaults } from "./utils";
+import {
+  TokenContextProvider,
+  useTokenMap,
+  useVaultMetadata,
+  VaultMetadataProvider,
+} from "./context";
 
 export const App = () => {
-  const [vaults, setVaults] = useState<Record<string, Vault>>({});
-  useEffect(() => {
-    (async () => {
-      const resp = await fetchAllVaults();
-      if (resp) {
-        setVaults(resp.vaults);
-      }
-    })();
-  }, []);
+  return (
+    <TokenContextProvider>
+      <VaultMetadataProvider>
+        <VaultTable />
+      </VaultMetadataProvider>
+    </TokenContextProvider>
+  );
+};
 
-  // TODO get SPL token values for vault
+const VaultTable: React.VFC = () => {
+  const vaults = useVaultMetadata();
+  const tokenMap = useTokenMap();
+
   return (
     <BalancesTable>
       <BalancesTableHead
@@ -28,15 +33,31 @@ export const App = () => {
         iconUrl="https://uploads-ssl.webflow.com/6158e3591ba06d14de4fd0df/61f900784e63439a5a052fed_PsyOptions.svg"
       />
       <BalancesTableContent>
-        {Object.keys(vaults).map((key) => {
-          const vault = vaults[key];
-          return (
-            <BalancesTableRow key={key}>
-              <BalancesTableCell title={vault.name} />
-            </BalancesTableRow>
-          );
-        })}
+        {Object.keys(vaults)
+          .filter(
+            (key) =>
+              // @ts-ignore delete wen better typing
+              !!tokenMap[vaults[key].accounts.vaultOwnershipTokenMint]?.amount
+          )
+          .map((id) => (
+            <VaultBalanceRow key={id} id={id} />
+          ))}
       </BalancesTableContent>
     </BalancesTable>
+  );
+};
+
+const VaultBalanceRow: React.VFC<{ id: string }> = ({ id }) => {
+  const tokenMap = useTokenMap();
+  const vaults = useVaultMetadata();
+  const vault = vaults[id];
+  const holdings =
+    // @ts-ignore delete wen better typing
+    !!tokenMap[vaults[key].accounts.vaultOwnershipTokenMint]?.amount;
+
+  return (
+    <BalancesTableRow>
+      <BalancesTableCell title={vault.name} subtitle={holdings} />
+    </BalancesTableRow>
   );
 };
