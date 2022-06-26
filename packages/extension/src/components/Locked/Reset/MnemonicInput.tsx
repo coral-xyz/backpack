@@ -83,6 +83,7 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
         // Not a valid mnemonic length
         return;
       }
+      e.preventDefault();
       setMnemonicWords(words);
     };
     window.addEventListener("paste", onPaste);
