@@ -5,6 +5,7 @@
 
 const { Parcel } = require("@parcel/core");
 const { program } = require("commander");
+const { resolve } = require("path");
 
 const options = {
   entries: "./src/index.tsx",
@@ -38,8 +39,8 @@ program.command("build").action(async () => {
   }
 });
 
-program.command("watch").action(async ({ port }) => {
-  console.debug(`👀 watching on http://localhost:${port}`);
+program.command("watch").action(async () => {
+  console.debug(`👀 watching ${resolve()}`);
   // https://parceljs.org/features/parcel-api/#watching
   const bundler = new Parcel({
     ...options,
