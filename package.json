@@ -11,7 +11,7 @@
   "scripts": {
     "lint:fix": "prettier {examples,packages}/**/*.{ts,tsx,css,md,json} --write",
     "prepare": "husky install",
-    "start": "env-cmd --silent turbo run start",
+    "start": "env-cmd --silent turbo run start --concurrency=20",
     "start:fresh": "yarn install && yarn clean && yarn install && yarn start",
     "test": "env-cmd --silent turbo run test -- --passWithNoTests --watchAll=false",
     "build": "env-cmd --silent turbo run build",
