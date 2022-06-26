@@ -2726,6 +2726,11 @@
     "@types/mime" "^1"
     "@types/node" "*"
 
+"@types/serviceworker@^0.0.47":
+  version "0.0.47"
+  resolved "https://registry.yarnpkg.com/@types/serviceworker/-/serviceworker-0.0.47.tgz#cb746abb9c77adc9d4bb595341cd3d67aaa9fdd2"
+  integrity sha512-0vfhBQPWdM3J+tkiPsKVpp5JcamlQmv3KUrj4iRjsO6ZpmCGYx3xZ8reb9bPniFrpRgptGMEOTN361XLwjehlw==
+
 "@types/sockjs@^0.3.33":
   version "0.3.33"
   resolved "https://registry.yarnpkg.com/@types/sockjs/-/sockjs-0.3.33.tgz#570d3a0b99ac995360e3136fd6045113b1bd236f"
@@ -9242,7 +9247,7 @@ pako@~1.0.5:
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
   integrity sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==
 
-parcel@2.6.2, parcel@^2.6.1:
+parcel@2.6.2, parcel@^2.6.1, parcel@^2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/parcel/-/parcel-2.6.2.tgz#4585208880f42b24935c7d3ad167dcd42f8174eb"
   integrity sha512-q6hrD3rm9M4S/VBVTcOs3pl55cnRwWfco7n8hZoAqnInWjWB+Khu92LRBMerMBTdE15Y+lJhWrXNdimDYstfhQ==

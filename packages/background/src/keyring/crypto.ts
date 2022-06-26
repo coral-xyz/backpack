@@ -4,6 +4,7 @@ import * as bs58 from "bs58";
 import { derivePath } from "ed25519-hd-key";
 import { Keypair } from "@solana/web3.js";
 import { DerivationPath } from "@coral-xyz/common";
+import { generateMnemonic, mnemonicToSeed } from "bip39";
 
 // An encrypted secret with associated metadata required for decryption.
 export type SecretPayload = {
@@ -61,9 +62,8 @@ function derivePathStr(dPath: DerivationPath, accountIndex: number): string {
 
 // Creates a new mnemonic and seed.
 export async function generateMnemonicAndSeed(): Promise<MnemonicSeed> {
-  const bip39 = await import("bip39");
-  const mnemonic = bip39.generateMnemonic(256);
-  const seed = await bip39.mnemonicToSeed(mnemonic);
+  const mnemonic = generateMnemonic(256);
+  const seed = await mnemonicToSeed(mnemonic);
   return { mnemonic, seed: Buffer.from(seed).toString("hex") };
 }
 

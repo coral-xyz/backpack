@@ -1,0 +1,26 @@
+<!-- This file is only used by the mobile app -->
+<html>
+  <head>
+    <title>service worker loader</title>
+  </head>
+  <body>
+    <script type="module">
+      setup();
+
+      async function setup() {
+        try {
+          const registration = await navigator.serviceWorker.register(
+            new URL("./src/service-worker.ts", import.meta.url),
+            {
+              type: "module",
+            }
+          );
+
+          document.write("background script service worker registered");
+        } catch (err) {
+          document.write(JSON.stringify({ err }));
+        }
+      }
+    </script>
+  </body>
+</html>
