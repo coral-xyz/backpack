@@ -66,6 +66,10 @@ function GodGrid({ gods, isDead }: any) {
   const theme = useTheme();
   const degodLabel = isDead ? "DeadGods" : "Degods";
 
+  const clickGod = (god: any) => {
+    console.log("clicked god", god);
+  };
+
   return (
     <View>
       <View
@@ -135,7 +139,19 @@ function GodGrid({ gods, isDead }: any) {
         >
           {gods.map((g) => {
             return (
-              <Image src={g.tokenMetaUriData.image} style={{ width: "50%" }} />
+              <Button
+                onClick={() => clickGod(g)}
+                style={{
+                  padding: 0,
+                  width: "50%",
+                  height: "100%",
+                }}
+              >
+                <Image
+                  src={g.tokenMetaUriData.image}
+                  style={{ width: "100%" }}
+                />
+              </Button>
             );
           })}
         </View>
