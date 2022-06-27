@@ -11,13 +11,14 @@ import {
 } from "@mui/material";
 import { Header, SubtextParagraph, PrimaryButton } from "../../common";
 import { WarningLogo } from "./ResetWarning";
-import { ImportAccounts } from "./ImportAccounts";
+import { ImportAccounts } from "../../ImportAccounts";
 import {
   getBackgroundClient,
   DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
 } from "@coral-xyz/common";
+import { CreatePassword } from "./CreatePassword";
 
 const useStyles = makeStyles((theme: any) => ({
   root: {
@@ -99,9 +100,16 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
       .then((publicKeys) => {
         nav.push(
           <ImportAccounts
-            mnemonic={mnemonic}
             publicKeys={publicKeys}
-            closeDrawer={closeDrawer}
+            onNext={(accountIndices: number[]) => {
+              nav.push(
+                <CreatePassword
+                  mnemonic={mnemonic}
+                  accountIndices={accountIndices}
+                  closeDrawer={closeDrawer}
+                />
+              );
+            }}
           />
         );
       })

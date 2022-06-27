@@ -1,7 +1,6 @@
 import type { PublicKey } from "@solana/web3.js";
 import { useEffect, useState } from "react";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useEphemeralNav } from "@coral-xyz/recoil";
 import { Box, List, ListItemButton, ListItemText } from "@mui/material";
 import {
   Checkbox,
@@ -9,31 +8,17 @@ import {
   SubtextParagraph,
   PrimaryButton,
   walletAddressDisplay,
-} from "../../common";
-import { CreatePassword } from "./CreatePassword";
+} from "./common";
 
 export function ImportAccounts({
-  mnemonic,
   publicKeys,
-  closeDrawer,
+  onNext,
 }: {
-  mnemonic: string;
   publicKeys: PublicKey[];
-  closeDrawer: () => void;
+  onNext: (accountIndices: number[]) => void;
 }) {
   const theme = useCustomTheme();
-  const nav = useEphemeralNav();
   const [accountIndices, setAccountIndices] = useState<number[]>([]);
-
-  const next = () => {
-    nav.push(
-      <CreatePassword
-        mnemonic={mnemonic}
-        accountIndices={accountIndices}
-        closeDrawer={closeDrawer}
-      />
-    );
-  };
 
   const handleSelect = (index: number) => () => {
     const currentIndex = accountIndices.indexOf(index);
@@ -141,7 +126,7 @@ export function ImportAccounts({
       >
         <PrimaryButton
           label="Import Accounts"
-          onClick={next}
+          onClick={() => onNext(accountIndices)}
           disabled={accountIndices.length === 0}
         />
       </Box>
