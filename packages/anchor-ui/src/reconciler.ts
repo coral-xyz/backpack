@@ -61,6 +61,7 @@ export const AnchorUi = {
       });
     };
   },
+  renderWidget(reactNode: any) {},
 };
 
 //
@@ -127,6 +128,9 @@ const RECONCILER = ReactReconciler({
         return createImageInstance(kind, props, r, h, o);
       case NodeKind.Button:
         return createButtonInstance(kind, props, r, h, o);
+      case NodeKind.Loading:
+        return createLoadingInstance(kind, props, r, h, o);
+
       case NodeKind.BalancesTable:
         return createBalancesTableInstance(kind, props, r, h, o);
       case NodeKind.BalancesTableHead:
@@ -201,6 +205,8 @@ const RECONCILER = ReactReconciler({
       case NodeKind.TableRow:
         return null;
       case NodeKind.Button:
+        return null;
+      case NodeKind.Loading:
         return null;
       case NodeKind.BalancesTable:
         return null;
@@ -289,6 +295,8 @@ const RECONCILER = ReactReconciler({
         break;
       case NodeKind.Button:
         break;
+      case NodeKind.Loading:
+        throw new Error("commitUpdate Loading not yet implemented");
       default:
         throw new Error("unexpected node kind");
     }
@@ -583,6 +591,23 @@ function createButtonInstance(
   };
 }
 
+function createLoadingInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): LoadingNodeSerialized {
+  const id = h.nextId();
+  return {
+    id,
+    kind: NodeKind.Loading,
+    props,
+    style: props.style || {},
+    children: [],
+  };
+}
+
 function createBalancesTableInstance(
   _kind: NodeKind,
   props: NodeProps,
@@ -750,6 +775,7 @@ export type NodeSerialized =
   | ImageNodeSerialized
   | ViewNodeSerialized
   | ButtonNodeSerialized
+  | LoadingNodeSerialized
   | BalancesTableNodeSerialized
   | BalancesTableHeadNodeSerialized
   | BalancesTableContentNodeSerialized
@@ -764,6 +790,7 @@ type NodeProps =
   | ImageProps
   | ViewProps
   | ButtonProps
+  | LoadingProps
   | BalancesTableProps
   | BalancesTableHeadProps
   | BalancesTableContentProps
@@ -771,6 +798,9 @@ type NodeProps =
   | BalancesTableCellProps
   | BalancesTableFooterProps;
 export enum NodeKind {
+  //
+  // App.
+  //
   Table = "Table",
   TableRow = "TableRow",
   Text = "Text",
@@ -778,6 +808,10 @@ export enum NodeKind {
   Image = "Image",
   View = "View",
   Button = "Button",
+  Loading = "Loading",
+  //
+  // Widget.
+  //
   BalancesTable = "BalancesTable",
   BalancesTableHead = "BalancesTableHead",
   BalancesTableContent = "BalancesTableContent",
@@ -856,6 +890,15 @@ type ViewProps = {
 type ButtonNodeSerialized = DefNodeSerialized<NodeKind.Button, ButtonProps>;
 type ButtonProps = {
   onClick?: (() => Promise<void>) | boolean;
+  style: Style;
+  children: undefined;
+};
+
+//
+// Loading.
+//
+type LoadingNodeSerialized = DefNodeSerialized<NodeKind.Loading, LoadingProps>;
+type LoadingProps = {
   style: Style;
   children: undefined;
 };

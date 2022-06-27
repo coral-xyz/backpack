@@ -11,6 +11,7 @@ export const TableRow = c("TableRow");
 export const TableFooter = c("TableFooter");
 export const View = c("View");
 export const Button = c("Button");
+export const Loading = c("Loading");
 
 export const BalancesTable = c("BalancesTable");
 export const BalancesTableContent = c("BalancesTableContent");

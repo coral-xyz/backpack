@@ -1,95 +1,153 @@
 import { useState, useEffect } from "react";
+import { Transaction, SystemProgram } from "@solana/web3.js";
 import {
-  PublicKey,
-  Transaction,
-  SystemProgram,
-  Connection,
-} from "@solana/web3.js";
-import AnchorUi, {
-  useNavigation,
   usePublicKey,
   useConnection,
+  useTheme,
   View,
   Image,
   Text,
   Button,
-  BalancesTable,
-  BalancesTableHead,
-  BalancesTableContent,
-  BalancesTableFooter,
-  BalancesTableRow,
-  BalancesTableCell,
+  Loading,
 } from "@coral-xyz/anchor-ui";
-import { customSplTokenAccounts } from "@coral-xyz/common";
-
-//
-// On connection to the host environment, warm the cache.
-//
-AnchorUi.events.on("connect", () => {
-  fetchRowData(window.anchorUi.publicKey, window.anchorUi.connection);
-});
+import { fetchDegodTokens } from "./utils";
 
 export function App() {
-  return <DegodsTable />;
-}
-
-function DegodsTable() {
-  const nav = useNavigation();
   const publicKey = usePublicKey();
   const connection = useConnection();
-  const [tokenAccounts, setTokenAccounts] = useState<any>(null);
+  const [tokenAccounts, setTokenAccounts] = useState<[any, any] | null>(null);
 
   useEffect(() => {
     (async () => {
       setTokenAccounts(null);
-      const tas = await fetchRowData(publicKey, connection);
-      setTokenAccounts(tas);
+      const res = await fetchDegodTokens(publicKey, connection);
+      setTokenAccounts(res);
     })();
   }, [publicKey, connection]);
 
-  return (
-    <BalancesTable>
-      <BalancesTableHead title={"Staked Degods"} iconUrl={DEGODS_ICON_DATA} />
-      {tokenAccounts === null ? (
-        <BalancesTableContent></BalancesTableContent>
-      ) : tokenAccounts.length === 0 ? (
-        <BalancesTableContent>
-          <BalancesTableRow onClick={() => nav.push(<StakeDetail />)}>
-            <BalancesTableCell
-              title={"Stake your Degods"}
-              icon={EMPTY_DEGODS_ICON}
-              subtitle={"Earn $DUST now"}
-              usdValue={0}
-            />
-          </BalancesTableRow>
-        </BalancesTableContent>
-      ) : (
-        <BalancesTableContent>
-          {/* TODO: Add estimated DUST */}
-          {tokenAccounts.map((t) => {
-            return (
-              <BalancesTableRow
-                key={t.publicKey.toString()}
-                onClick={() => nav.push(<StakeDetail token={t} />)}
-              >
-                <BalancesTableCell
-                  title={t.tokenMetaUriData.name}
-                  icon={t.tokenMetaUriData.image}
-                  subtitle={t.tokenMetaUriData.collection.family}
-                />
-              </BalancesTableRow>
-            );
-          })}
-        </BalancesTableContent>
-      )}
-      <BalancesTableFooter></BalancesTableFooter>
-    </BalancesTable>
+  return tokenAccounts === null ? (
+    <_Loading />
+  ) : (
+    <_App dead={tokenAccounts[0]} alive={tokenAccounts[1]} />
   );
 }
 
-function StakeDetail({ token }: any) {
+function _Loading() {
+  return (
+    <View
+      style={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
+    >
+      <Loading
+        style={{
+          display: "block",
+          marginLeft: "auto",
+          marginRight: "auto",
+        }}
+      />
+    </View>
+  );
+}
+
+function _App({ dead, alive }: any) {
+  return (
+    <View>
+      {dead.length > 0 && <GodGrid gods={dead} isDead={true} />}
+      {/*alive.length > 0 && <GodGrid gods={alive} isDead={false} />*/}
+    </View>
+  );
+}
+
+function GodGrid({ gods, isDead }: any) {
+  const theme = useTheme();
+  const degodLabel = isDead ? "DeadGods" : "Degods";
+
+  return (
+    <View>
+      <View
+        style={{
+          marginTop: "24px",
+        }}
+      >
+        <Text
+          style={{
+            fontSize: "20px",
+            textAlign: "center",
+            fontWeight: 500,
+            lineHeight: "24px",
+            color: theme.custom.colors.secondary,
+          }}
+        >
+          Estimated Rewards
+        </Text>
+        <Text
+          style={{
+            fontSize: "14px",
+            marginTop: "6px",
+            textAlign: "center",
+            fontWeight: 500,
+            lineHeight: "24px",
+          }}
+        >
+          719.2663 ({isDead ? 15 : 5} $DUST/day)
+        </Text>
+      </View>
+      <View
+        style={{
+          marginTop: "20px",
+          width: "268px",
+          display: "flex",
+          justifyContent: "space-between",
+          flexDirection: "row",
+          marginLeft: "auto",
+          marginRight: "auto",
+        }}
+      >
+        <Button style={{ flex: 1 }}>Unstake All</Button>
+        <View style={{ width: "8px" }}></View>
+        <Button style={{ flex: 1 }}>Claim $DUST</Button>
+      </View>
+      <View
+        style={{
+          marginTop: "38px",
+        }}
+      >
+        <Text
+          style={{
+            marginBottom: "8px",
+            fontSize: "14px",
+            lineHeight: "24px",
+            marginLeft: "12px",
+            marginRight: "12px",
+          }}
+        >
+          Staked {degodLabel}
+        </Text>
+        <View
+          style={{
+            display: "flex",
+            background: theme.custom.colors.nav,
+          }}
+        >
+          {gods.map((g) => {
+            return (
+              <Image src={g.tokenMetaUriData.image} style={{ width: "50%" }} />
+            );
+          })}
+        </View>
+      </View>
+    </View>
+  );
+}
+
+export function StakeDetail({ token }: any) {
   const publicKey = usePublicKey();
   const connection = useConnection();
+
   const unstake = async () => {
     const tx = new Transaction();
     tx.add(
@@ -106,6 +164,7 @@ function StakeDetail({ token }: any) {
     const signature = await window.anchorUi.send(tx);
     console.log("test: got signed transaction here", signature);
   };
+
   return (
     <View>
       <Image
@@ -144,75 +203,3 @@ function StakeDetail({ token }: any) {
     </View>
   );
 }
-
-export async function fetchRowData(wallet: PublicKey, connection: Connection) {
-  const [dead, alive] = await Promise.all([
-    fetchTokenAccounts(true, wallet, connection),
-    fetchTokenAccounts(false, wallet, connection),
-  ]);
-  return dead.concat(alive);
-}
-
-async function fetchTokenAccounts(
-  isDead: boolean,
-  wallet: PublicKey,
-  connection: Connection
-): Promise<any> {
-  const url = connection.rpcEndpoint;
-  const cacheKey = `${url}:${isDead}:${wallet.toString()}`;
-  const resp = CACHE.get(cacheKey);
-  if (resp) {
-    return await resp;
-  }
-  const newResp = fetchTokenAccountsInner(isDead, wallet, connection);
-  CACHE.set(cacheKey, newResp);
-  return await newResp;
-}
-
-async function fetchTokenAccountsInner(
-  isDead: boolean,
-  wallet: PublicKey,
-  connection: Connection
-) {
-  const [vaultPubkey] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("vault"),
-      isDead ? DEAD_BANK.toBuffer() : BANK.toBuffer(),
-      wallet.toBuffer(),
-    ],
-    PID_GEM_BANK
-  );
-
-  const [vaultAuthority] = await PublicKey.findProgramAddress(
-    [vaultPubkey.toBuffer()],
-    PID_GEM_BANK
-  );
-  const tokenAccounts = await customSplTokenAccounts(
-    connection,
-    vaultAuthority
-  );
-  const newResp = tokenAccounts.nftMetadata.map((m) => m[1]);
-
-  return newResp;
-}
-
-const EMPTY_DEGODS_ICON =
-  "https://uploads-ssl.webflow.com/61f2155bfe47bd05cae702bb/61f21670d6560ecc93050888_New%20Logo.png";
-const DEGODS_ICON_DATA =
-  "https://content.solsea.io/files/thumbnail/1632882828551-880453087-25B1476B-32ED-496E-AA86-35B687255916.jpeg";
-const PID_GEM_FARM = new PublicKey(
-  "FQzYycoqRjmZTgCcTTAkzceH2Ju8nzNLa5d78K3yAhVW"
-);
-const PID_GEM_BANK = new PublicKey(
-  "6VJpeYFy87Wuv4KvwqD5gyFBTkohqZTqs6LgbCJ8tDBA"
-);
-const FARM = new PublicKey("G9nFryoG6Cn2BexRquWa2AKTwcJfumWoDNLUwWkhXcij");
-const DEAD_FARM = new PublicKey("8LbL9wfddTWo9vFf5CWoH979KowdV7JUfbBrnNdmPpk8");
-
-const BANK = new PublicKey("EhRihAPeaR2jC9PKtyRcKzVwXRisykjt72ieYS232ERM");
-const DEAD_BANK = new PublicKey("4iDK8akg8RHg7PguBTTsJcQbHo5iHKzkBJLk8MSvnENA");
-
-//
-// Caches requests.
-//
-const CACHE = new Map<string, Promise<any>>();

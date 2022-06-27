@@ -29,6 +29,7 @@ export const plugins = selector({
   key: "plugins",
   get: ({ get }: any) => {
     return [
+      /*
       {
         url: MANGO_TABLE_PLUGIN_URL,
         iconUrl:
@@ -37,6 +38,7 @@ export const plugins = selector({
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
       },
+			*/
       {
         url: DEGODS_TABLE_PLUGIN_URL,
         iconUrl:
@@ -45,10 +47,11 @@ export const plugins = selector({
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
       },
+      /*
       {
         url: ANCHOR_TABLE_PLUGIN_URL,
         iconUrl:
-          "https://cdn.discordapp.com/attachments/987809245707796480/987809273998360576/Group_1912.png",
+          "https://pbs.twimg.com/profile_images/1537173219693711363/maYBbQGF_400x400.jpg",
         title: "Anchor",
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
@@ -69,6 +72,7 @@ export const plugins = selector({
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
       },
+			*/
     ];
   },
 });
@@ -79,6 +83,7 @@ export const tablePlugins = selector({
     const _activeWallet = get(activeWallet);
     const _connectionUrl = get(connectionUrl);
     return [
+      /*
       {
         url: HELLO_WORLD_PLUGIN_URL,
         iconUrl: "",
@@ -114,6 +119,7 @@ export const tablePlugins = selector({
         activeWallet: _activeWallet,
         connectionUrl: _connectionUrl,
       },
+			*/
     ];
   },
 });
