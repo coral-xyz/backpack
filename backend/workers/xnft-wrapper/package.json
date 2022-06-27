@@ -11,8 +11,8 @@
     "deploy": "wrangler publish"
   },
   "devDependencies": {
-    "esbuild": "^0.14.44",
-    "miniflare": "^2.5.0",
-    "wrangler": "^2.0.12"
+    "esbuild": "^0.14.47",
+    "miniflare": "^2.5.1",
+    "wrangler": "^2.0.15"
   }
 }
