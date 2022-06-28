@@ -2,7 +2,7 @@ import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
 import { registerRootComponent } from "expo";
 import { setupClient, useStore } from "@coral-xyz/common";
-import App from "./App";
+import App from "./src/App";
 import { RecoilRoot } from "recoil/native/recoil";
 import { Suspense } from "react";
 import { WebView } from "react-native-webview";
