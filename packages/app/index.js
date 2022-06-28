@@ -9,7 +9,7 @@ import { WebView } from "react-native-webview";
 import { View } from "react-native";
 
 function Background() {
-  const setBackgroundWrapper = useStore((state) => state.setBackgroundWrapper);
+  const setInjectJavaScript = useStore((state) => state.setInjectJavaScript);
   return (
     <View
       style={{
@@ -18,9 +18,11 @@ function Background() {
     >
       <WebView
         ref={(ref) => {
-          // XXX: temporary hack to ensure page is loaded
+          // XXX: timeout is a temporary hack to ensure page is loaded
           setTimeout(() => {
-            setBackgroundWrapper(ref.injectJavaScript);
+            // put the injectJavaScript function in a global observable
+            // store so that it can be used here & in @coral-xyz/common
+            setInjectJavaScript(ref.injectJavaScript);
           }, 500);
         }}
         source={{
@@ -40,8 +42,8 @@ function Background() {
 }
 
 const WaitingApp = () => {
-  const backgroundWrapper = useStore((state) => state.backgroundWrapper);
-  return backgroundWrapper ? <App /> : null;
+  const injectJavaScript = useStore((state) => state.injectJavaScript);
+  return injectJavaScript ? <App /> : null;
 };
 
 const WrappedApp = () => (
