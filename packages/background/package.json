@@ -5,7 +5,8 @@
   "main": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "start": "parcel service-worker-loader.html -p 9333",
+    "start": "parcel src/service-worker-loader.html -p 9333",
+    "build:loader": "parcel build src/service-worker-loader.html",
     "build": "yarn lint && tsc",
     "dev": "tsc --watch",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"

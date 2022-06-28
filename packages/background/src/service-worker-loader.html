@@ -5,22 +5,29 @@
   </head>
   <body>
     <script type="module">
-      setup();
-
-      async function setup() {
+      (async function setup() {
         try {
+          console.log(new URL("./service-worker.ts", import.meta.url));
           const registration = await navigator.serviceWorker.register(
-            new URL("./src/service-worker.ts", import.meta.url),
+            new URL("./service-worker.ts", import.meta.url),
             {
               type: "module",
             }
           );
 
+          navigator.serviceWorker.onmessage = (event) => {
+            alert(JSON.stringify(event));
+          };
+
+          window.forward = (msg) => {
+            navigator.serviceWorker.controller.postMessage(msg);
+          };
+
           document.write("background script service worker registered");
         } catch (err) {
           document.write(JSON.stringify({ err }));
         }
-      }
+      })();
     </script>
   </body>
 </html>
