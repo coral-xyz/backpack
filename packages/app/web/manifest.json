@@ -1,0 +1,10 @@
+{
+  "name": "Backpack",
+  "version": "0.1.0",
+  "description": "Backpack Wallet",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "index.html"
+  },
+  "permissions": ["storage"]
+}
