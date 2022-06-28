@@ -1,6 +1,9 @@
-// `chrome` = global.chrome OR undefined OR a polyfill used by the mobile app
-// `browser` = safari and firefox's equivelent of global.chrome
+import { vanillaStore } from "./zustand";
+
 export class BrowserRuntime {
+  // `chrome` = global.chrome OR undefined OR a polyfill used by the mobile app
+  // `browser` = safari and firefox's equivelent of global.chrome
+
   public static sendMessage(msg: any, cb?: any) {
     chrome
       ? chrome.runtime.sendMessage(msg, cb)
@@ -151,7 +154,15 @@ const chrome = globalThis.chrome
         onMessage: {
           addListener(cb) {},
         },
-        sendMessage(msg, cb) {},
+        sendMessage(msg, cb) {
+          const { injectJavaScript } = vanillaStore.getState();
+
+          console.log({ sendMessage: { msg, cb, injectJavaScript } });
+
+          injectJavaScript?.(
+            `window.forward(${JSON.stringify({ msg })}); true;`
+          );
+        },
       },
       storage: {
         local: {
