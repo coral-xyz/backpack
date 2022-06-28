@@ -14,11 +14,6 @@ module.exports = async () => {
     path.resolve(workspaceRoot, "node_modules"),
   ];
 
-  // config.resolver.extraNodeModules = {
-  //   stream: path.resolve(workspaceRoot, "node_modules", "readable-stream"),
-  //   // crypto: require.resolve("react-native-crypto-js"),
-  // };
-
   config.transformer = {
     getTransformOptions: async () => ({
       transform: {
