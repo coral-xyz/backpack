@@ -3,7 +3,7 @@ import expectPuppeteer, {
   getDefaultOptions,
 } from "expect-puppeteer";
 import { generateMnemonic, mnemonicToSeed } from "bip39";
-import type { Page } from "puppeteer";
+import type { Browser, Page } from "puppeteer";
 import manifest from "../../build/manifest.json";
 import { walletAddressDisplay } from "../components/common";
 import { Connection, LAMPORTS_PER_SOL } from "@solana/web3.js";
@@ -13,6 +13,8 @@ import { deriveKeypairs } from "@coral-xyz/background/dist/esm/keyring/crypto";
 let clientPage: Page;
 let extensionPopupPage: Page;
 let setupPage: Page;
+
+let browser: Browser;
 
 describe("Installing Anchor Wallet", () => {
   // afterAll(async () => {
