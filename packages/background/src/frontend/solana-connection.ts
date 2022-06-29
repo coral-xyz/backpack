@@ -63,7 +63,6 @@ async function handleInjected<T = any>(
   msg: RpcRequest
 ): Promise<RpcResponse<T>> {
   logger.debug(`handle solana connection injection ${msg.method}`, ctx, msg);
-  console.log("WTF HERE ARMANI");
   return await handleImpl(ctx, msg);
 }
 

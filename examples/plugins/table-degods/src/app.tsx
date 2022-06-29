@@ -22,7 +22,13 @@ export function App() {
       setTokenAccounts(null);
       const res = await fetchDegodTokens(publicKey, connection);
       setTokenAccounts(res);
+    })();
+  }, [publicKey, connection]);
 
+  /*
+	useEffect(() => {
+		(async () => {
+			try {
       const client = gemFarmClient();
       const farm = await client.account.farm.fetch(FARM);
       console.log(
@@ -45,7 +51,7 @@ export function App() {
         // Farmer authority
         {
           memcmp: {
-            bytes: window.anchor.publicKey.toString(),
+            bytes: window.backpack.publicKey.toString(),
             offset: 8 + 32,
           },
         },
@@ -55,8 +61,12 @@ export function App() {
       }
       const farmer = farmers[0];
       console.log("farmer here", farmer);
-    })();
-  }, [publicKey, connection]);
+			} catch(err) {
+				console.log('armani error', err);
+			}
+		})();
+	}, []);
+	*/
 
   return tokenAccounts === null ? (
     <_Loading />

@@ -369,7 +369,6 @@ export class Backend {
       account: AccountInfo<Buffer>;
     }>
   > {
-    console.log("ARMANI HERE GPA", programId.toString());
     return await this.connection!.getProgramAccounts(
       programId,
       configOrCommitment

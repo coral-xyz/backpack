@@ -13,11 +13,11 @@ AnchorUi.events.on("connect", () => {
 });
 
 export function gemBankClient(): Program<GemBank> {
-  return new Program<GemBank>(IDL_GEM_BANK, PID_GEM_BANK, window.anchor);
+  return new Program<GemBank>(IDL_GEM_BANK, PID_GEM_BANK, window.backpack);
 }
 
 export function gemFarmClient(): Program<GemFarm> {
-  return new Program<GemFarm>(IDL_GEM_FARM, PID_GEM_FARM, window.anchor);
+  return new Program<GemFarm>(IDL_GEM_FARM, PID_GEM_FARM, window.backpack);
 }
 
 export async function fetchDegodTokens(
