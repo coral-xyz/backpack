@@ -50,11 +50,11 @@ export class ProviderUiInjection extends EventEmitter implements Provider {
   }
 
   get publicKey(): PublicKey {
-    return window.anchor.publicKey;
+    return window.backpack.publicKey;
   }
 
   get connection(): Connection {
-    return window.anchor.connection;
+    return window.backpack.connection;
   }
 
   async sendAndConfirm(
