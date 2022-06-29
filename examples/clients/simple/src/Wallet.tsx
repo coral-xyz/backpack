@@ -6,7 +6,7 @@ import {
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import {
   PhantomWalletAdapter,
-  AnchorWalletAdapter,
+  BackpackWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
 import {
   WalletModalProvider,
@@ -29,7 +29,7 @@ export const Wallet: FC = (props) => {
   // Only the wallets you configure here will be compiled into your application, and only the dependencies
   // of wallets that your users connect to will be loaded.
   const wallets = useMemo(
-    () => [new AnchorWalletAdapter(), new PhantomWalletAdapter()],
+    () => [new BackpackWalletAdapter(), new PhantomWalletAdapter()],
     [network]
   );
 
