@@ -113,15 +113,11 @@ export function SearchingHardware() {
         combinedPubkeys.push(p);
       }
 
-      console.log(combinedPubkeys);
-
       const combinedAccounts = (
         await anchor.utils.rpc.getMultipleAccounts(connection, combinedPubkeys)
       ).map((result, idx) =>
         result === null ? { publicKey: combinedPubkeys[idx] } : result
       );
-
-      console.log(combinedAccounts);
 
       const bip44Root = combinedAccounts.slice(0, 1);
       const bip44 = combinedAccounts.slice(1, 11);
@@ -139,9 +135,10 @@ export function SearchingHardware() {
     if (deviceState === "none") {
       nav.push(<ConnectFailureHardware />);
     } else {
-      nav.push(
-        <ImportAccounts publicKeys={derivationAccounts} onNext={() => {}} />
-      );
+      nav
+        .push
+        // <ImportAccounts publicKeys={derivationAccounts} onNext={() => {}} />
+        ();
     }
   };
 
