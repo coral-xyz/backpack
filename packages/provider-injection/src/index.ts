@@ -12,7 +12,7 @@ function main() {
 }
 
 function initProvider() {
-  window.anchor = new ProviderInjection();
+  window.backpack = new ProviderInjection();
   window.anchorUi = new ProviderUiInjection();
 }
 

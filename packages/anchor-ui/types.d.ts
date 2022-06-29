@@ -5,7 +5,7 @@ import type {
 
 declare global {
   interface Window {
-    anchor: ProviderInjection;
+    backpack: ProviderInjection;
     anchorUi: ProviderUiInjection;
   }
 }
