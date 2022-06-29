@@ -1,5 +1,6 @@
-import type { PublicKey } from "@solana/web3.js";
 import { useEffect, useState } from "react";
+import type { PublicKey } from "@solana/web3.js";
+import * as anchor from "@project-serum/anchor";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box, List, ListItemButton, ListItemText } from "@mui/material";
 import {
@@ -9,16 +10,30 @@ import {
   PrimaryButton,
   walletAddressDisplay,
 } from "./common";
+import { DerivationPath } from "@coral-xyz/common";
+
+type Account = {
+  publicKey: anchor.web3.PublicKey;
+  account?: anchor.web3.AccountInfo<Buffer>;
+};
 
 export function ImportAccounts({
-  publicKeys,
+  loadAccounts,
   onNext,
 }: {
-  publicKeys: PublicKey[];
+  loadAccounts: (derivationPath: DerivationPath) => Promise<Array<Account>>;
   onNext: (accountIndices: number[]) => void;
 }) {
   const theme = useCustomTheme();
+  const [accounts, setAccounts] = useState<Array<Account>>([]);
   const [accountIndices, setAccountIndices] = useState<number[]>([]);
+  const [derivationPath, setDerivationPath] = useState<DerivationPath>(
+    DerivationPath.Bip44Change
+  );
+
+  useEffect(() => {
+    loadAccounts(derivationPath).then(setAccounts);
+  }, [derivationPath]);
 
   const handleSelect = (index: number) => () => {
     const currentIndex = accountIndices.indexOf(index);
@@ -31,15 +46,6 @@ export function ImportAccounts({
     newAccountIndices.sort();
     setAccountIndices(newAccountIndices);
   };
-
-  useEffect(() => {
-    /*
-      TODO: query balances
-      await Promise.all(publicKeys.map(async (publicKey) => {
-        const balance = await background.request({})
-      }));
-      */
-  }, []);
 
   return (
     <Box
@@ -74,7 +80,7 @@ export function ImportAccounts({
             paddingBottom: "8px",
           }}
         >
-          {publicKeys.map((publicKey, index) => (
+          {accounts.map(({ publicKey, account }, index) => (
             <ListItemButton
               key={publicKey.toString()}
               onClick={handleSelect(index)}
