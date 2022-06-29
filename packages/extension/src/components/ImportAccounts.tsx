@@ -16,8 +16,6 @@ import {
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useEphemeralNav } from "@coral-xyz/recoil";
-import type { NavEphemeralContext } from "@coral-xyz/recoil";
 
 type Account = {
   publicKey: anchor.web3.PublicKey;
@@ -30,7 +28,6 @@ export function ImportAccounts({
 }: {
   mnemonic?: string;
   onNext: (
-    nav: NavEphemeralContext,
     accountIndices: number[],
     derivationPath: DerivationPath,
     mnemonic?: string
@@ -42,7 +39,6 @@ export function ImportAccounts({
   const [derivationPath, setDerivationPath] = useState<DerivationPath>(
     DerivationPath.Bip44Change
   );
-  const nav = useEphemeralNav();
 
   // Handle the case where the keyring store is locked, i.e. this is a reset
   // without an unlock or this is during onboarding.
@@ -209,7 +205,7 @@ export function ImportAccounts({
       >
         <PrimaryButton
           label="Import Accounts"
-          onClick={() => onNext(nav, accountIndices, derivationPath, mnemonic)}
+          onClick={() => onNext(accountIndices, derivationPath, mnemonic)}
           disabled={accountIndices.length === 0}
         />
       </Box>

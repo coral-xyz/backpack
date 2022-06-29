@@ -1,4 +1,3 @@
-import { useEphemeralNav } from "@coral-xyz/recoil";
 import { Box, Grid } from "@mui/material";
 import {
   Header,
@@ -6,18 +5,14 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from "../../common";
-import { MnemonicInput } from "./MnemonicInput";
-import type { NavEphemeralContext } from "@coral-xyz/recoil";
 
 export function ResetWarning({
   onNext,
   onClose,
 }: {
-  onNext: (nav: NavEphemeralContext) => void;
+  onNext: () => void;
   onClose: () => void;
 }) {
-  const nav = useEphemeralNav();
-
   return (
     <Box
       sx={{
@@ -55,7 +50,7 @@ export function ResetWarning({
           <SecondaryButton label="Cancel" onClick={onClose} />
         </Box>
         <Box sx={{ width: "167.5px" }}>
-          <PrimaryButton label="Next" onClick={() => onNext(nav)} />
+          <PrimaryButton label="Next" onClick={() => onNext()} />
         </Box>
       </Box>
     </Box>

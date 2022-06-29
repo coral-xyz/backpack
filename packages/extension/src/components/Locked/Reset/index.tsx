@@ -1,103 +1,104 @@
 import { useState } from "react";
-import { useEphemeralNav } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
-import {
-  Header,
-  SubtextParagraph,
-  SecondaryButton,
-  DangerButton,
-} from "../../common";
+import { ResetWelcome } from "./ResetWelcome";
 import { ResetWarning } from "./ResetWarning";
 import { MnemonicInput } from "./MnemonicInput";
 import { SetupComplete } from "./SetupComplete";
 import { ImportAccounts } from "../../ImportAccounts";
 import { CreatePassword } from "../../Account/CreatePassword";
+import { NAV_BAR_HEIGHT, _NavBackButton } from "../../Layout/Nav";
 import {
   getBackgroundClient,
   DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
 } from "@coral-xyz/common";
-import type { NavEphemeralContext } from "@coral-xyz/recoil";
 
-export function Reset({ closeDrawer }: { closeDrawer: () => void }) {
-  const nav = useEphemeralNav();
+export function Reset({
+  onBack,
+  closeDrawer,
+}: {
+  onBack: () => void;
+  closeDrawer: () => void;
+}) {
+  const [mnemonic, setMnemonic] = useState("");
+  const [derivationPath, setDerivationPath] = useState<DerivationPath>();
+  const [accountIndices, setAccountIndices] = useState<number[]>([]);
 
-  const onNext = (nav: NavEphemeralContext) => {
-    nav.push(<MnemonicInput onNext={handleMnemonic} />);
+  const [step, setStep] = useState(0);
+
+  const nextStep = () => setStep(step + 1);
+  const prevStep = () => {
+    if (step === 0) {
+      onBack();
+    } else {
+      setStep(step - 1);
+    }
   };
 
-  const handleMnemonic = (nav: NavEphemeralContext, mnemonic: string) => {
-    nav.setState({ ...nav.state, mnemonic });
-    nav.push(
-      <ImportAccounts mnemonic={mnemonic} onNext={handleImportAccounts} />
-    );
-  };
-
-  const handleImportAccounts = (
-    nav: NavEphemeralContext,
-    accountIndices: number[],
-    derivationPath: DerivationPath
-  ) => {
-    nav.setState({ ...nav.state, accountIndices, derivationPath });
-    nav.push(<CreatePassword onNext={handleCreatePassword} />);
-  };
-
-  const handleCreatePassword = async (
-    nav: NavEphemeralContext,
-    password: string
+  const createStore = async (
+    mnemonic: string,
+    // TODO
+    derivationPath: DerivationPath | undefined,
+    password: string,
+    accountIndices: number[]
   ) => {
     const background = getBackgroundClient();
     await background.request({
       method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-      params: [
-        nav.state.mnemonic,
-        nav.state.derivationPath,
-        password,
-        nav.state.accountIndices,
-      ],
+      params: [mnemonic, derivationPath, password, accountIndices],
     });
-    nav.push(<SetupComplete onClose={closeDrawer} />);
   };
 
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        justifyContent: "space-between",
-      }}
-    >
-      <Box
-        sx={{
-          marginLeft: "24px",
-          marginRight: "24px",
-        }}
-      >
-        <Header text="Forgot your password?" />
-        <SubtextParagraph>
-          We can’t recover your password as it is only stored on your computer.
-          You can try more passwords or reset your wallet with the secret
-          recovery phrase.
-        </SubtextParagraph>
-      </Box>
-      <Box
-        sx={{
-          marginLeft: "16px",
-          marginRight: "16px",
-          marginBottom: "16px",
-        }}
-      >
-        <Box sx={{ mb: "16px" }}>
-          <SecondaryButton label="Try More Passwords" onClick={closeDrawer} />
-        </Box>
-        <DangerButton
-          label="Reset Secret Recovery Phrase"
-          onClick={() =>
-            nav.push(<ResetWarning onNext={onNext} onClose={closeDrawer} />)
-          }
+  const renderComponent =
+    {
+      0: <ResetWelcome onNext={nextStep} onClose={closeDrawer} />,
+      1: <ResetWarning onNext={nextStep} onClose={closeDrawer} />,
+      2: (
+        <MnemonicInput
+          onNext={(mnemonic: string) => {
+            setMnemonic(mnemonic);
+            nextStep();
+          }}
         />
+      ),
+      3: (
+        <ImportAccounts
+          mnemonic={mnemonic}
+          onNext={(
+            accountIndices: number[],
+            derivationPath: DerivationPath
+          ) => {
+            setAccountIndices(accountIndices);
+            setDerivationPath(derivationPath);
+            nextStep();
+          }}
+        />
+      ),
+      4: (
+        <CreatePassword
+          onNext={(password: string) => {
+            createStore(mnemonic, derivationPath, password, accountIndices);
+            nextStep();
+          }}
+        />
+      ),
+      5: <SetupComplete onClose={closeDrawer} />,
+    }[step] || null;
+
+  return (
+    <Box sx={{ height: "100%" }}>
+      <Box
+        sx={{
+          height: `${NAV_BAR_HEIGHT}px`,
+          position: "relative",
+          display: "flex",
+          justifyContent: "space-between",
+          padding: "10px 16px",
+        }}
+      >
+        <_NavBackButton onBack={prevStep} />
       </Box>
+      {renderComponent}
     </Box>
   );
 }

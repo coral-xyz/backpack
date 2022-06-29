@@ -11,8 +11,6 @@ import {
 } from "@mui/material";
 import { Header, SubtextParagraph, PrimaryButton } from "../../common";
 import { WarningLogo } from "./ResetWarning";
-import { useEphemeralNav } from "@coral-xyz/recoil";
-import type { NavEphemeralContext } from "@coral-xyz/recoil";
 import {
   getBackgroundClient,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
@@ -24,10 +22,6 @@ const useStyles = makeStyles((theme: any) => ({
     flexDirection: "column",
     justifyContent: "space-between",
     color: theme.custom.colors.nav,
-  },
-  icon: {
-    display: "block",
-    margin: "8 auto 24px auto",
   },
   mnemonicInputRoot: {
     color: theme.custom.colors.secondary,
@@ -70,7 +64,7 @@ const useStyles = makeStyles((theme: any) => ({
 export function MnemonicInput({
   onNext,
 }: {
-  onNext: (nav: NavEphemeralContext, mnemonic: string) => void;
+  onNext: (mnemonic: string) => void;
 }) {
   const classes = useStyles();
   const [mnemonicWords, setMnemonicWords] = useState<string[]>([
@@ -79,7 +73,6 @@ export function MnemonicInput({
   const [error, setError] = useState<null | string>(null);
   const mnemonic = mnemonicWords.map((f) => f.trim()).join(" ");
   const nextEnabled = mnemonicWords.find((w) => w.length < 3) === undefined;
-  const nav = useEphemeralNav();
 
   //
   // Handle pastes of 12 or 24 word mnemonics.
@@ -110,7 +103,7 @@ export function MnemonicInput({
       setError("Invalid secret recovery phrase");
       return;
     }
-    onNext(nav, mnemonic);
+    onNext(mnemonic);
   };
 
   //

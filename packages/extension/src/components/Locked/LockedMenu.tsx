@@ -1,18 +1,20 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { Box, ListItemText, Toolbar, IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LockIcon from "@mui/icons-material/Lock";
 import SupportIcon from "@mui/icons-material/Support";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useEphemeralNav } from "@coral-xyz/recoil";
 import { List, ListItem } from "../common/List";
 import { WithDrawer } from "../Layout/Drawer";
 import { Reset } from "./Reset";
 import { NAV_BAR_HEIGHT } from "../Layout/Nav";
 
+type Page = "menu" | "reset";
+
 export function LockedMenu({ menuOpen, setMenuOpen }: any) {
   const theme = useCustomTheme() as any;
+  const [page, setPage] = useState<Page>("menu");
   return (
     <Toolbar
       sx={{
@@ -44,15 +46,20 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
           backgroundColor: theme.custom.colors.nav,
         }}
       >
-        <LockedMenuList closeDrawer={() => setMenuOpen(false)} />
+        {page === "menu" && <LockedMenuList setPage={setPage} />}
+        {page === "reset" && (
+          <Reset
+            onBack={() => setPage("menu")}
+            closeDrawer={() => setMenuOpen(false)}
+          />
+        )}
       </WithDrawer>
     </Toolbar>
   );
 }
 
-export function LockedMenuList({ closeDrawer }: { closeDrawer: () => void }) {
+export function LockedMenuList({ setPage }: { setPage: (page: Page) => void }) {
   const theme = useCustomTheme();
-  const nav = useEphemeralNav();
 
   const options = [
     {
@@ -60,7 +67,7 @@ export function LockedMenuList({ closeDrawer }: { closeDrawer: () => void }) {
         <AccountCircleIcon style={{ color: theme.custom.colors.secondary }} />
       ),
       text: "Reset Secret Recovery Phrase",
-      onClick: () => nav.push(<Reset closeDrawer={closeDrawer} />),
+      onClick: () => setPage("reset"),
     },
     {
       icon: <SupportIcon style={{ color: theme.custom.colors.secondary }} />,

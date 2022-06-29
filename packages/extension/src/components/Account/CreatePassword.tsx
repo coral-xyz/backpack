@@ -16,20 +16,17 @@ const useStyles = makeStyles(() => ({
     marginBottom: "16px",
   },
 }));
-import { useEphemeralNav } from "@coral-xyz/recoil";
-import type { NavEphemeralContext } from "@coral-xyz/recoil";
 
 export function CreatePassword({
   onNext,
 }: {
-  onNext: (nav: NavEphemeralContext, password: string) => void;
+  onNext: (password: string) => void;
 }) {
   const classes = useStyles();
   const [checked, setChecked] = useState(true);
   const [password, setPassword] = useState("");
   const [passwordDup, setPasswordDup] = useState("");
   const [error, setError] = useState<null | string>(null);
-  const nav = useEphemeralNav();
 
   const next = async () => {
     if (password.length < 8) {
@@ -39,7 +36,7 @@ export function CreatePassword({
       setError(`Passwords don't match`);
       return;
     }
-    onNext(nav, password);
+    onNext(password);
   };
 
   return (
