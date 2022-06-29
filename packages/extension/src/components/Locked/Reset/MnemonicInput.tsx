@@ -1,6 +1,6 @@
+import { validateMnemonic } from "bip39";
 import { useState, useEffect } from "react";
 import makeStyles from "@mui/styles/makeStyles";
-import { useEphemeralNav } from "@coral-xyz/recoil";
 import {
   Box,
   Grid,
@@ -11,14 +11,12 @@ import {
 } from "@mui/material";
 import { Header, SubtextParagraph, PrimaryButton } from "../../common";
 import { WarningLogo } from "./ResetWarning";
-import { ImportAccounts } from "../../ImportAccounts";
+import { useEphemeralNav } from "@coral-xyz/recoil";
+import type { NavEphemeralContext } from "@coral-xyz/recoil";
 import {
   getBackgroundClient,
-  DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
-  UI_RPC_METHOD_PREVIEW_PUBKEYS,
 } from "@coral-xyz/common";
-import { CreatePassword } from "./CreatePassword";
 
 const useStyles = makeStyles((theme: any) => ({
   root: {
@@ -69,14 +67,23 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
+export function MnemonicInput({
+  onNext,
+}: {
+  onNext: (nav: NavEphemeralContext, mnemonic: string) => void;
+}) {
   const classes = useStyles();
-  const nav = useEphemeralNav();
   const [mnemonicWords, setMnemonicWords] = useState<string[]>([
     ...Array(12).fill(""),
   ]);
   const [error, setError] = useState<null | string>(null);
+  const mnemonic = mnemonicWords.map((f) => f.trim()).join(" ");
+  const nextEnabled = mnemonicWords.find((w) => w.length < 3) === undefined;
+  const nav = useEphemeralNav();
 
+  //
+  // Handle pastes of 12 or 24 word mnemonics.
+  //
   useEffect(() => {
     const onPaste = (e: any) => {
       const words = e.clipboardData.getData("text").split(" ");
@@ -84,6 +91,8 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
         // Not a valid mnemonic length
         return;
       }
+      // Prevent the paste from populating an individual input field with
+      // all words
       e.preventDefault();
       setMnemonicWords(words);
     };
@@ -93,41 +102,20 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
     };
   }, []);
 
-  const nextEnabled = mnemonicWords.find((w) => w.length < 3) === undefined;
-
+  //
+  // Validate the mnemonic and call the onNext handler.
+  //
   const next = () => {
-    const mnemonic = mnemonicWords.map((f) => f.trim()).join(" ");
-    loadPublicKeys(mnemonic)
-      .then((publicKeys) => {
-        nav.push(
-          <ImportAccounts
-            publicKeys={publicKeys}
-            onNext={(accountIndices: number[]) => {
-              nav.push(
-                <CreatePassword
-                  mnemonic={mnemonic}
-                  accountIndices={accountIndices}
-                  closeDrawer={closeDrawer}
-                />
-              );
-            }}
-          />
-        );
-      })
-      .catch(() => {
-        setError("Invalid mnemonic");
-      });
+    if (!validateMnemonic(mnemonic)) {
+      setError("Invalid secret recovery phrase");
+      return;
+    }
+    onNext(nav, mnemonic);
   };
 
-  const loadPublicKeys = async (mnemonic: string) => {
-    const derivationPath = DerivationPath.Bip44Change;
-    const background = getBackgroundClient();
-    return await background.request({
-      method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-      params: [mnemonic, derivationPath, 8],
-    });
-  };
-
+  //
+  // Generate a random mnemonic and populate state.
+  //
   const generateRandom = () => {
     const background = getBackgroundClient();
     background
@@ -151,7 +139,7 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
         }}
       >
         <Box>
-          <WarningLogo className={classes.icon} />
+          <WarningLogo />
           <Header text="Secret recovery phrase" />
           <SubtextParagraph style={{ marginTop: "8px" }}>
             Enter your 12 or 24-word secret recovery mnemonic to add an existing

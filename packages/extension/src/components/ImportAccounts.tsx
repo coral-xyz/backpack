@@ -1,7 +1,4 @@
 import { useEffect, useState } from "react";
-import type { PublicKey } from "@solana/web3.js";
-import * as anchor from "@project-serum/anchor";
-import { useCustomTheme } from "@coral-xyz/themes";
 import { Box, List, ListItemButton, ListItemText } from "@mui/material";
 import {
   Checkbox,
@@ -10,7 +7,17 @@ import {
   PrimaryButton,
   walletAddressDisplay,
 } from "./common";
-import { DerivationPath } from "@coral-xyz/common";
+import { Connection, PublicKey } from "@solana/web3.js";
+import * as anchor from "@project-serum/anchor";
+import { useAnchorContext } from "@coral-xyz/recoil";
+import {
+  getBackgroundClient,
+  DerivationPath,
+  UI_RPC_METHOD_PREVIEW_PUBKEYS,
+} from "@coral-xyz/common";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { useEphemeralNav } from "@coral-xyz/recoil";
+import type { NavEphemeralContext } from "@coral-xyz/recoil";
 
 type Account = {
   publicKey: anchor.web3.PublicKey;
@@ -18,11 +25,16 @@ type Account = {
 };
 
 export function ImportAccounts({
-  loadAccounts,
+  mnemonic,
   onNext,
 }: {
-  loadAccounts: (derivationPath: DerivationPath) => Promise<Array<Account>>;
-  onNext: (accountIndices: number[]) => void;
+  mnemonic?: string;
+  onNext: (
+    nav: NavEphemeralContext,
+    accountIndices: number[],
+    derivationPath: DerivationPath,
+    mnemonic?: string
+  ) => void;
 }) {
   const theme = useCustomTheme();
   const [accounts, setAccounts] = useState<Array<Account>>([]);
@@ -30,11 +42,76 @@ export function ImportAccounts({
   const [derivationPath, setDerivationPath] = useState<DerivationPath>(
     DerivationPath.Bip44Change
   );
+  const nav = useEphemeralNav();
+
+  // Handle the case where the keyring store is locked, i.e. this is a reset
+  // without an unlock or this is during onboarding.
+  let connection: Connection;
+  try {
+    ({ connection } = useAnchorContext());
+  } catch {
+    // Default to mainnet if the keyring store is locked
+    // TODO share this constant with components/Settings/ConnectionSwitch.tsx
+    const mainnetRpc =
+      process.env.DEFAULT_SOLANA_CONNECTION_URL ||
+      "https://solana-api.projectserum.com";
+    connection = new Connection(mainnetRpc, "confirmed");
+  }
 
   useEffect(() => {
-    loadAccounts(derivationPath).then(setAccounts);
+    /**
+    const loaderFn = mnemonic
+      ? (derivationPath: DerivationPath) =>
+          loadMnemonicPublicKeys(mnemonic, derivationPath)
+      : loadLedgerPublicKeys("ledger", derivationPath);
+    **/
+    if (!mnemonic || !derivationPath) return;
+
+    const loaderFn = (derivationPath: DerivationPath) =>
+      loadMnemonicPublicKeys(mnemonic, derivationPath);
+
+    loaderFn(derivationPath).then(async (publicKeys) => {
+      const accounts = (
+        await anchor.utils.rpc.getMultipleAccounts(
+          connection,
+          publicKeys.map((p: string) => new PublicKey(p))
+        )
+      ).map((result, index) => {
+        return result === null ? { publicKey: publicKeys[index] } : result;
+      });
+      setAccounts(accounts);
+    });
   }, [derivationPath]);
 
+  //
+  // Load accounts for the given mnemonic. This is passed to the ImportAccounts
+  // component and called whenever the derivation path is changed with the selector.
+  //
+  const loadMnemonicPublicKeys = async (
+    mnemonic: string,
+    derivationPath: DerivationPath
+  ) => {
+    const background = getBackgroundClient();
+    return await background.request({
+      method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
+      params: [mnemonic, derivationPath, 8],
+    });
+  };
+
+  //
+  // Load accounts for a ledger.
+  //
+  //
+  const loadLedgerPublicKeys = async (
+    ledger: string,
+    derivationPath: DerivationPath
+  ) => {
+    return [];
+  };
+
+  //
+  // Handles checkbox clicks to select accounts to import.
+  //
   const handleSelect = (index: number) => () => {
     const currentIndex = accountIndices.indexOf(index);
     const newAccountIndices = [...accountIndices];
@@ -132,7 +209,7 @@ export function ImportAccounts({
       >
         <PrimaryButton
           label="Import Accounts"
-          onClick={() => onNext(accountIndices)}
+          onClick={() => onNext(nav, accountIndices, derivationPath, mnemonic)}
           disabled={accountIndices.length === 0}
         />
       </Box>

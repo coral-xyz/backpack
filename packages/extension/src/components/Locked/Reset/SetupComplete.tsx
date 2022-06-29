@@ -1,7 +1,7 @@
 import { Box, Card, CardContent, Grid } from "@mui/material";
 import { Header, SubtextParagraph, PrimaryButton } from "../../common";
 
-export function SetupComplete({ closeDrawer }: { closeDrawer: () => void }) {
+export function SetupComplete({ onClose }: { onClose: () => void }) {
   return (
     <Box
       sx={{
@@ -78,7 +78,7 @@ export function SetupComplete({ closeDrawer }: { closeDrawer: () => void }) {
           mb: "16px",
         }}
       >
-        <PrimaryButton label="Finish" onClick={closeDrawer} />
+        <PrimaryButton label="Finish" onClick={onClose} />
       </Box>
     </Box>
   );

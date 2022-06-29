@@ -7,13 +7,16 @@ import {
   SecondaryButton,
 } from "../../common";
 import { MnemonicInput } from "./MnemonicInput";
+import type { NavEphemeralContext } from "@coral-xyz/recoil";
 
-export function ResetWarning({ closeDrawer }: { closeDrawer: () => void }) {
+export function ResetWarning({
+  onNext,
+  onClose,
+}: {
+  onNext: (nav: NavEphemeralContext) => void;
+  onClose: () => void;
+}) {
   const nav = useEphemeralNav();
-
-  const next = () => {
-    nav.push(<MnemonicInput closeDrawer={closeDrawer} />);
-  };
 
   return (
     <Box
@@ -49,10 +52,10 @@ export function ResetWarning({ closeDrawer }: { closeDrawer: () => void }) {
         }}
       >
         <Box sx={{ width: "167.5px" }}>
-          <SecondaryButton label="Cancel" onClick={closeDrawer} />
+          <SecondaryButton label="Cancel" onClick={onClose} />
         </Box>
         <Box sx={{ width: "167.5px" }}>
-          <PrimaryButton label="Next" onClick={next} />
+          <PrimaryButton label="Next" onClick={() => onNext(nav)} />
         </Box>
       </Box>
     </Box>

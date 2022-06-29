@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Box, ListItemText, Toolbar, IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -83,26 +84,27 @@ export function LockedMenuList({ closeDrawer }: { closeDrawer: () => void }) {
         }}
       >
         {options.map((o, idx) => (
-          <ListItem
-            onClick={o.onClick}
-            key={o.text}
-            style={{
-              height: "44px",
-              display: "flex",
-            }}
-            isLast={idx === options.length - 1}
-          >
-            {o.icon}
-            <ListItemText
-              sx={{
-                marginLeft: "8px",
-                fontSize: "16px",
-                lineHeight: "24px",
-                fontWeight: 500,
+          <Fragment key={idx}>
+            <ListItem
+              onClick={o.onClick}
+              style={{
+                height: "44px",
+                display: "flex",
               }}
-              primary={o.text}
-            />
-          </ListItem>
+              isLast={idx === options.length - 1}
+            >
+              {o.icon}
+              <ListItemText
+                sx={{
+                  marginLeft: "8px",
+                  fontSize: "16px",
+                  lineHeight: "24px",
+                  fontWeight: 500,
+                }}
+                primary={o.text}
+              />
+            </ListItem>
+          </Fragment>
         ))}
       </List>
     </Box>
