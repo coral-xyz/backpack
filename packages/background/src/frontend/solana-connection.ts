@@ -4,6 +4,7 @@ import type {
   SendOptions,
   Finality,
   ConfirmedSignaturesForAddress2Options,
+  GetProgramAccountsConfig,
 } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import type {
@@ -30,6 +31,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2,
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION,
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
+  SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS,
 } from "@coral-xyz/common";
 import type { Backend } from "../backend/solana-connection";
 import type { Config, Handle } from "../types";
@@ -61,6 +63,7 @@ async function handleInjected<T = any>(
   msg: RpcRequest
 ): Promise<RpcResponse<T>> {
   logger.debug(`handle solana connection injection ${msg.method}`, ctx, msg);
+  console.log("WTF HERE ARMANI");
   return await handleImpl(ctx, msg);
 }
 
@@ -108,6 +111,8 @@ async function handleImpl<T = any>(
       return await handleGetParsedTransactions(ctx, params[0], params[1]);
     case SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS:
       return await handleCustomSplTokenAccounts(ctx, params[0]);
+    case SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS:
+      return await handleGetProgramAccounts(ctx, params[0], params[1]);
     default:
       throw new Error("invalid rpc method");
   }
@@ -233,5 +238,17 @@ async function handleCustomSplTokenAccounts(
   pubkey: string
 ) {
   const resp = await ctx.backend.customSplTokenAccounts(new PublicKey(pubkey));
+  return [resp];
+}
+
+async function handleGetProgramAccounts(
+  ctx: Context<Backend>,
+  programId: string,
+  configOrCommitment?: GetProgramAccountsConfig | Commitment
+) {
+  const resp = await ctx.backend.getProgramAccounts(
+    new PublicKey(programId),
+    configOrCommitment
+  );
   return [resp];
 }

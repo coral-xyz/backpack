@@ -1,6 +1,9 @@
 import { PublicKey, Connection } from "@solana/web3.js";
+import { Program } from "@project-serum/anchor";
 import AnchorUi from "@coral-xyz/anchor-ui";
 import { customSplTokenAccounts } from "@coral-xyz/common";
+import { IDL as IDL_GEM_BANK, GemBank } from "./idl-gem-bank";
+import { IDL as IDL_GEM_FARM, GemFarm } from "./idl-gem-farm";
 
 //
 // On connection to the host environment, warm the cache.
@@ -8,6 +11,14 @@ import { customSplTokenAccounts } from "@coral-xyz/common";
 AnchorUi.events.on("connect", () => {
   fetchDegodTokens(window.anchorUi.publicKey, window.anchorUi.connection);
 });
+
+export function gemBankClient(): Program<GemBank> {
+  return new Program<GemBank>(IDL_GEM_BANK, PID_GEM_BANK, window.anchor);
+}
+
+export function gemFarmClient(): Program<GemFarm> {
+  return new Program<GemFarm>(IDL_GEM_FARM, PID_GEM_FARM, window.anchor);
+}
 
 export async function fetchDegodTokens(
   wallet: PublicKey,
@@ -75,8 +86,12 @@ const PID_GEM_FARM = new PublicKey(
 const PID_GEM_BANK = new PublicKey(
   "6VJpeYFy87Wuv4KvwqD5gyFBTkohqZTqs6LgbCJ8tDBA"
 );
-const FARM = new PublicKey("G9nFryoG6Cn2BexRquWa2AKTwcJfumWoDNLUwWkhXcij");
-const DEAD_FARM = new PublicKey("8LbL9wfddTWo9vFf5CWoH979KowdV7JUfbBrnNdmPpk8");
+export const FARM = new PublicKey(
+  "G9nFryoG6Cn2BexRquWa2AKTwcJfumWoDNLUwWkhXcij"
+);
+export const DEAD_FARM = new PublicKey(
+  "8LbL9wfddTWo9vFf5CWoH979KowdV7JUfbBrnNdmPpk8"
+);
 
 const BANK = new PublicKey("EhRihAPeaR2jC9PKtyRcKzVwXRisykjt72ieYS232ERM");
 const DEAD_BANK = new PublicKey("4iDK8akg8RHg7PguBTTsJcQbHo5iHKzkBJLk8MSvnENA");

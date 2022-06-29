@@ -10,7 +10,7 @@ import {
   Button,
   Loading,
 } from "@coral-xyz/anchor-ui";
-import { fetchDegodTokens } from "./utils";
+import { fetchDegodTokens, gemFarmClient, FARM } from "./utils";
 
 export function App() {
   const publicKey = usePublicKey();
@@ -22,6 +22,39 @@ export function App() {
       setTokenAccounts(null);
       const res = await fetchDegodTokens(publicKey, connection);
       setTokenAccounts(res);
+
+      const client = gemFarmClient();
+      const farm = await client.account.farm.fetch(FARM);
+      console.log(
+        "farm here",
+        farm,
+        farm.rewardA.rewardMint.toString(),
+        farm.rewardB.rewardMint.toString(),
+        farm.rewardA.rewardPot.toString(),
+        farm.rewardB.rewardPot.toString()
+      );
+
+      const farmers = await client.account.farmer.all([
+        // Farm pubkey.
+        {
+          memcmp: {
+            bytes: FARM.toString(),
+            offset: 8,
+          },
+        },
+        // Farmer authority
+        {
+          memcmp: {
+            bytes: window.anchor.publicKey.toString(),
+            offset: 8 + 32,
+          },
+        },
+      ]);
+      if (farmers.length === 0) {
+        return [];
+      }
+      const farmer = farmers[0];
+      console.log("farmer here", farmer);
     })();
   }, [publicKey, connection]);
 

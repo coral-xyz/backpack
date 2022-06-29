@@ -360,6 +360,22 @@ export class Backend {
     );
   }
 
+  async getProgramAccounts(
+    programId: PublicKey,
+    configOrCommitment?: GetProgramAccountsConfig | Commitment
+  ): Promise<
+    Array<{
+      pubkey: PublicKey;
+      account: AccountInfo<Buffer>;
+    }>
+  > {
+    console.log("ARMANI HERE GPA", programId.toString());
+    return await this.connection!.getProgramAccounts(
+      programId,
+      configOrCommitment
+    );
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Methods below not used currently.
   ///////////////////////////////////////////////////////////////////////////////
@@ -466,18 +482,6 @@ export class Backend {
     commitment?: Commitment,
     epoch?: number
   ): Promise<StakeActivationData> {
-    throw new Error("not implemented");
-  }
-
-  async getProgramAccounts(
-    programId: PublicKey,
-    configOrCommitment?: GetProgramAccountsConfig | Commitment
-  ): Promise<
-    Array<{
-      pubkey: PublicKey;
-      account: AccountInfo<Buffer>;
-    }>
-  > {
     throw new Error("not implemented");
   }
 
