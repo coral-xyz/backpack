@@ -20,6 +20,8 @@
           };
 
           window.forward = (msg) => {
+            alert(JSON.stringify(msg));
+            console.log({ forwarding: msg });
             navigator.serviceWorker.controller.postMessage(msg);
           };
 
