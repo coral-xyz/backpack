@@ -42,7 +42,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
   //
   private _connectionRequestManager: RequestManager;
 
-  public isAnchor: boolean;
+  public isBackpack: boolean;
   public isConnected: boolean;
   public publicKey?: PublicKey;
   public connection: Connection;
@@ -60,7 +60,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
     );
     this._initChannels();
 
-    this.isAnchor = true;
+    this.isBackpack = true;
     this.isConnected = false;
     this.publicKey = undefined;
     this.connection = this.defaultConnection();
