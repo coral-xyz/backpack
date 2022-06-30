@@ -13,7 +13,8 @@ function Background() {
   return (
     <View
       style={{
-        display: "none",
+        height: 300,
+        // display: "none",
       }}
     >
       <WebView
@@ -23,7 +24,7 @@ function Background() {
             // put the injectJavaScript function in a global observable
             // store so that it can be used here & in @coral-xyz/common
             setInjectJavaScript(ref.injectJavaScript);
-          }, 500);
+          }, 1_000);
         }}
         source={{
           // XXX: this can only be a domain that's specified in
