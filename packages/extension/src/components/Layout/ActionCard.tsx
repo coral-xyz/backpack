@@ -1,4 +1,4 @@
-import { Box, Card, CardContent } from "@mui/material";
+import { Typography, Box, Card, CardContent } from "@mui/material";
 
 export function ActionCard({
   icon,
@@ -19,11 +19,23 @@ export function ActionCard({
         cursor: "pointer",
         height: "112px",
         padding: "16px",
+        boxShadow: "none",
       }}
     >
       <CardContent onClick={onClick} style={{ padding: 0 }}>
-        <Box sx={{ mb: 1 }}>{icon}</Box>
-        <Box>{text}</Box>
+        <Box sx={{ mb: 1, display: "flex" }}>{icon}</Box>
+        <Box>
+          <Typography
+            style={{
+              fontWeight: 500,
+              fontSize: "16px",
+              lineHeight: "24px",
+              textAlign: "left",
+            }}
+          >
+            {text}
+          </Typography>
+        </Box>
       </CardContent>
     </Card>
   );

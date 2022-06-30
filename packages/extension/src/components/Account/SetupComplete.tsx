@@ -26,6 +26,7 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
           <SubtextParagraph
             style={{
               marginTop: "8px",
+              marginBottom: "24px",
             }}
           >
             Now get started exploring what your Backpack can do.

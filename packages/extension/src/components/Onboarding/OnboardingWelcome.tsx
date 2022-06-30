@@ -1,4 +1,5 @@
 import { Box, Grid } from "@mui/material";
+import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ActionCard } from "../Layout/ActionCard";
 import { BackpackHeader } from "../Locked";
@@ -29,14 +30,14 @@ export function OnboardingWelcome({
       <Grid container spacing={2}>
         <Grid item xs={6}>
           <ActionCard
-            icon={<BackpackIcon />}
+            icon={<AddCircle />}
             text="Create a new wallet"
             onClick={() => onSelect("create-wallet")}
           />
         </Grid>
         <Grid item xs={6}>
           <ActionCard
-            icon={<BackpackIcon />}
+            icon={<ArrowCircleDown />}
             text="Import an existing wallet"
             onClick={() => onSelect("import-wallet")}
           />

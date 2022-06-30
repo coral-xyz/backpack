@@ -13,7 +13,7 @@ const useStyles = makeStyles(() => ({
   passwordFieldRoot: {
     margin: 0,
     width: "100%",
-    marginBottom: "16px",
+    marginBottom: "12px",
   },
 }));
 
@@ -60,7 +60,7 @@ export function CreatePassword({
           }}
         >
           <Header text="Create a password" />
-          <SubtextParagraph>
+          <SubtextParagraph style={{ marginTop: "8px", marginBottom: "40px" }}>
             You’ll need this to unlock Backpack.
           </SubtextParagraph>
         </Box>
