@@ -200,8 +200,6 @@ export function MnemonicInput({
             label="I saved my secret recovery phrase"
           />
         )}
-      </Box>
-      <Box>
         {readOnly ? null : (
           <Box
             sx={{
@@ -223,14 +221,11 @@ export function MnemonicInput({
                   recovery mnemonic
                 </Link>
               </Box>
-              <Box>
-                <Link className={classes.link} onClick={generateRandom}>
-                  Use a random mnemonic
-                </Link>
-              </Box>
             </>
           </Box>
         )}
+      </Box>
+      <Box>
         <Box
           sx={{
             marginLeft: "16px",
@@ -241,9 +236,11 @@ export function MnemonicInput({
           {error && (
             <Typography className={classes.errorMsg}>{error}</Typography>
           )}
-          <Box sx={{ marginBottom: "12px" }}>
-            <CopyButton mnemonic={mnemonic} disabled={!copyEnabled} />
-          </Box>
+          {readOnly && (
+            <Box sx={{ marginBottom: "12px" }}>
+              <CopyButton mnemonic={mnemonic} disabled={!copyEnabled} />
+            </Box>
+          )}
           <PrimaryButton
             label="Import"
             onClick={next}
