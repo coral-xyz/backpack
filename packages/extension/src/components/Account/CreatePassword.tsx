@@ -1,6 +1,5 @@
 import { useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
-import { useEphemeralNav } from "@coral-xyz/recoil";
 import { Box, Typography } from "@mui/material";
 import {
   Header,
@@ -8,15 +7,9 @@ import {
   PrimaryButton,
   TextField,
   CheckboxForm,
-} from "../../common";
-import {
-  getBackgroundClient,
-  DerivationPath,
-  UI_RPC_METHOD_KEYRING_STORE_CREATE,
-} from "@coral-xyz/common";
-import { SetupComplete } from "./SetupComplete";
+} from "../common";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles(() => ({
   passwordFieldRoot: {
     margin: 0,
     width: "100%",
@@ -25,22 +18,15 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 export function CreatePassword({
-  mnemonic,
-  accountIndices,
-  closeDrawer,
+  onNext,
 }: {
-  mnemonic: string;
-  accountIndices: number[];
-  closeDrawer: () => void;
+  onNext: (password: string) => void;
 }) {
   const classes = useStyles();
-  const nav = useEphemeralNav();
   const [checked, setChecked] = useState(true);
   const [password, setPassword] = useState("");
   const [passwordDup, setPasswordDup] = useState("");
   const [error, setError] = useState<null | string>(null);
-
-  const derivationPath = DerivationPath.Bip44Change;
 
   const next = async () => {
     if (password.length < 8) {
@@ -50,12 +36,7 @@ export function CreatePassword({
       setError(`Passwords don't match`);
       return;
     }
-    const background = getBackgroundClient();
-    await background.request({
-      method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-      params: [mnemonic, derivationPath, password, accountIndices],
-    });
-    nav.push(<SetupComplete closeDrawer={closeDrawer} />);
+    onNext(password);
   };
 
   return (

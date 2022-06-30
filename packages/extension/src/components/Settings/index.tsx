@@ -366,6 +366,7 @@ function AddConnectWalletMenu({
   setImportPrivateKey: (s: boolean) => void;
 }) {
   const classes = useStyles();
+
   const createNewWallet = () => {
     const background = getBackgroundClient();
     background
@@ -384,6 +385,7 @@ function AddConnectWalletMenu({
       )
       .catch(console.error);
   };
+
   return (
     <List>
       <ListItem onClick={() => createNewWallet()}>

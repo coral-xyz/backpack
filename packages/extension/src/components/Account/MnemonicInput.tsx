@@ -1,6 +1,6 @@
+import { validateMnemonic } from "bip39";
 import { useState, useEffect } from "react";
 import makeStyles from "@mui/styles/makeStyles";
-import { useEphemeralNav } from "@coral-xyz/recoil";
 import {
   Box,
   Grid,
@@ -9,30 +9,22 @@ import {
   InputAdornment,
   Link,
 } from "@mui/material";
-import { Header, SubtextParagraph, PrimaryButton } from "../../common";
-import { WarningLogo } from "./ResetWarning";
-import { ImportAccounts } from "./ImportAccounts";
+import {
+  CheckboxForm,
+  Header,
+  SubtextParagraph,
+  PrimaryButton,
+} from "../common";
+import { WarningLogo } from "../Icon";
 import {
   getBackgroundClient,
-  DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
-  UI_RPC_METHOD_PREVIEW_PUBKEYS,
 } from "@coral-xyz/common";
 
 const useStyles = makeStyles((theme: any) => ({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    color: theme.custom.colors.nav,
-  },
-  icon: {
-    display: "block",
-    margin: "8 auto 24px auto",
-  },
   mnemonicInputRoot: {
     color: theme.custom.colors.secondary,
-    borderRadius: "12px",
+    borderRadius: "8px",
     marginTop: "4px",
     "& .MuiOutlinedInput-root": {
       backgroundColor: theme.custom.colors.background,
@@ -44,7 +36,7 @@ const useStyles = makeStyles((theme: any) => ({
     "& .MuiInputBase-input": {
       color: theme.custom.colors.fontColor,
       backgroundColor: theme.custom.colors.background,
-      borderRadius: "12px",
+      borderRadius: "8px",
       fontSize: "12px",
       fontWeight: 700,
     },
@@ -67,14 +59,29 @@ const useStyles = makeStyles((theme: any) => ({
   },
 }));
 
-export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
+export function MnemonicInput({
+  onNext,
+  readOnly = false,
+}: {
+  onNext: (mnemonic: string) => void;
+  readOnly?: boolean;
+}) {
   const classes = useStyles();
-  const nav = useEphemeralNav();
+
   const [mnemonicWords, setMnemonicWords] = useState<string[]>([
     ...Array(12).fill(""),
   ]);
   const [error, setError] = useState<null | string>(null);
+  const [checked, setChecked] = useState(false);
 
+  const mnemonic = mnemonicWords.map((f) => f.trim()).join(" ");
+  const nextEnabled =
+    (!readOnly || checked) &&
+    mnemonicWords.find((w) => w.length < 3) === undefined;
+
+  //
+  // Handle pastes of 12 or 24 word mnemonics.
+  //
   useEffect(() => {
     const onPaste = (e: any) => {
       const words = e.clipboardData.getData("text").split(" ");
@@ -82,43 +89,39 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
         // Not a valid mnemonic length
         return;
       }
+      // Prevent the paste from populating an individual input field with
+      // all words
       e.preventDefault();
       setMnemonicWords(words);
     };
-    window.addEventListener("paste", onPaste);
+    if (!readOnly) {
+      // Enable pasting if not readonly
+      window.addEventListener("paste", onPaste);
+    } else {
+      // If read only we can generate a random mnemnic
+      generateRandom();
+    }
     return () => {
-      window.removeEventListener("paste", onPaste);
+      if (!readOnly) {
+        window.removeEventListener("paste", onPaste);
+      }
     };
   }, []);
 
-  const nextEnabled = mnemonicWords.find((w) => w.length < 3) === undefined;
-
+  //
+  // Validate the mnemonic and call the onNext handler.
+  //
   const next = () => {
-    const mnemonic = mnemonicWords.map((f) => f.trim()).join(" ");
-    loadPublicKeys(mnemonic)
-      .then((publicKeys) => {
-        nav.push(
-          <ImportAccounts
-            mnemonic={mnemonic}
-            publicKeys={publicKeys}
-            closeDrawer={closeDrawer}
-          />
-        );
-      })
-      .catch(() => {
-        setError("Invalid mnemonic");
-      });
+    if (!validateMnemonic(mnemonic)) {
+      setError("Invalid secret recovery phrase");
+      return;
+    }
+    onNext(mnemonic);
   };
 
-  const loadPublicKeys = async (mnemonic: string) => {
-    const derivationPath = DerivationPath.Bip44Change;
-    const background = getBackgroundClient();
-    return await background.request({
-      method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-      params: [mnemonic, derivationPath, 8],
-    });
-  };
-
+  //
+  // Generate a random mnemonic and populate state.
+  //
   const generateRandom = () => {
     const background = getBackgroundClient();
     background
@@ -133,26 +136,30 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
   };
 
   return (
-    <Box className={classes.root}>
-      <Box
-        sx={{
-          marginTop: "16px",
-          marginLeft: "24px",
-          marginRight: "24px",
-        }}
-      >
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        justifyContent: "space-between",
+      }}
+    >
+      <Box sx={{ margin: "0 24px" }}>
         <Box>
-          <WarningLogo className={classes.icon} />
+          <Box sx={{ display: "block", textAlign: "center", mb: "12px" }}>
+            <WarningLogo />
+          </Box>
           <Header text="Secret recovery phrase" />
           <SubtextParagraph style={{ marginTop: "8px" }}>
-            Enter your 12 or 24-word secret recovery mnemonic to add an existing
-            wallet.
+            {readOnly
+              ? "This is the only way to recover your account if you lose your device. Write it down and store it in a safe place."
+              : "Enter your 12 or 24-word secret recovery mnemonic to add an existing wallet."}
           </SubtextParagraph>
         </Box>
         <Grid
           container
           rowSpacing={0}
-          columnSpacing={0.5}
+          columnSpacing={1}
           sx={{ marginTop: "32px" }}
         >
           {Array.from(Array(mnemonicWords.length).keys()).map((i) => (
@@ -171,6 +178,7 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
                   startAdornment: (
                     <InputAdornment position="start">{i + 1}</InputAdornment>
                   ),
+                  readOnly,
                 }}
                 value={mnemonicWords[i]}
                 onChange={(e) => {
@@ -182,33 +190,43 @@ export function MnemonicInput({ closeDrawer }: { closeDrawer: () => void }) {
             </Grid>
           ))}
         </Grid>
+        {readOnly && (
+          <CheckboxForm
+            checked={checked}
+            setChecked={setChecked}
+            label="I saved my secret recovery phrase"
+          />
+        )}
       </Box>
       <Box>
         <Box
           sx={{
             textAlign: "center",
-            marginTop: "27px",
-            marginBottom: "27px",
+            margin: "27px 0",
           }}
         >
-          <Box sx={{ flex: 1 }}>
-            <Link
-              className={classes.link}
-              onClick={() =>
-                setMnemonicWords([
-                  ...Array(mnemonicWords.length === 12 ? 24 : 12).fill(""),
-                ])
-              }
-            >
-              Use a {mnemonicWords.length === 12 ? "24" : "12"}-word recovery
-              mnemonic
-            </Link>
-          </Box>
-          <Box>
-            <Link className={classes.link} onClick={generateRandom}>
-              Use a random mnemonic
-            </Link>
-          </Box>
+          {readOnly ? null : (
+            <>
+              <Box sx={{ flex: 1 }}>
+                <Link
+                  className={classes.link}
+                  onClick={() =>
+                    setMnemonicWords([
+                      ...Array(mnemonicWords.length === 12 ? 24 : 12).fill(""),
+                    ])
+                  }
+                >
+                  Use a {mnemonicWords.length === 12 ? "24" : "12"}-word
+                  recovery mnemonic
+                </Link>
+              </Box>
+              <Box>
+                <Link className={classes.link} onClick={generateRandom}>
+                  Use a random mnemonic
+                </Link>
+              </Box>
+            </>
+          )}
         </Box>
         <Box
           sx={{

@@ -1,17 +1,20 @@
+import { Fragment, useState } from "react";
 import { Box, ListItemText, Toolbar, IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LockIcon from "@mui/icons-material/Lock";
 import SupportIcon from "@mui/icons-material/Support";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useEphemeralNav } from "@coral-xyz/recoil";
 import { List, ListItem } from "../common/List";
-import { WithEphemeralNavDrawer } from "../Layout/Drawer";
+import { WithDrawer } from "../Layout/Drawer";
 import { Reset } from "./Reset";
-import { NAV_BAR_HEIGHT } from "../Layout/Nav";
+import { NAV_BAR_HEIGHT, WithNav, NavBackButton } from "../Layout/Nav";
+
+type Page = "menu" | "reset";
 
 export function LockedMenu({ menuOpen, setMenuOpen }: any) {
   const theme = useCustomTheme() as any;
+  const [page, setPage] = useState<Page>("menu");
   return (
     <Toolbar
       sx={{
@@ -31,27 +34,33 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
       >
         <MenuIcon sx={{ color: theme.custom.colors.hamburger }} />
       </IconButton>
-      <WithEphemeralNavDrawer
-        title=""
-        openDrawer={menuOpen}
-        setOpenDrawer={setMenuOpen}
-        navbarStyle={{
-          borderBottom: undefined,
-          backgroundColor: theme.custom.colors.nav,
-        }}
-        navContentStyle={{
-          backgroundColor: theme.custom.colors.nav,
-        }}
-      >
-        <LockedMenuList closeDrawer={() => setMenuOpen(false)} />
-      </WithEphemeralNavDrawer>
+      <WithDrawer title="" openDrawer={menuOpen} setOpenDrawer={setMenuOpen}>
+        {page === "menu" && (
+          <WithNav
+            navButtonLeft={<NavBackButton onClick={() => setMenuOpen(false)} />}
+            navbarStyle={{
+              backgroundColor: theme.custom.colors.nav,
+            }}
+            navContentStyle={{
+              backgroundColor: theme.custom.colors.nav,
+            }}
+          >
+            <LockedMenuList setPage={setPage} />
+          </WithNav>
+        )}
+        {page === "reset" && (
+          <Reset
+            onBack={() => setPage("menu")}
+            closeDrawer={() => setMenuOpen(false)}
+          />
+        )}
+      </WithDrawer>
     </Toolbar>
   );
 }
 
-export function LockedMenuList({ closeDrawer }: { closeDrawer: () => void }) {
+export function LockedMenuList({ setPage }: { setPage: (page: Page) => void }) {
   const theme = useCustomTheme();
-  const nav = useEphemeralNav();
 
   const options = [
     {
@@ -59,7 +68,7 @@ export function LockedMenuList({ closeDrawer }: { closeDrawer: () => void }) {
         <AccountCircleIcon style={{ color: theme.custom.colors.secondary }} />
       ),
       text: "Reset Secret Recovery Phrase",
-      onClick: () => nav.push(<Reset closeDrawer={closeDrawer} />),
+      onClick: () => setPage("reset"),
     },
     {
       icon: <SupportIcon style={{ color: theme.custom.colors.secondary }} />,

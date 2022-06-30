@@ -1,119 +1,21 @@
-import { Box, Card, CardContent, Grid } from "@mui/material";
-import { Header, SubtextParagraph, PrimaryButton } from "../../common";
-
-export function SetupComplete({ closeDrawer }: { closeDrawer: () => void }) {
+export function WarningLogo() {
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        justifyContent: "space-between",
-        color: "theme.custom.colors.nav",
-      }}
+    <svg
+      width="46"
+      height="40"
+      viewBox="0 0 46 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
     >
-      <Box>
-        <Box
-          sx={{
-            mt: "24px",
-            ml: "24px",
-            mr: "24px",
-          }}
-        >
-          <Header text="You’ve set up Backpack!" />
-          <SubtextParagraph
-            style={{
-              marginTop: "8px",
-            }}
-          >
-            Now get started exploring what your Backpack can do.
-          </SubtextParagraph>
-        </Box>
-        <Box
-          sx={{
-            ml: "16px",
-            mr: "16px",
-          }}
-        >
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={<BackpackIcon />}
-                text="Fund your Backpack"
-                onClick={() => {}}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={<XNFTIcon />}
-                text="Browse the xNFT library"
-                onClick={() =>
-                  window.open("https://backpack.app/library", "_blank")
-                }
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={<TwitterIcon />}
-                text="Follow us on Twitter"
-                onClick={() =>
-                  window.open("https://twitter.com/xNFT_Backpack", "_blank")
-                }
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={<TwitterIcon />}
-                text="Join the Discord community"
-                onClick={() => {}}
-              />
-            </Grid>
-          </Grid>
-        </Box>
-      </Box>
-      <Box
-        sx={{
-          ml: "16px",
-          mr: "16px",
-          mb: "16px",
-        }}
-      >
-        <PrimaryButton label="Finish" onClick={closeDrawer} />
-      </Box>
-    </Box>
+      <path
+        d="M5.43 39.8421H40.57C44.1633 39.8421 46.4033 35.9455 44.6067 32.8421L27.0367 2.48546C25.24 -0.617874 20.76 -0.617874 18.9633 2.48546L1.39333 32.8421C-0.403335 35.9455 1.83666 39.8421 5.43 39.8421ZM23 23.5088C21.7167 23.5088 20.6667 22.4588 20.6667 21.1755V16.5088C20.6667 15.2255 21.7167 14.1755 23 14.1755C24.2833 14.1755 25.3333 15.2255 25.3333 16.5088V21.1755C25.3333 22.4588 24.2833 23.5088 23 23.5088ZM25.3333 32.8421H20.6667V28.1755H25.3333V32.8421Z"
+        fill="#A1A1AA"
+      />
+    </svg>
   );
 }
 
-function ActionCard({
-  icon,
-  text,
-  onClick,
-}: {
-  icon: any;
-  text: string;
-  onClick: () => void;
-}) {
-  return (
-    <Card
-      sx={{
-        bgcolor: "#3F3F46",
-        p: 1,
-        borderRadius: "12px",
-        color: "#fff",
-        cursor: "pointer",
-        height: "112px",
-        padding: "16px",
-      }}
-    >
-      <CardContent onClick={onClick} style={{ padding: 0 }}>
-        <Box sx={{ mb: 1 }}>{icon}</Box>
-        <Box>{text}</Box>
-      </CardContent>
-    </Card>
-  );
-}
-
-function XNFTIcon() {
+export function XNFTIcon() {
   return (
     <svg
       width="21"
@@ -130,7 +32,7 @@ function XNFTIcon() {
   );
 }
 
-function TwitterIcon() {
+export function TwitterIcon() {
   return (
     <svg
       width="24"
@@ -147,7 +49,7 @@ function TwitterIcon() {
   );
 }
 
-function BackpackIcon() {
+export function BackpackIcon() {
   return (
     <svg
       width="20"
@@ -161,10 +63,27 @@ function BackpackIcon() {
         fill="#FAFAFA"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M5.1999 8.00005C5.1999 6.67457 6.27442 5.60005 7.5999 5.60005H17.1999C18.5254 5.60005 19.5999 6.67457 19.5999 8.00005V12.8C19.5999 14.1255 18.5254 15.2 17.1999 15.2H7.5999C6.27442 15.2 5.1999 14.1255 5.1999 12.8V8.00005ZM12.3999 12.8C13.7254 12.8 14.7999 11.7255 14.7999 10.4C14.7999 9.07457 13.7254 8.00005 12.3999 8.00005C11.0744 8.00005 9.9999 9.07457 9.9999 10.4C9.9999 11.7255 11.0744 12.8 12.3999 12.8Z"
         fill="#FAFAFA"
+      />
+    </svg>
+  );
+}
+
+export function SuccessIcon() {
+  return (
+    <svg
+      width="48"
+      height="48"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M24 0.666656C11.12 0.666656 0.666626 11.12 0.666626 24C0.666626 36.88 11.12 47.3333 24 47.3333C36.88 47.3333 47.3333 36.88 47.3333 24C47.3333 11.12 36.88 0.666656 24 0.666656ZM17.6766 34.01L9.29996 25.6333C8.38996 24.7233 8.38996 23.2533 9.29996 22.3433C10.21 21.4333 11.68 21.4333 12.59 22.3433L19.3333 29.0633L35.3866 13.01C36.2966 12.1 37.7666 12.1 38.6766 13.01C39.5866 13.92 39.5866 15.39 38.6766 16.3L20.9666 34.01C20.08 34.92 18.5866 34.92 17.6766 34.01Z"
+        fill="#A1A1AA"
       />
     </svg>
   );
