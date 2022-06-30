@@ -3,8 +3,9 @@ import { Box, List, ListItemButton, ListItemText } from "@mui/material";
 import {
   Checkbox,
   Header,
-  SubtextParagraph,
+  Loading,
   PrimaryButton,
+  SubtextParagraph,
   walletAddressDisplay,
 } from "../common";
 import { Connection, PublicKey } from "@solana/web3.js";
@@ -142,58 +143,62 @@ export function ImportAccounts({
             Select which accounts you'd like to import.
           </SubtextParagraph>
         </Box>
-        <List
-          sx={{
-            color: theme.custom.colors.fontColor,
-            background: theme.custom.colors.background,
-            borderRadius: "12px",
-            marginLeft: "16px",
-            marginRight: "16px",
-            paddingTop: "8px",
-            paddingBottom: "8px",
-          }}
-        >
-          {accounts.map(({ publicKey, account }, index) => (
-            <ListItemButton
-              key={publicKey.toString()}
-              onClick={handleSelect(index)}
-              sx={{
-                display: "flex",
-                paddinLeft: "16px",
-                paddingRight: "16px",
-                paddingTop: "5px",
-                paddingBottom: "5px",
-              }}
-            >
-              <Box style={{ display: "flex", width: "100%" }}>
-                <Checkbox
-                  edge="start"
-                  checked={accountIndices.indexOf(index) !== -1}
-                  tabIndex={-1}
-                  disableRipple
-                  style={{ marginLeft: 0 }}
-                />
-                <ListItemText
-                  id={publicKey.toString()}
-                  primary={walletAddressDisplay(publicKey)}
-                  sx={{
-                    marginLeft: "8px",
-                    fontSize: "14px",
-                    lineHeight: "32px",
-                    fontWeight: 500,
-                  }}
-                />
-                <ListItemText
-                  sx={{
-                    color: theme.custom.colors.secondary,
-                    textAlign: "right",
-                  }}
-                  primary="0 SOL"
-                />
-              </Box>
-            </ListItemButton>
-          ))}
-        </List>
+        {accounts.length === 0 ? (
+          <Loading />
+        ) : (
+          <List
+            sx={{
+              color: theme.custom.colors.fontColor,
+              background: theme.custom.colors.background,
+              borderRadius: "12px",
+              marginLeft: "16px",
+              marginRight: "16px",
+              paddingTop: "8px",
+              paddingBottom: "8px",
+            }}
+          >
+            {accounts.map(({ publicKey, account }, index) => (
+              <ListItemButton
+                key={publicKey.toString()}
+                onClick={handleSelect(index)}
+                sx={{
+                  display: "flex",
+                  paddinLeft: "16px",
+                  paddingRight: "16px",
+                  paddingTop: "5px",
+                  paddingBottom: "5px",
+                }}
+              >
+                <Box style={{ display: "flex", width: "100%" }}>
+                  <Checkbox
+                    edge="start"
+                    checked={accountIndices.indexOf(index) !== -1}
+                    tabIndex={-1}
+                    disableRipple
+                    style={{ marginLeft: 0 }}
+                  />
+                  <ListItemText
+                    id={publicKey.toString()}
+                    primary={walletAddressDisplay(publicKey)}
+                    sx={{
+                      marginLeft: "8px",
+                      fontSize: "14px",
+                      lineHeight: "32px",
+                      fontWeight: 500,
+                    }}
+                  />
+                  <ListItemText
+                    sx={{
+                      color: theme.custom.colors.secondary,
+                      textAlign: "right",
+                    }}
+                    primary={`${account ? account.lamports / 10 ** 9 : 0} SOL`}
+                  />
+                </Box>
+              </ListItemButton>
+            ))}
+          </List>
+        )}
       </Box>
       <Box
         sx={{
