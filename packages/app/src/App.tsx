@@ -5,7 +5,7 @@ import { useKeyringStoreState } from "@coral-xyz/recoil";
 
 export default function App() {
   // XXX: uncommenting the line below will currently break the app
-  // const keyringStoreState = useKeyringStoreState();
+  const keyringStoreState = useKeyringStoreState();
   return (
     <View style={styles.container}>
       <Text>{Keypair.generate().publicKey.toString()}</Text>
