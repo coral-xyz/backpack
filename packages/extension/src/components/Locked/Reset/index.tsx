@@ -2,16 +2,9 @@ import { useState } from "react";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ResetWelcome } from "./ResetWelcome";
 import { ResetWarning } from "./ResetWarning";
-import { SetupComplete } from "../../Account/SetupComplete";
-import { MnemonicInput } from "../../Account/MnemonicInput";
-import { ImportAccounts } from "../../Account/ImportAccounts";
-import { CreatePassword } from "../../Account/CreatePassword";
+import { ResetSuccess } from "./ResetSuccess";
 import { WithNav, NavBackButton } from "../../Layout/Nav";
-import {
-  getBackgroundClient,
-  DerivationPath,
-  UI_RPC_METHOD_KEYRING_STORE_CREATE,
-} from "@coral-xyz/common";
+import { openOnboarding } from "@coral-xyz/common";
 
 export function Reset({
   onBack,
@@ -21,9 +14,6 @@ export function Reset({
   closeDrawer: () => void;
 }) {
   const theme = useCustomTheme();
-  const [mnemonic, setMnemonic] = useState("");
-  const [derivationPath, setDerivationPath] = useState<DerivationPath>();
-  const [accountIndices, setAccountIndices] = useState<number[]>([]);
   const [step, setStep] = useState(0);
 
   const nextStep = () => setStep(step + 1);
@@ -35,45 +25,11 @@ export function Reset({
     }
   };
 
-  const createStore = async (
-    mnemonic: string,
-    // TODO
-    derivationPath: DerivationPath | undefined,
-    password: string,
-    accountIndices: number[]
-  ) => {
-    const background = getBackgroundClient();
-    await background.request({
-      method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-      params: [mnemonic, derivationPath, password, accountIndices],
-    });
-  };
-
   const renderComponent =
     [
       <ResetWelcome onNext={nextStep} onClose={closeDrawer} />,
       <ResetWarning onNext={nextStep} onClose={closeDrawer} />,
-      <MnemonicInput
-        onNext={(mnemonic: string) => {
-          setMnemonic(mnemonic);
-          nextStep();
-        }}
-      />,
-      <ImportAccounts
-        mnemonic={mnemonic}
-        onNext={(accountIndices: number[], derivationPath: DerivationPath) => {
-          setAccountIndices(accountIndices);
-          setDerivationPath(derivationPath);
-          nextStep();
-        }}
-      />,
-      <CreatePassword
-        onNext={(password: string) => {
-          createStore(mnemonic, derivationPath, password, accountIndices);
-          nextStep();
-        }}
-      />,
-      <SetupComplete onClose={closeDrawer} />,
+      <ResetSuccess onNext={openOnboarding} />,
     ][step] || null;
 
   return (
