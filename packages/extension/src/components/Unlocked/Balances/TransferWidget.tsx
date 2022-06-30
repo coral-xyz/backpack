@@ -25,6 +25,7 @@ const useStyles = styles((theme) => ({
     marginBottom: "16px",
     "& .MuiOutlinedInput-root": {
       height: "48px !important",
+      border: `solid 1pt ${theme.custom.colors.border}`,
     },
   },
 }));
