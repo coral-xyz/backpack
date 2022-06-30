@@ -16,16 +16,31 @@
           );
 
           navigator.serviceWorker.onmessage = (event) => {
-            alert(JSON.stringify(event));
+            window.forwardLogs(event.data);
+
+            // console.log({ receivedInBrowserFromSW_3: event });
+            document
+              .querySelector("body")
+              .insertAdjacentHTML(
+                "beforeend",
+                `<pre>${JSON.stringify(event.data)}</pre>`
+              );
           };
 
-          window.forward = (msg) => {
-            alert(JSON.stringify(msg));
-            console.log({ forwarding: msg });
-            navigator.serviceWorker.controller.postMessage(msg);
+          window.forwardLogs = (...rawData) => {
+            window.ReactNativeWebView?.postMessage(JSON.stringify(rawData));
           };
 
-          document.write("background script service worker registered");
+          window.postMessageToBackgroundViaWebview = (rawData) => {
+            navigator.serviceWorker.controller.postMessage(rawData);
+          };
+
+          document
+            .querySelector("body")
+            .insertAdjacentHTML(
+              "beforeend",
+              "<p>background script service worker registered</p>"
+            );
         } catch (err) {
           document.write(JSON.stringify({ err }));
         }

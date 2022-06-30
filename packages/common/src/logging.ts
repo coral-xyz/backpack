@@ -1,3 +1,5 @@
+import { vanillaStore } from "./zustand";
+
 function log(str: any, ...args: any) {
   console.log(`anchor: ${str}`, ...args);
 }
@@ -18,4 +20,38 @@ export function getLogger(mod: string) {
       error: (str: string, ...args: any) => error(`${_mod}: ${str}`, ...args),
     };
   })();
+}
+
+/**
+ * Temporary logging helper function specifically for the mobile app
+ *
+ * An alternative to console.log which should ensure that your logs are
+ * visible in the terminal, regardless of whether you are in a webview,
+ * serviceworker or react native app.
+ * @param args what to log
+ */
+export async function logFromAnywhere(...args: any[]) {
+  try {
+    // if we're in a serviceworker, try sending the message to the HTML page
+    const clients = await self.clients.matchAll({
+      includeUncontrolled: true,
+      type: "window",
+    });
+
+    clients.forEach((client) => {
+      client.postMessage({ args, from: "serviceWorker" });
+    });
+  } catch (err) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      vanillaStore.getState().injectJavaScript!(
+        `window.forwardLogs(${JSON.stringify({
+          args,
+          from: "frontend",
+        })}); true;`
+      );
+    } catch (err) {
+      console.log({ args, from: "idk" });
+    }
+  }
 }

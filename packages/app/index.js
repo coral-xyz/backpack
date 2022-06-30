@@ -33,7 +33,7 @@ function Background() {
         }}
         onMessage={(event) =>
           // log messages sent to
-          console.log({ event })
+          console.log(...JSON.parse(event.nativeEvent.data))
         }
         originWhitelist={["*"]}
         limitsNavigationsToAppBoundDomains
