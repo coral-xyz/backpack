@@ -10,7 +10,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
 } from "@coral-xyz/common";
 import { TextField, PrimaryButton, CheckboxForm } from "../common";
-import { _NavBackButton, DummyButton } from "../Layout/Nav";
+import { NavBackButton, DummyButton } from "../Layout/Nav";
 import { BlankApp } from "../../app/Router";
 
 const useStyles = styles((theme) => ({
@@ -360,7 +360,11 @@ export function Stepper({ activeStep, handleBack, stepCount }: any) {
         ></Button>
       }
       backButton={
-        activeStep > 0 ? <_NavBackButton pop={handleBack} /> : <DummyButton />
+        activeStep > 0 ? (
+          <NavBackButton onClick={handleBack} />
+        ) : (
+          <DummyButton />
+        )
       }
     />
   );

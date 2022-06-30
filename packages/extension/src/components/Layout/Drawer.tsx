@@ -79,6 +79,33 @@ export function WithDrawer(props: any) {
       }}
       id="drawer"
     >
+      {children}
+    </Drawer>
+  );
+}
+
+export function WithEphemeralNavDrawer(props: any) {
+  const classes = useStyles();
+  const theme = useCustomTheme();
+  const {
+    children,
+    openDrawer,
+    title,
+    navbarStyle,
+    navContentStyle,
+    setOpenDrawer,
+  } = props;
+  return (
+    <Drawer
+      anchor={"bottom"}
+      open={openDrawer}
+      onClose={() => setOpenDrawer(false)}
+      classes={{
+        root: classes.drawerRoot,
+        paper: classes.drawerPaper,
+      }}
+      id="drawer"
+    >
       <WithEphemeralNav
         title={title}
         navbarStyle={{
