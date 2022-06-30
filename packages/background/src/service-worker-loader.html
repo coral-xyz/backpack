@@ -2,12 +2,17 @@
 <html>
   <head>
     <title>service worker loader</title>
+    <style>
+      body {
+        background: yellow;
+      }
+    </style>
   </head>
   <body>
     <script type="module">
       (async function setup() {
         try {
-          console.log(new URL("./service-worker.ts", import.meta.url));
+          // console.log(new URL("./service-worker.ts", import.meta.url));
           const registration = await navigator.serviceWorker.register(
             new URL("./service-worker.ts", import.meta.url),
             {
