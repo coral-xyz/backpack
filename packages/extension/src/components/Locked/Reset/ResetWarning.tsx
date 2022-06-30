@@ -30,7 +30,9 @@ export function ResetWarning({
           marginRight: "24px",
         }}
       >
-        <WarningLogo />
+        <Box sx={{ display: "block", textAlign: "center", mb: "12px" }}>
+          <WarningLogo />
+        </Box>
         <Header text="Reset your secret recovery phrase" />
         <SubtextParagraph>
           This will remove all wallets and replace them with a new wallet.
