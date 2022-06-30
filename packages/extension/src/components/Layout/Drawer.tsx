@@ -59,15 +59,7 @@ const useStyles = styles((theme) => ({
 
 export function WithDrawer(props: any) {
   const classes = useStyles();
-  const theme = useCustomTheme();
-  const {
-    children,
-    openDrawer,
-    title,
-    navbarStyle,
-    navContentStyle,
-    setOpenDrawer,
-  } = props;
+  const { children, openDrawer, setOpenDrawer } = props;
   return (
     <Drawer
       anchor={"bottom"}
@@ -96,16 +88,7 @@ export function WithEphemeralNavDrawer(props: any) {
     setOpenDrawer,
   } = props;
   return (
-    <Drawer
-      anchor={"bottom"}
-      open={openDrawer}
-      onClose={() => setOpenDrawer(false)}
-      classes={{
-        root: classes.drawerRoot,
-        paper: classes.drawerPaper,
-      }}
-      id="drawer"
-    >
+    <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
       <WithEphemeralNav
         title={title}
         navbarStyle={{
@@ -121,7 +104,7 @@ export function WithEphemeralNavDrawer(props: any) {
           {children}
         </WithDrawerContent>
       </WithEphemeralNav>
-    </Drawer>
+    </WithDrawer>
   );
 }
 
