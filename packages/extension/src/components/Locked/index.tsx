@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   getBackgroundClient,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
@@ -127,9 +127,14 @@ export function BackpackHeader() {
       >
         <AlphaLabel />
       </Box>
-      <Box sx={{ w: "200px", display: "block" }}>
-        <img src="/backpack.svg" />
-      </Box>
+      <img
+        src="/backpack.svg"
+        style={{
+          display: "block",
+          marginLeft: "auto",
+          marginRight: "auto",
+        }}
+      />
       <Typography
         sx={{
           textAlign: "center",

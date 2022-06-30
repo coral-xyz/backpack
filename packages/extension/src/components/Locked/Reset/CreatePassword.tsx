@@ -91,7 +91,7 @@ export function CreatePassword({
         >
           <TextField
             inputProps={{ name: "password" }}
-            placeholder="Enter your password..."
+            placeholder="Password"
             type="password"
             value={password}
             setValue={setPassword}
@@ -99,7 +99,7 @@ export function CreatePassword({
           />
           <TextField
             inputProps={{ name: "password-confirmation" }}
-            placeholder="Confirm your password..."
+            placeholder="Confirm Password"
             type="password"
             value={passwordDup}
             setValue={setPasswordDup}

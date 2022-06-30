@@ -89,6 +89,10 @@ export function LockedMenuList({ closeDrawer }: { closeDrawer: () => void }) {
             style={{
               height: "44px",
               display: "flex",
+              borderBottom:
+                idx < 2
+                  ? `solid 1pt ${theme.custom.colors.border1}`
+                  : undefined,
             }}
             isLast={idx === options.length - 1}
           >

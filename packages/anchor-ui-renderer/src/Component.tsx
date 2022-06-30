@@ -145,19 +145,18 @@ const useStyles = styles((theme) => ({
     },
   },
   passwordField: {
-    fontSize: "14px",
-    lineHeight: "24px",
     fontWeight: 500,
     borderRadius: "12px",
-    color: theme.custom.colors.secondary,
     width: "351px",
+    color: theme.custom.colors.secondary,
+    fontSize: "16px",
+    lineHeight: "24px",
   },
   passwordRoot: {
     marginLeft: "12px",
     marginRight: "12px",
     width: "351px",
     "& .MuiOutlinedInput-root": {
-      border: `solid 1pt ${theme.custom.colors.border}`,
       backgroundColor: theme.custom.colors.background,
       borderRadius: "12px",
       height: "56px",
@@ -168,7 +167,7 @@ const useStyles = styles((theme) => ({
   },
   textRootError: {
     "& .MuiOutlinedInput-root": {
-      borderColor: `${theme.custom.colors.negative} !important`,
+      border: `solid 1pt ${theme.custom.colors.negative}`,
     },
   },
   expand: {
@@ -596,6 +595,7 @@ export function TextField({
         shrink: false,
         style: {
           borderRadius: "12px",
+          border: "none",
         },
       }}
       InputProps={{
