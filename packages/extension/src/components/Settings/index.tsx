@@ -30,7 +30,6 @@ import { WalletAddress, List, ListItem } from "../../components/common";
 import { WithEphemeralNavDrawer } from "../Layout/Drawer";
 import { ConnectionMenu } from "./ConnectionSwitch";
 import { RecentActivityButton } from "../Unlocked/Balances/RecentActivity";
-import { ConnectHardware } from "./ConnectHardware";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -367,7 +366,6 @@ function AddConnectWalletMenu({
   setImportPrivateKey: (s: boolean) => void;
 }) {
   const classes = useStyles();
-  const nav = useEphemeralNav();
 
   const createNewWallet = () => {
     const background = getBackgroundClient();
@@ -386,10 +384,6 @@ function AddConnectWalletMenu({
           .catch(console.error)
       )
       .catch(console.error);
-  };
-
-  const openConnectHardware = () => {
-    nav.push(<ConnectHardware />);
   };
 
   return (
