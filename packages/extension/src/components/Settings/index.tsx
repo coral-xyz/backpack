@@ -53,7 +53,7 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-const AVATAR_URL = "coral.png";
+const AVATAR_URL = "/coral.png";
 
 export function SettingsButton() {
   return (

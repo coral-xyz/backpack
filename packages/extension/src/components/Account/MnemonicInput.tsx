@@ -27,7 +27,6 @@ const useStyles = makeStyles((theme: any) => ({
     borderRadius: "12px",
     marginTop: "4px",
     "& .MuiOutlinedInput-root": {
-      border: `solid 1pt ${theme.custom.colors.border}`,
       backgroundColor: theme.custom.colors.background,
       borderRadius: "12px",
       "& fieldset": {

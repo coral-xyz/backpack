@@ -18,6 +18,7 @@ const FONT_COLOR_2 = "#D4D4D8";
 const BRAND_COLOR = "#14B8A6";
 const BUTTON_FONT_COLOR = FONT_COLOR;
 const BORDER_COLOR = "#393C43";
+const BORDER_COLOR_1 = "#52525B";
 
 export const darkTheme = {
   ...baseTheme,
@@ -47,6 +48,7 @@ export const darkTheme = {
       drawerGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
       alpha: FONT_COLOR_2,
       bg2: BACKGROUND_COLOR_2,
+      border1: BORDER_COLOR_1,
     },
   },
 };
@@ -76,6 +78,7 @@ export const lightTheme = {
         "linear-gradient(180deg, #1B1D23 0%, rgba(27, 29, 35, 0) 100%)", // todo
       interactiveIconsActive: "#1196B5",
       bg2: BACKGROUND_COLOR_2,
+      border1: BORDER_COLOR_1,
     },
   },
 };

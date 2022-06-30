@@ -92,27 +92,30 @@ export function LockedMenuList({ setPage }: { setPage: (page: Page) => void }) {
         }}
       >
         {options.map((o, idx) => (
-          <Fragment key={idx}>
-            <ListItem
-              onClick={o.onClick}
-              style={{
-                height: "44px",
-                display: "flex",
+          <ListItem
+            onClick={o.onClick}
+            key={o.text}
+            style={{
+              height: "44px",
+              display: "flex",
+              borderBottom:
+                idx < 2
+                  ? `solid 1pt ${theme.custom.colors.border1}`
+                  : undefined,
+            }}
+            isLast={idx === options.length - 1}
+          >
+            {o.icon}
+            <ListItemText
+              sx={{
+                marginLeft: "8px",
+                fontSize: "16px",
+                lineHeight: "24px",
+                fontWeight: 500,
               }}
-              isLast={idx === options.length - 1}
-            >
-              {o.icon}
-              <ListItemText
-                sx={{
-                  marginLeft: "8px",
-                  fontSize: "16px",
-                  lineHeight: "24px",
-                  fontWeight: 500,
-                }}
-                primary={o.text}
-              />
-            </ListItem>
-          </Fragment>
+              primary={o.text}
+            />
+          </ListItem>
         ))}
       </List>
     </Box>
