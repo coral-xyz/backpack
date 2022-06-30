@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ActionCard } from "../Layout/ActionCard";
 import { BackpackHeader } from "../Locked";
@@ -22,7 +22,9 @@ export function OnboardingWelcome({
         height: "100%",
       }}
     >
-      <BackpackHeader />
+      <Box>
+        <BackpackHeader />
+      </Box>
 
       <Grid container spacing={2}>
         <Grid item xs={6}>
@@ -39,6 +41,7 @@ export function OnboardingWelcome({
             onClick={() => onSelect("import-wallet")}
           />
         </Grid>
+        {/**
         <Grid item xs={6}>
           <ActionCard
             icon={<BackpackIcon />}
@@ -46,6 +49,7 @@ export function OnboardingWelcome({
             onClick={() => onSelect("connect-hardware")}
           />
         </Grid>
+        **/}
       </Grid>
     </div>
   );
