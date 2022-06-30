@@ -88,16 +88,7 @@ export function WithEphemeralNavDrawer(props: any) {
     setOpenDrawer,
   } = props;
   return (
-    <Drawer
-      anchor={"bottom"}
-      open={openDrawer}
-      onClose={() => setOpenDrawer(false)}
-      classes={{
-        root: classes.drawerRoot,
-        paper: classes.drawerPaper,
-      }}
-      id="drawer"
-    >
+    <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
       <WithEphemeralNav
         title={title}
         navbarStyle={{
@@ -113,7 +104,7 @@ export function WithEphemeralNavDrawer(props: any) {
           {children}
         </WithDrawerContent>
       </WithEphemeralNav>
-    </Drawer>
+    </WithDrawer>
   );
 }
 
