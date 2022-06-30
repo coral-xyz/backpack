@@ -27,7 +27,7 @@ import {
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
 } from "@coral-xyz/common";
 import { WalletAddress, List, ListItem } from "../../components/common";
-import { WithDrawer } from "../Layout/Drawer";
+import { WithEphemeralNavDrawer } from "../Layout/Drawer";
 import { ConnectionMenu } from "./ConnectionSwitch";
 import { RecentActivityButton } from "../Unlocked/Balances/RecentActivity";
 
@@ -85,14 +85,14 @@ function AvatarButton() {
           }}
         />
       </IconButton>
-      <WithDrawer
+      <WithEphemeralNavDrawer
         openDrawer={settingsOpen}
         setOpenDrawer={setSettingsOpen}
         title={""}
         navbarStyle={{ borderBottom: undefined }}
       >
         <SettingsContent close={() => setSettingsOpen(false)} />
-      </WithDrawer>
+      </WithEphemeralNavDrawer>
     </div>
   );
 }

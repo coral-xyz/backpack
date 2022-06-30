@@ -7,7 +7,7 @@ import { useBlockchainTokenAccount } from "@coral-xyz/recoil";
 import { RecentActivitySmall } from "../RecentActivity";
 import { SendButton } from "./Send";
 import { DepositButton } from "./Deposit";
-import { WithDrawer } from "../../../Layout/Drawer";
+import { WithEphemeralNavDrawer } from "../../../Layout/Drawer";
 
 const useStyles = styles((theme) => ({
   tokenHeaderContainer: {
@@ -106,13 +106,13 @@ export function WithHeaderButton({
           <Typography className={classes.headerButtonLabel}>{label}</Typography>
         )}
       </Button>
-      <WithDrawer
+      <WithEphemeralNavDrawer
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}
         title={dialogTitle}
       >
         {dialog(setOpenDrawer)}
-      </WithDrawer>
+      </WithEphemeralNavDrawer>
     </>
   );
 }

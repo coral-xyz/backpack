@@ -6,7 +6,7 @@ import SupportIcon from "@mui/icons-material/Support";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { useEphemeralNav } from "@coral-xyz/recoil";
 import { List, ListItem } from "../common/List";
-import { WithDrawer } from "../Layout/Drawer";
+import { WithEphemeralNavDrawer } from "../Layout/Drawer";
 import { Reset } from "./Reset";
 import { NAV_BAR_HEIGHT } from "../Layout/Nav";
 
@@ -31,7 +31,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
       >
         <MenuIcon sx={{ color: theme.custom.colors.hamburger }} />
       </IconButton>
-      <WithDrawer
+      <WithEphemeralNavDrawer
         title=""
         openDrawer={menuOpen}
         setOpenDrawer={setMenuOpen}
@@ -44,7 +44,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
         }}
       >
         <LockedMenuList closeDrawer={() => setMenuOpen(false)} />
-      </WithDrawer>
+      </WithEphemeralNavDrawer>
     </Toolbar>
   );
 }

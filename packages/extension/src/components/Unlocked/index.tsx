@@ -1,10 +1,10 @@
 import { PluginManager } from "@coral-xyz/recoil";
-import { TabNavStack } from "../Layout/Nav";
+import { NavTabs } from "../Layout/NavTabs";
 
 export function Unlocked() {
   return (
     <PluginManager>
-      <TabNavStack />
+      <NavTabs />
     </PluginManager>
   );
 }
