@@ -54,7 +54,7 @@ function AnchorDetail({}: any) {
     console.log("fetching idl here");
     try {
       const programId = new PublicKey(val);
-      const idl = await Program.fetchIdl(programId, window.anchor);
+      const idl = await Program.fetchIdl(programId, window.backpack);
       console.log("idl here", idl);
     } catch (err) {
       console.error("error fetching IDL", err);

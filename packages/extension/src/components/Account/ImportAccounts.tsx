@@ -6,7 +6,7 @@ import {
   SubtextParagraph,
   PrimaryButton,
   walletAddressDisplay,
-} from "./common";
+} from "../common";
 import { Connection, PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { useAnchorContext } from "@coral-xyz/recoil";

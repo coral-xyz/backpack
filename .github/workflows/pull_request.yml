@@ -34,13 +34,13 @@ jobs:
       # Wallet Adapter tasks.
       #
       # The following [wallet-adapter] tasks are only necessary until the
-      # default 'anchor' branch in https://github.com/200ms-labs/wallet-adapter
+      # default 'anchor' branch in https://github.com/coral-xyz/wallet-adapter
       # gets merged upstream and deployed in @solana/wallet-adapter
       #
       - name: "[wallet-adapter] checkout"
         uses: actions/checkout@v3
         with:
-          repository: 200ms-labs/wallet-adapter
+          repository: coral-xyz/wallet-adapter
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           path: wallet-adapter
       - name: "[wallet-adapter] set env var"
@@ -102,7 +102,7 @@ jobs:
       # - name: "[e2e] run puppeteer tests"
       #   uses: wentokay/hello-world-docker-action@v11
       #   with:
-      #     command: yarn workspace @200ms/extension e2e
+      #     command: yarn workspace @coral-xyz/extension e2e
       #
 
       ##########################################################################

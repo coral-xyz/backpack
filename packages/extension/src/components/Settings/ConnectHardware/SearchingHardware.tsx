@@ -8,7 +8,7 @@ import * as ledgerCore from "@coral-xyz/ledger-core";
 import { useAnchorContext, useEphemeralNav } from "@coral-xyz/recoil";
 import { Header, PrimaryButton, SubtextParagraph } from "../../common";
 import { HardwareWalletIcon } from "./";
-import { ImportAccounts } from "../../ImportAccounts";
+import { ImportAccounts } from "../../Account/ImportAccounts";
 import { ConnectFailureHardware } from "./ConnectFailureHardware";
 import {
   getBackgroundClient,

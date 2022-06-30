@@ -8,7 +8,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { List, ListItem } from "../common/List";
 import { WithDrawer } from "../Layout/Drawer";
 import { Reset } from "./Reset";
-import { NAV_BAR_HEIGHT } from "../Layout/Nav";
+import { NAV_BAR_HEIGHT, WithNav, NavBackButton } from "../Layout/Nav";
 
 type Page = "menu" | "reset";
 
@@ -34,19 +34,20 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
       >
         <MenuIcon sx={{ color: theme.custom.colors.hamburger }} />
       </IconButton>
-      <WithDrawer
-        title=""
-        openDrawer={menuOpen}
-        setOpenDrawer={setMenuOpen}
-        navbarStyle={{
-          borderBottom: undefined,
-          backgroundColor: theme.custom.colors.nav,
-        }}
-        navContentStyle={{
-          backgroundColor: theme.custom.colors.nav,
-        }}
-      >
-        {page === "menu" && <LockedMenuList setPage={setPage} />}
+      <WithDrawer title="" openDrawer={menuOpen} setOpenDrawer={setMenuOpen}>
+        {page === "menu" && (
+          <WithNav
+            navButtonLeft={<NavBackButton onClick={() => setMenuOpen(false)} />}
+            navbarStyle={{
+              backgroundColor: theme.custom.colors.nav,
+            }}
+            navContentStyle={{
+              backgroundColor: theme.custom.colors.nav,
+            }}
+          >
+            <LockedMenuList setPage={setPage} />
+          </WithNav>
+        )}
         {page === "reset" && (
           <Reset
             onBack={() => setPage("menu")}

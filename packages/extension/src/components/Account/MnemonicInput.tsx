@@ -9,8 +9,8 @@ import {
   InputAdornment,
   Link,
 } from "@mui/material";
-import { Header, SubtextParagraph, PrimaryButton } from "../../common";
-import { WarningLogo } from "./ResetWarning";
+import { Header, SubtextParagraph, PrimaryButton } from "../common";
+import { WarningLogo } from "../Icon";
 import {
   getBackgroundClient,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,

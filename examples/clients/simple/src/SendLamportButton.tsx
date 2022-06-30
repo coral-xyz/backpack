@@ -12,7 +12,7 @@ export const SendLamportButton: FC = () => {
     // Test the pass through connection works.
     //
     // @ts-ignore
-    const bh = await window.anchor.connection.getLatestBlockhash();
+    const bh = await window.backpack.connection.getLatestBlockhash();
     console.log("got latest blockhash", bh);
 
     const transaction = new Transaction().add(

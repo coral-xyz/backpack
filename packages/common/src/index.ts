@@ -11,6 +11,7 @@ export * from "./solana";
 export * from "./utils";
 export * from "./background";
 export * from "./popup";
+export * from "./zustand";
 
 // Utility to transform the handler API into something a little more friendly.
 export function withContext<Backend>(

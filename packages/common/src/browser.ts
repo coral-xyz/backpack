@@ -1,63 +1,49 @@
-// Chrome or firefox specific apis.
+import { vanillaStore } from "./zustand";
+
 export class BrowserRuntime {
+  // `chrome` = global.chrome OR undefined OR a polyfill used by the mobile app
+  // `browser` = safari and firefox's equivelent of global.chrome
+
   public static sendMessage(msg: any, cb?: any) {
-    // @ts-ignore
     chrome
-      ? // @ts-ignore
-        chrome.runtime.sendMessage(msg, cb)
-      : // @ts-ignore
-        browser.runtime.sendMessage(msg).then(cb);
+      ? chrome.runtime.sendMessage(msg, cb)
+      : browser.runtime.sendMessage(msg).then(cb);
   }
 
-  public static addEventListener(listener: any): any {
-    // @ts-ignore
+  public static addEventListener(listener: any): void {
     return chrome
-      ? // @ts-ignore
-        chrome.runtime.onMessage.addListener(listener)
-      : // @ts-ignore
-        browser.runtime.onmessage.addListener(listener);
+      ? chrome.runtime.onMessage.addListener(listener)
+      : browser.runtime.onMessage.addListener(listener);
   }
 
-  public static getUrl(scriptName: string) {
-    // @ts-ignore
+  public static getUrl(scriptName: string): string {
     return chrome
-      ? // @ts-ignore
-        chrome.runtime.getURL(scriptName)
-      : // @ts-ignore
-        browser.runtime.getURL(scriptName);
+      ? chrome.runtime.getURL(scriptName)
+      : browser.runtime.getURL(scriptName);
   }
 
   public static sendMessageActiveTab(msg: any) {
-    // @ts-ignore
     return chrome
-      ? // @ts-ignore
-        chrome.tabs.query(
-          { active: true, currentWindow: true },
-          (tabs: any) => {
-            // @ts-ignore
-            chrome.tabs.sendMessage(tabs[0].id, msg);
-          }
-        )
-      : // @ts-ignore
-        browser.tabs.query(
-          { active: true, currentWindow: true },
-          (tabs: any) => {
-            // @ts-ignore
-            browser.tabs.sendMessage(tabs[0].id, msg);
-          }
-        );
+      ? chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+          if (tab?.id) chrome.tabs.sendMessage(tab.id, msg);
+        })
+      : browser.tabs
+          .query({ active: true, currentWindow: true })
+          .then(([tab]) => {
+            if (tab?.id) browser.tabs.sendMessage(tab.id, msg);
+          });
   }
 
   public static sendMessageTab(tabId: number, msg: any) {
-    // @ts-ignore
-    chrome.tabs.sendMessage(tabId, msg);
+    chrome
+      ? chrome.tabs.sendMessage(tabId, msg)
+      : browser.tabs.sendMessage(tabId, msg);
   }
 
-  public static async openWindow(options: any) {
+  public static async openWindow(options: chrome.windows.CreateData) {
     return new Promise((resolve, reject) => {
-      // @ts-ignore
-      chrome.windows.create(options, (newWindow) => {
-        // todo: firefox
+      // TODO: `browser` support
+      chrome?.windows.create(options, (newWindow) => {
         const error = BrowserRuntime.checkForError();
         if (error) {
           return reject(error);
@@ -68,37 +54,34 @@ export class BrowserRuntime {
   }
 
   public static checkForError() {
-    // @ts-ignore
     const { lastError } = chrome ? chrome.runtime : browser.runtime;
-    if (!lastError) {
-      return undefined;
-    }
-    if (lastError.stack && lastError.message) {
-      return lastError;
-    }
-    return new Error(lastError.message);
+    return lastError ? new Error(lastError.message) : undefined;
   }
 
-  public static async getLastFocusedWindow(): Promise<Window> {
+  public static async getLastFocusedWindow(): Promise<chrome.windows.Window>;
+  public static async getLastFocusedWindow(): Promise<browser.windows.Window>;
+  public static async getLastFocusedWindow() {
     return new Promise((resolve) => {
-      // @ts-ignore
-      chrome.windows.getLastFocused(resolve);
+      chrome
+        ? chrome.windows.getLastFocused(resolve)
+        : browser.windows.getLastFocused().then(resolve);
     });
   }
 
-  public static connect(connectInfo: any): Port {
-    // @ts-ignore
+  public static connect(
+    connectInfo?: chrome.runtime.ConnectInfo
+  ): chrome.runtime.Port;
+  public static connect(): browser.runtime.Port;
+  public static connect(connectInfo?) {
     return chrome
-      ? // @ts-ignore
-        chrome.runtime.connect(connectInfo)
-      : // @ts-ignore
-        browser.runtime.connect(connectInfo);
+      ? chrome.runtime.connect(connectInfo)
+      : browser.runtime.connect();
   }
 
   public static async getLocalStorage(key: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      // @ts-ignore
-      return chrome.storage.local.get(key, (result) => {
+      // TODO: add `browser` support
+      return chrome?.storage.local.get(key, (result) => {
         const err = BrowserRuntime.checkForError();
         if (err) {
           reject(err);
@@ -113,8 +96,8 @@ export class BrowserRuntime {
     return new Promise((resolve, reject) => {
       const obj: any = {};
       obj[key] = value;
-      // @ts-ignore
-      chrome.storage.local.set(obj, () => {
+      // TODO: add `browser` support
+      chrome?.storage.local.set(obj, () => {
         const err = BrowserRuntime.checkForError();
         if (err) {
           reject(err);
@@ -125,23 +108,75 @@ export class BrowserRuntime {
     });
   }
 
-  public static closeActiveTab() {
-    // @ts-ignore
-    chrome.tabs.getCurrent((tab: any) => {
-      // @ts-ignore
-      chrome.tabs.remove(tab.id, function () {});
-    });
+  public static closeActiveTab(): void {
+    chrome
+      ? chrome.tabs.getCurrent((tab) => {
+          if (tab?.id) chrome.tabs.remove(tab.id, function () {});
+        })
+      : browser.tabs.getCurrent().then((tab) => {
+          if (tab?.id) browser.tabs.remove(tab.id);
+        });
   }
 
-  public static activeTab(): Promise<any> {
+  public static activeTab(): Promise<chrome.tabs.Tab>;
+  public static activeTab(): Promise<browser.tabs.Tab>;
+  public static activeTab() {
     return new Promise((resolve) => {
-      // @ts-ignore
-      chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-        resolve(tab);
-      });
+      chrome
+        ? chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+            resolve(tab);
+          })
+        : browser.tabs
+            .query({ active: true, currentWindow: true })
+            .then(([tab]) => {
+              resolve(tab);
+            });
     });
   }
 }
 
-type Window = any;
-type Port = any;
+const chrome = globalThis.chrome
+  ? // `global.chrome` exists, we're in chromium. Set `chrome` to `global.chrome`
+    globalThis.chrome
+  : globalThis.browser
+  ? // `global.browser` exists, we're in FF/safari. Set `chrome` to `undefined`
+    undefined
+  : //
+    // we don't have `global.chrome` or `global.browser`, this means we're in the app.
+    // We can make our own version of `chrome` with a minimal implementation.
+
+    // TODO: make these functions actually do something useful
+    ({
+      runtime: {
+        connect(connectInfo) {},
+        getURL(path) {},
+        lastError: undefined,
+        onMessage: {
+          addListener(cb) {},
+        },
+        sendMessage(msg, cb) {
+          const { injectJavaScript } = vanillaStore.getState();
+
+          console.log({ sendMessage: { msg, cb, injectJavaScript } });
+
+          injectJavaScript?.(
+            `window.forward(${JSON.stringify({ msg })}); true;`
+          );
+        },
+      },
+      storage: {
+        local: {
+          get(keys) {},
+          set(items, callback) {},
+        },
+      },
+      tabs: {
+        remove(tabIds, callback) {},
+        sendMessage(tabId, message) {},
+        query(queryInfo) {},
+      },
+      windows: {
+        create(createData, callback) {},
+        getLastFocused(callback) {},
+      },
+    } as typeof globalThis.chrome);

@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Box } from "@mui/material";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { ResetWelcome } from "./ResetWelcome";
 import { ResetWarning } from "./ResetWarning";
-import { MnemonicInput } from "./MnemonicInput";
 import { SetupComplete } from "./SetupComplete";
-import { ImportAccounts } from "../../ImportAccounts";
+import { MnemonicInput } from "../../Account/MnemonicInput";
+import { ImportAccounts } from "../../Account/ImportAccounts";
 import { CreatePassword } from "../../Account/CreatePassword";
-import { NAV_BAR_HEIGHT, _NavBackButton } from "../../Layout/Nav";
+import { WithNav, NavBackButton } from "../../Layout/Nav";
 import {
   getBackgroundClient,
   DerivationPath,
@@ -20,6 +20,7 @@ export function Reset({
   onBack: () => void;
   closeDrawer: () => void;
 }) {
+  const theme = useCustomTheme();
   const [mnemonic, setMnemonic] = useState("");
   const [derivationPath, setDerivationPath] = useState<DerivationPath>();
   const [accountIndices, setAccountIndices] = useState<number[]>([]);
@@ -86,19 +87,16 @@ export function Reset({
     }[step] || null;
 
   return (
-    <Box sx={{ height: "100%" }}>
-      <Box
-        sx={{
-          height: `${NAV_BAR_HEIGHT}px`,
-          position: "relative",
-          display: "flex",
-          justifyContent: "space-between",
-          padding: "10px 16px",
-        }}
-      >
-        <_NavBackButton onBack={prevStep} />
-      </Box>
+    <WithNav
+      navButtonLeft={<NavBackButton onClick={prevStep} />}
+      navbarStyle={{
+        backgroundColor: theme.custom.colors.nav,
+      }}
+      navContentStyle={{
+        backgroundColor: theme.custom.colors.nav,
+      }}
+    >
       {renderComponent}
-    </Box>
+    </WithNav>
   );
 }

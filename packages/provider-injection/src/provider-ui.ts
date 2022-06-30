@@ -50,11 +50,11 @@ export class ProviderUiInjection extends EventEmitter implements Provider {
   }
 
   get publicKey(): PublicKey {
-    return window.anchor.publicKey;
+    return window.backpack.publicKey;
   }
 
   get connection(): Connection {
-    return window.anchor.connection;
+    return window.backpack.connection;
   }
 
   async sendAndConfirm(
@@ -95,7 +95,7 @@ export class ProviderUiInjection extends EventEmitter implements Provider {
 
   public async signTransaction(tx: Transaction): Promise<Transaction> {
     return await cmn.signTransaction(
-      window.anchor.publicKey,
+      window.backpack.publicKey,
       this._requestManager,
       tx
     );
@@ -179,7 +179,7 @@ export class ProviderUiInjection extends EventEmitter implements Provider {
 
   private _handleConnect(event: Event) {
     const { publicKey, connectionUrl } = event.data.detail.data;
-    window.anchor._connect(publicKey, connectionUrl);
+    window.backpack._connect(publicKey, connectionUrl);
     this.emit("connect", event.data.detail);
   }
 
@@ -204,16 +204,16 @@ export class ProviderUiInjection extends EventEmitter implements Provider {
   }
 
   private _handleConnectionUrlUpdated(event: Event) {
-    const publicKey = window.anchor.publicKey.toString();
+    const publicKey = window.backpack.publicKey.toString();
     const connectionUrl = event.data.detail.data.url;
-    window.anchor._connect(publicKey, connectionUrl);
+    window.backpack._connect(publicKey, connectionUrl);
     this.emit("connectionUpdate", event.data.detail);
   }
 
   private _handlePublicKeyUpdated(event: Event) {
     const publicKey = event.data.detail.data.publicKey;
-    const connectionUrl = window.anchor.connection.rpcEndpoint;
-    window.anchor._connect(publicKey, connectionUrl);
+    const connectionUrl = window.backpack.connection.rpcEndpoint;
+    window.backpack._connect(publicKey, connectionUrl);
     this.emit("publicKeyUpdate", event.data.detail);
   }
 }

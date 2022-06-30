@@ -5,7 +5,7 @@ import { Check, Clear, Bolt } from "@mui/icons-material";
 import { explorerUrl } from "@coral-xyz/common";
 import { useActiveWallet, useRecentTransactions } from "@coral-xyz/recoil";
 import { Loading } from "../../common";
-import { WithDrawer } from "../../Layout/Drawer";
+import { WithEphemeralNavDrawer } from "../../Layout/Drawer";
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {
@@ -98,13 +98,13 @@ export function RecentActivityButton() {
       >
         <Bolt className={classes.networkSettingsIcon} />
       </IconButton>
-      <WithDrawer
+      <WithEphemeralNavDrawer
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}
         title={"Recent Activity"}
       >
         <RecentActivity />
-      </WithDrawer>
+      </WithEphemeralNavDrawer>
     </div>
   );
 }

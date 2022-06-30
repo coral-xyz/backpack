@@ -1,31 +1,15 @@
 import { Suspense } from "react";
-import { useNavigation } from "@coral-xyz/recoil";
-import { Typography, IconButton } from "@mui/material";
+import { Box, Typography, IconButton } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowBack } from "@mui/icons-material";
 import { Scrollbar } from "./Scrollbar";
 import { Loading } from "../common";
-import { WithTabs } from "./Tab";
 import { Router } from "./Router";
-import { ApproveTransactionRequest } from "../Unlocked/ApproveTransactionRequest";
 
 export const NAV_BAR_HEIGHT = 56;
 export const NAV_BUTTON_WIDTH = 38;
 
 const useStyles = styles((theme) => ({
-  withNavContainer: {
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-  },
-  navBarContainer: {
-    display: "flex",
-    justifyContent: "space-between",
-    paddingLeft: "16px",
-    paddingRight: "16px",
-    paddingTop: "10px",
-    paddingBottom: "10px",
-  },
   menuButtonContainer: {
     width: `${NAV_BUTTON_WIDTH}px`,
     display: "flex",
@@ -55,94 +39,92 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-// The main nav persistent stack.
-export function TabNavStack() {
-  const classes = useStyles();
+export function WithNav({
+  title,
+  navButtonLeft,
+  navButtonRight,
+  children,
+  navbarStyle = {},
+  navContentStyle = {},
+}: {
+  title?: string;
+  navButtonLeft?: React.ReactNode;
+  navButtonRight?: React.ReactNode;
+  children?: React.ReactNode;
+  navbarStyle?: React.CSSProperties;
+  navContentStyle?: React.CSSProperties;
+}) {
   return (
-    <WithTabs>
-      <div className={classes.withNavContainer}>
-        <NavBar />
-        <NavContent />
-        <ApproveTransactionRequest />
-      </div>
-    </WithTabs>
+    <>
+      <NavBar
+        title={title || ""}
+        navButtonLeft={navButtonLeft}
+        navButtonRight={navButtonRight}
+        style={navbarStyle}
+      />
+      <NavContent style={navContentStyle} renderComponent={children} />
+    </>
   );
 }
 
-function NavBar() {
+export function NavBar({
+  title,
+  navButtonLeft,
+  navButtonRight,
+  style = {},
+}: {
+  title: string;
+  navButtonLeft: React.ReactNode;
+  navButtonRight: React.ReactNode;
+  style?: any;
+}) {
   return (
     <Suspense fallback={null}>
-      <_NavBar />
+      <div
+        style={{
+          display: "flex",
+          height: `${NAV_BAR_HEIGHT}px`,
+          position: "relative",
+          justifyContent: "space-between",
+          padding: "10px 16px",
+          ...style,
+        }}
+      >
+        <div style={{ position: "relative", width: "100%", display: "flex" }}>
+          <NavButton button={navButtonLeft} />
+          <CenterDisplay title={title} />
+          <NavButton button={navButtonRight} align="right" />
+        </div>
+      </div>
     </Suspense>
   );
 }
 
-function _NavBar() {
-  const classes = useStyles();
-  const theme = useCustomTheme();
-  const { isRoot } = useNavigation();
-  return (
-    <div
-      style={{
-        borderBottom: !isRoot
-          ? `solid 1pt ${theme.custom.colors.border}`
-          : undefined,
-        height: `${NAV_BAR_HEIGHT}px`,
-        position: "relative",
-      }}
-      className={classes.navBarContainer}
-    >
-      <div style={{ position: "relative", width: "100%", display: "flex" }}>
-        <LeftNavButton />
-        <CenterDisplay />
-        <RightNavButton />
-      </div>
-    </div>
-  );
-}
-
-function LeftNavButton() {
-  const { isRoot } = useNavigation();
+function NavButton({
+  button,
+  align = "left",
+}: {
+  button: React.ReactNode;
+  align?: "left" | "right";
+}) {
+  const alignment = { [align]: 0 };
   return (
     <div
       style={{
         position: "absolute",
-        left: 0,
         height: "100%",
         display: "flex",
         justifyContent: "center",
         flexDirection: "column",
+        ...alignment,
       }}
     >
-      {isRoot ? <DummyButton /> : <NavBackButton />}
+      {button ? button : <DummyButton />}
     </div>
   );
 }
 
-function RightNavButton() {
-  const { navButtonRight } = useNavigation();
-  return (
-    <div
-      style={{
-        position: "absolute",
-        right: 0,
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
-      }}
-    >
-      {navButtonRight ? navButtonRight : <DummyButton />}
-    </div>
-  );
-}
-
-export function NavBackButton() {
-  const { pop } = useNavigation();
-  return <_NavBackButton pop={pop} />;
-}
-
-export function _NavBackButton({ pop }: any) {
+export function NavBackButton({ onClick }: { onClick: () => void }) {
   const classes = useStyles();
   const theme = useCustomTheme();
   return (
@@ -157,7 +139,7 @@ export function _NavBackButton({ pop }: any) {
     >
       <IconButton
         disableRipple
-        onClick={() => pop()}
+        onClick={onClick}
         className={classes.backButton}
         size="large"
         data-testid="back-button"
@@ -168,45 +150,42 @@ export function _NavBackButton({ pop }: any) {
   );
 }
 
-function NavContent() {
+export function NavContent({
+  renderComponent = <Router />,
+  style,
+}: {
+  renderComponent?: React.ReactNode;
+  style?: any;
+}) {
+  const _style = {
+    flex: 1,
+    ...style,
+  };
   return (
-    <div style={{ flex: 1 }}>
+    <div style={_style}>
       <Scrollbar>
-        <Suspense fallback={<Loading />}>
-          <Router />
-        </Suspense>
+        <Suspense fallback={<Loading />}>{renderComponent}</Suspense>
       </Scrollbar>
     </div>
   );
 }
 
-function CenterDisplay() {
+function CenterDisplay({ title }: { title: string }) {
   return (
     <Suspense fallback={<div></div>}>
-      <_CenterDisplay />
+      <div
+        style={{
+          visibility: title ? undefined : "hidden",
+          overflow: "hidden",
+          maxWidth: `calc(100% - ${NAV_BUTTON_WIDTH * 2}px)`,
+          margin: "0 auto",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <NavTitleLabel title={title} />
+      </div>
     </Suspense>
-  );
-}
-
-function _CenterDisplay() {
-  const { title, isRoot } = useNavigation();
-  return <__CenterDisplay title={title} isRoot={isRoot} />;
-}
-
-export function __CenterDisplay({ title, isRoot }: any) {
-  return (
-    <div
-      style={{
-        visibility: isRoot ? "hidden" : undefined,
-        overflow: "hidden",
-        maxWidth: `calc(100% - ${NAV_BUTTON_WIDTH * 2}px)`,
-        margin: "0 auto",
-        display: "flex",
-        alignItems: "center",
-      }}
-    >
-      <NavTitleLabel title={title} />
-    </div>
   );
 }
 
