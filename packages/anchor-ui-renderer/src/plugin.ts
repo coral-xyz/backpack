@@ -10,8 +10,7 @@ import {
   getLogger,
   BackgroundClient,
   Event,
-  Channel,
-  PostMessageServer,
+  PluginServer,
   RpcResponse,
   NAV_COMPONENT_PLUGIN_TABLE_DETAIL,
   CHANNEL_PLUGIN_RPC_REQUEST,
@@ -54,9 +53,9 @@ const logger = getLogger("plugin");
 export class Plugin {
   private _activeWallet: PublicKey;
   private _connectionUrl: string;
-  private _rpcServer: PostMessageServer;
-  private _bridgeServer: PostMessageServer;
-  private _connectionBridge: PostMessageServer;
+  private _rpcServer: PluginServer;
+  private _bridgeServer: PluginServer;
+  private _connectionBridge: PluginServer;
   private _iframe?: HTMLIFrameElement;
   private _nextRenderId?: number;
   private _pendingBridgeRequests?: Array<any>;
@@ -102,7 +101,7 @@ export class Plugin {
     //
     // RPC Server channel from plugin -> extension-ui.
     //
-    this._rpcServer = Channel.serverPostMessage(
+    this._rpcServer = new PluginServer(
       url,
       CHANNEL_PLUGIN_RPC_REQUEST,
       CHANNEL_PLUGIN_RPC_RESPONSE
@@ -112,7 +111,7 @@ export class Plugin {
     //
     // React reconciler bridge messages for custom React rendering.
     //
-    this._bridgeServer = Channel.serverPostMessage(
+    this._bridgeServer = new PluginServer(
       url,
       CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE
     );
@@ -122,7 +121,7 @@ export class Plugin {
     // Bridges messages for the solana connection object from the plugin
     // to the background script.
     //
-    this._connectionBridge = Channel.serverPostMessage(
+    this._connectionBridge = new PluginServer(
       url,
       CHANNEL_PLUGIN_CONNECTION_BRIDGE
     );

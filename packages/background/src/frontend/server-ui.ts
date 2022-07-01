@@ -11,7 +11,7 @@ import type {
 import {
   getLogger,
   withContextPort,
-  PortChannel,
+  ChannelAppUi,
   NotificationsClient,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
@@ -62,7 +62,7 @@ import type { Handle } from "../types";
 const logger = getLogger("background-server-ui");
 
 export function start(events: EventEmitter, b: Backend): Handle {
-  const rpcServerUi = PortChannel.server(CONNECTION_POPUP_RPC);
+  const rpcServerUi = ChannelAppUi.server(CONNECTION_POPUP_RPC);
   const notificationsUi = new NotificationsClient(
     CONNECTION_POPUP_NOTIFICATIONS
   );
