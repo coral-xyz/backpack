@@ -1,4 +1,5 @@
 import { validateMnemonic } from "bip39";
+import { Tooltip } from "@mui/material";
 import { useState, useEffect } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import {
@@ -14,6 +15,7 @@ import {
   Header,
   SubtextParagraph,
   PrimaryButton,
+  SecondaryButton,
 } from "../common";
 import { WarningLogo } from "../Icon";
 import {
@@ -75,9 +77,10 @@ export function MnemonicInput({
   const [checked, setChecked] = useState(false);
 
   const mnemonic = mnemonicWords.map((f) => f.trim()).join(" ");
-  const nextEnabled =
-    (!readOnly || checked) &&
-    mnemonicWords.find((w) => w.length < 3) === undefined;
+  // Only enable copy all fields populated
+  const copyEnabled = mnemonicWords.find((w) => w.length < 3) === undefined;
+  // Only allow next if checkbox is checked in read only and all fields are populated
+  const nextEnabled = (!readOnly || checked) && copyEnabled;
 
   //
   // Handle pastes of 12 or 24 word mnemonics.
@@ -160,7 +163,7 @@ export function MnemonicInput({
           container
           rowSpacing={0}
           columnSpacing={1}
-          sx={{ marginTop: "32px" }}
+          sx={{ marginTop: "24px" }}
         >
           {Array.from(Array(mnemonicWords.length).keys()).map((i) => (
             <Grid item xs={4} key={i}>
@@ -197,15 +200,13 @@ export function MnemonicInput({
             label="I saved my secret recovery phrase"
           />
         )}
-      </Box>
-      <Box>
-        <Box
-          sx={{
-            textAlign: "center",
-            margin: "27px 0",
-          }}
-        >
-          {readOnly ? null : (
+        {readOnly ? null : (
+          <Box
+            sx={{
+              textAlign: "center",
+              margin: "12px 0",
+            }}
+          >
             <>
               <Box sx={{ flex: 1 }}>
                 <Link
@@ -220,14 +221,11 @@ export function MnemonicInput({
                   recovery mnemonic
                 </Link>
               </Box>
-              <Box>
-                <Link className={classes.link} onClick={generateRandom}>
-                  Use a random mnemonic
-                </Link>
-              </Box>
             </>
-          )}
-        </Box>
+          </Box>
+        )}
+      </Box>
+      <Box>
         <Box
           sx={{
             marginLeft: "16px",
@@ -238,6 +236,11 @@ export function MnemonicInput({
           {error && (
             <Typography className={classes.errorMsg}>{error}</Typography>
           )}
+          {readOnly && (
+            <Box sx={{ marginBottom: "12px" }}>
+              <CopyButton mnemonic={mnemonic} disabled={!copyEnabled} />
+            </Box>
+          )}
           <PrimaryButton
             label="Import"
             onClick={next}
@@ -246,5 +249,36 @@ export function MnemonicInput({
         </Box>
       </Box>
     </Box>
+  );
+}
+
+function CopyButton({
+  mnemonic,
+  disabled = false,
+}: {
+  mnemonic: string;
+  disabled?: boolean;
+}) {
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const onCopy = () => {
+    setTooltipOpen(true);
+    setTimeout(() => setTooltipOpen(false), 1000);
+    navigator.clipboard.writeText(mnemonic);
+  };
+  return (
+    <Tooltip
+      title={"Copied"}
+      open={tooltipOpen}
+      placement="top"
+      arrow={true}
+      disableFocusListener
+      disableHoverListener
+      disableTouchListener
+    >
+      {/* Box wrapper because Tooltip requires forwarded ref */}
+      <Box>
+        <SecondaryButton onClick={onCopy} label="Copy" disabled={disabled} />
+      </Box>
+    </Tooltip>
   );
 }
