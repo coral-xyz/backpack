@@ -9,47 +9,7 @@
     </style>
   </head>
   <body>
-    <script type="module">
-      (async function setup() {
-        try {
-          // console.log(new URL("./service-worker.ts", import.meta.url));
-          const registration = await navigator.serviceWorker.register(
-            new URL("./service-worker.ts", import.meta.url),
-            {
-              type: "module",
-            }
-          );
-
-          navigator.serviceWorker.onmessage = (event) => {
-            window.forwardLogs(event.data);
-
-            // console.log({ receivedInBrowserFromSW_3: event });
-            document
-              .querySelector("body")
-              .insertAdjacentHTML(
-                "beforeend",
-                `<pre>${JSON.stringify(event.data)}</pre>`
-              );
-          };
-
-          window.forwardLogs = (...rawData) => {
-            window.ReactNativeWebView?.postMessage(JSON.stringify(rawData));
-          };
-
-          window.postMessageToBackgroundViaWebview = (rawData) => {
-            navigator.serviceWorker.controller.postMessage(rawData);
-          };
-
-          document
-            .querySelector("body")
-            .insertAdjacentHTML(
-              "beforeend",
-              "<p>background script service worker registered</p>"
-            );
-        } catch (err) {
-          document.write(JSON.stringify({ err }));
-        }
-      })();
+    <script src="setup.ts" type="module">
     </script>
   </body>
 </html>

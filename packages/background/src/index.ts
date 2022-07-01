@@ -11,7 +11,7 @@ export * from "./keyring";
 //
 // Entry: Starts the background service.
 //
-export function start(): Background {
+export function start(isMobile?: boolean): Background {
   // Shared event message bus.
   const events = new EventEmitter();
 
@@ -20,7 +20,7 @@ export function start(): Background {
   const coreB = coreBackend.start(events, solanaB);
 
   // Frontend.
-  const _serverUi = serverInjected.start(events, coreB);
+  const _serverUi = !isMobile ? serverInjected.start(events, coreB) : undefined;
   const _serverInjected = serverUi.start(events, coreB);
   const _solanaConnection = solanaConnection.start(events, solanaB);
 

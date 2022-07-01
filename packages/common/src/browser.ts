@@ -136,6 +136,12 @@ export class BrowserRuntime {
   }
 }
 
+const REQUESTS = {};
+
+export function armaniHandleResponse(event: any) {
+  console.log("armani here test", event, REQUESTS);
+}
+
 const chrome = globalThis.chrome
   ? // `global.chrome` exists, we're in chromium. Set `chrome` to `global.chrome`
     globalThis.chrome
@@ -158,6 +164,7 @@ const chrome = globalThis.chrome
         lastError: undefined,
         onMessage: {
           addListener(cb) {
+            logFromAnywhere("armani 1234");
             self.addEventListener("message", (event) => {
               cb(event.data, {}, (result) => {
                 logFromAnywhere({ sendBackResult: result });
@@ -173,8 +180,10 @@ const chrome = globalThis.chrome
         async sendMessage(msg, cb) {
           logFromAnywhere({ sendMessage: { msg, cb } });
 
-          const out = await (() =>
+          /*
+          cb(await (() =>
             new Promise((resolve, reject) => {
+							REQUESTS[msg.data.id] = { resolve, reject };
               vanillaStore
                 .getState()
                 .injectJavaScript?.(
@@ -182,11 +191,11 @@ const chrome = globalThis.chrome
                     msg
                   )}); true;`
                 );
-
+							resolve('locked');
               // TODO: resolve after receiving response from backend serviceworker
-            }))();
-
-          cb(out);
+            }))());
+					*/
+          cb("locked");
         },
       },
       storage: {

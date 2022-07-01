@@ -2,7 +2,7 @@
 import { start } from ".";
 
 self.addEventListener("install", () => {
-  start();
+  start(true);
   self.skipWaiting();
 });
 

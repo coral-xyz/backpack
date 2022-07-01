@@ -31,6 +31,7 @@ export function getLogger(mod: string) {
  * @param args what to log
  */
 export async function logFromAnywhere(...args: any[]) {
+  // Assumes your're in the service worker.
   try {
     // if we're in a serviceworker, try sending the message to the HTML page
     const clients = await self.clients.matchAll({
@@ -39,7 +40,13 @@ export async function logFromAnywhere(...args: any[]) {
     });
 
     clients.forEach((client) => {
-      client.postMessage({ args, from: "serviceWorker" });
+      client.postMessage({
+        channel: "mobile-logs",
+        data: {
+          args,
+          from: "serviceWorker",
+        },
+      });
     });
   } catch (err) {
     try {
@@ -53,5 +60,11 @@ export async function logFromAnywhere(...args: any[]) {
     } catch (err) {
       console.log({ args, from: "idk" });
     }
+    /*
+	// Assumes you're in the frontend.
+	catch (err) {
+		console.log({ args, from: 'frontend' });
+  }
+		*/
   }
 }
