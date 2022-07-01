@@ -4,7 +4,7 @@ import { Provider, Spl } from "@project-serum/anchor";
 import {
   getBackgroundClient,
   BackgroundSolanaConnection,
-  PortChannel,
+  ChannelAppUi,
   SOLANA_CONNECTION_RPC_UI,
   UI_RPC_METHOD_CONNECTION_URL_READ,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
@@ -80,7 +80,7 @@ export const activeWalletWithName = selector({
 export const connectionBackgroundClient = selector({
   key: "connectionBackgroundClient",
   get: ({ get }) => {
-    return PortChannel.client(SOLANA_CONNECTION_RPC_UI);
+    return ChannelAppUi.client(SOLANA_CONNECTION_RPC_UI);
   },
 });
 

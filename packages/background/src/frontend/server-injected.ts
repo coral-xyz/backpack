@@ -16,8 +16,8 @@ import {
   BrowserRuntime,
   withContext,
   withContextPort,
-  Channel,
-  PortChannel,
+  ChannelContentScript,
+  ChannelAppUi,
   RPC_METHOD_CONNECT,
   RPC_METHOD_DISCONNECT,
   RPC_METHOD_SIGN_AND_SEND_TX,
@@ -45,9 +45,10 @@ import type { Handle } from "../types";
 const logger = getLogger("server-injected");
 
 export function start(events: EventEmitter, b: Backend): Handle {
-  const rpcServerInjected = Channel.server(CHANNEL_RPC_REQUEST);
-  const popupUiResponse = PortChannel.server(CONNECTION_POPUP_RESPONSE);
-  const notificationsInjected = Channel.client(CHANNEL_NOTIFICATION);
+  const rpcServerInjected = ChannelContentScript.server(CHANNEL_RPC_REQUEST);
+  const notificationsInjected =
+    ChannelContentScript.client(CHANNEL_NOTIFICATION);
+  const popupUiResponse = ChannelAppUi.server(CONNECTION_POPUP_RESPONSE);
 
   //
   // Dispatch notifications to injected web apps.

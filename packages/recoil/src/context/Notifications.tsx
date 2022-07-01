@@ -3,7 +3,7 @@ import { useSetRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import {
   getLogger,
-  PortChannel,
+  ChannelAppUi,
   Notification,
   BackgroundSolanaConnection,
   CONNECTION_POPUP_NOTIFICATIONS,
@@ -213,7 +213,7 @@ export function NotificationsProvider(props: any) {
     //
     // Initiate subscription.
     //
-    PortChannel.notifications(CONNECTION_POPUP_NOTIFICATIONS).onNotification(
+    ChannelAppUi.notifications(CONNECTION_POPUP_NOTIFICATIONS).onNotification(
       notificationsHandler
     );
   }, []);
