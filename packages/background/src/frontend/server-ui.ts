@@ -12,7 +12,6 @@ import {
   getLogger,
   withContextPort,
   ChannelAppUi,
-  NotificationsClient,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
@@ -63,7 +62,7 @@ const logger = getLogger("background-server-ui");
 
 export function start(events: EventEmitter, b: Backend): Handle {
   const rpcServerUi = ChannelAppUi.server(CONNECTION_POPUP_RPC);
-  const notificationsUi = new NotificationsClient(
+  const notificationsUi = ChannelAppUi.notifications(
     CONNECTION_POPUP_NOTIFICATIONS
   );
 

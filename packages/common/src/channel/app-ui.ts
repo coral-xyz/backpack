@@ -66,6 +66,13 @@ export class ChannelAppUiNotifications {
       }
     );
   }
+
+  public pushNotification(notif: Notification) {
+    BrowserRuntime.sendMessage({
+      channel: this.name,
+      data: notif,
+    });
+  }
 }
 
 export class ChannelAppUiClient implements BackgroundClient {
