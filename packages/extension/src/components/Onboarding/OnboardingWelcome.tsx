@@ -3,7 +3,6 @@ import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ActionCard } from "../Layout/ActionCard";
 import { BackpackHeader } from "../Locked";
-import { BackpackIcon } from "../Icon";
 import type { OnboardingFlows } from "./";
 
 export function OnboardingWelcome({

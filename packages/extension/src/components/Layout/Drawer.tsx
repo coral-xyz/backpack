@@ -145,7 +145,7 @@ function WithDrawerContent({ children, setOpenDrawer }: any) {
   const nav = useEphemeralNav();
   useEffect(() => {
     let previous = nav.navButtonRight;
-    nav.setNavButtonRight(<RightButton onClick={() => setOpenDrawer(false)} />);
+    nav.setNavButtonRight(<CloseButton onClick={() => setOpenDrawer(false)} />);
     return () => {
       nav.setNavButtonRight(previous);
     };
@@ -157,7 +157,7 @@ function WithDrawerContent({ children, setOpenDrawer }: any) {
   );
 }
 
-function RightButton({ onClick }: any) {
+export function CloseButton({ onClick }: any) {
   const classes = useStyles();
   return (
     <div

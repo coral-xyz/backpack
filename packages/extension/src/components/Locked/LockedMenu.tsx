@@ -6,7 +6,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import SupportIcon from "@mui/icons-material/Support";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List, ListItem } from "../common/List";
-import { WithDrawer } from "../Layout/Drawer";
+import { CloseButton, WithDrawer } from "../Layout/Drawer";
 import { Reset } from "./Reset";
 import { NAV_BAR_HEIGHT, WithNav, NavBackButton } from "../Layout/Nav";
 
@@ -37,7 +37,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
       <WithDrawer title="" openDrawer={menuOpen} setOpenDrawer={setMenuOpen}>
         {page === "menu" && (
           <WithNav
-            navButtonLeft={<NavBackButton onClick={() => setMenuOpen(false)} />}
+            navButtonRight={<CloseButton onClick={() => setMenuOpen(false)} />}
             navbarStyle={{
               backgroundColor: theme.custom.colors.nav,
             }}
