@@ -30,7 +30,8 @@ const useStyles = makeStyles((theme: any) => ({
     marginTop: "4px",
     "& .MuiOutlinedInput-root": {
       backgroundColor: theme.custom.colors.background,
-      borderRadius: "12px",
+      borderRadius: "8px",
+      height: "40px",
       "& fieldset": {
         border: "none",
       },
@@ -162,7 +163,7 @@ export function MnemonicInput({
         <Grid
           container
           rowSpacing={0}
-          columnSpacing={1}
+          columnSpacing={1.00005}
           sx={{ marginTop: "24px" }}
         >
           {Array.from(Array(mnemonicWords.length).keys()).map((i) => (
@@ -204,7 +205,7 @@ export function MnemonicInput({
           <Box
             sx={{
               textAlign: "center",
-              margin: "12px 0",
+              margin: "32px 0",
             }}
           >
             <>
