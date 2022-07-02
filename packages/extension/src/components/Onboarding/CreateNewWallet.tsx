@@ -4,7 +4,7 @@ import { styles } from "@coral-xyz/themes";
 import { MenuBook } from "@mui/icons-material";
 import {
   getBackgroundClient,
-  BrowserRuntime,
+  BrowserRuntimeExtension,
   DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
@@ -146,7 +146,7 @@ export function _CreateNewWallet({ mnemonic }: { mnemonic: string }) {
         params: [mnemonic, derivationPath, password],
       })
       .catch(console.error)
-      .then(() => BrowserRuntime.closeActiveTab());
+      .then(() => BrowserRuntimeExtension.closeActiveTab());
   };
   return (
     <div

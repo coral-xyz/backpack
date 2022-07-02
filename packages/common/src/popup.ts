@@ -1,5 +1,5 @@
 import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "./constants";
-import { BrowserRuntime } from "./browser";
+import { BrowserRuntimeExtension } from "./browser";
 
 const POPUP_HTML = "popup.html";
 const EXPANDED_HTML = "options.html";
@@ -63,8 +63,8 @@ export async function openApproveMessagePopupWindow(
 
 async function openPopupWindow(url: string): Promise<Window> {
   return new Promise((resolve, reject) => {
-    BrowserRuntime.getLastFocusedWindow().then((window: any) => {
-      BrowserRuntime.openWindow({
+    BrowserRuntimeExtension.getLastFocusedWindow().then((window: any) => {
+      BrowserRuntimeExtension.openWindow({
         url: `${url}`,
         type: "popup",
         width: EXTENSION_WIDTH,
