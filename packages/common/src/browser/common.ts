@@ -59,7 +59,7 @@ export class BrowserRuntimeCommon {
 //
 // Monkey patch for mobile.
 //
-const chrome = globalThis.chrome
+globalThis.chrome
   ? // `global.chrome` exists, we're in chromium. Set `chrome` to `global.chrome`
     globalThis.chrome
   : globalThis.browser
@@ -71,28 +71,29 @@ const chrome = globalThis.chrome
 
     // TODO: make these functions actually do something useful
     (() => {
+      //
+      // Currently assumes this is only called from the front end app code on
+      // mobile.
+      //
       BrowserRuntimeCommon.sendMessage = (msg, cb) => {
-        logFromAnywhere({ sendMessage: { msg, cb } });
+        //        logFromAnywhere({ sendMessage: { msg, cb } });
 
-        /*
-        cb(await (() =>
-        new Promise((resolve, reject) => {
-        REQUESTS[msg.data.id] = { resolve, reject };
-        vanillaStore
-        .getState()
-        .injectJavaScript?.(
-        `window.postMessageToBackgroundViaWebview(${JSON.stringify(
-        msg
-        )}); true;`
-        );
-        resolve('locked');
-        // TODO: resolve after receiving response from backend serviceworker
-        }))());
-      */
-        cb("locked");
+        const promise = new Promise((resolve, reject) => {
+          //					REQUESTS[msg.data.id] = { resolve, reject };
+          vanillaStore
+            .getState()
+            .injectJavaScript?.(
+              `window.postMessageToBackgroundViaWebview(${JSON.stringify(
+                msg
+              )}); true;`
+            );
+          // TODO: resolve after receiving response from backend serviceworker
+          resolve("locked");
+        });
+        promise.then(cb);
       };
       BrowserRuntimeCommon.addEventListener = (cb) => {
-        logFromAnywhere("armani 1234");
+        logFromAnywhere({ test: "armani 1234" });
         self.addEventListener("message", (event) => {
           cb(event.data, {}, (result) => {
             logFromAnywhere({ sendBackResult: result });

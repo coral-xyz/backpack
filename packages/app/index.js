@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useRef } from "react";
 import { View, Text } from "react-native";
 import { WebView } from "react-native-webview";
 import { registerRootComponent } from "expo";
@@ -9,6 +9,7 @@ import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
 
 function Background() {
+  const webViewRef = useRef(null);
   const setInjectJavaScript = useStore((state) => state.setInjectJavaScript);
   return (
     <View
@@ -18,13 +19,9 @@ function Background() {
       }}
     >
       <WebView
-        ref={(ref) => {
-          // XXX: timeout is a temporary hack to ensure page is loaded
-          setTimeout(() => {
-            // put the injectJavaScript function in a global observable
-            // store so that it can be used here & in @coral-xyz/common
-            setInjectJavaScript(ref.injectJavaScript);
-          }, 1_000);
+        ref={webViewRef}
+        onLoadEnd={() => {
+          setInjectJavaScript(webViewRef.current.injectJavaScript);
         }}
         source={{
           // XXX: this can only be a domain that's specified in

@@ -25,12 +25,12 @@
       // @ts-ignore
       window.ReactNativeWebView?.postMessage(JSON.stringify(event.data));
     };
-    // @ts-ignore
-    window.forwardLogs = (event) => handleForwardLogs({ data: event });
-
     const handleResponse = (event) => {
       //			armaniHandleResponse(event);
     };
+
+    // @ts-ignore
+    window.forwardLogs = (event) => handleForwardLogs({ data: event });
 
     // @ts-ignore
     window.postMessageToBackgroundViaWebview = (rawData) => {
