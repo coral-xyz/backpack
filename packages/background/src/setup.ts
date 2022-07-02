@@ -1,5 +1,3 @@
-import { armaniHandleResponse } from "@coral-xyz/common";
-
 (async function setup() {
   try {
     // console.log(new URL("./service-worker.ts", import.meta.url));
@@ -10,7 +8,7 @@ import { armaniHandleResponse } from "@coral-xyz/common";
       }
     );
 
-    navigator.serviceWorker.onmessage = (event) => {
+    navigator.serviceWorker.onmessage = (event: any) => {
       switch (event.channel) {
         case "mobile-logs":
           handleForwardLogs(event);
@@ -19,23 +17,28 @@ import { armaniHandleResponse } from "@coral-xyz/common";
           handleResponse(event);
           break;
         default:
-          throw new Error(event);
+        //throw new Error(event);
       }
     };
 
     const handleForwardLogs = (event) => {
+      // @ts-ignore
       window.ReactNativeWebView?.postMessage(JSON.stringify(event.data));
     };
+    // @ts-ignore
     window.forwardLogs = (event) => handleForwardLogs({ data: event });
 
     const handleResponse = (event) => {
       //			armaniHandleResponse(event);
     };
 
+    // @ts-ignore
     window.postMessageToBackgroundViaWebview = (rawData) => {
+      // @ts-ignore
       navigator.serviceWorker.controller.postMessage(rawData);
     };
 
+    // @ts-ignore
     document
       .querySelector("body")
       .insertAdjacentHTML(

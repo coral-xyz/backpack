@@ -1,12 +1,12 @@
+import { Suspense } from "react";
+import { View, Text } from "react-native";
+import { WebView } from "react-native-webview";
+import { registerRootComponent } from "expo";
+import { useStore } from "@coral-xyz/common";
+import { RecoilRoot } from "recoil/native/recoil";
+import App from "./src/App";
 import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
-import { registerRootComponent } from "expo";
-import { setupClient, useStore } from "@coral-xyz/common";
-import App from "./src/App";
-import { RecoilRoot } from "recoil/native/recoil";
-import { Suspense } from "react";
-import { WebView } from "react-native-webview";
-import { View } from "react-native";
 
 function Background() {
   const setInjectJavaScript = useStore((state) => state.setInjectJavaScript);
@@ -55,8 +55,6 @@ const WrappedApp = () => (
     </RecoilRoot>
   </Suspense>
 );
-
-setupClient();
 
 // registerRootComponent calls AppRegistry.registerComponent('main', () => App);
 // It also ensures that whether you load the app in Expo Go or in a native build,

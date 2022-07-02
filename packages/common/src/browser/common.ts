@@ -1,3 +1,4 @@
+import { logFromAnywhere } from "../logging";
 import { vanillaStore } from "../zustand";
 
 //
@@ -71,14 +72,37 @@ const chrome = globalThis.chrome
     // TODO: make these functions actually do something useful
     (() => {
       BrowserRuntimeCommon.sendMessage = (msg, cb) => {
-        const { injectJavaScript } = vanillaStore.getState();
+        logFromAnywhere({ sendMessage: { msg, cb } });
 
-        console.log({ sendMessage: { msg, cb, injectJavaScript } });
-
-        injectJavaScript?.(`window.forward(${JSON.stringify({ msg })}); true;`);
+        /*
+        cb(await (() =>
+        new Promise((resolve, reject) => {
+        REQUESTS[msg.data.id] = { resolve, reject };
+        vanillaStore
+        .getState()
+        .injectJavaScript?.(
+        `window.postMessageToBackgroundViaWebview(${JSON.stringify(
+        msg
+        )}); true;`
+        );
+        resolve('locked');
+        // TODO: resolve after receiving response from backend serviceworker
+        }))());
+      */
+        cb("locked");
       };
       BrowserRuntimeCommon.addEventListener = (cb) => {
-        // todo
+        logFromAnywhere("armani 1234");
+        self.addEventListener("message", (event) => {
+          cb(event.data, {}, (result) => {
+            logFromAnywhere({ sendBackResult: result });
+
+            // requests[event.data.id].resolve(result);
+            // delete requests[event.data.id];
+
+            // TODO: send result back to frontend over postMessage
+          });
+        });
       };
       BrowserRuntimeCommon.getLocalStorage = async (
         key: string
