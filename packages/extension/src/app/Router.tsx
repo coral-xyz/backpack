@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { styles } from "@coral-xyz/themes";
 import {
-  getBackgroundResponseClient,
   getLogger,
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
@@ -17,6 +16,7 @@ import {
   useKeyringStoreState,
   useApprovedOrigins,
   useBootstrapFast,
+  useBackgroundResponseClient,
 } from "@coral-xyz/recoil";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
@@ -117,6 +117,7 @@ function QueryLockedApproval() {
 
 function QueryLocked() {
   logger.debug("query locked");
+  const background = useBackgroundResponseClient();
 
   const url = new URL(window.location.href);
   const requestId = parseInt(url.searchParams.get("requestId")!);
@@ -129,12 +130,21 @@ function QueryLocked() {
     return <></>;
   }
   return (
-    <LockedBootstrap onUnlock={() => connectFlowDidComplete(requestId, true)} />
+    <LockedBootstrap
+      onUnlock={async () => {
+        await background.response({
+          id: requestId,
+          result: true,
+        });
+        window.close();
+      }}
+    />
   );
 }
 
 function QueryApproval() {
   logger.debug("query approval");
+  const background = useBackgroundResponseClient();
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
   const requestId = parseInt(url.searchParams.get("requestId")!);
@@ -149,9 +159,13 @@ function QueryApproval() {
   return (
     <Approval
       origin={origin}
-      onCompletion={(didApprove: boolean) =>
-        connectFlowDidComplete(requestId, didApprove)
-      }
+      onCompletion={async (didApprove: boolean) => {
+        await background.response({
+          id: requestId,
+          result: didApprove,
+        });
+        window.close();
+      }}
     />
   );
 }
@@ -159,6 +173,7 @@ function QueryApproval() {
 function QueryApproveTransaction() {
   logger.debug("query approve transaction");
 
+  const background = useBackgroundResponseClient();
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
   const requestId = parseInt(url.searchParams.get("requestId")!);
@@ -168,8 +183,12 @@ function QueryApproveTransaction() {
     <ApproveTransaction
       tx={tx}
       origin={origin}
-      onCompletion={(didApprove: boolean) => {
-        approveFlowDidComplete(requestId, didApprove);
+      onCompletion={async (didApprove: boolean) => {
+        await background.response({
+          id: requestId,
+          result: didApprove,
+        });
+        window.close();
       }}
     />
   );
@@ -178,6 +197,7 @@ function QueryApproveTransaction() {
 function QueryApproveMessage() {
   logger.debug("query approve transaction");
 
+  const bg = useBackgroundResponseClient();
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
   const requestId = parseInt(url.searchParams.get("requestId")!);
@@ -187,8 +207,12 @@ function QueryApproveMessage() {
     <ApproveMessage
       message={message}
       origin={origin}
-      onCompletion={(didApprove: boolean) => {
-        approveFlowDidComplete(requestId, didApprove);
+      onCompletion={async (didApprove: boolean) => {
+        await bg.response({
+          id: requestId,
+          result: didApprove,
+        });
+        window.close();
       }}
     />
   );
@@ -212,29 +236,6 @@ function FullApp() {
 function LockedBootstrap({ onUnlock }: any) {
   useBootstrapFast();
   return <Locked onUnlock={onUnlock} />;
-}
-
-// Invoked at the end of a connection flow. Triggers a notification to be sent
-// from the UI -> background script -> injected script and subsequently closes
-// the window.
-async function connectFlowDidComplete(requestId: number, result: boolean) {
-  const background = getBackgroundResponseClient();
-  await background.response({
-    id: requestId,
-    result,
-  });
-  // Must close *after* the above request goes through so that the notification
-  // can be relayed to the injected scrpit.
-  window.close();
-}
-
-async function approveFlowDidComplete(requestId: number, result: boolean) {
-  const respClient = getBackgroundResponseClient();
-  await respClient.response({
-    id: requestId,
-    result,
-  });
-  window.close();
 }
 
 export function WithSuspense(props: any) {

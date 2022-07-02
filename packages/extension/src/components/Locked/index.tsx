@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import {
-  getBackgroundClient,
-  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-} from "@coral-xyz/common";
+import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { TextField, PrimaryButton } from "../common";
 import { LockedMenu } from "./LockedMenu";
 
@@ -27,6 +25,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
 }
 
 function LockedInner({ onUnlock }: { onUnlock?: () => Promise<void> }) {
+  const background = useBackgroundClient();
   const theme = useCustomTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
@@ -35,7 +34,6 @@ function LockedInner({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const _onUnlock = async (e: any) => {
     e.preventDefault();
     try {
-      const background = getBackgroundClient();
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
         params: [password],

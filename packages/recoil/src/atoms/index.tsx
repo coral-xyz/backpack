@@ -1,3 +1,4 @@
+export * from "./background";
 export * from "./balances";
 export * from "./blockchains";
 export * from "./bootstrap";

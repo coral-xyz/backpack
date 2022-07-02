@@ -2,7 +2,6 @@ import { atom, selector } from "recoil";
 import { Commitment } from "@solana/web3.js";
 import { Provider, Spl } from "@project-serum/anchor";
 import {
-  getBackgroundClient,
   BackgroundSolanaConnection,
   ChannelAppUi,
   SOLANA_CONNECTION_RPC_UI,
@@ -14,6 +13,7 @@ import {
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
 } from "@coral-xyz/common";
 import { WalletPublicKeys } from "../types";
+import { backgroundClient } from "./background";
 
 /**
  * List of all public keys for the wallet along with associated nicknames.
@@ -22,8 +22,8 @@ export const walletPublicKeys = atom<WalletPublicKeys>({
   key: "walletPublicKeys",
   default: selector({
     key: "walletPublicKeysDefault",
-    get: async ({}) => {
-      const background = getBackgroundClient();
+    get: async ({ get }) => {
+      const background = get(backgroundClient);
       return await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
         params: [],
@@ -39,8 +39,8 @@ export const activeWallet = atom<string | null>({
   key: "activeWallet",
   default: selector({
     key: "activeWalletDefault",
-    get: async ({}) => {
-      const background = getBackgroundClient();
+    get: async ({ get }) => {
+      const background = get(backgroundClient);
       return await background.request({
         method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
         params: [],
@@ -92,7 +92,7 @@ export const connectionUrl = atom<string | null>({
   default: selector({
     key: "clusterConnectionDefault",
     get: ({ get }) => {
-      const background = getBackgroundClient();
+      const background = get(backgroundClient);
       return background.request({
         method: UI_RPC_METHOD_CONNECTION_URL_READ,
         params: [],
@@ -133,24 +133,28 @@ export const commitment = atom<Commitment>({
   key: "solanaCommitment",
   default: "processed",
   effects: [
-    ({ setSelf }) => {
-      const background = getBackgroundClient();
+    ({ setSelf, getPromise }) => {
       setSelf(
-        background.request({
-          method: UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
-          params: [],
-        })
+        (async () => {
+          const background = await getPromise(backgroundClient);
+          return await background.request({
+            method: UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
+            params: [],
+          });
+        })()
       );
     },
-    ({ onSet }) => {
+    ({ onSet, getPromise }) => {
       onSet((commitment) => {
-        const background = getBackgroundClient();
-        background
-          .request({
-            method: UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
-            params: [commitment],
-          })
-          .catch(console.error);
+        (async () => {
+          const background = await getPromise(backgroundClient);
+          await background
+            .request({
+              method: UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
+              params: [commitment],
+            })
+            .catch(console.error);
+        })();
       });
     },
   ],

@@ -1,11 +1,7 @@
 import { RecoilRoot } from "recoil";
-import {
-  setupBackgroundClientAppUi,
-  QUERY_CONNECT_HARDWARE,
-  QUERY_ONBOARDING,
-} from "@coral-xyz/common";
+import { QUERY_CONNECT_HARDWARE, QUERY_ONBOARDING } from "@coral-xyz/common";
+import { useBackgroundKeepAlive } from "@coral-xyz/recoil";
 import { WithSuspense } from "../app/Router";
-
 import { ConnectHardware } from "../components/Settings/ConnectHardware";
 import { Onboarding } from "../components/Onboarding";
 import "../app/App.css";
@@ -18,7 +14,6 @@ import { WithTheme } from "../app/theme";
 // - Connect to hardware
 //
 function Options() {
-  setupBackgroundClientAppUi();
   return (
     <RecoilRoot>
       <_Options />
@@ -27,6 +22,7 @@ function Options() {
 }
 
 function _Options() {
+  useBackgroundKeepAlive();
   return (
     <WithTheme>
       <WithSuspense>

@@ -12,6 +12,7 @@ import {
 } from "@mui/icons-material";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import {
+  useBackgroundClient,
   useEphemeralNav,
   useKeyringStoreState,
   KeyringStoreStateEnum,
@@ -19,7 +20,6 @@ import {
   useActiveWallet,
 } from "@coral-xyz/recoil";
 import {
-  getBackgroundClient,
   openConnectHardware,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
@@ -153,12 +153,12 @@ function AvatarHeader() {
 }
 
 function WalletList({ close }: { close: () => void }) {
+  const background = useBackgroundClient();
   const theme = useCustomTheme();
   const namedPublicKeys = useWalletPublicKeys();
   const nav = useEphemeralNav();
 
   const clickWallet = (publicKey: PublicKey) => {
-    const background = getBackgroundClient();
     background
       .request({
         method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
@@ -237,9 +237,9 @@ function WalletList({ close }: { close: () => void }) {
 function SettingsList({ close }: { close: () => void }) {
   const theme = useCustomTheme();
   const nav = useEphemeralNav();
+  const background = useBackgroundClient();
 
   const lockWallet = () => {
-    const background = getBackgroundClient();
     background
       .request({
         method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
@@ -365,10 +365,10 @@ function AddConnectWalletMenu({
   closeDrawer: () => void;
   setImportPrivateKey: (s: boolean) => void;
 }) {
+  const background = useBackgroundClient();
   const classes = useStyles();
 
   const createNewWallet = () => {
-    const background = getBackgroundClient();
     background
       .request({
         method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
@@ -408,6 +408,7 @@ function AddConnectWalletMenu({
 }
 
 function ImportPrivateKey({ closeDrawer }: any) {
+  const background = useBackgroundClient();
   const [name, setName] = useState("");
   const [secretKey, setSecretKey] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -418,7 +419,6 @@ function ImportPrivateKey({ closeDrawer }: any) {
       return;
     }
     const secretKeyStr = Buffer.from(kp.secretKey).toString("hex");
-    const background = getBackgroundClient();
     background
       .request({
         method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
