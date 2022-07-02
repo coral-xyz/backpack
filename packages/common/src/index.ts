@@ -9,7 +9,6 @@ export * from "./browser";
 export * from "./types";
 export * from "./solana";
 export * from "./utils";
-export * from "./background";
 export * from "./zustand";
 
 // Utility to transform the handler API into something a little more friendly.
