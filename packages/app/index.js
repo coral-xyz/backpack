@@ -8,6 +8,17 @@ import App from "./src/App";
 import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
 
+function WrappedApp() {
+  return (
+    <Suspense fallback={null}>
+      <RecoilRoot>
+        <Background />
+        <WaitingApp />
+      </RecoilRoot>
+    </Suspense>
+  );
+}
+
 function Background() {
   const webViewRef = useRef(null);
   const setInjectJavaScript = useStore((state) => state.setInjectJavaScript);
@@ -39,19 +50,10 @@ function Background() {
   );
 }
 
-const WaitingApp = () => {
+function WaitingApp() {
   const injectJavaScript = useStore((state) => state.injectJavaScript);
   return injectJavaScript ? <App /> : null;
-};
-
-const WrappedApp = () => (
-  <Suspense fallback={null}>
-    <RecoilRoot>
-      <Background />
-      <WaitingApp />
-    </RecoilRoot>
-  </Suspense>
-);
+}
 
 // registerRootComponent calls AppRegistry.registerComponent('main', () => App);
 // It also ensures that whether you load the app in Expo Go or in a native build,

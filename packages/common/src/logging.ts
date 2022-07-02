@@ -60,11 +60,5 @@ export async function logFromAnywhere(...args: any[]) {
     } catch (err) {
       console.log({ args, from: "idk" });
     }
-    /*
-	// Assumes you're in the frontend.
-	catch (err) {
-		console.log({ args, from: 'frontend' });
-  }
-		*/
   }
 }
