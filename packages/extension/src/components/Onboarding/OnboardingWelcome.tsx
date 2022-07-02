@@ -1,8 +1,9 @@
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, SvgIcon } from "@mui/material";
 import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ActionCard } from "../Layout/ActionCard";
 import { BackpackHeader } from "../Locked";
+import { HardwareWalletIcon } from "../Icon";
 import type { OnboardingFlows } from "./";
 
 export function OnboardingWelcome({
@@ -44,7 +45,11 @@ export function OnboardingWelcome({
         {/**
         <Grid item xs={6}>
           <ActionCard
-            icon={<BackpackIcon />}
+            icon={
+              <SvgIcon>
+                <HardwareWalletIcon />
+              </SvgIcon>
+            }
             text="Connect a hardware wallet"
             onClick={() => onSelect("connect-hardware")}
           />
