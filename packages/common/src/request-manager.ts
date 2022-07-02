@@ -1,10 +1,9 @@
-import type { BackgroundClient } from "./channel";
 import type { RpcRequest, RpcResponse, Event, ResponseHandler } from "./types";
 import { getLogger } from "./logging";
 
 const logger = getLogger("request-manager");
 
-export class RequestManager implements BackgroundClient {
+export class RequestManager {
   private _responseResolvers: { [requestId: number]: ResponseHandler } = {};
   private _requestId = 0;
   private _requestChannel: string;

@@ -1,6 +1,5 @@
-import { BackgroundClient } from "../channel";
 import { getLogger } from "../logging";
-import { ChannelAppUi } from "../channel";
+import { ChannelAppUi, ChannelAppUiClient } from "../channel";
 import {
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_RESPONSE,
@@ -9,30 +8,8 @@ import {
 
 const logger = getLogger("common/background/client");
 
-let _backgroundClient: BackgroundClient | null = null;
-let _backgroundResponseClient: BackgroundClient | null = null;
-
-export function setBackgroundClient(c: BackgroundClient) {
-  _backgroundClient = c;
-}
-
-export function setBackgroundResponseClient(c: BackgroundClient) {
-  _backgroundResponseClient = c;
-}
-
-export function getBackgroundClient(): BackgroundClient {
-  if (_backgroundClient === null) {
-    throw new Error("_backgroundClient not initialized");
-  }
-  return _backgroundClient;
-}
-
-export function getBackgroundResponseClient(): BackgroundClient {
-  if (_backgroundResponseClient === null) {
-    throw new Error("_backgroundClient not initialized");
-  }
-  return _backgroundResponseClient;
-}
+let _backgroundClient: ChannelAppUiClient | null = null;
+let _backgroundResponseClient: ChannelAppUiClient | null = null;
 
 export function setupBackgroundClientAppUi() {
   logger.debug("setting up core background clients");
@@ -58,4 +35,26 @@ export function setupBackgroundClientAppUi() {
       params: [],
     });
   }, 5 * 60 * 1000);
+}
+
+export function getBackgroundClient(): ChannelAppUiClient {
+  if (_backgroundClient === null) {
+    throw new Error("_backgroundClient not initialized");
+  }
+  return _backgroundClient;
+}
+
+export function getBackgroundResponseClient(): ChannelAppUiClient {
+  if (_backgroundResponseClient === null) {
+    throw new Error("_backgroundClient not initialized");
+  }
+  return _backgroundResponseClient;
+}
+
+function setBackgroundClient(c: ChannelAppUiClient) {
+  _backgroundClient = c;
+}
+
+function setBackgroundResponseClient(c: ChannelAppUiClient) {
+  _backgroundResponseClient = c;
 }
