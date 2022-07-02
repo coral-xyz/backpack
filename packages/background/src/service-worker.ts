@@ -1,9 +1,10 @@
 // This file is only used by the mobile app
-import { logFromAnywhere } from "@coral-xyz/common";
 import { start } from ".";
 
 self.addEventListener("install", () => {
-  start(true);
+  start({
+    isMobile: true,
+  });
   self.skipWaiting();
 });
 
@@ -12,5 +13,5 @@ self.addEventListener("activate", () => {
 });
 
 self.addEventListener("message", (event) => {
-  logFromAnywhere("received event armani");
+  //  logFromAnywhere("received event armani");
 });

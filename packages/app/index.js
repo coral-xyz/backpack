@@ -1,9 +1,9 @@
 import { Suspense, useRef } from "react";
 import { View, Text } from "react-native";
 import { WebView } from "react-native-webview";
+import { RecoilRoot } from "recoil/native/recoil";
 import { registerRootComponent } from "expo";
 import { useStore } from "@coral-xyz/common";
-import { RecoilRoot } from "recoil/native/recoil";
 import App from "./src/App";
 import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
