@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, List, ListItemButton, ListItemText } from "@mui/material";
+import Transport from "@ledgerhq/hw-transport";
+import * as ledgerCore from "@coral-xyz/ledger-core";
 import {
   Checkbox,
   Header,
@@ -23,16 +25,22 @@ type Account = {
   account?: anchor.web3.AccountInfo<Buffer>;
 };
 
+const LOAD_PUBKEY_AMOUNT = 8;
+
 export function ImportAccounts({
   mnemonic,
+  transport,
   onNext,
+  onError,
 }: {
   mnemonic?: string;
+  transport?: Transport | null;
   onNext: (
     accountIndices: number[],
     derivationPath: DerivationPath,
     mnemonic?: string
   ) => void;
+  onError?: (error: Error) => void;
 }) {
   const theme = useCustomTheme();
   const [accounts, setAccounts] = useState<Array<Account>>([]);
@@ -56,29 +64,36 @@ export function ImportAccounts({
   }
 
   useEffect(() => {
-    /**
-    const loaderFn = mnemonic
-      ? (derivationPath: DerivationPath) =>
-          loadMnemonicPublicKeys(mnemonic, derivationPath)
-      : loadLedgerPublicKeys("ledger", derivationPath);
-    **/
-    if (!mnemonic || !derivationPath) return;
+    if ((!mnemonic && !transport) || !derivationPath) return;
 
-    const loaderFn = (derivationPath: DerivationPath) =>
-      loadMnemonicPublicKeys(mnemonic, derivationPath);
+    let loaderFn;
+    if (mnemonic) {
+      loaderFn = (derivationPath: DerivationPath) =>
+        loadMnemonicPublicKeys(mnemonic, derivationPath);
+    } else {
+      loaderFn = (derivationPath: DerivationPath) =>
+        loadLedgerPublicKeys(transport!, derivationPath);
+    }
 
-    loaderFn(derivationPath).then(async (publicKeys) => {
-      const accounts = (
-        await anchor.utils.rpc.getMultipleAccounts(
-          connection,
-          publicKeys.map((p: string) => new PublicKey(p))
-        )
-      ).map((result, index) => {
-        return result === null ? { publicKey: publicKeys[index] } : result;
+    loaderFn(derivationPath)
+      .then(async (publicKeys: PublicKey[]) => {
+        const accounts = (
+          await anchor.utils.rpc.getMultipleAccounts(connection, publicKeys)
+        ).map((result, index) => {
+          return result === null ? { publicKey: publicKeys[index] } : result;
+        });
+        setAccounts(accounts);
+      })
+      .catch((error) => {
+        // Probably Ledger error, i.e. app is not opened
+        if (onError) {
+          // Call custom error handler if one was passed
+          onError(error);
+        } else {
+          throw error;
+        }
       });
-      setAccounts(accounts);
-    });
-  }, [derivationPath]);
+  }, [mnemonic, transport, derivationPath]);
 
   //
   // Load accounts for the given mnemonic. This is passed to the ImportAccounts
@@ -89,10 +104,11 @@ export function ImportAccounts({
     derivationPath: DerivationPath
   ) => {
     const background = getBackgroundClient();
-    return await background.request({
+    const publicKeys = await background.request({
       method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-      params: [mnemonic, derivationPath, 8],
+      params: [mnemonic, derivationPath, LOAD_PUBKEY_AMOUNT],
     });
+    return publicKeys.map((p: string) => new PublicKey(p));
   };
 
   //
@@ -100,10 +116,16 @@ export function ImportAccounts({
   //
   //
   const loadLedgerPublicKeys = async (
-    ledger: string,
+    transport: Transport,
     derivationPath: DerivationPath
   ) => {
-    return [];
+    const publicKeys = [];
+    for (let k = 0; k < LOAD_PUBKEY_AMOUNT; k += 1) {
+      publicKeys.push(
+        await ledgerCore.getPublicKey(transport!, k, derivationPath)
+      );
+    }
+    return publicKeys;
   };
 
   //
