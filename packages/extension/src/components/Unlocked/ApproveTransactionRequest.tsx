@@ -2,12 +2,12 @@ import { useMemo } from "react";
 import * as bs58 from "bs58";
 import { Transaction, Message } from "@solana/web3.js";
 import {
+  useBackgroundClient,
   useTransactionRequest,
   useAllPlugins,
   useActiveWallet,
 } from "@coral-xyz/recoil";
 import {
-  getBackgroundClient,
   UI_RPC_METHOD_SIGN_TRANSACTION,
   UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
 } from "@coral-xyz/common";
@@ -40,6 +40,7 @@ const useStyles = styles((theme) => ({
 }));
 
 export function ApproveTransactionRequest() {
+  const background = useBackgroundClient();
   const [request, setRequest] = useTransactionRequest();
   const plugins = useAllPlugins();
   const { publicKey } = useActiveWallet();
@@ -56,8 +57,6 @@ export function ApproveTransactionRequest() {
     if (!request) {
       throw new Error("request not found");
     }
-    const background = getBackgroundClient();
-
     let signature;
     if (request!.kind === "sign-tx") {
       signature = await background.request({

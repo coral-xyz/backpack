@@ -7,13 +7,13 @@ import { ImportAccounts } from "../Account/ImportAccounts";
 import { OnboardingWelcome } from "./OnboardingWelcome";
 import { WithNav, NavBackButton } from "../Layout/Nav";
 import {
-  getBackgroundClient,
   BrowserRuntimeExtension,
   DerivationPath,
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
 } from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 
 export type OnboardingFlows =
   | "create-wallet"
@@ -29,6 +29,7 @@ export function Onboarding() {
   const [step, setStep] = useState(0);
   const [onboardingFlow, setOnboardingFlow] = useState<OnboardingFlows>(null);
   const theme = useCustomTheme();
+  const background = useBackgroundClient();
 
   const createStore = async (
     mnemonic: string,
@@ -37,7 +38,6 @@ export function Onboarding() {
     password: string,
     accountIndices: number[]
   ) => {
-    const background = getBackgroundClient();
     await background.request({
       method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
       params: [mnemonic, derivationPath, password, accountIndices],

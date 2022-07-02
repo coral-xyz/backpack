@@ -11,3 +11,5 @@ export * from "./useLocalStorage";
 export * from "./useNavigation";
 export * from "./useBootstrap";
 export * from "./useTransactionRequest";
+export * from "./useBackgroundKeepAlive";
+export * from "./useBackgroundClient";

@@ -1,7 +1,6 @@
 import { atom, selector, selectorFamily } from "recoil";
 import { ParsedConfirmedTransaction, PublicKey } from "@solana/web3.js";
 import {
-  getBackgroundClient,
   UI_RPC_METHOD_NAVIGATION_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
 } from "@coral-xyz/common";
@@ -11,6 +10,7 @@ import { fetchRecentTransactions } from "./recent-transactions";
 import { splTokenRegistry } from "./token-registry";
 import { fetchPriceData } from "./price-data";
 import { activeWallet } from "./wallet";
+import { backgroundClient } from "./background";
 
 /**
  * Defines the initial app load fetch.
@@ -85,20 +85,20 @@ export const bootstrapFast = atom<any>({
   key: "bootstrapFast",
   default: null,
   effects: [
-    ({ setSelf }) => {
+    ({ setSelf, getPromise }) => {
       setSelf(
         (async () => {
           // Fetch all navigation state.
-          const backgroundClient = getBackgroundClient();
+          const bg = await getPromise(backgroundClient);
           const tabs = await Promise.all(
             TABS.map((t) =>
-              backgroundClient.request({
+              bg.request({
                 method: UI_RPC_METHOD_NAVIGATION_READ,
                 params: [t[0]],
               })
             )
           );
-          const activeTab = await backgroundClient.request({
+          const activeTab = await bg.request({
             method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
             params: [],
           });

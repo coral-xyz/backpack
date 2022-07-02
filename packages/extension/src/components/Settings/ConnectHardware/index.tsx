@@ -7,13 +7,12 @@ import TransportWebHid from "@ledgerhq/hw-transport-webhid";
 import * as anchor from "@project-serum/anchor";
 import * as ledgerCore from "@coral-xyz/ledger-core";
 import {
-  getBackgroundClient,
   DerivationPath,
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
   UI_RPC_METHOD_LEDGER_IMPORT,
 } from "@coral-xyz/common";
-import { useAnchorContext } from "@coral-xyz/recoil";
+import { useBackgroundClient, useAnchorContext } from "@coral-xyz/recoil";
 import { Stepper, WithContinue } from "../../Onboarding/CreateNewWallet";
 
 const STEP_COUNT = 3;
@@ -152,6 +151,7 @@ function Step0({ next }: any) {
 }
 
 function Step1({ next }: any) {
+  const background = useBackgroundClient();
   const { connection } = useAnchorContext();
   const [derivationAccounts, setDerivationAccounts] = useState<any>(null);
   const [pathType, setPathType] = useState("root");
@@ -188,7 +188,6 @@ function Step1({ next }: any) {
         : pathType === "bip44"
         ? pathIndex + 1
         : pathIndex;
-    const background = getBackgroundClient();
     await background.request({
       method: UI_RPC_METHOD_LEDGER_IMPORT,
       params: [dPath, account, accountPubkey.publicKey.toString()],
