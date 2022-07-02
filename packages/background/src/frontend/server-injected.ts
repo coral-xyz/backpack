@@ -9,15 +9,18 @@ import type {
   RpcResponse,
   Context,
   EventEmitter,
-  Window,
 } from "@coral-xyz/common";
 import {
   getLogger,
-  BrowserRuntimeExtension,
   withContext,
   withContextPort,
   ChannelContentScript,
   ChannelAppUi,
+  openLockedPopupWindow,
+  openApprovalPopupWindow,
+  openLockedApprovalPopupWindow,
+  openApproveTransactionPopupWindow,
+  openApproveMessagePopupWindow,
   RPC_METHOD_CONNECT,
   RPC_METHOD_DISCONNECT,
   RPC_METHOD_SIGN_AND_SEND_TX,
@@ -32,11 +35,6 @@ import {
   CONNECTION_POPUP_RESPONSE,
   BACKEND_EVENT,
   NOTIFICATION_CONNECTION_URL_UPDATED,
-  openLockedPopupWindow,
-  openApprovalPopupWindow,
-  openLockedApprovalPopupWindow,
-  openApproveTransactionPopupWindow,
-  openApproveMessagePopupWindow,
 } from "@coral-xyz/common";
 import type { Backend } from "../backend/core";
 import { SUCCESS_RESPONSE } from "../backend/core";
@@ -119,7 +117,6 @@ async function handleConnect(
 ): Promise<RpcResponse<string>> {
   const origin = ctx.sender.origin;
   const keyringStoreState = await ctx.backend.keyringStoreState();
-  const activeTab = await BrowserRuntimeExtension.activeTab();
   let didApprove = false;
 
   // Use the UI to ask the user if it should connect.
@@ -275,7 +272,7 @@ class RequestManager {
   // 2) The user can close the window.
   //
   public static requestUiAction<T = any>(
-    popupFn: (reqId: number) => Promise<Window>
+    popupFn: (reqId: number) => Promise<chrome.windows.Window>
   ): Promise<T> {
     return new Promise(async (resolve, reject) => {
       const requestId = RequestManager.addResponseResolver(resolve, reject);
