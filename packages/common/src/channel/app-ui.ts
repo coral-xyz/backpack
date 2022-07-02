@@ -9,7 +9,6 @@ import { generateUniqueId } from "../utils";
 
 export interface BackgroundClient {
   request<T = any>({ method, params }: RpcRequest): Promise<RpcResponse<T>>;
-  response<T = any>({ id, result }: RpcResponse): Promise<RpcResponse<T>>;
 }
 
 // Note that this doesn't actually use the port API anymore and so is
@@ -17,6 +16,10 @@ export interface BackgroundClient {
 export class ChannelAppUi {
   public static client(name: string): ChannelAppUiClient {
     return new ChannelAppUiClient(name);
+  }
+
+  public static responder(name: string): ChannelAppUiResponder {
+    return new ChannelAppUiResponder(name);
   }
 
   public static server(name: string): ChannelAppUiServer {
@@ -98,6 +101,10 @@ export class ChannelAppUiClient implements BackgroundClient {
       );
     });
   }
+}
+
+export class ChannelAppUiResponder {
+  constructor(private name: string) {}
 
   public async response<T = any>({
     id,

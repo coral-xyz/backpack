@@ -16,7 +16,7 @@ import {
   useKeyringStoreState,
   useApprovedOrigins,
   useBootstrapFast,
-  useBackgroundResponseClient,
+  useBackgroundResponder,
 } from "@coral-xyz/recoil";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
@@ -117,7 +117,7 @@ function QueryLockedApproval() {
 
 function QueryLocked() {
   logger.debug("query locked");
-  const background = useBackgroundResponseClient();
+  const background = useBackgroundResponder();
 
   const url = new URL(window.location.href);
   const requestId = parseInt(url.searchParams.get("requestId")!);
@@ -144,7 +144,7 @@ function QueryLocked() {
 
 function QueryApproval() {
   logger.debug("query approval");
-  const background = useBackgroundResponseClient();
+  const background = useBackgroundResponder();
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
   const requestId = parseInt(url.searchParams.get("requestId")!);
@@ -173,7 +173,7 @@ function QueryApproval() {
 function QueryApproveTransaction() {
   logger.debug("query approve transaction");
 
-  const background = useBackgroundResponseClient();
+  const background = useBackgroundResponder();
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
   const requestId = parseInt(url.searchParams.get("requestId")!);
@@ -197,7 +197,7 @@ function QueryApproveTransaction() {
 function QueryApproveMessage() {
   logger.debug("query approve transaction");
 
-  const bg = useBackgroundResponseClient();
+  const bg = useBackgroundResponder();
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
   const requestId = parseInt(url.searchParams.get("requestId")!);

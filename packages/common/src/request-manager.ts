@@ -73,10 +73,6 @@ export class RequestManager {
     return await prom;
   }
 
-  public async response<T = any>(resp: RpcResponse): Promise<RpcResponse<T>> {
-    throw new Error("response not implemented");
-  }
-
   // This must be called before `window.dipsatchEvent`.
   private _addResponseResolver(requestId: number) {
     let resolve, reject;
