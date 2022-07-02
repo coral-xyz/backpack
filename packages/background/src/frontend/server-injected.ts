@@ -13,7 +13,7 @@ import type {
 } from "@coral-xyz/common";
 import {
   getLogger,
-  BrowserRuntime,
+  BrowserRuntimeExtension,
   withContext,
   withContextPort,
   ChannelContentScript,
@@ -119,7 +119,7 @@ async function handleConnect(
 ): Promise<RpcResponse<string>> {
   const origin = ctx.sender.origin;
   const keyringStoreState = await ctx.backend.keyringStoreState();
-  const activeTab = await BrowserRuntime.activeTab();
+  const activeTab = await BrowserRuntimeExtension.activeTab();
   let didApprove = false;
 
   // Use the UI to ask the user if it should connect.

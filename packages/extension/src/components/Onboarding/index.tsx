@@ -8,7 +8,7 @@ import { OnboardingWelcome } from "./OnboardingWelcome";
 import { WithNav, NavBackButton } from "../Layout/Nav";
 import {
   getBackgroundClient,
-  BrowserRuntime,
+  BrowserRuntimeExtension,
   DerivationPath,
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
@@ -72,7 +72,7 @@ export function Onboarding() {
       }}
       readOnly={true}
     />,
-    <SetupComplete onClose={() => BrowserRuntime.closeActiveTab()} />,
+    <SetupComplete onClose={() => BrowserRuntimeExtension.closeActiveTab()} />,
   ];
 
   //
@@ -101,12 +101,12 @@ export function Onboarding() {
         nextStep();
       }}
     />,
-    <SetupComplete onClose={() => BrowserRuntime.closeActiveTab()} />,
+    <SetupComplete onClose={() => BrowserRuntimeExtension.closeActiveTab()} />,
   ];
 
   // TODO
   const connectHardwareFlow = [
-    <SetupComplete onClose={() => BrowserRuntime.closeActiveTab()} />,
+    <SetupComplete onClose={() => BrowserRuntimeExtension.closeActiveTab()} />,
   ];
 
   let renderComponent;

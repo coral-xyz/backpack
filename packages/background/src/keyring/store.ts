@@ -3,7 +3,7 @@ import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import type { EventEmitter, DerivationPath } from "@coral-xyz/common";
 import {
-  BrowserRuntime,
+  BrowserRuntimeCommon,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   BACKEND_EVENT,
 } from "@coral-xyz/common";
@@ -699,11 +699,11 @@ class KeynameStore {
 
 class LocalStorageDb {
   static async get(key: string): Promise<any> {
-    return await BrowserRuntime.getLocalStorage(key);
+    return await BrowserRuntimeCommon.getLocalStorage(key);
   }
 
   static async set(key: string, value: any): Promise<void> {
-    await BrowserRuntime.setLocalStorage(key, value);
+    await BrowserRuntimeCommon.setLocalStorage(key, value);
   }
 }
 

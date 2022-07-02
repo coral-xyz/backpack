@@ -4,7 +4,7 @@
 //
 
 import type { RpcResponse } from "../types";
-import { BrowserRuntime } from "../browser";
+import { BrowserRuntimeExtension, BrowserRuntimeCommon } from "../browser";
 import { POST_MESSAGE_ORIGIN } from "../constants";
 
 // Channel is a class that establishes communication channel from a
@@ -15,7 +15,7 @@ export class ChannelContentScript {
     window.addEventListener("message", (event) => {
       if (event.data.type !== reqChannel) return;
       // @ts-ignore
-      BrowserRuntime.sendMessage(
+      BrowserRuntimeCommon.sendMessage(
         {
           channel: reqChannel,
           data: event.data.detail,
@@ -39,13 +39,13 @@ export class ChannelContentScript {
       window.addEventListener("message", (event) => {
         if (event.data.type !== respChannel) return;
 
-        BrowserRuntime.sendMessage({
+        BrowserRuntimeCommon.sendMessage({
           channel: respChannel,
           data: event.data.detail,
         });
       });
     }
-    BrowserRuntime.addEventListener(
+    BrowserRuntimeCommon.addEventListener(
       (message: any, _sender: any, sendResponse: any) => {
         if (message.channel === reqChannel) {
           sendResponse({ result: "success" });
@@ -76,7 +76,7 @@ export class ChannelClient {
       channel: this.name,
       data,
     };
-    BrowserRuntime.sendMessageActiveTab(event);
+    BrowserRuntimeExtension.sendMessageActiveTab(event);
   }
 
   public sendMessageTab(tabId: number, data: any) {
@@ -84,7 +84,7 @@ export class ChannelClient {
       channel: this.name,
       data,
     };
-    BrowserRuntime.sendMessageTab(tabId, event);
+    BrowserRuntimeExtension.sendMessageTab(tabId, event);
   }
 }
 
@@ -94,7 +94,7 @@ export class ChannelServer {
   public handler(
     handlerFn: (message: any, sender: any) => Promise<RpcResponse>
   ) {
-    BrowserRuntime.addEventListener(
+    BrowserRuntimeCommon.addEventListener(
       (msg: any, sender: any, sendResponse: any) => {
         if (msg.channel === this.name) {
           const id = msg.data.id;

@@ -4,7 +4,7 @@
 //
 
 import type { RpcRequest, RpcResponse, Notification } from "../types";
-import { BrowserRuntime } from "../browser";
+import { BrowserRuntimeCommon } from "../browser";
 import { generateUniqueId } from "../utils";
 
 export interface BackgroundClient {
@@ -32,7 +32,7 @@ export class ChannelAppUiServer {
   constructor(private name: string) {}
 
   public handler(handlerFn: (req: RpcRequest) => Promise<RpcResponse>) {
-    BrowserRuntime.addEventListener(
+    BrowserRuntimeCommon.addEventListener(
       (msg: any, _sender: any, sendResponse: any) => {
         if (msg.channel !== this.name) {
           return;
@@ -56,7 +56,7 @@ export class ChannelAppUiNotifications {
   constructor(private name: string) {}
 
   public onNotification(handlerFn: (notif: Notification) => void) {
-    BrowserRuntime.addEventListener(
+    BrowserRuntimeCommon.addEventListener(
       (msg: any, _sender: any, sendResponse: any) => {
         if (msg.channel !== this.name) {
           return;
@@ -68,7 +68,7 @@ export class ChannelAppUiNotifications {
   }
 
   public pushNotification(notif: Notification) {
-    BrowserRuntime.sendMessage({
+    BrowserRuntimeCommon.sendMessage({
       channel: this.name,
       data: notif,
     });
@@ -84,7 +84,7 @@ export class ChannelAppUiClient implements BackgroundClient {
   }: RpcRequest): Promise<RpcResponse<T>> {
     const id = generateUniqueId();
     return new Promise((resolve, reject) => {
-      BrowserRuntime.sendMessage(
+      BrowserRuntimeCommon.sendMessage(
         {
           channel: this.name,
           data: { id, method, params },
@@ -104,7 +104,7 @@ export class ChannelAppUiClient implements BackgroundClient {
     result,
   }: RpcResponse): Promise<RpcResponse<T>> {
     return new Promise((resolve, reject) => {
-      BrowserRuntime.sendMessage(
+      BrowserRuntimeCommon.sendMessage(
         {
           channel: this.name,
           data: { id, result },
