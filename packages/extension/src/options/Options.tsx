@@ -1,6 +1,6 @@
 import { RecoilRoot } from "recoil";
 import {
-  setupClient,
+  setupBackgroundClientAppUi,
   QUERY_CONNECT_HARDWARE,
   QUERY_ONBOARDING,
 } from "@coral-xyz/common";
@@ -18,7 +18,7 @@ import { WithTheme } from "../app/theme";
 // - Connect to hardware
 //
 function Options() {
-  setupClient();
+  setupBackgroundClientAppUi();
   return (
     <RecoilRoot>
       <_Options />

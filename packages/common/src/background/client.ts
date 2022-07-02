@@ -34,7 +34,7 @@ export function getBackgroundResponseClient(): BackgroundClient {
   return _backgroundResponseClient;
 }
 
-export function setupClient() {
+export function setupBackgroundClientAppUi() {
   logger.debug("setting up core background clients");
 
   //

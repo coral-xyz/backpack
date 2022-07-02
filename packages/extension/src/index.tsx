@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { setupClient } from "@coral-xyz/common";
+import { setupBackgroundClientAppUi } from "@coral-xyz/common";
 import App from "./app/App";
 import LedgerIframe from "./components/LedgerIframe";
 import "./index.css";
@@ -9,7 +9,7 @@ async function main() {
   //
   // Initialize the client to the background script.
   //
-  setupClient();
+  setupBackgroundClientAppUi();
 
   //
   // Render the UI.
