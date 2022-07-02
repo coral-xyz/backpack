@@ -19,6 +19,7 @@ export * from "./wallet-adapter";
 export * from "./explorer";
 export * from "./provider";
 export * from "./programs";
+export * from "./background-connection";
 
 export type SolanaContext = {
   walletPublicKey: PublicKey;

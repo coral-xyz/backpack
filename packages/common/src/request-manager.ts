@@ -1,7 +1,7 @@
 import type { RpcRequest, RpcResponse, Event, ResponseHandler } from "./types";
 import { getLogger } from "./logging";
 
-const logger = getLogger("request-manager");
+const logger = getLogger("common/request-manager");
 
 export class RequestManager {
   private _responseResolvers: { [requestId: number]: ResponseHandler } = {};
