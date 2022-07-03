@@ -93,8 +93,8 @@ export function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
   //
   const importWalletFlow = [
     <ImportSecretKey
-      onNext={(secretKey: string, name: string) => {
-        secretKeyImport(secretKey, name);
+      onNext={async (secretKey: string, name: string) => {
+        await secretKeyImport(secretKey, name);
         closeDrawer();
       }}
     />,
