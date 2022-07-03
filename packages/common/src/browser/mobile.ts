@@ -6,6 +6,7 @@ import { generateUniqueId, IS_MOBILE } from "../utils";
 import {
   MOBILE_CHANNEL_HOST_RPC_REQUEST,
   MOBILE_CHANNEL_HOST_RPC_RESPONSE,
+  MOBILE_CHANNEL_BACKGROUND_NOTIFICATIONS,
   MOBILE_CHANNEL_BROWSER_RUNTIME_COMMON_RESPONSE,
 } from "../constants";
 
@@ -84,15 +85,26 @@ export function startMobileIfNeeded() {
 
     switch (msg.channel) {
       case MOBILE_CHANNEL_BROWSER_RUNTIME_COMMON_RESPONSE:
-        WebViewRequestManager.response(msg);
+        handleBrowserRuntimeCommonResponse(msg);
         break;
       case MOBILE_CHANNEL_HOST_RPC_REQUEST:
         handleHostRpcRequest(msg);
+        break;
+      case MOBILE_CHANNEL_BACKGROUND_NOTIFICATIONS:
+        handleBackgroundNotifications(msg);
         break;
       default:
         break;
     }
   });
+
+  const handleBrowserRuntimeCommonResponse = (msg) => {
+    WebViewRequestManager.response(msg);
+  };
+
+  const handleBackgroundNotifications = (msg) => {
+    // todo
+  };
 
   //////////////////////////////////////////////////////////////////////////////
   //

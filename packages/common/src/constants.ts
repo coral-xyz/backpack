@@ -25,6 +25,8 @@ export const MOBILE_CHANNEL_BROWSER_RUNTIME_COMMON_RESPONSE =
 export const MOBILE_CHANNEL_LOGS = "mobile-logs";
 export const MOBILE_CHANNEL_HOST_RPC_REQUEST = "mobile-host-rpc-request";
 export const MOBILE_CHANNEL_HOST_RPC_RESPONSE = "mobile-host-rpc-resposne";
+export const MOBILE_CHANNEL_BACKGROUND_NOTIFICATIONS =
+  "mobile-background-notifications";
 
 export const RECONCILER_BRIDGE_METHOD_CREATE_INSTANCE =
   "anchor-reconciler-method-create-instance";
