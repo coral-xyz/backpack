@@ -77,7 +77,6 @@ export function WithDrawer(props: any) {
 }
 
 export function WithEphemeralNavDrawer(props: any) {
-  const classes = useStyles();
   const theme = useCustomTheme();
   const {
     children,
