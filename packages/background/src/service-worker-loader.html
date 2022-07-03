@@ -13,18 +13,6 @@
 		 (async function setup() {
 			 try {
 
-				 // @ts-ignore
-				 window.forwardLogs = (event) => { //handleForwardLogs({ data: event });
-					 // @ts-ignore
-					 window.ReactNativeWebView?.postMessage(JSON.stringify(event.data));
-				 }
-
-				 // @ts-ignore
-				 window.postMessageToBackgroundViaWebview = (msg) => {
-					 // @ts-ignore
-					 navigator.serviceWorker.controller.postMessage(JSON.stringify(msg));
-				 };
-
 				 // console.log(new URL("./service-worker.ts", import.meta.url));
 				 const registration = await navigator.serviceWorker.register(
 					 new URL("./service-worker.ts", import.meta.url),
@@ -33,27 +21,48 @@
 					 }
 				 );
 
+				 // @ts-ignore
+				 window.forwardLogs = (...rawData) => { //handleForwardLogs({ data: event });
+					 // @ts-ignore
+					 window.ReactNativeWebView?.postMessage(JSON.stringify(rawData));
+				 }
+
+				 // @ts-ignore
+				 window.postMessageToBackgroundViaWebview = (rawData) => {
+					 // @ts-ignore
+					 navigator.serviceWorker.controller.postMessage(rawData);
+				 };
+
 				 //
 				 // Receive messages from the service worker.
 				 //
 				 navigator.serviceWorker.onmessage = (event) => {
+					 window.forwardLogs(JSON.stringify(event.data));
+            document
+              .querySelector("body")
+              .insertAdjacentHTML(
+                "beforeend",
+                `<pre>${JSON.stringify(event.data)}</pre>`
+              );
+
+					 /*
 					 // @ts-ignore
 					 switch (event.channel) {
 						 case "mobile-logs":
 							 // @ts-ignore
-							 window.forwardLogs({ data: `mobile-logs event: ${JSON.stringify(event)}`});
-							 //          handleForwardLogs(event);
+							 window.forwardLogs(JSON.stringify(event));
 							 break;
 						 case "mobile-response":
 							 // @ts-ignore
-							 window.forwardLogs({ data: `mobile-response event: ${JSON.stringify(event)}`});
+							 window.forwardLogs(JSON.stringify(event));
 							 handleResponse(event);
 							 break;
 						 default:
 							 // @ts-ignore
-							 window.forwardLogs({ data: `unknown event: ${JSON.stringify(event)}` });
+							 window.forwardLogs(JSON.stringify(event));
 							 break;
 					 }
+					 */
 				 };
 
 				 /*

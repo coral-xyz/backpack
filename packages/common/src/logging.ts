@@ -31,27 +31,18 @@ export function getLogger(mod: string) {
  * @param args what to log
  */
 export async function logFromAnywhere(...args: any[]) {
-  // Assumes your're in the service worker.
   try {
-    console.log(...args);
     // if we're in a serviceworker, try sending the message to the HTML page
     const clients = await self.clients.matchAll({
       includeUncontrolled: true,
       type: "window",
     });
+
     clients.forEach((client) => {
-      client.postMessage({
-        channel: "mobile-logs",
-        data: {
-          args,
-          from: "serviceWorker",
-        },
-      });
+      client.postMessage({ args, from: "serviceWorker" });
     });
   } catch (err) {
-    // Assumes you're in the webview.
     try {
-      /*
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       vanillaStore.getState().injectJavaScript!(
         `window.forwardLogs(${JSON.stringify({
@@ -59,17 +50,8 @@ export async function logFromAnywhere(...args: any[]) {
           from: "frontend",
         })}); true;`
       );
-			*/
-      // @ts-ignore
-      window.forwardLogs(
-        `${JSON.stringify({
-          args,
-          from: "frontend",
-        })}`
-      );
     } catch (err) {
-      // Assumes you're in the normal app ui.
-      console.log(...args);
+      console.log({ args, from: "idk" });
     }
   }
 }

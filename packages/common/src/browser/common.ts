@@ -76,15 +76,15 @@ globalThis.chrome
       // mobile.
       //
       BrowserRuntimeCommon.sendMessage = (msg, cb) => {
-        //        logFromAnywhere({ sendMessage: { msg, cb } });
-        //cb({ result: "locked" });
-        console.log("posting message from app ui", msg);
+        logFromAnywhere({ sendMessage: { msg, cb } });
+
         const promise = new Promise((resolve, reject) => {
-          //					REQUESTS[msg.data.id] = { resolve, reject };
           vanillaStore
             .getState()
             .injectJavaScript?.(
-              `window.postMessageToBackgroundViaWebview(msg); true;`
+              `window.postMessageToBackgroundViaWebview(${JSON.stringify(
+                msg
+              )}); true;`
             );
           // TODO: resolve after receiving response from backend serviceworker
           resolve({ result: "locked" });
@@ -92,24 +92,12 @@ globalThis.chrome
         promise.then(cb);
       };
       BrowserRuntimeCommon.addEventListener = (cb) => {
-        logFromAnywhere({ test: "armani 1234", self });
-
-        self.addEventListener("message", (event) => {
-          logFromAnywhere({ testing: "armani here" });
-        });
-
-        /*
         self.addEventListener("message", (event) => {
           cb(event.data, {}, (result) => {
             logFromAnywhere({ sendBackResult: result });
-
-            // requests[event.data.id].resolve(result);
-            // delete requests[event.data.id];
-
             // TODO: send result back to frontend over postMessage
           });
         });
-				*/
       };
       BrowserRuntimeCommon.getLocalStorage = async (
         key: string
