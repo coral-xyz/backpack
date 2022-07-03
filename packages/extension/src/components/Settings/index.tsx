@@ -352,7 +352,8 @@ export function ImportSecretKey({
       setError("Invalid private key");
       return;
     }
-    onNext(Buffer.from(kp.secretKey).toString("hex"), name);
+    const secretKeyHex = Buffer.from(kp.secretKey).toString("hex");
+    onNext(secretKeyHex, name);
   };
 
   return (
