@@ -1,5 +1,4 @@
 import { EventEmitter } from "eventemitter3";
-import { getLogger, startMobile } from "@coral-xyz/common";
 import * as serverUi from "./frontend/server-ui";
 import * as serverInjected from "./frontend/server-injected";
 import * as solanaConnection from "./frontend/solana-connection";
