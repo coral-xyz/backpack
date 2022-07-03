@@ -1,5 +1,6 @@
 import { logFromAnywhere } from "../logging";
 import { vanillaStore } from "../zustand";
+import { v1 } from "uuid";
 
 //
 // Browser apis that can be used in a mobile web view as well as the extension.
@@ -79,6 +80,7 @@ globalThis.chrome
         logFromAnywhere({ sendMessage: { msg, cb } });
 
         const promise = new Promise((resolve, reject) => {
+          WebViewRequestManager.addResolver(msg.data.id, resolve, reject);
           vanillaStore
             .getState()
             .injectJavaScript?.(
@@ -86,8 +88,6 @@ globalThis.chrome
                 msg
               )}); true;`
             );
-          // TODO: resolve after receiving response from backend serviceworker
-          resolve({ result: "locked" });
         });
         promise.then(cb);
       };
@@ -101,9 +101,7 @@ globalThis.chrome
             clients.forEach((client) => {
               client.postMessage({
                 channel: "mobile-response",
-                data: {
-                  result,
-                },
+                data: result,
               });
             });
           });
@@ -121,3 +119,24 @@ globalThis.chrome
         // todo
       };
     })();
+
+export class WebViewRequestManager {
+  private static RESOLVERS: { [requestId: string]: any } = {};
+
+  public static addResolver(id: string, resolve: any, reject: any) {
+    WebViewRequestManager.RESOLVERS[id] = { resolve, reject };
+  }
+
+  public static resolve(data: { id: string; result: any; error?: any }) {
+    const resolver = WebViewRequestManager.RESOLVERS[data.id];
+    if (!resolver) {
+      console.error("unable to find resolver for data", data);
+      return;
+    }
+    delete WebViewRequestManager.RESOLVERS[data.id];
+    if (data.error) {
+      resolver.reject(data.error);
+    }
+    resolver.resolve(data.result);
+  }
+}

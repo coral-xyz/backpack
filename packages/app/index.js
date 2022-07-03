@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 import { WebView } from "react-native-webview";
 import { RecoilRoot } from "recoil/native/recoil";
 import { registerRootComponent } from "expo";
-import { useStore } from "@coral-xyz/common";
+import { useStore, WebViewRequestManager } from "@coral-xyz/common";
 import App from "./src/App";
 import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
@@ -51,7 +51,7 @@ function Background() {
             console.log("forward-logs", data);
           };
           const handleResponse = (msg) => {
-            // TODO:
+            WebViewRequestManager.resolve(msg.data);
           };
           // @ts-ignore
           switch (msg.channel) {
