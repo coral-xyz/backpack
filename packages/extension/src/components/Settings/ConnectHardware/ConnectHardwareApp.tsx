@@ -1,7 +1,7 @@
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
 import { Header, PrimaryButton, SubtextParagraph } from "../../common";
-import { HardwareWalletIcon } from "../../Icon";
+import { SolanaIcon } from "../../Icon";
 
 export function ConnectHardwareApp({ onNext }: { onNext: () => void }) {
   return (
@@ -21,7 +21,7 @@ export function ConnectHardwareApp({ onNext }: { onNext: () => void }) {
         }}
       >
         <Box sx={{ display: "block", textAlign: "center", mb: "12px" }}>
-          <HardwareWalletIcon />
+          <SolanaIcon />
         </Box>
         <Header text="Open the Solana app" />
         <SubtextParagraph>
