@@ -3,6 +3,7 @@ import Transport from "@ledgerhq/hw-transport";
 import { AddConnectWalletMenu } from "./AddConnectWalletMenu";
 import { ImportAccounts } from "../../Account/ImportAccounts";
 import type { SelectedAccount } from "../../Account/ImportAccounts";
+import { ImportSecretKey } from "../../Settings";
 import { ConnectHardware } from "../../Settings/ConnectHardware";
 import { ConnectHardwareSearching } from "../../Settings/ConnectHardware/ConnectHardwareSearching";
 import { ConnectHardwareSuccess } from "../../Settings/ConnectHardware/ConnectHardwareSuccess";
@@ -12,6 +13,7 @@ import {
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_LEDGER_IMPORT,
+  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 
@@ -67,6 +69,13 @@ export function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
     }
   };
 
+  const secretKeyImport = async (secretKey: string, name: string) => {
+    await background.request({
+      method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+      params: [secretKey, name],
+    });
+  };
+
   const onSelectAction = (action: AddConnectFlows) => {
     if (action === "create-new-wallet") {
       createNewWallet()
@@ -82,7 +91,14 @@ export function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
   // 24 word mnemonic and select the accounts they want to import, as well
   // as set a password.
   //
-  const importWalletFlow = [<ConnectHardware onNext={() => nextStep()} />];
+  const importWalletFlow = [
+    <ImportSecretKey
+      onNext={(secretKey: string, name: string) => {
+        secretKeyImport(secretKey, name);
+        closeDrawer();
+      }}
+    />,
+  ];
 
   //
   // Flow for importing a hardware wallet.

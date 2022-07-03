@@ -1,6 +1,6 @@
 import { useEffect, useState, Suspense } from "react";
 import * as bs58 from "bs58";
-import { Typography, IconButton, Button, TextField } from "@mui/material";
+import { Typography, IconButton, TextField } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   Add,
@@ -20,13 +20,16 @@ import {
   useActiveWallet,
 } from "@coral-xyz/recoil";
 import {
-  openConnectHardware,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
 } from "@coral-xyz/common";
-import { WalletAddress, List, ListItem } from "../../components/common";
+import {
+  WalletAddress,
+  List,
+  ListItem,
+  PrimaryButton,
+} from "../../components/common";
 import { WithEphemeralNavDrawer } from "../Layout/Drawer";
 import { ConnectionMenu } from "./ConnectionSwitch";
 import { RecentActivityButton } from "../Unlocked/Balances/RecentActivity";
@@ -334,26 +337,24 @@ function SettingsList({ close }: { close: () => void }) {
   );
 }
 
-function ImportPrivateKey({ closeDrawer }: any) {
-  const background = useBackgroundClient();
+export function ImportSecretKey({
+  onNext,
+}: {
+  onNext: (secretKey: string, name: string) => void;
+}) {
   const [name, setName] = useState("");
   const [secretKey, setSecretKey] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const onImport = () => {
+
+  const next = () => {
     const kp = decodeAccount(secretKey);
     if (!kp) {
       setError("Invalid private key");
       return;
     }
-    const secretKeyStr = Buffer.from(kp.secretKey).toString("hex");
-    background
-      .request({
-        method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-        params: [secretKeyStr, name],
-      })
-      .then(() => closeDrawer())
-      .catch(console.error);
+    onNext(Buffer.from(kp.secretKey).toString("hex"), name);
   };
+
   return (
     <div>
       <Typography>Import private key</Typography>
@@ -385,7 +386,7 @@ function ImportPrivateKey({ closeDrawer }: any) {
         onChange={(e) => setSecretKey(e.target.value)}
       />
       {error && <Typography style={{ color: "red" }}>{error}</Typography>}
-      <Button onClick={onImport}>Import</Button>
+      <PrimaryButton onClick={next} label="Import" />
     </div>
   );
 }
