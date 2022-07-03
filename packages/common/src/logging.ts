@@ -31,27 +31,29 @@ export function getLogger(mod: string) {
  * @param args what to log
  */
 export async function logFromAnywhere(...args: any[]) {
+  // We're in the serviceworker, try sending the message to the HTML page.
   try {
-    // if we're in a serviceworker, try sending the message to the HTML page
     const clients = await self.clients.matchAll({
       includeUncontrolled: true,
       type: "window",
     });
 
     clients.forEach((client) => {
-      client.postMessage({ args, from: "serviceWorker" });
+      client.postMessage({
+        channel: "mobile-logs",
+        data: {
+          args,
+          from: "serviceWorker",
+        },
+      });
     });
   } catch (err) {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      vanillaStore.getState().injectJavaScript!(
-        `window.forwardLogs(${JSON.stringify({
-          args,
-          from: "frontend",
-        })}); true;`
-      );
-    } catch (err) {
-      console.log({ args, from: "idk" });
-    }
+    // We're in the front end app code.
+    // NOte that the log shere won't show up on the phone screen unless we
+    // inject into the webview.
+    console.log({
+      args,
+      from: "frontend",
+    });
   }
 }

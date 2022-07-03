@@ -20,7 +20,7 @@ function WrappedApp() {
 }
 
 function Background() {
-  //  const webViewRef = useRef(null);
+  const webViewRef = useRef(null);
   const setInjectJavaScript = useStore((state) => state.setInjectJavaScript);
   return (
     <View
@@ -44,10 +44,26 @@ function Background() {
           uri: "http://localhost:9333",
         }}
         onMessage={(event) => {
-          //
-          // Receives messages from the webview back to react-native code.
-          //
-          console.log(...JSON.parse(event.nativeEvent.data));
+          const msg = JSON.parse(event.nativeEvent.data);
+          console.log("onMessage", msg);
+
+          const handleForwardLogs = (data) => {
+            console.log("forward-logs", data);
+          };
+          const handleResponse = (msg) => {
+            // TODO:
+          };
+          // @ts-ignore
+          switch (msg.channel) {
+            case "mobile-logs":
+              handleForwardLogs(msg.data);
+              break;
+            case "mobile-response":
+              handleResponse(msg);
+              break;
+            default:
+              break;
+          }
         }}
         originWhitelist={["*"]}
         limitsNavigationsToAppBoundDomains
@@ -67,7 +83,10 @@ function WaitingApp() {
 registerRootComponent(WrappedApp);
 
 /*&
-        onLoadEnd={() => {
+(ref) => {
+        ref={webViewRef}
+      onLoadEnd={() => {
+          console.log('webviewref', webViewRef);
           setInjectJavaScript(webViewRef.current.injectJavaScript);
         }}
 */

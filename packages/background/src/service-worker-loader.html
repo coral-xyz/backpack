@@ -10,82 +10,47 @@
   </head>
   <body>
     <script type="module">
-		 (async function setup() {
-			 try {
+     (async function setup() {
+       try {
 
-				 // console.log(new URL("./service-worker.ts", import.meta.url));
-				 const registration = await navigator.serviceWorker.register(
-					 new URL("./service-worker.ts", import.meta.url),
-					 {
-						 type: "module",
-					 }
-				 );
+         // console.log(new URL("./service-worker.ts", import.meta.url));
+         const registration = await navigator.serviceWorker.register(
+           new URL("./service-worker.ts", import.meta.url),
+           {
+             type: "module",
+           }
+         );
+         // @ts-ignore
+         window.postMessageToBackgroundViaWebview = (rawData) => {
+           // @ts-ignore
+           navigator.serviceWorker.controller.postMessage(rawData);
+         };
 
-				 // @ts-ignore
-				 window.forwardLogs = (...rawData) => { //handleForwardLogs({ data: event });
-					 // @ts-ignore
-					 window.ReactNativeWebView?.postMessage(JSON.stringify(rawData));
-				 }
+         //
+         // Receive messages from the service worker.
+         //
+         navigator.serviceWorker.onmessage = (event) => {
+           window.ReactNativeWebView?.postMessage(JSON.stringify(event.data));
 
-				 // @ts-ignore
-				 window.postMessageToBackgroundViaWebview = (rawData) => {
-					 // @ts-ignore
-					 navigator.serviceWorker.controller.postMessage(rawData);
-				 };
+           document
+             .querySelector("body")
+             .insertAdjacentHTML(
+               "beforeend",
+               `<pre>${JSON.stringify(event.data)}</pre>`
+             );
+         };
 
-				 //
-				 // Receive messages from the service worker.
-				 //
-				 navigator.serviceWorker.onmessage = (event) => {
-					 window.forwardLogs(JSON.stringify(event.data));
-            document
-              .querySelector("body")
-              .insertAdjacentHTML(
-                "beforeend",
-                `<pre>${JSON.stringify(event.data)}</pre>`
-              );
-
-					 /*
-					 // @ts-ignore
-					 switch (event.channel) {
-						 case "mobile-logs":
-							 // @ts-ignore
-							 window.forwardLogs(JSON.stringify(event));
-							 break;
-						 case "mobile-response":
-							 // @ts-ignore
-							 window.forwardLogs(JSON.stringify(event));
-							 handleResponse(event);
-							 break;
-						 default:
-							 // @ts-ignore
-							 window.forwardLogs(JSON.stringify(event));
-							 break;
-					 }
-					 */
-				 };
-
-				 /*
-						const handleForwardLogs = (event: any) => {
-						// @ts-ignore
-						window.ReactNativeWebView?.postMessage(JSON.stringify(event.data));
-						};
-					*/
-				 const handleResponse = (event) => {
-					 //			armaniHandleResponse(event);
-				 };
-
-				 // @ts-ignore
-				 document
-					 .querySelector("body")
-					 .insertAdjacentHTML(
-						 "beforeend",
-						 "<p>background script service worker registered</p>"
-					 );
-			 } catch (err) {
-				 document.write(JSON.stringify({ err }));
-			 }
-		 })()
+         // @ts-ignore
+         document
+           .querySelector("body")
+           .insertAdjacentHTML(
+             "beforeend",
+             "<p>background script service worker registered</p>"
+           );
+       } catch (err) {
+         document.write(JSON.stringify({ err }));
+       }
+     })()
     </script>
   </body>
 </html>

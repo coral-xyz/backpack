@@ -93,9 +93,19 @@ globalThis.chrome
       };
       BrowserRuntimeCommon.addEventListener = (cb) => {
         self.addEventListener("message", (event) => {
-          cb(event.data, {}, (result) => {
-            logFromAnywhere({ sendBackResult: result });
-            // TODO: send result back to frontend over postMessage
+          cb(event.data, {}, async (result) => {
+            const clients = await self.clients.matchAll({
+              includeUncontrolled: true,
+              type: "window",
+            });
+            clients.forEach((client) => {
+              client.postMessage({
+                channel: "mobile-response",
+                data: {
+                  result,
+                },
+              });
+            });
           });
         });
       };
