@@ -24,6 +24,12 @@ export function startMobileIfNeeded() {
     return;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  // Monkey patch the BrowserRuntimeCommon apis for mobile.
+  //
+  //////////////////////////////////////////////////////////////////////////////
+
   // Assumes `sendMessage` is only called from the front end app code on
   // mobile.
   BrowserRuntimeCommon.sendMessage = (msg, cb) => {
@@ -59,7 +65,7 @@ export function startMobileIfNeeded() {
     key: string,
     value: any
   ): Promise<void> => {
-    // todo
+    return await rpcRequest("setLocalStorage", [key, value]);
   };
 
   BrowserRuntimeCommon.checkForError = () => {
@@ -90,7 +96,7 @@ export function startMobileIfNeeded() {
 
   //////////////////////////////////////////////////////////////////////////////
   //
-  // RPC Servers APIs.
+  // RPC "server" APIs.
   //
   // These APIs run in the context of the frontend react-native app code and
   // give the service worker access to resources provided by the host mobile
@@ -109,6 +115,8 @@ export function startMobileIfNeeded() {
       switch (method) {
         case "getLocalStorage":
           return handleGetLocalStorage(params[0]);
+        case "setLocalStorage":
+          return handleSetLocalStorage(params[0], params[1]);
         default:
           return [];
       }
@@ -124,12 +132,17 @@ export function startMobileIfNeeded() {
     });
   };
   const handleGetLocalStorage = (key: string) => {
+    // todo
     return ["locked", undefined];
+  };
+  const handleSetLocalStorage = (key: string, value: any) => {
+    // todo
+    return ["success", undefined];
   };
 
   //////////////////////////////////////////////////////////////////////////////
   //
-  // RPC Client APIs.
+  // RPC "client" APIs.
   //
   // These apis run in the context of the background service worker and give
   // the background script access to the frontend react-native app resources,
