@@ -12,9 +12,8 @@ import {
 } from "../common";
 import { Connection, PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
-import { useAnchorContext } from "@coral-xyz/recoil";
+import { useBackgroundClient, useAnchorContext } from "@coral-xyz/recoil";
 import {
-  getBackgroundClient,
   DerivationPath,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
 } from "@coral-xyz/common";
@@ -47,6 +46,7 @@ export function ImportAccounts({
   ) => void;
   onError?: (error: Error) => void;
 }) {
+  const background = useBackgroundClient();
   const theme = useCustomTheme();
   const [accounts, setAccounts] = useState<Array<Account>>([]);
   const [selectedAccounts, setSelectedAccounts] = useState<SelectedAccount[]>(
@@ -126,7 +126,6 @@ export function ImportAccounts({
     mnemonic: string,
     derivationPath: DerivationPath
   ) => {
-    const background = getBackgroundClient();
     const publicKeys = await background.request({
       method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
       params: [mnemonic, derivationPath, LOAD_PUBKEY_AMOUNT],

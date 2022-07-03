@@ -1,7 +1,7 @@
 import {
   getLogger,
-  Channel,
-  BrowserRuntime,
+  ChannelContentScript,
+  BrowserRuntimeExtension,
   CHANNEL_RPC_REQUEST,
   CHANNEL_RPC_RESPONSE,
   CHANNEL_NOTIFICATION,
@@ -27,7 +27,7 @@ function injectScript(scriptName: string) {
     const container = document.head || document.documentElement;
     const scriptTag = document.createElement("script");
     scriptTag.setAttribute("async", "false");
-    scriptTag.src = BrowserRuntime.getUrl(scriptName);
+    scriptTag.src = BrowserRuntimeExtension.getUrl(scriptName);
     container.insertBefore(scriptTag, container.children[0]);
     container.removeChild(scriptTag);
   } catch (error) {
@@ -46,11 +46,11 @@ function initClientChannels() {
   //
   // Wallet specific rpc requests.
   //
-  Channel.proxy(CHANNEL_RPC_REQUEST, CHANNEL_RPC_RESPONSE);
+  ChannelContentScript.proxy(CHANNEL_RPC_REQUEST, CHANNEL_RPC_RESPONSE);
   //
   // Solana Connection forwarding.
   //
-  Channel.proxy(
+  ChannelContentScript.proxy(
     CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
     CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
   );
@@ -60,7 +60,7 @@ function initClientChannels() {
 // client.
 function initBackgroundChannels() {
   // Forward all notifications from the background script to the injected page.
-  Channel.proxyReverse(CHANNEL_NOTIFICATION);
+  ChannelContentScript.proxyReverse(CHANNEL_NOTIFICATION);
 }
 
 main();

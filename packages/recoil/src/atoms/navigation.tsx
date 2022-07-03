@@ -1,10 +1,10 @@
 import { atom, atomFamily, selector, selectorFamily } from "recoil";
 import {
-  getBackgroundClient,
   UI_RPC_METHOD_NAVIGATION_UPDATE,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
 } from "@coral-xyz/common";
 import { bootstrapFast } from "./bootstrap";
+import { backgroundClient } from "./background";
 
 //
 // The tab currently selected.
@@ -19,13 +19,15 @@ export const navigationActiveTab = atom<string>({
     },
   }),
   effects: [
-    ({ onSet }) => {
+    ({ onSet, getPromise }) => {
       onSet((activeTab) => {
-        const background = getBackgroundClient();
-        return background.request({
-          method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-          params: [activeTab],
-        });
+        (async () => {
+          const background = await getPromise(backgroundClient);
+          return await background.request({
+            method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+            params: [activeTab],
+          });
+        })();
       });
     },
   ],
@@ -49,15 +51,17 @@ export const navigationDataMap = atomFamily<any, string>({
       },
   }),
   effects: (_nav: string) => [
-    ({ onSet }) => {
+    ({ onSet, getPromise }) => {
       onSet((navData) => {
-        const background = getBackgroundClient();
-        background
-          .request({
-            method: UI_RPC_METHOD_NAVIGATION_UPDATE,
-            params: [navData],
-          })
-          .catch(console.error);
+        (async () => {
+          const background = await getPromise(backgroundClient);
+          await background
+            .request({
+              method: UI_RPC_METHOD_NAVIGATION_UPDATE,
+              params: [navData],
+            })
+            .catch(console.error);
+        })();
       });
     },
   ],

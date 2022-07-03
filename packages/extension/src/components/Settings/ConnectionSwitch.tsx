@@ -2,11 +2,12 @@ import { useEffect } from "react";
 import { ListItemIcon, ListItemText } from "@mui/material";
 import { styles } from "@coral-xyz/themes";
 import { CheckBox } from "@mui/icons-material";
+import { UI_RPC_METHOD_CONNECTION_URL_UPDATE } from "@coral-xyz/common";
 import {
-  getBackgroundClient,
-  UI_RPC_METHOD_CONNECTION_URL_UPDATE,
-} from "@coral-xyz/common";
-import { useEphemeralNav, useSolanaConnectionUrl } from "@coral-xyz/recoil";
+  useBackgroundClient,
+  useEphemeralNav,
+  useSolanaConnectionUrl,
+} from "@coral-xyz/recoil";
 import { List, ListItem } from "../common";
 
 const useStyles = styles((theme) => ({
@@ -28,6 +29,7 @@ const endpoints = {
 };
 
 export function ConnectionMenu({ close }: { close: () => void }) {
+  const background = useBackgroundClient();
   const classes = useStyles();
   const connectionUrl = useSolanaConnectionUrl();
   const nav = useEphemeralNav();
@@ -52,7 +54,6 @@ export function ConnectionMenu({ close }: { close: () => void }) {
           onClick={() => {
             try {
               const url = typeof val === "string" ? val : val();
-              const background = getBackgroundClient();
               background
                 .request({
                   method: UI_RPC_METHOD_CONNECTION_URL_UPDATE,

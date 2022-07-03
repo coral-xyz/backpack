@@ -3,12 +3,12 @@ import { MobileStepper, Button, Checkbox, Typography } from "@mui/material";
 import { styles } from "@coral-xyz/themes";
 import { MenuBook } from "@mui/icons-material";
 import {
-  getBackgroundClient,
-  BrowserRuntime,
+  BrowserRuntimeExtension,
   DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
 } from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { TextField, PrimaryButton, CheckboxForm } from "../common";
 import { NavBackButton, DummyButton } from "../Layout/Nav";
 import { BlankApp } from "../../app/Router";
@@ -108,11 +108,11 @@ const useStyles = styles((theme) => ({
 const STEP_COUNT = 3;
 
 export function CreateNewWallet() {
+  const background = useBackgroundClient();
   const [mnemonic, setMnemonic] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
-      const background = getBackgroundClient();
       background
         .request({
           method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
@@ -132,6 +132,8 @@ export function _CreateNewWallet({ mnemonic }: { mnemonic: string }) {
   const [activeStep, setActiveState] = useState(0);
   const [password, setPassword] = useState("");
   const derivationPath = DerivationPath.Bip44Change;
+  const background = useBackgroundClient();
+
   const handleNext = () => {
     setActiveState(activeStep + 1);
   };
@@ -139,14 +141,13 @@ export function _CreateNewWallet({ mnemonic }: { mnemonic: string }) {
     setActiveState(activeStep - 1);
   };
   const handleDone = () => {
-    const background = getBackgroundClient();
     background
       .request({
         method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
         params: [mnemonic, derivationPath, password],
       })
       .catch(console.error)
-      .then(() => BrowserRuntime.closeActiveTab());
+      .then(() => BrowserRuntimeExtension.closeActiveTab());
   };
   return (
     <div

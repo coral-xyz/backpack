@@ -1,7 +1,6 @@
 import { RecoilRoot } from "recoil";
-import { setupClient } from "@coral-xyz/common";
+import { useBackgroundKeepAlive } from "@coral-xyz/recoil";
 import { WithSuspense } from "../app/Router";
-
 import { Onboarding } from "../components/Onboarding";
 import "../app/App.css";
 import { WithTheme } from "../app/theme";
@@ -12,7 +11,7 @@ import { WithTheme } from "../app/theme";
 // - Onboarding
 
 function Options() {
-  setupClient();
+  useBackgroundKeepAlive();
   return (
     <RecoilRoot>
       <WithTheme>

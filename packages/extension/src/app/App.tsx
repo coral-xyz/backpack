@@ -1,6 +1,9 @@
 import { RecoilRoot } from "recoil";
 import { HashRouter } from "react-router-dom";
-import { NotificationsProvider } from "@coral-xyz/recoil";
+import {
+  useBackgroundKeepAlive,
+  NotificationsProvider,
+} from "@coral-xyz/recoil";
 import { WithTheme } from "./theme";
 import { Router } from "./Router";
 import "./App.css";
@@ -16,6 +19,7 @@ export default function App() {
 }
 
 function _App() {
+  useBackgroundKeepAlive();
   return (
     <WithTheme>
       <NotificationsProvider>

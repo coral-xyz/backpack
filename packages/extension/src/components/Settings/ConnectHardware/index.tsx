@@ -1,4 +1,3 @@
-import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
 import { Header, PrimaryButton, SubtextParagraph } from "../../common";
 import { HardwareWalletIcon } from "../../Icon";

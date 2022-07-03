@@ -18,10 +18,8 @@ import {
   SecondaryButton,
 } from "../common";
 import { WarningLogo } from "../Icon";
-import {
-  getBackgroundClient,
-  UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
-} from "@coral-xyz/common";
+import { UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE } from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 
 const useStyles = makeStyles((theme: any) => ({
   mnemonicInputRoot: {
@@ -70,7 +68,7 @@ export function MnemonicInput({
   readOnly?: boolean;
 }) {
   const classes = useStyles();
-
+  const background = useBackgroundClient();
   const [mnemonicWords, setMnemonicWords] = useState<string[]>([
     ...Array(12).fill(""),
   ]);
@@ -127,7 +125,6 @@ export function MnemonicInput({
   // Generate a random mnemonic and populate state.
   //
   const generateRandom = () => {
-    const background = getBackgroundClient();
     background
       .request({
         method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,

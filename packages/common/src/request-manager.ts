@@ -1,10 +1,9 @@
-import type { BackgroundClient } from "./channel";
 import type { RpcRequest, RpcResponse, Event, ResponseHandler } from "./types";
 import { getLogger } from "./logging";
 
-const logger = getLogger("request-manager");
+const logger = getLogger("common/request-manager");
 
-export class RequestManager implements BackgroundClient {
+export class RequestManager {
   private _responseResolvers: { [requestId: number]: ResponseHandler } = {};
   private _requestId = 0;
   private _requestChannel: string;
@@ -72,10 +71,6 @@ export class RequestManager implements BackgroundClient {
       );
     }
     return await prom;
-  }
-
-  public async response<T = any>(resp: RpcResponse): Promise<RpcResponse<T>> {
-    throw new Error("response not implemented");
   }
 
   // This must be called before `window.dipsatchEvent`.

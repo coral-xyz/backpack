@@ -8,7 +8,7 @@ import { ConnectHardwareSearching } from "../../Settings/ConnectHardware/Connect
 import { ConnectHardwareSuccess } from "../../Settings/ConnectHardware/ConnectHardwareSuccess";
 
 import {
-  getBackgroundClient,
+  useBackgroundClient,
   DerivationPath,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
@@ -22,6 +22,7 @@ export type AddConnectFlows =
   | null;
 
 export function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
+  const background = useBackgroundClient();
   const [transport, setTransport] = useState<Transport | null>(null);
   const [transportError, setTransportError] = useState(false);
   const [addConnectFlow, setAddConnectFlow] = useState<AddConnectFlows>(null);
@@ -43,7 +44,6 @@ export function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
   // account from a randomly generated mnemonic.
   //
   const createNewWallet = async () => {
-    const background = getBackgroundClient();
     const newPubkeyStr = await background.request({
       method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
       params: [],
@@ -59,7 +59,6 @@ export function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
     accounts: SelectedAccount[],
     derivationPath: DerivationPath
   ) => {
-    const background = getBackgroundClient();
     for (const account of accounts) {
       await background.request({
         method: UI_RPC_METHOD_LEDGER_IMPORT,
