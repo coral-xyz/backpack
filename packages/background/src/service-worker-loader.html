@@ -11,45 +11,36 @@
   <body>
     <script type="module">
      (async function setup() {
-       try {
+			 //
+			 // Kickoff the service worker.
+			 //
+       const registration = await navigator.serviceWorker.register(
+         new URL("./service-worker.ts", import.meta.url),
+         {
+           type: "module",
+         }
+       );
 
-         // console.log(new URL("./service-worker.ts", import.meta.url));
-         const registration = await navigator.serviceWorker.register(
-           new URL("./service-worker.ts", import.meta.url),
-           {
-             type: "module",
-           }
+       //
+       // Receive messages from the service worker.
+       //
+       navigator.serviceWorker.onmessage = (event) => {
+         window.ReactNativeWebView?.postMessage(JSON.stringify(event.data));
+       };
+
+			 //
+			 // Send a message to the background service worker.
+			 //
+       window.postMessageToBackgroundViaWebview = (rawData) => {
+         navigator.serviceWorker.controller.postMessage(rawData);
+       };
+
+       document
+         .querySelector("body")
+         .insertAdjacentHTML(
+           "beforeend",
+           "<p>background script service worker registered</p>"
          );
-         // @ts-ignore
-         window.postMessageToBackgroundViaWebview = (rawData) => {
-           // @ts-ignore
-           navigator.serviceWorker.controller.postMessage(rawData);
-         };
-
-         //
-         // Receive messages from the service worker.
-         //
-         navigator.serviceWorker.onmessage = (event) => {
-           window.ReactNativeWebView?.postMessage(JSON.stringify(event.data));
-
-           document
-             .querySelector("body")
-             .insertAdjacentHTML(
-               "beforeend",
-               `<pre>${JSON.stringify(event.data)}</pre>`
-             );
-         };
-
-         // @ts-ignore
-         document
-           .querySelector("body")
-           .insertAdjacentHTML(
-             "beforeend",
-             "<p>background script service worker registered</p>"
-           );
-       } catch (err) {
-         document.write(JSON.stringify({ err }));
-       }
      })()
     </script>
   </body>

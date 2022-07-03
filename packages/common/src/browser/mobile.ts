@@ -7,15 +7,32 @@ import { getLogger } from "../logging";
 const logger = getLogger("common/mobile");
 
 /**
- * Event emitter for *all* events from the web view.
+ * Event emitter for *all* events on the web view component.
  */
 export const WEB_VIEW_EVENTS = new EventEmitter();
 
-export function mobileStart() {
+/**
+ * True if we're in the mobile environment.
+ */
+export const IS_MOBILE = globalThis.chrome
+  ? // `global.chrome` exists, we're in chromium.
+    globalThis.chrome
+  : globalThis.browser
+  ? // `global.browser` exists, we're in FF/safari.
+    false
+  : true;
+
+/**
+ * Start the mobile WebView system.
+ */
+export function startMobileIfNeeded() {
+  if (!IS_MOBILE) {
+    return;
+  }
+
   // Assumes `sendMessage` is only called from the front end app code on
   // mobile.
   BrowserRuntimeCommon.sendMessage = (msg, cb) => {
-    logFromAnywhere({ sendMessage: { msg, cb } });
     WebViewRequestManager.request(msg).then(cb);
   };
 
@@ -30,16 +47,20 @@ export function mobileStart() {
         });
         clients.forEach((client) => {
           client.postMessage({
-            channel: "mobile-response",
+            channel: "mobile-browser-runtime-common-response",
             data: result,
           });
         });
       });
     });
   };
+
+  // Assumes this is only called from the background service worker.
   BrowserRuntimeCommon.getLocalStorage = async (key: string): Promise<any> => {
     // todo
   };
+
+  // Assumes this is only called from the background service worker.
   BrowserRuntimeCommon.setLocalStorage = async (
     key: string,
     value: any
@@ -47,10 +68,11 @@ export function mobileStart() {
     // todo
   };
 
+  // Handle web view events here.
   WEB_VIEW_EVENTS.on("message", (msg) => {
     logger.debug(JSON.stringify(msg));
 
-    if (msg.channel === "mobile-response") {
+    if (msg.channel === "mobile-browser-runtime-common-response") {
       WebViewRequestManager.response(msg);
     }
   });
@@ -68,6 +90,10 @@ class WebViewRequestManager {
    * the webview.
    */
   public static request<T = any>(msg: any): Promise<T> {
+    logger.debug(
+      `sending request to webview service worker: ${JSON.stringify(msg)}`
+    );
+
     return new Promise((resolve, reject) => {
       WebViewRequestManager._resolvers[msg.data.id] = { resolve, reject };
       vanillaStore
@@ -97,6 +123,6 @@ class WebViewRequestManager {
     if (data.error) {
       resolver.reject(data.error);
     }
-    resolver.resolve(data.result);
+    resolver.resolve(data);
   }
 }
