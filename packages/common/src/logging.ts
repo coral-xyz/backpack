@@ -1,5 +1,6 @@
 import { vanillaStore } from "./zustand";
 import { IS_MOBILE } from "./utils";
+import { MOBILE_CHANNEL_LOGS } from "./constants";
 
 export function getLogger(mod: string) {
   return (() => {
@@ -52,7 +53,7 @@ async function logFromAnywhere(...args: any[]) {
 
     clients.forEach((client) => {
       client.postMessage({
-        channel: "mobile-logs",
+        channel: MOBILE_CHANNEL_LOGS,
         data: args,
       });
     });
@@ -64,7 +65,7 @@ async function logFromAnywhere(...args: any[]) {
     vanillaStore.getState().injectJavaScript!(
       `navigator.serviceWorker.onmessage(${JSON.stringify({
         data: {
-          channel: "mobile-logs",
+          channel: MOBILE_CHANNEL_LOGS,
           data: args,
         },
       })}); true;`

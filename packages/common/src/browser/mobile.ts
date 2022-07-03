@@ -3,6 +3,7 @@ import { vanillaStore } from "../zustand";
 import { BrowserRuntimeCommon } from "./common";
 import { getLogger } from "../logging";
 import { IS_MOBILE } from "../utils";
+import { MOBILE_CHANNEL_BROWSER_RUNTIME_COMMON_RESPONSE } from "../constants";
 
 const logger = getLogger("common/mobile");
 
@@ -36,7 +37,7 @@ export function startMobileIfNeeded() {
         });
         clients.forEach((client) => {
           client.postMessage({
-            channel: "mobile-browser-runtime-common-response",
+            channel: MOBILE_CHANNEL_BROWSER_RUNTIME_COMMON_RESPONSE,
             data: result,
           });
         });
@@ -47,6 +48,7 @@ export function startMobileIfNeeded() {
   // Assumes this is only called from the background service worker.
   BrowserRuntimeCommon.getLocalStorage = async (key: string): Promise<any> => {
     // todo
+    //		return 'asdf'
   };
 
   // Assumes this is only called from the background service worker.
@@ -61,7 +63,7 @@ export function startMobileIfNeeded() {
   WEB_VIEW_EVENTS.on("message", (msg) => {
     logger._log(JSON.stringify(msg));
 
-    if (msg.channel === "mobile-browser-runtime-common-response") {
+    if (msg.channel === MOBILE_CHANNEL_BROWSER_RUNTIME_COMMON_RESPONSE) {
       WebViewRequestManager.response(msg);
     }
   });
