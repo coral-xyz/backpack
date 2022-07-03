@@ -30,6 +30,7 @@ import { WalletAddress, List, ListItem } from "../../components/common";
 import { WithEphemeralNavDrawer } from "../Layout/Drawer";
 import { ConnectionMenu } from "./ConnectionSwitch";
 import { RecentActivityButton } from "../Unlocked/Balances/RecentActivity";
+import { AddConnectWallet } from "./AddConnectWallet";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -329,80 +330,6 @@ function SettingsList({ close }: { close: () => void }) {
           </ListItem>
         );
       })}
-    </List>
-  );
-}
-
-function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
-  const [importPrivateKey, setImportPrivateKey] = useState(false);
-  const nav = useEphemeralNav();
-
-  useEffect(() => {
-    const navButton = nav.navButtonRight;
-    nav.setNavButtonRight(undefined);
-    return () => {
-      nav.setNavButtonRight(navButton);
-    };
-  }, []);
-
-  return (
-    <div>
-      {importPrivateKey && <ImportPrivateKey closeDrawer={closeDrawer} />}
-      {!importPrivateKey && (
-        <AddConnectWalletMenu
-          setImportPrivateKey={setImportPrivateKey}
-          closeDrawer={closeDrawer}
-        />
-      )}
-    </div>
-  );
-}
-
-function AddConnectWalletMenu({
-  closeDrawer,
-  setImportPrivateKey,
-}: {
-  closeDrawer: () => void;
-  setImportPrivateKey: (s: boolean) => void;
-}) {
-  const classes = useStyles();
-
-  const createNewWallet = () => {
-    const background = getBackgroundClient();
-    background
-      .request({
-        method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-        params: [],
-      })
-      .then((newPubkeyStr: string) =>
-        background
-          .request({
-            method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-            params: [newPubkeyStr],
-          })
-          .then((_resp) => closeDrawer())
-          .catch(console.error)
-      )
-      .catch(console.error);
-  };
-
-  return (
-    <List>
-      <ListItem onClick={() => createNewWallet()}>
-        <Typography className={classes.addConnectWalletLabel}>
-          Create a new wallet
-        </Typography>
-      </ListItem>
-      <ListItem onClick={() => setImportPrivateKey(true)}>
-        <Typography className={classes.addConnectWalletLabel}>
-          Import a private key
-        </Typography>
-      </ListItem>
-      <ListItem onClick={() => openConnectHardware()} isLast={true}>
-        <Typography className={classes.addConnectWalletLabel}>
-          Connect hardware wallet
-        </Typography>
-      </ListItem>
     </List>
   );
 }
