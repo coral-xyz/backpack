@@ -8,12 +8,12 @@ import { ConnectHardwareSearching } from "../../Settings/ConnectHardware/Connect
 import { ConnectHardwareSuccess } from "../../Settings/ConnectHardware/ConnectHardwareSuccess";
 
 import {
-  useBackgroundClient,
   DerivationPath,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_LEDGER_IMPORT,
 } from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 
 export type AddConnectFlows =
   | "create-new-wallet"

@@ -11,15 +11,21 @@ import { WithTheme } from "../app/theme";
 // - Onboarding
 
 function Options() {
-  useBackgroundKeepAlive();
   return (
     <RecoilRoot>
-      <WithTheme>
-        <WithSuspense>
-          <Onboarding />
-        </WithSuspense>
-      </WithTheme>
+      <_Options />
     </RecoilRoot>
+  );
+}
+
+function _Options() {
+  useBackgroundKeepAlive();
+  return (
+    <WithTheme>
+      <WithSuspense>
+        <Onboarding />
+      </WithSuspense>
+    </WithTheme>
   );
 }
 
