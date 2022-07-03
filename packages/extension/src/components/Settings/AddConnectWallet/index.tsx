@@ -46,14 +46,14 @@ export function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
   // account from a randomly generated mnemonic.
   //
   const createNewWallet = async () => {
-    const newPubkeyStr = await background.request({
+    const newPubkey = await background.request({
       method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
       params: [],
     });
 
     await background.request({
       method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-      params: [newPubkeyStr],
+      params: [newPubkey],
     });
   };
 
