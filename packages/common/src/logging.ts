@@ -48,12 +48,20 @@ export async function logFromAnywhere(...args: any[]) {
       });
     });
   } catch (err) {
-    // We're in the front end app code.
-    // NOte that the log shere won't show up on the phone screen unless we
-    // inject into the webview.
-    console.log({
-      args,
-      from: "frontend",
-    });
+    // Although we're already in the frontend code here, send the log back
+    // to the webview so that we can log through the mobile subsystem.
+    //
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    vanillaStore.getState().injectJavaScript!(
+      `navigator.serviceWorker.onmessage(${JSON.stringify({
+        data: {
+          channel: "mobile-logs",
+          data: {
+            args,
+            from: "frontend",
+          },
+        },
+      })}); true;`
+    );
   }
 }

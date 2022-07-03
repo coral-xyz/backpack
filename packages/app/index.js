@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 import { WebView } from "react-native-webview";
 import { RecoilRoot } from "recoil/native/recoil";
 import { registerRootComponent } from "expo";
-import { useStore, WebViewRequestManager } from "@coral-xyz/common";
+import { useStore, WEB_VIEW_EVENTS } from "@coral-xyz/common";
 import App from "./src/App";
 import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
@@ -45,25 +45,7 @@ function Background() {
         }}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
-          console.log("onMessage", msg);
-
-          const handleForwardLogs = (data) => {
-            console.log("forward-logs", data);
-          };
-          const handleResponse = (msg) => {
-            WebViewRequestManager.resolve(msg.data);
-          };
-          // @ts-ignore
-          switch (msg.channel) {
-            case "mobile-logs":
-              handleForwardLogs(msg.data);
-              break;
-            case "mobile-response":
-              handleResponse(msg);
-              break;
-            default:
-              break;
-          }
+          WEB_VIEW_EVENTS.emit("message", msg);
         }}
         originWhitelist={["*"]}
         limitsNavigationsToAppBoundDomains
