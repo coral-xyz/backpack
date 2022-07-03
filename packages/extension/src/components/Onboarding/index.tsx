@@ -5,6 +5,7 @@ import { CreatePassword } from "../Account/CreatePassword";
 import { MnemonicInput } from "../Account/MnemonicInput";
 import { SetupComplete } from "../Account/SetupComplete";
 import { ImportAccounts } from "../Account/ImportAccounts";
+import type { SelectedAccount } from "../Account/ImportAccounts";
 import { OnboardingWelcome } from "./OnboardingWelcome";
 // import { ConnectHardware } from "../Settings/ConnectHardware";
 // import { ConnectHardwareSearching } from "../Settings/ConnectHardware/ConnectHardwareSearching";
@@ -30,7 +31,7 @@ export function Onboarding() {
   // const [transportError, setTransportError] = useState(false);
   const [derivationPath, setDerivationPath] = useState<DerivationPath>();
   const [password, setPassword] = useState<string>("");
-  const [accountIndices, setAccountIndices] = useState<number[]>([]);
+  const [accounts, setAccounts] = useState<SelectedAccount[]>([]);
   const [step, setStep] = useState(0);
   const [onboardingFlow, setOnboardingFlow] = useState<OnboardingFlows>(null);
   const theme = useCustomTheme();
@@ -94,14 +95,15 @@ export function Onboarding() {
     />,
     <ImportAccounts
       mnemonic={mnemonic}
-      onNext={(accountIndices: number[], derivationPath: DerivationPath) => {
-        setAccountIndices(accountIndices);
+      onNext={(accounts: SelectedAccount[], derivationPath: DerivationPath) => {
+        setAccounts(accounts);
         setDerivationPath(derivationPath);
         nextStep();
       }}
     />,
     <CreatePassword
       onNext={(password: string) => {
+        const accountIndices = accounts.map((account) => account.index);
         createStore(mnemonic, derivationPath, password, accountIndices);
         nextStep();
       }}

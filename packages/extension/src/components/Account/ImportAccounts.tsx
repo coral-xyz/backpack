@@ -25,6 +25,11 @@ type Account = {
   account?: anchor.web3.AccountInfo<Buffer>;
 };
 
+export type SelectedAccount = {
+  index: number;
+  publicKey: anchor.web3.PublicKey;
+};
+
 const LOAD_PUBKEY_AMOUNT = 8;
 
 export function ImportAccounts({
@@ -36,7 +41,7 @@ export function ImportAccounts({
   mnemonic?: string;
   transport?: Transport | null;
   onNext: (
-    accountIndices: number[],
+    selectedAccounts: SelectedAccount[],
     derivationPath: DerivationPath,
     mnemonic?: string
   ) => void;
@@ -44,7 +49,10 @@ export function ImportAccounts({
 }) {
   const theme = useCustomTheme();
   const [accounts, setAccounts] = useState<Array<Account>>([]);
-  const [accountIndices, setAccountIndices] = useState<number[]>([]);
+  const [selectedAccounts, setSelectedAccounts] = useState<SelectedAccount[]>(
+    []
+  );
+  // TODO make this configurable
   const [derivationPath, setDerivationPath] = useState<DerivationPath>(
     DerivationPath.Bip44Change
   );
@@ -63,16 +71,23 @@ export function ImportAccounts({
     connection = new Connection(mainnetRpc, "confirmed");
   }
 
+  //
+  // Load a list of accounts and their associated balances
+  //
   useEffect(() => {
-    if ((!mnemonic && !transport) || !derivationPath) return;
+    if (!derivationPath) return;
 
     let loaderFn;
     if (mnemonic) {
+      // Loading accounts from a mnemonic
       loaderFn = (derivationPath: DerivationPath) =>
         loadMnemonicPublicKeys(mnemonic, derivationPath);
-    } else {
+    } else if (transport) {
+      // Loading accounts from a Ledger
       loaderFn = (derivationPath: DerivationPath) =>
-        loadLedgerPublicKeys(transport!, derivationPath);
+        loadLedgerPublicKeys(transport, derivationPath);
+    } else {
+      return;
     }
 
     loaderFn(derivationPath)
@@ -86,6 +101,7 @@ export function ImportAccounts({
       })
       .catch((error) => {
         // Probably Ledger error, i.e. app is not opened
+        console.error(error);
         if (onError) {
           // Call custom error handler if one was passed
           onError(error);
@@ -94,6 +110,13 @@ export function ImportAccounts({
         }
       });
   }, [mnemonic, transport, derivationPath]);
+
+  //
+  // Clear selected acounts on change of derivation path.
+  //
+  useEffect(() => {
+    setSelectedAccounts([]);
+  }, [derivationPath]);
 
   //
   // Load accounts for the given mnemonic. This is passed to the ImportAccounts
@@ -122,7 +145,7 @@ export function ImportAccounts({
     const publicKeys = [];
     for (let k = 0; k < LOAD_PUBKEY_AMOUNT; k += 1) {
       publicKeys.push(
-        await ledgerCore.getPublicKey(transport!, k, derivationPath)
+        await ledgerCore.getPublicKey(transport, k, derivationPath)
       );
     }
     return publicKeys;
@@ -131,16 +154,19 @@ export function ImportAccounts({
   //
   // Handles checkbox clicks to select accounts to import.
   //
-  const handleSelect = (index: number) => () => {
-    const currentIndex = accountIndices.indexOf(index);
-    const newAccountIndices = [...accountIndices];
+  const handleSelect = (index: number, publicKey: PublicKey) => () => {
+    const currentIndex = selectedAccounts.findIndex((a) => a.index === index);
+    const newSelectedAccounts = [...selectedAccounts];
     if (currentIndex === -1) {
-      newAccountIndices.push(index);
+      // Adding the account
+      newSelectedAccounts.push({ index, publicKey });
     } else {
-      newAccountIndices.splice(currentIndex, 1);
+      // Removing the account
+      newSelectedAccounts.splice(currentIndex, 1);
     }
-    newAccountIndices.sort();
-    setAccountIndices(newAccountIndices);
+    // Sort by account indices
+    newSelectedAccounts.sort((a, b) => a.index - b.index);
+    setSelectedAccounts(newSelectedAccounts);
   };
 
   return (
@@ -182,7 +208,7 @@ export function ImportAccounts({
             {accounts.map(({ publicKey, account }, index) => (
               <ListItemButton
                 key={publicKey.toString()}
-                onClick={handleSelect(index)}
+                onClick={handleSelect(index, publicKey)}
                 sx={{
                   display: "flex",
                   paddinLeft: "16px",
@@ -194,7 +220,7 @@ export function ImportAccounts({
                 <Box style={{ display: "flex", width: "100%" }}>
                   <Checkbox
                     edge="start"
-                    checked={accountIndices.indexOf(index) !== -1}
+                    checked={selectedAccounts.some((a) => a.index === index)}
                     tabIndex={-1}
                     disableRipple
                     style={{ marginLeft: 0 }}
@@ -232,8 +258,8 @@ export function ImportAccounts({
       >
         <PrimaryButton
           label="Import Accounts"
-          onClick={() => onNext(accountIndices, derivationPath, mnemonic)}
-          disabled={accountIndices.length === 0}
+          onClick={() => onNext(selectedAccounts, derivationPath, mnemonic)}
+          disabled={selectedAccounts.length === 0}
         />
       </Box>
     </Box>
