@@ -63,12 +63,3 @@ function WaitingApp() {
 // It also ensures that whether you load the app in Expo Go or in a native build,
 // the environment is set up appropriately
 registerRootComponent(WrappedApp);
-
-/*&
-(ref) => {
-        ref={webViewRef}
-      onLoadEnd={() => {
-          console.log('webviewref', webViewRef);
-          setInjectJavaScript(webViewRef.current.injectJavaScript);
-        }}
-*/
