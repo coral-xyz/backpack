@@ -143,12 +143,16 @@ export function startMobileIfNeeded() {
       },
     });
   };
+  // TODO: replace this with whatever the react-native api is.
+  const MEM_STORAGE = {
+    "keyring-store": "locked",
+  };
   const handleGetLocalStorage = (key: string) => {
-    // todo
-    return ["locked", undefined];
+    const result = MEM_STORAGE[key];
+    return [result, undefined];
   };
   const handleSetLocalStorage = (key: string, value: any) => {
-    // todo
+    MEM_STORAGE[key] = value;
     return ["success", undefined];
   };
 
