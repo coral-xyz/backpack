@@ -11,9 +11,9 @@
   <body>
     <script type="module">
      (async function setup() {
-			 //
-			 // Kickoff the service worker.
-			 //
+       //
+       // Kickoff the service worker.
+       //
        const registration = await navigator.serviceWorker.register(
          new URL("./service-worker.ts", import.meta.url),
          {
@@ -28,9 +28,9 @@
          window.ReactNativeWebView?.postMessage(JSON.stringify(event.data));
        };
 
-			 //
-			 // Send a message to the background service worker.
-			 //
+       //
+       // Send a message to the background service worker.
+       //
        window.postMessageToBackgroundViaWebview = (rawData) => {
          navigator.serviceWorker.controller.postMessage(rawData);
        };
