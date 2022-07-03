@@ -1,8 +1,8 @@
 import EventEmitter from "eventemitter3";
-import { logFromAnywhere } from "../logging";
 import { vanillaStore } from "../zustand";
 import { BrowserRuntimeCommon } from "./common";
 import { getLogger } from "../logging";
+import { IS_MOBILE } from "../utils";
 
 const logger = getLogger("common/mobile");
 
@@ -10,17 +10,6 @@ const logger = getLogger("common/mobile");
  * Event emitter for *all* events on the web view component.
  */
 export const WEB_VIEW_EVENTS = new EventEmitter();
-
-/**
- * True if we're in the mobile environment.
- */
-export const IS_MOBILE = globalThis.chrome
-  ? // `global.chrome` exists, we're in chromium.
-    globalThis.chrome
-  : globalThis.browser
-  ? // `global.browser` exists, we're in FF/safari.
-    false
-  : true;
 
 /**
  * Start the mobile WebView system.
@@ -70,7 +59,7 @@ export function startMobileIfNeeded() {
 
   // Handle web view events here.
   WEB_VIEW_EVENTS.on("message", (msg) => {
-    logger.debug(JSON.stringify(msg));
+    logger._log(JSON.stringify(msg));
 
     if (msg.channel === "mobile-browser-runtime-common-response") {
       WebViewRequestManager.response(msg);

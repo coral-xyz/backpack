@@ -1,7 +1,17 @@
 import { vanillaStore } from "./zustand";
+import { IS_MOBILE } from "./utils";
 
-function log(str: any, ...args: any) {
-  console.log(`anchor: ${str}`, ...args);
+export function getLogger(mod: string) {
+  return (() => {
+    const _mod = mod;
+    return {
+      debug: (str: string, ...args: any) =>
+        debug(`anchor: ${_mod}: ${str}`, ...args),
+      error: (str: string, ...args: any) =>
+        error(`anchor: ${_mod}: ${str}`, ...args),
+      _log,
+    };
+  })();
 }
 
 function debug(str: any, ...args: any) {
@@ -9,17 +19,19 @@ function debug(str: any, ...args: any) {
 }
 
 function error(str: any, ...args: any) {
-  console.error(`${str}`, ...args);
+  log(`ERROR: ${str}`, ...args);
 }
 
-export function getLogger(mod: string) {
-  return (() => {
-    const _mod = mod;
-    return {
-      debug: (str: string, ...args: any) => debug(`${_mod}: ${str}`, ...args),
-      error: (str: string, ...args: any) => error(`${_mod}: ${str}`, ...args),
-    };
-  })();
+function log(str: any, ...args: any) {
+  if (IS_MOBILE) {
+    logFromAnywhere(str, ...args);
+  } else {
+    _log(str, ...args);
+  }
+}
+
+function _log(str: any, ...args: any) {
+  console.log(str, ...args);
 }
 
 /**
@@ -30,7 +42,7 @@ export function getLogger(mod: string) {
  * serviceworker or react native app.
  * @param args what to log
  */
-export async function logFromAnywhere(...args: any[]) {
+async function logFromAnywhere(...args: any[]) {
   // We're in the serviceworker, try sending the message to the HTML page.
   try {
     const clients = await self.clients.matchAll({
@@ -41,10 +53,7 @@ export async function logFromAnywhere(...args: any[]) {
     clients.forEach((client) => {
       client.postMessage({
         channel: "mobile-logs",
-        data: {
-          args,
-          from: "serviceWorker",
-        },
+        data: args,
       });
     });
   } catch (err) {
@@ -56,10 +65,7 @@ export async function logFromAnywhere(...args: any[]) {
       `navigator.serviceWorker.onmessage(${JSON.stringify({
         data: {
           channel: "mobile-logs",
-          data: {
-            args,
-            from: "frontend",
-          },
+          data: args,
         },
       })}); true;`
     );
