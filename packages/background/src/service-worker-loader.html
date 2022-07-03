@@ -9,7 +9,74 @@
     </style>
   </head>
   <body>
-    <script src="setup.ts" type="module">
+    <script type="module">
+		 (async function setup() {
+			 try {
+
+				 // @ts-ignore
+				 window.forwardLogs = (event) => { //handleForwardLogs({ data: event });
+					 // @ts-ignore
+					 window.ReactNativeWebView?.postMessage(JSON.stringify(event.data));
+				 }
+
+				 // @ts-ignore
+				 window.postMessageToBackgroundViaWebview = (msg) => {
+					 // @ts-ignore
+					 navigator.serviceWorker.controller.postMessage(JSON.stringify(msg));
+				 };
+
+				 // console.log(new URL("./service-worker.ts", import.meta.url));
+				 const registration = await navigator.serviceWorker.register(
+					 new URL("./service-worker.ts", import.meta.url),
+					 {
+						 type: "module",
+					 }
+				 );
+
+				 //
+				 // Receive messages from the service worker.
+				 //
+				 navigator.serviceWorker.onmessage = (event) => {
+					 // @ts-ignore
+					 switch (event.channel) {
+						 case "mobile-logs":
+							 // @ts-ignore
+							 window.forwardLogs({ data: `mobile-logs event: ${JSON.stringify(event)}`});
+							 //          handleForwardLogs(event);
+							 break;
+						 case "mobile-response":
+							 // @ts-ignore
+							 window.forwardLogs({ data: `mobile-response event: ${JSON.stringify(event)}`});
+							 handleResponse(event);
+							 break;
+						 default:
+							 // @ts-ignore
+							 window.forwardLogs({ data: `unknown event: ${JSON.stringify(event)}` });
+							 break;
+					 }
+				 };
+
+				 /*
+						const handleForwardLogs = (event: any) => {
+						// @ts-ignore
+						window.ReactNativeWebView?.postMessage(JSON.stringify(event.data));
+						};
+					*/
+				 const handleResponse = (event) => {
+					 //			armaniHandleResponse(event);
+				 };
+
+				 // @ts-ignore
+				 document
+					 .querySelector("body")
+					 .insertAdjacentHTML(
+						 "beforeend",
+						 "<p>background script service worker registered</p>"
+					 );
+			 } catch (err) {
+				 document.write(JSON.stringify({ err }));
+			 }
+		 })()
     </script>
   </body>
 </html>

@@ -78,14 +78,13 @@ globalThis.chrome
       BrowserRuntimeCommon.sendMessage = (msg, cb) => {
         //        logFromAnywhere({ sendMessage: { msg, cb } });
         //cb({ result: "locked" });
+        console.log("posting message from app ui", msg);
         const promise = new Promise((resolve, reject) => {
           //					REQUESTS[msg.data.id] = { resolve, reject };
           vanillaStore
             .getState()
             .injectJavaScript?.(
-              `window.postMessageToBackgroundViaWebview(${JSON.stringify(
-                msg
-              )}); true;`
+              `window.postMessageToBackgroundViaWebview(msg); true;`
             );
           // TODO: resolve after receiving response from backend serviceworker
           resolve({ result: "locked" });

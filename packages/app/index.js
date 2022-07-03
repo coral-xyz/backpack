@@ -39,10 +39,15 @@ function Background() {
           //      app.json > ios.infoPlist.WKAppBoundDomains[]
           uri: "http://localhost:9333",
         }}
-        onMessage={(event) =>
+        onMessage={(event) => {
+          //
+          // Receives messages from the webview back to react-native code.
+          //
+
           // log messages sent to
-          console.log(JSON.parse(event.nativeEvent.data))
-        }
+          //          console.log(JSON.parse(event.nativeEvent.data))
+          console.log(JSON.parse(event.nativeEvent.data));
+        }}
         originWhitelist={["*"]}
         limitsNavigationsToAppBoundDomains
       />
