@@ -23,6 +23,8 @@ export const CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE =
 export const MOBILE_CHANNEL_BROWSER_RUNTIME_COMMON_RESPONSE =
   "mobile-browser-runtime-common-response";
 export const MOBILE_CHANNEL_LOGS = "mobile-logs";
+export const MOBILE_CHANNEL_HOST_RPC_REQUEST = "mobile-host-rpc-request";
+export const MOBILE_CHANNEL_HOST_RPC_RESPONSE = "mobile-host-rpc-resposne";
 
 export const RECONCILER_BRIDGE_METHOD_CREATE_INSTANCE =
   "anchor-reconciler-method-create-instance";

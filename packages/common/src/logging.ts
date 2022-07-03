@@ -25,7 +25,7 @@ function error(str: any, ...args: any) {
 
 function log(str: any, ...args: any) {
   if (IS_MOBILE) {
-    logFromAnywhere(str, ...args);
+    _mobileLog(str, ...args);
   } else {
     _log(str, ...args);
   }
@@ -43,7 +43,7 @@ function _log(str: any, ...args: any) {
  * serviceworker or react native app.
  * @param args what to log
  */
-async function logFromAnywhere(...args: any[]) {
+async function _mobileLog(...args: any[]) {
   // We're in the serviceworker, try sending the message to the HTML page.
   try {
     const clients = await self.clients.matchAll({

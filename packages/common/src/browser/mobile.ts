@@ -2,8 +2,12 @@ import EventEmitter from "eventemitter3";
 import { vanillaStore } from "../zustand";
 import { BrowserRuntimeCommon } from "./common";
 import { getLogger } from "../logging";
-import { IS_MOBILE } from "../utils";
-import { MOBILE_CHANNEL_BROWSER_RUNTIME_COMMON_RESPONSE } from "../constants";
+import { generateUniqueId, IS_MOBILE } from "../utils";
+import {
+  MOBILE_CHANNEL_HOST_RPC_REQUEST,
+  MOBILE_CHANNEL_HOST_RPC_RESPONSE,
+  MOBILE_CHANNEL_BROWSER_RUNTIME_COMMON_RESPONSE,
+} from "../constants";
 
 const logger = getLogger("common/mobile");
 
@@ -29,29 +33,28 @@ export function startMobileIfNeeded() {
   // Assuemes `addEventListener` is only called from the service worker on
   // mobile.
   BrowserRuntimeCommon.addEventListener = (cb) => {
-    self.addEventListener("message", (event) => {
-      cb(event.data, {}, async (result) => {
-        const clients = await self.clients.matchAll({
-          includeUncontrolled: true,
-          type: "window",
-        });
-        clients.forEach((client) => {
-          client.postMessage({
-            channel: MOBILE_CHANNEL_BROWSER_RUNTIME_COMMON_RESPONSE,
-            data: result,
-          });
+    const handler = (event) => {
+      cb(event.data, {}, (result: any) => {
+        postMsgFromWorker({
+          channel: MOBILE_CHANNEL_BROWSER_RUNTIME_COMMON_RESPONSE,
+          data: result,
         });
       });
-    });
+    };
+    self.addEventListener("message", handler);
+    return handler;
   };
 
+  //
   // Assumes this is only called from the background service worker.
+  //
   BrowserRuntimeCommon.getLocalStorage = async (key: string): Promise<any> => {
-    // todo
-    //		return 'asdf'
+    return await rpcRequest("getLocalStorage", [key]);
   };
 
+  //
   // Assumes this is only called from the background service worker.
+  //
   BrowserRuntimeCommon.setLocalStorage = async (
     key: string,
     value: any
@@ -59,13 +62,154 @@ export function startMobileIfNeeded() {
     // todo
   };
 
-  // Handle web view events here.
+  BrowserRuntimeCommon.checkForError = () => {
+    return undefined;
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  // Handle all web view emitted events here.
+  //
+  //////////////////////////////////////////////////////////////////////////////
+
   WEB_VIEW_EVENTS.on("message", (msg) => {
+    // Use the raw log to avoid an infinite loop.
     logger._log(JSON.stringify(msg));
 
-    if (msg.channel === MOBILE_CHANNEL_BROWSER_RUNTIME_COMMON_RESPONSE) {
-      WebViewRequestManager.response(msg);
+    switch (msg.channel) {
+      case MOBILE_CHANNEL_BROWSER_RUNTIME_COMMON_RESPONSE:
+        WebViewRequestManager.response(msg);
+        break;
+      case MOBILE_CHANNEL_HOST_RPC_REQUEST:
+        handleHostRpcRequest(msg);
+        break;
+      default:
+        break;
     }
+  });
+
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  // RPC Servers APIs.
+  //
+  // These APIs run in the context of the frontend react-native app code and
+  // give the service worker access to resources provided by the host mobile
+  // app.
+  //
+  //////////////////////////////////////////////////////////////////////////////
+
+  const handleHostRpcRequest = ({
+    data,
+  }: {
+    data: { id: string; method: string; params: Array<any> };
+  }) => {
+    const { id, method, params } = data;
+
+    const [result, error] = (() => {
+      switch (method) {
+        case "getLocalStorage":
+          return handleGetLocalStorage(params[0]);
+        default:
+          return [];
+      }
+    })();
+
+    BrowserRuntimeCommon.sendMessage({
+      channel: MOBILE_CHANNEL_HOST_RPC_RESPONSE,
+      data: {
+        id,
+        result,
+        error,
+      },
+    });
+  };
+  const handleGetLocalStorage = (key: string) => {
+    return ["locked", undefined];
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  // RPC Client APIs.
+  //
+  // These apis run in the context of the background service worker and give
+  // the background script access to the frontend react-native app resources,
+  // e.g., sotrage.
+  //
+  //////////////////////////////////////////////////////////////////////////////
+
+  //
+  // Request promise resolvers.
+  //
+  const RPC_RESOLVERS = {};
+
+  //
+  // Send an rpc request to the frontend app code and resolves with a promise.
+  //
+  const rpcRequest = (method: string, params: Array<any>): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      const id = generateUniqueId();
+
+      let _listener: any;
+      _listener = BrowserRuntimeCommon.addEventListener(
+        (
+          msg: { channel: string; data: any },
+          _sender: any,
+          sendResponse: any
+        ) => {
+          //
+          // Drop all irrelevant messages.
+          //
+          if (msg.channel !== MOBILE_CHANNEL_HOST_RPC_RESPONSE) {
+            return;
+          }
+
+          //
+          // Get the resolver.
+          //
+          const resolver = RPC_RESOLVERS[msg.data.id];
+          if (!resolver) {
+            logger.error(`unable to find resolver: ${JSON.stringify(msg)}`);
+            return;
+          }
+
+          //
+          // Cleanup the listener to avoid a memory leak.
+          //
+          self.removeEventListener("message", resolver.listener);
+
+          //
+          // Resolve.
+          //
+          const { result, error } = msg.data;
+          if (error) {
+            resolver.reject(error);
+            return;
+          }
+          resolver.resolve(result);
+        }
+      );
+
+      RPC_RESOLVERS[id] = { resolve, reject, listener: _listener };
+
+      postMsgFromWorker({
+        channel: MOBILE_CHANNEL_HOST_RPC_REQUEST,
+        data: {
+          id,
+          method,
+          params,
+        },
+      });
+    });
+  };
+}
+
+async function postMsgFromWorker(msg: any) {
+  const clients = await self.clients.matchAll({
+    includeUncontrolled: true,
+    type: "window",
+  });
+  clients.forEach((client) => {
+    client.postMessage(msg);
   });
 }
 
@@ -81,9 +225,7 @@ class WebViewRequestManager {
    * the webview.
    */
   public static request<T = any>(msg: any): Promise<T> {
-    logger.debug(
-      `sending request to webview service worker: ${JSON.stringify(msg)}`
-    );
+    logger.debug(JSON.stringify(msg));
 
     return new Promise((resolve, reject) => {
       WebViewRequestManager._resolvers[msg.data.id] = { resolve, reject };
