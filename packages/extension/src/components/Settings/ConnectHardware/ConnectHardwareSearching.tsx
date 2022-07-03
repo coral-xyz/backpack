@@ -72,7 +72,7 @@ export function ConnectHardwareSearching({
         setTimeout(() => setConnectFailure(true), 2000);
       }
     })();
-  }, [navigatorStateChange]);
+  }, [connectFailure, navigatorStateChange]);
 
   useEffect(() => {
     if (transport) {
