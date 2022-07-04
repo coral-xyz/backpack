@@ -122,7 +122,7 @@ export function SolanaIcon() {
       <path
         d="M55.5 28C55.5 43.1878 43.1878 55.5 28 55.5C12.8122 55.5 0.5 43.1878 0.5 28C0.5 12.8122 12.8122 0.5 28 0.5C43.1878 0.5 55.5 12.8122 55.5 28Z"
         stroke="white"
-        stroke-opacity="0.15"
+        strokeOpacity="0.15"
       />
       <path
         fillRule="evenodd"
@@ -139,9 +139,9 @@ export function SolanaIcon() {
           y2="12.6588"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#9945FF" />
-          <stop offset="0.2" stop-color="#7962E7" />
-          <stop offset="1" stop-color="#00D18C" />
+          <stop stopColor="#9945FF" />
+          <stop offset="0.2" stopColor="#7962E7" />
+          <stop offset="1" stopColor="#00D18C" />
         </linearGradient>
       </defs>
     </svg>

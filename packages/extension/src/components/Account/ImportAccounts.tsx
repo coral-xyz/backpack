@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
-import { Box, List, ListItemButton, ListItemText } from "@mui/material";
+import { Link, Box, List, ListItemButton, ListItemText } from "@mui/material";
 import Transport from "@ledgerhq/hw-transport";
 import * as ledgerCore from "@coral-xyz/ledger-core";
 import {
   Checkbox,
   Header,
   Loading,
+  ListItem,
   PrimaryButton,
   SubtextParagraph,
   walletAddressDisplay,
 } from "../common";
+import { WithMiniDrawer } from "../Layout/Drawer";
 import { Connection, PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { useBackgroundClient, useAnchorContext } from "@coral-xyz/recoil";
@@ -52,10 +54,10 @@ export function ImportAccounts({
   const [selectedAccounts, setSelectedAccounts] = useState<SelectedAccount[]>(
     []
   );
-  // TODO make this configurable
   const [derivationPath, setDerivationPath] = useState<DerivationPath>(
     DerivationPath.Bip44Change
   );
+  const [derivationSelectorOpen, setDerivationSelectorOpen] = useState(false);
 
   // Handle the case where the keyring store is locked, i.e. this is a reset
   // without an unlock or this is during onboarding.
@@ -92,6 +94,7 @@ export function ImportAccounts({
 
     loaderFn(derivationPath)
       .then(async (publicKeys: PublicKey[]) => {
+        console.log(publicKeys);
         const accounts = (
           await anchor.utils.rpc.getMultipleAccounts(connection, publicKeys)
         ).map((result, index) => {
@@ -112,9 +115,10 @@ export function ImportAccounts({
   }, [mnemonic, transport, derivationPath]);
 
   //
-  // Clear selected acounts on change of derivation path.
+  // Clear accounts and selected acounts on change of derivation path.
   //
   useEffect(() => {
+    setAccounts([]);
     setSelectedAccounts([]);
   }, [derivationPath]);
 
@@ -193,58 +197,85 @@ export function ImportAccounts({
         {accounts.length === 0 ? (
           <Loading />
         ) : (
-          <List
-            sx={{
-              color: theme.custom.colors.fontColor,
-              background: theme.custom.colors.background,
-              borderRadius: "12px",
-              marginLeft: "16px",
-              marginRight: "16px",
-              paddingTop: "8px",
-              paddingBottom: "8px",
-            }}
-          >
-            {accounts.map(({ publicKey, account }, index) => (
-              <ListItemButton
-                key={publicKey.toString()}
-                onClick={handleSelect(index, publicKey)}
+          <>
+            <List
+              sx={{
+                color: theme.custom.colors.fontColor,
+                background: theme.custom.colors.background,
+                borderRadius: "12px",
+                marginLeft: "16px",
+                marginRight: "16px",
+                paddingTop: "8px",
+                paddingBottom: "8px",
+              }}
+            >
+              {accounts.map(({ publicKey, account }, index) => (
+                <ListItemButton
+                  key={publicKey.toString()}
+                  onClick={handleSelect(index, publicKey)}
+                  sx={{
+                    display: "flex",
+                    paddinLeft: "16px",
+                    paddingRight: "16px",
+                    paddingTop: "5px",
+                    paddingBottom: "5px",
+                  }}
+                >
+                  <Box style={{ display: "flex", width: "100%" }}>
+                    <Checkbox
+                      edge="start"
+                      checked={selectedAccounts.some((a) => a.index === index)}
+                      tabIndex={-1}
+                      disableRipple
+                      style={{ marginLeft: 0 }}
+                    />
+                    <ListItemText
+                      id={publicKey.toString()}
+                      primary={walletAddressDisplay(publicKey)}
+                      sx={{
+                        marginLeft: "8px",
+                        fontSize: "14px",
+                        lineHeight: "32px",
+                        fontWeight: 500,
+                      }}
+                    />
+                    <ListItemText
+                      sx={{
+                        color: theme.custom.colors.secondary,
+                        textAlign: "right",
+                      }}
+                      primary={`${
+                        account ? account.lamports / 10 ** 9 : 0
+                      } SOL`}
+                    />
+                  </Box>
+                </ListItemButton>
+              ))}
+            </List>
+            <Box
+              sx={{
+                textAlign: "center",
+                margin: "32px 0",
+              }}
+            >
+              <Link
                 sx={{
-                  display: "flex",
-                  paddinLeft: "16px",
-                  paddingRight: "16px",
-                  paddingTop: "5px",
-                  paddingBottom: "5px",
+                  cursor: "pointer",
+                  color: theme.custom.colors.secondary,
+                  textDecoration: "none",
                 }}
+                onClick={() => setDerivationSelectorOpen(true)}
               >
-                <Box style={{ display: "flex", width: "100%" }}>
-                  <Checkbox
-                    edge="start"
-                    checked={selectedAccounts.some((a) => a.index === index)}
-                    tabIndex={-1}
-                    disableRipple
-                    style={{ marginLeft: 0 }}
-                  />
-                  <ListItemText
-                    id={publicKey.toString()}
-                    primary={walletAddressDisplay(publicKey)}
-                    sx={{
-                      marginLeft: "8px",
-                      fontSize: "14px",
-                      lineHeight: "32px",
-                      fontWeight: 500,
-                    }}
-                  />
-                  <ListItemText
-                    sx={{
-                      color: theme.custom.colors.secondary,
-                      textAlign: "right",
-                    }}
-                    primary={`${account ? account.lamports / 10 ** 9 : 0} SOL`}
-                  />
-                </Box>
-              </ListItemButton>
-            ))}
-          </List>
+                Set derivation path
+              </Link>
+            </Box>
+            <DerivationSelection
+              open={derivationSelectorOpen}
+              setOpen={setDerivationSelectorOpen}
+              derivationPath={derivationPath}
+              setDerivationPath={setDerivationPath}
+            />
+          </>
         )}
       </Box>
       <Box
@@ -262,5 +293,74 @@ export function ImportAccounts({
         />
       </Box>
     </Box>
+  );
+}
+
+function DerivationSelection({
+  open,
+  setOpen,
+  derivationPath,
+  setDerivationPath,
+}: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  derivationPath: DerivationPath;
+  setDerivationPath: (derivationPath: DerivationPath) => void;
+}) {
+  const theme = useCustomTheme();
+
+  const options = [
+    {
+      path: DerivationPath.Bip44,
+      label: "44'/501'/0",
+    },
+    {
+      path: DerivationPath.Bip44Change,
+      label: "44'/501'/0'/0'",
+    },
+  ];
+
+  return (
+    <>
+      <WithMiniDrawer title="" openDrawer={open} setOpenDrawer={setOpen}>
+        <Box sx={{ color: theme.custom.colors.fontColor }}>
+          <List
+            style={{
+              background: theme.custom.colors.bg2,
+              marginLeft: "16px",
+              marginRight: "16px",
+            }}
+          >
+            {options.map((o, idx) => (
+              <ListItem
+                onClick={() => {
+                  setDerivationPath(o.path);
+                  setOpen(false);
+                }}
+                key={o.label}
+                style={{
+                  height: "44px",
+                  display: "flex",
+                  borderBottom:
+                    idx < 2 && idx !== options.length - 1
+                      ? `solid 1pt ${theme.custom.colors.border1}`
+                      : undefined,
+                }}
+              >
+                <ListItemText
+                  sx={{
+                    marginLeft: "8px",
+                    fontSize: "16px",
+                    lineHeight: "24px",
+                    fontWeight: 500,
+                  }}
+                  primary={o.label}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </WithMiniDrawer>
+    </>
   );
 }
