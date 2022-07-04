@@ -11,8 +11,6 @@ export interface BackgroundClient {
   request<T = any>({ method, params }: RpcRequest): Promise<RpcResponse<T>>;
 }
 
-// Note that this doesn't actually use the port API anymore and so is
-// poorly name.
 export class ChannelAppUi {
   public static client(name: string): ChannelAppUiClient {
     return new ChannelAppUiClient(name);
@@ -103,6 +101,7 @@ export class ChannelAppUiClient implements BackgroundClient {
   }
 }
 
+// Must be used from the frontend app code.
 export class ChannelAppUiResponder {
   constructor(private name: string) {}
 

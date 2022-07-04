@@ -3,14 +3,17 @@
 //
 export class BrowserRuntimeCommon {
   public static sendMessageToBackground(msg: any, cb?: any) {
-    chrome
-      ? chrome.runtime.sendMessage(msg, cb)
-      : browser.runtime.sendMessage(msg).then(cb);
+    return BrowserRuntimeCommon.sendMessageToAnywhere(msg, cb);
   }
 
   public static sendMessageToAppUi(msg: any, cb?: any) {
-    // By default, we use the same api.
-    return BrowserRuntimeCommon.sendMessageToBackground(msg, cb);
+    return BrowserRuntimeCommon.sendMessageToAnywhere(msg, cb);
+  }
+
+  public static sendMessageToAnywhere(msg: any, cb?: any) {
+    chrome
+      ? chrome.runtime.sendMessage(msg, cb)
+      : browser.runtime.sendMessage(msg).then(cb);
   }
 
   public static addEventListenerFromBackground(listener: any): void {

@@ -111,8 +111,12 @@ export function startMobileIfNeeded() {
     return handler;
   };
 
+  BrowserRuntimeCommon.sendMessageToAnywhere = (_msg, _cb) => {
+    throw new Error("sendMessageToAnywhere not implemented on mobile");
+  };
+
   BrowserRuntimeCommon.addEventListenerFromAnywhere = (cb) => {
-    throw new Error("not implemented");
+    throw new Error("addEventListenerFromAnywhere not implemented on mobile");
   };
 
   //
