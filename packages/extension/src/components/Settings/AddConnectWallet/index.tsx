@@ -159,7 +159,14 @@ export function AddConnectWallet({
   }
 
   return (
-    <WithDrawer openDrawer={true}>
+    <WithDrawer
+      openDrawer={true}
+      setOpenDrawer={(open: boolean) => {
+        if (!open) {
+          close();
+        }
+      }}
+    >
       <WithNav
         navButtonLeft={<NavBackButton onClick={prevStep} />}
         navbarStyle={{
