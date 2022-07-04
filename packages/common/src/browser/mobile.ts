@@ -66,7 +66,6 @@ export function startMobileIfNeeded() {
           postMsgFromWorker({
             channel: "fe-request-response",
             data: {
-              id: event.data.id,
               wrappedEvent: {
                 channel: "fe-request-response-inner",
                 data: result,
@@ -87,7 +86,6 @@ export function startMobileIfNeeded() {
           postMsgFromAppUi({
             channel: "bg-request-response",
             data: {
-              id: event.data.id,
               wrappedEvent: {
                 channel: "bg-request-response-inner",
                 data: result,
@@ -127,11 +125,10 @@ export function startMobileIfNeeded() {
     key: string,
     value: any
   ): Promise<void> => {
-    const id = generateUniqueId();
     return await BackendRequestManager.request({
       channel: MOBILE_CHANNEL_HOST_RPC_REQUEST,
       data: {
-        id,
+        id: generateUniqueId(),
         method: "setLocalStorage",
         params: [key, value],
       },
@@ -253,12 +250,10 @@ class CommonRequestManager {
 class FrontendRequestManager extends CommonRequestManager {
   public static request<T = any>(msg: any): Promise<T> {
     return new Promise((resolve, reject) => {
-      const id = generateUniqueId();
       CommonRequestManager._resolvers[msg.data.id] = { resolve, reject };
       postMsgFromAppUi({
         channel: "fe-request",
         data: {
-          id,
           wrappedEvent: msg,
         },
       });
@@ -269,12 +264,10 @@ class FrontendRequestManager extends CommonRequestManager {
 class BackendRequestManager extends CommonRequestManager {
   public static request<T = any>(msg: any): Promise<T> {
     return new Promise((resolve, reject) => {
-      const id = generateUniqueId();
       CommonRequestManager._resolvers[msg.data.id] = { resolve, reject };
       postMsgFromWorker({
         channel: "bg-request",
         data: {
-          id,
           wrappedEvent: msg,
         },
       });
