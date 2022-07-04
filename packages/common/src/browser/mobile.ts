@@ -3,7 +3,15 @@ import { vanillaStore } from "../zustand";
 import { BrowserRuntimeCommon } from "./common";
 import { getLogger } from "../logging";
 import { generateUniqueId, isServiceWorker, IS_MOBILE } from "../utils";
-import { MOBILE_CHANNEL_HOST_RPC_REQUEST } from "../constants";
+import {
+  MOBILE_CHANNEL_HOST_RPC_REQUEST,
+  MOBILE_CHANNEL_BG_REQUEST,
+  MOBILE_CHANNEL_BG_RESPONSE,
+  MOBILE_CHANNEL_BG_RESPONSE_INNER,
+  MOBILE_CHANNEL_FE_REQUEST,
+  MOBILE_CHANNEL_FE_RESPONSE,
+  MOBILE_CHANNEL_FE_RESPONSE_INNER,
+} from "../constants";
 
 const logger = getLogger("common/mobile");
 
@@ -18,7 +26,11 @@ export const WEB_VIEW_EVENTS = new EventEmitter();
 const EVENT_LISTENERS = [] as any;
 
 /**
- * Start the mobile WebView system.
+ * Start the mobile WebView messaging subsystem.
+ *
+ * Here, we patch the BrowserRuntimeCommon api so that it works on mobile,
+ * passing all messages through an intermediate webview before it hits the
+ * background service worker.
  */
 export function startMobileIfNeeded() {
   if (!IS_MOBILE) {
@@ -64,10 +76,10 @@ export function startMobileIfNeeded() {
       if (event && event.data && event.data.wrappedEvent) {
         cb(event.data.wrappedEvent, {}, (result: any) => {
           postMsgFromWorker({
-            channel: "fe-request-response",
+            channel: MOBILE_CHANNEL_FE_RESPONSE,
             data: {
               wrappedEvent: {
-                channel: "fe-request-response-inner",
+                channel: MOBILE_CHANNEL_FE_RESPONSE_INNER,
                 data: result,
               },
             },
@@ -84,10 +96,10 @@ export function startMobileIfNeeded() {
       if (event && event.data && event.data.wrappedEvent) {
         cb(event.data.wrappedEvent, {}, (result: any) => {
           postMsgFromAppUi({
-            channel: "bg-request-response",
+            channel: MOBILE_CHANNEL_BG_RESPONSE,
             data: {
               wrappedEvent: {
-                channel: "bg-request-response-inner",
+                channel: MOBILE_CHANNEL_BG_RESPONSE_INNER,
                 data: result,
               },
             },
@@ -125,7 +137,7 @@ export function startMobileIfNeeded() {
     key: string,
     value: any
   ): Promise<void> => {
-    return await BackendRequestManager.request({
+    const { id, result, error } = await BackendRequestManager.request({
       channel: MOBILE_CHANNEL_HOST_RPC_REQUEST,
       data: {
         id: generateUniqueId(),
@@ -141,14 +153,14 @@ export function startMobileIfNeeded() {
 
   //////////////////////////////////////////////////////////////////////////////
   //
-  // Response channels.
+  // Wrapped response channels.
   //
   //////////////////////////////////////////////////////////////////////////////
 
   if (isServiceWorker()) {
     BrowserRuntimeCommon.addEventListenerFromBackground(
       (msg, _sender, sendResponse) => {
-        if (msg.channel !== "bg-request-response-inner") {
+        if (msg.channel !== MOBILE_CHANNEL_BG_RESPONSE_INNER) {
           return;
         }
         BackendRequestManager.response(msg);
@@ -157,7 +169,7 @@ export function startMobileIfNeeded() {
   } else {
     BrowserRuntimeCommon.addEventListenerFromAppUi(
       (msg, _sender, sendResponse) => {
-        if (msg.channel !== "fe-request-response-inner") {
+        if (msg.channel !== MOBILE_CHANNEL_FE_RESPONSE_INNER) {
           return;
         }
         FrontendRequestManager.response(msg);
@@ -222,7 +234,6 @@ export function startMobileIfNeeded() {
   };
 }
 
-// TODO: brning up request here.
 class CommonRequestManager {
   static _resolvers: { [requestId: string]: any } = {};
 
@@ -252,7 +263,7 @@ class FrontendRequestManager extends CommonRequestManager {
     return new Promise((resolve, reject) => {
       CommonRequestManager._resolvers[msg.data.id] = { resolve, reject };
       postMsgFromAppUi({
-        channel: "fe-request",
+        channel: MOBILE_CHANNEL_FE_REQUEST,
         data: {
           wrappedEvent: msg,
         },
@@ -266,7 +277,7 @@ class BackendRequestManager extends CommonRequestManager {
     return new Promise((resolve, reject) => {
       CommonRequestManager._resolvers[msg.data.id] = { resolve, reject };
       postMsgFromWorker({
-        channel: "bg-request",
+        channel: MOBILE_CHANNEL_BG_REQUEST,
         data: {
           wrappedEvent: msg,
         },
