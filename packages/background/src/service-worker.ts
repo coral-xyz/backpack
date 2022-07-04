@@ -2,12 +2,12 @@
 import { start } from ".";
 
 self.addEventListener("install", () => {
-  start();
+  start({
+    isMobile: true,
+  });
   self.skipWaiting();
 });
 
 self.addEventListener("activate", () => {
   self.clients.claim();
 });
-
-self.addEventListener("message", console.log);

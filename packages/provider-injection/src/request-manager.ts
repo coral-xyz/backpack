@@ -1,5 +1,10 @@
-import type { RpcRequest, RpcResponse, Event, ResponseHandler } from "./types";
-import { getLogger } from "./logging";
+import { getLogger } from "@coral-xyz/common";
+import type {
+  RpcRequest,
+  RpcResponse,
+  Event,
+  ResponseHandler,
+} from "@coral-xyz/common";
 
 const logger = getLogger("common/request-manager");
 

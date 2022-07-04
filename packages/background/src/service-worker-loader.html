@@ -2,34 +2,46 @@
 <html>
   <head>
     <title>service worker loader</title>
+    <style>
+      body {
+        background: yellow;
+      }
+    </style>
   </head>
   <body>
     <script type="module">
-      (async function setup() {
-        try {
-          console.log(new URL("./service-worker.ts", import.meta.url));
-          const registration = await navigator.serviceWorker.register(
-            new URL("./service-worker.ts", import.meta.url),
-            {
-              type: "module",
-            }
-          );
+     (async function setup() {
+       //
+       // Kickoff the service worker.
+       //
+       const registration = await navigator.serviceWorker.register(
+         new URL("./service-worker.ts", import.meta.url),
+         {
+           type: "module",
+         }
+       );
 
-          navigator.serviceWorker.onmessage = (event) => {
-            alert(JSON.stringify(event));
-          };
+       //
+       // Receive messages from the service worker.
+       //
+       navigator.serviceWorker.onmessage = (event) => {
+         window.ReactNativeWebView?.postMessage(JSON.stringify(event.data));
+       };
 
-          window.forward = (msg) => {
-            alert(JSON.stringify(msg));
-            console.log({ forwarding: msg });
-            navigator.serviceWorker.controller.postMessage(msg);
-          };
+       //
+       // Send a message to the background service worker.
+       //
+       window.postMessageToBackgroundViaWebview = (rawData) => {
+         navigator.serviceWorker.controller.postMessage(rawData);
+       };
 
-          document.write("background script service worker registered");
-        } catch (err) {
-          document.write(JSON.stringify({ err }));
-        }
-      })();
+       document
+         .querySelector("body")
+         .insertAdjacentHTML(
+           "beforeend",
+           "<p>background script service worker registered</p>"
+         );
+     })()
     </script>
   </body>
 </html>

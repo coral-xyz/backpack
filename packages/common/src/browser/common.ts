@@ -1,19 +1,30 @@
-import { vanillaStore } from "../zustand";
-
 //
 // Browser apis that can be used in a mobile web view as well as the extension.
 //
 export class BrowserRuntimeCommon {
-  // `chrome` = global.chrome OR undefined OR a polyfill used by the mobile app
-  // `browser` = safari and firefox's equivelent of global.chrome
+  public static sendMessageToBackground(msg: any, cb?: any) {
+    return BrowserRuntimeCommon.sendMessageToAnywhere(msg, cb);
+  }
 
-  public static sendMessage(msg: any, cb?: any) {
+  public static sendMessageToAppUi(msg: any, cb?: any) {
+    return BrowserRuntimeCommon.sendMessageToAnywhere(msg, cb);
+  }
+
+  public static sendMessageToAnywhere(msg: any, cb?: any) {
     chrome
       ? chrome.runtime.sendMessage(msg, cb)
       : browser.runtime.sendMessage(msg).then(cb);
   }
 
-  public static addEventListener(listener: any): void {
+  public static addEventListenerFromBackground(listener: any): void {
+    return BrowserRuntimeCommon.addEventListenerFromAnywhere(listener);
+  }
+
+  public static addEventListenerFromAppUi(listener: any): void {
+    return BrowserRuntimeCommon.addEventListenerFromAnywhere(listener);
+  }
+
+  public static addEventListenerFromAnywhere(listener: any): void {
     return chrome
       ? chrome.runtime.onMessage.addListener(listener)
       : browser.runtime.onMessage.addListener(listener);
@@ -54,41 +65,3 @@ export class BrowserRuntimeCommon {
     return lastError ? new Error(lastError.message) : undefined;
   }
 }
-
-//
-// Monkey patch for mobile.
-//
-const chrome = globalThis.chrome
-  ? // `global.chrome` exists, we're in chromium. Set `chrome` to `global.chrome`
-    globalThis.chrome
-  : globalThis.browser
-  ? // `global.browser` exists, we're in FF/safari. Set `chrome` to `undefined`
-    undefined
-  : //
-    // we don't have `global.chrome` or `global.browser`, this means we're in the app.
-    // We can make our own version of `chrome` with a minimal implementation.
-
-    // TODO: make these functions actually do something useful
-    (() => {
-      BrowserRuntimeCommon.sendMessage = (msg, cb) => {
-        const { injectJavaScript } = vanillaStore.getState();
-
-        console.log({ sendMessage: { msg, cb, injectJavaScript } });
-
-        injectJavaScript?.(`window.forward(${JSON.stringify({ msg })}); true;`);
-      };
-      BrowserRuntimeCommon.addEventListener = (cb) => {
-        // todo
-      };
-      BrowserRuntimeCommon.getLocalStorage = async (
-        key: string
-      ): Promise<any> => {
-        // todo
-      };
-      BrowserRuntimeCommon.setLocalStorage = async (
-        key: string,
-        value: any
-      ): Promise<void> => {
-        // todo
-      };
-    })();

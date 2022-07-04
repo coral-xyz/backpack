@@ -38,11 +38,14 @@ import {
 } from "@coral-xyz/common";
 import type { Backend } from "../backend/core";
 import { SUCCESS_RESPONSE } from "../backend/core";
-import type { Handle } from "../types";
+import type { Config, Handle } from "../types";
 
 const logger = getLogger("server-injected");
 
-export function start(events: EventEmitter, b: Backend): Handle {
+export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
+  if (cfg.isMobile) {
+    return null;
+  }
   const rpcServerInjected = ChannelContentScript.server(CHANNEL_RPC_REQUEST);
   const notificationsInjected =
     ChannelContentScript.client(CHANNEL_NOTIFICATION);
