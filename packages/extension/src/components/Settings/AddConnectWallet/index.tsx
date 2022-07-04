@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Transport from "@ledgerhq/hw-transport";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { AddConnectWalletMenu } from "./AddConnectWalletMenu";
 import { ImportAccounts } from "../../Account/ImportAccounts";
 import type { SelectedAccount } from "../../Account/ImportAccounts";
@@ -7,7 +8,8 @@ import { ImportSecretKey } from "../../Settings";
 import { ConnectHardware } from "../../Settings/ConnectHardware";
 import { ConnectHardwareSearching } from "../../Settings/ConnectHardware/ConnectHardwareSearching";
 import { ConnectHardwareSuccess } from "../../Settings/ConnectHardware/ConnectHardwareSuccess";
-
+import { WithDrawer } from "../../Layout/Drawer";
+import { WithNav, NavBackButton } from "../../Layout/Nav";
 import {
   DerivationPath,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
@@ -23,7 +25,14 @@ export type AddConnectFlows =
   | "connect-hardware"
   | null;
 
-export function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
+export function AddConnectWallet({
+  onAddSuccess,
+  close,
+}: {
+  onAddSuccess: () => void;
+  close: () => void;
+}) {
+  const theme = useCustomTheme();
   const background = useBackgroundClient();
   const [transport, setTransport] = useState<Transport | null>(null);
   const [transportError, setTransportError] = useState(false);
@@ -32,10 +41,14 @@ export function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => {
-    if (step === 0) {
-      // If we are at the first step, back should revert to settings menu
-      closeDrawer();
+    if (addConnectFlow === null) {
+      // If we are at the first step, close
+      close();
+    } else if (step === 0) {
+      // First step in one of the wallet flows, go back to the add connect menu
+      setAddConnectFlow(null);
     } else {
+      // Previous step in flow
       setStep(step - 1);
     }
   };
@@ -57,6 +70,9 @@ export function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
     });
   };
 
+  //
+  // Add a pubkey to the Ledger store.
+  //
   const ledgerImport = async (
     accounts: SelectedAccount[],
     derivationPath: DerivationPath
@@ -78,9 +94,7 @@ export function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
 
   const onSelectAction = (action: AddConnectFlows) => {
     if (action === "create-new-wallet") {
-      createNewWallet()
-        .then(() => closeDrawer())
-        .catch(console.error);
+      createNewWallet().then(onAddSuccess).catch(console.error);
     } else {
       setAddConnectFlow(action);
     }
@@ -95,7 +109,7 @@ export function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
     <ImportSecretKey
       onNext={async (secretKey: string, name: string) => {
         await secretKeyImport(secretKey, name);
-        closeDrawer();
+        onAddSuccess();
       }}
     />,
   ];
@@ -126,7 +140,7 @@ export function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
         prevStep();
       }}
     />,
-    <ConnectHardwareSuccess onNext={closeDrawer} />,
+    <ConnectHardwareSuccess onNext={onAddSuccess} />,
   ];
 
   let renderComponent;
@@ -142,5 +156,20 @@ export function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
     renderComponent = flow[step] || null;
   }
 
-  return renderComponent;
+  return (
+    <WithDrawer openDrawer={true}>
+      <WithNav
+        navButtonLeft={<NavBackButton onClick={prevStep} />}
+        navbarStyle={{
+          backgroundColor: theme.custom.colors.nav,
+        }}
+        navContentStyle={{
+          backgroundColor: theme.custom.colors.nav,
+          height: "100%",
+        }}
+      >
+        {renderComponent}
+      </WithNav>
+    </WithDrawer>
+  );
 }

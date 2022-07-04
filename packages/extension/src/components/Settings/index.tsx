@@ -1,6 +1,6 @@
 import { useEffect, useState, Suspense } from "react";
 import * as bs58 from "bs58";
-import { Typography, IconButton, TextField } from "@mui/material";
+import { Typography, IconButton, Button, TextField } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   Add,
@@ -22,7 +22,6 @@ import {
 import {
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
 } from "@coral-xyz/common";
 import {
   WalletAddress,
@@ -46,7 +45,6 @@ const useStyles = styles((theme) => ({
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
-    position: "relative",
   },
   menuButton: {
     padding: 0,
@@ -109,18 +107,31 @@ function SettingsContent({ close }: { close: () => void }) {
   );
 }
 
+type SettingsPage = "menu" | "add-connect-wallet";
+
 function _SettingsContent({ close }: { close: () => void }) {
   const classes = useStyles();
   const keyringStoreState = useKeyringStoreState();
+  const [page, setPage] = useState<SettingsPage>("menu");
 
   return (
-    <div className={classes.settingsContainer}>
-      <AvatarHeader />
-      {keyringStoreState === KeyringStoreStateEnum.Unlocked && (
-        <WalletList close={close} />
+    <>
+      {page === "menu" && (
+        <div className={classes.settingsContainer}>
+          <AvatarHeader />
+          {keyringStoreState === KeyringStoreStateEnum.Unlocked && (
+            <WalletList
+              onAddConnectWallet={() => setPage("add-connect-wallet")}
+              close={close}
+            />
+          )}
+          <SettingsList close={close} />
+        </div>
       )}
-      <SettingsList close={close} />
-    </div>
+      {page === "add-connect-wallet" && (
+        <AddConnectWallet onAddSuccess={close} close={() => setPage("menu")} />
+      )}
+    </>
   );
 }
 
@@ -156,11 +167,16 @@ function AvatarHeader() {
   );
 }
 
-function WalletList({ close }: { close: () => void }) {
+function WalletList({
+  onAddConnectWallet,
+  close,
+}: {
+  onAddConnectWallet: () => void;
+  close: () => void;
+}) {
   const background = useBackgroundClient();
   const theme = useCustomTheme();
   const namedPublicKeys = useWalletPublicKeys();
-  const nav = useEphemeralNav();
 
   const clickWallet = (publicKey: PublicKey) => {
     background
@@ -171,9 +187,11 @@ function WalletList({ close }: { close: () => void }) {
       .then((_resp) => close())
       .catch(console.error);
   };
+
   const keys = namedPublicKeys.hdPublicKeys
     .concat(namedPublicKeys.importedPublicKeys)
     .concat(namedPublicKeys.ledgerPublicKeys);
+
   return (
     <>
       <List>
@@ -203,12 +221,7 @@ function WalletList({ close }: { close: () => void }) {
           color: theme.custom.colors.secondary,
         }}
       >
-        <ListItem
-          isLast={true}
-          onClick={() => {
-            nav.push(<AddConnectWallet closeDrawer={() => close()} />);
-          }}
-        >
+        <ListItem isLast={true} onClick={onAddConnectWallet}>
           <div
             style={{
               border: `solid ${theme.custom.colors.nav}`,
