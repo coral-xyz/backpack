@@ -1,15 +1,16 @@
 import { vanillaStore } from "./zustand";
-import { IS_MOBILE } from "./utils";
+import { isServiceWorker, IS_MOBILE } from "./utils";
 import { MOBILE_CHANNEL_LOGS } from "./constants";
 
 export function getLogger(mod: string) {
   return (() => {
     const _mod = mod;
+    const prefix = isServiceWorker() ? "service-worker:" : "";
     return {
       debug: (str: string, ...args: any) =>
-        debug(`anchor: ${_mod}: ${str}`, ...args),
+        debug(`${prefix}anchor: ${_mod}: ${str}`, ...args),
       error: (str: string, ...args: any) =>
-        error(`anchor: ${_mod}: ${str}`, ...args),
+        error(`${prefix}anchor: ${_mod}: ${str}`, ...args),
       _log,
     };
   })();

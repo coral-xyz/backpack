@@ -24,7 +24,7 @@ export const MOBILE_CHANNEL_BROWSER_RUNTIME_COMMON_RESPONSE =
   "mobile-browser-runtime-common-response";
 export const MOBILE_CHANNEL_LOGS = "mobile-logs";
 export const MOBILE_CHANNEL_HOST_RPC_REQUEST = "mobile-host-rpc-request";
-export const MOBILE_CHANNEL_HOST_RPC_RESPONSE = "mobile-host-rpc-resposne";
+export const MOBILE_CHANNEL_HOST_RPC_RESPONSE = "mobile-host-rpc-response";
 export const MOBILE_CHANNEL_BACKGROUND_NOTIFICATIONS =
   "mobile-background-notifications";
 
