@@ -252,6 +252,7 @@ export function ImportAccounts({
                 </ListItemButton>
               ))}
             </List>
+            {/**
             <Box
               sx={{
                 textAlign: "center",
@@ -275,6 +276,7 @@ export function ImportAccounts({
               derivationPath={derivationPath}
               setDerivationPath={setDerivationPath}
             />
+            **/}
           </>
         )}
       </Box>
