@@ -1,29 +1,17 @@
 import { useState } from "react";
-import Transport from "@ledgerhq/hw-transport";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { AddConnectWalletMenu } from "./AddConnectWalletMenu";
-import { ImportAccounts } from "../../Account/ImportAccounts";
-import type { SelectedAccount } from "../../Account/ImportAccounts";
 import { ImportSecretKey } from "../../Settings";
-import { ConnectHardware } from "../../Settings/ConnectHardware";
-import { ConnectHardwareSearching } from "../../Settings/ConnectHardware/ConnectHardwareSearching";
-import { ConnectHardwareSuccess } from "../../Settings/ConnectHardware/ConnectHardwareSuccess";
 import { WithDrawer } from "../../Layout/Drawer";
 import { WithNav, NavBackButton } from "../../Layout/Nav";
 import {
-  DerivationPath,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-  UI_RPC_METHOD_LEDGER_IMPORT,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 
-export type AddConnectFlows =
-  | "create-new-wallet"
-  | "import-wallet"
-  | "connect-hardware"
-  | null;
+export type AddConnectFlows = "create-new-wallet" | "import-wallet" | null;
 
 export function AddConnectWallet({
   onAddSuccess,
@@ -34,12 +22,10 @@ export function AddConnectWallet({
 }) {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
-  const [transport, setTransport] = useState<Transport | null>(null);
-  const [transportError, setTransportError] = useState(false);
   const [addConnectFlow, setAddConnectFlow] = useState<AddConnectFlows>(null);
   const [step, setStep] = useState(0);
 
-  const nextStep = () => setStep(step + 1);
+  // const nextStep = () => setStep(step + 1);
   const prevStep = () => {
     if (addConnectFlow === null) {
       // If we are at the first step, close
@@ -68,22 +54,6 @@ export function AddConnectWallet({
       method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
       params: [newPubkey],
     });
-  };
-
-  //
-  // Add one or more pubkeys to the Ledger store.
-  //
-  const ledgerImport = async (
-    accounts: SelectedAccount[],
-    derivationPath: DerivationPath
-  ) => {
-    for (const account of accounts) {
-      await background.request({
-        method: UI_RPC_METHOD_LEDGER_IMPORT,
-        params: [derivationPath, account.index, account.publicKey.toString()],
-      });
-    }
-    // TODO should the active wallet be updated here?
   };
 
   const secretKeyImport = async (secretKey: string, name: string) => {
@@ -115,58 +85,17 @@ export function AddConnectWallet({
     />,
   ];
 
-  //
-  // Flow for importing a hardware wallet.
-  //
-  const connectHardwareFlow = [
-    <ConnectHardware onNext={() => nextStep()} />,
-    <ConnectHardwareSearching
-      onNext={(transport) => {
-        setTransport(transport);
-        nextStep();
-      }}
-      isConnectFailure={!!transportError}
-    />,
-    <ImportAccounts
-      transport={transport}
-      onNext={async (
-        accounts: SelectedAccount[],
-        derivationPath: DerivationPath
-      ) => {
-        await ledgerImport(accounts, derivationPath);
-        nextStep();
-      }}
-      onError={() => {
-        setTransportError(true);
-        prevStep();
-      }}
-    />,
-    // TODO - close is called because it is possibly importing multiple accounts
-    <ConnectHardwareSuccess onNext={close} />,
-  ];
-
   let renderComponent;
   if (addConnectFlow === null || addConnectFlow === "create-new-wallet") {
     renderComponent = (
       <AddConnectWalletMenu onSelect={(action) => onSelectAction(action)} />
     );
   } else {
-    const flow = {
-      "import-wallet": importWalletFlow,
-      "connect-hardware": connectHardwareFlow,
-    }[addConnectFlow];
-    renderComponent = flow[step] || null;
+    renderComponent = importWalletFlow[step] || null;
   }
 
   return (
-    <WithDrawer
-      openDrawer={true}
-      setOpenDrawer={(open: boolean) => {
-        if (!open) {
-          close();
-        }
-      }}
-    >
+    <WithDrawer openDrawer={true}>
       <WithNav
         navButtonLeft={<NavBackButton onClick={prevStep} />}
         navbarStyle={{

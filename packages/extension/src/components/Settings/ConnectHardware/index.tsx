@@ -1,43 +1,86 @@
-import { Box } from "@mui/material";
-import { Header, PrimaryButton, SubtextParagraph } from "../../common";
-import { HardwareWalletIcon } from "../../Icon";
+import { useState } from "react";
+import Transport from "@ledgerhq/hw-transport";
+import { DerivationPath, UI_RPC_METHOD_LEDGER_IMPORT } from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { ConnectHardwareWelcome } from "./ConnectHardwareWelcome";
+import { ConnectHardwareSearching } from "./ConnectHardwareSearching";
+import { ConnectHardwareSuccess } from "./ConnectHardwareSuccess";
+import { ImportAccounts } from "../../Account/ImportAccounts";
+import type { SelectedAccount } from "../../Account/ImportAccounts";
+import { OptionsContainer } from "../../Onboarding";
+import { WithNav, NavBackButton } from "../../Layout/Nav";
 
-export function ConnectHardware({ onNext }: { onNext: () => void }) {
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        justifyContent: "space-between",
+export function ConnectHardware({ onComplete }: { onComplete: () => void }) {
+  const background = useBackgroundClient();
+  const theme = useCustomTheme();
+  const [transport, setTransport] = useState<Transport | null>(null);
+  const [transportError, setTransportError] = useState(false);
+  const [step, setStep] = useState(0);
+
+  const nextStep = () => setStep(step + 1);
+  const prevStep = () => {
+    if (step > 0) setStep(step - 1);
+  };
+
+  //
+  // Add one or more pubkeys to the Ledger store.
+  //
+  const ledgerImport = async (
+    accounts: SelectedAccount[],
+    derivationPath: DerivationPath
+  ) => {
+    for (const account of accounts) {
+      await background.request({
+        method: UI_RPC_METHOD_LEDGER_IMPORT,
+        params: [derivationPath, account.index, account.publicKey.toString()],
+      });
+    }
+  };
+
+  //
+  // Flow for importing a hardware wallet.
+  //
+  const connectHardwareFlow = [
+    <ConnectHardwareWelcome onNext={() => nextStep()} />,
+    <ConnectHardwareSearching
+      onNext={(transport) => {
+        setTransport(transport);
+        nextStep();
       }}
-    >
-      <Box
-        sx={{
-          marginTop: "16px",
-          marginLeft: "24px",
-          marginRight: "24px",
+      isConnectFailure={!!transportError}
+    />,
+    <ImportAccounts
+      transport={transport}
+      onNext={async (
+        accounts: SelectedAccount[],
+        derivationPath: DerivationPath
+      ) => {
+        await ledgerImport(accounts, derivationPath);
+        nextStep();
+      }}
+      onError={() => {
+        setTransportError(true);
+        prevStep();
+      }}
+    />,
+    <ConnectHardwareSuccess onNext={onComplete} />,
+  ];
+
+  return (
+    <OptionsContainer>
+      <WithNav
+        navButtonLeft={step > 0 ? <NavBackButton onClick={prevStep} /> : null}
+        navbarStyle={{
+          backgroundColor: theme.custom.colors.nav,
+        }}
+        navContentStyle={{
+          backgroundColor: theme.custom.colors.nav,
+          height: "100%",
         }}
       >
-        <Box sx={{ display: "block", textAlign: "center", mb: "24px" }}>
-          <HardwareWalletIcon />
-        </Box>
-        <Header text="Connect a hardware wallet" />
-        <SubtextParagraph>
-          Use your hardware wallet with Backpack.
-        </SubtextParagraph>
-      </Box>
-      <Box
-        sx={{
-          marginLeft: "16px",
-          marginRight: "16px",
-          marginBottom: "16px",
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        <PrimaryButton label="Next" onClick={onNext} />
-      </Box>
-    </Box>
+        {connectHardwareFlow[step]}
+      </WithNav>
+    </OptionsContainer>
   );
 }

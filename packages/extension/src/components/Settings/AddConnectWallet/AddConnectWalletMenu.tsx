@@ -4,6 +4,7 @@ import { ActionCard } from "../../Layout/ActionCard";
 import { HardwareWalletIcon } from "../../Icon";
 import type { AddConnectFlows } from "./";
 import { Header, SubtextParagraph } from "../../common";
+import { openConnectHardware } from "@coral-xyz/common";
 
 export function AddConnectWalletMenu({
   onSelect,
@@ -50,7 +51,7 @@ export function AddConnectWalletMenu({
                 />
               }
               text="Connect a hardware wallet"
-              onClick={() => onSelect("connect-hardware")}
+              onClick={openConnectHardware}
             />
           </Grid>
         </Grid>
