@@ -3,7 +3,6 @@ import type { Context, RpcRequest, RpcResponse, EventEmitter } from "./types";
 export * from "./constants";
 export * from "./crypto";
 export * from "./logging";
-export * from "./request-manager";
 export * from "./channel";
 export * from "./browser";
 export * from "./types";
