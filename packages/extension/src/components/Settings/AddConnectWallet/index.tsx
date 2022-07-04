@@ -71,7 +71,7 @@ export function AddConnectWallet({
   };
 
   //
-  // Add a pubkey to the Ledger store.
+  // Add one or more pubkeys to the Ledger store.
   //
   const ledgerImport = async (
     accounts: SelectedAccount[],
@@ -83,6 +83,7 @@ export function AddConnectWallet({
         params: [derivationPath, account.index, account.publicKey.toString()],
       });
     }
+    // TODO should the active wallet be updated here?
   };
 
   const secretKeyImport = async (secretKey: string, name: string) => {
@@ -140,7 +141,8 @@ export function AddConnectWallet({
         prevStep();
       }}
     />,
-    <ConnectHardwareSuccess onNext={onAddSuccess} />,
+    // TODO - close is called because it is possibly importing multiple accounts
+    <ConnectHardwareSuccess onNext={close} />,
   ];
 
   let renderComponent;
