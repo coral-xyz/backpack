@@ -8,6 +8,10 @@ export class BrowserRuntimeCommon {
       : browser.runtime.sendMessage(msg).then(cb);
   }
 
+  public static sendMessageToAppUi(msg: any) {
+    return BrowserRuntimeCommon.sendMessage(msg);
+  }
+
   public static addEventListener(listener: any): void {
     return chrome
       ? chrome.runtime.onMessage.addListener(listener)

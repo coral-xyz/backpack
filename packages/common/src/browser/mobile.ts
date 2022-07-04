@@ -8,6 +8,7 @@ import {
   MOBILE_CHANNEL_HOST_RPC_RESPONSE,
   MOBILE_CHANNEL_BACKGROUND_NOTIFICATIONS,
   MOBILE_CHANNEL_BROWSER_RUNTIME_COMMON_RESPONSE,
+  MOBILE_CHANNEL_LOGS,
 } from "../constants";
 
 const logger = getLogger("common/mobile");
@@ -17,6 +18,10 @@ const logger = getLogger("common/mobile");
  */
 export const WEB_VIEW_EVENTS = new EventEmitter();
 
+function isServiceWorker(): boolean {
+  return self.clients !== undefined;
+}
+
 /**
  * Start the mobile WebView system.
  */
@@ -25,31 +30,39 @@ export function startMobileIfNeeded() {
     return;
   }
 
+  const APP_UI_EVENT_LISTENERS = [] as any;
+
   //////////////////////////////////////////////////////////////////////////////
   //
   // Monkey patch the BrowserRuntimeCommon apis for mobile.
   //
   //////////////////////////////////////////////////////////////////////////////
 
-  // Assumes `sendMessage` is only called from the front end app code on
-  // mobile.
   BrowserRuntimeCommon.sendMessage = (msg, cb) => {
-    WebViewRequestManager.request(msg).then(cb);
+    if (isServiceWorker()) {
+      BackendRequestManager.request(msg).then(cb);
+    } else {
+      FrontendRequestManager.request(msg).then(cb);
+    }
   };
 
-  // Assuemes `addEventListener` is only called from the service worker on
-  // mobile.
   BrowserRuntimeCommon.addEventListener = (cb) => {
-    const handler = (event) => {
-      cb(event.data, {}, (result: any) => {
-        postMsgFromWorker({
-          channel: MOBILE_CHANNEL_BROWSER_RUNTIME_COMMON_RESPONSE,
-          data: result,
+    if (isServiceWorker()) {
+      const handler = (event) => {
+        cb(event.data, {}, (result: any) => {
+          postMsgFromWorker({
+            channel: "fe-request-response",
+            data: {
+              wrappedResponse: result,
+            },
+          });
         });
-      });
-    };
-    self.addEventListener("message", handler);
-    return handler;
+      };
+      self.addEventListener("message", handler);
+      return handler;
+    } else {
+      APP_UI_EVENT_LISTENERS.push(cb);
+    }
   };
 
   //
@@ -73,37 +86,64 @@ export function startMobileIfNeeded() {
     return undefined;
   };
 
+  //
+  //
+  //
+  const RESPONSE_RESOLVERS = {};
+
+  //
+  // Response channel
+  //
+  BrowserRuntimeCommon.addEventListener((msg, _sender, sendResponse) => {
+    if (msg.channel !== "bg-request-response") {
+      return;
+    }
+  });
+
   //////////////////////////////////////////////////////////////////////////////
   //
   // Handle all web view emitted events here.
   //
   //////////////////////////////////////////////////////////////////////////////
 
-  WEB_VIEW_EVENTS.on("message", (msg) => {
+  WEB_VIEW_EVENTS.on("message", (msg: { channel: string; data: any }) => {
     // Use the raw log to avoid an infinite loop.
     logger._log(JSON.stringify(msg));
 
     switch (msg.channel) {
-      case MOBILE_CHANNEL_BROWSER_RUNTIME_COMMON_RESPONSE:
-        handleBrowserRuntimeCommonResponse(msg);
+      case MOBILE_CHANNEL_LOGS:
         break;
       case MOBILE_CHANNEL_HOST_RPC_REQUEST:
         handleHostRpcRequest(msg);
         break;
-      case MOBILE_CHANNEL_BACKGROUND_NOTIFICATIONS:
-        handleBackgroundNotifications(msg);
-        break;
+      case "bg-request":
+        handleBgRequest(msg);
+        return;
+      case "fe-request-response":
+        handleFeRequestResponse(msg);
       default:
         break;
     }
   });
 
-  const handleBrowserRuntimeCommonResponse = (msg) => {
-    WebViewRequestManager.response(msg);
+  const handleBgRequest = (msg) => {
+    APP_UI_EVENT_LISTENERS.forEach((cb: any) => {
+      cb(msg.data.wrappedMsg, {}, (result: any) => {
+        vanillaStore.getState().injectJavaScript?.(
+          `window.postMessageToBackgroundViaWebview(${JSON.stringify({
+            channel: "bg-request-response",
+            data: {
+              id: msg.data.id,
+              result,
+            },
+          })}); true;`
+        );
+      });
+    });
   };
 
-  const handleBackgroundNotifications = (msg) => {
-    // todo
+  const handleFeRequestResponse = (msg) => {
+    FrontendRequestManager.response(msg);
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -134,14 +174,17 @@ export function startMobileIfNeeded() {
       }
     })();
 
-    BrowserRuntimeCommon.sendMessage({
-      channel: MOBILE_CHANNEL_HOST_RPC_RESPONSE,
-      data: {
-        id,
-        result,
-        error,
+    BrowserRuntimeCommon.sendMessage(
+      {
+        channel: MOBILE_CHANNEL_HOST_RPC_RESPONSE,
+        data: {
+          id,
+          result,
+          error,
+        },
       },
-    });
+      () => {}
+    );
   };
   // TODO: replace this with whatever the react-native api is.
   const MEM_STORAGE = {
@@ -246,7 +289,7 @@ async function postMsgFromWorker(msg: any) {
  * Assumes this is called from the context of the web app to send requests to
  * the webview's service worker.
  */
-class WebViewRequestManager {
+class FrontendRequestManager {
   private static _resolvers: { [requestId: string]: any } = {};
 
   /**
@@ -256,15 +299,16 @@ class WebViewRequestManager {
   public static request<T = any>(msg: any): Promise<T> {
     logger.debug(JSON.stringify(msg));
 
-    return new Promise((resolve, reject) => {
-      WebViewRequestManager._resolvers[msg.data.id] = { resolve, reject };
-      vanillaStore
-        .getState()
-        .injectJavaScript?.(
-          `window.postMessageToBackgroundViaWebview(${JSON.stringify(
-            msg
-          )}); true;`
-        );
+    return new Promise(async (resolve, reject) => {
+      FrontendRequestManager._resolvers[msg.data.id] = { resolve, reject };
+      vanillaStore.getState().injectJavaScript?.(
+        `window.postMessageToBackgroundViaWebview(${JSON.stringify({
+          channel: "fe-request",
+          data: {
+            wrappedMsg: msg,
+          },
+        })}); true;`
+      );
     });
   }
 
@@ -272,16 +316,64 @@ class WebViewRequestManager {
    * Resolves a given response associated with a request.
    */
   public static response({
-    data,
+    wrappedResponse: { data },
   }: {
-    data: { id: string; result: any; error?: any };
+    wrappedResponse: {
+      data: { id: string; result: any; error?: any };
+    };
   }) {
-    const resolver = WebViewRequestManager._resolvers[data.id];
+    const resolver = FrontendRequestManager._resolvers[data.id];
     if (!resolver) {
       console.error("unable to find resolver for data", data);
       return;
     }
-    delete WebViewRequestManager._resolvers[data.id];
+    delete FrontendRequestManager._resolvers[data.id];
+    if (data.error) {
+      resolver.reject(data.error);
+    }
+    resolver.resolve(data);
+  }
+}
+
+class BackendRequestManager {
+  private static _resolvers: { [requestId: string]: any } = {};
+
+  /**
+   * Sends a request to the background service worker from the app ui through
+   * the webview.
+   */
+  public static request<T = any>(msg: any): Promise<T> {
+    logger.debug(JSON.stringify(msg));
+
+    return new Promise(async (resolve, reject) => {
+      const id = generateUniqueId();
+      BackendRequestManager._resolvers[msg.data.id] = { resolve, reject };
+      postMsgFromWorker({
+        channel: "bg-request",
+        data: {
+          id,
+          wrappedMsg: msg,
+        },
+      });
+    });
+  }
+
+  /**
+   * Resolves a given response associated with a request.
+   */
+  public static response({
+    wrappedResponse: { data },
+  }: {
+    wrappedResponse: {
+      data: { id: string; result: any; error?: any };
+    };
+  }) {
+    const resolver = BackendRequestManager._resolvers[data.id];
+    if (!resolver) {
+      console.error("unable to find resolver for data", data);
+      return;
+    }
+    delete BackendRequestManager._resolvers[data.id];
     if (data.error) {
       resolver.reject(data.error);
     }
