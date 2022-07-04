@@ -3,6 +3,8 @@ import { getLogger } from "./logging";
 
 const logger = getLogger("common/request-manager");
 
+// TODO: see where this is used/ The window event listener could be a problem
+//       on mobile.
 export class RequestManager {
   private _responseResolvers: { [requestId: number]: ResponseHandler } = {};
   private _requestId = 0;

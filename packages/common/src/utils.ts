@@ -38,3 +38,7 @@ export const IS_MOBILE = globalThis.chrome
   ? // `global.browser` exists, we're in FF/safari.
     false
   : true;
+
+export function isServiceWorker(): boolean {
+  return self.clients !== undefined;
+}

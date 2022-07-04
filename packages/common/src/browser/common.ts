@@ -2,17 +2,26 @@
 // Browser apis that can be used in a mobile web view as well as the extension.
 //
 export class BrowserRuntimeCommon {
-  public static sendMessage(msg: any, cb?: any) {
+  public static sendMessageToBackground(msg: any, cb?: any) {
     chrome
       ? chrome.runtime.sendMessage(msg, cb)
       : browser.runtime.sendMessage(msg).then(cb);
   }
 
-  public static sendMessageToAppUi(msg: any) {
-    return BrowserRuntimeCommon.sendMessage(msg);
+  public static sendMessageToAppUi(msg: any, cb?: any) {
+    // By default, we use the same api.
+    return BrowserRuntimeCommon.sendMessageToBackground(msg, cb);
   }
 
-  public static addEventListener(listener: any): void {
+  public static addEventListenerFromBackground(listener: any): void {
+    return BrowserRuntimeCommon.addEventListenerFromAnywhere(listener);
+  }
+
+  public static addEventListenerFromAppUi(listener: any): void {
+    return BrowserRuntimeCommon.addEventListenerFromAnywhere(listener);
+  }
+
+  public static addEventListenerFromAnywhere(listener: any): void {
     return chrome
       ? chrome.runtime.onMessage.addListener(listener)
       : browser.runtime.onMessage.addListener(listener);

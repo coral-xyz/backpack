@@ -15,7 +15,7 @@ export class ChannelContentScript {
     window.addEventListener("message", (event) => {
       if (event.data.type !== reqChannel) return;
       // @ts-ignore
-      BrowserRuntimeCommon.sendMessage(
+      BrowserRuntimeCommon.sendMessageToBackground(
         {
           channel: reqChannel,
           data: event.data.detail,
@@ -39,13 +39,13 @@ export class ChannelContentScript {
       window.addEventListener("message", (event) => {
         if (event.data.type !== respChannel) return;
 
-        BrowserRuntimeCommon.sendMessage({
+        BrowserRuntimeCommon.sendMessageToAppUi({
           channel: respChannel,
           data: event.data.detail,
         });
       });
     }
-    BrowserRuntimeCommon.addEventListener(
+    BrowserRuntimeCommon.addEventListenerFromAnywhere(
       (message: any, _sender: any, sendResponse: any) => {
         if (message.channel === reqChannel) {
           sendResponse({ result: "success" });
@@ -94,7 +94,7 @@ export class ChannelServer {
   public handler(
     handlerFn: (message: any, sender: any) => Promise<RpcResponse>
   ) {
-    BrowserRuntimeCommon.addEventListener(
+    BrowserRuntimeCommon.addEventListenerFromBackground(
       (msg: any, sender: any, sendResponse: any) => {
         if (msg.channel === this.name) {
           const id = msg.data.id;
