@@ -36,14 +36,19 @@ import type { Config, Handle } from "../types";
 
 const logger = getLogger("solana-connection");
 
-export function start(_cfg: Config, events: EventEmitter, b: Backend): Handle {
+export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
   const solanaConnection = ChannelAppUi.server(SOLANA_CONNECTION_RPC_UI);
-  const solanaConnectionInjected = ChannelContentScript.server(
-    CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST
-  );
-
   solanaConnection.handler(withContextPort(b, events, handle));
-  solanaConnectionInjected.handler(withContext(b, events, handleInjected));
+
+  const solanaConnectionInjected = (() => {
+    if (!cfg.isMobile) {
+      const s = ChannelContentScript.server(
+        CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST
+      );
+      s.handler(withContext(b, events, handleInjected));
+      return s;
+    }
+  })();
 
   return {
     solanaConnection,
