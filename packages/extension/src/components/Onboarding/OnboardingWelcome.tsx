@@ -42,19 +42,21 @@ export function OnboardingWelcome({
             onClick={() => onSelect("import-wallet")}
           />
         </Grid>
-        {/**
         <Grid item xs={6}>
           <ActionCard
             icon={
-              <SvgIcon>
-                <HardwareWalletIcon />
-              </SvgIcon>
+              <HardwareWalletIcon
+                fill="#fff"
+                style={{
+                  width: "24px",
+                  height: "24px",
+                }}
+              />
             }
             text="Connect a hardware wallet"
             onClick={() => onSelect("connect-hardware")}
           />
         </Grid>
-        **/}
       </Grid>
     </div>
   );

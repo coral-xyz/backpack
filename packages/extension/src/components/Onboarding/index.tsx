@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useCustomTheme } from "@coral-xyz/themes";
-// import Transport from "@ledgerhq/hw-transport";
+import Transport from "@ledgerhq/hw-transport";
 import { CreatePassword } from "../Account/CreatePassword";
 import { MnemonicInput } from "../Account/MnemonicInput";
 import { SetupComplete } from "../Account/SetupComplete";
 import { ImportAccounts } from "../Account/ImportAccounts";
 import type { SelectedAccount } from "../Account/ImportAccounts";
 import { OnboardingWelcome } from "./OnboardingWelcome";
-// import { ConnectHardware } from "../Settings/ConnectHardware";
-// import { ConnectHardwareSearching } from "../Settings/ConnectHardware/ConnectHardwareSearching";
+import { ConnectHardware } from "../Settings/ConnectHardware";
+import { ConnectHardwareSearching } from "../Settings/ConnectHardware/ConnectHardwareSearching";
 import { WithNav, NavBackButton } from "../Layout/Nav";
 import {
   BrowserRuntimeExtension,
@@ -22,13 +22,13 @@ import { useBackgroundClient } from "@coral-xyz/recoil";
 export type OnboardingFlows =
   | "create-wallet"
   | "import-wallet"
-  // | "connect-hardware"
+  | "connect-hardware"
   | null;
 
 export function Onboarding() {
   const [mnemonic, setMnemonic] = useState("");
-  // const [transport, setTransport] = useState<Transport | null>(null);
-  // const [transportError, setTransportError] = useState(false);
+  const [transport, setTransport] = useState<Transport | null>(null);
+  const [transportError, setTransportError] = useState(false);
   const [derivationPath, setDerivationPath] = useState<DerivationPath>();
   const [password, setPassword] = useState<string>("");
   const [accounts, setAccounts] = useState<SelectedAccount[]>([]);
@@ -114,7 +114,6 @@ export function Onboarding() {
   //
   // Flow for importing a hardware wallet.
   //
-  /* TODO requires refactor of store init
   const connectHardwareFlow = [
     <ConnectHardware onNext={() => nextStep()} />,
     <ConnectHardwareSearching
@@ -126,7 +125,11 @@ export function Onboarding() {
     />,
     <ImportAccounts
       transport={transport}
-      onNext={() => nextStep()}
+      onNext={(accounts: SelectedAccount[], derivationPath: DerivationPath) => {
+        setAccounts(accounts);
+        setDerivationPath(derivationPath);
+        nextStep();
+      }}
       onError={() => {
         setTransportError(true);
         prevStep();
@@ -134,13 +137,13 @@ export function Onboarding() {
     />,
     <CreatePassword
       onNext={(password: string) => {
-        createStore(mnemonic, derivationPath, password, accountIndices);
+        // TODO requires refactor of store inint to allow init from ledger without mnemonic
+        // await createStore()
         nextStep();
       }}
     />,
     <SetupComplete onClose={() => BrowserRuntimeExtension.closeActiveTab()} />,
   ];
-  */
 
   let renderComponent;
   if (onboardingFlow === null) {
@@ -149,7 +152,7 @@ export function Onboarding() {
     const flow = {
       "create-wallet": createWalletFlow,
       "import-wallet": importWalletFlow,
-      // "connect-hardware": connectHardwareFlow,
+      "connect-hardware": connectHardwareFlow,
     }[onboardingFlow];
     renderComponent = (
       <WithNav
