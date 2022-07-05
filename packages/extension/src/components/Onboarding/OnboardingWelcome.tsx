@@ -20,6 +20,7 @@ export function OnboardingWelcome({
         justifyContent: "space-between",
         flexDirection: "column",
         height: "100%",
+        padding: "20px",
       }}
     >
       <Box>
