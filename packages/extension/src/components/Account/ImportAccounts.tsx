@@ -94,7 +94,6 @@ export function ImportAccounts({
 
     loaderFn(derivationPath)
       .then(async (publicKeys: PublicKey[]) => {
-        console.log(publicKeys);
         const accounts = (
           await anchor.utils.rpc.getMultipleAccounts(connection, publicKeys)
         ).map((result, index) => {
