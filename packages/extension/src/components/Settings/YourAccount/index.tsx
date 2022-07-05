@@ -15,7 +15,6 @@ export function YourAccount({ close }: { close: () => void }) {
       detailIcon: (props: any) => <ArrowForwardIos {...props} />,
     },
     "Edit wallets": {},
-    "Two-factor authentication": {},
     "Export private key": {},
     "Show secret recovery phrase": {},
     "Reset wallet": {},
