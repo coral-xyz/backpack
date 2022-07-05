@@ -188,8 +188,8 @@ export function ImportAccounts({
             marginTop: "24px",
           }}
         >
-          <Header text="Import Accounts" />
-          <SubtextParagraph style={{ marginTop: "8px" }}>
+          <Header text="Import accounts" />
+          <SubtextParagraph>
             Select which accounts you'd like to import.
           </SubtextParagraph>
         </Box>

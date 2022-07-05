@@ -1,7 +1,7 @@
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
 import { Header, PrimaryButton, SubtextParagraph } from "../../common";
-import { HardwareWalletIcon } from "../../Icon";
+import { SadFaceIcon } from "../../Icon";
 
 export function ConnectHardwareFailure({ onRetry }: { onRetry: () => void }) {
   return (
@@ -21,14 +21,16 @@ export function ConnectHardwareFailure({ onRetry }: { onRetry: () => void }) {
         }}
       >
         <Box sx={{ display: "block", textAlign: "center", mb: "12px" }}>
-          <HardwareWalletIcon />
+          <SadFaceIcon />
         </Box>
         <Header text="Unable to connect" />
         <SubtextParagraph>
           Check that your wallet is connected and unlocked, and your browser
           permissions are approved.
         </SubtextParagraph>
-        <SubtextParagraph>Help & support</SubtextParagraph>
+        <SubtextParagraph style={{ marginTop: "24px" }}>
+          Help & support
+        </SubtextParagraph>
       </Box>
       <Box
         sx={{

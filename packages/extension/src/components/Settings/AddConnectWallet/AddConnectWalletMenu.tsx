@@ -19,7 +19,7 @@ export function AddConnectWalletMenu({
         height: "100%",
       }}
     >
-      <Box sx={{ margin: "0 24px 40px 24px" }}>
+      <Box sx={{ margin: "24px" }}>
         <Header text="Add or connect a wallet" />
         <SubtextParagraph>Add new wallets to Backpack.</SubtextParagraph>
       </Box>

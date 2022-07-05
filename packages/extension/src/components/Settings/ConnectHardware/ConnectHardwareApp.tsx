@@ -13,13 +13,7 @@ export function ConnectHardwareApp({ onNext }: { onNext: () => void }) {
         justifyContent: "space-between",
       }}
     >
-      <Box
-        sx={{
-          marginTop: "16px",
-          marginLeft: "24px",
-          marginRight: "24px",
-        }}
-      >
+      <Box sx={{ margin: "0 24px" }}>
         <Box sx={{ display: "block", textAlign: "center", mb: "12px" }}>
           <SolanaIcon />
         </Box>

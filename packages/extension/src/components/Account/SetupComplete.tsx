@@ -25,7 +25,6 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
           <Header text="You’ve set up Backpack!" />
           <SubtextParagraph
             style={{
-              marginTop: "8px",
               marginBottom: "24px",
             }}
           >

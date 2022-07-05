@@ -151,7 +151,7 @@ export function MnemonicInput({
             <WarningLogo />
           </Box>
           <Header text="Secret recovery phrase" />
-          <SubtextParagraph style={{ marginTop: "8px" }}>
+          <SubtextParagraph>
             {readOnly
               ? "This is the only way to recover your account if you lose your device. Write it down and store it in a safe place."
               : "Enter your 12 or 24-word secret recovery mnemonic to add an existing wallet."}

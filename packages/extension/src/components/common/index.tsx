@@ -54,6 +54,7 @@ const useStyles = styles((theme) => ({
     color: theme.custom.colors.fontColor,
     fontSize: "24px",
     fontWeight: 500,
+    lineHeight: "32px",
   },
   checkBox: {
     padding: "9px",
@@ -70,7 +71,8 @@ const useStyles = styles((theme) => ({
     color: `${theme.custom.colors.primaryButton} !important`,
   },
   subtext: {
-    color: theme.custom.colors.secondary,
+    color: "#A1A1AA",
+    marginTop: "8px",
   },
 }));
 
