@@ -1,3 +1,5 @@
 import { start } from "@coral-xyz/background";
 
-const _handle = start();
+const _handle = start({
+  isMobile: false,
+});

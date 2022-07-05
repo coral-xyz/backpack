@@ -11,8 +11,6 @@ export interface BackgroundClient {
   request<T = any>({ method, params }: RpcRequest): Promise<RpcResponse<T>>;
 }
 
-// Note that this doesn't actually use the port API anymore and so is
-// poorly name.
 export class ChannelAppUi {
   public static client(name: string): ChannelAppUiClient {
     return new ChannelAppUiClient(name);
@@ -35,7 +33,7 @@ export class ChannelAppUiServer {
   constructor(private name: string) {}
 
   public handler(handlerFn: (req: RpcRequest) => Promise<RpcResponse>) {
-    BrowserRuntimeCommon.addEventListener(
+    BrowserRuntimeCommon.addEventListenerFromBackground(
       (msg: any, _sender: any, sendResponse: any) => {
         if (msg.channel !== this.name) {
           return;
@@ -59,7 +57,7 @@ export class ChannelAppUiNotifications {
   constructor(private name: string) {}
 
   public onNotification(handlerFn: (notif: Notification) => void) {
-    BrowserRuntimeCommon.addEventListener(
+    BrowserRuntimeCommon.addEventListenerFromAppUi(
       (msg: any, _sender: any, sendResponse: any) => {
         if (msg.channel !== this.name) {
           return;
@@ -71,7 +69,7 @@ export class ChannelAppUiNotifications {
   }
 
   public pushNotification(notif: Notification) {
-    BrowserRuntimeCommon.sendMessage({
+    BrowserRuntimeCommon.sendMessageToAppUi({
       channel: this.name,
       data: notif,
     });
@@ -87,7 +85,7 @@ export class ChannelAppUiClient implements BackgroundClient {
   }: RpcRequest): Promise<RpcResponse<T>> {
     const id = generateUniqueId();
     return new Promise((resolve, reject) => {
-      BrowserRuntimeCommon.sendMessage(
+      BrowserRuntimeCommon.sendMessageToBackground(
         {
           channel: this.name,
           data: { id, method, params },
@@ -103,6 +101,7 @@ export class ChannelAppUiClient implements BackgroundClient {
   }
 }
 
+// Must be used from the frontend app code.
 export class ChannelAppUiResponder {
   constructor(private name: string) {}
 
@@ -111,7 +110,7 @@ export class ChannelAppUiResponder {
     result,
   }: RpcResponse): Promise<RpcResponse<T>> {
     return new Promise((resolve, reject) => {
-      BrowserRuntimeCommon.sendMessage(
+      BrowserRuntimeCommon.sendMessageToBackground(
         {
           channel: this.name,
           data: { id, result },

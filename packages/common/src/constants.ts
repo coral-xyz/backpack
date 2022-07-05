@@ -17,6 +17,19 @@ export const CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST =
 export const CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE =
   "solana-connection-injected-response";
 
+//
+// Mobile webview messaging subsystem channels.
+//
+export const MOBILE_CHANNEL_LOGS = "mobile-logs";
+export const MOBILE_CHANNEL_HOST_RPC_REQUEST = "mobile-host-rpc-request";
+export const MOBILE_CHANNEL_HOST_RPC_RESPONSE = "mobile-host-rpc-response";
+export const MOBILE_CHANNEL_BG_REQUEST = "mobile-bg-request";
+export const MOBILE_CHANNEL_BG_RESPONSE = "mobile-bg-response";
+export const MOBILE_CHANNEL_BG_RESPONSE_INNER = "mobile-bg-response-inner";
+export const MOBILE_CHANNEL_FE_REQUEST = "mobile-fe-request";
+export const MOBILE_CHANNEL_FE_RESPONSE = "mobile-fe-response";
+export const MOBILE_CHANNEL_FE_RESPONSE_INNER = "mobile-fe-response-inner";
+
 export const RECONCILER_BRIDGE_METHOD_CREATE_INSTANCE =
   "anchor-reconciler-method-create-instance";
 export const RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE =

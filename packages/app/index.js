@@ -1,19 +1,32 @@
+import { Suspense, useRef } from "react";
+import { View, Text } from "react-native";
+import { WebView } from "react-native-webview";
+import { RecoilRoot } from "recoil/native/recoil";
+import { registerRootComponent } from "expo";
+import { useStore, WEB_VIEW_EVENTS } from "@coral-xyz/common";
+import App from "./src/App";
 import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
-import { registerRootComponent } from "expo";
-import { setupClient, useStore } from "@coral-xyz/common";
-import App from "./src/App";
-import { RecoilRoot } from "recoil/native/recoil";
-import { Suspense } from "react";
-import { WebView } from "react-native-webview";
-import { View } from "react-native";
+
+function WrappedApp() {
+  return (
+    <Suspense fallback={null}>
+      <RecoilRoot>
+        <Background />
+        <WaitingApp />
+      </RecoilRoot>
+    </Suspense>
+  );
+}
 
 function Background() {
+  const webViewRef = useRef(null);
   const setInjectJavaScript = useStore((state) => state.setInjectJavaScript);
   return (
     <View
       style={{
-        display: "none",
+        height: 300,
+        // display: "none",
       }}
     >
       <WebView
@@ -23,17 +36,17 @@ function Background() {
             // put the injectJavaScript function in a global observable
             // store so that it can be used here & in @coral-xyz/common
             setInjectJavaScript(ref.injectJavaScript);
-          }, 500);
+          }, 1_000);
         }}
         source={{
           // XXX: this can only be a domain that's specified in
           //      app.json > ios.infoPlist.WKAppBoundDomains[]
           uri: "http://localhost:9333",
         }}
-        onMessage={(event) =>
-          // log messages sent to
-          console.log({ event })
-        }
+        onMessage={(event) => {
+          const msg = JSON.parse(event.nativeEvent.data);
+          WEB_VIEW_EVENTS.emit("message", msg);
+        }}
         originWhitelist={["*"]}
         limitsNavigationsToAppBoundDomains
       />
@@ -41,21 +54,10 @@ function Background() {
   );
 }
 
-const WaitingApp = () => {
+function WaitingApp() {
   const injectJavaScript = useStore((state) => state.injectJavaScript);
   return injectJavaScript ? <App /> : null;
-};
-
-const WrappedApp = () => (
-  <Suspense fallback={null}>
-    <RecoilRoot>
-      <Background />
-      <WaitingApp />
-    </RecoilRoot>
-  </Suspense>
-);
-
-setupClient();
+}
 
 // registerRootComponent calls AppRegistry.registerComponent('main', () => App);
 // It also ensures that whether you load the app in Expo Go or in a native build,

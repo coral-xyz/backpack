@@ -4,14 +4,14 @@ import * as serverInjected from "./frontend/server-injected";
 import * as solanaConnection from "./frontend/solana-connection";
 import * as coreBackend from "./backend/core";
 import * as solanaConnectionBackend from "./backend/solana-connection";
-import type { Background } from "./types";
+import type { Background, Config } from "./types";
 
 export * from "./keyring";
 
 //
 // Entry: Starts the background service.
 //
-export function start(): Background {
+export function start(cfg: Config): Background {
   // Shared event message bus.
   const events = new EventEmitter();
 
@@ -20,9 +20,9 @@ export function start(): Background {
   const coreB = coreBackend.start(events, solanaB);
 
   // Frontend.
-  const _serverUi = serverInjected.start(events, coreB);
-  const _serverInjected = serverUi.start(events, coreB);
-  const _solanaConnection = solanaConnection.start(events, solanaB);
+  const _serverUi = serverInjected.start(cfg, events, coreB);
+  const _serverInjected = serverUi.start(cfg, events, coreB);
+  const _solanaConnection = solanaConnection.start(cfg, events, solanaB);
 
   return {
     _serverUi,

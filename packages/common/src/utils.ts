@@ -27,3 +27,18 @@ export function formatUSD(amount: number | string) {
 export function generateUniqueId() {
   return v1();
 }
+
+/**
+ * True if we're in the mobile environment.
+ */
+export const IS_MOBILE = globalThis.chrome
+  ? // `global.chrome` exists, we're in chromium.
+    false
+  : globalThis.browser
+  ? // `global.browser` exists, we're in FF/safari.
+    false
+  : true;
+
+export function isServiceWorker(): boolean {
+  return self.clients !== undefined;
+}

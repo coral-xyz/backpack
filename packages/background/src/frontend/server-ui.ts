@@ -56,11 +56,11 @@ import {
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import type { Backend } from "../backend/core";
-import type { Handle } from "../types";
+import type { Config, Handle } from "../types";
 
 const logger = getLogger("background-server-ui");
 
-export function start(events: EventEmitter, b: Backend): Handle {
+export function start(_cfg: Config, events: EventEmitter, b: Backend): Handle {
   const rpcServerUi = ChannelAppUi.server(CONNECTION_POPUP_RPC);
   const notificationsUi = ChannelAppUi.notifications(
     CONNECTION_POPUP_NOTIFICATIONS

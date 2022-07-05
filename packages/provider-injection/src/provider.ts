@@ -13,7 +13,6 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import type { Event } from "@coral-xyz/common";
 import {
   getLogger,
-  RequestManager,
   BackgroundSolanaConnection,
   CHANNEL_RPC_REQUEST,
   CHANNEL_RPC_RESPONSE,
@@ -27,6 +26,7 @@ import {
   NOTIFICATION_CONNECTION_URL_UPDATED,
 } from "@coral-xyz/common";
 import * as cmn from "./common";
+import { RequestManager } from "./request-manager";
 
 const logger = getLogger("provider-injection");
 

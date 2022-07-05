@@ -13,7 +13,6 @@ import type {
 import type { Provider } from "@project-serum/anchor";
 import type { Event } from "@coral-xyz/common";
 import {
-  RequestManager,
   getLogger,
   CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_PLUGIN_RPC_REQUEST,
@@ -30,6 +29,7 @@ import {
   PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
 } from "@coral-xyz/common";
 import * as cmn from "./common";
+import { RequestManager } from "./request-manager";
 
 const logger = getLogger("provider-ui-injection");
 
