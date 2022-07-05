@@ -36,7 +36,7 @@ export function ConnectHardwareSuccess({ onNext }: { onNext: () => void }) {
           justifyContent: "space-between",
         }}
       >
-        <PrimaryButton label="View wallet" onClick={onNext} />
+        <PrimaryButton label="All done!" onClick={window.close} />
       </Box>
     </Box>
   );
