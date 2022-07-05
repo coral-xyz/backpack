@@ -41,11 +41,23 @@ export function App() {
           Date.now(),
           true
         );
-        setEstimatedRewards(rewards.toFixed(2));
+        setEstimatedRewards(rewards.toFixed(4));
+
+        setInterval(() => {
+          const newRewards = getEstimatedRewards(
+            farmer.rewardA,
+            farmer.gemsStaked,
+            Date.now(),
+            true
+          );
+          console.log("new rewards here", newRewards);
+          setEstimatedRewards(newRewards.toFixed(4));
+        }, 1000);
       } catch (err) {
         console.error(err);
       }
     })();
+    /*
     (async () => {
       try {
         const [farmerPubkey] = await PublicKey.findProgramAddress(
@@ -68,6 +80,7 @@ export function App() {
         console.error(err);
       }
     })();
+		*/
   }, []);
 
   return tokenAccounts === null ? (
