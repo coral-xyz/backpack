@@ -9,6 +9,7 @@ import {
   Public,
   ArrowForwardIos,
   Launch,
+  AccountCircleOutlined,
 } from "@mui/icons-material";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import {
@@ -33,6 +34,7 @@ import { WithEphemeralNavDrawer } from "../Layout/Drawer";
 import { ConnectionMenu } from "./ConnectionSwitch";
 import { RecentActivityButton } from "../Unlocked/Balances/RecentActivity";
 import { AddConnectWallet } from "./AddConnectWallet";
+import { YourAccount } from "./YourAccount";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -268,21 +270,24 @@ function SettingsList({ close }: { close: () => void }) {
 
   const settingsMenu = [
     {
-      id: 0,
+      label: "Your Account",
+      onClick: () => nav.push(<YourAccount close={close} />),
+      icon: (props: any) => <AccountCircleOutlined {...props} />,
+      detailIcon: (props: any) => <ArrowForwardIos {...props} />,
+    },
+    {
       label: "Help & Support",
       onClick: () => console.log("help and support"),
       icon: (props: any) => <Help {...props} />,
       detailIcon: (props: any) => <Launch {...props} />,
     },
     {
-      id: 1,
       label: "Connection",
       onClick: () => nav.push(<ConnectionMenu close={close} />),
       icon: (props: any) => <Public {...props} />,
       detailIcon: (props: any) => <ArrowForwardIos {...props} />,
     },
     {
-      id: 2,
       label: "Lock Wallet",
       onClick: () => lockWallet(),
       icon: (props: any) => <Lock {...props} />,
@@ -300,7 +305,7 @@ function SettingsList({ close }: { close: () => void }) {
       {settingsMenu.map((s, idx) => {
         return (
           <ListItem
-            key={s.id}
+            key={s.label}
             isLast={idx === settingsMenu.length - 1}
             onClick={s.onClick}
             id={s.label}

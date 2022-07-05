@@ -28,16 +28,23 @@ export function List({ style, children }: any) {
   );
 }
 
-export function ListItem({ key, style, children, onClick, isLast, id }: any) {
+export function ListItem({
+  key,
+  style,
+  children,
+  isLast,
+  id,
+  onClick = undefined,
+}: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
   return (
     <MuiListItem
       data-testid={id}
       key={key}
-      button
       className={classes.settingsContentListItem}
-      onClick={() => onClick()}
+      onClick={onClick}
+      button={onClick}
       style={{
         borderBottom: isLast
           ? undefined

@@ -142,6 +142,10 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async keyringStoreCheckPassword(password: string): Promise<boolean> {
+    return await this.keyringStore.checkPassword(password);
+  }
+
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
 
