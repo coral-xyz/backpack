@@ -22,12 +22,7 @@ export function ResetWelcome({
         justifyContent: "space-between",
       }}
     >
-      <Box
-        sx={{
-          marginLeft: "24px",
-          marginRight: "24px",
-        }}
-      >
+      <Box sx={{ margin: "24px" }}>
         <Header text="Forgot your password?" />
         <SubtextParagraph>
           We can’t recover your password as it is only stored on your computer.

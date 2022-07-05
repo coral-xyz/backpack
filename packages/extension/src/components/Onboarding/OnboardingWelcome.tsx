@@ -20,6 +20,7 @@ export function OnboardingWelcome({
         justifyContent: "space-between",
         flexDirection: "column",
         height: "100%",
+        padding: "20px",
       }}
     >
       <Box>
@@ -41,15 +42,6 @@ export function OnboardingWelcome({
             onClick={() => onSelect("import-wallet")}
           />
         </Grid>
-        {/**
-        <Grid item xs={6}>
-          <ActionCard
-            icon={<BackpackIcon />}
-            text="Connect a hardware wallet"
-            onClick={() => onSelect("connect-hardware")}
-          />
-        </Grid>
-        **/}
       </Grid>
     </div>
   );

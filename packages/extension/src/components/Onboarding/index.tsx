@@ -4,6 +4,7 @@ import { CreatePassword } from "../Account/CreatePassword";
 import { MnemonicInput } from "../Account/MnemonicInput";
 import { SetupComplete } from "../Account/SetupComplete";
 import { ImportAccounts } from "../Account/ImportAccounts";
+import type { SelectedAccount } from "../Account/ImportAccounts";
 import { OnboardingWelcome } from "./OnboardingWelcome";
 import { WithNav, NavBackButton } from "../Layout/Nav";
 import {
@@ -15,17 +16,13 @@ import {
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 
-export type OnboardingFlows =
-  | "create-wallet"
-  | "import-wallet"
-  | "connect-hardware"
-  | null;
+export type OnboardingFlows = "create-wallet" | "import-wallet" | null;
 
 export function Onboarding() {
   const [mnemonic, setMnemonic] = useState("");
   const [derivationPath, setDerivationPath] = useState<DerivationPath>();
   const [password, setPassword] = useState<string>("");
-  const [accountIndices, setAccountIndices] = useState<number[]>([]);
+  const [accounts, setAccounts] = useState<SelectedAccount[]>([]);
   const [step, setStep] = useState(0);
   const [onboardingFlow, setOnboardingFlow] = useState<OnboardingFlows>(null);
   const theme = useCustomTheme();
@@ -89,23 +86,19 @@ export function Onboarding() {
     />,
     <ImportAccounts
       mnemonic={mnemonic}
-      onNext={(accountIndices: number[], derivationPath: DerivationPath) => {
-        setAccountIndices(accountIndices);
+      onNext={(accounts: SelectedAccount[], derivationPath: DerivationPath) => {
+        setAccounts(accounts);
         setDerivationPath(derivationPath);
         nextStep();
       }}
     />,
     <CreatePassword
       onNext={(password: string) => {
+        const accountIndices = accounts.map((account) => account.index);
         createStore(mnemonic, derivationPath, password, accountIndices);
         nextStep();
       }}
     />,
-    <SetupComplete onClose={() => BrowserRuntimeExtension.closeActiveTab()} />,
-  ];
-
-  // TODO
-  const connectHardwareFlow = [
     <SetupComplete onClose={() => BrowserRuntimeExtension.closeActiveTab()} />,
   ];
 
@@ -116,7 +109,6 @@ export function Onboarding() {
     const flow = {
       "create-wallet": createWalletFlow,
       "import-wallet": importWalletFlow,
-      "connect-hardware": connectHardwareFlow,
     }[onboardingFlow];
     renderComponent = (
       <WithNav
@@ -133,6 +125,11 @@ export function Onboarding() {
     );
   }
 
+  return <OptionsContainer>{renderComponent}</OptionsContainer>;
+}
+
+export function OptionsContainer({ children }: { children: React.ReactNode }) {
+  const theme = useCustomTheme();
   return (
     <div
       style={{
@@ -152,13 +149,12 @@ export function Onboarding() {
           display: "flex",
           flexDirection: "column",
           margin: "0 auto",
-          padding: onboardingFlow === null ? "20px" : 0,
           borderRadius: "12px",
           boxShadow:
             "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
         }}
       >
-        {renderComponent}
+        {children}
       </div>
     </div>
   );

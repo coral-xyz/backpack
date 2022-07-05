@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
-import { Box, List, ListItemButton, ListItemText } from "@mui/material";
+import { Link, Box, List, ListItemButton, ListItemText } from "@mui/material";
+import Transport from "@ledgerhq/hw-transport";
+import * as ledgerCore from "@coral-xyz/ledger-core";
 import {
   Checkbox,
   Header,
   Loading,
+  ListItem,
   PrimaryButton,
   SubtextParagraph,
   walletAddressDisplay,
 } from "../common";
+import { WithMiniDrawer } from "../Layout/Drawer";
 import { Connection, PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { useBackgroundClient, useAnchorContext } from "@coral-xyz/recoil";
@@ -22,24 +26,38 @@ type Account = {
   account?: anchor.web3.AccountInfo<Buffer>;
 };
 
+export type SelectedAccount = {
+  index: number;
+  publicKey: anchor.web3.PublicKey;
+};
+
+const LOAD_PUBKEY_AMOUNT = 8;
+
 export function ImportAccounts({
   mnemonic,
+  transport,
   onNext,
+  onError,
 }: {
   mnemonic?: string;
+  transport?: Transport | null;
   onNext: (
-    accountIndices: number[],
+    selectedAccounts: SelectedAccount[],
     derivationPath: DerivationPath,
     mnemonic?: string
   ) => void;
+  onError?: (error: Error) => void;
 }) {
   const background = useBackgroundClient();
   const theme = useCustomTheme();
   const [accounts, setAccounts] = useState<Array<Account>>([]);
-  const [accountIndices, setAccountIndices] = useState<number[]>([]);
-  const [derivationPath, setDerivationPath] = useState<DerivationPath>(
-    DerivationPath.Bip44Change
+  const [selectedAccounts, setSelectedAccounts] = useState<SelectedAccount[]>(
+    []
   );
+  const [derivationPath, setDerivationPath] = useState<DerivationPath>(
+    DerivationPath.Bip44
+  );
+  const [derivationSelectorOpen, setDerivationSelectorOpen] = useState(false);
 
   // Handle the case where the keyring store is locked, i.e. this is a reset
   // without an unlock or this is during onboarding.
@@ -55,29 +73,52 @@ export function ImportAccounts({
     connection = new Connection(mainnetRpc, "confirmed");
   }
 
+  //
+  // Load a list of accounts and their associated balances
+  //
   useEffect(() => {
-    /**
-    const loaderFn = mnemonic
-      ? (derivationPath: DerivationPath) =>
-          loadMnemonicPublicKeys(mnemonic, derivationPath)
-      : loadLedgerPublicKeys("ledger", derivationPath);
-    **/
-    if (!mnemonic || !derivationPath) return;
+    if (!derivationPath) return;
 
-    const loaderFn = (derivationPath: DerivationPath) =>
-      loadMnemonicPublicKeys(mnemonic, derivationPath);
+    let loaderFn;
+    if (mnemonic) {
+      // Loading accounts from a mnemonic
+      loaderFn = (derivationPath: DerivationPath) =>
+        loadMnemonicPublicKeys(mnemonic, derivationPath);
+    } else if (transport) {
+      // Loading accounts from a Ledger
+      loaderFn = (derivationPath: DerivationPath) =>
+        loadLedgerPublicKeys(transport, derivationPath);
+    } else {
+      return;
+    }
 
-    loaderFn(derivationPath).then(async (publicKeys) => {
-      const accounts = (
-        await anchor.utils.rpc.getMultipleAccounts(
-          connection,
-          publicKeys.map((p: string) => new PublicKey(p))
-        )
-      ).map((result, index) => {
-        return result === null ? { publicKey: publicKeys[index] } : result;
+    loaderFn(derivationPath)
+      .then(async (publicKeys: PublicKey[]) => {
+        const accounts = (
+          await anchor.utils.rpc.getMultipleAccounts(connection, publicKeys)
+        ).map((result, index) => {
+          return result === null ? { publicKey: publicKeys[index] } : result;
+        });
+        setAccounts(accounts);
+      })
+      .catch((error) => {
+        // Probably Ledger error, i.e. app is not opened
+        console.error(error);
+        if (onError) {
+          // Call custom error handler if one was passed
+          onError(error);
+        } else {
+          throw error;
+        }
       });
-      setAccounts(accounts);
-    });
+  }, [mnemonic, transport, derivationPath]);
+
+  //
+  // Clear accounts and selected acounts on change of derivation path.
+  //
+  useEffect(() => {
+    setAccounts([]);
+    setSelectedAccounts([]);
   }, [derivationPath]);
 
   //
@@ -88,10 +129,11 @@ export function ImportAccounts({
     mnemonic: string,
     derivationPath: DerivationPath
   ) => {
-    return await background.request({
+    const publicKeys = await background.request({
       method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-      params: [mnemonic, derivationPath, 8],
+      params: [mnemonic, derivationPath, LOAD_PUBKEY_AMOUNT],
     });
+    return publicKeys.map((p: string) => new PublicKey(p));
   };
 
   //
@@ -99,25 +141,34 @@ export function ImportAccounts({
   //
   //
   const loadLedgerPublicKeys = async (
-    ledger: string,
+    transport: Transport,
     derivationPath: DerivationPath
   ) => {
-    return [];
+    const publicKeys = [];
+    for (let k = 0; k < LOAD_PUBKEY_AMOUNT; k += 1) {
+      publicKeys.push(
+        await ledgerCore.getPublicKey(transport, k, derivationPath)
+      );
+    }
+    return publicKeys;
   };
 
   //
   // Handles checkbox clicks to select accounts to import.
   //
-  const handleSelect = (index: number) => () => {
-    const currentIndex = accountIndices.indexOf(index);
-    const newAccountIndices = [...accountIndices];
+  const handleSelect = (index: number, publicKey: PublicKey) => () => {
+    const currentIndex = selectedAccounts.findIndex((a) => a.index === index);
+    const newSelectedAccounts = [...selectedAccounts];
     if (currentIndex === -1) {
-      newAccountIndices.push(index);
+      // Adding the account
+      newSelectedAccounts.push({ index, publicKey });
     } else {
-      newAccountIndices.splice(currentIndex, 1);
+      // Removing the account
+      newSelectedAccounts.splice(currentIndex, 1);
     }
-    newAccountIndices.sort();
-    setAccountIndices(newAccountIndices);
+    // Sort by account indices
+    newSelectedAccounts.sort((a, b) => a.index - b.index);
+    setSelectedAccounts(newSelectedAccounts);
   };
 
   return (
@@ -137,66 +188,95 @@ export function ImportAccounts({
             marginTop: "24px",
           }}
         >
-          <Header text="Import Accounts" />
-          <SubtextParagraph style={{ marginTop: "8px" }}>
+          <Header text="Import accounts" />
+          <SubtextParagraph>
             Select which accounts you'd like to import.
           </SubtextParagraph>
         </Box>
         {accounts.length === 0 ? (
           <Loading />
         ) : (
-          <List
-            sx={{
-              color: theme.custom.colors.fontColor,
-              background: theme.custom.colors.background,
-              borderRadius: "12px",
-              marginLeft: "16px",
-              marginRight: "16px",
-              paddingTop: "8px",
-              paddingBottom: "8px",
-            }}
-          >
-            {accounts.map(({ publicKey, account }, index) => (
-              <ListItemButton
-                key={publicKey.toString()}
-                onClick={handleSelect(index)}
+          <>
+            <List
+              sx={{
+                color: theme.custom.colors.fontColor,
+                background: theme.custom.colors.background,
+                borderRadius: "12px",
+                marginLeft: "16px",
+                marginRight: "16px",
+                paddingTop: "8px",
+                paddingBottom: "8px",
+              }}
+            >
+              {accounts.map(({ publicKey, account }, index) => (
+                <ListItemButton
+                  key={publicKey.toString()}
+                  onClick={handleSelect(index, publicKey)}
+                  sx={{
+                    display: "flex",
+                    paddinLeft: "16px",
+                    paddingRight: "16px",
+                    paddingTop: "5px",
+                    paddingBottom: "5px",
+                  }}
+                >
+                  <Box style={{ display: "flex", width: "100%" }}>
+                    <Checkbox
+                      edge="start"
+                      checked={selectedAccounts.some((a) => a.index === index)}
+                      tabIndex={-1}
+                      disableRipple
+                      style={{ marginLeft: 0 }}
+                    />
+                    <ListItemText
+                      id={publicKey.toString()}
+                      primary={walletAddressDisplay(publicKey)}
+                      sx={{
+                        marginLeft: "8px",
+                        fontSize: "14px",
+                        lineHeight: "32px",
+                        fontWeight: 500,
+                      }}
+                    />
+                    <ListItemText
+                      sx={{
+                        color: theme.custom.colors.secondary,
+                        textAlign: "right",
+                      }}
+                      primary={`${
+                        account ? account.lamports / 10 ** 9 : 0
+                      } SOL`}
+                    />
+                  </Box>
+                </ListItemButton>
+              ))}
+            </List>
+            {/**
+            <Box
+              sx={{
+                textAlign: "center",
+                margin: "32px 0",
+              }}
+            >
+              <Link
                 sx={{
-                  display: "flex",
-                  paddinLeft: "16px",
-                  paddingRight: "16px",
-                  paddingTop: "5px",
-                  paddingBottom: "5px",
+                  cursor: "pointer",
+                  color: theme.custom.colors.secondary,
+                  textDecoration: "none",
                 }}
+                onClick={() => setDerivationSelectorOpen(true)}
               >
-                <Box style={{ display: "flex", width: "100%" }}>
-                  <Checkbox
-                    edge="start"
-                    checked={accountIndices.indexOf(index) !== -1}
-                    tabIndex={-1}
-                    disableRipple
-                    style={{ marginLeft: 0 }}
-                  />
-                  <ListItemText
-                    id={publicKey.toString()}
-                    primary={walletAddressDisplay(publicKey)}
-                    sx={{
-                      marginLeft: "8px",
-                      fontSize: "14px",
-                      lineHeight: "32px",
-                      fontWeight: 500,
-                    }}
-                  />
-                  <ListItemText
-                    sx={{
-                      color: theme.custom.colors.secondary,
-                      textAlign: "right",
-                    }}
-                    primary={`${account ? account.lamports / 10 ** 9 : 0} SOL`}
-                  />
-                </Box>
-              </ListItemButton>
-            ))}
-          </List>
+                Set derivation path
+              </Link>
+            </Box>
+            <DerivationSelection
+              open={derivationSelectorOpen}
+              setOpen={setDerivationSelectorOpen}
+              derivationPath={derivationPath}
+              setDerivationPath={setDerivationPath}
+            />
+            **/}
+          </>
         )}
       </Box>
       <Box
@@ -208,11 +288,80 @@ export function ImportAccounts({
         }}
       >
         <PrimaryButton
-          label="Import Accounts"
-          onClick={() => onNext(accountIndices, derivationPath, mnemonic)}
-          disabled={accountIndices.length === 0}
+          label="Import accounts"
+          onClick={() => onNext(selectedAccounts, derivationPath, mnemonic)}
+          disabled={selectedAccounts.length === 0}
         />
       </Box>
     </Box>
+  );
+}
+
+function DerivationSelection({
+  open,
+  setOpen,
+  derivationPath,
+  setDerivationPath,
+}: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  derivationPath: DerivationPath;
+  setDerivationPath: (derivationPath: DerivationPath) => void;
+}) {
+  const theme = useCustomTheme();
+
+  const options = [
+    {
+      path: DerivationPath.Bip44,
+      label: "44'/501'/",
+    },
+    {
+      path: DerivationPath.Bip44Change,
+      label: "44'/501'/0'/",
+    },
+  ];
+
+  return (
+    <>
+      <WithMiniDrawer title="" openDrawer={open} setOpenDrawer={setOpen}>
+        <Box sx={{ color: theme.custom.colors.fontColor }}>
+          <List
+            style={{
+              background: theme.custom.colors.bg2,
+              marginLeft: "16px",
+              marginRight: "16px",
+            }}
+          >
+            {options.map((o, idx) => (
+              <ListItem
+                onClick={() => {
+                  setDerivationPath(o.path);
+                  setOpen(false);
+                }}
+                key={o.label}
+                style={{
+                  height: "44px",
+                  display: "flex",
+                  borderBottom:
+                    idx !== options.length - 1
+                      ? `solid 1pt ${theme.custom.colors.border1}`
+                      : undefined,
+                }}
+              >
+                <ListItemText
+                  sx={{
+                    marginLeft: "8px",
+                    fontSize: "16px",
+                    lineHeight: "24px",
+                    fontWeight: 500,
+                  }}
+                  primary={o.label}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </WithMiniDrawer>
+    </>
   );
 }

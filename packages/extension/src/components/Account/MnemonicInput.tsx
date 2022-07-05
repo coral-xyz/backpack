@@ -17,7 +17,6 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from "../common";
-import { WarningLogo } from "../Icon";
 import { UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 
@@ -145,13 +144,10 @@ export function MnemonicInput({
         justifyContent: "space-between",
       }}
     >
-      <Box sx={{ margin: "0 24px" }}>
+      <Box sx={{ margin: `24px` }}>
         <Box>
-          <Box sx={{ display: "block", textAlign: "center", mb: "12px" }}>
-            <WarningLogo />
-          </Box>
           <Header text="Secret recovery phrase" />
-          <SubtextParagraph style={{ marginTop: "8px" }}>
+          <SubtextParagraph>
             {readOnly
               ? "This is the only way to recover your account if you lose your device. Write it down and store it in a safe place."
               : "Enter your 12 or 24-word secret recovery mnemonic to add an existing wallet."}

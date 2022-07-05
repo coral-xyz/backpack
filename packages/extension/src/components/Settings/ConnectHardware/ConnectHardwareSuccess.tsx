@@ -2,12 +2,12 @@ import { Box } from "@mui/material";
 import {
   Header,
   HeaderIcon,
-  SubtextParagraph,
   PrimaryButton,
+  SubtextParagraph,
 } from "../../common";
 import { SuccessIcon } from "../../Icon";
 
-export function ResetSuccess({ onNext }: { onNext: () => void }) {
+export function ConnectHardwareSuccess({ onNext }: { onNext: () => void }) {
   return (
     <Box
       sx={{
@@ -19,9 +19,9 @@ export function ResetSuccess({ onNext }: { onNext: () => void }) {
     >
       <Box sx={{ margin: "0 24px" }}>
         <HeaderIcon icon={<SuccessIcon />} />
-        <Header text="Secret recovery phrase reset" />
+        <Header text="Hardware wallet connected" />
         <SubtextParagraph>
-          You’re now ready to set up your Backpack.
+          You can now access your hardware wallet with Backpack.
         </SubtextParagraph>
       </Box>
       <Box
@@ -29,9 +29,11 @@ export function ResetSuccess({ onNext }: { onNext: () => void }) {
           marginLeft: "16px",
           marginRight: "16px",
           marginBottom: "16px",
+          display: "flex",
+          justifyContent: "space-between",
         }}
       >
-        <PrimaryButton label="Done" onClick={onNext} />
+        <PrimaryButton label="All done!" onClick={onNext} />
       </Box>
     </Box>
   );

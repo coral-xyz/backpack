@@ -1,5 +1,6 @@
 import type { PublicKey } from "@solana/web3.js";
 import {
+  Box,
   Typography,
   Button,
   CircularProgress,
@@ -54,6 +55,7 @@ const useStyles = styles((theme) => ({
     color: theme.custom.colors.fontColor,
     fontSize: "24px",
     fontWeight: 500,
+    lineHeight: "32px",
   },
   checkBox: {
     padding: "9px",
@@ -70,7 +72,7 @@ const useStyles = styles((theme) => ({
     color: `${theme.custom.colors.primaryButton} !important`,
   },
   subtext: {
-    color: theme.custom.colors.secondary,
+    color: "#A1A1AA",
   },
 }));
 
@@ -212,7 +214,7 @@ export function SubtextParagraph({
 }) {
   const classes = useStyles();
   return (
-    <p className={classes.subtext} style={style}>
+    <p className={classes.subtext} style={{ marginTop: "8px", ...style }}>
       {children}
     </p>
   );
@@ -221,6 +223,27 @@ export function SubtextParagraph({
 export function Header({ text }: { text: string }) {
   const classes = useStyles();
   return <Typography className={classes.header}>{text}</Typography>;
+}
+
+export function HeaderIcon({
+  icon,
+  style,
+}: {
+  icon: any;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <Box
+      sx={{
+        display: "block",
+        height: "56px",
+        width: "56px",
+        m: "8px auto 16px auto",
+      }}
+    >
+      {icon}
+    </Box>
+  );
 }
 
 export function Checkbox({

@@ -245,8 +245,8 @@ export class KeyringStore {
   public async ledgerImport(dPath: string, account: number, pubkey: string) {
     return this.withUnlock(async () => {
       const ledgerKeyring = this.activeBlockchain().ledgerKeyring!;
-      await ledgerKeyring.ledgerImport(dPath, account, pubkey);
       const name = KeynameStore.defaultNameLedger(ledgerKeyring.keyCount());
+      await ledgerKeyring.ledgerImport(dPath, account, pubkey);
       await this.setKeyname(pubkey, name);
 
       await this.persist();

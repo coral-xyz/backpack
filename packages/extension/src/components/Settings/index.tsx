@@ -20,16 +20,19 @@ import {
   useActiveWallet,
 } from "@coral-xyz/recoil";
 import {
-  openConnectHardware,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
 } from "@coral-xyz/common";
-import { WalletAddress, List, ListItem } from "../../components/common";
+import {
+  WalletAddress,
+  List,
+  ListItem,
+  PrimaryButton,
+} from "../../components/common";
 import { WithEphemeralNavDrawer } from "../Layout/Drawer";
 import { ConnectionMenu } from "./ConnectionSwitch";
 import { RecentActivityButton } from "../Unlocked/Balances/RecentActivity";
+import { AddConnectWallet } from "./AddConnectWallet";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -42,7 +45,6 @@ const useStyles = styles((theme) => ({
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
-    position: "relative",
   },
   menuButton: {
     padding: 0,
@@ -105,18 +107,31 @@ function SettingsContent({ close }: { close: () => void }) {
   );
 }
 
+type SettingsPage = "menu" | "add-connect-wallet";
+
 function _SettingsContent({ close }: { close: () => void }) {
   const classes = useStyles();
   const keyringStoreState = useKeyringStoreState();
+  const [page, setPage] = useState<SettingsPage>("menu");
 
   return (
-    <div className={classes.settingsContainer}>
-      <AvatarHeader />
-      {keyringStoreState === KeyringStoreStateEnum.Unlocked && (
-        <WalletList close={close} />
+    <>
+      {page === "menu" && (
+        <div className={classes.settingsContainer}>
+          <AvatarHeader />
+          {keyringStoreState === KeyringStoreStateEnum.Unlocked && (
+            <WalletList
+              onAddConnectWallet={() => setPage("add-connect-wallet")}
+              close={close}
+            />
+          )}
+          <SettingsList close={close} />
+        </div>
       )}
-      <SettingsList close={close} />
-    </div>
+      {page === "add-connect-wallet" && (
+        <AddConnectWallet onAddSuccess={close} close={() => setPage("menu")} />
+      )}
+    </>
   );
 }
 
@@ -152,11 +167,16 @@ function AvatarHeader() {
   );
 }
 
-function WalletList({ close }: { close: () => void }) {
+function WalletList({
+  onAddConnectWallet,
+  close,
+}: {
+  onAddConnectWallet: () => void;
+  close: () => void;
+}) {
   const background = useBackgroundClient();
   const theme = useCustomTheme();
   const namedPublicKeys = useWalletPublicKeys();
-  const nav = useEphemeralNav();
 
   const clickWallet = (publicKey: PublicKey) => {
     background
@@ -167,9 +187,11 @@ function WalletList({ close }: { close: () => void }) {
       .then((_resp) => close())
       .catch(console.error);
   };
+
   const keys = namedPublicKeys.hdPublicKeys
     .concat(namedPublicKeys.importedPublicKeys)
     .concat(namedPublicKeys.ledgerPublicKeys);
+
   return (
     <>
       <List>
@@ -199,12 +221,7 @@ function WalletList({ close }: { close: () => void }) {
           color: theme.custom.colors.secondary,
         }}
       >
-        <ListItem
-          isLast={true}
-          onClick={() => {
-            nav.push(<AddConnectWallet closeDrawer={() => close()} />);
-          }}
-        >
+        <ListItem isLast={true} onClick={onAddConnectWallet}>
           <div
             style={{
               border: `solid ${theme.custom.colors.nav}`,
@@ -333,100 +350,25 @@ function SettingsList({ close }: { close: () => void }) {
   );
 }
 
-function AddConnectWallet({ closeDrawer }: { closeDrawer: () => void }) {
-  const [importPrivateKey, setImportPrivateKey] = useState(false);
-  const nav = useEphemeralNav();
-
-  useEffect(() => {
-    const navButton = nav.navButtonRight;
-    nav.setNavButtonRight(undefined);
-    return () => {
-      nav.setNavButtonRight(navButton);
-    };
-  }, []);
-
-  return (
-    <div>
-      {importPrivateKey && <ImportPrivateKey closeDrawer={closeDrawer} />}
-      {!importPrivateKey && (
-        <AddConnectWalletMenu
-          setImportPrivateKey={setImportPrivateKey}
-          closeDrawer={closeDrawer}
-        />
-      )}
-    </div>
-  );
-}
-
-function AddConnectWalletMenu({
-  closeDrawer,
-  setImportPrivateKey,
+export function ImportSecretKey({
+  onNext,
 }: {
-  closeDrawer: () => void;
-  setImportPrivateKey: (s: boolean) => void;
+  onNext: (secretKey: string, name: string) => void;
 }) {
-  const background = useBackgroundClient();
-  const classes = useStyles();
-
-  const createNewWallet = () => {
-    background
-      .request({
-        method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-        params: [],
-      })
-      .then((newPubkeyStr: string) =>
-        background
-          .request({
-            method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-            params: [newPubkeyStr],
-          })
-          .then((_resp) => closeDrawer())
-          .catch(console.error)
-      )
-      .catch(console.error);
-  };
-
-  return (
-    <List>
-      <ListItem onClick={() => createNewWallet()}>
-        <Typography className={classes.addConnectWalletLabel}>
-          Create a new wallet
-        </Typography>
-      </ListItem>
-      <ListItem onClick={() => setImportPrivateKey(true)}>
-        <Typography className={classes.addConnectWalletLabel}>
-          Import a private key
-        </Typography>
-      </ListItem>
-      <ListItem onClick={() => openConnectHardware()} isLast={true}>
-        <Typography className={classes.addConnectWalletLabel}>
-          Connect hardware wallet
-        </Typography>
-      </ListItem>
-    </List>
-  );
-}
-
-function ImportPrivateKey({ closeDrawer }: any) {
-  const background = useBackgroundClient();
   const [name, setName] = useState("");
   const [secretKey, setSecretKey] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const onImport = () => {
+
+  const next = () => {
     const kp = decodeAccount(secretKey);
     if (!kp) {
       setError("Invalid private key");
       return;
     }
-    const secretKeyStr = Buffer.from(kp.secretKey).toString("hex");
-    background
-      .request({
-        method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-        params: [secretKeyStr, name],
-      })
-      .then(() => closeDrawer())
-      .catch(console.error);
+    const secretKeyHex = Buffer.from(kp.secretKey).toString("hex");
+    onNext(secretKeyHex, name);
   };
+
   return (
     <div>
       <Typography>Import private key</Typography>
@@ -458,7 +400,7 @@ function ImportPrivateKey({ closeDrawer }: any) {
         onChange={(e) => setSecretKey(e.target.value)}
       />
       {error && <Typography style={{ color: "red" }}>{error}</Typography>}
-      <Button onClick={onImport}>Import</Button>
+      <PrimaryButton onClick={next} label="Import" />
     </div>
   );
 }

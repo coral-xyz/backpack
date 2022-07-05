@@ -1,7 +1,7 @@
-import { Box, Card, CardContent, Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import { Header, SubtextParagraph, PrimaryButton } from "../common";
 import { ActionCard } from "../Layout/ActionCard";
-import { XNFTIcon, TwitterIcon, BackpackIcon } from "../Icon";
+import { WidgetIcon, TwitterIcon, CashIcon, DiscordIcon } from "../Icon";
 
 export function SetupComplete({ onClose }: { onClose: () => void }) {
   return (
@@ -25,7 +25,6 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
           <Header text="You’ve set up Backpack!" />
           <SubtextParagraph
             style={{
-              marginTop: "8px",
               marginBottom: "24px",
             }}
           >
@@ -41,14 +40,14 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <ActionCard
-                icon={<BackpackIcon />}
+                icon={<CashIcon />}
                 text="Fund your Backpack"
                 onClick={() => {}}
               />
             </Grid>
             <Grid item xs={6}>
               <ActionCard
-                icon={<XNFTIcon />}
+                icon={<WidgetIcon />}
                 text="Browse the xNFT library"
                 onClick={() =>
                   window.open("https://backpack.app/library", "_blank")
@@ -66,7 +65,7 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
             </Grid>
             <Grid item xs={6}>
               <ActionCard
-                icon={<TwitterIcon />}
+                icon={<DiscordIcon />}
                 text="Join the Discord community"
                 onClick={() => {}}
               />

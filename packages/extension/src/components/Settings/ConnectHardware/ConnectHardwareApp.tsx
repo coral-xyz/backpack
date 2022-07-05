@@ -1,13 +1,14 @@
+import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
 import {
   Header,
   HeaderIcon,
-  SubtextParagraph,
   PrimaryButton,
+  SubtextParagraph,
 } from "../../common";
-import { SuccessIcon } from "../../Icon";
+import { SolanaIcon } from "../../Icon";
 
-export function ResetSuccess({ onNext }: { onNext: () => void }) {
+export function ConnectHardwareApp({ onNext }: { onNext: () => void }) {
   return (
     <Box
       sx={{
@@ -18,10 +19,10 @@ export function ResetSuccess({ onNext }: { onNext: () => void }) {
       }}
     >
       <Box sx={{ margin: "0 24px" }}>
-        <HeaderIcon icon={<SuccessIcon />} />
-        <Header text="Secret recovery phrase reset" />
+        <HeaderIcon icon={<SolanaIcon />} />
+        <Header text="Open the Solana app" />
         <SubtextParagraph>
-          You’re now ready to set up your Backpack.
+          Make sure your wallet remains connected.
         </SubtextParagraph>
       </Box>
       <Box
@@ -29,9 +30,11 @@ export function ResetSuccess({ onNext }: { onNext: () => void }) {
           marginLeft: "16px",
           marginRight: "16px",
           marginBottom: "16px",
+          display: "flex",
+          justifyContent: "space-between",
         }}
       >
-        <PrimaryButton label="Done" onClick={onNext} />
+        <PrimaryButton label="Next" onClick={onNext} />
       </Box>
     </Box>
   );
