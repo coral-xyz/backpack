@@ -55,7 +55,7 @@ export function ImportAccounts({
     []
   );
   const [derivationPath, setDerivationPath] = useState<DerivationPath>(
-    DerivationPath.Bip44Change
+    DerivationPath.Bip44
   );
   const [derivationSelectorOpen, setDerivationSelectorOpen] = useState(false);
 
@@ -251,7 +251,6 @@ export function ImportAccounts({
                 </ListItemButton>
               ))}
             </List>
-            {/**
             <Box
               sx={{
                 textAlign: "center",
@@ -275,7 +274,6 @@ export function ImportAccounts({
               derivationPath={derivationPath}
               setDerivationPath={setDerivationPath}
             />
-            **/}
           </>
         )}
       </Box>
@@ -313,11 +311,11 @@ function DerivationSelection({
   const options = [
     {
       path: DerivationPath.Bip44,
-      label: "44'/501'/0",
+      label: "44'/501'/",
     },
     {
       path: DerivationPath.Bip44Change,
-      label: "44'/501'/0'/0'",
+      label: "44'/501'/0'/",
     },
   ];
 
@@ -343,7 +341,7 @@ function DerivationSelection({
                   height: "44px",
                   display: "flex",
                   borderBottom:
-                    idx < 2 && idx !== options.length - 1
+                    idx !== options.length - 1
                       ? `solid 1pt ${theme.custom.colors.border1}`
                       : undefined,
                 }}
