@@ -33,6 +33,7 @@ import { WithEphemeralNavDrawer } from "../Layout/Drawer";
 import { ConnectionMenu } from "./ConnectionSwitch";
 import { RecentActivityButton } from "../Unlocked/Balances/RecentActivity";
 import { AddConnectWallet } from "./AddConnectWallet";
+import { ShowRecoveryPhrase } from "./ShowRecoveryPhrase";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -91,7 +92,6 @@ function AvatarButton() {
         openDrawer={settingsOpen}
         setOpenDrawer={setSettingsOpen}
         title={""}
-        navbarStyle={{ borderBottom: undefined }}
       >
         <SettingsContent close={() => setSettingsOpen(false)} />
       </WithEphemeralNavDrawer>
@@ -286,6 +286,13 @@ function SettingsList({ close }: { close: () => void }) {
       label: "Lock Wallet",
       onClick: () => lockWallet(),
       icon: (props: any) => <Lock {...props} />,
+      detailIcon: (props: any) => <></>,
+    },
+    {
+      id: 3,
+      label: "Show Secret Recovery Phrase",
+      onClick: () => nav.push(<ShowRecoveryPhrase close={close} />),
+      icon: (props: any) => <></>,
       detailIcon: (props: any) => <></>,
     },
   ];

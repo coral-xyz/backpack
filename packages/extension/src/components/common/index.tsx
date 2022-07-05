@@ -220,9 +220,19 @@ export function SubtextParagraph({
   );
 }
 
-export function Header({ text }: { text: string }) {
+export function Header({
+  text,
+  style = {},
+}: {
+  text: string;
+  style?: React.CSSProperties;
+}) {
   const classes = useStyles();
-  return <Typography className={classes.header}>{text}</Typography>;
+  return (
+    <Typography className={classes.header} style={style}>
+      {text}
+    </Typography>
+  );
 }
 
 export function HeaderIcon({
