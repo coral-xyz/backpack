@@ -73,7 +73,6 @@ const useStyles = styles((theme) => ({
   },
   subtext: {
     color: "#A1A1AA",
-    marginTop: "8px",
   },
 }));
 
@@ -215,7 +214,7 @@ export function SubtextParagraph({
 }) {
   const classes = useStyles();
   return (
-    <p className={classes.subtext} style={style}>
+    <p className={classes.subtext} style={{ marginTop: "8px", ...style }}>
       {children}
     </p>
   );
