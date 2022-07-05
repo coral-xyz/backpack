@@ -288,7 +288,7 @@ export function ImportAccounts({
         }}
       >
         <PrimaryButton
-          label="Import Accounts"
+          label="Import accounts"
           onClick={() => onNext(selectedAccounts, derivationPath, mnemonic)}
           disabled={selectedAccounts.length === 0}
         />
