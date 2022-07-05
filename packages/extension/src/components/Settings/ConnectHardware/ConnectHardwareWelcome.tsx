@@ -1,5 +1,10 @@
 import { Box } from "@mui/material";
-import { Header, PrimaryButton, SubtextParagraph } from "../../common";
+import {
+  Header,
+  HeaderIcon,
+  PrimaryButton,
+  SubtextParagraph,
+} from "../../common";
 import { HardwareWalletIcon } from "../../Icon";
 
 export function ConnectHardwareWelcome({ onNext }: { onNext: () => void }) {
@@ -12,16 +17,8 @@ export function ConnectHardwareWelcome({ onNext }: { onNext: () => void }) {
         justifyContent: "space-between",
       }}
     >
-      <Box
-        sx={{
-          marginTop: "16px",
-          marginLeft: "24px",
-          marginRight: "24px",
-        }}
-      >
-        <Box sx={{ display: "block", textAlign: "center", mb: "24px" }}>
-          <HardwareWalletIcon />
-        </Box>
+      <Box sx={{ margin: "0 24px" }}>
+        <HeaderIcon icon={<HardwareWalletIcon />} />
         <Header text="Connect a hardware wallet" />
         <SubtextParagraph>
           Use your hardware wallet with Backpack.

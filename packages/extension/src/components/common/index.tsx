@@ -1,5 +1,6 @@
 import type { PublicKey } from "@solana/web3.js";
 import {
+  Box,
   Typography,
   Button,
   CircularProgress,
@@ -223,6 +224,27 @@ export function SubtextParagraph({
 export function Header({ text }: { text: string }) {
   const classes = useStyles();
   return <Typography className={classes.header}>{text}</Typography>;
+}
+
+export function HeaderIcon({
+  icon,
+  style,
+}: {
+  icon: any;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <Box
+      sx={{
+        display: "block",
+        height: "56px",
+        width: "56px",
+        m: "8px auto 16px auto",
+      }}
+    >
+      {icon}
+    </Box>
+  );
 }
 
 export function Checkbox({

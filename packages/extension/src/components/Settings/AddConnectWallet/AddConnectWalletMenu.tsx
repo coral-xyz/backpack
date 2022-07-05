@@ -46,8 +46,7 @@ export function AddConnectWalletMenu({
                   fill="#fff"
                   style={{
                     width: "24px",
-                    height: "16px",
-                    marginBottom: "4px",
+                    height: "24px",
                   }}
                 />
               }

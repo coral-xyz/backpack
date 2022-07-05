@@ -1,11 +1,12 @@
-import { Box, Grid } from "@mui/material";
+import { Box } from "@mui/material";
 import {
   Header,
+  HeaderIcon,
   SubtextParagraph,
-  PrimaryButton,
+  DangerButton,
   SecondaryButton,
 } from "../../common";
-import { WarningLogo } from "../../Icon";
+import { WarningIcon } from "../../Icon";
 
 export function ResetWarning({
   onNext,
@@ -23,16 +24,8 @@ export function ResetWarning({
         justifyContent: "space-between",
       }}
     >
-      <Box
-        sx={{
-          marginTop: "16px",
-          marginLeft: "24px",
-          marginRight: "24px",
-        }}
-      >
-        <Box sx={{ display: "block", textAlign: "center", mb: "12px" }}>
-          <WarningLogo />
-        </Box>
+      <Box sx={{ margin: "0 24px" }}>
+        <HeaderIcon icon={<WarningIcon />} />
         <Header text="Reset your secret recovery phrase" />
         <SubtextParagraph>
           This will remove all wallets and replace them with a new wallet.
@@ -53,7 +46,7 @@ export function ResetWarning({
           <SecondaryButton label="Cancel" onClick={onClose} />
         </Box>
         <Box sx={{ width: "167.5px" }}>
-          <PrimaryButton label="Next" onClick={() => onNext()} />
+          <DangerButton label="Reset" onClick={() => onNext()} />
         </Box>
       </Box>
     </Box>

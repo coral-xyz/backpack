@@ -1,5 +1,10 @@
 import { Box } from "@mui/material";
-import { Header, PrimaryButton, SubtextParagraph } from "../../common";
+import {
+  Header,
+  HeaderIcon,
+  PrimaryButton,
+  SubtextParagraph,
+} from "../../common";
 import { SuccessIcon } from "../../Icon";
 
 export function ConnectHardwareSuccess({ onNext }: { onNext: () => void }) {
@@ -12,16 +17,8 @@ export function ConnectHardwareSuccess({ onNext }: { onNext: () => void }) {
         justifyContent: "space-between",
       }}
     >
-      <Box
-        sx={{
-          marginTop: "16px",
-          marginLeft: "24px",
-          marginRight: "24px",
-        }}
-      >
-        <Box sx={{ display: "block", textAlign: "center", mb: "12px" }}>
-          <SuccessIcon />
-        </Box>
+      <Box sx={{ margin: "0 24px" }}>
+        <HeaderIcon icon={<SuccessIcon />} />
         <Header text="Hardware wallet connected" />
         <SubtextParagraph>
           You can now access your hardware wallet with Backpack.

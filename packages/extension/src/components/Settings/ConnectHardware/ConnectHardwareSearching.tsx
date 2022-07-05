@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
-import { Header, PrimaryButton, SubtextParagraph } from "../../common";
+import {
+  Header,
+  HeaderIcon,
+  PrimaryButton,
+  SubtextParagraph,
+} from "../../common";
 import { HardwareWalletIcon } from "../../Icon";
 import { ConnectHardwareFailure } from "./ConnectHardwareFailure";
 import { ConnectHardwareApp } from "./ConnectHardwareApp";
-
-type DeviceState = "detecting" | "found" | "none";
 
 export function ConnectHardwareSearching({
   onNext,
@@ -16,7 +19,6 @@ export function ConnectHardwareSearching({
   onNext: (transport: Transport) => void;
   isConnectFailure?: boolean;
 }) {
-  const [deviceState, setDeviceState] = useState<DeviceState>("detecting");
   const [transport, setTransport] = useState<Transport | null>(null);
   const [navigatorStateChange, setNavigatorStateChange] = useState(0);
   const [connectFailure, setConnectFailure] = useState(isConnectFailure);
@@ -96,16 +98,8 @@ export function ConnectHardwareSearching({
         justifyContent: "space-between",
       }}
     >
-      <Box
-        sx={{
-          marginTop: "16px",
-          marginLeft: "24px",
-          marginRight: "24px",
-        }}
-      >
-        <Box sx={{ display: "block", textAlign: "center", mb: "12px" }}>
-          <HardwareWalletIcon />
-        </Box>
+      <Box sx={{ margin: "0 24px" }}>
+        <HeaderIcon icon={<HardwareWalletIcon />} />
         <Header text="Searching for wallet..." />
         <SubtextParagraph>
           Make sure your wallet is connected, unlocked and browser permissions

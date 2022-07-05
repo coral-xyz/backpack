@@ -1,6 +1,10 @@
-import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
-import { Header, PrimaryButton, SubtextParagraph } from "../../common";
+import {
+  Header,
+  HeaderIcon,
+  PrimaryButton,
+  SubtextParagraph,
+} from "../../common";
 import { SadFaceIcon } from "../../Icon";
 
 export function ConnectHardwareFailure({ onRetry }: { onRetry: () => void }) {
@@ -13,16 +17,8 @@ export function ConnectHardwareFailure({ onRetry }: { onRetry: () => void }) {
         justifyContent: "space-between",
       }}
     >
-      <Box
-        sx={{
-          marginTop: "16px",
-          marginLeft: "24px",
-          marginRight: "24px",
-        }}
-      >
-        <Box sx={{ display: "block", textAlign: "center", mb: "12px" }}>
-          <SadFaceIcon />
-        </Box>
+      <Box sx={{ margin: "0 24px" }}>
+        <HeaderIcon icon={<SadFaceIcon />} />
         <Header text="Unable to connect" />
         <SubtextParagraph>
           Check that your wallet is connected and unlocked, and your browser

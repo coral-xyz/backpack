@@ -1,7 +1,11 @@
 import { Box } from "@mui/material";
-import { Header, SubtextParagraph, PrimaryButton } from "../../common";
+import {
+  Header,
+  HeaderIcon,
+  SubtextParagraph,
+  PrimaryButton,
+} from "../../common";
 import { SuccessIcon } from "../../Icon";
-import { openOnboarding } from "@coral-xyz/common";
 
 export function ResetSuccess({ onNext }: { onNext: () => void }) {
   return (
@@ -13,16 +17,8 @@ export function ResetSuccess({ onNext }: { onNext: () => void }) {
         justifyContent: "space-between",
       }}
     >
-      <Box
-        sx={{
-          marginTop: "16px",
-          marginLeft: "24px",
-          marginRight: "24px",
-        }}
-      >
-        <Box sx={{ display: "block", textAlign: "center", mb: "12px" }}>
-          <SuccessIcon />
-        </Box>
+      <Box sx={{ margin: "0 24px" }}>
+        <HeaderIcon icon={<SuccessIcon />} />
         <Header text="Secret recovery phrase reset" />
         <SubtextParagraph>
           You’re now ready to set up your Backpack.
