@@ -146,9 +146,8 @@ export function MnemonicInput({
         justifyContent: "space-between",
       }}
     >
-      <Box sx={{ margin: `${readOnly ? "24px" : "0 24px"}` }}>
+      <Box sx={{ margin: `24px` }}>
         <Box>
-          {!readOnly && <HeaderIcon icon={<WarningIcon />} />}
           <Header text="Secret recovery phrase" />
           <SubtextParagraph>
             {readOnly
