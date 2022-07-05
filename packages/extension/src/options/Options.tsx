@@ -44,7 +44,7 @@ function Router() {
 
   switch (query) {
     case QUERY_CONNECT_HARDWARE:
-      return <ConnectHardware onComplete={() => {}} />;
+      return <ConnectHardware onComplete={window.close} />;
     case QUERY_ONBOARDING:
       return <Onboarding />;
     default:
