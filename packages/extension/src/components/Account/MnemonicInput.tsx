@@ -13,12 +13,10 @@ import {
 import {
   CheckboxForm,
   Header,
-  HeaderIcon,
   SubtextParagraph,
   PrimaryButton,
   SecondaryButton,
 } from "../common";
-import { WarningIcon } from "../Icon";
 import { UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 
