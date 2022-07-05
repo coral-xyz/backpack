@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Transaction, SystemProgram } from "@solana/web3.js";
+import { PublicKey, Transaction, SystemProgram } from "@solana/web3.js";
 import {
   usePublicKey,
   useConnection,
@@ -10,12 +10,13 @@ import {
   Button,
   Loading,
 } from "@coral-xyz/anchor-ui";
-import { fetchDegodTokens, gemFarmClient, FARM } from "./utils";
+import { fetchDegodTokens, gemFarmClient, FARM, DEAD_FARM } from "./utils";
 
 export function App() {
   const publicKey = usePublicKey();
   const connection = useConnection();
   const [tokenAccounts, setTokenAccounts] = useState<[any, any] | null>(null);
+  const [estimatedRewards, setEstimatedRewards] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -25,53 +26,74 @@ export function App() {
     })();
   }, [publicKey, connection]);
 
-  /*
-	useEffect(() => {
-		(async () => {
-			try {
-      const client = gemFarmClient();
-      const farm = await client.account.farm.fetch(FARM);
-      console.log(
-        "farm here",
-        farm,
-        farm.rewardA.rewardMint.toString(),
-        farm.rewardB.rewardMint.toString(),
-        farm.rewardA.rewardPot.toString(),
-        farm.rewardB.rewardPot.toString()
-      );
-
-      const farmers = await client.account.farmer.all([
-        // Farm pubkey.
-        {
-          memcmp: {
-            bytes: FARM.toString(),
-            offset: 8,
-          },
-        },
-        // Farmer authority
-        {
-          memcmp: {
-            bytes: window.backpack.publicKey.toString(),
-            offset: 8 + 32,
-          },
-        },
-      ]);
-      if (farmers.length === 0) {
-        return [];
+  useEffect(() => {
+    const client = gemFarmClient();
+    (async () => {
+      try {
+        const [farmerPubkey] = await PublicKey.findProgramAddress(
+          [Buffer.from("farmer"), DEAD_FARM.toBuffer(), publicKey.toBuffer()],
+          client.programId
+        );
+        const farmer = await client.account.farmer.fetch(farmerPubkey);
+        const rewards = getEstimatedRewards(
+          farmer.rewardA,
+          farmer.gemsStaked,
+          Date.now(),
+          true
+        );
+        setEstimatedRewards(rewards.toFixed(2));
+      } catch (err) {
+        console.error(err);
       }
-      const farmer = farmers[0];
-      console.log("farmer here", farmer);
-			} catch(err) {
-				console.log('armani error', err);
-			}
-		})();
-	}, []);
-	*/
+    })();
+    (async () => {
+      try {
+        const [farmerPubkey] = await PublicKey.findProgramAddress(
+          [Buffer.from("farmer"), FARM.toBuffer(), publicKey.toBuffer()],
+          client.programId
+        );
+        const farmer = await client.account.farmer.fetch(farmerPubkey);
+        const rewards = getEstimatedRewards(
+          farmer.rewardA,
+          farmer.gemsStaked,
+          Date.now()
+        );
+        const rewardsB = getEstimatedRewards(
+          farmer.rewardB,
+          farmer.gemsStaked,
+          Date.now()
+        );
+        console.log("farmer rewards here", rewards);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  }, []);
 
   return tokenAccounts === null ? (
     <_Loading />
   ) : (
-    <_App dead={tokenAccounts[0]} alive={tokenAccounts[1]} />
+    <_App
+      dead={tokenAccounts[0]}
+      alive={tokenAccounts[1]}
+      estimatedRewards={estimatedRewards}
+    />
+  );
+}
+
+export function getEstimatedRewards(
+  reward: any,
+  gems: any,
+  currentTS: number,
+  isDead: boolean = false
+): Number {
+  const DUST_RATE = isDead ? 15 : 5;
+  return (
+    (reward.accruedReward.toNumber() - reward.paidOutReward.toNumber()) /
+      Math.pow(10, 9) +
+    gems.toNumber() *
+      DUST_RATE *
+      ((currentTS / 1000 - reward.fixedRate.lastUpdatedTs.toNumber()) / 86400)
   );
 }
 
@@ -96,16 +118,22 @@ function _Loading() {
   );
 }
 
-function _App({ dead, alive }: any) {
+function _App({ dead, alive, estimatedRewards }: any) {
   return (
     <View>
-      {dead.length > 0 && <GodGrid gods={dead} isDead={true} />}
+      {dead.length > 0 && (
+        <GodGrid
+          gods={dead}
+          isDead={true}
+          estimatedRewards={estimatedRewards}
+        />
+      )}
       {/*alive.length > 0 && <GodGrid gods={alive} isDead={false} />*/}
     </View>
   );
 }
 
-function GodGrid({ gods, isDead }: any) {
+function GodGrid({ gods, isDead, estimatedRewards }: any) {
   const theme = useTheme();
   const degodLabel = isDead ? "DeadGods" : "Degods";
 
@@ -140,7 +168,7 @@ function GodGrid({ gods, isDead }: any) {
             lineHeight: "24px",
           }}
         >
-          719.2663 ({isDead ? 15 : 5} $DUST/day)
+          {estimatedRewards} ({isDead ? 15 : 5} $DUST/day)
         </Text>
       </View>
       <View
@@ -262,3 +290,37 @@ export function StakeDetail({ token }: any) {
     </View>
   );
 }
+
+/*
+
+      const farm = await client.account.farm.fetch(FARM);
+      console.log(
+        "farm here",
+        farm,
+        farm.rewardA.rewardMint.toString(),
+        farm.rewardB.rewardMint.toString(),
+        farm.rewardA.rewardPot.toString(),
+        farm.rewardB.rewardPot.toString()
+      );
+
+      const farmers = await client.account.farmer.all([
+        // Farm pubkey.
+        {
+          memcmp: {
+            bytes: FARM.toString(),
+            offset: 8,
+          },
+        },
+        // Farmer authority
+        {
+          memcmp: {
+            bytes: window.backpack.publicKey.toString(),
+            offset: 8 + 32,
+          },
+        },
+      ]);
+      if (farmers.length === 0) {
+        return [];
+      }
+				const farmer = farmers[0];
+ */

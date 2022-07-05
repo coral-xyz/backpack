@@ -1136,10 +1136,6 @@ export type GemFarm = {
             type: "u64";
           },
           {
-            name: "rarityPointsStaked";
-            type: "u64";
-          },
-          {
             name: "minStakingEndsTs";
             type: "u64";
           },
@@ -2695,10 +2691,6 @@ export const IDL: GemFarm = {
           },
           {
             name: "gemsStaked",
-            type: "u64",
-          },
-          {
-            name: "rarityPointsStaked",
             type: "u64",
           },
           {
