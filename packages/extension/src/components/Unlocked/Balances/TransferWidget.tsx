@@ -21,8 +21,12 @@ import { Send } from "./TokensWidget/Send";
 
 const useStyles = styles((theme) => ({
   searchField: {
+    marginLeft: "12px",
+    marginRight: "12px",
     marginTop: "16px",
     marginBottom: "16px",
+    width: "inherit",
+    display: "flex",
     "& .MuiOutlinedInput-root": {
       height: "48px !important",
       border: `solid 1pt ${theme.custom.colors.border}`,
@@ -117,6 +121,7 @@ function TransferButton({
           height: "42px",
           minWidth: "42px",
           borderRadius: "21px",
+          boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
           marginLeft: "auto",
           marginRight: "auto",
           display: "block",
@@ -146,7 +151,7 @@ function SendToken({ close }: { close: () => void }) {
   const classes = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
   return (
-    <div style={{ margin: "0 12px" }}>
+    <div>
       <TextField
         placeholder={"Search"}
         value={searchFilter}
