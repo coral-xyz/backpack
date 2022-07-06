@@ -5,6 +5,7 @@ import useTheme from "@mui/styles/useTheme";
 import { useEphemeralNav } from "@coral-xyz/recoil";
 import { List, ListItem } from "../../common";
 import { ChangePassword } from "./ChangePassword";
+import { ShowRecoveryPhrase } from "./ShowRecoveryPhrase";
 
 export function YourAccount({ close }: { close: () => void }) {
   const nav = useEphemeralNav();
@@ -18,7 +19,11 @@ export function YourAccount({ close }: { close: () => void }) {
     },
     "Edit wallets": {},
     "Export private key": {},
-    "Show secret recovery phrase": {},
+    "Show secret recovery phrase": {
+      label: "Show secret recovery phrase",
+      onClick: () => nav.push(<ShowRecoveryPhrase />),
+      detailIcon: (props: any) => <ArrowForwardIos {...props} />,
+    },
     "Reset wallet": {},
   };
 

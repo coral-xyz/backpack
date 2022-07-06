@@ -153,40 +153,10 @@ export function MnemonicInput({
               : "Enter your 12 or 24-word secret recovery mnemonic to add an existing wallet."}
           </SubtextParagraph>
         </Box>
-        <Grid
-          container
-          rowSpacing={0}
-          columnSpacing={1.00005}
-          sx={{ marginTop: "24px" }}
-        >
-          {Array.from(Array(mnemonicWords.length).keys()).map((i) => (
-            <Grid item xs={4} key={i}>
-              <TextField
-                className={classes.mnemonicInputRoot}
-                variant="outlined"
-                margin="dense"
-                size="small"
-                required
-                fullWidth
-                InputLabelProps={{
-                  shrink: false,
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">{i + 1}</InputAdornment>
-                  ),
-                  readOnly,
-                }}
-                value={mnemonicWords[i]}
-                onChange={(e) => {
-                  const newMnemonicWords = [...mnemonicWords];
-                  newMnemonicWords[i] = e.target.value;
-                  setMnemonicWords(newMnemonicWords);
-                }}
-              />
-            </Grid>
-          ))}
-        </Grid>
+        <MnemonicInputFields
+          mnemonicWords={mnemonicWords}
+          onChange={readOnly ? undefined : setMnemonicWords}
+        />
         {readOnly && (
           <CheckboxForm
             checked={checked}
@@ -246,7 +216,60 @@ export function MnemonicInput({
   );
 }
 
-function CopyButton({
+export function MnemonicInputFields({
+  mnemonicWords,
+  onChange,
+  rootClass,
+}: {
+  mnemonicWords: Array<string>;
+  onChange?: (mnemonicWords: Array<string>) => void;
+  rootClass?: any;
+}) {
+  const classes = useStyles();
+  if (!rootClass) {
+    rootClass = classes.mnemonicInputRoot;
+  }
+  return (
+    <Grid
+      container
+      rowSpacing={0}
+      columnSpacing={1.00005}
+      sx={{ marginTop: "24px" }}
+    >
+      {Array.from(Array(mnemonicWords.length).keys()).map((i) => (
+        <Grid item xs={4} key={i}>
+          <TextField
+            className={rootClass}
+            variant="outlined"
+            margin="dense"
+            size="small"
+            required
+            fullWidth
+            InputLabelProps={{
+              shrink: false,
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">{i + 1}</InputAdornment>
+              ),
+              readOnly: onChange === undefined,
+            }}
+            value={mnemonicWords[i]}
+            onChange={(e) => {
+              if (onChange) {
+                const newMnemonicWords = [...mnemonicWords];
+                newMnemonicWords[i] = e.target.value;
+                onChange(newMnemonicWords);
+              }
+            }}
+          />
+        </Grid>
+      ))}
+    </Grid>
+  );
+}
+
+export function CopyButton({
   mnemonic,
   disabled = false,
 }: {

@@ -1,6 +1,6 @@
 import { useEffect, useState, Suspense } from "react";
 import * as bs58 from "bs58";
-import { Typography, IconButton, Button, TextField } from "@mui/material";
+import { Typography, IconButton, TextField } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   Add,
