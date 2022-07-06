@@ -1,10 +1,23 @@
 import { useEffect } from "react";
-import { ListItemText, TextField } from "@mui/material";
-import { useBackgroundClient, useEphemeralNav } from "@coral-xyz/recoil";
-import { List, ListItem, PrimaryButton, SubtextParagraph } from "../../common";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Button, TextField, Typography } from "@mui/material";
+import { useEphemeralNav } from "@coral-xyz/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { List, ListItem, PrimaryButton, SubtextParagraph } from "../../common";
 import z from "zod";
+
+const useStyles = styles((theme) => ({
+  textFieldRoot: {
+    color: theme.custom.colors.secondary,
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        border: "none",
+        color: theme.custom.colors.secondary,
+      },
+    },
+  },
+}));
 
 const schema = z
   .object({
@@ -36,6 +49,8 @@ const schema = z
 // )
 
 export function ChangePassword({ close }: { close: () => void }) {
+  const theme = useCustomTheme();
+  const classes = useStyles();
   const nav = useEphemeralNav();
 
   useEffect(() => {
@@ -57,49 +72,122 @@ export function ChangePassword({ close }: { close: () => void }) {
     <div style={{ paddingTop: "16px", height: "100%" }}>
       <form
         onSubmit={handleSubmit((d: any) => {
-          // console.log({ d, formState, errors: formState.errors })
           alert("password changed");
           close();
         })}
         style={{ display: "flex", height: "100%", flexDirection: "column" }}
       >
         <div style={{ flex: 1, flexGrow: 1 }}>
-          <List style={{ marginBottom: "50px" }}>
-            <ListItem isLast>
-              <ListItemText>Current</ListItemText>
+          <List>
+            <ListItem
+              isLast
+              style={{
+                height: "46px",
+                padding: "10px",
+              }}
+              button={false}
+            >
+              <Typography style={{ width: "80px" }}>Current</Typography>
               <TextField
                 placeholder="enter password"
                 type="password"
+                classes={{
+                  root: classes.textFieldRoot,
+                }}
                 {...register("currentPassword")}
+                className={classes.textField}
+                inputProps={{
+                  style: {
+                    color: theme.custom.colors.secondary,
+                    padding: 0,
+                  },
+                }}
               />
             </ListItem>
           </List>
-          {/* <SubtextParagraph>
-							{formState.errors.currentPassword?.message}
-							</SubtextParagraph> */}
-
-          {/* <Link to="">Forgot password?</Link> */}
-
+          <Button
+            disableRipple
+            style={{
+              padding: 0,
+              backgroundColor: "transparent",
+              marginTop: "10px",
+              marginLeft: "26px",
+              marginBottom: "26px",
+              textTransform: "none",
+              color: theme.custom.colors.activeNavButton,
+            }}
+          >
+            <Typography
+              style={{
+                fontSize: "14px",
+                fontWeight: 500,
+                lineHeight: "24px",
+              }}
+            >
+              Forgot Password ?
+            </Typography>
+          </Button>
           <List>
-            <ListItem>
-              <ListItemText>New</ListItemText>
+            <ListItem
+              button={false}
+              style={{
+                height: "44px",
+                padding: "10px",
+              }}
+            >
+              <Typography style={{ width: "80px" }}>New</Typography>
               <TextField
                 placeholder="enter password"
                 type="password"
+                classes={{
+                  root: classes.textFieldRoot,
+                }}
                 {...register("newPassword")}
+                inputProps={{
+                  style: {
+                    color: theme.custom.colors.secondary,
+                    padding: 0,
+                  },
+                }}
               />
             </ListItem>
-            <ListItem isLast>
-              <ListItemText>Verify</ListItemText>
+            <ListItem
+              button={false}
+              isLast
+              style={{
+                height: "44px",
+                padding: "10px",
+              }}
+            >
+              <Typography style={{ width: "80px" }}>Verify</Typography>
               <TextField
                 placeholder="re-enter password"
                 type="password"
+                classes={{
+                  root: classes.textFieldRoot,
+                }}
                 {...register("confirmNewPassword")}
+                inputProps={{
+                  style: {
+                    color: theme.custom.colors.secondary,
+                    padding: 0,
+                  },
+                }}
               />
             </ListItem>
           </List>
-          <SubtextParagraph>
-            {formState.errors.newPassword?.message}
+          <SubtextParagraph
+            style={{
+              fontWeight: 500,
+              fontSize: "14px",
+              lineHeight: "20px",
+              marginLeft: "26px",
+              marginRight: "26px",
+              marginTop: "10px",
+            }}
+          >
+            Your password must be at least 8 characters long and container
+            letters and numbers.
           </SubtextParagraph>
         </div>
         <div style={{ padding: 16 }}>

@@ -44,6 +44,7 @@ export function YourAccount({ close }: { close: () => void }) {
           onClick={val.onClick}
           style={{
             height: "44px",
+            padding: "10px",
           }}
         >
           <ListItemText>{key}</ListItemText>

@@ -316,6 +316,7 @@ function SettingsList({ close }: { close: () => void }) {
             id={s.label}
             style={{
               height: "44px",
+              padding: "10px",
             }}
           >
             <div
