@@ -167,7 +167,7 @@ const useStyles = styles((theme) => ({
   },
   textRootError: {
     "& .MuiOutlinedInput-root": {
-      border: `solid 1pt ${theme.custom.colors.negative}`,
+      border: `solid 2pt ${theme.custom.colors.negative} !important`,
     },
   },
   expand: {
