@@ -63,7 +63,7 @@ function LockedInner({ onUnlock }: { onUnlock?: () => Promise<void> }) {
       </Box>
       <Box sx={{ marginBottom: "84px" }}>
         <form onSubmit={_onUnlock}>
-          <Box sx={{ mb: "12px " }}>
+          <Box sx={{ margin: "0 12px 12px 12px" }}>
             <TextField
               isError={error}
               placeholder={"Password"}

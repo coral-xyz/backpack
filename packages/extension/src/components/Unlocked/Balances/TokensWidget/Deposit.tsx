@@ -99,7 +99,13 @@ export function Deposit({ close }: any) {
           <div style={{ marginTop: "163px" }}>
             <div>
               <TextFieldLabel leftLabel={"Deposit to"} />
-              <div style={{ display: "flex", justifyContent: "center" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  margin: "0 12px",
+                }}
+              >
                 <TextField
                   value={`${activeWallet.name} (${walletAddressDisplay(
                     activeWallet.publicKey

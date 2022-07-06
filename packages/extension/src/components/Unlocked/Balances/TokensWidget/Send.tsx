@@ -226,33 +226,37 @@ export function Send({
       <div className={classes.topHalf}>
         <div style={{ marginBottom: "40px" }}>
           <TextFieldLabel leftLabel={"Send to"} rightLabel={"Address Book"} />
-          <TextField
-            rootClass={classes.textRoot}
-            placeholder={"SOL Address"}
-            value={address}
-            setValue={setAddress}
-            isError={addressError}
-            inputProps={{
-              name: "to",
-            }}
-          />
+          <div style={{ margin: "0 12px" }}>
+            <TextField
+              rootClass={classes.textRoot}
+              placeholder={"SOL Address"}
+              value={address}
+              setValue={setAddress}
+              isError={addressError}
+              inputProps={{
+                name: "to",
+              }}
+            />
+          </div>
         </div>
         <div>
           <TextFieldLabel
             leftLabel={"Amount"}
             rightLabel={`${token.nativeBalance} ${token.ticker}`}
           />
-          <TextField
-            rootClass={classes.textRoot}
-            type={"number"}
-            placeholder={"Amount"}
-            value={amount}
-            setValue={setAmount}
-            isError={amountError}
-            inputProps={{
-              name: "amount",
-            }}
-          />
+          <div style={{ margin: "0 12px" }}>
+            <TextField
+              rootClass={classes.textRoot}
+              type={"number"}
+              placeholder={"Amount"}
+              value={amount}
+              setValue={setAmount}
+              isError={amountError}
+              inputProps={{
+                name: "amount",
+              }}
+            />
+          </div>
         </div>
       </div>
       <div className={classes.buttonContainer}>
