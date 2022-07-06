@@ -71,6 +71,7 @@ const useStyles = makeStyles((theme: any) => ({
     borderRadius: "4px",
     background: theme.custom.colors.secondaryButton,
     padding: "8px",
+    height: "56px",
   },
   listItemIconRoot: {
     minWidth: "inherit",
@@ -117,7 +118,7 @@ export function ShowRecoveryPhrase() {
     >
       <Box sx={{ margin: "32px 24px 0 24px" }}>
         <HeaderIcon
-          sx={{ width: "40px", height: "40px", marginBottom: "24px" }}
+          style={{ width: "40px", height: "40px", marginBottom: "24px" }}
           icon={<WarningIcon fill="#E95050" width="40px" height="40px" />}
         />
         <Header text="Warning" style={{ textAlign: "center" }} />
@@ -208,7 +209,7 @@ export function ShowRecoveryPhraseMnemonic({ mnemonic }: { mnemonic: string }) {
       <Box sx={{ margin: "32px 24px 0 24px" }}>
         <HeaderIcon
           icon={<EyeIcon />}
-          sx={{ width: "40px", height: "40px", marginBottom: "24px" }}
+          style={{ width: "40px", height: "40px", marginBottom: "24px" }}
         />
         <Header text="Recovery phrase" style={{ textAlign: "center" }} />
         <SubtextParagraph style={{ textAlign: "center" }}>
