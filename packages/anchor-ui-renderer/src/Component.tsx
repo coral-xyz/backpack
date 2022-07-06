@@ -568,6 +568,7 @@ export function TextField({
   isError,
   inputProps,
   disabled,
+  autoFocus,
 }: any) {
   const classes = useStyles();
   inputProps = Object.assign(
@@ -578,6 +579,7 @@ export function TextField({
   );
   return (
     <MuiTextField
+      autoFocus={autoFocus}
       disabled={disabled}
       placeholder={placeholder}
       variant="outlined"
