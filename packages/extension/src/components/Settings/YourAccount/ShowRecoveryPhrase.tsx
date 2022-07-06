@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import makeStyles from "@mui/styles/makeStyles";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Box, List, ListItem, ListItemIcon } from "@mui/material";
 import ChatIcon from "@mui/icons-material/Chat";
 import WebIcon from "@mui/icons-material/Web";
@@ -17,7 +17,7 @@ import {
 } from "../../common";
 import { EyeIcon, WarningIcon } from "../../Icon";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = styles((theme: any) => ({
   mnemonicInputRoot: {
     color: theme.custom.colors.secondary,
     borderRadius: "8px",
@@ -70,13 +70,24 @@ const useStyles = makeStyles((theme: any) => ({
 
 export function ShowRecoveryPhrase() {
   const classes = useStyles();
+  const theme = useCustomTheme();
   const background = useBackgroundClient();
   const nav = useEphemeralNav();
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    const navButton = nav.navButtonRight;
+    const title = nav.title;
+    nav.setNavButtonRight(null);
     nav.setTitle("Secret recovery phrase");
+    nav.setStyle({
+      borderBottom: `solid 1pt ${theme.custom.colors.border}`,
+    });
+    return () => {
+      nav.setNavButtonRight(navButton);
+      nav.setTitle(title);
+    };
   }, []);
 
   const _next = async () => {
@@ -158,7 +169,7 @@ export function ShowRecoveryPhrase() {
           marginBottom: "16px",
         }}
       >
-        <Box sx={{ marginBottom: "12px" }}>
+        <Box sx={{ marginBottom: "8px" }}>
           <TextField
             autoFocus={true}
             isError={error}
