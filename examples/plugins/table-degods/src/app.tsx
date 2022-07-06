@@ -50,37 +50,12 @@ export function App() {
             Date.now(),
             true
           );
-          console.log("new rewards here", newRewards);
           setEstimatedRewards(newRewards.toFixed(4));
         }, 1000);
       } catch (err) {
         console.error(err);
       }
     })();
-    /*
-    (async () => {
-      try {
-        const [farmerPubkey] = await PublicKey.findProgramAddress(
-          [Buffer.from("farmer"), FARM.toBuffer(), publicKey.toBuffer()],
-          client.programId
-        );
-        const farmer = await client.account.farmer.fetch(farmerPubkey);
-        const rewards = getEstimatedRewards(
-          farmer.rewardA,
-          farmer.gemsStaked,
-          Date.now()
-        );
-        const rewardsB = getEstimatedRewards(
-          farmer.rewardB,
-          farmer.gemsStaked,
-          Date.now()
-        );
-        console.log("farmer rewards here", rewards);
-      } catch (err) {
-        console.error(err);
-      }
-    })();
-		*/
   }, []);
 
   return tokenAccounts === null ? (
@@ -336,4 +311,29 @@ export function StakeDetail({ token }: any) {
         return [];
       }
 				const farmer = farmers[0];
+ */
+
+/*
+    (async () => {
+      try {
+        const [farmerPubkey] = await PublicKey.findProgramAddress(
+          [Buffer.from("farmer"), FARM.toBuffer(), publicKey.toBuffer()],
+          client.programId
+        );
+        const farmer = await client.account.farmer.fetch(farmerPubkey);
+        const rewards = getEstimatedRewards(
+          farmer.rewardA,
+          farmer.gemsStaked,
+          Date.now()
+        );
+        const rewardsB = getEstimatedRewards(
+          farmer.rewardB,
+          farmer.gemsStaked,
+          Date.now()
+        );
+        console.log("farmer rewards here", rewards);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
  */

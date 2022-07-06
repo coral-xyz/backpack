@@ -41,8 +41,8 @@ export const plugins = selector({
 			*/
       {
         url: DEGODS_TABLE_PLUGIN_URL,
-        iconUrl:
-          "https://cdn.discordapp.com/attachments/987809528848461914/987810144446459954/Group_1913.png",
+        iconUrl: "https://www.degods.com/images/degods_bitmap.svg",
+        //          "https://cdn.discordapp.com/attachments/987809528848461914/987810144446459954/Group_1913.png",
         title: "Degods",
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
