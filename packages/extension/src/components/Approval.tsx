@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import * as bs58 from "bs58";
 import { Message } from "@solana/web3.js";
-import { Box, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useApproveOrigin, useActiveWallet } from "@coral-xyz/recoil";
 import { BottomCard } from "./Unlocked/Balances/TokensWidget/Send";
@@ -198,19 +198,43 @@ function WithApproval({ title, onApproval, onReject, origin, children }: any) {
 function AppLogo({ origin }: any) {
   const theme = useCustomTheme();
   return (
-    <Box sx={{ width: "160px", textAlign: "center", color: "#fff" }}>
+    <div
+      style={{
+        position: "absolute",
+        top: 48,
+        left: 0,
+        right: 0,
+        marginLeft: "auto",
+        marginRight: "auto",
+        width: "128px",
+      }}
+    >
       <div
         style={{
           backgroundColor: "#fff",
-          width: "56px",
-          height: "56px",
-          borderRadius: "50%",
-          margin: "0 auto",
+          borderRadius: "8px",
+          height: "128px",
+          width: "128px",
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
         }}
-      ></div>
-      App Name
-      {origin}
-    </Box>
+      >
+        <Typography style={{ textAlign: "center" }}>Logo</Typography>
+      </div>
+      <Typography
+        style={{
+          color: theme.custom.colors.secondary,
+          lineHeight: "24px",
+          fontSize: "12px",
+          fontWeight: 500,
+          marginTop: "12px",
+          textAlign: "center",
+        }}
+      >
+        {origin}
+      </Typography>
+    </div>
   );
 }
 
@@ -226,10 +250,14 @@ function ActiveWallet() {
 
 function ConnectContent({ origin }: any) {
   const classes = useStyles();
+  const url = new URL(origin);
   return (
     <>
+      <Typography className={classes.contentTitle}>
+        Connect Wallet to {url.hostname}
+      </Typography>
       <Typography className={classes.contentSubTitle}>
-        This app would like to
+        By approving, the app can
       </Typography>
       <Typography className={classes.contentBullet}>
         1.{" "}
