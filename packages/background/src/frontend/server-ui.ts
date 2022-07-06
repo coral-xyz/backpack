@@ -102,8 +102,6 @@ async function handle<T = any>(
         params[2],
         params[3]
       );
-    case UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD:
-      return await handleKeyringStoreCheckPassword(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_STORE_UNLOCK:
       return await handleKeyringStoreUnlock(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_STORE_LOCK:
@@ -195,8 +193,13 @@ async function handle<T = any>(
     //
     case UI_RPC_METHOD_KEYNAME_UPDATE:
       return await handleKeynameUpdate(ctx, params[0], params[1]);
+    //
+    // Password.
+    //
     case UI_RPC_METHOD_PASSWORD_UPDATE:
       return await handlePasswordUpdate(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD:
+      return await handleKeyringStoreCheckPassword(ctx, params[0]);
     //
     // Solana.
     //
