@@ -4,10 +4,9 @@ import { Box, List, ListItem, ListItemIcon } from "@mui/material";
 import ChatIcon from "@mui/icons-material/Chat";
 import WebIcon from "@mui/icons-material/Web";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useBackgroundClient, useEphemeralNav } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC } from "@coral-xyz/common";
-import { CopyButton, MnemonicInputFields } from "../Account/MnemonicInput";
+import { CopyButton, MnemonicInputFields } from "../../Account/MnemonicInput";
 import {
   DangerButton,
   Header,
@@ -15,8 +14,8 @@ import {
   PrimaryButton,
   SubtextParagraph,
   TextField,
-} from "../common";
-import { EyeIcon, WarningIcon } from "../Icon";
+} from "../../common";
+import { EyeIcon, WarningIcon } from "../../Icon";
 
 const useStyles = makeStyles((theme: any) => ({
   outlinedFieldRoot: {

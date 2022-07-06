@@ -144,22 +144,17 @@ const useStyles = styles((theme) => ({
       backgroundColor: theme.custom.colors.nav,
     },
   },
-  passwordField: {
+  textFieldInput: {
     fontWeight: 500,
     borderRadius: "12px",
-    width: "351px",
     color: theme.custom.colors.secondary,
     fontSize: "16px",
     lineHeight: "24px",
   },
-  passwordRoot: {
-    marginLeft: "12px",
-    marginRight: "12px",
-    width: "351px",
+  textFieldRoot: {
     "& .MuiOutlinedInput-root": {
       backgroundColor: theme.custom.colors.background,
       borderRadius: "12px",
-      height: "56px",
       "& fieldset": {
         border: "none",
       },
@@ -569,17 +564,20 @@ export function TextField({
   inputProps,
   disabled,
   autoFocus,
+  rows,
 }: any) {
   const classes = useStyles();
   inputProps = Object.assign(
     {
-      className: classes.passwordField,
+      className: classes.textFieldInput,
     },
     inputProps
   );
   return (
     <MuiTextField
       autoFocus={autoFocus}
+      multiline={!!rows}
+      rows={rows}
       disabled={disabled}
       placeholder={placeholder}
       variant="outlined"
@@ -590,7 +588,7 @@ export function TextField({
       inputProps={inputProps}
       classes={{
         root: `${isError ? classes.textRootError : ""} ${
-          classes.passwordRoot
+          classes.textFieldRoot
         } ${rootClass ?? ""}`,
       }}
       InputLabelProps={{

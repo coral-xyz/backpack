@@ -14,6 +14,7 @@ const useStyles = styles((theme) => ({
     paddingTop: "12px",
     paddingBottom: "12px",
     borderRadius: "12px",
+    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
     backgroundColor: theme.custom.colors.nav,
   },
   headerLabel: {

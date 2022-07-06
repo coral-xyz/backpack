@@ -95,14 +95,18 @@ export class KeyringStore {
     this.autoLockStart();
   }
 
+  public async checkPassword(password: string) {
+    try {
+      await this.decryptKeyringFromStorage(password);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
   public async tryUnlock(password: string) {
     return this.withLock(async () => {
-      // Decrypt the keyring from storage.
-      const ciphertextPayload = await LocalStorageDb.get(KEY_KEYRING_STORE);
-      if (ciphertextPayload === undefined || ciphertextPayload === null) {
-        throw new Error("keyring store not found on disk");
-      }
-      const plaintext = await crypto.decrypt(ciphertextPayload, password);
+      const plaintext = await this.decryptKeyringFromStorage(password);
 
       const {
         solana,
@@ -119,6 +123,15 @@ export class KeyringStore {
       // Automatically lock the store when idle.
       this.autoLockStart();
     });
+  }
+
+  private async decryptKeyringFromStorage(password: string) {
+    const ciphertextPayload = await LocalStorageDb.get(KEY_KEYRING_STORE);
+    if (ciphertextPayload === undefined || ciphertextPayload === null) {
+      throw new Error("keyring store not found on disk");
+    }
+    const plaintext = await crypto.decrypt(ciphertextPayload, password);
+    return plaintext;
   }
 
   public lock() {

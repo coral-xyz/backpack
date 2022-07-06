@@ -1,4 +1,6 @@
 import { Box } from "@mui/material";
+import { useEphemeralNav } from "@coral-xyz/recoil";
+import { ResetSuccess } from "./ResetSuccess";
 import {
   Header,
   HeaderIcon,
@@ -8,13 +10,11 @@ import {
 } from "../../common";
 import { WarningIcon } from "../../Icon";
 
-export function ResetWarning({
-  onNext,
-  onClose,
-}: {
-  onNext: () => void;
-  onClose: () => void;
-}) {
+export function ResetWarning({ onClose }: { onClose: () => void }) {
+  const nav = useEphemeralNav();
+  const onNext = () => {
+    nav.push(<ResetSuccess />);
+  };
   return (
     <Box
       sx={{

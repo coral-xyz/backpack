@@ -1,3 +1,4 @@
+import { openOnboarding } from "@coral-xyz/common";
 import { Box } from "@mui/material";
 import {
   Header,
@@ -7,7 +8,7 @@ import {
 } from "../../common";
 import { SuccessIcon } from "../../Icon";
 
-export function ResetSuccess({ onNext }: { onNext: () => void }) {
+export function ResetSuccess() {
   return (
     <Box
       sx={{
@@ -31,7 +32,7 @@ export function ResetSuccess({ onNext }: { onNext: () => void }) {
           marginBottom: "16px",
         }}
       >
-        <PrimaryButton label="Done" onClick={onNext} />
+        <PrimaryButton label="Done" onClick={openOnboarding} />
       </Box>
     </Box>
   );

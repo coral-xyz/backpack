@@ -12,6 +12,7 @@
     "@coral-xyz/themes": "*",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
+    "@hookform/resolvers": "^2.9.3",
     "@ledgerhq/hw-transport": "^6.24.1",
     "@ledgerhq/hw-transport-webhid": "^6.24.1",
     "@mui/icons-material": "^5.8.0",
@@ -25,9 +26,11 @@
     "react": "^17.0.2",
     "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^17.0.2",
+    "react-hook-form": "^7.33.1",
     "react-router-dom": "^6.3.0",
     "recoil": "^0.6.1",
-    "tweetnacl": "^1.0.3"
+    "tweetnacl": "^1.0.3",
+    "zod": "^3.17.3"
   },
   "scripts": {
     "start": "NODE_ENV=development webpack serve",
