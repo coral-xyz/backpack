@@ -15,6 +15,7 @@ const BACKGROUND_COLOR_2 = "#3F3F46";
 const FONT_COLOR = "#FFFFFF";
 const FONT_COLOR_1 = "#71717A";
 const FONT_COLOR_2 = "#D4D4D8";
+const FONT_COLOR_3 = "#99A4B4";
 const BRAND_COLOR = "#14B8A6";
 const BUTTON_FONT_COLOR = FONT_COLOR;
 const BORDER_COLOR = "#393C43";
@@ -27,6 +28,7 @@ export const darkTheme = {
       background: BACKGROUND_COLOR_0,
       nav: BACKGROUND_COLOR_1,
       fontColor: FONT_COLOR,
+      secondaryDark: FONT_COLOR_3,
       border: BORDER_COLOR,
       activeNavButton: BRAND_COLOR,
       hamburger: FONT_COLOR_1,
