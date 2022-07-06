@@ -16,9 +16,9 @@ import {
   useBackgroundClient,
   useEphemeralNav,
   useKeyringStoreState,
-  KeyringStoreStateEnum,
   useWalletPublicKeys,
   useActiveWallet,
+  KeyringStoreStateEnum,
 } from "@coral-xyz/recoil";
 import {
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
@@ -102,6 +102,11 @@ function AvatarButton() {
 }
 
 function SettingsContent({ close }: { close: () => void }) {
+  const { setTitle, setStyle } = useEphemeralNav();
+  useEffect(() => {
+    setTitle("");
+    setStyle({});
+  }, []);
   return (
     <Suspense fallback={<div></div>}>
       <_SettingsContent close={close} />
@@ -309,6 +314,9 @@ function SettingsList({ close }: { close: () => void }) {
             isLast={idx === settingsMenu.length - 1}
             onClick={s.onClick}
             id={s.label}
+            style={{
+              height: "44px",
+            }}
           >
             <div
               style={{

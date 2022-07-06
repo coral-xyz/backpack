@@ -26,12 +26,13 @@ function NavEphemeralWrapper({
   navContentStyle: any;
 }) {
   const theme = useCustomTheme();
-  const { isRoot, title, pop, navButtonRight, renderComponent } =
+  const { isRoot, title, pop, navButtonRight, renderComponent, style } =
     useEphemeralNav();
   const navButtonLeft = isRoot ? null : <NavBackButton onClick={() => pop()} />;
   const _navbarStyle = {
     borderBottom: `solid 1pt ${theme.custom.colors.border}`,
     ...(navbarStyle ?? {}),
+    ...(style ?? {}),
   };
   return (
     <WithNav

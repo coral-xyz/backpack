@@ -9,6 +9,8 @@ type NavEphemeralContext = {
   setTitle: any;
   navButtonRight: any;
   setNavButtonRight: any;
+  style: any;
+  setStyle: any;
 };
 const _NavEphemeralContext = React.createContext<NavEphemeralContext | null>(
   null
@@ -20,6 +22,7 @@ export function NavEphemeralProvider(props: any) {
   const [stack, setStack] = useState([props.root]);
   const [title, setTitle] = useState(props.title);
   const [navButtonRight, setNavButtonRight] = useState<any>(null);
+  const [style, setStyle] = useState({});
 
   const push = (component: any) => {
     setStack([...stack, component]);
@@ -42,6 +45,8 @@ export function NavEphemeralProvider(props: any) {
         setTitle,
         navButtonRight,
         setNavButtonRight,
+        style,
+        setStyle,
       }}
     >
       {props.children}

@@ -42,9 +42,9 @@ export function ListItem({
     <MuiListItem
       data-testid={id}
       key={key}
+      button
       className={classes.settingsContentListItem}
       onClick={onClick}
-      button={onClick}
       style={{
         borderBottom: isLast
           ? undefined
