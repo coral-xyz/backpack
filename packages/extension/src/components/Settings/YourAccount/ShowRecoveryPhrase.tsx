@@ -18,6 +18,16 @@ import {
 import { EyeIcon, WarningIcon } from "../../Icon";
 
 const useStyles = styles((theme: any) => ({
+  passwordField: {
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        border: `solid 2pt ${theme.custom.colors.border}`,
+      },
+      "&:hover fieldset": {
+        border: `solid 2pt ${theme.custom.colors.primaryButton}`,
+      },
+    },
+  },
   mnemonicInputRoot: {
     color: theme.custom.colors.secondary,
     borderRadius: "8px",
@@ -169,6 +179,7 @@ export function ShowRecoveryPhrase() {
             type="password"
             value={password}
             setValue={setPassword}
+            rootClass={classes.passwordField}
           />
         </Box>
         <DangerButton
