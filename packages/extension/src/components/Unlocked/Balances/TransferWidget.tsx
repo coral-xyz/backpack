@@ -151,7 +151,7 @@ function SendToken({ close }: { close: () => void }) {
   const classes = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
   return (
-    <div>
+    <div style={{ margin: "0 12px" }}>
       <TextField
         placeholder={"Search"}
         value={searchFilter}

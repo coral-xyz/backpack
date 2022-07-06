@@ -150,6 +150,10 @@ const useStyles = styles((theme) => ({
     color: theme.custom.colors.secondary,
     fontSize: "16px",
     lineHeight: "24px",
+    "& ::placeholder": {
+      color: theme.custom.colors.hamburger,
+      opacity: "1 !important",
+    },
   },
   textFieldRoot: {
     "& .MuiOutlinedInput-root": {
@@ -573,6 +577,7 @@ export function TextField({
     },
     inputProps
   );
+  console.log(rows);
   return (
     <MuiTextField
       autoFocus={autoFocus}
