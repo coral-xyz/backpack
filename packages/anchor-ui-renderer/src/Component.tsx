@@ -159,10 +159,6 @@ const useStyles = styles((theme) => ({
         border: "none",
       },
     },
-    "& ::placeholder": {
-      color: theme.custom.colors.secondaryDark,
-      opacity: "1 !important",
-    },
   },
   textRootError: {
     "& .MuiOutlinedInput-root": {
