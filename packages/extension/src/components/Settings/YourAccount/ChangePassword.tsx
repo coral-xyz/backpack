@@ -50,16 +50,18 @@ const schema = z
 // )
 
 export function ChangePassword({ close }: { close: () => void }) {
-  const theme = useCustomTheme();
   const classes = useStyles();
+  const theme = useCustomTheme();
   const nav = useEphemeralNav();
-  const [forgotPassword, setForgotPassword] = useState(false);
 
   useEffect(() => {
     const navButton = nav.navButtonRight;
     const title = nav.title;
     nav.setNavButtonRight(null);
     nav.setTitle("Change password");
+    nav.setStyle({
+      borderBottom: `solid 1pt ${theme.custom.colors.border}`,
+    });
     return () => {
       nav.setNavButtonRight(navButton);
       nav.setTitle(title);
@@ -108,6 +110,7 @@ export function ChangePassword({ close }: { close: () => void }) {
             </ListItem>
           </List>
           <Button
+            onClick={() => nav.push(<Reset closeDrawer={() => nav.pop()} />)}
             disableRipple
             style={{
               padding: 0,
