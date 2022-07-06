@@ -9,6 +9,7 @@ import type {
   EventEmitter,
 } from "@coral-xyz/common";
 import {
+  UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   getLogger,
   withContextPort,
   ChannelAppUi,
@@ -101,6 +102,8 @@ async function handle<T = any>(
         params[2],
         params[3]
       );
+    case UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD:
+      return await handleKeyringStoreCheckPassword(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_STORE_UNLOCK:
       return await handleKeyringStoreUnlock(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_STORE_LOCK:
@@ -220,6 +223,18 @@ async function handleKeyringStoreCreate(
     accountIndices
   );
   return [resp];
+}
+
+async function handleKeyringStoreCheckPassword(
+  ctx: Context<Backend>,
+  password: string
+) {
+  try {
+    const resp = await ctx.backend.keyringStoreCheckPassword(password);
+    return [resp];
+  } catch (err) {
+    return [undefined, String(err)];
+  }
 }
 
 async function handleKeyringStoreUnlock(

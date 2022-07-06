@@ -1,4 +1,8 @@
-import { List as MuiList, ListItem as MuiListItem } from "@mui/material";
+import {
+  Divider,
+  List as MuiList,
+  ListItem as MuiListItem,
+} from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 
 const useStyles = styles(() => ({
@@ -28,24 +32,39 @@ export function List({ style, children }: any) {
   );
 }
 
-export function ListItem({ key, style, children, onClick, isLast, id }: any) {
+export function ListItem({
+  key,
+  style,
+  children,
+  isLast,
+  id,
+  onClick = undefined,
+  button = true,
+}: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
   return (
-    <MuiListItem
-      data-testid={id}
-      key={key}
-      button
-      className={classes.settingsContentListItem}
-      onClick={() => onClick()}
-      style={{
-        borderBottom: isLast
-          ? undefined
-          : `solid 1pt ${theme.custom.colors.border}`,
-        ...style,
-      }}
-    >
-      {children}
-    </MuiListItem>
+    <>
+      <MuiListItem
+        data-testid={id}
+        key={key}
+        button={button}
+        className={classes.settingsContentListItem}
+        onClick={onClick}
+        style={{
+          ...style,
+        }}
+      >
+        {children}
+      </MuiListItem>
+      {!isLast && (
+        <Divider
+          style={{
+            backgroundColor: theme.custom.colors.border,
+            height: "1px",
+          }}
+        />
+      )}
+    </>
   );
 }

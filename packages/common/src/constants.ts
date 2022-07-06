@@ -83,6 +83,8 @@ export const UI_RPC_METHOD_APPROVED_ORIGINS_READ = "approved-origins-read";
 export const UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE = "approved-origins-update";
 export const UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE =
   "keyring-store-keep-alive";
+export const UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD =
+  "keyring-store-check-password";
 export const UI_RPC_METHOD_KEYRING_STORE_UNLOCK = "keyring-store-unlock";
 export const UI_RPC_METHOD_KEYRING_STORE_LOCK = "keyring-store-lock";
 export const UI_RPC_METHOD_HD_KEYRING_CREATE = "hd-keyring-create";
