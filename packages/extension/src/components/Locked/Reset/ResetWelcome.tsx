@@ -8,7 +8,7 @@ import {
 } from "../../common";
 import { ResetWarning } from "./ResetWarning";
 
-export function ResetWelcome({ onClose }: { onClose: () => void }) {
+export function ResetWelcome({ onClose }: { onClose?: () => void }) {
   const nav = useEphemeralNav();
   const onNext = () => {
     nav.push(<ResetWarning onClose={onClose} />);
@@ -37,9 +37,11 @@ export function ResetWelcome({ onClose }: { onClose: () => void }) {
           marginBottom: "16px",
         }}
       >
-        <Box sx={{ mb: "16px" }}>
-          <SecondaryButton label="Try More Passwords" onClick={onClose} />
-        </Box>
+        {onClose && (
+          <Box sx={{ mb: "16px" }}>
+            <SecondaryButton label="Try More Passwords" onClick={onClose} />
+          </Box>
+        )}
         <DangerButton label="Reset Secret Recovery Phrase" onClick={onNext} />
       </Box>
     </Box>

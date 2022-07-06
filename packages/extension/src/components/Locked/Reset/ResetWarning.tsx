@@ -10,7 +10,7 @@ import {
 } from "../../common";
 import { WarningIcon } from "../../Icon";
 
-export function ResetWarning({ onClose }: { onClose: () => void }) {
+export function ResetWarning({ onClose }: { onClose?: () => void }) {
   const nav = useEphemeralNav();
   const onNext = () => {
     nav.push(<ResetSuccess />);
@@ -42,9 +42,11 @@ export function ResetWarning({ onClose }: { onClose: () => void }) {
           justifyContent: "space-between",
         }}
       >
-        <Box sx={{ width: "167.5px" }}>
-          <SecondaryButton label="Cancel" onClick={onClose} />
-        </Box>
+        {onClose && (
+          <Box sx={{ width: "167.5px" }}>
+            <SecondaryButton label="Cancel" onClick={onClose} />
+          </Box>
+        )}
         <Box sx={{ width: "167.5px" }}>
           <DangerButton label="Reset" onClick={() => onNext()} />
         </Box>
