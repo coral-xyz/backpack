@@ -1,6 +1,6 @@
 import { useEffect, useState, Suspense } from "react";
 import * as bs58 from "bs58";
-import { Typography, IconButton, Button, TextField } from "@mui/material";
+import { Typography, IconButton, TextField } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   Add,
@@ -256,6 +256,8 @@ function SettingsList({ close }: { close: () => void }) {
   const nav = useEphemeralNav();
   const background = useBackgroundClient();
 
+  useEffect(() => nav.setTitle(""), []);
+
   const lockWallet = () => {
     background
       .request({
@@ -291,7 +293,7 @@ function SettingsList({ close }: { close: () => void }) {
     {
       id: 3,
       label: "Show Secret Recovery Phrase",
-      onClick: () => nav.push(<ShowRecoveryPhrase close={close} />),
+      onClick: () => nav.push(<ShowRecoveryPhrase />),
       icon: (props: any) => <></>,
       detailIcon: (props: any) => <></>,
     },
