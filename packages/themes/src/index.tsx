@@ -38,7 +38,7 @@ export const darkTheme = {
       positive: "#35A63A",
       negative: "#E95050",
       primaryButton: BRAND_COLOR,
-      secondaryButton: "#292C33",
+      secondaryButton: BACKGROUND_COLOR_2,
       dangerButton: "#DC2626",
       buttonFontColor: BUTTON_FONT_COLOR,
       sendGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_0} 0%, rgba(27, 29, 35, 0) 100%)`,

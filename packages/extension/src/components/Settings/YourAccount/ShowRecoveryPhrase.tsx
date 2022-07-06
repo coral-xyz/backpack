@@ -23,7 +23,7 @@ const useStyles = styles((theme: any) => ({
     borderRadius: "8px",
     marginTop: "4px",
     "& .MuiOutlinedInput-root": {
-      backgroundColor: theme.custom.colors.secondaryButton,
+      backgroundColor: theme.custom.colors.nav,
       borderRadius: "8px",
       height: "40px",
       "& fieldset": {
@@ -32,7 +32,7 @@ const useStyles = styles((theme: any) => ({
     },
     "& .MuiInputBase-input": {
       color: theme.custom.colors.fontColor,
-      backgroundColor: theme.custom.colors.secondaryButton,
+      backgroundColor: theme.custom.colors.nav,
       borderRadius: "8px",
       fontSize: "12px",
       fontWeight: 700,
@@ -40,9 +40,6 @@ const useStyles = styles((theme: any) => ({
     "& .MuiInputAdornment-root": {
       color: theme.custom.colors.secondary,
       fontWeight: 500,
-    },
-    "&:hover": {
-      backgroundColor: theme.custom.colors.primary,
     },
   },
   listRoot: {
@@ -56,7 +53,7 @@ const useStyles = styles((theme: any) => ({
     alignItems: "start",
     borderBottom: `1px solid #000`,
     borderRadius: "4px",
-    background: theme.custom.colors.secondaryButton,
+    background: theme.custom.colors.nav,
     padding: "8px",
     height: "56px",
   },
@@ -70,7 +67,6 @@ const useStyles = styles((theme: any) => ({
 
 export function ShowRecoveryPhrase() {
   const classes = useStyles();
-  const theme = useCustomTheme();
   const background = useBackgroundClient();
   const nav = useEphemeralNav();
   const [password, setPassword] = useState("");
@@ -78,15 +74,10 @@ export function ShowRecoveryPhrase() {
 
   useEffect(() => {
     const navButton = nav.navButtonRight;
-    const title = nav.title;
     nav.setNavButtonRight(null);
     nav.setTitle("Secret recovery phrase");
-    nav.setStyle({
-      borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-    });
     return () => {
       nav.setNavButtonRight(navButton);
-      nav.setTitle(title);
     };
   }, []);
 
@@ -218,9 +209,6 @@ export function ShowRecoveryPhraseMnemonic({ mnemonic }: { mnemonic: string }) {
           mnemonicWords={mnemonicWords}
           rootClass={classes.mnemonicInputRoot}
         />
-        <Box sx={{ margin: "12px -8px 0 -8px" }}>
-          <CopyButton mnemonic={mnemonic} />
-        </Box>
       </Box>
       <Box
         sx={{
@@ -229,6 +217,9 @@ export function ShowRecoveryPhraseMnemonic({ mnemonic }: { mnemonic: string }) {
           marginBottom: "16px",
         }}
       >
+        <Box sx={{ marginBottom: "12px" }}>
+          <CopyButton mnemonic={mnemonic} />
+        </Box>
         <PrimaryButton label="Close" onClick={() => nav.toRoot()} />
       </Box>
     </Box>
