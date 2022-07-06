@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 import { Button, TextField, Typography } from "@mui/material";
-import { useEphemeralNav } from "@coral-xyz/recoil";
+import { useEphemeralNav, useBackgroundClient } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { List, ListItem, PrimaryButton, SubtextParagraph } from "../../common";
 import { Reset } from "../../Locked/Reset";
-import z from "zod";
+import {
+  UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
+  UI_RPC_METHOD_PASSWORD_UPDATE,
+} from "@coral-xyz/common";
 
 const useStyles = styles((theme) => ({
   textFieldRoot: {
@@ -20,39 +21,17 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-const schema = z
-  .object({
-    currentPassword: z.string(),
-    newPassword: z
-      .string()
-      .regex(
-        /^(?=.*[a-z])(?=.*\d)[a-z\d]{8,}$/i,
-        "Your password must be at least 8 characters long and contain letters and numbers."
-      ),
-    confirmNewPassword: z.string(),
-  })
-  .refine((data: any) => data.newPassword === data.confirmNewPassword, {
-    message: "Passwords don't match",
-    path: ["newPassword"],
-  });
-// XXX: won't work because recoil needs to be inside a react component
-// .refine(
-//   async (data) => {
-//     return await useBackgroundClient().request({
-//       method: UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
-//       params: [data.currentPassword],
-//     });
-//   },
-//   {
-//     message: "Current password is incorrect",
-//     path: ["currentPassword"],
-//   }
-// )
-
 export function ChangePassword({ close }: { close: () => void }) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const nav = useEphemeralNav();
+  const background = useBackgroundClient();
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPw1, setNewPw1] = useState("");
+  const [newPw2, setNewPw2] = useState("");
+
+  const [currentPasswordError, setCurrentPasswordError] = useState(false);
+  const [passwordMismatchError, setPasswordMismatchError] = useState(false);
 
   useEffect(() => {
     const navButton = nav.navButtonRight;
@@ -68,21 +47,44 @@ export function ChangePassword({ close }: { close: () => void }) {
     };
   }, []);
 
-  const { register, handleSubmit, formState } = useForm({
-    resolver: zodResolver(schema),
-  });
-
   return (
     <div style={{ paddingTop: "16px", height: "100%" }}>
       <form
-        onSubmit={handleSubmit((d: any) => {
-          alert("password changed");
-          close();
-        })}
+        onSubmit={(e) => {
+          e.preventDefault();
+          (async () => {
+            const isCurrentCorrect = await background.request({
+              method: UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
+              params: [currentPassword],
+            });
+            const mismatchError = newPw1.trim() === "" || newPw1 !== newPw2;
+
+            setCurrentPasswordError(!isCurrentCorrect);
+            setPasswordMismatchError(mismatchError);
+
+            if (!isCurrentCorrect || mismatchError) {
+              return;
+            }
+
+            await background.request({
+              method: UI_RPC_METHOD_PASSWORD_UPDATE,
+              params: [currentPassword, newPw1],
+            });
+
+            close();
+          })();
+        }}
         style={{ display: "flex", height: "100%", flexDirection: "column" }}
       >
         <div style={{ flex: 1, flexGrow: 1 }}>
-          <List>
+          <List
+            style={{
+              border: currentPasswordError
+                ? `solid 1pt ${theme.custom.colors.negative}`
+                : undefined,
+              borderRadius: "8px",
+            }}
+          >
             <ListItem
               isLast
               style={{
@@ -98,7 +100,6 @@ export function ChangePassword({ close }: { close: () => void }) {
                 classes={{
                   root: classes.textFieldRoot,
                 }}
-                {...register("currentPassword")}
                 className={classes.textField}
                 inputProps={{
                   style: {
@@ -106,6 +107,8 @@ export function ChangePassword({ close }: { close: () => void }) {
                     padding: 0,
                   },
                 }}
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
               />
             </ListItem>
           </List>
@@ -132,7 +135,14 @@ export function ChangePassword({ close }: { close: () => void }) {
               Forgot Password ?
             </Typography>
           </Button>
-          <List>
+          <List
+            style={{
+              border: passwordMismatchError
+                ? `solid 1pt ${theme.custom.colors.negative}`
+                : undefined,
+              borderRadius: "8px",
+            }}
+          >
             <ListItem
               button={false}
               style={{
@@ -142,12 +152,13 @@ export function ChangePassword({ close }: { close: () => void }) {
             >
               <Typography style={{ width: "80px" }}>New</Typography>
               <TextField
+                value={newPw1}
+                onChange={(e) => setNewPw1(e.target.value)}
                 placeholder="enter password"
                 type="password"
                 classes={{
                   root: classes.textFieldRoot,
                 }}
-                {...register("newPassword")}
                 inputProps={{
                   style: {
                     color: theme.custom.colors.secondary,
@@ -166,12 +177,13 @@ export function ChangePassword({ close }: { close: () => void }) {
             >
               <Typography style={{ width: "80px" }}>Verify</Typography>
               <TextField
+                value={newPw2}
+                onChange={(e) => setNewPw2(e.target.value)}
                 placeholder="re-enter password"
                 type="password"
                 classes={{
                   root: classes.textFieldRoot,
                 }}
-                {...register("confirmNewPassword")}
                 inputProps={{
                   style: {
                     color: theme.custom.colors.secondary,
