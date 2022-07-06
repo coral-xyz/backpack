@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, TextField, Typography } from "@mui/material";
 import { useEphemeralNav } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { List, ListItem, PrimaryButton, SubtextParagraph } from "../../common";
+import { Reset } from "../../Locked/Reset";
 import z from "zod";
 
 const useStyles = styles((theme) => ({
@@ -52,6 +53,7 @@ export function ChangePassword({ close }: { close: () => void }) {
   const theme = useCustomTheme();
   const classes = useStyles();
   const nav = useEphemeralNav();
+  const [forgotPassword, setForgotPassword] = useState(false);
 
   useEffect(() => {
     const navButton = nav.navButtonRight;
@@ -186,8 +188,8 @@ export function ChangePassword({ close }: { close: () => void }) {
               marginTop: "10px",
             }}
           >
-            Your password must be at least 8 characters long and container
-            letters and numbers.
+            Your password must be at least 8 characters long and contain letters
+            and numbers.
           </SubtextParagraph>
         </div>
         <div style={{ padding: 16 }}>
