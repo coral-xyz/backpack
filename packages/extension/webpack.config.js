@@ -187,6 +187,11 @@ const options = {
           force: true,
         },
         {
+          from: `src/assets/`,
+          to: "assets/",
+          force: true,
+        },
+        {
           from: "../provider-injection/dist/browser/index.js",
           to: "injected.js",
           force: true,
