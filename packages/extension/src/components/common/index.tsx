@@ -244,11 +244,12 @@ export function HeaderIcon({
 }) {
   return (
     <Box
-      sx={{
+      style={{
         display: "block",
         height: "56px",
         width: "56px",
-        m: "8px auto 16px auto",
+        margin: "8px auto 16px auto",
+        ...style,
       }}
     >
       {icon}
