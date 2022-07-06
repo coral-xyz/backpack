@@ -38,7 +38,6 @@ export function ConnectionMenu({ close }: { close: () => void }) {
   useEffect(() => {
     const navButton = nav.navButtonRight;
     nav.setNavButtonRight(null);
-    nav.setTitle("Solana network");
     return () => {
       nav.setNavButtonRight(navButton);
     };
@@ -46,7 +45,7 @@ export function ConnectionMenu({ close }: { close: () => void }) {
 
   const endpointKvs = Object.entries(endpoints);
   return (
-    <List className={classes.connectionMenu} style={{ marginTop: "16px" }}>
+    <List className={classes.connectionMenu}>
       {endpointKvs.map(([key, val], idx) => (
         <ListItem
           id={key}

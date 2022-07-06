@@ -93,6 +93,7 @@ function AvatarButton() {
         openDrawer={settingsOpen}
         setOpenDrawer={setSettingsOpen}
         title={""}
+        navbarStyle={{ borderBottom: undefined }}
       >
         <SettingsContent close={() => setSettingsOpen(false)} />
       </WithEphemeralNavDrawer>
@@ -261,8 +262,6 @@ function SettingsList({ close }: { close: () => void }) {
   const theme = useCustomTheme();
   const nav = useEphemeralNav();
   const background = useBackgroundClient();
-
-  useEffect(() => nav.setTitle(""), []);
 
   const lockWallet = () => {
     background
