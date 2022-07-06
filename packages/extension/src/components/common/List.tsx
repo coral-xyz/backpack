@@ -40,6 +40,7 @@ export function ListItem({
   id,
   onClick = undefined,
   button = true,
+  borderColor,
 }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -60,7 +61,9 @@ export function ListItem({
       {!isLast && (
         <Divider
           style={{
-            backgroundColor: theme.custom.colors.border,
+            backgroundColor: borderColor
+              ? borderColor
+              : theme.custom.colors.border,
             height: "1px",
           }}
         />
