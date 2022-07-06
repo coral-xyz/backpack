@@ -18,18 +18,6 @@ import {
 import { EyeIcon, WarningIcon } from "../../Icon";
 
 const useStyles = makeStyles((theme: any) => ({
-  outlinedFieldRoot: {
-    margin: 0,
-    width: "100%",
-    marginBottom: "12px",
-    "& .MuiOutlinedInput-root": {
-      border: `solid 2pt ${theme.custom.colors.primaryButton}`,
-    },
-    "& ::placeholder": {
-      color: theme.custom.colors.hamburger,
-      opacity: "1 !important",
-    },
-  },
   mnemonicInputRoot: {
     color: theme.custom.colors.secondary,
     borderRadius: "8px",
@@ -170,17 +158,17 @@ export function ShowRecoveryPhrase() {
           marginBottom: "16px",
         }}
       >
-        <TextField
-          autoFocus={true}
-          isError={error}
-          inputProps={{ name: "password" }}
-          placeholder="Password"
-          type="password"
-          value={password}
-          setValue={setPassword}
-          rootClass={classes.outlinedFieldRoot}
-        />
-
+        <Box sx={{ marginBottom: "12px" }}>
+          <TextField
+            autoFocus={true}
+            isError={error}
+            inputProps={{ name: "password" }}
+            placeholder="Password"
+            type="password"
+            value={password}
+            setValue={setPassword}
+          />
+        </Box>
         <DangerButton
           label="Show phrase"
           onClick={_next}

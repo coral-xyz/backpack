@@ -158,11 +158,16 @@ const useStyles = styles((theme) => ({
       "& fieldset": {
         border: "none",
       },
+      "&.Mui-focused fieldset": {
+        border: `solid 2pt ${theme.custom.colors.primaryButton}`,
+      },
     },
   },
   textRootError: {
     "& .MuiOutlinedInput-root": {
-      border: `solid 2pt ${theme.custom.colors.negative} !important`,
+      "& fieldset": {
+        border: `solid 2pt ${theme.custom.colors.negative} !important`,
+      },
     },
   },
   expand: {
