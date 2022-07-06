@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
-import { Box, ListItemIcon } from "@mui/material";
+import { Box, List, ListItem, ListItemIcon } from "@mui/material";
 import ChatIcon from "@mui/icons-material/Chat";
 import WebIcon from "@mui/icons-material/Web";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
@@ -12,8 +12,6 @@ import {
   DangerButton,
   Header,
   HeaderIcon,
-  List,
-  ListItem,
   PrimaryButton,
   SubtextParagraph,
   TextField,
@@ -28,13 +26,17 @@ const useStyles = makeStyles((theme: any) => ({
     "& .MuiOutlinedInput-root": {
       border: `solid 2pt ${theme.custom.colors.primaryButton}`,
     },
+    "& ::placeholder": {
+      color: theme.custom.colors.hamburger,
+      opacity: "1 !important",
+    },
   },
   mnemonicInputRoot: {
     color: theme.custom.colors.secondary,
     borderRadius: "8px",
     marginTop: "4px",
     "& .MuiOutlinedInput-root": {
-      backgroundColor: "#292C33",
+      backgroundColor: theme.custom.colors.secondaryButton,
       borderRadius: "8px",
       height: "40px",
       "& fieldset": {
@@ -43,7 +45,7 @@ const useStyles = makeStyles((theme: any) => ({
     },
     "& .MuiInputBase-input": {
       color: theme.custom.colors.fontColor,
-      backgroundColor: "#292C33",
+      backgroundColor: theme.custom.colors.secondaryButton,
       borderRadius: "8px",
       fontSize: "12px",
       fontWeight: 700,
@@ -56,6 +58,26 @@ const useStyles = makeStyles((theme: any) => ({
       backgroundColor: theme.custom.colors.primary,
     },
   },
+  listRoot: {
+    color: theme.custom.colors.fontColor,
+    padding: "0",
+    margin: "0 8px",
+    borderRadius: "4px",
+    fontSize: "14px",
+  },
+  listItemRoot: {
+    alignItems: "start",
+    borderBottom: `1px solid #000`,
+    borderRadius: "4px",
+    background: theme.custom.colors.secondaryButton,
+    padding: "8px",
+  },
+  listItemIconRoot: {
+    minWidth: "inherit",
+    height: "20px",
+    width: "20px",
+    marginRight: "8px",
+  },
 }));
 
 export function ShowRecoveryPhrase() {
@@ -66,7 +88,7 @@ export function ShowRecoveryPhrase() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    nav.setTitle("Show Recovery Phrase");
+    nav.setTitle("Secret recovery phrase");
   }, []);
 
   const _next = async () => {
@@ -77,6 +99,7 @@ export function ShowRecoveryPhrase() {
         params: [password],
       });
     } catch (e) {
+      console.error(e);
       setError(true);
       return;
     }
@@ -94,32 +117,45 @@ export function ShowRecoveryPhrase() {
     >
       <Box sx={{ margin: "32px 24px 0 24px" }}>
         <HeaderIcon
+          sx={{ width: "40px", height: "40px", marginBottom: "24px" }}
           icon={<WarningIcon fill="#E95050" width="40px" height="40px" />}
         />
-        <Header text="" style={{ textAlign: "center" }} />
+        <Header text="Warning" style={{ textAlign: "center" }} />
         <Box sx={{ marginTop: "24px" }}>
-          <List
-            style={{
-              margin: "0 8px",
-              borderRadius: "4px",
-              fontSize: "14px",
-            }}
-          >
-            <ListItem style={{ alignItems: "start", borderColor: "#000" }}>
-              <ListItemIcon sx={{ minWidth: "inherit", marginRight: "8px" }}>
-                <ChatIcon htmlColor="#EF4444" />
+          <List className={classes.listRoot}>
+            <ListItem className={classes.listItemRoot}>
+              <ListItemIcon className={classes.listItemIconRoot}>
+                <ChatIcon
+                  htmlColor="#EF4444"
+                  style={{
+                    height: "20px",
+                    width: "20px",
+                  }}
+                />
               </ListItemIcon>
               Backpack support will never ask for your secret phrase.
             </ListItem>
-            <ListItem style={{ alignItems: "start", borderColor: "#000" }}>
-              <ListItemIcon sx={{ minWidth: "inherit", marginRight: "8px" }}>
-                <WebIcon htmlColor="#EF4444" />
+            <ListItem className={classes.listItemRoot}>
+              <ListItemIcon className={classes.listItemIconRoot}>
+                <WebIcon
+                  htmlColor="#EF4444"
+                  style={{
+                    height: "20px",
+                    width: "20px",
+                  }}
+                />
               </ListItemIcon>
               Never share your secret phrase or enter it into an app or website.
             </ListItem>
-            <ListItem style={{ alignItems: "start" }} isLast={true}>
-              <ListItemIcon sx={{ minWidth: "inherit", marginRight: "8px" }}>
-                <LockOpenIcon htmlColor="#EF4444" />
+            <ListItem
+              className={classes.listItemRoot}
+              style={{ borderBottom: "none" }}
+            >
+              <ListItemIcon className={classes.listItemIconRoot}>
+                <LockOpenIcon
+                  htmlColor="#EF4444"
+                  style={{ height: "20px", width: "20px" }}
+                />
               </ListItemIcon>
               Anyone with your secret phrase will have complete control of your
               account.
@@ -135,6 +171,8 @@ export function ShowRecoveryPhrase() {
         }}
       >
         <TextField
+          autoFocus={true}
+          isError={error}
           inputProps={{ name: "password" }}
           placeholder="Password"
           type="password"
@@ -143,7 +181,11 @@ export function ShowRecoveryPhrase() {
           rootClass={classes.outlinedFieldRoot}
         />
 
-        <DangerButton label="Show phrase" onClick={_next} />
+        <DangerButton
+          label="Show phrase"
+          onClick={_next}
+          disabled={password.length === 0}
+        />
       </Box>
     </Box>
   );
@@ -153,10 +195,6 @@ export function ShowRecoveryPhraseMnemonic({ mnemonic }: { mnemonic: string }) {
   const classes = useStyles();
   const nav = useEphemeralNav();
   const mnemonicWords = mnemonic.split(" ");
-
-  useEffect(() => {
-    nav.setTitle("Show Recovery Phrase");
-  }, []);
 
   return (
     <Box
@@ -168,7 +206,10 @@ export function ShowRecoveryPhraseMnemonic({ mnemonic }: { mnemonic: string }) {
       }}
     >
       <Box sx={{ margin: "32px 24px 0 24px" }}>
-        <HeaderIcon icon={<EyeIcon />} />
+        <HeaderIcon
+          icon={<EyeIcon />}
+          sx={{ width: "40px", height: "40px", marginBottom: "24px" }}
+        />
         <Header text="Recovery phrase" style={{ textAlign: "center" }} />
         <SubtextParagraph style={{ textAlign: "center" }}>
           {" "}
