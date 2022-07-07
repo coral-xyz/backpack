@@ -395,26 +395,30 @@ export function ImportSecretKey({
         justifyContent: "space-between",
       }}
     >
-      <Box sx={{ margin: "24px" }}>
-        <Header text="Import private key" />
-        <SubtextParagraph style={{ marginBottom: "32px" }}>
-          Enter your private key. It will be encrypted and stored on your
-          device.
-        </SubtextParagraph>
-        <Box sx={{ marginBottom: "4px" }}>
+      <Box sx={{ margin: "24px 0" }}>
+        <Box sx={{ margin: "0 24px" }}>
+          <Header text="Import private key" />
+          <SubtextParagraph style={{ marginBottom: "32px" }}>
+            Enter your private key. It will be encrypted and stored on your
+            device.
+          </SubtextParagraph>
+        </Box>
+        <Box sx={{ margin: "0 16px" }}>
+          <Box sx={{ marginBottom: "4px" }}>
+            <TextField
+              autoFocus={true}
+              placeholder="Name"
+              value={name}
+              setValue={setName}
+            />
+          </Box>
           <TextField
-            autoFocus={true}
-            placeholder="Name"
-            value={name}
-            setValue={setName}
+            placeholder="Enter private key"
+            value={secretKey}
+            setValue={setSecretKey}
+            rows={4}
           />
         </Box>
-        <TextField
-          placeholder="Enter private key"
-          value={secretKey}
-          setValue={setSecretKey}
-          rows={4}
-        />
         {error && (
           <Typography style={{ color: "red", marginTop: "8px" }}>
             {error}
