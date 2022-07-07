@@ -254,7 +254,15 @@ function WalletList({
               }}
             />
           </div>
-          <Typography>Add / Connect Wallet</Typography>
+          <Typography
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "column",
+            }}
+          >
+            Add / Connect Wallet
+          </Typography>
         </ListItem>
       </List>
     </>
