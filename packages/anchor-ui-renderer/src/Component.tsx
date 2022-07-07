@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import type { Element } from "@coral-xyz/anchor-ui";
 import { NodeKind } from "@coral-xyz/anchor-ui";
 import { formatUSD } from "@coral-xyz/common";
+import { useCustomTheme } from "@coral-xyz/themes";
 import {
   Button as MuiButton,
   Card,
@@ -12,6 +13,7 @@ import {
   ListItemIcon,
   Typography,
   TextField as MuiTextField,
+  CircularProgress,
 } from "@mui/material";
 import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import { styles } from "@coral-xyz/themes";
@@ -212,6 +214,8 @@ export function Component({ viewData }) {
           childrenRenderer={viewData.children}
         />
       );
+    case NodeKind.Loading:
+      return <Loading id={id} props={props} style={style} />;
     case NodeKind.BalancesTable:
       return (
         <BalancesTable
@@ -671,6 +675,15 @@ export function __Button({
         ))}
     </MuiButton>
   );
+}
+
+function Loading({ id, props, style }: any) {
+  const theme = useCustomTheme();
+  style = {
+    color: theme.custom.colors.activeNavButton,
+    ...style,
+  };
+  return <CircularProgress style={style} />;
 }
 
 function Raw({ text }: any) {

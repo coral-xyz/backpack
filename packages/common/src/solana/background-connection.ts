@@ -75,6 +75,7 @@ import {
   SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
+  SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS,
 } from "../constants";
 import type { BackgroundClient } from "../channel";
 
@@ -240,6 +241,21 @@ export class BackgroundSolanaConnection extends Connection {
     });
   }
 
+  async getProgramAccounts(
+    programId: PublicKey,
+    configOrCommitment?: GetProgramAccountsConfig | Commitment
+  ): Promise<
+    Array<{
+      pubkey: PublicKey;
+      account: AccountInfo<Buffer>;
+    }>
+  > {
+    return await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS,
+      params: [programId.toString(), configOrCommitment],
+    });
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Below this not yet implemented.
   ///////////////////////////////////////////////////////////////////////////////
@@ -354,18 +370,6 @@ export class BackgroundSolanaConnection extends Connection {
     commitment?: Commitment,
     epoch?: number
   ): Promise<StakeActivationData> {
-    throw new Error("not implemented");
-  }
-
-  async getProgramAccounts(
-    programId: PublicKey,
-    configOrCommitment?: GetProgramAccountsConfig | Commitment
-  ): Promise<
-    Array<{
-      pubkey: PublicKey;
-      account: AccountInfo<Buffer>;
-    }>
-  > {
     throw new Error("not implemented");
   }
 

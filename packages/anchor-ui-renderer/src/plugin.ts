@@ -126,6 +126,13 @@ export class Plugin {
       CHANNEL_PLUGIN_CONNECTION_BRIDGE
     );
     this._connectionBridge.handler(this._handleConnectionBridge.bind(this));
+
+    //
+    // Effectively take a lock that's held until the setup is complete.
+    //
+    this._didFinishSetup = new Promise((resolve) => {
+      this._didFinishSetupResolver = resolve;
+    });
   }
 
   public get needsLoad() {
@@ -137,13 +144,6 @@ export class Plugin {
   //
   public createIframe() {
     logger.debug("creating iframe element");
-
-    //
-    // Effectively take a lock that's held until the setup is complete.
-    //
-    this._didFinishSetup = new Promise((resolve) => {
-      this._didFinishSetupResolver = resolve;
-    });
 
     this._nextRenderId = 0;
     this._iframe = document.createElement("iframe");
@@ -180,6 +180,8 @@ export class Plugin {
     this._nextRenderId = undefined;
     this._dom = undefined;
     this._pendingBridgeRequests = undefined;
+    this._didFinishSetupResolver = undefined;
+    this._didFinishSetup = undefined;
   }
 
   //
@@ -196,10 +198,11 @@ export class Plugin {
   //////////////////////////////////////////////////////////////////////////////
 
   public mount() {
-    if (this._didFinishSetup === undefined) {
-      throw new Error("plugin not setup");
-    }
-    this._didFinishSetup.then(() => {
+    this.createIframe();
+    //    if (this._didFinishSetup === undefined) {
+    //      throw new Error("plugin not setup");
+    //    }
+    this._didFinishSetup!.then(() => {
       this.pushMountNotification();
     });
   }
@@ -207,6 +210,14 @@ export class Plugin {
   public unmount() {
     this._dom?.clear();
     this.pushUnmountNotification();
+    this.destroyIframe();
+
+    //
+    // Effectively take a lock that's held until the setup is complete.
+    //
+    this._didFinishSetup = new Promise((resolve) => {
+      this._didFinishSetupResolver = resolve;
+    });
   }
 
   //

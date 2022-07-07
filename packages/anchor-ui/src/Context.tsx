@@ -1,9 +1,12 @@
 import React, { useContext, createContext } from "react";
+import { darkTheme } from "@coral-xyz/themes";
 
 type AnchorContext = {
   navigation: Navigation;
+  theme: Theme;
 };
 const _AnchorContext = createContext<AnchorContext | null>(null);
+type Theme = any;
 
 export const NAV_STACK: any = [];
 
@@ -36,6 +39,7 @@ export function AnchorProvider(props: any) {
     <_AnchorContext.Provider
       value={{
         navigation,
+        theme: darkTheme,
       }}
     >
       {props.children}
@@ -54,6 +58,11 @@ function useAnchorContext() {
 export function useNavigation() {
   const { navigation } = useAnchorContext();
   return navigation;
+}
+
+export function useTheme() {
+  const { theme } = useAnchorContext();
+  return theme;
 }
 
 type Navigation = any;
