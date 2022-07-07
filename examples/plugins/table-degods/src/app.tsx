@@ -70,22 +70,6 @@ export function App() {
   );
 }
 
-export function getEstimatedRewards(
-  reward: any,
-  gems: any,
-  currentTS: number,
-  isDead: boolean = false
-): Number {
-  const DUST_RATE = isDead ? 15 : 5;
-  return (
-    (reward.accruedReward.toNumber() - reward.paidOutReward.toNumber()) /
-      Math.pow(10, 9) +
-    gems.toNumber() *
-      DUST_RATE *
-      ((currentTS / 1000 - reward.fixedRate.lastUpdatedTs.toNumber()) / 86400)
-  );
-}
-
 function _Loading() {
   return (
     <View
@@ -117,7 +101,6 @@ function _App({ dead, alive, estimatedRewards }: any) {
           estimatedRewards={estimatedRewards}
         />
       )}
-      {/*alive.length > 0 && <GodGrid gods={alive} isDead={false} />*/}
     </View>
   );
 }
@@ -280,61 +263,18 @@ export function StakeDetail({ token }: any) {
   );
 }
 
-/*
-
-      const farm = await client.account.farm.fetch(FARM);
-      console.log(
-        "farm here",
-        farm,
-        farm.rewardA.rewardMint.toString(),
-        farm.rewardB.rewardMint.toString(),
-        farm.rewardA.rewardPot.toString(),
-        farm.rewardB.rewardPot.toString()
-      );
-
-      const farmers = await client.account.farmer.all([
-        // Farm pubkey.
-        {
-          memcmp: {
-            bytes: FARM.toString(),
-            offset: 8,
-          },
-        },
-        // Farmer authority
-        {
-          memcmp: {
-            bytes: window.backpack.publicKey.toString(),
-            offset: 8 + 32,
-          },
-        },
-      ]);
-      if (farmers.length === 0) {
-        return [];
-      }
-				const farmer = farmers[0];
- */
-
-/*
-    (async () => {
-      try {
-        const [farmerPubkey] = await PublicKey.findProgramAddress(
-          [Buffer.from("farmer"), FARM.toBuffer(), publicKey.toBuffer()],
-          client.programId
-        );
-        const farmer = await client.account.farmer.fetch(farmerPubkey);
-        const rewards = getEstimatedRewards(
-          farmer.rewardA,
-          farmer.gemsStaked,
-          Date.now()
-        );
-        const rewardsB = getEstimatedRewards(
-          farmer.rewardB,
-          farmer.gemsStaked,
-          Date.now()
-        );
-        console.log("farmer rewards here", rewards);
-      } catch (err) {
-        console.error(err);
-      }
-    })();
- */
+export function getEstimatedRewards(
+  reward: any,
+  gems: any,
+  currentTS: number,
+  isDead: boolean = false
+): Number {
+  const DUST_RATE = isDead ? 15 : 5;
+  return (
+    (reward.accruedReward.toNumber() - reward.paidOutReward.toNumber()) /
+      Math.pow(10, 9) +
+    gems.toNumber() *
+      DUST_RATE *
+      ((currentTS / 1000 - reward.fixedRate.lastUpdatedTs.toNumber()) / 86400)
+  );
+}
