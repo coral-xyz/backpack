@@ -1,4 +1,4 @@
-import { useState, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import * as bs58 from "bs58";
 import { Box, Typography, IconButton } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -397,39 +397,25 @@ export function ImportSecretKey({
     >
       <Box sx={{ margin: "24px" }}>
         <Header text="Import private key" />
-        <SubtextParagraph>
+        <SubtextParagraph style={{ marginBottom: "32px" }}>
           Enter your private key. It will be encrypted and stored on your
           device.
         </SubtextParagraph>
+        <Box sx={{ marginBottom: "4px" }}>
+          <TextField
+            autoFocus={true}
+            placeholder="Name"
+            value={name}
+            setValue={setName}
+          />
+        </Box>
         <TextField
-          placeholder="Name (optional)"
-          variant="outlined"
-          margin="dense"
-          required
-          fullWidth
-          InputLabelProps={{
-            shrink: false,
-          }}
-          value={name}
-          onChange={(e: any) => setName(e.target.value)}
-        />
-        <TextField
-          autoFocus={true}
-          inputProps={{
-            name: "privateKey",
-          }}
           placeholder="Enter private key"
-          variant="outlined"
-          margin="dense"
-          required
-          fullWidth
-          InputLabelProps={{
-            shrink: false,
-          }}
           value={secretKey}
-          onChange={(e: any) => setSecretKey(e.target.value)}
+          setValue={setSecretKey}
           rows={4}
         />
+        {error && <Typography style={{ color: "red" }}>{error}</Typography>}
       </Box>
       <Box
         sx={{
@@ -440,7 +426,6 @@ export function ImportSecretKey({
           justifyContent: "space-between",
         }}
       >
-        {error && <Typography style={{ color: "red" }}>{error}</Typography>}
         <PrimaryButton
           onClick={next}
           label="Import"

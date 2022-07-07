@@ -5,6 +5,7 @@ type NavEphemeralContext = {
   pop: any;
   renderComponent: any;
   isRoot: boolean;
+  toRoot: () => void;
   title: string;
   setTitle: any;
   navButtonRight: any;
@@ -27,11 +28,17 @@ export function NavEphemeralProvider(props: any) {
   const push = (component: any) => {
     setStack([...stack, component]);
   };
+
   const pop = () => {
     const s = [...stack];
     s.pop();
     setStack(s);
   };
+
+  const toRoot = () => {
+    setStack([stack[0]]);
+  };
+
   const renderComponent = stack[stack.length - 1];
 
   return (
@@ -41,6 +48,7 @@ export function NavEphemeralProvider(props: any) {
         pop,
         renderComponent,
         isRoot: stack.length === 1,
+        toRoot,
         title,
         setTitle,
         navButtonRight,

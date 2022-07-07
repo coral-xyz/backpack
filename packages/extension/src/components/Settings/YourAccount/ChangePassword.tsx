@@ -132,7 +132,7 @@ export function ChangePassword({ close }: { close: () => void }) {
                 lineHeight: "24px",
               }}
             >
-              Forgot Password ?
+              Forgot Password?
             </Typography>
           </Button>
           <List
