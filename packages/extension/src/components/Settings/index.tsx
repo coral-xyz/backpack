@@ -1,6 +1,6 @@
 import { useEffect, useState, Suspense } from "react";
 import * as bs58 from "bs58";
-import { Typography, IconButton, TextField } from "@mui/material";
+import { Box, Typography, IconButton } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   Add,
@@ -25,10 +25,13 @@ import {
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
 } from "@coral-xyz/common";
 import {
-  WalletAddress,
+  Header,
   List,
   ListItem,
   PrimaryButton,
+  SubtextParagraph,
+  TextField,
+  WalletAddress,
 } from "../../components/common";
 import { WithEphemeralNavDrawer } from "../Layout/Drawer";
 import { ConnectionMenu } from "./ConnectionSwitch";
@@ -384,38 +387,56 @@ export function ImportSecretKey({
   };
 
   return (
-    <div>
-      <Typography>Import private key</Typography>
-      <TextField
-        placeholder="Name (optional)"
-        variant="outlined"
-        margin="dense"
-        required
-        fullWidth
-        InputLabelProps={{
-          shrink: false,
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        justifyContent: "space-between",
+      }}
+    >
+      <Box sx={{ margin: "24px" }}>
+        <Header text="Import private key" />
+        <SubtextParagraph style={{ marginBottom: "32px" }}>
+          Enter your private key. It will be encrypted and stored on your
+          device.
+        </SubtextParagraph>
+        <Box sx={{ marginBottom: "4px" }}>
+          <TextField
+            autoFocus={true}
+            placeholder="Name"
+            value={name}
+            setValue={setName}
+          />
+        </Box>
+        <TextField
+          placeholder="Enter private key"
+          value={secretKey}
+          setValue={setSecretKey}
+          rows={4}
+        />
+        {error && (
+          <Typography style={{ color: "red", marginTop: "8px" }}>
+            {error}
+          </Typography>
+        )}
+      </Box>
+      <Box
+        sx={{
+          marginLeft: "16px",
+          marginRight: "16px",
+          marginBottom: "16px",
+          display: "flex",
+          justifyContent: "space-between",
         }}
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <TextField
-        inputProps={{
-          name: "mnemonic",
-        }}
-        placeholder="Secret Recovery Phrase"
-        variant="outlined"
-        margin="dense"
-        required
-        fullWidth
-        InputLabelProps={{
-          shrink: false,
-        }}
-        value={secretKey}
-        onChange={(e) => setSecretKey(e.target.value)}
-      />
-      {error && <Typography style={{ color: "red" }}>{error}</Typography>}
-      <PrimaryButton onClick={next} label="Import" />
-    </div>
+      >
+        <PrimaryButton
+          onClick={next}
+          label="Import"
+          disabled={secretKey.length === 0}
+        />
+      </Box>
+    </Box>
   );
 }
 
