@@ -42,5 +42,7 @@ async function fetchCoingecko(coingeckoId: string) {
   const resp = await fetch(
     `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoId}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true&include_last_updated_at=true`
   );
-  return await resp.json();
+  const r = await resp.json();
+  console.log("COINGECKO", r);
+  return r;
 }

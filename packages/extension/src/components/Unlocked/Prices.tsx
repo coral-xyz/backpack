@@ -55,17 +55,17 @@ function Prices({ close }: { close: () => void }) {
     <div>
       <Typography
         style={{
-          color: theme.custom.colors.secondary,
-          fontWeight: 500,
-          fontSize: "16px",
+          color: "#FAFAFA",
+          fontSize: "24px",
+          fontWeight: 700,
           lineHeight: "24px",
-          textAlign: "center",
-          marginBottom: "80px",
-          marginTop: "19px",
+          marginBottom: "32px",
+          marginLeft: "16px",
         }}
       >
-        Cointracker
+        Cryptoassets
       </Typography>
+      <div></div>
       <List
         style={{
           marginLeft: "16px",
@@ -137,31 +137,26 @@ function Prices({ close }: { close: () => void }) {
                   width: "60px",
                 }}
               ></div>
-              <Typography
-                style={{
-                  marginRight: "10px",
-                  color: "#FAFAFA",
-                }}
-              >
-                {p.price}
-              </Typography>
-              <div
-                style={{
-                  width: "58px",
-                  height: "20px",
-                  borderRadius: "10px",
-                  backgroundColor: p.percentChange > 0 ? "#D1FAE5" : "#FECACA",
-                  display: "flex",
-                  justifyContent: "center",
-                  flexDirection: "column",
-                }}
-              >
+              <div>
                 <Typography
                   style={{
-                    color: p.percentChange > 0 ? "#065F46" : "#991B1B",
-                    textAlign: "center",
-                    fontSize: "12px",
-                    lineHeight: "16px",
+                    color: "#FAFAFA",
+                    fontSize: "16px",
+                    lineHeight: "24px",
+                    fontWeight: 500,
+                  }}
+                >
+                  {p.price}
+                </Typography>
+                <Typography
+                  style={{
+                    float: "right",
+                    color:
+                      p.percentChange > 0
+                        ? theme.custom.colors.positive
+                        : theme.custom.colors.negative,
+                    fontSize: "16px",
+                    lineHeight: "24px",
                     fontWeight: 500,
                   }}
                 >
