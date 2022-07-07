@@ -578,7 +578,6 @@ export function TextField({
     },
     inputProps
   );
-  console.log(rows);
   return (
     <MuiTextField
       autoFocus={autoFocus}
