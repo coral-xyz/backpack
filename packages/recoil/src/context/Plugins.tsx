@@ -23,20 +23,12 @@ export function PluginManager(props: any) {
     allPlugins
       .filter((p) => p.needsLoad)
       .forEach((plugin) => {
-        //
-        // Register host API.
-        //
         plugin.setHostApi({
           push: segue.push,
           pop: segue.pop,
           request: setTransactionRequest,
           connectionBackgroundClient,
         });
-
-        //
-        // Setup the plugin.
-        //
-        plugin.createIframe();
       });
   }, [plugins, tablePlugins]);
 
