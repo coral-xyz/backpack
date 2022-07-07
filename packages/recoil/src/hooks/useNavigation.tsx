@@ -10,6 +10,8 @@ type NavigationContext = {
   pop: any;
   navButtonRight: any | null;
   setNavButtonRight: (b: null | any) => void;
+  navButtonLeft: any | null;
+  setNavButtonLeft: (b: null | any) => void;
 };
 
 export module SearchParamsFor {
@@ -35,6 +37,9 @@ export function useNavigation(): NavigationContext {
   const [navButtonRight, setNavButtonRight] = useRecoilState(
     atoms.navigationRightButton
   );
+  const [navButtonLeft, setNavButtonLeft] = useRecoilState(
+    atoms.navigationLeftButton
+  );
   const { push, pop } = useNavigationSegue();
   const isRoot = navData.urls.length === 1;
   const url = navData.urls[navData.urls.length - 1];
@@ -47,6 +52,8 @@ export function useNavigation(): NavigationContext {
     title,
     push,
     pop,
+    navButtonLeft,
+    setNavButtonLeft,
     navButtonRight,
     setNavButtonRight,
   };

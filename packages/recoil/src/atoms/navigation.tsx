@@ -108,3 +108,8 @@ export const navigationRightButton = atom<any | null>({
   key: "navigationRightButton",
   default: null,
 });
+
+export const navigationLeftButton = atom<any | null>({
+  key: "navigationLeftButton",
+  default: null,
+});

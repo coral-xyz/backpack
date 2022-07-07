@@ -7,13 +7,18 @@ import { ApproveTransactionRequest } from "../Unlocked/ApproveTransactionRequest
 // The main nav persistent stack.
 export function NavTabs() {
   const theme = useCustomTheme();
-  const { title, isRoot, pop, navButtonRight } = useNavigation();
+  const { title, isRoot, pop, navButtonLeft, navButtonRight } = useNavigation();
   const navbarStyle = {
     borderBottom: !isRoot
       ? `solid 1pt ${theme.custom.colors.border}`
       : undefined,
   };
-  const navButtonLeft = isRoot ? null : <NavBackButton onClick={pop} />;
+  const _navButtonLeft = navButtonLeft ? (
+    navButtonLeft
+  ) : isRoot ? null : (
+    <NavBackButton onClick={pop} />
+  );
+
   return (
     <WithTabs>
       <div
@@ -25,7 +30,7 @@ export function NavTabs() {
       >
         <WithNav
           title={title}
-          navButtonLeft={navButtonLeft}
+          navButtonLeft={_navButtonLeft}
           navButtonRight={navButtonRight}
           navbarStyle={navbarStyle}
         />

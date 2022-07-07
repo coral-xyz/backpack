@@ -16,10 +16,12 @@ import {
 } from "../Unlocked/Apps";
 import { Nfts } from "../Unlocked/Nfts";
 import { SettingsButton } from "../Settings";
+import { PriceButton } from "../Unlocked/Prices";
 
 export function Router() {
   const { url } = useNavigation();
-  const { navButtonRight, setNavButtonRight } = useNavigation();
+  const { navButtonRight, navButtonLeft, setNavButtonRight, setNavButtonLeft } =
+    useNavigation();
   const { tab } = useTab();
 
   //
@@ -29,21 +31,27 @@ export function Router() {
   // the useBootstrap hook to finish.
   //
   useEffect(() => {
+    console.log("armani url here", url);
     const previous = navButtonRight;
+    const previousLeft = navButtonLeft;
     if (
       url.startsWith("/balances") ||
       url.startsWith("/apps") ||
       url.startsWith("/nfts")
     ) {
       setNavButtonRight(<SettingsButton />);
+      setNavButtonLeft(<PriceButton />);
       return () => {
         setNavButtonRight(previous);
+        setNavButtonLeft(previousLeft);
       };
     }
     if (url.startsWith("/token") || url.startsWith("/plugins")) {
       setNavButtonRight(null);
+      setNavButtonLeft(null);
       return () => {
         setNavButtonRight(previous);
+        setNavButtonLeft(previousLeft);
       };
     }
   }, [url, tab]);
