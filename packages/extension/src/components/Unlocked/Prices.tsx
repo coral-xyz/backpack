@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { IconButton } from "@mui/material";
+import { useState, useEffect } from "react";
+import { Typography, List, ListItem, IconButton } from "@mui/material";
 import { Timeline } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { useEphemeralNav } from "@coral-xyz/recoil";
 import { WithEphemeralNavDrawer } from "../Layout/Drawer";
 
 export function PriceButton() {
@@ -26,23 +27,177 @@ export function PriceButton() {
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}
         isLeft
+        backdropStyle={
+          {
+            //					backgroundColor: "transparent",
+            ///					backgroundColor: '#00000080',
+            //					backgroundColor: theme.custom.colors.background,
+            //          backdropFilter: "blur(10px)",
+          }
+        }
       >
-        <Prices />
+        <Prices close={() => setOpenDrawer(false)} />
       </WithEphemeralNavDrawer>
     </>
   );
 }
 
-function Prices() {
+function Prices({ close }: { close: () => void }) {
+  const theme = useCustomTheme();
+  const nav = useEphemeralNav();
+  useEffect(() => {
+    nav.setStyle({
+      borderBottom: "none",
+    });
+  }, []);
+  const prices = usePrices();
   return (
-    <div
-      style={
-        {
-          //			width: '100vw',
-        }
-      }
-    >
-      asdf prices
+    <div>
+      <Typography
+        style={{
+          color: theme.custom.colors.secondary,
+          fontWeight: 500,
+          fontSize: "16px",
+          lineHeight: "24px",
+          textAlign: "center",
+          marginBottom: "80px",
+          marginTop: "19px",
+        }}
+      >
+        Cointracker
+      </Typography>
+      <List
+        style={{
+          marginLeft: "16px",
+          marginRight: "16px",
+          paddingLeft: "8px",
+          paddingRight: "8px",
+          borderRadius: "8px",
+          //			background: theme.custom.colors.nav,
+        }}
+      >
+        {prices.map((p) => {
+          return (
+            <ListItem
+              style={{
+                display: "flex",
+                height: "48px",
+                marginBottom: "12px",
+                padding: 0,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flex: 1,
+                }}
+              >
+                <div
+                  style={{
+                    marginRight: "12px",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }}
+                >
+                  <img
+                    src={p.icon}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "16px",
+                    }}
+                  />
+                </div>
+                <div>
+                  <Typography
+                    style={{
+                      color: "#FAFAFA", //theme.custom.colors.fontColor,
+                      fontSize: "16px",
+                      lineHeight: "24px",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {p.name}
+                  </Typography>
+                  <Typography
+                    style={{
+                      color: theme.custom.colors.secondary,
+                      fontSize: "14px",
+                      lineHeight: "20px",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {p.symbol}
+                  </Typography>
+                </div>
+              </div>
+              <div
+                style={{
+                  width: "60px",
+                }}
+              ></div>
+              <Typography
+                style={{
+                  marginRight: "10px",
+                  color: "#FAFAFA",
+                }}
+              >
+                {p.price}
+              </Typography>
+              <div
+                style={{
+                  width: "58px",
+                  height: "20px",
+                  borderRadius: "10px",
+                  backgroundColor: p.percentChange > 0 ? "#D1FAE5" : "#FECACA",
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                }}
+              >
+                <Typography
+                  style={{
+                    color: p.percentChange > 0 ? "#065F46" : "#991B1B",
+                    textAlign: "center",
+                    fontSize: "12px",
+                    lineHeight: "16px",
+                    fontWeight: 500,
+                  }}
+                >
+                  {p.percentChange}
+                </Typography>
+              </div>
+            </ListItem>
+          );
+        })}
+      </List>
     </div>
   );
+}
+
+function usePrices() {
+  return [
+    {
+      icon: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E/logo.png",
+      name: "Bitcon",
+      symbol: "BTC",
+      price: "20,300",
+      percentChange: -0.22,
+    },
+    {
+      icon: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk/logo.png",
+      name: "Ethereum",
+      symbol: "ETH",
+      price: "1,155",
+      percentChange: 3.14,
+    },
+    {
+      icon: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
+      name: "Solana",
+      symbol: "SOL",
+      price: "45.20",
+      percentChange: 6.21,
+    },
+  ];
 }

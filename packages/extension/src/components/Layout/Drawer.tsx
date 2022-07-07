@@ -34,6 +34,7 @@ const useStyles = styles((theme) => ({
   drawerPaper: {
     height: "100%",
     width: "100%",
+    background: "transparent",
   },
   miniDrawerRoot: {
     background: "transparent",
@@ -59,8 +60,9 @@ const useStyles = styles((theme) => ({
 }));
 
 export function WithDrawer(props: any) {
+  const theme = useCustomTheme();
   const classes = useStyles();
-  const { children, openDrawer, setOpenDrawer, isLeft } = props;
+  const { children, openDrawer, setOpenDrawer, isLeft, backdropStyle } = props;
   return (
     <Drawer
       anchor={isLeft ? "left" : "bottom"}
@@ -69,6 +71,12 @@ export function WithDrawer(props: any) {
       classes={{
         root: classes.drawerRoot,
         paper: classes.drawerPaper,
+      }}
+      BackdropProps={{
+        style: {
+          backgroundColor: theme.custom.colors.background,
+          ...backdropStyle,
+        },
       }}
       id="drawer"
     >
@@ -87,12 +95,14 @@ export function WithEphemeralNavDrawer(props: any) {
     navContentStyle,
     setOpenDrawer,
     isLeft,
+    backdropStyle,
   } = props;
   return (
     <WithDrawer
       isLeft={isLeft}
       openDrawer={openDrawer}
       setOpenDrawer={setOpenDrawer}
+      backdropStyle={backdropStyle}
     >
       <WithEphemeralNav
         title={title}
