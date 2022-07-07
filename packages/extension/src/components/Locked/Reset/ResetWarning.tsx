@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Box } from "@mui/material";
 import { useEphemeralNav } from "@coral-xyz/recoil";
 import { ResetSuccess } from "./ResetSuccess";
@@ -15,6 +16,11 @@ export function ResetWarning({ onClose }: { onClose: () => void }) {
   const onNext = () => {
     nav.push(<ResetSuccess />);
   };
+  useEffect(() => {
+    nav.setTitle("");
+    nav.setStyle({ borderBottom: "none" });
+    nav.setNavButtonRight(undefined);
+  }, []);
   return (
     <Box
       sx={{

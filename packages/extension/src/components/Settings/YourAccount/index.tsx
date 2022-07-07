@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { ListItemText } from "@mui/material";
-import { ArrowForwardIos } from "@mui/icons-material";
 import useTheme from "@mui/styles/useTheme";
 import { useEphemeralNav } from "@coral-xyz/recoil";
 import { List, ListItem, PushDetail } from "../../common";
 import { ChangePassword } from "./ChangePassword";
 import { ShowRecoveryPhrase } from "./ShowRecoveryPhrase";
+import { ResetWarning } from "../../Locked/Reset/ResetWarning";
 
 export function YourAccount({ close }: { close: () => void }) {
   const nav = useEphemeralNav();
@@ -13,18 +13,16 @@ export function YourAccount({ close }: { close: () => void }) {
 
   const menuItems = {
     "Change password": {
-      label: "Connection",
       onClick: () => nav.push(<ChangePassword close={close} />),
-      detailIcon: (props: any) => <ArrowForwardIos {...props} />,
     },
     "Edit wallets": {},
     "Export private key": {},
     "Show secret recovery phrase": {
-      label: "Show secret recovery phrase",
       onClick: () => nav.push(<ShowRecoveryPhrase />),
-      detailIcon: (props: any) => <ArrowForwardIos {...props} />,
     },
-    "Reset wallet": {},
+    "Reset wallet": {
+      onClick: () => nav.push(<ResetWarning onClose={close} />),
+    },
   };
 
   useEffect(() => {
