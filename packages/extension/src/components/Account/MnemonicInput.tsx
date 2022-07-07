@@ -202,7 +202,7 @@ export function MnemonicInput({
           )}
           {readOnly && (
             <Box sx={{ marginBottom: "12px" }}>
-              <CopyButton mnemonic={mnemonic} disabled={!copyEnabled} />
+              <CopyButton text={mnemonic} disabled={!copyEnabled} />
             </Box>
           )}
           <PrimaryButton
@@ -270,17 +270,19 @@ export function MnemonicInputFields({
 }
 
 export function CopyButton({
-  mnemonic,
+  text,
+  icon,
   disabled = false,
 }: {
-  mnemonic: string;
+  text: string;
+  icon?: React.ReactElement;
   disabled?: boolean;
 }) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const onCopy = () => {
     setTooltipOpen(true);
     setTimeout(() => setTooltipOpen(false), 1000);
-    navigator.clipboard.writeText(mnemonic);
+    navigator.clipboard.writeText(text);
   };
   return (
     <Tooltip
@@ -294,7 +296,12 @@ export function CopyButton({
     >
       {/* Box wrapper because Tooltip requires forwarded ref */}
       <Box>
-        <SecondaryButton onClick={onCopy} label="Copy" disabled={disabled} />
+        <SecondaryButton
+          onClick={onCopy}
+          label="Copy"
+          disabled={disabled}
+          endIcon={icon ? icon : null}
+        />
       </Box>
     </Tooltip>
   );
