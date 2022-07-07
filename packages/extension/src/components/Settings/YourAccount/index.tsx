@@ -4,7 +4,8 @@ import useTheme from "@mui/styles/useTheme";
 import { useEphemeralNav } from "@coral-xyz/recoil";
 import { List, ListItem, PushDetail } from "../../common";
 import { ChangePassword } from "./ChangePassword";
-import { ShowRecoveryPhrase } from "./ShowRecoveryPhrase";
+import { ShowPrivateKeyWarning } from "./ShowPrivateKey";
+import { ShowRecoveryPhraseWarning } from "./ShowRecoveryPhrase";
 import { ResetWarning } from "../../Locked/Reset/ResetWarning";
 
 export function YourAccount({ close }: { close: () => void }) {
@@ -16,9 +17,11 @@ export function YourAccount({ close }: { close: () => void }) {
       onClick: () => nav.push(<ChangePassword close={close} />),
     },
     "Edit wallets": {},
-    "Export private key": {},
+    "Show private key": {
+      onClick: () => nav.push(<ShowPrivateKeyWarning />),
+    },
     "Show secret recovery phrase": {
-      onClick: () => nav.push(<ShowRecoveryPhrase />),
+      onClick: () => nav.push(<ShowRecoveryPhraseWarning />),
     },
     "Reset wallet": {
       onClick: () => nav.push(<ResetWarning onClose={close} />),

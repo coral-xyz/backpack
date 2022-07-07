@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { styles } from "@coral-xyz/themes";
 import { Box, List, ListItem, ListItemIcon } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ChatIcon from "@mui/icons-material/Chat";
 import WebIcon from "@mui/icons-material/Web";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
+import { styles } from "@coral-xyz/themes";
 import { useBackgroundClient, useEphemeralNav } from "@coral-xyz/recoil";
-import { UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC } from "@coral-xyz/common";
-import { CopyButton, MnemonicInputFields } from "../../Account/MnemonicInput";
+import {
+  UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
+  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
+} from "@coral-xyz/common";
+import { CopyButton } from "../../Account/MnemonicInput";
 import {
   DangerButton,
   Header,
@@ -26,6 +29,19 @@ const useStyles = styles((theme: any) => ({
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
+      },
+    },
+  },
+  privateKeyField: {
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        border: `solid 1pt ${theme.custom.colors.border}`,
+      },
+      "&:hover fieldset": {
+        border: `solid 1pt ${theme.custom.colors.border}`,
+      },
+      "&.Mui-focused fieldset": {
+        border: `solid 1pt ${theme.custom.colors.border} !important`,
       },
     },
   },
@@ -76,7 +92,7 @@ const useStyles = styles((theme: any) => ({
   },
 }));
 
-export function ShowRecoveryPhraseWarning() {
+export function ShowPrivateKeyWarning() {
   const classes = useStyles();
   const background = useBackgroundClient();
   const nav = useEphemeralNav();
@@ -86,25 +102,30 @@ export function ShowRecoveryPhraseWarning() {
   useEffect(() => {
     const navButton = nav.navButtonRight;
     nav.setNavButtonRight(null);
-    nav.setTitle("Secret recovery phrase");
+    nav.setTitle("Show private key");
     return () => {
       nav.setNavButtonRight(navButton);
     };
   }, []);
 
   const _next = async () => {
-    let mnemonic;
+    const activeWallet = await background.request({
+      method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
+      params: [],
+    });
+    let privateKey;
     try {
-      mnemonic = await background.request({
-        method: UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC,
-        params: [password],
+      privateKey = await background.request({
+        method: UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
+        params: [password, activeWallet],
       });
     } catch (e) {
       console.error(e);
       setError(true);
       return;
     }
-    nav.push(<ShowRecoveryPhrase mnemonic={mnemonic} />);
+    console.log(privateKey);
+    nav.push(<ShowPrivateKey privateKey={privateKey} />);
   };
 
   return (
@@ -134,7 +155,7 @@ export function ShowRecoveryPhraseWarning() {
                   }}
                 />
               </ListItemIcon>
-              Backpack support will never ask for your secret phrase.
+              Backpack support will never ask for your private key.
             </ListItem>
             <ListItem className={classes.listItemRoot}>
               <ListItemIcon className={classes.listItemIconRoot}>
@@ -146,7 +167,7 @@ export function ShowRecoveryPhraseWarning() {
                   }}
                 />
               </ListItemIcon>
-              Never share your secret phrase or enter it into an app or website.
+              Never share your private key or enter it into an app or website.
             </ListItem>
             <ListItem
               className={classes.listItemRoot}
@@ -158,7 +179,7 @@ export function ShowRecoveryPhraseWarning() {
                   style={{ height: "20px", width: "20px" }}
                 />
               </ListItemIcon>
-              Anyone with your secret phrase will have complete control of your
+              Anyone with your private key will have complete control of your
               account.
             </ListItem>
           </List>
@@ -184,7 +205,7 @@ export function ShowRecoveryPhraseWarning() {
           />
         </Box>
         <DangerButton
-          label="Show phrase"
+          label="Show private key"
           onClick={_next}
           disabled={password.length === 0}
         />
@@ -193,10 +214,13 @@ export function ShowRecoveryPhraseWarning() {
   );
 }
 
-export function ShowRecoveryPhrase({ mnemonic }: { mnemonic: string }) {
+export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
   const classes = useStyles();
   const nav = useEphemeralNav();
-  const mnemonicWords = mnemonic.split(" ");
+
+  useEffect(() => {
+    nav.setTitle("Private key");
+  }, []);
 
   return (
     <Box
@@ -207,21 +231,27 @@ export function ShowRecoveryPhrase({ mnemonic }: { mnemonic: string }) {
         justifyContent: "space-between",
       }}
     >
-      <Box sx={{ margin: "32px 24px 0 24px" }}>
-        <HeaderIcon
-          icon={<EyeIcon />}
-          style={{ width: "40px", height: "40px", marginBottom: "24px" }}
-        />
-        <Header text="Recovery phrase" style={{ textAlign: "center" }} />
-        <SubtextParagraph style={{ textAlign: "center", fontSize: "14px" }}>
-          Use these {mnemonicWords.length} words to recover your wallet
-        </SubtextParagraph>
-        <MnemonicInputFields
-          mnemonicWords={mnemonicWords}
-          rootClass={classes.mnemonicInputRoot}
-        />
-        <Box sx={{ marginTop: "4px" }}>
-          <CopyButton text={mnemonic} icon={<ContentCopyIcon />} />
+      <Box>
+        <Box sx={{ margin: "32px 24px 0 24px" }}>
+          <HeaderIcon
+            icon={<EyeIcon />}
+            style={{ width: "40px", height: "40px", marginBottom: "24px" }}
+          />
+          <Header text="Private key" style={{ textAlign: "center" }} />
+          <SubtextParagraph style={{ textAlign: "center", fontSize: "14px" }}>
+            Never give out your private key
+          </SubtextParagraph>
+        </Box>
+        <Box sx={{ margin: "0 16px" }}>
+          <TextField
+            rows={3}
+            readOnly={true}
+            value={privateKey}
+            rootClass={classes.privateKeyField}
+          />
+          <Box sx={{ marginTop: "4px" }}>
+            <CopyButton text={privateKey} icon={<ContentCopyIcon />} />
+          </Box>
         </Box>
       </Box>
       <Box
