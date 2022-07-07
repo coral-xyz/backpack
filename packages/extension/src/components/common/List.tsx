@@ -3,6 +3,7 @@ import {
   List as MuiList,
   ListItem as MuiListItem,
 } from "@mui/material";
+import { ArrowForwardIos, Launch } from "@mui/icons-material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 
 const useStyles = styles(() => ({
@@ -41,6 +42,7 @@ export function ListItem({
   onClick = undefined,
   button = true,
   borderColor,
+  detail,
 }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -56,7 +58,15 @@ export function ListItem({
           ...style,
         }}
       >
-        {children}
+        <div
+          style={{
+            display: "flex",
+            flex: 1,
+          }}
+        >
+          {children}
+        </div>
+        {detail}
       </MuiListItem>
       {!isLast && (
         <Divider
@@ -69,5 +79,45 @@ export function ListItem({
         />
       )}
     </>
+  );
+}
+
+export function PushDetail() {
+  const theme = useCustomTheme();
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
+    >
+      <ArrowForwardIos
+        style={{
+          color: theme.custom.colors.secondary,
+          fontSize: "14px",
+        }}
+      />
+    </div>
+  );
+}
+
+export function LaunchDetail() {
+  const theme = useCustomTheme();
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
+    >
+      <Launch
+        style={{
+          color: theme.custom.colors.secondary,
+          fontSize: "14px",
+        }}
+      />
+    </div>
   );
 }

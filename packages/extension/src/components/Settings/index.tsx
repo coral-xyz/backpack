@@ -7,8 +7,6 @@ import {
   Lock,
   Help,
   Public,
-  ArrowForwardIos,
-  Launch,
   AccountCircleOutlined,
 } from "@mui/icons-material";
 import { PublicKey, Keypair } from "@solana/web3.js";
@@ -28,6 +26,8 @@ import {
   Header,
   List,
   ListItem,
+  PushDetail,
+  LaunchDetail,
   PrimaryButton,
   SubtextParagraph,
   TextField,
@@ -281,25 +281,25 @@ function SettingsList({ close }: { close: () => void }) {
       label: "Your Account",
       onClick: () => nav.push(<YourAccount close={close} />),
       icon: (props: any) => <AccountCircleOutlined {...props} />,
-      detailIcon: (props: any) => <ArrowForwardIos {...props} />,
+      detailIcon: <PushDetail />,
     },
     {
       label: "Help & Support",
       onClick: () => console.log("help and support"),
       icon: (props: any) => <Help {...props} />,
-      detailIcon: (props: any) => <Launch {...props} />,
+      detailIcon: <LaunchDetail />,
     },
     {
       label: "Connection",
       onClick: () => nav.push(<ConnectionMenu close={close} />),
       icon: (props: any) => <Public {...props} />,
-      detailIcon: (props: any) => <ArrowForwardIos {...props} />,
+      detailIcon: <PushDetail />,
     },
     {
       label: "Lock Wallet",
       onClick: () => lockWallet(),
       icon: (props: any) => <Lock {...props} />,
-      detailIcon: (props: any) => <></>,
+      detailIcon: <></>,
     },
   ];
 
@@ -321,6 +321,7 @@ function SettingsList({ close }: { close: () => void }) {
               height: "44px",
               padding: "10px",
             }}
+            detail={s.detailIcon}
           >
             <div
               style={{
@@ -345,20 +346,6 @@ function SettingsList({ close }: { close: () => void }) {
               >
                 {s.label}
               </Typography>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-              }}
-            >
-              {s.detailIcon({
-                style: {
-                  color: theme.custom.colors.secondary,
-                  fontSize: "14px",
-                },
-              })}
             </div>
           </ListItem>
         );
