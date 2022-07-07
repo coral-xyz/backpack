@@ -415,7 +415,11 @@ export function ImportSecretKey({
           setValue={setSecretKey}
           rows={4}
         />
-        {error && <Typography style={{ color: "red" }}>{error}</Typography>}
+        {error && (
+          <Typography style={{ color: "red", marginTop: "8px" }}>
+            {error}
+          </Typography>
+        )}
       </Box>
       <Box
         sx={{
