@@ -3,7 +3,7 @@ import { ListItemText } from "@mui/material";
 import { ArrowForwardIos } from "@mui/icons-material";
 import useTheme from "@mui/styles/useTheme";
 import { useEphemeralNav } from "@coral-xyz/recoil";
-import { List, ListItem } from "../../common";
+import { List, ListItem, PushDetail } from "../../common";
 import { ChangePassword } from "./ChangePassword";
 import { ShowRecoveryPhrase } from "./ShowRecoveryPhrase";
 
@@ -51,6 +51,7 @@ export function YourAccount({ close }: { close: () => void }) {
             height: "44px",
             padding: "10px",
           }}
+          detail={<PushDetail />}
         >
           <ListItemText>{key}</ListItemText>
         </ListItem>
