@@ -193,9 +193,7 @@ export function ImportAccounts({
             Select which accounts you'd like to import.
           </SubtextParagraph>
         </Box>
-        {accounts.length === 0 ? (
-          <Loading />
-        ) : (
+        {accounts.length > 0 && (
           <>
             <List
               sx={{
@@ -279,6 +277,7 @@ export function ImportAccounts({
           </>
         )}
       </Box>
+      {accounts.length === 0 && <Loading />}
       <Box
         sx={{
           mt: "12px",
