@@ -199,9 +199,6 @@ export class Plugin {
 
   public mount() {
     this.createIframe();
-    //    if (this._didFinishSetup === undefined) {
-    //      throw new Error("plugin not setup");
-    //    }
     this._didFinishSetup!.then(() => {
       this.pushMountNotification();
     });
