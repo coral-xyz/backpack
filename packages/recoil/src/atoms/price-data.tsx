@@ -1,4 +1,4 @@
-import { atomFamily, selectorFamily } from "recoil";
+import { atom, selector, atomFamily, selectorFamily } from "recoil";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { TokenAccountWithKey, TokenDisplay } from "../types";
 import { bootstrap } from "./bootstrap";
@@ -13,6 +13,17 @@ export const priceData = atomFamily<TokenDisplay | null, string>({
         const data = get(bootstrap);
         return data.coingeckoData.get(address);
       },
+  }),
+});
+
+export const historicalPriceData = atom({
+  key: "priceData",
+  default: selector({
+    key: "priceDataDefault",
+    get: ({ get }: any) => {
+      const data = get(bootstrap);
+      return data.historicalPriceData.prices;
+    },
   }),
 });
 
@@ -43,6 +54,17 @@ async function fetchCoingecko(coingeckoId: string) {
     `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoId}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true&include_last_updated_at=true`
   );
   const r = await resp.json();
-  console.log("COINGECKO", r);
   return r;
 }
+
+export async function fetchPriceDataHistorical(): Promise<HistoricalPrices> {
+  const prices = await (
+    await fetch("https://prices.coral-xyz.workers.dev/")
+  ).json();
+  return prices;
+}
+
+type HistoricalPrices = {
+  prices: { [key: string]: [number, number] };
+  updatedAt: number;
+};

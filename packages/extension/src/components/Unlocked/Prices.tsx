@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Typography, List, ListItem, IconButton } from "@mui/material";
-import { Timeline } from "@mui/icons-material";
+import ShowChart from "@mui/icons-material/ShowChart";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useEphemeralNav } from "@coral-xyz/recoil";
+import { useEphemeralNav, useHistoricalPrices } from "@coral-xyz/recoil";
 import { WithEphemeralNavDrawer } from "../Layout/Drawer";
 
 export function PriceButton() {
@@ -17,7 +17,7 @@ export function PriceButton() {
           padding: 0,
         }}
       >
-        <Timeline
+        <ShowChart
           style={{
             color: theme.custom.colors.secondary,
           }}
@@ -27,14 +27,6 @@ export function PriceButton() {
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}
         isLeft
-        backdropStyle={
-          {
-            //					backgroundColor: "transparent",
-            ///					backgroundColor: '#00000080',
-            //					backgroundColor: theme.custom.colors.background,
-            //          backdropFilter: "blur(10px)",
-          }
-        }
       >
         <Prices close={() => setOpenDrawer(false)} />
       </WithEphemeralNavDrawer>
@@ -45,6 +37,8 @@ export function PriceButton() {
 function Prices({ close }: { close: () => void }) {
   const theme = useCustomTheme();
   const nav = useEphemeralNav();
+  const _prices = useHistoricalPrices();
+  console.log("prices here", _prices);
   useEffect(() => {
     nav.setStyle({
       borderBottom: "none",

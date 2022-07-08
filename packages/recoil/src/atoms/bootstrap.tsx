@@ -8,7 +8,7 @@ import { anchorContext } from "../atoms/wallet";
 import { TokenAccountWithKey, TABS } from "../types";
 import { fetchRecentTransactions } from "./recent-transactions";
 import { splTokenRegistry } from "./token-registry";
-import { fetchPriceData } from "./price-data";
+import { fetchPriceData, fetchPriceDataHistorical } from "./price-data";
 import { activeWallet } from "./wallet";
 import { backgroundClient } from "./background";
 
@@ -41,16 +41,21 @@ export const bootstrap = selector<{
         tokenAccountsMap
       );
 
-      const [coingeckoData, recentTransactions] = await Promise.all([
-        //
-        // Fetch the price data.
-        //
-        fetchPriceData(splTokenAccounts, tokenRegistry),
-        //
-        // Get the transaction data for the wallet's recent transactions.
-        //
-        fetchRecentTransactions(provider.connection, walletPublicKey),
-      ]);
+      const [coingeckoData, historicalPriceData, recentTransactions] =
+        await Promise.all([
+          //
+          // Fetch the price data.
+          //
+          fetchPriceData(splTokenAccounts, tokenRegistry),
+          //
+          //
+          //
+          fetchPriceDataHistorical(),
+          //
+          // Get the transaction data for the wallet's recent transactions.
+          //
+          fetchRecentTransactions(provider.connection, walletPublicKey),
+        ]);
 
       //
       // Done.
@@ -60,6 +65,7 @@ export const bootstrap = selector<{
         splTokenMetadata: tokenMetadata,
         splNftMetadata: new Map(nftMetadata),
         coingeckoData,
+        historicalPriceData,
         recentTransactions,
         walletPublicKey,
       };
