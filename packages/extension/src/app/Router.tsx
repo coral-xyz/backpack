@@ -247,14 +247,17 @@ export function BlankApp() {
   return <div className={classes.appContainer}></div>;
 }
 
-const useStyles = styles((theme) => ({
-  appContainer: {
-    width: `${EXTENSION_WIDTH}px`,
-    height: `${EXTENSION_HEIGHT}px`,
-    backgroundColor: theme.custom.colors.background,
-    display: "flex",
-    flexDirection: "column",
-    overflow: "hidden",
-    position: "relative",
-  },
-}));
+const useStyles = styles((theme) => {
+  console.log("THEME HERE", theme);
+  return {
+    appContainer: {
+      width: `${EXTENSION_WIDTH}px`,
+      height: `${EXTENSION_HEIGHT}px`,
+      backgroundColor: theme.custom.colors.background,
+      display: "flex",
+      flexDirection: "column",
+      overflow: "hidden",
+      position: "relative",
+    },
+  };
+});

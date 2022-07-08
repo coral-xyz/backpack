@@ -54,7 +54,7 @@ export function YourAccount({ close }: { close: () => void }) {
           }}
           detail={<PushDetail />}
         >
-          <ListItemText>{key}</ListItemText>
+          <ListItemText style={{ fontWeight: 500 }}>{key}</ListItemText>
         </ListItem>
       ))}
     </List>

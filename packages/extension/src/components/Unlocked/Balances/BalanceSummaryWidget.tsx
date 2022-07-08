@@ -24,7 +24,7 @@ const useStyles = styles((theme) => ({
     lineHeight: "24px",
   },
   totalBalance: {
-    fontWeight: 500,
+    fontWeight: 600,
     fontSize: "20px",
     color: theme.custom.colors.fontColor,
     lineHeight: "24px",
