@@ -19,6 +19,7 @@
     "clean": "npx rimraf {.,backend,examples,packages}/**/{.parcel-cache,.turbo,build,dist,node_modules,yarn-error.log} packages/extension/dev"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^3.14.0",
     "env-cmd": "^10.1.0",
     "husky": "^8.0.1",
     "lint-staged": "^12.4.1",

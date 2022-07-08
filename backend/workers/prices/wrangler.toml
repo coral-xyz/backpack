@@ -1,0 +1,5 @@
+name = "prices"
+main = "src/index.ts"
+compatibility_date = "2022-07-08"
+
+kv_namespaces = [{ binding = "PRICES", id = "a27d67f9c18342b2b4fe9b258c0ec86c" }]
