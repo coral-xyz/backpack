@@ -9,3 +9,6 @@ kv_namespaces = [
 [build]
 command = "npm run build"
 watch_dir = "src"
+
+[triggers]
+crons = ["*/1 * * * *"]
