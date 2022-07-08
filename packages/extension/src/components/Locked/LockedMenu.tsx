@@ -97,7 +97,15 @@ export function LockedMenuList({ setMenuOpen }: any) {
             isLast={idx === options.length - 1}
             borderColor={theme.custom.colors.border1}
           >
-            {o.icon}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                flexDirection: "column",
+              }}
+            >
+              {o.icon}
+            </div>
             <ListItemText
               sx={{
                 marginLeft: "8px",
