@@ -1,23 +1,18 @@
 import { useStore, WEB_VIEW_EVENTS } from "@coral-xyz/common";
-import {
-  DarkTheme,
-  DefaultTheme,
-  NavigationContainer,
-} from "@react-navigation/native";
 import { registerRootComponent } from "expo";
 import { StatusBar } from "expo-status-bar";
 import { Suspense } from "react";
-import { SafeAreaView, StyleSheet, useColorScheme, View } from "react-native";
+import { SafeAreaView, StyleSheet, View } from "react-native";
 import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
 import { WebView } from "react-native-webview";
+import { NativeRouter } from "react-router-native";
 import { RecoilRoot } from "recoil/native/recoil";
 import App from "./src/App";
 
 function WrappedApp() {
-  const scheme = useColorScheme();
   return (
-    <NavigationContainer theme={scheme === "dark" ? DarkTheme : DefaultTheme}>
+    <NativeRouter>
       <SafeAreaView style={styles.container}>
         <StatusBar style="auto" />
         <Suspense fallback={null}>
@@ -27,7 +22,7 @@ function WrappedApp() {
           </RecoilRoot>
         </Suspense>
       </SafeAreaView>
-    </NavigationContainer>
+    </NativeRouter>
   );
 }
 

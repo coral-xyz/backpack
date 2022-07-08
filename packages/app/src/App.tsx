@@ -2,6 +2,7 @@ import { UI_RPC_METHOD_KEYRING_STORE_STATE } from "@coral-xyz/common";
 import { useKeyringStoreState } from "@coral-xyz/recoil";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Text } from "react-native";
+import { Route, Routes } from "react-router-native";
 import tw from "twrnc";
 import { useRequest } from "./lib/useRequest";
 import NeedsOnboarding from "./screens/NeedsOnboarding";
@@ -20,24 +21,11 @@ const props: Partial<React.ComponentProps<typeof Stack.Screen>> = {
 
 const WithNavigation = () => {
   return (
-    <Stack.Navigator
-      initialRouteName="NeedsOnboarding"
-      screenOptions={() => ({
-        headerShadowVisible: false,
-      })}
-    >
-      <Stack.Screen
-        name="NeedsOnboarding"
-        component={NeedsOnboarding}
-        {...(props as any)}
-      />
-      <Stack.Screen
-        name="CreateWallet"
-        component={CreateWallet}
-        {...(props as any)}
-      />
-      <Stack.Screen name="Final" component={Final} {...(props as any)} />
-    </Stack.Navigator>
+    <Routes>
+      <Route path="/" element={<NeedsOnboarding />} />
+      <Route path="/create-wallet" element={<CreateWallet />} />
+      <Route path="/final" element={<Final />} />
+    </Routes>
   );
 };
 

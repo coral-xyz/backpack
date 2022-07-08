@@ -4,14 +4,15 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
 } from "@coral-xyz/common";
 import { Pressable, Text, TextInput } from "react-native";
+import { Link } from "react-router-native";
 import tw from "twrnc";
 import { useRequest } from "../../../lib/useRequest";
 
-export default function CreateWallet({ navigation }: any) {
-  return <CreatePassword complete={() => navigation.navigate("Final")} />;
+export default function CreateWallet() {
+  return <CreatePassword />;
 }
 
-const CreatePassword = ({ complete }: any) => {
+const CreatePassword = () => {
   const mnemonic = useRequest(UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE, 128);
   const store = useRequest(
     UI_RPC_METHOD_KEYRING_STORE_CREATE,
@@ -30,13 +31,9 @@ const CreatePassword = ({ complete }: any) => {
       <PasswordInput placeholder="Confirm Password" />
       <Text style={tw`text-gray-400`}>I agree to the Terms of Service</Text>
       {mnemonic && <Text style={tw`text-white`}>{mnemonic}</Text>}
-      <CustomButton
-        text="Next"
-        onPress={() => {
-          console.log({ store });
-          complete();
-        }}
-      />
+      <Link to="/final" style={tw`bg-[#3F3F46] p-8 rounded-lg m-4`}>
+        <Text style={tw`text-white`}>Final</Text>
+      </Link>
     </>
   );
 };
