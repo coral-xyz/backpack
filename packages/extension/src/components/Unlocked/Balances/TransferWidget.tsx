@@ -238,7 +238,7 @@ function TokenRow({
       <BalancesTableCell
         props={{
           icon: token.logo,
-          title: token.ticker,
+          title: token.name,
           subtitle: `${token.nativeBalance.toLocaleString()} ${token.ticker}`,
           usdValue: token.usdBalance,
           percentChange: token.recentUsdBalanceChange,
