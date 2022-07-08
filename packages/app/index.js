@@ -1,32 +1,42 @@
-import { Suspense, useRef } from "react";
-import { View, Text } from "react-native";
-import { WebView } from "react-native-webview";
-import { RecoilRoot } from "recoil/native/recoil";
-import { registerRootComponent } from "expo";
 import { useStore, WEB_VIEW_EVENTS } from "@coral-xyz/common";
-import App from "./src/App";
+import {
+  DarkTheme,
+  DefaultTheme,
+  NavigationContainer,
+} from "@react-navigation/native";
+import { registerRootComponent } from "expo";
+import { StatusBar } from "expo-status-bar";
+import { Suspense } from "react";
+import { SafeAreaView, StyleSheet, useColorScheme, View } from "react-native";
 import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
+import { WebView } from "react-native-webview";
+import { RecoilRoot } from "recoil/native/recoil";
+import App from "./src/App";
 
 function WrappedApp() {
+  const scheme = useColorScheme();
   return (
-    <Suspense fallback={null}>
-      <RecoilRoot>
-        <Background />
-        <WaitingApp />
-      </RecoilRoot>
-    </Suspense>
+    <NavigationContainer theme={scheme === "dark" ? DarkTheme : DefaultTheme}>
+      <SafeAreaView style={styles.container}>
+        <StatusBar style="auto" />
+        <Suspense fallback={null}>
+          <RecoilRoot>
+            <Background />
+            <WaitingApp />
+          </RecoilRoot>
+        </Suspense>
+      </SafeAreaView>
+    </NavigationContainer>
   );
 }
 
 function Background() {
-  const webViewRef = useRef(null);
   const setInjectJavaScript = useStore((state) => state.setInjectJavaScript);
   return (
     <View
       style={{
-        height: 300,
-        // display: "none",
+        display: "none",
       }}
     >
       <WebView
@@ -53,6 +63,19 @@ function Background() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    display: "flex",
+    backgroundColor: "#1D1D20",
+    color: "#FFFFFF",
+  },
+  text: {
+    fontSize: 25,
+    fontWeight: "500",
+  },
+});
 
 function WaitingApp() {
   const injectJavaScript = useStore((state) => state.injectJavaScript);
