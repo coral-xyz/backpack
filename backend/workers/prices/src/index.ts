@@ -9,13 +9,15 @@ export default {
     ctx: ExecutionContext
   ): Promise<Response> {
     const store = new Store(env);
-    const _coinPrices = await store.get("prices");
-    try {
-      const coinPrices = await fetchPrices();
-    } catch (err) {
-      console.log("err", err);
+    let _coinPrices = await store.get("prices");
+    if (!_coinPrices) {
+      try {
+        _coinPrices = await fetchPrices();
+        await store.set("prices", _coinPrices);
+      } catch (err) {
+        console.log("err", err);
+      }
     }
-    //		await store.set("prices", coinPrices);
     return jsonResponse(_coinPrices);
   },
 
@@ -46,7 +48,7 @@ class Store {
   constructor(private env: Env) {}
 
   async get(key: string) {
-    return JSON.parse(await this.env.PRICES.get(key));
+    return await this.env.PRICES.get(key, "json");
   }
 
   async set(key: string, value: any) {
@@ -86,14 +88,10 @@ async function fetchPrices() {
   };
 
   const coinPrices = {};
-  console.log("here", coinPrices);
-  const ids = Object.keys(COINS);
-  for (let k = 0; k < ids.length; k += 1) {
-    const id = ids[k];
-    const data = await coingeckoApi(`coins/${id}/market_chart`);
-    console.log("data here", data);
-    coinPrices[id] = {
-      ...COINS[id],
+  for (const coin in COINS) {
+    const data = await coingeckoApi(`coins/${coin}/market_chart`);
+    coinPrices[coin] = {
+      ...COINS[coin],
       ...data,
     };
   }

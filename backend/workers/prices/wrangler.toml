@@ -5,3 +5,7 @@ compatibility_date = "2022-07-08"
 kv_namespaces = [
   { binding = "PRICES", id = "a27d67f9c18342b2b4fe9b258c0ec86c", preview_id = "9b82d8dbf4e74d06a25e94a393a51b1c" },
 ]
+
+[build]
+command = "npm run build"
+watch_dir = "src"
