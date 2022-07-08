@@ -26,13 +26,7 @@ export async function fetchCoinPrices(coin: string) {
 }
 
 async function coingeckoApi(resource: string) {
-  try {
-    const url = `https://api.coingecko.com/api/v3/${resource}?vs_currency=usd&days=1`;
-    console.log("url", url);
-    const resp = await fetch(url);
-    return await resp.json();
-  } catch (err) {
-    console.log("err", err);
-    throw err;
-  }
+  const url = `https://api.coingecko.com/api/v3/${resource}?vs_currency=usd&days=1`;
+  const resp = await fetch(url);
+  return await resp.json();
 }

@@ -12,7 +12,6 @@ export default {
   ): Promise<Response> {
     const store = new Store(env);
     let _coinPrices = await store.get("prices");
-    await fetchPrices();
     return jsonResponse(_coinPrices);
   },
 
