@@ -33,7 +33,7 @@ const useStyles = styles((theme) => ({
   },
   footerLabel: {
     fontSize: "14px",
-    weight: 500,
+    fontWeight: 500,
     color: theme.custom.colors.fontColor,
   },
 }));

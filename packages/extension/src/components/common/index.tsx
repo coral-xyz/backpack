@@ -46,7 +46,7 @@ const useStyles = styles((theme) => ({
   },
   buttonLabel: {
     color: theme.custom.colors.buttonFontColor,
-    weight: 500,
+    fontWeight: 500,
     fontSize: "16px",
     lineHeight: "24px",
     textTransform: "none",
@@ -214,7 +214,10 @@ export function SubtextParagraph({
 }) {
   const classes = useStyles();
   return (
-    <p className={classes.subtext} style={{ marginTop: "8px", ...style }}>
+    <p
+      className={classes.subtext}
+      style={{ fontWeight: 500, marginTop: "8px", ...style }}
+    >
       {children}
     </p>
   );

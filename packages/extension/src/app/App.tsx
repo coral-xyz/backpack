@@ -7,6 +7,9 @@ import {
 import { WithTheme } from "./theme";
 import { Router } from "./Router";
 import "./App.css";
+import "@fontsource/inter";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
 
 export default function App() {
   return (
