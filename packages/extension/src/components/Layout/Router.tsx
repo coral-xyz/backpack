@@ -60,9 +60,14 @@ function _Router() {
       <Route path="/token" element={<TokenPage />} />
       <Route path="/plugins" element={<PluginPage />} />
       <Route path="/plugin-table-detail" element={<PluginTableDetailPage />} />
+      <Route path="/simulator" element={<SimulatorPage />} />
       <Route path="*" element={<Redirect />} />
     </Routes>
   );
+}
+
+function SimulatorPage() {
+  return <div>simulate here</div>;
 }
 
 function Redirect() {
