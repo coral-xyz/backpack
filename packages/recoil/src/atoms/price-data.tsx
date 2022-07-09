@@ -61,7 +61,7 @@ export async function fetchPriceDataHistorical(): Promise<HistoricalPrices> {
   const prices = await (
     await fetch("https://prices.coral-xyz.workers.dev/")
   ).json();
-  return prices;
+  return await prices.json();
 }
 
 type HistoricalPrices = {
