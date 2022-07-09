@@ -107,7 +107,49 @@ function _App({ dead, alive, estimatedRewards }: any) {
 
 function GodGrid({ gods, isDead, estimatedRewards }: any) {
   const theme = useTheme();
+  const publicKey = usePublicKey();
+  const connection = useConnection();
   const degodLabel = isDead ? "DeadGods" : "Degods";
+
+  const unstakeAll = () => {
+    (async () => {
+      console.log("here");
+      const tx = new Transaction();
+      tx.add(
+        SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: publicKey,
+          lamports: 1000000,
+        })
+      );
+      console.log("plugin fetching most recent blockhash");
+      const { blockhash } = await connection!.getLatestBlockhash("recent");
+      console.log("plugin got recent blockhash", blockhash);
+      tx.recentBlockhash = blockhash;
+      const signature = await window.anchorUi.send(tx);
+      console.log("test: got signed transaction here", signature);
+    })();
+  };
+
+  const claimDust = () => {
+    (async () => {
+      console.log("here");
+      const tx = new Transaction();
+      tx.add(
+        SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: publicKey,
+          lamports: 1000000,
+        })
+      );
+      console.log("plugin fetching most recent blockhash");
+      const { blockhash } = await connection!.getLatestBlockhash("recent");
+      console.log("plugin got recent blockhash", blockhash);
+      tx.recentBlockhash = blockhash;
+      const signature = await window.anchorUi.send(tx);
+      console.log("test: got signed transaction here", signature);
+    })();
+  };
 
   const clickGod = (god: any) => {
     console.log("clicked god", god);
@@ -154,9 +196,13 @@ function GodGrid({ gods, isDead, estimatedRewards }: any) {
           marginRight: "auto",
         }}
       >
-        <Button style={{ flex: 1 }}>Unstake All</Button>
+        <Button onClick={unstakeAll} style={{ flex: 1 }}>
+          Unstake All
+        </Button>
         <View style={{ width: "8px" }}></View>
-        <Button style={{ flex: 1 }}>Claim $DUST</Button>
+        <Button onClick={claimDust} style={{ flex: 1 }}>
+          Claim $DUST
+        </Button>
       </View>
       <View
         style={{
