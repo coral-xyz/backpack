@@ -198,16 +198,18 @@ export class Plugin {
   //////////////////////////////////////////////////////////////////////////////
 
   public mount() {
+    console.log("mounted now here");
     this.createIframe();
+    console.log("mounted now here2");
     this._didFinishSetup!.then(() => {
       this.pushMountNotification();
     });
   }
 
   public unmount() {
+    this.destroyIframe();
     this._dom?.clear();
     this.pushUnmountNotification();
-    this.destroyIframe();
 
     //
     // Effectively take a lock that's held until the setup is complete.
@@ -215,6 +217,7 @@ export class Plugin {
     this._didFinishSetup = new Promise((resolve) => {
       this._didFinishSetupResolver = resolve;
     });
+    console.log("completely unnmounted");
   }
 
   //

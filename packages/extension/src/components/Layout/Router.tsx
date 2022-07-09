@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import {
   useDecodedSearchParams,
@@ -66,8 +66,34 @@ function _Router() {
   );
 }
 
+// The refresh code is a big hack. :)
 function SimulatorPage() {
-  return <div>simulate here</div>;
+  const [refresh, setRefresh] = useState(0);
+  const props = { pluginUrl: "http://localhost:9990" };
+
+  useEffect(() => {
+    let previous: any = null;
+    const i = setInterval(() => {
+      (async () => {
+        const js = await (await fetch(props.pluginUrl)).text();
+        if (previous !== null && previous !== js) {
+          setRefresh((r) => r + 1);
+        }
+        previous = js;
+      })();
+    }, 900);
+    return () => clearInterval(i);
+  }, []);
+
+  useEffect(() => {
+    if (refresh % 2 === 1) {
+      setTimeout(() => {
+        setRefresh((r) => r + 1);
+      }, 10);
+    }
+  }, [refresh]);
+
+  return refresh % 2 === 1 ? <div></div> : <PluginDisplay {...props} />;
 }
 
 function Redirect() {

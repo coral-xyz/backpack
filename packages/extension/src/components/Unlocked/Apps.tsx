@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Grid, Button, Typography } from "@mui/material";
 import { styles } from "@coral-xyz/themes";
 import { PluginRenderer } from "@coral-xyz/anchor-ui-renderer";
@@ -139,6 +140,7 @@ function AppIcon({
 export function PluginDisplay({ pluginUrl }: SearchParamsFor.Plugin["props"]) {
   const plugins = usePlugins();
   const p = plugins.find((p) => p.iframeUrl === encodeURI(pluginUrl));
+
   if (p === undefined) {
     throw new Error("unable to find plugin");
   }
