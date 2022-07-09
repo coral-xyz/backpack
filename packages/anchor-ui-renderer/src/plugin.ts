@@ -205,9 +205,9 @@ export class Plugin {
   }
 
   public unmount() {
+    this.destroyIframe();
     this._dom?.clear();
     this.pushUnmountNotification();
-    this.destroyIframe();
 
     //
     // Effectively take a lock that's held until the setup is complete.

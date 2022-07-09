@@ -1,7 +1,13 @@
-import { Button, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Grid, Button, Typography } from "@mui/material";
 import { styles } from "@coral-xyz/themes";
-import { Plugin, PluginRenderer } from "@coral-xyz/anchor-ui-renderer";
-import { usePlugins, useTablePlugins, useNavigation } from "@coral-xyz/recoil";
+import { PluginRenderer } from "@coral-xyz/anchor-ui-renderer";
+import {
+  useAppIcons,
+  usePlugins,
+  useTablePlugins,
+  useNavigation,
+} from "@coral-xyz/recoil";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { NAV_COMPONENT_PLUGINS } from "@coral-xyz/common";
 import { getSvgPath } from "figma-squircle";
@@ -43,45 +49,60 @@ export function Apps() {
 }
 
 function PluginGrid() {
-  const plugins = usePlugins();
+  const plugins = useAppIcons();
   return (
-    <div
+    <Grid
+      container
       style={{
-        display: "flex",
-        flexWrap: "wrap",
-        marginLeft: "20px",
-        marginRight: "20px",
+        paddingLeft: "20px",
+        paddingRight: "20px",
         marginBottom: "24px",
-        justifyContent: "space-between",
       }}
     >
-      {plugins.map((p: Plugin, idx: number) => {
+      {plugins.map((p: any, idx: number) => {
         return (
-          <div
+          <Grid
+            item
             key={p.iframeUrl}
+            xs={3}
             style={{
-              //              marginRight: idx !== plugins.length - 1 ? "15.67px" : 0,
               marginTop: idx >= 4 ? "24px" : 0,
             }}
           >
             <PluginIcon plugin={p} />
-          </div>
+          </Grid>
         );
       })}
-    </div>
+    </Grid>
   );
 }
 
-function PluginIcon({ plugin }: { plugin: Plugin }) {
-  const classes = useStyles();
+function PluginIcon({ plugin }: any) {
   const { push } = useNavigation();
   const onClick = () => {
     push({
       title: plugin.title,
-      componentId: NAV_COMPONENT_PLUGINS,
-      componentProps: { pluginUrl: plugin.iframeUrl },
+      componentId: plugin.componentId
+        ? plugin.componentId
+        : NAV_COMPONENT_PLUGINS,
+      componentProps: { pluginUrl: plugin.url },
     });
   };
+  return (
+    <AppIcon title={plugin.title} iconUrl={plugin.iconUrl} onClick={onClick} />
+  );
+}
+
+function AppIcon({
+  title,
+  iconUrl,
+  onClick,
+}: {
+  title: string;
+  iconUrl: string;
+  onClick: () => void;
+}) {
+  const classes = useStyles();
   return (
     <div
       style={{
@@ -90,6 +111,8 @@ function PluginIcon({ plugin }: { plugin: Plugin }) {
         display: "flex",
         justifyContent: "space-between",
         flexDirection: "column",
+        marginLeft: "auto",
+        marginRight: "auto",
       }}
     >
       <Button
@@ -102,14 +125,14 @@ function PluginIcon({ plugin }: { plugin: Plugin }) {
         }}
       >
         <img
-          src={plugin.iconUrl}
+          src={iconUrl}
           style={{
             width: ICON_WIDTH,
             height: ICON_WIDTH,
           }}
         />
       </Button>
-      <Typography className={classes.pluginTitle}>{plugin.title}</Typography>
+      <Typography className={classes.pluginTitle}>{title}</Typography>
     </div>
   );
 }
@@ -117,6 +140,7 @@ function PluginIcon({ plugin }: { plugin: Plugin }) {
 export function PluginDisplay({ pluginUrl }: SearchParamsFor.Plugin["props"]) {
   const plugins = usePlugins();
   const p = plugins.find((p) => p.iframeUrl === encodeURI(pluginUrl));
+
   if (p === undefined) {
     throw new Error("unable to find plugin");
   }
