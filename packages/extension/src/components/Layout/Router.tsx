@@ -104,14 +104,19 @@ function PluginTableDetailPage() {
 
 // The refresh code is a big hack. :)
 function SimulatorPage() {
-  const [refresh, setRefresh] = useState(0);
   const props = { pluginUrl: "http://localhost:9990" };
+  const refresh = useJavaScriptRefresh(props.pluginUrl);
+  return refresh % 2 === 1 ? <div></div> : <PluginDisplay {...props} />;
+}
+
+function useJavaScriptRefresh(url: string): number {
+  const [refresh, setRefresh] = useState(0);
 
   useEffect(() => {
     let previous: any = null;
     const i = setInterval(() => {
       (async () => {
-        const js = await (await fetch(props.pluginUrl)).text();
+        const js = await (await fetch(url)).text();
         if (previous !== null && previous !== js) {
           setRefresh((r) => r + 1);
         }
@@ -129,5 +134,5 @@ function SimulatorPage() {
     }
   }, [refresh]);
 
-  return refresh % 2 === 1 ? <div></div> : <PluginDisplay {...props} />;
+  return refresh;
 }
