@@ -90,28 +90,4 @@ program.command("dev").action(async () => {
   });
 });
 
-program.command("serve").action(async () => {
-  const express = require("express");
-  const fs = require("fs");
-  const app = express();
-  const port = 9990;
-  app.get("/", (req, res) => {
-    const js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
-    const innerHTML = `
-        <script type="module">${js}</script>`;
-    res.send(`
-        <!DOCTYPE html>
-        <html lang="en">
-          <head>
-            <meta charset="utf-8"/>
-          </head>
-          <body>${innerHTML}</body>
-        </html>
-        `);
-  });
-  app.listen(port, () => {
-    console.log(`listening on port ${port}`);
-  });
-});
-
 program.parse();

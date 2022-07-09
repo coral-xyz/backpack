@@ -4,7 +4,6 @@
   "scripts": {
     "build": "xnft build",
     "start": "xnft watch",
-    "serve": "xnft serve",
     "dev": "xnft dev"
   },
   "devDependencies": {
