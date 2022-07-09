@@ -58,23 +58,20 @@ function PluginGrid() {
         marginBottom: "24px",
       }}
     >
-      {plugins
-        .concat(plugins)
-        .concat(plugins)
-        .map((p: any, idx: number) => {
-          return (
-            <Grid
-              item
-              key={p.iframeUrl}
-              xs={3}
-              style={{
-                marginTop: idx >= 4 ? "24px" : 0,
-              }}
-            >
-              <PluginIcon plugin={p} />
-            </Grid>
-          );
-        })}
+      {plugins.map((p: any, idx: number) => {
+        return (
+          <Grid
+            item
+            key={p.iframeUrl}
+            xs={3}
+            style={{
+              marginTop: idx >= 4 ? "24px" : 0,
+            }}
+          >
+            <PluginIcon plugin={p} />
+          </Grid>
+        );
+      })}
     </Grid>
   );
 }

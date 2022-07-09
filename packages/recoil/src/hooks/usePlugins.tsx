@@ -12,7 +12,7 @@ export function useAppIcons() {
   const outOfBox = [
     {
       url: "",
-      iconUrl: "assets/coral.png",
+      iconUrl: "assets/simulator.png",
       title: "Simulator",
       activeWallet,
       connectionUrl,
