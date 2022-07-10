@@ -51,6 +51,8 @@ import {
   UI_RPC_METHOD_LEDGER_CONNECT,
   UI_RPC_METHOD_LEDGER_IMPORT,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
+  UI_RPC_METHOD_PLUGIN_STORAGE_GET,
+  UI_RPC_METHOD_PLUGIN_STORAGE_PUT,
   BACKEND_EVENT,
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_NOTIFICATIONS,
@@ -200,6 +202,13 @@ async function handle<T = any>(
       return await handlePasswordUpdate(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD:
       return await handleKeyringStoreCheckPassword(ctx, params[0]);
+    //
+    // Storage.
+    //
+    case UI_RPC_METHOD_PLUGIN_STORAGE_GET:
+      return await handlePluginStorageGet(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_PLUGIN_STORAGE_PUT:
+      return await handlePluginStoragePut(ctx, params[0], params[1], params[2]);
     //
     // Solana.
     //
@@ -540,5 +549,30 @@ async function handlePreviewPubkeys(
     derivationPath,
     numberOfAccounts
   );
+  return [resp];
+}
+
+// This API is only safe because it assumes the frontend UI code is doing
+// the proper gatekeeping. It shouldn't allow other xNFTs to call this
+// api with a fake plugin string.
+async function handlePluginStorageGet(
+  ctx: Context<Backend>,
+  plugin: string,
+  key: string
+): Promise<RpcResponse<any>> {
+  const resp = await ctx.backend.pluginStorageGet(plugin, key);
+  return [resp];
+}
+
+// This API is only safe because it assumes the frontend UI code is doing
+// the proper gatekeeping. It shouldn't allow other xNFTs to call this
+// api with a fake plugin string.
+async function handlePluginStoragePut(
+  ctx: Context<Backend>,
+  plugin: string,
+  key: string,
+  value: any
+): Promise<RpcResponse<any>> {
+  const resp = await ctx.backend.pluginStoragePut(plugin, key, value);
   return [resp];
 }

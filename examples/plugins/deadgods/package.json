@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "scripts": {
     "build": "xnft build",
-    "start": "xnft watch"
+    "start": "xnft watch",
+    "dev": "xnft dev"
   },
   "devDependencies": {
     "@coral-xyz/xnft": "*"

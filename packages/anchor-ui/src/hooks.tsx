@@ -20,3 +20,15 @@ export function useConnection(): Connection {
   }, [setConnection]);
   return connection;
 }
+
+export function useStore(): Store {
+  return {
+    get: window.anchorUi.getStorage,
+    set: window.anchorUi.setStorage,
+  };
+}
+
+export interface Store {
+  get<T>(key: string): Promise<T>;
+  set<T>(key: string, val: T): Promise<void>;
+}

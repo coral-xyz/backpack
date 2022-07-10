@@ -25,6 +25,7 @@ import {
   setNavData,
   setNav,
   getNav,
+  LocalStorageDb,
 } from "../keyring/store";
 import type { Backend as SolanaConnectionBackend } from "../backend/solana-connection";
 
@@ -469,6 +470,19 @@ export class Backend {
       derivationPath,
       numberOfAccounts
     );
+  }
+
+  async pluginStorageGet(plugin: string, key: string): Promise<any> {
+    return await LocalStorageDb.get(`${plugin}:${key}`);
+  }
+
+  async pluginStoragePut(
+    plugin: string,
+    key: string,
+    value: any
+  ): Promise<any> {
+    await LocalStorageDb.set(`${plugin}:${key}`, value);
+    return SUCCESS_RESPONSE;
   }
 }
 

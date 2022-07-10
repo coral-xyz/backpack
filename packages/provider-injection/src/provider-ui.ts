@@ -19,6 +19,8 @@ import {
   CHANNEL_PLUGIN_RPC_RESPONSE,
   PLUGIN_RPC_METHOD_NAV_PUSH,
   PLUGIN_RPC_METHOD_NAV_POP,
+  PLUGIN_RPC_METHOD_STORE_GET,
+  PLUGIN_RPC_METHOD_STORE_PUT,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ON_CLICK,
   PLUGIN_NOTIFICATION_ON_CHANGE,
@@ -130,6 +132,20 @@ export class ProviderUiInjection extends EventEmitter implements Provider {
     await this._requestManager.request({
       method: PLUGIN_RPC_METHOD_NAV_POP,
       params: [],
+    });
+  }
+
+  public async getStorage<T = any>(key: string): Promise<T> {
+    return await this._requestManager.request({
+      method: PLUGIN_RPC_METHOD_STORE_GET,
+      params: [key],
+    });
+  }
+
+  public async setStorage<T = any>(key: string, val: T): Promise<void> {
+    await this._requestManager.request({
+      method: PLUGIN_RPC_METHOD_STORE_PUT,
+      params: [key, JSON.stringify(val)],
     });
   }
 

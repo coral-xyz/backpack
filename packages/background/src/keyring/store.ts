@@ -710,7 +710,7 @@ class KeynameStore {
   }
 }
 
-class LocalStorageDb {
+export class LocalStorageDb {
   static async get(key: string): Promise<any> {
     return await BrowserRuntimeCommon.getLocalStorage(key);
   }

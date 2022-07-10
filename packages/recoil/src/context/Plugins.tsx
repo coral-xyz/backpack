@@ -5,6 +5,7 @@ import {
   usePlugins,
   useTablePlugins,
   useNavigationSegue,
+  useBackgroundClient,
   useConnectionBackgroundClient,
 } from "../hooks";
 
@@ -13,10 +14,11 @@ export function PluginManager(props: any) {
   const tablePlugins = useTablePlugins();
   const segue = useNavigationSegue();
   const setTransactionRequest = useSetRecoilState(atoms.transactionRequest);
+  const backgroundClient = useBackgroundClient();
   const connectionBackgroundClient = useConnectionBackgroundClient();
 
   //
-  // Bootup all the plugins on the initial render.
+  // Setup all the plugins on the initial render.
   //
   useEffect(() => {
     const allPlugins = plugins.concat(tablePlugins);
@@ -27,6 +29,7 @@ export function PluginManager(props: any) {
           push: segue.push,
           pop: segue.pop,
           request: setTransactionRequest,
+          backgroundClient,
           connectionBackgroundClient,
         });
       });
