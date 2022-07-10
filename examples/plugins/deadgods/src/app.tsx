@@ -10,6 +10,7 @@ import {
   Button,
   Loading,
 } from "@coral-xyz/anchor-ui";
+import * as anchor from "@project-serum/anchor";
 import { fetchDegodTokens, gemFarmClient, DEAD_FARM } from "./utils";
 
 export function App() {
@@ -133,21 +134,65 @@ function GodGrid({ gods, isDead, estimatedRewards }: any) {
 
   const claimDust = () => {
     (async () => {
-      console.log("here");
-      const tx = new Transaction();
-      tx.add(
-        SystemProgram.transfer({
-          fromPubkey: publicKey,
-          toPubkey: publicKey,
-          lamports: 1000000,
-        })
+      const farmClient = gemFarmClient();
+      const rewardAMint = new PublicKey(
+        "DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ"
       );
-      console.log("plugin fetching most recent blockhash");
-      const { blockhash } = await connection!.getLatestBlockhash("recent");
-      console.log("plugin got recent blockhash", blockhash);
-      tx.recentBlockhash = blockhash;
-      const signature = await window.anchorUi.send(tx);
-      console.log("test: got signed transaction here", signature);
+      const rewardBMint = new PublicKey(
+        "So11111111111111111111111111111111111111112"
+      );
+      const [farmer, bumpFarmer] = await PublicKey.findProgramAddress(
+        [Buffer.from("farmer"), DEAD_FARM.toBuffer(), publicKey.toBuffer()],
+        farmClient.programId
+      );
+      const [farmAuthority, bumpAuth] = await PublicKey.findProgramAddress(
+        [DEAD_FARM.toBuffer()],
+        farmClient.programId
+      );
+      const [rewardAPot, bumpPotA] = await PublicKey.findProgramAddress(
+        [
+          Buffer.from("reward_pot"),
+          DEAD_FARM.toBuffer(),
+          rewardAMint.toBuffer(),
+        ],
+        farmClient.programId
+      );
+      const [rewardBPot, bumpPotB] = await PublicKey.findProgramAddress(
+        [
+          Buffer.from("reward_pot"),
+          DEAD_FARM.toBuffer(),
+          rewardBMint.toBuffer(),
+        ],
+        farmClient.programId
+      );
+
+      try {
+        const tx = await farmClient.methods
+          .claim(bumpAuth, bumpFarmer, bumpPotA, bumpPotB)
+          .accounts({
+            farm: DEAD_FARM,
+            farmAuthority,
+            farmer,
+            identity: publicKey,
+            rewardAPot,
+            rewardAMint,
+            rewardADestination: await anchor.utils.token.associatedAddress({
+              mint: rewardAMint,
+              owner: publicKey,
+            }),
+            rewardBPot,
+            rewardBMint,
+            rewardBDestination: await anchor.utils.token.associatedAddress({
+              mint: rewardBMint,
+              owner: publicKey,
+            }),
+          })
+          .transaction();
+        const signature = await window.anchorUi.send(tx);
+        console.log("tx signature", signature);
+      } catch (err) {
+        console.log("WTF err here", err);
+      }
     })();
   };
 
