@@ -37,12 +37,29 @@ async function fetchTokenAccounts(
 ): Promise<any> {
   const url = connection.rpcEndpoint;
   const cacheKey = `${url}:${isDead}:${wallet.toString()}`;
-  const resp = CACHE.get(cacheKey);
-  if (resp) {
-    return await resp;
+  const val = window.localStorage.getItem(cacheKey);
+
+  //
+  // Only fetch this once a minute.
+  //
+  if (val) {
+    const resp = JSON.parse(val);
+    if (
+      Object.keys(resp.value).length > 0 &&
+      Date.now() - resp.ts < 1000 * 60
+    ) {
+      return await resp.value;
+    }
   }
+
   const newResp = fetchTokenAccountsInner(isDead, wallet, connection);
-  CACHE.set(cacheKey, newResp);
+  window.localStorage.setItem(
+    cacheKey,
+    JSON.stringify({
+      ts: Date.now(),
+      value: newResp,
+    })
+  );
   return await newResp;
 }
 
@@ -95,8 +112,3 @@ export const DEAD_FARM = new PublicKey(
 
 const BANK = new PublicKey("EhRihAPeaR2jC9PKtyRcKzVwXRisykjt72ieYS232ERM");
 const DEAD_BANK = new PublicKey("4iDK8akg8RHg7PguBTTsJcQbHo5iHKzkBJLk8MSvnENA");
-
-//
-// Caches requests.
-//
-const CACHE = new Map<string, Promise<any>>();

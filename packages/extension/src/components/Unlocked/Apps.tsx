@@ -63,7 +63,7 @@ function PluginGrid() {
         return (
           <Grid
             item
-            key={p.iframeUrl}
+            key={p.url}
             xs={3}
             style={{
               marginTop: idx >= 4 ? "24px" : 0,

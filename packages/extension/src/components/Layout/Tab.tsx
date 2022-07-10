@@ -1,7 +1,7 @@
 import { Tabs, Tab } from "@mui/material";
-import { styles } from "@coral-xyz/themes";
 import { AttachMoney as Money, Image, Apps } from "@mui/icons-material";
-import { useTab } from "@coral-xyz/recoil";
+import { styles } from "@coral-xyz/themes";
+import { useTab, useNavigation } from "@coral-xyz/recoil";
 import { TAB_NFTS, TAB_APPS, TAB_BALANCES } from "@coral-xyz/common";
 
 const useStyles = styles((theme) => ({
@@ -46,6 +46,8 @@ export function WithTabs(props: any) {
 function TabBar() {
   const classes = useStyles();
   const { tab, setTab } = useTab();
+  const { url } = useNavigation();
+  const hideTabs = url.startsWith("/plugins") || url.startsWith("/simulator");
   const className = (idx: string) => {
     if (idx === tab) {
       return classes.tabSelected;
@@ -65,6 +67,9 @@ function TabBar() {
         style: {
           display: "none",
         },
+      }}
+      style={{
+        display: hideTabs ? "none" : undefined,
       }}
     >
       <Tab

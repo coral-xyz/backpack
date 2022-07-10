@@ -10,7 +10,7 @@ import {
   Button,
   Loading,
 } from "@coral-xyz/anchor-ui";
-import { fetchDegodTokens, gemFarmClient, FARM, DEAD_FARM } from "./utils";
+import { fetchDegodTokens, gemFarmClient, DEAD_FARM } from "./utils";
 
 export function App() {
   const publicKey = usePublicKey();
@@ -229,6 +229,7 @@ function GodGrid({ gods, isDead, estimatedRewards }: any) {
           {gods.map((g) => {
             return (
               <Button
+                key={g.tokenMetaUriData.image}
                 onClick={() => clickGod(g)}
                 style={{
                   padding: 0,
