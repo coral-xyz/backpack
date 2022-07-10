@@ -21,10 +21,16 @@ export function useConnection(): Connection {
   return connection;
 }
 
-export function useStore(): Store {
+export function useLocalStorage(): Store {
   return {
-    get: window.anchorUi.getStorage,
-    set: window.anchorUi.setStorage,
+    //    get: (key) => window.anchorUi.getStorage(key),
+    //    set: (key, val) => window.anchorUi.setStorage(key, val),
+    // @ts-ignore
+    get: (key) =>
+      new Promise((resolve) => resolve(window.localStorage.getItem(key))),
+    // @ts-ignore
+    set: (key, val) =>
+      new Promise((resolve) => resolve(window.localStorage.setItem(key, val))),
   };
 }
 

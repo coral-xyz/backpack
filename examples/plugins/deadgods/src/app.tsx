@@ -3,7 +3,7 @@ import { PublicKey, Transaction, SystemProgram } from "@solana/web3.js";
 import {
   usePublicKey,
   useConnection,
-  useStore,
+  useLocalStorage,
   useTheme,
   View,
   Image,
@@ -16,8 +16,9 @@ import { fetchDegodTokens, gemFarmClient, FARM, DEAD_FARM } from "./utils";
 export function App() {
   const publicKey = usePublicKey();
   const connection = useConnection();
-  const store = useStore();
-  console.log("armani here got store here", store);
+  const store = useLocalStorage();
+  //	store.set("hello", "world");
+  store.get("hello").then((r) => console.log("read storage here", r));
   const [tokenAccounts, setTokenAccounts] = useState<[any, any] | null>(null);
   const [estimatedRewards, setEstimatedRewards] = useState("");
 
