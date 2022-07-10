@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useRecoilValue, useRecoilState, useSetRecoilState } from "recoil";
 import * as atoms from "../atoms";
@@ -10,6 +11,10 @@ type NavigationContext = {
   pop: any;
   navButtonRight: any | null;
   setNavButtonRight: (b: null | any) => void;
+  navButtonLeft: any | null;
+  setNavButtonLeft: (b: null | any) => void;
+  style: React.CSSProperties;
+  setStyle: (style: React.CSSProperties) => void;
 };
 
 export module SearchParamsFor {
@@ -35,6 +40,10 @@ export function useNavigation(): NavigationContext {
   const [navButtonRight, setNavButtonRight] = useRecoilState(
     atoms.navigationRightButton
   );
+  const [navButtonLeft, setNavButtonLeft] = useRecoilState(
+    atoms.navigationLeftButton
+  );
+  const [style, setStyle] = useRecoilState(atoms.navigationStyle);
   const { push, pop } = useNavigationSegue();
   const isRoot = navData.urls.length === 1;
   const url = navData.urls[navData.urls.length - 1];
@@ -49,6 +58,10 @@ export function useNavigation(): NavigationContext {
     pop,
     navButtonRight,
     setNavButtonRight,
+    navButtonLeft,
+    setNavButtonLeft,
+    style,
+    setStyle,
   };
 }
 

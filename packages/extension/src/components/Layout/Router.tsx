@@ -7,6 +7,10 @@ import {
   useTab,
 } from "@coral-xyz/recoil";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { IconButton } from "@mui/material";
+import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
+import TransitEnterexitIcon from "@mui/icons-material/TransitEnterexit";
 import { Balances } from "../Unlocked/Balances";
 import { Token } from "../Unlocked/Balances/TokensWidget/Token";
 import {
@@ -18,8 +22,16 @@ import { Nfts } from "../Unlocked/Nfts";
 import { SettingsButton } from "../Settings";
 
 export function Router() {
-  const { url } = useNavigation();
-  const { navButtonRight, setNavButtonRight } = useNavigation();
+  const theme = useCustomTheme();
+  const {
+    url,
+    navButtonRight,
+    setNavButtonRight,
+    navButtonLeft,
+    setNavButtonLeft,
+    style: navStyle,
+    setStyle,
+  } = useNavigation();
   const { tab } = useTab();
 
   //
@@ -30,15 +42,18 @@ export function Router() {
   //
   useEffect(() => {
     const previous = navButtonRight;
+    const previousLeft = navButtonLeft;
+    const previousStyle = navStyle;
+    const actions: any = [];
     if (
       url.startsWith("/balances") ||
       url.startsWith("/apps") ||
       url.startsWith("/nfts")
     ) {
       setNavButtonRight(<SettingsButton />);
-      return () => {
+      actions.push(() => {
         setNavButtonRight(previous);
-      };
+      });
     }
     if (
       url.startsWith("/token") ||
@@ -46,12 +61,45 @@ export function Router() {
       url.startsWith("/simulator")
     ) {
       setNavButtonRight(null);
-      return () => {
+      actions.push(() => {
         setNavButtonRight(previous);
-      };
+      });
     }
+
+    if (url.startsWith("/plugins") || url.startsWith("/simulator")) {
+      setNavButtonLeft(<ExitAppButton />);
+      setStyle({
+        backgroundColor: theme.custom.colors.nav,
+        height: "45px",
+        borderBottom: "none",
+        fontSize: "16px",
+      });
+      actions.push(() => {
+        setNavButtonLeft(previousLeft);
+        setStyle(previousStyle);
+      });
+    }
+
+    return () => {
+      actions.forEach((action: any) => action());
+    };
   }, [url, tab]);
   return <_Router />;
+}
+
+function ExitAppButton() {
+  const theme = useCustomTheme();
+  const nav = useNavigation();
+  return (
+    <IconButton
+      style={{
+        padding: 0,
+      }}
+      onClick={() => nav.pop()}
+    >
+      <TransitEnterexitIcon style={{ color: theme.custom.colors.secondary }} />
+    </IconButton>
+  );
 }
 
 function _Router() {

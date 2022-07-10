@@ -191,7 +191,7 @@ function GodGrid({ gods, isDead, estimatedRewards }: any) {
         const signature = await window.anchorUi.send(tx);
         console.log("tx signature", signature);
       } catch (err) {
-        console.log("WTF err here", err);
+        console.log("err here", err);
       }
     })();
   };

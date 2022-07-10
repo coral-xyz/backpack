@@ -30,6 +30,7 @@ function NavEphemeralWrapper({
     useEphemeralNav();
   const navButtonLeft = isRoot ? null : <NavBackButton onClick={() => pop()} />;
   const _navbarStyle = {
+    fontSize: "18px",
     borderBottom: `solid 1pt ${theme.custom.colors.border}`,
     ...(navbarStyle ?? {}),
     ...(style ?? {}),
