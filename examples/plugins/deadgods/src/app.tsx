@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { PublicKey, Transaction, SystemProgram } from "@solana/web3.js";
 import {
   usePublicKey,
@@ -11,61 +10,23 @@ import {
   Loading,
 } from "@coral-xyz/anchor-ui";
 import * as anchor from "@project-serum/anchor";
-import { fetchDegodTokens, gemFarmClient, DEAD_FARM } from "./utils";
+import {
+  useDegodTokens,
+  useEstimatedRewards,
+  gemFarmClient,
+  DEAD_FARM,
+} from "./utils";
 
 export function App() {
-  const publicKey = usePublicKey();
-  const connection = useConnection();
-  const [tokenAccounts, setTokenAccounts] = useState<[any, any] | null>(null);
-  const [estimatedRewards, setEstimatedRewards] = useState("");
-
-  useEffect(() => {
-    (async () => {
-      setTokenAccounts(null);
-      const res = await fetchDegodTokens(publicKey, connection);
-      setTokenAccounts(res);
-    })();
-  }, [publicKey, connection]);
-
-  useEffect(() => {
-    const client = gemFarmClient();
-    (async () => {
-      try {
-        const [farmerPubkey] = await PublicKey.findProgramAddress(
-          [Buffer.from("farmer"), DEAD_FARM.toBuffer(), publicKey.toBuffer()],
-          client.programId
-        );
-        const farmer = await client.account.farmer.fetch(farmerPubkey);
-        const rewards = getEstimatedRewards(
-          farmer.rewardA,
-          farmer.gemsStaked,
-          Date.now(),
-          true
-        );
-        setEstimatedRewards(rewards.toFixed(4));
-
-        const interval = setInterval(() => {
-          const newRewards = getEstimatedRewards(
-            farmer.rewardA,
-            farmer.gemsStaked,
-            Date.now(),
-            true
-          );
-          setEstimatedRewards(newRewards.toFixed(4));
-        }, 1000);
-        return () => clearInterval(interval);
-      } catch (err) {
-        console.error(err);
-      }
-    })();
-  }, []);
+  const tokenAccounts = useDegodTokens();
+  const estimatedRewards = useEstimatedRewards();
 
   return tokenAccounts === null ? (
     <_Loading />
   ) : (
     <_App
-      dead={tokenAccounts[0]}
-      alive={tokenAccounts[1]}
+      dead={tokenAccounts.dead}
+      alive={tokenAccounts.alive}
       estimatedRewards={estimatedRewards}
     />
   );
@@ -352,21 +313,5 @@ export function StakeDetail({ token }: any) {
         </Button>
       </View>
     </View>
-  );
-}
-
-export function getEstimatedRewards(
-  reward: any,
-  gems: any,
-  currentTS: number,
-  isDead: boolean = false
-): Number {
-  const DUST_RATE = isDead ? 15 : 5;
-  return (
-    (reward.accruedReward.toNumber() - reward.paidOutReward.toNumber()) /
-      Math.pow(10, 9) +
-    gems.toNumber() *
-      DUST_RATE *
-      ((currentTS / 1000 - reward.fixedRate.lastUpdatedTs.toNumber()) / 86400)
   );
 }

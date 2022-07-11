@@ -1,6 +1,7 @@
+import { useState, useEffect } from "react";
 import { PublicKey, Connection } from "@solana/web3.js";
 import { Program } from "@project-serum/anchor";
-import AnchorUi from "@coral-xyz/anchor-ui";
+import AnchorUi, { usePublicKey, useConnection } from "@coral-xyz/anchor-ui";
 import { customSplTokenAccounts } from "@coral-xyz/common";
 import { IDL as IDL_GEM_BANK, GemBank } from "./idl-gem-bank";
 import { IDL as IDL_GEM_FARM, GemFarm } from "./idl-gem-farm";
@@ -11,6 +12,71 @@ import { IDL as IDL_GEM_FARM, GemFarm } from "./idl-gem-farm";
 AnchorUi.events.on("connect", () => {
   fetchDegodTokens(window.anchorUi.publicKey, window.anchorUi.connection);
 });
+
+export function useDegodTokens() {
+  const publicKey = usePublicKey();
+  const connection = useConnection();
+
+  const [tokenAccounts, setTokenAccounts] = useState<
+    [any, any, any, any] | null
+  >(null);
+  useEffect(() => {
+    (async () => {
+      setTokenAccounts(null);
+      const res = await fetchDegodTokens(publicKey, connection);
+      setTokenAccounts(res);
+    })();
+  }, [publicKey, connection]);
+  if (tokenAccounts === null) {
+    return null;
+  }
+  return {
+    dead: tokenAccounts[0],
+    alive: tokenAccounts[1],
+    deadUnstaked: tokenAccounts[2],
+    aliveUnstaked: tokenAccounts[3],
+  };
+}
+
+export function useEstimatedRewards() {
+  const publicKey = usePublicKey();
+  const [estimatedRewards, setEstimatedRewards] = useState("");
+
+  useEffect(() => {
+    const client = gemFarmClient();
+    (async () => {
+      try {
+        const [farmerPubkey] = await PublicKey.findProgramAddress(
+          [Buffer.from("farmer"), DEAD_FARM.toBuffer(), publicKey.toBuffer()],
+          client.programId
+        );
+        const farmer = await client.account.farmer.fetch(farmerPubkey);
+        const rewards = getEstimatedRewards(
+          farmer.rewardA,
+          farmer.gemsStaked,
+          Date.now(),
+          true
+        );
+        setEstimatedRewards(rewards.toFixed(4));
+
+        const interval = setInterval(() => {
+          const newRewards = getEstimatedRewards(
+            farmer.rewardA,
+            farmer.gemsStaked,
+            Date.now(),
+            true
+          );
+          setEstimatedRewards(newRewards.toFixed(4));
+        }, 1000);
+        return () => clearInterval(interval);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  }, []);
+
+  return estimatedRewards;
+}
 
 export function gemBankClient(): Program<GemBank> {
   return new Program<GemBank>(IDL_GEM_BANK, PID_GEM_BANK, window.backpack);
@@ -25,12 +91,14 @@ export async function fetchDegodTokens(
   connection: Connection
 ) {
   return await Promise.all([
-    fetchTokenAccounts(true, wallet, connection),
-    fetchTokenAccounts(false, wallet, connection),
+    fetchStakedTokenAccounts(true, wallet, connection),
+    fetchStakedTokenAccounts(false, wallet, connection),
+    [], // todo
+    [], // todo
   ]);
 }
 
-async function fetchTokenAccounts(
+async function fetchStakedTokenAccounts(
   isDead: boolean,
   wallet: PublicKey,
   connection: Connection
@@ -52,7 +120,7 @@ async function fetchTokenAccounts(
     }
   }
 
-  const newResp = fetchTokenAccountsInner(isDead, wallet, connection);
+  const newResp = fetchStakedTokenAccountsInner(isDead, wallet, connection);
   window.localStorage.setItem(
     cacheKey,
     JSON.stringify({
@@ -63,7 +131,7 @@ async function fetchTokenAccounts(
   return await newResp;
 }
 
-async function fetchTokenAccountsInner(
+async function fetchStakedTokenAccountsInner(
   isDead: boolean,
   wallet: PublicKey,
   connection: Connection
@@ -90,6 +158,22 @@ async function fetchTokenAccountsInner(
     .filter((t) => !t.tokenMetaUriData.name.startsWith("DegodsGiveaway"));
 
   return newResp;
+}
+
+export function getEstimatedRewards(
+  reward: any,
+  gems: any,
+  currentTS: number,
+  isDead: boolean = false
+): Number {
+  const DUST_RATE = isDead ? 15 : 5;
+  return (
+    (reward.accruedReward.toNumber() - reward.paidOutReward.toNumber()) /
+      Math.pow(10, 9) +
+    gems.toNumber() *
+      DUST_RATE *
+      ((currentTS / 1000 - reward.fixedRate.lastUpdatedTs.toNumber()) / 86400)
+  );
 }
 
 export const EMPTY_DEGODS_ICON =
