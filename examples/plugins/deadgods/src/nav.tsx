@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { useTheme, View, Button, ScrollBar } from "@coral-xyz/anchor-ui";
+import { useTheme, View, Button, Text, ScrollBar } from "@coral-xyz/anchor-ui";
 
 export function Tabs({
   children,
@@ -66,6 +66,7 @@ function TabBar({ tabScreens, style }) {
       }}
     >
       {tabScreens.map((screen) => {
+        console.log("armani rerendering screens", activeTab);
         const routedOptions = options({ route: { name: screen.props.name } });
         const focused = activeTab === screen.props.name;
         return (
@@ -81,15 +82,29 @@ function TabBar({ tabScreens, style }) {
             }}
             onClick={() => setActiveTab(screen.props.name)}
           >
-            <View
-              style={{
-                width: "25px",
-                height: "25px",
-                marginLeft: "auto",
-                marginRight: "auto",
-              }}
-            >
-              {routedOptions.tabBarIcon({ focused })}
+            <View>
+              <View
+                style={{
+                  width: "25px",
+                  height: "25px",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                }}
+              >
+                {routedOptions.tabBarIcon({ focused })}
+              </View>
+              <Text
+                style={{
+                  textAlign: "center",
+                  fontSize: "9px",
+                  fontWeight: 400,
+                  color: focused
+                    ? routedOptions.tabBarActiveTintColor
+                    : routedOptions.tabBarInactiveTintColor,
+                }}
+              >
+                {screen.props.name}
+              </Text>
             </View>
           </Button>
         );
@@ -107,6 +122,8 @@ type TabsOptions = ({ route }) => RoutedTabsOptions;
 
 type RoutedTabsOptions = {
   tabBarIcon: ({ focused }: { focused: boolean }) => React.ReactNode;
+  tabBarActiveTintColor: string;
+  tabBarInactiveTintColor: string;
 };
 
 type TabContext = {

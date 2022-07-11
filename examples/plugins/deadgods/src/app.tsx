@@ -20,12 +20,7 @@ import { Tabs, Tab } from "./nav";
 export function App() {
   const tokenAccounts = useDegodTokens();
   const estimatedRewards = useEstimatedRewards();
-  console.log("token accounts here", tokenAccounts);
   return tokenAccounts === null ? <_Loading /> : <_App />;
-}
-
-function InnerTab() {
-  return <View style={{ color: "red" }}>inner tab 1 here</View>;
 }
 
 function InnerTab2() {
@@ -64,25 +59,19 @@ function _App() {
             const color = focused
               ? theme.custom.colors.activeNavButton
               : theme.custom.colors.secondary;
-            if (route.name === "tab-a") {
-              return (
-                <View
-                  style={{ background: color, width: "100%", height: "100%" }}
-                ></View>
-              );
+            if (route.name === "staked") {
+              return <View></View>;
             } else {
-              return (
-                <View
-                  style={{ background: color, width: "100%", height: "100%" }}
-                ></View>
-              );
+              return <View></View>;
             }
           },
+          tabBarActiveTintColor: theme.custom.colors.activeNavButton,
+          tabBarInactiveTintColor: theme.custom.colors.secondary,
         };
       }}
     >
-      <Tab name="tab-a" component={AppInner} />
-      <Tab name="tab-b" component={InnerTab2} />
+      <Tab name="staked" component={InnerTab2} />
+      <Tab name="unstaked" component={InnerTab2} />
     </Tabs>
   );
 }

@@ -199,6 +199,14 @@ const RECONCILER = ReactReconciler({
           // @ts-ignore
           pload = { value: newProps.value };
         }
+        if (oldProps.style !== newProps.style) {
+          pload = pload === null ? {} : pload;
+          pload = {
+            ...pload,
+            style: newProps.style,
+          };
+        }
+        console.log("UPDATING PREPARE TEXT FIELD", pload);
         return pload;
       case NodeKind.Image:
         return null;
@@ -288,6 +296,10 @@ const RECONCILER = ReactReconciler({
           // @ts-ignore
           instance.props.value = updatePayload.value;
         }
+        if (updatePayload.style !== undefined && updatePayload.style !== null) {
+          instance.style = updatePayload.style;
+        }
+        console.log("UPDATING TEXT FIELD HERE", instance, newProps);
         break;
       case NodeKind.Table:
         break;
