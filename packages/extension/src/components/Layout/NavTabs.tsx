@@ -3,8 +3,10 @@ import { useNavigation } from "@coral-xyz/recoil";
 import { WithTabs } from "./Tab";
 import { WithNav, NavBackButton } from "./Nav";
 import { ApproveTransactionRequest } from "../Unlocked/ApproveTransactionRequest";
+
 //
 // The main nav persistent stack.
+//
 export function NavTabs() {
   const theme = useCustomTheme();
   const { title, isRoot, pop, navButtonLeft, navButtonRight, style } =
