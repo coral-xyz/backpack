@@ -12,6 +12,7 @@ import { Text } from "react-native";
 import { NativeRouter, Route, Routes, useNavigate } from "react-router-native";
 import tw from "twrnc";
 import { CustomButton } from "./components/CustomButton";
+import { PasswordInput } from "./components/PasswordInput";
 import { __TEMPORARY_FIXED_PASSWORD_TO_UNLOCK_BACKPACK__ } from "./lib/toRemove";
 import NeedsOnboarding from "./screens/NeedsOnboarding";
 import CreateWallet from "./screens/NeedsOnboarding/CreateWallet";
@@ -59,6 +60,10 @@ const LockedScreen = () => {
   return (
     <>
       <Text style={tw`text-white`}>Locked</Text>
+      <PasswordInput
+        placeholder="Password"
+        value={__TEMPORARY_FIXED_PASSWORD_TO_UNLOCK_BACKPACK__}
+      />
       <CustomButton
         text="Unlock"
         onPress={async () => {

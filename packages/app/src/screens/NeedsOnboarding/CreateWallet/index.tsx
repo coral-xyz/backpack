@@ -5,10 +5,11 @@ import {
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import React from "react";
-import { Text, TextInput } from "react-native";
+import { Text } from "react-native";
 import { useNavigate } from "react-router-native";
 import tw from "twrnc";
 import { CustomButton } from "../../../components/CustomButton";
+import { PasswordInput } from "../../../components/PasswordInput";
 import { __TEMPORARY_FIXED_PASSWORD_TO_UNLOCK_BACKPACK__ } from "../../../lib/toRemove";
 import { useRequest } from "../../../lib/useRequest";
 
@@ -59,22 +60,3 @@ const CreatePassword = () => {
     </>
   );
 };
-
-const PasswordInput: React.FC<React.ComponentProps<typeof TextInput>> = (
-  props
-) => (
-  <TextInput
-    autoCapitalize="none"
-    autoComplete="off"
-    autoCorrect={false}
-    keyboardType="ascii-capable"
-    placeholderTextColor={"#ccc"}
-    secureTextEntry
-    style={tw`rounded-xl bg-transparent p-5 my-2 text-white text-lg border-gray-700 border-2 border-solid`}
-    textContentType="password"
-    {...props}
-    // onChangeText={setPubkey}
-    // onSubmitEditing={_handleSubmit}
-    // value={pubkey}
-  />
-);
