@@ -128,6 +128,8 @@ export const UI_RPC_METHOD_LEDGER_IMPORT = "ledger-import";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
+export const NOTIFICATION_KEYRING_STORE_CREATED =
+  "notification-keyring-store-created";
 export const NOTIFICATION_KEYRING_STORE_LOCKED =
   "notification-keyring-store-locked";
 export const NOTIFICATION_KEYRING_STORE_UNLOCKED =

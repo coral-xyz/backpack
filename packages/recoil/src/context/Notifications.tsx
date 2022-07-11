@@ -7,6 +7,7 @@ import {
   Notification,
   BackgroundSolanaConnection,
   CONNECTION_POPUP_NOTIFICATIONS,
+  NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_KEY_DELETE,
@@ -54,6 +55,9 @@ export function NotificationsProvider(props: any) {
       logger.debug(`received notification ${notif.name}`, notif);
 
       switch (notif.name) {
+        case NOTIFICATION_KEYRING_STORE_CREATED:
+          handleKeyringStoreCreated(notif);
+          break;
         case NOTIFICATION_KEYRING_STORE_LOCKED:
           handleKeyringStoreLocked(notif);
           break;
@@ -98,6 +102,10 @@ export function NotificationsProvider(props: any) {
     //
     // Notification handlers.
     //
+    const handleKeyringStoreCreated = (_notif: Notification) => {
+      // Keyring store is currently locked immediately after creation
+      setKeyringStoreState(KeyringStoreStateEnum.Locked);
+    };
     const handleConnectionUrlUpdated = (notif: Notification) => {
       setConnectionUrl(notif.data.url);
       allPlugins().forEach((p) => {
