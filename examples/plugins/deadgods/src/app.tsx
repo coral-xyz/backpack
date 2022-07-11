@@ -20,17 +20,8 @@ import { Tabs, Tab } from "./nav";
 export function App() {
   const tokenAccounts = useDegodTokens();
   const estimatedRewards = useEstimatedRewards();
-
-  return tokenAccounts === null ? (
-    <_Loading />
-  ) : (
-    <_App
-      deadStaked={tokenAccounts.dead}
-      deadUnstaked={tokenAccounts.deadUnstaked}
-      aliveStaked={tokenAccounts.alive}
-      estimatedRewards={estimatedRewards}
-    />
-  );
+  console.log("token accounts here", tokenAccounts);
+  return tokenAccounts === null ? <_Loading /> : <_App />;
 }
 
 function InnerTab() {
@@ -63,13 +54,7 @@ function _Loading() {
   );
 }
 
-function _App({
-  deadStaked,
-  deadUnstaked,
-  aliveStaked,
-  aliveUnstaked,
-  estimatedRewards,
-}: any) {
+function _App() {
   const theme = useTheme();
   return (
     <Tabs

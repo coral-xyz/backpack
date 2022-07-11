@@ -10,4 +10,5 @@ export {
   BalancesTableHead,
   BalancesTableRow,
   TextField,
+  ScrollBarImpl,
 } from "./Component";

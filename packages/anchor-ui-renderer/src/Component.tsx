@@ -1,8 +1,9 @@
 import React, { useState } from "react";
+import { Scrollbars } from "react-custom-scrollbars";
 import type { Element } from "@coral-xyz/anchor-ui";
 import { NodeKind } from "@coral-xyz/anchor-ui";
 import { formatUSD } from "@coral-xyz/common";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme, styles } from "@coral-xyz/themes";
 import {
   Button as MuiButton,
   Card,
@@ -16,7 +17,6 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { ExpandMore, ExpandLess } from "@mui/icons-material";
-import { styles } from "@coral-xyz/themes";
 import { usePluginContext } from "./Context";
 import { ViewRenderer } from "./ViewRenderer";
 
@@ -221,6 +221,15 @@ export function Component({ viewData }) {
       );
     case NodeKind.Loading:
       return <Loading id={id} props={props} style={style} />;
+    case NodeKind.ScrollBar:
+      return (
+        <ScrollBar
+          id={id}
+          props={props}
+          style={style}
+          children={viewData.children}
+        />
+      );
     case NodeKind.BalancesTable:
       return (
         <BalancesTable
@@ -689,6 +698,63 @@ function Loading({ id, props, style }: any) {
     ...style,
   };
   return <CircularProgress style={style} />;
+}
+
+function ScrollBar({ id, props, style, children }: any) {
+  console.log("RENDERING SCROLLBAR HERE", children);
+  return (
+    <ScrollBarImpl>
+      {children.map((c: Element) => (
+        <ViewRenderer key={c.id} element={c} />
+      ))}
+    </ScrollBarImpl>
+  );
+}
+
+export function ScrollBarImpl(props: any) {
+  const theme = useCustomTheme();
+  return (
+    <>
+      <Scrollbars
+        style={{ width: "100%", height: "100%" }}
+        renderTrackHorizontal={(props) => (
+          <div {...props} className="track-horizontal" />
+        )}
+        renderTrackVertical={(props) => (
+          <div
+            style={{ backgroundColor: theme.custom.colors.scrollbarTrack }}
+            {...props}
+            className="track-vertical"
+          />
+        )}
+        renderThumbHorizontal={(props) => (
+          <div {...props} className="thumb-horizontal" />
+        )}
+        renderThumbVertical={(props) => (
+          <div
+            style={{ backgroundColor: theme.custom.colors.scrollbarThumb }}
+            {...props}
+            className="thumb-vertical"
+          />
+        )}
+        renderView={(props) => <div {...props} className="view" />}
+        autoHide
+        thumbMinSize={30}
+      >
+        {props.children}
+      </Scrollbars>
+      <style>
+        {`
+          .track-vertical {
+            background: ${theme.custom.colors.scrollbarTrack};
+          }
+          .track-vertical .thumb-vertical {
+            background-color: ${theme.custom.colors.scrollbarThumb};
+          }
+				`}
+      </style>
+    </>
+  );
 }
 
 function Raw({ text }: any) {

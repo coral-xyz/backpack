@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { useTheme, View, Button } from "@coral-xyz/anchor-ui";
+import { useTheme, View, Button, ScrollBar } from "@coral-xyz/anchor-ui";
 
 export function Tabs({
   children,
@@ -7,6 +7,7 @@ export function Tabs({
   options,
 }: {
   children: any;
+  style: React.CSSProperties;
   options?: TabsOptions;
 }) {
   const isArray = children && children.length !== undefined;
@@ -37,13 +38,15 @@ function TabContent({ tabScreens }) {
   const { activeTab } = useTabContext();
   const screen = tabScreens.find((t) => t.props.name === activeTab);
   return (
-    <View
-      style={{
-        flex: 1,
-      }}
-    >
-      {screen.props.component()}
-    </View>
+    <ScrollBar>
+      <View
+        style={{
+          flex: 1,
+        }}
+      >
+        {screen.props.component()}
+      </View>
+    </ScrollBar>
   );
 }
 
@@ -67,6 +70,7 @@ function TabBar({ tabScreens, style }) {
         const focused = activeTab === screen.props.name;
         return (
           <Button
+            key={screen.props.name}
             style={{
               padding: 0,
               height: "100%",
