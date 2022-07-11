@@ -625,7 +625,10 @@ function createScrollBarInstance(
   return {
     id,
     kind: NodeKind.ScrollBar,
-    props,
+    props: {
+      ...props,
+      children: undefined,
+    },
     style: {},
     children: [],
   };

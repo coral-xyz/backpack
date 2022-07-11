@@ -701,7 +701,6 @@ function Loading({ id, props, style }: any) {
 }
 
 function ScrollBar({ id, props, style, children }: any) {
-  console.log("RENDERING SCROLLBAR HERE", children);
   return (
     <ScrollBarImpl>
       {children.map((c: Element) => (
