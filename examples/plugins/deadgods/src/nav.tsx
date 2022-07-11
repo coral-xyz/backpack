@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { useTheme, View, Text } from "@coral-xyz/anchor-ui";
+import { useTheme, View, Button } from "@coral-xyz/anchor-ui";
 
 export function Tabs({
   children,
@@ -66,8 +66,10 @@ function TabBar({ tabScreens, style }) {
         const routedOptions = options({ route: { name: screen.props.name } });
         const focused = activeTab === screen.props.name;
         return (
-          <View
+          <Button
             style={{
+              padding: 0,
+              height: "100%",
               flex: 1,
               display: "flex",
               justifyContent: "center",
@@ -85,7 +87,7 @@ function TabBar({ tabScreens, style }) {
             >
               {routedOptions.tabBarIcon({ focused })}
             </View>
-          </View>
+          </Button>
         );
       })}
     </View>
