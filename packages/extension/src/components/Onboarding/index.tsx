@@ -139,6 +139,7 @@ export function OptionsContainer({ children }: { children: React.ReactNode }) {
         width: "100vw",
         height: "100vh",
         backgroundImage: `url('coral-bg.png')`,
+        backgroundSize: "cover",
       }}
     >
       <div
