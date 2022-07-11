@@ -6,23 +6,20 @@ import { SafeAreaView, StyleSheet, View } from "react-native";
 import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
 import { WebView } from "react-native-webview";
-import { NativeRouter } from "react-router-native";
 import { RecoilRoot } from "recoil/native/recoil";
 import App from "./src/App";
 
 function WrappedApp() {
   return (
-    <NativeRouter>
-      <SafeAreaView style={styles.container}>
-        <StatusBar style="auto" />
-        <Suspense fallback={null}>
-          <RecoilRoot>
-            <Background />
-            <WaitingApp />
-          </RecoilRoot>
-        </Suspense>
-      </SafeAreaView>
-    </NativeRouter>
+    <SafeAreaView style={styles.container}>
+      <StatusBar style="auto" />
+      <Suspense fallback={null}>
+        <RecoilRoot>
+          <Background />
+          <WaitingApp />
+        </RecoilRoot>
+      </Suspense>
+    </SafeAreaView>
   );
 }
 
