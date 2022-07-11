@@ -43,7 +43,8 @@ function _Loading() {
         justifyContent: "center",
       }}
     >
-      <Loading
+      <Image
+        src="https://www.deadgods.com/images/degods_bitmap.svg"
         style={{
           display: "block",
           marginLeft: "auto",
