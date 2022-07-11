@@ -25,8 +25,9 @@ export function App() {
     <_Loading />
   ) : (
     <_App
-      dead={tokenAccounts.dead}
-      alive={tokenAccounts.alive}
+      deadStaked={tokenAccounts.dead}
+      deadUnstaked={tokenAccounts.deadUnstaked}
+      aliveStaked={tokenAccounts.alive}
       estimatedRewards={estimatedRewards}
     />
   );
@@ -53,12 +54,19 @@ function _Loading() {
   );
 }
 
-function _App({ dead, alive, estimatedRewards }: any) {
+function _App({
+  deadStaked,
+  deadUnstaked,
+  aliveStaked,
+  aliveUnstaked,
+  estimatedRewards,
+}: any) {
   return (
     <View>
-      {dead.length > 0 && (
-        <GodGrid
-          gods={dead}
+      {deadStaked.length > 0 && (
+        <AppInner
+          stakedGods={deadStaked}
+          unstakedGods={deadUnstaked}
           isDead={true}
           estimatedRewards={estimatedRewards}
         />
@@ -67,11 +75,20 @@ function _App({ dead, alive, estimatedRewards }: any) {
   );
 }
 
-function GodGrid({ gods, isDead, estimatedRewards }: any) {
+function AppInner({ stakedGods, unstakedGods, isDead, estimatedRewards }: any) {
+  return (
+    <View>
+      <Header isDead={isDead} estimatedRewards={estimatedRewards} />
+      <GodGrid isDead={isDead} gods={stakedGods} isStaked={true} />
+      <GodGrid isDead={isDead} gods={unstakedGods} isStaked={false} />
+    </View>
+  );
+}
+
+function Header({ isDead, estimatedRewards }: any) {
   const theme = useTheme();
   const publicKey = usePublicKey();
   const connection = useConnection();
-  const degodLabel = isDead ? "DeadGods" : "Degods";
 
   const unstakeAll = () => {
     (async () => {
@@ -156,18 +173,13 @@ function GodGrid({ gods, isDead, estimatedRewards }: any) {
       }
     })();
   };
-
-  const clickGod = (god: any) => {
-    console.log("clicked god", god);
-  };
-
   return (
-    <View>
-      <View
-        style={{
-          marginTop: "24px",
-        }}
-      >
+    <View
+      style={{
+        marginTop: "24px",
+      }}
+    >
+      <View>
         <Text
           style={{
             fontSize: "20px",
@@ -210,47 +222,56 @@ function GodGrid({ gods, isDead, estimatedRewards }: any) {
           Claim $DUST
         </Button>
       </View>
-      <View
+    </View>
+  );
+}
+
+function GodGrid({ gods, isDead, isStaked }: any) {
+  const theme = useTheme();
+  const degodLabel = isDead ? "DeadGods" : "Degods";
+
+  const clickGod = (god: any) => {
+    console.log("clicked god", god);
+  };
+
+  return (
+    <View
+      style={{
+        marginTop: "38px",
+      }}
+    >
+      <Text
         style={{
-          marginTop: "38px",
+          marginBottom: "8px",
+          fontSize: "14px",
+          lineHeight: "24px",
+          marginLeft: "12px",
+          marginRight: "12px",
         }}
       >
-        <Text
-          style={{
-            marginBottom: "8px",
-            fontSize: "14px",
-            lineHeight: "24px",
-            marginLeft: "12px",
-            marginRight: "12px",
-          }}
-        >
-          Staked {degodLabel}
-        </Text>
-        <View
-          style={{
-            display: "flex",
-            background: theme.custom.colors.nav,
-          }}
-        >
-          {gods.map((g) => {
-            return (
-              <Button
-                key={g.tokenMetaUriData.image}
-                onClick={() => clickGod(g)}
-                style={{
-                  padding: 0,
-                  width: "50%",
-                  height: "100%",
-                }}
-              >
-                <Image
-                  src={g.tokenMetaUriData.image}
-                  style={{ width: "100%" }}
-                />
-              </Button>
-            );
-          })}
-        </View>
+        {isStaked ? "Staked" : "Unstaked"} {degodLabel}
+      </Text>
+      <View
+        style={{
+          display: "flex",
+          background: theme.custom.colors.nav,
+        }}
+      >
+        {gods.map((g) => {
+          return (
+            <Button
+              key={g.tokenMetaUriData.image}
+              onClick={() => clickGod(g)}
+              style={{
+                padding: 0,
+                width: "50%",
+                height: "100%",
+              }}
+            >
+              <Image src={g.tokenMetaUriData.image} style={{ width: "100%" }} />
+            </Button>
+          );
+        })}
       </View>
     </View>
   );

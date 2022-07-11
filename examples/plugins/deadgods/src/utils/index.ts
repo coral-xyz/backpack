@@ -93,9 +93,20 @@ export async function fetchDegodTokens(
   return await Promise.all([
     fetchStakedTokenAccounts(true, wallet, connection),
     fetchStakedTokenAccounts(false, wallet, connection),
-    [], // todo
+    fetchTokenAccounts(wallet, connection),
     [], // todo
   ]);
+}
+
+async function fetchTokenAccounts(
+  wallet: PublicKey,
+  connection: Connection
+): Promise<any> {
+  const resp = await customSplTokenAccounts(connection, wallet);
+  const tokens = resp.nftMetadata
+    .map((m) => m[1])
+    .filter((t) => t.tokenMetaUriData.name.startsWith("DeGod"));
+  return tokens;
 }
 
 async function fetchStakedTokenAccounts(
