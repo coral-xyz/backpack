@@ -226,7 +226,7 @@ export function startMobileIfNeeded() {
 
   // TODO: replace this with whatever the react-native api is.
   const MEM_STORAGE = {
-    "keyring-store": "locked",
+    // "keyring-store": "locked",
   };
   const handleGetLocalStorage = (key: string) => {
     const result = MEM_STORAGE[key];

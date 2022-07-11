@@ -2,6 +2,7 @@
   "expo": {
     "name": "Backpack",
     "slug": "backpack",
+    "owner": "coral-xyz",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -19,7 +20,8 @@
       "supportsTablet": true,
       "infoPlist": {
         "WKAppBoundDomains": ["localhost:9333"]
-      }
+      },
+      "bundleIdentifier": "community.coral.backpack"
     },
     "android": {
       "adaptiveIcon": {

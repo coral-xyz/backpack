@@ -27,6 +27,7 @@
     "react-native-url-polyfill": "^1.3.0",
     "react-native-web": "0.17.7",
     "react-native-webview": "11.18.1",
+    "react-router-native": "^6.3.0",
     "readable-stream": "^4.0.0",
     "recoil": "^0.7.3",
     "twrnc": "^3.3.3"
