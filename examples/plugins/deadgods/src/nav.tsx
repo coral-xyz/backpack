@@ -53,7 +53,6 @@ function TabContent({ tabScreens }) {
 function TabBar({ tabScreens, style }) {
   const theme = useTheme();
   const { activeTab, options, setActiveTab } = useTabContext();
-
   return (
     <View
       style={{
@@ -66,7 +65,6 @@ function TabBar({ tabScreens, style }) {
       }}
     >
       {tabScreens.map((screen) => {
-        console.log("armani rerendering screens", activeTab);
         const routedOptions = options({ route: { name: screen.props.name } });
         const focused = activeTab === screen.props.name;
         return (

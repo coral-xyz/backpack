@@ -19,7 +19,6 @@ import { Tabs, Tab } from "./nav";
 
 export function App() {
   const tokenAccounts = useDegodTokens();
-  const estimatedRewards = useEstimatedRewards();
   return tokenAccounts === null ? <_Loading /> : <_App />;
 }
 
@@ -70,7 +69,7 @@ function _App() {
         };
       }}
     >
-      <Tab name="staked" component={InnerTab2} />
+      <Tab name="staked" component={AppInner} />
       <Tab name="unstaked" component={InnerTab2} />
     </Tabs>
   );
