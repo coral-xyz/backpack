@@ -224,6 +224,7 @@ function FullApp() {
   const keyringStoreState = useKeyringStoreState();
   const needsOnboarding =
     keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
+  console.log("ONBOARDING", needsOnboarding);
   const isLocked =
     !needsOnboarding && keyringStoreState === KeyringStoreStateEnum.Locked;
 

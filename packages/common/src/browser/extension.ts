@@ -77,7 +77,7 @@ export class BrowserRuntimeExtension {
             });
     });
   }
-
+  browserextbrowserext;
   public static closeActiveTab(): void {
     chrome
       ? chrome.tabs.getCurrent((tab) => {

@@ -1,4 +1,4 @@
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil";
 import { UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE } from "@coral-xyz/common";
 import { KeyringStoreState } from "../atoms/keyring-store";
 import * as atoms from "../atoms";
@@ -6,6 +6,10 @@ import { useBackgroundClient } from "./useBackgroundClient";
 
 export function useKeyringStoreState(): KeyringStoreState {
   return useRecoilState(atoms.keyringStoreState)[0]!;
+}
+
+export function useResetKeyringStoreState() {
+  return useResetRecoilState(atoms.keyringStoreState);
 }
 
 export function useApprovedOrigins(): Array<string> {
