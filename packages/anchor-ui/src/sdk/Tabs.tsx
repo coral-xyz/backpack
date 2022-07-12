@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
-import { useTheme, View, Button, Text, ScrollBar } from "@coral-xyz/anchor-ui";
+import { View, Button, Text, ScrollBar } from "../elements";
+import { useTheme } from "../Context";
 
 export function Tabs({
   children,

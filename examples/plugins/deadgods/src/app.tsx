@@ -7,6 +7,8 @@ import {
   Image,
   Text,
   Button,
+  Tabs,
+  Tab,
 } from "@coral-xyz/anchor-ui";
 import * as anchor from "@project-serum/anchor";
 import {
@@ -15,7 +17,6 @@ import {
   gemFarmClient,
   DEAD_FARM,
 } from "./utils";
-import { Tabs, Tab } from "./nav";
 
 export function App() {
   const tokenAccounts = useDegodTokens();
