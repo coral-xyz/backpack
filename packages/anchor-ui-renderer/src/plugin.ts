@@ -639,6 +639,11 @@ class Dom {
           instance.style = updatePayload.style;
         }
         break;
+      case NodeKind.Text:
+        if (updatePayload.style) {
+          instance.style = updatePayload.style;
+        }
+        break;
       case NodeKind.TextField:
         if (updatePayload.value !== undefined && updatePayload.value !== null) {
           instance.props.value = updatePayload.value;
