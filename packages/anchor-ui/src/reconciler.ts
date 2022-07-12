@@ -130,6 +130,8 @@ const RECONCILER = ReactReconciler({
         return createButtonInstance(kind, props, r, h, o);
       case NodeKind.Loading:
         return createLoadingInstance(kind, props, r, h, o);
+      case NodeKind.ScrollBar:
+        return createScrollBarInstance(kind, props, r, h, o);
 
       case NodeKind.BalancesTable:
         return createBalancesTableInstance(kind, props, r, h, o);
@@ -189,7 +191,13 @@ const RECONCILER = ReactReconciler({
         }
         return payload;
       case NodeKind.Text:
-        return null;
+        let textPload: UpdateDiff | null = null;
+        if (oldProps.style !== newProps.style) {
+          textPload = {
+            style: newProps.style,
+          };
+        }
+        return textPload;
       case NodeKind.TextField:
         let pload: UpdateDiff | null = null;
         // @ts-ignore
@@ -207,6 +215,8 @@ const RECONCILER = ReactReconciler({
       case NodeKind.Button:
         return null;
       case NodeKind.Loading:
+        return null;
+      case NodeKind.ScrollBar:
         return null;
       case NodeKind.BalancesTable:
         return null;
@@ -279,6 +289,11 @@ const RECONCILER = ReactReconciler({
           instance.style = updatePayload.style;
         }
         break;
+      case NodeKind.Text:
+        if (updatePayload.style !== undefined && updatePayload.style !== null) {
+          instance.style = updatePayload.style;
+        }
+        break;
       case NodeKind.TextField:
         if (updatePayload.value !== undefined && updatePayload.value !== null) {
           // @ts-ignore
@@ -295,6 +310,8 @@ const RECONCILER = ReactReconciler({
         break;
       case NodeKind.Button:
         break;
+      case NodeKind.ScrollBar:
+        throw new Error("commitUpdate ScrollBar not yet implemented");
       case NodeKind.Loading:
         throw new Error("commitUpdate Loading not yet implemented");
       default:
@@ -608,6 +625,26 @@ function createLoadingInstance(
   };
 }
 
+function createScrollBarInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): ScrollBarNodeSerialized {
+  const id = h.nextId();
+  return {
+    id,
+    kind: NodeKind.ScrollBar,
+    props: {
+      ...props,
+      children: undefined,
+    },
+    style: {},
+    children: [],
+  };
+}
+
 function createBalancesTableInstance(
   _kind: NodeKind,
   props: NodeProps,
@@ -776,6 +813,7 @@ export type NodeSerialized =
   | ViewNodeSerialized
   | ButtonNodeSerialized
   | LoadingNodeSerialized
+  | ScrollBarNodeSerialized
   | BalancesTableNodeSerialized
   | BalancesTableHeadNodeSerialized
   | BalancesTableContentNodeSerialized
@@ -791,6 +829,7 @@ type NodeProps =
   | ViewProps
   | ButtonProps
   | LoadingProps
+  | ScrollBarProps
   | BalancesTableProps
   | BalancesTableHeadProps
   | BalancesTableContentProps
@@ -809,6 +848,7 @@ export enum NodeKind {
   View = "View",
   Button = "Button",
   Loading = "Loading",
+  ScrollBar = "ScrollBar",
   //
   // Widget.
   //
@@ -899,6 +939,18 @@ type ButtonProps = {
 //
 type LoadingNodeSerialized = DefNodeSerialized<NodeKind.Loading, LoadingProps>;
 type LoadingProps = {
+  style: Style;
+  children: undefined;
+};
+
+//
+// ScrollBar.
+//
+type ScrollBarNodeSerialized = DefNodeSerialized<
+  NodeKind.ScrollBar,
+  ScrollBarProps
+>;
+type ScrollBarProps = {
   style: Style;
   children: undefined;
 };

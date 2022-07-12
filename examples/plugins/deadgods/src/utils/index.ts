@@ -58,7 +58,6 @@ export function useEstimatedRewards() {
           true
         );
         setEstimatedRewards(rewards.toFixed(4));
-
         const interval = setInterval(() => {
           const newRewards = getEstimatedRewards(
             farmer.rewardA,

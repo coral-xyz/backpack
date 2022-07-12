@@ -154,6 +154,7 @@ function PluginTableDetailPage() {
 function SimulatorPage() {
   const props = { pluginUrl: "http://localhost:9990" };
   const refresh = useJavaScriptRefresh(props.pluginUrl);
+  console.log("refresh here", refresh);
   return refresh % 2 === 1 ? <div></div> : <PluginDisplay {...props} />;
 }
 

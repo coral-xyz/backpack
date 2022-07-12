@@ -7,7 +7,8 @@ import {
   Image,
   Text,
   Button,
-  Loading,
+  Tabs,
+  Tab,
 } from "@coral-xyz/anchor-ui";
 import * as anchor from "@project-serum/anchor";
 import {
@@ -19,18 +20,11 @@ import {
 
 export function App() {
   const tokenAccounts = useDegodTokens();
-  const estimatedRewards = useEstimatedRewards();
+  return tokenAccounts === null ? <_Loading /> : <_App />;
+}
 
-  return tokenAccounts === null ? (
-    <_Loading />
-  ) : (
-    <_App
-      deadStaked={tokenAccounts.dead}
-      deadUnstaked={tokenAccounts.deadUnstaked}
-      aliveStaked={tokenAccounts.alive}
-      estimatedRewards={estimatedRewards}
-    />
-  );
+function InnerTab2() {
+  return <View style={{ color: "red" }}>inner tab 2 here</View>;
 }
 
 function _Loading() {
@@ -55,33 +49,53 @@ function _Loading() {
   );
 }
 
-function _App({
-  deadStaked,
-  deadUnstaked,
-  aliveStaked,
-  aliveUnstaked,
-  estimatedRewards,
-}: any) {
+function _App() {
+  const theme = useTheme();
   return (
-    <View>
-      {deadStaked.length > 0 && (
-        <AppInner
-          stakedGods={deadStaked}
-          unstakedGods={deadUnstaked}
-          isDead={true}
-          estimatedRewards={estimatedRewards}
-        />
-      )}
-    </View>
+    <Tabs
+      options={({ route }) => {
+        return {
+          tabBarIcon: ({ focused }) => {
+            const color = focused
+              ? theme.custom.colors.activeNavButton
+              : theme.custom.colors.secondary;
+            if (route.name === "staked") {
+              return <View></View>;
+            } else {
+              return <View></View>;
+            }
+          },
+          tabBarActiveTintColor: theme.custom.colors.activeNavButton,
+          tabBarInactiveTintColor: theme.custom.colors.secondary,
+        };
+      }}
+    >
+      <Tab name="staked" component={AppInner} />
+      <Tab name="unstaked" component={InnerTab2} />
+    </Tabs>
   );
 }
 
-function AppInner({ stakedGods, unstakedGods, isDead, estimatedRewards }: any) {
+function AppInner() {
+  const isDead = false;
+  const tokenAccounts = useDegodTokens()!;
+  const estimatedRewards = useEstimatedRewards();
+  console.log("loding ehre", tokenAccounts, estimatedRewards);
+  if (tokenAccounts === null) return <View></View>;
   return (
-    <View>
+    <View
+      style={{
+        marginTop: "24px",
+        marginBottom: "38px",
+      }}
+    >
       <Header isDead={isDead} estimatedRewards={estimatedRewards} />
-      <GodGrid isDead={isDead} gods={stakedGods} isStaked={true} />
-      <GodGrid isDead={isDead} gods={unstakedGods} isStaked={false} />
+      <GodGrid isDead={isDead} gods={tokenAccounts.dead} isStaked={true} />
+      <GodGrid
+        isDead={isDead}
+        gods={tokenAccounts.deadUnstaked}
+        isStaked={false}
+      />
     </View>
   );
 }
@@ -175,11 +189,7 @@ function Header({ isDead, estimatedRewards }: any) {
     })();
   };
   return (
-    <View
-      style={{
-        marginTop: "24px",
-      }}
-    >
+    <View>
       <View>
         <Text
           style={{
