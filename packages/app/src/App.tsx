@@ -4,16 +4,19 @@ import {
 } from "@coral-xyz/common";
 import {
   NotificationsProvider,
+  useActiveWallet,
   useBackgroundClient,
   useBackgroundKeepAlive,
   useKeyringStoreState,
 } from "@coral-xyz/recoil";
+import { useForm } from "react-hook-form";
 import { Text } from "react-native";
 import { NativeRouter, Route, Routes, useNavigate } from "react-router-native";
 import tw from "twrnc";
 import { CustomButton } from "./components/CustomButton";
+import { ErrorMessage } from "./components/ErrorMessage";
 import { PasswordInput } from "./components/PasswordInput";
-import { __TEMPORARY_FIXED_PASSWORD_TO_UNLOCK_BACKPACK__ } from "./lib/toRemove";
+import { ButtonFooter, MainContent } from "./components/Templates";
 import NeedsOnboarding from "./screens/NeedsOnboarding";
 import CreateWallet from "./screens/NeedsOnboarding/CreateWallet";
 
@@ -35,45 +38,76 @@ const HomeScreen = () => {
 const UnlockedScreen = () => {
   const background = useBackgroundClient();
   const navigate = useNavigate();
+  const wallet = useActiveWallet();
 
   return (
     <>
-      <Text style={tw`text-white`}>Unlocked</Text>
-      <CustomButton
-        text="Lock"
-        onPress={async () => {
-          await background.request({
-            method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-            params: [],
-          });
-          navigate("/");
-        }}
-      />
+      <MainContent>
+        <Text style={tw`text-white text-xs`}>
+          Unlocked: {wallet.publicKey.toString()}
+        </Text>
+      </MainContent>
+      <ButtonFooter>
+        <CustomButton
+          text="Lock"
+          onPress={async () => {
+            await background.request({
+              method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+              params: [],
+            });
+            navigate("/");
+          }}
+        />
+      </ButtonFooter>
     </>
   );
 };
 
+interface FormData {
+  password: string;
+}
+
 const LockedScreen = () => {
   const background = useBackgroundClient();
   const navigate = useNavigate();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setError,
+  } = useForm<FormData>();
+
+  const onSubmit = async ({ password }: FormData) => {
+    // TODO: fix issue with uncaught error with incorrect password
+    try {
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+        params: [password],
+      });
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+      setError("password", { message: "Invalid password" });
+    }
+  };
 
   return (
     <>
-      <Text style={tw`text-white`}>Locked</Text>
-      <PasswordInput
-        placeholder="Password"
-        value={__TEMPORARY_FIXED_PASSWORD_TO_UNLOCK_BACKPACK__}
-      />
-      <CustomButton
-        text="Unlock"
-        onPress={async () => {
-          await background.request({
-            method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-            params: [__TEMPORARY_FIXED_PASSWORD_TO_UNLOCK_BACKPACK__],
-          });
-          navigate("/");
-        }}
-      />
+      <MainContent>
+        <Text style={tw`text-white`}>Locked</Text>
+        <PasswordInput
+          placeholder="Password"
+          name="password"
+          control={control}
+          rules={{
+            required: "You must enter a password",
+          }}
+        />
+        <ErrorMessage for={errors.password} />
+      </MainContent>
+      <ButtonFooter>
+        <CustomButton text="Unlock" onPress={handleSubmit(onSubmit)} />
+      </ButtonFooter>
     </>
   );
 };
