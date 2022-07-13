@@ -4,7 +4,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Text } from "react-native";
 import { useNavigate } from "react-router-native";
@@ -17,35 +17,33 @@ import { ButtonFooter, MainContent } from "../../../components/Templates";
 import { useRequest } from "../../../lib/useRequest";
 
 export default function CreateWallet() {
-  return <CreatePassword />;
+  const [password, setPassword] = useState("");
+  const mnemonic = useRequest(UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE, 128);
+
+  return password ? (
+    <ShowSecretRecoveryPhrase password={password} mnemonic={mnemonic} />
+  ) : (
+    <CreatePassword setPassword={setPassword} />
+  );
 }
 
-interface FormData {
+interface CreatePasswordFormData {
   password: string;
   passwordConfirmation: string;
   agreedToTerms: boolean;
 }
 
-const CreatePassword = () => {
-  const mnemonic = useRequest(UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE, 128);
-  const background = useBackgroundClient();
-
-  const navigate = useNavigate();
+const CreatePassword: React.FC<{
+  setPassword: React.Dispatch<React.SetStateAction<string>>;
+}> = ({ setPassword }) => {
+  const onSubmit = ({ password }: CreatePasswordFormData) =>
+    setPassword(password);
   const {
     control,
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm<FormData>();
-
-  const onSubmit = async ({ password }: FormData) => {
-    await background.request({
-      method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-      params: [mnemonic, DerivationPath.Bip44Change, password, [0]],
-    });
-    navigate("/");
-  };
-
+  } = useForm<CreatePasswordFormData>();
   return (
     <>
       <MainContent>
@@ -89,12 +87,41 @@ const CreatePassword = () => {
         <ErrorMessage for={errors.agreedToTerms} />
       </MainContent>
       <ButtonFooter>
-        {mnemonic && (
-          <>
-            <Text style={tw`text-white`}>{mnemonic}</Text>
-            <CustomButton text="Next" onPress={handleSubmit(onSubmit)} />
-          </>
-        )}
+        <CustomButton text="Next" onPress={handleSubmit(onSubmit)} />
+      </ButtonFooter>
+    </>
+  );
+};
+
+const ShowSecretRecoveryPhrase: React.FC<{
+  password: string;
+  mnemonic: string;
+}> = ({ password, mnemonic }) => {
+  const background = useBackgroundClient();
+  const navigate = useNavigate();
+
+  const onSubmit = async () => {
+    await background.request({
+      method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
+      params: [mnemonic, DerivationPath.Bip44Change, password, [0]],
+    });
+    navigate("/");
+  };
+
+  return (
+    <>
+      <MainContent>
+        <Text style={tw`text-white text-2xl font-bold`}>
+          Secret recovery phrase
+        </Text>
+        <Text style={tw`text-gray-400`}>
+          This is the only way to recover your account if you lose your device.
+          Write it down and store it in a safe place.
+        </Text>
+        <Text style={tw`text-white p-10`}>{mnemonic}</Text>
+      </MainContent>
+      <ButtonFooter>
+        <CustomButton text="Continue" onPress={onSubmit} />
       </ButtonFooter>
     </>
   );
