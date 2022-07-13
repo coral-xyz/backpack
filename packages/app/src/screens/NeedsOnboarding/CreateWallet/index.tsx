@@ -6,13 +6,14 @@ import {
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Text, View } from "react-native";
+import { Text } from "react-native";
 import { useNavigate } from "react-router-native";
 import tw from "twrnc";
 import { CheckBox } from "../../../components/CheckBox";
 import { CustomButton } from "../../../components/CustomButton";
 import { ErrorMessage } from "../../../components/ErrorMessage";
 import { PasswordInput } from "../../../components/PasswordInput";
+import { ButtonFooter, MainContent } from "../../../components/Templates";
 import { useRequest } from "../../../lib/useRequest";
 
 export default function CreateWallet() {
@@ -37,17 +38,17 @@ const CreatePassword = () => {
     watch,
   } = useForm<FormData>();
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async ({ password }: FormData) => {
     await background.request({
       method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-      params: [mnemonic, DerivationPath.Bip44Change, data.password, [0]],
+      params: [mnemonic, DerivationPath.Bip44Change, password, [0]],
     });
     navigate("/");
   };
 
   return (
-    <View style={tw`p-4 flex-1`}>
-      <View style={tw`flex-grow`}>
+    <>
+      <MainContent>
         <Text style={tw`text-white text-2xl font-bold`}>Create a password</Text>
         <Text style={tw`text-[#71717A] text-lg mb-5`}>
           You'll need this to unlock Backpack.
@@ -86,15 +87,15 @@ const CreatePassword = () => {
           label="I agree to the terms"
         />
         <ErrorMessage for={errors.agreedToTerms} />
-      </View>
-      <View>
+      </MainContent>
+      <ButtonFooter>
         {mnemonic && (
           <>
             <Text style={tw`text-white`}>{mnemonic}</Text>
             <CustomButton text="Next" onPress={handleSubmit(onSubmit)} />
           </>
         )}
-      </View>
-    </View>
+      </ButtonFooter>
+    </>
   );
 };
