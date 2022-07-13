@@ -8,12 +8,13 @@ import {
   useBackgroundKeepAlive,
   useKeyringStoreState,
 } from "@coral-xyz/recoil";
+import { useForm } from "react-hook-form";
 import { Text } from "react-native";
 import { NativeRouter, Route, Routes, useNavigate } from "react-router-native";
 import tw from "twrnc";
 import { CustomButton } from "./components/CustomButton";
+import { ErrorMessage } from "./components/ErrorMessage";
 import { PasswordInput } from "./components/PasswordInput";
-import { __TEMPORARY_FIXED_PASSWORD_TO_UNLOCK_BACKPACK__ } from "./lib/toRemove";
 import NeedsOnboarding from "./screens/NeedsOnboarding";
 import CreateWallet from "./screens/NeedsOnboarding/CreateWallet";
 
@@ -53,27 +54,46 @@ const UnlockedScreen = () => {
   );
 };
 
+interface FormData {
+  password: string;
+}
+
 const LockedScreen = () => {
   const background = useBackgroundClient();
   const navigate = useNavigate();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setError,
+  } = useForm<FormData>();
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+        params: [data.password],
+      });
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+      setError("password", { message: "Invalid password" });
+    }
+  };
 
   return (
     <>
       <Text style={tw`text-white`}>Locked</Text>
       <PasswordInput
         placeholder="Password"
-        value={__TEMPORARY_FIXED_PASSWORD_TO_UNLOCK_BACKPACK__}
-      />
-      <CustomButton
-        text="Unlock"
-        onPress={async () => {
-          await background.request({
-            method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-            params: [__TEMPORARY_FIXED_PASSWORD_TO_UNLOCK_BACKPACK__],
-          });
-          navigate("/");
+        name="password"
+        control={control}
+        rules={{
+          required: "You must enter a password",
         }}
       />
+      <ErrorMessage for={errors.password} />
+      <CustomButton text="Unlock" onPress={handleSubmit(onSubmit)} />
     </>
   );
 };

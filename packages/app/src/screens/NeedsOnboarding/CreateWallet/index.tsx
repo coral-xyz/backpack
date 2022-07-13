@@ -5,58 +5,96 @@ import {
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import React from "react";
-import { Text } from "react-native";
+import { useForm } from "react-hook-form";
+import { Text, View } from "react-native";
 import { useNavigate } from "react-router-native";
 import tw from "twrnc";
+import { CheckBox } from "../../../components/CheckBox";
 import { CustomButton } from "../../../components/CustomButton";
+import { ErrorMessage } from "../../../components/ErrorMessage";
 import { PasswordInput } from "../../../components/PasswordInput";
-import { __TEMPORARY_FIXED_PASSWORD_TO_UNLOCK_BACKPACK__ } from "../../../lib/toRemove";
 import { useRequest } from "../../../lib/useRequest";
 
 export default function CreateWallet() {
   return <CreatePassword />;
 }
 
+interface FormData {
+  password: string;
+  passwordConfirmation: string;
+  agreedToTerms: boolean;
+}
+
 const CreatePassword = () => {
   const mnemonic = useRequest(UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE, 128);
   const background = useBackgroundClient();
+
   const navigate = useNavigate();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm<FormData>();
+
+  const onSubmit = async (data: FormData) => {
+    await background.request({
+      method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
+      params: [mnemonic, DerivationPath.Bip44Change, data.password, [0]],
+    });
+    navigate("/");
+  };
 
   return (
-    <>
-      <Text style={tw`text-white text-2xl`}>Create a password</Text>
-      <Text style={tw`text-[#71717A] text-lg`}>
-        You'll need this to unlock Backpack.
-      </Text>
-      <PasswordInput
-        placeholder="Password"
-        value={__TEMPORARY_FIXED_PASSWORD_TO_UNLOCK_BACKPACK__}
-      />
-      <PasswordInput
-        placeholder="Confirm Password"
-        value={__TEMPORARY_FIXED_PASSWORD_TO_UNLOCK_BACKPACK__}
-      />
-      <Text style={tw`text-gray-400`}>I agree to the Terms of Service</Text>
-      {mnemonic && (
-        <>
-          <Text style={tw`text-white`}>{mnemonic}</Text>
-          <CustomButton
-            text="Create wallet"
-            onPress={async () => {
-              await background.request({
-                method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-                params: [
-                  mnemonic,
-                  DerivationPath.Bip44Change,
-                  __TEMPORARY_FIXED_PASSWORD_TO_UNLOCK_BACKPACK__,
-                  [0],
-                ],
-              });
-              navigate("/");
-            }}
-          />
-        </>
-      )}
-    </>
+    <View style={tw`p-4 flex-1`}>
+      <View style={tw`flex-grow`}>
+        <Text style={tw`text-white text-2xl font-bold`}>Create a password</Text>
+        <Text style={tw`text-[#71717A] text-lg mb-5`}>
+          You'll need this to unlock Backpack.
+        </Text>
+        <PasswordInput
+          placeholder="Password"
+          name="password"
+          control={control}
+          rules={{
+            required: "You must specify a password",
+            minLength: {
+              value: 8,
+              message: "Password must be at least 8 characters",
+            },
+          }}
+        />
+        <ErrorMessage for={errors.password} />
+
+        <PasswordInput
+          placeholder="Confirm Password"
+          name="passwordConfirmation"
+          control={control}
+          rules={{
+            validate: (val: string) => {
+              if (val !== watch("password")) {
+                return "Passwords do not match";
+              }
+            },
+          }}
+        />
+        <ErrorMessage for={errors.passwordConfirmation} />
+
+        <CheckBox
+          name="agreedToTerms"
+          control={control}
+          label="I agree to the terms"
+        />
+        <ErrorMessage for={errors.agreedToTerms} />
+      </View>
+      <View>
+        {mnemonic && (
+          <>
+            <Text style={tw`text-white`}>{mnemonic}</Text>
+            <CustomButton text="Next" onPress={handleSubmit(onSubmit)} />
+          </>
+        )}
+      </View>
+    </View>
   );
 };
