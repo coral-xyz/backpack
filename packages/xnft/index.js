@@ -6,6 +6,7 @@
 const { Parcel } = require("@parcel/core");
 const { program } = require("commander");
 const { resolve } = require("path");
+const { SIMULATOR_PORT } = { SIMULATOR_PORT: 9933 }; // TODO: replace with import.
 
 const options = {
   entries: "./src/index.tsx",
@@ -57,7 +58,7 @@ program.command("dev").action(async () => {
   const express = require("express");
   const fs = require("fs");
   const app = express();
-  const port = 9990;
+  const port = SIMULATOR_PORT;
 
   // https://parceljs.org/features/parcel-api/#watching
   const bundler = new Parcel({

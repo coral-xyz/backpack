@@ -1,6 +1,10 @@
 import { RecoilRoot } from "recoil";
+import { HashRouter } from "react-router-dom";
 import { QUERY_CONNECT_HARDWARE, QUERY_ONBOARDING } from "@coral-xyz/common";
-import { useBackgroundKeepAlive } from "@coral-xyz/recoil";
+import {
+  useBackgroundKeepAlive,
+  NotificationsProvider,
+} from "@coral-xyz/recoil";
 import { WithSuspense } from "../app/Router";
 import { ConnectHardware } from "../components/Settings/ConnectHardware";
 import { Onboarding } from "../components/Onboarding";
@@ -15,9 +19,11 @@ import { WithTheme } from "../app/theme";
 //
 function Options() {
   return (
-    <RecoilRoot>
-      <_Options />
-    </RecoilRoot>
+    <HashRouter>
+      <RecoilRoot>
+        <_Options />
+      </RecoilRoot>
+    </HashRouter>
   );
 }
 
@@ -25,9 +31,11 @@ function _Options() {
   useBackgroundKeepAlive();
   return (
     <WithTheme>
-      <WithSuspense>
-        <Router />
-      </WithSuspense>
+      <NotificationsProvider>
+        <WithSuspense>
+          <Router />
+        </WithSuspense>
+      </NotificationsProvider>
     </WithTheme>
   );
 }

@@ -219,3 +219,5 @@ export const QUERY_APPROVE_TRANSACTION = "approve-tx=true";
 export const QUERY_APPROVE_MESSAGE = "approve-message=true";
 export const QUERY_CONNECT_HARDWARE = "connect-hardware=true";
 export const QUERY_ONBOARDING = "onboarding=true";
+
+export const SIMULATOR_PORT = 9933;

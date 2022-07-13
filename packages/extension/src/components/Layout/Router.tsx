@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { SIMULATOR_PORT } from "@coral-xyz/common";
 import {
   useDecodedSearchParams,
   useBootstrap,
@@ -9,15 +10,12 @@ import {
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { IconButton } from "@mui/material";
-import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import TransitEnterexitIcon from "@mui/icons-material/TransitEnterexit";
 import { Balances } from "../Unlocked/Balances";
 import { Token } from "../Unlocked/Balances/TokensWidget/Token";
-import {
-  PluginDisplay,
-  Apps,
-  PluginTableDetailDisplay,
-} from "../Unlocked/Apps";
+import { Apps } from "../Unlocked/Apps";
+import { PluginDisplay } from "../Unlocked/Apps/Plugin";
+import { Simulator } from "../Unlocked/Apps/Simulator";
 import { Nfts } from "../Unlocked/Nfts";
 import { SettingsButton } from "../Settings";
 
@@ -111,7 +109,6 @@ function _Router() {
       <Route path="/apps" element={<AppsPage />} />
       <Route path="/token" element={<TokenPage />} />
       <Route path="/plugins" element={<PluginPage />} />
-      <Route path="/plugin-table-detail" element={<PluginTableDetailPage />} />
       <Route path="/simulator" element={<SimulatorPage />} />
       <Route path="*" element={<Redirect />} />
     </Routes>
@@ -145,43 +142,6 @@ function PluginPage() {
   return <PluginDisplay {...props} />;
 }
 
-function PluginTableDetailPage() {
-  const { props } = useDecodedSearchParams<SearchParamsFor.Plugin>();
-  return <PluginTableDetailDisplay {...props} />;
-}
-
-// The refresh code is a big hack. :)
 function SimulatorPage() {
-  const props = { pluginUrl: "http://localhost:9990" };
-  const refresh = useJavaScriptRefresh(props.pluginUrl);
-  console.log("refresh here", refresh);
-  return refresh % 2 === 1 ? <div></div> : <PluginDisplay {...props} />;
-}
-
-function useJavaScriptRefresh(url: string): number {
-  const [refresh, setRefresh] = useState(0);
-
-  useEffect(() => {
-    let previous: any = null;
-    const i = setInterval(() => {
-      (async () => {
-        const js = await (await fetch(url)).text();
-        if (previous !== null && previous !== js) {
-          setRefresh((r) => r + 1);
-        }
-        previous = js;
-      })();
-    }, 900);
-    return () => clearInterval(i);
-  }, []);
-
-  useEffect(() => {
-    if (refresh % 2 === 1) {
-      setTimeout(() => {
-        setRefresh((r) => r + 1);
-      }, 10);
-    }
-  }, [refresh]);
-
-  return refresh;
+  return <Simulator pluginUrl={`http://localhost:${SIMULATOR_PORT}`} />;
 }

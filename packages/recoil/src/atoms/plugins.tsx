@@ -1,4 +1,5 @@
 import { selector } from "recoil";
+import { SIMULATOR_PORT } from "@coral-xyz/common";
 import { activeWallet, connectionUrl } from "./wallet";
 
 const OPEN_ORDERS_PLUGIN_URL = pluginURL("app");
@@ -12,7 +13,7 @@ const MANGO_TABLE_PLUGIN_URL = pluginURL("table-mango");
 const DEGODS_TABLE_PLUGIN_URL = pluginURL("deadgods");
 const ANCHOR_TABLE_PLUGIN_URL = pluginURL("table-anchor");
 const PSYFI_TABLE_PLUGIN_URL = pluginURL("table-psyfi");
-const SIMULATOR_URL = "http://localhost:9990";
+const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
 
 function pluginURL(pluginName: string) {
   return [

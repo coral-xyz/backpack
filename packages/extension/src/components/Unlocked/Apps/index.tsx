@@ -1,14 +1,6 @@
-import { useEffect, useState } from "react";
 import { Grid, Button, Typography } from "@mui/material";
 import { styles } from "@coral-xyz/themes";
-import { PluginRenderer } from "@coral-xyz/anchor-ui-renderer";
-import {
-  useAppIcons,
-  usePlugins,
-  useTablePlugins,
-  useNavigation,
-} from "@coral-xyz/recoil";
-import type { SearchParamsFor } from "@coral-xyz/recoil";
+import { useAppIcons, useNavigation } from "@coral-xyz/recoil";
 import { NAV_COMPONENT_PLUGINS } from "@coral-xyz/common";
 import { getSvgPath } from "figma-squircle";
 
@@ -135,25 +127,4 @@ function AppIcon({
       <Typography className={classes.pluginTitle}>{title}</Typography>
     </div>
   );
-}
-
-export function PluginDisplay({ pluginUrl }: SearchParamsFor.Plugin["props"]) {
-  const plugins = usePlugins();
-  const p = plugins.find((p) => p.iframeUrl === encodeURI(pluginUrl));
-
-  if (p === undefined) {
-    throw new Error("unable to find plugin");
-  }
-  return <PluginRenderer key={p.iframeUrl} plugin={p} />;
-}
-
-export function PluginTableDetailDisplay({
-  pluginUrl,
-}: SearchParamsFor.Plugin["props"]) {
-  const plugins = useTablePlugins();
-  const p = plugins.find((p) => p.iframeUrl === encodeURI(pluginUrl));
-  if (p === undefined) {
-    throw new Error("unable to find plugin");
-  }
-  return <PluginRenderer key={p.iframeUrl} plugin={p} />;
 }
