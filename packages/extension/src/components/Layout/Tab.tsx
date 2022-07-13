@@ -1,8 +1,8 @@
 import { Tabs, Tab } from "@mui/material";
-import { AttachMoney as Money, Image, Apps } from "@mui/icons-material";
-import { styles } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useTab, useNavigation } from "@coral-xyz/recoil";
 import { TAB_NFTS, TAB_APPS, TAB_BALANCES } from "@coral-xyz/common";
+import { BalancesIcon, GridIcon, ImageIcon } from "../Icon";
 
 const useStyles = styles((theme) => ({
   container: {
@@ -45,6 +45,7 @@ export function WithTabs(props: any) {
 
 function TabBar() {
   const classes = useStyles();
+  const theme = useCustomTheme();
   const { tab, setTab } = useTab();
   const { url } = useNavigation();
   const hideTabs = url.startsWith("/plugins") || url.startsWith("/simulator");
@@ -76,19 +77,43 @@ function TabBar() {
         value={TAB_BALANCES}
         disableRipple
         className={classes.tab}
-        icon={<Money className={className(TAB_BALANCES)} />}
+        icon={
+          <BalancesIcon
+            fill={
+              tab === TAB_BALANCES
+                ? theme.custom.colors.tabIconSelected
+                : theme.custom.colors.secondary
+            }
+          />
+        }
       />
       <Tab
         value={TAB_APPS}
         disableRipple
         className={classes.tab}
-        icon={<Apps className={className(TAB_APPS)} />}
+        icon={
+          <GridIcon
+            fill={
+              tab === TAB_APPS
+                ? theme.custom.colors.tabIconSelected
+                : theme.custom.colors.secondary
+            }
+          />
+        }
       />
       <Tab
         value={TAB_NFTS}
         disableRipple
         className={classes.tab}
-        icon={<Image className={className(TAB_NFTS)} />}
+        icon={
+          <ImageIcon
+            fill={
+              tab === TAB_NFTS
+                ? theme.custom.colors.tabIconSelected
+                : theme.custom.colors.secondary
+            }
+          />
+        }
       />
     </Tabs>
   );
