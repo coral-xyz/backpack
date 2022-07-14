@@ -81,6 +81,12 @@ const options = {
   module: {
     rules: [
       {
+        test: /\.m?js$/,
+        resolve: {
+          fullySpecified: false, // disable the behaviour
+        },
+      },
+      {
         test: /\.css$/,
         use: [
           {

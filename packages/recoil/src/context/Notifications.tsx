@@ -40,6 +40,7 @@ export function NotificationsProvider(props: any) {
   const setActiveWallet = useSetRecoilState(atoms.activeWallet);
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
   const setConnectionUrl = useSetRecoilState(atoms.connectionUrl);
+  const setNav = useSetRecoilState(atoms.navData);
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   const navigate = useNavigate();
 
@@ -200,21 +201,6 @@ export function NotificationsProvider(props: any) {
       });
     };
     const handleNavigationUrlDidChange = (notif: Notification) => {
-      //
-      // If we've popped the table detail view, then we need to notify
-      // the plugin to update its internal state.
-      //
-      const oldUrl = notif.data.oldUrl;
-      if (oldUrl && oldUrl.startsWith("/plugin-table-detail")) {
-        const search = new URLSearchParams(oldUrl.split("?")[1]);
-        const { props } =
-          useDecodedSearchParams<SearchParamsFor.Plugin>(search);
-        const plugin = getPlugin({ url: props.pluginUrl });
-        plugin.pushNotification({
-          name: PLUGIN_NOTIFICATION_NAVIGATION_POP,
-          data: {},
-        });
-      }
       navigate(notif.data.url);
     };
 

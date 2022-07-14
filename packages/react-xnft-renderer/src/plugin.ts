@@ -12,7 +12,6 @@ import {
   Event,
   PluginServer,
   RpcResponse,
-  NAV_COMPONENT_PLUGIN_TABLE_DETAIL,
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
@@ -385,20 +384,14 @@ export class Plugin {
     }
   }
 
+  // todo: can delete with the widget refactor probably
   private async _handleNavPush(): Promise<RpcResponse> {
-    this._navPushFn!({
-      title: this.iframeUrl,
-      componentId: NAV_COMPONENT_PLUGIN_TABLE_DETAIL,
-      componentProps: {
-        pluginUrl: this.iframeUrl,
-      },
-    });
-    return ["success"];
+    throw new Error("not implemented");
   }
 
+  // todo: can delete with the widget refactor probably
   private async _handleNavPop(): Promise<RpcResponse> {
-    // todo
-    return ["success"];
+    throw new Error("not implemented");
   }
 
   private async _handleSignTransaction(

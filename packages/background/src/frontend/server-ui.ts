@@ -35,9 +35,9 @@ import {
   UI_RPC_METHOD_KEYNAME_UPDATE,
   UI_RPC_METHOD_PASSWORD_UPDATE,
   UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE,
-  UI_RPC_METHOD_NAVIGATION_UPDATE,
+  UI_RPC_METHOD_NAVIGATION_PUSH,
+  UI_RPC_METHOD_NAVIGATION_POP,
   UI_RPC_METHOD_NAVIGATION_READ,
-  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
@@ -165,12 +165,12 @@ async function handle<T = any>(
     //
     // Navigation.
     //
-    case UI_RPC_METHOD_NAVIGATION_UPDATE:
-      return await handleNavigationUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_NAVIGATION_PUSH:
+      return await handleNavigationPush(ctx, params[0]);
+    case UI_RPC_METHOD_NAVIGATION_POP:
+      return await handleNavigationPop(ctx);
     case UI_RPC_METHOD_NAVIGATION_READ:
-      return await handleNavigationRead(ctx, params[0]);
-    case UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ:
-      return await handleNavigationActiveTabRead(ctx);
+      return await handleNavRead(ctx);
     case UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE:
       return await handleNavigationActiveTabUpdate(ctx, params[0]);
     //
@@ -411,26 +411,25 @@ async function handleMnemonicCreate(
   return [resp];
 }
 
-async function handleNavigationUpdate(
+async function handleNavigationPush(
   ctx: Context<Backend>,
-  navData: any
+  url: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.navigationUpdate(navData);
+  const resp = await ctx.backend.navigationPush(url);
   return [resp];
 }
 
-async function handleNavigationRead(
-  ctx: Context<Backend>,
-  nav: string
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.navigationRead(nav);
-  return [resp];
-}
-
-async function handleNavigationActiveTabRead(
+async function handleNavigationPop(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.navigationActiveTabRead();
+  const resp = await ctx.backend.navigationPop();
+  return [resp];
+}
+
+async function handleNavRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.navRead();
   return [resp];
 }
 

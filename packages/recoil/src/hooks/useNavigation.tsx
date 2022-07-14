@@ -1,75 +1,57 @@
-import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { useRecoilValue, useRecoilState, useSetRecoilState } from "recoil";
+import { useSearchParams, useLocation } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import {
+  UI_RPC_METHOD_NAVIGATION_PUSH,
+  UI_RPC_METHOD_NAVIGATION_POP,
+  TAB_SET,
+} from "@coral-xyz/common";
 import * as atoms from "../atoms";
 
 type NavigationContext = {
   isRoot: boolean;
   title: string;
-  url: string;
   push: any;
   pop: any;
-  navButtonRight: any | null;
-  setNavButtonRight: (b: null | any) => void;
-  navButtonLeft: any | null;
-  setNavButtonLeft: (b: null | any) => void;
-  style: React.CSSProperties;
-  setStyle: (style: React.CSSProperties) => void;
 };
 
-export module SearchParamsFor {
-  export interface Plugin {
-    props: { pluginUrl: string };
-  }
-  export interface Tab {
-    props: {};
-  }
-  export interface Token {
-    props: { address: string; blockchain: string };
-  }
-}
-type ExtensionSearchParams = { title?: string } & (
-  | SearchParamsFor.Plugin
-  | SearchParamsFor.Tab
-  | SearchParamsFor.Token
-);
-
 export function useNavigation(): NavigationContext {
-  const activeTab = useRecoilValue(atoms.navigationActiveTab)!;
-  const navData = useRecoilValue(atoms.navigationDataMap(activeTab));
-  const [navButtonRight, setNavButtonRight] = useRecoilState(
-    atoms.navigationRightButton
-  );
-  const [navButtonLeft, setNavButtonLeft] = useRecoilState(
-    atoms.navigationLeftButton
-  );
-  const [style, setStyle] = useRecoilState(atoms.navigationStyle);
+  const location = useLocation();
   const { push, pop } = useNavigationSegue();
-  const isRoot = navData.urls.length === 1;
-  const url = navData.urls[navData.urls.length - 1];
-  const params = new URLSearchParams(url);
-  const title =
-    useDecodedSearchParams<ExtensionSearchParams>(params).title || "";
+
+  const pathname = location.pathname;
+  const isRoot = TAB_SET.has(pathname.slice(1));
+  const params = new URLSearchParams(location.search);
+  let title = isRoot
+    ? ""
+    : useDecodedSearchParams<ExtensionSearchParams>(params).title || "";
+
   return {
     isRoot,
-    url,
     title,
     push,
     pop,
-    navButtonRight,
-    setNavButtonRight,
-    navButtonLeft,
-    setNavButtonLeft,
-    style,
-    setStyle,
   };
 }
 
-export function useNavigationSegue() {
-  const pushUrl = useSetRecoilState(atoms.navigationUrlPush);
-  const popUrl = useSetRecoilState(atoms.navigationUrlPop);
+export function useRedirectUrl(): string {
+  const nav = useRecoilValue(atoms.navData);
+  const navData = nav.data[nav.activeTab];
+  const url = navData.urls[navData.urls.length - 1];
+  return url;
+}
 
-  const push = ({
+// Assumes all urls are of the form `/<tab>/<component-id>/.../`.
+export function useTab(): string {
+  const location = useLocation();
+  const pathname = location.pathname;
+  const tab = pathname.split("/")[1];
+  return tab;
+}
+
+export function useNavigationSegue() {
+  const background = useRecoilValue(atoms.backgroundClient);
+
+  const push = async ({
     title,
     componentId,
     componentProps,
@@ -82,23 +64,21 @@ export function useNavigationSegue() {
       props: componentProps,
       title,
     });
-    pushUrl(url);
+    return await background.request({
+      method: UI_RPC_METHOD_NAVIGATION_PUSH,
+      params: [url],
+    });
   };
-  const pop = () => {
-    popUrl();
+  const pop = async () => {
+    return await background.request({
+      method: UI_RPC_METHOD_NAVIGATION_POP,
+      params: [],
+    });
   };
 
   return {
     push,
     pop,
-  };
-}
-
-export function useTab(): { tab: string; setTab: (tab: string) => void } {
-  const [tab, setTab] = useRecoilState(atoms.navigationActiveTab);
-  return {
-    tab,
-    setTab,
   };
 }
 
@@ -139,3 +119,21 @@ function makeParams(ob = {}) {
     )
     .join("&");
 }
+
+export module SearchParamsFor {
+  export interface Plugin {
+    props: { pluginUrl: string };
+  }
+  export interface Tab {
+    props: {};
+  }
+  export interface Token {
+    props: { address: string; blockchain: string };
+  }
+}
+
+type ExtensionSearchParams = { title?: string } & (
+  | SearchParamsFor.Plugin
+  | SearchParamsFor.Tab
+  | SearchParamsFor.Token
+);

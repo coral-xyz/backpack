@@ -10,13 +10,6 @@ export function useBlockchainTokens(blockchain: string): Array<string> {
   return useRecoilValue(atoms.blockchainTokens(blockchain));
 }
 
-export function useBlockchainBalance(blockchain: string, address: string) {
-  const balance = useRecoilValue(
-    atoms.blockchainTokenAccounts({ blockchain, address })
-  );
-  return balance;
-}
-
 export function useBlockchainLogo(blockchain: string): string {
   switch (blockchain) {
     case "solana":
