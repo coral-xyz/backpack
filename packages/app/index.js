@@ -4,7 +4,6 @@ import { StatusBar } from "expo-status-bar";
 import { Suspense } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import "react-native-get-random-values";
-import "react-native-url-polyfill/auto";
 import { WebView } from "react-native-webview";
 import { RecoilRoot } from "recoil/native/recoil";
 import App from "./src/App";
@@ -49,7 +48,6 @@ function Background() {
           const msg = JSON.parse(event.nativeEvent.data);
           WEB_VIEW_EVENTS.emit("message", msg);
         }}
-        originWhitelist={["*"]}
         limitsNavigationsToAppBoundDomains
       />
     </View>
@@ -62,10 +60,6 @@ const styles = StyleSheet.create({
     display: "flex",
     backgroundColor: "#1D1D20",
     color: "#FFFFFF",
-  },
-  text: {
-    fontSize: 25,
-    fontWeight: "500",
   },
 });
 
