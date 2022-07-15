@@ -9,7 +9,7 @@
     "@mui/styles": "^5.8.4"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc"
   },
   "devDependencies": {
     "typescript": "^4.7.4"
