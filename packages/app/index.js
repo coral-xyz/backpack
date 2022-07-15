@@ -37,7 +37,7 @@ function Background() {
             // put the injectJavaScript function in a global observable
             // store so that it can be used here & in @coral-xyz/common
             setInjectJavaScript(ref.injectJavaScript);
-          }, 1_000);
+          }, 1000);
         }}
         source={{
           // XXX: this can only be a domain that's specified in
