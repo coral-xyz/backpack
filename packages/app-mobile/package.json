@@ -1,5 +1,5 @@
 {
-  "name": "@coral-xyz/app",
+  "name": "@coral-xyz/app-mobile",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
