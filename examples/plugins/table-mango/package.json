@@ -6,7 +6,7 @@
     "start": "xnft watch"
   },
   "devDependencies": {
-    "@coral-xyz/xnft": "*"
+    "@coral-xyz/xnft-cli": "*"
   },
   "dependencies": {
     "react-xnft": "*",

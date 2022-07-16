@@ -7,7 +7,7 @@
     "dev": "xnft dev"
   },
   "devDependencies": {
-    "@coral-xyz/xnft": "*",
+    "@coral-xyz/xnft-cli": "*",
     "local-web-server": "^5.2.0"
   },
   "dependencies": {

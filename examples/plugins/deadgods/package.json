@@ -7,7 +7,7 @@
     "dev": "xnft dev"
   },
   "devDependencies": {
-    "@coral-xyz/xnft": "*"
+    "@coral-xyz/xnft-cli": "*"
   },
   "dependencies": {
     "react-xnft": "*",
