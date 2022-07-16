@@ -1,5 +1,5 @@
 {
-  "name": "anchor-wallet",
+  "name": "backpack",
   "private": true,
   "workspaces": [
     "backend/workers/*",
@@ -16,7 +16,7 @@
     "test": "env-cmd --silent turbo run test -- --passWithNoTests --watchAll=false",
     "build": "env-cmd --silent turbo run build",
     "e2e": "env-cmd --silent turbo run e2e",
-    "clean": "npx rimraf {.,backend,examples,packages}/**/{.parcel-cache,.turbo,build,dist,node_modules,yarn-error.log} packages/extension/dev"
+    "clean": "npx rimraf {.,backend,examples,packages}/**/{.parcel-cache,.turbo,build,dist,node_modules,yarn-error.log} packages/app-extension/dev"
   },
   "devDependencies": {
     "env-cmd": "^10.1.0",

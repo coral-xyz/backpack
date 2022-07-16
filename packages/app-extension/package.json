@@ -1,5 +1,5 @@
 {
-  "name": "@coral-xyz/extension",
+  "name": "@coral-xyz/app-extension",
   "version": "0.1.0",
   "description": "Solana wallet browser extension",
   "private": true,
