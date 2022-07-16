@@ -303,7 +303,7 @@ async function postMsgFromWorker(msg: any) {
 async function postMsgFromAppUi(msg: any) {
   vanillaStore
     .getState()
-    .injectJavaScript?.(
+    ?.injectJavaScript?.(
       `window.postMessageToBackgroundViaWebview(${JSON.stringify(msg)}); true;`
     );
 }

@@ -1,15 +1,15 @@
 {
   "name": "@coral-xyz/themes",
   "version": "0.1.0",
-  "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
+  "react-native": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "dependencies": {
     "@mui/material": "^5.8.4",
     "@mui/styles": "^5.8.4"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json && tsc -p tsconfig.cjs.json"
+    "build": "tsc"
   },
   "devDependencies": {
     "typescript": "^4.7.4"

@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "WKAppBoundDomains": ["localhost:9333"]
+        "WKAppBoundDomains": ["xnfts.dev"]
       },
       "bundleIdentifier": "community.coral.backpack"
     },
@@ -27,7 +27,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "community.coral.backpack"
     },
     "web": {
       "favicon": "./assets/favicon.png"

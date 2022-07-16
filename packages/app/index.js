@@ -2,9 +2,8 @@ import { useStore, WEB_VIEW_EVENTS } from "@coral-xyz/common";
 import { registerRootComponent } from "expo";
 import { StatusBar } from "expo-status-bar";
 import { Suspense } from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { Platform, SafeAreaView, StyleSheet, View } from "react-native";
 import "react-native-get-random-values";
-import "react-native-url-polyfill/auto";
 import { WebView } from "react-native-webview";
 import { RecoilRoot } from "recoil/native/recoil";
 import App from "./src/App";
@@ -32,24 +31,42 @@ function Background() {
       }}
     >
       <WebView
+        cacheEnabled
+        cacheMode="LOAD_CACHE_ELSE_NETWORK"
         ref={(ref) => {
           // XXX: timeout is a temporary hack to ensure page is loaded
-          setTimeout(() => {
-            // put the injectJavaScript function in a global observable
-            // store so that it can be used here & in @coral-xyz/common
-            setInjectJavaScript(ref.injectJavaScript);
-          }, 1_000);
+          setTimeout(
+            () => {
+              // put the injectJavaScript function in a global observable
+              // store so that it can be used here & in @coral-xyz/common
+              setInjectJavaScript(ref.injectJavaScript);
+            },
+            // TODO: remove this timeout, trigger event once SW loaded instead
+            Platform.OS === "android" ? 5000 : 1000
+          );
         }}
         source={{
-          // XXX: this can only be a domain that's specified in
-          //      app.json > ios.infoPlist.WKAppBoundDomains[]
-          uri: "http://localhost:9333",
+          uri: "https://fc9e097a.backpack.pages.dev",
+          // // XXX: this can only be localhost or a domain that's specified in
+          // //      app.json > ios.infoPlist.WKAppBoundDomains[]
+          // uri:
+          //   Platform.OS === "android"
+          //     ? // temporary hack as android can't access localhost. Using
+          //       // `adb -s emulator-5554 reverse tcp:9333 tcp:9333` is not
+          //       // reliable. ngrok & localtunnel don't work with dev server.
+          //       "https://fc9e097a.backpack.pages.dev"
+          //     : // serviceworkers must be used with SSL (unless its localhost)
+          //       // & expo iOS apps can only load from localhost in dev mode
+          //       // because of restrictions imposed by WKAppBoundDomains.
+          //       // Need to find a workaround to be able to test on iOS devices
+          //       // in dev, possibly using a custom plugin that'd allow access
+          //       // to a non-localhost URL that is specific for each build.
+          //       "http://localhost:9333",
         }}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
           WEB_VIEW_EVENTS.emit("message", msg);
         }}
-        originWhitelist={["*"]}
         limitsNavigationsToAppBoundDomains
       />
     </View>
@@ -62,10 +79,6 @@ const styles = StyleSheet.create({
     display: "flex",
     backgroundColor: "#1D1D20",
     color: "#FFFFFF",
-  },
-  text: {
-    fontSize: 25,
-    fontWeight: "500",
   },
 });
 
