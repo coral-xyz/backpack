@@ -40,5 +40,5 @@ export const IS_MOBILE = globalThis.chrome
   : true;
 
 export function isServiceWorker(): boolean {
-  return self.clients !== undefined;
+  return globalThis.clients !== undefined;
 }
