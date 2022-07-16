@@ -46,22 +46,19 @@ function Background() {
           );
         }}
         source={{
-          uri: "https://fc9e097a.backpack.pages.dev",
-          // // XXX: this can only be localhost or a domain that's specified in
-          // //      app.json > ios.infoPlist.WKAppBoundDomains[]
-          // uri:
-          //   Platform.OS === "android"
-          //     ? // temporary hack as android can't access localhost. Using
-          //       // `adb -s emulator-5554 reverse tcp:9333 tcp:9333` is not
-          //       // reliable. ngrok & localtunnel don't work with dev server.
-          //       "https://fc9e097a.backpack.pages.dev"
-          //     : // serviceworkers must be used with SSL (unless its localhost)
-          //       // & expo iOS apps can only load from localhost in dev mode
-          //       // because of restrictions imposed by WKAppBoundDomains.
-          //       // Need to find a workaround to be able to test on iOS devices
-          //       // in dev, possibly using a custom plugin that'd allow access
-          //       // to a non-localhost URL that is specific for each build.
-          //       "http://localhost:9333",
+          uri:
+            Platform.OS === "android"
+              ? // temporary hack as android can't access localhost. Using
+                // `adb -s emulator-5554 reverse tcp:9333 tcp:9333` is not
+                // reliable. ngrok & localtunnel don't work with dev server.
+                "https://fc9e097a.backpack.pages.dev"
+              : // serviceworkers must be used with SSL (unless its localhost)
+                // & expo iOS apps can only load from localhost in dev mode
+                // because of restrictions imposed by WKAppBoundDomains.
+                // Need to find a workaround to be able to test on iOS devices
+                // in dev, possibly using a custom plugin that'd allow access
+                // to a non-localhost URL that is specific for each build.
+                "http://localhost:9333",
         }}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
