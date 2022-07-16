@@ -6,7 +6,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "postinstall": "cd ../.. && yarn build"
   },
   "dependencies": {
     "@coral-xyz/common": "*",
