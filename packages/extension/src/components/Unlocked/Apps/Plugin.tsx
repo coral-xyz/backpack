@@ -1,4 +1,4 @@
-import { PluginRenderer } from "@coral-xyz/anchor-ui-renderer";
+import { PluginRenderer } from "@coral-xyz/react-xnft-renderer";
 import { usePlugins, useTablePlugins } from "@coral-xyz/recoil";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 

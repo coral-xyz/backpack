@@ -1,1 +1,1 @@
-export { ScrollBarImpl as Scrollbar } from "@coral-xyz/anchor-ui-renderer";
+export { ScrollBarImpl as Scrollbar } from "@coral-xyz/react-xnft-renderer";

@@ -4,7 +4,7 @@
   "description": "Solana wallet browser extension",
   "private": true,
   "dependencies": {
-    "@coral-xyz/anchor-ui-renderer": "*",
+    "@coral-xyz/react-xnft-renderer": "*",
     "@coral-xyz/background": "*",
     "@coral-xyz/common": "*",
     "@coral-xyz/ledger-core": "*",

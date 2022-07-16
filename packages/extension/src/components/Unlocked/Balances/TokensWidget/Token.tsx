@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Typography } from "@mui/material";
 import { styles } from "@coral-xyz/themes";
-import { Button } from "@coral-xyz/anchor-ui-renderer";
+import { Button } from "@coral-xyz/react-xnft-renderer";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { useBlockchainTokenAccount } from "@coral-xyz/recoil";
 import { RecentActivitySmall } from "../RecentActivity";

@@ -1,5 +1,5 @@
 {
-  "name": "@coral-xyz/anchor-ui-renderer",
+  "name": "@coral-xyz/react-xnft-renderer",
   "version": "1.0.0",
   "description": "",
   "module": "dist/esm/index.js",

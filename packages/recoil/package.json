@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@coral-xyz/anchor-ui-renderer": "*",
+    "@coral-xyz/react-xnft-renderer": "*",
     "@coral-xyz/common": "*",
     "@project-serum/anchor": "^0.23.0",
     "@solana/spl-token-registry": "^0.2.3225",

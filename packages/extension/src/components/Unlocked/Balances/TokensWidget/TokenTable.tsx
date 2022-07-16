@@ -8,7 +8,7 @@ import {
   BalancesTableRow,
   BalancesTableCell,
   BalancesTableContent,
-} from "@coral-xyz/anchor-ui-renderer";
+} from "@coral-xyz/react-xnft-renderer";
 import {
   useBlockchainLogo,
   useBlockchainTokensSorted,

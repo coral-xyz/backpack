@@ -9,7 +9,7 @@ import {
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 
 export * from "./List";
-export { TextField } from "@coral-xyz/anchor-ui-renderer";
+export { TextField } from "@coral-xyz/react-xnft-renderer";
 
 const useStyles = styles((theme) => ({
   sendTo: {

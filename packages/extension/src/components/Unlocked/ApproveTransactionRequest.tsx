@@ -11,7 +11,7 @@ import {
   UI_RPC_METHOD_SIGN_TRANSACTION,
   UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
 } from "@coral-xyz/common";
-import { Plugin } from "@coral-xyz/anchor-ui-renderer";
+import { Plugin } from "@coral-xyz/react-xnft-renderer";
 import { Typography } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { walletAddressDisplay } from "../common";

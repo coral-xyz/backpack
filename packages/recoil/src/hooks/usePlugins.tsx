@@ -1,8 +1,8 @@
 import { useRecoilValue } from "recoil";
 import * as atoms from "../atoms";
 // XXX: this full path is currently necessary as it avoids loading the jsx in
-//      anchor-ui-renderer/src/Component.tsx in the background service worker
-import { Plugin } from "@coral-xyz/anchor-ui-renderer/dist/esm/plugin";
+//      react-xnft-renderer/src/Component.tsx in the background service worker
+import { Plugin } from "@coral-xyz/react-xnft-renderer/dist/esm/plugin";
 
 export function useAppIcons() {
   const pluginData = useRecoilValue(atoms.plugins);

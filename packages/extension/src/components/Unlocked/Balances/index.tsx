@@ -1,4 +1,4 @@
-import { PluginRenderer } from "@coral-xyz/anchor-ui-renderer";
+import { PluginRenderer } from "@coral-xyz/react-xnft-renderer";
 import { useTablePlugins } from "@coral-xyz/recoil";
 import { TransferWidget } from "./TransferWidget";
 import { BalanceSummaryWidget } from "./BalanceSummaryWidget";

@@ -9,7 +9,7 @@ import {
   BalancesTableContent,
   BalancesTableRow,
   BalancesTableCell,
-} from "@coral-xyz/anchor-ui-renderer";
+} from "@coral-xyz/react-xnft-renderer";
 import {
   useBlockchainLogo,
   useBlockchainTokensSorted,
