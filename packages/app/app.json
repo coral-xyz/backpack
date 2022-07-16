@@ -18,9 +18,6 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "infoPlist": {
-        "WKAppBoundDomains": ["xnfts.dev"]
-      },
       "bundleIdentifier": "community.coral.backpack"
     },
     "android": {
