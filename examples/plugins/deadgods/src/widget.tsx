@@ -9,7 +9,7 @@ import {
   BalancesTableFooter,
   BalancesTableRow,
   BalancesTableCell,
-} from "@coral-xyz/anchor-ui";
+} from "react-xnft";
 import { fetchDegodTokens, DEGODS_ICON_DATA, EMPTY_DEGODS_ICON } from "./utils";
 import { StakeDetail } from "./app";
 

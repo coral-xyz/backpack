@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Scrollbars } from "react-custom-scrollbars";
-import type { Element } from "@coral-xyz/anchor-ui";
-import { NodeKind } from "@coral-xyz/anchor-ui";
+import type { Element } from "react-xnft";
+import { NodeKind } from "react-xnft";
 import { formatUSD } from "@coral-xyz/common";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import {

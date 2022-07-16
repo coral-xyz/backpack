@@ -1,9 +1,9 @@
-import AnchorUi, { Text, View } from "@coral-xyz/anchor-ui";
+import ReactXnft, { Text, View } from "react-xnft";
 
 //
 // On connection to the host environment, warm the cache.
 //
-AnchorUi.events.on("connect", () => {
+ReactXnft.events.on("connect", () => {
   // no-op
 });
 

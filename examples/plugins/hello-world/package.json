@@ -9,7 +9,7 @@
     "@coral-xyz/xnft": "*"
   },
   "dependencies": {
-    "@coral-xyz/anchor-ui": "*",
+    "react-xnft": "*",
     "react": "^17.0.2"
   }
 }

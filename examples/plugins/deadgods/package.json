@@ -10,7 +10,7 @@
     "@coral-xyz/xnft": "*"
   },
   "dependencies": {
-    "@coral-xyz/anchor-ui": "*",
+    "react-xnft": "*",
     "@coral-xyz/common": "*",
     "@project-serum/anchor": "^0.25.0",
     "@project-serum/serum": "^0.13.64",

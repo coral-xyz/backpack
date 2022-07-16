@@ -19,7 +19,7 @@ import { NAV_STACK } from "./Context";
 const logger = getLogger("anchor-ui-reconciler");
 const events = new EventEmitter();
 
-export const AnchorUi = {
+export const ReactXnft = {
   events,
   render(reactNode: any) {
     window.onload = () => {

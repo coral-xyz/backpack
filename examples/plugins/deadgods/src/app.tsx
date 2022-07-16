@@ -9,7 +9,7 @@ import {
   Button,
   Tabs,
   Tab,
-} from "@coral-xyz/anchor-ui";
+} from "react-xnft";
 import * as anchor from "@project-serum/anchor";
 import {
   useDegodTokens,

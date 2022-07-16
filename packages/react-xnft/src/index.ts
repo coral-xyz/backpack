@@ -1,6 +1,6 @@
-import { AnchorUi } from "./reconciler";
+import { ReactXnft } from "./reconciler";
 
-export default AnchorUi;
+export default ReactXnft;
 export {
   NodeKind,
   UpdateDiff,

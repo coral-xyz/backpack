@@ -4,7 +4,7 @@ import {
   BalancesTableHead,
   BalancesTableCell,
   BalancesTableRow,
-} from "@coral-xyz/anchor-ui";
+} from "react-xnft";
 import {
   TokenContextProvider,
   useTokenMap,

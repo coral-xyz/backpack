@@ -1,14 +1,14 @@
-import AnchorUi, { AnchorDom } from "@coral-xyz/anchor-ui";
+import ReactXnft, { AnchorDom } from "react-xnft";
 import { App } from "./app";
 import { Widget } from "./widget";
 
-AnchorUi.render(
+ReactXnft.render(
   <AnchorDom>
     <App />
   </AnchorDom>
 );
 
-AnchorUi.renderWidget(
+ReactXnft.renderWidget(
   <AnchorDom>
     <Widget />
   </AnchorDom>

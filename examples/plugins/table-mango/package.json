@@ -9,7 +9,7 @@
     "@coral-xyz/xnft": "*"
   },
   "dependencies": {
-    "@coral-xyz/anchor-ui": "*",
+    "react-xnft": "*",
     "@blockworks-foundation/mango-client": "^3.4.4",
     "@project-serum/anchor": "^0.23.0",
     "@project-serum/serum": "^0.13.64",

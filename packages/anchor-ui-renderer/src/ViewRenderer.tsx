@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Element } from "@coral-xyz/anchor-ui";
+import { Element } from "react-xnft";
 import { usePluginContext } from "./Context";
 import { Component } from "./Component";
 

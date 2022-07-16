@@ -5,7 +5,7 @@ import {
   Element,
   TextSerialized,
   NodeSerialized,
-} from "@coral-xyz/anchor-ui";
+} from "react-xnft";
 import {
   getLogger,
   BackgroundClient,

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
+import ReactXnft, { usePublicKey, useConnection } from "react-xnft";
 import { PublicKey, Connection } from "@solana/web3.js";
 import { Program } from "@project-serum/anchor";
-import AnchorUi, { usePublicKey, useConnection } from "@coral-xyz/anchor-ui";
 import { customSplTokenAccounts } from "@coral-xyz/common";
 import { IDL as IDL_GEM_BANK, GemBank } from "./idl-gem-bank";
 import { IDL as IDL_GEM_FARM, GemFarm } from "./idl-gem-farm";
@@ -9,7 +9,7 @@ import { IDL as IDL_GEM_FARM, GemFarm } from "./idl-gem-farm";
 //
 // On connection to the host environment, warm the cache.
 //
-AnchorUi.events.on("connect", () => {
+ReactXnft.events.on("connect", () => {
   fetchDegodTokens(window.anchorUi.publicKey, window.anchorUi.connection);
 });
 
