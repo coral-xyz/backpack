@@ -1,7 +1,13 @@
-import React, { useEffect } from "react";
-import { useLocation, Routes, Route, Navigate } from "react-router-dom";
+import React, { useState } from "react";
+import {
+  useLocation,
+  useSearchParams,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { TAB_SET, SIMULATOR_PORT } from "@coral-xyz/common";
+import { SIMULATOR_PORT } from "@coral-xyz/common";
 import {
   useDecodedSearchParams,
   useBootstrap,
@@ -20,20 +26,79 @@ import { Simulator } from "../Unlocked/Apps/Simulator";
 import { Nfts } from "../Unlocked/Nfts";
 import { SettingsButton } from "../Settings";
 import { WithNav, NavBackButton } from "./Nav";
-import { TAB_HEIGHT } from "./Tab";
+
+export function NavStackRouter() {
+  return (
+    <NavStack initial={"home1"}>
+      <NavStackScreen name="home1" component={Home1} />
+      <NavStackScreen name="home2" component={Home2} />
+    </NavStack>
+  );
+}
+
+function NavStack({ initial, children }: any) {
+  return (
+    <AnimatePresence>
+      <WithMotionInner></WithMotionInner>
+    </AnimatePresence>
+  );
+}
+
+function NavStackScreen({
+  name,
+  component,
+}: {
+  name: string;
+  component: (props: any) => React.ReactNode;
+}) {
+  // todo
+  return <></>;
+}
+
+export function Router2() {
+  const [page, setPage] = useState(1);
+  return (
+    <AnimatePresence initial={false}>
+      <WithMotionInner id={page} navAction={"push"}>
+        {page === 1 && <Home1 onClick={() => setPage(2)} />}
+        {page === 2 && <Home2 onClick={() => setPage(1)} />}
+      </WithMotionInner>
+    </AnimatePresence>
+  );
+}
 
 export function Router() {
   const location = useLocation();
+
+  // TODO: add initial=false prop to animate presence.
   return (
-    <Routes location={location} key={location.pathname}>
-      <Route path="/balances" element={<BalancesPage />} />
-      <Route path="/balances/token" element={<TokenPage />} />
-      <Route path="/apps" element={<AppsPage />} />
-      <Route path="/apps/plugins" element={<PluginPage />} />
-      <Route path="/apps/simulator" element={<SimulatorPage />} />
-      <Route path="/nfts" element={<NftsPage />} />
-      <Route path="*" element={<Redirect />} />
-    </Routes>
+    <AnimatePresence>
+      <Routes location={location} key={location.pathname}>
+        <Route path="/balances" element={<BalancesPage />} />
+        <Route path="/balances/token" element={<TokenPage />} />
+        <Route path="/apps" element={<AppsPage />} />
+        <Route path="/apps/plugins" element={<PluginPage />} />
+        <Route path="/apps/simulator" element={<SimulatorPage />} />
+        <Route path="/nfts" element={<NftsPage />} />
+        <Route path="*" element={<Redirect />} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
+function Home1({ onClick, asdf }: any) {
+  return (
+    <div onClick={() => onClick()} style={{ color: "white" }}>
+      Testing home 1
+    </div>
+  );
+}
+
+function Home2({ onClick, asdf }: any) {
+  return (
+    <div onClick={() => onClick()} style={{ color: "white" }}>
+      Testing home 2
+    </div>
   );
 }
 
@@ -43,30 +108,30 @@ function Redirect() {
 }
 
 function BalancesPage() {
-  return <_WithNav component={<Balances />} />;
+  return <NavScreen component={<Balances />} />;
 }
 
 function NftsPage() {
-  return <_WithNav component={<Nfts />} />;
+  return <NavScreen component={<Nfts />} />;
 }
 
 function AppsPage() {
-  return <_WithNav component={<Apps />} />;
+  return <NavScreen component={<Apps />} />;
 }
 
 function TokenPage() {
   const { props } = useDecodedSearchParams<SearchParamsFor.Token>();
-  return <_WithNav component={<Token {...props} />} />;
+  return <NavScreen component={<Token {...props} />} />;
 }
 
 function PluginPage() {
   const { props } = useDecodedSearchParams<SearchParamsFor.Plugin>();
-  return <_WithNav component={<PluginDisplay {...props} />} />;
+  return <NavScreen component={<PluginDisplay {...props} />} />;
 }
 
 function SimulatorPage() {
   return (
-    <_WithNav
+    <NavScreen
       component={<Simulator pluginUrl={`http://localhost:${SIMULATOR_PORT}`} />}
     />
   );
@@ -87,9 +152,10 @@ function ExitAppButton() {
   );
 }
 
-function _WithNav({ component }: { component: React.ReactNode }) {
+function NavScreen({ component }: { component: React.ReactNode }) {
   const { title, isRoot, pop } = useNavigation();
   const { style, navButtonLeft, navButtonRight } = useNavBar();
+
   const _navButtonLeft = navButtonLeft ? (
     navButtonLeft
   ) : isRoot ? null : (
@@ -97,27 +163,86 @@ function _WithNav({ component }: { component: React.ReactNode }) {
   );
 
   return (
-    <>
-      <WithNav
-        title={title}
-        navButtonLeft={_navButtonLeft}
-        navButtonRight={navButtonRight}
-        navbarStyle={style}
+    <WithMotion>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+        }}
       >
-        <NavBootstrap>{component}</NavBootstrap>
-      </WithNav>
-    </>
+        <WithNav
+          title={title}
+          navButtonLeft={_navButtonLeft}
+          navButtonRight={navButtonRight}
+          navbarStyle={style}
+        >
+          <NavBootstrap>{component}</NavBootstrap>
+        </WithNav>
+      </div>
+    </WithMotion>
   );
 }
+
+function WithMotion({ children, id }: { children: any; id?: string }) {
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  let navAction = searchParams.get("nav");
+  return (
+    <WithMotionInner id={location.pathname} navAction={navAction}>
+      {children}
+    </WithMotionInner>
+  );
+}
+
+function WithMotionInner({ children, id, navAction }: any) {
+  return (
+    <motion.div
+      key={id}
+      style={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+      }}
+      variants={MOTION_VARIANTS}
+      initial={!navAction || navAction === "tab" ? {} : "initial"}
+      animate={!navAction || navAction === "tab" ? {} : "animate"}
+      exit={!navAction || navAction === "tab" ? {} : "exit"}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+const MOTION_VARIANTS = {
+  initial: {
+    opacity: 0,
+  },
+  animate: {
+    translateX: 0,
+    opacity: 1,
+    transition: { delay: 0.09 },
+  },
+  exit: {
+    translateX: window.innerWidth,
+    transition: { delay: 0.09, duration: 0.1 },
+    opacity: 0,
+  },
+};
 
 function useNavBar() {
   const theme = useCustomTheme();
   let { isRoot } = useNavigation();
+  const pathname = useLocation().pathname;
 
   let navButtonLeft = null as any;
   let navButtonRight = null as any;
 
-  const pathname = useLocation().pathname;
   let navStyle = {
     fontSize: "18px",
     borderBottom: !isRoot
@@ -125,10 +250,9 @@ function useNavBar() {
       : undefined,
   } as React.CSSProperties;
 
-  if (TAB_SET.has(pathname.slice(1))) {
+  if (isRoot) {
     navButtonRight = <SettingsButton />;
-  }
-  if (
+  } else if (
     pathname === "/balances/token" ||
     pathname === "/apps/plugins" ||
     pathname === "/apps/simulator"

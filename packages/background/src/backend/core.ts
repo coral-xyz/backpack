@@ -376,7 +376,7 @@ export class Backend {
       name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
       data: {
         url,
-        nav,
+        nav: "push",
       },
     });
 
@@ -398,7 +398,7 @@ export class Backend {
       name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
       data: {
         url,
-        nav,
+        nav: "pop",
       },
     });
 
@@ -431,7 +431,7 @@ export class Backend {
       name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
       data: {
         url,
-        nav,
+        nav: "tab",
       },
     });
 

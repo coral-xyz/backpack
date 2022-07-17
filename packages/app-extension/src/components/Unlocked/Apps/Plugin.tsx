@@ -6,6 +6,10 @@ export function PluginDisplay({ pluginUrl }: SearchParamsFor.Plugin["props"]) {
   const plugins = usePlugins();
   const p = plugins.find((p) => p.iframeUrl === encodeURI(pluginUrl));
 
+  // Hack: This is hit due to the framer-motion animation.
+  if (!pluginUrl) {
+    return <></>;
+  }
   if (p === undefined) {
     throw new Error("unable to find plugin");
   }

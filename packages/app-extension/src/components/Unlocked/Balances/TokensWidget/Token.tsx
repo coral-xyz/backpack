@@ -54,6 +54,11 @@ const useStyles = styles((theme) => ({
 }));
 
 export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
+  // Hack: This is hit for some reason due to the framer-motion animation.
+  if (!blockchain || !address) {
+    return <></>;
+  }
+
   return (
     <div>
       <TokenHeader blockchain={blockchain} address={address} />

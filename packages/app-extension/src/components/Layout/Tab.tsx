@@ -11,7 +11,7 @@ import {
 import { BalancesIcon, GridIcon, ImageIcon } from "../Icon";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 
-export const TAB_HEIGHT = 64;
+const TAB_HEIGHT = 64;
 
 const useStyles = styles((theme) => ({
   container: {
@@ -46,7 +46,9 @@ export function WithTabs(props: any) {
   const classes = useStyles();
   return (
     <div className={classes.container}>
-      {props.children}
+      <div style={{ position: "relative", width: "100%", height: "100%" }}>
+        {props.children}
+      </div>
       <TabBar />
     </div>
   );
