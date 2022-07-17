@@ -1,9 +1,6 @@
-import { atom, selector, selectorFamily } from "recoil";
+import { atom, selector } from "recoil";
 import { ParsedConfirmedTransaction, PublicKey } from "@solana/web3.js";
-import {
-  UI_RPC_METHOD_NAVIGATION_READ,
-  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
-} from "@coral-xyz/common";
+import { UI_RPC_METHOD_NAVIGATION_READ } from "@coral-xyz/common";
 import { anchorContext } from "../atoms/wallet";
 import { TokenAccountWithKey, TABS } from "../types";
 import { fetchRecentTransactions } from "./recent-transactions";
@@ -83,31 +80,17 @@ export const bootstrap = selector<{
 // being locked or unlocked.
 export const bootstrapFast = atom<any>({
   key: "bootstrapFast",
-  default: null,
-  effects: [
-    ({ setSelf, getPromise }) => {
-      setSelf(
-        (async () => {
-          // Fetch all navigation state.
-          const bg = await getPromise(backgroundClient);
-          const tabs = await Promise.all(
-            TABS.map((t) =>
-              bg.request({
-                method: UI_RPC_METHOD_NAVIGATION_READ,
-                params: [t[0]],
-              })
-            )
-          );
-          const activeTab = await bg.request({
-            method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ,
-            params: [],
-          });
-          return {
-            tabs,
-            activeTab,
-          };
-        })()
-      );
+  default: selector({
+    key: "bootstrapFastDefault",
+    get: async ({ get }) => {
+      const bg = get(backgroundClient);
+      const nav = await bg.request({
+        method: UI_RPC_METHOD_NAVIGATION_READ,
+        params: [],
+      });
+      return {
+        nav,
+      };
     },
-  ],
+  }),
 });

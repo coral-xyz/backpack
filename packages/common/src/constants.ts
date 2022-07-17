@@ -107,10 +107,9 @@ export const UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY = "export-secret-key";
 export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC = "export-mnemonic";
 export const UI_RPC_METHOD_KEYRING_RESET_MNEMONIC = "reset-mnemonic";
 export const UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE = "autolock-update";
-export const UI_RPC_METHOD_NAVIGATION_UPDATE = "navigation-update";
+export const UI_RPC_METHOD_NAVIGATION_PUSH = "navigation-push";
+export const UI_RPC_METHOD_NAVIGATION_POP = "navigation-pop";
 export const UI_RPC_METHOD_NAVIGATION_READ = "navigation-read";
-export const UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_READ =
-  "navigation-active-tab-read";
 export const UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE =
   "navigation-active-tab-update";
 export const UI_RPC_METHOD_SETTINGS_DARK_MODE_READ = "settings-dark-mode-read";
@@ -202,10 +201,10 @@ export const TAB_BALANCES = "balances";
 export const TAB_SWAP = "swap";
 export const TAB_NFTS = "nfts";
 export const TAB_APPS = "apps";
-export const NAV_COMPONENT_BALANCES_NETWORK = "balancesNetwork";
-export const NAV_COMPONENT_TOKEN = "token";
-export const NAV_COMPONENT_PLUGINS = "plugins";
-export const NAV_COMPONENT_PLUGIN_TABLE_DETAIL = "plugin-table-detail";
+export const TAB_SET = new Set([TAB_BALANCES, TAB_SWAP, TAB_NFTS, TAB_APPS]);
+
+export const NAV_COMPONENT_TOKEN = "balances/token";
+export const NAV_COMPONENT_PLUGINS = "apps/plugins";
 
 export const BACKEND_EVENT = "backend-event";
 

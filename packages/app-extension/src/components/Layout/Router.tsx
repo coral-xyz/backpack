@@ -1,11 +1,12 @@
-import { useEffect } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import { SIMULATOR_PORT } from "@coral-xyz/common";
+import React, { useEffect } from "react";
+import { useLocation, Routes, Route, Navigate } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { TAB_SET, SIMULATOR_PORT } from "@coral-xyz/common";
 import {
   useDecodedSearchParams,
   useBootstrap,
   useNavigation,
-  useTab,
+  useRedirectUrl,
 } from "@coral-xyz/recoil";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -18,71 +19,57 @@ import { PluginDisplay } from "../Unlocked/Apps/Plugin";
 import { Simulator } from "../Unlocked/Apps/Simulator";
 import { Nfts } from "../Unlocked/Nfts";
 import { SettingsButton } from "../Settings";
+import { WithNav, NavBackButton } from "./Nav";
+import { TAB_HEIGHT } from "./Tab";
 
 export function Router() {
-  const theme = useCustomTheme();
-  const {
-    url,
-    navButtonRight,
-    setNavButtonRight,
-    navButtonLeft,
-    setNavButtonLeft,
-    style: navStyle,
-    setStyle,
-  } = useNavigation();
-  const { tab } = useTab();
+  const location = useLocation();
+  return (
+    <Routes location={location} key={location.pathname}>
+      <Route path="/balances" element={<BalancesPage />} />
+      <Route path="/balances/token" element={<TokenPage />} />
+      <Route path="/apps" element={<AppsPage />} />
+      <Route path="/apps/plugins" element={<PluginPage />} />
+      <Route path="/apps/simulator" element={<SimulatorPage />} />
+      <Route path="/nfts" element={<NftsPage />} />
+      <Route path="*" element={<Redirect />} />
+    </Routes>
+  );
+}
 
-  //
-  // We set the nav button at the top level instead of the bottom so that
-  // we can instantly render it, which makes for a nicer loading experience.
-  // Otherwise, we'd have to wait for the content to load, which requires
-  // the useBootstrap hook to finish.
-  //
-  useEffect(() => {
-    const previous = navButtonRight;
-    const previousLeft = navButtonLeft;
-    const previousStyle = navStyle;
-    const actions: any = [];
-    if (
-      url.startsWith("/balances") ||
-      url.startsWith("/apps") ||
-      url.startsWith("/nfts")
-    ) {
-      setNavButtonRight(<SettingsButton />);
-      actions.push(() => {
-        setNavButtonRight(previous);
-      });
-    }
-    if (
-      url.startsWith("/token") ||
-      url.startsWith("/plugins") ||
-      url.startsWith("/simulator")
-    ) {
-      setNavButtonRight(null);
-      actions.push(() => {
-        setNavButtonRight(previous);
-      });
-    }
+function Redirect() {
+  const url = useRedirectUrl();
+  return <Navigate to={url} replace />;
+}
 
-    if (url.startsWith("/plugins") || url.startsWith("/simulator")) {
-      setNavButtonLeft(<ExitAppButton />);
-      setStyle({
-        backgroundColor: theme.custom.colors.nav,
-        height: "45px",
-        borderBottom: "none",
-        fontSize: "16px",
-      });
-      actions.push(() => {
-        setNavButtonLeft(previousLeft);
-        setStyle(previousStyle);
-      });
-    }
+function BalancesPage() {
+  return <_WithNav component={<Balances />} />;
+}
 
-    return () => {
-      actions.forEach((action: any) => action());
-    };
-  }, [url, tab]);
-  return <_Router />;
+function NftsPage() {
+  return <_WithNav component={<Nfts />} />;
+}
+
+function AppsPage() {
+  return <_WithNav component={<Apps />} />;
+}
+
+function TokenPage() {
+  const { props } = useDecodedSearchParams<SearchParamsFor.Token>();
+  return <_WithNav component={<Token {...props} />} />;
+}
+
+function PluginPage() {
+  const { props } = useDecodedSearchParams<SearchParamsFor.Plugin>();
+  return <_WithNav component={<PluginDisplay {...props} />} />;
+}
+
+function SimulatorPage() {
+  return (
+    <_WithNav
+      component={<Simulator pluginUrl={`http://localhost:${SIMULATOR_PORT}`} />}
+    />
+  );
 }
 
 function ExitAppButton() {
@@ -100,48 +87,72 @@ function ExitAppButton() {
   );
 }
 
-function _Router() {
-  useBootstrap();
+function _WithNav({ component }: { component: React.ReactNode }) {
+  const { title, isRoot, pop } = useNavigation();
+  const { style, navButtonLeft, navButtonRight } = useNavBar();
+  const _navButtonLeft = navButtonLeft ? (
+    navButtonLeft
+  ) : isRoot ? null : (
+    <NavBackButton onClick={pop} />
+  );
+
   return (
-    <Routes>
-      <Route path="/balances" element={<BalancesPage />} />
-      <Route path="/nfts" element={<NftsPage />} />
-      <Route path="/apps" element={<AppsPage />} />
-      <Route path="/token" element={<TokenPage />} />
-      <Route path="/plugins" element={<PluginPage />} />
-      <Route path="/simulator" element={<SimulatorPage />} />
-      <Route path="*" element={<Redirect />} />
-    </Routes>
+    <>
+      <WithNav
+        title={title}
+        navButtonLeft={_navButtonLeft}
+        navButtonRight={navButtonRight}
+        navbarStyle={style}
+      >
+        <NavBootstrap>{component}</NavBootstrap>
+      </WithNav>
+    </>
   );
 }
 
-function Redirect() {
-  const { url } = useNavigation();
-  return <Navigate to={url} replace />;
+function useNavBar() {
+  const theme = useCustomTheme();
+  let { isRoot } = useNavigation();
+
+  let navButtonLeft = null as any;
+  let navButtonRight = null as any;
+
+  const pathname = useLocation().pathname;
+  let navStyle = {
+    fontSize: "18px",
+    borderBottom: !isRoot
+      ? `solid 1pt ${theme.custom.colors.border}`
+      : undefined,
+  } as React.CSSProperties;
+
+  if (TAB_SET.has(pathname.slice(1))) {
+    navButtonRight = <SettingsButton />;
+  }
+  if (
+    pathname === "/balances/token" ||
+    pathname === "/apps/plugins" ||
+    pathname === "/apps/simulator"
+  ) {
+    navButtonRight = null;
+  }
+  if (pathname === "/apps/plugins" || pathname === "/apps/simulator") {
+    navButtonLeft = <ExitAppButton />;
+    navStyle = {
+      backgroundColor: theme.custom.colors.nav,
+      height: "45px",
+      borderBottom: "none",
+      fontSize: "16px",
+    };
+  }
+
+  return {
+    navButtonRight,
+    navButtonLeft,
+    style: navStyle,
+  };
 }
 
-function BalancesPage() {
-  return <Balances />;
-}
-
-function NftsPage() {
-  return <Nfts />;
-}
-
-function AppsPage() {
-  return <Apps />;
-}
-
-function TokenPage() {
-  const { props } = useDecodedSearchParams<SearchParamsFor.Token>();
-  return <Token {...props} />;
-}
-
-function PluginPage() {
-  const { props } = useDecodedSearchParams<SearchParamsFor.Plugin>();
-  return <PluginDisplay {...props} />;
-}
-
-function SimulatorPage() {
-  return <Simulator pluginUrl={`http://localhost:${SIMULATOR_PORT}`} />;
+function NavBootstrap({ children }: any) {
+  useBootstrap();
+  return <>{children}</>;
 }

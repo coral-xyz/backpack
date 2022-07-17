@@ -1,10 +1,9 @@
 import { Suspense } from "react";
-import { Box, Typography, IconButton } from "@mui/material";
+import { Typography, IconButton } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowBack } from "@mui/icons-material";
 import { Scrollbar } from "./Scrollbar";
 import { Loading } from "../common";
-import { Router } from "./Router";
 
 export const NAV_BAR_HEIGHT = 56;
 export const NAV_BUTTON_WIDTH = 38;
@@ -151,7 +150,7 @@ export function NavBackButton({ onClick }: { onClick: () => void }) {
 }
 
 export function NavContent({
-  renderComponent = <Router />,
+  renderComponent,
   style,
 }: {
   renderComponent?: React.ReactNode;

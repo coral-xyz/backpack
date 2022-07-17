@@ -1,8 +1,17 @@
+import { useLocation } from "react-router-dom";
 import { Tabs, Tab } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useTab, useNavigation } from "@coral-xyz/recoil";
-import { TAB_NFTS, TAB_APPS, TAB_BALANCES } from "@coral-xyz/common";
+import {
+  TAB_NFTS,
+  TAB_APPS,
+  TAB_BALANCES,
+  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+} from "@coral-xyz/common";
 import { BalancesIcon, GridIcon, ImageIcon } from "../Icon";
+import { useBackgroundClient } from "@coral-xyz/recoil";
+
+export const TAB_HEIGHT = 64;
 
 const useStyles = styles((theme) => ({
   container: {
@@ -17,11 +26,11 @@ const useStyles = styles((theme) => ({
   tab: {
     borderTop: `solid 1pt ${theme.custom.colors.border}`,
     color: theme.custom.colors.tabIconBackground,
-    height: "64px",
+    height: `${TAB_HEIGHT}px`,
   },
   tabRoot: {
-    height: "64px",
-    minHeight: "64px",
+    height: `${TAB_HEIGHT}px`,
+    minHeight: `${TAB_HEIGHT}px`,
     backgroundColor: theme.custom.colors.nav,
   },
   tabIndicator: {
@@ -46,19 +55,22 @@ export function WithTabs(props: any) {
 function TabBar() {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { tab, setTab } = useTab();
-  const { url } = useNavigation();
-  const hideTabs = url.startsWith("/plugins") || url.startsWith("/simulator");
-  const className = (idx: string) => {
-    if (idx === tab) {
-      return classes.tabSelected;
-    }
-    return classes.tabUnselected;
-  };
+  const tab = useTab();
+  const location = useLocation();
+  const pathname = location.pathname;
+  const background = useBackgroundClient();
+  const hideTabs =
+    pathname.startsWith("/apps/plugins") ||
+    pathname.startsWith("/apps/simulator");
   return (
     <Tabs
       value={tab}
-      onChange={(_e, newValue) => setTab(newValue)}
+      onChange={(_e, newValue) =>
+        background.request({
+          method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+          params: [newValue],
+        })
+      }
       variant="fullWidth"
       classes={{
         root: classes.tabRoot,
