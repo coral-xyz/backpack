@@ -68,7 +68,7 @@ export function LockedMenuList({ setMenuOpen }: any) {
     {
       icon: <SupportIcon style={{ color: theme.custom.colors.secondary }} />,
       text: "Help & Support",
-      onClick: () => console.log("help & support"),
+      onClick: () => console.log("help & support"), // TODO:
     },
     {
       icon: <LockIcon style={{ color: theme.custom.colors.secondary }} />,
