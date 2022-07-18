@@ -229,15 +229,22 @@ export function WithDrawerNoHeader(props: any) {
 
 export function WithContaineredDrawer(
   props: PropsWithChildren<{
+    backdropStyles?: CSSProperties;
     containerRef: MutableRefObject<any>;
     openDrawer: boolean;
-    paperStyles: Partial<CSSProperties>;
+    paperStyles?: CSSProperties;
     setOpenDrawer: Dispatch<SetStateAction<boolean>>;
   }>
 ) {
   const theme = useCustomTheme();
-  const { children, containerRef, openDrawer, setOpenDrawer, paperStyles } =
-    props;
+  const {
+    children,
+    backdropStyles,
+    containerRef,
+    openDrawer,
+    setOpenDrawer,
+    paperStyles,
+  } = props;
 
   return (
     <Drawer
@@ -251,7 +258,12 @@ export function WithContaineredDrawer(
           ...paperStyles,
         },
       }}
-      BackdropProps={{ style: { position: "absolute" } }}
+      BackdropProps={{
+        style: {
+          position: "absolute",
+          ...backdropStyles,
+        },
+      }}
       ModalProps={{
         container: containerRef.current,
         style: { position: "absolute" },

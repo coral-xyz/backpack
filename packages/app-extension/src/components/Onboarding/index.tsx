@@ -153,8 +153,8 @@ export function OptionsContainer({ children }: { children: React.ReactNode }) {
           flexDirection: "column",
           margin: "0 auto",
           borderRadius: "12px",
-          boxShadow:
-            "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
+          overflow: "hidden",
+          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.25)",
         }}
       >
         {children}

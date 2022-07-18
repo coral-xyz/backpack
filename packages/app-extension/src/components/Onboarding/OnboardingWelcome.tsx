@@ -35,14 +35,12 @@ export function OnboardingWelcome({
 }: {
   onSelect: (flow: OnboardingFlows) => void;
 }) {
-  const theme = useCustomTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const containerRef = useRef(null);
 
   return (
     <div
       style={{
-        background: theme.custom.colors.nav,
         display: "flex",
         textAlign: "center",
         justifyContent: "space-between",
@@ -116,8 +114,9 @@ function OnboardingMenu({
         openDrawer={menuOpen}
         setOpenDrawer={setMenuOpen}
         paperStyles={{
-          borderRadius: "12px 12px 0 0",
+          borderRadius: "12px",
         }}
+        backdropStyles={{ borderRadius: "12px" }}
       >
         <OnboardingMenuList />
       </WithContaineredDrawer>
