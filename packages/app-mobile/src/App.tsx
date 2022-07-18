@@ -10,7 +10,7 @@ import {
   useKeyringStoreState,
 } from "@coral-xyz/recoil";
 import { useForm } from "react-hook-form";
-import { Text } from "react-native";
+import { KeyboardAvoidingView, Text } from "react-native";
 import { NativeRouter, Route, Routes, useNavigate } from "react-router-native";
 import tw from "twrnc";
 import { CustomButton } from "./components/CustomButton";
@@ -118,10 +118,16 @@ export default function App() {
   return (
     <NativeRouter>
       <NotificationsProvider>
-        <Routes>
-          <Route path="/" element={<HomeScreen />} />
-          <Route path="/create-wallet" element={<CreateWallet />} />
-        </Routes>
+        <KeyboardAvoidingView>
+          <Routes>
+            <Route path="/" element={<HomeScreen />} />
+            <Route path="/create-wallet" element={<CreateWallet />} />
+            <Route
+              path="/import-wallet"
+              element={<CreateWallet importExisting />}
+            />
+          </Routes>
+        </KeyboardAvoidingView>
       </NotificationsProvider>
     </NativeRouter>
   );
