@@ -1,4 +1,4 @@
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, useCallback } from "react";
 import * as bs58 from "bs58";
 import { Box, Typography, IconButton } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -120,9 +120,28 @@ function SettingsContent({ close }: { close: () => void }) {
 type SettingsPage = "menu" | "add-connect-wallet";
 
 function _SettingsContent({ close }: { close: () => void }) {
+  const background = useBackgroundClient();
   const classes = useStyles();
   const keyringStoreState = useKeyringStoreState();
   const [page, setPage] = useState<SettingsPage>("menu");
+
+  const onAddSuccessHandler = useCallback(
+    async (publicKey?: string) => {
+      try {
+        if (publicKey) {
+          await background.request({
+            method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+            params: [publicKey],
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        close();
+      }
+    },
+    [background]
+  );
 
   return (
     <>
@@ -139,7 +158,10 @@ function _SettingsContent({ close }: { close: () => void }) {
         </div>
       )}
       {page === "add-connect-wallet" && (
-        <AddConnectWallet onAddSuccess={close} close={() => setPage("menu")} />
+        <AddConnectWallet
+          onAddSuccess={onAddSuccessHandler}
+          close={() => setPage("menu")}
+        />
       )}
     </>
   );
