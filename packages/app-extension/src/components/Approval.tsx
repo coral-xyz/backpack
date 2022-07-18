@@ -71,22 +71,6 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function Approval({ origin, onCompletion }: any) {
-  const approveOrigin = useApproveOrigin();
-  const approve = async () => {
-    await approveOrigin(origin);
-    await onCompletion(true);
-  };
-  const reject = async () => {
-    await onCompletion(false);
-  };
-  return (
-    <WithApproval title={"Connect"} onApproval={approve} onReject={reject}>
-      <ConnectContent origin={origin} />
-    </WithApproval>
-  );
-}
-
 export function ApproveTransaction({ tx, origin, onCompletion }: any) {
   const classes = useStyles();
   useEffect(() => {

@@ -20,11 +20,8 @@ import {
 } from "@coral-xyz/recoil";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
-import {
-  Approval,
-  ApproveTransaction,
-  ApproveMessage,
-} from "../components/Approval";
+import { ApproveTransaction, ApproveMessage } from "../components/Approval";
+import { ApproveOrigin } from "../components/Unlocked/Approvals/ApproveOrigin";
 import "./App.css";
 
 const logger = getLogger("router");
@@ -147,6 +144,7 @@ function QueryApproval() {
   const background = useBackgroundResponder();
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
+  const title = url.searchParams.get("title");
   const requestId = parseInt(url.searchParams.get("requestId")!);
 
   const approvedOrigins = useApprovedOrigins();
@@ -157,8 +155,9 @@ function QueryApproval() {
     return <></>;
   }
   return (
-    <Approval
+    <ApproveOrigin
       origin={origin}
+      title={title}
       onCompletion={async (didApprove: boolean) => {
         await background.response({
           id: requestId,

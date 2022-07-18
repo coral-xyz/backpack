@@ -129,19 +129,31 @@ async function handleConnect(
       didApprove = true;
     } else {
       const resp = await RequestManager.requestUiAction((requestId: number) => {
-        return openApprovalPopupWindow(ctx.sender.origin, requestId);
+        return openApprovalPopupWindow(
+          ctx.sender.origin,
+          ctx.sender.tab.title,
+          requestId
+        );
       });
       didApprove = !resp.windowClosed && resp.result;
     }
   } else if (keyringStoreState === "locked") {
     if (await ctx.backend.isApprovedOrigin(origin)) {
       const resp = await RequestManager.requestUiAction((requestId: number) => {
-        return openLockedPopupWindow(ctx.sender.origin, requestId);
+        return openLockedPopupWindow(
+          ctx.sender.origin,
+          ctx.sender.tab.title,
+          requestId
+        );
       });
       didApprove = !resp.windowClosed && resp.result;
     } else {
       const resp = await RequestManager.requestUiAction((requestId: number) => {
-        return openLockedApprovalPopupWindow(ctx.sender.origin, requestId);
+        return openLockedApprovalPopupWindow(
+          ctx.sender.origin,
+          ctx.sender.tab.title,
+          requestId
+        );
       });
       didApprove = !resp.windowClosed && resp.result;
     }

@@ -98,25 +98,31 @@ const EXPANDED_HTML = "options.html";
 
 export async function openLockedApprovalPopupWindow(
   origin: string,
+  title: string,
   requestId: number
 ): Promise<chrome.windows.Window> {
-  const url = `${POPUP_HTML}?${QUERY_LOCKED_APPROVAL}&origin=${origin}&requestId=${requestId}`;
+  const encodedTitle = encodeURIComponent(title);
+  const url = `${POPUP_HTML}?${QUERY_LOCKED_APPROVAL}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}`;
   return openPopupWindow(url);
 }
 
 export async function openLockedPopupWindow(
   origin: string,
+  title: string,
   requestId: number
 ): Promise<chrome.windows.Window> {
-  const url = `${POPUP_HTML}?${QUERY_LOCKED}&origin=${origin}&requestId=${requestId}`;
+  const encodedTitle = encodeURIComponent(title);
+  const url = `${POPUP_HTML}?${QUERY_LOCKED}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}`;
   return openPopupWindow(url);
 }
 
 export async function openApprovalPopupWindow(
   origin: string,
+  title: string,
   requestId: number
 ): Promise<chrome.windows.Window> {
-  const url = `${POPUP_HTML}?${QUERY_APPROVAL}&origin=${origin}&requestId=${requestId}`;
+  const encodedTitle = encodeURIComponent(title);
+  const url = `${POPUP_HTML}?${QUERY_APPROVAL}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}`;
   return openPopupWindow(url);
 }
 
