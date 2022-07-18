@@ -219,20 +219,6 @@ function CheckIcon() {
   );
 }
 
-{
-  /*
-function CloseIcon() {
-  const theme = useCustomTheme();
-  return (
-    <_CloseIcon
-      htmlColor={theme.custom.colors.negative}
-      style={{ height: "20px", width: "20px" }}
-    />
-  );
-}
-  */
-}
-
 function Connectable({
   title,
   description,
