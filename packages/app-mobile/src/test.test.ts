@@ -16,8 +16,7 @@ async function reloadExpo() {
   await client.shake();
   const reloadSelector =
     "type == 'XCUIElementTypeOther' && name CONTAINS 'Reload'";
-  const reload = await client.$(`-ios predicate string:${reloadSelector}`);
-  await reload.click();
+  await tapOn(`-ios predicate string:${reloadSelector}`);
 }
 
 beforeAll(async () => {
@@ -50,6 +49,33 @@ afterAll(async () => {
 test("Creating a new wallet", async () => {
   await find("~BackpackLogo");
   await tapOn("~CreateANewWallet");
+
+  await fillIn("~Password", "test1234");
+  await fillIn("~ConfirmPassword", "test1234");
+
+  await tapOn("~IAgreeToTheTerms");
+  await tapOn("~Next");
+
+  await tapOn("~Continue");
+
+  await fillIn("~Password", "test1234");
+  await tapOn("~Unlock");
+
+  await tapOn("~Lock");
+
+  await find("~Password");
+});
+
+test("Import an existing wallet", async () => {
+  await find("~BackpackLogo");
+  await tapOn("~ImportAnExistingWallet");
+
+  await fillIn(
+    "~RecoveryPhrase",
+    "imitate chaos mountain warrior heart city" +
+      " cigar isolate enact another horse top"
+  );
+  await tapOn("~Import");
 
   await fillIn("~Password", "test1234");
   await fillIn("~ConfirmPassword", "test1234");

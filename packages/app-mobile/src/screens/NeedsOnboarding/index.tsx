@@ -19,16 +19,16 @@ export default function NeedsOnboarding() {
       </View>
 
       <View style={tw`flex flex-row p-2`}>
-        <Button text="Create a new wallet" />
-        <Button text="Import an existing wallet" />
+        <Button text="Create a new wallet" to="/create-wallet" />
+        <Button text="Import an existing wallet" to="/import-wallet" />
       </View>
     </>
   );
 }
 
-const Button: React.FC<{ text: string }> = ({ text }) => (
+const Button: React.FC<{ text: string; to: string }> = ({ text, to }) => (
   <Link
-    to="/create-wallet"
+    to={to}
     style={tw`bg-[#3F3F46] p-8 m-2 rounded-lg flex-1 justify-end`}
     {...addTestIdentifier(text)}
   >

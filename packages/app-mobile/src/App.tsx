@@ -122,6 +122,10 @@ export default function App() {
           <Routes>
             <Route path="/" element={<HomeScreen />} />
             <Route path="/create-wallet" element={<CreateWallet />} />
+            <Route
+              path="/import-wallet"
+              element={<CreateWallet importExisting />}
+            />
           </Routes>
         </KeyboardAvoidingView>
       </NotificationsProvider>

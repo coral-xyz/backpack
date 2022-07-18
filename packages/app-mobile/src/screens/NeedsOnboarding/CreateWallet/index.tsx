@@ -14,25 +14,86 @@ import { CustomButton } from "../../../components/CustomButton";
 import { ErrorMessage } from "../../../components/ErrorMessage";
 import { PasswordInput } from "../../../components/PasswordInput";
 import { ButtonFooter, MainContent } from "../../../components/Templates";
+import { TextInput } from "../../../components/TextInput";
 import { useRequest } from "../../../lib/useRequest";
 
-export default function CreateWallet() {
+export default function CreateWallet({ importExisting = false }) {
+  return importExisting ? <ExistingWallet /> : <NewWallet />;
+}
+
+const ExistingWallet = () => {
+  const [recoveryPhrase, setRecoveryPhrase] = useState("");
+
+  return recoveryPhrase ? (
+    <NewWallet />
+  ) : (
+    <ImportRecoveryPhrase setRecoveryPhrase={setRecoveryPhrase} />
+  );
+};
+
+const NewWallet = () => {
   const [password, setPassword] = useState("");
-  const mnemonic = useRequest(UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE, 128);
+  const recoveryPhrase = useRequest(
+    UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
+    128
+  );
 
   return password ? (
-    <ShowSecretRecoveryPhrase password={password} mnemonic={mnemonic} />
+    <ShowSecretRecoveryPhrase
+      password={password}
+      recoveryPhrase={recoveryPhrase!}
+    />
   ) : (
     <CreatePassword setPassword={setPassword} />
   );
+};
+
+interface ImportRecoveryPhraseFormData {
+  recoveryPhrase: string;
 }
+const ImportRecoveryPhrase = ({ setRecoveryPhrase }: any) => {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setError,
+  } = useForm<ImportRecoveryPhraseFormData>();
+
+  const onSubmit = async ({ recoveryPhrase }: ImportRecoveryPhraseFormData) => {
+    // TODO: validate recovery phrase in background script
+    if (recoveryPhrase.split(" ").length !== 12) {
+      setError("recoveryPhrase", { message: "Invalid recovery phrase" });
+      return;
+    }
+    setRecoveryPhrase(recoveryPhrase);
+  };
+
+  return (
+    <>
+      <MainContent>
+        <Text style={tw`text-white`}>Secret recovery phrase</Text>
+        <TextInput
+          placeholder="Recovery phrase"
+          name="recoveryPhrase"
+          control={control}
+          rules={{
+            required: "You must enter a valid 12 word recovery phrase",
+          }}
+        />
+        <ErrorMessage for={errors.recoveryPhrase} />
+      </MainContent>
+      <ButtonFooter>
+        <CustomButton text="Import" onPress={handleSubmit(onSubmit)} />
+      </ButtonFooter>
+    </>
+  );
+};
 
 interface CreatePasswordFormData {
   password: string;
   passwordConfirmation: string;
   agreedToTerms: boolean;
 }
-
 const CreatePassword: React.FC<{
   setPassword: React.Dispatch<React.SetStateAction<string>>;
 }> = ({ setPassword }) => {
@@ -95,15 +156,15 @@ const CreatePassword: React.FC<{
 
 const ShowSecretRecoveryPhrase: React.FC<{
   password: string;
-  mnemonic: string;
-}> = ({ password, mnemonic }) => {
+  recoveryPhrase: string;
+}> = ({ password, recoveryPhrase }) => {
   const background = useBackgroundClient();
   const navigate = useNavigate();
 
   const onSubmit = async () => {
     await background.request({
       method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-      params: [mnemonic, DerivationPath.Bip44Change, password, [0]],
+      params: [recoveryPhrase, DerivationPath.Bip44Change, password, [0]],
     });
     navigate("/");
   };
@@ -118,7 +179,7 @@ const ShowSecretRecoveryPhrase: React.FC<{
           This is the only way to recover your account if you lose your device.
           Write it down and store it in a safe place.
         </Text>
-        <Text style={tw`text-white p-10`}>{mnemonic}</Text>
+        <Text style={tw`text-white p-10`}>{recoveryPhrase}</Text>
       </MainContent>
       <ButtonFooter>
         <CustomButton text="Continue" onPress={onSubmit} />
