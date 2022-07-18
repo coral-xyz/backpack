@@ -115,9 +115,11 @@ export function Onboarding() {
         navButtonLeft={<NavBackButton onClick={prevStep} />}
         navbarStyle={{
           backgroundColor: theme.custom.colors.nav,
+          borderRadius: "12px",
         }}
         navContentStyle={{
           backgroundColor: theme.custom.colors.nav,
+          borderRadius: "12px",
         }}
       >
         {flow[step] || null}
