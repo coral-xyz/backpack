@@ -334,7 +334,7 @@ export class Backend {
         name: _name,
       },
     });
-    return SUCCESS_RESPONSE;
+    return publicKey;
   }
 
   keyringExportSecretKey(password: string, pubkey: string): string {

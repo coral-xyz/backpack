@@ -1,4 +1,11 @@
-import { useEffect } from "react";
+import {
+  type CSSProperties,
+  type Dispatch,
+  type MutableRefObject,
+  type PropsWithChildren,
+  type SetStateAction,
+  useEffect,
+} from "react";
 import { Drawer, Button, IconButton } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -216,6 +223,54 @@ export function WithDrawerNoHeader(props: any) {
           </Button>
         )}
       </div>
+    </Drawer>
+  );
+}
+
+export function WithContaineredDrawer(
+  props: PropsWithChildren<{
+    backdropStyles?: CSSProperties;
+    containerRef: MutableRefObject<any>;
+    openDrawer: boolean;
+    paperStyles?: CSSProperties;
+    setOpenDrawer: Dispatch<SetStateAction<boolean>>;
+  }>
+) {
+  const theme = useCustomTheme();
+  const {
+    children,
+    backdropStyles,
+    containerRef,
+    openDrawer,
+    setOpenDrawer,
+    paperStyles,
+  } = props;
+
+  return (
+    <Drawer
+      anchor="bottom"
+      open={openDrawer}
+      onClose={() => setOpenDrawer(false)}
+      PaperProps={{
+        style: {
+          position: "absolute",
+          background: theme.custom.colors.nav,
+          ...paperStyles,
+        },
+      }}
+      BackdropProps={{
+        style: {
+          position: "absolute",
+          ...backdropStyles,
+        },
+      }}
+      ModalProps={{
+        container: containerRef.current,
+        style: { position: "absolute" },
+        disableAutoFocus: true,
+      }}
+    >
+      {children}
     </Drawer>
   );
 }

@@ -17,7 +17,7 @@ export function AddConnectWallet({
   onAddSuccess,
   close,
 }: {
-  onAddSuccess: () => void;
+  onAddSuccess: (publicKey?: string) => void;
   close: () => void;
 }) {
   const theme = useCustomTheme();
@@ -56,8 +56,11 @@ export function AddConnectWallet({
     });
   };
 
-  const secretKeyImport = async (secretKey: string, name: string) => {
-    await background.request({
+  const secretKeyImport = async (
+    secretKey: string,
+    name: string
+  ): Promise<string> => {
+    return background.request({
       method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
       params: [secretKey, name],
     });
@@ -65,7 +68,9 @@ export function AddConnectWallet({
 
   const onSelectAction = (action: AddConnectFlows) => {
     if (action === "create-new-wallet") {
-      createNewWallet().then(onAddSuccess).catch(console.error);
+      createNewWallet()
+        .then(() => onAddSuccess())
+        .catch(console.error);
     } else {
       setAddConnectFlow(action);
     }
@@ -79,8 +84,8 @@ export function AddConnectWallet({
   const importWalletFlow = [
     <ImportSecretKey
       onNext={async (secretKey: string, name: string) => {
-        await secretKeyImport(secretKey, name);
-        onAddSuccess();
+        const publicKey = await secretKeyImport(secretKey, name);
+        onAddSuccess(publicKey);
       }}
     />,
   ];
