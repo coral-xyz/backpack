@@ -103,7 +103,11 @@ function LockedInner({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   );
 }
 
-export function BackpackHeader() {
+export function BackpackHeader({
+  alphaStyle,
+}: {
+  alphaStyle?: React.CSSProperties;
+}) {
   const theme = useCustomTheme();
   return (
     <Box
@@ -121,6 +125,7 @@ export function BackpackHeader() {
           flexDirection: "row-reverse",
           marginBottom: "4px",
           marginRight: "58px",
+          ...alphaStyle,
         }}
       >
         <AlphaLabel />
