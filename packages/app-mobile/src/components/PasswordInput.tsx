@@ -2,6 +2,7 @@ import React from "react";
 import { Control, useController } from "react-hook-form";
 import { TextInput } from "react-native";
 import tw from "twrnc";
+import { addTestIdentifier } from "../lib/addTestIdentifier";
 
 export const PasswordInput: React.FC<
   { name: string; control: Control; rules?: any } & React.ComponentProps<
@@ -29,6 +30,7 @@ export const PasswordInput: React.FC<
       onChangeText={field.onChange}
       ref={field.ref}
       value={field.value}
+      {...addTestIdentifier(props.placeholder!)}
       {...props}
     />
   );
