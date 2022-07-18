@@ -48,7 +48,8 @@ export function OnboardingWelcome({
         justifyContent: "space-between",
         flexDirection: "column",
         height: "100%",
-        padding: "20px",
+        padding: "0 16px 16px 16px",
+        borderRadius: "12px",
         position: "relative",
         overflow: "hidden",
       }}
@@ -99,18 +100,12 @@ function OnboardingMenu({
       sx={{
         display: "flex",
         flexDirection: "row-reverse",
-        paddingLeft: "16px",
-        paddingRight: "16px",
-        paddingTop: "10px",
-        paddingBottom: "10px",
+        padding: "0 !important",
+        minHeight: "0 !important",
         height: NAV_BAR_HEIGHT,
       }}
     >
-      <IconButton
-        color="inherit"
-        onClick={() => setMenuOpen(true)}
-        sx={{ padding: 0 }}
-      >
+      <IconButton onClick={() => setMenuOpen(true)} sx={{ padding: 0 }}>
         <Menu sx={{ color: theme.custom.colors.hamburger }} />
       </IconButton>
       <WithContaineredDrawer
@@ -118,8 +113,7 @@ function OnboardingMenu({
         openDrawer={menuOpen}
         setOpenDrawer={setMenuOpen}
         paperStyles={{
-          padding: "40px 16px 40px 16px",
-          borderRadius: "15px 15px 0 0",
+          borderRadius: "12px 12px 0 0",
         }}
       >
         <OnboardingMenuList />
@@ -161,6 +155,8 @@ function OnboardingMenuList() {
           background: theme.custom.colors.bg2,
           marginLeft: "16px",
           marginRight: "16px",
+          marginTop: "40px",
+          marginBottom: "40px",
         }}
       >
         {options.map((o, idx) => (
@@ -192,11 +188,13 @@ function OnboardingMenuList() {
               }}
               primary={o.text}
             />
-            <div>
-              <CallMade
-                style={{ flexGrow: 1, color: theme.custom.colors.secondary }}
-              />
-            </div>
+            <CallMade
+              style={{
+                flexShrink: 1,
+                alignSelf: "center",
+                color: theme.custom.colors.secondary,
+              }}
+            />
           </ListItem>
         ))}
       </List>
