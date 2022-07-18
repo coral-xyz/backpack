@@ -49,7 +49,6 @@ export function OnboardingWelcome({
         flexDirection: "column",
         height: "100%",
         padding: "0 16px 16px 16px",
-        borderRadius: "12px",
         position: "relative",
         overflow: "hidden",
       }}
@@ -61,7 +60,11 @@ export function OnboardingWelcome({
           menuOpen={menuOpen}
           setMenuOpen={setMenuOpen}
         />
-        <BackpackHeader />
+        <BackpackHeader
+          alphaStyle={{
+            marginRight: "42px",
+          }}
+        />
       </Box>
 
       <Grid container spacing={2}>
@@ -106,7 +109,7 @@ function OnboardingMenu({
       }}
     >
       <IconButton onClick={() => setMenuOpen(true)} sx={{ padding: 0 }}>
-        <Menu sx={{ color: theme.custom.colors.hamburger }} />
+        <Menu sx={{ color: theme.custom.colors.secondary }} />
       </IconButton>
       <WithContaineredDrawer
         containerRef={containerRef}
