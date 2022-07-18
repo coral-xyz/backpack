@@ -107,7 +107,7 @@ export function ApproveOrigin({ origin, title, onCompletion }: any) {
   } else if (title) {
     siteTitle = title;
   } else {
-    siteTitle = "Unknown Site";
+    siteTitle = "Website";
   }
 
   // This uses a Google API for favicon retrieval, do we want to parse the page ourselves?
