@@ -1,4 +1,4 @@
-import { useConnection, usePublicKey } from "@coral-xyz/anchor-ui";
+import { useConnection, usePublicKey } from "react-xnft";
 import { fetchTokens } from "@coral-xyz/common";
 import { AnchorProvider, Spl } from "@project-serum/anchor";
 import React, { createContext, useContext, useEffect, useState } from "react";

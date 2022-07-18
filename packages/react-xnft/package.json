@@ -1,0 +1,24 @@
+{
+  "name": "react-xnft",
+  "version": "1.0.0",
+  "description": "",
+  "module": "dist/esm/index.js",
+  "react-native": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@coral-xyz/common": "*",
+    "@coral-xyz/provider-injection": "*",
+    "eventemitter3": "^4.0.7",
+    "react": "^17.0.0",
+    "react-reconciler": "^0.26.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.6.3"
+  }
+}

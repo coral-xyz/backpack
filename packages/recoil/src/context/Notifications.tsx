@@ -7,6 +7,7 @@ import {
   Notification,
   BackgroundSolanaConnection,
   CONNECTION_POPUP_NOTIFICATIONS,
+  NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_KEY_DELETE,
@@ -39,6 +40,7 @@ export function NotificationsProvider(props: any) {
   const setActiveWallet = useSetRecoilState(atoms.activeWallet);
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
   const setConnectionUrl = useSetRecoilState(atoms.connectionUrl);
+  const setNav = useSetRecoilState(atoms.navData);
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   const navigate = useNavigate();
 
@@ -54,6 +56,9 @@ export function NotificationsProvider(props: any) {
       logger.debug(`received notification ${notif.name}`, notif);
 
       switch (notif.name) {
+        case NOTIFICATION_KEYRING_STORE_CREATED:
+          handleKeyringStoreCreated(notif);
+          break;
         case NOTIFICATION_KEYRING_STORE_LOCKED:
           handleKeyringStoreLocked(notif);
           break;
@@ -98,6 +103,10 @@ export function NotificationsProvider(props: any) {
     //
     // Notification handlers.
     //
+    const handleKeyringStoreCreated = (_notif: Notification) => {
+      // Keyring store is currently locked immediately after creation
+      setKeyringStoreState(KeyringStoreStateEnum.Locked);
+    };
     const handleConnectionUrlUpdated = (notif: Notification) => {
       setConnectionUrl(notif.data.url);
       allPlugins().forEach((p) => {
@@ -192,21 +201,6 @@ export function NotificationsProvider(props: any) {
       });
     };
     const handleNavigationUrlDidChange = (notif: Notification) => {
-      //
-      // If we've popped the table detail view, then we need to notify
-      // the plugin to update its internal state.
-      //
-      const oldUrl = notif.data.oldUrl;
-      if (oldUrl && oldUrl.startsWith("/plugin-table-detail")) {
-        const search = new URLSearchParams(oldUrl.split("?")[1]);
-        const { props } =
-          useDecodedSearchParams<SearchParamsFor.Plugin>(search);
-        const plugin = getPlugin({ url: props.pluginUrl });
-        plugin.pushNotification({
-          name: PLUGIN_NOTIFICATION_NAVIGATION_POP,
-          data: {},
-        });
-      }
       navigate(notif.data.url);
     };
 

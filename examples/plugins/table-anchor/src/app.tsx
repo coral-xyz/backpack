@@ -13,7 +13,7 @@ import AnchorUi, {
   BalancesTableFooter,
   BalancesTableRow,
   BalancesTableCell,
-} from "@coral-xyz/anchor-ui";
+} from "react-xnft";
 
 const ANCHOR_ICON =
   "https://pbs.twimg.com/profile_images/1537173219693711363/maYBbQGF_400x400.jpg";

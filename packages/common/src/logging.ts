@@ -62,8 +62,7 @@ async function _mobileLog(...args: any[]) {
     // Although we're already in the frontend code here, send the log back
     // to the webview so that we can log through the mobile subsystem.
     //
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    vanillaStore.getState().injectJavaScript!(
+    vanillaStore.getState()?.injectJavaScript?.(
       `navigator.serviceWorker.onmessage(${JSON.stringify({
         data: {
           channel: MOBILE_CHANNEL_LOGS,

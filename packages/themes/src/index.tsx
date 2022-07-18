@@ -3,9 +3,19 @@ import useTheme from "@mui/styles/useTheme";
 import createStyles from "@mui/styles/createStyles";
 
 const baseTheme = createStyles({
-  palette: {},
   typography: {
-    fontFamily: "Inter, sans-serif",
+    fontFamily: ["Inter", "sans-serif"].join(","),
+    // TODO: do we need all of these?
+    fontWeight: 500,
+    allVariants: {
+      fontWeight: 500,
+    },
+    body: {
+      fontWeight: 500,
+    },
+    p: {
+      fontWeight: 500,
+    },
   },
 });
 
@@ -20,7 +30,7 @@ const BUTTON_FONT_COLOR = FONT_COLOR;
 const BORDER_COLOR = "#393C43";
 const BORDER_COLOR_1 = "#52525B";
 
-export const darkTheme = {
+export const darkTheme: any = {
   ...baseTheme,
   custom: {
     colors: {
@@ -53,7 +63,7 @@ export const darkTheme = {
   },
 };
 
-export const lightTheme = {
+export const lightTheme: any = {
   ...baseTheme,
   custom: {
     colors: {

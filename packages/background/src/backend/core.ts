@@ -12,17 +12,16 @@ import {
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
+  NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_CONNECTION_URL_UPDATED,
 } from "@coral-xyz/common";
-import type { NavData } from "../keyring/store";
+import type { Nav } from "../keyring/store";
 import {
   BLOCKCHAIN_SOLANA,
   KeyringStore,
-  getNavData,
-  setNavData,
   setNav,
   getNav,
 } from "../keyring/store";
@@ -139,6 +138,11 @@ export class Backend {
       password,
       accountIndices
     );
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_KEYRING_STORE_CREATED,
+    });
+
     return SUCCESS_RESPONSE;
   }
 
@@ -330,7 +334,7 @@ export class Backend {
         name: _name,
       },
     });
-    return SUCCESS_RESPONSE;
+    return publicKey;
   }
 
   keyringExportSecretKey(password: string, pubkey: string): string {
@@ -351,59 +355,74 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async navigationUpdate(navData: any): Promise<string> {
-    const d = await getNavData(navData.id);
-    if (!d) {
-      throw new Error("invariant violation");
-    }
-    await setNavData(navData.id, navData);
-    if (d.urls.length !== navData.urls.length) {
-      const oldUrl = d.urls[d.urls.length - 1];
-      this.events.emit(BACKEND_EVENT, {
-        name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-        data: {
-          url: navData.urls[navData.urls.length - 1],
-          oldUrl,
-        },
-      });
-    }
-    return SUCCESS_RESPONSE;
-  }
-
-  async navigationRead(navKey: string): Promise<NavData> {
+  async navigationPush(url: string): Promise<string> {
     let nav = await getNav();
     if (!nav) {
-      await setNav(defaultNav);
-      nav = defaultNav;
+      throw new Error("nav not found");
     }
-    // @ts-ignore
-    return nav.data[navKey];
-  }
+    nav.data[nav.activeTab].urls.push(url);
+    await setNav(nav);
 
-  async navigationActiveTabRead(): Promise<string> {
-    let nav = await getNav();
-    if (!nav) {
-      await setNav(defaultNav);
-      nav = defaultNav;
-    }
-    // @ts-ignore
-    return nav.activeTab;
-  }
-
-  async navigationActiveTabUpdate(activeTab: string): Promise<string> {
-    let nav = await getNav();
-    if (!nav) {
-      throw new Error("invariant violation");
-    }
-    await setNav({
-      ...nav,
-      activeTab,
-    });
-    const navData = nav.data[activeTab];
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
       data: {
-        url: navData.urls[navData.urls.length - 1],
+        url,
+        nav,
+      },
+    });
+
+    return SUCCESS_RESPONSE;
+  }
+
+  async navigationPop(): Promise<string> {
+    let nav = await getNav();
+    if (!nav) {
+      throw new Error("nav not found");
+    }
+    nav.data[nav.activeTab].urls.pop();
+    await setNav(nav);
+
+    const urls = nav.data[nav.activeTab].urls;
+    const url = urls[urls.length - 1];
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+      data: {
+        url,
+        nav,
+      },
+    });
+
+    return SUCCESS_RESPONSE;
+  }
+
+  async navRead(): Promise<Nav> {
+    let nav = await getNav();
+    if (!nav) {
+      await setNav(defaultNav);
+      nav = defaultNav;
+    }
+    // @ts-ignore
+    return nav;
+  }
+
+  async navigationActiveTabUpdate(activeTab: string): Promise<string> {
+    const currNav = await getNav();
+    if (!currNav) {
+      throw new Error("invariant violation");
+    }
+    const nav = {
+      ...currNav,
+      activeTab,
+    };
+    await setNav(nav);
+    const navData = nav.data[activeTab];
+    const url = navData.urls[navData.urls.length - 1];
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+      data: {
+        url,
+        nav,
       },
     });
 

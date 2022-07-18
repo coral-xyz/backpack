@@ -9,7 +9,7 @@ import {
   BalancesTableFooter,
   BalancesTableRow,
   BalancesTableCell,
-} from "@coral-xyz/anchor-ui";
+} from "react-xnft";
 
 const icon = "https://aux.iconspalace.com/uploads/finder-circle-icon-256.png";
 

@@ -1,8 +1,8 @@
 import React from "react";
-import AnchorUi, { AnchorDom } from "@coral-xyz/anchor-ui";
+import ReactXnft, { AnchorDom } from "react-xnft";
 import { App } from "./app";
 
-AnchorUi.render(
+ReactXnft.render(
   <AnchorDom>
     <App />
   </AnchorDom>

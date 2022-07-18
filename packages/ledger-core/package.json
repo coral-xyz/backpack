@@ -2,7 +2,8 @@
   "name": "@coral-xyz/ledger-core",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/esm/index.js",
+  "module": "dist/esm/index.js",
+  "react-native": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "scripts": {
     "build": "tsc",

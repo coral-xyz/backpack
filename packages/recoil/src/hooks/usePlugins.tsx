@@ -1,16 +1,21 @@
 import { useRecoilValue } from "recoil";
-import { plugins, tablePlugins } from "../atoms";
+import * as atoms from "../atoms";
 // XXX: this full path is currently necessary as it avoids loading the jsx in
-//      anchor-ui-renderer/src/Component.tsx in the background service worker
-import { Plugin } from "@coral-xyz/anchor-ui-renderer/dist/esm/plugin";
+//      react-xnft-renderer/src/Component.tsx in the background service worker
+import { Plugin } from "@coral-xyz/react-xnft-renderer/dist/esm/plugin";
+
+export function useAppIcons() {
+  const pluginData = useRecoilValue(atoms.plugins);
+  return pluginData;
+}
 
 export function usePlugins(): Array<Plugin> {
-  const pluginData = useRecoilValue(plugins);
+  const pluginData = useRecoilValue(atoms.plugins);
   return pluginData.map((p) => getPlugin(p));
 }
 
 export function useTablePlugins(): Array<Plugin> {
-  const pluginData = useRecoilValue(tablePlugins);
+  const pluginData = useRecoilValue(atoms.tablePlugins);
   return pluginData.map((p) => getPlugin(p));
 }
 

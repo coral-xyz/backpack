@@ -31,3 +31,7 @@ dist/
 .idea
 deptool-report.html
 test-ledger/
+
+.yarn
+.expo
+.next

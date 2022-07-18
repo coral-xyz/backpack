@@ -1,4 +1,5 @@
 import { selector } from "recoil";
+import { SIMULATOR_PORT } from "@coral-xyz/common";
 import { activeWallet, connectionUrl } from "./wallet";
 
 const OPEN_ORDERS_PLUGIN_URL = pluginURL("app");
@@ -9,9 +10,10 @@ const HELLO_WORLD_PLUGIN_URL =
   "https://embed.xnfts.dev/5r1jwBmveWJaJVtkFCUFcboqv4sfYheaoEoBicAiJmEJ";
 // "https://localhost:9999/5r1jwBmveWJaJVtkFCUFcboqv4sfYheaoEoBicAiJmEJ";
 const MANGO_TABLE_PLUGIN_URL = pluginURL("table-mango");
-const DEGODS_TABLE_PLUGIN_URL = pluginURL("table-degods");
+const DEGODS_TABLE_PLUGIN_URL = pluginURL("deadgods");
 const ANCHOR_TABLE_PLUGIN_URL = pluginURL("table-anchor");
 const PSYFI_TABLE_PLUGIN_URL = pluginURL("table-psyfi");
+const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
 
 function pluginURL(pluginName: string) {
   return [
@@ -45,6 +47,14 @@ export const plugins = selector({
         title: "DeadGods",
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
+      },
+      {
+        url: SIMULATOR_URL,
+        iconUrl: "assets/simulator.png",
+        title: "Simulator",
+        activeWallet: get(activeWallet),
+        connectionUrl: get(connectionUrl),
+        componentId: "simulator",
       },
       /*
       {

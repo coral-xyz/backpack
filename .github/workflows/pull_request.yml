@@ -102,7 +102,7 @@ jobs:
       # - name: "[e2e] run puppeteer tests"
       #   uses: wentokay/hello-world-docker-action@v11
       #   with:
-      #     command: yarn workspace @coral-xyz/extension e2e
+      #     command: yarn workspace @coral-xyz/app-extension e2e
       #
 
       ##########################################################################
@@ -116,14 +116,14 @@ jobs:
 
       - name: "zip build artifacts"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        working-directory: packages/extension
+        working-directory: packages/app-extension
         run: zip -r build.zip build/
       - name: "upload build artifacts"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v2
         with:
           name: backpack-build
-          path: packages/extension/build.zip
+          path: packages/app-extension/build.zip
       - uses: actions/download-artifact@v2
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:

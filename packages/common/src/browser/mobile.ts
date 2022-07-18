@@ -226,7 +226,7 @@ export function startMobileIfNeeded() {
 
   // TODO: replace this with whatever the react-native api is.
   const MEM_STORAGE = {
-    "keyring-store": "locked",
+    // "keyring-store": "locked",
   };
   const handleGetLocalStorage = (key: string) => {
     const result = MEM_STORAGE[key];
@@ -303,7 +303,7 @@ async function postMsgFromWorker(msg: any) {
 async function postMsgFromAppUi(msg: any) {
   vanillaStore
     .getState()
-    .injectJavaScript?.(
+    ?.injectJavaScript?.(
       `window.postMessageToBackgroundViaWebview(${JSON.stringify(msg)}); true;`
     );
 }
