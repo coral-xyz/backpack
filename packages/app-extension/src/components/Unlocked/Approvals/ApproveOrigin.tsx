@@ -113,10 +113,6 @@ export function ApproveOrigin({ origin, title, onCompletion }: any) {
   // This uses a Google API for favicon retrieval, do we want to parse the page ourselves?
   const siteIcon = `https://www.google.com/s2/favicons?domain=${origin}&sz=180`;
 
-  useEffect(() => {
-    (async () => {})();
-  }, []);
-
   const onConnect = async () => {
     await approveOrigin(origin);
     await onCompletion(true);
