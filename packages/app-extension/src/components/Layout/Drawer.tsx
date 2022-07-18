@@ -247,7 +247,6 @@ export function WithContaineredDrawer(
       PaperProps={{
         style: {
           position: "absolute",
-          padding: "16px",
           background: theme.custom.colors.nav,
           ...paperStyles,
         },
