@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { Box } from "@mui/material";
 import { useBackgroundClient, useEphemeralNav } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_KEYRING_RESET } from "@coral-xyz/common";
-import { ResetSuccess } from "./ResetSuccess";
 import {
   Header,
   HeaderIcon,
@@ -20,7 +19,6 @@ export function ResetWarning({ onClose }: { onClose: () => void }) {
       method: UI_RPC_METHOD_KEYRING_RESET,
       params: [],
     });
-    nav.push(<ResetSuccess />);
   };
   useEffect(() => {
     nav.setTitle("");
