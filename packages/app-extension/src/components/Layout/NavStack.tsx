@@ -35,7 +35,6 @@ function NavStackInner({
   const { title, rightNavButton, leftNavButton, style } = options({
     route: activeRoute,
   });
-
   return (
     <AnimatePresence initial={false}>
       <WithMotion id={activeRoute.name} navAction={"push"}>
@@ -45,7 +44,7 @@ function NavStackInner({
           navButtonRight={rightNavButton}
           navbarStyle={style}
         >
-          {activeScreen.props.component()}
+          {activeScreen.props.component({ ...(activeRoute.props ?? {}) })}
         </WithNav>
       </WithMotion>
     </AnimatePresence>

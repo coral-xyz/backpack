@@ -68,9 +68,8 @@ export function Router2() {
 export function Router3() {
   const location = useLocation();
 
-  // TODO: add initial=false prop to animate presence.
   return (
-    <AnimatePresence>
+    <AnimatePresence initial={false}>
       <Routes location={location} key={location.pathname}>
         <Route path="/balances" element={<BalancesPage />} />
         <Route path="/balances/token" element={<TokenPage />} />
@@ -88,7 +87,10 @@ function NavHome1() {
   const { push, pop } = useNavStack();
   return (
     <div>
-      <div onClick={() => push("home2")} style={{ color: "white" }}>
+      <div
+        onClick={() => push("home2", { title: "armani" })}
+        style={{ color: "white" }}
+      >
         Push home 1
       </div>
       <div onClick={() => pop()} style={{ color: "white" }}>
@@ -98,7 +100,7 @@ function NavHome1() {
   );
 }
 
-function NavHome2() {
+function NavHome2({ title }: any) {
   const { push, pop } = useNavStack();
   return (
     <div>
@@ -106,7 +108,7 @@ function NavHome2() {
         Push home 2
       </div>
       <div onClick={() => pop()} style={{ color: "white" }}>
-        Po home 2
+        {title}
       </div>
     </div>
   );
