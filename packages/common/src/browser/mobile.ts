@@ -1,5 +1,6 @@
 import EventEmitter from "eventemitter3";
-import { vanillaStore } from "../zustand";
+import { vanillaStore } from "../zustand-store";
+import { getItemAsync, setItemAsync } from "expo-secure-store";
 import { BrowserRuntimeCommon } from "./common";
 import { getLogger } from "../logging";
 import { generateUniqueId, isServiceWorker, IS_MOBILE } from "../utils";
@@ -229,10 +230,12 @@ export function startMobileIfNeeded() {
     // "keyring-store": "locked",
   };
   const handleGetLocalStorage = (key: string) => {
+    getItemAsync(key);
     const result = MEM_STORAGE[key];
     return [result, undefined];
   };
   const handleSetLocalStorage = (key: string, value: any) => {
+    setItemAsync(key, value);
     MEM_STORAGE[key] = value;
     return ["success", undefined];
   };

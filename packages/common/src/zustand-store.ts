@@ -1,5 +1,6 @@
-import vanilla from "zustand/vanilla";
+// import create from "zustand";
 import create from "zustand";
+import vanilla from "zustand/vanilla";
 
 // temporarily using a zustand store as it's a quick
 // way to share a function (injectJavaScript) between

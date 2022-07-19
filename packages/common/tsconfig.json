@@ -2,6 +2,10 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist/esm/",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "baseUrl": "src",
+    "paths": {
+      "expo-secure-store": ["fake-expo-secure-store"]
+    }
   }
 }
