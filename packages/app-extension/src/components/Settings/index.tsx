@@ -59,9 +59,6 @@ const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
     color: theme.custom.colors.fontColor,
   },
-  settingsContainer: {
-    height: "100%",
-  },
   menuButtonContainer: {
     display: "flex",
     justifyContent: "center",
@@ -197,12 +194,11 @@ function SettingsMenu() {
 }
 
 function _SettingsContent() {
-  const classes = useStyles();
   const nav = useNavStack();
   const { close } = useDrawerContext();
   const keyringStoreState = useKeyringStoreState();
   return (
-    <div className={classes.settingsContainer}>
+    <div>
       <AvatarHeader />
       {keyringStoreState === KeyringStoreStateEnum.Unlocked && (
         <WalletList
