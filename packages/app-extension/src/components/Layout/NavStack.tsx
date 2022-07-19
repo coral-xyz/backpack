@@ -55,6 +55,8 @@ function NavStackInner({
     title = titleDefault;
   }
 
+  console.log("active route here", activeRoute, activeScreen);
+
   // TODO: plumb through the nav action.
   return (
     <AnimatePresence initial={false}>

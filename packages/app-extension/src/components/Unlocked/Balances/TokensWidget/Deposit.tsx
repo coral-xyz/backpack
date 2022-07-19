@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button, Tooltip, Typography } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useActiveWallet } from "@coral-xyz/recoil";
@@ -10,7 +10,6 @@ import {
   walletAddressDisplay,
 } from "../../../common";
 import { useDrawerContext } from "../../../Layout/Drawer";
-import { useNavStack } from "../../../Layout/NavStack";
 
 const useStyles = styles((theme) => ({
   subtext: {
@@ -45,8 +44,13 @@ export function DepositButton({ token }: any) {
   return (
     <WithHeaderButton
       label={"Deposit"}
-      dialogTitle={`${token.ticker} / Deposit`}
-      dialog={() => <Deposit />}
+      routes={[
+        {
+          component: Deposit,
+          title: `${token.ticker} / Deposit`,
+          name: "deposit",
+        },
+      ]}
     />
   );
 }

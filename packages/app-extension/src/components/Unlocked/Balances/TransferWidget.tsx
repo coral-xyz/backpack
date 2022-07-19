@@ -78,11 +78,13 @@ function SendButton() {
           name: "select-token",
           component: SendToken,
           title: "Select token",
+          props: {},
         },
         {
           name: "send",
-          component: _Send,
+          component: (props: any) => <_Send {...props} />,
           title: "", // todo
+          props: {},
         },
       ]}
     />
@@ -120,7 +122,7 @@ function TransferButton({
 }: {
   label: string;
   labelComponent: any;
-  routes: Array<{ component: any; title: string; name: string }>;
+  routes: Array<{ props?: any; component: any; title: string; name: string }>;
 }) {
   const theme = useCustomTheme();
   return (
@@ -144,8 +146,8 @@ function TransferButton({
           marginBottom: "8px",
         }}
         label={""}
-        routes={routes}
         labelComponent={labelComponent}
+        routes={routes}
       />
       <Typography
         style={{
@@ -164,7 +166,6 @@ function TransferButton({
 
 function SendToken() {
   const classes = useStyles();
-  const { close } = useDrawerContext();
   const [searchFilter, setSearchFilter] = useState("");
   return (
     <div>
@@ -179,18 +180,12 @@ function SendToken() {
           },
         }}
       />
-      <TokenTable close={close} searchFilter={searchFilter} />
+      <TokenTable searchFilter={searchFilter} />
     </div>
   );
 }
 
-function TokenTable({
-  close,
-  searchFilter,
-}: {
-  close: () => void;
-  searchFilter?: string;
-}) {
+function TokenTable({ searchFilter }: { searchFilter?: string }) {
   const blockchain = "solana";
   const title = "Tokens";
 
@@ -218,27 +213,14 @@ function TokenTable({
       />
       <BalancesTableContent>
         {tokenAccountsFiltered.map((token: any) => (
-          <TokenRow
-            key={token.address}
-            close={close}
-            token={token}
-            blockchain={blockchain}
-          />
+          <TokenRow key={token.address} token={token} blockchain={blockchain} />
         ))}
       </BalancesTableContent>
     </BalancesTable>
   );
 }
 
-function TokenRow({
-  close,
-  token,
-  blockchain,
-}: {
-  close: () => void;
-  token: any;
-  blockchain: string;
-}) {
+function TokenRow({ token, blockchain }: { token: any; blockchain: string }) {
   const { push } = useNavStack();
   return (
     <BalancesTableRow
@@ -246,7 +228,6 @@ function TokenRow({
         push("send", {
           blockchain,
           token,
-          close,
         })
       }
     >
@@ -263,15 +244,8 @@ function TokenRow({
   );
 }
 
-function _Send({
-  close,
-  token,
-  blockchain,
-}: {
-  close: () => void;
-  token: any;
-  blockchain: string;
-}) {
+function _Send({ token, blockchain }: { token: any; blockchain: string }) {
+  const { close } = useDrawerContext();
   const { title, setTitle } = useNavStack();
   useEffect(() => {
     const prev = title;

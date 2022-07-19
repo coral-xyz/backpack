@@ -106,6 +106,13 @@ export function SendButton({
   return (
     <WithHeaderButton
       label={"Send"}
+      routes={[
+        {
+          name: "send",
+          component: Send,
+          title: `${token.ticker} / Send`,
+        },
+      ]}
       dialogTitle={`${token.ticker} / Send`}
       dialog={(setOpenDrawer: any) => (
         <Send
