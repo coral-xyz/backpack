@@ -27,6 +27,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
+  UI_RPC_METHOD_KEYRING_RESET,
   UI_RPC_METHOD_HD_KEYRING_CREATE,
   UI_RPC_METHOD_CONNECTION_URL_READ,
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
@@ -134,6 +135,8 @@ async function handle<T = any>(
       return await handleMnemonicCreate(ctx, params[0]);
     case UI_RPC_METHOD_PREVIEW_PUBKEYS:
       return await handlePreviewPubkeys(ctx, params[0], params[1], params[2]);
+    case UI_RPC_METHOD_KEYRING_RESET:
+      return await handleKeyringReset(ctx);
     //
     // Ledger.
     //
@@ -400,6 +403,13 @@ async function handleKeyringAutolockUpdate(
   autolockSecs: number
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.keyringAutolockUpdate(autolockSecs);
+  return [resp];
+}
+
+async function handleKeyringReset(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.keyringReset();
   return [resp];
 }
 

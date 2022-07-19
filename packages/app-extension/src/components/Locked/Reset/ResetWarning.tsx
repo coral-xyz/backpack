@@ -1,10 +1,7 @@
 import { useEffect } from "react";
 import { Box } from "@mui/material";
 import { useBackgroundClient, useEphemeralNav } from "@coral-xyz/recoil";
-import {
-  BrowserRuntimeCommon,
-  UI_RPC_METHOD_KEYRING_STORE_LOCK,
-} from "@coral-xyz/common";
+import { UI_RPC_METHOD_KEYRING_RESET } from "@coral-xyz/common";
 import { ResetSuccess } from "./ResetSuccess";
 import {
   Header,
@@ -20,10 +17,9 @@ export function ResetWarning({ onClose }: { onClose: () => void }) {
   const nav = useEphemeralNav();
   const onNext = async () => {
     await background.request({
-      method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+      method: UI_RPC_METHOD_KEYRING_RESET,
       params: [],
     });
-    await BrowserRuntimeCommon.clearLocalStorage();
     nav.push(<ResetSuccess />);
   };
   useEffect(() => {

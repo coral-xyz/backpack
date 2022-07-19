@@ -15,6 +15,7 @@ import {
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
+  NOTIFICATION_KEYRING_STORE_RESET,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_CONNECTION_URL_UPDATED,
 } from "@coral-xyz/common";
@@ -352,6 +353,14 @@ export class Backend {
 
   async keyringAutolockUpdate(secs: number): Promise<string> {
     await this.keyringStore.autoLockUpdate(secs);
+    return SUCCESS_RESPONSE;
+  }
+
+  keyringReset(): string {
+    this.keyringStore.reset();
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_KEYRING_STORE_RESET,
+    });
     return SUCCESS_RESPONSE;
   }
 

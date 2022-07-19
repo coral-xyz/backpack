@@ -193,6 +193,10 @@ export class KeyringStore {
     });
   }
 
+  public reset() {
+    return LocalStorageDb.reset();
+  }
+
   public async autoLockUpdate(autoLockSecs: number) {
     return this.withUnlock(async () => {
       await walletDataSetAutoLock(autoLockSecs);
@@ -717,6 +721,10 @@ class LocalStorageDb {
 
   static async set(key: string, value: any): Promise<void> {
     await BrowserRuntimeCommon.setLocalStorage(key, value);
+  }
+
+  static async reset(): Promise<void> {
+    await BrowserRuntimeCommon.clearLocalStorage();
   }
 }
 

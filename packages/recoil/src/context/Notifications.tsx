@@ -10,6 +10,7 @@ import {
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
+  NOTIFICATION_KEYRING_STORE_RESET,
   NOTIFICATION_KEYRING_KEY_DELETE,
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
@@ -64,6 +65,9 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_KEYRING_STORE_UNLOCKED:
           handleKeyringStoreUnlocked(notif);
+          break;
+        case NOTIFICATION_KEYRING_STORE_RESET:
+          handleReset(notif);
           break;
         case NOTIFICATION_KEYRING_KEY_DELETE:
           handleKeyringKeyDelete(notif);
@@ -181,6 +185,9 @@ export function NotificationsProvider(props: any) {
     };
     const handleResetMnemonic = (notif: Notification) => {
       // TODO.
+    };
+    const handleReset = (_notif: Notification) => {
+      setKeyringStoreState(KeyringStoreStateEnum.NeedsOnboarding);
     };
     const handleApprovedOriginsUpdate = (notif: Notification) => {
       setApprovedOrigins(notif.data.approvedOrigins);
