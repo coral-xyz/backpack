@@ -208,6 +208,7 @@ export const TAB_SET = new Set([TAB_BALANCES, TAB_SWAP, TAB_NFTS, TAB_APPS]);
 
 export const NAV_COMPONENT_TOKEN = "balances/token";
 export const NAV_COMPONENT_PLUGINS = "apps/plugins";
+export const NAV_COMPONENT_SIMULATOR = "apps/simulator";
 
 export const BACKEND_EVENT = "backend-event";
 

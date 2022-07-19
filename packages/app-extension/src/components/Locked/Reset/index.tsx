@@ -1,12 +1,14 @@
 import { useEffect } from "react";
-import { useEphemeralNav } from "@coral-xyz/recoil";
 import { ResetWelcome } from "./ResetWelcome";
+import { useNavStack } from "../../Layout/NavStack";
+import { useDrawerContext } from "../../Layout/Drawer";
 
-export function Reset({ closeDrawer }: { closeDrawer: () => void }) {
-  const nav = useEphemeralNav();
+export function Reset() {
+  const { close } = useDrawerContext();
+  const nav = useNavStack();
   useEffect(() => {
     nav.setTitle("");
     nav.setStyle({ borderBottom: "none" });
   }, []);
-  return <ResetWelcome onClose={closeDrawer} />;
+  return <ResetWelcome onClose={close} />;
 }

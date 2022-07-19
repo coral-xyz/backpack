@@ -1,7 +1,13 @@
-import React, { useEffect } from "react";
-import { useLocation, Routes, Route, Navigate } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import {
+  useLocation,
+  useSearchParams,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { TAB_SET, SIMULATOR_PORT } from "@coral-xyz/common";
+import { SIMULATOR_PORT } from "@coral-xyz/common";
 import {
   useDecodedSearchParams,
   useBootstrap,
@@ -20,20 +26,22 @@ import { Simulator } from "../Unlocked/Apps/Simulator";
 import { Nfts } from "../Unlocked/Nfts";
 import { SettingsButton } from "../Settings";
 import { WithNav, NavBackButton } from "./Nav";
-import { TAB_HEIGHT } from "./Tab";
+import { WithMotion } from "./NavStack";
 
 export function Router() {
   const location = useLocation();
   return (
-    <Routes location={location} key={location.pathname}>
-      <Route path="/balances" element={<BalancesPage />} />
-      <Route path="/balances/token" element={<TokenPage />} />
-      <Route path="/apps" element={<AppsPage />} />
-      <Route path="/apps/plugins" element={<PluginPage />} />
-      <Route path="/apps/simulator" element={<SimulatorPage />} />
-      <Route path="/nfts" element={<NftsPage />} />
-      <Route path="*" element={<Redirect />} />
-    </Routes>
+    <AnimatePresence initial={false}>
+      <Routes location={location} key={location.pathname}>
+        <Route path="/balances" element={<BalancesPage />} />
+        <Route path="/balances/token" element={<TokenPage />} />
+        <Route path="/apps" element={<AppsPage />} />
+        <Route path="/apps/plugins" element={<PluginPage />} />
+        <Route path="/apps/simulator" element={<SimulatorPage />} />
+        <Route path="/nfts" element={<NftsPage />} />
+        <Route path="*" element={<Redirect />} />
+      </Routes>
+    </AnimatePresence>
   );
 }
 
@@ -43,30 +51,30 @@ function Redirect() {
 }
 
 function BalancesPage() {
-  return <_WithNav component={<Balances />} />;
+  return <NavScreen component={<Balances />} />;
 }
 
 function NftsPage() {
-  return <_WithNav component={<Nfts />} />;
+  return <NavScreen component={<Nfts />} />;
 }
 
 function AppsPage() {
-  return <_WithNav component={<Apps />} />;
+  return <NavScreen component={<Apps />} />;
 }
 
 function TokenPage() {
   const { props } = useDecodedSearchParams<SearchParamsFor.Token>();
-  return <_WithNav component={<Token {...props} />} />;
+  return <NavScreen component={<Token {...props} />} />;
 }
 
 function PluginPage() {
   const { props } = useDecodedSearchParams<SearchParamsFor.Plugin>();
-  return <_WithNav component={<PluginDisplay {...props} />} />;
+  return <NavScreen component={<PluginDisplay {...props} />} />;
 }
 
 function SimulatorPage() {
   return (
-    <_WithNav
+    <NavScreen
       component={<Simulator pluginUrl={`http://localhost:${SIMULATOR_PORT}`} />}
     />
   );
@@ -87,9 +95,10 @@ function ExitAppButton() {
   );
 }
 
-function _WithNav({ component }: { component: React.ReactNode }) {
+function NavScreen({ component }: { component: React.ReactNode }) {
   const { title, isRoot, pop } = useNavigation();
   const { style, navButtonLeft, navButtonRight } = useNavBar();
+
   const _navButtonLeft = navButtonLeft ? (
     navButtonLeft
   ) : isRoot ? null : (
@@ -97,27 +106,50 @@ function _WithNav({ component }: { component: React.ReactNode }) {
   );
 
   return (
-    <>
-      <WithNav
-        title={title}
-        navButtonLeft={_navButtonLeft}
-        navButtonRight={navButtonRight}
-        navbarStyle={style}
+    <WithMotionWrapper>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+        }}
       >
-        <NavBootstrap>{component}</NavBootstrap>
-      </WithNav>
-    </>
+        <WithNav
+          title={title}
+          navButtonLeft={_navButtonLeft}
+          navButtonRight={navButtonRight}
+          navbarStyle={style}
+        >
+          <NavBootstrap>{component}</NavBootstrap>
+        </WithNav>
+      </div>
+    </WithMotionWrapper>
+  );
+}
+
+function WithMotionWrapper({ children }: { children: any }) {
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const navAction = searchParams.get("nav");
+  return (
+    <WithMotion id={location.pathname} navAction={navAction}>
+      {children}
+    </WithMotion>
   );
 }
 
 function useNavBar() {
   const theme = useCustomTheme();
   let { isRoot } = useNavigation();
+  const pathname = useLocation().pathname;
 
   let navButtonLeft = null as any;
   let navButtonRight = null as any;
 
-  const pathname = useLocation().pathname;
   let navStyle = {
     fontSize: "18px",
     borderBottom: !isRoot
@@ -125,10 +157,9 @@ function useNavBar() {
       : undefined,
   } as React.CSSProperties;
 
-  if (TAB_SET.has(pathname.slice(1))) {
+  if (isRoot) {
     navButtonRight = <SettingsButton />;
-  }
-  if (
+  } else if (
     pathname === "/balances/token" ||
     pathname === "/apps/plugins" ||
     pathname === "/apps/simulator"

@@ -1,10 +1,11 @@
-import {
+import React, {
+  useContext,
+  useEffect,
   type CSSProperties,
   type Dispatch,
   type MutableRefObject,
   type PropsWithChildren,
   type SetStateAction,
-  useEffect,
 } from "react";
 import { Drawer, Button, IconButton } from "@mui/material";
 import { Close } from "@mui/icons-material";
@@ -68,18 +69,20 @@ export function WithDrawer(props: any) {
   const classes = useStyles();
   const { children, openDrawer, setOpenDrawer } = props;
   return (
-    <Drawer
-      anchor={"bottom"}
-      open={openDrawer}
-      onClose={() => setOpenDrawer(false)}
-      classes={{
-        root: classes.drawerRoot,
-        paper: classes.drawerPaper,
-      }}
-      id="drawer"
-    >
-      {children}
-    </Drawer>
+    <DrawerProvider setOpenDrawer={setOpenDrawer}>
+      <Drawer
+        anchor={"bottom"}
+        open={openDrawer}
+        onClose={() => setOpenDrawer(false)}
+        classes={{
+          root: classes.drawerRoot,
+          paper: classes.drawerPaper,
+        }}
+        id="drawer"
+      >
+        {children}
+      </Drawer>
+    </DrawerProvider>
   );
 }
 
@@ -273,4 +276,30 @@ export function WithContaineredDrawer(
       {children}
     </Drawer>
   );
+}
+
+type DrawerContext = {
+  close: () => void;
+};
+const _DrawerContext = React.createContext<DrawerContext | null>(null);
+
+function DrawerProvider({ children, setOpenDrawer }: any) {
+  const close = () => setOpenDrawer(false);
+  return (
+    <_DrawerContext.Provider
+      value={{
+        close,
+      }}
+    >
+      {children}
+    </_DrawerContext.Provider>
+  );
+}
+
+export function useDrawerContext(): DrawerContext {
+  const ctx = useContext(_DrawerContext);
+  if (ctx === null) {
+    throw new Error("Context not available");
+  }
+  return ctx;
 }

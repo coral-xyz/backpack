@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Typography } from "@mui/material";
-import { styles } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Button } from "@coral-xyz/react-xnft-renderer";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { useBlockchainTokenAccount } from "@coral-xyz/recoil";
 import { RecentActivitySmall } from "../RecentActivity";
 import { SendButton } from "./Send";
 import { DepositButton } from "./Deposit";
-import { WithEphemeralNavDrawer } from "../../../Layout/Drawer";
+import { WithDrawer } from "../../../Layout/Drawer";
+import { NavStackEphemeral, NavStackScreen } from "../../../Layout/NavStack";
+import { CloseButton } from "../../../Layout/Drawer";
 
 const useStyles = styles((theme) => ({
   tokenHeaderContainer: {
@@ -54,6 +56,11 @@ const useStyles = styles((theme) => ({
 }));
 
 export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
+  // Hack: This is hit for some reason due to the framer-motion animation.
+  if (!blockchain || !address) {
+    return <></>;
+  }
+
   return (
     <div>
       <TokenHeader blockchain={blockchain} address={address} />
@@ -92,11 +99,12 @@ export function WithHeaderButton({
   style,
   labelComponent,
   label,
-  dialog,
-  dialogTitle,
+  routes,
 }: any) {
   const classes = useStyles();
+  const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
+  const initialRoute = routes[0];
   return (
     <>
       <Button style={style} onClick={() => setOpenDrawer(true)}>
@@ -106,13 +114,43 @@ export function WithHeaderButton({
           <Typography className={classes.headerButtonLabel}>{label}</Typography>
         )}
       </Button>
-      <WithEphemeralNavDrawer
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-        title={dialogTitle}
-      >
-        {dialog(setOpenDrawer)}
-      </WithEphemeralNavDrawer>
+      <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+        <div
+          style={{ height: "100%", background: theme.custom.colors.background }}
+        >
+          <NavStackEphemeral
+            initialRoute={initialRoute}
+            options={(args) => routeOptions(routes, args)}
+            style={{
+              borderBottom: `solid 1pt ${theme.custom.colors.border}`,
+            }}
+            navButtonRight={
+              <CloseButton onClick={() => setOpenDrawer(false)} />
+            }
+          >
+            {routes.map((r: any) => (
+              <NavStackScreen
+                key={r.name}
+                name={r.name}
+                component={r.component}
+              />
+            ))}
+          </NavStackEphemeral>
+        </div>
+      </WithDrawer>
     </>
   );
+}
+
+function routeOptions(
+  routes: Array<{ title: string; name: string }>,
+  { route }: { route: { name: string; props?: any } }
+) {
+  const found = routes.find((r) => r.name === route.name);
+  if (!found) {
+    throw new Error("route not found");
+  }
+  return {
+    title: found.title,
+  };
 }

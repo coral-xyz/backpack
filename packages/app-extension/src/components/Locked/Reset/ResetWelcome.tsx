@@ -1,17 +1,16 @@
 import { Box } from "@mui/material";
-import { useEphemeralNav } from "@coral-xyz/recoil";
 import {
   Header,
   SubtextParagraph,
   SecondaryButton,
   DangerButton,
 } from "../../common";
-import { ResetWarning } from "./ResetWarning";
+import { useNavStack } from "../../Layout/NavStack";
 
 export function ResetWelcome({ onClose }: { onClose: () => void }) {
-  const nav = useEphemeralNav();
+  const nav = useNavStack();
   const onNext = () => {
-    nav.push(<ResetWarning onClose={onClose} />);
+    nav.push("reset-warning");
   };
   return (
     <Box

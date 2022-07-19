@@ -18,6 +18,8 @@ import {
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
 import { Send } from "./TokensWidget/Send";
+import { useDrawerContext } from "../../Layout/Drawer";
+import { useNavStack } from "../../Layout/NavStack";
 
 const useStyles = styles((theme) => ({
   searchField: {
@@ -71,10 +73,18 @@ function SendButton() {
           }}
         />
       }
-      dialog={(setOpenDrawer: (b: boolean) => void) => {
-        return <SendToken close={() => setOpenDrawer(false)} />;
-      }}
-      dialogTitle={"Select token"}
+      routes={[
+        {
+          name: "select-token",
+          component: SendToken,
+          title: "Select token",
+        },
+        {
+          name: "send",
+          component: (props: any) => <_Send {...props} />,
+          title: "",
+        },
+      ]}
     />
   );
 }
@@ -92,10 +102,13 @@ function ReceiveButton() {
           }}
         />
       }
-      dialog={(setOpenDrawer: (b: boolean) => void) => {
-        return <Deposit close={() => setOpenDrawer(false)} />;
-      }}
-      dialogTitle={"Deposit"}
+      routes={[
+        {
+          component: Deposit,
+          title: "Deposit",
+          name: "deposit",
+        },
+      ]}
     />
   );
 }
@@ -103,13 +116,11 @@ function ReceiveButton() {
 function TransferButton({
   label,
   labelComponent,
-  dialog,
-  dialogTitle,
+  routes,
 }: {
   label: string;
   labelComponent: any;
-  dialog: (setOpenDrawer: (b: boolean) => void) => React.ReactNode;
-  dialogTitle: string;
+  routes: Array<{ props?: any; component: any; title: string; name: string }>;
 }) {
   const theme = useCustomTheme();
   return (
@@ -132,10 +143,9 @@ function TransferButton({
           display: "block",
           marginBottom: "8px",
         }}
-        dialogTitle={dialogTitle}
         label={""}
-        dialog={dialog}
         labelComponent={labelComponent}
+        routes={routes}
       />
       <Typography
         style={{
@@ -152,7 +162,7 @@ function TransferButton({
   );
 }
 
-function SendToken({ close }: { close: () => void }) {
+function SendToken() {
   const classes = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
   return (
@@ -168,18 +178,12 @@ function SendToken({ close }: { close: () => void }) {
           },
         }}
       />
-      <TokenTable close={close} searchFilter={searchFilter} />
+      <TokenTable searchFilter={searchFilter} />
     </div>
   );
 }
 
-function TokenTable({
-  close,
-  searchFilter,
-}: {
-  close: () => void;
-  searchFilter?: string;
-}) {
+function TokenTable({ searchFilter }: { searchFilter?: string }) {
   const blockchain = "solana";
   const title = "Tokens";
 
@@ -207,33 +211,23 @@ function TokenTable({
       />
       <BalancesTableContent>
         {tokenAccountsFiltered.map((token: any) => (
-          <TokenRow
-            key={token.address}
-            close={close}
-            token={token}
-            blockchain={blockchain}
-          />
+          <TokenRow key={token.address} token={token} blockchain={blockchain} />
         ))}
       </BalancesTableContent>
     </BalancesTable>
   );
 }
 
-function TokenRow({
-  close,
-  token,
-  blockchain,
-}: {
-  close: () => void;
-  token: any;
-  blockchain: string;
-}) {
-  const { push } = useEphemeralNav();
+function TokenRow({ token, blockchain }: { token: any; blockchain: string }) {
+  const { push } = useNavStack();
   return (
     <BalancesTableRow
-      onClick={() => {
-        push(<_Send blockchain={blockchain} token={token} close={close} />);
-      }}
+      onClick={() =>
+        push("send", {
+          blockchain,
+          token,
+        })
+      }
     >
       <BalancesTableCell
         props={{
@@ -248,16 +242,9 @@ function TokenRow({
   );
 }
 
-function _Send({
-  close,
-  token,
-  blockchain,
-}: {
-  close: () => void;
-  token: any;
-  blockchain: string;
-}) {
-  const { title, setTitle } = useEphemeralNav();
+function _Send({ token, blockchain }: { token: any; blockchain: string }) {
+  const { close } = useDrawerContext();
+  const { title, setTitle } = useNavStack();
   useEffect(() => {
     const prev = title;
     setTitle(`Send ${token.ticker}`);

@@ -28,13 +28,11 @@ export function NavEphemeralProvider(props: any) {
   const push = (component: any) => {
     setStack([...stack, component]);
   };
-
   const pop = () => {
     const s = [...stack];
     s.pop();
     setStack(s);
   };
-
   const toRoot = () => {
     setStack([stack[0]]);
   };

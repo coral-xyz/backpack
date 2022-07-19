@@ -9,6 +9,7 @@ import {
   TextFieldLabel,
   walletAddressDisplay,
 } from "../../../common";
+import { useDrawerContext } from "../../../Layout/Drawer";
 
 const useStyles = styles((theme) => ({
   subtext: {
@@ -43,18 +44,23 @@ export function DepositButton({ token }: any) {
   return (
     <WithHeaderButton
       label={"Deposit"}
-      dialogTitle={`${token.ticker} / Deposit`}
-      dialog={(setOpenDrawer: any) => (
-        <Deposit close={() => setOpenDrawer(false)} />
-      )}
+      routes={[
+        {
+          component: Deposit,
+          title: `${token.ticker} / Deposit`,
+          name: "deposit",
+        },
+      ]}
     />
   );
 }
 
-export function Deposit({ close }: any) {
+export function Deposit() {
   const classes = useStyles();
   const theme = useCustomTheme();
+  const { close } = useDrawerContext();
   const activeWallet = useActiveWallet();
+
   return (
     <div
       style={{

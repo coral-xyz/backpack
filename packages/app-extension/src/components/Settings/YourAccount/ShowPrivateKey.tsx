@@ -5,7 +5,7 @@ import ChatIcon from "@mui/icons-material/Chat";
 import WebIcon from "@mui/icons-material/Web";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import { styles } from "@coral-xyz/themes";
-import { useBackgroundClient, useEphemeralNav } from "@coral-xyz/recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import {
   UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
@@ -20,6 +20,8 @@ import {
   TextField,
 } from "../../common";
 import { EyeIcon, WarningIcon } from "../../Icon";
+import { useNavStack } from "../../Layout/NavStack";
+import { useDrawerContext } from "../../Layout/Drawer";
 
 const useStyles = styles((theme: any) => ({
   passwordField: {
@@ -95,13 +97,12 @@ const useStyles = styles((theme: any) => ({
 export function ShowPrivateKeyWarning() {
   const classes = useStyles();
   const background = useBackgroundClient();
-  const nav = useEphemeralNav();
+  const nav = useNavStack();
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
 
   useEffect(() => {
     const navButton = nav.navButtonRight;
-    nav.setNavButtonRight(null);
     nav.setTitle("Show private key");
     return () => {
       nav.setNavButtonRight(navButton);
@@ -124,8 +125,7 @@ export function ShowPrivateKeyWarning() {
       setError(true);
       return;
     }
-    console.log(privateKey);
-    nav.push(<ShowPrivateKey privateKey={privateKey} />);
+    nav.push("show-private-key", { privateKey });
   };
 
   return (
@@ -216,7 +216,8 @@ export function ShowPrivateKeyWarning() {
 
 export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
   const classes = useStyles();
-  const nav = useEphemeralNav();
+  const { close } = useDrawerContext();
+  const nav = useNavStack();
 
   useEffect(() => {
     nav.setTitle("Private key");
@@ -261,7 +262,7 @@ export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
           marginBottom: "16px",
         }}
       >
-        <SecondaryButton label="Close" onClick={() => nav.toRoot()} />
+        <SecondaryButton label="Close" onClick={() => close()} />
       </Box>
     </Box>
   );
