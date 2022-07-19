@@ -40,7 +40,7 @@ function NavStackInner({
   navScreens: any;
   options: NavStackOptions;
 }) {
-  let { isRoot, activeRoute, pop, navButtonRight, title, style } =
+  let { isRoot, activeRoute, pop, navButtonRight, title, style, contentStyle } =
     useNavStack();
 
   const navButtonLeft = isRoot ? null : <NavBackButton onClick={() => pop()} />;
@@ -64,6 +64,7 @@ function NavStackInner({
           navButtonLeft={navButtonLeft}
           navButtonRight={navButtonRight}
           navbarStyle={style}
+          navContentStyle={contentStyle}
         >
           {activeScreen.props.component({ ...(activeRoute.props ?? {}) })}
         </WithNav>
@@ -83,6 +84,7 @@ function NavStackProvider({
   const [navButtonRightOverride, setNavButtonRightOverride] =
     useState<any>(navButtonRight);
   const [_style, setStyle] = useState(style);
+  const [contentStyle, setContentStyle] = useState({});
 
   const push = (route: string, props: any) => {
     setStack([...stack, { name: route, props }]);
@@ -109,6 +111,8 @@ function NavStackProvider({
         setNavButtonRight: setNavButtonRightOverride,
         style: _style,
         setStyle,
+        contentStyle,
+        setContentStyle,
       }}
     >
       {children}
@@ -140,6 +144,8 @@ type NavStackContext = {
   setNavButtonRight: any;
   style: any;
   setStyle: any;
+  contentStyle: any;
+  setContentStyle: any;
 };
 
 const _NavStackContext = React.createContext<NavStackContext | null>(null);

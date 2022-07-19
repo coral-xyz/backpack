@@ -178,10 +178,16 @@ function AvatarButton() {
 }
 
 function SettingsMenu() {
-  const { setTitle, setStyle } = useNavStack();
+  const theme = useCustomTheme();
+  const { setTitle, setStyle, setContentStyle } = useNavStack();
   useEffect(() => {
     setTitle("");
-    setStyle({});
+    setStyle({
+      backgroundColor: theme.custom.colors.background,
+    });
+    setContentStyle({
+      backgroundColor: theme.custom.colors.background,
+    });
   }, []);
   return (
     <Suspense fallback={<div></div>}>
@@ -428,9 +434,26 @@ function SettingsList({ close }: { close: () => void }) {
 
 export function ImportSecretKey() {
   const background = useBackgroundClient();
+  const nav = useNavStack();
+  const theme = useCustomTheme();
   const [name, setName] = useState("");
   const [secretKey, setSecretKey] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const prevStyle = nav.style;
+    const prevContentStyle = nav.contentStyle;
+    nav.setStyle({
+      backgroundColor: theme.custom.colors.nav,
+    });
+    nav.setContentStyle({
+      backgroundColor: theme.custom.colors.nav,
+    });
+    return () => {
+      nav.setStyle(prevStyle);
+      nav.setContentStyle(prevContentStyle);
+    };
+  }, [nav.setContentStyle]);
 
   const onClick = async () => {
     const kp = decodeAccount(secretKey);

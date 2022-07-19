@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Box, Grid } from "@mui/material";
 import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
 import {
@@ -5,6 +6,7 @@ import {
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
 } from "@coral-xyz/common";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { ActionCard } from "../../Layout/ActionCard";
 import { HardwareWalletIcon } from "../../Icon";
@@ -16,12 +18,30 @@ export function AddConnectWalletMenu() {
   const { close } = useDrawerContext();
   const nav = useNavStack();
   const background = useBackgroundClient();
+  const theme = useCustomTheme();
+
+  useEffect(() => {
+    const prevStyle = nav.style;
+    const prevContentStyle = nav.contentStyle;
+    nav.setStyle({
+      backgroundColor: theme.custom.colors.nav,
+    });
+    nav.setContentStyle({
+      backgroundColor: theme.custom.colors.nav,
+    });
+    return () => {
+      nav.setStyle(prevStyle);
+      nav.setContentStyle(prevContentStyle);
+    };
+  }, [nav.setContentStyle]);
+
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
         height: "100%",
+        backgroundColor: theme.custom.colors.nav,
       }}
     >
       <Box sx={{ margin: "24px" }}>
