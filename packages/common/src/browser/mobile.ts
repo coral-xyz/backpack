@@ -1,5 +1,5 @@
 import EventEmitter from "eventemitter3";
-import { vanillaStore } from "../zustand";
+import { vanillaStore } from "../zustand-store";
 import { BrowserRuntimeCommon } from "./common";
 import { getLogger } from "../logging";
 import { generateUniqueId, isServiceWorker, IS_MOBILE } from "../utils";
@@ -12,6 +12,8 @@ import {
   MOBILE_CHANNEL_FE_RESPONSE,
   MOBILE_CHANNEL_FE_RESPONSE_INNER,
 } from "../constants";
+// use expo-secure-store if in react-native, otherwise fake-expo-secure-store.ts
+import { getItemAsync, setItemAsync } from "expo-secure-store";
 
 const logger = getLogger("common/mobile");
 
@@ -193,11 +195,11 @@ export function startMobileIfNeeded() {
 
   if (!isServiceWorker()) {
     BrowserRuntimeCommon.addEventListenerFromAppUi(
-      (msg, _sender, sendResponse) => {
+      async (msg, _sender, sendResponse) => {
         if (msg.channel !== MOBILE_CHANNEL_HOST_RPC_REQUEST) {
           return;
         }
-        const [result, error] = handleHostRpcRequest(msg);
+        const [result, error] = await handleHostRpcRequest(msg);
 
         sendResponse({
           id: msg.data.id,
@@ -208,7 +210,7 @@ export function startMobileIfNeeded() {
     );
   }
 
-  const handleHostRpcRequest = ({
+  const handleHostRpcRequest = async ({
     data,
   }: {
     data: { id: string; method: string; params: Array<any> };
@@ -216,24 +218,22 @@ export function startMobileIfNeeded() {
     const { id, method, params } = data;
     switch (method) {
       case "getLocalStorage":
-        return handleGetLocalStorage(params[0]);
+        return await handleGetLocalStorage(params[0]);
       case "setLocalStorage":
-        return handleSetLocalStorage(params[0], params[1]);
+        return await handleSetLocalStorage(params[0], params[1]);
       default:
         return [];
     }
   };
 
-  // TODO: replace this with whatever the react-native api is.
-  const MEM_STORAGE = {
-    // "keyring-store": "locked",
+  // like localStorage, expo-secure-store can only save and return strings,
+  // so we must JSON.parse and JSON.stringify values when needed
+  // https://docs.expo.dev/versions/latest/sdk/securestore
+  const handleGetLocalStorage = async (key: string) => {
+    return [JSON.parse(String(await getItemAsync(key))), undefined];
   };
-  const handleGetLocalStorage = (key: string) => {
-    const result = MEM_STORAGE[key];
-    return [result, undefined];
-  };
-  const handleSetLocalStorage = (key: string, value: any) => {
-    MEM_STORAGE[key] = value;
+  const handleSetLocalStorage = async (key: string, value: any) => {
+    await setItemAsync(key, JSON.stringify(value));
     return ["success", undefined];
   };
 }

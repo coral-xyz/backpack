@@ -2,6 +2,13 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist/esm/",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "baseUrl": "src",
+    "paths": {
+      // replace 'expo-secure-store' with ''./src/fake-expo-secure-store'
+      // when building the esmodules output, as react-native code is
+      // incompatible with regualar react code.
+      "expo-secure-store": ["fake-expo-secure-store"]
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { vanillaStore } from "./zustand";
+import { vanillaStore } from "./zustand-store";
 import { isServiceWorker, IS_MOBILE } from "./utils";
 import { MOBILE_CHANNEL_LOGS } from "./constants";
 
