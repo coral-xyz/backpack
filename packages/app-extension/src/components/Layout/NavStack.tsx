@@ -2,20 +2,32 @@ import React, { useState, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { WithNav, NavBackButton } from "./Nav";
 
-export function NavStack({
+/**
+ * Ephemeral nav stack API for animating transitions between components on the
+ * push/pop navigation stack.
+ */
+export function NavStackEphemeral({
   initialRoute,
   children,
   options,
+  style,
+  navButtonRight,
 }: {
   initialRoute: { name: string; props?: any };
   children: any;
   options: NavStackOptions;
+  style?: React.CSSProperties;
+  navButtonRight?: React.ReactNode;
 }) {
   const isArray = children && children.length !== undefined;
   const navScreens =
     children === undefined ? [] : isArray ? children : [children];
   return (
-    <NavStackProvider initialRoute={initialRoute}>
+    <NavStackProvider
+      initialRoute={initialRoute}
+      style={style}
+      navButtonRight={navButtonRight}
+    >
       <NavStackInner navScreens={navScreens} options={options} />
     </NavStackProvider>
   );
@@ -28,20 +40,29 @@ function NavStackInner({
   navScreens: any;
   options: NavStackOptions;
 }) {
-  const { activeRoute } = useNavStack();
+  let { isRoot, activeRoute, pop, navButtonRight, title, style } =
+    useNavStack();
+
+  const navButtonLeft = isRoot ? null : <NavBackButton onClick={() => pop()} />;
   const activeScreen = navScreens.find(
     (c: any) => c.props.name === activeRoute.name
   );
-  const { title, rightNavButton, leftNavButton, style } = options({
+
+  let { title: titleDefault } = options({
     route: activeRoute,
   });
+  if (!title) {
+    title = titleDefault;
+  }
+
+  // TODO: plumb through the nav action.
   return (
     <AnimatePresence initial={false}>
       <WithMotion id={activeRoute.name} navAction={"push"}>
         <WithNav
           title={title}
-          navButtonLeft={leftNavButton}
-          navButtonRight={rightNavButton}
+          navButtonLeft={navButtonLeft}
+          navButtonRight={navButtonRight}
           navbarStyle={style}
         >
           {activeScreen.props.component({ ...(activeRoute.props ?? {}) })}
@@ -51,8 +72,18 @@ function NavStackInner({
   );
 }
 
-function NavStackProvider({ initialRoute, children }: any) {
+function NavStackProvider({
+  initialRoute,
+  navButtonRight,
+  style,
+  children,
+}: any) {
   const [stack, setStack] = useState([initialRoute]);
+  const [titleOverride, setTitleOverride] = useState(initialRoute.title);
+  const [navButtonRightOverride, setNavButtonRightOverride] =
+    useState<any>(navButtonRight);
+  const [_style, setStyle] = useState(style);
+
   const push = (route: string, props: any) => {
     setStack([...stack, { name: route, props }]);
   };
@@ -60,12 +91,24 @@ function NavStackProvider({ initialRoute, children }: any) {
     const newStack = [...stack];
     setStack(newStack.slice(0, newStack.length - 1));
   };
+  const toRoot = () => {
+    setStack([stack[0]]);
+  };
+
   return (
     <_NavStackContext.Provider
       value={{
         activeRoute: stack[stack.length - 1],
         push,
         pop,
+        isRoot: stack.length === 1,
+        toRoot,
+        title: titleOverride,
+        setTitle: setTitleOverride,
+        navButtonRight: navButtonRightOverride,
+        setNavButtonRight: setNavButtonRightOverride,
+        style: _style,
+        setStyle,
       }}
     >
       {children}
@@ -89,6 +132,14 @@ type NavStackContext = {
   activeRoute: { name: string; props?: any };
   push: (route: string, props?: any) => void;
   pop: () => void;
+  isRoot: boolean;
+  toRoot: () => void;
+  title: string;
+  setTitle: any;
+  navButtonRight: any;
+  setNavButtonRight: any;
+  style: any;
+  setStyle: any;
 };
 
 const _NavStackContext = React.createContext<NavStackContext | null>(null);
@@ -154,10 +205,10 @@ const MOTION_VARIANTS = {
 
 function Router() {
   return (
-    <NavStack initialRoute={{ name: "home1" }} options={routeOptions}>
+    <NavStackEphemeral initialRoute={{ name: "home1" }} options={routeOptions}>
       <NavStackScreen name={"home1"} component={NavHome1} />
       <NavStackScreen name={"home2"} component={NavHome2} />
-    </NavStack>
+    </NavStackEphemeral>
   );
 }
 

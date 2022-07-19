@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Tooltip, Typography } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useActiveWallet } from "@coral-xyz/recoil";
@@ -9,6 +9,8 @@ import {
   TextFieldLabel,
   walletAddressDisplay,
 } from "../../../common";
+import { useDrawerContext } from "../../../Layout/Drawer";
+import { useNavStack } from "../../../Layout/NavStack";
 
 const useStyles = styles((theme) => ({
   subtext: {
@@ -44,17 +46,17 @@ export function DepositButton({ token }: any) {
     <WithHeaderButton
       label={"Deposit"}
       dialogTitle={`${token.ticker} / Deposit`}
-      dialog={(setOpenDrawer: any) => (
-        <Deposit close={() => setOpenDrawer(false)} />
-      )}
+      dialog={() => <Deposit />}
     />
   );
 }
 
-export function Deposit({ close }: any) {
+export function Deposit() {
   const classes = useStyles();
   const theme = useCustomTheme();
+  const { close } = useDrawerContext();
   const activeWallet = useActiveWallet();
+
   return (
     <div
       style={{

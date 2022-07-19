@@ -129,6 +129,8 @@ export function Send({
 }) {
   const classes = useStyles() as any;
   const token = useBlockchainTokenAccount(blockchain, tokenAddress);
+  const { provider } = useAnchorContext();
+
   const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState<number>(0.0);
@@ -136,7 +138,7 @@ export function Send({
   const [amountError, setAmountError] = useState<boolean>(false);
   const [_isFreshAccount, setIsFreshAccount] = useState<boolean>(false); // Not used for now.
   const [accountValidated, setAccountValidated] = useState<boolean>(false);
-  const { provider } = useAnchorContext();
+
   const amountFloat = parseFloat(amount.toString());
 
   // This effect validates the account address given.

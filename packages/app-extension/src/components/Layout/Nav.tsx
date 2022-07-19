@@ -16,7 +16,7 @@ const useStyles = styles((theme) => ({
     flexDirection: "column",
   },
   overviewLabel: {
-    fontSize: "inherit",
+    fontSize: "18px",
     fontWeight: 500,
     color: theme.custom.colors.fontColor,
     overflow: "hidden",
