@@ -1,15 +1,19 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { Box, ListItemText, Toolbar, IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import AccountCircleIcon from "@mui/icons-material/AccountCircleOutlined";
 import LockIcon from "@mui/icons-material/Lock";
 import SupportIcon from "@mui/icons-material/Support";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import CallMadeIcon from "@mui/icons-material/CallMade";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { useEphemeralNav } from "@coral-xyz/recoil";
 import { List, ListItem } from "../common/List";
 import { WithEphemeralNavDrawer } from "../Layout/Drawer";
 import { Reset } from "./Reset";
-import { NAV_BAR_HEIGHT, WithNav, NavBackButton } from "../Layout/Nav";
+import { NAV_BAR_HEIGHT } from "../Layout/Nav";
+import { DiscordIcon } from "../Icon";
 
 type Page = "menu" | "reset";
 
@@ -64,6 +68,15 @@ export function LockedMenuList({ setMenuOpen }: any) {
       ),
       text: "Reset Secret Recovery Phrase",
       onClick: () => nav.push(<Reset closeDrawer={() => setMenuOpen(false)} />),
+      suffix: (
+        <ChevronRightIcon
+          style={{
+            flexShrink: 1,
+            alignSelf: "center",
+            color: theme.custom.colors.secondary,
+          }}
+        />
+      ),
     },
     {
       icon: <SupportIcon style={{ color: theme.custom.colors.secondary }} />,
@@ -74,6 +87,16 @@ export function LockedMenuList({ setMenuOpen }: any) {
       icon: <LockIcon style={{ color: theme.custom.colors.secondary }} />,
       text: "Backpack.app",
       onClick: () => window.open("https://backpack.app", "_blank"),
+    },
+    {
+      icon: <TwitterIcon style={{ color: theme.custom.colors.secondary }} />,
+      text: "Twitter",
+      onClick: () => window.open("https://twitter.com/xNFT_Backpack", "_blank"),
+    },
+    {
+      icon: <DiscordIcon fill={theme.custom.colors.secondary} />,
+      text: "Discord",
+      onClick: () => console.log("discord"), // TODO:
     },
   ];
 
@@ -115,6 +138,15 @@ export function LockedMenuList({ setMenuOpen }: any) {
               }}
               primary={o.text}
             />
+            {o.suffix ?? (
+              <CallMadeIcon
+                style={{
+                  flexShrink: 1,
+                  alignSelf: "center",
+                  color: theme.custom.colors.secondary,
+                }}
+              />
+            )}
           </ListItem>
         ))}
       </List>
