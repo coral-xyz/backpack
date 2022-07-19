@@ -4,8 +4,14 @@
 
 const MEM_STORAGE = {};
 
+export const deleteItemAsync = (key: string): Promise<void> =>
+  new Promise((res) => {
+    delete MEM_STORAGE[key];
+    res();
+  });
+
 export const getItemAsync = (key: string): Promise<string | null> =>
-  new Promise((res, rej) => {
+  new Promise((res) => {
     const result = MEM_STORAGE[key];
     res(result);
   });
