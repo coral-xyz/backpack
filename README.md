@@ -24,6 +24,7 @@ Go to chrome://flags/#allow-insecure-localhost and enable the toggle, then resta
 git clone https://github.com/coral-xyz/wallet-adapter
 cd wallet-adapter
 yarn
+export NODE_OPTIONS=--no-experimental-fetch
 yarn build
 npx lerna exec -- yarn link
 ```
