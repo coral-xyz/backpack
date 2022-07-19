@@ -242,7 +242,7 @@ async function handleSignAllTxs(
   txs: Array<string>,
   walletAddress: string
 ): Promise<RpcResponse<Array<string>>> {
-  const resp = ctx.backend.signAllTransactions(txs, walletAddress);
+  const resp = await ctx.backend.signAllTransactions(txs, walletAddress);
   return [resp];
 }
 
@@ -257,7 +257,7 @@ async function handleSignMessage(
   const didApprove = uiResp.result;
 
   if (didApprove) {
-    const sig = ctx.backend.signMessage(msg, walletAddress);
+    const sig = await ctx.backend.signMessage(msg, walletAddress);
     return [sig];
   }
 

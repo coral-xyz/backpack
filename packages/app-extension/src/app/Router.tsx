@@ -194,7 +194,7 @@ function QueryApproveTransaction() {
 }
 
 function QueryApproveMessage() {
-  logger.debug("query approve transaction");
+  logger.debug("query approve message");
 
   const bg = useBackgroundResponder();
   const url = new URL(window.location.href);
