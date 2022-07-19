@@ -21,6 +21,7 @@ import {
   walletAddressDisplay,
   PrimaryButton,
   Loading,
+  SecondaryButton,
 } from "../../../common";
 import { useDrawerContext, WithMiniDrawer } from "../../../Layout/Drawer";
 
@@ -129,6 +130,7 @@ export function Send({
   tokenAddress: string;
 }) {
   const classes = useStyles() as any;
+  const theme = useCustomTheme();
   const { close } = useDrawerContext();
   const token = useBlockchainTokenAccount(blockchain, tokenAddress);
   const { provider } = useAnchorContext();
@@ -142,6 +144,14 @@ export function Send({
   const [accountValidated, setAccountValidated] = useState<boolean>(false);
 
   const amountFloat = parseFloat(amount.toString());
+
+  //
+  // When sending SOL, account for the tx fee.
+  //
+  let lamportsOffset = 0.0;
+  if (token.mint === SOL_NATIVE_MINT) {
+    lamportsOffset = 0.000005;
+  }
 
   // This effect validates the account address given.
   useEffect(() => {
@@ -182,14 +192,6 @@ export function Send({
     let didAmountError = false;
     if (amountFloat <= 0) {
       didAmountError = true;
-    }
-
-    //
-    // When sending SOL, account for the tx fee.
-    //
-    let lamportsOffset = 0.0;
-    if (token.mint === SOL_NATIVE_MINT) {
-      lamportsOffset = 0.000005;
     }
 
     if (token.nativeBalance < amountFloat + lamportsOffset) {
@@ -259,6 +261,20 @@ export function Send({
               inputProps={{
                 name: "amount",
               }}
+              endAdornment={
+                <SecondaryButton
+                  label="Max"
+                  onClick={() =>
+                    setAmount(token.nativeBalance - lamportsOffset)
+                  }
+                  style={{
+                    width: "auto",
+                    height: "auto",
+                    backgroundColor: theme.custom.colors.background,
+                    borderRadius: "24px",
+                  }}
+                />
+              }
             />
           </div>
         </div>
