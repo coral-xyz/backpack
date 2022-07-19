@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Box, ListItemText, Toolbar, IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircleOutlined";
@@ -8,18 +7,20 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import CallMadeIcon from "@mui/icons-material/CallMade";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useEphemeralNav } from "@coral-xyz/recoil";
 import { List, ListItem } from "../common/List";
-import { WithEphemeralNavDrawer } from "../Layout/Drawer";
+import { WithDrawer, CloseButton } from "../Layout/Drawer";
 import { Reset } from "./Reset";
+import { ResetWarning } from "./Reset/ResetWarning";
 import { NAV_BAR_HEIGHT } from "../Layout/Nav";
+import {
+  useNavStack,
+  NavStackEphemeral,
+  NavStackScreen,
+} from "../Layout/NavStack";
 import { DiscordIcon } from "../Icon";
-
-type Page = "menu" | "reset";
 
 export function LockedMenu({ menuOpen, setMenuOpen }: any) {
   const theme = useCustomTheme() as any;
-  const [page, setPage] = useState<Page>("menu");
   return (
     <Toolbar
       sx={{
@@ -39,27 +40,39 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
       >
         <MenuIcon sx={{ color: theme.custom.colors.hamburger }} />
       </IconButton>
-      <WithEphemeralNavDrawer
-        title=""
-        openDrawer={menuOpen}
-        setOpenDrawer={setMenuOpen}
-        navbarStyle={{
-          backgroundColor: theme.custom.colors.nav,
-          borderBottom: "none",
-        }}
-        navContentStyle={{
-          backgroundColor: theme.custom.colors.nav,
-        }}
-      >
-        <LockedMenuList setMenuOpen={setMenuOpen} />
-      </WithEphemeralNavDrawer>
+      <WithDrawer openDrawer={menuOpen} setOpenDrawer={setMenuOpen}>
+        <div style={{ height: "100%", background: theme.custom.colors.nav }}>
+          <NavStackEphemeral
+            initialRoute={{ name: "root" }}
+            options={(args) => ({ title: "" })}
+            navButtonRight={<CloseButton onClick={() => setMenuOpen(false)} />}
+            style={{
+              backgroundColor: theme.custom.colors.nav,
+              borderBottom: "none",
+            }}
+          >
+            <NavStackScreen
+              name={"root"}
+              component={(props: any) => <LockedMenuList {...props} />}
+            />
+            <NavStackScreen
+              name={"reset"}
+              component={(props: any) => <Reset {...props} />}
+            />
+            <NavStackScreen
+              name={"reset-warning"}
+              component={(props: any) => <ResetWarning {...props} />}
+            />
+          </NavStackEphemeral>
+        </div>
+      </WithDrawer>
     </Toolbar>
   );
 }
 
-export function LockedMenuList({ setMenuOpen }: any) {
+export function LockedMenuList() {
   const theme = useCustomTheme();
-  const nav = useEphemeralNav();
+  const nav = useNavStack();
 
   const options = [
     {
@@ -67,7 +80,7 @@ export function LockedMenuList({ setMenuOpen }: any) {
         <AccountCircleIcon style={{ color: theme.custom.colors.secondary }} />
       ),
       text: "Reset Secret Recovery Phrase",
-      onClick: () => nav.push(<Reset closeDrawer={() => setMenuOpen(false)} />),
+      onClick: () => nav.push("reset"),
       suffix: (
         <ChevronRightIcon
           style={{
