@@ -22,13 +22,14 @@ import {
   Support,
   Twitter,
 } from "@mui/icons-material";
+import { DiscordIcon } from "../Icon";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ActionCard } from "../Layout/ActionCard";
 import { BackpackHeader } from "../Locked";
 import { NAV_BAR_HEIGHT } from "../Layout/Nav";
 import { List, ListItem } from "../common/List";
-import type { OnboardingFlows } from "./";
 import { WithContaineredDrawer } from "../Layout/Drawer";
+import type { OnboardingFlows } from "./";
 
 export function OnboardingWelcome({
   onSelect,
@@ -144,7 +145,7 @@ function OnboardingMenuList() {
       onClick: () => window.open("https://twitter.com/xNFT_Backpack", "_blank"),
     },
     {
-      icon: <Twitter style={{ color: theme.custom.colors.secondary }} />, // TODO:
+      icon: <DiscordIcon fill={theme.custom.colors.secondary} />,
       text: "Discord",
       onClick: () => console.log("discord"), // TODO:
     },
