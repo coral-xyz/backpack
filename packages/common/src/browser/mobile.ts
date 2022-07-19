@@ -194,11 +194,11 @@ export function startMobileIfNeeded() {
 
   if (!isServiceWorker()) {
     BrowserRuntimeCommon.addEventListenerFromAppUi(
-      (msg, _sender, sendResponse) => {
+      async (msg, _sender, sendResponse) => {
         if (msg.channel !== MOBILE_CHANNEL_HOST_RPC_REQUEST) {
           return;
         }
-        const [result, error] = handleHostRpcRequest(msg);
+        const [result, error] = await handleHostRpcRequest(msg);
 
         sendResponse({
           id: msg.data.id,
@@ -209,7 +209,7 @@ export function startMobileIfNeeded() {
     );
   }
 
-  const handleHostRpcRequest = ({
+  const handleHostRpcRequest = async ({
     data,
   }: {
     data: { id: string; method: string; params: Array<any> };
@@ -217,9 +217,9 @@ export function startMobileIfNeeded() {
     const { id, method, params } = data;
     switch (method) {
       case "getLocalStorage":
-        return handleGetLocalStorage(params[0]);
+        return await handleGetLocalStorage(params[0]);
       case "setLocalStorage":
-        return handleSetLocalStorage(params[0], params[1]);
+        return await handleSetLocalStorage(params[0], params[1]);
       default:
         return [];
     }
@@ -229,12 +229,14 @@ export function startMobileIfNeeded() {
   const MEM_STORAGE = {
     // "keyring-store": "locked",
   };
-  const handleGetLocalStorage = (key: string) => {
-    getItemAsync(key);
+  const handleGetLocalStorage = async (key: string) => {
+    return [await getItemAsync(key), undefined];
     const result = MEM_STORAGE[key];
     return [result, undefined];
   };
-  const handleSetLocalStorage = (key: string, value: any) => {
+  const handleSetLocalStorage = async (key: string, value: any) => {
+    await setItemAsync(key, value);
+    return ["success", undefined];
     setItemAsync(key, value);
     MEM_STORAGE[key] = value;
     return ["success", undefined];
