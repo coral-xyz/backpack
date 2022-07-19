@@ -67,7 +67,7 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
               <ActionCard
                 icon={<DiscordIcon />}
                 text="Join the Discord community"
-                onClick={() => {}}
+                onClick={() => {}} // TODO:
               />
             </Grid>
           </Grid>
