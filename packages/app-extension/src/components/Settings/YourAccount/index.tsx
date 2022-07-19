@@ -1,30 +1,28 @@
 import { useEffect } from "react";
 import { ListItemText } from "@mui/material";
 import useTheme from "@mui/styles/useTheme";
-import { useEphemeralNav } from "@coral-xyz/recoil";
 import { List, ListItem, PushDetail } from "../../common";
-import { ChangePassword } from "./ChangePassword";
-import { ShowPrivateKeyWarning } from "./ShowPrivateKey";
-import { ShowRecoveryPhraseWarning } from "./ShowRecoveryPhrase";
-import { ResetWarning } from "../../Locked/Reset/ResetWarning";
+import { useDrawerContext } from "../../Layout/Drawer";
+import { useNavStack } from "../../Layout/NavStack";
 
-export function YourAccount({ close }: { close: () => void }) {
-  const nav = useEphemeralNav();
+export function YourAccount() {
+  const { close } = useDrawerContext();
+  const nav = useNavStack();
   const theme = useTheme() as any;
 
   const menuItems = {
     "Change password": {
-      onClick: () => nav.push(<ChangePassword close={close} />),
+      onClick: () => nav.push("change-password"),
     },
     "Edit wallets": {},
     "Show private key": {
-      onClick: () => nav.push(<ShowPrivateKeyWarning />),
+      onClick: () => nav.push("show-private-key-warning"),
     },
     "Show secret recovery phrase": {
-      onClick: () => nav.push(<ShowRecoveryPhraseWarning />),
+      onClick: () => nav.push("show-secret-phrase-warning"),
     },
     "Reset wallet": {
-      onClick: () => nav.push(<ResetWarning onClose={close} />),
+      onClick: () => nav.push("reset-warning", { onClose: () => close() }),
     },
   };
 

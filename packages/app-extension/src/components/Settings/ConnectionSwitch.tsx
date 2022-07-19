@@ -3,11 +3,9 @@ import { ListItemIcon, ListItemText } from "@mui/material";
 import { styles } from "@coral-xyz/themes";
 import { CheckBox } from "@mui/icons-material";
 import { UI_RPC_METHOD_CONNECTION_URL_UPDATE } from "@coral-xyz/common";
-import {
-  useBackgroundClient,
-  useEphemeralNav,
-  useSolanaConnectionUrl,
-} from "@coral-xyz/recoil";
+import { useBackgroundClient, useSolanaConnectionUrl } from "@coral-xyz/recoil";
+import { useDrawerContext } from "../Layout/Drawer";
+import { useNavStack } from "../Layout/NavStack";
 import { List, ListItem } from "../common";
 
 const useStyles = styles((theme) => ({
@@ -28,11 +26,12 @@ const endpoints = {
     new URL(prompt("Enter your custom endpoint")!.trim()).toString(),
 };
 
-export function ConnectionMenu({ close }: { close: () => void }) {
+export function ConnectionMenu() {
+  const { close } = useDrawerContext();
   const background = useBackgroundClient();
   const classes = useStyles();
   const connectionUrl = useSolanaConnectionUrl();
-  const nav = useEphemeralNav();
+  const nav = useNavStack();
   const urls = Object.values(endpoints).filter((v) => typeof v === "string");
 
   useEffect(() => {

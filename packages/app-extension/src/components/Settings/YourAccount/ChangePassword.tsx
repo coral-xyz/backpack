@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { Button, TextField, Typography } from "@mui/material";
-import { useEphemeralNav, useBackgroundClient } from "@coral-xyz/recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { List, ListItem, PrimaryButton, SubtextParagraph } from "../../common";
-import { Reset } from "../../Locked/Reset";
 import {
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_PASSWORD_UPDATE,
 } from "@coral-xyz/common";
+import { List, ListItem, PrimaryButton, SubtextParagraph } from "../../common";
+import { useDrawerContext } from "../../Layout/Drawer";
+import { useNavStack } from "../../Layout/NavStack";
 
 const useStyles = styles((theme) => ({
   textFieldRoot: {
@@ -21,10 +22,11 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function ChangePassword({ close }: { close: () => void }) {
+export function ChangePassword() {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const nav = useEphemeralNav();
+  const { close } = useDrawerContext();
+  const nav = useNavStack();
   const background = useBackgroundClient();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPw1, setNewPw1] = useState("");
@@ -113,7 +115,7 @@ export function ChangePassword({ close }: { close: () => void }) {
             </ListItem>
           </List>
           <Button
-            onClick={() => nav.push(<Reset closeDrawer={() => nav.pop()} />)}
+            onClick={() => nav.push("reset", { closeDrawer: () => nav.pop() })}
             disableRipple
             style={{
               padding: 0,

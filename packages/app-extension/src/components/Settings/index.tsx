@@ -12,7 +12,6 @@ import {
 import { PublicKey, Keypair } from "@solana/web3.js";
 import {
   useBackgroundClient,
-  useEphemeralNav,
   useKeyringStoreState,
   useWalletPublicKeys,
   useActiveWallet,
@@ -33,7 +32,17 @@ import {
   TextField,
   WalletAddress,
 } from "../../components/common";
-import { WithEphemeralNavDrawer } from "../Layout/Drawer";
+import { WithDrawer, CloseButton, useDrawerContext } from "../Layout/Drawer";
+import {
+  useNavStack,
+  NavStackEphemeral,
+  NavStackScreen,
+} from "../Layout/NavStack";
+import { ShowPrivateKeyWarning } from "./YourAccount/ShowPrivateKey";
+import { ShowRecoveryPhraseWarning } from "./YourAccount/ShowRecoveryPhrase";
+import { ChangePassword } from "./YourAccount/ChangePassword";
+import { ResetWarning } from "../Locked/Reset/ResetWarning";
+import { Reset } from "../Locked/Reset";
 import { ConnectionMenu } from "./ConnectionSwitch";
 import { RecentActivityButton } from "../Unlocked/Balances/RecentActivity";
 import { AddConnectWallet } from "./AddConnectWallet";
@@ -73,6 +82,7 @@ export function SettingsButton() {
 
 function AvatarButton() {
   const classes = useStyles();
+  const theme = useCustomTheme();
   const [settingsOpen, setSettingsOpen] = useState(false);
   return (
     <div className={classes.menuButtonContainer}>
@@ -92,20 +102,47 @@ function AvatarButton() {
           }}
         />
       </IconButton>
-      <WithEphemeralNavDrawer
-        openDrawer={settingsOpen}
-        setOpenDrawer={setSettingsOpen}
-        title={""}
-        navbarStyle={{ borderBottom: undefined }}
-      >
-        <SettingsContent close={() => setSettingsOpen(false)} />
-      </WithEphemeralNavDrawer>
+      <WithDrawer openDrawer={settingsOpen} setOpenDrawer={setSettingsOpen}>
+        <div
+          style={{ height: "100%", background: theme.custom.colors.background }}
+        >
+          <NavStackEphemeral
+            initialRoute={{ name: "root" }}
+            options={(args) => ({ title: "" })}
+            navButtonRight={
+              <CloseButton onClick={() => setSettingsOpen(false)} />
+            }
+          >
+            <NavStackScreen name={"root"} component={SettingsContent} />
+            <NavStackScreen name={"your-account"} component={YourAccount} />
+            <NavStackScreen
+              name={"connection-menu"}
+              component={ConnectionMenu}
+            />
+            <NavStackScreen
+              name={"change-password"}
+              component={ChangePassword}
+            />
+            <NavStackScreen
+              name={"show-private-key-warning"}
+              component={ShowPrivateKeyWarning}
+            />
+            <NavStackScreen
+              name={"show-secret-phrase-warning"}
+              component={ShowRecoveryPhraseWarning}
+            />
+            <NavStackScreen name={"reset-warning"} component={ResetWarning} />
+            <NavStackScreen name={"reset"} component={Reset} />
+          </NavStackEphemeral>
+        </div>
+      </WithDrawer>
     </div>
   );
 }
 
-function SettingsContent({ close }: { close: () => void }) {
-  const { setTitle, setStyle } = useEphemeralNav();
+function SettingsContent() {
+  const { close } = useDrawerContext();
+  const { setTitle, setStyle } = useNavStack();
   useEffect(() => {
     setTitle("");
     setStyle({});
@@ -293,7 +330,7 @@ function WalletList({
 
 function SettingsList({ close }: { close: () => void }) {
   const theme = useCustomTheme();
-  const nav = useEphemeralNav();
+  const nav = useNavStack();
   const background = useBackgroundClient();
 
   const lockWallet = () => {
@@ -309,7 +346,7 @@ function SettingsList({ close }: { close: () => void }) {
   const settingsMenu = [
     {
       label: "Your Account",
-      onClick: () => nav.push(<YourAccount close={close} />),
+      onClick: () => nav.push("your-account"),
       icon: (props: any) => <AccountCircleOutlined {...props} />,
       detailIcon: <PushDetail />,
     },
@@ -321,7 +358,7 @@ function SettingsList({ close }: { close: () => void }) {
     },
     {
       label: "Connection",
-      onClick: () => nav.push(<ConnectionMenu close={close} />),
+      onClick: () => nav.push("connection-menu"),
       icon: (props: any) => <Public {...props} />,
       detailIcon: <PushDetail />,
     },

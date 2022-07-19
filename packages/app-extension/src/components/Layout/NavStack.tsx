@@ -55,8 +55,6 @@ function NavStackInner({
     title = titleDefault;
   }
 
-  console.log("active route here", activeRoute, activeScreen);
-
   // TODO: plumb through the nav action.
   return (
     <AnimatePresence initial={false}>
@@ -200,94 +198,3 @@ const MOTION_VARIANTS = {
     opacity: 0,
   },
 };
-
-////////////////////////////////////////////////////////////////////////////////
-// Examples. of the nav stack api.
-////////////////////////////////////////////////////////////////////////////////
-
-function Router() {
-  return (
-    <NavStackEphemeral initialRoute={{ name: "home1" }} options={routeOptions}>
-      <NavStackScreen name={"home1"} component={NavHome1} />
-      <NavStackScreen name={"home2"} component={NavHome2} />
-    </NavStackEphemeral>
-  );
-}
-
-function routeOptions({ route }: { route: { name: string; props?: any } }) {
-  switch (route.name) {
-    case "home1":
-      return {
-        title: "Home Title 1",
-      };
-    case "home2":
-      return {
-        title: "Test 2",
-      };
-    default:
-      console.log(route);
-      throw new Error("unknown route");
-  }
-}
-
-export function Router2() {
-  const [page, setPage] = useState(1);
-  return (
-    <AnimatePresence initial={false}>
-      <WithMotion id={page} navAction={"push"}>
-        {page === 1 && <Home1 onClick={() => setPage(2)} />}
-        {page === 2 && <Home2 onClick={() => setPage(1)} />}
-      </WithMotion>
-    </AnimatePresence>
-  );
-}
-
-function NavHome1() {
-  const { push, pop } = useNavStack();
-  return (
-    <div>
-      <div
-        onClick={() => push("home2", { title: "armani" })}
-        style={{ color: "white" }}
-      >
-        Push home 1
-      </div>
-      <div onClick={() => pop()} style={{ color: "white" }}>
-        Pop home 1
-      </div>
-    </div>
-  );
-}
-
-function NavHome2({ title }: any) {
-  const { push, pop } = useNavStack();
-  return (
-    <div>
-      <div onClick={() => push("home1")} style={{ color: "white" }}>
-        Push home 2
-      </div>
-      <div onClick={() => pop()} style={{ color: "white" }}>
-        {title}
-      </div>
-    </div>
-  );
-}
-
-function Home1({ onClick, asdf }: any) {
-  return (
-    <div onClick={() => onClick()} style={{ color: "white" }}>
-      Testing home 1
-    </div>
-  );
-}
-
-function Home2({ onClick, asdf }: any) {
-  return (
-    <div onClick={() => onClick()} style={{ color: "white" }}>
-      Testing home 2
-    </div>
-  );
-}
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////

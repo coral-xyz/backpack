@@ -78,13 +78,11 @@ function SendButton() {
           name: "select-token",
           component: SendToken,
           title: "Select token",
-          props: {},
         },
         {
           name: "send",
           component: (props: any) => <_Send {...props} />,
-          title: "", // todo
-          props: {},
+          title: "",
         },
       ]}
     />
