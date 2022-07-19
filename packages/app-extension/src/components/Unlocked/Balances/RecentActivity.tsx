@@ -5,7 +5,8 @@ import { Check, Clear, Bolt } from "@mui/icons-material";
 import { explorerUrl } from "@coral-xyz/common";
 import { useActiveWallet, useRecentTransactions } from "@coral-xyz/recoil";
 import { Loading } from "../../common";
-import { WithEphemeralNavDrawer } from "../../Layout/Drawer";
+import { WithDrawer, CloseButton } from "../../Layout/Drawer";
+import { NavStackEphemeral, NavStackScreen } from "../../Layout/NavStack";
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {
@@ -87,6 +88,7 @@ const useStyles = styles((theme) => ({
 
 export function RecentActivityButton() {
   const classes = useStyles();
+  const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
   return (
     <div className={classes.networkSettingsButtonContainer}>
@@ -98,13 +100,27 @@ export function RecentActivityButton() {
       >
         <Bolt className={classes.networkSettingsIcon} />
       </IconButton>
-      <WithEphemeralNavDrawer
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-        title={"Recent Activity"}
-      >
-        <RecentActivity />
-      </WithEphemeralNavDrawer>
+      <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+        <div
+          style={{ height: "100%", background: theme.custom.colors.background }}
+        >
+          <NavStackEphemeral
+            initialRoute={{ name: "root" }}
+            options={(_args) => ({ title: "Recent Activity" })}
+            style={{
+              borderBottom: `solid 1pt ${theme.custom.colors.border}`,
+            }}
+            navButtonRight={
+              <CloseButton onClick={() => setOpenDrawer(false)} />
+            }
+          >
+            <NavStackScreen
+              name={"root"}
+              component={(props: any) => <RecentActivity {...props} />}
+            />
+          </NavStackEphemeral>
+        </div>
+      </WithDrawer>
     </div>
   );
 }

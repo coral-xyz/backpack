@@ -18,6 +18,7 @@ import {
   KeyringStoreStateEnum,
 } from "@coral-xyz/recoil";
 import {
+  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
 } from "@coral-xyz/common";
@@ -51,7 +52,7 @@ import { ResetWarning } from "../Locked/Reset/ResetWarning";
 import { Reset } from "../Locked/Reset";
 import { ConnectionMenu } from "./ConnectionSwitch";
 import { RecentActivityButton } from "../Unlocked/Balances/RecentActivity";
-import { AddConnectWallet } from "./AddConnectWallet";
+import { AddConnectWalletMenu } from "./AddConnectWallet";
 import { YourAccount } from "./YourAccount";
 
 const useStyles = styles((theme) => ({
@@ -121,7 +122,15 @@ function AvatarButton() {
           >
             <NavStackScreen
               name={"root"}
-              component={(props: any) => <SettingsContent {...props} />}
+              component={(props: any) => <SettingsMenu {...props} />}
+            />
+            <NavStackScreen
+              name={"add-connect-wallet"}
+              component={(props: any) => <AddConnectWalletMenu {...props} />}
+            />
+            <NavStackScreen
+              name={"import-secret-key"}
+              component={(props: any) => <ImportSecretKey {...props} />}
             />
             <NavStackScreen
               name={"your-account"}
@@ -168,8 +177,7 @@ function AvatarButton() {
   );
 }
 
-function SettingsContent() {
-  const { close } = useDrawerContext();
+function SettingsMenu() {
   const { setTitle, setStyle } = useNavStack();
   useEffect(() => {
     setTitle("");
@@ -177,58 +185,27 @@ function SettingsContent() {
   }, []);
   return (
     <Suspense fallback={<div></div>}>
-      <_SettingsContent close={close} />
+      <_SettingsContent />
     </Suspense>
   );
 }
 
-type SettingsPage = "menu" | "add-connect-wallet";
-
-function _SettingsContent({ close }: { close: () => void }) {
-  const background = useBackgroundClient();
+function _SettingsContent() {
   const classes = useStyles();
+  const nav = useNavStack();
+  const { close } = useDrawerContext();
   const keyringStoreState = useKeyringStoreState();
-  const [page, setPage] = useState<SettingsPage>("menu");
-
-  const onAddSuccessHandler = useCallback(
-    async (publicKey?: string) => {
-      try {
-        if (publicKey) {
-          await background.request({
-            method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-            params: [publicKey],
-          });
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        close();
-      }
-    },
-    [background]
-  );
-
   return (
-    <>
-      {page === "menu" && (
-        <div className={classes.settingsContainer}>
-          <AvatarHeader />
-          {keyringStoreState === KeyringStoreStateEnum.Unlocked && (
-            <WalletList
-              onAddConnectWallet={() => setPage("add-connect-wallet")}
-              close={close}
-            />
-          )}
-          <SettingsList close={close} />
-        </div>
-      )}
-      {page === "add-connect-wallet" && (
-        <AddConnectWallet
-          onAddSuccess={onAddSuccessHandler}
-          close={() => setPage("menu")}
+    <div className={classes.settingsContainer}>
+      <AvatarHeader />
+      {keyringStoreState === KeyringStoreStateEnum.Unlocked && (
+        <WalletList
+          onAddConnectWallet={() => nav.push("add-connect-wallet")}
+          close={close}
         />
       )}
-    </>
+      <SettingsList close={close} />
+    </div>
   );
 }
 
@@ -449,23 +426,29 @@ function SettingsList({ close }: { close: () => void }) {
   );
 }
 
-export function ImportSecretKey({
-  onNext,
-}: {
-  onNext: (secretKey: string, name: string) => void;
-}) {
+export function ImportSecretKey() {
+  const background = useBackgroundClient();
   const [name, setName] = useState("");
   const [secretKey, setSecretKey] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const next = () => {
+  const onClick = async () => {
     const kp = decodeAccount(secretKey);
     if (!kp) {
       setError("Invalid private key");
       return;
     }
     const secretKeyHex = Buffer.from(kp.secretKey).toString("hex");
-    onNext(secretKeyHex, name);
+
+    const publicKey = await background.request({
+      method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+      params: [secretKeyHex, name],
+    });
+
+    await background.request({
+      method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+      params: [publicKey],
+    });
   };
 
   return (
@@ -517,7 +500,7 @@ export function ImportSecretKey({
         }}
       >
         <PrimaryButton
-          onClick={next}
+          onClick={onClick}
           label="Import"
           disabled={secretKey.length === 0}
         />
