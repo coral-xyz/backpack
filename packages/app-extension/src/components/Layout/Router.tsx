@@ -28,7 +28,7 @@ import { SettingsButton } from "../Settings";
 import { WithNav, NavBackButton } from "./Nav";
 import { useNavStack, WithMotion, NavStack, NavStackScreen } from "./NavStack";
 
-export function Router() {
+export function Router3() {
   return (
     <NavStack initialRoute={{ name: "home1" }} options={routeOptions}>
       <NavStackScreen name={"home1"} component={NavHome1} />
@@ -65,7 +65,7 @@ export function Router2() {
   );
 }
 
-export function Router3() {
+export function Router() {
   const location = useLocation();
 
   return (
@@ -216,10 +216,10 @@ function NavScreen({ component }: { component: React.ReactNode }) {
   );
 }
 
-function WithMotionWrapper({ children, id }: { children: any; id?: string }) {
+function WithMotionWrapper({ children }: { children: any }) {
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  let navAction = searchParams.get("nav");
+  const navAction = searchParams.get("nav");
   return (
     <WithMotion id={location.pathname} navAction={navAction}>
       {children}
