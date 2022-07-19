@@ -1,6 +1,5 @@
 import EventEmitter from "eventemitter3";
 import { vanillaStore } from "../zustand-store";
-import { getItemAsync, setItemAsync } from "expo-secure-store";
 import { BrowserRuntimeCommon } from "./common";
 import { getLogger } from "../logging";
 import { generateUniqueId, isServiceWorker, IS_MOBILE } from "../utils";
@@ -13,6 +12,8 @@ import {
   MOBILE_CHANNEL_FE_RESPONSE,
   MOBILE_CHANNEL_FE_RESPONSE_INNER,
 } from "../constants";
+// use expo-secure-store if in react-native, otherwise fake-expo-secure-store.ts
+import { getItemAsync, setItemAsync } from "expo-secure-store";
 
 const logger = getLogger("common/mobile");
 
@@ -225,6 +226,9 @@ export function startMobileIfNeeded() {
     }
   };
 
+  // like localStorage, expo-secure-store can only save and return strings,
+  // so we must JSON.parse and JSON.stringify values when needed
+  // https://docs.expo.dev/versions/latest/sdk/securestore
   const handleGetLocalStorage = async (key: string) => {
     return [JSON.parse(String(await getItemAsync(key))), undefined];
   };

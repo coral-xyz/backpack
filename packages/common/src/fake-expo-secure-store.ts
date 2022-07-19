@@ -1,3 +1,7 @@
+// this is loaded instead of `expo-secure-store` if this package is loaded
+// outside react-native. This is necessary because it has react-native
+// dependencies which are incompatible with standard react code.
+
 const MEM_STORAGE = {};
 
 export const getItemAsync = (key: string): Promise<string | null> =>
