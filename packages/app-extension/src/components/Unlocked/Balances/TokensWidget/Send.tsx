@@ -21,6 +21,7 @@ import {
   walletAddressDisplay,
   PrimaryButton,
   Loading,
+  SecondaryButton,
 } from "../../../common";
 import { useDrawerContext, WithMiniDrawer } from "../../../Layout/Drawer";
 
@@ -248,7 +249,14 @@ export function Send({
             leftLabel={"Amount"}
             rightLabel={`${token.nativeBalance} ${token.ticker}`}
           />
-          <div style={{ margin: "0 12px" }}>
+          <div
+            style={{
+              margin: "0 12px",
+              display: "flex",
+              gap: 10,
+              alignItems: "stretch",
+            }}
+          >
             <TextField
               rootClass={classes.textRoot}
               type={"number"}
@@ -259,6 +267,11 @@ export function Send({
               inputProps={{
                 name: "amount",
               }}
+            />
+            <SecondaryButton
+              label="MAX"
+              onClick={() => setAmount(token.nativeBalance)}
+              style={{ width: "auto", height: "auto" }}
             />
           </div>
         </div>
