@@ -40,7 +40,7 @@ function NavStackInner({
 
   return (
     <AnimatePresence initial={false}>
-      <WithMotionInner id={activeRoute} navAction={"push"}>
+      <WithMotion id={activeRoute} navAction={"push"}>
         <WithNav
           title={title}
           navButtonLeft={leftNavButton}
@@ -49,7 +49,7 @@ function NavStackInner({
         >
           {activeScreen.props.component()}
         </WithNav>
-      </WithMotionInner>
+      </WithMotion>
     </AnimatePresence>
   );
 }
@@ -111,7 +111,7 @@ export function NavStackScreen({
   return <></>;
 }
 
-export function WithMotionInner({ children, id, navAction }: any) {
+export function WithMotion({ children, id, navAction }: any) {
   return (
     <motion.div
       key={id}

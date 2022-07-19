@@ -26,12 +26,7 @@ import { Simulator } from "../Unlocked/Apps/Simulator";
 import { Nfts } from "../Unlocked/Nfts";
 import { SettingsButton } from "../Settings";
 import { WithNav, NavBackButton } from "./Nav";
-import {
-  useNavStack,
-  WithMotionInner,
-  NavStack,
-  NavStackScreen,
-} from "./NavStack";
+import { useNavStack, WithMotion, NavStack, NavStackScreen } from "./NavStack";
 
 export function Router() {
   return (
@@ -43,15 +38,14 @@ export function Router() {
 }
 
 function routeOptions({ route }: { route: string }) {
-  console.log("route here", route);
   switch (route) {
     case "home1":
       return {
-        title: route,
+        title: "Home Title 1",
       };
     case "home2":
       return {
-        title: route,
+        title: "Test 2",
       };
     default:
       console.log(route);
@@ -63,10 +57,10 @@ export function Router2() {
   const [page, setPage] = useState(1);
   return (
     <AnimatePresence initial={false}>
-      <WithMotionInner id={page} navAction={"push"}>
+      <WithMotion id={page} navAction={"push"}>
         {page === 1 && <Home1 onClick={() => setPage(2)} />}
         {page === 2 && <Home2 onClick={() => setPage(1)} />}
-      </WithMotionInner>
+      </WithMotion>
     </AnimatePresence>
   );
 }
@@ -195,7 +189,7 @@ function NavScreen({ component }: { component: React.ReactNode }) {
   );
 
   return (
-    <WithMotion>
+    <WithMotionWrapper>
       <div
         style={{
           display: "flex",
@@ -216,18 +210,18 @@ function NavScreen({ component }: { component: React.ReactNode }) {
           <NavBootstrap>{component}</NavBootstrap>
         </WithNav>
       </div>
-    </WithMotion>
+    </WithMotionWrapper>
   );
 }
 
-function WithMotion({ children, id }: { children: any; id?: string }) {
+function WithMotionWrapper({ children, id }: { children: any; id?: string }) {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   let navAction = searchParams.get("nav");
   return (
-    <WithMotionInner id={location.pathname} navAction={navAction}>
+    <WithMotion id={location.pathname} navAction={navAction}>
       {children}
-    </WithMotionInner>
+    </WithMotion>
   );
 }
 
