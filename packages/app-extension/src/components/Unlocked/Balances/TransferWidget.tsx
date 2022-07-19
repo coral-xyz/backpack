@@ -243,7 +243,6 @@ function TokenRow({ token, blockchain }: { token: any; blockchain: string }) {
 }
 
 function _Send({ token, blockchain }: { token: any; blockchain: string }) {
-  const { close } = useDrawerContext();
   const { title, setTitle } = useNavStack();
   useEffect(() => {
     const prev = title;
@@ -252,11 +251,5 @@ function _Send({ token, blockchain }: { token: any; blockchain: string }) {
       setTitle(prev);
     };
   }, []);
-  return (
-    <Send
-      blockchain={blockchain}
-      tokenAddress={token.address}
-      onCancel={close}
-    />
-  );
+  return <Send blockchain={blockchain} tokenAddress={token.address} />;
 }

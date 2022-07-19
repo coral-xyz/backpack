@@ -22,7 +22,7 @@ import {
   PrimaryButton,
   Loading,
 } from "../../../common";
-import { WithMiniDrawer } from "../../../Layout/Drawer";
+import { useDrawerContext, WithMiniDrawer } from "../../../Layout/Drawer";
 
 const logger = getLogger("send-component");
 
@@ -109,32 +109,27 @@ export function SendButton({
       routes={[
         {
           name: "send",
-          component: Send,
+          component: (props: any) => <Send {...props} />,
           title: `${token.ticker} / Send`,
+          props: {
+            blockchain,
+            tokenAddress: address,
+          },
         },
       ]}
-      dialogTitle={`${token.ticker} / Send`}
-      dialog={(setOpenDrawer: any) => (
-        <Send
-          blockchain={blockchain}
-          tokenAddress={address}
-          onCancel={() => setOpenDrawer(false)}
-        />
-      )}
     />
   );
 }
 
 export function Send({
-  onCancel,
   blockchain,
   tokenAddress,
 }: {
-  onCancel: () => void;
   blockchain: string;
   tokenAddress: string;
 }) {
   const classes = useStyles() as any;
+  const { close } = useDrawerContext();
   const token = useBlockchainTokenAccount(blockchain, tokenAddress);
   const { provider } = useAnchorContext();
 
@@ -280,7 +275,7 @@ export function Send({
             token={token}
             address={address}
             amount={amountFloat}
-            close={() => onCancel()}
+            close={() => close()}
           />
         </WithMiniDrawer>
       </div>
