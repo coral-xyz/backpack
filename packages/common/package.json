@@ -2,10 +2,10 @@
   "name": "@coral-xyz/common",
   "version": "1.0.0",
   "module": "dist/esm/index.js",
-  "react-native": "dist/esm/index.js",
+  "react-native": "dist/rn/index.js",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "build": "yarn lint && tsc && tsc-alias",
+    "build": "yarn lint && tsc && tsc-alias && tsc -p tsconfig.rn.json",
     "dev": "tsc --watch",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
   },

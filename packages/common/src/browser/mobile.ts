@@ -225,20 +225,11 @@ export function startMobileIfNeeded() {
     }
   };
 
-  // TODO: replace this with whatever the react-native api is.
-  const MEM_STORAGE = {
-    // "keyring-store": "locked",
-  };
   const handleGetLocalStorage = async (key: string) => {
-    return [await getItemAsync(key), undefined];
-    const result = MEM_STORAGE[key];
-    return [result, undefined];
+    return [JSON.parse(String(await getItemAsync(key))), undefined];
   };
   const handleSetLocalStorage = async (key: string, value: any) => {
-    await setItemAsync(key, value);
-    return ["success", undefined];
-    setItemAsync(key, value);
-    MEM_STORAGE[key] = value;
+    await setItemAsync(key, JSON.stringify(value));
     return ["success", undefined];
   };
 }
