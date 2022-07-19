@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   useLocation,
   useSearchParams,
@@ -26,33 +26,37 @@ import { Simulator } from "../Unlocked/Apps/Simulator";
 import { Nfts } from "../Unlocked/Nfts";
 import { SettingsButton } from "../Settings";
 import { WithNav, NavBackButton } from "./Nav";
+import {
+  useNavStack,
+  WithMotionInner,
+  NavStack,
+  NavStackScreen,
+} from "./NavStack";
 
-export function NavStackRouter() {
+export function Router() {
   return (
-    <NavStack initial={"home1"}>
-      <NavStackScreen name="home1" component={Home1} />
-      <NavStackScreen name="home2" component={Home2} />
+    <NavStack initialRoute={"home1"} options={routeOptions}>
+      <NavStackScreen route={"home1"} component={NavHome1} />
+      <NavStackScreen route={"home2"} component={NavHome2} />
     </NavStack>
   );
 }
 
-function NavStack({ initial, children }: any) {
-  return (
-    <AnimatePresence>
-      <WithMotionInner></WithMotionInner>
-    </AnimatePresence>
-  );
-}
-
-function NavStackScreen({
-  name,
-  component,
-}: {
-  name: string;
-  component: (props: any) => React.ReactNode;
-}) {
-  // todo
-  return <></>;
+function routeOptions({ route }: { route: string }) {
+  console.log("route here", route);
+  switch (route) {
+    case "home1":
+      return {
+        title: route,
+      };
+    case "home2":
+      return {
+        title: route,
+      };
+    default:
+      console.log(route);
+      throw new Error("unknown route");
+  }
 }
 
 export function Router2() {
@@ -67,7 +71,7 @@ export function Router2() {
   );
 }
 
-export function Router() {
+export function Router3() {
   const location = useLocation();
 
   // TODO: add initial=false prop to animate presence.
@@ -83,6 +87,34 @@ export function Router() {
         <Route path="*" element={<Redirect />} />
       </Routes>
     </AnimatePresence>
+  );
+}
+
+function NavHome1() {
+  const { push, pop } = useNavStack();
+  return (
+    <div>
+      <div onClick={() => push("home2")} style={{ color: "white" }}>
+        Push home 1
+      </div>
+      <div onClick={() => pop()} style={{ color: "white" }}>
+        Pop home 1
+      </div>
+    </div>
+  );
+}
+
+function NavHome2() {
+  const { push, pop } = useNavStack();
+  return (
+    <div>
+      <div onClick={() => push("home1")} style={{ color: "white" }}>
+        Push home 2
+      </div>
+      <div onClick={() => pop()} style={{ color: "white" }}>
+        Po home 2
+      </div>
+    </div>
   );
 }
 
@@ -198,42 +230,6 @@ function WithMotion({ children, id }: { children: any; id?: string }) {
     </WithMotionInner>
   );
 }
-
-function WithMotionInner({ children, id, navAction }: any) {
-  return (
-    <motion.div
-      key={id}
-      style={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        flex: 1,
-      }}
-      variants={MOTION_VARIANTS}
-      initial={!navAction || navAction === "tab" ? {} : "initial"}
-      animate={!navAction || navAction === "tab" ? {} : "animate"}
-      exit={!navAction || navAction === "tab" ? {} : "exit"}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-const MOTION_VARIANTS = {
-  initial: {
-    opacity: 0,
-  },
-  animate: {
-    translateX: 0,
-    opacity: 1,
-    transition: { delay: 0.09 },
-  },
-  exit: {
-    translateX: window.innerWidth,
-    transition: { delay: 0.09, duration: 0.1 },
-    opacity: 0,
-  },
-};
 
 function useNavBar() {
   const theme = useCustomTheme();
