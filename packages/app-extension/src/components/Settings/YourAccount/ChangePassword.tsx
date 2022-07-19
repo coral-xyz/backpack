@@ -36,15 +36,12 @@ export function ChangePassword() {
   const [passwordMismatchError, setPasswordMismatchError] = useState(false);
 
   useEffect(() => {
-    const navButton = nav.navButtonRight;
     const title = nav.title;
-    nav.setNavButtonRight(null);
     nav.setTitle("Change password");
     nav.setStyle({
       borderBottom: `solid 1pt ${theme.custom.colors.border}`,
     });
     return () => {
-      nav.setNavButtonRight(navButton);
       nav.setTitle(title);
     };
   }, []);

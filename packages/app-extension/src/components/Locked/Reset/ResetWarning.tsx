@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Box } from "@mui/material";
-import { useBackgroundClient, useEphemeralNav } from "@coral-xyz/recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_KEYRING_RESET } from "@coral-xyz/common";
 import {
   Header,
@@ -10,10 +10,11 @@ import {
   SecondaryButton,
 } from "../../common";
 import { WarningIcon } from "../../Icon";
+import { useNavStack } from "../../Layout/NavStack";
 
 export function ResetWarning({ onClose }: { onClose: () => void }) {
   const background = useBackgroundClient();
-  const nav = useEphemeralNav();
+  const nav = useNavStack();
   const onNext = async () => {
     await background.request({
       method: UI_RPC_METHOD_KEYRING_RESET,
@@ -23,7 +24,6 @@ export function ResetWarning({ onClose }: { onClose: () => void }) {
   useEffect(() => {
     nav.setTitle("");
     nav.setStyle({ borderBottom: "none" });
-    nav.setNavButtonRight(undefined);
   }, []);
   return (
     <Box

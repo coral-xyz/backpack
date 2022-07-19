@@ -5,7 +5,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ChatIcon from "@mui/icons-material/Chat";
 import WebIcon from "@mui/icons-material/Web";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
-import { useBackgroundClient, useEphemeralNav } from "@coral-xyz/recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC } from "@coral-xyz/common";
 import { CopyButton, MnemonicInputFields } from "../../Account/MnemonicInput";
 import {
@@ -17,6 +17,8 @@ import {
   TextField,
 } from "../../common";
 import { EyeIcon, WarningIcon } from "../../Icon";
+import { useNavStack } from "../../Layout/NavStack";
+import { useDrawerContext } from "../../Layout/Drawer";
 
 const useStyles = styles((theme: any) => ({
   passwordField: {
@@ -79,13 +81,12 @@ const useStyles = styles((theme: any) => ({
 export function ShowRecoveryPhraseWarning() {
   const classes = useStyles();
   const background = useBackgroundClient();
-  const nav = useEphemeralNav();
+  const nav = useNavStack();
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
 
   useEffect(() => {
     const navButton = nav.navButtonRight;
-    nav.setNavButtonRight(null);
     nav.setTitle("Secret recovery phrase");
     return () => {
       nav.setNavButtonRight(navButton);
@@ -104,7 +105,7 @@ export function ShowRecoveryPhraseWarning() {
       setError(true);
       return;
     }
-    nav.push(<ShowRecoveryPhrase mnemonic={mnemonic} />);
+    nav.push("show-secret-phrase", { mnemonic });
   };
 
   return (
@@ -195,7 +196,8 @@ export function ShowRecoveryPhraseWarning() {
 
 export function ShowRecoveryPhrase({ mnemonic }: { mnemonic: string }) {
   const classes = useStyles();
-  const nav = useEphemeralNav();
+  const nav = useNavStack();
+  const { close } = useDrawerContext();
   const mnemonicWords = mnemonic.split(" ");
 
   return (
@@ -231,7 +233,7 @@ export function ShowRecoveryPhrase({ mnemonic }: { mnemonic: string }) {
           marginBottom: "16px",
         }}
       >
-        <SecondaryButton label="Close" onClick={() => nav.toRoot()} />
+        <SecondaryButton label="Close" onClick={() => close()} />
       </Box>
     </Box>
   );

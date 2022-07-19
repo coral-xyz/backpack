@@ -38,8 +38,14 @@ import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../Layout/NavStack";
-import { ShowPrivateKeyWarning } from "./YourAccount/ShowPrivateKey";
-import { ShowRecoveryPhraseWarning } from "./YourAccount/ShowRecoveryPhrase";
+import {
+  ShowPrivateKeyWarning,
+  ShowPrivateKey,
+} from "./YourAccount/ShowPrivateKey";
+import {
+  ShowRecoveryPhraseWarning,
+  ShowRecoveryPhrase,
+} from "./YourAccount/ShowRecoveryPhrase";
 import { ChangePassword } from "./YourAccount/ChangePassword";
 import { ResetWarning } from "../Locked/Reset/ResetWarning";
 import { Reset } from "../Locked/Reset";
@@ -113,26 +119,48 @@ function AvatarButton() {
               <CloseButton onClick={() => setSettingsOpen(false)} />
             }
           >
-            <NavStackScreen name={"root"} component={SettingsContent} />
-            <NavStackScreen name={"your-account"} component={YourAccount} />
+            <NavStackScreen
+              name={"root"}
+              component={(props: any) => <SettingsContent {...props} />}
+            />
+            <NavStackScreen
+              name={"your-account"}
+              component={(props: any) => <YourAccount {...props} />}
+            />
             <NavStackScreen
               name={"connection-menu"}
-              component={ConnectionMenu}
+              component={(props: any) => <ConnectionMenu {...props} />}
             />
             <NavStackScreen
               name={"change-password"}
-              component={ChangePassword}
+              component={(props: any) => <ChangePassword {...props} />}
             />
             <NavStackScreen
               name={"show-private-key-warning"}
-              component={ShowPrivateKeyWarning}
+              component={(props: any) => <ShowPrivateKeyWarning {...props} />}
+            />
+            <NavStackScreen
+              name={"show-private-key"}
+              component={(props: any) => <ShowPrivateKey {...props} />}
             />
             <NavStackScreen
               name={"show-secret-phrase-warning"}
-              component={ShowRecoveryPhraseWarning}
+              component={(props: any) => (
+                <ShowRecoveryPhraseWarning {...props} />
+              )}
             />
-            <NavStackScreen name={"reset-warning"} component={ResetWarning} />
-            <NavStackScreen name={"reset"} component={Reset} />
+            <NavStackScreen
+              name={"show-secret-phrase"}
+              component={(props: any) => <ShowRecoveryPhrase {...props} />}
+            />
+            <NavStackScreen
+              name={"reset-warning"}
+              component={(props: any) => <ResetWarning {...props} />}
+            />
+            <NavStackScreen
+              name={"reset"}
+              component={(props: any) => <Reset {...props} />}
+            />
           </NavStackEphemeral>
         </div>
       </WithDrawer>

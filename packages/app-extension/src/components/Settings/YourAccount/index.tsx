@@ -27,15 +27,10 @@ export function YourAccount() {
   };
 
   useEffect(() => {
-    const navButton = nav.navButtonRight;
-    nav.setNavButtonRight(null);
     nav.setTitle("Your Account");
     nav.setStyle({
       borderBottom: `solid 1pt ${theme.custom.colors.border}`,
     });
-    return () => {
-      nav.setNavButtonRight(navButton);
-    };
   }, []);
 
   return (
