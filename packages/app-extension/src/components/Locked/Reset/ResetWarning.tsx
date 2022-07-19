@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Box } from "@mui/material";
-import { useEphemeralNav } from "@coral-xyz/recoil";
+import { useBackgroundClient, useEphemeralNav } from "@coral-xyz/recoil";
+import { UI_RPC_METHOD_KEYRING_RESET } from "@coral-xyz/common";
 import { ResetSuccess } from "./ResetSuccess";
 import {
   Header,
@@ -12,8 +13,13 @@ import {
 import { WarningIcon } from "../../Icon";
 
 export function ResetWarning({ onClose }: { onClose: () => void }) {
+  const background = useBackgroundClient();
   const nav = useEphemeralNav();
-  const onNext = () => {
+  const onNext = async () => {
+    await background.request({
+      method: UI_RPC_METHOD_KEYRING_RESET,
+      params: [],
+    });
     nav.push(<ResetSuccess />);
   };
   useEffect(() => {

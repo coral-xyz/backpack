@@ -95,6 +95,7 @@ export const UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY = "keyring-import-wallet";
 export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
   "keyring-mnemonic-create";
 export const UI_RPC_METHOD_PREVIEW_PUBKEYS = "keyring-preview-pubkeys";
+export const UI_RPC_METHOD_KEYRING_RESET = "keyring-reset";
 
 export const UI_RPC_METHOD_CONNECTION_URL_READ = "connection-url-read";
 export const UI_RPC_METHOD_CONNECTION_URL_UPDATE = "connection-url-update";
@@ -133,6 +134,8 @@ export const NOTIFICATION_KEYRING_STORE_LOCKED =
   "notification-keyring-store-locked";
 export const NOTIFICATION_KEYRING_STORE_UNLOCKED =
   "notification-keyring-store-unlocked";
+export const NOTIFICATION_KEYRING_STORE_RESET =
+  "notification-keyring-store-reset";
 export const NOTIFICATION_CONNECTION_URL_UPDATED =
   "anchor-connection-url-updated";
 export const NOTIFICATION_KEYNAME_UPDATE = "anchor-keyname-update";

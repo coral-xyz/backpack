@@ -60,6 +60,19 @@ export class BrowserRuntimeCommon {
     });
   }
 
+  public static async clearLocalStorage(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      chrome?.storage.local.clear(() => {
+        const err = BrowserRuntimeCommon.checkForError();
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
   public static checkForError() {
     const { lastError } = chrome ? chrome.runtime : browser.runtime;
     return lastError ? new Error(lastError.message) : undefined;
