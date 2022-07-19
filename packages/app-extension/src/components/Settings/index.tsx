@@ -431,6 +431,7 @@ function SettingsList({ close }: { close: () => void }) {
 export function ImportSecretKey() {
   const background = useBackgroundClient();
   const nav = useNavStack();
+  const { close } = useDrawerContext();
   const theme = useCustomTheme();
   const [name, setName] = useState("");
   const [secretKey, setSecretKey] = useState("");
@@ -468,6 +469,8 @@ export function ImportSecretKey() {
       method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
       params: [publicKey],
     });
+
+    close();
   };
 
   return (
