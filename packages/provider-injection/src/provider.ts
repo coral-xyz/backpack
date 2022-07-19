@@ -34,7 +34,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
   private _options?: ConfirmOptions;
 
   //
-  // Channel to send extension specfici RPC requests to the extension.
+  // Channel to send extension specific RPC requests to the extension.
   //
   private _requestManager: RequestManager;
   //
