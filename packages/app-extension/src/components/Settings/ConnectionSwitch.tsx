@@ -34,14 +34,6 @@ export function ConnectionMenu() {
   const nav = useNavStack();
   const urls = Object.values(endpoints).filter((v) => typeof v === "string");
 
-  useEffect(() => {
-    const navButton = nav.navButtonRight;
-    nav.setNavButtonRight(null);
-    return () => {
-      nav.setNavButtonRight(navButton);
-    };
-  }, []);
-
   const endpointKvs = Object.entries(endpoints);
   return (
     <List className={classes.connectionMenu}>
