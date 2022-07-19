@@ -30,15 +30,15 @@ import { useNavStack, WithMotion, NavStack, NavStackScreen } from "./NavStack";
 
 export function Router() {
   return (
-    <NavStack initialRoute={"home1"} options={routeOptions}>
-      <NavStackScreen route={"home1"} component={NavHome1} />
-      <NavStackScreen route={"home2"} component={NavHome2} />
+    <NavStack initialRoute={{ name: "home1" }} options={routeOptions}>
+      <NavStackScreen name={"home1"} component={NavHome1} />
+      <NavStackScreen name={"home2"} component={NavHome2} />
     </NavStack>
   );
 }
 
-function routeOptions({ route }: { route: string }) {
-  switch (route) {
+function routeOptions({ route }: { route: { name: string; props?: any } }) {
+  switch (route.name) {
     case "home1":
       return {
         title: "Home Title 1",

@@ -7,7 +7,7 @@ export function NavStack({
   children,
   options,
 }: {
-  initialRoute: string;
+  initialRoute: { name: string; props?: any };
   children: any;
   options: NavStackOptions;
 }) {
@@ -30,17 +30,15 @@ function NavStackInner({
 }) {
   const { activeRoute } = useNavStack();
   const activeScreen = navScreens.find(
-    (c: any) => c.props.route === activeRoute
+    (c: any) => c.props.name === activeRoute.name
   );
   const { title, rightNavButton, leftNavButton, style } = options({
     route: activeRoute,
   });
 
-  // todo: componoent props
-
   return (
     <AnimatePresence initial={false}>
-      <WithMotion id={activeRoute} navAction={"push"}>
+      <WithMotion id={activeRoute.name} navAction={"push"}>
         <WithNav
           title={title}
           navButtonLeft={leftNavButton}
@@ -56,8 +54,8 @@ function NavStackInner({
 
 function NavStackProvider({ initialRoute, children }: any) {
   const [stack, setStack] = useState([initialRoute]);
-  const push = (route: string) => {
-    setStack([...stack, route]);
+  const push = (route: string, props: any) => {
+    setStack([...stack, { name: route, props }]);
   };
   const pop = () => {
     const newStack = [...stack];
@@ -76,7 +74,11 @@ function NavStackProvider({ initialRoute, children }: any) {
   );
 }
 
-type NavStackOptions = ({ route }: { route: string }) => RoutedNavStackOptions;
+type NavStackOptions = ({
+  route,
+}: {
+  route: { name: string; props?: any };
+}) => RoutedNavStackOptions;
 type RoutedNavStackOptions = {
   title: string;
   rightNavButton?: any;
@@ -85,8 +87,8 @@ type RoutedNavStackOptions = {
 };
 
 type NavStackContext = {
-  activeRoute: string;
-  push: (route: string) => void;
+  activeRoute: { name: string; props?: any };
+  push: (route: string, props?: any) => void;
   pop: () => void;
 };
 
@@ -101,10 +103,10 @@ export function useNavStack(): NavStackContext {
 }
 
 export function NavStackScreen({
-  route,
+  name,
   component,
 }: {
-  route: string;
+  name: string;
   component: (props: any) => React.ReactNode;
 }) {
   // todo
