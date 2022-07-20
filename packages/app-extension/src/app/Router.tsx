@@ -227,45 +227,42 @@ function FullApp() {
   const isLocked =
     !needsOnboarding && keyringStoreState === KeyringStoreStateEnum.Locked;
 
+  console.log("rendering is locked", isLocked);
+
   return (
     <AnimatePresence initial={false}>
       {isLocked && (
-        <motion.div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            right: 0,
-            bottom: 0,
-          }}
-          key={"locked"}
-          variants={MOTION_VARIANTS}
-          initial={"initial"}
-          animate={"animate"}
-          exit={"exit"}
-        >
+        <WithLockMotion key={"locked"}>
           <LockedBootstrap />
-        </motion.div>
+        </WithLockMotion>
       )}
       {!isLocked && (
-        <motion.div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            right: 0,
-            bottom: 0,
-          }}
-          key={"unlocked"}
-          variants={MOTION_VARIANTS}
-          initial={"initial"}
-          animate={"animate"}
-          exit={"exit"}
-        >
+        <WithLockMotion key={"unlocked"}>
           <Unlocked />
-        </motion.div>
+        </WithLockMotion>
       )}
     </AnimatePresence>
+  );
+}
+
+function WithLockMotion({ children, key }: any) {
+  return (
+    <motion.div
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0,
+      }}
+      key={key}
+      variants={MOTION_VARIANTS}
+      initial={"initial"}
+      animate={"animate"}
+      exit={"exit"}
+    >
+      {children}
+    </motion.div>
   );
 }
 

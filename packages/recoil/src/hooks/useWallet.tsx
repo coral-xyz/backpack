@@ -1,13 +1,6 @@
-import {
-  useRecoilValue,
-  useRecoilValueLoadable,
-  constSelector,
-  Loadable,
-} from "recoil";
+import { useRecoilValue, useRecoilValueLoadable, Loadable } from "recoil";
 import { PublicKey } from "@solana/web3.js";
 import * as atoms from "../atoms";
-import { KeyringStoreStateEnum } from "../atoms/keyring-store";
-import { useKeyringStoreState } from "./useKeyringStoreState";
 
 export function useActiveWalletLoadable(): Loadable<{
   publicKey: string;
@@ -38,18 +31,7 @@ export function useWalletPublicKeys(): {
     name: string;
   }>;
 } {
-  const keyringStoreState = useKeyringStoreState();
-  const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
-  // @ts-ignore
-  const keys = useRecoilValue(
-    isLocked
-      ? constSelector({
-          hdPublicKeys: [],
-          importedPublicKeys: [],
-          ledgerPublicKeys: [],
-        })
-      : atoms.walletPublicKeys
-  );
+  const keys = useRecoilValue(atoms.walletPublicKeys);
   return {
     hdPublicKeys: keys.hdPublicKeys.map((k: any) => {
       return {

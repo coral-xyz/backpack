@@ -1,4 +1,4 @@
-import { useEffect, useState, Suspense, useCallback } from "react";
+import { useEffect, useState, Suspense } from "react";
 import * as bs58 from "bs58";
 import { Box, Typography, IconButton } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -11,11 +11,10 @@ import {
 } from "@mui/icons-material";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import {
-  useBackgroundClient,
   useKeyringStoreState,
+  useBackgroundClient,
   useWalletPublicKeys,
   useActiveWallet,
-  KeyringStoreStateEnum,
 } from "@coral-xyz/recoil";
 import {
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
