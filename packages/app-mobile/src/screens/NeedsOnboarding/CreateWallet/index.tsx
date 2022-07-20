@@ -26,23 +26,22 @@ const ExistingWallet = () => {
   const [recoveryPhrase, setRecoveryPhrase] = useState("");
 
   return recoveryPhrase ? (
-    <NewWallet />
+    <NewWallet recoveryPhrase={recoveryPhrase} />
   ) : (
     <ImportRecoveryPhrase setRecoveryPhrase={setRecoveryPhrase} />
   );
 };
 
-const NewWallet = () => {
+const NewWallet = ({ recoveryPhrase }: { recoveryPhrase?: string }) => {
   const [password, setPassword] = useState("");
-  const recoveryPhrase = useRequest(
-    UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
-    128
-  );
+  const _recoveryPhrase =
+    recoveryPhrase ||
+    useRequest(UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE, 128);
 
   return password ? (
     <ShowSecretRecoveryPhrase
       password={password}
-      recoveryPhrase={recoveryPhrase!}
+      recoveryPhrase={_recoveryPhrase!}
     />
   ) : (
     <CreatePassword setPassword={setPassword} />
