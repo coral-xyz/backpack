@@ -1,8 +1,7 @@
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation } from "react-router-dom";
 import { Button, Divider } from "@mui/material";
 import { PluginRenderer } from "@coral-xyz/react-xnft-renderer";
 import {
-  useNavigation,
   useBackgroundClient,
   usePlugins,
   useTablePlugins,
@@ -53,10 +52,12 @@ export function PluginTableDetailDisplay({
 function PluginControl() {
   const background = useBackgroundClient();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const theme = useCustomTheme();
 
   const closePlugin = () => {
-    const newUrl;
+    searchParams.delete("plugin");
+    const newUrl = `${location.pathname}?${searchParams.toString()}`;
     background
       .request({
         method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,

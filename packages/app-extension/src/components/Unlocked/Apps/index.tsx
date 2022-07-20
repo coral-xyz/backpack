@@ -8,10 +8,7 @@ import {
   useAppIcons,
   useNavigation,
 } from "@coral-xyz/recoil";
-import {
-  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
-  NAV_COMPONENT_PLUGINS,
-} from "@coral-xyz/common";
+import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
 import { WithDrawer } from "../../Layout/Drawer";
 import { PluginDisplay } from "./Plugin";
 
@@ -118,18 +115,6 @@ function PluginGrid() {
     </>
   );
 }
-
-/*
-	const onPluginDidLoad = (plugin: any) => {
-    push({
-      title: plugin.title,
-      componentId: plugin.componentId
-        ? plugin.componentId
-								 : NAV_COMPONENT_PLUGINS,
-      componentProps: { pluginUrl: plugin.url },
-    });
-	};
-*/
 
 function PluginIcon({ plugin, onClick }: any) {
   return (
