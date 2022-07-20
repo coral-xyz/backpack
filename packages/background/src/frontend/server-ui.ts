@@ -1,12 +1,13 @@
 // All RPC request handlers for requests that can be sent from the trusted
 // extension UI to the background script.
 
-import type {
+import {
   RpcRequest,
   RpcResponse,
   DerivationPath,
   Context,
   EventEmitter,
+  UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
 } from "@coral-xyz/common";
 import {
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
@@ -132,6 +133,8 @@ async function handle<T = any>(
       return handleKeyringExportMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_RESET_MNEMONIC:
       return handleKeyringResetMnemonic(ctx, params[0]);
+    case UI_RPC_METHOD_KEYRING_AUTOLOCK_READ:
+      return await handleKeyringAutolockRead(ctx);
     case UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE:
       return await handleKeyringAutolockUpdate(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE:
@@ -406,6 +409,13 @@ function handleKeyringResetMnemonic(
   password: string
 ): RpcResponse<string> {
   const resp = ctx.backend.keyringResetMnemonic(password);
+  return [resp];
+}
+
+async function handleKeyringAutolockRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<number>> {
+  const resp = await ctx.backend.keyringAutolockRead();
   return [resp];
 }
 
