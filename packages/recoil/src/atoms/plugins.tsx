@@ -1,5 +1,5 @@
 import { selector } from "recoil";
-import { SIMULATOR_PORT, NAV_COMPONENT_SIMULATOR } from "@coral-xyz/common";
+import { SIMULATOR_PORT } from "@coral-xyz/common";
 import { activeWallet, connectionUrl } from "./wallet";
 
 const OPEN_ORDERS_PLUGIN_URL = pluginURL("app");
@@ -54,7 +54,6 @@ export const plugins = selector({
         title: "Simulator",
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
-        componentId: NAV_COMPONENT_SIMULATOR,
       },
       /*
       {
