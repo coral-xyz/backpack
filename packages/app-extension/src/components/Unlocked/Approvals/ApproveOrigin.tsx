@@ -135,7 +135,7 @@ export function ApproveOrigin({ origin, title, onCompletion }: any) {
           padding: "16px",
           position: "absolute",
         }}
-        onClick={onCompletion}
+        onClick={onDeny}
         size="large"
       >
         <_CloseIcon className={classes.closeButtonIcon} />
