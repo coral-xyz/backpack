@@ -61,9 +61,10 @@ export function PluginDisplay({ pluginUrl }: SearchParamsFor.Plugin["props"]) {
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
+              minWidth: "41.67px",
             }}
           >
-            <MoreIcon fill={theme.custom.colors.secondary} />
+            <MoreIcon fill={theme.custom.colors.border1} />
           </Button>
           <div
             style={{
@@ -91,9 +92,10 @@ export function PluginDisplay({ pluginUrl }: SearchParamsFor.Plugin["props"]) {
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
+              minWidth: "41.67px",
             }}
           >
-            <PowerIcon fill={theme.custom.colors.secondary} />
+            <PowerIcon fill={theme.custom.colors.border1} />
           </Button>
         </div>
       </div>
