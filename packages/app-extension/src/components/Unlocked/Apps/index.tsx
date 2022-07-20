@@ -9,6 +9,7 @@ import {
   useNavigation,
 } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
+import { Simulator } from "./Simulator";
 import { WithDrawer } from "../../Layout/Drawer";
 import { PluginDisplay } from "./Plugin";
 
@@ -84,6 +85,20 @@ function PluginGrid() {
       .catch(console.error);
   };
 
+  const closePlugin = () => {
+    setOpenDrawer(false);
+    setTimeout(() => {
+      searchParams.delete("plugin");
+      const newUrl = `${location.pathname}?${searchParams.toString()}`;
+      background
+        .request({
+          method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+          params: [newUrl],
+        })
+        .catch(console.error);
+    }, 1000);
+  };
+
   return (
     <>
       <Grid
@@ -110,22 +125,14 @@ function PluginGrid() {
         })}
       </Grid>
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        <PluginDisplay
-          pluginUrl={pluginUrl!}
-          closePlugin={() => {
-            setOpenDrawer(false);
-            setTimeout(() => {
-              searchParams.delete("plugin");
-              const newUrl = `${location.pathname}?${searchParams.toString()}`;
-              background
-                .request({
-                  method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
-                  params: [newUrl],
-                })
-                .catch(console.error);
-            }, 1000);
-          }}
-        />
+        {pluginUrl! === "http://localhost:9933" ? (
+          <Simulator pluginUrl={pluginUrl} closePlugin={closePlugin} />
+        ) : (
+          <PluginDisplay
+            pluginUrl={pluginUrl!}
+            closePlugin={() => closePlugin()}
+          />
+        )}
       </WithDrawer>
     </>
   );
