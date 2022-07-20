@@ -105,6 +105,7 @@ export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE =
 export const UI_RPC_METHOD_KEYNAME_UPDATE = "keyname-update";
 export const UI_RPC_METHOD_PASSWORD_UPDATE = "password-update";
 export const UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY = "export-secret-key";
+export const UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC = "validate-mnemonic";
 export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC = "export-mnemonic";
 export const UI_RPC_METHOD_KEYRING_RESET_MNEMONIC = "reset-mnemonic";
 export const UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE = "autolock-update";
