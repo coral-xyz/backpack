@@ -11,7 +11,6 @@ import {
 } from "@mui/icons-material";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import {
-  useKeyringStoreState,
   useBackgroundClient,
   useWalletPublicKeys,
   useActiveWallet,
@@ -53,6 +52,7 @@ import { ConnectionMenu } from "./ConnectionSwitch";
 import { RecentActivityButton } from "../Unlocked/Balances/RecentActivity";
 import { AddConnectWalletMenu } from "./AddConnectWallet";
 import { YourAccount } from "./YourAccount";
+import { EditWallets } from "./YourAccount/EditWallets";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -139,6 +139,10 @@ function AvatarButton() {
             <NavStackScreen
               name={"change-password"}
               component={(props: any) => <ChangePassword {...props} />}
+            />
+            <NavStackScreen
+              name={"edit-wallets"}
+              component={(props: any) => <EditWallets {...props} />}
             />
             <NavStackScreen
               name={"show-private-key-warning"}

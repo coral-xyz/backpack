@@ -61,6 +61,7 @@ export function ListItem({
         <div
           style={{
             display: "flex",
+            alignItems: "center",
             flex: 1,
           }}
         >
