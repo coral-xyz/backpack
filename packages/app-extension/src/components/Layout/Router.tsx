@@ -141,17 +141,8 @@ function useNavBar() {
 
   if (isRoot) {
     navButtonRight = <SettingsButton />;
-  } else if (pathname === "/balances/token" || pathname === "/apps/simulator") {
+  } else if (pathname === "/balances/token") {
     navButtonRight = null;
-  }
-  if (pathname === "/apps/simulator") {
-    navButtonLeft = <ExitAppButton />;
-    navStyle = {
-      backgroundColor: theme.custom.colors.nav,
-      height: "45px",
-      borderBottom: "none",
-      fontSize: "16px",
-    };
   }
 
   return {
