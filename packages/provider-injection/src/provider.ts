@@ -132,11 +132,16 @@ export class ProviderInjection extends EventEmitter implements Provider {
     if (this.isConnected) {
       throw new Error("provider already connected");
     }
-    // Send request to the RPC api.
-    return await this._requestManager.request({
+    // Send request to the RPC API.
+    const result = await this._requestManager.request({
       method: RPC_METHOD_CONNECT,
       params: [onlyIfTrustedMaybe],
     });
+    console.log(result);
+    if (!result) {
+      throw new Error("user did not approve connection");
+    }
+    return result;
   }
 
   async disconnect() {
@@ -243,6 +248,6 @@ function _mapNotificationName(notificationName: string) {
     case NOTIFICATION_CONNECTION_URL_UPDATED:
       return "connectionDidChange";
     default:
-      throw new Error(`unexpected notificatoin name ${notificationName}`);
+      throw new Error(`unexpected notification name ${notificationName}`);
   }
 }
