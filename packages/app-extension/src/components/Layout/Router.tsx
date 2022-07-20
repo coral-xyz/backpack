@@ -66,11 +66,6 @@ function TokenPage() {
   return <NavScreen component={<Token {...props} />} />;
 }
 
-function PluginPage() {
-  const { props } = useDecodedSearchParams<SearchParamsFor.Plugin>();
-  return <PluginDisplay {...props} />;
-}
-
 function SimulatorPage() {
   return (
     <NavScreen
