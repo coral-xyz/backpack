@@ -208,12 +208,7 @@ export function NotificationsProvider(props: any) {
       });
     };
     const handleNavigationUrlDidChange = (notif: Notification) => {
-      const [path, search] = notif.data.url.split("?");
-      const searchParams = new URLSearchParams(search);
-      searchParams.delete("nav");
-      searchParams.append("nav", notif.data.nav);
-      const newUrl = `${path}?${search}`;
-      navigate(newUrl);
+      navigate(notif.data.url);
     };
 
     //
