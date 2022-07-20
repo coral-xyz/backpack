@@ -19,7 +19,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         height: "100%",
       }}
     >
-      <LockedInner />
+      <LockedInner onUnlock={onUnlock} />
     </Box>
   );
 }
