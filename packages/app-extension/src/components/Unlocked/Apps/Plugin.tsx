@@ -8,10 +8,9 @@ import {
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
-import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
 import { PowerIcon, MoreIcon } from "../../Icon";
 
-export function PluginDisplay({ pluginUrl }: SearchParamsFor.Plugin["props"]) {
+export function PluginDisplay({ pluginUrl, closePlugin }: any) {
   const theme = useCustomTheme();
   const plugins = usePlugins();
   const p = plugins.find((p) => p.iframeUrl === encodeURI(pluginUrl));
@@ -32,7 +31,7 @@ export function PluginDisplay({ pluginUrl }: SearchParamsFor.Plugin["props"]) {
         backgroundColor: theme.custom.colors.background,
       }}
     >
-      <PluginControl />
+      <PluginControl closePlugin={closePlugin} />
       <PluginRenderer key={p.iframeUrl} plugin={p} />
     </div>
   );
@@ -49,22 +48,8 @@ export function PluginTableDetailDisplay({
   return <PluginRenderer key={p.iframeUrl} plugin={p} />;
 }
 
-function PluginControl() {
-  const background = useBackgroundClient();
-  const [searchParams] = useSearchParams();
-  const location = useLocation();
+function PluginControl({ closePlugin }: any) {
   const theme = useCustomTheme();
-
-  const closePlugin = () => {
-    searchParams.delete("plugin");
-    const newUrl = `${location.pathname}?${searchParams.toString()}`;
-    background
-      .request({
-        method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
-        params: [newUrl],
-      })
-      .catch(console.error);
-  };
 
   return (
     <div

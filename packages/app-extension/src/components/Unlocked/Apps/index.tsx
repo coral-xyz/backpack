@@ -110,7 +110,22 @@ function PluginGrid() {
         })}
       </Grid>
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        <PluginDisplay pluginUrl={pluginUrl!} />
+        <PluginDisplay
+          pluginUrl={pluginUrl!}
+          closePlugin={() => {
+            setOpenDrawer(false);
+            setTimeout(() => {
+              searchParams.delete("plugin");
+              const newUrl = `${location.pathname}?${searchParams.toString()}`;
+              background
+                .request({
+                  method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+                  params: [newUrl],
+                })
+                .catch(console.error);
+            }, 1000);
+          }}
+        />
       </WithDrawer>
     </>
   );
