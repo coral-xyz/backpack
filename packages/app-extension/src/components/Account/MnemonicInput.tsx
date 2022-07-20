@@ -1,4 +1,3 @@
-import { validateMnemonic } from "bip39";
 import { Tooltip } from "@mui/material";
 import { useState, useEffect } from "react";
 import makeStyles from "@mui/styles/makeStyles";
@@ -17,7 +16,10 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from "../common";
-import { UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE } from "@coral-xyz/common";
+import {
+  UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
+  UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
+} from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 
 const useStyles = makeStyles((theme: any) => ({
@@ -113,11 +115,16 @@ export function MnemonicInput({
   // Validate the mnemonic and call the onNext handler.
   //
   const next = () => {
-    if (!validateMnemonic(mnemonic)) {
-      setError("Invalid secret recovery phrase");
-      return;
-    }
-    onNext(mnemonic);
+    background
+      .request({
+        method: UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
+        params: [mnemonic],
+      })
+      .then((isValid: boolean) => {
+        return isValid
+          ? onNext(mnemonic)
+          : setError("Invalid secret recovery phrase");
+      });
   };
 
   //

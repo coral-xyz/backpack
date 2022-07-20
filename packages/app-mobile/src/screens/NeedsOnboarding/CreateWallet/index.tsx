@@ -2,6 +2,7 @@ import {
   DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
+  UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import React, { useState } from "react";
@@ -25,23 +26,22 @@ const ExistingWallet = () => {
   const [recoveryPhrase, setRecoveryPhrase] = useState("");
 
   return recoveryPhrase ? (
-    <NewWallet />
+    <NewWallet recoveryPhrase={recoveryPhrase} />
   ) : (
     <ImportRecoveryPhrase setRecoveryPhrase={setRecoveryPhrase} />
   );
 };
 
-const NewWallet = () => {
+const NewWallet = ({ recoveryPhrase }: { recoveryPhrase?: string }) => {
   const [password, setPassword] = useState("");
-  const recoveryPhrase = useRequest(
-    UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
-    128
-  );
+  const _recoveryPhrase =
+    recoveryPhrase ||
+    useRequest(UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE, 128);
 
   return password ? (
     <ShowSecretRecoveryPhrase
       password={password}
-      recoveryPhrase={recoveryPhrase!}
+      recoveryPhrase={_recoveryPhrase!}
     />
   ) : (
     <CreatePassword setPassword={setPassword} />
@@ -58,14 +58,19 @@ const ImportRecoveryPhrase = ({ setRecoveryPhrase }: any) => {
     formState: { errors },
     setError,
   } = useForm<ImportRecoveryPhraseFormData>();
+  const background = useBackgroundClient();
 
   const onSubmit = async ({ recoveryPhrase }: ImportRecoveryPhraseFormData) => {
-    // TODO: validate recovery phrase in background script
-    if (recoveryPhrase.split(" ").length !== 12) {
-      setError("recoveryPhrase", { message: "Invalid recovery phrase" });
-      return;
-    }
-    setRecoveryPhrase(recoveryPhrase);
+    background
+      .request({
+        method: UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
+        params: [recoveryPhrase],
+      })
+      .then((isValid: boolean) => {
+        return isValid
+          ? setRecoveryPhrase(recoveryPhrase)
+          : setError("recoveryPhrase", { message: "Invalid recovery phrase" });
+      });
   };
 
   return (

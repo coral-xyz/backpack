@@ -22,6 +22,7 @@ import {
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
+  UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
   UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC,
   UI_RPC_METHOD_KEYRING_RESET_MNEMONIC,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
@@ -125,6 +126,8 @@ async function handle<T = any>(
       return await handleKeyringImportSecretKey(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY:
       return handleKeyringExportSecretKey(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC:
+      return await handleValidateMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC:
       return handleKeyringExportMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_RESET_MNEMONIC:
@@ -379,6 +382,14 @@ function handleKeyringExportSecretKey(
   pubkey: string
 ): RpcResponse<string> {
   const resp = ctx.backend.keyringExportSecretKey(password, pubkey);
+  return [resp];
+}
+
+function handleValidateMnemonic(
+  ctx: Context<Backend>,
+  mnemonic: string
+): RpcResponse<boolean> {
+  const resp = ctx.backend.validateMnemonic(mnemonic);
   return [resp];
 }
 
