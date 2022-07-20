@@ -90,8 +90,9 @@ function AppInner() {
   const isDead = false;
   const tokenAccounts = useDegodTokens()!;
   const estimatedRewards = useEstimatedRewards();
-  console.log("loding ehre", tokenAccounts, estimatedRewards);
+
   if (tokenAccounts === null) return <View></View>;
+
   return (
     <View
       style={{

@@ -87,6 +87,12 @@ function PluginGrid() {
 
   const closePlugin = () => {
     setOpenDrawer(false);
+
+    // Bit of a hack. Would be better to have a callback on the drawer animation closing.
+    // Also, there's a potential race condition between this request persisting
+    // and the user navigating to another url before that completing. In practice,
+    // it's not a problem because this happens so quickly relative to the next
+    // user action. If there's a bug, investigate this. :)
     setTimeout(() => {
       searchParams.delete("plugin");
       const newUrl = `${location.pathname}?${searchParams.toString()}`;
@@ -96,7 +102,7 @@ function PluginGrid() {
           params: [newUrl],
         })
         .catch(console.error);
-    }, 1000);
+    }, 100);
   };
 
   return (
