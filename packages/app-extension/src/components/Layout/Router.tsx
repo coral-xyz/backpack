@@ -1,4 +1,5 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { WithDrawer } from "./Drawer";
 import {
   useLocation,
   useSearchParams,
@@ -67,9 +68,30 @@ function TokenPage() {
   return <NavScreen component={<Token {...props} />} />;
 }
 
+let DID_LOAD = false;
 function PluginPage() {
+  console.log("PLUGIN PAGE", DID_LOAD);
+  const oldDidLoad = DID_LOAD;
+  DID_LOAD = true;
+  const history = useLocation();
+  console.log("HISTORY", history);
+  const [openDrawer, setOpenDrawer] = useState(true);
+  /*
+	useEffect(() => {
+		if (oldDidLoad) {
+			setTimeout(() => {
+				setOpenDrawer(true);
+			}, 500);
+		}
+	}, []);
+	*/
+
   const { props } = useDecodedSearchParams<SearchParamsFor.Plugin>();
-  return <NavScreen component={<PluginDisplay {...props} />} />;
+  return (
+    <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+      <PluginDisplay {...props} />
+    </WithDrawer>
+  );
 }
 
 function SimulatorPage() {
@@ -96,6 +118,7 @@ function ExitAppButton() {
 }
 
 function NavScreen({ component }: { component: React.ReactNode }) {
+  DID_LOAD = true;
   const { title, isRoot, pop } = useNavigation();
   const { style, navButtonLeft, navButtonRight } = useNavBar();
 

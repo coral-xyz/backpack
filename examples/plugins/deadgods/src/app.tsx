@@ -19,8 +19,18 @@ import {
 } from "./utils";
 
 export function App() {
+  const theme = useTheme();
   const tokenAccounts = useDegodTokens();
-  return tokenAccounts === null ? <_Loading /> : <_App />;
+  return (
+    <View
+      style={{
+        height: "100%",
+        backgroundColor: theme.custom.colors.background,
+      }}
+    >
+      {tokenAccounts === null ? <_Loading /> : <_App />}
+    </View>
+  );
 }
 
 function InnerTab2() {
