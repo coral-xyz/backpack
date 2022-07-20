@@ -123,21 +123,19 @@ function QueryLocked() {
   const keyringStoreState = useKeyringStoreState();
   const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
 
+  const onUnlock = async () => {
+    await background.response({
+      id: requestId,
+      result: true,
+    });
+    window.close();
+  };
+
   // Wallet is unlocked so close the window. We're done.
   if (!isLocked) {
-    return <></>;
+    onUnlock();
   }
-  return (
-    <LockedBootstrap
-      onUnlock={async () => {
-        await background.response({
-          id: requestId,
-          result: true,
-        });
-        window.close();
-      }}
-    />
-  );
+  return <LockedBootstrap onUnlock={onUnlock} />;
 }
 
 function QueryApproval() {
@@ -153,7 +151,7 @@ function QueryApproval() {
 
   // Origin is found so close the window. We're done.
   if (found) {
-    return <></>;
+    window.close();
   }
   return (
     <ApproveOrigin
