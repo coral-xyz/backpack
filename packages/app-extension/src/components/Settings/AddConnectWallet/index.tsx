@@ -1,123 +1,98 @@
-import { useState } from "react";
-import { useCustomTheme } from "@coral-xyz/themes";
-import { AddConnectWalletMenu } from "./AddConnectWalletMenu";
-import { ImportSecretKey } from "../../Settings";
-import { WithDrawer } from "../../Layout/Drawer";
-import { WithNav, NavBackButton } from "../../Layout/Nav";
+import { useEffect } from "react";
+import { Box, Grid } from "@mui/material";
+import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
 import {
+  openConnectHardware,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
 } from "@coral-xyz/common";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { useBackgroundClient } from "@coral-xyz/recoil";
+import { ActionCard } from "../../Layout/ActionCard";
+import { HardwareWalletIcon } from "../../Icon";
+import { Header, SubtextParagraph } from "../../common";
+import { useNavStack } from "../../Layout/NavStack";
+import { useDrawerContext } from "../../Layout/Drawer";
 
-export type AddConnectFlows = "create-new-wallet" | "import-wallet" | null;
-
-export function AddConnectWallet({
-  onAddSuccess,
-  close,
-}: {
-  onAddSuccess: (publicKey?: string) => void;
-  close: () => void;
-}) {
-  const theme = useCustomTheme();
+export function AddConnectWalletMenu() {
+  const { close } = useDrawerContext();
+  const nav = useNavStack();
   const background = useBackgroundClient();
-  const [addConnectFlow, setAddConnectFlow] = useState<AddConnectFlows>(null);
-  const [step, setStep] = useState(0);
+  const theme = useCustomTheme();
 
-  // const nextStep = () => setStep(step + 1);
-  const prevStep = () => {
-    if (addConnectFlow === null) {
-      // If we are at the first step, close
-      close();
-    } else if (step === 0) {
-      // First step in one of the wallet flows, go back to the add connect menu
-      setAddConnectFlow(null);
-    } else {
-      // Previous step in flow
-      setStep(step - 1);
-    }
-  };
-
-  //
-  // Add a new pubkey based on an existing mnemonic. Note that this is different
-  // to the create wallet flow in the onboarding welcome, which imports the first
-  // account from a randomly generated mnemonic.
-  //
-  const createNewWallet = async () => {
-    const newPubkey = await background.request({
-      method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-      params: [],
+  useEffect(() => {
+    const prevStyle = nav.style;
+    const prevContentStyle = nav.contentStyle;
+    nav.setStyle({
+      backgroundColor: theme.custom.colors.nav,
     });
-
-    await background.request({
-      method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-      params: [newPubkey],
+    nav.setContentStyle({
+      backgroundColor: theme.custom.colors.nav,
     });
-  };
-
-  const secretKeyImport = async (
-    secretKey: string,
-    name: string
-  ): Promise<string> => {
-    return background.request({
-      method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-      params: [secretKey, name],
-    });
-  };
-
-  const onSelectAction = (action: AddConnectFlows) => {
-    if (action === "create-new-wallet") {
-      createNewWallet()
-        .then(() => onAddSuccess())
-        .catch(console.error);
-    } else {
-      setAddConnectFlow(action);
-    }
-  };
-
-  //
-  // Flow for importing an existing mnemonic. The user can input a 12 or
-  // 24 word mnemonic and select the accounts they want to import, as well
-  // as set a password.
-  //
-  const importWalletFlow = [
-    <ImportSecretKey
-      onNext={async (secretKey: string, name: string) => {
-        const publicKey = await secretKeyImport(secretKey, name);
-        onAddSuccess(publicKey);
-      }}
-    />,
-  ];
-
-  let renderComponent;
-  if (addConnectFlow === null || addConnectFlow === "create-new-wallet") {
-    renderComponent = (
-      <AddConnectWalletMenu onSelect={(action) => onSelectAction(action)} />
-    );
-  } else {
-    renderComponent = importWalletFlow[step] || null;
-  }
+    return () => {
+      nav.setStyle(prevStyle);
+      nav.setContentStyle(prevContentStyle);
+    };
+  }, [nav.setContentStyle]);
 
   return (
-    <WithDrawer
-      openDrawer={true}
-      setOpenDrawer={(open: boolean) => {
-        if (!open) close();
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        backgroundColor: theme.custom.colors.nav,
       }}
     >
-      <WithNav
-        navButtonLeft={<NavBackButton onClick={prevStep} />}
-        navbarStyle={{
-          backgroundColor: theme.custom.colors.nav,
-        }}
-        navContentStyle={{
-          backgroundColor: theme.custom.colors.nav,
-          height: "100%",
-        }}
-      >
-        {renderComponent}
-      </WithNav>
-    </WithDrawer>
+      <Box sx={{ margin: "24px" }}>
+        <Header text="Add or connect a wallet" />
+        <SubtextParagraph>Add new wallets to Backpack.</SubtextParagraph>
+      </Box>
+      <Box sx={{ margin: "0 16px" }}>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <ActionCard
+              icon={<AddCircle />}
+              text="Create a new wallet"
+              onClick={async () => {
+                const newPubkey = await background.request({
+                  method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+                  params: [],
+                });
+
+                await background.request({
+                  method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+                  params: [newPubkey],
+                });
+
+                close();
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <ActionCard
+              icon={<ArrowCircleDown />}
+              text="Import an existing wallet"
+              onClick={() => nav.push("import-secret-key")}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <ActionCard
+              icon={
+                <HardwareWalletIcon
+                  fill="#fff"
+                  style={{
+                    width: "24px",
+                    height: "24px",
+                  }}
+                />
+              }
+              text="Connect a hardware wallet"
+              onClick={openConnectHardware}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+    </div>
   );
 }

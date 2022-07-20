@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { styles } from "@coral-xyz/themes";
 import {
   getLogger,
@@ -226,10 +227,43 @@ function FullApp() {
   const isLocked =
     !needsOnboarding && keyringStoreState === KeyringStoreStateEnum.Locked;
 
-  if (isLocked) {
-    return <LockedBootstrap />;
+  console.log("rendering is locked", isLocked);
+
+  return (
+    <AnimatePresence initial={false}>
+      <WithLockMotion key={isLocked ? "locked" : "unlocked"}>
+        {isLocked && <LockedBootstrap />}
+        {!isLocked && <Unlocked />}
+      </WithLockMotion>
+    </AnimatePresence>
+  );
+}
+
+function WithLockMotion({ children, key }: any) {
+  // TODO: Remove this if statement to enable animation on lock/unlock.
+  //       Currently here because there's a re-render flicker the first
+  //       time you unlock the app.
+  if (true) {
+    return children;
   }
-  return <Unlocked />;
+  return (
+    <motion.div
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0,
+      }}
+      key={key}
+      variants={MOTION_VARIANTS}
+      initial={"initial"}
+      animate={"animate"}
+      exit={"exit"}
+    >
+      {children}
+    </motion.div>
+  );
 }
 
 function LockedBootstrap({ onUnlock }: any) {
@@ -247,7 +281,6 @@ export function BlankApp() {
 }
 
 const useStyles = styles((theme) => {
-  console.log("THEME HERE", theme);
   return {
     appContainer: {
       width: `${EXTENSION_WIDTH}px`,
@@ -260,3 +293,17 @@ const useStyles = styles((theme) => {
     },
   };
 });
+
+const MOTION_VARIANTS = {
+  initial: {
+    opacity: 0,
+  },
+  animate: {
+    opacity: 1,
+    transition: { delay: 0.09 },
+  },
+  exit: {
+    transition: { delay: 0.09, duration: 0.1 },
+    opacity: 0,
+  },
+};

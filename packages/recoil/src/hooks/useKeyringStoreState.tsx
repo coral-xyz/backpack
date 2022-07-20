@@ -5,7 +5,7 @@ import * as atoms from "../atoms";
 import { useBackgroundClient } from "./useBackgroundClient";
 
 export function useKeyringStoreState(): KeyringStoreState {
-  return useRecoilState(atoms.keyringStoreState)[0]!;
+  return useRecoilValue(atoms.keyringStoreState)!;
 }
 
 export function useApprovedOrigins(): Array<string> {
