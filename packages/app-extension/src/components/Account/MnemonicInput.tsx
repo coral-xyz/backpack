@@ -1,7 +1,5 @@
-import { Tooltip } from "@mui/material";
-import { useState, useEffect } from "react";
-import makeStyles from "@mui/styles/makeStyles";
 import {
+  Tooltip,
   Box,
   Grid,
   TextField,
@@ -9,6 +7,8 @@ import {
   InputAdornment,
   Link,
 } from "@mui/material";
+import { useState, useEffect, ClipboardEventHandler } from "react";
+import makeStyles from "@mui/styles/makeStyles";
 import {
   CheckboxForm,
   Header,
@@ -267,6 +267,36 @@ export function MnemonicInputFields({
                 const newMnemonicWords = [...mnemonicWords];
                 newMnemonicWords[i] = e.target.value;
                 onChange(newMnemonicWords);
+              }
+            }}
+            onPaste={(e) => {
+              try {
+                if (onChange) {
+                  // Try to split the string on the clipboard by commas, spaces
+                  // and/or linebreaks into an array of strings. Then effectively
+                  // paste each word into each corresponding textbox.
+                  onChange(
+                    e.clipboardData
+                      .getData("text")
+                      .toLowerCase()
+                      .replace(/[,\r\n\s]/g, " ") // only keep words (all langs)
+                      .split(" ")
+                      .filter(Boolean)
+                      .reduce(
+                        (words, word, j) => {
+                          words[i + j] = word;
+                          return words;
+                        },
+                        [...mnemonicWords]
+                      )
+                      .slice(0, mnemonicWords.length) // don't paste extra words
+                  );
+                  // it worked, prevent the actual paste from happening
+                  e.preventDefault();
+                }
+              } catch (err) {
+                console.error(err);
+                // didn't work, paste as normal
               }
             }}
           />
