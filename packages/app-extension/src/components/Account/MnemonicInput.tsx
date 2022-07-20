@@ -269,36 +269,6 @@ export function MnemonicInputFields({
                 onChange(newMnemonicWords);
               }
             }}
-            onPaste={(e) => {
-              try {
-                if (onChange) {
-                  // Try to split the string on the clipboard by commas, spaces
-                  // and/or linebreaks into an array of strings. Then effectively
-                  // paste each word into each corresponding textbox.
-                  onChange(
-                    e.clipboardData
-                      .getData("text")
-                      .toLowerCase()
-                      .replace(/[,\r\n\s]/g, " ") // only keep words (all langs)
-                      .split(" ")
-                      .filter(Boolean)
-                      .reduce(
-                        (words, word, j) => {
-                          words[i + j] = word;
-                          return words;
-                        },
-                        [...mnemonicWords]
-                      )
-                      .slice(0, mnemonicWords.length) // don't paste extra words
-                  );
-                  // it worked, prevent the actual paste from happening
-                  e.preventDefault();
-                }
-              } catch (err) {
-                console.error(err);
-                // didn't work, paste as normal
-              }
-            }}
           />
         </Grid>
       ))}
