@@ -227,25 +227,19 @@ function FullApp() {
   const isLocked =
     !needsOnboarding && keyringStoreState === KeyringStoreStateEnum.Locked;
 
-  console.log("rendering is locked", isLocked);
-
   return (
     <AnimatePresence initial={false}>
       <WithLockMotion key={isLocked ? "locked" : "unlocked"}>
-        {isLocked && <LockedBootstrap />}
-        {!isLocked && <Unlocked />}
+        <Suspense fallback={<div style={{ display: "none" }}></div>}>
+          {isLocked && <LockedBootstrap />}
+          {!isLocked && <Unlocked />}
+        </Suspense>
       </WithLockMotion>
     </AnimatePresence>
   );
 }
 
 function WithLockMotion({ children, key }: any) {
-  // TODO: Remove this if statement to enable animation on lock/unlock.
-  //       Currently here because there's a re-render flicker the first
-  //       time you unlock the app.
-  if (true) {
-    return children;
-  }
   return (
     <motion.div
       style={{
