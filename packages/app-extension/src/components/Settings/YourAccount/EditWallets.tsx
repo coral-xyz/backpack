@@ -4,12 +4,10 @@ import { Add, MoreHoriz } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 import { useEffect } from "react";
 import { List, ListItem, walletAddressDisplay } from "../../common";
-import { useDrawerContext } from "../../Layout/Drawer";
 import { useNavStack } from "../../Layout/NavStack";
 
 export function EditWallets() {
   const theme = useCustomTheme();
-  const { close } = useDrawerContext();
   const nav = useNavStack();
   const blockchains = useBlockchains();
   const wallets = useWalletPublicKeys();
