@@ -2,6 +2,7 @@ import {
   DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
+  UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import React, { useState } from "react";
@@ -58,14 +59,19 @@ const ImportRecoveryPhrase = ({ setRecoveryPhrase }: any) => {
     formState: { errors },
     setError,
   } = useForm<ImportRecoveryPhraseFormData>();
+  const background = useBackgroundClient();
 
   const onSubmit = async ({ recoveryPhrase }: ImportRecoveryPhraseFormData) => {
-    // TODO: validate recovery phrase in background script
-    if (recoveryPhrase.split(" ").length !== 12) {
-      setError("recoveryPhrase", { message: "Invalid recovery phrase" });
-      return;
-    }
-    setRecoveryPhrase(recoveryPhrase);
+    background
+      .request({
+        method: UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
+        params: [recoveryPhrase],
+      })
+      .then((isValid: boolean) => {
+        return isValid
+          ? setRecoveryPhrase(recoveryPhrase)
+          : setError("recoveryPhrase", { message: "Invalid recovery phrase" });
+      });
   };
 
   return (
