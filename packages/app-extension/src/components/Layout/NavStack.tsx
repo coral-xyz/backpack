@@ -189,7 +189,7 @@ export function WithMotion({ children, id, navAction }: any) {
   );
 }
 
-const MOTION_VARIANTS = {
+export const MOTION_VARIANTS = {
   initial: {
     opacity: 0,
   },

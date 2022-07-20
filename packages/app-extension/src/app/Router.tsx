@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { styles } from "@coral-xyz/themes";
 import {
   getLogger,
@@ -226,10 +227,46 @@ function FullApp() {
   const isLocked =
     !needsOnboarding && keyringStoreState === KeyringStoreStateEnum.Locked;
 
-  if (isLocked) {
-    return <LockedBootstrap />;
-  }
-  return <Unlocked />;
+  return (
+    <AnimatePresence initial={false}>
+      {isLocked && (
+        <motion.div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+          }}
+          key={"locked"}
+          variants={MOTION_VARIANTS}
+          initial={"initial"}
+          animate={"animate"}
+          exit={"exit"}
+        >
+          <LockedBootstrap />
+        </motion.div>
+      )}
+      {!isLocked && (
+        <motion.div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+          }}
+          key={"unlocked"}
+          variants={MOTION_VARIANTS}
+          initial={"initial"}
+          animate={"animate"}
+          exit={"exit"}
+        >
+          <Unlocked />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 }
 
 function LockedBootstrap({ onUnlock }: any) {
@@ -247,7 +284,6 @@ export function BlankApp() {
 }
 
 const useStyles = styles((theme) => {
-  console.log("THEME HERE", theme);
   return {
     appContainer: {
       width: `${EXTENSION_WIDTH}px`,
@@ -260,3 +296,17 @@ const useStyles = styles((theme) => {
     },
   };
 });
+
+const MOTION_VARIANTS = {
+  initial: {
+    opacity: 0,
+  },
+  animate: {
+    opacity: 1,
+    transition: { delay: 0.09 },
+  },
+  exit: {
+    transition: { delay: 0.09, duration: 0.1 },
+    opacity: 0,
+  },
+};

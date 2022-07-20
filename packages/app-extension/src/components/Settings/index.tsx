@@ -196,16 +196,13 @@ function SettingsMenu() {
 function _SettingsContent() {
   const nav = useNavStack();
   const { close } = useDrawerContext();
-  const keyringStoreState = useKeyringStoreState();
   return (
     <div>
       <AvatarHeader />
-      {keyringStoreState === KeyringStoreStateEnum.Unlocked && (
-        <WalletList
-          onAddConnectWallet={() => nav.push("add-connect-wallet")}
-          close={close}
-        />
-      )}
+      <WalletList
+        onAddConnectWallet={() => nav.push("add-connect-wallet")}
+        close={close}
+      />
       <SettingsList close={close} />
     </div>
   );
@@ -346,8 +343,7 @@ function SettingsList({ close }: { close: () => void }) {
         method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
         params: [],
       })
-      .catch(console.error)
-      .then(() => close());
+      .catch(console.error);
   };
 
   const settingsMenu = [
