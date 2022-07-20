@@ -3,7 +3,7 @@ import {
   List as MuiList,
   ListItem as MuiListItem,
 } from "@mui/material";
-import { ArrowForwardIos, Launch } from "@mui/icons-material";
+import { ChevronRight, CallMade, Launch } from "@mui/icons-material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 
 const useStyles = styles(() => ({
@@ -92,10 +92,9 @@ export function PushDetail() {
         justifyContent: "center",
       }}
     >
-      <ArrowForwardIos
+      <ChevronRight
         style={{
           color: theme.custom.colors.secondary,
-          fontSize: "14px",
         }}
       />
     </div>
@@ -112,10 +111,9 @@ export function LaunchDetail() {
         justifyContent: "center",
       }}
     >
-      <Launch
+      <CallMade
         style={{
           color: theme.custom.colors.secondary,
-          fontSize: "14px",
         }}
       />
     </div>
