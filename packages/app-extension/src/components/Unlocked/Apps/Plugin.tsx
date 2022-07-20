@@ -1,11 +1,19 @@
+import { useSearchParams } from "react-router-dom";
 import { Button, Divider } from "@mui/material";
 import { PluginRenderer } from "@coral-xyz/react-xnft-renderer";
-import { useNavigation, usePlugins, useTablePlugins } from "@coral-xyz/recoil";
+import {
+  useNavigation,
+  useBackgroundClient,
+  usePlugins,
+  useTablePlugins,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
+import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
 import { PowerIcon, MoreIcon } from "../../Icon";
 
 export function PluginDisplay({ pluginUrl }: SearchParamsFor.Plugin["props"]) {
+  const theme = useCustomTheme();
   const plugins = usePlugins();
   const p = plugins.find((p) => p.iframeUrl === encodeURI(pluginUrl));
 
@@ -17,14 +25,12 @@ export function PluginDisplay({ pluginUrl }: SearchParamsFor.Plugin["props"]) {
     throw new Error("unable to find plugin");
   }
 
+  // TODO: splash loading page.
   return (
     <div
       style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
+        height: "100%",
+        backgroundColor: theme.custom.colors.background,
       }}
     >
       <PluginControl />
@@ -45,8 +51,20 @@ export function PluginTableDetailDisplay({
 }
 
 function PluginControl() {
-  const { pop } = useNavigation();
+  const background = useBackgroundClient();
+  const [searchParams] = useSearchParams();
   const theme = useCustomTheme();
+
+  const closePlugin = () => {
+    const newUrl;
+    background
+      .request({
+        method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+        params: [newUrl],
+      })
+      .catch(console.error);
+  };
+
   return (
     <div
       style={{
@@ -54,7 +72,7 @@ function PluginControl() {
         height: "36px",
         right: 16,
         top: 10,
-        zIndex: 2,
+        zIndex: 2000,
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
@@ -103,7 +121,7 @@ function PluginControl() {
         </div>
         <Button
           disableRipple
-          onClick={() => pop()}
+          onClick={() => closePlugin()}
           style={{
             flex: 1,
             height: "30px",

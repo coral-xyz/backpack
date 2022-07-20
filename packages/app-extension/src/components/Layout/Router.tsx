@@ -1,5 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
-import { WithDrawer } from "./Drawer";
+import React from "react";
 import {
   useLocation,
   useSearchParams,
@@ -37,7 +36,6 @@ export function Router() {
         <Route path="/balances" element={<BalancesPage />} />
         <Route path="/balances/token" element={<TokenPage />} />
         <Route path="/apps" element={<AppsPage />} />
-        <Route path="/apps/plugins" element={<PluginPage />} />
         <Route path="/apps/simulator" element={<SimulatorPage />} />
         <Route path="/nfts" element={<NftsPage />} />
         <Route path="*" element={<Redirect />} />
@@ -68,30 +66,9 @@ function TokenPage() {
   return <NavScreen component={<Token {...props} />} />;
 }
 
-let DID_LOAD = false;
 function PluginPage() {
-  console.log("PLUGIN PAGE", DID_LOAD);
-  const oldDidLoad = DID_LOAD;
-  DID_LOAD = true;
-  const history = useLocation();
-  console.log("HISTORY", history);
-  const [openDrawer, setOpenDrawer] = useState(true);
-  /*
-	useEffect(() => {
-		if (oldDidLoad) {
-			setTimeout(() => {
-				setOpenDrawer(true);
-			}, 500);
-		}
-	}, []);
-	*/
-
   const { props } = useDecodedSearchParams<SearchParamsFor.Plugin>();
-  return (
-    <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-      <PluginDisplay {...props} />
-    </WithDrawer>
-  );
+  return <PluginDisplay {...props} />;
 }
 
 function SimulatorPage() {
@@ -118,7 +95,6 @@ function ExitAppButton() {
 }
 
 function NavScreen({ component }: { component: React.ReactNode }) {
-  DID_LOAD = true;
   const { title, isRoot, pop } = useNavigation();
   const { style, navButtonLeft, navButtonRight } = useNavBar();
 
@@ -182,14 +158,10 @@ function useNavBar() {
 
   if (isRoot) {
     navButtonRight = <SettingsButton />;
-  } else if (
-    pathname === "/balances/token" ||
-    pathname === "/apps/plugins" ||
-    pathname === "/apps/simulator"
-  ) {
+  } else if (pathname === "/balances/token" || pathname === "/apps/simulator") {
     navButtonRight = null;
   }
-  if (pathname === "/apps/plugins" || pathname === "/apps/simulator") {
+  if (pathname === "/apps/simulator") {
     navButtonLeft = <ExitAppButton />;
     navStyle = {
       backgroundColor: theme.custom.colors.nav,

@@ -439,6 +439,33 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async navigationCurrentUrlUpdate(url: string): Promise<string> {
+    // Get the tab nav.
+    const currNav = await getNav();
+    if (!currNav) {
+      throw new Error("invariant violation");
+    }
+
+    // Update the active tab's nav stack.
+    const navData = currNav.data[currNav.activeTab];
+    navData.urls[navData.urls.length - 1] = url;
+    currNav.data[currNav.activeTab] = navData;
+
+    // Save the change.
+    await setNav(currNav);
+
+    // Notify listeners.
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+      data: {
+        url,
+        nav: "tab",
+      },
+    });
+
+    return SUCCESS_RESPONSE;
+  }
+
   async darkModeRead(): Promise<boolean> {
     // todo
     return true;

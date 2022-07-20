@@ -111,6 +111,8 @@ export const UI_RPC_METHOD_KEYRING_RESET_MNEMONIC = "reset-mnemonic";
 export const UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE = "autolock-update";
 export const UI_RPC_METHOD_NAVIGATION_PUSH = "navigation-push";
 export const UI_RPC_METHOD_NAVIGATION_POP = "navigation-pop";
+export const UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE =
+  "navigation-current-url-update";
 export const UI_RPC_METHOD_NAVIGATION_READ = "navigation-read";
 export const UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE =
   "navigation-active-tab-update";
@@ -208,7 +210,6 @@ export const TAB_APPS = "apps";
 export const TAB_SET = new Set([TAB_BALANCES, TAB_SWAP, TAB_NFTS, TAB_APPS]);
 
 export const NAV_COMPONENT_TOKEN = "balances/token";
-export const NAV_COMPONENT_PLUGINS = "apps/plugins";
 export const NAV_COMPONENT_SIMULATOR = "apps/simulator";
 
 export const BACKEND_EVENT = "backend-event";

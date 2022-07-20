@@ -39,6 +39,7 @@ import {
   UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE,
   UI_RPC_METHOD_NAVIGATION_PUSH,
   UI_RPC_METHOD_NAVIGATION_POP,
+  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
   UI_RPC_METHOD_NAVIGATION_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
@@ -175,6 +176,8 @@ async function handle<T = any>(
       return await handleNavigationPush(ctx, params[0]);
     case UI_RPC_METHOD_NAVIGATION_POP:
       return await handleNavigationPop(ctx);
+    case UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE:
+      return await handleNavigationCurrentUrlUpdate(ctx, params[0]);
     case UI_RPC_METHOD_NAVIGATION_READ:
       return await handleNavRead(ctx);
     case UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE:
@@ -444,6 +447,14 @@ async function handleNavigationPop(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.navigationPop();
+  return [resp];
+}
+
+async function handleNavigationCurrentUrlUpdate(
+  ctx: Context<Backend>,
+  url: string
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.navigationCurrentUrlUpdate(url);
   return [resp];
 }
 

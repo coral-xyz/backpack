@@ -1,8 +1,19 @@
+import { useState, useEffect } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
+import { getSvgPath } from "figma-squircle";
 import { Grid, Button, Typography } from "@mui/material";
 import { styles } from "@coral-xyz/themes";
-import { useAppIcons, useNavigation } from "@coral-xyz/recoil";
-import { NAV_COMPONENT_PLUGINS } from "@coral-xyz/common";
-import { getSvgPath } from "figma-squircle";
+import {
+  useBackgroundClient,
+  useAppIcons,
+  useNavigation,
+} from "@coral-xyz/recoil";
+import {
+  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+  NAV_COMPONENT_PLUGINS,
+} from "@coral-xyz/common";
+import { WithDrawer } from "../../Layout/Drawer";
+import { PluginDisplay } from "./Plugin";
 
 const ICON_WIDTH = 64;
 
@@ -41,45 +52,86 @@ export function Apps() {
 }
 
 function PluginGrid() {
+  const { push } = useNavigation();
   const plugins = useAppIcons();
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const background = useBackgroundClient();
+  const pluginUrl = searchParams.get("plugin");
+  const [openDrawer, setOpenDrawer] = useState(
+    pluginUrl !== undefined && pluginUrl !== null
+  );
+
+  useEffect(() => {
+    setOpenDrawer(pluginUrl !== undefined && pluginUrl !== null);
+  }, [pluginUrl]);
+
+  const onClickPlugin = (p: any) => {
+    // Update the URL to use the plugin.
+    //
+    // This will do two things
+    //
+    // 1. Update and persist the new url. Important so that if the user
+    //    closes/re-opens the app, the plugin opens up immediately.
+    // 2. Cause a reload of this route with the plguin url in the search
+    //    params, which will trigger the drawer to activate.
+    //
+    const newUrl = `${location.pathname}${
+      location.search
+    }&plugin=${encodeURIComponent(p.url)}`;
+    background
+      .request({
+        method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+        params: [newUrl],
+      })
+      .catch(console.error);
+  };
+
   return (
-    <Grid
-      container
-      style={{
-        paddingLeft: "20px",
-        paddingRight: "20px",
-        marginBottom: "24px",
-      }}
-    >
-      {plugins.map((p: any, idx: number) => {
-        return (
-          <Grid
-            item
-            key={p.url}
-            xs={3}
-            style={{
-              marginTop: idx >= 4 ? "24px" : 0,
-            }}
-          >
-            <PluginIcon plugin={p} />
-          </Grid>
-        );
-      })}
-    </Grid>
+    <>
+      <Grid
+        container
+        style={{
+          paddingLeft: "20px",
+          paddingRight: "20px",
+          marginBottom: "24px",
+        }}
+      >
+        {plugins.map((p: any, idx: number) => {
+          return (
+            <Grid
+              item
+              key={p.url}
+              xs={3}
+              style={{
+                marginTop: idx >= 4 ? "24px" : 0,
+              }}
+            >
+              <PluginIcon plugin={p} onClick={() => onClickPlugin(p)} />
+            </Grid>
+          );
+        })}
+      </Grid>
+      <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+        <PluginDisplay pluginUrl={pluginUrl!} />
+      </WithDrawer>
+    </>
   );
 }
 
-function PluginIcon({ plugin }: any) {
-  const { push } = useNavigation();
-  const onClick = () => {
+/*
+	const onPluginDidLoad = (plugin: any) => {
     push({
       title: plugin.title,
       componentId: plugin.componentId
         ? plugin.componentId
-        : NAV_COMPONENT_PLUGINS,
+								 : NAV_COMPONENT_PLUGINS,
       componentProps: { pluginUrl: plugin.url },
     });
-  };
+	};
+*/
+
+function PluginIcon({ plugin, onClick }: any) {
   return (
     <AppIcon title={plugin.title} iconUrl={plugin.iconUrl} onClick={onClick} />
   );
