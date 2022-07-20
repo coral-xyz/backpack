@@ -41,6 +41,7 @@ const useStyles = styles((theme) => ({
   },
   drawerPaper: {
     height: "100%",
+    background: "transparent",
   },
   miniDrawerRoot: {
     background: "transparent",

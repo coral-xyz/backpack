@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React from "react";
 import {
   useLocation,
   useSearchParams,
@@ -6,8 +6,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
-import { SIMULATOR_PORT } from "@coral-xyz/common";
+import { AnimatePresence } from "framer-motion";
 import {
   useDecodedSearchParams,
   useBootstrap,
@@ -21,8 +20,6 @@ import TransitEnterexitIcon from "@mui/icons-material/TransitEnterexit";
 import { Balances } from "../Unlocked/Balances";
 import { Token } from "../Unlocked/Balances/TokensWidget/Token";
 import { Apps } from "../Unlocked/Apps";
-import { PluginDisplay } from "../Unlocked/Apps/Plugin";
-import { Simulator } from "../Unlocked/Apps/Simulator";
 import { Nfts } from "../Unlocked/Nfts";
 import { SettingsButton } from "../Settings";
 import { WithNav, NavBackButton } from "./Nav";
@@ -36,8 +33,6 @@ export function Router() {
         <Route path="/balances" element={<BalancesPage />} />
         <Route path="/balances/token" element={<TokenPage />} />
         <Route path="/apps" element={<AppsPage />} />
-        <Route path="/apps/plugins" element={<PluginPage />} />
-        <Route path="/apps/simulator" element={<SimulatorPage />} />
         <Route path="/nfts" element={<NftsPage />} />
         <Route path="*" element={<Redirect />} />
       </Routes>
@@ -65,19 +60,6 @@ function AppsPage() {
 function TokenPage() {
   const { props } = useDecodedSearchParams<SearchParamsFor.Token>();
   return <NavScreen component={<Token {...props} />} />;
-}
-
-function PluginPage() {
-  const { props } = useDecodedSearchParams<SearchParamsFor.Plugin>();
-  return <NavScreen component={<PluginDisplay {...props} />} />;
-}
-
-function SimulatorPage() {
-  return (
-    <NavScreen
-      component={<Simulator pluginUrl={`http://localhost:${SIMULATOR_PORT}`} />}
-    />
-  );
 }
 
 function ExitAppButton() {
@@ -159,21 +141,8 @@ function useNavBar() {
 
   if (isRoot) {
     navButtonRight = <SettingsButton />;
-  } else if (
-    pathname === "/balances/token" ||
-    pathname === "/apps/plugins" ||
-    pathname === "/apps/simulator"
-  ) {
+  } else if (pathname === "/balances/token") {
     navButtonRight = null;
-  }
-  if (pathname === "/apps/plugins" || pathname === "/apps/simulator") {
-    navButtonLeft = <ExitAppButton />;
-    navStyle = {
-      backgroundColor: theme.custom.colors.nav,
-      height: "45px",
-      borderBottom: "none",
-      fontSize: "16px",
-    };
   }
 
   return {

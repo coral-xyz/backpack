@@ -376,12 +376,12 @@ export class Backend {
     }
     nav.data[nav.activeTab].urls.push(url);
     await setNav(nav);
+    url = setSearchParam(url, "nav", "push");
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
       data: {
         url,
-        nav: "push",
       },
     });
 
@@ -397,13 +397,13 @@ export class Backend {
     await setNav(nav);
 
     const urls = nav.data[nav.activeTab].urls;
-    const url = urls[urls.length - 1];
+    let url = urls[urls.length - 1];
+    url = setSearchParam(url, "nav", "pop");
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
       data: {
         url,
-        nav: "pop",
       },
     });
 
@@ -431,7 +431,35 @@ export class Backend {
     };
     await setNav(nav);
     const navData = nav.data[activeTab];
-    const url = navData.urls[navData.urls.length - 1];
+    let url = navData.urls[navData.urls.length - 1];
+    url = setSearchParam(url, "nav", "tab");
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+      data: {
+        url,
+      },
+    });
+
+    return SUCCESS_RESPONSE;
+  }
+
+  async navigationCurrentUrlUpdate(url: string): Promise<string> {
+    // Get the tab nav.
+    const currNav = await getNav();
+    if (!currNav) {
+      throw new Error("invariant violation");
+    }
+
+    // Update the active tab's nav stack.
+    const navData = currNav.data[currNav.activeTab];
+    navData.urls[navData.urls.length - 1] = url;
+    currNav.data[currNav.activeTab] = navData;
+
+    // Save the change.
+    await setNav(currNav);
+
+    // Notify listeners.
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
       data: {
@@ -511,3 +539,11 @@ export class Backend {
 
 export const SUCCESS_RESPONSE = "success";
 const defaultNav = makeDefaultNav();
+
+function setSearchParam(url: string, key: string, value: string) {
+  const [path, search] = url.split("?");
+  const searchParams = new URLSearchParams(search);
+  searchParams.delete(key);
+  searchParams.append(key, value);
+  return `${path}?${search}`;
+}
