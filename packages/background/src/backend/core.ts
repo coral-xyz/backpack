@@ -352,6 +352,10 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async keyringAutolockRead(): Promise<number> {
+    return await this.keyringStore.autoLockRead();
+  }
+
   async keyringAutolockUpdate(secs: number): Promise<string> {
     await this.keyringStore.autoLockUpdate(secs);
     return SUCCESS_RESPONSE;
