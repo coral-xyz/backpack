@@ -231,16 +231,10 @@ function FullApp() {
 
   return (
     <AnimatePresence initial={false}>
-      {isLocked && (
-        <WithLockMotion key={"locked"}>
-          <LockedBootstrap />
-        </WithLockMotion>
-      )}
-      {!isLocked && (
-        <WithLockMotion key={"unlocked"}>
-          <Unlocked />
-        </WithLockMotion>
-      )}
+      <WithLockMotion key={isLocked ? "locked" : "unlocked"}>
+        {isLocked && <LockedBootstrap />}
+        {!isLocked && <Unlocked />}
+      </WithLockMotion>
     </AnimatePresence>
   );
 }

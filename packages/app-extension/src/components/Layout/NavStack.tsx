@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useKeyringStoreState } from "@coral-xyz/recoil";
 import { WithNav, NavBackButton } from "./Nav";
 
 /**
@@ -54,11 +55,9 @@ function NavStackInner({
   if (!title) {
     title = titleDefault;
   }
-
-  // TODO: plumb through the nav action.
   return (
     <AnimatePresence initial={false}>
-      <WithMotion id={activeRoute.name} navAction={"push"}>
+      <WithMotion id={activeRoute.name} navAction={activeRoute.navAction}>
         <WithNav
           title={title}
           navButtonLeft={navButtonLeft}
@@ -79,7 +78,7 @@ function NavStackProvider({
   style,
   children,
 }: any) {
-  const [stack, setStack] = useState([initialRoute]);
+  const [stack, setStack] = useState([{ navAction: "push", ...initialRoute }]);
   const [titleOverride, setTitleOverride] = useState(initialRoute.title);
   const [navButtonRightOverride, setNavButtonRightOverride] =
     useState<any>(navButtonRight);
@@ -87,11 +86,13 @@ function NavStackProvider({
   const [contentStyle, setContentStyle] = useState({});
 
   const push = (route: string, props: any) => {
-    setStack([...stack, { name: route, props }]);
+    setStack([...stack, { name: route, props, navAction: "push" }]);
   };
   const pop = () => {
-    const newStack = [...stack];
-    setStack(newStack.slice(0, newStack.length - 1));
+    let newStack = [...stack];
+    newStack = newStack.slice(0, newStack.length - 1);
+    newStack[newStack.length - 1]["navAction"] = "pop";
+    setStack(newStack);
   };
   const toRoot = () => {
     setStack([stack[0]]);
@@ -133,7 +134,7 @@ type RoutedNavStackOptions = {
 };
 
 type NavStackContext = {
-  activeRoute: { name: string; props?: any };
+  activeRoute: { name: string; props?: any; navAction?: "push" | "pop" };
   push: (route: string, props?: any) => void;
   pop: () => void;
   isRoot: boolean;
@@ -165,7 +166,6 @@ export function NavStackScreen({
   name: string;
   component: (props: any) => React.ReactNode;
 }) {
-  // todo
   return <></>;
 }
 
