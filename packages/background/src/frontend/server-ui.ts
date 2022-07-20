@@ -1,13 +1,12 @@
 // All RPC request handlers for requests that can be sent from the trusted
 // extension UI to the background script.
 
-import {
+import type {
   RpcRequest,
   RpcResponse,
   DerivationPath,
   Context,
   EventEmitter,
-  UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
 } from "@coral-xyz/common";
 import {
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
@@ -37,6 +36,7 @@ import {
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYNAME_UPDATE,
   UI_RPC_METHOD_PASSWORD_UPDATE,
+  UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
   UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE,
   UI_RPC_METHOD_NAVIGATION_PUSH,
   UI_RPC_METHOD_NAVIGATION_POP,
