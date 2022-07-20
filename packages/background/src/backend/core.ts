@@ -1,3 +1,4 @@
+import { validateMnemonic as _validateMnemonic } from "bip39";
 import * as bs58 from "bs58";
 import type { Commitment, SendOptions } from "@solana/web3.js";
 import { PublicKey, Transaction } from "@solana/web3.js";
@@ -351,6 +352,10 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async keyringAutolockRead(): Promise<number> {
+    return await this.keyringStore.autoLockRead();
+  }
+
   async keyringAutolockUpdate(secs: number): Promise<string> {
     await this.keyringStore.autoLockUpdate(secs);
     return SUCCESS_RESPONSE;
@@ -483,7 +488,11 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async mnemonicCreate(strength): Promise<string> {
+  validateMnemonic(mnemonic: string): boolean {
+    return _validateMnemonic(mnemonic);
+  }
+
+  async mnemonicCreate(strength: number): Promise<string> {
     return this.keyringStore.createMnemonic(strength);
   }
 
