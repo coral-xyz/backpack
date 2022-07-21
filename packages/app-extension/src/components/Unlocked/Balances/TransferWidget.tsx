@@ -1,3 +1,4 @@
+import { Blockchain } from "@coral-xyz/common";
 import { useState, useEffect } from "react";
 import { Typography } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -182,7 +183,7 @@ function SendToken() {
 }
 
 function TokenTable({ searchFilter }: { searchFilter?: string }) {
-  const blockchain = "solana";
+  const blockchain = Blockchain.SOLANA;
   const title = "Tokens";
 
   const blockchainLogo = useBlockchainLogo(blockchain);
@@ -216,7 +217,13 @@ function TokenTable({ searchFilter }: { searchFilter?: string }) {
   );
 }
 
-function TokenRow({ token, blockchain }: { token: any; blockchain: string }) {
+function TokenRow({
+  token,
+  blockchain,
+}: {
+  token: any;
+  blockchain: Blockchain;
+}) {
   const { push } = useNavStack();
   return (
     <BalancesTableRow
@@ -240,7 +247,7 @@ function TokenRow({ token, blockchain }: { token: any; blockchain: string }) {
   );
 }
 
-function _Send({ token, blockchain }: { token: any; blockchain: string }) {
+function _Send({ token, blockchain }: { token: any; blockchain: Blockchain }) {
   const { title, setTitle } = useNavStack();
   useEffect(() => {
     const prev = title;

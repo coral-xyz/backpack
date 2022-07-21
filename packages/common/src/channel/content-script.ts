@@ -95,6 +95,7 @@ export class ChannelServer {
     handlerFn: (message: any, sender: any) => Promise<RpcResponse>
   ) {
     BrowserRuntimeCommon.addEventListenerFromAnywhere(
+      // @ts-ignore
       (msg: any, sender: any, sendResponse: any) => {
         if (msg.channel === this.name) {
           const id = msg.data.id;

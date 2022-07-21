@@ -43,13 +43,13 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
   solanaConnection.handler(withContextPort(b, events, handle));
 
   const solanaConnectionInjected = (() => {
-    if (!cfg.isMobile) {
-      const s = ChannelContentScript.server(
-        CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST
-      );
-      s.handler(withContext(b, events, handleInjected));
-      return s;
-    }
+    if (cfg.isMobile) return;
+
+    const s = ChannelContentScript.server(
+      CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST
+    );
+    s.handler(withContext(b, events, handleInjected));
+    return s;
   })();
 
   return {

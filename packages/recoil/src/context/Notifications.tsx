@@ -21,12 +21,10 @@ import {
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_CONNECTION_URL_UPDATED,
-  PLUGIN_NOTIFICATION_NAVIGATION_POP,
 } from "@coral-xyz/common";
 import { KeyringStoreStateEnum, useUpdateAllSplTokenAccounts } from "../";
 import * as atoms from "../atoms";
-import { getPlugin, allPlugins, useDecodedSearchParams } from "../hooks";
-import type { SearchParamsFor } from "../hooks";
+import { allPlugins } from "../hooks";
 
 const logger = getLogger("notifications-provider");
 

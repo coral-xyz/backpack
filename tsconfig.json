@@ -12,6 +12,7 @@
     "module": "es2022",
     "moduleResolution": "node",
     "noImplicitAny": false,
+    "noImplicitReturns": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,

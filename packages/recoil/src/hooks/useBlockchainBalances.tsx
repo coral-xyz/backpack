@@ -1,42 +1,43 @@
 import { useRecoilValue } from "recoil";
+import { Blockchain } from "@coral-xyz/common";
 import * as atoms from "../atoms";
 
-export function useBlockchains(): Array<string> {
+export function useBlockchains() {
   const blockchains = useRecoilValue(atoms.blockchainKeys);
   return blockchains;
 }
 
-export function useBlockchainTokens(blockchain: string): Array<string> {
-  return useRecoilValue(atoms.blockchainTokens(blockchain));
+export function useBlockchainTokens(blockchain: Blockchain) {
+  return useRecoilValue<Blockchain>(atoms.blockchainTokens(blockchain));
 }
 
-export function useBlockchainLogo(blockchain: string): string {
+export function useBlockchainLogo(blockchain: Blockchain): string {
   switch (blockchain) {
-    case "solana":
+    case Blockchain.SOLANA:
       return "/solana.png";
     default:
       throw new Error("invariant violation");
   }
 }
 
-export function useTotal(blockchain?: string): any {
+export function useTotal(blockchain?: Blockchain): any {
   return useRecoilValue(
     blockchain ? atoms.blockchainTotal(blockchain) : atoms.total
   );
 }
 
-export function useBlockchainTotal(blockchain: string): any {
+export function useBlockchainTotal(blockchain: Blockchain): any {
   return useRecoilValue(atoms.blockchainTotal(blockchain));
 }
 
 export function useBlockchainTokenAccount(
-  blockchain: string,
+  blockchain: Blockchain,
   address: string
 ): any {
   return useRecoilValue(atoms.blockchainTokenAccounts({ blockchain, address }));
 }
 
-export function useBlockchainTokensSorted(blockchain: string) {
+export function useBlockchainTokensSorted(blockchain: Blockchain) {
   return useRecoilValue(atoms.blockchainTokensSorted(blockchain));
 }
 
@@ -44,8 +45,8 @@ export function usePriceData(mintAddress: string): any {
   return useRecoilValue(atoms.priceData(mintAddress));
 }
 
-export function useNftMetadataAddresses(blockchain: string): Array<string> {
-  if (blockchain !== "solana") {
+export function useNftMetadataAddresses(blockchain: Blockchain): Array<string> {
+  if (blockchain !== Blockchain.SOLANA) {
     throw new Error("only solana currently supported");
   }
   return useRecoilValue(atoms.solanaNftMetadataKeys);

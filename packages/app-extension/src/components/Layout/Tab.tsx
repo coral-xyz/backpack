@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { Tabs, Tab } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { useTab, useNavigation } from "@coral-xyz/recoil";
+import { useTab, useBackgroundClient } from "@coral-xyz/recoil";
 import {
   TAB_NFTS,
   TAB_APPS,
@@ -9,7 +9,6 @@ import {
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
 } from "@coral-xyz/common";
 import { BalancesIcon, GridIcon, ImageIcon } from "../Icon";
-import { useBackgroundClient } from "@coral-xyz/recoil";
 
 const TAB_HEIGHT = 64;
 

@@ -1,6 +1,7 @@
 import { useSearchParams, useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import {
+  Blockchain,
   UI_RPC_METHOD_NAVIGATION_PUSH,
   UI_RPC_METHOD_NAVIGATION_POP,
   TAB_SET,
@@ -130,7 +131,7 @@ export module SearchParamsFor {
     props: {};
   }
   export interface Token {
-    props: { address: string; blockchain: string };
+    props: { address: string; blockchain: Blockchain };
   }
 }
 

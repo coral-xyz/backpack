@@ -1,3 +1,8 @@
+import {
+  Blockchain,
+  toTitleCase,
+  NAV_COMPONENT_TOKEN,
+} from "@coral-xyz/common";
 import { useState } from "react";
 import { Typography, ListItem } from "@mui/material";
 import { styles } from "@coral-xyz/themes";
@@ -14,7 +19,6 @@ import {
   useBlockchainTokensSorted,
   useNavigation,
 } from "@coral-xyz/recoil";
-import { toTitleCase, NAV_COMPONENT_TOKEN } from "@coral-xyz/common";
 
 const useStyles = styles((theme) => ({
   blockchainFooter: {
@@ -39,7 +43,7 @@ const useStyles = styles((theme) => ({
 }));
 
 export function TokenTable() {
-  const blockchain = "solana";
+  const blockchain = Blockchain.SOLANA;
   const title = "Tokens";
   const limit = 3;
 
@@ -77,7 +81,13 @@ export function TokenTable() {
   );
 }
 
-function TokenRow({ token, blockchain }: { token: any; blockchain: string }) {
+function TokenRow({
+  token,
+  blockchain,
+}: {
+  token: any;
+  blockchain: Blockchain;
+}) {
   const { push } = useNavigation();
   return (
     <BalancesTableRow
