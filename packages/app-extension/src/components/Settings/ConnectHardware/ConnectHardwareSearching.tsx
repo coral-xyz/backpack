@@ -75,6 +75,7 @@ export function ConnectHardwareSearching({
   }, [connectFailure, navigatorStateChange]);
 
   useEffect(() => {
+    // Auto advance is transport set
     if (transport) {
       setTimeout(() => setConnectSuccess(true), 2000);
     }
@@ -83,7 +84,7 @@ export function ConnectHardwareSearching({
   if (connectFailure) {
     return <ConnectHardwareFailure onRetry={() => setConnectFailure(false)} />;
   } else if (connectSuccess) {
-    // Got device, but app is not necessarily open. Remind user to open.
+    // Got device, but Solana app is not necessarily open. Remind user to open.
     return <ConnectHardwareApp onNext={() => onNext(transport!)} />;
   }
 
@@ -113,7 +114,10 @@ export function ConnectHardwareSearching({
           justifyContent: "space-between",
         }}
       >
-        {/* This is just a placeholder next button so its always disabled */}
+        {/*
+        This is just a placeholder next button so its always disabled. Screen
+        will auto advance when transport is set.
+        */}
         <PrimaryButton label="Next" disabled={true} />
       </Box>
     </Box>
