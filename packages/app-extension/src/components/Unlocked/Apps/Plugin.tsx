@@ -1,11 +1,6 @@
-import { useSearchParams, useLocation } from "react-router-dom";
 import { Button, Divider } from "@mui/material";
 import { PluginRenderer } from "@coral-xyz/react-xnft-renderer";
-import {
-  useBackgroundClient,
-  usePlugins,
-  useTablePlugins,
-} from "@coral-xyz/recoil";
+import { usePlugins, useTablePlugins } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { PowerIcon, MoreIcon } from "../../Icon";

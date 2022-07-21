@@ -31,7 +31,6 @@ export function ConnectionMenu() {
   const background = useBackgroundClient();
   const classes = useStyles();
   const connectionUrl = useSolanaConnectionUrl();
-  const nav = useNavStack();
   const urls = Object.values(endpoints).filter((v) => typeof v === "string");
 
   const endpointKvs = Object.entries(endpoints);
