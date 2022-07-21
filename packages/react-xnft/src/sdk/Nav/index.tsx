@@ -175,7 +175,16 @@ function NavBackButton({ onClick }: { onClick: () => void }) {
         position: "relative",
       }}
     >
-      <Button onClick={onClick}>
+      <Button
+        onClick={onClick}
+        style={{
+          backgroundColor: "transparent",
+          height: "24px",
+          width: "24px",
+          minWidth: "24px",
+          padding: 0,
+        }}
+      >
         <ArrowBack fill={theme.custom.colors.secondary} />
       </Button>
     </View>

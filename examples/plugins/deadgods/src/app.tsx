@@ -67,12 +67,15 @@ function InnerTab1() {
 
 function InnerTab2() {
   const nav = useNavigation();
+
   useEffect(() => {
     nav.setTitle("nav 2");
   }, []);
+
   return (
     <View
       onClick={() => {
+        console.log("testing wtf");
         nav.push("root");
       }}
       style={{ color: "red" }}
