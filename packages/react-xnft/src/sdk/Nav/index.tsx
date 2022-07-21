@@ -1,6 +1,6 @@
 import React from "react";
 import { useTheme } from "../../Context";
-import { View, Text, Button, ScrollBar } from "../../elements";
+import { View, Text, Button, ScrollBar, NavAnimation } from "../../elements";
 import { useNavigation, NavStackProvider, NavStackOptions } from "./Context";
 import { ArrowBack } from "../Icons";
 
@@ -67,15 +67,17 @@ function NavStackInner({
   }
 
   return (
-    <WithNav
-      title={title}
-      navButtonLeft={navButtonLeft}
-      navButtonRight={navButtonRight}
-      navbarStyle={style}
-      navContentStyle={contentStyle}
-    >
-      {activeScreen.props.component({ ...(activeRoute.props ?? {}) })}
-    </WithNav>
+    <NavAnimation routeName={activeRoute.name} navAction={"push"}>
+      <WithNav
+        title={title}
+        navButtonLeft={navButtonLeft}
+        navButtonRight={navButtonRight}
+        navbarStyle={style}
+        navContentStyle={contentStyle}
+      >
+        {activeScreen.props.component({ ...(activeRoute.props ?? {}) })}
+      </WithNav>
+    </NavAnimation>
   );
 }
 

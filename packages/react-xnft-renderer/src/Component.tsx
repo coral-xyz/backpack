@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Scrollbars } from "react-custom-scrollbars";
 import type { Element } from "react-xnft";
+import { motion, AnimatePresence } from "framer-motion";
 import { NodeKind } from "react-xnft";
 import { formatUSD } from "@coral-xyz/common";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
@@ -234,6 +235,8 @@ export function Component({ viewData }) {
       return <Svg props={props} children={viewData.children} />;
     case NodeKind.Path:
       return <Path props={props} />;
+    case NodeKind.NavAnimation:
+      return <NavAnimation props={props} children={viewData.children} />;
     case NodeKind.BalancesTable:
       return (
         <BalancesTable
@@ -301,6 +304,18 @@ function Path({ props }: any) {
       clipRule={props.clipRule}
       fill={props.fill}
     />
+  );
+}
+
+function NavAnimation({ props, children }: any) {
+  console.log("NAV ANIMATION HERE", props);
+  return (
+    <AnimatePresence initial={false}>
+      <WithMotion id={props.routeName} navAction={props.navAction}>
+        {children &&
+          children.map((c: Element) => <ViewRenderer key={c.id} element={c} />)}
+      </WithMotion>
+    </AnimatePresence>
   );
 }
 
@@ -788,3 +803,39 @@ export function ScrollBarImpl(props: any) {
 function Raw({ text }: any) {
   return <>{text}</>;
 }
+
+export function WithMotion({ children, id, navAction }: any) {
+  return (
+    <motion.div
+      key={id}
+      style={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+      }}
+      variants={MOTION_VARIANTS}
+      initial={!navAction || navAction === "tab" ? {} : "initial"}
+      animate={!navAction || navAction === "tab" ? {} : "animate"}
+      exit={!navAction || navAction === "tab" ? {} : "exit"}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export const MOTION_VARIANTS = {
+  initial: {
+    opacity: 0,
+  },
+  animate: {
+    translateX: 0,
+    opacity: 1,
+    transition: { delay: 0.09 },
+  },
+  exit: {
+    translateX: window.innerWidth,
+    transition: { delay: 0.09, duration: 0.1 },
+    opacity: 0,
+  },
+};

@@ -11,4 +11,5 @@ export {
   BalancesTableRow,
   TextField,
   ScrollBarImpl,
+  WithMotion,
 } from "./Component";

@@ -642,6 +642,14 @@ class Dom {
           instance.props.value = updatePayload.value;
         }
         break;
+      case NodeKind.NavAnimation:
+        if (
+          updatePayload.routeName !== undefined &&
+          updatePayload.routeName !== null
+        ) {
+          instance.props.routeName = updatePayload.routeName;
+        }
+        break;
       default:
         throw new Error("invariant violation");
     }

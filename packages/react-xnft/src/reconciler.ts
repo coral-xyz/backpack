@@ -136,6 +136,8 @@ const RECONCILER = ReactReconciler({
         return createSvgInstance(kind, props, r, h, o);
       case NodeKind.Path:
         return createPathInstance(kind, props, r, h, o);
+      case NodeKind.NavAnimation:
+        return createNavAnimationInstance(kind, props, r, h, o);
       case NodeKind.BalancesTable:
         return createBalancesTableInstance(kind, props, r, h, o);
       case NodeKind.BalancesTableHead:
@@ -209,6 +211,14 @@ const RECONCILER = ReactReconciler({
           pload = { value: newProps.value };
         }
         return pload;
+      case NodeKind.NavAnimation:
+        let naPayload: UpdateDiff | null = null;
+        // @ts-ignore
+        if (oldProps.routeName !== newProps.routeName) {
+          // @ts-ignore
+          naPayload = { routeName: newProps.routeName };
+        }
+        return naPayload;
       case NodeKind.Image:
         return null;
       case NodeKind.Table:
@@ -305,6 +315,15 @@ const RECONCILER = ReactReconciler({
         if (updatePayload.value !== undefined && updatePayload.value !== null) {
           // @ts-ignore
           instance.props.value = updatePayload.value;
+        }
+        break;
+      case NodeKind.NavAnimation:
+        if (
+          updatePayload.routeName !== undefined &&
+          updatePayload.routeName !== null
+        ) {
+          // @ts-ignore
+          instance.props.routeName = updatePayload.routeName;
         }
         break;
       case NodeKind.Table:
@@ -630,6 +649,7 @@ function createLoadingInstance(
   return {
     id,
     kind: NodeKind.Loading,
+    // @ts-ignore
     props,
     style: props.style || {},
     children: [],
@@ -691,6 +711,26 @@ function createPathInstance(
       ...props,
     },
     style: props.style || {},
+    children: [],
+  };
+}
+
+function createNavAnimationInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): NavAnimationNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.NavAnimation,
+    // @ts-ignore
+    props: {
+      ...props,
+      children: undefined,
+    },
+    style: {},
     children: [],
   };
 }
@@ -866,6 +906,7 @@ export type NodeSerialized =
   | ScrollBarNodeSerialized
   | SvgNodeSerialized
   | PathNodeSerialized
+  | NavAnimationNodeSerialized
   | BalancesTableNodeSerialized
   | BalancesTableHeadNodeSerialized
   | BalancesTableContentNodeSerialized
@@ -882,6 +923,7 @@ type NodeProps =
   | ButtonProps
   | LoadingProps
   | ScrollBarProps
+  | NavAnimationProps
   | BalancesTableProps
   | BalancesTableHeadProps
   | BalancesTableContentProps
@@ -903,6 +945,7 @@ export enum NodeKind {
   ScrollBar = "ScrollBar",
   Svg = "Svg",
   Path = "Path",
+  NavAnimation = "NavAnimation",
 
   //
   // Widget.
@@ -1032,6 +1075,20 @@ type PathProps = {
   fill: string;
   fillRule?: string;
   clipRule?: string;
+};
+
+//
+// NavAnimation.
+//
+type NavAnimationNodeSerialized = DefNodeSerialized<
+  NodeKind.NavAnimation,
+  NavAnimationProps
+>;
+type NavAnimationProps = {
+  routeName: string;
+  navAction: string;
+  style: undefined;
+  children: undefined;
 };
 
 //
