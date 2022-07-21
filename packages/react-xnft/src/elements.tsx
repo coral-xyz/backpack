@@ -13,6 +13,7 @@ export const View = c("View");
 export const Button = c("Button");
 export const Loading = c("Loading");
 export const ScrollBar = c("ScrollBar");
+export const Svg = c("Svg");
 
 export const BalancesTable = c("BalancesTable");
 export const BalancesTableContent = c("BalancesTableContent");

@@ -1,8 +1,9 @@
 import React from "react";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { View, Text, ScrollBar } from "../../elements";
+import { View, Text, Button, ScrollBar } from "../../elements";
 import { useNavStack, NavStackProvider, NavStackOptions } from "./Context";
 
+/*
 // TODO: share this with the main app.
 const NAV_BAR_HEIGHT = 56;
 const NAV_BUTTON_WIDTH = 38;
@@ -56,19 +57,15 @@ function NavStackInner({
     title = titleDefault;
   }
   return (
-    <AnimatePresence initial={false}>
-      <WithMotion id={activeRoute.name} navAction={activeRoute.navAction}>
-        <WithNav
+    <WithNav
           title={title}
           navButtonLeft={navButtonLeft}
           navButtonRight={navButtonRight}
           navbarStyle={style}
           navContentStyle={contentStyle}
-        >
+    >
           {activeScreen.props.component({ ...(activeRoute.props ?? {}) })}
         </WithNav>
-      </WithMotion>
-    </AnimatePresence>
   );
 }
 
@@ -174,15 +171,11 @@ function NavBackButton({ onClick }: { onClick: () => void }) {
         position: "relative",
       }}
     >
-      <IconButton
-        disableRipple
+      <Button
         onClick={onClick}
-        className={classes.backButton}
-        size="large"
-        data-testid="back-button"
       >
         <ArrowBack style={{ color: theme.custom.colors.secondary }} />
-      </IconButton>
+      </Button>
     </View>
   );
 }
@@ -254,3 +247,11 @@ function NavBackButton({ onClick }: { onClick: () => void }) {
     </View>
   );
 }
+*/
+
+/*
+    <AnimatePresence initial={false}>
+      <WithMotion id={activeRoute.name} navAction={activeRoute.navAction}>
+      </WithMotion>
+    </AnimatePresence>
+*/
