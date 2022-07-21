@@ -14,7 +14,9 @@ export function YourAccount() {
     "Change password": {
       onClick: () => nav.push("change-password"),
     },
-    "Edit wallets": {},
+    "Edit wallets": {
+      onClick: () => nav.push("edit-wallets"),
+    },
     "Show private key": {
       onClick: () => nav.push("show-private-key-warning"),
     },

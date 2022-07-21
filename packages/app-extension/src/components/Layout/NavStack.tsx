@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useKeyringStoreState } from "@coral-xyz/recoil";
 import { WithNav, NavBackButton } from "./Nav";
 
 /**
@@ -40,7 +41,7 @@ function NavStackInner({
   navScreens: any;
   options: NavStackOptions;
 }) {
-  let { isRoot, activeRoute, pop, navButtonRight, title, style } =
+  let { isRoot, activeRoute, pop, navButtonRight, title, style, contentStyle } =
     useNavStack();
 
   const navButtonLeft = isRoot ? null : <NavBackButton onClick={() => pop()} />;
@@ -54,16 +55,15 @@ function NavStackInner({
   if (!title) {
     title = titleDefault;
   }
-
-  // TODO: plumb through the nav action.
   return (
     <AnimatePresence initial={false}>
-      <WithMotion id={activeRoute.name} navAction={"push"}>
+      <WithMotion id={activeRoute.name} navAction={activeRoute.navAction}>
         <WithNav
           title={title}
           navButtonLeft={navButtonLeft}
           navButtonRight={navButtonRight}
           navbarStyle={style}
+          navContentStyle={contentStyle}
         >
           {activeScreen.props.component({ ...(activeRoute.props ?? {}) })}
         </WithNav>
@@ -78,18 +78,21 @@ function NavStackProvider({
   style,
   children,
 }: any) {
-  const [stack, setStack] = useState([initialRoute]);
+  const [stack, setStack] = useState([{ navAction: "push", ...initialRoute }]);
   const [titleOverride, setTitleOverride] = useState(initialRoute.title);
   const [navButtonRightOverride, setNavButtonRightOverride] =
     useState<any>(navButtonRight);
   const [_style, setStyle] = useState(style);
+  const [contentStyle, setContentStyle] = useState({});
 
   const push = (route: string, props: any) => {
-    setStack([...stack, { name: route, props }]);
+    setStack([...stack, { name: route, props, navAction: "push" }]);
   };
   const pop = () => {
-    const newStack = [...stack];
-    setStack(newStack.slice(0, newStack.length - 1));
+    let newStack = [...stack];
+    newStack = newStack.slice(0, newStack.length - 1);
+    newStack[newStack.length - 1]["navAction"] = "pop";
+    setStack(newStack);
   };
   const toRoot = () => {
     setStack([stack[0]]);
@@ -109,6 +112,8 @@ function NavStackProvider({
         setNavButtonRight: setNavButtonRightOverride,
         style: _style,
         setStyle,
+        contentStyle,
+        setContentStyle,
       }}
     >
       {children}
@@ -129,7 +134,7 @@ type RoutedNavStackOptions = {
 };
 
 type NavStackContext = {
-  activeRoute: { name: string; props?: any };
+  activeRoute: { name: string; props?: any; navAction?: "push" | "pop" };
   push: (route: string, props?: any) => void;
   pop: () => void;
   isRoot: boolean;
@@ -140,6 +145,8 @@ type NavStackContext = {
   setNavButtonRight: any;
   style: any;
   setStyle: any;
+  contentStyle: any;
+  setContentStyle: any;
 };
 
 const _NavStackContext = React.createContext<NavStackContext | null>(null);
@@ -159,7 +166,6 @@ export function NavStackScreen({
   name: string;
   component: (props: any) => React.ReactNode;
 }) {
-  // todo
   return <></>;
 }
 
@@ -183,7 +189,7 @@ export function WithMotion({ children, id, navAction }: any) {
   );
 }
 
-const MOTION_VARIANTS = {
+export const MOTION_VARIANTS = {
   initial: {
     opacity: 0,
   },

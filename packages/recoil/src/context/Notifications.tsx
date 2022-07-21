@@ -208,8 +208,7 @@ export function NotificationsProvider(props: any) {
       });
     };
     const handleNavigationUrlDidChange = (notif: Notification) => {
-      const url = `${notif.data.url}&nav=${notif.data.nav}`;
-      navigate(url);
+      navigate(notif.data.url);
     };
 
     //

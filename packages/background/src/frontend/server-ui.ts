@@ -22,6 +22,7 @@ import {
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
+  UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
   UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC,
   UI_RPC_METHOD_KEYRING_RESET_MNEMONIC,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
@@ -35,9 +36,11 @@ import {
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYNAME_UPDATE,
   UI_RPC_METHOD_PASSWORD_UPDATE,
+  UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
   UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE,
   UI_RPC_METHOD_NAVIGATION_PUSH,
   UI_RPC_METHOD_NAVIGATION_POP,
+  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
   UI_RPC_METHOD_NAVIGATION_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
@@ -125,10 +128,14 @@ async function handle<T = any>(
       return await handleKeyringImportSecretKey(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY:
       return handleKeyringExportSecretKey(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC:
+      return await handleValidateMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC:
       return handleKeyringExportMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_RESET_MNEMONIC:
       return handleKeyringResetMnemonic(ctx, params[0]);
+    case UI_RPC_METHOD_KEYRING_AUTOLOCK_READ:
+      return await handleKeyringAutolockRead(ctx);
     case UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE:
       return await handleKeyringAutolockUpdate(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE:
@@ -172,6 +179,8 @@ async function handle<T = any>(
       return await handleNavigationPush(ctx, params[0]);
     case UI_RPC_METHOD_NAVIGATION_POP:
       return await handleNavigationPop(ctx);
+    case UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE:
+      return await handleNavigationCurrentUrlUpdate(ctx, params[0]);
     case UI_RPC_METHOD_NAVIGATION_READ:
       return await handleNavRead(ctx);
     case UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE:
@@ -382,6 +391,14 @@ function handleKeyringExportSecretKey(
   return [resp];
 }
 
+function handleValidateMnemonic(
+  ctx: Context<Backend>,
+  mnemonic: string
+): RpcResponse<boolean> {
+  const resp = ctx.backend.validateMnemonic(mnemonic);
+  return [resp];
+}
+
 function handleKeyringExportMnemonic(
   ctx: Context<Backend>,
   password: string
@@ -395,6 +412,13 @@ function handleKeyringResetMnemonic(
   password: string
 ): RpcResponse<string> {
   const resp = ctx.backend.keyringResetMnemonic(password);
+  return [resp];
+}
+
+async function handleKeyringAutolockRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<number>> {
+  const resp = await ctx.backend.keyringAutolockRead();
   return [resp];
 }
 
@@ -433,6 +457,14 @@ async function handleNavigationPop(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.navigationPop();
+  return [resp];
+}
+
+async function handleNavigationCurrentUrlUpdate(
+  ctx: Context<Backend>,
+  url: string
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.navigationCurrentUrlUpdate(url);
   return [resp];
 }
 

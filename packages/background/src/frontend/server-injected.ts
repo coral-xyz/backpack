@@ -172,9 +172,11 @@ async function handleConnect(
         connectionUrl,
       },
     });
+    return [SUCCESS_RESPONSE];
+  } else {
+    logger.debug("user did not approve");
+    return null;
   }
-
-  return [SUCCESS_RESPONSE];
 }
 
 function handleDisconnect(ctx: Context<Backend>): RpcResponse<string> {

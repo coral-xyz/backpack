@@ -2,6 +2,7 @@ import { atom, selector } from "recoil";
 import {
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
+  UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
 } from "@coral-xyz/common";
 import { backgroundClient } from "./background";
 
@@ -46,4 +47,18 @@ export const approvedOrigins = atom<Array<string> | null>({
       );
     },
   ],
+});
+
+export const autoLockSecs = atom<number | null>({
+  key: "autoLockSecs",
+  default: selector({
+    key: "autoLockSecsDefault",
+    get: async ({ get }) => {
+      const background = get(backgroundClient);
+      return await background.request({
+        method: UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
+        params: [],
+      });
+    },
+  }),
 });

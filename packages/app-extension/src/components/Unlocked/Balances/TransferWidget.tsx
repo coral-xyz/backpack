@@ -13,12 +13,10 @@ import {
 import {
   useBlockchainLogo,
   useBlockchainTokensSorted,
-  useEphemeralNav,
 } from "@coral-xyz/recoil";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
 import { Send } from "./TokensWidget/Send";
-import { useDrawerContext } from "../../Layout/Drawer";
 import { useNavStack } from "../../Layout/NavStack";
 
 const useStyles = styles((theme) => ({

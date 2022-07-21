@@ -1,12 +1,23 @@
+import { useCustomTheme } from "@coral-xyz/themes";
 import { useState, useEffect } from "react";
 import { PluginDisplay } from "./Plugin";
 
 // The refresh code is a big hack. :)
-export function Simulator({ pluginUrl }: { pluginUrl: string }) {
-  const props = { pluginUrl };
+export function Simulator({
+  pluginUrl,
+  closePlugin,
+}: {
+  pluginUrl: string;
+  closePlugin: () => void;
+}) {
+  const theme = useCustomTheme();
+  const props = { pluginUrl, closePlugin };
   const refresh = useJavaScriptRefresh(props.pluginUrl);
-  console.log("refreshing here", refresh);
-  return refresh % 2 === 1 ? <div></div> : <PluginDisplay {...props} />;
+  return refresh % 2 === 1 ? (
+    <div style={{ backgroundColor: theme.custom.colors.background }}></div>
+  ) : (
+    <PluginDisplay {...props} />
+  );
 }
 
 function useJavaScriptRefresh(url: string): number {

@@ -18,7 +18,7 @@ import {
   EthereumKeyringFactory,
 } from ".";
 
-const LOCK_INTERVAL_SECS = 15 * 60 * 1000;
+const LOCK_INTERVAL_SECS = 15 * 60;
 
 export const BLOCKCHAIN_SOLANA = "solana";
 // const BLOCKCHAIN_ETHEREUM = "ethereum";
@@ -197,6 +197,10 @@ export class KeyringStore {
     return LocalStorageDb.reset();
   }
 
+  public async autoLockRead(): Promise<number> {
+    return walletDataGetAutoLockSecs();
+  }
+
   public async autoLockUpdate(autoLockSecs: number) {
     return this.withUnlock(async () => {
       await walletDataSetAutoLock(autoLockSecs);
@@ -339,7 +343,7 @@ export class KeyringStore {
           });
           clearInterval(this.autoLockInterval!);
         }
-      }, autoLockSecs ?? LOCK_INTERVAL_SECS);
+      }, (autoLockSecs ?? LOCK_INTERVAL_SECS) * 1000);
     });
   }
 

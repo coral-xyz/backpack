@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { TextField, PrimaryButton } from "../common";
@@ -19,7 +19,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         height: "100%",
       }}
     >
-      <LockedInner />
+      <LockedInner onUnlock={onUnlock} />
     </Box>
   );
 }
