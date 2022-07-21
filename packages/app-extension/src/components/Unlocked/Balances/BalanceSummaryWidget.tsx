@@ -1,7 +1,7 @@
+import { Blockchain, formatUSD } from "@coral-xyz/common";
 import { Typography } from "@mui/material";
 import { styles } from "@coral-xyz/themes";
 import { useTotal } from "@coral-xyz/recoil";
-import { formatUSD } from "@coral-xyz/common";
 
 const useStyles = styles((theme) => ({
   balancesHeaderContainer: {
@@ -41,7 +41,11 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function BalanceSummaryWidget({ blockchain }: { blockchain?: string }) {
+export function BalanceSummaryWidget({
+  blockchain,
+}: {
+  blockchain?: Blockchain;
+}) {
   const classes = useStyles();
   const { totalBalance, totalChange, percentChange } = useTotal(blockchain);
   return (

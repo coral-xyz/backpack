@@ -1,12 +1,13 @@
 import { selector, selectorFamily } from "recoil";
 import { blockchainKeys } from "./blockchains";
 import { blockchainTokensSorted } from "./token";
+import { Blockchain } from "@coral-xyz/common";
 
 export const total = selector({
   key: "total",
-  get: ({ get }: any) => {
+  get: ({ get }) => {
     const blockchains = get(blockchainKeys);
-    const total = blockchains.map((b: string) => get(blockchainTotal(b)));
+    const total = blockchains.map((b) => get(blockchainTotal(b)));
     // @ts-ignore
     const totalBalance = total
       .map((t: any) => t.totalBalance)
@@ -28,8 +29,8 @@ export const total = selector({
 export const blockchainTotal = selectorFamily({
   key: "blockchainTotal",
   get:
-    (blockchain: string) =>
-    ({ get }: any) => {
+    (blockchain: Blockchain) =>
+    ({ get }) => {
       const tokens = get(blockchainTokensSorted(blockchain)).filter(
         (t: any) => t.usdBalance && t.recentUsdBalanceChange
       );

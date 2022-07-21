@@ -3,6 +3,7 @@ import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import type { EventEmitter, DerivationPath } from "@coral-xyz/common";
 import {
+  Blockchain,
   BrowserRuntimeCommon,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   BACKEND_EVENT,
@@ -20,9 +21,8 @@ import {
 
 const LOCK_INTERVAL_SECS = 15 * 60;
 
-export const BLOCKCHAIN_SOLANA = "solana";
 // const BLOCKCHAIN_ETHEREUM = "ethereum";
-const BLOCKCHAIN_DEFAULT = BLOCKCHAIN_SOLANA;
+const BLOCKCHAIN_DEFAULT = Blockchain.SOLANA;
 
 const DEFAULT_SOLANA_CONNECTION_URL =
   process.env.DEFAULT_SOLANA_CONNECTION_URL ||
@@ -39,7 +39,7 @@ export class KeyringStore {
 
   constructor(events: EventEmitter) {
     this.blockchains = new Map([
-      [BLOCKCHAIN_SOLANA, BlockchainKeyring.solana()],
+      [Blockchain.SOLANA, BlockchainKeyring.solana()],
       //      [BLOCKCHAIN_ETHEREUM, BlockchainKeyring.ethereum()],
     ]);
     this.lastUsedTs = 0;

@@ -4,6 +4,7 @@ import { priceData } from "./price-data";
 import { splTokenRegistry } from "./token-registry";
 import { TokenAccountWithKey } from "../types";
 import { connectionUrl, activeWallet } from "./wallet";
+import { Blockchain } from "@coral-xyz/common";
 
 /**
  * Returns the token accounts sorted by usd notional balances.
@@ -11,7 +12,7 @@ import { connectionUrl, activeWallet } from "./wallet";
 export const blockchainTokensSorted = selectorFamily({
   key: "blockchainTokensSorted",
   get:
-    (blockchain: string) =>
+    (blockchain: Blockchain) =>
     ({ get }: any) => {
       const tokenAddresses = get(blockchainTokens(blockchain));
       const tokenAccounts = tokenAddresses.map((address: string) =>
@@ -33,10 +34,10 @@ export const blockchainTokensSorted = selectorFamily({
 export const blockchainTokens = selectorFamily({
   key: "blockchainTokens",
   get:
-    (blockchain: string) =>
+    (blockchain: Blockchain) =>
     ({ get }: any) => {
       switch (blockchain) {
-        case "solana":
+        case Blockchain.SOLANA:
           return get(
             solanaTokenAccountKeys({
               connectionUrl: get(connectionUrl),
@@ -52,10 +53,10 @@ export const blockchainTokens = selectorFamily({
 export const blockchainTokenAccounts = selectorFamily({
   key: "blockchainTokenAccountsMap",
   get:
-    ({ address, blockchain }: { address: string; blockchain: string }) =>
+    ({ address, blockchain }: { address: string; blockchain: Blockchain }) =>
     ({ get }: any) => {
       switch (blockchain) {
-        case "solana":
+        case Blockchain.SOLANA:
           const tokenAccount = get(
             solanaTokenAccountsMap({
               connectionUrl: get(connectionUrl),

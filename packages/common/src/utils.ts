@@ -1,9 +1,7 @@
 import { v1 } from "uuid";
 
-export function toTitleCase(blockchain: string) {
-  return (
-    blockchain.slice(0, 1).toUpperCase() + blockchain.toLowerCase().slice(1)
-  );
+export function toTitleCase(str: string) {
+  return str.slice(0, 1).toUpperCase() + str.toLowerCase().slice(1);
 }
 
 /**

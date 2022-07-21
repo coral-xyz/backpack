@@ -8,6 +8,7 @@ import {
   useBlockchainTokenAccount,
 } from "@coral-xyz/recoil";
 import {
+  Blockchain,
   confirmTransaction,
   getLogger,
   explorerUrl,
@@ -100,7 +101,7 @@ export function SendButton({
   blockchain,
   address,
 }: {
-  blockchain: string;
+  blockchain: Blockchain;
   address: string;
 }) {
   const token = useBlockchainTokenAccount(blockchain, address);
@@ -126,7 +127,7 @@ export function Send({
   blockchain,
   tokenAddress,
 }: {
-  blockchain: string;
+  blockchain: Blockchain;
   tokenAddress: string;
 }) {
   const classes = useStyles() as any;

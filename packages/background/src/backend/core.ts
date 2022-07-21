@@ -6,6 +6,7 @@ import type { NamedPublicKey, KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
 import {
+  Blockchain,
   BACKEND_EVENT,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_KEYRING_KEY_DELETE,
@@ -21,12 +22,7 @@ import {
   NOTIFICATION_CONNECTION_URL_UPDATED,
 } from "@coral-xyz/common";
 import type { Nav } from "../keyring/store";
-import {
-  BLOCKCHAIN_SOLANA,
-  KeyringStore,
-  setNav,
-  getNav,
-} from "../keyring/store";
+import { KeyringStore, setNav, getNav } from "../keyring/store";
 import type { Backend as SolanaConnectionBackend } from "../backend/solana-connection";
 
 export function start(events: EventEmitter, solanaB: SolanaConnectionBackend) {
@@ -122,7 +118,7 @@ export class Backend {
   }
 
   async solanaConnectionUrl(): Promise<string> {
-    const blockchain = this.keyringStore.blockchains.get(BLOCKCHAIN_SOLANA);
+    const blockchain = this.keyringStore.blockchains.get(Blockchain.SOLANA);
     const url = await blockchain!.connectionUrlRead();
     return url;
   }

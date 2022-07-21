@@ -22,3 +22,7 @@ export type Event = any;
 export type EventHandler = (notif: any) => void;
 export type EventEmitter = any;
 export type ResponseHandler = [any, any];
+
+export enum Blockchain {
+  SOLANA = "solana",
+}

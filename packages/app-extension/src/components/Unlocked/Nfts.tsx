@@ -1,5 +1,6 @@
 import { styles } from "@coral-xyz/themes";
 import { useNftMetadata, useNftMetadataAddresses } from "@coral-xyz/recoil";
+import { Blockchain } from "@coral-xyz/common";
 
 const useStyles = styles((theme) => ({
   nftImage: {
@@ -8,7 +9,7 @@ const useStyles = styles((theme) => ({
 }));
 
 export function Nfts() {
-  return <_Nfts blockchain={"solana"} />;
+  return <_Nfts blockchain={Blockchain.SOLANA} />;
 }
 
 export function _Nfts({ blockchain }: any) {
