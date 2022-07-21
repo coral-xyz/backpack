@@ -1,12 +1,14 @@
 import React from "react";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useTheme } from "../../Context";
 import { View, Text, Button, ScrollBar } from "../../elements";
-import { useNavStack, NavStackProvider, NavStackOptions } from "./Context";
+import { useNavigation, NavStackProvider, NavStackOptions } from "./Context";
 import { ArrowBack } from "../Icons";
 
 // TODO: share this with the main app.
 const NAV_BAR_HEIGHT = 56;
 const NAV_BUTTON_WIDTH = 38;
+
+export { useNavigation } from "./Context";
 
 export function NavStack({
   initialRoute,
@@ -43,7 +45,7 @@ function NavStackInner({
   options: NavStackOptions;
 }) {
   let { isRoot, activeRoute, pop, navButtonRight, title, style, contentStyle } =
-    useNavStack();
+    useNavigation();
 
   const navButtonLeft = isRoot ? null : <NavBackButton onClick={() => pop()} />;
   const activeScreen = navScreens.find(
@@ -56,6 +58,7 @@ function NavStackInner({
   if (!title) {
     title = titleDefault;
   }
+
   return (
     <WithNav
       title={title}
@@ -93,7 +96,7 @@ function WithNav({
   navContentStyle?: React.CSSProperties;
 }) {
   return (
-    <>
+    <View style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <NavBar
         title={title || ""}
         navButtonLeft={navButtonLeft}
@@ -101,7 +104,7 @@ function WithNav({
         style={navbarStyle}
       />
       <NavContent style={navContentStyle} renderComponent={children} />
-    </>
+    </View>
   );
 }
 
@@ -161,7 +164,7 @@ function NavButton({
 }
 
 function NavBackButton({ onClick }: { onClick: () => void }) {
-  const theme = useCustomTheme();
+  const theme = useTheme();
   return (
     <View
       style={{
@@ -215,7 +218,7 @@ function CenterDisplay({ title }: { title: string }) {
 }
 
 function NavTitleLabel({ title }: any) {
-  const theme = useCustomTheme();
+  const theme = useTheme();
   return (
     <Text
       style={{

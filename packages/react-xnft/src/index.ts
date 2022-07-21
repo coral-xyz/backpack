@@ -9,7 +9,7 @@ export {
   TextSerialized,
   NodeSerialized,
 } from "./reconciler";
-export { useNavigation, useTheme } from "./Context";
+export { useTheme } from "./Context";
 export * from "./Dom";
 export * from "./elements";
 export * from "./hooks";

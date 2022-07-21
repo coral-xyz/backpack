@@ -1,8 +1,9 @@
-import { PublicKey, Transaction, SystemProgram } from "@solana/web3.js";
+import { useEffect } from "react";
 import {
   usePublicKey,
   useConnection,
   useTheme,
+  useNavigation,
   View,
   Image,
   Text,
@@ -12,6 +13,7 @@ import {
   NavStack,
   NavScreen,
 } from "react-xnft";
+import { PublicKey, Transaction, SystemProgram } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import {
   useDegodTokens,
@@ -32,19 +34,52 @@ export function App() {
     >
       <NavStack
         initialRoute={{ name: "root" }}
-        options={(args) => {
-          title: "Armani";
-        }}
+        options={(args) => ({
+          title: "Armani",
+        })}
         style={{}}
       >
-        <NavScreen name={"root"} component={InnerTab2} />
+        <NavScreen name={"root"} component={InnerTab1} />
+        <NavScreen name={"root2"} component={InnerTab2} />
       </NavStack>
     </View>
   );
 }
 
+function InnerTab1() {
+  const nav = useNavigation();
+
+  useEffect(() => {
+    nav.setTitle("nav 1");
+  }, []);
+
+  return (
+    <View
+      onClick={() => {
+        nav.push("root2");
+      }}
+      style={{ color: "blue" }}
+    >
+      inner tab 1 here
+    </View>
+  );
+}
+
 function InnerTab2() {
-  return <View style={{ color: "red" }}>inner tab 2 here</View>;
+  const nav = useNavigation();
+  useEffect(() => {
+    nav.setTitle("nav 2");
+  }, []);
+  return (
+    <View
+      onClick={() => {
+        nav.push("root");
+      }}
+      style={{ color: "red" }}
+    >
+      inner tab 2 here
+    </View>
+  );
 }
 
 function _Loading() {

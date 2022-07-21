@@ -30,7 +30,7 @@ type RoutedNavStackOptions = {
   style?: any;
 };
 
-export function useNavStack(): NavStackContext {
+export function useNavigation(): NavStackContext {
   const ctx = useContext(_NavStackContext);
   if (ctx === null) {
     throw new Error("Context not available");
