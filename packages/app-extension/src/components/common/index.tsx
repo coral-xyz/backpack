@@ -60,6 +60,9 @@ const useStyles = styles((theme) => ({
   checkBox: {
     padding: "9px",
     color: theme.custom.colors.primaryButton,
+    "&.Mui-disabled": {
+      opacity: 0.5,
+    },
   },
   checkboxContainer: {
     display: "flex",

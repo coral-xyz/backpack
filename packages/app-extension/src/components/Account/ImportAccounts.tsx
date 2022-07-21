@@ -18,6 +18,7 @@ import { useBackgroundClient, useAnchorContext } from "@coral-xyz/recoil";
 import {
   DerivationPath,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
+  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 
@@ -54,6 +55,7 @@ export function ImportAccounts({
   const [selectedAccounts, setSelectedAccounts] = useState<SelectedAccount[]>(
     []
   );
+  const [importedPubkeys, setImportedPubkeys] = useState<string[]>([]);
   const [derivationPath, setDerivationPath] = useState<DerivationPath>(
     DerivationPath.Bip44
   );
@@ -72,6 +74,26 @@ export function ImportAccounts({
       "https://solana-api.projectserum.com";
     connection = new Connection(mainnetRpc, "confirmed");
   }
+
+  useEffect(() => {
+    (async () => {
+      if (connection) {
+        try {
+          const accounts = await background.request({
+            method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
+            params: [],
+          });
+          setImportedPubkeys(
+            Object.values(accounts)
+              .flat()
+              .map((a: any) => a.publicKey)
+          );
+        } catch {
+          // Keyring store locked, either onboarding or left open
+        }
+      }
+    })();
+  }, [connection]);
 
   //
   // Load a list of accounts and their associated balances
@@ -217,12 +239,17 @@ export function ImportAccounts({
                     paddingTop: "5px",
                     paddingBottom: "5px",
                   }}
+                  disabled={importedPubkeys.includes(publicKey.toString())}
                 >
                   <Box style={{ display: "flex", width: "100%" }}>
                     <Checkbox
                       edge="start"
-                      checked={selectedAccounts.some((a) => a.index === index)}
+                      checked={
+                        selectedAccounts.some((a) => a.index === index) ||
+                        importedPubkeys.includes(publicKey.toString())
+                      }
                       tabIndex={-1}
+                      disabled={importedPubkeys.includes(publicKey.toString())}
                       disableRipple
                       style={{ marginLeft: 0 }}
                     />
