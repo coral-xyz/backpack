@@ -1,4 +1,4 @@
-import { Blockchain } from "@coral-xyz/common";
+import { Blockchain, formatUSD } from "@coral-xyz/common";
 import {
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
@@ -14,7 +14,7 @@ import {
   useTotal,
 } from "@coral-xyz/recoil";
 import { useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Text, View } from "react-native";
+import { KeyboardAvoidingView, Pressable, Text, View } from "react-native";
 import { NativeRouter, Route, Routes, useNavigate } from "react-router-native";
 import tw from "twrnc";
 import { CustomButton } from "./components/CustomButton";
@@ -50,12 +50,9 @@ const UnlockedScreen = () => {
   const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
   const connectionUrl = useSolanaConnectionUrl();
   console.log(wallet.publicKey.toString());
-  console.log({
-    tokenAccountsSorted,
-  });
 
   const tokenAccountsFiltered = tokenAccountsSorted.filter(
-    (t: any) => t.nativeBalance !== 0
+    (t) => t.nativeBalance !== 0
   );
 
   return (
@@ -66,15 +63,31 @@ const UnlockedScreen = () => {
         </Text>
         <Text style={tw`text-white text-xs`}>{connectionUrl}</Text>
         <View style={tw`bg-black p-4 rounded-xl`}>
-          <Text style={tw`text-white text-xs`}>Tokens</Text>
           <Text style={tw`text-white text-xs`}>
-            {JSON.stringify({
-              totalBalance,
-              totalChange,
-              percentChange,
-              tokenAccountsFiltered,
-            })}
+            Total Balance: {formatUSD(totalBalance)}
           </Text>
+          {Number.isFinite(percentChange) && (
+            <>
+              <Text style={tw`text-white text-xs`}>Last 24 hrs</Text>
+              <Text style={tw`text-white text-xs`}>
+                {formatUSD(totalChange)} ({`${percentChange.toFixed(2)}%`})
+              </Text>
+            </>
+          )}
+        </View>
+
+        <Pressable>
+          <Text style={tw`text-white text-xs`}>Receive</Text>
+          <Text style={tw`text-white text-xs`}>Send</Text>
+        </Pressable>
+
+        <View style={tw`bg-black p-4 rounded-xl`}>
+          <Text style={tw`text-white text-xs`}>Tokens</Text>
+          {tokenAccountsFiltered.map((tokenAccount) => (
+            <Text style={tw`text-white text-xs`} key={tokenAccount.mint}>
+              {JSON.stringify(tokenAccount)}
+            </Text>
+          ))}
         </View>
       </MainContent>
       <ButtonFooter>

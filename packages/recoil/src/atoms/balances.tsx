@@ -8,14 +8,10 @@ export const total = selector({
   get: ({ get }) => {
     const blockchains = get(blockchainKeys);
     const total = blockchains.map((b) => get(blockchainTotal(b)));
-    // @ts-ignore
     const totalBalance = total
-      .map((t: any) => t.totalBalance)
-      .reduce((a: number, b: number) => a + b);
-    // @ts-ignore
-    const totalChange = total
-      .map((t: any) => t.totalChange)
-      .reduce((a: number, b: number) => a + b);
+      .map((t) => t.totalBalance)
+      .reduce((a, b) => a + b);
+    const totalChange = total.map((t) => t.totalChange).reduce((a, b) => a + b);
     const oldBalance = totalBalance - totalChange;
     const percentChange = totalChange / oldBalance;
     return {
@@ -32,20 +28,13 @@ export const blockchainTotal = selectorFamily({
     (blockchain: Blockchain) =>
     ({ get }) => {
       const tokens = get(blockchainTokensSorted(blockchain)).filter(
-        (t: any) => t.usdBalance && t.recentUsdBalanceChange
+        (t) => t.usdBalance && t.recentUsdBalanceChange
       );
-
-      // @ts-ignore
       const totalBalance = tokens
-        // @ts-ignore
         .map((t) => t.usdBalance)
-        // @ts-ignore
         .reduce((a, b) => a + b, 0);
-      // @ts-ignore
       const totalChange = tokens
-        // @ts-ignore
         .map((t) => t.recentUsdBalanceChange)
-        // @ts-ignore
         .reduce((a, b) => a + b, 0);
       const oldBalance = totalBalance - totalChange;
       const percentChange = totalChange / oldBalance;

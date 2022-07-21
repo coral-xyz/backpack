@@ -20,6 +20,8 @@ import { Deposit } from "./TokensWidget/Deposit";
 import { Send } from "./TokensWidget/Send";
 import { useNavStack } from "../../Layout/NavStack";
 
+type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
+
 const useStyles = styles((theme) => ({
   searchField: {
     marginLeft: "12px",
@@ -192,7 +194,7 @@ function TokenTable({ searchFilter }: { searchFilter?: string }) {
 
   const searchLower = search.toLowerCase();
   const tokenAccountsFiltered = tokenAccountsSorted.filter(
-    (t: any) =>
+    (t) =>
       t.nativeBalance !== 0 &&
       t.name &&
       (t.name.toLowerCase().startsWith(searchLower) ||
@@ -209,7 +211,7 @@ function TokenTable({ searchFilter }: { searchFilter?: string }) {
         props={{ title, iconUrl: blockchainLogo, disableToggle: true }}
       />
       <BalancesTableContent>
-        {tokenAccountsFiltered.map((token: any) => (
+        {tokenAccountsFiltered.map((token) => (
           <TokenRow key={token.address} token={token} blockchain={blockchain} />
         ))}
       </BalancesTableContent>
@@ -221,7 +223,7 @@ function TokenRow({
   token,
   blockchain,
 }: {
-  token: any;
+  token: Token;
   blockchain: Blockchain;
 }) {
   const { push } = useNavStack();
@@ -247,7 +249,13 @@ function TokenRow({
   );
 }
 
-function _Send({ token, blockchain }: { token: any; blockchain: Blockchain }) {
+function _Send({
+  token,
+  blockchain,
+}: {
+  token: Token;
+  blockchain: Blockchain;
+}) {
   const { title, setTitle } = useNavStack();
   useEffect(() => {
     const prev = title;

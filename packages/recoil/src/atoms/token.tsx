@@ -5,6 +5,7 @@ import { splTokenRegistry } from "./token-registry";
 import { TokenAccountWithKey } from "../types";
 import { connectionUrl, activeWallet } from "./wallet";
 import { Blockchain } from "@coral-xyz/common";
+import { TokenInfo } from "@solana/spl-token-registry";
 
 /**
  * Returns the token accounts sorted by usd notional balances.
@@ -13,17 +14,19 @@ export const blockchainTokensSorted = selectorFamily({
   key: "blockchainTokensSorted",
   get:
     (blockchain: Blockchain) =>
-    ({ get }: any) => {
+    ({ get }) => {
       const tokenAddresses = get(blockchainTokens(blockchain));
-      const tokenAccounts = tokenAddresses.map((address: string) =>
-        get(
-          blockchainTokenAccounts({
-            address,
-            blockchain,
-          })
+      const tokenAccounts = tokenAddresses
+        .map(
+          (address) =>
+            get(
+              blockchainTokenAccounts({
+                address,
+                blockchain,
+              })
+            )!
         )
-      );
-      // @ts-ignore
+        .filter(Boolean);
       return tokenAccounts.sort((a, b) => b.usdBalance - a.usdBalance);
     },
 });
@@ -35,13 +38,13 @@ export const blockchainTokens = selectorFamily({
   key: "blockchainTokens",
   get:
     (blockchain: Blockchain) =>
-    ({ get }: any) => {
+    ({ get }) => {
       switch (blockchain) {
         case Blockchain.SOLANA:
           return get(
             solanaTokenAccountKeys({
-              connectionUrl: get(connectionUrl),
-              publicKey: get(activeWallet),
+              connectionUrl: get(connectionUrl)!,
+              publicKey: get(activeWallet)!,
             })
           );
         default:
@@ -54,12 +57,12 @@ export const blockchainTokenAccounts = selectorFamily({
   key: "blockchainTokenAccountsMap",
   get:
     ({ address, blockchain }: { address: string; blockchain: Blockchain }) =>
-    ({ get }: any) => {
+    ({ get }) => {
       switch (blockchain) {
         case Blockchain.SOLANA:
           const tokenAccount = get(
             solanaTokenAccountsMap({
-              connectionUrl: get(connectionUrl),
+              connectionUrl: get(connectionUrl)!,
               tokenAddress: address,
             })
           );
@@ -69,9 +72,10 @@ export const blockchainTokenAccounts = selectorFamily({
           //
           // Token registry metadata.
           //
-          const tokenRegistry = get(splTokenRegistry);
+          const tokenRegistry = get(splTokenRegistry)!;
           const tokenMetadata =
-            tokenRegistry.get(tokenAccount.mint.toString()) ?? {};
+            tokenRegistry.get(tokenAccount.mint.toString()) ??
+            ({} as TokenInfo);
           const ticker = tokenMetadata.symbol;
           const logo = tokenMetadata.logoURI;
           const name = tokenMetadata.name;
@@ -79,7 +83,7 @@ export const blockchainTokenAccounts = selectorFamily({
           //
           // Price data.
           //
-          const price = get(priceData(tokenAccount.mint.toString()));
+          const price = get(priceData(tokenAccount.mint.toString())) as any;
           const nativeBalance = tokenMetadata.decimals
             ? tokenAccount.amount.toNumber() / 10 ** tokenMetadata.decimals
             : tokenAccount.amount.toNumber();

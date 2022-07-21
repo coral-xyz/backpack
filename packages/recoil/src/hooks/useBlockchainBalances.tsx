@@ -8,7 +8,7 @@ export function useBlockchains() {
 }
 
 export function useBlockchainTokens(blockchain: Blockchain) {
-  return useRecoilValue<Blockchain>(atoms.blockchainTokens(blockchain));
+  return useRecoilValue(atoms.blockchainTokens(blockchain));
 }
 
 export function useBlockchainLogo(blockchain: Blockchain): string {
