@@ -56,6 +56,7 @@ function InnerTab1() {
   return (
     <View
       onClick={() => {
+        console.log("testing nav 1 wtf");
         nav.push("root2");
       }}
       style={{ color: "blue" }}
@@ -75,7 +76,7 @@ function InnerTab2() {
   return (
     <View
       onClick={() => {
-        console.log("testing wtf");
+        console.log("testing nav 2 wtf");
         nav.push("root");
       }}
       style={{ color: "red" }}

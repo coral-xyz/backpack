@@ -59,6 +59,8 @@ function NavStackInner({
     title = titleDefault;
   }
 
+  console.log("active screen here", activeRoute, activeScreen);
+
   return (
     <WithNav
       title={title}
