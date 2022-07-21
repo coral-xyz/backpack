@@ -1,5 +1,11 @@
 import React from "react";
-import { useNavStack, NavStackProvider } from "./Context";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { View, Text, ScrollBar } from "../../elements";
+import { useNavStack, NavStackProvider, NavStackOptions } from "./Context";
+
+// TODO: share this with the main app.
+const NAV_BAR_HEIGHT = 56;
+const NAV_BUTTON_WIDTH = 38;
 
 export function NavStack({
   initialRoute,
@@ -73,7 +79,7 @@ export function NavScreen() {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-export function WithNav({
+function WithNav({
   title,
   navButtonLeft,
   navButtonRight,
@@ -101,7 +107,7 @@ export function WithNav({
   );
 }
 
-export function NavBar({
+function NavBar({
   title,
   navButtonLeft,
   navButtonRight,
@@ -113,24 +119,22 @@ export function NavBar({
   style?: any;
 }) {
   return (
-    <Suspense fallback={null}>
-      <div
-        style={{
-          display: "flex",
-          height: `${NAV_BAR_HEIGHT}px`,
-          position: "relative",
-          justifyContent: "space-between",
-          padding: "10px 16px",
-          ...style,
-        }}
-      >
-        <div style={{ position: "relative", width: "100%", display: "flex" }}>
-          <NavButton button={navButtonLeft} />
-          <CenterDisplay title={title} />
-          <NavButton button={navButtonRight} align="right" />
-        </div>
-      </div>
-    </Suspense>
+    <View
+      style={{
+        display: "flex",
+        height: `${NAV_BAR_HEIGHT}px`,
+        position: "relative",
+        justifyContent: "space-between",
+        padding: "10px 16px",
+        ...style,
+      }}
+    >
+      <View style={{ position: "relative", width: "100%", display: "flex" }}>
+        <NavButton button={navButtonLeft} />
+        <CenterDisplay title={title} />
+        <NavButton button={navButtonRight} align="right" />
+      </View>
+    </View>
   );
 }
 
@@ -143,7 +147,7 @@ function NavButton({
 }) {
   const alignment = { [align]: 0 };
   return (
-    <div
+    <View
       style={{
         position: "absolute",
         height: "100%",
@@ -154,15 +158,14 @@ function NavButton({
       }}
     >
       {button ? button : <DummyButton />}
-    </div>
+    </View>
   );
 }
 
-export function NavBackButton({ onClick }: { onClick: () => void }) {
-  const classes = useStyles();
+function NavBackButton({ onClick }: { onClick: () => void }) {
   const theme = useCustomTheme();
   return (
-    <div
+    <View
       style={{
         width: `${NAV_BUTTON_WIDTH}px`,
         display: "flex",
@@ -180,11 +183,11 @@ export function NavBackButton({ onClick }: { onClick: () => void }) {
       >
         <ArrowBack style={{ color: theme.custom.colors.secondary }} />
       </IconButton>
-    </div>
+    </View>
   );
 }
 
-export function NavContent({
+function NavContent({
   renderComponent,
   style,
 }: {
@@ -196,60 +199,41 @@ export function NavContent({
     ...style,
   };
   return (
-    <div style={_style}>
-      <Scrollbar>
-        <Suspense fallback={<Loading />}>{renderComponent}</Suspense>
-      </Scrollbar>
-    </div>
+    <View style={_style}>
+      <ScrollBar>{renderComponent}</ScrollBar>
+    </View>
   );
 }
 
 function CenterDisplay({ title }: { title: string }) {
   return (
-    <Suspense fallback={<div></div>}>
-      <div
-        style={{
-          visibility: title ? undefined : "hidden",
-          overflow: "hidden",
-          maxWidth: `calc(100% - ${NAV_BUTTON_WIDTH * 2}px)`,
-          margin: "0 auto",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <NavTitleLabel title={title} />
-      </div>
-    </Suspense>
+    <View
+      style={{
+        visibility: title ? undefined : "hidden",
+        overflow: "hidden",
+        maxWidth: `calc(100% - ${NAV_BUTTON_WIDTH * 2}px)`,
+        margin: "0 auto",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      <NavTitleLabel title={title} />
+    </View>
   );
 }
 
-export function NavTitleLabel({ title }: any) {
-  const classes = useStyles();
-  const titleComponents = title.split("/");
-  return titleComponents.length === 2 ? (
-    <Typography className={classes.overviewLabel} title={title}>
-      <span className={classes.overviewLabelPrefix}>
-        {titleComponents[0]} /
-      </span>
-      {titleComponents[1]}
-    </Typography>
-  ) : (
-    <Typography className={classes.overviewLabel} title={title}>
-      {title}
-    </Typography>
-  );
+function NavTitleLabel({ title }: any) {
+  return <Text className={classes.overviewLabel}>{title}</Text>;
 }
 
-export function DummyButton() {
-  const classes = useStyles();
-  return <div className={classes.menuButtonContainer}></div>;
+function DummyButton() {
+  return <View className={classes.menuButtonContainer}></View>;
 }
 
-export function NavBackButton({ onClick }: { onClick: () => void }) {
-  const classes = useStyles();
+function NavBackButton({ onClick }: { onClick: () => void }) {
   const theme = useCustomTheme();
   return (
-    <div
+    <View
       style={{
         width: `${NAV_BUTTON_WIDTH}px`,
         display: "flex",
@@ -267,6 +251,6 @@ export function NavBackButton({ onClick }: { onClick: () => void }) {
       >
         <ArrowBack style={{ color: theme.custom.colors.secondary }} />
       </IconButton>
-    </div>
+    </View>
   );
 }
