@@ -68,6 +68,7 @@ export function TokenTable() {
         tokenAccountsFiltered.length > limit && (
           <BalancesTableFooter
             count={tokenAccountsFiltered.length}
+            limit={limit}
             showAll={showAll}
             setShowAll={setShowAll}
           />
@@ -104,13 +105,19 @@ function TokenRow({ token, blockchain }: { token: any; blockchain: string }) {
   );
 }
 
-export function BalancesTableFooter({ count, showAll, setShowAll }: any) {
+export function BalancesTableFooter({
+  count,
+  limit,
+  showAll,
+  setShowAll,
+}: any) {
   const { showContent } = useBalancesContext();
   return showContent ? (
     <TokenTableFooter
       showAll={showAll}
       onClick={() => setShowAll((showAll: boolean) => !showAll)}
       count={count}
+      limit={limit}
     />
   ) : (
     <></>
@@ -121,10 +128,12 @@ function TokenTableFooter({
   showAll,
   onClick,
   count,
+  limit,
 }: {
   showAll: boolean;
   onClick: () => void;
   count: number;
+  limit: number;
 }) {
   const classes = useStyles();
   return (
@@ -142,7 +151,7 @@ function TokenTableFooter({
         }}
       >
         <Typography className={classes.footerLabel}>
-          {showAll ? `Hide ${count}` : `Show all ${count}`}
+          {showAll ? `Hide ${count - limit}` : `Show all ${count}`}
         </Typography>
       </div>
     </ListItem>
