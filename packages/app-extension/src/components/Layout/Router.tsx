@@ -15,8 +15,6 @@ import {
 } from "@coral-xyz/recoil";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { IconButton } from "@mui/material";
-import TransitEnterexitIcon from "@mui/icons-material/TransitEnterexit";
 import { Balances } from "../Unlocked/Balances";
 import { Token } from "../Unlocked/Balances/TokensWidget/Token";
 import { Apps } from "../Unlocked/Apps";
@@ -60,21 +58,6 @@ function AppsPage() {
 function TokenPage() {
   const { props } = useDecodedSearchParams<SearchParamsFor.Token>();
   return <NavScreen component={<Token {...props} />} />;
-}
-
-function ExitAppButton() {
-  const theme = useCustomTheme();
-  const nav = useNavigation();
-  return (
-    <IconButton
-      style={{
-        padding: 0,
-      }}
-      onClick={() => nav.pop()}
-    >
-      <TransitEnterexitIcon style={{ color: theme.custom.colors.secondary }} />
-    </IconButton>
-  );
 }
 
 function NavScreen({ component }: { component: React.ReactNode }) {
