@@ -40,8 +40,14 @@ export function App() {
         })}
         style={{}}
       >
-        <NavScreen name={"root"} component={() => <InnerTab1 />} />
-        <NavScreen name={"root2"} component={() => <InnerTab2 />} />
+        <NavScreen
+          name={"root"}
+          component={(props: any) => <InnerTab1 {...props} />}
+        />
+        <NavScreen
+          name={"root2"}
+          component={(props: any) => <InnerTab2 {...props} />}
+        />
       </NavStack>
     </View>
   );

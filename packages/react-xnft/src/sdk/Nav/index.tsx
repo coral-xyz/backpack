@@ -59,8 +59,6 @@ function NavStackInner({
     title = titleDefault;
   }
 
-  console.log("RENDERING HERE", activeRoute.name);
-
   return (
     <NavAnimation routeName={activeRoute.name} navAction={"push"}>
       <WithNav

@@ -308,7 +308,6 @@ function Path({ props }: any) {
 }
 
 function NavAnimation({ props, children }: any) {
-  console.log("NAV ANIMATION HERE", props);
   return (
     <AnimatePresence initial={false}>
       <WithMotion id={props.routeName} navAction={props.navAction}>
