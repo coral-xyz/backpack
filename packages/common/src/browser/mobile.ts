@@ -13,7 +13,7 @@ import {
   MOBILE_CHANNEL_FE_RESPONSE_INNER,
 } from "../constants";
 // use expo-secure-store if in react-native, otherwise fake-expo-secure-store.ts
-import { getItemAsync, setItemAsync } from "expo-secure-store";
+import { deleteItemAsync, getItemAsync, setItemAsync } from "expo-secure-store";
 
 const logger = getLogger("common/mobile");
 
@@ -230,6 +230,20 @@ export function startMobileIfNeeded() {
   // so we must JSON.parse and JSON.stringify values when needed
   // https://docs.expo.dev/versions/latest/sdk/securestore
   const handleGetLocalStorage = async (key: string) => {
+    // const stores = [
+    //   "keyring-store",
+    //   "keyname-store",
+    //   "wallet-data",
+    //   "nav-store7",
+    // ];
+    // for (const store of stores) {
+    //   try {
+    //     await deleteItemAsync(store);
+    //   } catch (err) {
+    //     // ignore
+    //   }
+    // }
+
     return [JSON.parse(String(await getItemAsync(key))), undefined];
   };
   const handleSetLocalStorage = async (key: string, value: any) => {

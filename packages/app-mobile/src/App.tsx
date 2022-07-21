@@ -1,3 +1,4 @@
+import { Blockchain } from "@coral-xyz/common";
 import {
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
@@ -7,10 +8,13 @@ import {
   useActiveWallet,
   useBackgroundClient,
   useBackgroundKeepAlive,
+  useBlockchainTokensSorted,
   useKeyringStoreState,
+  useSolanaConnectionUrl,
+  useTotal,
 } from "@coral-xyz/recoil";
 import { useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Text } from "react-native";
+import { KeyboardAvoidingView, Text, View } from "react-native";
 import { NativeRouter, Route, Routes, useNavigate } from "react-router-native";
 import tw from "twrnc";
 import { CustomButton } from "./components/CustomButton";
@@ -19,6 +23,7 @@ import { PasswordInput } from "./components/PasswordInput";
 import { ButtonFooter, MainContent } from "./components/Templates";
 import NeedsOnboarding from "./screens/NeedsOnboarding";
 import CreateWallet from "./screens/NeedsOnboarding/CreateWallet";
+import { ToggleConnection } from "./screens/ToggleConnection";
 
 const HomeScreen = () => {
   const keyringStoreState = useKeyringStoreState();
@@ -39,6 +44,19 @@ const UnlockedScreen = () => {
   const background = useBackgroundClient();
   const navigate = useNavigate();
   const wallet = useActiveWallet();
+  const { totalBalance, totalChange, percentChange } = useTotal(
+    Blockchain.SOLANA
+  );
+  const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
+  const connectionUrl = useSolanaConnectionUrl();
+  console.log(wallet.publicKey.toString());
+  console.log({
+    tokenAccountsSorted,
+  });
+
+  const tokenAccountsFiltered = tokenAccountsSorted.filter(
+    (t: any) => t.nativeBalance !== 0
+  );
 
   return (
     <>
@@ -46,8 +64,26 @@ const UnlockedScreen = () => {
         <Text style={tw`text-white text-xs`}>
           Unlocked: {wallet.publicKey.toString()}
         </Text>
+        <Text style={tw`text-white text-xs`}>{connectionUrl}</Text>
+        <View style={tw`bg-black p-4 rounded-xl`}>
+          <Text style={tw`text-white text-xs`}>Tokens</Text>
+          <Text style={tw`text-white text-xs`}>
+            {JSON.stringify({
+              totalBalance,
+              totalChange,
+              percentChange,
+              tokenAccountsFiltered,
+            })}
+          </Text>
+        </View>
       </MainContent>
       <ButtonFooter>
+        <CustomButton
+          text="Toggle Connection"
+          onPress={() => {
+            navigate("/toggle-connection");
+          }}
+        />
         <CustomButton
           text="Lock"
           onPress={async () => {
@@ -118,10 +154,11 @@ export default function App() {
   return (
     <NativeRouter>
       <NotificationsProvider>
-        <KeyboardAvoidingView>
+        <KeyboardAvoidingView style={tw`flex-1`} behavior="padding">
           <Routes>
             <Route path="/" element={<HomeScreen />} />
             <Route path="/create-wallet" element={<CreateWallet />} />
+            <Route path="/toggle-connection" element={<ToggleConnection />} />
             <Route
               path="/import-wallet"
               element={<CreateWallet importExisting />}
