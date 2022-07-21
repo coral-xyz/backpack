@@ -9,6 +9,8 @@ import {
   Button,
   Tabs,
   Tab,
+  NavStack,
+  NavScreen,
 } from "react-xnft";
 import * as anchor from "@project-serum/anchor";
 import {
@@ -28,7 +30,15 @@ export function App() {
         backgroundColor: theme.custom.colors.background,
       }}
     >
-      {tokenAccounts === null ? <_Loading /> : <_App />}
+      <NavStack
+        initialRoute={{ name: "root" }}
+        options={(args) => {
+          title: "Armani";
+        }}
+        style={{}}
+      >
+        <NavScreen name={"root"} component={InnerTab2} />
+      </NavStack>
     </View>
   );
 }

@@ -2,8 +2,8 @@ import React from "react";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { View, Text, Button, ScrollBar } from "../../elements";
 import { useNavStack, NavStackProvider, NavStackOptions } from "./Context";
+import { ArrowBack } from "../Icons";
 
-/*
 // TODO: share this with the main app.
 const NAV_BAR_HEIGHT = 56;
 const NAV_BUTTON_WIDTH = 38;
@@ -58,19 +58,20 @@ function NavStackInner({
   }
   return (
     <WithNav
-          title={title}
-          navButtonLeft={navButtonLeft}
-          navButtonRight={navButtonRight}
-          navbarStyle={style}
-          navContentStyle={contentStyle}
+      title={title}
+      navButtonLeft={navButtonLeft}
+      navButtonRight={navButtonRight}
+      navbarStyle={style}
+      navContentStyle={contentStyle}
     >
-          {activeScreen.props.component({ ...(activeRoute.props ?? {}) })}
-        </WithNav>
+      {activeScreen.props.component({ ...(activeRoute.props ?? {}) })}
+    </WithNav>
   );
 }
 
-export function NavScreen() {
-  return <></>;
+export function NavScreen({ component, name }: any) {
+  // TODO: allow empty tags.
+  return <View style={{ display: "none" }}></View>;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -171,10 +172,8 @@ function NavBackButton({ onClick }: { onClick: () => void }) {
         position: "relative",
       }}
     >
-      <Button
-        onClick={onClick}
-      >
-        <ArrowBack style={{ color: theme.custom.colors.secondary }} />
+      <Button onClick={onClick}>
+        <ArrowBack fill={theme.custom.colors.secondary} />
       </Button>
     </View>
   );
@@ -216,15 +215,26 @@ function CenterDisplay({ title }: { title: string }) {
 }
 
 function NavTitleLabel({ title }: any) {
-  return <Text className={classes.overviewLabel}>{title}</Text>;
+  const theme = useCustomTheme();
+  return (
+    <Text
+      style={{
+        fontSize: "18px",
+        fontWeight: 500,
+        color: theme.custom.colors.fontColor,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        textAlign: "center",
+        lineHeight: "24px",
+      }}
+    >
+      {title}
+    </Text>
+  );
 }
 
 function DummyButton() {
-  return <View className={classes.menuButtonContainer}></View>;
-}
-
-function NavBackButton({ onClick }: { onClick: () => void }) {
-  const theme = useCustomTheme();
   return (
     <View
       style={{
@@ -232,22 +242,10 @@ function NavBackButton({ onClick }: { onClick: () => void }) {
         display: "flex",
         justifyContent: "center",
         flexDirection: "column",
-        position: "relative",
       }}
-    >
-      <IconButton
-        disableRipple
-        onClick={onClick}
-        className={classes.backButton}
-        size="large"
-        data-testid="back-button"
-      >
-        <ArrowBack style={{ color: theme.custom.colors.secondary }} />
-      </IconButton>
-    </View>
+    ></View>
   );
 }
-*/
 
 /*
     <AnimatePresence initial={false}>
