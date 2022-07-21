@@ -10,6 +10,13 @@ const NAV_BUTTON_WIDTH = 38;
 
 export { useNavigation } from "./Context";
 
+/*
+    <AnimatePresence initial={false}>
+      <WithMotion id={activeRoute.name} navAction={activeRoute.navAction}>
+      </WithMotion>
+    </AnimatePresence>
+*/
+
 export function NavStack({
   initialRoute,
   children,
@@ -76,9 +83,6 @@ export function NavScreen({ component, name }: any) {
   // TODO: allow empty tags.
   return <View style={{ display: "none" }}></View>;
 }
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
 
 function WithNav({
   title,
@@ -258,10 +262,3 @@ function DummyButton() {
     ></View>
   );
 }
-
-/*
-    <AnimatePresence initial={false}>
-      <WithMotion id={activeRoute.name} navAction={activeRoute.navAction}>
-      </WithMotion>
-    </AnimatePresence>
-*/
