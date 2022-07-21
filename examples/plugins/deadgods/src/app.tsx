@@ -1,15 +1,19 @@
-import { PublicKey, Transaction, SystemProgram } from "@solana/web3.js";
+import { useEffect } from "react";
 import {
   usePublicKey,
   useConnection,
   useTheme,
+  useNavigation,
   View,
   Image,
   Text,
   Button,
   Tabs,
   Tab,
+  NavStack,
+  NavScreen,
 } from "react-xnft";
+import { PublicKey, Transaction, SystemProgram } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import {
   useDegodTokens,
@@ -18,6 +22,7 @@ import {
   DEAD_FARM,
 } from "./utils";
 
+// TODO: checkpointing this now that we have the nav stack.
 export function App() {
   const theme = useTheme();
   const tokenAccounts = useDegodTokens();
@@ -28,13 +33,64 @@ export function App() {
         backgroundColor: theme.custom.colors.background,
       }}
     >
-      {tokenAccounts === null ? <_Loading /> : <_App />}
+      <NavStack
+        initialRoute={{ name: "root" }}
+        options={({ route }) => {
+          switch (route.name) {
+            case "root":
+              return {
+                title: "nav1",
+              };
+            case "root2":
+              return { title: "nav2" };
+            default:
+              throw new Error("unknown route");
+          }
+        }}
+        style={{}}
+      >
+        <NavScreen
+          name={"root"}
+          component={(props: any) => <InnerTab1 {...props} />}
+        />
+        <NavScreen
+          name={"root2"}
+          component={(props: any) => <InnerTab2 {...props} />}
+        />
+      </NavStack>
+    </View>
+  );
+}
+
+function InnerTab1() {
+  const nav = useNavigation();
+
+  return (
+    <View
+      style={{ color: "blue" }}
+      onClick={() => {
+        nav.push("root2");
+      }}
+    >
+      Click me. TODO: checkpointing this now that we have the nav stack. Next is
+      to make the degods design match figma.
     </View>
   );
 }
 
 function InnerTab2() {
-  return <View style={{ color: "red" }}>inner tab 2 here</View>;
+  const nav = useNavigation();
+
+  return (
+    <View
+      style={{ color: "red" }}
+      onClick={() => {
+        nav.push("root");
+      }}
+    >
+      Click me 2
+    </View>
+  );
 }
 
 function _Loading() {

@@ -220,13 +220,7 @@ export function EyeIcon() {
 
 export function BalancesIcon({ fill = "#99A4B4" }) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-    >
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <path
         d="M9 20C13.4183 20 17 16.4183 17 12C17 7.58172 13.4183 4 9 4C4.58172 4 1 7.58172 1 12C1 16.4183 4.58172 20 9 20Z"
         fill={fill}
@@ -270,13 +264,7 @@ export function GridIcon({ fill = "#99A4B4" }) {
 
 export function ImageIcon({ fill = "#99A4B4" }) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-    >
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <path
         d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.9 13.98L11 16.51L14.1 12.52C14.3 12.26 14.7 12.26 14.9 12.53L18.41 17.21C18.66 17.54 18.42 18.01 18.01 18.01H6.02C5.6 18.01 5.37 17.53 5.63 17.2L8.12 14C8.31 13.74 8.69 13.73 8.9 13.98Z"
         fill={fill}
@@ -287,13 +275,7 @@ export function ImageIcon({ fill = "#99A4B4" }) {
 
 export function PowerIcon({ fill = "#99A4B4" }) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-    >
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <path
         d="M8.88896 0H7.11125V8.88896H8.88896V0ZM13.1867 1.92437L11.929 3.18208C13.3244 4.32438 14.2223 6.05333 14.2223 8C14.2223 11.4356 11.4356 14.2223 8 14.2223C4.56437 14.2223 1.77771 11.4356 1.77771 8C1.77771 6.05333 2.67542 4.32438 4.07104 3.18229L2.81333 1.92458C1.09771 3.39104 0 5.56437 0 8C0 12.4177 3.58229 16 8 16C12.4177 16 16 12.4177 16 8C16 5.56437 14.9023 3.39104 13.1867 1.92437Z"
         fill={fill}

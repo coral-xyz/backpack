@@ -132,7 +132,12 @@ const RECONCILER = ReactReconciler({
         return createLoadingInstance(kind, props, r, h, o);
       case NodeKind.ScrollBar:
         return createScrollBarInstance(kind, props, r, h, o);
-
+      case NodeKind.Svg:
+        return createSvgInstance(kind, props, r, h, o);
+      case NodeKind.Path:
+        return createPathInstance(kind, props, r, h, o);
+      case NodeKind.NavAnimation:
+        return createNavAnimationInstance(kind, props, r, h, o);
       case NodeKind.BalancesTable:
         return createBalancesTableInstance(kind, props, r, h, o);
       case NodeKind.BalancesTableHead:
@@ -206,6 +211,14 @@ const RECONCILER = ReactReconciler({
           pload = { value: newProps.value };
         }
         return pload;
+      case NodeKind.NavAnimation:
+        let naPayload: UpdateDiff | null = null;
+        // @ts-ignore
+        if (oldProps.routeName !== newProps.routeName) {
+          // @ts-ignore
+          naPayload = { routeName: newProps.routeName };
+        }
+        return naPayload;
       case NodeKind.Image:
         return null;
       case NodeKind.Table:
@@ -217,6 +230,10 @@ const RECONCILER = ReactReconciler({
       case NodeKind.Loading:
         return null;
       case NodeKind.ScrollBar:
+        return null;
+      case NodeKind.Svg:
+        return null;
+      case NodeKind.Path:
         return null;
       case NodeKind.BalancesTable:
         return null;
@@ -300,6 +317,15 @@ const RECONCILER = ReactReconciler({
           instance.props.value = updatePayload.value;
         }
         break;
+      case NodeKind.NavAnimation:
+        if (
+          updatePayload.routeName !== undefined &&
+          updatePayload.routeName !== null
+        ) {
+          // @ts-ignore
+          instance.props.routeName = updatePayload.routeName;
+        }
+        break;
       case NodeKind.Table:
         break;
       case NodeKind.TableRow:
@@ -310,6 +336,10 @@ const RECONCILER = ReactReconciler({
         break;
       case NodeKind.Button:
         break;
+      case NodeKind.Svg:
+        throw new Error("commitUpdate Svg not yet implemented");
+      case NodeKind.Path:
+        throw new Error("commitUpdate Path not yet implemented");
       case NodeKind.ScrollBar:
         throw new Error("commitUpdate ScrollBar not yet implemented");
       case NodeKind.Loading:
@@ -619,6 +649,7 @@ function createLoadingInstance(
   return {
     id,
     kind: NodeKind.Loading,
+    // @ts-ignore
     props,
     style: props.style || {},
     children: [],
@@ -636,6 +667,65 @@ function createScrollBarInstance(
   return {
     id,
     kind: NodeKind.ScrollBar,
+    props: {
+      ...props,
+      children: undefined,
+    },
+    style: {},
+    children: [],
+  };
+}
+
+function createSvgInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): SvgNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.Svg,
+    // @ts-ignore
+    props: {
+      ...props,
+      children: undefined,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
+function createPathInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): PathNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.Path,
+    // @ts-ignore
+    props: {
+      ...props,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
+function createNavAnimationInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): NavAnimationNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.NavAnimation,
+    // @ts-ignore
     props: {
       ...props,
       children: undefined,
@@ -814,6 +904,9 @@ export type NodeSerialized =
   | ButtonNodeSerialized
   | LoadingNodeSerialized
   | ScrollBarNodeSerialized
+  | SvgNodeSerialized
+  | PathNodeSerialized
+  | NavAnimationNodeSerialized
   | BalancesTableNodeSerialized
   | BalancesTableHeadNodeSerialized
   | BalancesTableContentNodeSerialized
@@ -830,6 +923,7 @@ type NodeProps =
   | ButtonProps
   | LoadingProps
   | ScrollBarProps
+  | NavAnimationProps
   | BalancesTableProps
   | BalancesTableHeadProps
   | BalancesTableContentProps
@@ -849,6 +943,10 @@ export enum NodeKind {
   Button = "Button",
   Loading = "Loading",
   ScrollBar = "ScrollBar",
+  Svg = "Svg",
+  Path = "Path",
+  NavAnimation = "NavAnimation",
+
   //
   // Widget.
   //
@@ -952,6 +1050,44 @@ type ScrollBarNodeSerialized = DefNodeSerialized<
 >;
 type ScrollBarProps = {
   style: Style;
+  children: undefined;
+};
+
+//
+// Svg.
+//
+type SvgNodeSerialized = DefNodeSerialized<NodeKind.Svg, SvgProps>;
+type SvgProps = {
+  width: string;
+  height: string;
+  viewBox: string;
+  fill: string;
+  children: undefined;
+  style: Style;
+};
+
+//
+// Path.
+//
+type PathNodeSerialized = DefNodeSerialized<NodeKind.Path, PathProps>;
+type PathProps = {
+  d: string;
+  fill: string;
+  fillRule?: string;
+  clipRule?: string;
+};
+
+//
+// NavAnimation.
+//
+type NavAnimationNodeSerialized = DefNodeSerialized<
+  NodeKind.NavAnimation,
+  NavAnimationProps
+>;
+type NavAnimationProps = {
+  routeName: string;
+  navAction: string;
+  style: undefined;
   children: undefined;
 };
 

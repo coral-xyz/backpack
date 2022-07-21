@@ -229,7 +229,7 @@ function FullApp() {
 
   return (
     <AnimatePresence initial={false}>
-      <WithLockMotion key={isLocked ? "locked" : "unlocked"}>
+      <WithLockMotion id={isLocked ? "locked" : "unlocked"}>
         <Suspense fallback={<div style={{ display: "none" }}></div>}>
           {isLocked && <LockedBootstrap />}
           {!isLocked && <Unlocked />}
@@ -239,7 +239,7 @@ function FullApp() {
   );
 }
 
-function WithLockMotion({ children, key }: any) {
+function WithLockMotion({ children, id }: any) {
   return (
     <motion.div
       style={{
@@ -249,7 +249,7 @@ function WithLockMotion({ children, key }: any) {
         right: 0,
         bottom: 0,
       }}
-      key={key}
+      key={id}
       variants={MOTION_VARIANTS}
       initial={"initial"}
       animate={"animate"}

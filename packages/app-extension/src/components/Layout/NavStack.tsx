@@ -1,7 +1,9 @@
 import React, { useState, useContext } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { useKeyringStoreState } from "@coral-xyz/recoil";
+import { AnimatePresence } from "framer-motion";
 import { WithNav, NavBackButton } from "./Nav";
+import { WithMotion } from "@coral-xyz/react-xnft-renderer";
+
+export { WithMotion } from "@coral-xyz/react-xnft-renderer";
 
 /**
  * Ephemeral nav stack API for animating transitions between components on the
@@ -168,39 +170,3 @@ export function NavStackScreen({
 }) {
   return <></>;
 }
-
-export function WithMotion({ children, id, navAction }: any) {
-  return (
-    <motion.div
-      key={id}
-      style={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        flex: 1,
-      }}
-      variants={MOTION_VARIANTS}
-      initial={!navAction || navAction === "tab" ? {} : "initial"}
-      animate={!navAction || navAction === "tab" ? {} : "animate"}
-      exit={!navAction || navAction === "tab" ? {} : "exit"}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-export const MOTION_VARIANTS = {
-  initial: {
-    opacity: 0,
-  },
-  animate: {
-    translateX: 0,
-    opacity: 1,
-    transition: { delay: 0.09 },
-  },
-  exit: {
-    translateX: window.innerWidth,
-    transition: { delay: 0.09, duration: 0.1 },
-    opacity: 0,
-  },
-};

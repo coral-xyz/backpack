@@ -1,4 +1,3 @@
-import { useLocation } from "react-router-dom";
 import { Tabs, Tab } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useTab, useBackgroundClient } from "@coral-xyz/recoil";
@@ -57,15 +56,11 @@ function TabBar() {
   const classes = useStyles();
   const theme = useCustomTheme();
   const tab = useTab();
-  const location = useLocation();
-  const pathname = location.pathname;
   const background = useBackgroundClient();
-  const hideTabs =
-    pathname.startsWith("/apps/plugins") ||
-    pathname.startsWith("/apps/simulator");
+
   return (
     <Tabs
-      value={tab}
+      value={tab === "" ? undefined : tab}
       onChange={(_e, newValue) =>
         background.request({
           method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
@@ -81,9 +76,6 @@ function TabBar() {
         style: {
           display: "none",
         },
-      }}
-      style={{
-        display: hideTabs ? "none" : undefined,
       }}
     >
       <Tab
