@@ -1,6 +1,11 @@
+import { useSearchParams, useLocation } from "react-router-dom";
 import { Button, Divider } from "@mui/material";
 import { PluginRenderer } from "@coral-xyz/react-xnft-renderer";
-import { usePlugins, useTablePlugins } from "@coral-xyz/recoil";
+import {
+  useBackgroundClient,
+  usePlugins,
+  useTablePlugins,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { PowerIcon, MoreIcon } from "../../Icon";
@@ -44,8 +49,6 @@ export function PluginTableDetailDisplay({
 }
 
 function PluginControl({ closePlugin }: any) {
-  const theme = useCustomTheme();
-
   return (
     <div
       style={{
@@ -63,7 +66,6 @@ function PluginControl({ closePlugin }: any) {
         style={{
           width: "87px",
           height: "32px",
-          border: `solid 1pt ${theme.custom.colors.border}`,
           borderRadius: "18.5px",
           display: "flex",
           background: "#fff",
@@ -74,7 +76,7 @@ function PluginControl({ closePlugin }: any) {
           onClick={() => {}}
           style={{
             flex: 1,
-            height: "30px",
+            height: "32px",
             padding: 0,
             display: "flex",
             flexDirection: "column",
@@ -82,7 +84,7 @@ function PluginControl({ closePlugin }: any) {
             minWidth: "41.67px",
           }}
         >
-          <MoreIcon fill={theme.custom.colors.border1} />
+          <MoreIcon fill={"#000000"} />
         </Button>
         <div
           style={{
@@ -96,7 +98,7 @@ function PluginControl({ closePlugin }: any) {
             style={{
               width: "0.5px",
               height: "20px",
-              backgroundColor: theme.custom.colors.secondary,
+              backgroundColor: "#E9E9E9",
             }}
           />
         </div>
@@ -105,7 +107,7 @@ function PluginControl({ closePlugin }: any) {
           onClick={() => closePlugin()}
           style={{
             flex: 1,
-            height: "30px",
+            height: "32px",
             padding: 0,
             display: "flex",
             flexDirection: "column",
@@ -113,7 +115,7 @@ function PluginControl({ closePlugin }: any) {
             minWidth: "41.67px",
           }}
         >
-          <PowerIcon fill={theme.custom.colors.border1} />
+          <PowerIcon fill={"#000000"} />
         </Button>
       </div>
     </div>

@@ -8,8 +8,6 @@ import {
   Image,
   Text,
   Button,
-  Tabs,
-  Tab,
   NavStack,
   NavScreen,
 } from "react-xnft";
@@ -22,27 +20,29 @@ import {
   DEAD_FARM,
 } from "./utils";
 
-// TODO: checkpointing this now that we have the nav stack.
 export function App() {
-  const theme = useTheme();
-  const tokenAccounts = useDegodTokens();
   return (
     <View
       style={{
+        backgroundImage:
+          "url(https://user-images.githubusercontent.com/6990215/180327248-61e7675e-490b-4bdf-8588-370aa008302a.png)",
+        backgroundRepeat: "no-repeat",
         height: "100%",
-        backgroundColor: theme.custom.colors.background,
+        backgroundColor: "#111827",
       }}
     >
       <NavStack
-        initialRoute={{ name: "root" }}
+        initialRoute={{ name: "stake" }}
         options={({ route }) => {
           switch (route.name) {
-            case "root":
+            case "stake":
               return {
-                title: "nav1",
+                title: "",
               };
-            case "root2":
-              return { title: "nav2" };
+            case "deadgods":
+              return { title: "Stake Deadgods" };
+            case "degods":
+              return { title: "Stake Degods" };
             default:
               throw new Error("unknown route");
           }
@@ -50,35 +50,46 @@ export function App() {
         style={{}}
       >
         <NavScreen
-          name={"root"}
-          component={(props: any) => <InnerTab1 {...props} />}
+          name={"stake"}
+          component={(props: any) => <Stake {...props} />}
         />
         <NavScreen
-          name={"root2"}
-          component={(props: any) => <InnerTab2 {...props} />}
+          name={"deadgods"}
+          component={(props: any) => <DeadGods {...props} />}
         />
       </NavStack>
     </View>
   );
 }
 
-function InnerTab1() {
+function Stake() {
   const nav = useNavigation();
 
   return (
     <View
-      style={{ color: "blue" }}
+      style={{
+        height: "100%",
+      }}
       onClick={() => {
         nav.push("root2");
       }}
     >
-      Click me. TODO: checkpointing this now that we have the nav stack. Next is
-      to make the degods design match figma.
+      <View
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(17, 24, 39, 0) 38.3%, rgba(17, 24, 39, 0.102162) 38.3%, #111827 81.65%)",
+          position: "fixed",
+          left: 0,
+          right: 0,
+          top: 0,
+          height: "519px",
+        }}
+      ></View>
     </View>
   );
 }
 
-function InnerTab2() {
+function DeadGods() {
   const nav = useNavigation();
 
   return (
@@ -88,57 +99,8 @@ function InnerTab2() {
         nav.push("root");
       }}
     >
-      Click me 2
+      InnerTab2 Click me 2InnerTab2
     </View>
-  );
-}
-
-function _Loading() {
-  return (
-    <View
-      style={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-      }}
-    >
-      <Image
-        src="https://www.deadgods.com/images/degods_bitmap.svg"
-        style={{
-          display: "block",
-          marginLeft: "auto",
-          marginRight: "auto",
-        }}
-      />
-    </View>
-  );
-}
-
-function _App() {
-  const theme = useTheme();
-  return (
-    <Tabs
-      options={({ route }) => {
-        return {
-          tabBarIcon: ({ focused }) => {
-            const color = focused
-              ? theme.custom.colors.activeNavButton
-              : theme.custom.colors.secondary;
-            if (route.name === "staked") {
-              return <View></View>;
-            } else {
-              return <View></View>;
-            }
-          },
-          tabBarActiveTintColor: theme.custom.colors.activeNavButton,
-          tabBarInactiveTintColor: theme.custom.colors.secondary,
-        };
-      }}
-    >
-      <Tab name="staked" component={AppInner} />
-      <Tab name="unstaked" component={InnerTab2} />
-    </Tabs>
   );
 }
 
