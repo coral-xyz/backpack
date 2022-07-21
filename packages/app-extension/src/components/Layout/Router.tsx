@@ -117,6 +117,7 @@ function WithMotionWrapper({ children }: { children: any }) {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const navAction = searchParams.get("nav");
+
   return (
     <WithMotion id={location.pathname} navAction={navAction}>
       {children}

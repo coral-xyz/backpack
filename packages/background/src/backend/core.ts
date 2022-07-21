@@ -540,10 +540,10 @@ export class Backend {
 export const SUCCESS_RESPONSE = "success";
 const defaultNav = makeDefaultNav();
 
-function setSearchParam(url: string, key: string, value: string) {
+function setSearchParam(url: string, key: string, value: string): string {
   const [path, search] = url.split("?");
   const searchParams = new URLSearchParams(search);
   searchParams.delete(key);
   searchParams.append(key, value);
-  return `${path}?${search}`;
+  return `${path}?${searchParams.toString()}`;
 }
