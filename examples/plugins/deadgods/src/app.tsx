@@ -36,10 +36,15 @@ export function App() {
       <NavStack
         initialRoute={{ name: "root" }}
         options={({ route }) => {
-          if (route.name === "root") {
-            return { title: "nav1" };
-          } else {
-            return { title: "nav2" };
+          switch (route.name) {
+            case "root":
+              return {
+                title: "nav1",
+              };
+            case "root2":
+              return { title: "nav2" };
+            default:
+              throw new Error("unknown route");
           }
         }}
         style={{}}
@@ -64,7 +69,6 @@ function InnerTab1() {
     <View
       style={{ color: "blue" }}
       onClick={() => {
-        console.log("testing nav 1 wtf");
         nav.push("root2");
       }}
     >
@@ -81,7 +85,6 @@ function InnerTab2() {
     <View
       style={{ color: "red" }}
       onClick={() => {
-        console.log("testing nav 2 wtf");
         nav.push("root");
       }}
     >
