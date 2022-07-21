@@ -19,6 +19,7 @@ import { Balances } from "../Unlocked/Balances";
 import { Token } from "../Unlocked/Balances/TokensWidget/Token";
 import { Apps } from "../Unlocked/Apps";
 import { Nfts } from "../Unlocked/Nfts";
+import { Swap } from "../Unlocked/Swap";
 import { SettingsButton } from "../Settings";
 import { WithNav, NavBackButton } from "./Nav";
 import { WithMotion } from "./NavStack";
@@ -32,6 +33,7 @@ export function Router() {
         <Route path="/balances/token" element={<TokenPage />} />
         <Route path="/apps" element={<AppsPage />} />
         <Route path="/nfts" element={<NftsPage />} />
+        <Route path="/swap" element={<SwapPage />} />
         <Route path="*" element={<Redirect />} />
       </Routes>
     </AnimatePresence>
@@ -58,6 +60,10 @@ function AppsPage() {
 function TokenPage() {
   const { props } = useDecodedSearchParams<SearchParamsFor.Token>();
   return <NavScreen component={<Token {...props} />} />;
+}
+
+function SwapPage() {
+  return <NavScreen component={<Swap />} />;
 }
 
 function NavScreen({ component }: { component: React.ReactNode }) {

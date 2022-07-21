@@ -5,9 +5,10 @@ import {
   TAB_NFTS,
   TAB_APPS,
   TAB_BALANCES,
+  TAB_SWAP,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
 } from "@coral-xyz/common";
-import { BalancesIcon, GridIcon, ImageIcon } from "../Icon";
+import { BalancesIcon, GridIcon, ImageIcon, SwapIcon } from "../Icon";
 
 const TAB_HEIGHT = 64;
 
@@ -100,6 +101,20 @@ function TabBar() {
           <GridIcon
             fill={
               tab === TAB_APPS
+                ? theme.custom.colors.tabIconSelected
+                : theme.custom.colors.secondary
+            }
+          />
+        }
+      />
+      <Tab
+        value={TAB_SWAP}
+        disableRipple
+        className={classes.tab}
+        icon={
+          <SwapIcon
+            fill={
+              tab === TAB_SWAP
                 ? theme.custom.colors.tabIconSelected
                 : theme.custom.colors.secondary
             }
