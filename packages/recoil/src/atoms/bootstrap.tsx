@@ -2,7 +2,7 @@ import { atom, selector } from "recoil";
 import { ParsedConfirmedTransaction, PublicKey } from "@solana/web3.js";
 import { UI_RPC_METHOD_NAVIGATION_READ } from "@coral-xyz/common";
 import { anchorContext } from "../atoms/wallet";
-import { TokenAccountWithKey, TABS } from "../types";
+import { TokenAccountWithKey } from "../types";
 import { fetchRecentTransactions } from "./recent-transactions";
 import { splTokenRegistry } from "./token-registry";
 import { fetchPriceData } from "./price-data";

@@ -1,3 +1,4 @@
+import "react-native-url-polyfill/auto";
 import { useStore, WEB_VIEW_EVENTS } from "@coral-xyz/common";
 import { registerRootComponent } from "expo";
 import { StatusBar } from "expo-status-bar";
@@ -24,6 +25,7 @@ function WrappedApp() {
 
 function Background() {
   const setInjectJavaScript = useStore((state) => state.setInjectJavaScript);
+
   return (
     <View
       style={{
