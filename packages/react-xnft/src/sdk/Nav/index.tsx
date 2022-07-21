@@ -10,13 +10,6 @@ const NAV_BUTTON_WIDTH = 38;
 
 export { useNavigation } from "./Context";
 
-/*
-    <AnimatePresence initial={false}>
-      <WithMotion id={activeRoute.name} navAction={activeRoute.navAction}>
-      </WithMotion>
-    </AnimatePresence>
-*/
-
 export function NavStack({
   initialRoute,
   children,
@@ -65,6 +58,8 @@ function NavStackInner({
   if (!title) {
     title = titleDefault;
   }
+
+  console.log("RENDERING HERE", activeRoute.name);
 
   return (
     <NavAnimation routeName={activeRoute.name} navAction={"push"}>
