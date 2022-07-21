@@ -9,6 +9,8 @@ import {
   Button,
   Tabs,
   Tab,
+  Svg,
+  Path,
 } from "react-xnft";
 import * as anchor from "@project-serum/anchor";
 import {

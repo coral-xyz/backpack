@@ -132,7 +132,10 @@ const RECONCILER = ReactReconciler({
         return createLoadingInstance(kind, props, r, h, o);
       case NodeKind.ScrollBar:
         return createScrollBarInstance(kind, props, r, h, o);
-
+      case NodeKind.Svg:
+        return createSvgInstance(kind, props, r, h, o);
+      case NodeKind.Path:
+        return createPathInstance(kind, props, r, h, o);
       case NodeKind.BalancesTable:
         return createBalancesTableInstance(kind, props, r, h, o);
       case NodeKind.BalancesTableHead:
@@ -217,6 +220,10 @@ const RECONCILER = ReactReconciler({
       case NodeKind.Loading:
         return null;
       case NodeKind.ScrollBar:
+        return null;
+      case NodeKind.Svg:
+        return null;
+      case NodeKind.Path:
         return null;
       case NodeKind.BalancesTable:
         return null;
@@ -310,6 +317,10 @@ const RECONCILER = ReactReconciler({
         break;
       case NodeKind.Button:
         break;
+      case NodeKind.Svg:
+        throw new Error("commitUpdate Svg not yet implemented");
+      case NodeKind.Path:
+        throw new Error("commitUpdate Path not yet implemented");
       case NodeKind.ScrollBar:
         throw new Error("commitUpdate ScrollBar not yet implemented");
       case NodeKind.Loading:
@@ -645,6 +656,45 @@ function createScrollBarInstance(
   };
 }
 
+function createSvgInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): SvgNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.Svg,
+    // @ts-ignore
+    props: {
+      ...props,
+      children: undefined,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
+function createPathInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): PathNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.Path,
+    // @ts-ignore
+    props: {
+      ...props,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
 function createBalancesTableInstance(
   _kind: NodeKind,
   props: NodeProps,
@@ -814,6 +864,8 @@ export type NodeSerialized =
   | ButtonNodeSerialized
   | LoadingNodeSerialized
   | ScrollBarNodeSerialized
+  | SvgNodeSerialized
+  | PathNodeSerialized
   | BalancesTableNodeSerialized
   | BalancesTableHeadNodeSerialized
   | BalancesTableContentNodeSerialized
@@ -849,6 +901,9 @@ export enum NodeKind {
   Button = "Button",
   Loading = "Loading",
   ScrollBar = "ScrollBar",
+  Svg = "Svg",
+  Path = "Path",
+
   //
   // Widget.
   //
@@ -953,6 +1008,30 @@ type ScrollBarNodeSerialized = DefNodeSerialized<
 type ScrollBarProps = {
   style: Style;
   children: undefined;
+};
+
+//
+// Svg.
+//
+type SvgNodeSerialized = DefNodeSerialized<NodeKind.Svg, SvgProps>;
+type SvgProps = {
+  width: string;
+  height: string;
+  viewBox: string;
+  fill: string;
+  children: undefined;
+  style: Style;
+};
+
+//
+// Path.
+//
+type PathNodeSerialized = DefNodeSerialized<NodeKind.Path, PathProps>;
+type PathProps = {
+  d: string;
+  fill: string;
+  fillRule?: string;
+  clipRule?: string;
 };
 
 //

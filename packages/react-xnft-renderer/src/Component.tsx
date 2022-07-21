@@ -230,6 +230,10 @@ export function Component({ viewData }) {
           children={viewData.children}
         />
       );
+    case NodeKind.Svg:
+      return <Svg props={props} children={viewData.children} />;
+    case NodeKind.Path:
+      return <Path props={props} />;
     case NodeKind.BalancesTable:
       return (
         <BalancesTable
@@ -273,6 +277,31 @@ export function Component({ viewData }) {
       console.error(viewData);
       throw new Error("unexpected view data");
   }
+}
+
+function Svg({ props, children }: any) {
+  return (
+    <svg
+      width={props.width}
+      height={props.height}
+      viewBox={props.viewBox}
+      fill={props.fill}
+    >
+      {children &&
+        children.map((c: Element) => <ViewRenderer key={c.id} element={c} />)}
+    </svg>
+  );
+}
+
+function Path({ props }: any) {
+  return (
+    <path
+      d={props.d}
+      fillRule={props.fillRule}
+      clipRule={props.clipRule}
+      fill={props.fill}
+    />
+  );
 }
 
 export function BalancesTable({
