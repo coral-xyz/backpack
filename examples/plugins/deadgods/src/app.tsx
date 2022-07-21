@@ -39,8 +39,8 @@ export function App() {
         })}
         style={{}}
       >
-        <NavScreen name={"root"} component={InnerTab1} />
-        <NavScreen name={"root2"} component={InnerTab2} />
+        <NavScreen name={"root"} component={() => <InnerTab1 />} />
+        <NavScreen name={"root2"} component={() => <InnerTab2 />} />
       </NavStack>
     </View>
   );
@@ -55,13 +55,13 @@ function InnerTab1() {
 
   return (
     <View
+      style={{ color: "blue" }}
       onClick={() => {
         console.log("testing nav 1 wtf");
         nav.push("root2");
       }}
-      style={{ color: "blue" }}
     >
-      inner tab 1 here
+      Click me 1
     </View>
   );
 }
@@ -75,13 +75,13 @@ function InnerTab2() {
 
   return (
     <View
+      style={{ color: "red" }}
       onClick={() => {
         console.log("testing nav 2 wtf");
         nav.push("root");
       }}
-      style={{ color: "red" }}
     >
-      inner tab 2 here
+      Click me 2
     </View>
   );
 }

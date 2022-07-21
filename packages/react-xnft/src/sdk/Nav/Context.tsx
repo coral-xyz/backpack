@@ -52,13 +52,18 @@ export function NavStackProvider({
   const [contentStyle, setContentStyle] = useState({});
 
   const push = (route: string, props: any) => {
-    setStack([...stack, { name: route, props, navAction: "push" }]);
+    setStack((oldStack) => [
+      ...oldStack,
+      { name: route, props, navAction: "push" },
+    ]);
   };
   const pop = () => {
-    let newStack = [...stack];
-    newStack = newStack.slice(0, newStack.length - 1);
-    newStack[newStack.length - 1]["navAction"] = "pop";
-    setStack(newStack);
+    setStack((oldStack) => {
+      let newStack = [...oldStack];
+      newStack = newStack.slice(0, newStack.length - 1);
+      newStack[newStack.length - 1]["navAction"] = "pop";
+      return newStack;
+    });
   };
   const toRoot = () => {
     setStack([stack[0]]);
