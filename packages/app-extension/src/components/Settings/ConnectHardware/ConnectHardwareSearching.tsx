@@ -29,16 +29,13 @@ export function ConnectHardwareSearching({
   //
   useEffect(() => {
     // @ts-ignore
-    const connectListener = navigator.hid.addEventListener(
-      "connect",
-      (event: any) => {
-        setNavigatorStateChange((prev) => prev + 1);
-      }
-    );
+    const connectListener = navigator.hid.addEventListener("connect", () => {
+      setNavigatorStateChange((prev) => prev + 1);
+    });
     // @ts-ignore
     const disconnectListener = navigator.hid.addEventListener(
       "disconnect",
-      async (event: any) => {
+      async () => {
         setNavigatorStateChange((prev) => prev + 1);
       }
     );
@@ -55,28 +52,30 @@ export function ConnectHardwareSearching({
   //
   useEffect(() => {
     (async () => {
-      // @ts-ignore
-      const devices = await navigator.hid.getDevices();
-      if (devices.length > 0) {
-        if (transport === null) {
-          TransportWebHid.create()
-            .then(setTransport)
-            .catch(async (err) => {
-              if (err.message === "The device is already open.") {
-                const devices = await TransportWebHid.list();
-                await Promise.all(devices.map((d) => d.close()));
-                setNavigatorStateChange(() => navigatorStateChange + 1);
-              }
-            });
-        }
-      } else {
-        // No HID devices
-        setTimeout(() => setConnectFailure(true), 2000);
+      if (transport === null && !connectFailure) {
+        TransportWebHid.create()
+          .then(setTransport)
+          .catch(async (err) => {
+            if (err.message === "The device is already open.") {
+              const devices = await TransportWebHid.list();
+              // Close all open devices
+              await Promise.all(devices.map((d) => d.close()));
+              // Reload
+              setNavigatorStateChange(() => navigatorStateChange + 1);
+            } else if (err.message === "Access denied to use Ledger device") {
+              // User cancelled the permissions screen, or no device available in screen
+              setTimeout(() => setConnectFailure(true), 2000);
+            } else {
+              console.error(err);
+              setTimeout(() => setConnectFailure(true), 2000);
+            }
+          });
       }
     })();
   }, [connectFailure, navigatorStateChange]);
 
   useEffect(() => {
+    // Auto advance is transport set
     if (transport) {
       setTimeout(() => setConnectSuccess(true), 2000);
     }
@@ -85,7 +84,7 @@ export function ConnectHardwareSearching({
   if (connectFailure) {
     return <ConnectHardwareFailure onRetry={() => setConnectFailure(false)} />;
   } else if (connectSuccess) {
-    // Got device, but app is not necessarily open. Remind user to open.
+    // Got device, but Solana app is not necessarily open. Remind user to open.
     return <ConnectHardwareApp onNext={() => onNext(transport!)} />;
   }
 
@@ -115,7 +114,10 @@ export function ConnectHardwareSearching({
           justifyContent: "space-between",
         }}
       >
-        {/* This is just a placeholdern next button so its always disabled */}
+        {/*
+        This is just a placeholder next button so its always disabled. Screen
+        will auto advance when transport is set.
+        */}
         <PrimaryButton label="Next" disabled={true} />
       </Box>
     </Box>
