@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, Box, List, ListItemButton, ListItemText } from "@mui/material";
+import { Box, List, ListItemButton, ListItemText } from "@mui/material";
 import Transport from "@ledgerhq/hw-transport";
 import * as ledgerCore from "@coral-xyz/ledger-core";
 import {
