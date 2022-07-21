@@ -35,7 +35,7 @@ export class RequestManager {
   private _handleRpcResponse(event: Event) {
     if (event.data.type !== this._responseChannel) return;
 
-    const { id, result } = event.data.detail;
+    const { id, result, error } = event.data.detail;
     const resolver = this._responseResolvers[id];
     if (!resolver) {
       logger.error("unexpected event", event);
@@ -43,7 +43,11 @@ export class RequestManager {
     }
     delete this._responseResolvers[id];
     const [resolve, reject] = resolver;
-    resolve(result);
+    if (error) {
+      reject(error);
+    } else {
+      resolve(result);
+    }
   }
 
   // Sends a request from this script to the content script across the

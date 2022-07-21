@@ -153,7 +153,7 @@ function QueryApproval() {
 
   // Origin is found so close the window. We're done.
   if (found) {
-    return <></>;
+    window.close();
   }
   return (
     <ApproveOrigin
