@@ -35,9 +35,13 @@ export function App() {
     >
       <NavStack
         initialRoute={{ name: "root" }}
-        options={(args) => ({
-          title: "",
-        })}
+        options={({ route }) => {
+          if (route.name === "root") {
+            return { title: "nav1" };
+          } else {
+            return { title: "nav2" };
+          }
+        }}
         style={{}}
       >
         <NavScreen
@@ -56,10 +60,6 @@ export function App() {
 function InnerTab1() {
   const nav = useNavigation();
 
-  useEffect(() => {
-    nav.setTitle("nav 1");
-  }, []);
-
   return (
     <View
       style={{ color: "blue" }}
@@ -76,10 +76,6 @@ function InnerTab1() {
 
 function InnerTab2() {
   const nav = useNavigation();
-
-  useEffect(() => {
-    nav.setTitle("nav 2");
-  }, []);
 
   return (
     <View
