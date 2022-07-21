@@ -22,6 +22,7 @@ import {
   DEAD_FARM,
 } from "./utils";
 
+// TODO: checkpointing this now that we have the nav stack.
 export function App() {
   const theme = useTheme();
   const tokenAccounts = useDegodTokens();
@@ -35,7 +36,7 @@ export function App() {
       <NavStack
         initialRoute={{ name: "root" }}
         options={(args) => ({
-          title: "Armani",
+          title: "",
         })}
         style={{}}
       >
@@ -61,7 +62,8 @@ function InnerTab1() {
         nav.push("root2");
       }}
     >
-      Click me 1
+      Click me. TODO: checkpointing this now that we have the nav stack. Next is
+      to make the degods design match figma.
     </View>
   );
 }
