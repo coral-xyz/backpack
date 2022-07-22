@@ -8,6 +8,7 @@
     "web": "expo start --web",
     "eject": "expo eject",
     "postinstall": "cd ../.. && yarn build",
+    "eas-build-pre-install": "cd ../.. && yarn download-wallet-adapter-on-ci",
     "e2e": "jest"
   },
   "dependencies": {
