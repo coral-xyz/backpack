@@ -41,28 +41,12 @@ function StakeScreen() {
   const isDead = false;
   const tokenAccounts = useDegodTokens()!;
 
-  if (tokenAccounts === null)
-    return (
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          height: "100%",
-        }}
-      >
-        <Loading
-          style={{ display: "block", marginLeft: "auto", marginRight: "auto" }}
-        />
-      </View>
-    );
+  if (tokenAccounts === null) {
+    return <LoadingIndicator />;
+  }
 
   return (
-    <View
-      style={{
-        marginBottom: "38px",
-      }}
-    >
+    <View>
       <GodGrid isDead={isDead} gods={tokenAccounts.dead} isStaked={true} />
       <GodGrid
         isDead={isDead}
@@ -84,7 +68,7 @@ function GodGrid({ gods, isDead, isStaked }: any) {
   return (
     <View
       style={{
-        marginTop: "38px",
+        marginBottom: "38px",
       }}
     >
       <Text
@@ -180,6 +164,23 @@ export function StakeDetail({ token }: any) {
           <Text>Unstake</Text>
         </Button>
       </View>
+    </View>
+  );
+}
+
+function LoadingIndicator() {
+  return (
+    <View
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        height: "100%",
+      }}
+    >
+      <Loading
+        style={{ display: "block", marginLeft: "auto", marginRight: "auto" }}
+      />
     </View>
   );
 }
