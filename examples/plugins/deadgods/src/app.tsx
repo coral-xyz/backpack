@@ -1,10 +1,9 @@
-import { useTheme, View, Tabs, Tab } from "react-xnft";
+import { View, Tabs, Tab } from "react-xnft";
 import { DegodsIcon, StakeIcon } from "./utils/icon";
 import { Dust } from "./Dust";
 import { Stake } from "./Stake";
 
 export function App() {
-  const theme = useTheme();
   return (
     <View style={{ height: "100%", backgroundColor: "#111827" }}>
       <Tabs
@@ -22,8 +21,6 @@ export function App() {
                 return <StakeIcon fill={color} />;
               }
             },
-            tabBarActiveTintColor: theme.custom.colors.activeNavButton,
-            tabBarInactiveTintColor: theme.custom.colors.secondary,
           };
         }}
       >

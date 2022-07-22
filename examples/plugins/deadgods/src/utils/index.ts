@@ -31,10 +31,10 @@ export function useDegodTokens() {
     return null;
   }
   return {
-    dead: tokenAccounts[0],
-    alive: tokenAccounts[1],
-    deadUnstaked: tokenAccounts[2],
-    aliveUnstaked: tokenAccounts[3],
+    dead: tokenAccounts[0].map((t) => ({ ...t, isStaked: true })),
+    alive: tokenAccounts[1].map((t) => ({ ...t, isStaked: true })),
+    deadUnstaked: tokenAccounts[2].map((t) => ({ ...t, isStaked: false })),
+    aliveUnstaked: tokenAccounts[3].map((t) => ({ ...t, isStaked: false })),
   };
 }
 

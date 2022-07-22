@@ -12,6 +12,9 @@ import {
 } from "react-xnft";
 import { Transaction, SystemProgram } from "@solana/web3.js";
 import { useDegodTokens } from "./utils";
+import { UnlockIcon, LockIcon } from "./utils/icon";
+
+const STATS = "https://api.degods.com/v1/stats";
 
 export function Stake() {
   return (
@@ -21,7 +24,7 @@ export function Stake() {
         switch (route.name) {
           case "stake":
             return {
-              title: "",
+              title: "My Gods",
             };
           default:
             throw new Error("unknown route");
@@ -46,64 +49,115 @@ function StakeScreen() {
   }
 
   return (
-    <View>
-      <GodGrid isDead={isDead} gods={tokenAccounts.dead} isStaked={true} />
-      <GodGrid
-        isDead={isDead}
-        gods={tokenAccounts.deadUnstaked}
-        isStaked={false}
-      />
-    </View>
+    <GodGrid
+      isDead={isDead}
+      staked={tokenAccounts.dead}
+      unstaked={tokenAccounts.deadUnstaked}
+      isStaked={true}
+    />
   );
 }
 
-function GodGrid({ gods, isDead, isStaked }: any) {
-  const theme = useTheme();
-  const degodLabel = isDead ? "DeadGods" : "Degods";
-
+function GodGrid({ staked, unstaked, isDead }: any) {
   const clickGod = (god: any) => {
     console.log("clicked god", god);
   };
+
+  const gods = (staked ?? []).concat(unstaked ?? []);
+  console.log("gods here", gods);
 
   return (
     <View
       style={{
         marginBottom: "38px",
+        marginRight: "20px",
+        marginLeft: "20px",
       }}
     >
       <Text
         style={{
-          marginBottom: "8px",
-          fontSize: "14px",
-          lineHeight: "24px",
-          marginLeft: "12px",
-          marginRight: "12px",
+          fontSize: "12px",
         }}
       >
-        {isStaked ? "Staked" : "Unstaked"} {degodLabel}
+        🔥 Earn $DUST by staking your DeadGods
       </Text>
       <View
         style={{
+          marginTop: "8px",
           display: "flex",
-          background: theme.custom.colors.nav,
+          justifyContent: "space-between",
         }}
       >
         {gods.map((g) => {
           return (
-            <Button
-              key={g.tokenMetaUriData.image}
-              onClick={() => clickGod(g)}
-              style={{
-                padding: 0,
-                width: "50%",
-                height: "100%",
-              }}
-            >
-              <Image src={g.tokenMetaUriData.image} style={{ width: "100%" }} />
-            </Button>
+            <View>
+              <Button
+                key={g.tokenMetaUriData.image}
+                onClick={() => clickGod(g)}
+                style={{
+                  padding: 0,
+                  width: "150px",
+                  height: "150px",
+                  borderRadius: "6px",
+                }}
+              >
+                <Image
+                  src={g.tokenMetaUriData.image}
+                  style={{
+                    borderRadius: "6px",
+                    width: "150px",
+                  }}
+                />
+              </Button>
+              <View
+                style={{
+                  marginTop: "3px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: "12px",
+                    lineHeight: "19.08px",
+                  }}
+                >
+                  ID {""}
+                </Text>
+                <View style={{ display: "flex" }}>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      marginRight: "2px",
+                    }}
+                  >
+                    {g.isStaked ? <LockIcon /> : <UnlockIcon />}
+                  </View>
+                  <Text
+                    style={{
+                      fontSize: "12px",
+                      lineHeight: "19.08px",
+                    }}
+                  >
+                    {g.isStaked ? "Staked" : "Unstaked"}
+                  </Text>
+                </View>
+              </View>
+            </View>
           );
         })}
       </View>
+      <Text
+        style={{
+          marginTop: "36px",
+          fontSize: "12px",
+          textAlign: "center",
+        }}
+      >
+        👋 See more in Magic Eden
+      </Text>
     </View>
   );
 }
