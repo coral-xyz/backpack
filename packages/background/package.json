@@ -5,9 +5,14 @@
   "module": "dist/esm/index.js",
   "react-native": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
+  "targets": {
+    "module": false,
+    "main": false,
+    "types": false
+  },
   "scripts": {
     "start": "parcel src/service-worker-loader.html -p 9333",
-    "build:loader": "parcel build src/service-worker-loader.html",
+    "build:loader": "parcel build src/service-worker-loader.html --dist-dir html",
     "build": "yarn lint && tsc",
     "dev": "tsc --watch",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
