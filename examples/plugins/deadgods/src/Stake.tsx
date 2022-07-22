@@ -15,6 +15,7 @@ import {
 import { Transaction, SystemProgram } from "@solana/web3.js";
 import { useDegodTokens } from "./utils";
 import { UnlockIcon, LockIcon } from "./utils/icon";
+import { THEME } from "./theme";
 
 const STATS = "https://api.degods.com/v1/stats";
 
@@ -118,11 +119,12 @@ function DetailScreen({ god }) {
       <Text
         style={{
           color: "#fff",
-          marginBottom: "24px",
+          marginBottom: "10px",
         }}
       >
         {god.tokenMetaUriData.description}
       </Text>
+      <Text>{god.tokenMetaUriData.external_url}</Text>
       {god.isStaked ? (
         <Button
           style={{
@@ -131,6 +133,9 @@ function DetailScreen({ god }) {
             display: "block",
             marginLeft: "auto",
             marginRight: "auto",
+            marginTop: "24px",
+            marginBottom: "24px",
+            backgroundColor: THEME.colors.unstake,
           }}
           onClick={() => unstake()}
         >
@@ -144,30 +149,22 @@ function DetailScreen({ god }) {
             display: "block",
             marginLeft: "auto",
             marginRight: "auto",
+            marginTop: "24px",
+            marginBottom: "24px",
+            backgroundColor: THEME.colors.stake,
           }}
           onClick={() => stake()}
         >
           Stake
         </Button>
       )}
-      <View
-        style={{
-          marginTop: "24px",
-        }}
-      >
-        <Text
-          style={{
-            borderBottom: "solid 2pt #393C43",
-            paddingBottom: "8px",
-          }}
-        >
-          Attributes
-        </Text>
+      <View>
+        <Text style={{ color: "rgba(255, 255, 255, 0.8)" }}>Attributes</Text>
         <View
           style={{
             display: "flex",
             flexWrap: "wrap",
-            marginTop: "16px",
+            marginTop: "4px",
             marginLeft: "-4px",
             marginRight: "-4px",
           }}
@@ -234,9 +231,44 @@ function StakeScreen() {
 }
 
 function GodGrid({ staked, unstaked, isDead }: any) {
+  const publicKey = usePublicKey();
+  const connection = useConnection();
   const nav = useNavigation();
+
   const clickGod = (god: any) => {
     nav.push("detail", { god });
+  };
+  const stakeAll = async () => {
+    const tx = new Transaction();
+    tx.add(
+      SystemProgram.transfer({
+        fromPubkey: publicKey,
+        toPubkey: publicKey,
+        lamports: 1000000,
+      })
+    );
+    console.log("plugin fetching most recent blockhash");
+    const { blockhash } = await connection!.getLatestBlockhash("recent");
+    console.log("plugin got recent blockhash", blockhash);
+    tx.recentBlockhash = blockhash;
+    const signature = await window.anchorUi.send(tx);
+    console.log("test: got signed transaction here", signature);
+  };
+  const unstakeAll = async () => {
+    const tx = new Transaction();
+    tx.add(
+      SystemProgram.transfer({
+        fromPubkey: publicKey,
+        toPubkey: publicKey,
+        lamports: 1000000,
+      })
+    );
+    console.log("plugin fetching most recent blockhash");
+    const { blockhash } = await connection!.getLatestBlockhash("recent");
+    console.log("plugin got recent blockhash", blockhash);
+    tx.recentBlockhash = blockhash;
+    const signature = await window.anchorUi.send(tx);
+    console.log("test: got signed transaction here", signature);
   };
 
   const gods = (staked ?? []).concat(unstaked ?? []);
@@ -249,13 +281,6 @@ function GodGrid({ staked, unstaked, isDead }: any) {
         marginBottom: "38px",
       }}
     >
-      <Text
-        style={{
-          fontSize: "12px",
-        }}
-      >
-        🔥 Earn $DUST by staking your DeadGods
-      </Text>
       <View
         style={{
           marginTop: "8px",
@@ -271,8 +296,8 @@ function GodGrid({ staked, unstaked, isDead }: any) {
                 onClick={() => clickGod(g)}
                 style={{
                   padding: 0,
-                  width: "150px",
-                  height: "150px",
+                  width: "157.5px",
+                  height: "157.5px",
                   borderRadius: "6px",
                 }}
               >
@@ -280,7 +305,7 @@ function GodGrid({ staked, unstaked, isDead }: any) {
                   src={g.tokenMetaUriData.image}
                   style={{
                     borderRadius: "6px",
-                    width: "150px",
+                    width: "157.5px",
                   }}
                 />
               </Button>
@@ -324,60 +349,44 @@ function GodGrid({ staked, unstaked, isDead }: any) {
           );
         })}
       </View>
+      <View
+        style={{
+          marginTop: "24px",
+          marginBottom: "24px",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Button
+          onClick={() => stakeAll()}
+          style={{
+            width: "100%",
+            backgroundColor: THEME.colors.stake,
+            marginBottom: "8px",
+            height: "48px",
+          }}
+        >
+          Stake All
+        </Button>
+        <Button
+          onClick={() => unstakeAll()}
+          style={{
+            width: "100%",
+            height: "48px",
+            backgroundColor: THEME.colors.unstake,
+          }}
+        >
+          Unstake All
+        </Button>
+      </View>
       <Text
         style={{
-          marginTop: "36px",
           fontSize: "12px",
           textAlign: "center",
         }}
       >
-        👋 See more in Magic Eden
+        👋 Browse Magic Eden
       </Text>
-    </View>
-  );
-}
-
-export function StakeDetail({ token }: any) {
-  const publicKey = usePublicKey();
-  const connection = useConnection();
-
-  const unstake = async () => {};
-
-  return (
-    <View>
-      <Image
-        src={token.tokenMetaUriData.image}
-        style={{
-          width: "343px",
-          height: "343px",
-          marginLeft: "auto",
-          marginRight: "auto",
-          marginTop: "16px",
-          display: "block",
-          borderRadius: "8px",
-        }}
-      />
-      <View
-        style={{
-          marginTop: "16px",
-          display: "flex",
-          justifyContent: "space-between",
-          width: "343px",
-          marginLeft: "auto",
-          marginRight: "auto",
-        }}
-      >
-        <Button
-          onClick={() => unstake()}
-          style={{
-            width: "100%",
-            height: "48px",
-            borderRadius: "12px",
-          }}
-        >
-          <Text>Unstake</Text>
-        </Button>
-      </View>
     </View>
   );
 }
