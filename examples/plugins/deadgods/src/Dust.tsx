@@ -64,11 +64,7 @@ export function Dust() {
 function ClaimDust() {
   const estimatedRewards = useEstimatedRewards();
   return (
-    <View
-      style={{
-        height: "100%",
-      }}
-    >
+    <View>
       <View>
         <Header isDead={true} estimatedRewards={estimatedRewards} />
       </View>
