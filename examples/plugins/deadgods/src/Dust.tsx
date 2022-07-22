@@ -24,7 +24,7 @@ export function Dust() {
       <View
         style={{
           background:
-            "linear-gradient(180deg, rgba(17, 24, 39, 0) 38.3%, rgba(17, 24, 39, 0.102162) 38.3%, #111827 81.65%)",
+            "linear-gradient(180deg, rgba(17, 24, 39, 0) 0%, rgba(17, 24, 39, 0.102162) 38.3%, #111827 81.65%)",
           position: "fixed",
           left: 0,
           right: 0,
