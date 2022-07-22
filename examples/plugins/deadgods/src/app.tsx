@@ -1,5 +1,5 @@
 import { useTheme, View, Tabs, Tab } from "react-xnft";
-import { DegodsIcon } from "./utils/icon";
+import { DegodsIcon, StakeIcon } from "./utils/icon";
 import { Dust } from "./Dust";
 import { Stake } from "./Stake";
 
@@ -19,7 +19,7 @@ export function App() {
               if (route.name === "dust") {
                 return <DegodsIcon fill={color} />;
               } else {
-                return <View style={{ color }}>test</View>;
+                return <StakeIcon fill={color} />;
               }
             },
             tabBarActiveTintColor: theme.custom.colors.activeNavButton,
