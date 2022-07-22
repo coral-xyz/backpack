@@ -15,21 +15,6 @@ https://user-images.githubusercontent.com/101902546/173857300-fc139113-0af5-46fc
 
 Go to chrome://flags/#allow-insecure-localhost and enable the toggle, then restart chrome
 
-#### Link local wallet-adapter
-
-<details>
-  <summary>Ensure that Backpack-compatible @solana/wallet-adapter-wallets has been yarn link'd</summary>
-
-```
-git clone https://github.com/coral-xyz/wallet-adapter
-cd wallet-adapter
-yarn
-export NODE_OPTIONS=--no-experimental-fetch
-yarn build
-npx lerna exec -- yarn link
-```
-</details>
-
 #### Environment variables
 
 You can also optionally rename `.env.example` to `.env` and set your own variables.

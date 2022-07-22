@@ -16,7 +16,10 @@
     "test": "env-cmd --silent turbo run test -- --passWithNoTests --watchAll=false",
     "build": "env-cmd --silent turbo run build",
     "e2e": "env-cmd --silent turbo run e2e",
-    "clean": "npx rimraf {.,backend,examples,packages}/**/{.parcel-cache,.turbo,build,dist,node_modules,yarn-error.log} packages/app-extension/dev"
+    "clean": "npx rimraf {backend,examples,packages}/**/{.parcel-cache,.turbo,build,dev,dist,node_modules,yarn-error.log} && yarn clean:root",
+    "clean:root": "npx rimraf {.parcel-cache,.turbo,node_modules,yarn-error.log}",
+    "preinstall": "node -e \"if (! require('fs').existsSync('./wallet-adapter/packages/wallets/backpack/lib')){process.exit(1)}\" || yarn install-wallet-adapter",
+    "install-wallet-adapter": "cd wallet-adapter && yarn && yarn build && npx lerna exec -- yarn unlink || true && npx lerna exec -- yarn link && cd .."
   },
   "devDependencies": {
     "env-cmd": "^10.1.0",

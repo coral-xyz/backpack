@@ -1,0 +1,3 @@
+[submodule "wallet-adapter"]
+	path = wallet-adapter
+	url = https://github.com/coral-xyz/wallet-adapter
