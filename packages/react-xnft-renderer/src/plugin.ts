@@ -19,6 +19,7 @@ import {
   CHANNEL_PLUGIN_CONNECTION_BRIDGE,
   PLUGIN_RPC_METHOD_NAV_PUSH,
   PLUGIN_RPC_METHOD_NAV_POP,
+  PLUGIN_RPC_METHOD_OPEN_LINK,
   RPC_METHOD_SIGN_TX as PLUGIN_RPC_METHOD_SIGN_TX,
   RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_RPC_METHOD_SIGN_AND_SEND_TX,
   RPC_METHOD_SIMULATE as PLUGIN_RPC_METHOD_SIMULATE_TX,
@@ -372,6 +373,8 @@ export class Plugin {
         return await this._handleNavPush();
       case PLUGIN_RPC_METHOD_NAV_POP:
         return await this._handleNavPop();
+      case PLUGIN_RPC_METHOD_OPEN_LINK:
+        return await this._openLink(params[0]);
       case PLUGIN_RPC_METHOD_SIGN_TX:
         return await this._handleSignTransaction(params[0], params[1]);
       case PLUGIN_RPC_METHOD_SIGN_AND_SEND_TX:
@@ -392,6 +395,13 @@ export class Plugin {
   // todo: can delete with the widget refactor probably
   private async _handleNavPop(): Promise<RpcResponse> {
     throw new Error("not implemented");
+  }
+
+  private async _openLink(url: string): Promise<RpcResponse> {
+    console.log("armani open link here");
+    // TODO: ask for permission from the user.
+    window.open(url);
+    return ["success"];
   }
 
   private async _handleSignTransaction(

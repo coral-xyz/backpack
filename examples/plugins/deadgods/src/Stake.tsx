@@ -11,6 +11,7 @@ import {
   NavScreen,
   Image,
   Loading,
+  Linking,
 } from "react-xnft";
 import { Transaction, SystemProgram } from "@solana/web3.js";
 import { useDegodTokens } from "./utils";
@@ -379,14 +380,20 @@ function GodGrid({ staked, unstaked, isDead }: any) {
           Unstake All
         </Button>
       </View>
-      <Text
-        style={{
-          fontSize: "12px",
-          textAlign: "center",
+      <View
+        onClick={() => {
+          Linking.openLink("https://magiceden.io");
         }}
       >
-        👋 Browse Magic Eden
-      </Text>
+        <Text
+          style={{
+            fontSize: "12px",
+            textAlign: "center",
+          }}
+        >
+          👋 Browse Magic Eden
+        </Text>
+      </View>
     </View>
   );
 }

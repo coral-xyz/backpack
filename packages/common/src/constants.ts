@@ -55,8 +55,11 @@ export const RECONCILER_BRIDGE_METHOD_RENDER_ROOT =
   "reconciler-bridge-method-render-root";
 
 export const PLUGIN_NOTIFICATION_RENDER = "render";
+
 export const PLUGIN_RPC_METHOD_NAV_PUSH = "nav-push";
 export const PLUGIN_RPC_METHOD_NAV_POP = "nav-pop";
+export const PLUGIN_RPC_METHOD_OPEN_LINK = "open-link";
+
 export const PLUGIN_NOTIFICATION_CONNECT = "connect";
 export const PLUGIN_NOTIFICATION_ON_CLICK = "on-click";
 export const PLUGIN_NOTIFICATION_ON_CHANGE = "on-change";
