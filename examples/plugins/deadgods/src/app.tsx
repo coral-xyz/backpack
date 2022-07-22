@@ -6,7 +6,7 @@ import { Stake } from "./Stake";
 export function App() {
   const theme = useTheme();
   return (
-    <View style={{ height: "100%" }}>
+    <View style={{ height: "100%", backgroundColor: "#111827" }}>
       <Tabs
         style={{
           backgroundColor: "#111827",
@@ -15,11 +15,9 @@ export function App() {
         options={({ route }) => {
           return {
             tabBarIcon: ({ focused }) => {
-              const color = focused
-                ? theme.custom.colors.activeNavButton
-                : theme.custom.colors.secondary;
+              const color = focused ? "#FFEFEB" : "#6B7280";
               if (route.name === "dust") {
-                return <DegodsIcon />;
+                return <DegodsIcon fill={color} />;
               } else {
                 return <View></View>;
               }
@@ -30,7 +28,7 @@ export function App() {
         }}
       >
         <Tab name="dust" disableLabel={true} component={() => <Dust />} />
-        <Tab name="stake" component={() => <Stake />} />
+        <Tab name="stake" disableLabel={true} component={() => <Stake />} />
       </Tabs>
     </View>
   );

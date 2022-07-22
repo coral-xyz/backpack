@@ -44,7 +44,7 @@ export function Dust() {
               case "deadgods":
                 return { title: "Stake Deadgods" };
               case "degods":
-                return { title: "Stake Degods" };
+                return { title: "Stake DeadGods" };
               default:
                 throw new Error("unknown route");
             }

@@ -6,6 +6,8 @@ import {
   Image,
   Text,
   Button,
+  NavStack,
+  NavScreen,
 } from "react-xnft";
 import { Transaction, SystemProgram } from "@solana/web3.js";
 import { useDegodTokens } from "./utils";
