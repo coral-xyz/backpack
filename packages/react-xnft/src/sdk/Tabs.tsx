@@ -43,6 +43,7 @@ function TabContent({ tabScreens }) {
       <View
         style={{
           flex: 1,
+          height: "100%",
         }}
       >
         {screen.props.component()}
@@ -78,6 +79,7 @@ function TabBar({ tabScreens, style }) {
               display: "flex",
               justifyContent: "center",
               flexDirection: "column",
+              background: "transparent",
             }}
             onClick={() => setActiveTab(screen.props.name)}
           >
@@ -92,18 +94,20 @@ function TabBar({ tabScreens, style }) {
               >
                 {routedOptions.tabBarIcon({ focused })}
               </View>
-              <Text
-                style={{
-                  textAlign: "center",
-                  fontSize: "9px",
-                  fontWeight: 400,
-                  color: focused
-                    ? routedOptions.tabBarActiveTintColor
-                    : routedOptions.tabBarInactiveTintColor,
-                }}
-              >
-                {screen.props.name}
-              </Text>
+              {!screen.props.disableLabel && (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontSize: "9px",
+                    fontWeight: 400,
+                    color: focused
+                      ? routedOptions.tabBarActiveTintColor
+                      : routedOptions.tabBarInactiveTintColor,
+                  }}
+                >
+                  {screen.props.name}
+                </Text>
+              )}
             </View>
           </Button>
         );
@@ -115,6 +119,7 @@ function TabBar({ tabScreens, style }) {
 type TabProps = {
   component: () => React.ReactNode;
   name: string;
+  disableLabel?: boolean;
 };
 
 type TabsOptions = ({ route }) => RoutedTabsOptions;
