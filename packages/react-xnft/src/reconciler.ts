@@ -219,6 +219,16 @@ const RECONCILER = ReactReconciler({
           naPayload = { routeName: newProps.routeName };
         }
         return naPayload;
+      case NodeKind.Path:
+        let pathPayload: UpdateDiff | null = null;
+        // @ts-ignore
+        if (oldProps.fill !== newProps.fill) {
+          // @ts-ignore
+          pathPayload = { fill: newProps.fill };
+        }
+        return pathPayload;
+      case NodeKind.Svg:
+        return null;
       case NodeKind.Image:
         return null;
       case NodeKind.Table:
@@ -230,10 +240,6 @@ const RECONCILER = ReactReconciler({
       case NodeKind.Loading:
         return null;
       case NodeKind.ScrollBar:
-        return null;
-      case NodeKind.Svg:
-        return null;
-      case NodeKind.Path:
         return null;
       case NodeKind.BalancesTable:
         return null;
@@ -326,6 +332,12 @@ const RECONCILER = ReactReconciler({
           instance.props.routeName = updatePayload.routeName;
         }
         break;
+      case NodeKind.Path:
+        if (updatePayload.fill !== undefined && updatePayload.fill !== null) {
+          // @ts-ignore
+          instance.props.fill = updatePayload.fill;
+        }
+        break;
       case NodeKind.Table:
         break;
       case NodeKind.TableRow:
@@ -338,8 +350,6 @@ const RECONCILER = ReactReconciler({
         break;
       case NodeKind.Svg:
         throw new Error("commitUpdate Svg not yet implemented");
-      case NodeKind.Path:
-        throw new Error("commitUpdate Path not yet implemented");
       case NodeKind.ScrollBar:
         throw new Error("commitUpdate ScrollBar not yet implemented");
       case NodeKind.Loading:

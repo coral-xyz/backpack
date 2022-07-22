@@ -19,7 +19,7 @@ export function App() {
               if (route.name === "dust") {
                 return <DegodsIcon fill={color} />;
               } else {
-                return <View></View>;
+                return <View style={{ color }}>test</View>;
               }
             },
             tabBarActiveTintColor: theme.custom.colors.activeNavButton,
