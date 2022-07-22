@@ -13,6 +13,7 @@ const MANGO_TABLE_PLUGIN_URL = pluginURL("table-mango");
 const DEGODS_TABLE_PLUGIN_URL = pluginURL("deadgods");
 const ANCHOR_TABLE_PLUGIN_URL = pluginURL("table-anchor");
 const PSYFI_TABLE_PLUGIN_URL = pluginURL("table-psyfi");
+const PRICES_PLUGIN_URL = pluginURL("prices");
 const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
 
 function pluginURL(pluginName: string) {
@@ -45,6 +46,13 @@ export const plugins = selector({
         url: DEGODS_TABLE_PLUGIN_URL,
         iconUrl: "assets/deadgods.png",
         title: "DeadGods",
+        activeWallet: get(activeWallet),
+        connectionUrl: get(connectionUrl),
+      },
+      {
+        url: PRICES_PLUGIN_URL,
+        iconUrl: "assets/prices.png",
+        title: "Prices",
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
       },
