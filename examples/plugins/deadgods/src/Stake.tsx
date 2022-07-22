@@ -8,20 +8,58 @@ import {
   Button,
   NavStack,
   NavScreen,
+  Loading,
 } from "react-xnft";
 import { Transaction, SystemProgram } from "@solana/web3.js";
 import { useDegodTokens } from "./utils";
 
 export function Stake() {
+  return (
+    <NavStack
+      initialRoute={{ name: "stake" }}
+      options={({ route }) => {
+        switch (route.name) {
+          case "stake":
+            return {
+              title: "",
+            };
+          default:
+            throw new Error("unknown route");
+        }
+      }}
+      style={{}}
+    >
+      <NavScreen
+        name={"stake"}
+        component={(props: any) => <StakeScreen {...props} />}
+      />
+    </NavStack>
+  );
+}
+
+function StakeScreen() {
   const isDead = false;
   const tokenAccounts = useDegodTokens()!;
 
-  if (tokenAccounts === null) return <View></View>;
+  if (tokenAccounts === null)
+    return (
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          height: "100%",
+        }}
+      >
+        <Loading
+          style={{ display: "block", marginLeft: "auto", marginRight: "auto" }}
+        />
+      </View>
+    );
 
   return (
     <View
       style={{
-        marginTop: "24px",
         marginBottom: "38px",
       }}
     >
