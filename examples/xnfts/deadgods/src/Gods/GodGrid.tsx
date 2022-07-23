@@ -10,9 +10,9 @@ import {
   Loading,
 } from "react-xnft";
 import { Transaction, SystemProgram } from "@solana/web3.js";
-import { useDegodTokens } from "./utils";
-import { UnlockIcon, LockIcon } from "./utils/icon";
-import { THEME } from "./theme";
+import { useDegodTokens } from "../utils";
+import { UnlockIcon, LockIcon } from "../utils/icon";
+import { THEME } from "../utils/theme";
 
 const STATS = "https://api.degods.com/v1/stats";
 

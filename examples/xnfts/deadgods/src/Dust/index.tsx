@@ -1,7 +1,8 @@
 import { usePublicKey, View, Text, Button, Stack } from "react-xnft";
 import { PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
-import { useEstimatedRewards, gemFarmClient, DEAD_FARM } from "./utils";
+import { useEstimatedRewards, gemFarmClient, DEAD_FARM } from "../utils";
+import { THEME } from "../utils/theme";
 
 export function DustScreen() {
   return (
@@ -11,13 +12,12 @@ export function DustScreen() {
           "url(https://user-images.githubusercontent.com/6990215/180327248-61e7675e-490b-4bdf-8588-370aa008302a.png)",
         backgroundRepeat: "no-repeat",
         height: "100%",
-        backgroundColor: "#111827",
+        backgroundColor: THEME.colors.background,
       }}
     >
       <View
         style={{
-          background:
-            "linear-gradient(180deg, rgba(17, 24, 39, 0) 0%, rgba(17, 24, 39, 0.102162) 38.3%, #111827 81.65%)",
+          background: THEME.colors.backgroundGradient,
           position: "fixed",
           left: 0,
           right: 0,
@@ -141,7 +141,7 @@ function Header({ isDead, estimatedRewards }: any) {
         <Text
           style={{
             textAlign: "center",
-            color: "#fff",
+            color: THEME.colors.text,
             fontSize: "20px",
             fontWeight: 400,
             lineHeight: "150%",
@@ -156,7 +156,7 @@ function Header({ isDead, estimatedRewards }: any) {
             textAlign: "center",
             fontWeight: 500,
             lineHeight: "24px",
-            color: "#fff",
+            color: THEME.colors.text,
           }}
         >
           {estimatedRewards} DUST
@@ -164,7 +164,7 @@ function Header({ isDead, estimatedRewards }: any) {
         <Text
           style={{
             marginTop: "12px",
-            color: "rgba(255, 255, 255, 0.8)",
+            color: THEME.colors.textSecondary,
             textAlign: "center",
           }}
         >
@@ -187,12 +187,12 @@ function Header({ isDead, estimatedRewards }: any) {
           style={{
             flex: 1,
             background: "#FFEFEB",
+            color: "#6100FF",
             border: "1px solid #000000",
             boxShadow: "4px 3px 0px #6100FF",
             borderRadius: "8px",
             width: "192px",
             height: "40px",
-            color: "#6100FF",
             fontWeight: 500,
           }}
         >

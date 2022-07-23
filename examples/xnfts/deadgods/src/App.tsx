@@ -1,20 +1,23 @@
 import { View, Tab } from "react-xnft";
-import { DegodsIcon, GodsIcon } from "./utils/icon";
 import { DustScreen } from "./Dust";
 import { GodsScreen } from "./Gods";
+import { DegodsIcon, GodsIcon } from "./utils/icon";
+import { THEME } from "./utils/theme";
 
 export function App() {
   return (
     <View style={{ height: "100%", backgroundColor: "#111827" }}>
       <Tab.Navigator
         style={{
-          backgroundColor: "#111827",
+          backgroundColor: THEME.colors.background,
           borderTop: "none",
         }}
         options={({ route }) => {
           return {
             tabBarIcon: ({ focused }) => {
-              const color = focused ? "#FFEFEB" : "#6B7280";
+              const color = focused
+                ? THEME.colors.activeTab
+                : THEME.colors.inactiveTab;
               if (route.name === "dust") {
                 return <DegodsIcon fill={color} />;
               } else {

@@ -7,7 +7,7 @@ import {
   Button,
 } from "react-xnft";
 import { Transaction, SystemProgram } from "@solana/web3.js";
-import { THEME } from "./theme";
+import { THEME } from "../utils/theme";
 
 export function GodDetailScreen({ god }) {
   const publicKey = usePublicKey();
@@ -69,14 +69,14 @@ export function GodDetailScreen({ god }) {
       />
       <Text
         style={{
-          color: "rgba(255, 255, 255, 0.8)",
+          color: THEME.colors.textSecondary,
         }}
       >
         Description
       </Text>
       <Text
         style={{
-          color: "#fff",
+          color: THEME.colors.text,
           marginBottom: "10px",
         }}
       >
@@ -117,7 +117,7 @@ export function GodDetailScreen({ god }) {
         </Button>
       )}
       <View>
-        <Text style={{ color: "rgba(255, 255, 255, 0.8)" }}>Attributes</Text>
+        <Text style={{ color: THEME.colors.textSecondary }}>Attributes</Text>
         <View
           style={{
             display: "flex",
@@ -137,7 +137,7 @@ export function GodDetailScreen({ god }) {
                 <View
                   style={{
                     borderRadius: "8px",
-                    backgroundColor: "#292C33",
+                    backgroundColor: THEME.colors.attributeBackground,
                     paddingTop: "4px",
                     paddingBottom: "4px",
                     paddingLeft: "8px",
@@ -146,7 +146,7 @@ export function GodDetailScreen({ god }) {
                 >
                   <Text
                     style={{
-                      color: "#99A4B4",
+                      color: THEME.colors.attributeTitle,
                       fontSize: "14px",
                     }}
                   >
@@ -154,7 +154,7 @@ export function GodDetailScreen({ god }) {
                   </Text>
                   <Text
                     style={{
-                      color: "#fff",
+                      color: THEME.colors.text,
                       fontSize: "16px",
                     }}
                   >
