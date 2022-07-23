@@ -78,7 +78,8 @@ export class ProviderUiInjection extends EventEmitter implements Provider {
   async send(
     tx: Transaction,
     signers?: Signer[],
-    options?: SendOptions
+    options?: SendOptions,
+    connection?: Connection
   ): Promise<TransactionSignature> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
@@ -86,7 +87,7 @@ export class ProviderUiInjection extends EventEmitter implements Provider {
     return await cmn.send(
       this.publicKey,
       this._requestManager,
-      this.connection,
+      connection ? connection : this.connection,
       tx,
       signers,
       options
