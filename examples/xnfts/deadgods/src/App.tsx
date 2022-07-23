@@ -1,7 +1,7 @@
 import { View, Tab } from "react-xnft";
-import { DegodsIcon, StakeIcon } from "./utils/icon";
-import { Dust } from "./Dust";
-import { Stake } from "./Stake";
+import { DegodsIcon, GodsIcon } from "./utils/icon";
+import { DustScreen } from "./Dust";
+import { GodsScreen } from "./Gods";
 
 export function App() {
   return (
@@ -18,7 +18,7 @@ export function App() {
               if (route.name === "dust") {
                 return <DegodsIcon fill={color} />;
               } else {
-                return <StakeIcon fill={color} />;
+                return <GodsIcon fill={color} />;
               }
             },
           };
@@ -27,12 +27,12 @@ export function App() {
         <Tab.Screen
           name="dust"
           disableLabel={true}
-          component={() => <Dust />}
+          component={() => <DustScreen />}
         />
         <Tab.Screen
-          name="stake"
+          name="gods"
           disableLabel={true}
-          component={() => <Stake />}
+          component={() => <GodsScreen />}
         />
       </Tab.Navigator>
     </View>

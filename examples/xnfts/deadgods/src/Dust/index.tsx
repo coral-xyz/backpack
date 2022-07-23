@@ -3,7 +3,7 @@ import { PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { useEstimatedRewards, gemFarmClient, DEAD_FARM } from "./utils";
 
-export function Dust() {
+export function DustScreen() {
   return (
     <View
       style={{
