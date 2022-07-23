@@ -4,8 +4,8 @@
   "workspaces": [
     "backend/workers/*",
     "examples/clients/*",
-    "examples/plugins",
-    "examples/plugins/*",
+    "examples/xnfts",
+    "examples/xnfts/*",
     "packages/*"
   ],
   "scripts": {
