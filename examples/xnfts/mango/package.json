@@ -1,5 +1,5 @@
 {
-  "name": "@coral-xyz/example-plugin-table-mango",
+  "name": "@coral-xyz/example-plugin-mango",
   "version": "0.1.0",
   "scripts": {
     "build": "xnft build",
