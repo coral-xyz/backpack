@@ -232,7 +232,11 @@ export function Send({
     >
       <div className={classes.topHalf}>
         <div style={{ marginBottom: "40px" }}>
-          <TextFieldLabel leftLabel={"Send to"} rightLabel={"Address Book"} />
+          <TextFieldLabel
+            leftLabel={"Send to"}
+            rightLabel={"Address Book"}
+            style={{ marginLeft: "24px", marginRight: "24px" }}
+          />
           <div style={{ margin: "0 12px" }}>
             <TextField
               rootClass={classes.textRoot}
@@ -250,6 +254,7 @@ export function Send({
           <TextFieldLabel
             leftLabel={"Amount"}
             rightLabel={`${token.nativeBalance} ${token.ticker}`}
+            style={{ marginLeft: "24px", marginRight: "24px" }}
           />
           <div style={{ margin: "0 12px" }}>
             <TextField

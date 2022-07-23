@@ -12,13 +12,13 @@ export * from "./List";
 export { TextField } from "@coral-xyz/react-xnft-renderer";
 
 const useStyles = styles((theme) => ({
-  sendTo: {
+  leftLabel: {
     color: theme.custom.colors.fontColor,
     fontSize: "12px",
     lineHeight: "16px",
     fontWeight: 500,
   },
-  addressBook: {
+  rightLabel: {
     fontWeight: 500,
     fontSize: "12px",
     lineHeight: "16px",
@@ -96,20 +96,19 @@ export function walletAddressDisplay(publicKey: PublicKey) {
   return `${pubkeyStr.slice(0, 4)}...${pubkeyStr.slice(pubkeyStr.length - 4)}`;
 }
 
-export function TextFieldLabel({ leftLabel, rightLabel }: any) {
+export function TextFieldLabel({ leftLabel, rightLabel, style }: any) {
   const classes = useStyles();
   return (
     <div
       style={{
         display: "flex",
         justifyContent: "space-between",
-        marginLeft: "24px",
-        marginRight: "24px",
         marginBottom: "8px",
+        ...style,
       }}
     >
-      <Typography className={classes.sendTo}>{leftLabel}</Typography>
-      <Typography className={classes.addressBook}>{rightLabel}</Typography>
+      <Typography className={classes.leftLabel}>{leftLabel}</Typography>
+      <Typography className={classes.rightLabel}>{rightLabel}</Typography>
     </div>
   );
 }
