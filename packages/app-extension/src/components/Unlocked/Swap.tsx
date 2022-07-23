@@ -18,8 +18,13 @@ import {
   SwapProvider,
 } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
-import { TextField, TextFieldLabel } from "../common";
-import { BottomCard, NetworkFeeInfo } from "./Balances/TokensWidget/Send";
+import {
+  TextField,
+  TextFieldLabel,
+  PrimaryButton,
+  DangerButton,
+} from "../common";
+import { BottomCard } from "./Balances/TokensWidget/Send";
 import { WithMiniDrawer, WithDrawer } from "../Layout/Drawer";
 
 const useStyles = styles((theme) => ({
@@ -35,7 +40,7 @@ const useStyles = styles((theme) => ({
     marginLeft: "16px",
     marginRight: "16px",
   },
-  bottomHalfContent: {
+  bottomHalfWrapper: {
     background: theme.custom.colors.swapGradient,
     flex: 1,
     paddingBottom: "12px",
@@ -44,31 +49,17 @@ const useStyles = styles((theme) => ({
     borderTopRightRadius: "12px",
     position: "relative",
   },
-  bottomHalfFooter: {
+  bottomHalf: {
     display: "flex",
+    flexDirection: "column",
     justifyContent: "space-between",
-    paddingLeft: "12px",
-    paddingRight: "12px",
-  },
-  reviewBtn: {
-    marginTop: "16px",
-    marginBottom: "16px",
-    borderRadius: "12px",
-    backgroundColor: theme.custom.colors.nav,
-    flex: 1,
-    height: "48px",
-  },
-  reviewBtnLabel: {
-    fontSize: "16px",
-    lineHeight: "24px",
-    fontWeight: 500,
-    textTransform: "none",
-    color: theme.custom.colors.fontColor,
+    margin: "0 16px 16px 16px",
+    height: "100%",
   },
   fromFieldRoot: {
-    margin: 0,
+    marginTop: 0,
+    marginBottom: 0,
     "& .MuiOutlinedInput-root": {
-      height: "48px !important",
       "& fieldset": {
         border: `solid 2pt ${theme.custom.colors.border}`,
       },
@@ -283,33 +274,38 @@ function _Swap({ blockchain, cancel, onCancel }: any) {
           setValue={setFromAmount}
         />
       </div>
-      <div className={classes.bottomHalfContent}>
-        <TextFieldLabel leftLabel={"You Receive"} rightLabel={""} />
-        <TextField
-          endAdornment={
-            <TokenSelectorButton
-              blockchain={blockchain}
-              mint={toMint}
-              isFrom={false}
+      <div className={classes.bottomHalfWrapper}>
+        <div className={classes.bottomHalf}>
+          <div>
+            <TextFieldLabel leftLabel={"You Receive"} />
+            <TextField
+              endAdornment={
+                <TokenSelectorButton
+                  blockchain={blockchain}
+                  mint={toMint}
+                  isFrom={false}
+                />
+              }
+              rootClass={classes.receiveFieldRoot}
+              type={"number"}
+              value={toAmount ?? 0}
+              disabled={true}
+              inputProps={{
+                "&:hover": {
+                  cursor: "no-drop",
+                },
+              }}
             />
-          }
-          rootClass={classes.receiveFieldRoot}
-          type={"number"}
-          value={toAmount ?? 0}
-          disabled={true}
-          inputProps={{
-            "&:hover": {
-              cursor: "no-drop",
-            },
-          }}
-        />
-      </div>
-      <div className={classes.bottomHalfFooter}>
-        {cancel && <CancelButton onCancel={onCancel} />}
-        <ReviewButton
-          onClick={() => setOpenDrawer()}
-          disabled={!fromAmount || !toAmount}
-        />
+          </div>
+          <div>
+            {cancel && <DangerButton onClick={onCancel} />}
+            <PrimaryButton
+              label="Review"
+              onClick={() => setOpenDrawer()}
+              disabled={!fromAmount || !toAmount}
+            />
+          </div>
+        </div>
       </div>
       <WithMiniDrawer
         openDrawer={_openDrawer}
@@ -371,27 +367,6 @@ function CancelButton({ onCancel }: any) {
       style={{ marginRight: "8px" }}
     >
       <Typography className={classes.reviewBtnLabel}>Cancel</Typography>
-    </Button>
-  );
-}
-
-function ReviewButton({
-  onClick,
-  disabled = false,
-}: {
-  onClick: () => void;
-  disabled?: boolean;
-}) {
-  const classes = useStyles();
-  return (
-    <Button
-      disableRipple
-      disableElevation
-      className={classes.reviewBtn}
-      onClick={onClick}
-      disabled={disabled}
-    >
-      <Typography className={classes.reviewBtnLabel}>Review</Typography>
     </Button>
   );
 }
