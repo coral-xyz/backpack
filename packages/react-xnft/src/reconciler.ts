@@ -188,45 +188,46 @@ const RECONCILER = ReactReconciler({
     host: Host
   ): UpdateDiff => {
     logger.debug("prepareUpdate", instance, type, oldProps, newProps);
+    let payload: UpdateDiff | null = null;
     switch (type) {
       case NodeKind.View:
-        let payload: UpdateDiff | null = null;
         if (oldProps.style !== newProps.style) {
           payload = { style: newProps.style };
         }
         return payload;
       case NodeKind.Text:
-        let textPload: UpdateDiff | null = null;
         if (oldProps.style !== newProps.style) {
-          textPload = {
+          payload = {
             style: newProps.style,
           };
         }
-        return textPload;
+        return payload;
       case NodeKind.TextField:
-        let pload: UpdateDiff | null = null;
         // @ts-ignore
         if (oldProps.value !== newProps.value) {
           // @ts-ignore
-          pload = { value: newProps.value };
+          payload = { value: newProps.value };
         }
-        return pload;
+        return payload;
       case NodeKind.NavAnimation:
-        let naPayload: UpdateDiff | null = null;
         // @ts-ignore
         if (oldProps.routeName !== newProps.routeName) {
           // @ts-ignore
-          naPayload = { routeName: newProps.routeName };
+          payload = { routeName: newProps.routeName };
         }
-        return naPayload;
+        return payload;
       case NodeKind.Path:
-        let pathPayload: UpdateDiff | null = null;
         // @ts-ignore
         if (oldProps.fill !== newProps.fill) {
           // @ts-ignore
-          pathPayload = { fill: newProps.fill };
+          payload = { fill: newProps.fill };
         }
-        return pathPayload;
+        return payload;
+      case NodeKind.Button:
+        if (oldProps.style !== newProps.style) {
+          payload = { style: newProps.style };
+        }
+        return payload;
       case NodeKind.Svg:
         return null;
       case NodeKind.Image:
@@ -234,8 +235,6 @@ const RECONCILER = ReactReconciler({
       case NodeKind.Table:
         return null;
       case NodeKind.TableRow:
-        return null;
-      case NodeKind.Button:
         return null;
       case NodeKind.Loading:
         return null;
@@ -338,6 +337,11 @@ const RECONCILER = ReactReconciler({
           instance.props.fill = updatePayload.fill;
         }
         break;
+      case NodeKind.Button:
+        if (updatePayload.style !== undefined && updatePayload.style !== null) {
+          instance.style = updatePayload.style;
+        }
+        break;
       case NodeKind.Table:
         break;
       case NodeKind.TableRow:
@@ -345,8 +349,6 @@ const RECONCILER = ReactReconciler({
       case NodeKind.Text:
         break;
       case NodeKind.Image:
-        break;
-      case NodeKind.Button:
         break;
       case NodeKind.Svg:
         throw new Error("commitUpdate Svg not yet implemented");
