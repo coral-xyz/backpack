@@ -655,6 +655,11 @@ class Dom {
           instance.props.fill = updatePayload.fill;
         }
         break;
+      case NodeKind.Button:
+        if (updatePayload.style !== undefined && updatePayload.style !== null) {
+          instance.style = updatePayload.style;
+        }
+        break;
       default:
         throw new Error("invariant violation");
     }
