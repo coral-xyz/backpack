@@ -1,3 +1,3 @@
-export * from "./Tabs";
+export * from "./Tab";
 export * from "./Icons";
-export * from "./Nav";
+export * from "./Stack";

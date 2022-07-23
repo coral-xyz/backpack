@@ -1,11 +1,4 @@
-import {
-  usePublicKey,
-  View,
-  Text,
-  Button,
-  NavStack,
-  NavScreen,
-} from "react-xnft";
+import { usePublicKey, View, Text, Button, Stack } from "react-xnft";
 import { PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { useEstimatedRewards, gemFarmClient, DEAD_FARM } from "./utils";
@@ -33,7 +26,7 @@ export function Dust() {
         }}
       ></View>
       <View style={{ height: "100%" }}>
-        <NavStack
+        <Stack.Navigator
           initialRoute={{ name: "dust" }}
           options={({ route }) => {
             switch (route.name) {
@@ -51,11 +44,11 @@ export function Dust() {
           }}
           style={{}}
         >
-          <NavScreen
+          <Stack.Screen
             name={"dust"}
             component={(props: any) => <ClaimDust {...props} />}
           />
-        </NavStack>
+        </Stack.Navigator>
       </View>
     </View>
   );

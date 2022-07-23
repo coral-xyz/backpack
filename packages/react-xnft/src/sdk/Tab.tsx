@@ -2,7 +2,12 @@ import React, { useState, useContext } from "react";
 import { View, Button, Text, ScrollBar } from "../elements";
 import { useTheme } from "../Context";
 
-export function Tabs({
+export const Tab = {
+  Navigator,
+  Screen,
+};
+
+function Navigator({
   children,
   style,
   options,
@@ -31,7 +36,7 @@ export function Tabs({
   );
 }
 
-export function Tab({ name, component }: TabProps) {
+function Screen({ name, component }: TabProps) {
   return <></>;
 }
 

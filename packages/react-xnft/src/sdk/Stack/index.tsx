@@ -10,7 +10,12 @@ const NAV_BUTTON_WIDTH = 38;
 
 export { useNavigation } from "./Context";
 
-export function NavStack({
+export const Stack = {
+  Navigator,
+  Screen,
+};
+
+function Navigator({
   initialRoute,
   children,
   options,
@@ -74,7 +79,7 @@ function NavStackInner({
   );
 }
 
-export function NavScreen({ component, name }: any) {
+function Screen({ component, name }: any) {
   // TODO: allow empty tags.
   return <View style={{ display: "none" }}></View>;
 }

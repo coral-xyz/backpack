@@ -1,4 +1,4 @@
-import { View, Tabs, Tab } from "react-xnft";
+import { View, Tab } from "react-xnft";
 import { DegodsIcon, StakeIcon } from "./utils/icon";
 import { Dust } from "./Dust";
 import { Stake } from "./Stake";
@@ -6,7 +6,7 @@ import { Stake } from "./Stake";
 export function App() {
   return (
     <View style={{ height: "100%", backgroundColor: "#111827" }}>
-      <Tabs
+      <Tab.Navigator
         style={{
           backgroundColor: "#111827",
           borderTop: "none",
@@ -24,9 +24,17 @@ export function App() {
           };
         }}
       >
-        <Tab name="dust" disableLabel={true} component={() => <Dust />} />
-        <Tab name="stake" disableLabel={true} component={() => <Stake />} />
-      </Tabs>
+        <Tab.Screen
+          name="dust"
+          disableLabel={true}
+          component={() => <Dust />}
+        />
+        <Tab.Screen
+          name="stake"
+          disableLabel={true}
+          component={() => <Stake />}
+        />
+      </Tab.Navigator>
     </View>
   );
 }

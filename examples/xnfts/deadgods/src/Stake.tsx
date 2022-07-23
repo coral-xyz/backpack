@@ -1,14 +1,12 @@
 import {
   usePublicKey,
   useConnection,
-  useTheme,
   useNavigation,
   View,
   Image,
   Text,
   Button,
-  NavStack,
-  NavScreen,
+  Stack,
   Image,
   Loading,
 } from "react-xnft";
@@ -21,7 +19,7 @@ const STATS = "https://api.degods.com/v1/stats";
 
 export function Stake() {
   return (
-    <NavStack
+    <Stack.Navigator
       initialRoute={{ name: "stake" }}
       options={({ route }) => {
         switch (route.name) {
@@ -39,15 +37,15 @@ export function Stake() {
       }}
       style={{}}
     >
-      <NavScreen
+      <Stack.Screen
         name={"stake"}
         component={(props: any) => <StakeScreen {...props} />}
       />
-      <NavScreen
+      <Stack.Screen
         name={"detail"}
         component={(props: any) => <DetailScreen {...props} />}
       />
-    </NavStack>
+    </Stack.Navigator>
   );
 }
 
