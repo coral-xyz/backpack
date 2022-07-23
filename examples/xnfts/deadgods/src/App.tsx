@@ -19,9 +19,9 @@ export function App() {
                 ? THEME.colors.activeTab
                 : THEME.colors.inactiveTab;
               if (route.name === "dust") {
-                return <DegodsIcon fill={color} />;
+                return <Tab.Icon element={<DegodsIcon fill={color} />} />;
               } else {
-                return <GodsIcon fill={color} />;
+                return <Tab.Icon element={<GodsIcon fill={color} />} />;
               }
             },
           };
