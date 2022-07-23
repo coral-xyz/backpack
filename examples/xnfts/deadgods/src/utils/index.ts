@@ -130,7 +130,11 @@ async function fetchStakedTokenAccounts(
     }
   }
 
-  const newResp = fetchStakedTokenAccountsInner(isDead, wallet, connection);
+  const newResp = await fetchStakedTokenAccountsInner(
+    isDead,
+    wallet,
+    connection
+  );
   window.localStorage.setItem(
     cacheKey,
     JSON.stringify({
@@ -138,7 +142,7 @@ async function fetchStakedTokenAccounts(
       value: newResp,
     })
   );
-  return await newResp;
+  return newResp;
 }
 
 async function fetchStakedTokenAccountsInner(
