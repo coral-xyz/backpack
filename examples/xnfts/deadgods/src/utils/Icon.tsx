@@ -31,7 +31,7 @@ export function DegodsIcon({ fill = "#FFEFEB" }) {
   );
 }
 
-export function StakeIcon({ fill }) {
+export function GodsIcon({ fill }) {
   return (
     <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Path
