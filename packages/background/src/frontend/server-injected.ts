@@ -165,14 +165,12 @@ async function handleConnect(
   if (didApprove) {
     const activeWallet = await ctx.backend.activeWallet();
     const connectionUrl = await ctx.backend.solanaConnectionUrl();
+    const data = { publicKey: activeWallet, connectionUrl };
     ctx.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_CONNECTED,
-      data: {
-        publicKey: activeWallet,
-        connectionUrl,
-      },
+      data,
     });
-    return [SUCCESS_RESPONSE];
+    return [data];
   } else {
     logger.debug("user did not approve");
     return null;
