@@ -650,6 +650,16 @@ class Dom {
           instance.props.routeName = updatePayload.routeName;
         }
         break;
+      case NodeKind.Path:
+        if (updatePayload.fill !== undefined && updatePayload.fill !== null) {
+          instance.props.fill = updatePayload.fill;
+        }
+        break;
+      case NodeKind.Button:
+        if (updatePayload.style !== undefined && updatePayload.style !== null) {
+          instance.style = updatePayload.style;
+        }
+        break;
       default:
         throw new Error("invariant violation");
     }

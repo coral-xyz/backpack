@@ -2,7 +2,12 @@ import React, { useState, useContext } from "react";
 import { View, Button, Text, ScrollBar } from "../elements";
 import { useTheme } from "../Context";
 
-export function Tabs({
+export const Tab = {
+  Navigator,
+  Screen,
+};
+
+function Navigator({
   children,
   style,
   options,
@@ -31,7 +36,7 @@ export function Tabs({
   );
 }
 
-export function Tab({ name, component }: TabProps) {
+function Screen({ name, component }: TabProps) {
   return <></>;
 }
 
@@ -43,6 +48,7 @@ function TabContent({ tabScreens }) {
       <View
         style={{
           flex: 1,
+          height: "100%",
         }}
       >
         {screen.props.component()}
@@ -68,6 +74,9 @@ function TabBar({ tabScreens, style }) {
       {tabScreens.map((screen) => {
         const routedOptions = options({ route: { name: screen.props.name } });
         const focused = activeTab === screen.props.name;
+        const color = focused
+          ? routedOptions.tabBarActiveTintColor
+          : routedOptions.tabBarInactiveTintColor;
         return (
           <Button
             key={screen.props.name}
@@ -78,6 +87,9 @@ function TabBar({ tabScreens, style }) {
               display: "flex",
               justifyContent: "center",
               flexDirection: "column",
+              background: "transparent",
+              borderRadius: 0,
+              position: "relative",
             }}
             onClick={() => setActiveTab(screen.props.name)}
           >
@@ -92,19 +104,29 @@ function TabBar({ tabScreens, style }) {
               >
                 {routedOptions.tabBarIcon({ focused })}
               </View>
-              <Text
-                style={{
-                  textAlign: "center",
-                  fontSize: "9px",
-                  fontWeight: 400,
-                  color: focused
-                    ? routedOptions.tabBarActiveTintColor
-                    : routedOptions.tabBarInactiveTintColor,
-                }}
-              >
-                {screen.props.name}
-              </Text>
+              {!screen.props.disableLabel && (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontSize: "9px",
+                    fontWeight: 400,
+                    color,
+                  }}
+                >
+                  {screen.props.name}
+                </Text>
+              )}
             </View>
+            <View
+              style={{
+                position: "absolute",
+                height: "4px",
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: color,
+              }}
+            ></View>
           </Button>
         );
       })}
@@ -115,6 +137,7 @@ function TabBar({ tabScreens, style }) {
 type TabProps = {
   component: () => React.ReactNode;
   name: string;
+  disableLabel?: boolean;
 };
 
 type TabsOptions = ({ route }) => RoutedTabsOptions;

@@ -8,11 +8,12 @@ const OPEN_ORDERS_ICON_URL =
 
 const HELLO_WORLD_PLUGIN_URL =
   "https://embed.xnfts.dev/5r1jwBmveWJaJVtkFCUFcboqv4sfYheaoEoBicAiJmEJ";
-// "https://localhost:9999/5r1jwBmveWJaJVtkFCUFcboqv4sfYheaoEoBicAiJmEJ";
-const MANGO_TABLE_PLUGIN_URL = pluginURL("table-mango");
-const DEGODS_TABLE_PLUGIN_URL = pluginURL("deadgods");
 const ANCHOR_TABLE_PLUGIN_URL = pluginURL("table-anchor");
 const PSYFI_TABLE_PLUGIN_URL = pluginURL("table-psyfi");
+
+const DEGODS_TABLE_PLUGIN_URL = pluginURL("deadgods");
+const MANGO_TABLE_PLUGIN_URL = pluginURL("mango");
+const PRICES_PLUGIN_URL = pluginURL("prices");
 const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
 
 function pluginURL(pluginName: string) {
@@ -31,20 +32,24 @@ export const plugins = selector({
   key: "plugins",
   get: ({ get }: any) => {
     return [
-      /*
-      {
-        url: MANGO_TABLE_PLUGIN_URL,
-        iconUrl:
-          "https://cdn.discordapp.com/attachments/987809528848461914/987811342763302942/Group_1914_2.png",
-        title: "Mango",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(connectionUrl),
-      },
-			*/
       {
         url: DEGODS_TABLE_PLUGIN_URL,
         iconUrl: "assets/deadgods.png",
         title: "DeadGods",
+        activeWallet: get(activeWallet),
+        connectionUrl: get(connectionUrl),
+      },
+      {
+        url: PRICES_PLUGIN_URL,
+        iconUrl: "assets/prices.png",
+        title: "Prices",
+        activeWallet: get(activeWallet),
+        connectionUrl: get(connectionUrl),
+      },
+      {
+        url: MANGO_TABLE_PLUGIN_URL,
+        iconUrl: "assets/mango.png",
+        title: "Mango",
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
       },

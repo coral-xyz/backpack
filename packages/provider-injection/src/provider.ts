@@ -100,12 +100,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
     this.emit(_mapNotificationName(event.data.detail.name));
   }
 
-  _handleNotificationConnected(event: Event) {
-    this._connect(
-      event.data.detail.data.publicKey,
-      event.data.detail.data.connectionUrl
-    );
-  }
+  _handleNotificationConnected(event: Event) {}
 
   private _connect(publicKey: string, connectionUrl: string) {
     this.isConnected = true;
@@ -137,10 +132,8 @@ export class ProviderInjection extends EventEmitter implements Provider {
       method: RPC_METHOD_CONNECT,
       params: [onlyIfTrustedMaybe],
     });
-    if (!result) {
-      throw new Error("user did not approve connection");
-    }
-    return result;
+
+    this._connect(result.publicKey, result.connectionUrl);
   }
 
   async disconnect() {

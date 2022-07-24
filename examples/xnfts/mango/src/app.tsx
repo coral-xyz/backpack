@@ -25,7 +25,6 @@ export function App() {
 }
 
 function MangoTable() {
-  const nav = useNavigation();
   const [rowData, setRowData] = useState<Array<any> | null>(null);
   useEffect(() => {
     (async () => {
@@ -44,10 +43,7 @@ function MangoTable() {
           <BalancesTableContent>
             {rowData.map((row) => {
               return (
-                <BalancesTableRow
-                  key={row.mangoAccount.publicKey.toString()}
-                  onClick={() => nav.push(<MangoAccountDetail />)}
-                >
+                <BalancesTableRow key={row.mangoAccount.publicKey.toString()}>
                   <BalancesTableCell
                     title={row.title}
                     subtitle={row.subtitle}

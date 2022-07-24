@@ -31,10 +31,10 @@ export function useDegodTokens() {
     return null;
   }
   return {
-    dead: tokenAccounts[0],
-    alive: tokenAccounts[1],
-    deadUnstaked: tokenAccounts[2],
-    aliveUnstaked: tokenAccounts[3],
+    dead: tokenAccounts[0].map((t) => ({ ...t, isStaked: true })),
+    alive: tokenAccounts[1].map((t) => ({ ...t, isStaked: true })),
+    deadUnstaked: tokenAccounts[2].map((t) => ({ ...t, isStaked: false })),
+    aliveUnstaked: tokenAccounts[3].map((t) => ({ ...t, isStaked: false })),
   };
 }
 
@@ -130,7 +130,11 @@ async function fetchStakedTokenAccounts(
     }
   }
 
-  const newResp = fetchStakedTokenAccountsInner(isDead, wallet, connection);
+  const newResp = await fetchStakedTokenAccountsInner(
+    isDead,
+    wallet,
+    connection
+  );
   window.localStorage.setItem(
     cacheKey,
     JSON.stringify({
@@ -138,7 +142,7 @@ async function fetchStakedTokenAccounts(
       value: newResp,
     })
   );
-  return await newResp;
+  return newResp;
 }
 
 async function fetchStakedTokenAccountsInner(
