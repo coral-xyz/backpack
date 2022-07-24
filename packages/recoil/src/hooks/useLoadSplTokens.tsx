@@ -40,13 +40,6 @@ export const useUpdateAllSplTokenAccounts = () =>
         //
         // Regular tokens.
         //
-        set(
-          atoms.solanaTokenAccountKeys({
-            connectionUrl,
-            publicKey,
-          }),
-          customSplTokenAccounts.tokenAccounts.map((a) => a.key.toString())
-        );
         customSplTokenAccounts.tokenAccounts.forEach((tokenAccount) => {
           set(
             atoms.solanaTokenAccountsMap({
@@ -56,16 +49,20 @@ export const useUpdateAllSplTokenAccounts = () =>
             tokenAccount
           );
         });
+        set(
+          atoms.solanaTokenAccountKeys({
+            connectionUrl,
+            publicKey,
+          }),
+          customSplTokenAccounts.tokenAccounts.map((a) => a.key.toString())
+        );
 
         //
         // Nfts.
         //
         set(
-          atoms.solanaNftMetadataKeys,
-          customSplTokenAccounts.nftMetadata.map((c) => c[0])
+          atoms.solanaNftMetadata,
+          new Map(customSplTokenAccounts.nftMetadata)
         );
-        customSplTokenAccounts.nftMetadata.forEach(([key, value]) => {
-          set(atoms.solanaNftMetadataMap(key), value);
-        });
       }
   );

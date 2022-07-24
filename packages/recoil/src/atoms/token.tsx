@@ -168,31 +168,15 @@ export const solanaTokenAccountsMap = atomFamily<
 });
 
 //
-// Token account address for all nfts.
-//
-export const solanaNftMetadataKeys = atom<Array<string>>({
-  key: "solanaNftKeys",
-  default: selector({
-    key: "solanaNftKeysDefault",
-    get: ({ get }: any) => {
-      const b = get(bootstrap);
-      return Array.from(b.splNftMetadata.keys());
-    },
-  }),
-});
-
-//
 // Full token metadata for all nfts.
 //
-export const solanaNftMetadataMap = atomFamily<any, string>({
+export const solanaNftMetadata = atom<Map<string, any>>({
   key: "solanaNftMap",
-  default: selectorFamily({
+  default: selector({
     key: "solanaNftMapDefault",
-    get:
-      (tokenAddress: string) =>
-      ({ get }: any) => {
-        const b = get(bootstrap);
-        return b.splNftMetadata.get(tokenAddress);
-      },
+    get: ({ get }: any) => {
+      const b = get(bootstrap);
+      return new Map(b.splNftMetadata);
+    },
   }),
 });

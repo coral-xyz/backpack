@@ -51,7 +51,11 @@ export function TokenTable() {
   const tokenAccountsSorted = useBlockchainTokensSorted(blockchain);
   const [showAll, setShowAll] = useState(false);
   const tokenAccountsFiltered = tokenAccountsSorted.filter(
-    (t: any) => t.nativeBalance !== 0
+    (t: any) =>
+      t.nativeBalance !== 0 &&
+      t.name !== undefined &&
+      t.ticker !== undefined &&
+      t.logo !== undefined
   );
 
   return (
