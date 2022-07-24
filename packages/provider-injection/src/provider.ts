@@ -132,9 +132,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
       method: RPC_METHOD_CONNECT,
       params: [onlyIfTrustedMaybe],
     });
-    if (!result) {
-      throw new Error("user did not approve connection");
-    }
+
     this._connect(result.publicKey, result.connectionUrl);
   }
 
