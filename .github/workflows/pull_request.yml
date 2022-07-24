@@ -50,7 +50,7 @@ jobs:
         with:
           publish_dir: packages/background/html
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          destination_dir: ${{ github.event.number }}
+          destination_dir: ${{ github.sha }}
 
       ##########################################################################
       # Release.
