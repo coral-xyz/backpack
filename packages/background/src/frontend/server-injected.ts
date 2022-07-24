@@ -171,10 +171,9 @@ async function handleConnect(
       data,
     });
     return [data];
-  } else {
-    logger.debug("user did not approve");
-    return null;
   }
+
+  throw new Error("user did not approve");
 }
 
 function handleDisconnect(ctx: Context<Backend>): RpcResponse<string> {
@@ -211,7 +210,7 @@ async function handleSignAndSendTx(
     return [sig];
   }
 
-  return [null];
+  throw new Error("user denied transaction signature");
 }
 
 async function handleSignTx(
@@ -234,7 +233,7 @@ async function handleSignTx(
     return [sig];
   }
 
-  return [null];
+  throw new Error("user denied transaction signature");
 }
 
 async function handleSignAllTxs(
@@ -242,8 +241,9 @@ async function handleSignAllTxs(
   txs: Array<string>,
   walletAddress: string
 ): Promise<RpcResponse<Array<string>>> {
-  const resp = await ctx.backend.signAllTransactions(txs, walletAddress);
-  return [resp];
+  throw new Error("not implemented");
+  // const resp = await ctx.backend.signAllTransactions(txs, walletAddress);
+  // return [resp];
 }
 
 async function handleSignMessage(
@@ -261,7 +261,7 @@ async function handleSignMessage(
     return [sig];
   }
 
-  return [null];
+  throw new Error("user denied message signature");
 }
 
 async function handleSimulate(
