@@ -30,11 +30,12 @@ import {
   RPC_METHOD_SIMULATE,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
+  NOTIFICATION_CONNECTION_URL_UPDATED,
+  NOTIFICATION_ACTIVE_WALLET_UPDATED,
   CHANNEL_RPC_REQUEST,
   CHANNEL_NOTIFICATION,
   CONNECTION_POPUP_RESPONSE,
   BACKEND_EVENT,
-  NOTIFICATION_CONNECTION_URL_UPDATED,
 } from "@coral-xyz/common";
 import type { Backend } from "../backend/core";
 import { SUCCESS_RESPONSE } from "../backend/core";
@@ -63,6 +64,9 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
         notificationsInjected.sendMessageActiveTab(notification);
         break;
       case NOTIFICATION_DISCONNECTED:
+        notificationsInjected.sendMessageActiveTab(notification);
+        break;
+      case NOTIFICATION_ACTIVE_WALLET_UPDATED:
         notificationsInjected.sendMessageActiveTab(notification);
         break;
       default:

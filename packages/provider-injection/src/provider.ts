@@ -24,6 +24,7 @@ import {
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
+  NOTIFICATION_ACTIVE_WALLET_UPDATED,
 } from "@coral-xyz/common";
 import * as cmn from "./common";
 import { RequestManager } from "./request-manager";
@@ -93,6 +94,9 @@ export class ProviderInjection extends EventEmitter implements Provider {
       case NOTIFICATION_CONNECTION_URL_UPDATED:
         this._handleNotificationConnectionUrlUpdated(event);
         break;
+      case NOTIFICATION_ACTIVE_WALLET_UPDATED:
+        this._handleNotificationActiveWalletUpdated(event);
+        break;
       default:
         throw new Error(`unexpected notification ${event.data.detail.name}`);
     }
@@ -121,6 +125,12 @@ export class ProviderInjection extends EventEmitter implements Provider {
       this._connectionRequestManager,
       event.data.detail.data.url
     );
+  }
+
+  _handleNotificationActiveWalletUpdated(event: Event) {
+    console.log("active wallet updated");
+    console.log(event);
+    this.publicKey = new PublicKey(event.data.detail.data.publicKey);
   }
 
   async connect(onlyIfTrustedMaybe: boolean) {
@@ -241,6 +251,8 @@ function _mapNotificationName(notificationName: string) {
       return "disconnect";
     case NOTIFICATION_CONNECTION_URL_UPDATED:
       return "connectionDidChange";
+    case NOTIFICATION_ACTIVE_WALLET_UPDATED:
+      return "activeWalletDidChange";
     default:
       throw new Error(`unexpected notification name ${notificationName}`);
   }
