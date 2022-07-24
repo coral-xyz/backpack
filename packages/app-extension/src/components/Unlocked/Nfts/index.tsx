@@ -1,10 +1,6 @@
 import { Button, Typography } from "@mui/material";
-import {
-  NAV_COMPONENT_NFT_DETAIL,
-  NAV_COMPONENT_NFT_COLLECTION,
-} from "@coral-xyz/common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { useNavigation, useNftCollections } from "@coral-xyz/recoil";
+import { useNftCollections } from "@coral-xyz/recoil";
 
 const useStyles = styles((theme) => ({
   nftImage: {
@@ -16,6 +12,7 @@ export function Nfts() {
   return (
     <div
       style={{
+        marginTop: "24px",
         paddingLeft: "16px",
         paddingRight: "16px",
       }}
@@ -41,6 +38,7 @@ function BalancesHeader() {
 }
 
 export function CollectionGrid() {
+  //  const nftMetadata = useNftMetadata();
   const collections = useNftCollections();
   return (
     <div
@@ -66,34 +64,8 @@ function NftCollection({
 }) {
   const theme = useCustomTheme();
   const display = collection[0];
-  const { push } = useNavigation();
-
-  const onClick = () => {
-    if (collection.length === 1) {
-      if (!display.tokenMetaUriData.name || !display.publicKey) {
-        throw new Error("invalid nft data");
-      }
-      push({
-        title: display.tokenMetaUriData.name,
-        componentId: NAV_COMPONENT_NFT_DETAIL,
-        componentProps: {
-          publicKey: display.publicKey,
-        },
-      });
-    } else {
-      push({
-        title: name,
-        componentId: NAV_COMPONENT_NFT_COLLECTION,
-        componentProps: {
-          name,
-        },
-      });
-    }
-  };
-
   return (
     <Button
-      onClick={onClick}
       disableRipple
       style={{
         marginTop: "16px",

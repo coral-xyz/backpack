@@ -211,6 +211,8 @@ export const TAB_APPS = "apps";
 export const TAB_SET = new Set([TAB_BALANCES, TAB_SWAP, TAB_NFTS, TAB_APPS]);
 
 export const NAV_COMPONENT_TOKEN = "balances/token";
+export const NAV_COMPONENT_NFT_DETAIL = "nfts/detail";
+export const NAV_COMPONENT_NFT_COLLECTION = "nfts/collection";
 
 export const BACKEND_EVENT = "backend-event";
 

@@ -46,3 +46,7 @@ export function usePriceData(mintAddress: string): any {
 export function useNftMetadata(): Map<string, any> {
   return useRecoilValue(atoms.solanaNftMetadata);
 }
+
+export function useNftCollections(): Map<string, any> {
+  return useRecoilValue(atoms.solanaNftCollections);
+}
