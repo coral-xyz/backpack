@@ -181,7 +181,6 @@ export function GodDetailScreen({ god }) {
 }
 
 function AttributesTabScreen({ god }) {
-  console.log("attributes here", god);
   return (
     <View
       style={{
