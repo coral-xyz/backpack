@@ -80,12 +80,18 @@ jobs:
           CI: ""
         run: yarn build
 
-      #
-      # - name: "[e2e] run puppeteer tests"
-      #   uses: wentokay/hello-world-docker-action@v11
-      #   with:
-      #     command: yarn workspace @coral-xyz/app-extension e2e
-      #
+      ##########################################################################
+      # GitHub Pages
+      ##########################################################################
+
+      - run: cd packages/background && yarn build:html
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          publish_dir: packages/background/build
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          destination_dir: background-scripts/${{ github.sha }}
 
       ##########################################################################
       # Release.
