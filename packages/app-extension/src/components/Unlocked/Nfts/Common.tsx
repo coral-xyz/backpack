@@ -8,7 +8,7 @@ export function GridCard({ onClick, nft, subtitle }: any) {
       onClick={onClick}
       disableRipple
       style={{
-        marginTop: "16px",
+        marginBottom: "16px",
         textTransform: "none",
         padding: 0,
         borderRadius: "8px",
@@ -44,6 +44,10 @@ export function GridCard({ onClick, nft, subtitle }: any) {
             style={{
               fontSize: "12px",
               color: theme.custom.colors.fontColor,
+              textOverflow: "ellipsis",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+              maxWidth: "130px",
             }}
           >
             {subtitle.name}{" "}
