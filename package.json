@@ -6,7 +6,8 @@
     "examples/clients/*",
     "examples/xnfts",
     "examples/xnfts/*",
-    "packages/*"
+    "packages/*",
+    "web"
   ],
   "scripts": {
     "lint:fix": "prettier {examples,packages}/**/*.{ts,tsx,css,md,json} --write",
