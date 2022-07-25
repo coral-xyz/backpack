@@ -22,14 +22,13 @@ const useStyles = styles((theme) => ({
     bottom: 0,
   },
   tab: {
-    borderTop: `solid 1pt ${theme.custom.colors.border}`,
     color: theme.custom.colors.tabIconBackground,
     height: `${TAB_HEIGHT}px`,
   },
   tabRoot: {
     height: `${TAB_HEIGHT}px`,
     minHeight: `${TAB_HEIGHT}px`,
-    backgroundColor: theme.custom.colors.nav,
+    backgroundColor: "transparent",
   },
   tabIndicator: {
     color: "none",
