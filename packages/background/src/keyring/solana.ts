@@ -23,6 +23,7 @@ import type {
   LedgerKeyringJson,
   LedgerKeyring,
 } from "./types";
+import { postMessageToIframe } from "../shared";
 
 export class SolanaKeyringFactory implements KeyringFactory {
   public fromJson(payload: KeyringJson): SolanaKeyring {
@@ -350,19 +351,3 @@ self.addEventListener("message", (msg) => {
     console.error(err);
   }
 });
-
-// Handle sending postMessages
-const postMessageToIframe = (message: any) => {
-  (self as any).clients
-    .matchAll({
-      frameType: "top-level",
-      includeUncontrolled: true,
-      type: "window",
-      visibilityState: "visible",
-    })
-    .then((clients: any) => {
-      clients.forEach((client: any) => {
-        client.postMessage(message);
-      });
-    });
-};
