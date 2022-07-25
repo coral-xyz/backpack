@@ -90,12 +90,15 @@ jobs:
 
       - run: cd packages/background && yarn build:html
 
+      - name: "set env.short_commit_sha"
+        run: echo "short_commit_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           publish_dir: packages/background/build
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          destination_dir: background-scripts/${{ github.sha }}
+          destination_dir: background-scripts/${{ env.short_commit_sha }}
 
       ##########################################################################
       # Release.
