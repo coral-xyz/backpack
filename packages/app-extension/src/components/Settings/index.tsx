@@ -8,6 +8,7 @@ import {
   Help,
   Public,
   AccountCircleOutlined,
+  Tab as WindowIcon,
 } from "@mui/icons-material";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import {
@@ -16,6 +17,7 @@ import {
   useActiveWallet,
 } from "@coral-xyz/recoil";
 import {
+  openPopupWindow,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
@@ -367,6 +369,12 @@ function SettingsList({ close }: { close: () => void }) {
       onClick: () => nav.push("connection-menu"),
       icon: (props: any) => <Public {...props} />,
       detailIcon: <PushDetail />,
+    },
+    {
+      label: "Pop window",
+      onClick: () => openPopupWindow("popup.html"),
+      icon: (props: any) => <WindowIcon {...props} />,
+      detailIcon: <LaunchDetail />,
     },
     {
       label: "Lock Wallet",
