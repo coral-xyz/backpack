@@ -15,7 +15,6 @@ export function NftsDetail({ publicKey }: { publicKey: string }) {
   return (
     <div
       style={{
-        marginTop: "4px",
         paddingLeft: "16px",
         paddingRight: "16px",
       }}
