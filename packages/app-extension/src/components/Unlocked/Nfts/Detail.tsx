@@ -216,7 +216,7 @@ function SendScreen({ nft }: { nft: any }) {
         <SendConfirmationCard
           token={{
             mint: nft.metadata.mint,
-            decimals: 0, // Are there any NFTs that don't use decimals 1?
+            decimals: 0, // Are there any NFTs that don't use decimals 0?
           }}
           address={address}
           amount={1.0}
