@@ -17,6 +17,7 @@ import {
   SwapProvider,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { Blockchain } from "@coral-xyz/common";
 import {
   TextField,
   TextFieldLabel,
@@ -32,6 +33,8 @@ import {
   useDrawerContext,
 } from "../Layout/Drawer";
 import { WithNav } from "../Layout/Nav";
+import type { Token } from "../common/TokenTable";
+import { SearchableTokenTable } from "../common/TokenTable";
 
 const useStyles = styles((theme) => ({
   container: {
@@ -416,7 +419,7 @@ function SwapTokensButton({ onClick, isSwap, isLoading }: any) {
   );
 }
 
-function TokenSelectorButton({ mint, isFrom, blockchain }: any) {
+function TokenSelectorButton({ mint, isFrom }: any) {
   const classes = useStyles();
   const tokenRegistry = useSplTokenRegistry();
   const tokenInfo = tokenRegistry.get(mint); // todo handle null case
@@ -424,11 +427,24 @@ function TokenSelectorButton({ mint, isFrom, blockchain }: any) {
   const logoUri = tokenInfo ? tokenInfo.logoURI : "-";
   const { setFromMint, setToMint } = useSwapContext();
 
+  const onSelectToken = (blockchain: Blockchain, token: Token) => {
+    if (isFrom) {
+      setFromMint(token.mint);
+    } else {
+      setToMint(token.mint);
+    }
+    close();
+  };
+
+  const tokenFilter = isFrom
+    ? (token: Token) => token.nativeBalance !== 0
+    : () => true;
+
   return (
     <>
       <InputAdornment position="end">
         <WithHeaderButton
-          label={
+          labelComponent={
             <>
               <img className={classes.tokenLogo} src={logoUri} />
               <Typography className={classes.tokenSelectorButtonLabel}>
@@ -437,107 +453,22 @@ function TokenSelectorButton({ mint, isFrom, blockchain }: any) {
               <ExpandMore className={classes.expandMore} />
             </>
           }
-          style={{
-            diplay: "flex",
-          }}
           routes={[
             {
               title: "Select token",
               name: "select-token",
-              component: (props: any) => <TokenList {...props} />,
+              component: (props: any) => <SearchableTokenTable {...props} />,
               props: {
-                mint,
-                setMint: isFrom ? setFromMint : setToMint,
-                isFrom,
+                onClickRow: onSelectToken,
+                customFilter: tokenFilter,
               },
             },
           ]}
+          style={{
+            backgroundColor: "transparent",
+          }}
         />
       </InputAdornment>
     </>
-  );
-}
-
-function TokenList({ mint, setMint, isFrom }: any) {
-  const tokenAccountsSorted = useSwapTokenList(mint, isFrom);
-  const { close } = useDrawerContext();
-  const classes = useStyles();
-  const [search, setSearch] = useState("");
-
-  const didSelect = (token: any) => {
-    setMint(token.mint);
-    close();
-  };
-
-  let tokens = tokenAccountsSorted;
-  if (isFrom) {
-    tokens = tokenAccountsSorted.filter((t: any) => t.nativeBalance > 0);
-  }
-
-  const searchLower = search.toLowerCase();
-  tokens = tokens.filter(
-    (t: any) =>
-      t.name &&
-      (t.name.toLowerCase().startsWith(searchLower) ||
-        t.ticker.toLowerCase().startsWith(searchLower))
-  );
-
-  return (
-    <div>
-      <TextField
-        placeholder={"Search"}
-        value={search}
-        setValue={setSearch}
-        rootClass={classes.searchField}
-        inputProps={{
-          style: {
-            height: "48px",
-          },
-        }}
-      />
-      <div className={classes.tokenListContainer}>
-        <List className={classes.tokenList}>
-          {tokens.map((t: any) => (
-            <TokenListItem key={t.address} onClick={didSelect} token={t} />
-          ))}
-        </List>
-      </div>
-    </div>
-  );
-}
-
-function TokenListItem({ token, onClick }: any) {
-  const classes = useStyles();
-  return (
-    <ListItem
-      button
-      className={classes.tokenListItem}
-      onClick={() => onClick(token)}
-    >
-      <div style={{ display: "flex " }}>
-        <img
-          src={token.logo}
-          style={{ width: "30px", height: "30px", marginRight: "8px" }}
-        />
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            flexDirection: "column",
-          }}
-        >
-          <Typography className={classes.tokenListItemName}>
-            {token.name}
-          </Typography>
-        </div>
-      </div>
-      <div>
-        {token.nativeBalance && (
-          <Typography className={classes.tokenListItemBalance}>
-            {token.nativeBalance.toLocaleString()} {token.ticker}
-          </Typography>
-        )}
-      </div>
-    </ListItem>
   );
 }
