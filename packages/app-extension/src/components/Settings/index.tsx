@@ -371,8 +371,11 @@ function SettingsList({ close }: { close: () => void }) {
       detailIcon: <PushDetail />,
     },
     {
-      label: "Pop window",
-      onClick: () => openPopupWindow("popup.html"),
+      label: "Pop Window",
+      onClick: () => {
+        openPopupWindow("popup.html");
+        window.close();
+      },
       icon: (props: any) => <WindowIcon {...props} />,
       detailIcon: <LaunchDetail />,
     },
