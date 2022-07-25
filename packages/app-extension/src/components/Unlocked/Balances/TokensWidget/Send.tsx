@@ -352,7 +352,7 @@ export function SendConfirmationCard({
   amount,
   close,
 }: {
-  token: { mint: string };
+  token: { mint: string; decimals?: number };
   address: string;
   amount: number;
   close: () => void;
@@ -382,6 +382,7 @@ export function SendConfirmationCard({
           destination: new PublicKey(address),
           mint: new PublicKey(token.mint),
           amount,
+          decimals: token.decimals,
         });
       }
     } catch (err) {

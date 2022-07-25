@@ -141,8 +141,6 @@ function SendScreen({ nft }: { nft: any }) {
   const [addressError, setAddressError] = useState<boolean>(false);
   const [openConfirm, setOpenConfirm] = useState(false);
 
-  console.log("NFT HERE", nft);
-
   const onReject = () => {
     close();
   };
@@ -207,7 +205,10 @@ function SendScreen({ nft }: { nft: any }) {
       </div>
       <WithMiniDrawer openDrawer={openConfirm} setOpenDrawer={setOpenConfirm}>
         <SendConfirmationCard
-          token={{ mint: nft.metadata.mint }}
+          token={{
+            mint: nft.metadata.mint,
+            decimals: 1, // Are there any NFTs that don't use decimals 1?
+          }}
           address={address}
           amount={1.0}
           close={() => close()}
@@ -241,6 +242,7 @@ function Attributes({ nft }: { nft: any }) {
           {nft.tokenMetaUriData.attributes.map((attr: any) => {
             return (
               <div
+                key={attr.trait_type}
                 style={{
                   padding: "4px",
                 }}

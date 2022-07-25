@@ -33,7 +33,7 @@ function Grid({ name }: { name: string }) {
       }}
     >
       {c.items.map((nft: any) => (
-        <NftCard nft={nft} />
+        <NftCard key={nft.publicKey} nft={nft} />
       ))}
     </div>
   );
