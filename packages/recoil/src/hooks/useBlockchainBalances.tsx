@@ -47,6 +47,6 @@ export function useNftMetadata(): Map<string, any> {
   return useRecoilValue(atoms.solanaNftMetadata);
 }
 
-export function useNftCollections(): Map<string, any> {
+export function useNftCollections(): Array<any> {
   return useRecoilValue(atoms.solanaNftCollections);
 }

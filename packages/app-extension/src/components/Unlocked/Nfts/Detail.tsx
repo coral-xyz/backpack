@@ -57,6 +57,7 @@ function Description({ nft }: { nft: any }) {
           fontWeight: 500,
           fontSize: "16px",
           lineHeight: "24px",
+          marginBottom: "4px",
         }}
       >
         Description

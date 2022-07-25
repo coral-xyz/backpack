@@ -1,44 +1,25 @@
 import { Button, Typography } from "@mui/material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { useNftCollections } from "@coral-xyz/recoil";
-
-const useStyles = styles((theme) => ({
-  nftImage: {
-    width: "187px",
-  },
-}));
+import {
+  NAV_COMPONENT_NFT_DETAIL,
+  NAV_COMPONENT_NFT_COLLECTION,
+} from "@coral-xyz/common";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { useNavigation, useNftCollections } from "@coral-xyz/recoil";
 
 export function Nfts() {
   return (
     <div
       style={{
-        marginTop: "24px",
         paddingLeft: "16px",
         paddingRight: "16px",
       }}
     >
-      <BalancesHeader />
-      <CollectionGrid />
+      <NftGrid />
     </div>
   );
 }
 
-function BalancesHeader() {
-  const theme = useCustomTheme();
-  // TODO
-  return (
-    <div
-      style={
-        {
-          //			borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-        }
-      }
-    ></div>
-  );
-}
-
-export function CollectionGrid() {
-  //  const nftMetadata = useNftMetadata();
+function NftGrid() {
   const collections = useNftCollections();
   return (
     <div
@@ -49,23 +30,59 @@ export function CollectionGrid() {
       }}
     >
       {[...collections.entries()].map(([name, c]: any) => (
-        <NftCollection name={c.name} collection={c.items} />
+        <NftCollectionCard name={c.name} collection={c.items} />
       ))}
     </div>
   );
 }
 
-function NftCollection({
+function NftCollectionCard({
   name,
   collection,
 }: {
   name: string;
   collection: any;
 }) {
-  const theme = useCustomTheme();
   const display = collection[0];
+  const { push } = useNavigation();
+
+  const onClick = () => {
+    if (collection.length === 1) {
+      if (!display.tokenMetaUriData.name || !display.publicKey) {
+        throw new Error("invalid nft data");
+      }
+      push({
+        title: display.tokenMetaUriData.name,
+        componentId: NAV_COMPONENT_NFT_DETAIL,
+        componentProps: {
+          publicKey: display.publicKey,
+        },
+      });
+    } else {
+      push({
+        title: name,
+        componentId: NAV_COMPONENT_NFT_COLLECTION,
+        componentProps: {
+          name,
+        },
+      });
+    }
+  };
+
+  return (
+    <GridCard
+      onClick={onClick}
+      nft={display}
+      subtitle={{ name, length: collection.length }}
+    />
+  );
+}
+
+export function GridCard({ onClick, nft, subtitle }: any) {
+  const theme = useCustomTheme();
   return (
     <Button
+      onClick={onClick}
       disableRipple
       style={{
         marginTop: "16px",
@@ -81,55 +98,42 @@ function NftCollection({
         style={{
           width: "164px",
         }}
-        src={display.tokenMetaUriData.image}
+        src={nft.tokenMetaUriData.image}
       />
-      <div
-        style={{
-          backgroundColor: theme.custom.colors.nav,
-          position: "absolute",
-          left: 8,
-          bottom: 8,
-          zIndex: 2,
-          height: "24px",
-          borderRadius: "12px",
-          paddingLeft: "8px",
-          paddingRight: "8px",
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "column",
-        }}
-      >
-        <Typography
+      {subtitle && (
+        <div
           style={{
-            fontSize: "12px",
-            color: theme.custom.colors.fontColor,
+            backgroundColor: theme.custom.colors.nav,
+            position: "absolute",
+            left: 8,
+            bottom: 8,
+            zIndex: 2,
+            height: "24px",
+            borderRadius: "12px",
+            paddingLeft: "8px",
+            paddingRight: "8px",
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
           }}
         >
-          {name}{" "}
-          <span
+          <Typography
             style={{
-              color: theme.custom.colors.secondary,
+              fontSize: "12px",
+              color: theme.custom.colors.fontColor,
             }}
           >
-            {collection.length}
-          </span>
-        </Typography>
-      </div>
+            {subtitle.name}{" "}
+            <span
+              style={{
+                color: theme.custom.colors.secondary,
+              }}
+            >
+              {subtitle.length}
+            </span>
+          </Typography>
+        </div>
+      )}
     </Button>
   );
 }
-
-/*
-function Nft({ nftMetadata }: any) {
-  const classes = useStyles();
-  return (
-    <div style={{ height: "164px", overflow: "hidden" }}>
-      <img
-        src={nftMetadata.tokenMetaUriData.image}
-        className={classes.nftImage}
-      />
-    </div>
-  );
-}
-
-*/

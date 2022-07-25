@@ -197,7 +197,6 @@ export const solanaNftCollections = selector({
     //
     const collections: Map<string, any> = new Map();
     for (let [key, value] of metadata.entries()) {
-      console.log("value here", value);
       if (value.tokenMetaUriData.collection) {
         const name = value.tokenMetaUriData.collection.name;
         if (!collections.has(name)) {
