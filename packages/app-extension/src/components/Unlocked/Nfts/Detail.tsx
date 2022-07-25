@@ -33,7 +33,6 @@ function Image({ nft }: { nft: any }) {
     <img
       style={{
         width: "100%",
-        height: "343px",
         borderRadius: "8px",
       }}
       src={nft.tokenMetaUriData.image}
@@ -48,7 +47,6 @@ function Description({ nft }: { nft: any }) {
     <div
       style={{
         marginTop: "20px",
-        marginBottom: "4px",
       }}
     >
       <Typography
