@@ -4,7 +4,6 @@ import { useNftMetadata } from "@coral-xyz/recoil";
 import { PrimaryButton } from "../../common";
 
 export function NftsDetail({ publicKey }: { publicKey: string }) {
-  const theme = useCustomTheme();
   const nfts = useNftMetadata();
   const nft = nfts.get(publicKey);
 
@@ -12,8 +11,6 @@ export function NftsDetail({ publicKey }: { publicKey: string }) {
   if (!publicKey) {
     return <></>;
   }
-
-  const send = () => {};
 
   return (
     <div
@@ -23,18 +20,39 @@ export function NftsDetail({ publicKey }: { publicKey: string }) {
         paddingRight: "16px",
       }}
     >
-      <img
-        style={{
-          width: "100%",
-          height: "343px",
-          borderRadius: "8px",
-        }}
-        src={nft.tokenMetaUriData.image}
-      />
+      <Image nft={nft} />
+      <Description nft={nft} />
+      <SendButton nft={nft} />
+      <Attributes nft={nft} />
+    </div>
+  );
+}
+
+function Image({ nft }: { nft: any }) {
+  return (
+    <img
+      style={{
+        width: "100%",
+        height: "343px",
+        borderRadius: "8px",
+      }}
+      src={nft.tokenMetaUriData.image}
+    />
+  );
+}
+
+function Description({ nft }: { nft: any }) {
+  const theme = useCustomTheme();
+
+  return (
+    <div
+      style={{
+        marginTop: "20px",
+        marginBottom: "4px",
+      }}
+    >
       <Typography
         style={{
-          marginTop: "20px",
-          marginBottom: "4px",
           color: theme.custom.colors.secondary,
           fontWeight: 500,
           fontSize: "16px",
@@ -52,16 +70,21 @@ export function NftsDetail({ publicKey }: { publicKey: string }) {
       >
         {nft.tokenMetaUriData.description}
       </Typography>
-      <PrimaryButton
-        style={{
-          marginBottom: "24px",
-          marginTop: "24px",
-        }}
-        onClick={() => send()}
-        label={"Send"}
-      />
-      <Attributes nft={nft} />
     </div>
+  );
+}
+
+function SendButton({ nft }: { nft: any }) {
+  const send = () => {};
+  return (
+    <PrimaryButton
+      style={{
+        marginBottom: "24px",
+        marginTop: "24px",
+      }}
+      onClick={() => send()}
+      label={"Send"}
+    />
   );
 }
 
