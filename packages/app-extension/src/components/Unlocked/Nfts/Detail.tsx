@@ -33,6 +33,15 @@ export function NftsDetail({ publicKey }: { publicKey: string }) {
     return <></>;
   }
 
+  // TODO: this is hit when the NFT has been transferred out and
+  //       the user re-opens the app to the old url which is no longer
+  //       valid.
+  //
+  //       Should probably just pop the stack here or redirect.
+  if (!nft) {
+    return <></>;
+  }
+
   return (
     <div
       style={{
