@@ -1,7 +1,21 @@
+import { useState } from "react";
 import { Typography } from "@mui/material";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { useNftMetadata } from "@coral-xyz/recoil";
-import { PrimaryButton } from "../../common";
+import { PrimaryButton, SecondaryButton } from "../../common";
+import { useDrawerContext, WithDrawer, CloseButton } from "../../Layout/Drawer";
+import { NavStackEphemeral, NavStackScreen } from "../../Layout/NavStack";
+import { TextField } from "../../common";
+
+const useStyles = styles((theme) => ({
+  textRoot: {
+    marginTop: "12px !important",
+    marginBottom: "0 !important",
+    "& .MuiOutlinedInput-root": {
+      backgroundColor: `${theme.custom.colors.nav} !important`,
+    },
+  },
+}));
 
 export function NftsDetail({ publicKey }: { publicKey: string }) {
   const nfts = useNftMetadata();
@@ -32,6 +46,7 @@ function Image({ nft }: { nft: any }) {
     <img
       style={{
         width: "100%",
+        minHeight: "343px",
         borderRadius: "8px",
       }}
       src={nft.tokenMetaUriData.image}
@@ -73,16 +88,98 @@ function Description({ nft }: { nft: any }) {
 }
 
 function SendButton({ nft }: { nft: any }) {
-  const send = () => {};
+  const theme = useCustomTheme();
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const send = () => {
+    setOpenDrawer(true);
+  };
   return (
-    <PrimaryButton
+    <>
+      <PrimaryButton
+        style={{
+          marginBottom: "24px",
+          marginTop: "24px",
+        }}
+        onClick={() => send()}
+        label={"Send"}
+      />
+      <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+        <div
+          style={{ height: "100%", background: theme.custom.colors.background }}
+        >
+          <NavStackEphemeral
+            initialRoute={{ name: "send" }}
+            options={(args) => ({
+              title: `${nft.tokenMetaUriData.name} / Send`,
+            })}
+            navButtonRight={
+              <CloseButton onClick={() => setOpenDrawer(false)} />
+            }
+          >
+            <NavStackScreen
+              name={"send"}
+              component={() => <SendScreen nft={nft} />}
+            />
+          </NavStackEphemeral>
+        </div>
+      </WithDrawer>
+    </>
+  );
+}
+
+function SendScreen({ nft }: { nft: any }) {
+  const classes = useStyles();
+  const { close } = useDrawerContext();
+  const [address, setAddress] = useState("");
+  const [addressError, setAddressError] = useState<boolean>(false);
+
+  const onReject = () => {
+    close();
+  };
+  const onSend = () => {};
+
+  return (
+    <div
       style={{
-        marginBottom: "24px",
-        marginTop: "24px",
+        paddingLeft: "16px",
+        paddingRight: "16px",
+        paddingBottom: "24px",
+        height: "100%",
       }}
-      onClick={() => send()}
-      label={"Send"}
-    />
+    >
+      <div
+        style={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
+      >
+        <div>
+          <Image nft={nft} />
+          <TextField
+            rootClass={classes.textRoot}
+            placeholder={"Recipient's SOL Address"}
+            value={address}
+            setValue={setAddress}
+            isError={addressError}
+            inputProps={{
+              name: "to",
+            }}
+          />
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <SecondaryButton
+            style={{
+              marginRight: "8px",
+            }}
+            onClick={onReject}
+            label={"Cancel"}
+          />
+          <PrimaryButton onClick={onSend} label={"Next"} />
+        </div>
+      </div>
+    </div>
   );
 }
 
