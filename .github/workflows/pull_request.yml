@@ -74,14 +74,18 @@ jobs:
 
       - run: yarn test
 
-      - name: "[e2e] build extension"
+      ##########################################################################
+      # Build extension.
+      ##########################################################################
+
+      - name: "build extension"
         # CI!=true so that build warnings aren't treated like errors (for now)
         env:
           CI: ""
         run: yarn build
 
       ##########################################################################
-      # GitHub Pages
+      # GitHub Pages.
       ##########################################################################
 
       - run: cd packages/background && yarn build:html
