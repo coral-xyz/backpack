@@ -29,7 +29,7 @@ function NftGrid() {
       }}
     >
       {collections.map((c: any) => (
-        <NftCollectionCard name={c.name} collection={c.items} />
+        <NftCollectionCard key={c.name} name={c.name} collection={c.items} />
       ))}
     </div>
   );

@@ -292,7 +292,10 @@ export function Send({
             token={token}
             address={address}
             amount={amountFloat}
-            close={() => close()}
+            close={() => {
+              setOpenDrawer(false);
+              close();
+            }}
           />
         </WithMiniDrawer>
       </div>
@@ -343,7 +346,17 @@ export function NetworkFeeInfo() {
   );
 }
 
-function SendConfirmationCard({ token, address, amount, close }: any) {
+export function SendConfirmationCard({
+  token,
+  address,
+  amount,
+  close,
+}: {
+  token: { mint: string; decimals?: number };
+  address: string;
+  amount: number;
+  close: () => void;
+}) {
   const ctx = useSolanaCtx();
   const [cardType, setCardType] = useState<
     "confirm" | "sending" | "complete" | "error"
@@ -369,6 +382,7 @@ function SendConfirmationCard({ token, address, amount, close }: any) {
           destination: new PublicKey(address),
           mint: new PublicKey(token.mint),
           amount,
+          decimals: token.decimals,
         });
       }
     } catch (err) {

@@ -136,12 +136,10 @@ export function PrimaryButton({
 } & React.ComponentProps<typeof Button>) {
   const classes = useStyles();
   const theme = useCustomTheme() as any;
-  const buttonStyle = Object.assign(
-    {
-      backgroundColor: theme.custom.colors.primaryButton,
-    },
-    buttonProps.style
-  );
+  const buttonStyle = {
+    backgroundColor: theme.custom.colors.primaryButton,
+    ...buttonProps.style,
+  };
   return (
     <Button
       disableRipple
@@ -166,19 +164,17 @@ export function SecondaryButton({
   buttonLabelStyle?: React.CSSProperties;
   label?: string;
 } & React.ComponentProps<typeof Button>) {
-  const theme = useCustomTheme() as any;
-  const buttonStyle = Object.assign(
-    {
-      backgroundColor: theme.custom.colors.secondaryButton,
-    },
-    buttonProps.style
-  );
+  const theme = useCustomTheme();
+  const buttonStyle = {
+    backgroundColor: theme.custom.colors.secondaryButton,
+    ...buttonProps.style,
+  };
   return (
     <PrimaryButton
-      style={buttonStyle}
       buttonLabelStyle={buttonLabelStyle}
       label={label}
       {...buttonProps}
+      style={buttonStyle}
     />
   );
 }
