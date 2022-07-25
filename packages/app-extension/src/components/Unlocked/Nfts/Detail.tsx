@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { Typography } from "@mui/material";
+import { PublicKey } from "@solana/web3.js";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { useNftMetadata } from "@coral-xyz/recoil";
 import { PrimaryButton, SecondaryButton } from "../../common";
-import { useDrawerContext, WithDrawer, CloseButton } from "../../Layout/Drawer";
+import {
+  useDrawerContext,
+  WithDrawer,
+  WithMiniDrawer,
+  CloseButton,
+} from "../../Layout/Drawer";
 import { NavStackEphemeral, NavStackScreen } from "../../Layout/NavStack";
 import { TextField } from "../../common";
+import { SendConfirmationCard } from "../Balances/TokensWidget/Send";
 
 const useStyles = styles((theme) => ({
   textRoot: {
@@ -132,54 +139,81 @@ function SendScreen({ nft }: { nft: any }) {
   const { close } = useDrawerContext();
   const [address, setAddress] = useState("");
   const [addressError, setAddressError] = useState<boolean>(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
+
+  console.log("NFT HERE", nft);
 
   const onReject = () => {
     close();
   };
-  const onSend = () => {};
+  const onSend = () => {
+    let didAddressError = false;
+    try {
+      new PublicKey(address);
+    } catch (_err) {
+      didAddressError = true;
+    }
+    if (didAddressError) {
+      setAddressError(true);
+      return;
+    }
+
+    setAddressError(false);
+    setOpenConfirm(true);
+  };
 
   return (
-    <div
-      style={{
-        paddingLeft: "16px",
-        paddingRight: "16px",
-        paddingBottom: "24px",
-        height: "100%",
-      }}
-    >
+    <>
       <div
         style={{
+          paddingLeft: "16px",
+          paddingRight: "16px",
+          paddingBottom: "24px",
           height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
         }}
       >
-        <div>
-          <Image nft={nft} />
-          <TextField
-            rootClass={classes.textRoot}
-            placeholder={"Recipient's SOL Address"}
-            value={address}
-            setValue={setAddress}
-            isError={addressError}
-            inputProps={{
-              name: "to",
-            }}
-          />
-        </div>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <SecondaryButton
-            style={{
-              marginRight: "8px",
-            }}
-            onClick={onReject}
-            label={"Cancel"}
-          />
-          <PrimaryButton onClick={onSend} label={"Next"} />
+        <div
+          style={{
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <Image nft={nft} />
+            <TextField
+              rootClass={classes.textRoot}
+              placeholder={"Recipient's SOL Address"}
+              value={address}
+              setValue={setAddress}
+              isError={addressError}
+              inputProps={{
+                name: "to",
+              }}
+            />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <SecondaryButton
+              style={{
+                marginRight: "8px",
+              }}
+              onClick={onReject}
+              label={"Cancel"}
+            />
+            <PrimaryButton onClick={onSend} label={"Next"} />
+          </div>
         </div>
       </div>
-    </div>
+      <WithMiniDrawer openDrawer={openConfirm} setOpenDrawer={setOpenConfirm}>
+        <SendConfirmationCard
+          token={{ mint: nft.metadata.mint }}
+          address={address}
+          amount={1.0}
+          close={() => close()}
+        />
+      </WithMiniDrawer>
+    </>
   );
 }
 
