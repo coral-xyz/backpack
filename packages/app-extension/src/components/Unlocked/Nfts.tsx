@@ -3,14 +3,8 @@ import {
   NAV_COMPONENT_NFT_DETAIL,
   NAV_COMPONENT_NFT_COLLECTION,
 } from "@coral-xyz/common";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { useNavigation, useNftCollections } from "@coral-xyz/recoil";
-
-const useStyles = styles((theme) => ({
-  nftImage: {
-    width: "187px",
-  },
-}));
 
 export function Nfts() {
   return (
@@ -20,27 +14,12 @@ export function Nfts() {
         paddingRight: "16px",
       }}
     >
-      <BalancesHeader />
       <CollectionGrid />
     </div>
   );
 }
 
-function BalancesHeader() {
-  const theme = useCustomTheme();
-  // TODO
-  return (
-    <div
-      style={
-        {
-          //			borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-        }
-      }
-    ></div>
-  );
-}
-
-export function CollectionGrid() {
+function CollectionGrid() {
   const collections = useNftCollections();
   return (
     <div
@@ -146,18 +125,3 @@ function NftCollection({
     </Button>
   );
 }
-
-/*
-function Nft({ nftMetadata }: any) {
-  const classes = useStyles();
-  return (
-    <div style={{ height: "164px", overflow: "hidden" }}>
-      <img
-        src={nftMetadata.tokenMetaUriData.image}
-        className={classes.nftImage}
-      />
-    </div>
-  );
-}
-
-*/
