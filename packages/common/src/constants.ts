@@ -196,6 +196,8 @@ export const LEDGER_METHOD_CONNECT = "ledger-method-connect";
 export const LEDGER_METHOD_SIGN_TRANSACTION = "ledger-method-sign-transaction";
 export const LEDGER_METHOD_SIGN_MESSAGE = "ledger-method-sign-message";
 
+export const BACKGROUND_SERVICE_WORKER_READY = "service-worker-ready";
+
 export const POST_MESSAGE_ORIGIN = "*";
 
 export const EXTENSION_WIDTH = 375;

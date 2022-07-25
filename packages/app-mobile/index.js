@@ -1,8 +1,12 @@
 import "react-native-url-polyfill/auto";
-import { useStore, WEB_VIEW_EVENTS } from "@coral-xyz/common";
+import {
+  BACKGROUND_SERVICE_WORKER_READY,
+  useStore,
+  WEB_VIEW_EVENTS,
+} from "@coral-xyz/common";
 import { registerRootComponent } from "expo";
 import { StatusBar } from "expo-status-bar";
-import { Suspense } from "react";
+import { useRef, Suspense } from "react";
 import { Platform, SafeAreaView, StyleSheet, View } from "react-native";
 import "react-native-get-random-values";
 import { WebView } from "react-native-webview";
@@ -25,6 +29,7 @@ function WrappedApp() {
 
 function Background() {
   const setInjectJavaScript = useStore((state) => state.setInjectJavaScript);
+  const ref = useRef(null);
 
   return (
     <View
@@ -35,18 +40,7 @@ function Background() {
       <WebView
         cacheEnabled
         cacheMode="LOAD_CACHE_ELSE_NETWORK"
-        ref={(ref) => {
-          // XXX: timeout is a temporary hack to ensure page is loaded
-          setTimeout(
-            () => {
-              // put the injectJavaScript function in a global observable
-              // store so that it can be used here & in @coral-xyz/common
-              setInjectJavaScript(ref.injectJavaScript);
-            },
-            // TODO: remove this timeout, trigger event once SW loaded instead
-            Platform.OS === "android" ? 5000 : 1000
-          );
-        }}
+        ref={ref}
         source={{
           uri:
             Platform.OS === "android"
@@ -64,7 +58,11 @@ function Background() {
         }}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
-          WEB_VIEW_EVENTS.emit("message", msg);
+          if (msg.type === BACKGROUND_SERVICE_WORKER_READY) {
+            setInjectJavaScript(ref.current.injectJavaScript);
+          } else {
+            WEB_VIEW_EVENTS.emit("message", msg);
+          }
         }}
         limitsNavigationsToAppBoundDomains
       />
