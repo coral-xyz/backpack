@@ -1,6 +1,6 @@
 import { NAV_COMPONENT_NFT_DETAIL } from "@coral-xyz/common";
 import { useNavigation, useNftCollections } from "@coral-xyz/recoil";
-import { GridCard } from ".";
+import { GridCard } from "./Common";
 
 export function NftsCollection({ name }: { name: string }) {
   return (
