@@ -33,7 +33,7 @@ const useStyles = styles((theme) => ({
     "& .MuiOutlinedInput-root": {
       height: "48px !important",
       "& fieldset": {
-        border: `solid 2pt ${theme.custom.colors.border}`,
+        border: `solid 1pt ${theme.custom.colors.border}`,
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,

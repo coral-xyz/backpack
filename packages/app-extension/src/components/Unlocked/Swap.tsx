@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  makeStyles,
   List,
   ListItem,
   InputAdornment,
@@ -17,15 +16,22 @@ import {
   useSwapContext,
   SwapProvider,
 } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   TextField,
   TextFieldLabel,
   PrimaryButton,
   DangerButton,
 } from "../common";
+import { WithHeaderButton } from "./Balances/TokensWidget/Token";
 import { BottomCard } from "./Balances/TokensWidget/Send";
-import { WithMiniDrawer, WithDrawer } from "../Layout/Drawer";
+import {
+  CloseButton,
+  WithMiniDrawer,
+  WithDrawer,
+  useDrawerContext,
+} from "../Layout/Drawer";
+import { WithNav } from "../Layout/Nav";
 
 const useStyles = styles((theme) => ({
   container: {
@@ -61,7 +67,7 @@ const useStyles = styles((theme) => ({
     marginBottom: 0,
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `solid 2pt ${theme.custom.colors.border}`,
+        border: `solid 1pt ${theme.custom.colors.border}`,
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
@@ -71,6 +77,17 @@ const useStyles = styles((theme) => ({
   receiveFieldRoot: {
     marginTop: 0,
     marginBottom: 0,
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        border: `solid 1pt ${theme.custom.colors.border}`,
+        // Override disable and hover styles
+        borderColor: `${theme.custom.colors.border} !important`,
+      },
+    },
+    "& .MuiInputBase-input.Mui-disabled": {
+      // Override disabled font color
+      WebkitTextFillColor: `${theme.custom.colors.secondary} !important`,
+    },
   },
   swapTokensContainer: {
     backgroundColor: theme.custom.colors.background,
@@ -135,7 +152,6 @@ const useStyles = styles((theme) => ({
     borderRadius: "10px",
   },
   tokenList: {
-    borderTop: `solid 1pt ${theme.custom.colors.border}`,
     padding: 0,
   },
   tokenListItem: {
@@ -151,7 +167,23 @@ const useStyles = styles((theme) => ({
     color: theme.custom.colors.secondary,
     fontWeight: 500,
   },
-  tokenListSearchRoot: {},
+  searchField: {
+    marginLeft: "12px",
+    marginRight: "12px",
+    marginTop: "16px",
+    marginBottom: "16px",
+    width: "inherit",
+    display: "flex",
+    "& .MuiOutlinedInput-root": {
+      height: "48px !important",
+      "& fieldset": {
+        border: `solid 1pt ${theme.custom.colors.border}`,
+      },
+      "&:hover fieldset": {
+        border: `solid 2pt ${theme.custom.colors.primaryButton}`,
+      },
+    },
+  },
   tokenListContainer: {
     flex: 1,
     backgroundColor: theme.custom.colors.nav,
@@ -211,6 +243,7 @@ function SwapInner({ blockchain, cancel, onCancel }: any) {
 
 function _Swap({ blockchain, cancel, onCancel }: any) {
   const classes = useStyles();
+  const theme = useCustomTheme();
   const {
     fromAmount,
     setFromAmount,
@@ -291,8 +324,8 @@ function _Swap({ blockchain, cancel, onCancel }: any) {
               value={toAmount ?? 0}
               disabled={true}
               inputProps={{
-                "&:hover": {
-                  cursor: "no-drop",
+                style: {
+                  textFill: `${theme.custom.colors.fontColor} !important`,
                 },
               }}
             />
@@ -356,21 +389,6 @@ function SwapConfirmation({ onConfirm }: any) {
   );
 }
 
-function CancelButton({ onCancel }: any) {
-  const classes = useStyles();
-  return (
-    <Button
-      onClick={onCancel}
-      disableRipple
-      disableElevation
-      className={classes.reviewBtn}
-      style={{ marginRight: "8px" }}
-    >
-      <Typography className={classes.reviewBtnLabel}>Cancel</Typography>
-    </Button>
-  );
-}
-
 // Hack: We combine the swap and close button into one so that we can position
 // it correctly without the drawer cutting off the top.
 function SwapTokensButton({ onClick, isSwap, isLoading }: any) {
@@ -399,55 +417,55 @@ function SwapTokensButton({ onClick, isSwap, isLoading }: any) {
 }
 
 function TokenSelectorButton({ mint, isFrom, blockchain }: any) {
-  const [openDrawer, setOpenDrawer] = useState(false);
   const classes = useStyles();
   const tokenRegistry = useSplTokenRegistry();
   const tokenInfo = tokenRegistry.get(mint); // todo handle null case
   const symbol = tokenInfo ? tokenInfo.symbol : "-";
   const logoUri = tokenInfo ? tokenInfo.logoURI : "-";
+  const { setFromMint, setToMint } = useSwapContext();
+
   return (
     <>
       <InputAdornment position="end">
-        <Button
-          disableRipple
-          className={classes.tokenSelectorButton}
-          onClick={() => setOpenDrawer(true)}
-        >
-          <img className={classes.tokenLogo} src={logoUri} />
-          <Typography className={classes.tokenSelectorButtonLabel}>
-            {symbol}
-          </Typography>
-          <ExpandMore className={classes.expandMore} />
-        </Button>
-      </InputAdornment>
-      <WithDrawer
-        title={"Tokens"}
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-      >
-        <TokenList
-          mint={mint}
-          blockchain={blockchain}
-          isFrom={isFrom}
-          close={() => setOpenDrawer(false)}
+        <WithHeaderButton
+          label={
+            <>
+              <img className={classes.tokenLogo} src={logoUri} />
+              <Typography className={classes.tokenSelectorButtonLabel}>
+                {symbol}
+              </Typography>
+              <ExpandMore className={classes.expandMore} />
+            </>
+          }
+          style={{
+            diplay: "flex",
+          }}
+          routes={[
+            {
+              title: "Select token",
+              name: "select-token",
+              component: (props: any) => <TokenList {...props} />,
+              props: {
+                mint,
+                setMint: isFrom ? setFromMint : setToMint,
+                isFrom,
+              },
+            },
+          ]}
         />
-      </WithDrawer>
+      </InputAdornment>
     </>
   );
 }
 
-function TokenList({ mint, isFrom, blockchain, close }: any) {
-  const [search, setSearch] = useState("");
-  const { setFromMint, setToMint } = useSwapContext();
-  const classes = useStyles();
+function TokenList({ mint, setMint, isFrom }: any) {
   const tokenAccountsSorted = useSwapTokenList(mint, isFrom);
+  const { close } = useDrawerContext();
+  const classes = useStyles();
+  const [search, setSearch] = useState("");
 
   const didSelect = (token: any) => {
-    if (isFrom) {
-      setFromMint(token.mint);
-    } else {
-      setToMint(token.mint);
-    }
+    setMint(token.mint);
     close();
   };
 
@@ -465,12 +483,17 @@ function TokenList({ mint, isFrom, blockchain, close }: any) {
   );
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+    <div>
       <TextField
-        placeholder={"Search name"}
-        rootClass={classes.tokenListSearchRoot}
+        placeholder={"Search"}
         value={search}
         setValue={setSearch}
+        rootClass={classes.searchField}
+        inputProps={{
+          style: {
+            height: "48px",
+          },
+        }}
       />
       <div className={classes.tokenListContainer}>
         <List className={classes.tokenList}>
