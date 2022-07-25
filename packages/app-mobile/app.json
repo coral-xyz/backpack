@@ -18,7 +18,10 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "community.coral.backpack"
+      "bundleIdentifier": "community.coral.backpack",
+      "infoPlist": {
+        "WKAppBoundDomains": ["coral-xyz.github.io"]
+      }
     },
     "android": {
       "adaptiveIcon": {
