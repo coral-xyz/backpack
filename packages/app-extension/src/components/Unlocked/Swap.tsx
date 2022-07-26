@@ -1,9 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
-  List,
-  ListItem,
   InputAdornment,
-  Button,
   Typography,
   IconButton,
   CircularProgress,
@@ -26,13 +23,7 @@ import {
 } from "../common";
 import { WithHeaderButton } from "./Balances/TokensWidget/Token";
 import { BottomCard } from "./Balances/TokensWidget/Send";
-import {
-  CloseButton,
-  WithMiniDrawer,
-  WithDrawer,
-  useDrawerContext,
-} from "../Layout/Drawer";
-import { WithNav } from "../Layout/Nav";
+import { WithMiniDrawer, useDrawerContext } from "../Layout/Drawer";
 import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
 
@@ -154,80 +145,41 @@ const useStyles = styles((theme) => ({
     height: "20px",
     borderRadius: "10px",
   },
-  tokenList: {
-    padding: 0,
-  },
-  tokenListItem: {
-    display: "flex",
-    justifyContent: "space-between",
-    borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-  },
-  tokenListItemName: {
-    color: theme.custom.colors.fontColor,
-    fontWeight: 500,
-  },
-  tokenListItemBalance: {
-    color: theme.custom.colors.secondary,
-    fontWeight: 500,
-  },
-  searchField: {
-    marginLeft: "12px",
-    marginRight: "12px",
-    marginTop: "16px",
-    marginBottom: "16px",
-    width: "inherit",
-    display: "flex",
-    "& .MuiOutlinedInput-root": {
-      height: "48px !important",
-      "& fieldset": {
-        border: `solid 1pt ${theme.custom.colors.border}`,
-      },
-      "&:hover fieldset": {
-        border: `solid 2pt ${theme.custom.colors.primaryButton}`,
-      },
-    },
-  },
-  tokenListContainer: {
-    flex: 1,
-    backgroundColor: theme.custom.colors.nav,
-  },
   paperAnchorBottom: {
     height: "402px",
   },
   confirmationTitle: {
     color: theme.custom.colors.secondary,
-    lineHeight: "16px",
+    fontSize: "14px",
     fontWeight: 500,
-    fontSize: "12px",
-    marginTop: "38px",
+    lineHeight: "20px",
+    marginTop: "32px",
     textAlign: "center",
   },
-  confirmationTitleAmount: {
+  confirmationAmount: {
     color: theme.custom.colors.fontColor,
-    lineHeight: "24px",
+    fontSize: "24px",
     fontWeight: 500,
-    fontSize: "18px",
-    marginTop: "5px",
+    lineHeight: "32px",
+    marginTop: "8px",
     textAlign: "center",
-    marginBottom: "41px",
+    marginBottom: "38px",
   },
-  confirmationTitleRow: {
-    marginBottom: "12px",
+  swapInfoRow: {
+    marginBottom: "8px",
     display: "flex",
     justifyContent: "space-between",
-    marginLeft: "24px",
-    marginRight: "24px",
   },
-  confirmationTitleLeft: {
+  swapInfoTitleLeft: {
     color: theme.custom.colors.secondary,
-    lineHeight: "16px",
-    fontSize: "12px",
+    lineHeight: "20px",
+    fontSize: "14px",
     fontWeight: 500,
   },
-  confirmationTitleRight: {
+  swapInfoTitleRight: {
     color: theme.custom.colors.fontColor,
-    lineHeight: "16px",
-    fontSize: "12px",
+    lineHeight: "20px",
+    fontSize: "14px",
     fontWeight: 500,
   },
 }));
@@ -253,34 +205,54 @@ function _Swap({ blockchain, cancel, onCancel }: any) {
     toAmount,
     fromToken,
     fromMint,
+    fromMintInfo,
     toMint,
+    toMintInfo,
     swapToFromMints,
     executeSwap,
+    route,
+    isLoadingRoutes,
+    transactions,
+    isLoadingTransactions,
   } = useSwapContext();
   const fromTokenData = useBlockchainTokenAccount(blockchain, fromToken);
-  const [_openDrawer, _setOpenDrawer] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
   const [isConfirmingSwap, setIsConfirmingSwap] = useState(false);
-
-  const setOpenDrawer = () => {
-    _setOpenDrawer(true);
-  };
 
   const onConfirm = async () => {
     setIsConfirmingSwap(true);
     const result = await executeSwap();
     setIsConfirmingSwap(false);
-    _setOpenDrawer(false);
+    setOpenDrawer(false);
     console.log("result", result);
     // todo: do something with the swap here.
   };
 
   const onSwapButtonClick = () => {
-    if (_openDrawer) {
-      _setOpenDrawer(false);
+    if (openDrawer) {
+      setOpenDrawer(false);
     } else {
       swapToFromMints();
     }
   };
+
+  console.log(transactions);
+
+  const swapInfoRows = toAmount
+    ? [
+        [
+          "Rate",
+          `1 ${fromMintInfo.symbol} ≈ ${(toAmount / fromAmount).toFixed(4)} ${
+            toMintInfo.symbol
+          }`,
+        ],
+        ["Network Fee", `${transactions ? transactions.length : "-"}`],
+        [
+          "Price Impact",
+          `${route.priceImpactPct > 0.5 ? route.priceImpactPct : "< 0.5"}%`,
+        ],
+      ]
+    : [];
 
   return (
     <div className={classes.container}>
@@ -288,15 +260,16 @@ function _Swap({ blockchain, cancel, onCancel }: any) {
         <SwapTokensButton
           isLoading={isConfirmingSwap}
           onClick={onSwapButtonClick}
-          isSwap={!_openDrawer}
+          isSwap={!openDrawer}
         />
         <TextFieldLabel
           leftLabel={"You Pay"}
-          rightLabel={
+          rightLabel={`Max: ${
             fromTokenData ? fromTokenData.nativeBalance.toString() : "-"
-          }
+          }`}
         />
         <TextField
+          startAd
           endAdornment={
             <TokenSelectorButton
               blockchain={blockchain}
@@ -315,6 +288,18 @@ function _Swap({ blockchain, cancel, onCancel }: any) {
           <div>
             <TextFieldLabel leftLabel={"You Receive"} />
             <TextField
+              startAdornment={
+                isLoadingRoutes && (
+                  <CircularProgress
+                    style={{
+                      display: "flex",
+                      color: theme.custom.colors.secondary,
+                    }}
+                    size={24}
+                    thickness={5}
+                  />
+                )
+              }
               endAdornment={
                 <TokenSelectorButton
                   blockchain={blockchain}
@@ -324,7 +309,7 @@ function _Swap({ blockchain, cancel, onCancel }: any) {
               }
               rootClass={classes.receiveFieldRoot}
               type={"number"}
-              value={toAmount ?? 0}
+              value={toAmount}
               disabled={true}
               inputProps={{
                 style: {
@@ -332,20 +317,31 @@ function _Swap({ blockchain, cancel, onCancel }: any) {
                 },
               }}
             />
+            {swapInfoRows && (
+              <div
+                style={{
+                  marginTop: "24px",
+                  marginLeft: "8px",
+                  marginRight: "8px",
+                }}
+              >
+                <SwapInfo rows={swapInfoRows} />
+              </div>
+            )}
           </div>
           <div>
             {cancel && <DangerButton onClick={onCancel} />}
             <PrimaryButton
               label="Review"
-              onClick={() => setOpenDrawer()}
+              onClick={() => setOpenDrawer(true)}
               disabled={!fromAmount || !toAmount}
             />
           </div>
         </div>
       </div>
       <WithMiniDrawer
-        openDrawer={_openDrawer}
-        setOpenDrawer={_setOpenDrawer}
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
         paperAnchorBottom={classes.paperAnchorBottom}
       >
         <SwapConfirmation onConfirm={onConfirm} />
@@ -356,40 +352,53 @@ function _Swap({ blockchain, cancel, onCancel }: any) {
 
 function SwapConfirmation({ onConfirm }: any) {
   const classes = useStyles();
-  const { fromAmount, toAmount, fromMint, toMint } = useSwapContext();
-  const tokenRegistry = useSplTokenRegistry();
-  const fromMintInfo = tokenRegistry.get(fromMint)!;
-  const toMintInfo = tokenRegistry.get(toMint)!;
+  const theme = useCustomTheme();
+  const { fromAmount, toAmount, fromMintInfo, toMintInfo, route } =
+    useSwapContext();
   const rate = toAmount! / fromAmount;
   const rows = [
     ["You Pay", `${fromAmount} ${fromMintInfo.symbol}`],
-    ["Rate", `1 ${fromMintInfo.symbol} = ${rate} ${toMintInfo.symbol}`],
-    ["Network", "Solana"],
-    ["Estimated Fees", "-"], // todo
-    ["Slippage", "1%"], // todo
+    [
+      "Rate",
+      `1 ${fromMintInfo.symbol} = ${rate.toFixed(4)} ${toMintInfo.symbol}`,
+    ],
+    ["Network Fee", "-"], // todo
+    [
+      "Backpack Fee",
+      <span style={{ color: theme.custom.colors.secondary }}>FREE</span>,
+    ],
+    [
+      "Price Impact",
+      `${route.priceImpactPct > 0.5 ? route.priceImpactPct : "< 0.5"}%`,
+    ],
   ];
+  const logoUri = toMintInfo ? toMintInfo.logoURI : "-";
+
   return (
     <BottomCard onButtonClick={onConfirm} buttonLabel={"Confirm"}>
       <Typography className={classes.confirmationTitle}>You Receive</Typography>
-      <Typography className={classes.confirmationTitleAmount}>
-        {toAmount} {toMintInfo?.symbol}
+      <Typography className={classes.confirmationAmount}>
+        <img className={classes.tokenLogo} src={logoUri} />
+        {toAmount}{" "}
+        <span style={{ color: theme.custom.colors.secondary }}>
+          {toMintInfo?.symbol}
+        </span>
       </Typography>
-      <div>
-        {rows.map((r) => {
-          return (
-            <div className={classes.confirmationTitleRow}>
-              <Typography className={classes.confirmationTitleLeft}>
-                {r[0]}
-              </Typography>
-              <Typography className={classes.confirmationTitleRight}>
-                {r[1]}
-              </Typography>
-            </div>
-          );
-        })}
+      <div style={{ margin: "24px" }}>
+        <SwapInfo rows={rows} />
       </div>
     </BottomCard>
   );
+}
+
+function SwapInfo({ rows }: any) {
+  const classes = useStyles();
+  return rows.map((r: any) => (
+    <div className={classes.swapInfoRow} key={r[0]}>
+      <Typography className={classes.swapInfoTitleLeft}>{r[0]}</Typography>
+      <Typography className={classes.swapInfoTitleRight}>{r[1]}</Typography>
+    </div>
+  ));
 }
 
 // Hack: We combine the swap and close button into one so that we can position
@@ -422,20 +431,12 @@ function SwapTokensButton({ onClick, isSwap, isLoading }: any) {
 function TokenSelectorButton({ mint, isFrom }: any) {
   const classes = useStyles();
   const tokenRegistry = useSplTokenRegistry();
+  const { setFromMint, setToMint } = useSwapContext();
   const tokenInfo = tokenRegistry.get(mint); // todo handle null case
   const symbol = tokenInfo ? tokenInfo.symbol : "-";
   const logoUri = tokenInfo ? tokenInfo.logoURI : "-";
-  const { setFromMint, setToMint } = useSwapContext();
 
-  const onSelectToken = (blockchain: Blockchain, token: Token) => {
-    if (isFrom) {
-      setFromMint(token.mint);
-    } else {
-      setToMint(token.mint);
-    }
-    close();
-  };
-
+  const setMint = isFrom ? setFromMint : setToMint;
   const tokenFilter = isFrom
     ? (token: Token) => token.nativeBalance !== 0
     : () => true;
@@ -457,9 +458,9 @@ function TokenSelectorButton({ mint, isFrom }: any) {
             {
               title: "Select token",
               name: "select-token",
-              component: (props: any) => <SearchableTokenTable {...props} />,
+              component: (props: any) => <SelectToken {...props} />,
               props: {
-                onClickRow: onSelectToken,
+                setMint,
                 customFilter: tokenFilter,
               },
             },
@@ -470,5 +471,24 @@ function TokenSelectorButton({ mint, isFrom }: any) {
         />
       </InputAdornment>
     </>
+  );
+}
+
+function SelectToken({
+  setMint,
+  customFilter,
+}: {
+  setMint: (mint: string) => void;
+  customFilter: (token: Token) => boolean;
+}) {
+  const { close } = useDrawerContext();
+
+  const onClickRow = (_blockchain: Blockchain, token: Token) => {
+    setMint(token.mint);
+    close();
+  };
+
+  return (
+    <SearchableTokenTable onClickRow={onClickRow} customFilter={customFilter} />
   );
 }
