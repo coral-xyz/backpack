@@ -97,12 +97,15 @@ jobs:
         name: "set env.commit_sha from commit or merge commit"
         run: echo "commit_sha=${{ github.sha }}" >> $GITHUB_ENV
 
+      - name: "set env.short_sha"
+        run: echo "short_sha=`echo "${{ env.commit_sha }}" | cut -c1-8`" >> $GITHUB_ENV
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           publish_dir: packages/background/build
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          destination_dir: "background-scripts/`echo ${{env.commit_sha}} | cut -c1-8`"
+          destination_dir: "background-scripts/${{ env.short_sha }}"
 
       ##########################################################################
       # Release.
