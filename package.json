@@ -6,6 +6,7 @@
     "examples/clients/*",
     "examples/xnfts",
     "examples/xnfts/*",
+    "examples/xnfts/xnft-program-library/packages/*",
     "packages/*",
     "web"
   ],

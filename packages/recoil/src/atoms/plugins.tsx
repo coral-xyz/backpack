@@ -11,10 +11,16 @@ const HELLO_WORLD_PLUGIN_URL =
 const ANCHOR_TABLE_PLUGIN_URL = pluginURL("table-anchor");
 const PSYFI_TABLE_PLUGIN_URL = pluginURL("table-psyfi");
 
-const DEGODS_TABLE_PLUGIN_URL = pluginURL("deadgods");
 const MANGO_TABLE_PLUGIN_URL = pluginURL("mango");
 const PRICES_PLUGIN_URL = pluginURL("prices");
 const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
+
+//
+// xnft-program-library
+//
+const DEGODS_TABLE_PLUGIN_URL = pluginURL(
+  "xnft-program-library/packages/deadgods"
+);
 
 function pluginURL(pluginName: string) {
   return [
