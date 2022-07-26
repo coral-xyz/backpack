@@ -1,3 +1,4 @@
+import { Grid } from "@mui/material";
 import {
   NAV_COMPONENT_NFT_DETAIL,
   NAV_COMPONENT_NFT_COLLECTION,
@@ -21,17 +22,13 @@ export function Nfts() {
 function NftGrid() {
   const collections = useNftCollections();
   return (
-    <div
-      style={{
-        flexWrap: "wrap",
-        display: "flex",
-        justifyContent: "space-between",
-      }}
-    >
+    <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
       {collections.map((c: any) => (
-        <NftCollectionCard key={c.name} name={c.name} collection={c.items} />
+        <Grid item xs={6} sm={4} md={3} lg={2}>
+          <NftCollectionCard key={c.name} name={c.name} collection={c.items} />
+        </Grid>
       ))}
-    </div>
+    </Grid>
   );
 }
 
