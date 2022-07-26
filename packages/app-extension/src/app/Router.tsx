@@ -278,7 +278,8 @@ const useStyles = styles((theme) => {
   return {
     appContainer: {
       width: `${EXTENSION_WIDTH}px`,
-      height: `${EXTENSION_HEIGHT}px`,
+      minHeight: `${EXTENSION_HEIGHT}px`,
+      height: "100%",
       backgroundColor: theme.custom.colors.background,
       display: "flex",
       flexDirection: "column",

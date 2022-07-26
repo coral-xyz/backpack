@@ -27,4 +27,5 @@ input[type="number"] {
 
 #root {
   overflow: hidden;
+  height: 100vh;
 }
