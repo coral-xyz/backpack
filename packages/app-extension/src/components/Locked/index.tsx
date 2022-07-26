@@ -65,6 +65,7 @@ function LockedInner({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         <form onSubmit={_onUnlock}>
           <Box sx={{ margin: "0 12px 12px 12px" }}>
             <TextField
+              autoFocus={true}
               isError={error}
               placeholder={"Password"}
               type={"password"}
