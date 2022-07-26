@@ -20,6 +20,8 @@ import { Token } from "../Unlocked/Balances/TokensWidget/Token";
 import { Apps } from "../Unlocked/Apps";
 import { Nfts } from "../Unlocked/Nfts";
 import { Swap } from "../Unlocked/Swap";
+import { NftsDetail } from "../Unlocked/Nfts/Detail";
+import { NftsCollection } from "../Unlocked/Nfts/Collection";
 import { SettingsButton } from "../Settings";
 import { WithNav, NavBackButton } from "./Nav";
 import { WithMotion } from "./NavStack";
@@ -34,6 +36,8 @@ export function Router() {
         <Route path="/apps" element={<AppsPage />} />
         <Route path="/nfts" element={<NftsPage />} />
         <Route path="/swap" element={<SwapPage />} />
+        <Route path="/nfts/collection" element={<NftsCollectionPage />} />
+        <Route path="/nfts/detail" element={<NftsDetailPage />} />
         <Route path="*" element={<Redirect />} />
       </Routes>
     </AnimatePresence>
@@ -51,6 +55,16 @@ function BalancesPage() {
 
 function NftsPage() {
   return <NavScreen component={<Nfts />} />;
+}
+
+function NftsCollectionPage() {
+  const { props } = useDecodedSearchParams();
+  return <NavScreen component={<NftsCollection {...props} />} />;
+}
+
+function NftsDetailPage() {
+  const { props } = useDecodedSearchParams();
+  return <NavScreen component={<NftsDetail {...props} />} />;
 }
 
 function AppsPage() {
@@ -124,9 +138,10 @@ function useNavBar() {
 
   let navStyle = {
     fontSize: "18px",
-    borderBottom: !isRoot
-      ? `solid 1pt ${theme.custom.colors.border}`
-      : undefined,
+    borderBottom:
+      !isRoot && !pathname.startsWith("/nfts")
+        ? `solid 1pt ${theme.custom.colors.border}`
+        : undefined,
   } as React.CSSProperties;
 
   if (isRoot) {

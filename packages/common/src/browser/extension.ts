@@ -144,7 +144,9 @@ export async function openApproveMessagePopupWindow(
   return await openPopupWindow(url);
 }
 
-async function openPopupWindow(url: string): Promise<chrome.windows.Window> {
+export async function openPopupWindow(
+  url: string
+): Promise<chrome.windows.Window> {
   const MACOS_TOOLBAR_HEIGHT = 28;
   function isMacOs(): boolean {
     function getOs() {

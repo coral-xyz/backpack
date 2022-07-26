@@ -41,11 +41,17 @@ export class Solana {
     const { walletPublicKey, registry, tokenClient, commitment } = ctx;
     const { mint, destination, amount } = req;
 
-    const tokenInfo = registry.get(mint.toString());
-    if (!tokenInfo) {
-      throw new Error("no token info found");
-    }
-    const decimals = tokenInfo.decimals;
+    const decimals = (() => {
+      if (req.decimals !== undefined) {
+        return req.decimals;
+      }
+      const tokenInfo = registry.get(mint.toString());
+      if (!tokenInfo) {
+        throw new Error("no token info found");
+      }
+      const decimals = tokenInfo.decimals;
+      return decimals;
+    })();
     const nativeAmount = new BN(amount * 10 ** decimals);
 
     const destinationAta = associatedTokenAddress(mint, destination);
@@ -145,6 +151,7 @@ export type TransferTokenRequest = {
   destination: PublicKey;
   mint: PublicKey;
   amount: number;
+  decimals?: number;
 };
 
 export type TransferSolRequest = {

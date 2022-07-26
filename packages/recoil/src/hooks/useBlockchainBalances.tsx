@@ -20,10 +20,8 @@ export function useBlockchainLogo(blockchain: Blockchain): string {
   }
 }
 
-export function useTotal(blockchain?: Blockchain): any {
-  return useRecoilValue(
-    blockchain ? atoms.blockchainTotal(blockchain) : atoms.total
-  );
+export function useTotal(): any {
+  return useRecoilValue(atoms.total);
 }
 
 export function useBlockchainTotal(blockchain: Blockchain): any {
@@ -45,13 +43,10 @@ export function usePriceData(mintAddress: string): any {
   return useRecoilValue(atoms.priceData(mintAddress));
 }
 
-export function useNftMetadataAddresses(blockchain: Blockchain): Array<string> {
-  if (blockchain !== Blockchain.SOLANA) {
-    throw new Error("only solana currently supported");
-  }
-  return useRecoilValue(atoms.solanaNftMetadataKeys);
+export function useNftMetadata(): Map<string, any> {
+  return useRecoilValue(atoms.solanaNftMetadata);
 }
 
-export function useNftMetadata(address: string): any {
-  return useRecoilValue(atoms.solanaNftMetadataMap(address));
+export function useNftCollections(): Array<any> {
+  return useRecoilValue(atoms.solanaNftCollections);
 }

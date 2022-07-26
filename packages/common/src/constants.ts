@@ -196,6 +196,8 @@ export const LEDGER_METHOD_CONNECT = "ledger-method-connect";
 export const LEDGER_METHOD_SIGN_TRANSACTION = "ledger-method-sign-transaction";
 export const LEDGER_METHOD_SIGN_MESSAGE = "ledger-method-sign-message";
 
+export const BACKGROUND_SERVICE_WORKER_READY = "service-worker-ready";
+
 export const POST_MESSAGE_ORIGIN = "*";
 
 export const EXTENSION_WIDTH = 375;
@@ -211,6 +213,8 @@ export const TAB_APPS = "apps";
 export const TAB_SET = new Set([TAB_BALANCES, TAB_SWAP, TAB_NFTS, TAB_APPS]);
 
 export const NAV_COMPONENT_TOKEN = "balances/token";
+export const NAV_COMPONENT_NFT_DETAIL = "nfts/detail";
+export const NAV_COMPONENT_NFT_COLLECTION = "nfts/collection";
 
 export const BACKEND_EVENT = "backend-event";
 

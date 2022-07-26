@@ -49,6 +49,7 @@ export function ListItem({
   return (
     <>
       <MuiListItem
+        disableRipple
         data-testid={id}
         key={key}
         button={button}
