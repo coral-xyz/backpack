@@ -17,6 +17,7 @@ export default function App() {
       style={{
         height: "100vh",
         minHeight: "600px",
+        minWidth: "375px",
       }}
     >
       <HashRouter>
