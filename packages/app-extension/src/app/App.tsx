@@ -13,11 +13,18 @@ import "@fontsource/inter/600.css";
 
 export default function App() {
   return (
-    <HashRouter>
-      <RecoilRoot>
-        <_App />
-      </RecoilRoot>
-    </HashRouter>
+    <div
+      style={{
+        height: "100vh",
+        minHeight: "600px",
+      }}
+    >
+      <HashRouter>
+        <RecoilRoot>
+          <_App />
+        </RecoilRoot>
+      </HashRouter>
+    </div>
   );
 }
 
