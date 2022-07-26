@@ -91,18 +91,18 @@ jobs:
       - run: cd packages/background && yarn build:html
 
       - if: github.event_name == 'pull_request'
-        name: "set env.short_sha from latest commit in PR"
-        run: echo "short_sha=`echo '${{ github.event.pull_request.head.sha }}' | cut -c1-8`" >> $GITHUB_ENV
+        name: "set env.commit_sha from latest commit in PR"
+        run: echo "commit_sha=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
       - if: github.event_name == 'push'
-        name: "set env.short_sha from commit or merge commit"
-        run: echo "short_commit_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        name: "set env.commit_sha from commit or merge commit"
+        run: echo "commit_sha=${{ github.sha }}" >> $GITHUB_ENV
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           publish_dir: packages/background/build
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          destination_dir: background-scripts/${{ env.short_sha }}
+          destination_dir: "background-scripts/`echo ${{env.commit_sha}} | cut -c1-8`"
 
       ##########################################################################
       # Release.
