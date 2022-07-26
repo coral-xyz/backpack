@@ -90,7 +90,11 @@ jobs:
 
       - run: cd packages/background && yarn build:html
 
-      - name: "set env.short_commit_sha"
+      - if: github.event_name == 'pull_request'
+        name: "set env.short_sha from latest commit in PR"
+        run: echo "short_sha=`echo '${{ github.event.pull_request.head.sha }}' | cut -c1-8`" >> $GITHUB_ENV
+      - if: github.event_name == 'push'
+        name: "set env.short_sha from commit or merge commit"
         run: echo "short_commit_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Deploy
@@ -98,7 +102,7 @@ jobs:
         with:
           publish_dir: packages/background/build
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          destination_dir: background-scripts/${{ env.short_commit_sha }}
+          destination_dir: background-scripts/${{ env.short_sha }}
 
       ##########################################################################
       # Release.
