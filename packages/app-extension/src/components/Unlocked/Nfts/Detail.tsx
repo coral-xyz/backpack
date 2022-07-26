@@ -190,6 +190,7 @@ function SendScreen({ nft }: { nft: any }) {
           <div>
             <Image nft={nft} />
             <TextField
+              autoFocus
               rootClass={classes.textRoot}
               placeholder={"Recipient's SOL Address"}
               value={address}
