@@ -52,7 +52,7 @@ export function NftsDetail({ publicKey }: { publicKey: string }) {
       <Image nft={nft} />
       <Description nft={nft} />
       <SendButton nft={nft} />
-      <Attributes nft={nft} />
+      {nft.tokenMetaUriData.attributes && <Attributes nft={nft} />}
     </div>
   );
 }
@@ -229,6 +229,7 @@ function SendScreen({ nft }: { nft: any }) {
 
 function Attributes({ nft }: { nft: any }) {
   const theme = useCustomTheme();
+
   return (
     <div>
       <Typography style={{ color: theme.custom.colors.secondary }}>
