@@ -8,11 +8,11 @@ const OPEN_ORDERS_ICON_URL =
 
 const HELLO_WORLD_PLUGIN_URL =
   "https://embed.xnfts.dev/5r1jwBmveWJaJVtkFCUFcboqv4sfYheaoEoBicAiJmEJ";
-const ANCHOR_TABLE_PLUGIN_URL = pluginURL("xnfts/table-anchor");
-const PSYFI_TABLE_PLUGIN_URL = pluginURL("xnfts/table-psyfi");
+const ANCHOR_TABLE_PLUGIN_URL = pluginURL("xnft/table-anchor");
+const PSYFI_TABLE_PLUGIN_URL = pluginURL("xnft/table-psyfi");
 
-const MANGO_TABLE_PLUGIN_URL = pluginURL("xnfts/mango");
-const PRICES_PLUGIN_URL = pluginURL("xnfts/prices");
+const MANGO_TABLE_PLUGIN_URL = pluginURL("xnft/mango");
+const PRICES_PLUGIN_URL = pluginURL("xnft/prices");
 const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
 
 //
