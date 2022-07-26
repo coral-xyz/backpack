@@ -102,7 +102,7 @@ jobs:
         with:
           publish_dir: packages/background/build
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          destination_dir: "background-scripts/`echo "${{env.commit_sha}}" | cut -c1-8`"
+          destination_dir: "background-scripts/`echo ${{env.commit_sha}} | cut -c1-8`"
 
       ##########################################################################
       # Release.
