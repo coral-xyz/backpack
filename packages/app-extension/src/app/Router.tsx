@@ -277,7 +277,7 @@ export function BlankApp() {
 const useStyles = styles((theme) => {
   return {
     appContainer: {
-      width: `${EXTENSION_WIDTH}px`,
+      minWidth: `${EXTENSION_WIDTH}px`,
       minHeight: `${EXTENSION_HEIGHT}px`,
       height: "100%",
       backgroundColor: theme.custom.colors.background,
