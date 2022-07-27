@@ -126,12 +126,13 @@ export function WithMiniDrawer(props: any) {
     paperAnchorBottom,
     backdropProps,
     modalProps,
+    onClose,
   } = props;
   return (
     <Drawer
       anchor={"bottom"}
       open={openDrawer}
-      onClose={() => setOpenDrawer(false)}
+      onClose={() => (onClose ? onClose() : setOpenDrawer(false))}
       classes={{
         root: classes.miniDrawerRoot,
         paper: classes.miniDrawerPaper,
@@ -144,7 +145,6 @@ export function WithMiniDrawer(props: any) {
         ...backdropProps,
       }}
       ModalProps={{
-        onBackdropClick: () => setOpenDrawer(false),
         ...modalProps,
       }}
     >
