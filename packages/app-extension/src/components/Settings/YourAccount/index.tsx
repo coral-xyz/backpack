@@ -1,14 +1,13 @@
 import { useEffect } from "react";
-import { ListItemText } from "@mui/material";
-import useTheme from "@mui/styles/useTheme";
-import { List, ListItem, PushDetail } from "../../common";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { useDrawerContext } from "../../Layout/Drawer";
 import { useNavStack } from "../../Layout/NavStack";
+import { SettingsList } from "../../common/Settings/List";
 
 export function YourAccount() {
   const { close } = useDrawerContext();
   const nav = useNavStack();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
 
   const menuItems = {
     "Change password": {
@@ -35,23 +34,5 @@ export function YourAccount() {
     });
   }, []);
 
-  return (
-    <List style={{ marginTop: "16px" }}>
-      {Object.entries(menuItems).map(([key, val]: any, i, { length }) => (
-        <ListItem
-          key={key}
-          id={key}
-          isLast={i === length - 1}
-          onClick={val.onClick}
-          style={{
-            height: "44px",
-            padding: "10px",
-          }}
-          detail={<PushDetail />}
-        >
-          <ListItemText style={{ fontWeight: 500 }}>{key}</ListItemText>
-        </ListItem>
-      ))}
-    </List>
-  );
+  return <SettingsList menuItems={menuItems} />;
 }
