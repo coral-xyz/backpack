@@ -3,18 +3,7 @@ import * as atoms from ".";
 import { Blockchain } from "@coral-xyz/common";
 
 const ROUTE_MAP_URL = "https://quote-api.jup.ag/v1/indexed-route-map";
-const WHITELIST = [
-  "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", // USDT
-  "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt", // SRM
-  "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", // USDC
-  "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R", // RAY
-  "9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E", // BTC
-  "EzfgjvkSwthhgHaceR3LnKXUoRkP6NUhfghdaHAj1tUv", // FTT
-  "ChVzxWRmrTeSgwd3Ui3UumcN8KX7VK3WaD4KGeSKpypj", // SUSHI
-  "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs", // ETH
-  "2wpTofQ8SkACrkZWrZDjXPitYa8AwWgX8AfxdeBRRVLX", // LINK
-  "BXZX2JRJFjvKazM1ibeDFxgAngKExb74MRXzXKvgikxX", // YFI
-];
+
 export const jupiterRouteMap = selector({
   key: "jupiterRouteMap",
   get: async ({}) => {
@@ -60,10 +49,9 @@ export const swapTokenList = selectorFamily({
         return get(walletJupiterTokens);
       } else {
         const routeMap = get(jupiterRouteMap);
-        const walletTokens = get(
-          atoms.blockchainTokensSorted(Blockchain.SOLANA)
+        return routeMap[mint].map((mint: string) =>
+          get(atoms.solanaMintRegistryMap({ mint }))
         );
-        return routeMap[mint];
       }
     },
 });

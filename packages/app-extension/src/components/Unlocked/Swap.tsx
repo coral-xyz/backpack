@@ -114,14 +114,6 @@ const useStyles = styles((theme) => ({
     marginLeft: "auto",
     marginRight: "auto",
   },
-  circularProgress: {
-    color: theme.custom.colors.secondary,
-    width: "16px",
-    height: "16px",
-    marginLeft: "auto",
-    marginRight: "auto",
-    display: "block",
-  },
   tokenSelectorButton: {
     display: "flex",
   },
@@ -218,6 +210,12 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
   const fromTokenData = useBlockchainTokenAccount(blockchain, fromToken);
   const [swapState, setSwapState] = useState(SwapState.INITIAL);
 
+  // Only allow drawer close if not confirming
+  const onDrawerClose =
+    swapState === SwapState.CONFIRMING
+      ? () => null
+      : () => setSwapState(SwapState.INITIAL);
+
   const onConfirm = async () => {
     setSwapState(SwapState.CONFIRMING);
     const result = await executeSwap();
@@ -237,11 +235,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
   return (
     <div className={classes.container}>
       <div className={classes.topHalf}>
-        <SwapTokensButton
-          isLoading={swapState === SwapState.CONFIRMING}
-          isSwap={swapState === SwapState.INITIAL}
-          onClick={onSwapButtonClick}
-        />
+        <SwapTokensButton onClick={onSwapButtonClick} />
         <TextFieldLabel
           leftLabel={"You Pay"}
           rightLabel={`Max: ${
@@ -253,8 +247,8 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
           endAdornment={
             <TokenSelectorButton
               blockchain={blockchain}
-              isFrom={true}
               mint={fromMint}
+              isFrom={true}
             />
           }
           rootClass={classes.fromFieldRoot}
@@ -322,19 +316,15 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
         openDrawer={swapState !== SwapState.INITIAL}
         backdropProps={{
           style: {
-            background: "rgba(0,0,0,0.8)",
+            opacity: 0.8,
+            background: "#18181b",
           },
         }}
-        modalProps={{
-          onBackdropClick: () =>
-            // Only close on backdrop click if not confirming
-            swapState === SwapState.CONFIRMING
-              ? null
-              : setSwapState(SwapState.INITIAL),
-        }}
+        modalProps={{ onBackdropClick: onDrawerClose }}
+        onClose={onDrawerClose}
       >
         {swapState === SwapState.CONFIRMATION && (
-          <SwapConfirmation onConfirm={onConfirm} />
+          <SwapConfirmation onConfirm={onConfirm} onClose={onDrawerClose} />
         )}
         {swapState === SwapState.CONFIRMING && <SwapConfirming />}
         {swapState === SwapState.CONFIRMED && <SwapConfirmed />}
@@ -354,10 +344,17 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
 //
 // Bottom drawer displayed so the user can confirm the swap parameters.
 //
-function SwapConfirmation({ onConfirm }: any) {
+function SwapConfirmation({
+  onConfirm,
+  onClose,
+}: {
+  onConfirm: () => void;
+  onClose: () => void;
+}) {
   const classes = useStyles();
   return (
     <BottomCard onButtonClick={onConfirm} buttonLabel={"Confirm"}>
+      <CloseButton onClick={onClose} />
       <Typography
         className={classes.confirmationTitle}
         style={{ marginTop: "32px" }}
@@ -378,14 +375,12 @@ function SwapConfirmation({ onConfirm }: any) {
 }
 
 //
-// Bottom drawer that is displayed while the swap is confirming (i.e. transactions
+// Bottom card that is displayed while the swap is confirming (i.e. transactions
 // are being submitted/confirmed)
 //
 function SwapConfirming() {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { toAmount, toMintInfo } = useSwapContext();
-
   return (
     <BottomCard>
       <Typography
@@ -413,11 +408,12 @@ function SwapConfirming() {
   );
 }
 
+//
+// Bottom card displayed on swap success.
+//
 function SwapConfirmed() {
   const classes = useStyles();
   const navigate = useNavigate();
-  const { toAmount, toMintInfo } = useSwapContext();
-
   return (
     <BottomCard
       cancelButtonLabel={"View balances"}
@@ -442,6 +438,18 @@ function SwapConfirmed() {
   );
 }
 
+//
+// Bottom card displayed on swap error.
+//
+// Jupiter can return up to three transactions to fulfill a swap. They are
+// a setup transaction, the actual swap, and a cleanup transaction.
+//
+// An error should be displayed if the setup or swap transaction fail. If the
+// cleanup transaction fails there may be a dangling wSOL account, but we
+// display a success because the swap succeeded.
+//
+// TODO - how to handle failed cleanups?
+//
 function SwapError({ onRetry, onCancel }: any) {
   const classes = useStyles();
   return (
@@ -535,29 +543,32 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   );
 }
 
-// Hack: We combine the swap and close button into one so that we can position
-// it correctly without the drawer cutting off the top.
-function SwapTokensButton({ onClick, isSwap, isLoading }: any) {
+function SwapTokensButton({ onClick }: { onClick: () => void }) {
   const classes = useStyles();
   return (
     <div className={classes.swapTokensContainer}>
-      {isLoading ? (
-        <div className={classes.loadingContainer}>
-          <CircularProgress size={16} className={classes.circularProgress} />
-        </div>
-      ) : (
-        <IconButton
-          disableRipple
-          className={classes.swapTokensButton}
-          onClick={onClick}
-        >
-          {isSwap ? (
-            <SwapVert className={classes.swapIcon} />
-          ) : (
-            <Close className={classes.swapIcon} />
-          )}
-        </IconButton>
-      )}
+      <IconButton
+        disableRipple
+        className={classes.swapTokensButton}
+        onClick={onClick}
+      >
+        <SwapVert className={classes.swapIcon} />
+      </IconButton>
+    </div>
+  );
+}
+
+function CloseButton({ onClick }: { onClick: () => void }) {
+  const classes = useStyles();
+  return (
+    <div className={classes.swapTokensContainer}>
+      <IconButton
+        disableRipple
+        className={classes.swapTokensButton}
+        onClick={onClick}
+      >
+        <Close className={classes.swapIcon} />
+      </IconButton>
     </div>
   );
 }
@@ -566,10 +577,11 @@ function TokenSelectorButton({ mint, isFrom }: any) {
   const classes = useStyles();
   const tokenRegistry = useSplTokenRegistry();
   const { setFromMint, setToMint } = useSwapContext();
-  const tokenInfo = tokenRegistry.get(mint); // todo handle null case
+  const tokenAccountsSorted = useSwapTokenList(mint, isFrom);
+
+  const tokenInfo = tokenRegistry.get(mint); // TODO handle null case
   const symbol = tokenInfo ? tokenInfo.symbol : "-";
   const logoUri = tokenInfo ? tokenInfo.logoURI : "-";
-
   const setMint = isFrom ? setFromMint : setToMint;
   const tokenFilter = isFrom
     ? (token: Token) => token.nativeBalance !== 0
@@ -595,6 +607,7 @@ function TokenSelectorButton({ mint, isFrom }: any) {
               component: (props: any) => <SelectToken {...props} />,
               props: {
                 setMint,
+                tokenAccounts: tokenAccountsSorted,
                 customFilter: tokenFilter,
               },
             },
@@ -610,9 +623,11 @@ function TokenSelectorButton({ mint, isFrom }: any) {
 
 function SelectToken({
   setMint,
+  tokenAccounts,
   customFilter,
 }: {
   setMint: (mint: string) => void;
+  tokenAccounts: Token[];
   customFilter: (token: Token) => boolean;
 }) {
   const { close } = useDrawerContext();
@@ -623,6 +638,10 @@ function SelectToken({
   };
 
   return (
-    <SearchableTokenTable onClickRow={onClickRow} customFilter={customFilter} />
+    <SearchableTokenTable
+      onClickRow={onClickRow}
+      tokenAccounts={tokenAccounts}
+      customFilter={customFilter}
+    />
   );
 }

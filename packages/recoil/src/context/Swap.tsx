@@ -144,16 +144,20 @@ export function SwapProvider(props: any) {
 
   const calculateTransactionFee = async () => {
     let fee = 0;
-    console.log("Number of transactions", Object.keys(transactions).length);
     for (const serializedTransaction of Object.values(transactions)) {
       const transaction = Transaction.from(
         Buffer.from(serializedTransaction, "base64")
       );
       // Under the hood this just calls connection.getFeeForMessage with
       // the message, it's a convenience method
-      fee += await transaction.getEstimatedFee(connection);
+      try {
+        fee += await transaction.getEstimatedFee(connection);
+      } catch {
+        // TODO errors here for connection unavailable intermittently, why?
+        // TODO should we provide no estimate instead? 5000 lamports seems ballpark
+        fee += 5000;
+      }
     }
-    console.log("Fee for transactions", fee);
     return fee;
   };
 
