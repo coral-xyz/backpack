@@ -238,9 +238,27 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
         <SwapTokensButton onClick={onSwapButtonClick} />
         <TextFieldLabel
           leftLabel={"You Pay"}
-          rightLabel={`Max: ${
-            fromTokenData ? fromTokenData.nativeBalance.toString() : "-"
-          }`}
+          rightLabelComponent={
+            <div
+              onClick={() =>
+                setFromAmount(
+                  fromTokenData ? fromTokenData.nativeBalance.toString() : 0
+                )
+              }
+              style={{
+                fontWeight: 500,
+                fontSize: "12px",
+                lineHeight: "16px",
+                color: theme.custom.colors.fontColor,
+                cursor: "pointer",
+              }}
+            >
+              <span style={{ color: theme.custom.colors.secondary }}>
+                Max:{" "}
+              </span>
+              {fromTokenData ? fromTokenData.nativeBalance.toString() : "0"}
+            </div>
+          }
         />
         <TextField
           startAd

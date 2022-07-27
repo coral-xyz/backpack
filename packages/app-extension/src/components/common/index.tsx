@@ -96,7 +96,17 @@ export function walletAddressDisplay(publicKey: PublicKey) {
   return `${pubkeyStr.slice(0, 4)}...${pubkeyStr.slice(pubkeyStr.length - 4)}`;
 }
 
-export function TextFieldLabel({ leftLabel, rightLabel, style }: any) {
+export function TextFieldLabel({
+  leftLabel,
+  rightLabel,
+  rightLabelComponent,
+  style,
+}: {
+  leftLabel: string;
+  rightLabel?: string;
+  rightLabelComponent?: React.ReactNode;
+  style?: any;
+}) {
   const classes = useStyles();
   return (
     <div
@@ -108,7 +118,11 @@ export function TextFieldLabel({ leftLabel, rightLabel, style }: any) {
       }}
     >
       <Typography className={classes.leftLabel}>{leftLabel}</Typography>
-      <Typography className={classes.rightLabel}>{rightLabel}</Typography>
+      {rightLabelComponent ? (
+        rightLabelComponent
+      ) : (
+        <Typography className={classes.rightLabel}>{rightLabel}</Typography>
+      )}
     </div>
   );
 }
