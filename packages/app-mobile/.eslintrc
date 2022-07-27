@@ -1,7 +1,7 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "simple-import-sort", "import"],
   "rules": {
     "@typescript-eslint/consistent-type-imports": [
       "error",
@@ -9,9 +9,14 @@
         "prefer": "type-imports",
         "disallowTypeAnnotations": true
       }
-    ]
+    ],
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
+    "import/first": "error",
+    "import/newline-after-import": "error",
+    "import/no-duplicates": "error"
   },
-  "ignorePatterns": ["dist/*"],
+  "env": { "es6": true },
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module",

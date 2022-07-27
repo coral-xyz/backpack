@@ -1,5 +1,6 @@
-import { Blockchain, formatUSD } from "@coral-xyz/common";
 import {
+  Blockchain,
+  formatUSD,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
 } from "@coral-xyz/common";
@@ -17,6 +18,7 @@ import { useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Pressable, Text, View } from "react-native";
 import { NativeRouter, Route, Routes, useNavigate } from "react-router-native";
 import tw from "twrnc";
+
 import { CustomButton } from "./components/CustomButton";
 import { ErrorMessage } from "./components/ErrorMessage";
 import { PasswordInput } from "./components/PasswordInput";
