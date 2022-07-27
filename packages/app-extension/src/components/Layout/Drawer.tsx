@@ -49,7 +49,6 @@ const useStyles = styles((theme) => ({
     flex: 1,
   },
   miniDrawerPaper: {
-    height: `${MINI_DRAWER_HEIGHT}px`,
     background: "transparent",
   },
   closeDrawerButton: {
@@ -126,6 +125,7 @@ export function WithMiniDrawer(props: any) {
     setOpenDrawer,
     paperAnchorBottom,
     backdropProps,
+    modalProps,
   } = props;
   return (
     <Drawer
@@ -140,10 +140,13 @@ export function WithMiniDrawer(props: any) {
       BackdropProps={{
         style: {
           background: "transparent",
-          ...backdropProps,
         },
+        ...backdropProps,
       }}
-      ModalProps={{ onBackdropClick: () => setOpenDrawer(false) }}
+      ModalProps={{
+        onBackdropClick: () => setOpenDrawer(false),
+        ...modalProps,
+      }}
     >
       {children}
     </Drawer>

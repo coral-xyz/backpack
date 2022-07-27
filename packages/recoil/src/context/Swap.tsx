@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, Transaction } from "@solana/web3.js";
 import {
   associatedTokenAddress,
   USDC_MINT,
   WSOL_MINT,
 } from "@coral-xyz/common";
 import { useActiveWallet, useSplTokenRegistry } from "../hooks";
+import { useSolanaCtx } from "../hooks/useSolanaConnection";
 
 const DEFAULT_SLIPPAGE_PERCENT = 1;
 const DEFAULT_FEE_BPS = 0;
@@ -41,6 +42,8 @@ type SwapContext = {
   isLoadingRoutes: boolean;
   transactions: any;
   isLoadingTransactions: boolean;
+  transactionFee: any;
+  isLoadingTransactionFee: boolean;
 };
 
 const _SwapContext = React.createContext<SwapContext | null>(null);
@@ -48,6 +51,7 @@ const _SwapContext = React.createContext<SwapContext | null>(null);
 export function SwapProvider(props: any) {
   const wallet = useActiveWallet();
   const tokenRegistry = useSplTokenRegistry();
+  const { connection } = useSolanaCtx();
   const [[fromMint, toMint], setFromMintToMint] = useState([
     WSOL_MINT,
     USDC_MINT,
@@ -60,6 +64,8 @@ export function SwapProvider(props: any) {
   const [isLoadingRoutes, setIsLoadingRoutes] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
+  const [transactionFee, setTransactionFee] = useState<number | null>(null);
+  const [isLoadingTransactionFee, setIsLoadingTransactionFee] = useState(false);
   const fromToken = associatedTokenAddress(fromMintPubkey, wallet.publicKey);
   const toToken = associatedTokenAddress(toMintPubkey, wallet.publicKey);
   const feeBps = DEFAULT_FEE_BPS;
@@ -87,6 +93,17 @@ export function SwapProvider(props: any) {
       }
     })();
   }, [routes]);
+
+  useEffect(() => {
+    (async () => {
+      setTransactionFee(null);
+      if (Object.keys(transactions).length > 0) {
+        setIsLoadingTransactionFee(true);
+        setTransactionFee(await calculateTransactionFee());
+        setIsLoadingTransactionFee(false);
+      }
+    })();
+  }, [transactions]);
 
   const fetchRoutes = async () => {
     setRoutes([]);
@@ -123,6 +140,21 @@ export function SwapProvider(props: any) {
     ).json();
     setIsLoadingTransactions(false);
     return transactions;
+  };
+
+  const calculateTransactionFee = async () => {
+    let fee = 0;
+    console.log("Number of transactions", Object.keys(transactions).length);
+    for (const serializedTransaction of Object.values(transactions)) {
+      const transaction = Transaction.from(
+        Buffer.from(serializedTransaction, "base64")
+      );
+      // Under the hood this just calls connection.getFeeForMessage with
+      // the message, it's a convenience method
+      fee += await transaction.getEstimatedFee(connection);
+    }
+    console.log("Fee for transactions", fee);
+    return fee;
   };
 
   const swapToFromMints = () => {
@@ -168,6 +200,8 @@ export function SwapProvider(props: any) {
         isLoadingRoutes,
         transactions,
         isLoadingTransactions,
+        transactionFee,
+        isLoadingTransactionFee,
       }}
     >
       {props.children}

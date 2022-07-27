@@ -591,15 +591,16 @@ function Error({ signature }: { signature: string }) {
 
 export function BottomCard({
   onButtonClick,
-  onReject,
+  onCancelButtonClick,
   buttonLabel,
   buttonStyle,
-  cancelButton,
   buttonLabelStyle,
+  cancelButtonLabel,
+  cancelButtonStyle,
+  cancelButtonLabelStyle,
   children,
 }: any) {
   const classes = useStyles();
-  const theme = useCustomTheme();
   return (
     <div className={classes.sendConfirmationContainer}>
       <div className={classes.sendConfirmationTopHalf} style={{ flex: 1 }}>
@@ -614,24 +615,25 @@ export function BottomCard({
           justifyContent: "space-between",
         }}
       >
-        {cancelButton && (
-          <PrimaryButton
+        {cancelButtonLabel && (
+          <SecondaryButton
             style={{
               marginRight: "8px",
-              backgroundColor: theme.custom.colors.nav,
+              ...cancelButtonStyle,
             }}
-            buttonLabelStyle={{ color: theme.custom.colors.fontColor }}
-            onClick={onReject}
-            label={"Cancel"}
+            buttonLabelStyle={cancelButtonLabelStyle}
+            onClick={onCancelButtonClick}
+            label={cancelButtonLabel}
           />
         )}
-
-        <PrimaryButton
-          style={buttonStyle}
-          buttonLabelStyle={buttonLabelStyle}
-          onClick={onButtonClick}
-          label={buttonLabel}
-        />
+        {buttonLabel && (
+          <PrimaryButton
+            style={buttonStyle}
+            buttonLabelStyle={buttonLabelStyle}
+            onClick={onButtonClick}
+            label={buttonLabel}
+          />
+        )}
       </div>
     </div>
   );

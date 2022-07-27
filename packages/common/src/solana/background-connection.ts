@@ -261,8 +261,6 @@ export class BackgroundSolanaConnection extends Connection {
     message: Message,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<number>> {
-    console.log("Background", message);
-    console.log("Background", commitment);
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE,
       params: [message, commitment],

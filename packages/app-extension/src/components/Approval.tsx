@@ -167,8 +167,8 @@ function WithApproval({ title, onApproval, onReject, origin, children }: any) {
           <BottomCard
             buttonLabel={"Approve"}
             onButtonClick={onApproval}
-            onReject={onReject}
-            cancelButton={true}
+            onCancelButtonClick={onReject}
+            cancelButtonLabel={"Cancel"}
           >
             <AppLogo origin={origin} />
             <div className={classes.contentContainer}>{children}</div>

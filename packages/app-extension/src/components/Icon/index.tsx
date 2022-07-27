@@ -116,6 +116,42 @@ export function SuccessIcon() {
   );
 }
 
+export function CheckIcon() {
+  return (
+    <svg
+      width="48"
+      height="48"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="48" height="48" rx="24" fill="#35A63A" />
+      <path
+        d="M20 29.5598L14.44 23.9998L12.5466 25.8798L20 33.3331L36 17.3331L34.12 15.4531L20 29.5598Z"
+        fill="white"
+      />
+    </svg>
+  );
+}
+
+export function CrossIcon() {
+  return (
+    <svg
+      width="48"
+      height="48"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="48" height="48" rx="24" fill="#E95050" />
+      <path
+        d="M33.3334 16.547L31.4534 14.667L24.0001 22.1203L16.5467 14.667L14.6667 16.547L22.1201 24.0003L14.6667 31.4537L16.5467 33.3337L24.0001 25.8803L31.4534 33.3337L33.3334 31.4537L25.8801 24.0003L33.3334 16.547Z"
+        fill="white"
+      />
+    </svg>
+  );
+}
+
 export function HardwareWalletIcon({ fill = "#A1A1AA", ...props }) {
   return (
     <svg
