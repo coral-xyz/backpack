@@ -219,9 +219,11 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
   const onConfirm = async () => {
     setSwapState(SwapState.CONFIRMING);
     const result = await executeSwap();
-    setTimeout(() => {
+    if (result) {
+      setSwapState(SwapState.CONFIRMED);
+    } else {
       setSwapState(SwapState.ERROR);
-    }, 5000);
+    }
   };
 
   const onSwapButtonClick = () => {
@@ -231,6 +233,11 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
       swapToFromMints();
     }
   };
+
+  const exceedsBalance =
+    fromAmount &&
+    fromTokenData &&
+    Number(fromAmount) > fromTokenData.nativeBalance;
 
   return (
     <div className={classes.container}>
@@ -325,7 +332,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
             <PrimaryButton
               label="Review"
               onClick={() => setSwapState(SwapState.CONFIRMATION)}
-              disabled={!fromAmount || !toAmount}
+              disabled={!fromAmount || !toAmount || exceedsBalance}
             />
           </div>
         </div>

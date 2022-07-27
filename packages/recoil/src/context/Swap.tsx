@@ -1,15 +1,21 @@
+import * as bs58 from "bs58";
 import React, { useContext, useEffect, useState } from "react";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import {
   associatedTokenAddress,
+  confirmTransaction,
   USDC_MINT,
   WSOL_MINT,
+  UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
 } from "@coral-xyz/common";
-import { useActiveWallet, useSplTokenRegistry } from "../hooks";
+import {
+  useActiveWallet,
+  useBackgroundClient,
+  useSplTokenRegistry,
+} from "../hooks";
 import { useSolanaCtx } from "../hooks/useSolanaConnection";
 
 const DEFAULT_SLIPPAGE_PERCENT = 1;
-const DEFAULT_FEE_BPS = 0;
 const JUPITER_BASE_URL = "https://quote-api.jup.ag/v1/";
 
 type JupiterRoute = {
@@ -20,6 +26,12 @@ type JupiterRoute = {
   outAmountWithSlippage: number;
   priceImpactPct: number;
   swapMode: string;
+};
+
+type JupiterTransactions = {
+  setupTransaction?: string;
+  swapTransaction: string;
+  cleanupTransaction?: string;
 };
 
 type SwapContext = {
@@ -39,10 +51,10 @@ type SwapContext = {
   setSlippage: (s: number) => void;
   executeSwap: () => Promise<any>;
   route: JupiterRoute;
-  isLoadingRoutes: boolean;
   transactions: any;
-  isLoadingTransactions: boolean;
   transactionFee: any;
+  isLoadingRoutes: boolean;
+  isLoadingTransactions: boolean;
   isLoadingTransactionFee: boolean;
 };
 
@@ -52,6 +64,8 @@ export function SwapProvider(props: any) {
   const wallet = useActiveWallet();
   const tokenRegistry = useSplTokenRegistry();
   const { connection } = useSolanaCtx();
+  const background = useBackgroundClient();
+
   const [[fromMint, toMint], setFromMintToMint] = useState([
     WSOL_MINT,
     USDC_MINT,
@@ -61,16 +75,19 @@ export function SwapProvider(props: any) {
   const [fromAmount, setFromAmount] = useState(0);
   const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE_PERCENT);
   const [routes, setRoutes] = useState<JupiterRoute[]>([]);
-  const [isLoadingRoutes, setIsLoadingRoutes] = useState(false);
-  const [transactions, setTransactions] = useState([]);
-  const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
+  const [transactions, setTransactions] = useState<JupiterTransactions | null>(
+    null
+  );
   const [transactionFee, setTransactionFee] = useState<number | null>(null);
+  const [isLoadingRoutes, setIsLoadingRoutes] = useState(false);
+  const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
   const [isLoadingTransactionFee, setIsLoadingTransactionFee] = useState(false);
+
   const fromToken = associatedTokenAddress(fromMintPubkey, wallet.publicKey);
   const toToken = associatedTokenAddress(toMintPubkey, wallet.publicKey);
-  const feeBps = DEFAULT_FEE_BPS;
   const fromMintInfo = tokenRegistry.get(fromMintPubkey.toString())!;
   const toMintInfo = tokenRegistry.get(toMintPubkey.toString())!;
+
   const route = routes && routes[0];
   const toAmount = route && route.outAmount / 10 ** toMintInfo.decimals;
 
@@ -89,7 +106,7 @@ export function SwapProvider(props: any) {
       if (routes.length > 0) {
         setTransactions(await fetchTransactions());
       } else {
-        setTransactions([]);
+        setTransactions(null);
       }
     })();
   }, [routes]);
@@ -97,7 +114,7 @@ export function SwapProvider(props: any) {
   useEffect(() => {
     (async () => {
       setTransactionFee(null);
-      if (Object.keys(transactions).length > 0) {
+      if (transactions && Object.keys(transactions).length > 0) {
         setIsLoadingTransactionFee(true);
         setTransactionFee(await calculateTransactionFee());
         setIsLoadingTransactionFee(false);
@@ -113,7 +130,6 @@ export function SwapProvider(props: any) {
       outputMint: toMint,
       amount: (fromAmount * 10 ** fromMintInfo.decimals).toString(),
       slippage: slippage.toString(),
-      feeBps: feeBps.toString(),
     };
     const queryString = new URLSearchParams(params).toString();
     const { data } = await (
@@ -144,6 +160,7 @@ export function SwapProvider(props: any) {
 
   const calculateTransactionFee = async () => {
     let fee = 0;
+    if (!transactions) return null;
     for (const serializedTransaction of Object.values(transactions)) {
       const transaction = Transaction.from(
         Buffer.from(serializedTransaction, "base64")
@@ -152,10 +169,10 @@ export function SwapProvider(props: any) {
       // the message, it's a convenience method
       try {
         fee += await transaction.getEstimatedFee(connection);
-      } catch {
+      } catch (e) {
         // TODO errors here for connection unavailable intermittently, why?
-        // TODO should we provide no estimate instead? 5000 lamports seems ballpark
-        fee += 5000;
+        console.log("could not retrieve transaction fee", e);
+        return null;
       }
     }
     return fee;
@@ -175,11 +192,46 @@ export function SwapProvider(props: any) {
   };
 
   const executeSwap = async () => {
-    try {
-      console.log("Swap transactions", transactions);
-    } catch (err) {
-      console.log("Swap failed", err);
+    if (!transactions) return null;
+    for (let transactionStep of [
+      "setupTransaction",
+      "swapTransaction",
+      "cleanupTransaction",
+    ]) {
+      const serializedTransaction = transactions[transactionStep];
+      if (serializedTransaction) {
+        try {
+          const signature = await background.request({
+            method: UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
+            params: [
+              bs58.encode(Buffer.from(serializedTransaction, "base64")),
+              wallet.publicKey,
+            ],
+          });
+          await confirmTransaction(connection, signature, "confirmed");
+        } catch (e) {
+          console.log("swap error", e);
+          if (transactionStep === "setupTransaction") {
+            return false;
+          } else if (transactionStep === "swapTransaction") {
+            // Setup transaction didn't exist or suceeded, so update the
+            // transactions required to execute to only the remaining
+            // transactions so the user can retry
+            const { setupTransaction, ...rest } = transactions;
+            setTransactions(rest);
+          } else if (transactionStep === "cleanupTransaction") {
+            // Failed on cleanup, we still want to display a success message
+            // to the user here as the swap has completed. The cleanup step
+            // was likely removing a wSOL account and so is relatively
+            // inconsequential.
+            // TODO - handle this somehow?
+            return true;
+          }
+        }
+      }
     }
+    // All transactions successful
+    return true;
   };
 
   return (
