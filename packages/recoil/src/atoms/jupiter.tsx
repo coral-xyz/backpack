@@ -20,7 +20,7 @@ export const jupiterRouteMap = selector({
   key: "jupiterRouteMap",
   get: async ({}) => {
     const response = await (
-      await fetch(`${JUPITER_BASE_URL}/indexed-route-map`)
+      await fetch(`${JUPITER_BASE_URL}indexed-route-map`)
     ).json();
     const getMint = (index: number) => response["mintKeys"][index];
     // Replace indices with mint addresses
