@@ -8,18 +8,19 @@ export function GridCard({ onClick, nft, subtitle }: any) {
       onClick={onClick}
       disableRipple
       style={{
-        marginBottom: "16px",
         textTransform: "none",
         padding: 0,
         borderRadius: "8px",
         position: "relative",
-        height: "164px",
         overflow: "hidden",
+        minHeight: "163.4px",
+        minWidth: "163.4px",
+        aspectRatio: "1",
       }}
     >
       <img
         style={{
-          width: "164px",
+          width: "100%",
         }}
         src={nft.tokenMetaUriData.image}
       />

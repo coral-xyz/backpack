@@ -1,3 +1,4 @@
+import { Grid } from "@mui/material";
 import { NAV_COMPONENT_NFT_DETAIL } from "@coral-xyz/common";
 import { useNavigation, useNftCollections } from "@coral-xyz/recoil";
 import { GridCard } from "./Common";
@@ -10,12 +11,12 @@ export function NftsCollection({ name }: { name: string }) {
         paddingRight: "16px",
       }}
     >
-      <Grid name={name} />
+      <_Grid name={name} />
     </div>
   );
 }
 
-function Grid({ name }: { name: string }) {
+function _Grid({ name }: { name: string }) {
   const collections = useNftCollections();
   const c = collections?.filter((col: any) => col.name === name)[0];
 
@@ -25,17 +26,13 @@ function Grid({ name }: { name: string }) {
   }
 
   return (
-    <div
-      style={{
-        flexWrap: "wrap",
-        display: "flex",
-        justifyContent: "space-between",
-      }}
-    >
+    <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
       {c.items.map((nft: any) => (
-        <NftCard key={nft.publicKey} nft={nft} />
+        <Grid item xs={6} sm={4} md={3} lg={2}>
+          <NftCard key={nft.publicKey} nft={nft} />
+        </Grid>
       ))}
-    </div>
+    </Grid>
   );
 }
 

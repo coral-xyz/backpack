@@ -1,0 +1,3 @@
+[submodule "examples/xnft-program-library"]
+	path = examples/xnft-program-library
+	url = https://github.com/coral-xyz/xnft-program-library.git

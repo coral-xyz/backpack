@@ -4,13 +4,14 @@
   "workspaces": [
     "backend/workers/*",
     "examples/clients/*",
-    "examples/xnfts",
-    "examples/xnfts/*",
+    "examples",
+    "examples/xnft/*",
+    "examples/xnft-program-library/packages/*",
     "packages/*",
     "web"
   ],
   "scripts": {
-    "lint:fix": "prettier {examples,packages}/**/*.{ts,tsx,css,md,json} --write",
+    "lint:fix": "prettier {examples/xnft,examples/xnft-program-library/packages,packages}/**/*.{ts,tsx,json} --write",
     "prepare": "husky install",
     "start": "env-cmd --silent turbo run start --concurrency=20",
     "start:fresh": "yarn install && yarn clean && yarn install && yarn start",
