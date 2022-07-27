@@ -6,7 +6,9 @@ export function SettingsList({
   menuItems,
 }: {
   style?: React.CSSProperties;
-  menuItems: { [key: string]: { onClick: () => void } };
+  menuItems: {
+    [key: string]: { onClick: () => void; detail?: React.ReactNode };
+  };
 }) {
   return (
     <List style={{ marginTop: "16px", ...style }}>
@@ -15,12 +17,12 @@ export function SettingsList({
           key={key}
           id={key}
           isLast={i === length - 1}
-          onClick={val.onClick}
+          onClick={() => val.onClick()}
           style={{
             height: "44px",
             padding: "10px",
           }}
-          detail={<PushDetail />}
+          detail={val.detail ?? <PushDetail />}
         >
           <ListItemText style={{ fontWeight: 500 }}>{key}</ListItemText>
         </ListItem>
