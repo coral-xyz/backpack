@@ -23,9 +23,10 @@ import { CustomButton } from "./components/CustomButton";
 import { ErrorMessage } from "./components/ErrorMessage";
 import { PasswordInput } from "./components/PasswordInput";
 import { ButtonFooter, MainContent } from "./components/Templates";
+import { ResetApp } from "./screens/Helpers/ResetApp";
+import { ToggleConnection } from "./screens/Helpers/ToggleConnection";
 import NeedsOnboarding from "./screens/NeedsOnboarding";
 import CreateWallet from "./screens/NeedsOnboarding/CreateWallet";
-import { ToggleConnection } from "./screens/ToggleConnection";
 
 const HomeScreen = () => {
   const keyringStoreState = useKeyringStoreState();
@@ -46,9 +47,7 @@ const UnlockedScreen = () => {
   const background = useBackgroundClient();
   const navigate = useNavigate();
   const wallet = useActiveWallet();
-  const { totalBalance, totalChange, percentChange } = useTotal(
-    Blockchain.SOLANA
-  );
+  const { totalBalance, totalChange, percentChange } = useTotal();
   const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
   const connectionUrl = useSolanaConnectionUrl();
   console.log(wallet.publicKey.toString());
@@ -157,6 +156,12 @@ const LockedScreen = () => {
         <ErrorMessage for={errors.password} />
       </MainContent>
       <ButtonFooter>
+        <CustomButton
+          text="Reset App"
+          onPress={() => {
+            navigate("/reset");
+          }}
+        />
         <CustomButton text="Unlock" onPress={handleSubmit(onSubmit)} />
       </ButtonFooter>
     </>
@@ -172,6 +177,7 @@ export default function App() {
         <KeyboardAvoidingView style={tw`flex-1`} behavior="padding">
           <Routes>
             <Route path="/" element={<HomeScreen />} />
+            <Route path="/reset" element={<ResetApp />} />
             <Route path="/create-wallet" element={<CreateWallet />} />
             <Route path="/toggle-connection" element={<ToggleConnection />} />
             <Route
