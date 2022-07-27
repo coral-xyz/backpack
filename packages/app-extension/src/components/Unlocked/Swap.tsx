@@ -466,15 +466,6 @@ function SwapConfirmed() {
 //
 // Bottom card displayed on swap error.
 //
-// Jupiter can return up to three transactions to fulfill a swap. They are
-// a setup transaction, the actual swap, and a cleanup transaction.
-//
-// An error should be displayed if the setup or swap transaction fail. If the
-// cleanup transaction fails there may be a dangling wSOL account, but we
-// display a success because the swap succeeded.
-//
-// TODO - how to handle failed cleanups?
-//
 function SwapError({ onRetry, onCancel }: any) {
   const classes = useStyles();
   return (
