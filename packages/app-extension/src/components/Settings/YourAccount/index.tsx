@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import useTheme from "@mui/styles/useTheme";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { useDrawerContext } from "../../Layout/Drawer";
 import { useNavStack } from "../../Layout/NavStack";
 import { SettingsList } from "../../common/Settings/List";
@@ -7,7 +7,7 @@ import { SettingsList } from "../../common/Settings/List";
 export function YourAccount() {
   const { close } = useDrawerContext();
   const nav = useNavStack();
-  const theme = useTheme() as any;
+  const theme = useCustomTheme();
 
   const menuItems = {
     "Change password": {
