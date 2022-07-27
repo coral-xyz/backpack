@@ -2,6 +2,7 @@ import ExpoCheckBox from "expo-checkbox";
 import { Controller } from "react-hook-form";
 import { Text, View } from "react-native";
 import tw from "twrnc";
+
 import { addTestIdentifier } from "../lib/addTestIdentifier";
 
 export const CheckBox: React.FC<{
