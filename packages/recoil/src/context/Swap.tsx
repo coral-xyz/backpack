@@ -14,9 +14,9 @@ import {
   useSplTokenRegistry,
 } from "../hooks";
 import { useSolanaCtx } from "../hooks/useSolanaConnection";
+import { JUPITER_BASE_URL } from "../atoms/jupiter";
 
 const DEFAULT_SLIPPAGE_PERCENT = 1;
-const JUPITER_BASE_URL = "https://quote-api.jup.ag/v1/";
 
 type JupiterRoute = {
   amount: number;

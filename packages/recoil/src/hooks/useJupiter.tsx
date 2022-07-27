@@ -8,17 +8,3 @@ export function useJupiterWalletTokens(): Array<any> {
 export function useSwapTokenList(mint: string, isFrom: boolean): Array<any> {
   return useRecoilValue(atoms.swapTokenList({ mint, isFrom }));
 }
-
-/**
-export function useJupiterRoutes(
-  inputMint: string,
-  outputMint: string,
-  amount: Number,
-  slippage: float,
-  feeBps: Number
-) {
-  return useRecoilValue(
-    atoms.swapRoutes({ inputMint, outputMint, amount, slippage, feeBps })
-  );
-}
-**/
