@@ -38,9 +38,11 @@ const useStyles = styles((theme) => ({
 
 export function SearchableTokenTable({
   onClickRow,
+  tokenAccounts,
   customFilter = () => true,
 }: {
   onClickRow: (blockchain: Blockchain, token: Token) => void;
+  tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   customFilter: (token: Token) => boolean;
 }) {
   const classes = useStyles();
@@ -60,6 +62,7 @@ export function SearchableTokenTable({
       />
       <TokenTable
         onClickRow={onClickRow}
+        tokenAccounts={tokenAccounts}
         searchFilter={searchFilter}
         customFilter={customFilter}
       />
@@ -69,20 +72,22 @@ export function SearchableTokenTable({
 
 export function TokenTable({
   onClickRow,
+  tokenAccounts,
   searchFilter = "",
   customFilter = () => true,
 }: {
   onClickRow: (blockchain: Blockchain, token: Token) => void;
+  tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   searchFilter: string;
   customFilter: (token: Token) => boolean;
 }) {
   const blockchain = Blockchain.SOLANA;
   const title = "Tokens";
-
   const blockchainLogo = useBlockchainLogo(blockchain);
-  const tokenAccountsSorted = useBlockchainTokensSorted(blockchain);
+  const tokenAccountsSorted = tokenAccounts
+    ? tokenAccounts
+    : useBlockchainTokensSorted(blockchain);
   const [search, setSearch] = useState(searchFilter);
-
   const searchLower = search.toLowerCase();
   const tokenAccountsFiltered = tokenAccountsSorted
     .filter(
@@ -122,13 +127,17 @@ function TokenRow({
   onClick: (blockchain: Blockchain, token: Token) => void;
   token: Token;
 }) {
+  let subtitle = token.ticker;
+  if (token.nativeBalance) {
+    subtitle = `${token.nativeBalance.toLocaleString()} ${subtitle}`;
+  }
   return (
     <BalancesTableRow onClick={onClick}>
       <BalancesTableCell
         props={{
           icon: token.logo,
           title: token.name,
-          subtitle: `${token.nativeBalance.toLocaleString()} ${token.ticker}`,
+          subtitle,
           usdValue: token.usdBalance,
           percentChange: token.recentUsdBalanceChange,
         }}
