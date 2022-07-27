@@ -3,6 +3,12 @@
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint", "simple-import-sort", "import"],
   "rules": {
+    "@typescript-eslint/consistent-type-exports": [
+      "error",
+      {
+        "fixMixedExportsWithInlineTypeSpecifier": true
+      }
+    ],
     "@typescript-eslint/consistent-type-imports": [
       "error",
       {
