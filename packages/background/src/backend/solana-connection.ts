@@ -375,6 +375,13 @@ export class Backend {
     );
   }
 
+  async getFeeForMessage(
+    message: Message,
+    commitment?: Commitment
+  ): Promise<RpcResponseAndContext<number>> {
+    return await this.connection!.getFeeForMessage(message, commitment);
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Methods below not used currently.
   ///////////////////////////////////////////////////////////////////////////////
@@ -586,13 +593,6 @@ export class Backend {
     blockhash: Blockhash,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<FeeCalculator | null>> {
-    throw new Error("not implemented");
-  }
-
-  getFeeForMessage(
-    message: Message,
-    commitment?: Commitment
-  ): Promise<RpcResponseAndContext<number>> {
     throw new Error("not implemented");
   }
 

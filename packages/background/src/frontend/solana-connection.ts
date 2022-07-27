@@ -5,8 +5,9 @@ import type {
   Finality,
   ConfirmedSignaturesForAddress2Options,
   GetProgramAccountsConfig,
+  MessageArgs,
 } from "@solana/web3.js";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, Message } from "@solana/web3.js";
 import type {
   RpcRequest,
   RpcResponse,
@@ -32,6 +33,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION,
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
   SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS,
+  SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE,
 } from "@coral-xyz/common";
 import type { Backend } from "../backend/solana-connection";
 import type { Config, Handle } from "../types";
@@ -112,6 +114,8 @@ async function handleImpl<T = any>(
       return await handleCustomSplTokenAccounts(ctx, params[0]);
     case SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS:
       return await handleGetProgramAccounts(ctx, params[0], params[1]);
+    case SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE:
+      return await handleGetFeeForMessage(ctx, params[0], params[1]);
     default:
       throw new Error("invalid rpc method");
   }
@@ -248,6 +252,18 @@ async function handleGetProgramAccounts(
   const resp = await ctx.backend.getProgramAccounts(
     new PublicKey(programId),
     configOrCommitment
+  );
+  return [resp];
+}
+
+async function handleGetFeeForMessage(
+  ctx: Context<Backend>,
+  message: MessageArgs,
+  commitment?: Finality
+) {
+  const resp = await ctx.backend.getFeeForMessage(
+    new Message(message),
+    commitment
   );
   return [resp];
 }
