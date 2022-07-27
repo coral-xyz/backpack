@@ -111,7 +111,7 @@ export function TokenTable({
       <BalancesTableContent>
         {tokenAccountsFiltered.map((token) => (
           <TokenRow
-            key={token.address}
+            key={token.mint}
             token={token}
             onClick={() => onClickRow(blockchain, token)}
           />
@@ -139,7 +139,6 @@ function TokenRow({
       <BalancesTableRow onClick={onClick}>
         {inView && (
           <BalancesTableCell
-            ref={ref}
             props={{
               icon: token.logo,
               title: token.name,
