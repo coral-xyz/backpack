@@ -1,12 +1,10 @@
-import { useEffect } from "react";
 import { ListItemIcon, ListItemText } from "@mui/material";
 import { styles } from "@coral-xyz/themes";
 import { CheckBox } from "@mui/icons-material";
 import { UI_RPC_METHOD_CONNECTION_URL_UPDATE } from "@coral-xyz/common";
 import { useBackgroundClient, useSolanaConnectionUrl } from "@coral-xyz/recoil";
-import { useDrawerContext } from "../Layout/Drawer";
-import { useNavStack } from "../Layout/NavStack";
-import { List, ListItem } from "../common";
+import { useDrawerContext } from "../../../Layout/Drawer";
+import { List, ListItem } from "../../../common";
 
 const useStyles = styles((theme) => ({
   connectionMenu: {
@@ -26,7 +24,7 @@ const endpoints = {
     new URL(prompt("Enter your custom endpoint")!.trim()).toString(),
 };
 
-export function ConnectionMenu() {
+export function PreferencesSolanaConnection() {
   const { close } = useDrawerContext();
   const background = useBackgroundClient();
   const classes = useStyles();

@@ -9,6 +9,7 @@ import {
   Public,
   AccountCircleOutlined,
   Tab as WindowIcon,
+  Settings,
 } from "@mui/icons-material";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import {
@@ -47,10 +48,15 @@ import {
   ShowRecoveryPhraseWarning,
   ShowRecoveryPhrase,
 } from "./YourAccount/ShowRecoveryPhrase";
+import { Preferences } from "./Preferences";
+import { PreferencesAutoLock } from "./Preferences/AutoLock";
+import { PreferencesTrustedApps } from "./Preferences/TrustedApps";
+import { PreferencesSolanaConnection } from "./Preferences/Solana/ConnectionSwitch";
+import { PreferencesSolanaCommitment } from "./Preferences/Solana/Commitment";
+import { PreferencesSolanaExplorer } from "./Preferences/Solana/Explorer";
 import { ChangePassword } from "./YourAccount/ChangePassword";
 import { ResetWarning } from "../Locked/Reset/ResetWarning";
 import { Reset } from "../Locked/Reset";
-import { ConnectionMenu } from "./ConnectionSwitch";
 import { RecentActivityButton } from "../Unlocked/Balances/RecentActivity";
 import { AddConnectWalletMenu } from "./AddConnectWallet";
 import { YourAccount } from "./YourAccount";
@@ -135,8 +141,34 @@ function AvatarButton() {
               component={(props: any) => <YourAccount {...props} />}
             />
             <NavStackScreen
-              name={"connection-menu"}
-              component={(props: any) => <ConnectionMenu {...props} />}
+              name={"preferences"}
+              component={(props: any) => <Preferences {...props} />}
+            />
+            <NavStackScreen
+              name={"preferences-auto-lock"}
+              component={(props: any) => <PreferencesAutoLock {...props} />}
+            />
+            <NavStackScreen
+              name={"preferences-trusted-apps"}
+              component={(props: any) => <PreferencesTrustedApps {...props} />}
+            />
+            <NavStackScreen
+              name={"preferences-solana-rpc-connection"}
+              component={(props: any) => (
+                <PreferencesSolanaConnection {...props} />
+              )}
+            />
+            <NavStackScreen
+              name={"preferences-solana-commitment"}
+              component={(props: any) => (
+                <PreferencesSolanaCommitment {...props} />
+              )}
+            />
+            <NavStackScreen
+              name={"preferences-solana-explorer"}
+              component={(props: any) => (
+                <PreferencesSolanaExplorer {...props} />
+              )}
             />
             <NavStackScreen
               name={"change-password"}
@@ -359,16 +391,16 @@ function SettingsList({ close }: { close: () => void }) {
       detailIcon: <PushDetail />,
     },
     {
+      label: "Preferences",
+      onClick: () => nav.push("preferences"),
+      icon: (props: any) => <Settings {...props} />,
+      detailIcon: <PushDetail />,
+    },
+    {
       label: "Help & Support",
       onClick: () => console.log("help and support"),
       icon: (props: any) => <Help {...props} />,
       detailIcon: <LaunchDetail />,
-    },
-    {
-      label: "Connection",
-      onClick: () => nav.push("connection-menu"),
-      icon: (props: any) => <Public {...props} />,
-      detailIcon: <PushDetail />,
     },
     {
       label: "Pop Window",
