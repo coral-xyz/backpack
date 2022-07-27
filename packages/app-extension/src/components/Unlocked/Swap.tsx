@@ -592,7 +592,7 @@ function CloseButton({ onClick }: { onClick: () => void }) {
 function TokenSelectorButton({ mint, isFrom }: any) {
   const classes = useStyles();
   const tokenRegistry = useSplTokenRegistry();
-  const { setFromMint, setToMint } = useSwapContext();
+  const { toMint, fromMint, setToMint, setFromMint } = useSwapContext();
   const tokenAccountsSorted = useSwapTokenList(mint, isFrom);
 
   const tokenInfo = tokenRegistry.get(mint); // TODO handle null case
@@ -600,8 +600,8 @@ function TokenSelectorButton({ mint, isFrom }: any) {
   const logoUri = tokenInfo ? tokenInfo.logoURI : "-";
   const setMint = isFrom ? setFromMint : setToMint;
   const tokenFilter = isFrom
-    ? (token: Token) => token.nativeBalance !== 0
-    : () => true;
+    ? (token: Token) => token.nativeBalance !== 0 && token.mint !== toMint
+    : (token: Token) => token.mint !== fromMint;
 
   return (
     <>
