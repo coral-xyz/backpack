@@ -210,15 +210,10 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
     toAmount,
     fromToken,
     fromMint,
-    fromMintInfo,
     toMint,
-    toMintInfo,
     swapToFromMints,
     executeSwap,
-    route,
     isLoadingRoutes,
-    transactionFee,
-    isLoadingTransactionFee,
   } = useSwapContext();
   const fromTokenData = useBlockchainTokenAccount(blockchain, fromToken);
   const [swapState, setSwapState] = useState(SwapState.INITIAL);
@@ -238,29 +233,6 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
       swapToFromMints();
     }
   };
-
-  const swapInfoRows = toAmount
-    ? [
-        [
-          "Rate",
-          `1 ${fromMintInfo.symbol} ≈ ${(toAmount / fromAmount).toFixed(4)} ${
-            toMintInfo.symbol
-          }`,
-        ],
-        [
-          "Network Fee",
-          transactionFee ? `${transactionFee / 10 ** 9} SOL` : "-",
-        ],
-        [
-          "Price Impact",
-          `${
-            route.priceImpactPct > 0.5
-              ? route.priceImpactPct.toFixed(2)
-              : "< 0.5"
-          }%`,
-        ],
-      ]
-    : [];
 
   return (
     <div className={classes.container}>
@@ -325,7 +297,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
                 },
               }}
             />
-            {swapInfoRows && (
+            {toAmount && (
               <div
                 style={{
                   marginTop: "24px",
@@ -333,7 +305,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
                   marginRight: "8px",
                 }}
               >
-                <SwapInfo rows={swapInfoRows} />
+                <SwapInfo />
               </div>
             )}
           </div>
@@ -364,18 +336,14 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
         {swapState === SwapState.CONFIRMATION && (
           <SwapConfirmation onConfirm={onConfirm} />
         )}
-        {swapState === SwapState.CONFIRMING && (
-          <SwapConfirming toAmount={toAmount} toMintInfo={toMintInfo} />
-        )}
-        {swapState === SwapState.CONFIRMED && (
-          <SwapConfirmed toAmount={toAmount} toMintInfo={toMintInfo} />
-        )}
+        {swapState === SwapState.CONFIRMING && <SwapConfirming />}
+        {swapState === SwapState.CONFIRMED && <SwapConfirmed />}
         {swapState === SwapState.ERROR && (
           <SwapError
             onCancel={() => {
               setSwapState(SwapState.INITIAL);
             }}
-            onRetry={() => console.log("Cancelling")}
+            onRetry={onConfirm}
           />
         )}
       </WithMiniDrawer>
@@ -388,35 +356,6 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
 //
 function SwapConfirmation({ onConfirm }: any) {
   const classes = useStyles();
-  const theme = useCustomTheme();
-  const {
-    fromAmount,
-    toAmount,
-    fromMintInfo,
-    toMintInfo,
-    route,
-    transactionFee,
-  } = useSwapContext();
-  const rate = toAmount! / fromAmount;
-  const rows = [
-    ["You Pay", `${fromAmount} ${fromMintInfo.symbol}`],
-    [
-      "Rate",
-      `1 ${fromMintInfo.symbol} = ${rate.toFixed(4)} ${toMintInfo.symbol}`,
-    ],
-    ["Network Fee", transactionFee ? `${transactionFee / 10 ** 9} SOL` : "-"],
-    [
-      "Backpack Fee",
-      <span style={{ color: theme.custom.colors.secondary }}>FREE</span>,
-    ],
-    [
-      "Price Impact",
-      `${
-        route.priceImpactPct > 0.5 ? route.priceImpactPct.toFixed(2) : "< 0.5"
-      }%`,
-    ],
-  ];
-
   return (
     <BottomCard onButtonClick={onConfirm} buttonLabel={"Confirm"}>
       <Typography
@@ -429,10 +368,10 @@ function SwapConfirmation({ onConfirm }: any) {
         className={classes.confirmationAmount}
         style={{ marginTop: "8px", marginBottom: "38px" }}
       >
-        <SwapReceiveAmount toAmount={toAmount} toMintInfo={toMintInfo} />
+        <SwapReceiveAmount />
       </Typography>
-      <div style={{ margin: "24px" }}>
-        <SwapInfo rows={rows} />
+      <div style={{ margin: "24px 24px 68px 24px" }}>
+        <SwapInfo compact={false} />
       </div>
     </BottomCard>
   );
@@ -442,9 +381,11 @@ function SwapConfirmation({ onConfirm }: any) {
 // Bottom drawer that is displayed while the swap is confirming (i.e. transactions
 // are being submitted/confirmed)
 //
-function SwapConfirming({ toAmount, toMintInfo }: any) {
+function SwapConfirming() {
   const classes = useStyles();
   const theme = useCustomTheme();
+  const { toAmount, toMintInfo } = useSwapContext();
+
   return (
     <BottomCard>
       <Typography
@@ -457,7 +398,7 @@ function SwapConfirming({ toAmount, toMintInfo }: any) {
         className={classes.confirmationAmount}
         style={{ marginTop: "8px", marginBottom: "16px" }}
       >
-        <SwapReceiveAmount toAmount={toAmount} toMintInfo={toMintInfo} />
+        <SwapReceiveAmount />
       </Typography>
       <div style={{ textAlign: "center" }}>
         <CircularProgress
@@ -472,9 +413,11 @@ function SwapConfirming({ toAmount, toMintInfo }: any) {
   );
 }
 
-function SwapConfirmed({ toAmount, toMintInfo }: any) {
+function SwapConfirmed() {
   const classes = useStyles();
   const navigate = useNavigate();
+  const { toAmount, toMintInfo } = useSwapContext();
+
   return (
     <BottomCard
       cancelButtonLabel={"View balances"}
@@ -490,7 +433,7 @@ function SwapConfirmed({ toAmount, toMintInfo }: any) {
         className={classes.confirmationAmount}
         style={{ marginTop: "8px", marginBottom: "16px" }}
       >
-        <SwapReceiveAmount toAmount={toAmount} toMintInfo={toMintInfo} />
+        <SwapReceiveAmount />
       </Typography>
       <div style={{ textAlign: "center", marginBottom: "24px" }}>
         <CheckIcon />
@@ -514,7 +457,7 @@ function SwapError({ onRetry, onCancel }: any) {
       >
         Error :(
       </Typography>
-      <div style={{ textAlign: "center" }}>
+      <div style={{ textAlign: "center", marginBottom: "24px" }}>
         <CrossIcon />
       </div>
     </BottomCard>
@@ -524,9 +467,11 @@ function SwapError({ onRetry, onCancel }: any) {
 //
 // Token logo, swap receive amount, and swap currency
 //
-function SwapReceiveAmount({ toAmount, toMintInfo }: any) {
+function SwapReceiveAmount() {
   const classes = useStyles();
   const theme = useCustomTheme();
+  const { toAmount, toMintInfo } = useSwapContext();
+
   const logoUri = toMintInfo ? toMintInfo.logoURI : "-";
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
@@ -539,14 +484,55 @@ function SwapReceiveAmount({ toAmount, toMintInfo }: any) {
   );
 }
 
-function SwapInfo({ rows }: any) {
+function SwapInfo({ compact = true }: { compact?: boolean }) {
   const classes = useStyles();
-  return rows.map((r: any) => (
-    <div className={classes.swapInfoRow} key={r[0]}>
-      <Typography className={classes.swapInfoTitleLeft}>{r[0]}</Typography>
-      <Typography className={classes.swapInfoTitleRight}>{r[1]}</Typography>
-    </div>
-  ));
+  const theme = useCustomTheme();
+  const {
+    fromAmount,
+    toAmount,
+    fromMintInfo,
+    toMintInfo,
+    route,
+    transactionFee,
+  } = useSwapContext();
+
+  const rate = toAmount! / fromAmount;
+
+  const rows = [];
+  if (!compact) {
+    rows.push(["You Pay", `${fromAmount} ${fromMintInfo.symbol}`]);
+  }
+  rows.push([
+    "Rate",
+    `1 ${fromMintInfo.symbol} = ${rate.toFixed(4)} ${toMintInfo.symbol}`,
+  ]);
+  rows.push([
+    "Network Fee",
+    transactionFee ? `${transactionFee / 10 ** 9} SOL` : "-",
+  ]);
+  if (!compact) {
+    rows.push([
+      "Backpack Fee",
+      <span style={{ color: theme.custom.colors.secondary }}>FREE</span>,
+    ]);
+  }
+  rows.push([
+    "Price Impact",
+    `${
+      route.priceImpactPct > 0.5 ? route.priceImpactPct.toFixed(2) : "< 0.5"
+    }%`,
+  ]);
+
+  return (
+    <>
+      {rows.map((r: any) => (
+        <div className={classes.swapInfoRow} key={r[0]}>
+          <Typography className={classes.swapInfoTitleLeft}>{r[0]}</Typography>
+          <Typography className={classes.swapInfoTitleRight}>{r[1]}</Typography>
+        </div>
+      ))}
+    </>
+  );
 }
 
 // Hack: We combine the swap and close button into one so that we can position
