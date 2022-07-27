@@ -4,9 +4,10 @@
   "private": true,
   "source": "src/index.html",
   "dependencies": {
-    "@solana/wallet-adapter-base": "^0.9.5",
-    "@solana/wallet-adapter-react": "^0.15.4",
-    "@solana/wallet-adapter-react-ui": "^0.9.6",
+    "@solana/wallet-adapter-base": "^0.9.9",
+    "@solana/wallet-adapter-react": "^0.15.8",
+    "@solana/wallet-adapter-react-ui": "^0.9.11",
+    "@solana/wallet-adapter-wallets": "^0.16.9",
     "@solana/web3.js": "^1.36.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
@@ -20,7 +21,6 @@
   },
   "scripts": {
     "start": "rimraf dist && parcel",
-    "build": "rimraf dist && parcel build",
-    "preinstall": "yarn link @solana/wallet-adapter-wallets"
+    "build": "rimraf dist && parcel build"
   }
 }
