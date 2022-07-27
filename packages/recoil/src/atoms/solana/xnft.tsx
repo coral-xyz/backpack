@@ -9,10 +9,10 @@ const OPEN_ORDERS_ICON_URL =
 
 const HELLO_WORLD_PLUGIN_URL =
   "https://embed.xnfts.dev/5r1jwBmveWJaJVtkFCUFcboqv4sfYheaoEoBicAiJmEJ";
-const ANCHOR_TABLE_PLUGIN_URL = pluginURL("xnft/table-anchor");
 const PSYFI_TABLE_PLUGIN_URL = pluginURL("xnft/table-psyfi");
 
 const MANGO_TABLE_PLUGIN_URL = pluginURL("xnft/mango");
+const ANCHOR_PLUGIN_URL = pluginURL("xnft/anchor");
 const PRICES_PLUGIN_URL = pluginURL("xnft/prices");
 const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
 
@@ -67,15 +67,14 @@ export const plugins = selector({
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
       },
-      /*
       {
-        url: ANCHOR_TABLE_PLUGIN_URL,
-        iconUrl:
-          "https://pbs.twimg.com/profile_images/1537173219693711363/maYBbQGF_400x400.jpg",
+        url: ANCHOR_PLUGIN_URL,
+        iconUrl: "assets/anchor.png",
         title: "Anchor",
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
       },
+      /*
       {
         url: OPEN_ORDERS_PLUGIN_URL,
         iconUrl:
