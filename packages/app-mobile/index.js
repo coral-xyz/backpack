@@ -10,7 +10,7 @@ import { registerRootComponent } from "expo";
 import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
 import { Suspense, useRef } from "react";
-import { Platform, SafeAreaView, StyleSheet, View } from "react-native";
+import { SafeAreaView, StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
 import { RecoilRoot } from "recoil/native/recoil";
 import App from "./src/App";
@@ -48,6 +48,8 @@ function WrappedApp() {
 function Background() {
   const setInjectJavaScript = useStore((state) => state.setInjectJavaScript);
   const ref = useRef(null);
+
+  alert(WEBVIEW_URI);
 
   return (
     <View

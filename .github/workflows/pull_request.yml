@@ -113,7 +113,7 @@ jobs:
       - name: "set env.short_sha"
         run: echo "short_sha=`echo "${{ env.commit_sha }}" | cut -c1-8`" >> $GITHUB_ENV
 
-      - name: Deploy
+      - name: Deploy background html
         uses: peaceiris/actions-gh-pages@v3
         with:
           publish_dir: packages/background/build
@@ -121,8 +121,11 @@ jobs:
           destination_dir: "background-scripts/${{ env.short_sha }}"
 
       ##########################################################################
-      # Build mobile app preview.
+      # Mobile app
       ##########################################################################
+
+      - name: set env.expo_channel
+        run: echo "expo_channel=pr-${{ github.event.number }}" >> $GITHUB_ENV
 
       - name: Setup Expo
         uses: expo/expo-github-action@v7
@@ -132,12 +135,17 @@ jobs:
 
       - name: Publish to Expo
         working-directory: packages/app-mobile
-        run: expo publish --release-channel=pr-${{ github.event.number }} --non-interactive
+        run: expo publish --release-channel=${{ env.expo_channel }} --non-interactive
 
-      - name: Comment in preview
-        uses: expo/expo-github-action/preview-comment@v7
+      - name: Comment
+        uses: marocchino/sticky-pull-request-comment@v2
         with:
-          channel: pr-${{ github.event.number }}
+          header: qr-code
+          message: |
+            Deployed to channel **${{ env.expo_channel }}**
+            <img alt="QR Code" src="https://qr.expo.dev/expo-go?owner=coral-xyz&slug=backpack&releaseChannel=${{ env.expo_channel }}" width="200" height="200" />
+            [Manifest](https://exp.host/@coral-xyz/backpack/index.exp?release-channel=${{ env.expo_channel }}&sdkVersion=45.0.0) / [Learn more](https://expo.fyi/manifest-url)
+            [Project page](https://expo.dev/@coral-xyz/backpack?serviceType=classic&distribution=expo-go&release-channel=${{ env.expo_channel }}) / [Learn more](https://expo.fyi/project-page)
 
       ##########################################################################
       # Release.
