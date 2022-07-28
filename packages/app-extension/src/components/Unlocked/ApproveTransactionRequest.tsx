@@ -88,6 +88,9 @@ export function ApproveTransactionRequest() {
       }}
     >
       <BottomCard
+        style={{
+          height: "295px",
+        }}
         buttonLabel={"Confirm"}
         onButtonClick={onConfirm}
         cancelButtonLabel={"Cancel"}

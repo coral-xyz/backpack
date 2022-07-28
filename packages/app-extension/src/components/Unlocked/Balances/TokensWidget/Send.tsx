@@ -603,10 +603,11 @@ export function BottomCard({
   cancelButtonStyle,
   cancelButtonLabelStyle,
   children,
+  style,
 }: any) {
   const classes = useStyles();
   return (
-    <div className={classes.sendConfirmationContainer}>
+    <div className={classes.sendConfirmationContainer} style={style}>
       <div className={classes.sendConfirmationTopHalf} style={{ flex: 1 }}>
         {children}
       </div>
