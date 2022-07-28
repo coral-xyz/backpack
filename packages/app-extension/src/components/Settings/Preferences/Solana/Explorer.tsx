@@ -31,6 +31,10 @@ export function PreferencesSolanaExplorer() {
       onClick: () => changeExplorer(SolanaExplorer.SOLANA_BEACH),
       detail: explorer === SolanaExplorer.SOLANA_BEACH ? <Checkmark /> : <></>,
     },
+    "Solana FM": {
+      onClick: () => changeExplorer(SolanaExplorer.SOLANA_FM),
+      detail: explorer === SolanaExplorer.SOLANA_FM ? <Checkmark /> : <></>,
+    },
   };
 
   const changeExplorer = (explorer: string) => {
