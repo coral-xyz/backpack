@@ -386,12 +386,9 @@ function SwapConfirmation({
       >
         You Receive
       </Typography>
-      <Typography
-        className={classes.confirmationAmount}
-        style={{ marginTop: "8px", marginBottom: "38px" }}
-      >
+      <div style={{ marginTop: "8px", marginBottom: "38px" }}>
         <SwapReceiveAmount />
-      </Typography>
+      </div>
       <div style={{ margin: "24px 24px 68px 24px" }}>
         <SwapInfo compact={false} />
       </div>
@@ -414,12 +411,9 @@ function SwapConfirming() {
       >
         Swapping...
       </Typography>
-      <Typography
-        className={classes.confirmationAmount}
-        style={{ marginTop: "8px", marginBottom: "16px" }}
-      >
+      <div style={{ marginTop: "8px", marginBottom: "16px" }}>
         <SwapReceiveAmount />
-      </Typography>
+      </div>
       <div style={{ textAlign: "center" }}>
         <CircularProgress
           size={48}
@@ -450,12 +444,9 @@ function SwapConfirmed() {
       >
         Swap Confirmed!
       </Typography>
-      <Typography
-        className={classes.confirmationAmount}
-        style={{ marginTop: "8px", marginBottom: "16px" }}
-      >
+      <div style={{ marginTop: "8px", marginBottom: "16px" }}>
         <SwapReceiveAmount />
-      </Typography>
+      </div>
       <div style={{ textAlign: "center", marginBottom: "24px" }}>
         <CheckIcon />
       </div>
@@ -498,7 +489,10 @@ function SwapReceiveAmount() {
 
   const logoUri = toMintInfo ? toMintInfo.logoURI : "-";
   return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
+    <div
+      className={classes.confirmationAmount}
+      style={{ display: "flex", justifyContent: "center" }}
+    >
       <img className={classes.tokenLogoLarge} src={logoUri} />
       {toAmount}
       <span style={{ color: theme.custom.colors.secondary, marginLeft: "8px" }}>
