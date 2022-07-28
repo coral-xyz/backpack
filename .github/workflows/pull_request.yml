@@ -121,6 +121,26 @@ jobs:
           destination_dir: "background-scripts/${{ env.short_sha }}"
 
       ##########################################################################
+      # Build mobile app preview.
+      ##########################################################################
+
+      - name: Setup Expo
+        uses: expo/expo-github-action@v7
+        working-directory: packages/app-mobile
+        with:
+          expo-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Publish to Expo
+        working-directory: packages/app-mobile
+        run: expo publish --release-channel=pr-${{ github.event.number }} --non-interactive
+
+      - name: Comment in preview
+        uses: expo/expo-github-action/preview-comment@v7
+        with:
+          channel: pr-${{ github.event.number }}
+
+      ##########################################################################
       # Release.
       ##########################################################################
 
