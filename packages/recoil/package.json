@@ -5,6 +5,7 @@
   "module": "dist/esm/index.js",
   "react-native": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
+  "source": "src/index.ts",
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch"
