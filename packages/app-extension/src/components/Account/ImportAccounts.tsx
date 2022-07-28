@@ -242,17 +242,27 @@ export function ImportAccounts({
                   disabled={importedPubkeys.includes(publicKey.toString())}
                 >
                   <Box style={{ display: "flex", width: "100%" }}>
-                    <Checkbox
-                      edge="start"
-                      checked={
-                        selectedAccounts.some((a) => a.index === index) ||
-                        importedPubkeys.includes(publicKey.toString())
-                      }
-                      tabIndex={-1}
-                      disabled={importedPubkeys.includes(publicKey.toString())}
-                      disableRipple
-                      style={{ marginLeft: 0 }}
-                    />
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Checkbox
+                        edge="start"
+                        checked={
+                          selectedAccounts.some((a) => a.index === index) ||
+                          importedPubkeys.includes(publicKey.toString())
+                        }
+                        tabIndex={-1}
+                        disabled={importedPubkeys.includes(
+                          publicKey.toString()
+                        )}
+                        disableRipple
+                        style={{ marginLeft: 0 }}
+                      />
+                    </div>
                     <ListItemText
                       id={publicKey.toString()}
                       primary={walletAddressDisplay(publicKey)}

@@ -58,8 +58,9 @@ const useStyles = styles((theme) => ({
     lineHeight: "32px",
   },
   checkBox: {
-    padding: "9px",
     color: theme.custom.colors.primaryButton,
+    width: "18px",
+    height: "18px",
     "&.Mui-disabled": {
       opacity: 0.5,
     },
@@ -73,6 +74,7 @@ const useStyles = styles((theme) => ({
   },
   checkBoxChecked: {
     color: `${theme.custom.colors.primaryButton} !important`,
+    background: "white",
   },
   subtext: {
     color: "#A1A1AA",
@@ -283,6 +285,7 @@ export function Checkbox({
   const classes = useStyles();
   return (
     <_Checkbox
+      disableRipple
       className={classes.checkBox}
       checked={checked}
       onChange={() => setChecked(!checked)}
@@ -307,7 +310,19 @@ export function CheckboxForm({
   const classes = useStyles();
   return (
     <div className={classes.checkboxContainer}>
-      <Checkbox checked={checked} setChecked={setChecked} sx={{ padding: 0 }} />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <Checkbox
+          checked={checked}
+          setChecked={setChecked}
+          sx={{ padding: 0 }}
+        />
+      </div>
       <div
         style={{
           display: "flex",

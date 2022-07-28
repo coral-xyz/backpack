@@ -165,11 +165,8 @@ export function RecentActivitySmallHeader() {
     >
       <div>
         <Typography className={classes.recentActivityLabel}>
-          Recent Actvitiy
+          Recent Activity
         </Typography>
-      </div>
-      <div>
-        <Typography className={classes.allWalletsLabel}>All Wallets</Typography>
       </div>
     </div>
   );

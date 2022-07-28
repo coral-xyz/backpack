@@ -235,7 +235,7 @@ export function Send({
         <div style={{ marginBottom: "40px" }}>
           <TextFieldLabel
             leftLabel={"Send to"}
-            rightLabel={"Address Book"}
+            rightLabel={""}
             style={{ marginLeft: "24px", marginRight: "24px" }}
           />
           <div style={{ margin: "0 12px" }}>
