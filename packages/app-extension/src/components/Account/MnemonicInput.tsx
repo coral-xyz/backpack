@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme: any) => ({
       color: theme.custom.colors.fontColor,
       backgroundColor: theme.custom.colors.background,
       borderRadius: "8px",
-      fontSize: "12px",
+      fontSize: "14px",
       fontWeight: 700,
     },
     "& .MuiInputAdornment-root": {
