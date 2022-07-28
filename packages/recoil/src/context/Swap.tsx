@@ -99,7 +99,7 @@ export function SwapProvider(props: any) {
         setRoutes([]);
       }
     })();
-  }, [fromMint, fromAmount]);
+  }, [fromMint, fromAmount, toMint]);
 
   useEffect(() => {
     (async () => {
