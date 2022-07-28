@@ -147,10 +147,10 @@ export class Plugin {
     this._nextRenderId = 0;
     this._iframe = document.createElement("iframe");
     this._iframe.setAttribute("fetchpriority", "low");
-    this._iframe!.src = this.iframeUrl;
+    this._iframe.src = this.iframeUrl;
     this._iframe.sandbox.add("allow-same-origin");
     this._iframe.sandbox.add("allow-scripts");
-    this._iframe!.onload = async () => {
+    this._iframe.onload = async () => {
       this._rpcServer.setWindow(this._iframe!.contentWindow);
       this._bridgeServer.setWindow(this._iframe!.contentWindow);
       this._dom = new Dom();
@@ -519,7 +519,7 @@ export class Plugin {
     if (this._pendingBridgeRequests!.length === 0) {
       return false;
     }
-    let nextReq = this._pendingBridgeRequests![0];
+    const nextReq = this._pendingBridgeRequests![0];
     return nextReq.renderId === this._nextRenderId;
   }
 
