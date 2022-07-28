@@ -4,7 +4,7 @@ require("react-native-url-polyfill/auto");
 import {
   BACKGROUND_SERVICE_WORKER_READY,
   useStore,
-  WEB_VIEW_EVENTS,
+  WEB_VIEW_EVENTS
 } from "@coral-xyz/common";
 import { registerRootComponent } from "expo";
 import Constants from "expo-constants";
@@ -13,6 +13,7 @@ import { Suspense, useRef } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
 import { RecoilRoot } from "recoil/native/recoil";
+
 import App from "./src/App";
 
 const LOCALHOST_WEBVIEW_URI = "http://localhost:9333";

@@ -95,6 +95,9 @@ jobs:
       - name: "set env.short_sha"
         run: echo "short_sha=`echo "${{ env.commit_sha }}" | cut -c1-8`" >> $GITHUB_ENV
 
+      - name: set env.webworker_url
+        run: echo "webworker_url=https://coral-xyz.github.io/backpack/background-scripts/${{ env.short_sha }}/service-worker-loader.html" >> $GITHUB_ENV
+
       - name: "tag build version"
         run: pushd ./packages/app-extension && ./scripts/version.sh latest-${{ github.run_number }} && popd
 
@@ -102,7 +105,7 @@ jobs:
         # CI!=true so that build warnings aren't treated like errors (for now)
         env:
           CI: ""
-        run: EAS_BUILD_GIT_COMMIT_HASH=${{ env.short_sha }} yarn build
+        run: WEBWORKER_URL=${{ env.webworker_url }} yarn build
 
       #
       # Build the extension, edge release.
@@ -206,7 +209,7 @@ jobs:
 
       - name: Publish to Expo
         working-directory: packages/app-mobile
-        run: EAS_BUILD_GIT_COMMIT_HASH=${{ env.short_sha }} expo publish --release-channel=${{ env.expo_channel }} --non-interactive
+        run: WEBWORKER_URL=${{ env.webworker_url }} expo publish --release-channel=${{ env.expo_channel }} --non-interactive
 
       - name: Comment
         uses: marocchino/sticky-pull-request-comment@v2
@@ -217,6 +220,7 @@ jobs:
             <img alt="QR Code" src="https://qr.expo.dev/expo-go?owner=coral-xyz&slug=backpack&releaseChannel=${{ env.expo_channel }}" width="200" height="200" />
             [Manifest](https://exp.host/@coral-xyz/backpack/index.exp?release-channel=${{ env.expo_channel }}&sdkVersion=45.0.0) / [Learn more](https://expo.fyi/manifest-url)
             [Project page](https://expo.dev/@coral-xyz/backpack?serviceType=classic&distribution=expo-go&release-channel=${{ env.expo_channel }}) / [Learn more](https://expo.fyi/project-page)
+            [Webworker](${{ env.webworker_url }})
 
       ##########################################################################
       # Upload build artifacts.
