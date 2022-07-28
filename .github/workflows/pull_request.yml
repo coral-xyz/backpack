@@ -180,6 +180,26 @@ jobs:
           external_repository: coral-xyz/ledger-injection
 
       ##########################################################################
+      # Build mobile app preview.
+      ##########################################################################
+
+      - name: Setup Expo
+        uses: expo/expo-github-action@v7
+        working-directory: packages/app-mobile
+        with:
+          expo-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Publish to Expo
+        working-directory: packages/app-mobile
+        run: expo publish --release-channel=pr-${{ github.event.number }} --non-interactive
+
+      - name: Comment in preview
+        uses: expo/expo-github-action/preview-comment@v7
+        with:
+          channel: pr-${{ github.event.number }}
+
+      ##########################################################################
       # Upload build artifacts.
       ##########################################################################
 
@@ -275,7 +295,7 @@ jobs:
       # NPM Publish.
       ##########################################################################
 
-      - name:  "update npm package version"
+      - name: "update npm package version"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: ./scripts/npm_release.sh 0.1.0-latest.${{ github.run_number }}
       - name: "publish to npm: common-public"
