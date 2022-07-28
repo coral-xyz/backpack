@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   SolanaExplorer,
   UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
@@ -5,10 +6,16 @@ import {
 import { useSolanaExplorer, useBackgroundClient } from "@coral-xyz/recoil";
 import { SettingsList } from "../../../common/Settings/List";
 import { Checkmark } from "./ConnectionSwitch";
+import { useNavStack } from "../../../Layout/NavStack";
 
 export function PreferencesSolanaExplorer() {
   const background = useBackgroundClient();
   const explorer = useSolanaExplorer();
+  const nav = useNavStack();
+
+  useEffect(() => {
+    nav.setTitle("Explorer");
+  }, [nav]);
 
   const menuItems = {
     "Solana Explorer": {

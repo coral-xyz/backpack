@@ -1,9 +1,11 @@
+import { useEffect } from "react";
 import { Check } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { UI_RPC_METHOD_CONNECTION_URL_UPDATE } from "@coral-xyz/common";
 import { useBackgroundClient, useSolanaConnectionUrl } from "@coral-xyz/recoil";
 import { useDrawerContext } from "../../../Layout/Drawer";
 import { SettingsList } from "../../../common/Settings/List";
+import { useNavStack } from "../../../Layout/NavStack";
 
 const MAINNET = "https://solana-api.projectserum.com";
 const DEVNET = "https://api.devnet.solana.com";
@@ -13,6 +15,12 @@ export function PreferencesSolanaConnection() {
   const { close } = useDrawerContext();
   const background = useBackgroundClient();
   const currentUrl = useSolanaConnectionUrl();
+  const nav = useNavStack();
+
+  useEffect(() => {
+    nav.setTitle("RPC Connection");
+  }, [nav]);
+
   const menuItems = {
     "Mainnet (Beta)": {
       onClick: () => changeNetwork(MAINNET),
