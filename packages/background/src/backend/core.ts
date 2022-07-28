@@ -20,6 +20,7 @@ import {
   NOTIFICATION_KEYRING_STORE_RESET,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_CONNECTION_URL_UPDATED,
+  NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
 } from "@coral-xyz/common";
 import type { Nav } from "../keyring/store";
 import { KeyringStore, setNav, getNav } from "../keyring/store";
@@ -352,8 +353,14 @@ export class Backend {
     return await this.keyringStore.autoLockRead();
   }
 
-  async keyringAutolockUpdate(secs: number): Promise<string> {
-    await this.keyringStore.autoLockUpdate(secs);
+  async keyringAutolockUpdate(autoLockSecs: number): Promise<string> {
+    await this.keyringStore.autoLockUpdate(autoLockSecs);
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
+      data: {
+        autoLockSecs,
+      },
+    });
     return SUCCESS_RESPONSE;
   }
 

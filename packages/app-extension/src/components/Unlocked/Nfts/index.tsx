@@ -24,7 +24,7 @@ function NftGrid() {
   return (
     <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
       {collections.map((c: any) => (
-        <Grid item xs={6} sm={4} md={3} lg={2}>
+        <Grid item xs={6} sm={4} md={3} lg={2} key={c.name}>
           <NftCollectionCard key={c.name} name={c.name} collection={c.items} />
         </Grid>
       ))}

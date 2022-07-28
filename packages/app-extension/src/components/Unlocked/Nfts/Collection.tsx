@@ -28,8 +28,8 @@ function _Grid({ name }: { name: string }) {
   return (
     <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
       {c.items.map((nft: any) => (
-        <Grid item xs={6} sm={4} md={3} lg={2}>
-          <NftCard key={nft.publicKey} nft={nft} />
+        <Grid item xs={6} sm={4} md={3} lg={2} key={nft.publicKey.toString()}>
+          <NftCard nft={nft} />
         </Grid>
       ))}
     </Grid>

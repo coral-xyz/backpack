@@ -21,6 +21,7 @@ import {
   NOTIFICATION_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_CONNECTION_URL_UPDATED,
+  NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
 } from "@coral-xyz/common";
 import { KeyringStoreStateEnum, useUpdateAllSplTokenAccounts } from "../";
 import * as atoms from "../atoms";
@@ -39,7 +40,7 @@ export function NotificationsProvider(props: any) {
   const setActiveWallet = useSetRecoilState(atoms.activeWallet);
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
   const setConnectionUrl = useSetRecoilState(atoms.connectionUrl);
-  const setNav = useSetRecoilState(atoms.navData);
+  const setAutoLockSecs = useSetRecoilState(atoms.autoLockSecs);
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   const navigate = useNavigate();
 
@@ -96,6 +97,9 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_CONNECTION_URL_UPDATED:
           handleConnectionUrlUpdated(notif);
+          break;
+        case NOTIFICATION_AUTO_LOCK_SECS_UPDATED:
+          handleAutoLockSecsUpdated(notif);
           break;
         default:
           break;
@@ -207,6 +211,9 @@ export function NotificationsProvider(props: any) {
     };
     const handleNavigationUrlDidChange = (notif: Notification) => {
       navigate(notif.data.url);
+    };
+    const handleAutoLockSecsUpdated = (notif: Notification) => {
+      setAutoLockSecs(notif.data.autoLockSecs);
     };
 
     //

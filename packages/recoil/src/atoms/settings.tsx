@@ -1,4 +1,9 @@
-import { atom } from "recoil";
+import { atom, selector } from "recoil";
+import {
+  UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
+  UI_RPC_METHOD_APPROVED_ORIGINS_READ,
+} from "@coral-xyz/common";
+import { backgroundClient } from "./background";
 
 /**
  * Toggle for darkmode.
@@ -31,4 +36,36 @@ export const isDarkMode = atom<boolean | null>({
     },
   ],
 	*/
+});
+
+export const autoLockSecs = atom<number | null>({
+  key: "autoLockSecs",
+  default: selector({
+    key: "autoLockSecsDefault",
+    get: async ({ get }) => {
+      const background = get(backgroundClient);
+      return await background.request({
+        method: UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
+        params: [],
+      });
+    },
+  }),
+});
+
+export const approvedOrigins = atom<Array<string> | null>({
+  key: "approvedOrigins",
+  default: null,
+  effects: [
+    ({ setSelf, getPromise }) => {
+      setSelf(
+        (async () => {
+          const background = await getPromise(backgroundClient);
+          return await background.request({
+            method: UI_RPC_METHOD_APPROVED_ORIGINS_READ,
+            params: [],
+          });
+        })()
+      );
+    },
+  ],
 });
