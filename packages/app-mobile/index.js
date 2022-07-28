@@ -50,7 +50,7 @@ function Background() {
   const setInjectJavaScript = useStore((state) => state.setInjectJavaScript);
   const ref = useRef(null);
 
-  alert(WEBVIEW_URI);
+  console.log({ WEBVIEW_URI });
 
   return (
     <View
