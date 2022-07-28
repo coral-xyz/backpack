@@ -91,11 +91,14 @@ jobs:
       # Build extension.
       ##########################################################################
 
+      - name: "set env.short_sha"
+        run: echo "short_sha=`echo "${{ env.commit_sha }}" | cut -c1-8`" >> $GITHUB_ENV
+
       - name: "build extension"
         # CI!=true so that build warnings aren't treated like errors (for now)
         env:
           CI: ""
-        run: yarn build
+        run: EAS_BUILD_GIT_COMMIT_HASH=${{ env.short_sha }} yarn build
 
       ##########################################################################
       # GitHub Pages.
@@ -109,9 +112,6 @@ jobs:
       - if: github.event_name == 'push'
         name: "set env.commit_sha from commit or merge commit"
         run: echo "commit_sha=${{ github.sha }}" >> $GITHUB_ENV
-
-      - name: "set env.short_sha"
-        run: echo "short_sha=`echo "${{ env.commit_sha }}" | cut -c1-8`" >> $GITHUB_ENV
 
       - name: Deploy background html
         uses: peaceiris/actions-gh-pages@v3
@@ -135,7 +135,7 @@ jobs:
 
       - name: Publish to Expo
         working-directory: packages/app-mobile
-        run: expo publish --release-channel=${{ env.expo_channel }} --non-interactive
+        run: EAS_BUILD_GIT_COMMIT_HASH=${{ env.short_sha }} expo publish --release-channel=${{ env.expo_channel }} --non-interactive
 
       - name: Comment
         uses: marocchino/sticky-pull-request-comment@v2
