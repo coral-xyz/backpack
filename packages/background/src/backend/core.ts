@@ -533,6 +533,22 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async approvedOriginsDelete(origin: string): Promise<string> {
+    const data = await getWalletData();
+    const approvedOrigins = data.approvedOrigins.filter((o) => o !== origin);
+    await setWalletData({
+      ...data,
+      approvedOrigins,
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_APPROVED_ORIGINS_UPDATE,
+      data: {
+        approvedOrigins,
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
   async ledgerConnect() {
     await this.keyringStore.ledgerConnect();
     return SUCCESS_RESPONSE;

@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { ListItemText } from "@mui/material";
+import { UI_RPC_METHOD_APPROVED_ORIGINS_DELETE } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useApprovedOrigins } from "@coral-xyz/recoil";
+import { useBackgroundClient, useApprovedOrigins } from "@coral-xyz/recoil";
 import { useNavStack } from "../../Layout/NavStack";
 import { List, ListItem, PrimaryButton } from "../../common";
 
@@ -37,11 +38,24 @@ export function PreferencesTrustedApps() {
 
 function RevokeButton({ origin }: { origin: string }) {
   const theme = useCustomTheme();
+  const background = useBackgroundClient();
+
+  const onClick = async () => {
+    await background.request({
+      method: UI_RPC_METHOD_APPROVED_ORIGINS_DELETE,
+      params: [origin],
+    });
+  };
+
   return (
     <PrimaryButton
+      onClick={() => onClick()}
       label="Revoke"
       style={{
         backgroundColor: theme.custom.colors.negative,
+        width: "71px",
+        height: "34px",
+        borderRadius: "4px",
       }}
     />
   );

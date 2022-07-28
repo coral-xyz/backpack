@@ -53,6 +53,7 @@ import {
   UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
+  UI_RPC_METHOD_APPROVED_ORIGINS_DELETE,
   UI_RPC_METHOD_LEDGER_CONNECT,
   UI_RPC_METHOD_LEDGER_IMPORT,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
@@ -203,6 +204,8 @@ async function handle<T = any>(
       return await handleApprovedOriginsRead(ctx);
     case UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE:
       return await handleApprovedOriginsUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_APPROVED_ORIGINS_DELETE:
+      return await handleApprovedOriginsDelete(ctx, params[0]);
     //
     // Nicknames for keys.
     //
@@ -576,6 +579,14 @@ async function handleApprovedOriginsUpdate(
   approvedOrigins: Array<string>
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.approvedOriginsUpdate(approvedOrigins);
+  return [resp];
+}
+
+async function handleApprovedOriginsDelete(
+  ctx: Context<Backend>,
+  origin: string
+): Promise<RpcResponse> {
+  const resp = await ctx.backend.approvedOriginsDelete(origin);
   return [resp];
 }
 

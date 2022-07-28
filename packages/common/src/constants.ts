@@ -81,6 +81,7 @@ export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS =
 export const UI_RPC_METHOD_KEYRING_STORE_STATE = "keyring-store-state";
 export const UI_RPC_METHOD_APPROVED_ORIGINS_READ = "approved-origins-read";
 export const UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE = "approved-origins-update";
+export const UI_RPC_METHOD_APPROVED_ORIGINS_DELETE = "approved-origins-delete";
 export const UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE =
   "keyring-store-keep-alive";
 export const UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD =
