@@ -4,6 +4,7 @@
   "module": "dist/esm/index.js",
   "react-native": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
+  "source": "src/index.tsx",
   "dependencies": {
     "@mui/material": "^5.8.4",
     "@mui/styles": "^5.8.4"
