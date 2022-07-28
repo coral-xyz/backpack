@@ -9,9 +9,44 @@ on:
       - master
 
 jobs:
+  add-labels-based-on-whats-changed:
+    name: Add PR labels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            mobile:
+              - 'packages/app-mobile/**'
+            extension:
+              - 'packages/app-extension/**'
+            xnft:
+              - 'packages/react-xnft/**'
+              - 'packages/react-xnft-renderer/**'
+              - 'packages/xnft/**'
+              - 'packages/xnft-cli/**'
+
+      - if: steps.changes.outputs.mobile == 'true'
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: "mobile"
+
+      - if: steps.changes.outputs.extension == 'true'
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: "extension"
+
+      - if: steps.changes.outputs.xnft == 'true'
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: "xnft"
+
   tests:
     runs-on: ubuntu-latest
-    name: Run tests
+    name: Build and run tests
     steps:
       ##########################################################################
       # Setup environment.
