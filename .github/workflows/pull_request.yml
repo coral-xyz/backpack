@@ -98,6 +98,10 @@ jobs:
       - name: set env.webworker_url
         run: echo "webworker_url=https://coral-xyz.github.io/backpack/background-scripts/${{ env.short_sha }}/service-worker-loader.html" >> $GITHUB_ENV
 
+      ##########################################################################
+      # Build extension.
+      ##########################################################################
+
       - name: "tag build version"
         run: pushd ./packages/app-extension && ./scripts/version.sh latest-${{ github.run_number }} && popd
 
@@ -155,6 +159,12 @@ jobs:
       - name: "rename beta build"
         working-directory: packages/app-extension
         run: mv build build-beta
+
+      ##########################################################################
+      # Yarn test.
+      ##########################################################################
+
+      - run: yarn test
 
       ##########################################################################
       # Yarn test.
