@@ -22,6 +22,7 @@ export function PreferencesTrustedApps() {
       {Object.entries(approvedOrigins).map(
         ([key, origin]: any, i, { length }) => (
           <ListItem
+            button={false}
             key={key}
             id={key}
             isLast={i === length - 1}
