@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { ListItemText } from "@mui/material";
+import { Typography, ListItemText } from "@mui/material";
+import { CloudOff } from "@mui/icons-material";
 import { UI_RPC_METHOD_APPROVED_ORIGINS_DELETE } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { useBackgroundClient, useApprovedOrigins } from "@coral-xyz/recoil";
@@ -14,7 +15,9 @@ export function PreferencesTrustedApps() {
     nav.setTitle("Trusted Apps");
   }, [nav]);
 
-  return (
+  return approvedOrigins.length === 0 ? (
+    <EmptyOrigins />
+  ) : (
     <List style={{ marginTop: "16px" }}>
       {Object.entries(approvedOrigins).map(
         ([key, origin]: any, i, { length }) => (
@@ -33,6 +36,51 @@ export function PreferencesTrustedApps() {
         )
       )}
     </List>
+  );
+}
+
+function EmptyOrigins() {
+  const theme = useCustomTheme();
+  return (
+    <div
+      style={{
+        paddingLeft: "16px",
+        paddingRight: "16px",
+        paddingBottom: "16px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        height: "100%",
+      }}
+    >
+      <div
+        style={{
+          marginTop: "-30px",
+        }}
+      >
+        <CloudOff
+          style={{
+            color: theme.custom.colors.secondary,
+            width: "100px",
+            height: "100px",
+            marginLeft: "auto",
+            marginRight: "auto",
+            display: "block",
+          }}
+        />
+        <Typography
+          style={{
+            color: theme.custom.colors.secondary,
+            textAlign: "center",
+            fontSize: "22px",
+            lineHeight: "28px",
+            fontWeight: 500,
+          }}
+        >
+          No approved applications
+        </Typography>
+      </div>
+    </div>
   );
 }
 
