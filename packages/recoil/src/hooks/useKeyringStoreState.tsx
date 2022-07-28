@@ -30,3 +30,7 @@ export function useApproveOrigin(): (origin: string) => Promise<void> {
 export function useAutolockSecs(): number {
   return useRecoilValue(atoms.autoLockSecs)!;
 }
+
+export function useSolanaExplorer(): string {
+  return useRecoilValue(atoms.solanaExplorer)!;
+}

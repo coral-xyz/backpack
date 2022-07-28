@@ -22,6 +22,7 @@ import {
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
+  NOTIFICATION_SOLANA_EXPLORER_UPDATED,
 } from "@coral-xyz/common";
 import { KeyringStoreStateEnum, useUpdateAllSplTokenAccounts } from "../";
 import * as atoms from "../atoms";
@@ -41,6 +42,7 @@ export function NotificationsProvider(props: any) {
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
   const setConnectionUrl = useSetRecoilState(atoms.connectionUrl);
   const setAutoLockSecs = useSetRecoilState(atoms.autoLockSecs);
+  const setSolanaExplorer = useSetRecoilState(atoms.solanaExplorer);
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   const navigate = useNavigate();
 
@@ -101,6 +103,8 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_AUTO_LOCK_SECS_UPDATED:
           handleAutoLockSecsUpdated(notif);
           break;
+        case NOTIFICATION_SOLANA_EXPLORER_UPDATED:
+          handleSolanaExplorerUpdated(notif);
         default:
           break;
       }
@@ -214,6 +218,9 @@ export function NotificationsProvider(props: any) {
     };
     const handleAutoLockSecsUpdated = (notif: Notification) => {
       setAutoLockSecs(notif.data.autoLockSecs);
+    };
+    const handleSolanaExplorerUpdated = (notif: Notification) => {
+      setSolanaExplorer(notif.data.explorer);
     };
 
     //

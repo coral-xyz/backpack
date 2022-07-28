@@ -60,7 +60,7 @@ export function PreferencesSolanaConnection() {
   return <SettingsList menuItems={menuItems} />;
 }
 
-function Checkmark() {
+export function Checkmark() {
   const theme = useCustomTheme();
   return (
     <Check

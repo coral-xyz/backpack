@@ -20,6 +20,7 @@ import {
 } from ".";
 
 const LOCK_INTERVAL_SECS = 15 * 60;
+export const DEFAULT_SOLANA_EXPLORER = "https://explorer.solana.com/";
 
 // const BLOCKCHAIN_ETHEREUM = "ethereum";
 const BLOCKCHAIN_DEFAULT = Blockchain.SOLANA;
@@ -86,6 +87,7 @@ export class KeyringStore {
     await setWalletData({
       autoLockSecs: LOCK_INTERVAL_SECS,
       approvedOrigins: [],
+      explorer: DEFAULT_SOLANA_EXPLORER,
     });
 
     // Persist the encrypted data to then store.
@@ -654,6 +656,7 @@ class BlockchainKeyring {
 export type WalletData = {
   autoLockSecs: number;
   approvedOrigins: Array<string>;
+  explorer: string;
 };
 
 async function walletDataSetAutoLock(autoLockSecs: number) {
@@ -668,7 +671,7 @@ async function walletDataGetAutoLockSecs(): Promise<number> {
   return getWalletData().then(({ autoLockSecs }) => autoLockSecs);
 }
 
-async function getWalletData(): Promise<WalletData> {
+export async function getWalletData(): Promise<WalletData> {
   const data = await LocalStorageDb.get(KEY_WALLET_DATA);
   if (data === undefined) {
     throw new Error("wallet data is undefined");
@@ -676,7 +679,7 @@ async function getWalletData(): Promise<WalletData> {
   return data;
 }
 
-async function setWalletData(data: WalletData) {
+export async function setWalletData(data: WalletData) {
   await LocalStorageDb.set(KEY_WALLET_DATA, data);
 }
 
