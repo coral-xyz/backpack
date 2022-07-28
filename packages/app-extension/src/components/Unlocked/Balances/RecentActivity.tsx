@@ -3,7 +3,11 @@ import { Typography, List, ListItem, IconButton } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Check, Clear, Bolt } from "@mui/icons-material";
 import { explorerUrl } from "@coral-xyz/common";
-import { useActiveWallet, useRecentTransactions } from "@coral-xyz/recoil";
+import {
+  useSolanaExplorer,
+  useActiveWallet,
+  useRecentTransactions,
+} from "@coral-xyz/recoil";
 import { Loading } from "../../common";
 import { WithDrawer, CloseButton } from "../../Layout/Drawer";
 import { NavStackEphemeral, NavStackScreen } from "../../Layout/NavStack";
@@ -222,12 +226,13 @@ export function _RecentActivityList({ address, style }: any) {
 
 function RecentActivityListItem({ transaction }: any) {
   const classes = useStyles();
+  const explorer = useSolanaExplorer();
   const txSig = transaction.transaction.signatures[0];
   const unixTimestamp = transaction.blockTime;
   const date = new Date(unixTimestamp * 1000);
   const dateStr = date.toLocaleDateString();
   const onClick = () => {
-    window.open(explorerUrl(txSig));
+    window.open(explorerUrl(explorer, txSig));
   };
   return (
     <ListItem

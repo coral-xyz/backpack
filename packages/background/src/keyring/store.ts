@@ -5,6 +5,7 @@ import type { EventEmitter, DerivationPath } from "@coral-xyz/common";
 import {
   Blockchain,
   BrowserRuntimeCommon,
+  SolanaExplorer,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   BACKEND_EVENT,
 } from "@coral-xyz/common";
@@ -20,7 +21,6 @@ import {
 } from ".";
 
 const LOCK_INTERVAL_SECS = 15 * 60;
-export const DEFAULT_SOLANA_EXPLORER = "https://explorer.solana.com/";
 
 // const BLOCKCHAIN_ETHEREUM = "ethereum";
 const BLOCKCHAIN_DEFAULT = Blockchain.SOLANA;
@@ -87,7 +87,7 @@ export class KeyringStore {
     await setWalletData({
       autoLockSecs: LOCK_INTERVAL_SECS,
       approvedOrigins: [],
-      explorer: DEFAULT_SOLANA_EXPLORER,
+      explorer: SolanaExplorer.DEFAULT,
     });
 
     // Persist the encrypted data to then store.

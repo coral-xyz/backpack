@@ -7,6 +7,7 @@ import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
 import {
   Blockchain,
+  SolanaExplorer,
   BACKEND_EVENT,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_KEYRING_KEY_DELETE,
@@ -30,7 +31,6 @@ import {
   getNav,
   getWalletData,
   setWalletData,
-  DEFAULT_SOLANA_EXPLORER,
 } from "../keyring/store";
 import type { Backend as SolanaConnectionBackend } from "../backend/solana-connection";
 
@@ -549,7 +549,7 @@ export class Backend {
 
   async solanaExplorerRead(): Promise<string> {
     const data = await getWalletData();
-    return data.explorer ?? DEFAULT_SOLANA_EXPLORER;
+    return data.explorer ?? SolanaExplorer.DEFAULT;
   }
 
   async solanaExplorerUpdate(explorer: string): Promise<string> {

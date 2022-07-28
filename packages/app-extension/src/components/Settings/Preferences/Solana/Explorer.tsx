@@ -1,11 +1,10 @@
-import { UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE } from "@coral-xyz/common";
+import {
+  SolanaExplorer,
+  UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
+} from "@coral-xyz/common";
 import { useSolanaExplorer, useBackgroundClient } from "@coral-xyz/recoil";
 import { SettingsList } from "../../../common/Settings/List";
 import { Checkmark } from "./ConnectionSwitch";
-
-const SOLANA_EXPLORER = "https://explorer.solana.com/";
-const SOLSCAN = "https://solscan.io/";
-const SOLANA_BEACH = "https://solanabeach.io/";
 
 export function PreferencesSolanaExplorer() {
   const background = useBackgroundClient();
@@ -13,16 +12,17 @@ export function PreferencesSolanaExplorer() {
 
   const menuItems = {
     "Solana Explorer": {
-      onClick: () => changeExplorer(SOLANA_EXPLORER),
-      detail: explorer === SOLANA_EXPLORER ? <Checkmark /> : <></>,
+      onClick: () => changeExplorer(SolanaExplorer.SOLANA_EXPLORER),
+      detail:
+        explorer === SolanaExplorer.SOLANA_EXPLORER ? <Checkmark /> : <></>,
     },
     Solscan: {
-      onClick: () => changeExplorer(SOLSCAN),
-      detail: explorer === SOLSCAN ? <Checkmark /> : <></>,
+      onClick: () => changeExplorer(SolanaExplorer.SOLSCAN),
+      detail: explorer === SolanaExplorer.SOLSCAN ? <Checkmark /> : <></>,
     },
     "Solana Beach": {
-      onClick: () => changeExplorer(SOLANA_BEACH),
-      detail: explorer === SOLANA_BEACH ? <Checkmark /> : <></>,
+      onClick: () => changeExplorer(SolanaExplorer.SOLANA_BEACH),
+      detail: explorer === SolanaExplorer.SOLANA_BEACH ? <Checkmark /> : <></>,
     },
   };
 
