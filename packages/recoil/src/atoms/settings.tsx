@@ -57,20 +57,16 @@ export const autoLockSecs = atom<number | null>({
 
 export const approvedOrigins = atom<Array<string> | null>({
   key: "approvedOrigins",
-  default: null,
-  effects: [
-    ({ setSelf, getPromise }) => {
-      setSelf(
-        (async () => {
-          const background = await getPromise(backgroundClient);
-          return await background.request({
-            method: UI_RPC_METHOD_APPROVED_ORIGINS_READ,
-            params: [],
-          });
-        })()
-      );
+  default: selector({
+    key: "approvedOriginsDefault",
+    get: async ({ get }) => {
+      const background = get(backgroundClient);
+      return await background.request({
+        method: UI_RPC_METHOD_APPROVED_ORIGINS_READ,
+        params: [],
+      });
     },
-  ],
+  }),
 });
 
 export const solanaExplorer = atom<string | null>({
