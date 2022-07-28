@@ -15,8 +15,6 @@ import { useEphemeralNav } from "@coral-xyz/recoil";
 import { WithEphemeralNav } from "../Layout/NavEphemeral";
 import { NAV_BAR_HEIGHT, NAV_BUTTON_WIDTH } from "./Nav";
 
-const MINI_DRAWER_HEIGHT = 295;
-
 const useStyles = styles((theme) => ({
   withDrawer: {
     height: "100%",
