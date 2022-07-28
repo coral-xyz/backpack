@@ -159,6 +159,8 @@ export const NOTIFICATION_SPL_TOKENS_DID_UPDATE =
   "anchor-spl-tokens-did-update";
 export const NOTIFICATION_NAVIGATION_URL_DID_CHANGE =
   "anchor-navigation-url-did-change";
+export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
+  "anchor-auto-lock-secs-updated";
 
 export const SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO = "solana-get-account-info";
 export const SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH =

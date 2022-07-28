@@ -202,7 +202,7 @@ export class KeyringStore {
   }
 
   public async autoLockUpdate(autoLockSecs: number) {
-    return this.withUnlock(async () => {
+    return await this.withUnlock(async () => {
       await walletDataSetAutoLock(autoLockSecs);
       clearInterval(this.autoLockInterval!);
       this.autoLockStart();
