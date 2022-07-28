@@ -10,6 +10,7 @@ on:
 
 jobs:
   add-labels-based-on-whats-changed:
+    name: Add PR labels
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -45,7 +46,7 @@ jobs:
 
   tests:
     runs-on: ubuntu-latest
-    name: Run tests
+    name: Build and run tests
     steps:
       ##########################################################################
       # Setup environment.
