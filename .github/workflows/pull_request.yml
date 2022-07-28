@@ -185,7 +185,6 @@ jobs:
 
       - name: Setup Expo
         uses: expo/expo-github-action@v7
-        working-directory: packages/app-mobile
         with:
           expo-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
