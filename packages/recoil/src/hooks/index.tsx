@@ -13,3 +13,4 @@ export * from "./useBootstrap";
 export * from "./useTransactionRequest";
 export * from "./useBackgroundKeepAlive";
 export * from "./useBackgroundClient";
+export * from "./useJupiter";

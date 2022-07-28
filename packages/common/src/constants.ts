@@ -183,6 +183,8 @@ export const SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS =
   "solana-custom-spl-token-accounts";
 export const SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS =
   "solana-get-program-accounts";
+export const SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE =
+  "solana-get-fee-for-message";
 
 export const CONNECTION_POPUP_RPC = "anchor-popup-rpc";
 export const CONNECTION_POPUP_RESPONSE = "anchor-popup-response";

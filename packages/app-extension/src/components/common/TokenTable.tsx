@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 import { styles } from "@coral-xyz/themes";
 import { Blockchain } from "@coral-xyz/common";
 import {
@@ -110,7 +111,7 @@ export function TokenTable({
       <BalancesTableContent>
         {tokenAccountsFiltered.map((token) => (
           <TokenRow
-            key={token.address}
+            key={token.mint}
             token={token}
             onClick={() => onClickRow(blockchain, token)}
           />
@@ -127,21 +128,27 @@ function TokenRow({
   onClick: (blockchain: Blockchain, token: Token) => void;
   token: Token;
 }) {
+  const { ref, inView } = useInView({ triggerOnce: true });
   let subtitle = token.ticker;
   if (token.nativeBalance) {
     subtitle = `${token.nativeBalance.toLocaleString()} ${subtitle}`;
   }
+  // Don't render if not in view as this list is potentially very long
   return (
-    <BalancesTableRow onClick={onClick}>
-      <BalancesTableCell
-        props={{
-          icon: token.logo,
-          title: token.name,
-          subtitle,
-          usdValue: token.usdBalance,
-          percentChange: token.recentUsdBalanceChange,
-        }}
-      />
-    </BalancesTableRow>
+    <div ref={ref}>
+      <BalancesTableRow onClick={onClick}>
+        {inView && (
+          <BalancesTableCell
+            props={{
+              icon: token.logo,
+              title: token.name,
+              subtitle,
+              usdValue: token.usdBalance,
+              percentChange: token.recentUsdBalanceChange,
+            }}
+          />
+        )}
+      </BalancesTableRow>
+    </div>
   );
 }

@@ -104,7 +104,10 @@ export function Deposit() {
           </div>
           <div style={{ marginTop: "163px" }}>
             <div>
-              <TextFieldLabel leftLabel={"Deposit to"} />
+              <TextFieldLabel
+                leftLabel={"Deposit to"}
+                style={{ marginLeft: "24px", marginRight: "24px" }}
+              />
               <div
                 style={{
                   display: "flex",

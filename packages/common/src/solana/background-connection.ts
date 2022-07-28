@@ -76,6 +76,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
   SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS,
+  SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE,
 } from "../constants";
 import type { BackgroundClient } from "../channel";
 
@@ -253,6 +254,16 @@ export class BackgroundSolanaConnection extends Connection {
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS,
       params: [programId.toString(), configOrCommitment],
+    });
+  }
+
+  async getFeeForMessage(
+    message: Message,
+    commitment?: Commitment
+  ): Promise<RpcResponseAndContext<number>> {
+    return await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE,
+      params: [message, commitment],
     });
   }
 
@@ -478,13 +489,6 @@ export class BackgroundSolanaConnection extends Connection {
     throw new Error("not implemented");
   }
 
-  getFeeForMessage(
-    message: Message,
-    commitment?: Commitment
-  ): Promise<RpcResponseAndContext<number>> {
-    throw new Error("not implemented");
-  }
-
   getRecentBlockhash(commitment?: Commitment): Promise<{
     blockhash: Blockhash;
     feeCalculator: FeeCalculator;
@@ -508,6 +512,7 @@ export class BackgroundSolanaConnection extends Connection {
   getGenesisHash(): Promise<string> {
     throw new Error("not implemented");
   }
+
   getBlock(
     slot: number,
     opts?: {
@@ -516,9 +521,11 @@ export class BackgroundSolanaConnection extends Connection {
   ): Promise<BlockResponse | null> {
     throw new Error("not implemented");
   }
+
   getBlockHeight(commitment?: Commitment): Promise<number> {
     throw new Error("not implemented");
   }
+
   getBlockProduction(
     configOrCommitment?: GetBlockProductionConfig | Commitment
   ): Promise<RpcResponseAndContext<BlockProduction>> {

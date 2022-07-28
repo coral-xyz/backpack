@@ -232,7 +232,11 @@ export function Send({
     >
       <div className={classes.topHalf}>
         <div style={{ marginBottom: "40px" }}>
-          <TextFieldLabel leftLabel={"Send to"} rightLabel={"Address Book"} />
+          <TextFieldLabel
+            leftLabel={"Send to"}
+            rightLabel={"Address Book"}
+            style={{ marginLeft: "24px", marginRight: "24px" }}
+          />
           <div style={{ margin: "0 12px" }}>
             <TextField
               rootClass={classes.textRoot}
@@ -250,6 +254,7 @@ export function Send({
           <TextFieldLabel
             leftLabel={"Amount"}
             rightLabel={`${token.nativeBalance} ${token.ticker}`}
+            style={{ marginLeft: "24px", marginRight: "24px" }}
           />
           <div style={{ margin: "0 12px" }}>
             <TextField
@@ -586,15 +591,16 @@ function Error({ signature }: { signature: string }) {
 
 export function BottomCard({
   onButtonClick,
-  onReject,
+  onCancelButtonClick,
   buttonLabel,
   buttonStyle,
-  cancelButton,
   buttonLabelStyle,
+  cancelButtonLabel,
+  cancelButtonStyle,
+  cancelButtonLabelStyle,
   children,
 }: any) {
   const classes = useStyles();
-  const theme = useCustomTheme();
   return (
     <div className={classes.sendConfirmationContainer}>
       <div className={classes.sendConfirmationTopHalf} style={{ flex: 1 }}>
@@ -609,24 +615,25 @@ export function BottomCard({
           justifyContent: "space-between",
         }}
       >
-        {cancelButton && (
-          <PrimaryButton
+        {cancelButtonLabel && (
+          <SecondaryButton
             style={{
               marginRight: "8px",
-              backgroundColor: theme.custom.colors.nav,
+              ...cancelButtonStyle,
             }}
-            buttonLabelStyle={{ color: theme.custom.colors.fontColor }}
-            onClick={onReject}
-            label={"Cancel"}
+            buttonLabelStyle={cancelButtonLabelStyle}
+            onClick={onCancelButtonClick}
+            label={cancelButtonLabel}
           />
         )}
-
-        <PrimaryButton
-          style={buttonStyle}
-          buttonLabelStyle={buttonLabelStyle}
-          onClick={onButtonClick}
-          label={buttonLabel}
-        />
+        {buttonLabel && (
+          <PrimaryButton
+            style={buttonStyle}
+            buttonLabelStyle={buttonLabelStyle}
+            onClick={onButtonClick}
+            label={buttonLabel}
+          />
+        )}
       </div>
     </div>
   );

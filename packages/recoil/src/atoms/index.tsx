@@ -12,3 +12,4 @@ export * from "./token-registry";
 export * from "./token";
 export * from "./transaction-request";
 export * from "./wallet";
+export * from "./jupiter";

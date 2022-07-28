@@ -88,10 +88,10 @@ export function ApproveTransactionRequest() {
       }}
     >
       <BottomCard
-        onButtonClick={onConfirm}
         buttonLabel={"Confirm"}
-        cancelButton={true}
-        onReject={onReject}
+        onButtonClick={onConfirm}
+        cancelButtonLabel={"Cancel"}
+        onCancelButtonClick={onReject}
       >
         {request && plugin && (
           <div style={{ padding: "24px", height: "100%" }}>

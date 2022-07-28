@@ -7,9 +7,8 @@ import { useBlockchainTokenAccount } from "@coral-xyz/recoil";
 import { RecentActivitySmall } from "../RecentActivity";
 import { SendButton } from "./Send";
 import { DepositButton } from "./Deposit";
-import { WithDrawer } from "../../../Layout/Drawer";
+import { WithDrawer, CloseButton } from "../../../Layout/Drawer";
 import { NavStackEphemeral, NavStackScreen } from "../../../Layout/NavStack";
-import { CloseButton } from "../../../Layout/Drawer";
 
 const useStyles = styles((theme) => ({
   tokenHeaderContainer: {

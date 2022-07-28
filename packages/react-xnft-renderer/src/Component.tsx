@@ -625,6 +625,7 @@ export function TextField({
   value,
   setValue,
   rootClass,
+  startAdornment,
   endAdornment,
   isError,
   inputProps,
@@ -665,6 +666,7 @@ export function TextField({
         },
       }}
       InputProps={{
+        startAdornment,
         endAdornment,
       }}
       value={value}
