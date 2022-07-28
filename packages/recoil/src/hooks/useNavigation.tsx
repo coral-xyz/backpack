@@ -22,7 +22,7 @@ export function useNavigation(): NavigationContext {
   const pathname = location.pathname;
   const isRoot = TAB_SET.has(pathname.slice(1));
   const params = new URLSearchParams(location.search);
-  let title = isRoot
+  const title = isRoot
     ? ""
     : useDecodedSearchParams<ExtensionSearchParams>(params).title || "";
 
@@ -123,7 +123,7 @@ function makeParams(ob = {}) {
     .join("&");
 }
 
-export module SearchParamsFor {
+export namespace SearchParamsFor {
   export interface Plugin {
     props: { pluginUrl: string };
   }

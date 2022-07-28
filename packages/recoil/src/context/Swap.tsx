@@ -194,7 +194,7 @@ export function SwapProvider(props: any) {
 
   const executeSwap = async () => {
     if (!transactions) return null;
-    for (let transactionStep of [
+    for (const transactionStep of [
       "setupTransaction",
       "swapTransaction",
       "cleanupTransaction",

@@ -164,7 +164,7 @@ const RECONCILER = ReactReconciler({
     logger.debug("createTextInstance", text);
     const instance = {
       id: h.nextId(),
-      kind: "raw" as "raw", // ts wtf?
+      kind: "raw" as const,
       text,
       props: undefined,
       style: undefined,
@@ -1242,7 +1242,7 @@ function getOnChangeHandler(viewId: number): (event: any) => void {
 }
 
 export class ReconcilerBridgeManager {
-  private static _renderId: number = 0;
+  private static _renderId = 0;
 
   //
   // Send a message from the plugin-ui to the host over the reconciler bridge.

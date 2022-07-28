@@ -1,5 +1,5 @@
 import * as bs58 from "bs58";
-import { Commitment } from "@solana/web3.js";
+import type { Commitment } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import type { EventEmitter, DerivationPath } from "@coral-xyz/common";

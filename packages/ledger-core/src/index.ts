@@ -66,7 +66,7 @@ export async function solanaLedgerSignBytes(
   derivationPath: Buffer,
   msgBytes: Buffer // Transaction "message".
 ) {
-  var numPaths = Buffer.alloc(1);
+  const numPaths = Buffer.alloc(1);
   // @ts-ignore
   numPaths.writeUInt8(1);
   const payload = Buffer.concat([numPaths, derivationPath, msgBytes]);
@@ -79,7 +79,7 @@ export async function getPublicKey(
   account: number,
   path: DerivationPath
 ) {
-  let dPath = solanaDerivationPath(account, path);
+  const dPath = solanaDerivationPath(account, path);
   const pubkeyBytes = await solanaLedgerPubkey(transport, dPath);
   return new PublicKey(bs58.encode(pubkeyBytes));
 }
@@ -112,8 +112,8 @@ async function solanaSend(
   p1: number,
   payload: Buffer
 ) {
-  var p2 = 0;
-  var payload_offset = 0;
+  let p2 = 0;
+  let payload_offset = 0;
 
   if (payload.length > MAX_PAYLOAD) {
     while (payload.length - payload_offset > MAX_PAYLOAD) {
