@@ -1,4 +1,5 @@
 import { useRecoilState, useRecoilValue } from "recoil";
+import { Commitment } from "@solana/web3.js";
 import { UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE } from "@coral-xyz/common";
 import { KeyringStoreState } from "../atoms/keyring-store";
 import * as atoms from "../atoms";
@@ -33,4 +34,8 @@ export function useAutolockSecs(): number {
 
 export function useSolanaExplorer(): string {
   return useRecoilValue(atoms.solanaExplorer)!;
+}
+
+export function useSolanaCommitment(): Commitment {
+  return useRecoilValue(atoms.solanaCommitment)!;
 }

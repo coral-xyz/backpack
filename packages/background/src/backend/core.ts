@@ -23,6 +23,7 @@ import {
   NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
+  NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
 } from "@coral-xyz/common";
 import type { Nav } from "../keyring/store";
 import {
@@ -493,12 +494,27 @@ export class Backend {
   }
 
   async solanaCommitmentRead(): Promise<Commitment> {
-    // todo
-    return "processed";
+    const data = await getWalletData();
+    return data.solana && data.solana.commitment
+      ? data.solana.commitment
+      : "processed";
   }
 
-  async solanaCommitmentUpdate(commitment: string): Promise<string> {
-    // todo
+  async solanaCommitmentUpdate(commitment: Commitment): Promise<string> {
+    const data = await getWalletData();
+    await setWalletData({
+      ...data,
+      solana: {
+        ...data.solana,
+        commitment,
+      },
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
+      data: {
+        commitment,
+      },
+    });
     return SUCCESS_RESPONSE;
   }
 
@@ -549,14 +565,19 @@ export class Backend {
 
   async solanaExplorerRead(): Promise<string> {
     const data = await getWalletData();
-    return data.explorer ?? SolanaExplorer.DEFAULT;
+    return data.solana && data.solana.explorer
+      ? data.solana.explorer
+      : SolanaExplorer.DEFAULT;
   }
 
   async solanaExplorerUpdate(explorer: string): Promise<string> {
     const data = await getWalletData();
     await setWalletData({
       ...data,
-      explorer,
+      solana: {
+        ...data.solana,
+        explorer,
+      },
     });
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_SOLANA_EXPLORER_UPDATED,

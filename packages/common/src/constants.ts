@@ -165,6 +165,8 @@ export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
   "anchor-auto-lock-secs-updated";
 export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
   "anchor-solana-explorer-updated";
+export const NOTIFICATION_SOLANA_COMMITMENT_UPDATED =
+  "anchor-solana-commitment-updated";
 
 export const SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO = "solana-get-account-info";
 export const SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH =

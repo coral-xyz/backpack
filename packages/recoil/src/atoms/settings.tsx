@@ -1,8 +1,10 @@
 import { atom, selector } from "recoil";
+import { Commitment } from "@solana/web3.js";
 import {
   UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_SOLANA_EXPLORER_READ,
+  UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
 } from "@coral-xyz/common";
 import { backgroundClient } from "./background";
 
@@ -79,6 +81,20 @@ export const solanaExplorer = atom<string | null>({
       const background = get(backgroundClient);
       return await background.request({
         method: UI_RPC_METHOD_SOLANA_EXPLORER_READ,
+        params: [],
+      });
+    },
+  }),
+});
+
+export const solanaCommitment = atom<Commitment | null>({
+  key: "solanaCommitment",
+  default: selector({
+    key: "solanaCommitmentDefault",
+    get: async ({ get }) => {
+      const background = get(backgroundClient);
+      return await background.request({
+        method: UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
         params: [],
       });
     },

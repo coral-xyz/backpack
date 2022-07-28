@@ -8,6 +8,7 @@ import type {
   Context,
   EventEmitter,
 } from "@coral-xyz/common";
+import type { Commitment } from "@solana/web3.js";
 import {
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   getLogger,
@@ -515,7 +516,9 @@ async function handleSolanaCommitmentUpdate(
   ctx: Context<Backend>,
   commitment: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaCommitmentUpdate(commitment);
+  const resp = await ctx.backend.solanaCommitmentUpdate(
+    commitment as Commitment
+  );
   return [resp];
 }
 

@@ -1,10 +1,11 @@
 import { useRecoilValue, useRecoilValueLoadable, Loadable } from "recoil";
-import { Commitment, Connection } from "@solana/web3.js";
+import { Connection } from "@solana/web3.js";
 import { SolanaContext, BackgroundClient } from "@coral-xyz/common";
 import * as atoms from "../atoms";
 import { useSplTokenRegistry } from "./useSplTokenRegistry";
 import { useActiveWallet } from "./useWallet";
 import { useBackgroundClient } from "./useBackgroundClient";
+import { useSolanaCommitment } from "./useKeyringStoreState";
 
 export function useSolanaConnectionUrl(): string {
   return useRecoilValue(atoms.connectionUrl)!;
@@ -22,7 +23,7 @@ export function useSolanaCtx(): SolanaContext {
   const { publicKey: walletPublicKey } = useActiveWallet();
   const { tokenClient, provider } = useAnchorContext();
   const registry = useSplTokenRegistry();
-  const commitment = useCommitment();
+  const commitment = useSolanaCommitment();
   const backgroundClient = useBackgroundClient();
   return {
     walletPublicKey,
@@ -32,10 +33,6 @@ export function useSolanaCtx(): SolanaContext {
     backgroundClient,
     connection: provider.connection,
   };
-}
-
-export function useCommitment(): Commitment {
-  return useRecoilValue(atoms.commitment);
 }
 
 export function useConnectionBackgroundClient(): BackgroundClient {
