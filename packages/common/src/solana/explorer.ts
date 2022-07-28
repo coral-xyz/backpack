@@ -1,10 +1,10 @@
 export const SolanaExplorer = {
-  SOLANA_EXPLORER: "https://explorer.solana.com/",
-  SOLSCAN: "https://solscan.io/",
-  SOLANA_BEACH: "https://solanabeach.io/",
-  SOLANA_FM: "https://solana.fm/",
+  SOLANA_EXPLORER: "https://explorer.solana.com",
+  SOLSCAN: "https://solscan.io",
+  SOLANA_BEACH: "https://solanabeach.io",
+  SOLANA_FM: "https://solana.fm",
 
-  DEFAULT: "https://solscan.io/",
+  DEFAULT: "https://solscan.io",
 };
 
 export function explorerUrl(base: string, tx: string): string {
