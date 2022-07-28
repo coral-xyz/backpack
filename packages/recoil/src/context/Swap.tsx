@@ -144,6 +144,7 @@ export function SwapProvider(props: any) {
     const body = {
       route,
       userPublicKey: wallet.publicKey,
+      wrapUnwrapSOL: false,
     };
     const transactions = await (
       await fetch(`${JUPITER_BASE_URL}swap`, {
