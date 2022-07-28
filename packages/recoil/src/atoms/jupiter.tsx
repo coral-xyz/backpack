@@ -1,7 +1,8 @@
 import { selector, selectorFamily } from "recoil";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { Blockchain } from "@coral-xyz/common";
-import * as atoms from ".";
+import { blockchainTokensSorted } from "./token";
+import { splTokenRegistry } from "./token-registry";
 
 export const JUPITER_BASE_URL = "https://quote-api.jup.ag/v1/";
 
@@ -37,7 +38,7 @@ export const walletJupiterTokens = selector({
   key: "walletJupiterTokens",
   get: async ({ get }) => {
     const inputMints = get(jupiterInputMints);
-    const walletTokens = get(atoms.blockchainTokensSorted(Blockchain.SOLANA));
+    const walletTokens = get(blockchainTokensSorted(Blockchain.SOLANA));
     // Only allow tokens that Jupiter allows.
     return walletTokens.filter((t: any) => inputMints.includes(t.mint));
   },
@@ -55,7 +56,7 @@ export const swapTokenList = selectorFamily({
         return (
           routeMap[mint]
             .map((mint: string) => {
-              const tokenRegistry = get(atoms.splTokenRegistry)!;
+              const tokenRegistry = get(splTokenRegistry)!;
               const tokenMetadata =
                 tokenRegistry.get(mint) ?? ({} as TokenInfo);
               const { name, symbol, logoURI } = tokenMetadata;
