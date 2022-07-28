@@ -196,7 +196,7 @@ export const solanaNftCollections = selector({
     // Bucket all the nfts by collection name.
     //
     const collections: Map<string, any> = new Map();
-    for (let [key, value] of metadata.entries()) {
+    for (const [key, value] of metadata.entries()) {
       if (value.tokenMetaUriData.collection) {
         const name = value.tokenMetaUriData.collection.name;
         if (!collections.has(name)) {
@@ -212,7 +212,7 @@ export const solanaNftCollections = selector({
     // Finally, sort each bucket for consistent UI presentation.
     //
     const sortedCollections: any = [];
-    for (let [name, items] of collections.entries()) {
+    for (const [name, items] of collections.entries()) {
       items.sort((a, b) =>
         a.publicKey > b.publicKey ? 1 : a.publicKey === b.publicKey ? 0 : -1
       );

@@ -1,11 +1,10 @@
 import BN from "bn.js";
-import type { TransactionInstruction, Commitment } from "@solana/web3.js";
-import {
+import type {
+  TransactionInstruction,
+  Commitment,
   Connection,
-  PublicKey,
-  SystemProgram,
-  Transaction,
 } from "@solana/web3.js";
+import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { Token } from "@solana/spl-token";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import * as anchor from "@project-serum/anchor";

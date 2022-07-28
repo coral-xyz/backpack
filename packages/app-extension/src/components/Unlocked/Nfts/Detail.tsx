@@ -3,7 +3,7 @@ import { Typography } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { useNftMetadata } from "@coral-xyz/recoil";
-import { PrimaryButton, SecondaryButton } from "../../common";
+import { PrimaryButton, SecondaryButton, TextField } from "../../common";
 import {
   useDrawerContext,
   WithDrawer,
@@ -11,7 +11,6 @@ import {
   CloseButton,
 } from "../../Layout/Drawer";
 import { NavStackEphemeral, NavStackScreen } from "../../Layout/NavStack";
-import { TextField } from "../../common";
 import { SendConfirmationCard } from "../Balances/TokensWidget/Send";
 
 const useStyles = styles((theme) => ({
