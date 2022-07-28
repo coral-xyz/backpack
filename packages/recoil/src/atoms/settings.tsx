@@ -2,6 +2,7 @@ import { atom, selector } from "recoil";
 import {
   UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
+  UI_RPC_METHOD_SOLANA_EXPLORER_READ,
 } from "@coral-xyz/common";
 import { backgroundClient } from "./background";
 
@@ -68,4 +69,18 @@ export const approvedOrigins = atom<Array<string> | null>({
       );
     },
   ],
+});
+
+export const solanaExplorer = atom<string | null>({
+  key: "solanaExplorer",
+  default: selector({
+    key: "solanaExplorerDefault",
+    get: async ({ get }) => {
+      const background = get(backgroundClient);
+      return await background.request({
+        method: UI_RPC_METHOD_SOLANA_EXPLORER_READ,
+        params: [],
+      });
+    },
+  }),
 });

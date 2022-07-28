@@ -129,6 +129,8 @@ export const UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION =
   "ui-rpc-method-sign-and-send-tx";
 export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
 export const UI_RPC_METHOD_LEDGER_IMPORT = "ledger-import";
+export const UI_RPC_METHOD_SOLANA_EXPLORER_READ = "solana-explorer-read";
+export const UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE = "solana-explorer-update";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
@@ -161,6 +163,8 @@ export const NOTIFICATION_NAVIGATION_URL_DID_CHANGE =
   "anchor-navigation-url-did-change";
 export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
   "anchor-auto-lock-secs-updated";
+export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
+  "anchor-solana-explorer-updated";
 
 export const SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO = "solana-get-account-info";
 export const SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH =

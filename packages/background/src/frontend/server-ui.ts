@@ -55,6 +55,8 @@ import {
   UI_RPC_METHOD_LEDGER_CONNECT,
   UI_RPC_METHOD_LEDGER_IMPORT,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
+  UI_RPC_METHOD_SOLANA_EXPLORER_READ,
+  UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
   BACKEND_EVENT,
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_NOTIFICATIONS,
@@ -219,6 +221,10 @@ async function handle<T = any>(
       return await handleSolanaCommitmentRead(ctx);
     case UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE:
       return await handleSolanaCommitmentUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_SOLANA_EXPLORER_READ:
+      return await handleSolanaExplorerRead(ctx);
+    case UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE:
+      return await handleSolanaExplorerUpdate(ctx, params[0]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -510,6 +516,21 @@ async function handleSolanaCommitmentUpdate(
   commitment: string
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.solanaCommitmentUpdate(commitment);
+  return [resp];
+}
+
+async function handleSolanaExplorerRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.solanaExplorerRead();
+  return [resp];
+}
+
+async function handleSolanaExplorerUpdate(
+  ctx: Context<Backend>,
+  url: string
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.solanaExplorerUpdate(url);
   return [resp];
 }
 

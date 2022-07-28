@@ -7,6 +7,7 @@ import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
 import {
   Blockchain,
+  SolanaExplorer,
   BACKEND_EVENT,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_KEYRING_KEY_DELETE,
@@ -21,9 +22,16 @@ import {
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
+  NOTIFICATION_SOLANA_EXPLORER_UPDATED,
 } from "@coral-xyz/common";
 import type { Nav } from "../keyring/store";
-import { KeyringStore, setNav, getNav } from "../keyring/store";
+import {
+  KeyringStore,
+  setNav,
+  getNav,
+  getWalletData,
+  setWalletData,
+} from "../keyring/store";
 import type { Backend as SolanaConnectionBackend } from "../backend/solana-connection";
 
 export function start(events: EventEmitter, solanaB: SolanaConnectionBackend) {
@@ -537,6 +545,26 @@ export class Backend {
       derivationPath,
       numberOfAccounts
     );
+  }
+
+  async solanaExplorerRead(): Promise<string> {
+    const data = await getWalletData();
+    return data.explorer ?? SolanaExplorer.DEFAULT;
+  }
+
+  async solanaExplorerUpdate(explorer: string): Promise<string> {
+    const data = await getWalletData();
+    await setWalletData({
+      ...data,
+      explorer,
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_SOLANA_EXPLORER_UPDATED,
+      data: {
+        explorer,
+      },
+    });
+    return SUCCESS_RESPONSE;
   }
 }
 
