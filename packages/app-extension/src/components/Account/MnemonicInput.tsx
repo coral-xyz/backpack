@@ -31,16 +31,19 @@ const useStyles = makeStyles((theme: any) => ({
       backgroundColor: theme.custom.colors.background,
       borderRadius: "8px",
       height: "40px",
+      paddingLeft: "8px",
       "& fieldset": {
         border: "none",
       },
     },
     "& .MuiInputBase-input": {
       color: theme.custom.colors.fontColor,
-      backgroundColor: theme.custom.colors.background,
+      position: "absolute",
+      left: "32px",
       borderRadius: "8px",
       fontSize: "14px",
       fontWeight: 700,
+      paddingRight: "8px",
     },
     "& .MuiInputAdornment-root": {
       color: theme.custom.colors.secondary,
