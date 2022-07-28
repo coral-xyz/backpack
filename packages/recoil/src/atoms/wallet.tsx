@@ -1,5 +1,4 @@
 import { atom, selector } from "recoil";
-import { Commitment } from "@solana/web3.js";
 import { Provider, Spl } from "@project-serum/anchor";
 import {
   BackgroundSolanaConnection,
@@ -8,11 +7,10 @@ import {
   UI_RPC_METHOD_CONNECTION_URL_READ,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
-  UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
-  UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
 } from "@coral-xyz/common";
 import { WalletPublicKeys } from "../types";
 import { backgroundClient } from "./background";
+import { solanaCommitment } from "./settings";
 
 /**
  * List of all public keys for the wallet along with associated nicknames.
@@ -109,7 +107,7 @@ export const anchorContext = selector({
       _connectionBackgroundClient,
       _connectionUrl
     );
-    const _commitment = get(commitment);
+    const _commitment = get(solanaCommitment);
     // Note: this provider is *read-only*.
     //
     // @ts-ignore
@@ -126,35 +124,4 @@ export const anchorContext = selector({
       tokenClient,
     };
   },
-});
-
-export const commitment = atom<Commitment>({
-  key: "solanaCommitment",
-  default: "processed",
-  effects: [
-    ({ setSelf, getPromise }) => {
-      setSelf(
-        (async () => {
-          const background = await getPromise(backgroundClient);
-          return await background.request({
-            method: UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
-            params: [],
-          });
-        })()
-      );
-    },
-    ({ onSet, getPromise }) => {
-      onSet((commitment) => {
-        (async () => {
-          const background = await getPromise(backgroundClient);
-          await background
-            .request({
-              method: UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
-              params: [commitment],
-            })
-            .catch(console.error);
-        })();
-      });
-    },
-  ],
 });

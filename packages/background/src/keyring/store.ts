@@ -1,4 +1,5 @@
 import * as bs58 from "bs58";
+import { Commitment } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import type { EventEmitter, DerivationPath } from "@coral-xyz/common";
@@ -87,7 +88,10 @@ export class KeyringStore {
     await setWalletData({
       autoLockSecs: LOCK_INTERVAL_SECS,
       approvedOrigins: [],
-      explorer: SolanaExplorer.DEFAULT,
+      solana: {
+        explorer: SolanaExplorer.DEFAULT,
+        commitment: "confirmed",
+      },
     });
 
     // Persist the encrypted data to then store.
@@ -656,7 +660,12 @@ class BlockchainKeyring {
 export type WalletData = {
   autoLockSecs: number;
   approvedOrigins: Array<string>;
+  solana: SolanaData;
+};
+
+type SolanaData = {
   explorer: string;
+  commitment: Commitment;
 };
 
 async function walletDataSetAutoLock(autoLockSecs: number) {
