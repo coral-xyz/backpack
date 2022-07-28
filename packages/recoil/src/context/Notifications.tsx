@@ -107,6 +107,7 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_SOLANA_EXPLORER_UPDATED:
           handleSolanaExplorerUpdated(notif);
+          break;
         case NOTIFICATION_SOLANA_COMMITMENT_UPDATED:
           handleSolanaCommitmentUpdated(notif);
           break;
