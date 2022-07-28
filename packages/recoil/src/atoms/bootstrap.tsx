@@ -2,6 +2,7 @@ import { atom, selector } from "recoil";
 import { ParsedConfirmedTransaction, PublicKey } from "@solana/web3.js";
 import { UI_RPC_METHOD_NAVIGATION_READ } from "@coral-xyz/common";
 import { anchorContext } from "../atoms/wallet";
+import { jupiterRouteMap } from "../atoms/jupiter";
 import { TokenAccountWithKey } from "../types";
 import { fetchRecentTransactions } from "./recent-transactions";
 import { splTokenRegistry } from "./token-registry";
@@ -25,6 +26,8 @@ export const bootstrap = selector<{
     const tokenRegistry = get(splTokenRegistry);
     const { provider } = get(anchorContext);
     const walletPublicKey = new PublicKey(get(activeWallet));
+    // Preload Jupiter route maps for swapper
+    get(jupiterRouteMap);
     //
     // Perform data fetch.
     //
