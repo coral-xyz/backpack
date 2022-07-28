@@ -308,7 +308,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
               }
               rootClass={classes.receiveFieldRoot}
               type={"number"}
-              value={toAmount}
+              value={toAmount || ""}
               disabled={true}
               inputProps={{
                 style: {
