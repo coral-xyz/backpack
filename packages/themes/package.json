@@ -6,7 +6,6 @@
   "types": "dist/esm/index.d.ts",
   "source": "src/index.tsx",
   "dependencies": {
-    "@coral-xyz/recoil": "*",
     "@mui/material": "^5.8.4",
     "@mui/styles": "^5.8.4",
     "react": "^17.0.0"

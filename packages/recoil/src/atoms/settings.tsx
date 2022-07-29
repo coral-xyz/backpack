@@ -11,10 +11,12 @@ import { backgroundClient } from "./background";
 /**
  * Toggle for darkmode.
  */
+// TODO: enable this.
+// not being used in theme right now due to circular imports,
+// see packages/themes/src/index.tsx for details
 export const isDarkMode = atom<boolean | null>({
   key: "isDarkMode",
   default: true,
-  // TODO: enable this.
   /*
   effects: [
     ({ setSelf }) => {

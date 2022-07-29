@@ -106,7 +106,8 @@ export const styles = _makeStyles<CustomTheme>;
 export const useCustomTheme = useTheme<CustomTheme>;
 
 export const WithTheme: React.FC = ({ children }) => {
-  const isDarkMode = useDarkMode();
+  // TODO: use useDarkMode(), we can't import recoil rn due to circular dependency
+  const isDarkMode = true;
   const [theme, rawTheme] = useMemo(() => {
     const rawTheme = isDarkMode ? darkTheme : lightTheme;
     const theme = createTheme(rawTheme as any, { custom: rawTheme.custom });
