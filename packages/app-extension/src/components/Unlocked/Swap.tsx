@@ -251,6 +251,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
           }
         />
         <TextField
+          placeholder={"0"}
           startAd
           endAdornment={
             <TokenSelectorButton
@@ -270,6 +271,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
           <div>
             <TextFieldLabel leftLabel={"You Receive"} />
             <TextField
+              placeholder={"0"}
               startAdornment={
                 isLoadingRoutes && (
                   <CircularProgress
@@ -545,7 +547,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     transactionFee,
   } = useSwapContext();
 
-  const rate = toAmount! / fromAmount;
+  const rate = fromAmount ? toAmount! / fromAmount : 0;
 
   const rows = [];
   if (!compact) {
