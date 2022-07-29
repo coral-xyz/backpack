@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
-import { Box, List, ListItemButton, ListItemText } from "@mui/material";
+import {
+  Box,
+  List,
+  ListItemButton,
+  ListItemText,
+  MenuItem,
+} from "@mui/material";
 import Transport from "@ledgerhq/hw-transport";
 import * as ledgerCore from "@coral-xyz/ledger-core";
 import {
   Checkbox,
   Header,
   Loading,
-  ListItem,
   PrimaryButton,
   SubtextParagraph,
+  TextField,
   walletAddressDisplay,
 } from "../common";
-import { WithMiniDrawer } from "../Layout/Drawer";
 import { Connection, PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { useBackgroundClient, useAnchorContext } from "@coral-xyz/recoil";
@@ -32,7 +37,7 @@ export type SelectedAccount = {
   publicKey: anchor.web3.PublicKey;
 };
 
-const LOAD_PUBKEY_AMOUNT = 8;
+const LOAD_PUBKEY_AMOUNT = 6;
 
 export function ImportAccounts({
   mnemonic,
@@ -59,7 +64,6 @@ export function ImportAccounts({
   const [derivationPath, setDerivationPath] = useState<DerivationPath>(
     DerivationPath.Bip44
   );
-  const [derivationSelectorOpen, setDerivationSelectorOpen] = useState(false);
 
   // Handle the case where the keyring store is locked, i.e. this is a reset
   // without an unlock or this is during onboarding.
@@ -193,6 +197,17 @@ export function ImportAccounts({
     setSelectedAccounts(newSelectedAccounts);
   };
 
+  const derivationPathOptions = [
+    {
+      path: DerivationPath.Bip44,
+      label: "44'/501'/",
+    },
+    {
+      path: DerivationPath.Bip44Change,
+      label: "44'/501'/0'/",
+    },
+  ];
+
   return (
     <Box
       sx={{
@@ -215,6 +230,19 @@ export function ImportAccounts({
             Select which accounts you'd like to import.
           </SubtextParagraph>
         </Box>
+        <div style={{ margin: "16px" }}>
+          <TextField
+            label="Derivation Path"
+            setValue={setDerivationPath}
+            select={true}
+          >
+            {derivationPathOptions.map((o, idx) => (
+              <MenuItem value={o.path} key={idx}>
+                {o.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </div>
         {accounts.length > 0 && (
           <>
             <List
@@ -287,31 +315,6 @@ export function ImportAccounts({
                 </ListItemButton>
               ))}
             </List>
-            {/**
-            <Box
-              sx={{
-                textAlign: "center",
-                margin: "32px 0",
-              }}
-            >
-              <Link
-                sx={{
-                  cursor: "pointer",
-                  color: theme.custom.colors.secondary,
-                  textDecoration: "none",
-                }}
-                onClick={() => setDerivationSelectorOpen(true)}
-              >
-                Set derivation path
-              </Link>
-            </Box>
-            <DerivationSelection
-              open={derivationSelectorOpen}
-              setOpen={setDerivationSelectorOpen}
-              derivationPath={derivationPath}
-              setDerivationPath={setDerivationPath}
-            />
-            **/}
           </>
         )}
       </Box>
@@ -331,74 +334,5 @@ export function ImportAccounts({
         />
       </Box>
     </Box>
-  );
-}
-
-function DerivationSelection({
-  open,
-  setOpen,
-  derivationPath,
-  setDerivationPath,
-}: {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  derivationPath: DerivationPath;
-  setDerivationPath: (derivationPath: DerivationPath) => void;
-}) {
-  const theme = useCustomTheme();
-
-  const options = [
-    {
-      path: DerivationPath.Bip44,
-      label: "44'/501'/",
-    },
-    {
-      path: DerivationPath.Bip44Change,
-      label: "44'/501'/0'/",
-    },
-  ];
-
-  return (
-    <>
-      <WithMiniDrawer title="" openDrawer={open} setOpenDrawer={setOpen}>
-        <Box sx={{ color: theme.custom.colors.fontColor }}>
-          <List
-            style={{
-              background: theme.custom.colors.bg2,
-              marginLeft: "16px",
-              marginRight: "16px",
-            }}
-          >
-            {options.map((o, idx) => (
-              <ListItem
-                onClick={() => {
-                  setDerivationPath(o.path);
-                  setOpen(false);
-                }}
-                key={o.label}
-                style={{
-                  height: "44px",
-                  display: "flex",
-                  borderBottom:
-                    idx !== options.length - 1
-                      ? `solid 1pt ${theme.custom.colors.border1}`
-                      : undefined,
-                }}
-              >
-                <ListItemText
-                  sx={{
-                    marginLeft: "8px",
-                    fontSize: "16px",
-                    lineHeight: "24px",
-                    fontWeight: 500,
-                  }}
-                  primary={o.label}
-                />
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-      </WithMiniDrawer>
-    </>
   );
 }
