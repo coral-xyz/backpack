@@ -7,7 +7,6 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "postinstall": "cd ../.. && yarn build",
     "e2e": "jest",
     "lint:fix": "eslint 'src/**/*' --fix"
   },
