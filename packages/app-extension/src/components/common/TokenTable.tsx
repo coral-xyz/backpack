@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useInView } from "react-intersection-observer";
+import { FixedSizeList as WindowedList } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
 import { styles } from "@coral-xyz/themes";
 import { Blockchain } from "@coral-xyz/common";
 import {
@@ -49,7 +50,7 @@ export function SearchableTokenTable({
   const classes = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
   return (
-    <div>
+    <>
       <TextField
         placeholder={"Search"}
         value={searchFilter}
@@ -67,7 +68,7 @@ export function SearchableTokenTable({
         searchFilter={searchFilter}
         customFilter={customFilter}
       />
-    </div>
+    </>
   );
 }
 
@@ -103,19 +104,55 @@ export function TokenTable({
     setSearch(searchFilter);
   }, [searchFilter]);
 
+  const useVirtualization = tokenAccountsFiltered.length > 100;
+  // Note: if this fixed height changes in react-xnft-renderer it'll need to be changed here
+  const rowHeight = 68;
+
   return (
-    <BalancesTable>
+    <BalancesTable
+      style={useVirtualization ? { height: "calc(100% - 92px)" } : {}}
+    >
       <BalancesTableHead
         props={{ title, iconUrl: blockchainLogo, disableToggle: true }}
       />
-      <BalancesTableContent>
-        {tokenAccountsFiltered.map((token) => (
-          <TokenRow
-            key={token.mint}
-            token={token}
-            onClick={() => onClickRow(blockchain, token)}
-          />
-        ))}
+      <BalancesTableContent style={useVirtualization ? { height: "100%" } : {}}>
+        {useVirtualization ? (
+          <AutoSizer>
+            {({ height, width }: { height: number; width: number }) => {
+              return (
+                <WindowedList
+                  height={height}
+                  width={width}
+                  itemCount={tokenAccountsFiltered.length}
+                  itemSize={rowHeight}
+                  overscanCount={24}
+                >
+                  {({ index, style }) => {
+                    const token = tokenAccountsFiltered[index];
+                    return (
+                      <TokenRow
+                        key={token.mint}
+                        token={token}
+                        onClick={(token) => onClickRow(blockchain, token)}
+                        style={style}
+                      />
+                    );
+                  }}
+                </WindowedList>
+              );
+            }}
+          </AutoSizer>
+        ) : (
+          <>
+            {tokenAccountsFiltered.map((token: any) => (
+              <TokenRow
+                key={token.mint}
+                token={token}
+                onClick={(token) => onClickRow(blockchain, token)}
+              />
+            ))}
+          </>
+        )}
       </BalancesTableContent>
     </BalancesTable>
   );
@@ -124,31 +161,27 @@ export function TokenTable({
 function TokenRow({
   onClick,
   token,
+  style,
 }: {
-  onClick: (blockchain: Blockchain, token: Token) => void;
+  onClick: (token: Token) => void;
   token: Token;
+  style?: any;
 }) {
-  const { ref, inView } = useInView({ triggerOnce: true });
   let subtitle = token.ticker;
   if (token.nativeBalance) {
     subtitle = `${token.nativeBalance.toLocaleString()} ${subtitle}`;
   }
-  // Don't render if not in view as this list is potentially very long
   return (
-    <div ref={ref}>
-      <BalancesTableRow onClick={onClick}>
-        {inView && (
-          <BalancesTableCell
-            props={{
-              icon: token.logo,
-              title: token.name,
-              subtitle,
-              usdValue: token.usdBalance,
-              percentChange: token.recentUsdBalanceChange,
-            }}
-          />
-        )}
-      </BalancesTableRow>
-    </div>
+    <BalancesTableRow onClick={() => onClick(token)} style={style}>
+      <BalancesTableCell
+        props={{
+          icon: token.logo,
+          title: token.name,
+          subtitle,
+          usdValue: token.usdBalance,
+          percentChange: token.recentUsdBalanceChange,
+        }}
+      />
+    </BalancesTableRow>
   );
 }
