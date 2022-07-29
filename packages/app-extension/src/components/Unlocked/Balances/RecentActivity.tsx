@@ -142,7 +142,6 @@ export function RecentActivitySmall({ address }: any) {
   const theme = useCustomTheme();
   return (
     <div>
-      <RecentActivitySmallHeader />
       <RecentActivityList
         address={address}
         style={{ borderTop: `solid 1pt ${theme.custom.colors.border}` }}

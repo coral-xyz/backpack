@@ -6,7 +6,14 @@ export function Balances() {
   return (
     <div>
       <BalanceSummaryWidget />
-      <TransferWidget />
+      <div
+        style={{
+          marginTop: "20px",
+          marginBottom: "20px",
+        }}
+      >
+        <TransferWidget />
+      </div>
       <TokensWidget />
     </div>
   );

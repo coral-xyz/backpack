@@ -5,17 +5,16 @@ import { Button } from "@coral-xyz/react-xnft-renderer";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { useBlockchainTokenAccount } from "@coral-xyz/recoil";
 import { RecentActivitySmall } from "../RecentActivity";
-import { SendButton } from "./Send";
-import { DepositButton } from "./Deposit";
 import { WithDrawer, CloseButton } from "../../../Layout/Drawer";
 import { NavStackEphemeral, NavStackScreen } from "../../../Layout/NavStack";
+import { TransferWidget } from "../TransferWidget";
 
 const useStyles = styles((theme) => ({
   tokenHeaderContainer: {
-    marginBottom: "38px",
+    marginBottom: "24px",
   },
   balanceContainer: {
-    marginTop: "24px",
+    marginTop: "38px",
   },
   tokenHeaderButtonContainer: {
     width: "208px",
@@ -23,7 +22,7 @@ const useStyles = styles((theme) => ({
     justifyContent: "space-between",
     marginLeft: "auto",
     marginRight: "auto",
-    marginTop: "20px",
+    marginTop: "24px",
   },
   positivePercent: {
     color: theme.custom.colors.positive,
@@ -32,18 +31,18 @@ const useStyles = styles((theme) => ({
     color: theme.custom.colors.negative,
   },
   nativeBalanceLabel: {
-    color: theme.custom.colors.secondary,
-    fontSize: "20px",
-    fontWeight: 500,
+    color: theme.custom.colors.fontColor,
+    fontSize: "30px",
+    fontWeight: 600,
     textAlign: "center",
-    lineHeight: "24px",
+    lineHeight: "36px",
   },
   usdBalanceLabel: {
-    color: theme.custom.colors.fontColor,
+    color: theme.custom.colors.secondary,
     fontWeight: 500,
     fontSize: "14px",
     textAlign: "center",
-    marginTop: "6px",
+    marginTop: "4px",
     lineHeight: "24px",
   },
   headerButtonLabel: {
@@ -83,12 +82,11 @@ function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
         </Typography>
         <Typography className={classes.usdBalanceLabel}>
           ${parseFloat(token.usdBalance.toFixed(2)).toLocaleString()}{" "}
-          <span className={percentClass}>({token.recentPercentChange}%)</span>
+          <span className={percentClass}>{token.recentPercentChange}%</span>
         </Typography>
       </div>
       <div className={classes.tokenHeaderButtonContainer}>
-        <DepositButton token={token} />
-        <SendButton blockchain={blockchain} address={address} />
+        <TransferWidget blockchain={blockchain} address={address} />
       </div>
     </div>
   );

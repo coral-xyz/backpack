@@ -26,6 +26,7 @@ import {
   SecondaryButton,
 } from "../../../common";
 import { useDrawerContext, WithMiniDrawer } from "../../../Layout/Drawer";
+import { useNavStack } from "../../../Layout/NavStack";
 
 const logger = getLogger("send-component");
 
@@ -136,6 +137,7 @@ export function Send({
   const { close } = useDrawerContext();
   const token = useBlockchainTokenAccount(blockchain, tokenAddress);
   const { provider } = useAnchorContext();
+  const nav = useNavStack();
 
   const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState("");
@@ -144,6 +146,10 @@ export function Send({
   const [amountError, setAmountError] = useState<boolean>(false);
   const [_isFreshAccount, setIsFreshAccount] = useState<boolean>(false); // Not used for now.
   const [accountValidated, setAccountValidated] = useState<boolean>(false);
+
+  useEffect(() => {
+    nav.setTitle(`Send ${token.ticker}`);
+  }, [nav]);
 
   const amountFloat = parseFloat(amount.toString());
 
