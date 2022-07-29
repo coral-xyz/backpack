@@ -63,6 +63,7 @@ const useStyles = styles((theme) => ({
   },
   cardListRoot: {
     padding: "0 !important",
+    height: "100%",
   },
   tokenListItem: {
     borderTop: `solid 1pt ${theme.custom.colors.border}`,
@@ -328,7 +329,7 @@ export function BalancesTable({
   const classes = useStyles();
   return (
     <BalancesTableProvider>
-      <Card className={classes.blockchainCard} elevation={0}>
+      <Card className={classes.blockchainCard} elevation={0} style={style}>
         {children ??
           childrenRenderer.map((c: Element) => (
             <ViewRenderer key={c.id} element={c} />
@@ -424,7 +425,7 @@ export function BalancesTableContent({
   const classes = useStyles();
   const { showContent } = useBalancesContext();
   return (
-    <CardContent classes={{ root: classes.cardContentRoot }}>
+    <CardContent classes={{ root: classes.cardContentRoot }} style={style}>
       <List
         style={{
           display: !showContent ? "none" : undefined,
@@ -498,6 +499,7 @@ function __BalancesTableRow({
       disableRipple
       className={classes.tokenListItem}
       onClick={onClick}
+      style={style}
     >
       {children ??
         childrenRenderer.map((c: Element) => (

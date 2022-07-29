@@ -207,7 +207,6 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
     executeSwap,
     isLoadingRoutes,
   } = useSwapContext();
-  const fromTokenData = useBlockchainTokenAccount(blockchain, fromToken);
   const [swapState, setSwapState] = useState(SwapState.INITIAL);
 
   // Only allow drawer close if not confirming
@@ -234,11 +233,6 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
     }
   };
 
-  const exceedsBalance =
-    fromAmount &&
-    fromTokenData &&
-    Number(fromAmount) > fromTokenData.nativeBalance;
-
   return (
     <div className={classes.container}>
       <div className={classes.topHalf}>
@@ -246,25 +240,10 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
         <TextFieldLabel
           leftLabel={"You Pay"}
           rightLabelComponent={
-            <div
-              onClick={() =>
-                setFromAmount(
-                  fromTokenData ? fromTokenData.nativeBalance.toString() : 0
-                )
-              }
-              style={{
-                fontWeight: 500,
-                fontSize: "12px",
-                lineHeight: "16px",
-                color: theme.custom.colors.fontColor,
-                cursor: "pointer",
-              }}
-            >
-              <span style={{ color: theme.custom.colors.secondary }}>
-                Max:{" "}
-              </span>
-              {fromTokenData ? fromTokenData.nativeBalance.toString() : "0"}
-            </div>
+            <MaxSwapAmount
+              blockchain={blockchain}
+              onSetAmount={setFromAmount}
+            />
           }
         />
         <TextField
@@ -328,13 +307,10 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
               </div>
             )}
           </div>
-          <div>
-            <PrimaryButton
-              label="Review"
-              onClick={() => setSwapState(SwapState.CONFIRMATION)}
-              disabled={!fromAmount || !toAmount || exceedsBalance}
-            />
-          </div>
+          <ConfirmSwapButton
+            blockchain={blockchain}
+            onClick={() => setSwapState(SwapState.CONFIRMATION)}
+          />
         </div>
       </div>
       <WithMiniDrawer
@@ -365,6 +341,57 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
     </div>
   );
 }
+
+const MaxSwapAmount = ({
+  blockchain,
+  onSetAmount,
+}: {
+  blockchain: Blockchain;
+  onSetAmount: (arg0: number) => void;
+}) => {
+  const theme = useCustomTheme();
+  const { fromToken } = useSwapContext();
+  const fromTokenData = useBlockchainTokenAccount(blockchain, fromToken);
+  return (
+    <div
+      onClick={() =>
+        onSetAmount(fromTokenData ? fromTokenData.nativeBalance.toString() : 0)
+      }
+      style={{
+        fontWeight: 500,
+        fontSize: "12px",
+        lineHeight: "16px",
+        color: theme.custom.colors.fontColor,
+        cursor: "pointer",
+      }}
+    >
+      <span style={{ color: theme.custom.colors.secondary }}>Max: </span>
+      {fromTokenData ? fromTokenData.nativeBalance.toString() : "0"}
+    </div>
+  );
+};
+
+const ConfirmSwapButton = ({
+  blockchain,
+  onClick,
+}: {
+  blockchain: Blockchain;
+  onClick: () => void;
+}) => {
+  const { toAmount, fromAmount, fromToken } = useSwapContext();
+  const fromTokenData = useBlockchainTokenAccount(blockchain, fromToken);
+  const exceedsBalance =
+    fromAmount &&
+    fromTokenData &&
+    Number(fromAmount) > fromTokenData.nativeBalance;
+  return (
+    <PrimaryButton
+      label="Review"
+      onClick={onClick}
+      disabled={!fromAmount || !toAmount || exceedsBalance}
+    />
+  );
+};
 
 //
 // Bottom drawer displayed so the user can confirm the swap parameters.
