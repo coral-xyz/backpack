@@ -1,6 +1,6 @@
 import { Tabs, Tab } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { useTab, useBackgroundClient } from "@coral-xyz/recoil";
+import { useTab, useNavigation, useBackgroundClient } from "@coral-xyz/recoil";
 import {
   TAB_NFTS,
   TAB_APPS,
@@ -57,6 +57,11 @@ function TabBar() {
   const theme = useCustomTheme();
   const tab = useTab();
   const background = useBackgroundClient();
+  const nav = useNavigation();
+
+  const onTabClick = () => {
+    //		nav.toRoot();
+  };
 
   return (
     <Tabs
@@ -79,6 +84,7 @@ function TabBar() {
       }}
     >
       <Tab
+        onClick={() => onTabClick()}
         value={TAB_BALANCES}
         disableRipple
         className={classes.tab}
