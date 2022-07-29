@@ -167,7 +167,8 @@ const useStyles = styles((theme) => ({
         border: "none",
       },
       "&.Mui-focused fieldset": {
-        border: `solid 2pt ${theme.custom.colors.primaryButton}`,
+        border: `solid 2pt ${theme.custom.colors.primaryButton} !important`,
+        borderColor: `${theme.custom.colors.primaryButton} !important`,
       },
     },
   },
