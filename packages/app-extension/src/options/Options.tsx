@@ -1,7 +1,6 @@
 import { RecoilRoot } from "recoil";
 import { HashRouter } from "react-router-dom";
 import { QUERY_CONNECT_HARDWARE, QUERY_ONBOARDING } from "@coral-xyz/common";
-import { WithTheme } from "@coral-xyz/themes";
 import {
   useBackgroundKeepAlive,
   NotificationsProvider,
@@ -10,6 +9,7 @@ import { WithSuspense } from "../app/Router";
 import { ConnectHardware } from "../components/Settings/ConnectHardware";
 import { Onboarding } from "../components/Onboarding";
 import "../app/App.css";
+import { WithTheme } from "../components/common/WithTheme";
 
 //
 // Options provides the "expanded" extension app flows. Namely,
