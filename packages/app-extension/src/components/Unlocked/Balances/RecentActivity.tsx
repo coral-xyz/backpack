@@ -1,7 +1,7 @@
 import { Suspense, useState } from "react";
 import { Typography, List, ListItem, IconButton } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Check, Clear, Bolt } from "@mui/icons-material";
+import { CallMade, Check, Clear, Bolt } from "@mui/icons-material";
 import { explorerUrl } from "@coral-xyz/common";
 import {
   useSolanaExplorer,
@@ -223,6 +223,7 @@ export function _RecentActivityList({ address, style }: any) {
 
 function RecentActivityListItem({ transaction }: any) {
   const classes = useStyles();
+  const theme = useCustomTheme();
   const explorer = useSolanaExplorer();
   const txSig = transaction.transaction.signatures[0];
   const unixTimestamp = transaction.blockTime;
@@ -238,12 +239,31 @@ function RecentActivityListItem({ transaction }: any) {
       className={classes.listItem}
       onClick={onClick}
     >
-      <RecentActivityListItemIcon transaction={transaction} />
-      <div>
-        <Typography className={classes.txSig}>
-          {txSig.slice(0, 4)}...{txSig.slice(txSig.length - 5)}
-        </Typography>
-        <Typography className={classes.txDate}>{dateStr}</Typography>
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <div style={{ flex: 1, display: "flex" }}>
+          <RecentActivityListItemIcon transaction={transaction} />
+          <div>
+            <Typography className={classes.txSig}>
+              {txSig.slice(0, 4)}...{txSig.slice(txSig.length - 5)}
+            </Typography>
+            <Typography className={classes.txDate}>{dateStr}</Typography>
+          </div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          <CallMade style={{ color: theme.custom.colors.secondary }} />
+        </div>
       </div>
     </ListItem>
   );
