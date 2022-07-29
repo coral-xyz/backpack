@@ -70,7 +70,11 @@ export function ConnectHardware({ onComplete }: { onComplete: () => void }) {
   return (
     <OptionsContainer>
       <WithNav
-        navButtonLeft={step > 0 ? <NavBackButton onClick={prevStep} /> : null}
+        navButtonLeft={
+          step > 0 && step < connectHardwareFlow.length - 1 ? (
+            <NavBackButton onClick={prevStep} />
+          ) : null
+        }
         navbarStyle={{
           backgroundColor: theme.custom.colors.nav,
         }}
