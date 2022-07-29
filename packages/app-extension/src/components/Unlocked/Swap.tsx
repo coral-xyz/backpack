@@ -237,6 +237,12 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
     }
   };
 
+  const _setFromAmount = (amount: number) => {
+    if (amount >= 0) {
+      setFromAmount(amount);
+    }
+  };
+
   return (
     <div className={classes.container}>
       <div className={classes.topHalf}>
@@ -246,7 +252,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
           rightLabelComponent={
             <MaxSwapAmount
               blockchain={blockchain}
-              onSetAmount={setFromAmount}
+              onSetAmount={_setFromAmount}
             />
           }
         />
@@ -263,7 +269,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
           rootClass={classes.fromFieldRoot}
           type={"number"}
           value={fromAmount}
-          setValue={setFromAmount}
+          setValue={_setFromAmount}
         />
       </div>
       <div className={classes.bottomHalfWrapper}>
