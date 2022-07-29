@@ -239,6 +239,7 @@ export function ImportAccounts({
                     paddingTop: "5px",
                     paddingBottom: "5px",
                   }}
+                  disableRipple
                   disabled={importedPubkeys.includes(publicKey.toString())}
                 >
                   <Box style={{ display: "flex", width: "100%" }}>

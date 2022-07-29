@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Tooltip, Typography } from "@mui/material";
+import { Tooltip, Typography } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useActiveWallet } from "@coral-xyz/recoil";
@@ -219,14 +219,5 @@ export function QrCode({ data }: { data: string }) {
     >
       <img src={`https://qr.warp.workers.dev/qz=0?${data}`} alt={data} />
     </div>
-  );
-}
-
-function CopyButton({ publicKey }: { publicKey: string }) {
-  const classes = useStyles();
-  return (
-    <Button className={classes.copyButton}>
-      <Typography className={classes.copyButtonLabel}>Copy</Typography>
-    </Button>
   );
 }
