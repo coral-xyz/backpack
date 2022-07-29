@@ -247,7 +247,15 @@ function RecentActivityListItem({ transaction }: any) {
         }}
       >
         <div style={{ flex: 1, display: "flex" }}>
-          <RecentActivityListItemIcon transaction={transaction} />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <RecentActivityListItemIcon transaction={transaction} />
+          </div>
           <div>
             <Typography className={classes.txSig}>
               {txSig.slice(0, 4)}...{txSig.slice(txSig.length - 5)}
