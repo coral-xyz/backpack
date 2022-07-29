@@ -784,7 +784,13 @@ export function ScrollBarImpl(props: any) {
             className="thumb-vertical"
           />
         )}
-        renderView={(props) => <div {...props} className="view" />}
+        renderView={(props) => (
+          <div
+            {...props}
+            className="view"
+            style={{ right: -15, bottom: -15, marginRight: 0, marginBottom: 0 }}
+          />
+        )}
         autoHide
         thumbMinSize={30}
       >
