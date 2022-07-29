@@ -63,6 +63,7 @@ export function Onboarding() {
       }}
     />,
     <MnemonicInput
+      buttonLabel="Next"
       onNext={(mnemonic: string) => {
         createStore(mnemonic, DerivationPath.Bip44Change, password, [0]);
         nextStep();
@@ -79,6 +80,7 @@ export function Onboarding() {
   //
   const importWalletFlow = [
     <MnemonicInput
+      buttonLabel="Import"
       onNext={(mnemonic: string) => {
         setMnemonic(mnemonic);
         nextStep();

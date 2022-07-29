@@ -67,9 +67,11 @@ const useStyles = makeStyles((theme: any) => ({
 export function MnemonicInput({
   onNext,
   readOnly = false,
+  buttonLabel,
 }: {
   onNext: (mnemonic: string) => void;
   readOnly?: boolean;
+  buttonLabel: string;
 }) {
   const classes = useStyles();
   const background = useBackgroundClient();
@@ -216,7 +218,7 @@ export function MnemonicInput({
             </Box>
           )}
           <PrimaryButton
-            label="Import"
+            label={buttonLabel}
             onClick={next}
             disabled={!nextEnabled}
           />
