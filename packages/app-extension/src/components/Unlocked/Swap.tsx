@@ -38,7 +38,7 @@ const useStyles = styles((theme) => ({
     marginRight: "16px",
   },
   bottomHalfWrapper: {
-    background: theme.custom.colors.swapGradient,
+    borderTop: `solid 1pt ${theme.custom.colors.border}`,
     flex: 1,
     paddingBottom: "12px",
     paddingTop: "38px",
@@ -94,7 +94,7 @@ const useStyles = styles((theme) => ({
     borderRadius: "22px",
   },
   swapTokensButton: {
-    backgroundColor: theme.custom.colors.nav,
+    border: `solid 1pt ${theme.custom.colors.border}`,
     width: "38px",
     height: "38px",
     marginLeft: "auto",
