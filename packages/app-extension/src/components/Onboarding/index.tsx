@@ -114,7 +114,9 @@ export function Onboarding() {
     }[onboardingFlow];
     renderComponent = (
       <WithNav
-        navButtonLeft={<NavBackButton onClick={prevStep} />}
+        navButtonLeft={
+          step < flow.length - 1 && <NavBackButton onClick={prevStep} />
+        }
         navbarStyle={{
           backgroundColor: theme.custom.colors.nav,
           borderRadius: "12px",
