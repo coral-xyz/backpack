@@ -179,7 +179,7 @@ export function Deposit() {
                             pointerEvents: "none",
                             color: theme.custom.colors.secondary,
                             position: "absolute",
-                            left: 310,
+                            right: "17px",
                           }}
                         />
                       }
