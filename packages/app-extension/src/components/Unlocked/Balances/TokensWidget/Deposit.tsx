@@ -21,11 +21,14 @@ const useStyles = styles((theme) => ({
     lineHeight: "16px",
     size: "12px",
     fontWeight: 500,
-    fontSize: "12px",
+    fontSize: "14px",
     textAlign: "center",
   },
   depositTextFieldRoot: {
     margin: 0,
+    "& .MuiOutlinedInput-root": {
+      border: `solid 1pt ${theme.custom.colors.border}`,
+    },
   },
   copyButton: {
     background: "transparent",
@@ -88,6 +91,9 @@ export function Deposit() {
           buttonLabelStyle={{
             color: theme.custom.colors.fontColor,
           }}
+          topHalfStyle={{
+            background: "transparent",
+          }}
         >
           <div
             style={{
@@ -131,8 +137,7 @@ export function Deposit() {
             </div>
             <div>
               <Typography className={classes.subtext}>
-                This address can only receive SOL and SPL tokens on Solana. Any
-                other asset not currently supported.
+                This address can only receive SOL and SPL tokens on Solana.
               </Typography>
             </div>
           </div>
