@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useDarkMode } from "@coral-xyz/recoil";
 import { CssBaseline, StyledEngineProvider } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ThemeProvider as OldThemeProvider } from "@mui/styles";
