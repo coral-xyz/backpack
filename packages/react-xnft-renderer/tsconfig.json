@@ -1,7 +1,11 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "dist/esm/",
-    "rootDir": "./src"
+    "outDir": "./dist/esm/",
+    "rootDir": "./src",
+    "baseUrl": "src",
+    "paths": {
+      "@coral-xyz/react-xnft-renderer": ["index.ts"]
+    }
   }
 }
