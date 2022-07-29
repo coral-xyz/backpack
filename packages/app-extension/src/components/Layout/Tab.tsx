@@ -7,6 +7,7 @@ import {
   TAB_BALANCES,
   TAB_SWAP,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+  UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
 import { BalancesIcon, GridIcon, ImageIcon, SwapIcon } from "../Icon";
 
@@ -58,15 +59,23 @@ function TabBar() {
   const tab = useTab();
   const background = useBackgroundClient();
 
+  const onTabClick = (tabValue: string) => {
+    if (tabValue === tab) {
+      background.request({
+        method: UI_RPC_METHOD_NAVIGATION_TO_ROOT,
+        params: [],
+      });
+    } else {
+      background.request({
+        method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+        params: [tabValue],
+      });
+    }
+  };
+
   return (
     <Tabs
       value={tab === "" ? undefined : tab}
-      onChange={(_e, newValue) =>
-        background.request({
-          method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-          params: [newValue],
-        })
-      }
       variant="fullWidth"
       classes={{
         root: classes.tabRoot,
@@ -79,6 +88,7 @@ function TabBar() {
       }}
     >
       <Tab
+        onClick={() => onTabClick(TAB_BALANCES)}
         value={TAB_BALANCES}
         disableRipple
         className={classes.tab}
@@ -93,6 +103,7 @@ function TabBar() {
         }
       />
       <Tab
+        onClick={() => onTabClick(TAB_APPS)}
         value={TAB_APPS}
         disableRipple
         className={classes.tab}
@@ -107,6 +118,7 @@ function TabBar() {
         }
       />
       <Tab
+        onClick={() => onTabClick(TAB_SWAP)}
         value={TAB_SWAP}
         disableRipple
         className={classes.tab}
@@ -121,6 +133,7 @@ function TabBar() {
         }
       />
       <Tab
+        onClick={() => onTabClick(TAB_NFTS)}
         value={TAB_NFTS}
         disableRipple
         className={classes.tab}
