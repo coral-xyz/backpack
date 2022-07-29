@@ -1,3 +1,8 @@
+import { useMemo } from "react";
+import { CssBaseline, StyledEngineProvider } from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider as OldThemeProvider } from "@mui/styles";
+
 import _makeStyles from "@mui/styles/makeStyles";
 import useTheme from "@mui/styles/useTheme";
 import createStyles from "@mui/styles/createStyles";
@@ -98,3 +103,23 @@ type CustomTheme = typeof lightTheme & typeof darkTheme;
 export const styles = _makeStyles<CustomTheme>;
 
 export const useCustomTheme = useTheme<CustomTheme>;
+
+export const WithTheme: React.FC = ({ children }) => {
+  // TODO: use useDarkMode(), we can't import recoil rn due to circular dependency
+  const isDarkMode = true;
+  const [theme, rawTheme] = useMemo(() => {
+    const rawTheme = isDarkMode ? darkTheme : lightTheme;
+    const theme = createTheme(rawTheme as any, { custom: rawTheme.custom });
+    return [theme, rawTheme];
+  }, [isDarkMode]);
+  return (
+    <StyledEngineProvider injectFirst>
+      <OldThemeProvider theme={rawTheme}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          {children}
+        </ThemeProvider>
+      </OldThemeProvider>
+    </StyledEngineProvider>
+  );
+};

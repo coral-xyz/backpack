@@ -3,8 +3,9 @@ import { HashRouter } from "react-router-dom";
 import {
   useBackgroundKeepAlive,
   NotificationsProvider,
+  useDarkMode,
 } from "@coral-xyz/recoil";
-import { WithTheme } from "./theme";
+import { WithTheme } from "@coral-xyz/themes";
 import { Router } from "./Router";
 import "./App.css";
 import "@fontsource/inter";
