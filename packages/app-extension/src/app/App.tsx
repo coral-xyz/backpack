@@ -3,14 +3,13 @@ import { HashRouter } from "react-router-dom";
 import {
   useBackgroundKeepAlive,
   NotificationsProvider,
-  useDarkMode,
 } from "@coral-xyz/recoil";
-import { WithTheme } from "@coral-xyz/themes";
 import { Router } from "./Router";
 import "./App.css";
 import "@fontsource/inter";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
+import { WithTheme } from "../components/common/WithTheme";
 
 export default function App() {
   return (
