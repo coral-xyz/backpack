@@ -100,6 +100,10 @@ const useStyles = styles((theme) => ({
     marginLeft: "auto",
     marginRight: "auto",
   },
+  closeConfirmButton: {
+    border: "none !important",
+    background: theme.custom.colors.nav,
+  },
   swapIcon: {
     color: theme.custom.colors.secondary,
   },
@@ -601,7 +605,7 @@ function CloseButton({ onClick }: { onClick: () => void }) {
     <div className={classes.swapTokensContainer}>
       <IconButton
         disableRipple
-        className={classes.swapTokensButton}
+        className={`${classes.swapTokensButton} ${classes.closeConfirmButton}`}
         onClick={onClick}
       >
         <Close className={classes.swapIcon} />
