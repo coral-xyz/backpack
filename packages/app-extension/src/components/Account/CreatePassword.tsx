@@ -39,6 +39,8 @@ export function CreatePassword({
     onNext(password);
   };
 
+  const isNextDisabled = password.length < 8 || password !== passwordDup;
+
   return (
     <Box
       sx={{
@@ -61,7 +63,8 @@ export function CreatePassword({
         >
           <Header text="Create a password" />
           <SubtextParagraph style={{ marginTop: "8px", marginBottom: "40px" }}>
-            You’ll need this to unlock Backpack.
+            Your password should be at least 8 characters. You’ll need this to
+            unlock Backpack.
           </SubtextParagraph>
         </Box>
         <Box
@@ -103,7 +106,7 @@ export function CreatePassword({
           marginBottom: "16px",
         }}
       >
-        <PrimaryButton label="Next" onClick={next} />
+        <PrimaryButton disabled={isNextDisabled} label="Next" onClick={next} />
       </Box>
     </Box>
   );
