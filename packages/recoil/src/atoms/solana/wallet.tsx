@@ -10,7 +10,7 @@ import {
 } from "@coral-xyz/common";
 import { WalletPublicKeys } from "../../types";
 import { backgroundClient } from "../background";
-import { solanaCommitment } from "../settings";
+import { solanaCommitment } from "../preferences";
 
 /**
  * List of all public keys for the wallet along with associated nicknames.

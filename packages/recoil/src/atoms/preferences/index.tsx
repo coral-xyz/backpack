@@ -6,7 +6,7 @@ import {
   UI_RPC_METHOD_SOLANA_EXPLORER_READ,
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
 } from "@coral-xyz/common";
-import { backgroundClient } from "./background";
+import { backgroundClient } from "../background";
 
 /**
  * Toggle for darkmode.
