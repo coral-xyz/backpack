@@ -161,6 +161,24 @@ export function Deposit() {
                   disableFocusListener
                   disableHoverListener
                   disableTouchListener
+                  componentsProps={{
+                    tooltip: {
+                      sx: {
+                        fontSize: "14px",
+                        bgcolor: theme.custom.colors.activeNavButton,
+                        "& .MuiTooltip-arrow": {
+                          color: theme.custom.colors.activeNavButton,
+                        },
+                      },
+                    },
+                    popper: {
+                      sx: {
+                        // Hack: Without this, the root container of the app widens by 15 px,
+                        //       when the tooltip displays.
+                        position: "fixed",
+                      },
+                    },
+                  }}
                 >
                   <div
                     onClick={() => onCopy()}
