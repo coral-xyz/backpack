@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useNavStack } from "../../Layout/NavStack";
+import { useNavStack } from "../../common/Layout/NavStack";
 import { SettingsList } from "../../common/Settings/List";
 
 export function Preferences() {

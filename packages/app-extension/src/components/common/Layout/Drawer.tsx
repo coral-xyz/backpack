@@ -12,7 +12,7 @@ import { Close } from "@mui/icons-material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { EXTENSION_HEIGHT } from "@coral-xyz/common";
 import { useEphemeralNav } from "@coral-xyz/recoil";
-import { WithEphemeralNav } from "../Layout/NavEphemeral";
+import { WithEphemeralNav } from "./NavEphemeral";
 import { NAV_BAR_HEIGHT, NAV_BUTTON_WIDTH } from "./Nav";
 
 const useStyles = styles((theme) => ({

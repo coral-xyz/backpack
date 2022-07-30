@@ -9,8 +9,11 @@ import {
   useRecentTransactions,
 } from "@coral-xyz/recoil";
 import { Loading } from "../../common";
-import { WithDrawer, CloseButton } from "../../Layout/Drawer";
-import { NavStackEphemeral, NavStackScreen } from "../../Layout/NavStack";
+import { WithDrawer, CloseButton } from "../../common/Layout/Drawer";
+import {
+  NavStackEphemeral,
+  NavStackScreen,
+} from "../../common/Layout/NavStack";
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {

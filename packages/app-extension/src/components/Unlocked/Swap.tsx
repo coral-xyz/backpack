@@ -20,7 +20,7 @@ import { Blockchain } from "@coral-xyz/common";
 import { TextField, TextFieldLabel, PrimaryButton } from "../common";
 import { WithHeaderButton } from "./Balances/TokensWidget/Token";
 import { BottomCard } from "./Balances/TokensWidget/Send";
-import { WithMiniDrawer, useDrawerContext } from "../Layout/Drawer";
+import { WithMiniDrawer, useDrawerContext } from "../common/Layout/Drawer";
 import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
 

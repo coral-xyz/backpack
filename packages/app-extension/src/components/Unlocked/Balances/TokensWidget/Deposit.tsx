@@ -10,7 +10,7 @@ import {
   TextFieldLabel,
   walletAddressDisplay,
 } from "../../../common";
-import { useDrawerContext } from "../../../Layout/Drawer";
+import { useDrawerContext } from "../../../common/Layout/Drawer";
 
 const useStyles = styles((theme) => ({
   subtext: {

@@ -8,15 +8,15 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import CallMadeIcon from "@mui/icons-material/CallMade";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List, ListItem } from "../common/List";
-import { WithDrawer, CloseButton } from "../Layout/Drawer";
+import { WithDrawer, CloseButton } from "../common/Layout/Drawer";
 import { Reset } from "./Reset";
 import { ResetWarning } from "./Reset/ResetWarning";
-import { NAV_BAR_HEIGHT } from "../Layout/Nav";
+import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import {
   useNavStack,
   NavStackEphemeral,
   NavStackScreen,
-} from "../Layout/NavStack";
+} from "../common/Layout/NavStack";
 import { DiscordIcon } from "../common/Icon";
 
 export function LockedMenu({ menuOpen, setMenuOpen }: any) {

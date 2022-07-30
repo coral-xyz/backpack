@@ -25,8 +25,11 @@ import {
   Loading,
   SecondaryButton,
 } from "../../../common";
-import { useDrawerContext, WithMiniDrawer } from "../../../Layout/Drawer";
-import { useNavStack } from "../../../Layout/NavStack";
+import {
+  useDrawerContext,
+  WithMiniDrawer,
+} from "../../../common/Layout/Drawer";
+import { useNavStack } from "../../../common/Layout/NavStack";
 
 const logger = getLogger("send-component");
 

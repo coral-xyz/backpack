@@ -10,8 +10,8 @@ import {
   SecondaryButton,
 } from "../../common";
 import { WarningIcon } from "../../common/Icon";
-import { useNavStack } from "../../Layout/NavStack";
-import { useDrawerContext } from "../../Layout/Drawer";
+import { useNavStack } from "../../common/Layout/NavStack";
+import { useDrawerContext } from "../../common/Layout/Drawer";
 
 export function ResetWarning() {
   const background = useBackgroundClient();

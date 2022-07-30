@@ -17,8 +17,8 @@ import {
   TextField,
 } from "../../common";
 import { EyeIcon, WarningIcon } from "../../common/Icon";
-import { useNavStack } from "../../Layout/NavStack";
-import { useDrawerContext } from "../../Layout/Drawer";
+import { useNavStack } from "../../common/Layout/NavStack";
+import { useDrawerContext } from "../../common/Layout/Drawer";
 
 const useStyles = styles((theme: any) => ({
   passwordField: {

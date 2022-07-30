@@ -1,5 +1,5 @@
 import { WithTabs } from "./Tab";
-import { ApproveTransactionRequest } from "../Unlocked/ApproveTransactionRequest";
+import { ApproveTransactionRequest } from "../../Unlocked/ApproveTransactionRequest";
 import { Router } from "./Router";
 
 //

@@ -33,12 +33,16 @@ import {
   TextField,
   WalletAddress,
 } from "../../components/common";
-import { WithDrawer, CloseButton, useDrawerContext } from "../Layout/Drawer";
+import {
+  WithDrawer,
+  CloseButton,
+  useDrawerContext,
+} from "../common/Layout/Drawer";
 import {
   useNavStack,
   NavStackEphemeral,
   NavStackScreen,
-} from "../Layout/NavStack";
+} from "../common/Layout/NavStack";
 import {
   ShowPrivateKeyWarning,
   ShowPrivateKey,

@@ -3,10 +3,10 @@ import * as bs58 from "bs58";
 import { Message } from "@solana/web3.js";
 import { Typography } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { useApproveOrigin, useActiveWallet } from "@coral-xyz/recoil";
+import { useActiveWallet } from "@coral-xyz/recoil";
 import { BottomCard } from "./Unlocked/Balances/TokensWidget/Send";
 import { walletAddressDisplay } from "../components/common";
-import { WithEphemeralNav } from "../components/Layout/NavEphemeral";
+import { WithEphemeralNav } from "../components/common/Layout/NavEphemeral";
 
 const useStyles = styles((theme) => ({
   activeWallet: {

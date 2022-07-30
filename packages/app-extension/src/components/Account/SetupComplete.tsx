@@ -1,7 +1,7 @@
 import { Typography, Box, Grid } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Header, SubtextParagraph, PrimaryButton } from "../common";
-import { ActionCard } from "../Layout/ActionCard";
+import { ActionCard } from "../common/Layout/ActionCard";
 import {
   PinIcon,
   ExtensionIcon,

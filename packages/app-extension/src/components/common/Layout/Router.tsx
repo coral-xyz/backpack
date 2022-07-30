@@ -15,14 +15,14 @@ import {
 } from "@coral-xyz/recoil";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Balances } from "../Unlocked/Balances";
-import { Token } from "../Unlocked/Balances/TokensWidget/Token";
-import { Apps } from "../Unlocked/Apps";
-import { Nfts } from "../Unlocked/Nfts";
-import { Swap } from "../Unlocked/Swap";
-import { NftsDetail } from "../Unlocked/Nfts/Detail";
-import { NftsCollection } from "../Unlocked/Nfts/Collection";
-import { SettingsButton } from "../Settings";
+import { Balances } from "../../Unlocked/Balances";
+import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
+import { Apps } from "../../Unlocked/Apps";
+import { Nfts } from "../../Unlocked/Nfts";
+import { Swap } from "../../Unlocked/Swap";
+import { NftsDetail } from "../../Unlocked/Nfts/Detail";
+import { NftsCollection } from "../../Unlocked/Nfts/Collection";
+import { SettingsButton } from "../../Settings";
 import { WithNav, NavBackButton } from "./Nav";
 import { WithMotion } from "./NavStack";
 

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useDrawerContext } from "../../Layout/Drawer";
-import { useNavStack } from "../../Layout/NavStack";
+import { useDrawerContext } from "../../common/Layout/Drawer";
+import { useNavStack } from "../../common/Layout/NavStack";
 import { SettingsList } from "../../common/Settings/List";
 
 export function YourAccount() {

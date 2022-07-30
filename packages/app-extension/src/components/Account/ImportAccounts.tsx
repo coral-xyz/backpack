@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { Box, List, ListItemButton, ListItemText } from "@mui/material";
 import Transport from "@ledgerhq/hw-transport";
 import * as ledgerCore from "@coral-xyz/ledger-core";
+import { Connection, PublicKey } from "@solana/web3.js";
+import * as anchor from "@project-serum/anchor";
+import { useBackgroundClient, useAnchorContext } from "@coral-xyz/recoil";
 import {
   Checkbox,
   Header,
@@ -11,10 +14,7 @@ import {
   SubtextParagraph,
   walletAddressDisplay,
 } from "../common";
-import { WithMiniDrawer } from "../Layout/Drawer";
-import { Connection, PublicKey } from "@solana/web3.js";
-import * as anchor from "@project-serum/anchor";
-import { useBackgroundClient, useAnchorContext } from "@coral-xyz/recoil";
+import { WithMiniDrawer } from "../common/Layout/Drawer";
 import {
   DerivationPath,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,

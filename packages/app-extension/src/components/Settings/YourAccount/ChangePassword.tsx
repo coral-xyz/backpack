@@ -7,8 +7,8 @@ import {
   UI_RPC_METHOD_PASSWORD_UPDATE,
 } from "@coral-xyz/common";
 import { List, ListItem, PrimaryButton, SubtextParagraph } from "../../common";
-import { useDrawerContext } from "../../Layout/Drawer";
-import { useNavStack } from "../../Layout/NavStack";
+import { useDrawerContext } from "../../common/Layout/Drawer";
+import { useNavStack } from "../../common/Layout/NavStack";
 
 const useStyles = styles((theme) => ({
   textFieldRoot: {

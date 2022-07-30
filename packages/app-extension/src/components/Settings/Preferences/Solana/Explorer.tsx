@@ -6,7 +6,7 @@ import {
 import { useSolanaExplorer, useBackgroundClient } from "@coral-xyz/recoil";
 import { SettingsList } from "../../../common/Settings/List";
 import { Checkmark } from "./ConnectionSwitch";
-import { useNavStack } from "../../../Layout/NavStack";
+import { useNavStack } from "../../../common/Layout/NavStack";
 
 export function PreferencesSolanaExplorer() {
   const background = useBackgroundClient();
