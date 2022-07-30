@@ -2,13 +2,13 @@ import { atom, selector } from "recoil";
 import { ParsedConfirmedTransaction, PublicKey } from "@solana/web3.js";
 import { UI_RPC_METHOD_NAVIGATION_READ } from "@coral-xyz/common";
 import { anchorContext } from "../atoms/wallet";
-import { jupiterRouteMap } from "../atoms/jupiter";
 import { TokenAccountWithKey } from "../types";
-import { fetchRecentTransactions } from "./recent-transactions";
-import { splTokenRegistry } from "./token-registry";
 import { fetchPriceData } from "./price-data";
 import { activeWallet } from "./wallet";
 import { backgroundClient } from "./background";
+import { jupiterRouteMap } from "./solana/jupiter";
+import { fetchRecentTransactions } from "./solana/recent-transactions";
+import { splTokenRegistry } from "./solana/token-registry";
 
 /**
  * Defines the initial app load fetch.

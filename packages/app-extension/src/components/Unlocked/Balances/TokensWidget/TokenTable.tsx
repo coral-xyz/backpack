@@ -3,7 +3,6 @@ import {
   toTitleCase,
   NAV_COMPONENT_TOKEN,
 } from "@coral-xyz/common";
-import { useState } from "react";
 import { Typography, ListItem } from "@mui/material";
 import { styles } from "@coral-xyz/themes";
 import {

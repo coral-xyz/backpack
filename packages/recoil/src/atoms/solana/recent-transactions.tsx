@@ -4,8 +4,8 @@ import {
   Connection,
   PublicKey,
 } from "@solana/web3.js";
-import { bootstrap } from "./bootstrap";
-import { anchorContext } from "./wallet";
+import { bootstrap } from "../bootstrap";
+import { anchorContext } from "../wallet";
 
 export const recentTransactions = atomFamily<
   Array<ParsedTransactionWithMeta> | null,
