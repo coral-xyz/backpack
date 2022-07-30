@@ -10,12 +10,26 @@ import { registerRootComponent } from "expo";
 import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
 import { Suspense, useRef } from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { Platform, SafeAreaView, StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
 import { RecoilRoot } from "recoil/native/recoil";
 import App from "./src/App";
 
-const WEBVIEW_URI = Constants.manifest.extra.url || "http://localhost:9333";
+const LOCALHOST_WEBVIEW_URI = "http://localhost:9333";
+
+const WEBVIEW_URI = (() => {
+  if (process.env.NODE_ENV === "production") {
+    return Constants.manifest.extra.url || alert("No WEBVIEW_URI");
+  } else {
+    if (Platform.OS === "ios") {
+      // iOS can only use serviceworkers from localhost or WKAppBoundDomains
+      // we can't use WKAppBoundDomains in development, so it must use localhost
+      return LOCALHOST_WEBVIEW_URI;
+    } else {
+      return Constants.manifest.extra.url || LOCALHOST_WEBVIEW_URI;
+    }
+  }
+})();
 
 function WrappedApp() {
   return (
