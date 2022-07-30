@@ -1,17 +1,21 @@
-import "react-native-url-polyfill/auto";
+require("react-native-get-random-values");
+require("react-native-url-polyfill/auto");
+
 import {
   BACKGROUND_SERVICE_WORKER_READY,
   useStore,
   WEB_VIEW_EVENTS,
 } from "@coral-xyz/common";
 import { registerRootComponent } from "expo";
+import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
-import { useRef, Suspense } from "react";
+import { Suspense, useRef } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
-import "react-native-get-random-values";
 import { WebView } from "react-native-webview";
 import { RecoilRoot } from "recoil/native/recoil";
 import App from "./src/App";
+
+const WEBVIEW_URI = Constants.manifest.extra.url || "http://localhost:9333";
 
 function WrappedApp() {
   return (
@@ -42,13 +46,7 @@ function Background() {
         cacheMode="LOAD_CACHE_ELSE_NETWORK"
         ref={ref}
         source={{
-          uri: process.env.EAS_BUILD_GIT_COMMIT_HASH
-            ? [
-                "https://coral-xyz.github.io/backpack/background-scripts",
-                process.env.EAS_BUILD_GIT_COMMIT_HASH,
-                "service-worker-loader.html",
-              ].join("/")
-            : "http://localhost:9333",
+          uri: WEBVIEW_URI,
         }}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
