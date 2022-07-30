@@ -4,9 +4,9 @@ import {
   UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
 } from "@coral-xyz/common";
 import { useSolanaExplorer, useBackgroundClient } from "@coral-xyz/recoil";
-import { SettingsList } from "../../../common/Settings/List";
+import { SettingsList } from "../../../../common/Settings/List";
+import { useNavStack } from "../../../../common/Layout/NavStack";
 import { Checkmark } from "./ConnectionSwitch";
-import { useNavStack } from "../../../common/Layout/NavStack";
 
 export function PreferencesSolanaExplorer() {
   const background = useBackgroundClient();

@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Typography } from "@mui/material";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE } from "@coral-xyz/common";
-import { TextField, PrimaryButton, SecondaryButton } from "../../common";
-import { useNavStack } from "../../common/Layout/NavStack";
+import { TextField, PrimaryButton, SecondaryButton } from "../../../common";
+import { useNavStack } from "../../../common/Layout/NavStack";
 import { useAutolockSecs, useBackgroundClient } from "@coral-xyz/recoil";
 
 const useStyles = styles((theme) => ({

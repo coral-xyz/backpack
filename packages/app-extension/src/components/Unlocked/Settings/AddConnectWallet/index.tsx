@@ -8,11 +8,11 @@ import {
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { ActionCard } from "../../common/Layout/ActionCard";
-import { HardwareWalletIcon } from "../../common/Icon";
-import { Header, SubtextParagraph } from "../../common";
-import { useNavStack } from "../../common/Layout/NavStack";
-import { useDrawerContext } from "../../common/Layout/Drawer";
+import { ActionCard } from "../../../common/Layout/ActionCard";
+import { HardwareWalletIcon } from "../../../common/Icon";
+import { Header, SubtextParagraph } from "../../../common";
+import { useNavStack } from "../../../common/Layout/NavStack";
+import { useDrawerContext } from "../../../common/Layout/Drawer";
 
 export function AddConnectWalletMenu() {
   const { close } = useDrawerContext();

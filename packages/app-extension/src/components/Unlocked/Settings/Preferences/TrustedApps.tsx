@@ -4,8 +4,8 @@ import { CloudOff } from "@mui/icons-material";
 import { UI_RPC_METHOD_APPROVED_ORIGINS_DELETE } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { useBackgroundClient, useApprovedOrigins } from "@coral-xyz/recoil";
-import { useNavStack } from "../../common/Layout/NavStack";
-import { List, ListItem, PrimaryButton } from "../../common";
+import { useNavStack } from "../../../common/Layout/NavStack";
+import { List, ListItem, PrimaryButton } from "../../../common";
 
 export function PreferencesTrustedApps() {
   const nav = useNavStack();

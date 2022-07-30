@@ -6,9 +6,14 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_PASSWORD_UPDATE,
 } from "@coral-xyz/common";
-import { List, ListItem, PrimaryButton, SubtextParagraph } from "../../common";
-import { useDrawerContext } from "../../common/Layout/Drawer";
-import { useNavStack } from "../../common/Layout/NavStack";
+import {
+  List,
+  ListItem,
+  PrimaryButton,
+  SubtextParagraph,
+} from "../../../common";
+import { useDrawerContext } from "../../../common/Layout/Drawer";
+import { useNavStack } from "../../../common/Layout/NavStack";
 
 const useStyles = styles((theme) => ({
   textFieldRoot: {

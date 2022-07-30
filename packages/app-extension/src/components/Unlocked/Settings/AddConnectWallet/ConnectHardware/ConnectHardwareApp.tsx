@@ -4,8 +4,8 @@ import {
   HeaderIcon,
   PrimaryButton,
   SubtextParagraph,
-} from "../../../common";
-import { SolanaIcon } from "../../../common/Icon";
+} from "../../../../common";
+import { SolanaIcon } from "../../../../common/Icon";
 
 export function ConnectHardwareApp({ onNext }: { onNext: () => void }) {
   return (

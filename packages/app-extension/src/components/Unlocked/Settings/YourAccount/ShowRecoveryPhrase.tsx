@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
+import { styles } from "@coral-xyz/themes";
 import { Box, List, ListItem, ListItemIcon } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ChatIcon from "@mui/icons-material/Chat";
 import WebIcon from "@mui/icons-material/Web";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
-import { styles } from "@coral-xyz/themes";
 import { useBackgroundClient } from "@coral-xyz/recoil";
+import { UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC } from "@coral-xyz/common";
 import {
-  UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
-  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
-} from "@coral-xyz/common";
-import { CopyButton } from "../../Account/MnemonicInput";
+  CopyButton,
+  MnemonicInputFields,
+} from "../../../Account/MnemonicInput";
 import {
   DangerButton,
   Header,
@@ -18,10 +18,10 @@ import {
   SecondaryButton,
   SubtextParagraph,
   TextField,
-} from "../../common";
-import { EyeIcon, WarningIcon } from "../../common/Icon";
-import { useNavStack } from "../../common/Layout/NavStack";
-import { useDrawerContext } from "../../common/Layout/Drawer";
+} from "../../../common";
+import { EyeIcon, WarningIcon } from "../../../common/Icon";
+import { useNavStack } from "../../../common/Layout/NavStack";
+import { useDrawerContext } from "../../../common/Layout/Drawer";
 
 const useStyles = styles((theme: any) => ({
   passwordField: {
@@ -31,19 +31,6 @@ const useStyles = styles((theme: any) => ({
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
-      },
-    },
-  },
-  privateKeyField: {
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        border: `solid 1pt ${theme.custom.colors.border}`,
-      },
-      "&:hover fieldset": {
-        border: `solid 1pt ${theme.custom.colors.border}`,
-      },
-      "&.Mui-focused fieldset": {
-        border: `solid 1pt ${theme.custom.colors.border} !important`,
       },
     },
   },
@@ -94,7 +81,7 @@ const useStyles = styles((theme: any) => ({
   },
 }));
 
-export function ShowPrivateKeyWarning() {
+export function ShowRecoveryPhraseWarning() {
   const classes = useStyles();
   const background = useBackgroundClient();
   const nav = useNavStack();
@@ -103,29 +90,25 @@ export function ShowPrivateKeyWarning() {
 
   useEffect(() => {
     const navButton = nav.navButtonRight;
-    nav.setTitle("Show private key");
+    nav.setTitle("Secret recovery phrase");
     return () => {
       nav.setNavButtonRight(navButton);
     };
   }, []);
 
   const _next = async () => {
-    const activeWallet = await background.request({
-      method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
-      params: [],
-    });
-    let privateKey;
+    let mnemonic;
     try {
-      privateKey = await background.request({
-        method: UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
-        params: [password, activeWallet],
+      mnemonic = await background.request({
+        method: UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC,
+        params: [password],
       });
     } catch (e) {
       console.error(e);
       setError(true);
       return;
     }
-    nav.push("show-private-key", { privateKey });
+    nav.push("show-secret-phrase", { mnemonic });
   };
 
   return (
@@ -155,7 +138,7 @@ export function ShowPrivateKeyWarning() {
                   }}
                 />
               </ListItemIcon>
-              Backpack support will never ask for your private key.
+              Backpack support will never ask for your secret phrase.
             </ListItem>
             <ListItem className={classes.listItemRoot}>
               <ListItemIcon className={classes.listItemIconRoot}>
@@ -167,7 +150,7 @@ export function ShowPrivateKeyWarning() {
                   }}
                 />
               </ListItemIcon>
-              Never share your private key or enter it into an app or website.
+              Never share your secret phrase or enter it into an app or website.
             </ListItem>
             <ListItem
               className={classes.listItemRoot}
@@ -179,7 +162,7 @@ export function ShowPrivateKeyWarning() {
                   style={{ height: "20px", width: "20px" }}
                 />
               </ListItemIcon>
-              Anyone with your private key will have complete control of your
+              Anyone with your secret phrase will have complete control of your
               account.
             </ListItem>
           </List>
@@ -205,7 +188,7 @@ export function ShowPrivateKeyWarning() {
           />
         </Box>
         <DangerButton
-          label="Show private key"
+          label="Show phrase"
           onClick={_next}
           disabled={password.length === 0}
         />
@@ -214,14 +197,11 @@ export function ShowPrivateKeyWarning() {
   );
 }
 
-export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
+export function ShowRecoveryPhrase({ mnemonic }: { mnemonic: string }) {
   const classes = useStyles();
-  const { close } = useDrawerContext();
   const nav = useNavStack();
-
-  useEffect(() => {
-    nav.setTitle("Private key");
-  }, []);
+  const { close } = useDrawerContext();
+  const mnemonicWords = mnemonic.split(" ");
 
   return (
     <Box
@@ -232,27 +212,21 @@ export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
         justifyContent: "space-between",
       }}
     >
-      <Box>
-        <Box sx={{ margin: "32px 24px 0 24px" }}>
-          <HeaderIcon
-            icon={<EyeIcon />}
-            style={{ width: "40px", height: "40px", marginBottom: "24px" }}
-          />
-          <Header text="Private key" style={{ textAlign: "center" }} />
-          <SubtextParagraph style={{ textAlign: "center", fontSize: "14px" }}>
-            Never give out your private key
-          </SubtextParagraph>
-        </Box>
-        <Box sx={{ margin: "0 16px" }}>
-          <TextField
-            rows={3}
-            readOnly={true}
-            value={privateKey}
-            rootClass={classes.privateKeyField}
-          />
-          <Box sx={{ marginTop: "4px" }}>
-            <CopyButton text={privateKey} icon={<ContentCopyIcon />} />
-          </Box>
+      <Box sx={{ margin: "32px 24px 0 24px" }}>
+        <HeaderIcon
+          icon={<EyeIcon />}
+          style={{ width: "40px", height: "40px", marginBottom: "24px" }}
+        />
+        <Header text="Recovery phrase" style={{ textAlign: "center" }} />
+        <SubtextParagraph style={{ textAlign: "center", fontSize: "14px" }}>
+          Use these {mnemonicWords.length} words to recover your wallet
+        </SubtextParagraph>
+        <MnemonicInputFields
+          mnemonicWords={mnemonicWords}
+          rootClass={classes.mnemonicInputRoot}
+        />
+        <Box sx={{ marginTop: "4px" }}>
+          <CopyButton text={mnemonic} icon={<ContentCopyIcon />} />
         </Box>
       </Box>
       <Box

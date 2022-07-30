@@ -22,7 +22,7 @@ import { Nfts } from "../../Unlocked/Nfts";
 import { Swap } from "../../Unlocked/Swap";
 import { NftsDetail } from "../../Unlocked/Nfts/Detail";
 import { NftsCollection } from "../../Unlocked/Nfts/Collection";
-import { SettingsButton } from "../../Settings";
+import { SettingsButton } from "../../Unlocked/Settings";
 import { WithNav, NavBackButton } from "./Nav";
 import { WithMotion } from "./NavStack";
 

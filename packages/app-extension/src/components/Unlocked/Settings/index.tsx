@@ -32,17 +32,17 @@ import {
   SubtextParagraph,
   TextField,
   WalletAddress,
-} from "../../components/common";
+} from "../../../components/common";
 import {
   WithDrawer,
   CloseButton,
   useDrawerContext,
-} from "../common/Layout/Drawer";
+} from "../../common/Layout/Drawer";
 import {
   useNavStack,
   NavStackEphemeral,
   NavStackScreen,
-} from "../common/Layout/NavStack";
+} from "../../common/Layout/NavStack";
 import {
   ShowPrivateKeyWarning,
   ShowPrivateKey,
@@ -58,9 +58,9 @@ import { PreferencesSolanaConnection } from "./Preferences/Solana/ConnectionSwit
 import { PreferencesSolanaCommitment } from "./Preferences/Solana/Commitment";
 import { PreferencesSolanaExplorer } from "./Preferences/Solana/Explorer";
 import { ChangePassword } from "./YourAccount/ChangePassword";
-import { ResetWarning } from "../Locked/Reset/ResetWarning";
-import { Reset } from "../Locked/Reset";
-import { RecentActivityButton } from "../Unlocked/Balances/RecentActivity";
+import { ResetWarning } from "../../Locked/Reset/ResetWarning";
+import { Reset } from "../../Locked/Reset";
+import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { AddConnectWalletMenu } from "./AddConnectWallet";
 import { YourAccount } from "./YourAccount";
 import { EditWallets } from "./YourAccount/EditWallets";
