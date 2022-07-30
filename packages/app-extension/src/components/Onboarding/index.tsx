@@ -14,7 +14,7 @@ import { SetupComplete } from "../Account/SetupComplete";
 import { ImportAccounts } from "../Account/ImportAccounts";
 import type { SelectedAccount } from "../Account/ImportAccounts";
 import { OnboardingWelcome } from "./OnboardingWelcome";
-import { WithNav, NavBackButton } from "../Layout/Nav";
+import { WithNav, NavBackButton } from "../common/Layout/Nav";
 
 export type OnboardingFlows = "create-wallet" | "import-wallet" | null;
 

@@ -5,8 +5,11 @@ import { Button } from "@coral-xyz/react-xnft-renderer";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { useBlockchainTokenAccount } from "@coral-xyz/recoil";
 import { RecentActivityList } from "../RecentActivity";
-import { WithDrawer, CloseButton } from "../../../Layout/Drawer";
-import { NavStackEphemeral, NavStackScreen } from "../../../Layout/NavStack";
+import { WithDrawer, CloseButton } from "../../../common/Layout/Drawer";
+import {
+  NavStackEphemeral,
+  NavStackScreen,
+} from "../../../common/Layout/NavStack";
 import { TransferWidget } from "../TransferWidget";
 
 const useStyles = styles((theme) => ({

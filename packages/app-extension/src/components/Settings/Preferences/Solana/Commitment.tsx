@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Commitment } from "@solana/web3.js";
 import { UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE } from "@coral-xyz/common";
 import { useBackgroundClient, useSolanaCommitment } from "@coral-xyz/recoil";
-import { useNavStack } from "../../../Layout/NavStack";
+import { useNavStack } from "../../../common/Layout/NavStack";
 import { Checkmark } from "./ConnectionSwitch";
 import { SettingsList } from "../../../common/Settings/List";
 

@@ -15,8 +15,8 @@ import { Plugin } from "@coral-xyz/react-xnft-renderer";
 import { Typography } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { walletAddressDisplay } from "../common";
-import { Scrollbar } from "../Layout/Scrollbar";
-import { WithMiniDrawer } from "../Layout/Drawer";
+import { Scrollbar } from "../common/Layout/Scrollbar";
+import { WithMiniDrawer } from "../common/Layout/Drawer";
 import { BottomCard } from "../Unlocked/Balances/TokensWidget/Send";
 
 const useStyles = styles((theme) => ({

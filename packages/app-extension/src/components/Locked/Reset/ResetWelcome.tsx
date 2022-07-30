@@ -5,7 +5,7 @@ import {
   SecondaryButton,
   DangerButton,
 } from "../../common";
-import { useNavStack } from "../../Layout/NavStack";
+import { useNavStack } from "../../common/Layout/NavStack";
 
 export function ResetWelcome({ onClose }: { onClose: () => void }) {
   const nav = useNavStack();

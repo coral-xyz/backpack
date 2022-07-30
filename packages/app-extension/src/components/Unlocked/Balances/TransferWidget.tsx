@@ -6,7 +6,7 @@ import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
 import { Send } from "./TokensWidget/Send";
-import { useNavStack } from "../../Layout/NavStack";
+import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTable } from "../../common/TokenTable";
 import { Send as TokenSend } from "./TokensWidget/Send";

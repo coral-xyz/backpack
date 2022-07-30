@@ -9,8 +9,11 @@ import {
   WithDrawer,
   WithMiniDrawer,
   CloseButton,
-} from "../../Layout/Drawer";
-import { NavStackEphemeral, NavStackScreen } from "../../Layout/NavStack";
+} from "../../common/Layout/Drawer";
+import {
+  NavStackEphemeral,
+  NavStackScreen,
+} from "../../common/Layout/NavStack";
 import { SendConfirmationCard } from "../Balances/TokensWidget/Send";
 
 const useStyles = styles((theme) => ({

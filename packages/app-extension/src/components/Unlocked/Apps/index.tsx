@@ -10,7 +10,7 @@ import {
 } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
 import { Simulator } from "./Simulator";
-import { WithDrawer } from "../../Layout/Drawer";
+import { WithDrawer } from "../../common/Layout/Drawer";
 import { PluginDisplay } from "./Plugin";
 
 const ICON_WIDTH = 64;

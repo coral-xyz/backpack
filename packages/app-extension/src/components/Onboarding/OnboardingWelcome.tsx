@@ -24,11 +24,11 @@ import {
 } from "@mui/icons-material";
 import { DiscordIcon } from "../common/Icon";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { ActionCard } from "../Layout/ActionCard";
+import { ActionCard } from "../common/Layout/ActionCard";
 import { BackpackHeader } from "../Locked";
-import { NAV_BAR_HEIGHT } from "../Layout/Nav";
+import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import { List, ListItem } from "../common/List";
-import { WithContaineredDrawer } from "../Layout/Drawer";
+import { WithContaineredDrawer } from "../common/Layout/Drawer";
 import type { OnboardingFlows } from "./";
 
 export function OnboardingWelcome({

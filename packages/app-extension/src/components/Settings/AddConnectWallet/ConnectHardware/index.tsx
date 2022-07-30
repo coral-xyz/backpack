@@ -9,7 +9,7 @@ import { ConnectHardwareSuccess } from "./ConnectHardwareSuccess";
 import { ImportAccounts } from "../../../Account/ImportAccounts";
 import type { SelectedAccount } from "../../../Account/ImportAccounts";
 import { OptionsContainer } from "../../../Onboarding";
-import { WithNav, NavBackButton } from "../../../Layout/Nav";
+import { WithNav, NavBackButton } from "../../../common/Layout/Nav";
 
 export function ConnectHardware({ onComplete }: { onComplete: () => void }) {
   const background = useBackgroundClient();
