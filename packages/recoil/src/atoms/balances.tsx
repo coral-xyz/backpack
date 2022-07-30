@@ -1,7 +1,7 @@
 import { selector, selectorFamily } from "recoil";
-import { blockchainKeys } from "./blockchains";
-import { blockchainTokensSorted } from "./token";
 import { Blockchain } from "@coral-xyz/common";
+import { blockchainKeys } from "./blockchains";
+import { blockchainTokensSorted } from "./solana/token";
 
 export const total = selector({
   key: "total",

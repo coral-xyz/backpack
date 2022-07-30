@@ -44,7 +44,6 @@ const useStyles = styles((theme) => ({
 export function TokenTable() {
   const blockchain = Blockchain.SOLANA;
   const title = "Tokens";
-  const limit = 3;
 
   const blockchainLogo = useBlockchainLogo(blockchain);
   const tokenAccountsSorted = useBlockchainTokensSorted(blockchain);

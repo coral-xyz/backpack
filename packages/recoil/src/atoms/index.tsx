@@ -7,7 +7,6 @@ export * from "./navigation";
 export * from "./plugins";
 export * from "./price-data";
 export * from "./settings";
-export * from "./token";
 export * from "./transaction-request";
 export * from "./wallet";
 export * from "./solana";
