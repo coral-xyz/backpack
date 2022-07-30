@@ -7,8 +7,8 @@ import {
   HeaderIcon,
   PrimaryButton,
   SubtextParagraph,
-} from "../../common";
-import { HardwareWalletIcon } from "../../Icon";
+} from "../../../common";
+import { HardwareWalletIcon } from "../../../Icon";
 import { ConnectHardwareFailure } from "./ConnectHardwareFailure";
 import { ConnectHardwareApp } from "./ConnectHardwareApp";
 

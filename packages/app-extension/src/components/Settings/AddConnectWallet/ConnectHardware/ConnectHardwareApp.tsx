@@ -1,12 +1,11 @@
-import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
 import {
   Header,
   HeaderIcon,
   PrimaryButton,
   SubtextParagraph,
-} from "../../common";
-import { SolanaIcon } from "../../Icon";
+} from "../../../common";
+import { SolanaIcon } from "../../../Icon";
 
 export function ConnectHardwareApp({ onNext }: { onNext: () => void }) {
   return (

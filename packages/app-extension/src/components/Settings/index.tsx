@@ -6,7 +6,6 @@ import {
   Add,
   Lock,
   Help,
-  Public,
   AccountCircleOutlined,
   Tab as WindowIcon,
   Settings,

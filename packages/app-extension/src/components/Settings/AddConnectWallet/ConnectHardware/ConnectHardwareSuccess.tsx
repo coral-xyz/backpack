@@ -4,10 +4,10 @@ import {
   HeaderIcon,
   PrimaryButton,
   SubtextParagraph,
-} from "../../common";
-import { HardwareWalletIcon } from "../../Icon";
+} from "../../../common";
+import { SuccessIcon } from "../../../Icon";
 
-export function ConnectHardwareWelcome({ onNext }: { onNext: () => void }) {
+export function ConnectHardwareSuccess({ onNext }: { onNext: () => void }) {
   return (
     <Box
       sx={{
@@ -18,10 +18,10 @@ export function ConnectHardwareWelcome({ onNext }: { onNext: () => void }) {
       }}
     >
       <Box sx={{ margin: "0 24px" }}>
-        <HeaderIcon icon={<HardwareWalletIcon />} />
-        <Header text="Connect a hardware wallet" />
+        <HeaderIcon icon={<SuccessIcon />} />
+        <Header text="Hardware wallet connected" />
         <SubtextParagraph>
-          Use your hardware wallet with Backpack.
+          You can now access your hardware wallet with Backpack.
         </SubtextParagraph>
       </Box>
       <Box
@@ -33,7 +33,7 @@ export function ConnectHardwareWelcome({ onNext }: { onNext: () => void }) {
           justifyContent: "space-between",
         }}
       >
-        <PrimaryButton label="Next" onClick={onNext} />
+        <PrimaryButton label="All done!" onClick={onNext} />
       </Box>
     </Box>
   );

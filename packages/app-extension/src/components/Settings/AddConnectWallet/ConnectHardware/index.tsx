@@ -6,10 +6,10 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { ConnectHardwareWelcome } from "./ConnectHardwareWelcome";
 import { ConnectHardwareSearching } from "./ConnectHardwareSearching";
 import { ConnectHardwareSuccess } from "./ConnectHardwareSuccess";
-import { ImportAccounts } from "../../Account/ImportAccounts";
-import type { SelectedAccount } from "../../Account/ImportAccounts";
-import { OptionsContainer } from "../../Onboarding";
-import { WithNav, NavBackButton } from "../../Layout/Nav";
+import { ImportAccounts } from "../../../Account/ImportAccounts";
+import type { SelectedAccount } from "../../../Account/ImportAccounts";
+import { OptionsContainer } from "../../../Onboarding";
+import { WithNav, NavBackButton } from "../../../Layout/Nav";
 
 export function ConnectHardware({ onComplete }: { onComplete: () => void }) {
   const background = useBackgroundClient();
