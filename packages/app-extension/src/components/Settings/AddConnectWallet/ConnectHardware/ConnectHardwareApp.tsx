@@ -5,7 +5,7 @@ import {
   PrimaryButton,
   SubtextParagraph,
 } from "../../../common";
-import { SolanaIcon } from "../../../Icon";
+import { SolanaIcon } from "../../../common/Icon";
 
 export function ConnectHardwareApp({ onNext }: { onNext: () => void }) {
   return (

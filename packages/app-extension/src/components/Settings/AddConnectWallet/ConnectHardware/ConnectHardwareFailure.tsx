@@ -5,7 +5,7 @@ import {
   PrimaryButton,
   SubtextParagraph,
 } from "../../../common";
-import { SadFaceIcon } from "../../../Icon";
+import { SadFaceIcon } from "../../../common/Icon";
 
 export function ConnectHardwareFailure({ onRetry }: { onRetry: () => void }) {
   return (

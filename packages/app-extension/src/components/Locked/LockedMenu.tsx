@@ -17,7 +17,7 @@ import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../Layout/NavStack";
-import { DiscordIcon } from "../Icon";
+import { DiscordIcon } from "../common/Icon";
 
 export function LockedMenu({ menuOpen, setMenuOpen }: any) {
   const theme = useCustomTheme() as any;

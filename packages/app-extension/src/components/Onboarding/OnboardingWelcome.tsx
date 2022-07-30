@@ -22,7 +22,7 @@ import {
   Support,
   Twitter,
 } from "@mui/icons-material";
-import { DiscordIcon } from "../Icon";
+import { DiscordIcon } from "../common/Icon";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ActionCard } from "../Layout/ActionCard";
 import { BackpackHeader } from "../Locked";

@@ -5,7 +5,7 @@ import {
   PrimaryButton,
   SubtextParagraph,
 } from "../../../common";
-import { SuccessIcon } from "../../../Icon";
+import { SuccessIcon } from "../../../common/Icon";
 
 export function ConnectHardwareSuccess({ onNext }: { onNext: () => void }) {
   return (

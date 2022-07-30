@@ -19,7 +19,7 @@ import {
   SubtextParagraph,
   TextField,
 } from "../../common";
-import { EyeIcon, WarningIcon } from "../../Icon";
+import { EyeIcon, WarningIcon } from "../../common/Icon";
 import { useNavStack } from "../../Layout/NavStack";
 import { useDrawerContext } from "../../Layout/Drawer";
 

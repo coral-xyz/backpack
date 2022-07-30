@@ -5,7 +5,7 @@ import {
   PrimaryButton,
   SubtextParagraph,
 } from "../../../common";
-import { HardwareWalletIcon } from "../../../Icon";
+import { HardwareWalletIcon } from "../../../common/Icon";
 
 export function ConnectHardwareWelcome({ onNext }: { onNext: () => void }) {
   return (

@@ -9,7 +9,7 @@ import {
 import { useCustomTheme } from "@coral-xyz/themes";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { ActionCard } from "../../Layout/ActionCard";
-import { HardwareWalletIcon } from "../../Icon";
+import { HardwareWalletIcon } from "../../common/Icon";
 import { Header, SubtextParagraph } from "../../common";
 import { useNavStack } from "../../Layout/NavStack";
 import { useDrawerContext } from "../../Layout/Drawer";

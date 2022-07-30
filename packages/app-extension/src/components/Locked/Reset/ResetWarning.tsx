@@ -9,7 +9,7 @@ import {
   DangerButton,
   SecondaryButton,
 } from "../../common";
-import { WarningIcon } from "../../Icon";
+import { WarningIcon } from "../../common/Icon";
 import { useNavStack } from "../../Layout/NavStack";
 import { useDrawerContext } from "../../Layout/Drawer";
 

@@ -9,7 +9,7 @@ import {
   TwitterIcon,
   CashIcon,
   DiscordIcon,
-} from "../Icon";
+} from "../common/Icon";
 
 export function SetupComplete({ onClose }: { onClose: () => void }) {
   return (

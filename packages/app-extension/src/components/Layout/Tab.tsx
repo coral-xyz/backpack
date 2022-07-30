@@ -9,7 +9,7 @@ import {
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
-import { BalancesIcon, GridIcon, ImageIcon, SwapIcon } from "../Icon";
+import { BalancesIcon, GridIcon, ImageIcon, SwapIcon } from "../common/Icon";
 
 const TAB_HEIGHT = 64;
 

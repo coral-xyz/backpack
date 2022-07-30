@@ -7,7 +7,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Close, ExpandMore, SwapVert } from "@mui/icons-material";
-import { CheckIcon, CrossIcon } from "../Icon";
+import { CheckIcon, CrossIcon } from "../common/Icon";
 import {
   useBlockchainTokenAccount,
   useSplTokenRegistry,
