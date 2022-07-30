@@ -8,7 +8,8 @@
     "web": "expo start --web",
     "eject": "expo eject",
     "e2e": "jest",
-    "lint:fix": "eslint 'src/**/*' --fix"
+    "lint:fix": "eslint 'src/**/*' --fix",
+    "postinstall": "cd ../.. && yarn build"
   },
   "dependencies": {
     "@coral-xyz/common": "*",
@@ -18,6 +19,7 @@
     "expo": "~45.0.6",
     "expo-checkbox": "~2.1.0",
     "expo-constants": "^13.1.1",
+    "expo-dev-client": "~1.0.1",
     "expo-secure-store": "^11.2.0",
     "expo-status-bar": "~1.3.0",
     "expo-updates": "~0.13.3",
