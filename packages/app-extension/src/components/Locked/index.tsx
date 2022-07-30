@@ -10,23 +10,8 @@ export const NAV_BAR_HEIGHT = 56;
 
 export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const theme = useCustomTheme();
-  return (
-    <Box
-      sx={{
-        backgroundColor: theme.custom.colors.nav,
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-      }}
-    >
-      <LockedInner onUnlock={onUnlock} />
-    </Box>
-  );
-}
-
-function LockedInner({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const background = useBackgroundClient();
-  const theme = useCustomTheme();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState<boolean>(false);
@@ -46,58 +31,68 @@ function LockedInner({ onUnlock }: { onUnlock?: () => Promise<void> }) {
       setError(true);
     }
   };
+
   return (
     <Box
       sx={{
         backgroundColor: theme.custom.colors.nav,
-        textAlign: "center",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
         height: "100%",
       }}
     >
-      <Box>
-        <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-        <BackpackHeader />
-      </Box>
-      <Box sx={{ marginBottom: "84px" }}>
-        <form onSubmit={_onUnlock}>
-          <Box sx={{ margin: "0 12px 12px 12px" }}>
-            <TextField
-              autoFocus={true}
-              isError={error}
-              placeholder={"Password"}
-              type={"password"}
-              value={password}
-              setValue={setPassword}
-            />
-          </Box>
-          <Box sx={{ mx: "12px" }}>
-            <PrimaryButton label="Unlock" type="submit" />
-          </Box>
-        </form>
-        <Box
-          sx={{
-            position: "absolute",
-            width: "100%",
-            display: error ? "block" : "none",
-            mt: "24px",
-          }}
-        >
-          <Typography
+      <Box
+        sx={{
+          backgroundColor: theme.custom.colors.nav,
+          textAlign: "center",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          height: "100%",
+        }}
+      >
+        <Box>
+          <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+          <BackpackHeader />
+        </Box>
+        <Box sx={{ marginBottom: "84px" }}>
+          <form onSubmit={_onUnlock}>
+            <Box sx={{ margin: "0 12px 12px 12px" }}>
+              <TextField
+                autoFocus={true}
+                isError={error}
+                placeholder={"Password"}
+                type={"password"}
+                value={password}
+                setValue={setPassword}
+              />
+            </Box>
+            <Box sx={{ mx: "12px" }}>
+              <PrimaryButton label="Unlock" type="submit" />
+            </Box>
+          </form>
+          <Box
             sx={{
-              color: theme.custom.colors.secondary,
-              fontSize: "16px",
-              textAlign: "center",
-              cursor: "pointer",
-              lineHeight: "24px",
-              fontWeight: 500,
+              position: "absolute",
+              width: "100%",
+              display: error ? "block" : "none",
+              mt: "24px",
             }}
-            onClick={() => setMenuOpen(true)}
           >
-            Forgot Password?
-          </Typography>
+            <Typography
+              sx={{
+                color: theme.custom.colors.secondary,
+                fontSize: "16px",
+                textAlign: "center",
+                cursor: "pointer",
+                lineHeight: "24px",
+                fontWeight: 500,
+              }}
+              onClick={() => setMenuOpen(true)}
+            >
+              Forgot Password?
+            </Typography>
+          </Box>
         </Box>
       </Box>
     </Box>

@@ -231,30 +231,3 @@ function ActiveWallet() {
     </Typography>
   );
 }
-
-function ConnectContent({ origin }: any) {
-  const classes = useStyles();
-  const url = new URL(origin);
-  return (
-    <>
-      <Typography className={classes.contentTitle}>
-        Connect Wallet to {url.hostname}
-      </Typography>
-      <Typography className={classes.contentSubTitle}>
-        By approving, the app can
-      </Typography>
-      <Typography className={classes.contentBullet}>
-        1.{" "}
-        <span style={{ marginLeft: "8px" }}>
-          View your wallet abalance and activity
-        </span>
-      </Typography>
-      <Typography className={classes.contentBullet}>
-        2.{" "}
-        <span style={{ marginLeft: "8px" }}>
-          Request approval for transactions
-        </span>
-      </Typography>
-    </>
-  );
-}
