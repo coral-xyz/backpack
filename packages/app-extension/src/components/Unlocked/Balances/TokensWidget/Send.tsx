@@ -154,11 +154,13 @@ export function Send({
   const amountFloat = parseFloat(amount.toString());
 
   //
-  // When sending SOL, account for the tx fee.
+  // When sending SOL, account for the tx fee and rent exempt minimum.
   //
   let lamportsOffset = 0.0;
   if (token.mint === SOL_NATIVE_MINT) {
-    lamportsOffset = 0.000005;
+    const txFee = 0.000005;
+    const rentExemptMinimum = 0.00203928;
+    lamportsOffset = txFee + rentExemptMinimum;
   }
 
   // This effect validates the account address given.
