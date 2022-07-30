@@ -26,8 +26,10 @@ const useStyles = styles((theme) => ({
   },
   noRecentActivityLabel: {
     fontWeight: 500,
-    fontSize: "14px",
-    color: theme.custom.colors.fontColor,
+    fontSize: "16px",
+    padding: "16px",
+    textAlign: "center",
+    color: theme.custom.colors.secondary,
   },
   recentActivityListItemIconContainer: {
     width: "44px",
