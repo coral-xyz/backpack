@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import { styles } from "@coral-xyz/themes";
 import { Box, List, ListItem, ListItemIcon } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ChatIcon from "@mui/icons-material/Chat";
 import WebIcon from "@mui/icons-material/Web";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
+import { styles } from "@coral-xyz/themes";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC } from "@coral-xyz/common";
 import {
   CopyButton,
   MnemonicInputFields,
-} from "../../../Account/MnemonicInput";
+} from "../../../common/Account/MnemonicInput";
 import {
   DangerButton,
   Header,

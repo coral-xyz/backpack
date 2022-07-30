@@ -8,11 +8,11 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { CreatePassword } from "../Account/CreatePassword";
-import { MnemonicInput } from "../Account/MnemonicInput";
-import { SetupComplete } from "../Account/SetupComplete";
-import { ImportAccounts } from "../Account/ImportAccounts";
-import type { SelectedAccount } from "../Account/ImportAccounts";
+import { CreatePassword } from "../common/Account/CreatePassword";
+import { MnemonicInput } from "../common/Account/MnemonicInput";
+import { SetupComplete } from "../common/Account/SetupComplete";
+import { ImportAccounts } from "../common/Account/ImportAccounts";
+import type { SelectedAccount } from "../common/Account/ImportAccounts";
 import { OnboardingWelcome } from "./OnboardingWelcome";
 import { WithNav, NavBackButton } from "../common/Layout/Nav";
 

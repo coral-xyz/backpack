@@ -7,7 +7,7 @@ import {
   PrimaryButton,
   TextField,
   CheckboxForm,
-} from "../common";
+} from "../../common";
 
 const useStyles = makeStyles(() => ({
   passwordFieldRoot: {

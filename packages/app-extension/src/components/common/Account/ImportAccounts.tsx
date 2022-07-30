@@ -6,6 +6,12 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { useBackgroundClient, useAnchorContext } from "@coral-xyz/recoil";
 import {
+  DerivationPath,
+  UI_RPC_METHOD_PREVIEW_PUBKEYS,
+  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
+} from "@coral-xyz/common";
+import { useCustomTheme } from "@coral-xyz/themes";
+import {
   Checkbox,
   Header,
   Loading,
@@ -13,14 +19,8 @@ import {
   PrimaryButton,
   SubtextParagraph,
   walletAddressDisplay,
-} from "../common";
-import { WithMiniDrawer } from "../common/Layout/Drawer";
-import {
-  DerivationPath,
-  UI_RPC_METHOD_PREVIEW_PUBKEYS,
-  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-} from "@coral-xyz/common";
-import { useCustomTheme } from "@coral-xyz/themes";
+} from "../../common";
+import { WithMiniDrawer } from "../../common/Layout/Drawer";
 
 type Account = {
   publicKey: anchor.web3.PublicKey;

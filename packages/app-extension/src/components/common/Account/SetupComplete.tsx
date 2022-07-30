@@ -1,7 +1,7 @@
 import { Typography, Box, Grid } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Header, SubtextParagraph, PrimaryButton } from "../common";
-import { ActionCard } from "../common/Layout/ActionCard";
+import { Header, SubtextParagraph, PrimaryButton } from "../../common";
+import { ActionCard } from "../../common/Layout/ActionCard";
 import {
   PinIcon,
   ExtensionIcon,
@@ -9,7 +9,7 @@ import {
   TwitterIcon,
   CashIcon,
   DiscordIcon,
-} from "../common/Icon";
+} from "../../common/Icon";
 
 export function SetupComplete({ onClose }: { onClose: () => void }) {
   return (

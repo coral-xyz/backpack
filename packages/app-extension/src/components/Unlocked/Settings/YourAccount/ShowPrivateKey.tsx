@@ -10,7 +10,7 @@ import {
   UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
 } from "@coral-xyz/common";
-import { CopyButton } from "../../../Account/MnemonicInput";
+import { CopyButton } from "../../../common/Account/MnemonicInput";
 import {
   DangerButton,
   Header,

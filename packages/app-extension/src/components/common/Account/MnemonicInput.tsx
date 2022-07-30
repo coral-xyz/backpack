@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Tooltip,
   Box,
@@ -7,20 +8,19 @@ import {
   InputAdornment,
   Link,
 } from "@mui/material";
-import { useState, useEffect, ClipboardEventHandler } from "react";
 import makeStyles from "@mui/styles/makeStyles";
+import {
+  UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
+  UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
+} from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import {
   CheckboxForm,
   Header,
   SubtextParagraph,
   PrimaryButton,
   SecondaryButton,
-} from "../common";
-import {
-  UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
-  UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
-} from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+} from "../../common";
 
 const useStyles = makeStyles((theme: any) => ({
   mnemonicInputRoot: {
