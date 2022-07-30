@@ -30,8 +30,26 @@ const BUTTON_FONT_COLOR = FONT_COLOR;
 const BORDER_COLOR = "#393C43";
 const BORDER_COLOR_1 = "#52525B";
 
+const componentOverrides = {
+  MuiPaper: {
+    styleOverrides: {
+      root: {
+        backgroundImage: "none",
+      },
+    },
+  },
+};
+
 export const darkTheme: any = {
   ...baseTheme,
+  palette: {
+    mode: "dark",
+    background: {
+      default: BACKGROUND_COLOR_0,
+      paper: BACKGROUND_COLOR_1,
+    },
+  },
+  components: componentOverrides,
   custom: {
     colors: {
       background: BACKGROUND_COLOR_0,
@@ -65,6 +83,7 @@ export const darkTheme: any = {
 
 export const lightTheme: any = {
   ...baseTheme,
+  components: componentOverrides,
   custom: {
     colors: {
       ...darkTheme.custom.colors,
