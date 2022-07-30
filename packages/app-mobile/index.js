@@ -1,10 +1,10 @@
-require("react-native-get-random-values");
-require("react-native-url-polyfill/auto");
+import "react-native-get-random-values";
+import "react-native-url-polyfill/auto";
 
 import {
   BACKGROUND_SERVICE_WORKER_READY,
   useStore,
-  WEB_VIEW_EVENTS
+  WEB_VIEW_EVENTS,
 } from "@coral-xyz/common";
 import { registerRootComponent } from "expo";
 import Constants from "expo-constants";
@@ -50,12 +50,13 @@ function Background() {
   const setInjectJavaScript = useStore((state) => state.setInjectJavaScript);
   const ref = useRef(null);
 
-  console.log({ WEBVIEW_URI });
+  alert(WEBVIEW_URI);
 
   return (
     <View
       style={{
-        display: "none",
+        // display: "none",
+        height: 100,
       }}
     >
       <WebView
@@ -68,6 +69,7 @@ function Background() {
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
           if (msg.type === BACKGROUND_SERVICE_WORKER_READY) {
+            alert("ready");
             setInjectJavaScript(ref.current.injectJavaScript);
           } else {
             WEB_VIEW_EVENTS.emit("message", msg);
