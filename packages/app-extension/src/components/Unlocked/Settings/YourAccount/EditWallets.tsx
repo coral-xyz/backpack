@@ -1,4 +1,5 @@
-import { useBlockchains, useWalletPublicKeys } from "@coral-xyz/recoil";
+import { useWalletPublicKeys } from "@coral-xyz/recoil";
+import { Blockchain } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Add, MoreHoriz } from "@mui/icons-material";
 import { Typography } from "@mui/material";
@@ -9,9 +10,7 @@ import { useNavStack } from "../../../common/Layout/NavStack";
 export function EditWallets() {
   const theme = useCustomTheme();
   const nav = useNavStack();
-  const blockchains = useBlockchains();
   const wallets = useWalletPublicKeys();
-
   useEffect(() => {
     const title = nav.title;
     nav.setTitle("Edit wallets");
@@ -27,14 +26,11 @@ export function EditWallets() {
   // TODO: filter wallets by iterated blockchain keyring name
   return (
     <div style={{ paddingTop: "16px", height: "100%" }}>
-      {blockchains.map((b) => (
-        <BlockchainWalletList
-          key={b}
-          name={b}
-          wallets={wallets}
-          onAddConnectWallet={() => nav.push("add-connect-wallet")}
-        />
-      ))}
+      <BlockchainWalletList
+        name={Blockchain.SOLANA}
+        wallets={wallets}
+        onAddConnectWallet={() => nav.push("add-connect-wallet")}
+      />
     </div>
   );
 }

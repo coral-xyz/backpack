@@ -1,7 +1,7 @@
 import { formatUSD } from "@coral-xyz/common";
 import { Typography } from "@mui/material";
 import { styles } from "@coral-xyz/themes";
-import { useTotal } from "@coral-xyz/recoil";
+import { useSolanaBalance } from "@coral-xyz/recoil";
 
 const useStyles = styles((theme) => ({
   balancesHeaderContainer: {
@@ -43,7 +43,7 @@ const useStyles = styles((theme) => ({
 
 export function BalanceSummaryWidget() {
   const classes = useStyles();
-  const { totalBalance, totalChange, percentChange } = useTotal();
+  const { totalBalance, totalChange, percentChange } = useSolanaBalance();
   return (
     <div className={classes.balancesHeaderContainer}>
       <div>
