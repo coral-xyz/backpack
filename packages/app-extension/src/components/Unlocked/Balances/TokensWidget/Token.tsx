@@ -4,7 +4,7 @@ import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Button } from "@coral-xyz/react-xnft-renderer";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { useBlockchainTokenAccount } from "@coral-xyz/recoil";
-import { RecentActivitySmall } from "../RecentActivity";
+import { RecentActivityList } from "../RecentActivity";
 import { WithDrawer, CloseButton } from "../../../Layout/Drawer";
 import { NavStackEphemeral, NavStackScreen } from "../../../Layout/NavStack";
 import { TransferWidget } from "../TransferWidget";
@@ -62,7 +62,7 @@ export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
   return (
     <div>
       <TokenHeader blockchain={blockchain} address={address} />
-      <RecentActivitySmall address={address} />
+      <RecentActivityList address={address} />
     </div>
   );
 }
