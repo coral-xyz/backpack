@@ -21,11 +21,14 @@
           }
         );
 
+        const postMessage = (data) =>
+          window.ReactNativeWebView?.postMessage(JSON.stringify(data));
+
         //
         // Receive messages from the service worker..
         //
         navigator.serviceWorker.onmessage = (event) => {
-          window.ReactNativeWebView?.postMessage(JSON.stringify(event.data));
+          postMessage(event.data);
         };
 
         //
@@ -36,6 +39,8 @@
         };
 
         document.querySelector("body").style.background = "green";
+
+        postMessage({ type: "service-worker-ready" });
       })();
     </script>
   </body>
