@@ -16,7 +16,7 @@ import {
   SwapProvider,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Blockchain } from "@coral-xyz/common";
+import { SOL_NATIVE_MINT, Blockchain } from "@coral-xyz/common";
 import { TextField, TextFieldLabel, PrimaryButton } from "../common";
 import { WithHeaderButton } from "./Balances/TokensWidget/Token";
 import { BottomCard } from "./Balances/TokensWidget/Send";
@@ -204,7 +204,6 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
     fromAmount,
     setFromAmount,
     toAmount,
-    fromToken,
     fromMint,
     toMint,
     swapToFromMints,
@@ -249,12 +248,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
         <SwapTokensButton onClick={onSwapButtonClick} />
         <TextFieldLabel
           leftLabel={"You Pay"}
-          rightLabelComponent={
-            <MaxSwapAmount
-              blockchain={blockchain}
-              onSetAmount={_setFromAmount}
-            />
-          }
+          rightLabelComponent={<MaxSwapAmount onSetAmount={_setFromAmount} />}
         />
         <TextField
           placeholder={"0"}
@@ -355,20 +349,19 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
 }
 
 const MaxSwapAmount = ({
-  blockchain,
   onSetAmount,
 }: {
-  blockchain: Blockchain;
-  onSetAmount: (arg0: number) => void;
+  onSetAmount: (amount: number) => void;
 }) => {
   const theme = useCustomTheme();
-  const { fromToken } = useSwapContext();
-  const fromTokenData = useBlockchainTokenAccount(blockchain, fromToken);
+  const { fromMint } = useSwapContext();
+  const tokenAccountsSorted = useSwapTokenList(fromMint, true);
+  const balance =
+    tokenAccountsSorted.find((t) => t.mint === fromMint)?.nativeBalance || 0;
+
   return (
     <div
-      onClick={() =>
-        onSetAmount(fromTokenData ? fromTokenData.nativeBalance.toString() : 0)
-      }
+      onClick={() => onSetAmount(balance)}
       style={{
         fontWeight: 500,
         fontSize: "12px",
@@ -378,7 +371,7 @@ const MaxSwapAmount = ({
       }}
     >
       <span style={{ color: theme.custom.colors.secondary }}>Max: </span>
-      {fromTokenData ? fromTokenData.nativeBalance.toString() : "0"}
+      {balance}
     </div>
   );
 };

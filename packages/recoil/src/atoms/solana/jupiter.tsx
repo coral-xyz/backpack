@@ -4,6 +4,7 @@ import { Blockchain } from "@coral-xyz/common";
 import { blockchainTokensSorted } from "./token";
 import { splTokenRegistry } from "./token-registry";
 import { bootstrap } from "../bootstrap";
+import { SOL_NATIVE_MINT } from "@coral-xyz/common";
 
 export const JUPITER_BASE_URL = "https://quote-api.jup.ag/v1/";
 
@@ -32,7 +33,9 @@ export const walletJupiterTokens = selector({
     const inputMints = get(jupiterInputMints);
     const walletTokens = get(blockchainTokensSorted(Blockchain.SOLANA));
     // Only allow tokens that Jupiter allows.
-    return walletTokens.filter((t: any) => inputMints.includes(t.mint));
+    return walletTokens.filter(
+      (t: any) => inputMints.includes(t.mint) || t.mint === SOL_NATIVE_MINT
+    );
   },
 });
 

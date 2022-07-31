@@ -4,6 +4,7 @@ import { PublicKey, Transaction } from "@solana/web3.js";
 import {
   associatedTokenAddress,
   confirmTransaction,
+  SOL_NATIVE_MINT,
   USDC_MINT,
   WSOL_MINT,
   UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
@@ -126,7 +127,10 @@ export function SwapProvider(props: any) {
     setRoutes([]);
     setIsLoadingRoutes(true);
     const params = {
-      inputMint: fromMint,
+      // If the swap is from native SOL we want Jupiter to return WSOL routes
+      // because it does not support native SOL, but it can auto wrap and
+      // unwrap.
+      inputMint: fromMint === SOL_NATIVE_MINT ? WSOL_MINT : fromMint,
       outputMint: toMint,
       amount: (fromAmount! * 10 ** fromMintInfo.decimals).toString(),
       slippage: slippage.toString(),
@@ -144,7 +148,7 @@ export function SwapProvider(props: any) {
     const body = {
       route,
       userPublicKey: wallet.publicKey,
-      wrapUnwrapSOL: false,
+      wrapUnwrapSOL: fromMint === SOL_NATIVE_MINT,
     };
     const transactions = await (
       await fetch(`${JUPITER_BASE_URL}swap`, {
