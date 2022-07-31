@@ -1,6 +1,6 @@
 import { selector } from "recoil";
 import { SIMULATOR_PORT } from "@coral-xyz/common";
-import { activeWallet, connectionUrl } from "./solana/wallet";
+import { activeWallet, connectionUrl } from "./wallet";
 
 const OPEN_ORDERS_PLUGIN_URL = pluginURL("app");
 const OPEN_ORDERS_ICON_URL =

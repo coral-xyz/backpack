@@ -2,7 +2,7 @@ import { atom, atomFamily, selector, selectorFamily } from "recoil";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { Blockchain } from "@coral-xyz/common";
 import { bootstrap } from "../bootstrap";
-import { priceData } from "../price-data";
+import { priceData } from "../prices";
 import { splTokenRegistry } from "./token-registry";
 import { TokenAccountWithKey } from "../../types";
 import { connectionUrl, activeWallet } from "./wallet";

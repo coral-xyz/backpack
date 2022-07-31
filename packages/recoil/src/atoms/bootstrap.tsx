@@ -2,8 +2,8 @@ import { atom, selector } from "recoil";
 import { ParsedConfirmedTransaction, PublicKey } from "@solana/web3.js";
 import { UI_RPC_METHOD_NAVIGATION_READ } from "@coral-xyz/common";
 import { TokenAccountWithKey } from "../types";
-import { fetchPriceData } from "./price-data";
-import { backgroundClient } from "./background";
+import { fetchPriceData } from "./prices";
+import { backgroundClient } from "./client";
 import { anchorContext } from "./solana/wallet";
 import { activeWallet } from "./solana/wallet";
 import { jupiterRouteMap } from "./solana/jupiter";
@@ -27,7 +27,10 @@ export const bootstrap = selector<{
     const { provider } = get(anchorContext);
     const walletPublicKey = new PublicKey(get(activeWallet));
     // Preload Jupiter route maps for swapper
-    get(jupiterRouteMap);
+    //		console.log('jup before');
+    // TODO: do this in promise.all ?
+    get(jupiterRouteMap); //.then(() => console.log('after then'));
+    //		console.log('jup after');
     //
     // Perform data fetch.
     //
