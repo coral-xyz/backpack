@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Tooltip, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useActiveWallet } from "@coral-xyz/recoil";
@@ -11,6 +11,7 @@ import {
   walletAddressDisplay,
 } from "../../../common";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
+import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 
 const useStyles = styles((theme) => ({
   subtext: {
@@ -155,31 +156,7 @@ export function Deposit() {
                   margin: "0 12px",
                 }}
               >
-                <Tooltip
-                  title={"Copied"}
-                  open={tooltipOpen}
-                  disableFocusListener
-                  disableHoverListener
-                  disableTouchListener
-                  componentsProps={{
-                    tooltip: {
-                      sx: {
-                        fontSize: "14px",
-                        bgcolor: theme.custom.colors.activeNavButton,
-                        "& .MuiTooltip-arrow": {
-                          color: theme.custom.colors.activeNavButton,
-                        },
-                      },
-                    },
-                    popper: {
-                      sx: {
-                        // Hack: Without this, the root container of the app widens by 15 px,
-                        //       when the tooltip displays.
-                        position: "fixed",
-                      },
-                    },
-                  }}
-                >
+                <WithCopyTooltip tooltipOpen={tooltipOpen}>
                   <div
                     onClick={() => onCopy()}
                     style={{ width: "100%" }}
@@ -206,7 +183,7 @@ export function Deposit() {
                       }}
                     />
                   </div>
-                </Tooltip>
+                </WithCopyTooltip>
               </div>
             </div>
             <div>
