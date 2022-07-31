@@ -1,6 +1,6 @@
 import { useRecoilValue, useRecoilValueLoadable, Loadable } from "recoil";
 import { PublicKey } from "@solana/web3.js";
-import * as atoms from "../atoms";
+import * as atoms from "../../atoms";
 
 export function useActiveWalletLoadable(): Loadable<{
   publicKey: string;

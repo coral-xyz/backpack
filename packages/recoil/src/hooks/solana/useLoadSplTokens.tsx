@@ -1,6 +1,6 @@
 import { useRecoilValue, useRecoilCallback } from "recoil";
-import { TokenAccountWithKey } from "../types";
-import * as atoms from "../atoms";
+import { TokenAccountWithKey } from "../../types";
+import * as atoms from "../../atoms";
 
 export function useTokenAddresses(): string[] {
   const publicKey = useRecoilValue(atoms.activeWallet)!;

@@ -1,5 +1,5 @@
 import { useRecoilValue } from "recoil";
-import * as atoms from "../atoms";
+import * as atoms from "../../atoms";
 
 export function useJupiterWalletTokens(): Array<any> {
   return useRecoilValue(atoms.walletJupiterTokens);
