@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Typography, Link } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { SystemProgram, PublicKey } from "@solana/web3.js";
+import { Connection, SystemProgram, PublicKey } from "@solana/web3.js";
 import {
   useAnchorContext,
   useSolanaCtx,
@@ -50,12 +50,6 @@ const useStyles = styles((theme) => ({
     paddingBottom: "24px",
     paddingTop: "25px",
     justifyContent: "space-between",
-  },
-  button: {
-    background: "transparent",
-    width: "100%",
-    height: "48px",
-    borderRadius: "12px",
   },
   textRoot: {
     marginTop: "0 !important",
@@ -144,64 +138,46 @@ export function Send({
 
   const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState("");
-  const [amount, setAmount] = useState<number>(0.0);
-  const [addressError, setAddressError] = useState<boolean>(false);
+  const [amount, setAmount] = useState<number | null>(null);
   const [amountError, setAmountError] = useState<boolean>(false);
-  const [_isFreshAccount, setIsFreshAccount] = useState<boolean>(false); // Not used for now.
-  const [accountValidated, setAccountValidated] = useState<boolean>(false);
+
+  const {
+    isValidAddress,
+    isFreshAddress: _,
+    isErrorAddress,
+  } = useIsValidSolanaSendAddress(address, provider.connection);
+
+  const amountFloat = amount && parseFloat(amount.toString());
+  const isSendDisabled = !isValidAddress || amount === null || amount <= 0;
+  const lamportsOffset = (() => {
+    //
+    // When sending SOL, account for the tx fee and rent exempt minimum.
+    //
+    let lamportsOffset = 0.0;
+    if (token.mint === SOL_NATIVE_MINT) {
+      const txFee = 0.000005;
+      const rentExemptMinimum = 0.00203928;
+      lamportsOffset = txFee + rentExemptMinimum;
+    }
+    return lamportsOffset;
+  })();
 
   useEffect(() => {
     nav.setTitle(`Send ${token.ticker}`);
   }, [nav]);
 
-  const amountFloat = parseFloat(amount.toString());
-
-  //
-  // When sending SOL, account for the tx fee and rent exempt minimum.
-  //
-  let lamportsOffset = 0.0;
-  if (token.mint === SOL_NATIVE_MINT) {
-    const txFee = 0.000005;
-    const rentExemptMinimum = 0.00203928;
-    lamportsOffset = txFee + rentExemptMinimum;
-  }
-
-  // This effect validates the account address given.
-  useEffect(() => {
-    if (accountValidated) {
-      setAccountValidated(false);
+  const _setAmount = (amount: number) => {
+    if (amount < 0) {
+      return;
     }
-    (async () => {
-      let pubkey;
-      try {
-        pubkey = new PublicKey(address);
-      } catch (err) {
-        // Not valid address so don't bother validating it.
-        return;
-      }
-
-      const account = await provider.connection.getAccountInfo(pubkey);
-
-      // Null data means the account has no lamports. This is valid.
-      if (!account) {
-        setIsFreshAccount(true);
-        setAccountValidated(true);
-        return;
-      }
-
-      // Only allow system program accounts to be given. ATAs only!
-      if (!account.owner.equals(SystemProgram.programId)) {
-        setAddressError(true);
-        return;
-      }
-
-      // The account data has been successfully validated.
-      setAccountValidated(true);
-    })();
-  }, [address]);
+    setAmount(amount);
+  };
 
   // On click handler.
   const onNext = () => {
+    if (!amount || !amountFloat) {
+      return;
+    }
     let didAmountError = false;
     if (amountFloat <= 0) {
       didAmountError = true;
@@ -211,26 +187,7 @@ export function Send({
       didAmountError = true;
     }
 
-    let didAddressError = false;
-    try {
-      new PublicKey(address);
-    } catch (_err) {
-      didAddressError = true;
-    }
-
-    // Do this below the above so that we can set the proper error states
-    // on all the fields.
-    if (didAmountError || didAddressError) {
-      setAmountError(didAmountError);
-      setAddressError(didAddressError);
-      return;
-    }
-    if (!accountValidated) {
-      return;
-    }
-
-    setAddressError(false);
-    setAmountError(false);
+    setAmountError(didAmountError);
     setOpenDrawer(true);
   };
 
@@ -255,7 +212,7 @@ export function Send({
               placeholder={"SOL Address"}
               value={address}
               setValue={setAddress}
-              isError={addressError}
+              isError={isErrorAddress}
               inputProps={{
                 name: "to",
               }}
@@ -272,9 +229,9 @@ export function Send({
             <TextField
               rootClass={classes.textRoot}
               type={"number"}
-              placeholder={"Amount"}
+              placeholder={"0"}
               value={amount}
-              setValue={setAmount}
+              setValue={_setAmount}
               isError={amountError}
               inputProps={{
                 name: "amount",
@@ -283,7 +240,7 @@ export function Send({
                 <SecondaryButton
                   label="Max"
                   onClick={() =>
-                    setAmount(token.nativeBalance - lamportsOffset)
+                    _setAmount(token.nativeBalance - lamportsOffset)
                   }
                   style={{
                     width: "auto",
@@ -299,7 +256,7 @@ export function Send({
       </div>
       <div className={classes.buttonContainer}>
         <PrimaryButton
-          className={classes.button}
+          disabled={isSendDisabled}
           label="Send"
           type="submit"
           data-testid="Send"
@@ -308,7 +265,7 @@ export function Send({
           <SendConfirmationCard
             token={token}
             address={address}
-            amount={amountFloat}
+            amount={amountFloat!}
             close={() => {
               setOpenDrawer(false);
               close();
@@ -657,4 +614,64 @@ export function BottomCard({
       </div>
     </div>
   );
+}
+
+export function useIsValidSolanaSendAddress(
+  address: string,
+  connection: Connection
+): {
+  isValidAddress: boolean;
+  isFreshAddress: boolean;
+  isErrorAddress: boolean;
+} {
+  const [addressError, setAddressError] = useState<boolean>(false);
+  const [isFreshAccount, setIsFreshAccount] = useState<boolean>(false); // Not used for now.
+  const [accountValidated, setAccountValidated] = useState<boolean>(false);
+
+  // This effect validates the account address given.
+  useEffect(() => {
+    if (accountValidated) {
+      setAccountValidated(false);
+    }
+    if (address === "") {
+      setAccountValidated(false);
+      setAddressError(false);
+      return;
+    }
+    (async () => {
+      let pubkey;
+      try {
+        pubkey = new PublicKey(address);
+      } catch (err) {
+        setAddressError(true);
+        // Not valid address so don't bother validating it.
+        return;
+      }
+
+      const account = await connection.getAccountInfo(pubkey);
+
+      // Null data means the account has no lamports. This is valid.
+      if (!account) {
+        setIsFreshAccount(true);
+        setAccountValidated(true);
+        return;
+      }
+
+      // Only allow system program accounts to be given. ATAs only!
+      if (!account.owner.equals(SystemProgram.programId)) {
+        setAddressError(true);
+        return;
+      }
+
+      // The account data has been successfully validated.
+      setAddressError(false);
+      setAccountValidated(true);
+    })();
+  }, [address]);
+
+  return {
+    isValidAddress: accountValidated,
+    isFreshAddress: isFreshAccount,
+    isErrorAddress: addressError,
+  };
 }

@@ -32,6 +32,7 @@ const BORDER_COLOR_1 = "#52525B";
 const POSITIVE_COLOR = "#35A63A";
 const NEGATIVE_COLOR = "#E95050";
 const SCROLLBAR_THUMB_COLOR = "rgb(153 164 180)";
+const DISABLED_BUTTON_COLOR = BRAND_COLOR;
 
 export const darkTheme: any = {
   ...baseTheme,
@@ -62,6 +63,7 @@ export const darkTheme: any = {
       alpha: FONT_COLOR_2,
       bg2: BACKGROUND_COLOR_2,
       border1: BORDER_COLOR_1,
+      disabledButton: DISABLED_BUTTON_COLOR,
     },
   },
 };
@@ -109,6 +111,7 @@ export const lightTheme: any = {
       alpha: LIGHT_FONT_COLOR_2,
       bg2: LIGHT_BACKGROUND_COLOR_2,
       border1: LIGHT_BORDER_COLOR_1,
+      disabledButton: DISABLED_BUTTON_COLOR,
     },
   },
 };
