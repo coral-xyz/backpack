@@ -68,9 +68,9 @@ export const darkTheme: any = {
 
 const LIGHT_BACKGROUND_COLOR_0 = "#ECEFF3";
 const LIGHT_BACKGROUND_COLOR_1 = "#ffffff";
-const LIGHT_BACKGROUND_COLOR_2 = "#3F3F46"; // todo
+const LIGHT_BACKGROUND_COLOR_2 = "#3F3F46";
 const LIGHT_FONT_COLOR = "#43546D";
-const LIGHT_FONT_COLOR_1 = "#67758B"; //#99A4B4";
+const LIGHT_FONT_COLOR_1 = "#67758B";
 const LIGHT_FONT_COLOR_2 = "#D4D4D8";
 const LIGHT_BRAND_COLOR = "#14B8A6";
 const LIGHT_BUTTON_FONT_COLOR = FONT_COLOR;
@@ -118,19 +118,3 @@ type CustomTheme = typeof lightTheme & typeof darkTheme;
 export const styles = _makeStyles<CustomTheme>;
 
 export const useCustomTheme = useTheme<CustomTheme>;
-
-/*
-      tabIconBackground: "#99A4B4",
-      tabIconSelected: "#1196B5",
-      secondary: "#67758B",
-      positive: "#19A51E",
-      negative: "#E31B1B",
-      primaryButton: BRAND_COLOR,
-      secondaryButton: "#292C33",
-      dangerButton: "#DC2626",
-      sendGradient:
-        "linear-gradient(180deg, #1B1D23 0%, rgba(27, 29, 35, 0) 100%)", // todo
-      interactiveIconsActive: "#1196B5",
-      bg2: BACKGROUND_COLOR_2,
-      border1: BORDER_COLOR_1,
- */

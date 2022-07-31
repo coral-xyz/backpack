@@ -12,6 +12,9 @@ const useStyles = styles(() => ({
     height: "56px",
     display: "flex",
   },
+  dividerRoot: {
+    borderColor: "transparent !important",
+  },
 }));
 
 export function List({ style, children }: any) {
@@ -76,6 +79,7 @@ export function ListItem({
               : theme.custom.colors.border,
             height: "1px",
           }}
+          classes={{ root: classes.dividerRoot }}
         />
       )}
     </>
