@@ -57,8 +57,6 @@ export const darkTheme: any = {
       buttonFontColor: BUTTON_FONT_COLOR,
       sendGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_0} 0%, rgba(27, 29, 35, 0) 100%)`,
       swapGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
-      interactiveIconsActive: BRAND_COLOR,
-      interactiveIconsHover: "#67758B",
       drawerGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
       alpha: FONT_COLOR_2,
       bg2: BACKGROUND_COLOR_2,
@@ -70,7 +68,7 @@ export const darkTheme: any = {
 
 const LIGHT_BACKGROUND_COLOR_0 = "#ECEFF3";
 const LIGHT_BACKGROUND_COLOR_1 = "#ffffff";
-const LIGHT_BACKGROUND_COLOR_2 = "#3F3F46";
+const LIGHT_BACKGROUND_COLOR_2 = LIGHT_BACKGROUND_COLOR_0;
 const LIGHT_FONT_COLOR = "#43546D";
 const LIGHT_FONT_COLOR_1 = "#67758B";
 const LIGHT_FONT_COLOR_2 = "#D4D4D8";
@@ -105,8 +103,6 @@ export const lightTheme: any = {
       buttonFontColor: LIGHT_BUTTON_FONT_COLOR,
       sendGradient: `linear-gradient(180deg, ${LIGHT_BACKGROUND_COLOR_0} 0%, rgba(27, 29, 35, 0) 100%)`,
       swapGradient: `linear-gradient(180deg, ${LIGHT_BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
-      interactiveIconsActive: BRAND_COLOR,
-      interactiveIconsHover: "#67758B",
       drawerGradient: `linear-gradient(180deg, ${LIGHT_BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
       alpha: LIGHT_FONT_COLOR_2,
       bg2: LIGHT_BACKGROUND_COLOR_2,
