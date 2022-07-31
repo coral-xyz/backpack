@@ -497,7 +497,7 @@ export function ImportSecretKey() {
       nav.setStyle(prevStyle);
       nav.setContentStyle(prevContentStyle);
     };
-  }, [nav.style, nav.contentStyle, nav.setContentStyle, theme]);
+  }, [theme]);
 
   const onClick = async () => {
     const kp = decodeAccount(secretKey);
