@@ -44,6 +44,7 @@ import {
   UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
   UI_RPC_METHOD_NAVIGATION_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+  UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
@@ -189,6 +190,8 @@ async function handle<T = any>(
       return await handleNavRead(ctx);
     case UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE:
       return await handleNavigationActiveTabUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_NAVIGATION_TO_ROOT:
+      return await handleNavigationToRoot(ctx);
     //
     // Wallet app settings.
     //
@@ -490,6 +493,13 @@ async function handleNavigationActiveTabUpdate(
   tabKey: string
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.navigationActiveTabUpdate(tabKey);
+  return [resp];
+}
+
+async function handleNavigationToRoot(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.navigationToRoot();
   return [resp];
 }
 

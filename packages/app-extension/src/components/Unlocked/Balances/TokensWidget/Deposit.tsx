@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Tooltip, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useActiveWallet } from "@coral-xyz/recoil";
@@ -10,7 +10,8 @@ import {
   TextFieldLabel,
   walletAddressDisplay,
 } from "../../../common";
-import { useDrawerContext } from "../../../Layout/Drawer";
+import { useDrawerContext } from "../../../common/Layout/Drawer";
+import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 
 const useStyles = styles((theme) => ({
   subtext: {
@@ -155,13 +156,7 @@ export function Deposit() {
                   margin: "0 12px",
                 }}
               >
-                <Tooltip
-                  title={"Copied"}
-                  open={tooltipOpen}
-                  disableFocusListener
-                  disableHoverListener
-                  disableTouchListener
-                >
+                <WithCopyTooltip tooltipOpen={tooltipOpen}>
                   <div
                     onClick={() => onCopy()}
                     style={{ width: "100%" }}
@@ -179,7 +174,7 @@ export function Deposit() {
                             pointerEvents: "none",
                             color: theme.custom.colors.secondary,
                             position: "absolute",
-                            left: 310,
+                            right: "17px",
                           }}
                         />
                       }
@@ -188,7 +183,7 @@ export function Deposit() {
                       }}
                     />
                   </div>
-                </Tooltip>
+                </WithCopyTooltip>
               </div>
             </div>
             <div>

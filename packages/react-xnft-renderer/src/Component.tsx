@@ -524,7 +524,11 @@ export function BalancesTableCell({ props, style }: any) {
           className={classes.tokenListItemIcon}
           classes={{ root: classes.tokenListItemIconRoot }}
         >
-          <img src={icon} className={classes.logoIcon} />
+          <img
+            src={icon}
+            className={classes.logoIcon}
+            onError={(event) => (event.currentTarget.style.display = "none")}
+          />
         </ListItemIcon>
       )}
       <div className={classes.tokenListItemContent}>

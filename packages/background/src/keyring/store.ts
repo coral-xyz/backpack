@@ -88,6 +88,7 @@ export class KeyringStore {
     await setWalletData({
       autoLockSecs: LOCK_INTERVAL_SECS,
       approvedOrigins: [],
+      darkMode: true,
       solana: {
         explorer: SolanaExplorer.DEFAULT,
         commitment: "confirmed",
@@ -660,6 +661,7 @@ class BlockchainKeyring {
 export type WalletData = {
   autoLockSecs: number;
   approvedOrigins: Array<string>;
+  darkMode: boolean;
   solana: SolanaData;
 };
 

@@ -4,23 +4,13 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [
-        "examples/**/build",
-        "examples/**/dist",
-        "packages/**/build",
-        "packages/**/dist"
-      ]
+      "outputs": ["build/**", "dist/**"]
     },
     "test": {
       "dependsOn": ["^build"]
     },
-    "e2e": {
-      "dependsOn": ["^build"]
-    },
     "start": {
-      "dependsOn": ["^build"],
-      "outputs": ["packages/extension/dev"],
-      "cache": false
+      "dependsOn": ["^build"]
     }
   },
   "globalDependencies": [".env"]

@@ -2,6 +2,7 @@ import { useSearchParams, useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import {
   Blockchain,
+  UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   UI_RPC_METHOD_NAVIGATION_PUSH,
   UI_RPC_METHOD_NAVIGATION_POP,
   TAB_SET,
@@ -12,12 +13,13 @@ type NavigationContext = {
   isRoot: boolean;
   title: string;
   push: any;
-  pop: any;
+  pop: () => void;
+  toRoot: () => void;
 };
 
 export function useNavigation(): NavigationContext {
   const location = useLocation();
-  const { push, pop } = useNavigationSegue();
+  const { push, pop, toRoot } = useNavigationSegue();
 
   const pathname = location.pathname;
   const isRoot = TAB_SET.has(pathname.slice(1));
@@ -31,6 +33,7 @@ export function useNavigation(): NavigationContext {
     title,
     push,
     pop,
+    toRoot,
   };
 }
 
@@ -76,10 +79,17 @@ export function useNavigationSegue() {
       params: [],
     });
   };
+  const toRoot = async () => {
+    return await background.request({
+      method: UI_RPC_METHOD_NAVIGATION_TO_ROOT,
+      params: [],
+    });
+  };
 
   return {
     push,
     pop,
+    toRoot,
   };
 }
 

@@ -113,6 +113,7 @@ export const UI_RPC_METHOD_KEYRING_AUTOLOCK_READ = "autolock-read";
 export const UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE = "autolock-update";
 export const UI_RPC_METHOD_NAVIGATION_PUSH = "navigation-push";
 export const UI_RPC_METHOD_NAVIGATION_POP = "navigation-pop";
+export const UI_RPC_METHOD_NAVIGATION_TO_ROOT = "navigation-to-root";
 export const UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE =
   "navigation-current-url-update";
 export const UI_RPC_METHOD_NAVIGATION_READ = "navigation-read";
@@ -168,6 +169,7 @@ export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
   "anchor-solana-explorer-updated";
 export const NOTIFICATION_SOLANA_COMMITMENT_UPDATED =
   "anchor-solana-commitment-updated";
+export const NOTIFICATION_DARK_MODE_UPDATED = "anchor-dark-mode-updated";
 
 export const SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO = "solana-get-account-info";
 export const SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH =

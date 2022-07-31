@@ -14,7 +14,7 @@ import {
   useSplTokenRegistry,
 } from "../hooks";
 import { useSolanaCtx } from "../hooks/useSolanaConnection";
-import { JUPITER_BASE_URL } from "../atoms/jupiter";
+import { JUPITER_BASE_URL } from "../atoms/solana/jupiter";
 
 const DEFAULT_SLIPPAGE_PERCENT = 1;
 
@@ -35,7 +35,7 @@ type JupiterTransactions = {
 };
 
 type SwapContext = {
-  fromAmount: number;
+  fromAmount: number | null;
   setFromAmount: (a: number) => void;
   toAmount?: number;
   fromMint: string;
@@ -72,7 +72,7 @@ export function SwapProvider(props: any) {
   ]);
   const fromMintPubkey = new PublicKey(fromMint);
   const toMintPubkey = new PublicKey(toMint);
-  const [fromAmount, setFromAmount] = useState(0);
+  const [fromAmount, setFromAmount] = useState<number | null>(null);
   const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE_PERCENT);
   const [routes, setRoutes] = useState<JupiterRoute[]>([]);
   const [transactions, setTransactions] = useState<JupiterTransactions | null>(
@@ -93,7 +93,7 @@ export function SwapProvider(props: any) {
 
   useEffect(() => {
     (async () => {
-      if (fromAmount > 0) {
+      if (fromAmount && fromAmount > 0) {
         setRoutes(await fetchRoutes());
       } else {
         setRoutes([]);
@@ -128,7 +128,7 @@ export function SwapProvider(props: any) {
     const params = {
       inputMint: fromMint,
       outputMint: toMint,
-      amount: (fromAmount * 10 ** fromMintInfo.decimals).toString(),
+      amount: (fromAmount! * 10 ** fromMintInfo.decimals).toString(),
       slippage: slippage.toString(),
     };
     const queryString = new URLSearchParams(params).toString();

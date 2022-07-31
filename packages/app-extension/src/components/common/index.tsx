@@ -40,8 +40,13 @@ const useStyles = styles((theme) => ({
     width: "100%",
     height: "48px",
     borderRadius: "12px",
+    backgroundColor: theme.custom.colors.primaryButton,
     "&.Mui-disabled": {
       opacity: 0.5,
+      backgroundColor: theme.custom.colors.disabledButton,
+    },
+    "&:hover": {
+      backgroundColor: theme.custom.colors.primaryButton,
     },
   },
   buttonLabel: {
@@ -77,7 +82,7 @@ const useStyles = styles((theme) => ({
     background: "white",
   },
   subtext: {
-    color: "#A1A1AA",
+    color: theme.custom.colors.subtext,
   },
 }));
 
@@ -150,11 +155,6 @@ export function PrimaryButton({
   label?: string;
 } & React.ComponentProps<typeof Button>) {
   const classes = useStyles();
-  const theme = useCustomTheme() as any;
-  const buttonStyle = {
-    backgroundColor: theme.custom.colors.primaryButton,
-    ...buttonProps.style,
-  };
   return (
     <Button
       disableRipple
@@ -162,7 +162,7 @@ export function PrimaryButton({
       className={classes.button}
       variant="contained"
       {...buttonProps}
-      style={buttonStyle}
+      style={buttonProps.style}
     >
       <Typography style={buttonLabelStyle} className={classes.buttonLabel}>
         {label}

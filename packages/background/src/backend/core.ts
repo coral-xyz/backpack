@@ -24,6 +24,7 @@ import {
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
+  NOTIFICATION_DARK_MODE_UPDATED,
 } from "@coral-xyz/common";
 import type { Nav } from "../keyring/store";
 import {
@@ -422,6 +423,31 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async navigationToRoot(): Promise<string> {
+    let nav = await getNav();
+    if (!nav) {
+      throw new Error("nav not found");
+    }
+    const urls = nav.data[nav.activeTab].urls;
+    if (urls.length <= 1) {
+      return SUCCESS_RESPONSE;
+    }
+
+    let url = urls[0];
+    nav.data[nav.activeTab].urls = [url];
+    await setNav(nav);
+
+    url = setSearchParam(url, "nav", "pop");
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+      data: {
+        url,
+      },
+    });
+
+    return SUCCESS_RESPONSE;
+  }
+
   async navRead(): Promise<Nav> {
     let nav = await getNav();
     if (!nav) {
@@ -484,12 +510,22 @@ export class Backend {
   }
 
   async darkModeRead(): Promise<boolean> {
-    // todo
-    return true;
+    const data = await getWalletData();
+    return data.darkMode ?? true;
   }
 
   async darkModeUpdate(darkMode: boolean): Promise<string> {
-    // todo
+    const data = await getWalletData();
+    await setWalletData({
+      ...data,
+      darkMode,
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_DARK_MODE_UPDATED,
+      data: {
+        darkMode,
+      },
+    });
     return SUCCESS_RESPONSE;
   }
 

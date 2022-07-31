@@ -7,7 +7,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Close, ExpandMore, SwapVert } from "@mui/icons-material";
-import { CheckIcon, CrossIcon } from "../Icon";
+import { CheckIcon, CrossIcon } from "../common/Icon";
 import {
   useBlockchainTokenAccount,
   useSplTokenRegistry,
@@ -20,7 +20,7 @@ import { Blockchain } from "@coral-xyz/common";
 import { TextField, TextFieldLabel, PrimaryButton } from "../common";
 import { WithHeaderButton } from "./Balances/TokensWidget/Token";
 import { BottomCard } from "./Balances/TokensWidget/Send";
-import { WithMiniDrawer, useDrawerContext } from "../Layout/Drawer";
+import { WithMiniDrawer, useDrawerContext } from "../common/Layout/Drawer";
 import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
 
@@ -237,6 +237,12 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
     }
   };
 
+  const _setFromAmount = (amount: number) => {
+    if (amount >= 0) {
+      setFromAmount(amount);
+    }
+  };
+
   return (
     <div className={classes.container}>
       <div className={classes.topHalf}>
@@ -246,11 +252,12 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
           rightLabelComponent={
             <MaxSwapAmount
               blockchain={blockchain}
-              onSetAmount={setFromAmount}
+              onSetAmount={_setFromAmount}
             />
           }
         />
         <TextField
+          placeholder={"0"}
           startAd
           endAdornment={
             <TokenSelectorButton
@@ -262,7 +269,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
           rootClass={classes.fromFieldRoot}
           type={"number"}
           value={fromAmount}
-          setValue={setFromAmount}
+          setValue={_setFromAmount}
         />
       </div>
       <div className={classes.bottomHalfWrapper}>
@@ -270,6 +277,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
           <div>
             <TextFieldLabel leftLabel={"You Receive"} />
             <TextField
+              placeholder={"0"}
               startAdornment={
                 isLoadingRoutes && (
                   <CircularProgress
@@ -545,7 +553,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     transactionFee,
   } = useSwapContext();
 
-  const rate = toAmount! / fromAmount;
+  const rate = fromAmount ? toAmount! / fromAmount : 0;
 
   const rows = [];
   if (!compact) {

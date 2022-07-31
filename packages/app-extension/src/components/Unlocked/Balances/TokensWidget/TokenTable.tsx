@@ -3,7 +3,6 @@ import {
   toTitleCase,
   NAV_COMPONENT_TOKEN,
 } from "@coral-xyz/common";
-import { useState } from "react";
 import { Typography, ListItem } from "@mui/material";
 import { styles } from "@coral-xyz/themes";
 import {
@@ -45,7 +44,6 @@ const useStyles = styles((theme) => ({
 export function TokenTable() {
   const blockchain = Blockchain.SOLANA;
   const title = "Tokens";
-  const limit = 3;
 
   const blockchainLogo = useBlockchainLogo(blockchain);
   const tokenAccountsSorted = useBlockchainTokensSorted(blockchain);
@@ -59,7 +57,9 @@ export function TokenTable() {
 
   return (
     <BalancesTable>
-      <BalancesTableHead props={{ title, iconUrl: blockchainLogo }} />
+      <BalancesTableHead
+        props={{ title, iconUrl: blockchainLogo, disableToggle: true }}
+      />
       <BalancesTableContent>
         {tokenAccountsFiltered.map((token: any) => (
           <TokenRow key={token.address} token={token} blockchain={blockchain} />

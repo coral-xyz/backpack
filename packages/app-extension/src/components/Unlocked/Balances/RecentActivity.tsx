@@ -9,8 +9,11 @@ import {
   useRecentTransactions,
 } from "@coral-xyz/recoil";
 import { Loading } from "../../common";
-import { WithDrawer, CloseButton } from "../../Layout/Drawer";
-import { NavStackEphemeral, NavStackScreen } from "../../Layout/NavStack";
+import { WithDrawer, CloseButton } from "../../common/Layout/Drawer";
+import {
+  NavStackEphemeral,
+  NavStackScreen,
+} from "../../common/Layout/NavStack";
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {
@@ -26,31 +29,22 @@ const useStyles = styles((theme) => ({
   },
   noRecentActivityLabel: {
     fontWeight: 500,
-    fontSize: "14px",
-    color: theme.custom.colors.fontColor,
-  },
-  listItem: {
-    backgroundColor: theme.custom.colors.nav,
-    paddingLeft: "12px",
-    paddingRight: "12px",
-    paddingTop: "10px",
-    paddingBottom: "10px",
-    display: "flex",
-    height: "68px",
-    borderBottom: `solid 1pt ${theme.custom.colors.border}`,
+    fontSize: "16px",
+    padding: "16px",
+    textAlign: "center",
+    color: theme.custom.colors.secondary,
   },
   recentActivityListItemIconContainer: {
     width: "44px",
     height: "44px",
     borderRadius: "22px",
     marginRight: "12px",
-    border: `solid 1pt ${theme.custom.colors.border}`,
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
   },
   recentActivityListItemIcon: {
-    color: theme.custom.colors.secondary,
+    color: theme.custom.colors.positive,
     marginLeft: "auto",
     marginRight: "auto",
   },
@@ -132,7 +126,7 @@ export function RecentActivityButton() {
 export function RecentActivity() {
   const wallet = useActiveWallet();
   return (
-    <div>
+    <div style={{ marginTop: "16px" }}>
       <RecentActivityList address={wallet.publicKey.toString()} />
     </div>
   );
@@ -142,7 +136,6 @@ export function RecentActivitySmall({ address }: any) {
   const theme = useCustomTheme();
   return (
     <div>
-      <RecentActivitySmallHeader />
       <RecentActivityList
         address={address}
         style={{ borderTop: `solid 1pt ${theme.custom.colors.border}` }}
@@ -182,36 +175,56 @@ export function RecentActivityList({ address, style }: any) {
 
 function RecentActivityLoading() {
   const classes = useStyles();
-  const theme = useCustomTheme();
   return (
     <div
       className={classes.listItem}
       style={{
-        height: "40px",
-        borderTop: `solid 1pt ${theme.custom.colors.border}`,
+        height: "68px",
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
       }}
     >
       <div
-        style={{ display: "block", marginLeft: "auto", marginRight: "auto" }}
+        style={{
+          display: "block",
+          marginLeft: "auto",
+          marginRight: "auto",
+        }}
       >
-        <Loading iconStyle={{ width: "25px", height: "25px" }} />
+        <Loading iconStyle={{ width: "35px", height: "35px" }} />
       </div>
     </div>
   );
 }
 
 export function _RecentActivityList({ address, style }: any) {
+  const theme = useCustomTheme();
+  const transactions = useRecentTransactions(address);
+
   if (!style) {
     style = {};
   }
-  const transactions = useRecentTransactions(address);
+
   return (
-    <List style={{ ...style, paddingTop: 0, paddingBottom: 0 }}>
+    <List
+      style={{
+        paddingTop: 0,
+        paddingBottom: 0,
+        backgroundColor: theme.custom.colors.nav,
+        marginLeft: "16px",
+        marginRight: "16px",
+        borderRadius: "12px",
+        marginBottom: "16px",
+        ...style,
+      }}
+    >
       {transactions.length > 0 ? (
-        transactions.map((tx: any) => (
+        transactions.map((tx: any, idx: number) => (
           <RecentActivityListItem
             key={tx.transaction.signatures[0]}
             transaction={tx}
+            isLast={idx === transactions.length - 1}
           />
         ))
       ) : (
@@ -221,7 +234,7 @@ export function _RecentActivityList({ address, style }: any) {
   );
 }
 
-function RecentActivityListItem({ transaction }: any) {
+function RecentActivityListItem({ transaction, isLast }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const explorer = useSolanaExplorer();
@@ -229,15 +242,30 @@ function RecentActivityListItem({ transaction }: any) {
   const unixTimestamp = transaction.blockTime;
   const date = new Date(unixTimestamp * 1000);
   const dateStr = date.toLocaleDateString();
+
   const onClick = () => {
     window.open(explorerUrl(explorer, txSig));
   };
+
+  console.log("tx", transaction.meta.status.Ok);
+
   return (
     <ListItem
       button
       disableRipple
       className={classes.listItem}
       onClick={onClick}
+      style={{
+        paddingLeft: "12px",
+        paddingRight: "12px",
+        paddingTop: "10px",
+        paddingBottom: "10px",
+        display: "flex",
+        height: "68px",
+        borderBottom: isLast
+          ? undefined
+          : `solid 1pt ${theme.custom.colors.border}`,
+      }}
     >
       <div
         style={{

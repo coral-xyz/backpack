@@ -4,8 +4,8 @@ import {
   useBackgroundKeepAlive,
   NotificationsProvider,
 } from "@coral-xyz/recoil";
-import { WithTheme } from "./theme";
 import { Router } from "./Router";
+import { WithTheme } from "../components/common/WithTheme";
 import "./App.css";
 import "@fontsource/inter";
 import "@fontsource/inter/500.css";

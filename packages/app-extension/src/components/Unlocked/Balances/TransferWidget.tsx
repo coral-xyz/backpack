@@ -6,11 +6,18 @@ import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
 import { Send } from "./TokensWidget/Send";
-import { useNavStack } from "../../Layout/NavStack";
+import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTable } from "../../common/TokenTable";
+import { Send as TokenSend } from "./TokensWidget/Send";
 
-export function TransferWidget() {
+export function TransferWidget({
+  blockchain,
+  address,
+}: {
+  blockchain?: Blockchain;
+  address?: string;
+}) {
   return (
     <div
       style={{
@@ -18,53 +25,75 @@ export function TransferWidget() {
         width: "120px",
         marginLeft: "auto",
         marginRight: "auto",
-        marginTop: "20px",
-        marginBottom: "20px",
       }}
     >
       <ReceiveButton />
       <div style={{ width: "16px" }} />
-      <SendButton />
+      <SendButton blockchain={blockchain} address={address} />
     </div>
   );
 }
 
-function SendButton() {
+function SendButton({
+  blockchain,
+  address,
+}: {
+  blockchain?: Blockchain;
+  address?: string;
+}) {
+  const theme = useCustomTheme();
   return (
     <TransferButton
       label={"Send"}
       labelComponent={
         <ArrowUpward
           style={{
+            color: theme.custom.colors.fontColor,
             display: "flex",
             marginLeft: "auto",
             marginRight: "auto",
           }}
         />
       }
-      routes={[
-        {
-          name: "select-token",
-          component: SendToken,
-          title: "Select token",
-        },
-        {
-          name: "send",
-          component: (props: any) => <_Send {...props} />,
-          title: "",
-        },
-      ]}
+      routes={
+        blockchain && address
+          ? [
+              {
+                name: "send",
+                component: (props: any) => <TokenSend {...props} />,
+                title: `Send`,
+                props: {
+                  blockchain,
+                  tokenAddress: address,
+                },
+              },
+            ]
+          : [
+              {
+                name: "select-token",
+                component: SendToken,
+                title: "Select token",
+              },
+              {
+                name: "send",
+                component: (props: any) => <_Send {...props} />,
+                title: "",
+              },
+            ]
+      }
     />
   );
 }
 
 function ReceiveButton() {
+  const theme = useCustomTheme();
   return (
     <TransferButton
       label={"Receive"}
       labelComponent={
         <ArrowDownward
           style={{
+            color: theme.custom.colors.fontColor,
             display: "flex",
             marginLeft: "auto",
             marginRight: "auto",
