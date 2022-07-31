@@ -127,11 +127,11 @@ export function SwapProvider(props: any) {
     setRoutes([]);
     setIsLoadingRoutes(true);
     const params = {
-      // If the swap is from native SOL we want Jupiter to return WSOL routes
+      // If the swap is to or from native SOL we want Jupiter to return WSOL routes
       // because it does not support native SOL, but it can auto wrap and
       // unwrap.
       inputMint: fromMint === SOL_NATIVE_MINT ? WSOL_MINT : fromMint,
-      outputMint: toMint,
+      outputMint: toMint === SOL_NATIVE_MINT ? WSOL_MINT : toMint,
       amount: (fromAmount! * 10 ** fromMintInfo.decimals).toString(),
       slippage: slippage.toString(),
     };
@@ -148,7 +148,7 @@ export function SwapProvider(props: any) {
     const body = {
       route,
       userPublicKey: wallet.publicKey,
-      wrapUnwrapSOL: fromMint === SOL_NATIVE_MINT,
+      wrapUnwrapSOL: fromMint === SOL_NATIVE_MINT || toMint === SOL_NATIVE_MINT,
     };
     const transactions = await (
       await fetch(`${JUPITER_BASE_URL}swap`, {

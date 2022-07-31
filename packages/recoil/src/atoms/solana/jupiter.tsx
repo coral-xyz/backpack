@@ -4,7 +4,8 @@ import { Blockchain } from "@coral-xyz/common";
 import { blockchainTokensSorted } from "./token";
 import { splTokenRegistry } from "./token-registry";
 import { bootstrap } from "../bootstrap";
-import { SOL_NATIVE_MINT } from "@coral-xyz/common";
+import { SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
+import { SOL_LOGO_URI } from "./token-registry";
 
 export const JUPITER_BASE_URL = "https://quote-api.jup.ag/v1/";
 
@@ -17,8 +18,8 @@ export const jupiterRouteMap = selector({
 });
 
 // All input tokens for Jupiter
-export const jupiterInputMints = selector({
-  key: "jupiterInputMints",
+export const allJupiterInputMints = selector({
+  key: "allJupiterInputMints",
   get: async ({ get }) => {
     const routeMap = get(jupiterRouteMap);
     return Object.keys(routeMap);
@@ -27,40 +28,42 @@ export const jupiterInputMints = selector({
 
 // Jupiter tokens that can be swapped *from* owned by the currently active
 // wallet.
-export const walletJupiterTokens = selector({
-  key: "walletJupiterTokens",
+export const jupiterInputMints = selector({
+  key: "jupiterInputMints",
   get: async ({ get }) => {
-    const inputMints = get(jupiterInputMints);
+    const inputMints = get(allJupiterInputMints);
     const walletTokens = get(blockchainTokensSorted(Blockchain.SOLANA));
-    // Only allow tokens that Jupiter allows.
+    // Only allow tokens that Jupiter allows as well as native SOL.
     return walletTokens.filter(
       (t: any) => inputMints.includes(t.mint) || t.mint === SOL_NATIVE_MINT
     );
   },
 });
 
-export const swapTokenList = selectorFamily({
-  key: "swapTokenList",
+export const jupiterOutputMints = selectorFamily({
+  key: "jupiterOutputMints",
   get:
-    ({ mint, isFrom }: { mint: string; isFrom: boolean }) =>
+    ({ inputMint }: { inputMint: string }) =>
     ({ get }: any) => {
-      if (isFrom) {
-        return get(walletJupiterTokens);
-      } else {
-        const routeMap = get(jupiterRouteMap);
-        return (
-          routeMap[mint]
-            .map((mint: string) => {
-              const tokenRegistry = get(splTokenRegistry)!;
-              const tokenMetadata =
-                tokenRegistry.get(mint) ?? ({} as TokenInfo);
-              const { name, symbol, logoURI } = tokenMetadata;
-              return { name, ticker: symbol, logo: logoURI, mint };
-            })
-            // Filter out tokens that don't have at least name and ticker
-            .filter((t: any) => t.name && t.ticker)
-        );
-      }
+      const routeMap = get(jupiterRouteMap);
+      // If input mint is SOL native then we can use WSOL with unwrapping
+      const routeMapMint =
+        inputMint === SOL_NATIVE_MINT ? WSOL_MINT : inputMint;
+      const swapTokens = routeMap[routeMapMint].map((mint: string) => {
+        const tokenRegistry = get(splTokenRegistry)!;
+        const tokenMetadata = tokenRegistry.get(mint) ?? ({} as TokenInfo);
+        const { name, symbol, logoURI } = tokenMetadata;
+        return { name, ticker: symbol, logo: logoURI, mint };
+      });
+      // Add native SOL
+      swapTokens.push({
+        name: "Solana",
+        ticker: "SOL",
+        logo: SOL_LOGO_URI,
+        mint: SOL_NATIVE_MINT,
+      });
+      // Filter out tokens that don't have at least name and ticker
+      return swapTokens.filter((t: any) => t.name && t.ticker);
     },
 });
 

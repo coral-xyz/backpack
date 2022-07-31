@@ -11,7 +11,8 @@ import { CheckIcon, CrossIcon } from "../common/Icon";
 import {
   useBlockchainTokenAccount,
   useSplTokenRegistry,
-  useSwapTokenList,
+  useJupiterInputMints,
+  useJupiterOutputMints,
   useSwapContext,
   SwapProvider,
 } from "@coral-xyz/recoil";
@@ -252,14 +253,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
         />
         <TextField
           placeholder={"0"}
-          startAd
-          endAdornment={
-            <TokenSelectorButton
-              blockchain={blockchain}
-              mint={fromMint}
-              isFrom={true}
-            />
-          }
+          endAdornment={<InputTokenSelectorButton />}
           rootClass={classes.fromFieldRoot}
           type={"number"}
           value={fromAmount}
@@ -284,13 +278,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
                   />
                 )
               }
-              endAdornment={
-                <TokenSelectorButton
-                  blockchain={blockchain}
-                  mint={toMint}
-                  isFrom={false}
-                />
-              }
+              endAdornment={<OutputTokenSelectorButton />}
               rootClass={classes.receiveFieldRoot}
               type={"number"}
               value={toAmount || ""}
@@ -355,7 +343,7 @@ const MaxSwapAmount = ({
 }) => {
   const theme = useCustomTheme();
   const { fromMint } = useSwapContext();
-  const tokenAccountsSorted = useSwapTokenList(fromMint, true);
+  const tokenAccountsSorted = useJupiterInputMints();
   const balance =
     tokenAccountsSorted.find((t) => t.mint === fromMint)?.nativeBalance || 0;
 
@@ -619,19 +607,43 @@ function CloseButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-function TokenSelectorButton({ mint, isFrom }: any) {
-  const classes = useStyles();
-  const tokenRegistry = useSplTokenRegistry();
-  const { toMint, fromMint, setToMint, setFromMint } = useSwapContext();
-  const tokenAccountsSorted = useSwapTokenList(mint, isFrom);
+function InputTokenSelectorButton() {
+  const { fromMint, setFromMint } = useSwapContext();
+  const tokenAccounts = useJupiterInputMints();
+  const tokenAccountsFiltered = tokenAccounts.filter(
+    (token: Token) => token.nativeBalance !== 0 && token.mint !== fromMint
+  );
+  return (
+    <TokenSelectorButton
+      selectedMint={fromMint}
+      tokenAccounts={tokenAccountsFiltered}
+      setMint={setFromMint}
+    />
+  );
+}
 
-  const tokenInfo = tokenRegistry.get(mint); // TODO handle null case
+function OutputTokenSelectorButton() {
+  const { fromMint, toMint, setToMint } = useSwapContext();
+  const tokenAccounts = useJupiterOutputMints(fromMint);
+  const tokenAccountsFiltered = tokenAccounts.filter(
+    (token: Token) => token.mint !== toMint
+  );
+  return (
+    <TokenSelectorButton
+      selectedMint={toMint}
+      tokenAccounts={tokenAccountsFiltered}
+      setMint={setToMint}
+    />
+  );
+}
+
+function TokenSelectorButton({ selectedMint, tokenAccounts, setMint }: any) {
+  const classes = useStyles();
+
+  const tokenRegistry = useSplTokenRegistry();
+  const tokenInfo = tokenRegistry.get(selectedMint); // TODO handle null case
   const symbol = tokenInfo ? tokenInfo.symbol : "-";
   const logoUri = tokenInfo ? tokenInfo.logoURI : "-";
-  const setMint = isFrom ? setFromMint : setToMint;
-  const tokenFilter = isFrom
-    ? (token: Token) => token.nativeBalance !== 0 && token.mint !== toMint
-    : (token: Token) => token.mint !== fromMint;
 
   return (
     <>
@@ -659,8 +671,7 @@ function TokenSelectorButton({ mint, isFrom }: any) {
               component: (props: any) => <SelectToken {...props} />,
               props: {
                 setMint,
-                tokenAccounts: tokenAccountsSorted,
-                customFilter: tokenFilter,
+                tokenAccounts,
               },
             },
           ]}

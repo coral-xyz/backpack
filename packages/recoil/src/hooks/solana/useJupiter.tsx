@@ -1,10 +1,10 @@
 import { useRecoilValue } from "recoil";
 import * as atoms from "../../atoms";
 
-export function useJupiterWalletTokens(): Array<any> {
-  return useRecoilValue(atoms.walletJupiterTokens);
+export function useJupiterInputMints(): Array<any> {
+  return useRecoilValue(atoms.jupiterInputMints);
 }
 
-export function useSwapTokenList(mint: string, isFrom: boolean): Array<any> {
-  return useRecoilValue(atoms.swapTokenList({ mint, isFrom }));
+export function useJupiterOutputMints(inputMint: string): Array<any> {
+  return useRecoilValue(atoms.jupiterOutputMints({ inputMint }));
 }

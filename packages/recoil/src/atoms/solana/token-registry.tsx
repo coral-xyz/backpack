@@ -2,7 +2,7 @@ import { atom } from "recoil";
 import { TokenListProvider, TokenInfo } from "@solana/spl-token-registry";
 import { WSOL_MINT, SOL_NATIVE_MINT } from "@coral-xyz/common";
 
-const SOL_LOGO_URI =
+export const SOL_LOGO_URI =
   "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png";
 
 export const splTokenRegistry = atom<Map<string, TokenInfo> | null>({
