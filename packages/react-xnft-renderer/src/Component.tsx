@@ -622,6 +622,8 @@ function _TextField({ id, props, children, style }: any) {
       placeholder={props.placeholder}
       value={props.value}
       setValue={onChange}
+      children={children}
+      style={style}
     />
   );
 }
@@ -639,6 +641,9 @@ export function TextField({
   disabled,
   autoFocus,
   rows,
+  select,
+  children,
+  style,
 }: any) {
   const classes = useStyles();
   inputProps = Object.assign(
@@ -678,6 +683,9 @@ export function TextField({
       }}
       value={value}
       onChange={(e) => setValue(e.target.value)}
+      select={select}
+      children={children}
+      style={style}
     />
   );
 }
