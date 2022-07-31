@@ -3,23 +3,15 @@ import { TokenInfo } from "@solana/spl-token-registry";
 import { Blockchain } from "@coral-xyz/common";
 import { blockchainTokensSorted } from "./token";
 import { splTokenRegistry } from "./token-registry";
+import { bootstrap } from "../bootstrap";
 
 export const JUPITER_BASE_URL = "https://quote-api.jup.ag/v1/";
 
 export const jupiterRouteMap = selector({
   key: "jupiterRouteMap",
-  get: async ({}) => {
-    const response = await (
-      await fetch(`${JUPITER_BASE_URL}indexed-route-map`)
-    ).json();
-    const getMint = (index: number) => response["mintKeys"][index];
-    // Replace indices with mint addresses
-    return Object.keys(response["indexedRouteMap"]).reduce((acc, key) => {
-      acc[getMint(parseInt(key))] = response["indexedRouteMap"][key].map(
-        (i: number) => getMint(i)
-      );
-      return acc;
-    }, {});
+  get: async ({ get }) => {
+    const b = get(bootstrap);
+    return b.jupiterRouteMap;
   },
 });
 
@@ -68,3 +60,17 @@ export const swapTokenList = selectorFamily({
       }
     },
 });
+
+export async function fetchJupiterRouteMap() {
+  const response = await (
+    await fetch(`${JUPITER_BASE_URL}indexed-route-map`)
+  ).json();
+  const getMint = (index: number) => response["mintKeys"][index];
+  // Replace indices with mint addresses
+  return Object.keys(response["indexedRouteMap"]).reduce((acc, key) => {
+    acc[getMint(parseInt(key))] = response["indexedRouteMap"][key].map(
+      (i: number) => getMint(i)
+    );
+    return acc;
+  }, {});
+}

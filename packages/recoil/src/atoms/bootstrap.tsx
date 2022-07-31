@@ -6,9 +6,9 @@ import { fetchPriceData } from "./prices";
 import { backgroundClient } from "./client";
 import { anchorContext } from "./solana/wallet";
 import { activeWallet } from "./solana/wallet";
-import { jupiterRouteMap } from "./solana/jupiter";
 import { fetchRecentTransactions } from "./solana/recent-transactions";
 import { splTokenRegistry } from "./solana/token-registry";
+import { fetchJupiterRouteMap } from "./solana/jupiter";
 
 /**
  * Defines the initial app load fetch.
@@ -20,17 +20,14 @@ export const bootstrap = selector<{
   coingeckoData: Map<string, any>;
   recentTransactions: Array<ParsedConfirmedTransaction>;
   walletPublicKey: PublicKey;
+  jupiterRouteMap: any;
 }>({
   key: "bootstrap",
   get: async ({ get }: any) => {
     const tokenRegistry = get(splTokenRegistry);
     const { provider } = get(anchorContext);
     const walletPublicKey = new PublicKey(get(activeWallet));
-    // Preload Jupiter route maps for swapper
-    //		console.log('jup before');
-    // TODO: do this in promise.all ?
-    get(jupiterRouteMap); //.then(() => console.log('after then'));
-    //		console.log('jup after');
+
     //
     // Perform data fetch.
     //
@@ -44,16 +41,21 @@ export const bootstrap = selector<{
         tokenAccountsMap
       );
 
-      const [coingeckoData, recentTransactions] = await Promise.all([
-        //
-        // Fetch the price data.
-        //
-        fetchPriceData(splTokenAccounts, tokenRegistry),
-        //
-        // Get the transaction data for the wallet's recent transactions.
-        //
-        fetchRecentTransactions(provider.connection, walletPublicKey),
-      ]);
+      const [coingeckoData, recentTransactions, jupiterRouteMap] =
+        await Promise.all([
+          //
+          // Fetch the price data.
+          //
+          fetchPriceData(splTokenAccounts, tokenRegistry),
+          //
+          // Get the transaction data for the wallet's recent transactions.
+          //
+          fetchRecentTransactions(provider.connection, walletPublicKey),
+          //
+          // Preload Jupiter route maps for swapper.
+          //
+          fetchJupiterRouteMap(),
+        ]);
 
       //
       // Done.
@@ -65,6 +67,7 @@ export const bootstrap = selector<{
         coingeckoData,
         recentTransactions,
         walletPublicKey,
+        jupiterRouteMap,
       };
     } catch (err) {
       // TODO: show error notification.
@@ -76,6 +79,7 @@ export const bootstrap = selector<{
         coingeckoData: new Map(),
         recentTransactions: [],
         walletPublicKey,
+        jupiterRouteMap: {},
       };
     }
   },
