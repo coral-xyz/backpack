@@ -1,6 +1,10 @@
 import { useState } from "react";
 import Transport from "@ledgerhq/hw-transport";
-import { DerivationPath, UI_RPC_METHOD_LEDGER_IMPORT } from "@coral-xyz/common";
+import {
+  DerivationPath,
+  UI_RPC_METHOD_LEDGER_IMPORT,
+  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+} from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ConnectHardwareWelcome } from "./ConnectHardwareWelcome";
@@ -34,6 +38,17 @@ export function ConnectHardware({ onComplete }: { onComplete: () => void }) {
       await background.request({
         method: UI_RPC_METHOD_LEDGER_IMPORT,
         params: [derivationPath, account.index, account.publicKey.toString()],
+      });
+    }
+
+    //
+    // Automatically switch to the first wallet in the import list.
+    //
+    if (accounts.length > 0) {
+      const active = accounts[0].publicKey.toString();
+      await background.request({
+        method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+        params: [active],
       });
     }
   };
