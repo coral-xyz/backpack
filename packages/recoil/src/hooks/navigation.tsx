@@ -37,13 +37,6 @@ export function useNavigation(): NavigationContext {
   };
 }
 
-export function useRedirectUrl(): string {
-  const nav = useRecoilValue(atoms.navData);
-  const navData = nav.data[nav.activeTab];
-  const url = navData.urls[navData.urls.length - 1];
-  return url;
-}
-
 // Assumes all urls are of the form `/<tab>/<component-id>/.../`.
 export function useTab(): string {
   const location = useLocation();

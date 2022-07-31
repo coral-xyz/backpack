@@ -48,6 +48,8 @@ const useStyles = styles((theme) => ({
   },
   miniDrawerPaper: {
     background: "transparent",
+    borderTopLeftRadius: "12px",
+    borderTopRightRadius: "12px",
   },
   closeDrawerButton: {
     backgroundColor: theme.custom.colors.background,

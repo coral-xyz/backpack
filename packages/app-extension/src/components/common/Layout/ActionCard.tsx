@@ -1,4 +1,5 @@
 import { Typography, Box, Card, CardContent } from "@mui/material";
+import { useCustomTheme } from "@coral-xyz/themes";
 
 export function ActionCard({
   icon,
@@ -9,13 +10,14 @@ export function ActionCard({
   text: string;
   onClick: () => void;
 }) {
+  const theme = useCustomTheme();
   return (
     <Card
       sx={{
-        bgcolor: "#3F3F46",
+        bgcolor: theme.custom.colors.bg2,
         p: 1,
         borderRadius: "12px",
-        color: "#fff",
+        color: theme.custom.colors.fontColor,
         cursor: "pointer",
         height: "112px",
         padding: "16px",

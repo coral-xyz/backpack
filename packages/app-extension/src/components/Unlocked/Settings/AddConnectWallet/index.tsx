@@ -80,7 +80,7 @@ export function AddConnectWalletMenu() {
             <ActionCard
               icon={
                 <HardwareWalletIcon
-                  fill="#fff"
+                  fill={theme.custom.colors.fontColor}
                   style={{
                     width: "24px",
                     height: "24px",

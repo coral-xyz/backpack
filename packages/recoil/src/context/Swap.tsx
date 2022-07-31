@@ -13,8 +13,8 @@ import {
   useActiveWallet,
   useBackgroundClient,
   useSplTokenRegistry,
+  useSolanaCtx,
 } from "../hooks";
-import { useSolanaCtx } from "../hooks/useSolanaConnection";
 import { JUPITER_BASE_URL } from "../atoms/solana/jupiter";
 
 const DEFAULT_SLIPPAGE_PERCENT = 1;

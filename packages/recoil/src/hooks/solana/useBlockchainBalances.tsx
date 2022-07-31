@@ -1,6 +1,6 @@
 import { useRecoilValue } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
-import * as atoms from "../atoms";
+import * as atoms from "../../atoms";
 
 export function useBlockchainTokens(blockchain: Blockchain) {
   return useRecoilValue(atoms.blockchainTokens(blockchain));
@@ -28,10 +28,6 @@ export function useBlockchainTokenAccount(
 
 export function useBlockchainTokensSorted(blockchain: Blockchain) {
   return useRecoilValue(atoms.blockchainTokensSorted(blockchain));
-}
-
-export function usePriceData(mintAddress: string): any {
-  return useRecoilValue(atoms.priceData(mintAddress));
 }
 
 export function useNftMetadata(): Map<string, any> {

@@ -1,11 +1,11 @@
 import { useRecoilValue, useRecoilValueLoadable, Loadable } from "recoil";
 import { Connection } from "@solana/web3.js";
 import { SolanaContext, BackgroundClient } from "@coral-xyz/common";
-import * as atoms from "../atoms";
+import * as atoms from "../../atoms";
 import { useSplTokenRegistry } from "./useSplTokenRegistry";
 import { useActiveWallet } from "./useWallet";
-import { useBackgroundClient } from "./useBackgroundClient";
-import { useSolanaCommitment } from "./useKeyringStoreState";
+import { useSolanaCommitment } from "../keyring";
+import { useBackgroundClient } from "../client";
 
 export function useSolanaConnectionUrl(): string {
   return useRecoilValue(atoms.connectionUrl)!;

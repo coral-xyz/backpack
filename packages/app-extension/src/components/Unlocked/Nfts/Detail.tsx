@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Typography } from "@mui/material";
-import { PublicKey } from "@solana/web3.js";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
-import { useNftMetadata } from "@coral-xyz/recoil";
+import { useNftMetadata, useAnchorContext } from "@coral-xyz/recoil";
 import { PrimaryButton, SecondaryButton, TextField } from "../../common";
 import {
   useDrawerContext,
@@ -15,6 +14,7 @@ import {
   NavStackScreen,
 } from "../../common/Layout/NavStack";
 import { SendConfirmationCard } from "../Balances/TokensWidget/Send";
+import { useIsValidSolanaSendAddress } from "../Balances/TokensWidget/Send";
 
 const useStyles = styles((theme) => ({
   textRoot: {
@@ -149,25 +149,18 @@ function SendScreen({ nft }: { nft: any }) {
   const classes = useStyles();
   const { close } = useDrawerContext();
   const [address, setAddress] = useState("");
-  const [addressError, setAddressError] = useState<boolean>(false);
   const [openConfirm, setOpenConfirm] = useState(false);
+  const { provider } = useAnchorContext();
+  const {
+    isValidAddress,
+    isErrorAddress,
+    isFreshAddress: _,
+  } = useIsValidSolanaSendAddress(address, provider.connection);
 
   const onReject = () => {
     close();
   };
   const onSend = () => {
-    let didAddressError = false;
-    try {
-      new PublicKey(address);
-    } catch (_err) {
-      didAddressError = true;
-    }
-    if (didAddressError) {
-      setAddressError(true);
-      return;
-    }
-
-    setAddressError(false);
     setOpenConfirm(true);
   };
 
@@ -197,7 +190,7 @@ function SendScreen({ nft }: { nft: any }) {
               placeholder={"Recipient's SOL Address"}
               value={address}
               setValue={setAddress}
-              isError={addressError}
+              isError={isErrorAddress}
               inputProps={{
                 name: "to",
               }}
@@ -211,7 +204,11 @@ function SendScreen({ nft }: { nft: any }) {
               onClick={onReject}
               label={"Cancel"}
             />
-            <PrimaryButton onClick={onSend} label={"Next"} />
+            <PrimaryButton
+              disabled={!isValidAddress}
+              onClick={onSend}
+              label={"Next"}
+            />
           </div>
         </div>
       </div>
