@@ -525,7 +525,11 @@ function SwapReceiveAmount() {
       className={classes.confirmationAmount}
       style={{ display: "flex", justifyContent: "center" }}
     >
-      <img className={classes.tokenLogoLarge} src={logoUri} />
+      <img
+        className={classes.tokenLogoLarge}
+        src={logoUri}
+        onError={(event) => (event.currentTarget.style.display = "none")}
+      />
       {toAmount}
       <span style={{ color: theme.custom.colors.secondary, marginLeft: "8px" }}>
         {toMintInfo?.symbol}
@@ -635,7 +639,13 @@ function TokenSelectorButton({ mint, isFrom }: any) {
         <WithHeaderButton
           labelComponent={
             <>
-              <img className={classes.tokenLogo} src={logoUri} />
+              <img
+                className={classes.tokenLogo}
+                src={logoUri}
+                onError={(event) =>
+                  (event.currentTarget.style.display = "none")
+                }
+              />
               <Typography className={classes.tokenSelectorButtonLabel}>
                 {symbol}
               </Typography>
