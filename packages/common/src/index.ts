@@ -9,6 +9,7 @@ export * from "./types";
 export * from "./solana";
 export * from "./utils";
 export * from "./zustand-store";
+export * from "./features";
 
 // Utility to transform the handler API into something a little more friendly.
 export function withContext<Backend>(

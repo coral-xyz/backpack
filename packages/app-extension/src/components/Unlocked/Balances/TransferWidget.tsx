@@ -41,12 +41,14 @@ function SendButton({
   blockchain?: Blockchain;
   address?: string;
 }) {
+  const theme = useCustomTheme();
   return (
     <TransferButton
       label={"Send"}
       labelComponent={
         <ArrowUpward
           style={{
+            color: theme.custom.colors.fontColor,
             display: "flex",
             marginLeft: "auto",
             marginRight: "auto",
@@ -84,12 +86,14 @@ function SendButton({
 }
 
 function ReceiveButton() {
+  const theme = useCustomTheme();
   return (
     <TransferButton
       label={"Receive"}
       labelComponent={
         <ArrowDownward
           style={{
+            color: theme.custom.colors.fontColor,
             display: "flex",
             marginLeft: "auto",
             marginRight: "auto",

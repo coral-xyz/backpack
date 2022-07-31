@@ -24,6 +24,7 @@ import {
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
+  NOTIFICATION_DARK_MODE_UPDATED,
 } from "@coral-xyz/common";
 import type { Nav } from "../keyring/store";
 import {
@@ -509,12 +510,22 @@ export class Backend {
   }
 
   async darkModeRead(): Promise<boolean> {
-    // todo
-    return true;
+    const data = await getWalletData();
+    return data.darkMode ?? true;
   }
 
   async darkModeUpdate(darkMode: boolean): Promise<string> {
-    // todo
+    const data = await getWalletData();
+    await setWalletData({
+      ...data,
+      darkMode,
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_DARK_MODE_UPDATED,
+      data: {
+        darkMode,
+      },
+    });
     return SUCCESS_RESPONSE;
   }
 
