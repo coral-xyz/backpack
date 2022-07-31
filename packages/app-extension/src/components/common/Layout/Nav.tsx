@@ -161,7 +161,7 @@ export function NavContent({
     ...style,
   };
   return (
-    <div style={_style}>
+    <div className="nav-content-style" style={_style}>
       <Scrollbar>
         <Suspense fallback={<Loading />}>{renderComponent}</Suspense>
       </Scrollbar>

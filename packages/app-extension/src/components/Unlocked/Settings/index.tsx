@@ -217,6 +217,7 @@ function AvatarButton() {
 function SettingsMenu() {
   const theme = useCustomTheme();
   const { setTitle, setStyle, setContentStyle } = useNavStack();
+
   useEffect(() => {
     setTitle("");
     setStyle({
@@ -225,7 +226,8 @@ function SettingsMenu() {
     setContentStyle({
       backgroundColor: theme.custom.colors.background,
     });
-  }, []);
+  }, [setTitle, setStyle, setContentStyle, theme.custom.colors.background]);
+
   return (
     <Suspense fallback={<div></div>}>
       <_SettingsContent />
@@ -495,7 +497,7 @@ export function ImportSecretKey() {
       nav.setStyle(prevStyle);
       nav.setContentStyle(prevContentStyle);
     };
-  }, [nav.setContentStyle]);
+  }, [nav.style, nav.contentStyle, nav.setContentStyle, theme]);
 
   const onClick = async () => {
     const kp = decodeAccount(secretKey);
