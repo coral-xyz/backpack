@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Switch } from "@mui/material";
 import { UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE } from "@coral-xyz/common";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { useDarkMode, useBackgroundClient } from "@coral-xyz/recoil";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
@@ -30,10 +30,9 @@ export function Preferences() {
       onClick: () => nav.push("preferences-trusted-apps"),
     },
     "Dark Mode": {
-      onClick: () => onDarkModeSwitch,
+      onClick: () => onDarkModeSwitch(!isDarkMode),
       detail: (
         <DarkModeSwitch
-          isDarkMode={isDarkMode}
           onSwitch={(isDarkMode) => onDarkModeSwitch(isDarkMode)}
         />
       ),
@@ -71,11 +70,42 @@ export function Preferences() {
 }
 
 function DarkModeSwitch({
-  isDarkMode,
   onSwitch,
 }: {
-  isDarkMode: boolean;
   onSwitch: (isDarkMode: boolean) => void;
 }) {
-  return <Switch disableRipple onChange={(v) => onSwitch(!isDarkMode)} />;
+  const isDarkMode = useDarkMode();
+  const classes = useStyles();
+  return (
+    <Switch
+      checked={isDarkMode}
+      disableRipple
+      onChange={() => onSwitch(!isDarkMode)}
+      classes={{
+        switchBase: classes.switchBase,
+        track: isDarkMode ? classes.trackChecked : classes.track,
+        colorPrimary: classes.colorPrimary,
+      }}
+    />
+  );
 }
+
+const useStyles = styles((theme) => ({
+  switchBase: {
+    "&:hover": {
+      backgroundColor: "transparent",
+      "@media (hover: none)": {
+        backgroundColor: "transparent",
+      },
+    },
+  },
+  colorPrimary: {
+    "&.Mui-checked": {
+      color: theme.custom.colors.activeNavButton,
+    },
+  },
+  track: {},
+  trackChecked: {
+    backgroundColor: `${theme.custom.colors.activeNavButton} !important`,
+  },
+}));

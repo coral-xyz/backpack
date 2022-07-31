@@ -21,6 +21,7 @@ export const isDarkMode = atom<boolean | null>({
           params: [],
         });
       } catch (e) {
+        // An error is thrown on first time wallet onboarding.
         console.error(e);
         return true;
       }
