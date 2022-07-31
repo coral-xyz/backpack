@@ -13,7 +13,6 @@ export function Preferences() {
   const isDarkMode = useDarkMode();
 
   const onDarkModeSwitch = async (isDarkMode: boolean) => {
-    console.log("on switch");
     await background.request({
       method: UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
       params: [isDarkMode],
@@ -78,12 +77,5 @@ function DarkModeSwitch({
   isDarkMode: boolean;
   onSwitch: (isDarkMode: boolean) => void;
 }) {
-  console.log("IS DARK MODE", isDarkMode);
-  return (
-    <Switch
-      disableRipple
-      disabled={!isDarkMode}
-      onChange={(v) => onSwitch(!isDarkMode)}
-    />
-  );
+  return <Switch disableRipple onChange={(v) => onSwitch(!isDarkMode)} />;
 }
