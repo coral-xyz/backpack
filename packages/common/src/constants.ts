@@ -169,6 +169,7 @@ export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
   "anchor-solana-explorer-updated";
 export const NOTIFICATION_SOLANA_COMMITMENT_UPDATED =
   "anchor-solana-commitment-updated";
+export const NOTIFICATION_DARK_MODE_UPDATED = "anchor-dark-mode-updated";
 
 export const SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO = "solana-get-account-info";
 export const SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH =

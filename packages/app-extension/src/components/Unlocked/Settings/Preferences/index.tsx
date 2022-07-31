@@ -1,11 +1,24 @@
 import { useEffect } from "react";
+import { Switch } from "@mui/material";
+import { UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { useDarkMode, useBackgroundClient } from "@coral-xyz/recoil";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 
 export function Preferences() {
   const theme = useCustomTheme();
   const nav = useNavStack();
+  const background = useBackgroundClient();
+  const isDarkMode = useDarkMode();
+
+  const onDarkModeSwitch = async (isDarkMode: boolean) => {
+    console.log("on switch");
+    await background.request({
+      method: UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
+      params: [isDarkMode],
+    });
+  };
 
   //
   // Global.
@@ -16,6 +29,15 @@ export function Preferences() {
     },
     "Trusted Apps": {
       onClick: () => nav.push("preferences-trusted-apps"),
+    },
+    "Dark Mode": {
+      onClick: () => onDarkModeSwitch,
+      detail: (
+        <DarkModeSwitch
+          isDarkMode={isDarkMode}
+          onSwitch={(isDarkMode) => onDarkModeSwitch(isDarkMode)}
+        />
+      ),
     },
   };
 
@@ -46,5 +68,22 @@ export function Preferences() {
       <SettingsList menuItems={menuItems} />
       <SettingsList menuItems={solanaMenuItems} />
     </div>
+  );
+}
+
+function DarkModeSwitch({
+  isDarkMode,
+  onSwitch,
+}: {
+  isDarkMode: boolean;
+  onSwitch: (isDarkMode: boolean) => void;
+}) {
+  console.log("IS DARK MODE", isDarkMode);
+  return (
+    <Switch
+      disableRipple
+      disabled={!isDarkMode}
+      onChange={(v) => onSwitch(!isDarkMode)}
+    />
   );
 }
