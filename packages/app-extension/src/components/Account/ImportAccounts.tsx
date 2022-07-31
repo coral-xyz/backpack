@@ -233,6 +233,7 @@ export function ImportAccounts({
         <div style={{ margin: "16px" }}>
           <TextField
             label="Derivation Path"
+            value={derivationPath}
             setValue={setDerivationPath}
             select={true}
           >

@@ -38,6 +38,13 @@ const componentOverrides = {
       },
     },
   },
+  MuiSelect: {
+    styleOverrides: {
+      icon: {
+        color: FONT_COLOR_1,
+      },
+    },
+  },
 };
 
 export const darkTheme: any = {
