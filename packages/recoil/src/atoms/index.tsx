@@ -1,5 +1,5 @@
 export * from "./bootstrap";
-export * from "./keyring-store";
+export * from "./keyring";
 export * from "./prices";
 export * from "./transaction-request";
 export * from "./solana";
