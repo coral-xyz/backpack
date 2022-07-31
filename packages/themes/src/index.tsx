@@ -35,8 +35,33 @@ const NEGATIVE_COLOR = "#E95050";
 const SCROLLBAR_THUMB_COLOR = "rgb(153 164 180)";
 const DISABLED_BUTTON_COLOR = BRAND_COLOR;
 
+const componentOverrides = {
+  MuiPaper: {
+    styleOverrides: {
+      root: {
+        backgroundImage: "none",
+      },
+    },
+  },
+  MuiSelect: {
+    styleOverrides: {
+      icon: {
+        color: FONT_COLOR_1,
+      },
+    },
+  },
+};
+
 export const darkTheme: any = {
   ...baseTheme,
+  palette: {
+    mode: "dark",
+    background: {
+      default: BACKGROUND_COLOR_0,
+      paper: BACKGROUND_COLOR_1,
+    },
+  },
+  components: componentOverrides,
   custom: {
     colors: {
       background: BACKGROUND_COLOR_0,
@@ -85,6 +110,7 @@ const LIGHT_SCROLLBAR_THUMB_COLOR = SCROLLBAR_THUMB_COLOR;
 
 export const lightTheme: any = {
   ...baseTheme,
+  components: componentOverrides,
   custom: {
     colors: {
       background: LIGHT_BACKGROUND_COLOR_0,
