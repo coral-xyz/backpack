@@ -57,7 +57,9 @@ export function TokenTable() {
 
   return (
     <BalancesTable>
-      <BalancesTableHead props={{ title, iconUrl: blockchainLogo }} />
+      <BalancesTableHead
+        props={{ title, iconUrl: blockchainLogo, disableToggle: true }}
+      />
       <BalancesTableContent>
         {tokenAccountsFiltered.map((token: any) => (
           <TokenRow key={token.address} token={token} blockchain={blockchain} />
