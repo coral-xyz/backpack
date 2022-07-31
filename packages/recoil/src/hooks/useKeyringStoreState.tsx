@@ -1,7 +1,7 @@
 import { useRecoilState, useRecoilValue } from "recoil";
 import { Commitment } from "@solana/web3.js";
 import { UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE } from "@coral-xyz/common";
-import { KeyringStoreState } from "../atoms/keyring-store";
+import { KeyringStoreState } from "../atoms/keyring";
 import * as atoms from "../atoms";
 import { useBackgroundClient } from "./useBackgroundClient";
 

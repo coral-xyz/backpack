@@ -3,9 +3,9 @@ import { ChannelAppUiClient, ChannelAppUiResponder } from "@coral-xyz/common";
 import * as atoms from "../atoms";
 
 export function useBackgroundClient(): ChannelAppUiClient {
-  return useRecoilValue(atoms.backgroundClient)!;
+  return useRecoilValue(atoms.backgroundClient);
 }
 
 export function useBackgroundResponder(): ChannelAppUiResponder {
-  return useRecoilValue(atoms.backgroundResponder)!;
+  return useRecoilValue(atoms.backgroundResponder);
 }

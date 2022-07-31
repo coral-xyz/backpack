@@ -2,11 +2,6 @@ import { useRecoilValue } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
 import * as atoms from "../atoms";
 
-export function useBlockchains() {
-  const blockchains = useRecoilValue(atoms.blockchainKeys);
-  return blockchains;
-}
-
 export function useBlockchainTokens(blockchain: Blockchain) {
   return useRecoilValue(atoms.blockchainTokens(blockchain));
 }
@@ -20,12 +15,8 @@ export function useBlockchainLogo(blockchain: Blockchain): string {
   }
 }
 
-export function useTotal(): any {
-  return useRecoilValue(atoms.total);
-}
-
-export function useBlockchainTotal(blockchain: Blockchain): any {
-  return useRecoilValue(atoms.blockchainTotal(blockchain));
+export function useSolanaBalance(): any {
+  return useRecoilValue(atoms.solanaBalance);
 }
 
 export function useBlockchainTokenAccount(

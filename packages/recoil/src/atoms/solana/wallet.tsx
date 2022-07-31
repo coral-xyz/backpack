@@ -8,9 +8,9 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
 } from "@coral-xyz/common";
-import { WalletPublicKeys } from "../types";
-import { backgroundClient } from "./background";
-import { solanaCommitment } from "./settings";
+import { WalletPublicKeys } from "../../types";
+import { backgroundClient } from "../client";
+import { solanaCommitment } from "../preferences";
 
 /**
  * List of all public keys for the wallet along with associated nicknames.

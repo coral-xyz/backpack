@@ -1,13 +1,11 @@
 import { selector, selectorFamily } from "recoil";
-import { blockchainKeys } from "./blockchains";
-import { blockchainTokensSorted } from "./token";
 import { Blockchain } from "@coral-xyz/common";
+import { blockchainTokensSorted } from "./token";
 
-export const total = selector({
+export const solanaBalance = selector({
   key: "total",
   get: ({ get }) => {
-    const blockchains = get(blockchainKeys);
-    const total = blockchains.map((b) => get(blockchainTotal(b)));
+    const total = [get(blockchainBalance(Blockchain.SOLANA))];
     const totalBalance = total
       .map((t) => t.totalBalance)
       .reduce((a, b) => a + b);
@@ -22,7 +20,7 @@ export const total = selector({
   },
 });
 
-export const blockchainTotal = selectorFamily({
+const blockchainBalance = selectorFamily({
   key: "blockchainTotal",
   get:
     (blockchain: Blockchain) =>

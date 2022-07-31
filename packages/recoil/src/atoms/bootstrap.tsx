@@ -1,14 +1,14 @@
 import { atom, selector } from "recoil";
 import { ParsedConfirmedTransaction, PublicKey } from "@solana/web3.js";
 import { UI_RPC_METHOD_NAVIGATION_READ } from "@coral-xyz/common";
-import { anchorContext } from "../atoms/wallet";
-import { jupiterRouteMap } from "../atoms/jupiter";
 import { TokenAccountWithKey } from "../types";
-import { fetchRecentTransactions } from "./recent-transactions";
-import { splTokenRegistry } from "./token-registry";
-import { fetchPriceData } from "./price-data";
-import { activeWallet } from "./wallet";
-import { backgroundClient } from "./background";
+import { fetchPriceData } from "./prices";
+import { backgroundClient } from "./client";
+import { anchorContext } from "./solana/wallet";
+import { activeWallet } from "./solana/wallet";
+import { jupiterRouteMap } from "./solana/jupiter";
+import { fetchRecentTransactions } from "./solana/recent-transactions";
+import { splTokenRegistry } from "./solana/token-registry";
 
 /**
  * Defines the initial app load fetch.
@@ -27,7 +27,10 @@ export const bootstrap = selector<{
     const { provider } = get(anchorContext);
     const walletPublicKey = new PublicKey(get(activeWallet));
     // Preload Jupiter route maps for swapper
-    get(jupiterRouteMap);
+    //		console.log('jup before');
+    // TODO: do this in promise.all ?
+    get(jupiterRouteMap); //.then(() => console.log('after then'));
+    //		console.log('jup after');
     //
     // Perform data fetch.
     //
@@ -94,6 +97,24 @@ export const bootstrapFast = atom<any>({
       return {
         nav,
       };
+    },
+  }),
+});
+
+/**
+ * This is fetched once on loading the app for the initial url redirect
+ * and is otherwise ignored.
+ */
+export const navData = atom<{
+  activeTab: string;
+  data: { [navId: string]: { id: string; urls: Array<string> } };
+}>({
+  key: "navigationState",
+  default: selector({
+    key: "navigationStateDefault",
+    get: ({ get }: any) => {
+      const { nav } = get(bootstrapFast);
+      return nav;
     },
   }),
 });

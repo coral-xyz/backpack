@@ -1,11 +1,11 @@
 import { atom, atomFamily, selector, selectorFamily } from "recoil";
-import { bootstrap } from "./bootstrap";
-import { priceData } from "./price-data";
-import { splTokenRegistry } from "./token-registry";
-import { TokenAccountWithKey } from "../types";
-import { connectionUrl, activeWallet } from "./wallet";
-import { Blockchain } from "@coral-xyz/common";
 import { TokenInfo } from "@solana/spl-token-registry";
+import { Blockchain } from "@coral-xyz/common";
+import { bootstrap } from "../bootstrap";
+import { priceData } from "../prices";
+import { splTokenRegistry } from "./token-registry";
+import { TokenAccountWithKey } from "../../types";
+import { connectionUrl, activeWallet } from "./wallet";
 
 /**
  * Returns the token accounts sorted by usd notional balances.
