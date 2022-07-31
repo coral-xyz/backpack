@@ -34,7 +34,6 @@ export function List({ style, children }: any) {
 }
 
 export function ListItem({
-  key,
   style,
   children,
   isLast,
@@ -51,7 +50,6 @@ export function ListItem({
       <MuiListItem
         disableRipple
         data-testid={id}
-        key={key}
         button={button}
         className={classes.settingsContentListItem}
         onClick={onClick}
