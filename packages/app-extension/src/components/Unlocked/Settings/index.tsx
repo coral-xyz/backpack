@@ -1,7 +1,6 @@
 import { useEffect, useState, Suspense } from "react";
 import * as bs58 from "bs58";
 import { Box, Typography, IconButton } from "@mui/material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   Add,
   Lock,
@@ -11,6 +10,7 @@ import {
   Settings,
 } from "@mui/icons-material";
 import { PublicKey, Keypair } from "@solana/web3.js";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   useBackgroundClient,
   useWalletPublicKeys,
@@ -18,6 +18,7 @@ import {
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
+  Features,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
@@ -407,7 +408,9 @@ function SettingsList({ close }: { close: () => void }) {
       icon: (props: any) => <Help {...props} />,
       detailIcon: <LaunchDetail />,
     },
-    {
+  ];
+  if (Features.popMode) {
+    settingsMenu.push({
       label: "Pop Window",
       onClick: () => {
         openPopupWindow("popup.html");
@@ -415,14 +418,14 @@ function SettingsList({ close }: { close: () => void }) {
       },
       icon: (props: any) => <WindowIcon {...props} />,
       detailIcon: <LaunchDetail />,
-    },
-    {
-      label: "Lock Wallet",
-      onClick: () => lockWallet(),
-      icon: (props: any) => <Lock {...props} />,
-      detailIcon: <></>,
-    },
-  ];
+    });
+  }
+  settingsMenu.push({
+    label: "Lock Wallet",
+    onClick: () => lockWallet(),
+    icon: (props: any) => <Lock {...props} />,
+    detailIcon: <></>,
+  });
 
   return (
     <List

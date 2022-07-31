@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import { Switch } from "@mui/material";
-import { UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE } from "@coral-xyz/common";
+import {
+  Features,
+  UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
+} from "@coral-xyz/common";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { useDarkMode, useBackgroundClient } from "@coral-xyz/recoil";
 import { useNavStack } from "../../../common/Layout/NavStack";
@@ -31,22 +34,25 @@ export function Preferences() {
   //
   // Global.
   //
-  const menuItems = {
+  const menuItems: any = {
     "Auto-lock timer": {
       onClick: () => nav.push("preferences-auto-lock"),
     },
     "Trusted Apps": {
       onClick: () => nav.push("preferences-trusted-apps"),
     },
-    "Dark Mode": {
+  };
+
+  if (Features.lightMode) {
+    menuItems["Dark Mode"] = {
       onClick: () => onDarkModeSwitch(!isDarkMode),
       detail: (
         <DarkModeSwitch
           onSwitch={(isDarkMode) => onDarkModeSwitch(isDarkMode)}
         />
       ),
-    },
-  };
+    };
+  }
 
   //
   // Solana.
