@@ -82,7 +82,7 @@ const useStyles = styles((theme) => ({
     background: "white",
   },
   subtext: {
-    color: "#A1A1AA",
+    color: theme.custom.colors.subtext,
   },
 }));
 

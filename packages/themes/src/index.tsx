@@ -25,6 +25,7 @@ const BACKGROUND_COLOR_2 = "#3F3F46";
 const FONT_COLOR = "#FFFFFF";
 const FONT_COLOR_1 = "#71717A";
 const FONT_COLOR_2 = "#D4D4D8";
+const FONT_COLOR_3 = "#A1A1AA";
 const BRAND_COLOR = "#14B8A6";
 const BUTTON_FONT_COLOR = FONT_COLOR;
 const BORDER_COLOR = "#393C43";
@@ -62,6 +63,7 @@ export const darkTheme: any = {
       bg2: BACKGROUND_COLOR_2,
       border1: BORDER_COLOR_1,
       disabledButton: DISABLED_BUTTON_COLOR,
+      subtext: FONT_COLOR_3,
     },
   },
 };
@@ -72,6 +74,7 @@ const LIGHT_BACKGROUND_COLOR_2 = LIGHT_BACKGROUND_COLOR_0;
 const LIGHT_FONT_COLOR = "#43546D";
 const LIGHT_FONT_COLOR_1 = "#67758B";
 const LIGHT_FONT_COLOR_2 = "#D4D4D8";
+const LIGHT_FONT_COLOR_3 = LIGHT_FONT_COLOR_1;
 const LIGHT_BRAND_COLOR = "#14B8A6";
 const LIGHT_BUTTON_FONT_COLOR = FONT_COLOR;
 const LIGHT_BORDER_COLOR = "#DBDADB";
@@ -108,6 +111,7 @@ export const lightTheme: any = {
       bg2: LIGHT_BACKGROUND_COLOR_2,
       border1: LIGHT_BORDER_COLOR_1,
       disabledButton: DISABLED_BUTTON_COLOR,
+      subtext: LIGHT_FONT_COLOR_3,
     },
   },
 };
