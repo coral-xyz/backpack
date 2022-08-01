@@ -626,7 +626,6 @@ class BlockchainKeyring {
 // Keys used by the local storage db.
 const KEY_KEYRING_STORE = "keyring-store";
 const KEY_KEYNAME_STORE = "keyname-store";
-const KEY_NAV = "nav-store7";
 
 class KeynameStore {
   public static async setName(pubkey: string, name: string) {
@@ -659,18 +658,3 @@ class KeynameStore {
     return `Ledger ${accountIndex + 1}`;
   }
 }
-
-export async function getNav(): Promise<Nav | undefined> {
-  return await LocalStorageDb.get(KEY_NAV);
-}
-
-export async function setNav(nav: Nav) {
-  await LocalStorageDb.set(KEY_NAV, nav);
-}
-
-export type Nav = { activeTab: string; data: { [navId: string]: NavData } };
-
-export type NavData = {
-  id: string;
-  urls: Array<any>;
-};
