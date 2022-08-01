@@ -9,7 +9,6 @@ import {
 import { Close, ExpandMore, SwapVert } from "@mui/icons-material";
 import { CheckIcon, CrossIcon } from "../common/Icon";
 import {
-  useBlockchainTokenAccount,
   useSplTokenRegistry,
   useJupiterInputMints,
   useJupiterOutputMints,
@@ -213,7 +212,6 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
     swapToFromMints,
     executeSwap,
     isLoadingRoutes,
-    isJupiterError,
   } = useSwapContext();
   const [swapState, setSwapState] = useState(SwapState.INITIAL);
 
@@ -293,7 +291,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
                 },
               }}
             />
-            {toAmount && (
+            {!!toAmount && (
               <div
                 style={{
                   marginTop: "24px",
@@ -305,14 +303,10 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
               </div>
             )}
           </div>
-          {isJupiterError ? (
-            <SwapUnavailableButton />
-          ) : (
-            <ConfirmSwapButton
-              blockchain={blockchain}
-              onClick={() => setSwapState(SwapState.CONFIRMATION)}
-            />
-          )}
+          <ConfirmSwapButton
+            blockchain={blockchain}
+            onClick={() => setSwapState(SwapState.CONFIRMATION)}
+          />
         </div>
       </div>
       <WithMiniDrawer
@@ -376,6 +370,10 @@ const SwapUnavailableButton = () => {
   return <DangerButton label="Swaps unavailable" disabled={true} />;
 };
 
+const InsufficientBalanceButton = () => {
+  return <DangerButton label="Insufficient balance" disabled={true} />;
+};
+
 const ConfirmSwapButton = ({
   blockchain,
   onClick,
@@ -383,17 +381,21 @@ const ConfirmSwapButton = ({
   blockchain: Blockchain;
   onClick: () => void;
 }) => {
-  const { toAmount, fromAmount, fromToken } = useSwapContext();
-  const fromTokenData = useBlockchainTokenAccount(blockchain, fromToken);
-  const exceedsBalance =
-    fromAmount &&
-    fromTokenData &&
-    Number(fromAmount) > fromTokenData.nativeBalance;
+  const { toAmount, fromAmount, fromMint, isJupiterError } = useSwapContext();
+  const tokenAccountsSorted = useJupiterInputMints();
+  const balance =
+    tokenAccountsSorted.find((t) => t.mint === fromMint)?.nativeBalance || 0;
+  const exceedsBalance = fromAmount && fromAmount > balance;
+  if (exceedsBalance) {
+    return <InsufficientBalanceButton />;
+  } else if (isJupiterError) {
+    return <SwapUnavailableButton />;
+  }
   return (
     <PrimaryButton
       label="Review"
       onClick={onClick}
-      disabled={!fromAmount || !toAmount || exceedsBalance}
+      disabled={!fromAmount || !toAmount}
     />
   );
 };
