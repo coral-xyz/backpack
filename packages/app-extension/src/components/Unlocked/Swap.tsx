@@ -204,15 +204,7 @@ function SwapInner({ blockchain }: any) {
 
 function _Swap({ blockchain }: { blockchain: Blockchain }) {
   const classes = useStyles();
-  const theme = useCustomTheme();
-  const {
-    fromAmount,
-    setFromAmount,
-    toAmount,
-    swapToFromMints,
-    executeSwap,
-    isLoadingRoutes,
-  } = useSwapContext();
+  const { toAmount, swapToFromMints, executeSwap } = useSwapContext();
   const [swapState, setSwapState] = useState(SwapState.INITIAL);
 
   // Only allow drawer close if not confirming
