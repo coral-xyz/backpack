@@ -1,6 +1,6 @@
 import { atomFamily, selectorFamily } from "recoil";
 import { TokenInfo } from "@solana/spl-token-registry";
-import { Blockchain } from "@coral-xyz/common";
+import { Blockchain, SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
 import { bootstrap } from "../bootstrap";
 import { priceData } from "../prices";
 import { splTokenRegistry } from "./token-registry";
@@ -83,7 +83,13 @@ export const blockchainTokenAccounts = selectorFamily({
           //
           // Price data.
           //
-          const price = get(priceData(tokenAccount.mint.toString())) as any;
+
+          // Use native SOL price for wSOL
+          const priceMint =
+            tokenAccount.mint.toString() === WSOL_MINT
+              ? SOL_NATIVE_MINT
+              : tokenAccount.mint.toString();
+          const price = get(priceData(priceMint)) as any;
           const nativeBalance = tokenMetadata.decimals
             ? tokenAccount.amount.toNumber() / 10 ** tokenMetadata.decimals
             : tokenAccount.amount.toNumber();
