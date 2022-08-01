@@ -17,7 +17,14 @@ export const splTokenRegistry = atom<Map<string, TokenInfo> | null>({
             .getList();
           const tokenMap = tokenList.reduce((map, item) => {
             if (item.address === WSOL_MINT) {
-              map.set(item.address, { ...item, symbol: "wSOL" });
+              map.set(item.address, {
+                ...item,
+                symbol: "wSOL",
+                extensions: {
+                  ...item.extensions,
+                  coingeckoId: "wrapped-solana",
+                },
+              });
             } else {
               map.set(item.address, item);
             }
