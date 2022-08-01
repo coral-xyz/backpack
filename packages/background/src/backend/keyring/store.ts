@@ -1,11 +1,9 @@
 import * as bs58 from "bs58";
-import type { Commitment } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import type { EventEmitter, DerivationPath } from "@coral-xyz/common";
 import {
   Blockchain,
-  BrowserRuntimeCommon,
   SolanaExplorer,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   BACKEND_EVENT,
@@ -20,6 +18,8 @@ import {
   EthereumHdKeyringFactory,
   EthereumKeyringFactory,
 } from ".";
+import * as store from "../store";
+import { DefaultKeyname } from "../store";
 
 const LOCK_INTERVAL_SECS = 15 * 60;
 
@@ -85,7 +85,7 @@ export class KeyringStore {
     );
 
     // Persist the initial wallet ui metadata.
-    await setWalletData({
+    await store.setWalletData({
       autoLockSecs: LOCK_INTERVAL_SECS,
       approvedOrigins: [],
       darkMode: true,
@@ -133,7 +133,7 @@ export class KeyringStore {
   }
 
   private async decryptKeyringFromStorage(password: string) {
-    const ciphertextPayload = await LocalStorageDb.get(KEY_KEYRING_STORE);
+    const ciphertextPayload = await store.getEncryptedKeyring();
     if (ciphertextPayload === undefined || ciphertextPayload === null) {
       throw new Error("keyring store not found on disk");
     }
@@ -201,16 +201,17 @@ export class KeyringStore {
   }
 
   public reset() {
-    return LocalStorageDb.reset();
-  }
-
-  public async autoLockRead(): Promise<number> {
-    return walletDataGetAutoLockSecs();
+    return store.reset();
   }
 
   public async autoLockUpdate(autoLockSecs: number) {
     return await this.withUnlock(async () => {
-      await walletDataSetAutoLock(autoLockSecs);
+      const data = await store.getWalletData();
+      await store.setWalletData({
+        ...data,
+        autoLockSecs,
+      });
+
       clearInterval(this.autoLockInterval!);
       this.autoLockStart();
     });
@@ -252,14 +253,6 @@ export class KeyringStore {
     });
   }
 
-  public async getKeyname(pk: string): Promise<string> {
-    return await this.activeBlockchain().getKeyname(pk);
-  }
-
-  public async setKeyname(pk: string, newName: string) {
-    await this.activeBlockchain().setKeyname(pk, newName);
-  }
-
   public keepAlive() {
     return this.withUnlock(() => {});
   }
@@ -273,9 +266,9 @@ export class KeyringStore {
   public async ledgerImport(dPath: string, account: number, pubkey: string) {
     return this.withUnlock(async () => {
       const ledgerKeyring = this.activeBlockchain().ledgerKeyring!;
-      const name = KeynameStore.defaultNameLedger(ledgerKeyring.keyCount());
+      const name = DefaultKeyname.defaultLedger(ledgerKeyring.keyCount());
       await ledgerKeyring.ledgerImport(dPath, account, pubkey);
-      await this.setKeyname(pubkey, name);
+      await store.setKeyname(pubkey, name);
 
       await this.persist();
     });
@@ -316,7 +309,7 @@ export class KeyringStore {
     if (this.isUnlocked()) {
       return false;
     }
-    const ciphertext = await LocalStorageDb.get(KEY_KEYRING_STORE);
+    const ciphertext = await store.getEncryptedKeyring();
     return ciphertext !== undefined && ciphertext !== null;
   }
 
@@ -334,13 +327,13 @@ export class KeyringStore {
     }
     const plaintext = JSON.stringify(this.toJson());
     const ciphertext = await crypto.encrypt(plaintext, this.password!);
-    await LocalStorageDb.set(KEY_KEYRING_STORE, ciphertext);
+    await store.setEncryptedKeyring(ciphertext);
   }
 
   private autoLockStart() {
     // Check the last time the keystore was used at a regular interval.
     // If it hasn't been used recently, lock the keystore.
-    walletDataGetAutoLockSecs().then((autoLockSecs) => {
+    store.getWalletData().then(({ autoLockSecs }) => {
       this.autoLockInterval = setInterval(() => {
         const currentTs = Date.now() / 1000;
         if (currentTs - this.lastUsedTs >= LOCK_INTERVAL_SECS) {
@@ -396,40 +389,6 @@ export class KeyringStore {
   // Never use this.
   private activeBlockchainUnchecked(): BlockchainKeyring {
     return this.blockchains.get(this.activeBlockchainLabel!)!;
-  }
-
-  public async isApprovedOrigin(origin: string): Promise<boolean> {
-    const data = await getWalletData();
-    if (!data.approvedOrigins) {
-      return false;
-    }
-    const found = data.approvedOrigins.find((o) => o === origin);
-    return found !== undefined;
-  }
-
-  public async approvedOrigins(): Promise<Array<string>> {
-    const data = await getWalletData();
-    return data.approvedOrigins;
-  }
-
-  public async approveOrigin(origin: string) {
-    const data = await getWalletData();
-    const found = data.approvedOrigins.find((o) => o === origin);
-    if (found) {
-      throw new Error(`origin already approved: ${origin}`);
-    }
-    await setWalletData({
-      ...data,
-      approvedOrigins: [...data.approvedOrigins, origin],
-    });
-  }
-
-  public async approvedOriginsUpdate(approvedOrigins: Array<string>) {
-    const data = await getWalletData();
-    await setWalletData({
-      ...data,
-      approvedOrigins,
-    });
   }
 }
 
@@ -511,9 +470,9 @@ class BlockchainKeyring {
 
     // Persist a given name for this wallet.
     for (const index of accountIndices) {
-      const name = KeynameStore.defaultName(index);
+      const name = DefaultKeyname.defaultDerived(index);
       const pubkey = this.hdKeyring.getPublicKey(index);
-      await KeynameStore.setName(pubkey, name);
+      await store.setKeyname(pubkey, name);
     }
   }
 
@@ -558,8 +517,8 @@ class BlockchainKeyring {
     const [pubkey, accountIndex] = this.hdKeyring!.deriveNext();
 
     // Save a default name.
-    const name = KeynameStore.defaultName(accountIndex);
-    this.setKeyname(pubkey, name);
+    const name = DefaultKeyname.defaultDerived(accountIndex);
+    store.setKeyname(pubkey, name);
 
     return [pubkey, name, accountIndex];
   }
@@ -570,11 +529,11 @@ class BlockchainKeyring {
   ): Promise<[string, string]> {
     const pubkey = this.importedKeyring!.importSecretKey(secretKey).toString();
     if (!name || name.length === 0) {
-      name = KeynameStore.defaultNameImported(
+      name = DefaultKeyname.defaultImported(
         this.importedKeyring!.publicKeys().length
       );
     }
-    await this.setKeyname(pubkey, name);
+    await store.setKeyname(pubkey, name);
     return [pubkey, name];
   }
 
@@ -600,14 +559,6 @@ class BlockchainKeyring {
     }
     this.connectionUrl = url;
     return true;
-  }
-
-  public async getKeyname(pubkey: string): Promise<string> {
-    return await KeynameStore.getName(pubkey);
-  }
-
-  public async setKeyname(pubkey: string, newName: string) {
-    await KeynameStore.setName(pubkey, newName);
   }
 
   public toJson(): any {
@@ -656,107 +607,3 @@ class BlockchainKeyring {
     return this.ledgerKeyring!;
   }
 }
-
-// Persistent metadata for the UI shared across all networks.
-export type WalletData = {
-  autoLockSecs: number;
-  approvedOrigins: Array<string>;
-  darkMode: boolean;
-  solana: SolanaData;
-};
-
-type SolanaData = {
-  explorer: string;
-  commitment: Commitment;
-};
-
-async function walletDataSetAutoLock(autoLockSecs: number) {
-  const data = await getWalletData();
-  await setWalletData({
-    ...data,
-    autoLockSecs,
-  });
-}
-
-async function walletDataGetAutoLockSecs(): Promise<number> {
-  return getWalletData().then(({ autoLockSecs }) => autoLockSecs);
-}
-
-export async function getWalletData(): Promise<WalletData> {
-  const data = await LocalStorageDb.get(KEY_WALLET_DATA);
-  if (data === undefined) {
-    throw new Error("wallet data is undefined");
-  }
-  return data;
-}
-
-export async function setWalletData(data: WalletData) {
-  await LocalStorageDb.set(KEY_WALLET_DATA, data);
-}
-
-// Keys used by the local storage db.
-const KEY_KEYRING_STORE = "keyring-store";
-const KEY_KEYNAME_STORE = "keyname-store";
-const KEY_WALLET_DATA = "wallet-data";
-const KEY_NAV = "nav-store7";
-
-class KeynameStore {
-  public static async setName(pubkey: string, name: string) {
-    let keynames = await LocalStorageDb.get(KEY_KEYNAME_STORE);
-    if (!keynames) {
-      keynames = {};
-    }
-    keynames[pubkey] = name;
-    await LocalStorageDb.set(KEY_KEYNAME_STORE, keynames);
-  }
-
-  public static async getName(pubkey: string): Promise<string> {
-    const names = await LocalStorageDb.get(KEY_KEYNAME_STORE);
-    const name = names[pubkey];
-    if (!name) {
-      throw new Error(`unable to find name for key: ${pubkey.toString()}`);
-    }
-    return name;
-  }
-
-  public static defaultName(accountIndex: number): string {
-    return `Wallet ${accountIndex + 1}`;
-  }
-
-  public static defaultNameImported(accountIndex: number): string {
-    return `Imported Wallet ${accountIndex + 1}`;
-  }
-
-  public static defaultNameLedger(accountIndex: number): string {
-    return `Ledger ${accountIndex + 1}`;
-  }
-}
-
-class LocalStorageDb {
-  static async get(key: string): Promise<any> {
-    return await BrowserRuntimeCommon.getLocalStorage(key);
-  }
-
-  static async set(key: string, value: any): Promise<void> {
-    await BrowserRuntimeCommon.setLocalStorage(key, value);
-  }
-
-  static async reset(): Promise<void> {
-    await BrowserRuntimeCommon.clearLocalStorage();
-  }
-}
-
-export async function getNav(): Promise<Nav | undefined> {
-  return await LocalStorageDb.get(KEY_NAV);
-}
-
-export async function setNav(nav: Nav) {
-  await LocalStorageDb.set(KEY_NAV, nav);
-}
-
-export type Nav = { activeTab: string; data: { [navId: string]: NavData } };
-
-export type NavData = {
-  id: string;
-  urls: Array<any>;
-};

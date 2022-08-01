@@ -26,15 +26,10 @@ import {
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_DARK_MODE_UPDATED,
 } from "@coral-xyz/common";
-import type { Nav } from "../keyring/store";
-import {
-  KeyringStore,
-  setNav,
-  getNav,
-  getWalletData,
-  setWalletData,
-} from "../keyring/store";
-import type { Backend as SolanaConnectionBackend } from "../backend/solana-connection";
+import type { Nav } from "./store";
+import * as store from "./store";
+import { KeyringStore } from "./keyring/store";
+import type { Backend as SolanaConnectionBackend } from "./solana-connection";
 
 export function start(events: EventEmitter, solanaB: SolanaConnectionBackend) {
   return new Backend(events, solanaB);
@@ -49,10 +44,6 @@ export class Backend {
     this.keyringStore = new KeyringStore(events);
     this.solanaConnectionBackend = solanaB;
     this.events = events;
-  }
-
-  async isApprovedOrigin(origin: string): Promise<boolean> {
-    return await this.keyringStore.isApprovedOrigin(origin);
   }
 
   disconnect() {
@@ -204,19 +195,13 @@ export class Backend {
     const pubkeys = this.keyringStore.publicKeys();
     const [hdNames, importedNames, ledgerNames] = await Promise.all([
       Promise.all(
-        pubkeys.hdPublicKeys.map((pk) =>
-          this.keyringStore.getKeyname(pk.toString())
-        )
+        pubkeys.hdPublicKeys.map((pk) => store.getKeyname(pk.toString()))
       ),
       Promise.all(
-        pubkeys.importedPublicKeys.map((pk) =>
-          this.keyringStore.getKeyname(pk.toString())
-        )
+        pubkeys.importedPublicKeys.map((pk) => store.getKeyname(pk.toString()))
       ),
       Promise.all(
-        pubkeys.ledgerPublicKeys.map((pk) =>
-          this.keyringStore.getKeyname(pk.toString())
-        )
+        pubkeys.ledgerPublicKeys.map((pk) => store.getKeyname(pk.toString()))
       ),
     ]);
     return {
@@ -301,7 +286,7 @@ export class Backend {
   }
 
   async keynameUpdate(publicKey: string, newName: string): Promise<string> {
-    await this.keyringStore.setKeyname(publicKey, newName);
+    await store.setKeyname(publicKey, newName);
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYNAME_UPDATE,
       data: {
@@ -360,7 +345,8 @@ export class Backend {
   }
 
   async keyringAutolockRead(): Promise<number> {
-    return await this.keyringStore.autoLockRead();
+    const data = await store.getWalletData();
+    return data.autoLockSecs;
   }
 
   async keyringAutolockUpdate(autoLockSecs: number): Promise<string> {
@@ -383,12 +369,12 @@ export class Backend {
   }
 
   async navigationPush(url: string): Promise<string> {
-    let nav = await getNav();
+    let nav = await store.getNav();
     if (!nav) {
       throw new Error("nav not found");
     }
     nav.data[nav.activeTab].urls.push(url);
-    await setNav(nav);
+    await store.setNav(nav);
     url = setSearchParam(url, "nav", "push");
 
     this.events.emit(BACKEND_EVENT, {
@@ -402,12 +388,12 @@ export class Backend {
   }
 
   async navigationPop(): Promise<string> {
-    let nav = await getNav();
+    let nav = await store.getNav();
     if (!nav) {
       throw new Error("nav not found");
     }
     nav.data[nav.activeTab].urls.pop();
-    await setNav(nav);
+    await store.setNav(nav);
 
     const urls = nav.data[nav.activeTab].urls;
     let url = urls[urls.length - 1];
@@ -424,7 +410,7 @@ export class Backend {
   }
 
   async navigationToRoot(): Promise<string> {
-    let nav = await getNav();
+    let nav = await store.getNav();
     if (!nav) {
       throw new Error("nav not found");
     }
@@ -435,7 +421,7 @@ export class Backend {
 
     let url = urls[0];
     nav.data[nav.activeTab].urls = [url];
-    await setNav(nav);
+    await store.setNav(nav);
 
     url = setSearchParam(url, "nav", "pop");
     this.events.emit(BACKEND_EVENT, {
@@ -449,9 +435,9 @@ export class Backend {
   }
 
   async navRead(): Promise<Nav> {
-    let nav = await getNav();
+    let nav = await store.getNav();
     if (!nav) {
-      await setNav(defaultNav);
+      await store.setNav(defaultNav);
       nav = defaultNav;
     }
     // @ts-ignore
@@ -459,7 +445,7 @@ export class Backend {
   }
 
   async navigationActiveTabUpdate(activeTab: string): Promise<string> {
-    const currNav = await getNav();
+    const currNav = await store.getNav();
     if (!currNav) {
       throw new Error("invariant violation");
     }
@@ -467,7 +453,7 @@ export class Backend {
       ...currNav,
       activeTab,
     };
-    await setNav(nav);
+    await store.setNav(nav);
     const navData = nav.data[activeTab];
     let url = navData.urls[navData.urls.length - 1];
     url = setSearchParam(url, "nav", "tab");
@@ -484,7 +470,7 @@ export class Backend {
 
   async navigationCurrentUrlUpdate(url: string): Promise<string> {
     // Get the tab nav.
-    const currNav = await getNav();
+    const currNav = await store.getNav();
     if (!currNav) {
       throw new Error("invariant violation");
     }
@@ -495,7 +481,7 @@ export class Backend {
     currNav.data[currNav.activeTab] = navData;
 
     // Save the change.
-    await setNav(currNav);
+    await store.setNav(currNav);
 
     // Notify listeners.
     this.events.emit(BACKEND_EVENT, {
@@ -510,13 +496,13 @@ export class Backend {
   }
 
   async darkModeRead(): Promise<boolean> {
-    const data = await getWalletData();
+    const data = await store.getWalletData();
     return data.darkMode ?? true;
   }
 
   async darkModeUpdate(darkMode: boolean): Promise<string> {
-    const data = await getWalletData();
-    await setWalletData({
+    const data = await store.getWalletData();
+    await store.setWalletData({
       ...data,
       darkMode,
     });
@@ -530,15 +516,15 @@ export class Backend {
   }
 
   async solanaCommitmentRead(): Promise<Commitment> {
-    const data = await getWalletData();
+    const data = await store.getWalletData();
     return data.solana && data.solana.commitment
       ? data.solana.commitment
       : "processed";
   }
 
   async solanaCommitmentUpdate(commitment: Commitment): Promise<string> {
-    const data = await getWalletData();
-    await setWalletData({
+    const data = await store.getWalletData();
+    await store.setWalletData({
       ...data,
       solana: {
         ...data.solana,
@@ -554,12 +540,27 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async isApprovedOrigin(origin: string): Promise<boolean> {
+    const data = await store.getWalletData();
+    if (!data.approvedOrigins) {
+      return false;
+    }
+    const found = data.approvedOrigins.find((o) => o === origin);
+    return found !== undefined;
+  }
+
   async approvedOriginsRead(): Promise<Array<string>> {
-    return await this.keyringStore.approvedOrigins();
+    const data = await store.getWalletData();
+    return data.approvedOrigins;
   }
 
   async approvedOriginsUpdate(approvedOrigins: Array<string>): Promise<string> {
-    await this.keyringStore.approvedOriginsUpdate(approvedOrigins);
+    const data = await store.getWalletData();
+    await store.setWalletData({
+      ...data,
+      approvedOrigins,
+    });
+
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_APPROVED_ORIGINS_UPDATE,
       data: {
@@ -570,9 +571,9 @@ export class Backend {
   }
 
   async approvedOriginsDelete(origin: string): Promise<string> {
-    const data = await getWalletData();
+    const data = await store.getWalletData();
     const approvedOrigins = data.approvedOrigins.filter((o) => o !== origin);
-    await setWalletData({
+    await store.setWalletData({
       ...data,
       approvedOrigins,
     });
@@ -616,15 +617,15 @@ export class Backend {
   }
 
   async solanaExplorerRead(): Promise<string> {
-    const data = await getWalletData();
+    const data = await store.getWalletData();
     return data.solana && data.solana.explorer
       ? data.solana.explorer
       : SolanaExplorer.DEFAULT;
   }
 
   async solanaExplorerUpdate(explorer: string): Promise<string> {
-    const data = await getWalletData();
-    await setWalletData({
+    const data = await store.getWalletData();
+    await store.setWalletData({
       ...data,
       solana: {
         ...data.solana,

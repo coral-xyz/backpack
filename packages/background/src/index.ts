@@ -6,7 +6,7 @@ import * as coreBackend from "./backend/core";
 import * as solanaConnectionBackend from "./backend/solana-connection";
 import type { Background, Config } from "./types";
 
-export * from "./keyring";
+export * from "./backend/keyring";
 
 //
 // Entry: Starts the background service.

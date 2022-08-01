@@ -23,7 +23,7 @@ import type {
   LedgerKeyringJson,
   LedgerKeyring,
 } from "./types";
-import { postMessageToIframe } from "../shared";
+import { postMessageToIframe } from "../../shared";
 
 export class SolanaKeyringFactory implements KeyringFactory {
   public fromJson(payload: KeyringJson): SolanaKeyring {
