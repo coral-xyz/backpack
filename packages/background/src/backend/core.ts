@@ -27,7 +27,14 @@ import {
   NOTIFICATION_DARK_MODE_UPDATED,
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
-import { getWalletData, setWalletData, setNav, getNav } from "./store";
+import {
+  getWalletData,
+  setWalletData,
+  setNav,
+  getNav,
+  getKeyname,
+  setKeyname,
+} from "./store";
 import { KeyringStore } from "./keyring/store";
 import type { Backend as SolanaConnectionBackend } from "./solana-connection";
 
@@ -194,20 +201,12 @@ export class Backend {
   }> {
     const pubkeys = this.keyringStore.publicKeys();
     const [hdNames, importedNames, ledgerNames] = await Promise.all([
+      Promise.all(pubkeys.hdPublicKeys.map((pk) => getKeyname(pk.toString()))),
       Promise.all(
-        pubkeys.hdPublicKeys.map((pk) =>
-          this.keyringStore.getKeyname(pk.toString())
-        )
+        pubkeys.importedPublicKeys.map((pk) => getKeyname(pk.toString()))
       ),
       Promise.all(
-        pubkeys.importedPublicKeys.map((pk) =>
-          this.keyringStore.getKeyname(pk.toString())
-        )
-      ),
-      Promise.all(
-        pubkeys.ledgerPublicKeys.map((pk) =>
-          this.keyringStore.getKeyname(pk.toString())
-        )
+        pubkeys.ledgerPublicKeys.map((pk) => getKeyname(pk.toString()))
       ),
     ]);
     return {
@@ -292,7 +291,7 @@ export class Backend {
   }
 
   async keynameUpdate(publicKey: string, newName: string): Promise<string> {
-    await this.keyringStore.setKeyname(publicKey, newName);
+    await setKeyname(publicKey, newName);
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYNAME_UPDATE,
       data: {

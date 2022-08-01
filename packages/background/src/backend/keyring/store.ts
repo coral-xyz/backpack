@@ -23,6 +23,9 @@ import {
   setWalletData,
   getEncryptedKeyring,
   setEncryptedKeyring,
+  getKeyname,
+  setKeyname,
+  DefaultKeyname,
   LocalStorageDb,
 } from "../store";
 
@@ -258,14 +261,6 @@ export class KeyringStore {
     });
   }
 
-  public async getKeyname(pk: string): Promise<string> {
-    return await this.activeBlockchain().getKeyname(pk);
-  }
-
-  public async setKeyname(pk: string, newName: string) {
-    await this.activeBlockchain().setKeyname(pk, newName);
-  }
-
   public keepAlive() {
     return this.withUnlock(() => {});
   }
@@ -279,9 +274,9 @@ export class KeyringStore {
   public async ledgerImport(dPath: string, account: number, pubkey: string) {
     return this.withUnlock(async () => {
       const ledgerKeyring = this.activeBlockchain().ledgerKeyring!;
-      const name = KeynameStore.defaultNameLedger(ledgerKeyring.keyCount());
+      const name = DefaultKeyname.defaultLedger(ledgerKeyring.keyCount());
       await ledgerKeyring.ledgerImport(dPath, account, pubkey);
-      await this.setKeyname(pubkey, name);
+      await setKeyname(pubkey, name);
 
       await this.persist();
     });
@@ -483,9 +478,9 @@ class BlockchainKeyring {
 
     // Persist a given name for this wallet.
     for (const index of accountIndices) {
-      const name = KeynameStore.defaultName(index);
+      const name = DefaultKeyname.defaultDerived(index);
       const pubkey = this.hdKeyring.getPublicKey(index);
-      await KeynameStore.setName(pubkey, name);
+      await setKeyname(pubkey, name);
     }
   }
 
@@ -530,8 +525,8 @@ class BlockchainKeyring {
     const [pubkey, accountIndex] = this.hdKeyring!.deriveNext();
 
     // Save a default name.
-    const name = KeynameStore.defaultName(accountIndex);
-    this.setKeyname(pubkey, name);
+    const name = DefaultKeyname.defaultDerived(accountIndex);
+    setKeyname(pubkey, name);
 
     return [pubkey, name, accountIndex];
   }
@@ -542,11 +537,11 @@ class BlockchainKeyring {
   ): Promise<[string, string]> {
     const pubkey = this.importedKeyring!.importSecretKey(secretKey).toString();
     if (!name || name.length === 0) {
-      name = KeynameStore.defaultNameImported(
+      name = DefaultKeyname.defaultImported(
         this.importedKeyring!.publicKeys().length
       );
     }
-    await this.setKeyname(pubkey, name);
+    await setKeyname(pubkey, name);
     return [pubkey, name];
   }
 
@@ -572,14 +567,6 @@ class BlockchainKeyring {
     }
     this.connectionUrl = url;
     return true;
-  }
-
-  public async getKeyname(pubkey: string): Promise<string> {
-    return await KeynameStore.getName(pubkey);
-  }
-
-  public async setKeyname(pubkey: string, newName: string) {
-    await KeynameStore.setName(pubkey, newName);
   }
 
   public toJson(): any {
@@ -626,40 +613,5 @@ class BlockchainKeyring {
       return this.importedKeyring!;
     }
     return this.ledgerKeyring!;
-  }
-}
-
-// Keys used by the local storage db.
-const KEY_KEYNAME_STORE = "keyname-store";
-
-class KeynameStore {
-  public static async setName(pubkey: string, name: string) {
-    let keynames = await LocalStorageDb.get(KEY_KEYNAME_STORE);
-    if (!keynames) {
-      keynames = {};
-    }
-    keynames[pubkey] = name;
-    await LocalStorageDb.set(KEY_KEYNAME_STORE, keynames);
-  }
-
-  public static async getName(pubkey: string): Promise<string> {
-    const names = await LocalStorageDb.get(KEY_KEYNAME_STORE);
-    const name = names[pubkey];
-    if (!name) {
-      throw new Error(`unable to find name for key: ${pubkey.toString()}`);
-    }
-    return name;
-  }
-
-  public static defaultName(accountIndex: number): string {
-    return `Wallet ${accountIndex + 1}`;
-  }
-
-  public static defaultNameImported(accountIndex: number): string {
-    return `Imported Wallet ${accountIndex + 1}`;
-  }
-
-  public static defaultNameLedger(accountIndex: number): string {
-    return `Ledger ${accountIndex + 1}`;
   }
 }
