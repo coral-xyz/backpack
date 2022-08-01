@@ -18,16 +18,8 @@ import {
   EthereumHdKeyringFactory,
   EthereumKeyringFactory,
 } from ".";
-import {
-  getWalletData,
-  setWalletData,
-  getEncryptedKeyring,
-  setEncryptedKeyring,
-  getKeyname,
-  setKeyname,
-  DefaultKeyname,
-  LocalStorageDb,
-} from "../store";
+import * as store from "../store";
+import { DefaultKeyname, LocalStorageDb } from "../store";
 
 const LOCK_INTERVAL_SECS = 15 * 60;
 
@@ -93,7 +85,7 @@ export class KeyringStore {
     );
 
     // Persist the initial wallet ui metadata.
-    await setWalletData({
+    await store.setWalletData({
       autoLockSecs: LOCK_INTERVAL_SECS,
       approvedOrigins: [],
       darkMode: true,
@@ -141,7 +133,7 @@ export class KeyringStore {
   }
 
   private async decryptKeyringFromStorage(password: string) {
-    const ciphertextPayload = await getEncryptedKeyring();
+    const ciphertextPayload = await store.getEncryptedKeyring();
     if (ciphertextPayload === undefined || ciphertextPayload === null) {
       throw new Error("keyring store not found on disk");
     }
@@ -214,8 +206,8 @@ export class KeyringStore {
 
   public async autoLockUpdate(autoLockSecs: number) {
     return await this.withUnlock(async () => {
-      const data = await getWalletData();
-      await setWalletData({
+      const data = await store.getWalletData();
+      await store.setWalletData({
         ...data,
         autoLockSecs,
       });
@@ -276,7 +268,7 @@ export class KeyringStore {
       const ledgerKeyring = this.activeBlockchain().ledgerKeyring!;
       const name = DefaultKeyname.defaultLedger(ledgerKeyring.keyCount());
       await ledgerKeyring.ledgerImport(dPath, account, pubkey);
-      await setKeyname(pubkey, name);
+      await store.setKeyname(pubkey, name);
 
       await this.persist();
     });
@@ -317,7 +309,7 @@ export class KeyringStore {
     if (this.isUnlocked()) {
       return false;
     }
-    const ciphertext = await getEncryptedKeyring();
+    const ciphertext = await store.getEncryptedKeyring();
     return ciphertext !== undefined && ciphertext !== null;
   }
 
@@ -335,13 +327,13 @@ export class KeyringStore {
     }
     const plaintext = JSON.stringify(this.toJson());
     const ciphertext = await crypto.encrypt(plaintext, this.password!);
-    await setEncryptedKeyring(ciphertext);
+    await store.setEncryptedKeyring(ciphertext);
   }
 
   private autoLockStart() {
     // Check the last time the keystore was used at a regular interval.
     // If it hasn't been used recently, lock the keystore.
-    getWalletData().then(({ autoLockSecs }) => {
+    store.getWalletData().then(({ autoLockSecs }) => {
       this.autoLockInterval = setInterval(() => {
         const currentTs = Date.now() / 1000;
         if (currentTs - this.lastUsedTs >= LOCK_INTERVAL_SECS) {
@@ -480,7 +472,7 @@ class BlockchainKeyring {
     for (const index of accountIndices) {
       const name = DefaultKeyname.defaultDerived(index);
       const pubkey = this.hdKeyring.getPublicKey(index);
-      await setKeyname(pubkey, name);
+      await store.setKeyname(pubkey, name);
     }
   }
 
@@ -526,7 +518,7 @@ class BlockchainKeyring {
 
     // Save a default name.
     const name = DefaultKeyname.defaultDerived(accountIndex);
-    setKeyname(pubkey, name);
+    store.setKeyname(pubkey, name);
 
     return [pubkey, name, accountIndex];
   }
@@ -541,7 +533,7 @@ class BlockchainKeyring {
         this.importedKeyring!.publicKeys().length
       );
     }
-    await setKeyname(pubkey, name);
+    await store.setKeyname(pubkey, name);
     return [pubkey, name];
   }
 
