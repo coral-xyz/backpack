@@ -4,7 +4,7 @@ import { SolanaContext, BackgroundClient } from "@coral-xyz/common";
 import * as atoms from "../../atoms";
 import { useSplTokenRegistry } from "./useSplTokenRegistry";
 import { useActiveWallet } from "./useWallet";
-import { useSolanaCommitment } from "../keyring";
+import { useSolanaCommitment } from "../preferences";
 import { useBackgroundClient } from "../client";
 
 export function useSolanaConnectionUrl(): string {
