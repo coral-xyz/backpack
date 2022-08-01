@@ -51,10 +51,6 @@ export class Backend {
     this.events = events;
   }
 
-  async isApprovedOrigin(origin: string): Promise<boolean> {
-    return await this.keyringStore.isApprovedOrigin(origin);
-  }
-
   disconnect() {
     // todo
     return SUCCESS_RESPONSE;
@@ -360,7 +356,8 @@ export class Backend {
   }
 
   async keyringAutolockRead(): Promise<number> {
-    return await this.keyringStore.autoLockRead();
+    const data = await getWalletData();
+    return data.autoLockSecs;
   }
 
   async keyringAutolockUpdate(autoLockSecs: number): Promise<string> {
@@ -554,12 +551,27 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async isApprovedOrigin(origin: string): Promise<boolean> {
+    const data = await getWalletData();
+    if (!data.approvedOrigins) {
+      return false;
+    }
+    const found = data.approvedOrigins.find((o) => o === origin);
+    return found !== undefined;
+  }
+
   async approvedOriginsRead(): Promise<Array<string>> {
-    return await this.keyringStore.approvedOrigins();
+    const data = await getWalletData();
+    return data.approvedOrigins;
   }
 
   async approvedOriginsUpdate(approvedOrigins: Array<string>): Promise<string> {
-    await this.keyringStore.approvedOriginsUpdate(approvedOrigins);
+    const data = await getWalletData();
+    await setWalletData({
+      ...data,
+      approvedOrigins,
+    });
+
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_APPROVED_ORIGINS_UPDATE,
       data: {

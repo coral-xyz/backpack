@@ -204,13 +204,14 @@ export class KeyringStore {
     return LocalStorageDb.reset();
   }
 
-  public async autoLockRead(): Promise<number> {
-    return walletDataGetAutoLockSecs();
-  }
-
   public async autoLockUpdate(autoLockSecs: number) {
     return await this.withUnlock(async () => {
-      await walletDataSetAutoLock(autoLockSecs);
+      const data = await getWalletData();
+      await setWalletData({
+        ...data,
+        autoLockSecs,
+      });
+
       clearInterval(this.autoLockInterval!);
       this.autoLockStart();
     });
@@ -340,7 +341,7 @@ export class KeyringStore {
   private autoLockStart() {
     // Check the last time the keystore was used at a regular interval.
     // If it hasn't been used recently, lock the keystore.
-    walletDataGetAutoLockSecs().then((autoLockSecs) => {
+    getWalletData().then(({ autoLockSecs }) => {
       this.autoLockInterval = setInterval(() => {
         const currentTs = Date.now() / 1000;
         if (currentTs - this.lastUsedTs >= LOCK_INTERVAL_SECS) {
@@ -396,40 +397,6 @@ export class KeyringStore {
   // Never use this.
   private activeBlockchainUnchecked(): BlockchainKeyring {
     return this.blockchains.get(this.activeBlockchainLabel!)!;
-  }
-
-  public async isApprovedOrigin(origin: string): Promise<boolean> {
-    const data = await getWalletData();
-    if (!data.approvedOrigins) {
-      return false;
-    }
-    const found = data.approvedOrigins.find((o) => o === origin);
-    return found !== undefined;
-  }
-
-  public async approvedOrigins(): Promise<Array<string>> {
-    const data = await getWalletData();
-    return data.approvedOrigins;
-  }
-
-  public async approveOrigin(origin: string) {
-    const data = await getWalletData();
-    const found = data.approvedOrigins.find((o) => o === origin);
-    if (found) {
-      throw new Error(`origin already approved: ${origin}`);
-    }
-    await setWalletData({
-      ...data,
-      approvedOrigins: [...data.approvedOrigins, origin],
-    });
-  }
-
-  public async approvedOriginsUpdate(approvedOrigins: Array<string>) {
-    const data = await getWalletData();
-    await setWalletData({
-      ...data,
-      approvedOrigins,
-    });
   }
 }
 
@@ -669,18 +636,6 @@ type SolanaData = {
   explorer: string;
   commitment: Commitment;
 };
-
-async function walletDataSetAutoLock(autoLockSecs: number) {
-  const data = await getWalletData();
-  await setWalletData({
-    ...data,
-    autoLockSecs,
-  });
-}
-
-async function walletDataGetAutoLockSecs(): Promise<number> {
-  return getWalletData().then(({ autoLockSecs }) => autoLockSecs);
-}
 
 export async function getWalletData(): Promise<WalletData> {
   const data = await LocalStorageDb.get(KEY_WALLET_DATA);
