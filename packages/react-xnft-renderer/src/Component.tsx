@@ -178,6 +178,10 @@ const useStyles = styles((theme) => ({
       "& fieldset": {
         border: `solid 2pt ${theme.custom.colors.negative} !important`,
       },
+      "&.Mui-focused fieldset": {
+        border: `solid 2pt ${theme.custom.colors.negative} !important`,
+        borderColor: `${theme.custom.colors.negative} !important`,
+      },
     },
   },
   expand: {
