@@ -37,7 +37,8 @@ export type SelectedAccount = {
   publicKey: anchor.web3.PublicKey;
 };
 
-const LOAD_PUBKEY_AMOUNT = 6;
+const LOAD_PUBKEY_AMOUNT = 20;
+const DISPLAY_PUBKEY_AMOUNT = 6;
 
 export function ImportAccounts({
   mnemonic,
@@ -123,9 +124,17 @@ export function ImportAccounts({
         const accounts = (
           await anchor.utils.rpc.getMultipleAccounts(connection, publicKeys)
         ).map((result, index) => {
-          return result === null ? { publicKey: publicKeys[index] } : result;
+          return result === null
+            ? { publicKey: publicKeys[index], account: undefined }
+            : result;
         });
-        setAccounts(accounts);
+        setAccounts(
+          accounts.sort((a, b) => {
+            const aLamports = a.account ? a.account.lamports : 0;
+            const bLamports = b.account ? b.account.lamports : 0;
+            return bLamports - aLamports;
+          })
+        );
       })
       .catch((error) => {
         // Probably Ledger error, i.e. app is not opened
@@ -257,64 +266,66 @@ export function ImportAccounts({
                 paddingBottom: "8px",
               }}
             >
-              {accounts.map(({ publicKey, account }, index) => (
-                <ListItemButton
-                  key={publicKey.toString()}
-                  onClick={handleSelect(index, publicKey)}
-                  sx={{
-                    display: "flex",
-                    paddinLeft: "16px",
-                    paddingRight: "16px",
-                    paddingTop: "5px",
-                    paddingBottom: "5px",
-                  }}
-                  disableRipple
-                  disabled={importedPubkeys.includes(publicKey.toString())}
-                >
-                  <Box style={{ display: "flex", width: "100%" }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <Checkbox
-                        edge="start"
-                        checked={
-                          selectedAccounts.some((a) => a.index === index) ||
-                          importedPubkeys.includes(publicKey.toString())
-                        }
-                        tabIndex={-1}
-                        disabled={importedPubkeys.includes(
-                          publicKey.toString()
-                        )}
-                        disableRipple
-                        style={{ marginLeft: 0 }}
+              {accounts
+                .slice(0, DISPLAY_PUBKEY_AMOUNT)
+                .map(({ publicKey, account }, index) => (
+                  <ListItemButton
+                    key={publicKey.toString()}
+                    onClick={handleSelect(index, publicKey)}
+                    sx={{
+                      display: "flex",
+                      paddinLeft: "16px",
+                      paddingRight: "16px",
+                      paddingTop: "5px",
+                      paddingBottom: "5px",
+                    }}
+                    disableRipple
+                    disabled={importedPubkeys.includes(publicKey.toString())}
+                  >
+                    <Box style={{ display: "flex", width: "100%" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <Checkbox
+                          edge="start"
+                          checked={
+                            selectedAccounts.some((a) => a.index === index) ||
+                            importedPubkeys.includes(publicKey.toString())
+                          }
+                          tabIndex={-1}
+                          disabled={importedPubkeys.includes(
+                            publicKey.toString()
+                          )}
+                          disableRipple
+                          style={{ marginLeft: 0 }}
+                        />
+                      </div>
+                      <ListItemText
+                        id={publicKey.toString()}
+                        primary={walletAddressDisplay(publicKey)}
+                        sx={{
+                          marginLeft: "8px",
+                          fontSize: "14px",
+                          lineHeight: "32px",
+                          fontWeight: 500,
+                        }}
                       />
-                    </div>
-                    <ListItemText
-                      id={publicKey.toString()}
-                      primary={walletAddressDisplay(publicKey)}
-                      sx={{
-                        marginLeft: "8px",
-                        fontSize: "14px",
-                        lineHeight: "32px",
-                        fontWeight: 500,
-                      }}
-                    />
-                    <ListItemText
-                      sx={{
-                        color: theme.custom.colors.secondary,
-                        textAlign: "right",
-                      }}
-                      primary={`${
-                        account ? account.lamports / 10 ** 9 : 0
-                      } SOL`}
-                    />
-                  </Box>
-                </ListItemButton>
-              ))}
+                      <ListItemText
+                        sx={{
+                          color: theme.custom.colors.secondary,
+                          textAlign: "right",
+                        }}
+                        primary={`${
+                          account ? account.lamports / 10 ** 9 : 0
+                        } SOL`}
+                      />
+                    </Box>
+                  </ListItemButton>
+                ))}
             </List>
           </>
         )}
