@@ -68,7 +68,7 @@ export function SwapProvider(props: any) {
   const background = useBackgroundClient();
 
   const [[fromMint, toMint], setFromMintToMint] = useState([
-    WSOL_MINT,
+    SOL_NATIVE_MINT,
     USDC_MINT,
   ]);
   const fromMintPubkey = new PublicKey(fromMint);
@@ -91,6 +91,10 @@ export function SwapProvider(props: any) {
 
   const route = routes && routes[0];
   const toAmount = route && route.outAmount / 10 ** toMintInfo.decimals;
+
+  // If swapping from or to native SOL, auto wrap and unwrap
+  const wrapUnwrapSOL =
+    fromMint === SOL_NATIVE_MINT || toMint === SOL_NATIVE_MINT;
 
   useEffect(() => {
     (async () => {
@@ -127,9 +131,9 @@ export function SwapProvider(props: any) {
     setRoutes([]);
     setIsLoadingRoutes(true);
     const params = {
-      // If the swap is to or from native SOL we want Jupiter to return WSOL routes
-      // because it does not support native SOL, but it can auto wrap and
-      // unwrap.
+      // If the swap is to or from native SOL we want Jupiter to return wSOL
+      // routes because it does not support native SOL routes, but it can auto
+      // wrap and unwrap native SOL for a wSOL route.
       inputMint: fromMint === SOL_NATIVE_MINT ? WSOL_MINT : fromMint,
       outputMint: toMint === SOL_NATIVE_MINT ? WSOL_MINT : toMint,
       amount: (fromAmount! * 10 ** fromMintInfo.decimals).toString(),
@@ -147,8 +151,8 @@ export function SwapProvider(props: any) {
     setIsLoadingTransactions(true);
     const body = {
       route,
+      wrapUnwrapSOL,
       userPublicKey: wallet.publicKey,
-      wrapUnwrapSOL: fromMint === SOL_NATIVE_MINT || toMint === SOL_NATIVE_MINT,
     };
     const transactions = await (
       await fetch(`${JUPITER_BASE_URL}swap`, {
@@ -203,6 +207,14 @@ export function SwapProvider(props: any) {
       "swapTransaction",
       "cleanupTransaction",
     ]) {
+      if (wrapUnwrapSOL) {
+        // From or to mint is native SOL and so auto wrap and unwrap is enabled.
+        // This means that the users existing wSOL account (if any) may be
+        // closed. This isn't necessarily part of the cleanup transaction, it
+        // can also happen in the main swap. To handle this we need to recreate
+        // the wSOL account with the pre-swap balance.
+        console.warn("TODO recreate wSOL account and balance");
+      }
       const serializedTransaction = transactions[transactionStep];
       if (serializedTransaction) {
         try {
