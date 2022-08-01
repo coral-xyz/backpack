@@ -18,7 +18,7 @@ import {
   EthereumHdKeyringFactory,
   EthereumKeyringFactory,
 } from ".";
-import { getWalletData, setWalletData, LocalStorageDb } from "../backend/store";
+import { getWalletData, setWalletData, LocalStorageDb } from "../store";
 
 const LOCK_INTERVAL_SECS = 15 * 60;
 

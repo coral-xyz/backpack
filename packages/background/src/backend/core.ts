@@ -26,10 +26,10 @@ import {
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_DARK_MODE_UPDATED,
 } from "@coral-xyz/common";
-import type { Nav } from "../backend/store";
-import { getWalletData, setWalletData, setNav, getNav } from "../backend/store";
-import { KeyringStore } from "../keyring/store";
-import type { Backend as SolanaConnectionBackend } from "../backend/solana-connection";
+import type { Nav } from "./store";
+import { getWalletData, setWalletData, setNav, getNav } from "./store";
+import { KeyringStore } from "./keyring/store";
+import type { Backend as SolanaConnectionBackend } from "./solana-connection";
 
 export function start(events: EventEmitter, solanaB: SolanaConnectionBackend) {
   return new Backend(events, solanaB);
