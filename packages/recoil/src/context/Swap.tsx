@@ -57,6 +57,7 @@ type SwapContext = {
   isLoadingRoutes: boolean;
   isLoadingTransactions: boolean;
   isLoadingTransactionFee: boolean;
+  isJupiterError: boolean;
 };
 
 const _SwapContext = React.createContext<SwapContext | null>(null);
@@ -67,14 +68,15 @@ export function SwapProvider(props: any) {
   const { connection } = useSolanaCtx();
   const background = useBackgroundClient();
 
+  // Swap setttings
   const [[fromMint, toMint], setFromMintToMint] = useState([
     SOL_NATIVE_MINT,
     USDC_MINT,
   ]);
-  const fromMintPubkey = new PublicKey(fromMint);
-  const toMintPubkey = new PublicKey(toMint);
   const [fromAmount, setFromAmount] = useState<number | null>(null);
   const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE_PERCENT);
+
+  // Jupiter data
   const [routes, setRoutes] = useState<JupiterRoute[]>([]);
   const [transactions, setTransactions] = useState<JupiterTransactions | null>(
     null
@@ -84,10 +86,19 @@ export function SwapProvider(props: any) {
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
   const [isLoadingTransactionFee, setIsLoadingTransactionFee] = useState(false);
 
-  const fromToken = associatedTokenAddress(fromMintPubkey, wallet.publicKey);
-  const toToken = associatedTokenAddress(toMintPubkey, wallet.publicKey);
-  const fromMintInfo = tokenRegistry.get(fromMintPubkey.toString())!;
-  const toMintInfo = tokenRegistry.get(toMintPubkey.toString())!;
+  // Error states
+  const [isJupiterError, setIsJupiterError] = useState(false);
+
+  const fromToken = associatedTokenAddress(
+    new PublicKey(fromMint),
+    wallet.publicKey
+  );
+  const toToken = associatedTokenAddress(
+    new PublicKey(toMint),
+    wallet.publicKey
+  );
+  const fromMintInfo = tokenRegistry.get(fromMint)!;
+  const toMintInfo = tokenRegistry.get(toMint)!;
 
   const route = routes && routes[0];
   const toAmount = route && route.outAmount / 10 ** toMintInfo.decimals;
@@ -108,7 +119,7 @@ export function SwapProvider(props: any) {
 
   useEffect(() => {
     (async () => {
-      if (routes.length > 0) {
+      if (routes && routes.length > 0 && !isLoadingRoutes) {
         setTransactions(await fetchTransactions());
       } else {
         setTransactions(null);
@@ -140,11 +151,23 @@ export function SwapProvider(props: any) {
       slippage: slippage.toString(),
     };
     const queryString = new URLSearchParams(params).toString();
-    const { data } = await (
-      await fetch(`${JUPITER_BASE_URL}quote?${queryString}`)
-    ).json();
-    setIsLoadingRoutes(false);
-    return data;
+    try {
+      const response = await fetch(`${JUPITER_BASE_URL}quote?${queryString}`);
+      if (!response.ok) {
+        // fetch throws for network errors but http status code errors so throw
+        // manually if status code is outside of 200-299 range
+        throw new Error(response.status.toString());
+      }
+      const { data } = await response.json();
+      setIsJupiterError(false);
+      return data;
+    } catch (e) {
+      console.error("error fetching swap routes", e);
+      setIsJupiterError(true);
+      return [];
+    } finally {
+      setIsLoadingRoutes(false);
+    }
   };
 
   const fetchTransactions = async () => {
@@ -275,6 +298,7 @@ export function SwapProvider(props: any) {
         isLoadingTransactions,
         transactionFee,
         isLoadingTransactionFee,
+        isJupiterError,
       }}
     >
       {props.children}
