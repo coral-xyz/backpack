@@ -18,7 +18,13 @@ import {
   EthereumHdKeyringFactory,
   EthereumKeyringFactory,
 } from ".";
-import { getWalletData, setWalletData, LocalStorageDb } from "../store";
+import {
+  getWalletData,
+  setWalletData,
+  getEncryptedKeyring,
+  setEncryptedKeyring,
+  LocalStorageDb,
+} from "../store";
 
 const LOCK_INTERVAL_SECS = 15 * 60;
 
@@ -132,7 +138,7 @@ export class KeyringStore {
   }
 
   private async decryptKeyringFromStorage(password: string) {
-    const ciphertextPayload = await LocalStorageDb.get(KEY_KEYRING_STORE);
+    const ciphertextPayload = await getEncryptedKeyring();
     if (ciphertextPayload === undefined || ciphertextPayload === null) {
       throw new Error("keyring store not found on disk");
     }
@@ -316,7 +322,7 @@ export class KeyringStore {
     if (this.isUnlocked()) {
       return false;
     }
-    const ciphertext = await LocalStorageDb.get(KEY_KEYRING_STORE);
+    const ciphertext = await getEncryptedKeyring();
     return ciphertext !== undefined && ciphertext !== null;
   }
 
@@ -334,7 +340,7 @@ export class KeyringStore {
     }
     const plaintext = JSON.stringify(this.toJson());
     const ciphertext = await crypto.encrypt(plaintext, this.password!);
-    await LocalStorageDb.set(KEY_KEYRING_STORE, ciphertext);
+    await setEncryptedKeyring(ciphertext);
   }
 
   private autoLockStart() {
@@ -624,7 +630,6 @@ class BlockchainKeyring {
 }
 
 // Keys used by the local storage db.
-const KEY_KEYRING_STORE = "keyring-store";
 const KEY_KEYNAME_STORE = "keyname-store";
 
 class KeynameStore {
