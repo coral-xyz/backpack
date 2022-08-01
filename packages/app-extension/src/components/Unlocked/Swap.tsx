@@ -17,8 +17,13 @@ import {
   SwapProvider,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { SOL_NATIVE_MINT, Blockchain } from "@coral-xyz/common";
-import { TextField, TextFieldLabel, PrimaryButton } from "../common";
+import { Blockchain } from "@coral-xyz/common";
+import {
+  TextField,
+  TextFieldLabel,
+  PrimaryButton,
+  DangerButton,
+} from "../common";
 import { WithHeaderButton } from "./Balances/TokensWidget/Token";
 import { BottomCard } from "./Balances/TokensWidget/Send";
 import { WithMiniDrawer, useDrawerContext } from "../common/Layout/Drawer";
@@ -205,11 +210,10 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
     fromAmount,
     setFromAmount,
     toAmount,
-    fromMint,
-    toMint,
     swapToFromMints,
     executeSwap,
     isLoadingRoutes,
+    isJupiterError,
   } = useSwapContext();
   const [swapState, setSwapState] = useState(SwapState.INITIAL);
 
@@ -301,10 +305,14 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
               </div>
             )}
           </div>
-          <ConfirmSwapButton
-            blockchain={blockchain}
-            onClick={() => setSwapState(SwapState.CONFIRMATION)}
-          />
+          {isJupiterError ? (
+            <SwapUnavailableButton />
+          ) : (
+            <ConfirmSwapButton
+              blockchain={blockchain}
+              onClick={() => setSwapState(SwapState.CONFIRMATION)}
+            />
+          )}
         </div>
       </div>
       <WithMiniDrawer
@@ -362,6 +370,10 @@ const MaxSwapAmount = ({
       {balance}
     </div>
   );
+};
+
+const SwapUnavailableButton = () => {
+  return <DangerButton label="Swaps unavailable" disabled={true} />;
 };
 
 const ConfirmSwapButton = ({
