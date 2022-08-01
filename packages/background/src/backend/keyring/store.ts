@@ -19,7 +19,7 @@ import {
   EthereumKeyringFactory,
 } from ".";
 import * as store from "../store";
-import { DefaultKeyname, LocalStorageDb } from "../store";
+import { DefaultKeyname } from "../store";
 
 const LOCK_INTERVAL_SECS = 15 * 60;
 
@@ -201,7 +201,7 @@ export class KeyringStore {
   }
 
   public reset() {
-    return LocalStorageDb.reset();
+    return store.reset();
   }
 
   public async autoLockUpdate(autoLockSecs: number) {
