@@ -7,6 +7,7 @@ import {
   useSolanaExplorer,
   useActiveWallet,
   useRecentTransactions,
+  useSolanaConnectionUrl,
 } from "@coral-xyz/recoil";
 import { Loading } from "../../common";
 import { WithDrawer, CloseButton } from "../../common/Layout/Drawer";
@@ -238,13 +239,15 @@ function RecentActivityListItem({ transaction, isLast }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const explorer = useSolanaExplorer();
+  const connectionUrl = useSolanaConnectionUrl();
+
   const txSig = transaction.transaction.signatures[0];
   const unixTimestamp = transaction.blockTime;
   const date = new Date(unixTimestamp * 1000);
   const dateStr = date.toLocaleDateString();
 
   const onClick = () => {
-    window.open(explorerUrl(explorer, txSig));
+    window.open(explorerUrl(explorer, txSig, connectionUrl));
   };
 
   console.log("tx", transaction.meta.status.Ok);

@@ -5,7 +5,8 @@ import { bootstrap } from "../bootstrap";
 import { priceData } from "../prices";
 import { splTokenRegistry } from "./token-registry";
 import { TokenAccountWithKey } from "../../types";
-import { connectionUrl, activeWallet } from "./wallet";
+import { activeWallet } from "./wallet";
+import { connectionUrl } from "../preferences";
 
 /**
  * Returns the token accounts sorted by usd notional balances.

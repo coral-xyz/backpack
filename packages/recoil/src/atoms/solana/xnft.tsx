@@ -1,6 +1,7 @@
 import { selector } from "recoil";
 import { SIMULATOR_PORT } from "@coral-xyz/common";
-import { activeWallet, connectionUrl } from "./wallet";
+import { activeWallet } from "./wallet";
+import { connectionUrl } from "../preferences";
 
 const OPEN_ORDERS_PLUGIN_URL = pluginURL("app");
 const OPEN_ORDERS_ICON_URL =

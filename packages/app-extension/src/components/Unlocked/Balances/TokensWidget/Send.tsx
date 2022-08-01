@@ -7,6 +7,7 @@ import {
   useSolanaCtx,
   useBlockchainTokenAccount,
   useSolanaExplorer,
+  useSolanaConnectionUrl,
 } from "@coral-xyz/recoil";
 import {
   Blockchain,
@@ -465,6 +466,7 @@ function ConfirmSend({ address }: { address: string }) {
 function Sending({ signature }: { signature: string }) {
   const theme = useCustomTheme();
   const solanaExplorer = useSolanaExplorer();
+  const connectionUrl = useSolanaConnectionUrl();
   return (
     <div
       style={{
@@ -483,7 +485,7 @@ function Sending({ signature }: { signature: string }) {
         Sending...
       </Typography>
       <Link
-        href={explorerUrl(solanaExplorer, signature)}
+        href={explorerUrl(solanaExplorer, signature, connectionUrl)}
         target="_blank"
         style={{ textAlign: "center" }}
       >
@@ -502,6 +504,7 @@ function Complete({
 }) {
   const theme = useCustomTheme();
   const explorer = useSolanaExplorer();
+  const connectionUrl = useSolanaConnectionUrl();
   return (
     <div
       style={{
@@ -523,7 +526,7 @@ function Complete({
         {walletAddressDisplay(new PublicKey(address))}
       </Typography>
       <Link
-        href={explorerUrl(explorer, signature)}
+        href={explorerUrl(explorer, signature, connectionUrl)}
         target="_blank"
         style={{ textAlign: "center" }}
       >
@@ -536,6 +539,7 @@ function Complete({
 function Error({ signature }: { signature: string }) {
   const theme = useCustomTheme();
   const explorer = useSolanaExplorer();
+  const connectionUrl = useSolanaConnectionUrl();
   return (
     <div
       style={{
@@ -551,7 +555,7 @@ function Error({ signature }: { signature: string }) {
         There was a problem confirming the transaction.
       </Typography>
       <Link
-        href={explorerUrl(explorer, signature)}
+        href={explorerUrl(explorer, signature, connectionUrl)}
         target="_blank"
         style={{ textAlign: "center" }}
       >
