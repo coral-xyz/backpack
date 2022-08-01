@@ -1,15 +1,14 @@
 import { useEffect } from "react";
 import { Check } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { UI_RPC_METHOD_CONNECTION_URL_UPDATE } from "@coral-xyz/common";
+import {
+  SolanaCluster,
+  UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+} from "@coral-xyz/common";
 import { useBackgroundClient, useSolanaConnectionUrl } from "@coral-xyz/recoil";
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
 import { SettingsList } from "../../../../common/Settings/List";
 import { useNavStack } from "../../../../common/Layout/NavStack";
-
-const MAINNET = "https://solana-api.projectserum.com";
-const DEVNET = "https://api.devnet.solana.com";
-const LOCALNET = "http://localhost:8899";
 
 export function PreferencesSolanaConnection() {
   const { close } = useDrawerContext();
@@ -23,16 +22,16 @@ export function PreferencesSolanaConnection() {
 
   const menuItems = {
     "Mainnet (Beta)": {
-      onClick: () => changeNetwork(MAINNET),
-      detail: currentUrl === MAINNET ? <Checkmark /> : <></>,
+      onClick: () => changeNetwork(SolanaCluster.MAINNET),
+      detail: currentUrl === SolanaCluster.MAINNET ? <Checkmark /> : <></>,
     },
     Devnet: {
-      onClick: () => changeNetwork(DEVNET),
-      detail: currentUrl === DEVNET ? <Checkmark /> : <></>,
+      onClick: () => changeNetwork(SolanaCluster.DEVNET),
+      detail: currentUrl === SolanaCluster.DEVNET ? <Checkmark /> : <></>,
     },
     Localnet: {
-      onClick: () => changeNetwork(LOCALNET),
-      detail: currentUrl === LOCALNET ? <Checkmark /> : <></>,
+      onClick: () => changeNetwork(SolanaCluster.LOCALNET),
+      detail: currentUrl === SolanaCluster.LOCALNET ? <Checkmark /> : <></>,
     },
     Custom: {
       onClick: () =>
@@ -41,9 +40,9 @@ export function PreferencesSolanaConnection() {
           new URL(prompt("Enter your custom endpoint")!.trim()).toString()
         ),
       detail:
-        currentUrl !== MAINNET &&
-        currentUrl !== DEVNET &&
-        currentUrl !== LOCALNET ? (
+        currentUrl !== SolanaCluster.MAINNET &&
+        currentUrl !== SolanaCluster.DEVNET &&
+        currentUrl !== SolanaCluster.LOCALNET ? (
           <Checkmark />
         ) : (
           <></>

@@ -2,15 +2,12 @@ import { atom, selector } from "recoil";
 import { Provider, Spl } from "@project-serum/anchor";
 import {
   BackgroundSolanaConnection,
-  ChannelAppUi,
-  SOLANA_CONNECTION_RPC_UI,
-  UI_RPC_METHOD_CONNECTION_URL_READ,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
 } from "@coral-xyz/common";
 import { WalletPublicKeys } from "../../types";
-import { backgroundClient } from "../client";
-import { solanaCommitment } from "../preferences";
+import { backgroundClient, connectionBackgroundClient } from "../client";
+import { solanaCommitment, connectionUrl } from "../preferences";
 
 /**
  * List of all public keys for the wallet along with associated nicknames.
@@ -72,30 +69,6 @@ export const activeWalletWithName = selector({
     );
     return result;
   },
-});
-
-export const connectionBackgroundClient = selector({
-  key: "connectionBackgroundClient",
-  get: ({ get }) => {
-    return ChannelAppUi.client(SOLANA_CONNECTION_RPC_UI);
-  },
-});
-
-/**
- * URL to the cluster to communicate with.
- */
-export const connectionUrl = atom<string | null>({
-  key: "clusterConnection",
-  default: selector({
-    key: "clusterConnectionDefault",
-    get: ({ get }) => {
-      const background = get(backgroundClient);
-      return background.request({
-        method: UI_RPC_METHOD_CONNECTION_URL_READ,
-        params: [],
-      });
-    },
-  }),
 });
 
 export const anchorContext = selector({

@@ -16,6 +16,7 @@ import type { BackgroundClient } from "../";
 
 export * from "./wallet-adapter";
 export * from "./explorer";
+export * from "./cluster";
 export * from "./provider";
 export * from "./programs";
 export * from "./background-connection";

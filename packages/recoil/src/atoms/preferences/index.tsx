@@ -6,6 +6,7 @@ import {
   UI_RPC_METHOD_SOLANA_EXPLORER_READ,
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
+  UI_RPC_METHOD_CONNECTION_URL_READ,
 } from "@coral-xyz/common";
 import { backgroundClient } from "../client";
 
@@ -79,6 +80,23 @@ export const solanaCommitment = atom<Commitment | null>({
       const background = get(backgroundClient);
       return await background.request({
         method: UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
+        params: [],
+      });
+    },
+  }),
+});
+
+/**
+ * URL to the cluster to communicate with.
+ */
+export const connectionUrl = atom<string | null>({
+  key: "clusterConnection",
+  default: selector({
+    key: "clusterConnectionDefault",
+    get: ({ get }) => {
+      const background = get(backgroundClient);
+      return background.request({
+        method: UI_RPC_METHOD_CONNECTION_URL_READ,
         params: [],
       });
     },
