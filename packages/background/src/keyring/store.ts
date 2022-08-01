@@ -1,11 +1,9 @@
 import * as bs58 from "bs58";
-import type { Commitment } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import type { EventEmitter, DerivationPath } from "@coral-xyz/common";
 import {
   Blockchain,
-  BrowserRuntimeCommon,
   SolanaExplorer,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   BACKEND_EVENT,
@@ -20,6 +18,7 @@ import {
   EthereumHdKeyringFactory,
   EthereumKeyringFactory,
 } from ".";
+import { getWalletData, setWalletData, LocalStorageDb } from "../backend/store";
 
 const LOCK_INTERVAL_SECS = 15 * 60;
 
@@ -624,35 +623,9 @@ class BlockchainKeyring {
   }
 }
 
-// Persistent metadata for the UI shared across all networks.
-export type WalletData = {
-  autoLockSecs: number;
-  approvedOrigins: Array<string>;
-  darkMode: boolean;
-  solana: SolanaData;
-};
-
-type SolanaData = {
-  explorer: string;
-  commitment: Commitment;
-};
-
-export async function getWalletData(): Promise<WalletData> {
-  const data = await LocalStorageDb.get(KEY_WALLET_DATA);
-  if (data === undefined) {
-    throw new Error("wallet data is undefined");
-  }
-  return data;
-}
-
-export async function setWalletData(data: WalletData) {
-  await LocalStorageDb.set(KEY_WALLET_DATA, data);
-}
-
 // Keys used by the local storage db.
 const KEY_KEYRING_STORE = "keyring-store";
 const KEY_KEYNAME_STORE = "keyname-store";
-const KEY_WALLET_DATA = "wallet-data";
 const KEY_NAV = "nav-store7";
 
 class KeynameStore {
@@ -684,20 +657,6 @@ class KeynameStore {
 
   public static defaultNameLedger(accountIndex: number): string {
     return `Ledger ${accountIndex + 1}`;
-  }
-}
-
-class LocalStorageDb {
-  static async get(key: string): Promise<any> {
-    return await BrowserRuntimeCommon.getLocalStorage(key);
-  }
-
-  static async set(key: string, value: any): Promise<void> {
-    await BrowserRuntimeCommon.setLocalStorage(key, value);
-  }
-
-  static async reset(): Promise<void> {
-    await BrowserRuntimeCommon.clearLocalStorage();
   }
 }
 
