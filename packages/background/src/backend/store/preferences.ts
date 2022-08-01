@@ -29,3 +29,5 @@ export async function getWalletData(): Promise<WalletData> {
 export async function setWalletData(data: WalletData) {
   await LocalStorageDb.set(STORE_KEY_WALLET_DATA, data);
 }
+
+export const DEFAULT_LOCK_INTERVAL_SECS = 15 * 60;

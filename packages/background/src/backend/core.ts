@@ -28,7 +28,7 @@ import {
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
 import * as store from "./store";
-import { KeyringStore } from "./keyring/store";
+import { KeyringStore } from "./keyring";
 import type { Backend as SolanaConnectionBackend } from "./solana-connection";
 
 export function start(events: EventEmitter, solanaB: SolanaConnectionBackend) {
