@@ -239,58 +239,16 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
     }
   };
 
-  const _setFromAmount = (amount: number) => {
-    if (amount >= 0) {
-      setFromAmount(amount);
-    }
-  };
-
   return (
     <div className={classes.container}>
       <div className={classes.topHalf}>
         <SwapTokensButton onClick={onSwapButtonClick} />
-        <TextFieldLabel
-          leftLabel={"You Pay"}
-          rightLabelComponent={<MaxSwapAmount onSetAmount={_setFromAmount} />}
-        />
-        <TextField
-          placeholder={"0"}
-          endAdornment={<InputTokenSelectorButton />}
-          rootClass={classes.fromFieldRoot}
-          type={"number"}
-          value={fromAmount}
-          setValue={_setFromAmount}
-        />
+        <InputTextField />
       </div>
       <div className={classes.bottomHalfWrapper}>
         <div className={classes.bottomHalf}>
           <div>
-            <TextFieldLabel leftLabel={"You Receive"} />
-            <TextField
-              placeholder={"0"}
-              startAdornment={
-                isLoadingRoutes && (
-                  <CircularProgress
-                    style={{
-                      display: "flex",
-                      color: theme.custom.colors.secondary,
-                    }}
-                    size={24}
-                    thickness={5}
-                  />
-                )
-              }
-              endAdornment={<OutputTokenSelectorButton />}
-              rootClass={classes.receiveFieldRoot}
-              type={"number"}
-              value={toAmount || ""}
-              disabled={true}
-              inputProps={{
-                style: {
-                  textFill: `${theme.custom.colors.fontColor} !important`,
-                },
-              }}
-            />
+            <OutputTextField />
             {!!toAmount && (
               <div
                 style={{
@@ -338,17 +296,85 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
   );
 }
 
-const MaxSwapAmount = ({
-  onSetAmount,
-}: {
-  onSetAmount: (amount: number) => void;
-}) => {
-  const theme = useCustomTheme();
-  const { fromMint } = useSwapContext();
+function InputTextField() {
+  const classes = useStyles();
+  const { fromAmount, fromMint, setFromAmount } = useSwapContext();
   const tokenAccountsSorted = useJupiterInputMints();
   const balance =
     tokenAccountsSorted.find((t) => t.mint === fromMint)?.nativeBalance || 0;
+  const exceedsBalance = fromAmount && fromAmount > balance;
 
+  const _setFromAmount = (amount: number) => {
+    if (amount >= 0) {
+      setFromAmount(amount);
+    }
+  };
+
+  return (
+    <>
+      <TextFieldLabel
+        leftLabel={"You Pay"}
+        rightLabelComponent={
+          <MaxSwapAmount balance={balance} onSetAmount={_setFromAmount} />
+        }
+      />
+      <TextField
+        placeholder={"0"}
+        endAdornment={<InputTokenSelectorButton />}
+        rootClass={classes.fromFieldRoot}
+        type={"number"}
+        value={fromAmount}
+        setValue={_setFromAmount}
+        isError={exceedsBalance}
+      />
+    </>
+  );
+}
+
+function OutputTextField() {
+  const classes = useStyles();
+  const theme = useCustomTheme();
+  const { toAmount, isLoadingRoutes } = useSwapContext();
+  return (
+    <>
+      <TextFieldLabel leftLabel={"You Receive"} />
+      <TextField
+        placeholder={"0"}
+        startAdornment={
+          isLoadingRoutes && (
+            <CircularProgress
+              style={{
+                display: "flex",
+                color: theme.custom.colors.secondary,
+              }}
+              size={24}
+              thickness={5}
+            />
+          )
+        }
+        endAdornment={<OutputTokenSelectorButton />}
+        rootClass={classes.receiveFieldRoot}
+        type={"number"}
+        value={toAmount || ""}
+        disabled={true}
+        inputProps={{
+          style: {
+            textFill: `${theme.custom.colors.fontColor} !important`,
+          },
+        }}
+      />
+    </>
+  );
+}
+
+const MaxSwapAmount = ({
+  balance,
+  onSetAmount,
+}: {
+  balance: number;
+  onSetAmount: (amount: number) => void;
+}) => {
+  const theme = useCustomTheme();
   return (
     <div
       onClick={() => onSetAmount(balance)}
