@@ -15,6 +15,7 @@ const PSYFI_TABLE_PLUGIN_URL = pluginURL("xnft/table-psyfi");
 const MANGO_TABLE_PLUGIN_URL = pluginURL("xnft/mango");
 const PRICES_PLUGIN_URL = pluginURL("xnft/prices");
 const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
+const AVI_PLUGIN_URL = pluginURL("xnft/avi");
 
 //
 // xnft-program-library
@@ -64,6 +65,13 @@ export const plugins = selector({
         url: SIMULATOR_URL,
         iconUrl: "assets/simulator.png",
         title: "Simulator",
+        activeWallet: get(activeWallet),
+        connectionUrl: get(connectionUrl),
+      },
+      {
+        url: AVI_PLUGIN_URL,
+        iconUrl: "assets/simulator.png",
+        title: "Avi",
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
       },
