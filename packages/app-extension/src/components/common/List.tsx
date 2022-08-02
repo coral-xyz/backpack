@@ -3,7 +3,7 @@ import {
   List as MuiList,
   ListItem as MuiListItem,
 } from "@mui/material";
-import { ChevronRight, CallMade, Launch } from "@mui/icons-material";
+import { ChevronRight, CallMade } from "@mui/icons-material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 
 const useStyles = styles(() => ({
@@ -39,6 +39,7 @@ export function List({ style, children }: any) {
 export function ListItem({
   style,
   children,
+  isFirst,
   isLast,
   id,
   onClick = undefined,
@@ -57,6 +58,10 @@ export function ListItem({
         className={classes.settingsContentListItem}
         onClick={onClick}
         style={{
+          borderTopLeftRadius: isFirst ? "8px" : 0,
+          borderTopRightRadius: isFirst ? "8px" : 0,
+          borderBottomLeftRadius: isLast ? "8px" : 0,
+          borderBottomRightRadius: isLast ? "8px" : 0,
           ...style,
         }}
       >

@@ -16,6 +16,7 @@ export function SettingsList({
         <ListItem
           key={key}
           id={key}
+          isFirst={i === 0}
           isLast={i === length - 1}
           onClick={() => val.onClick()}
           style={{

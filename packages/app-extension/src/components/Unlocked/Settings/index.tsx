@@ -316,6 +316,7 @@ function WalletList({
             <ListItem
               key={publicKey.toString()}
               onClick={() => clickWallet(publicKey)}
+              isFirst={idx === 0}
               isLast={idx === keys.length - 1}
             >
               <WalletAddress
@@ -438,6 +439,7 @@ function SettingsList({ close }: { close: () => void }) {
         return (
           <ListItem
             key={s.label}
+            isFirst={idx === 0}
             isLast={idx === settingsMenu.length - 1}
             onClick={s.onClick}
             id={s.label}
