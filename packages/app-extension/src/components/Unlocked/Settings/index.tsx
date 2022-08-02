@@ -65,10 +65,19 @@ import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { AddConnectWalletMenu } from "./AddConnectWallet";
 import { YourAccount } from "./YourAccount";
 import { EditWallets } from "./YourAccount/EditWallets";
+import { RemoveWallet } from "./YourAccount/EditWallets/RemoveWallet";
+import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
+import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
     color: theme.custom.colors.fontColor,
+  },
+  selectedAddConnect: {
+    "&:hover": {
+      // Disable hover color.
+      background: "transparent",
+    },
   },
   menuButtonContainer: {
     display: "flex",
@@ -183,6 +192,18 @@ function AvatarButton() {
               component={(props: any) => <EditWallets {...props} />}
             />
             <NavStackScreen
+              name={"edit-wallets-wallet-detail"}
+              component={(props: any) => <WalletDetail {...props} />}
+            />
+            <NavStackScreen
+              name={"edit-wallets-remove"}
+              component={(props: any) => <RemoveWallet {...props} />}
+            />
+            <NavStackScreen
+              name={"edit-wallets-rename"}
+              component={(props: any) => <RenameWallet {...props} />}
+            />
+            <NavStackScreen
               name={"show-private-key-warning"}
               component={(props: any) => <ShowPrivateKeyWarning {...props} />}
             />
@@ -290,6 +311,7 @@ function WalletList({
   onAddConnectWallet: () => void;
   close: () => void;
 }) {
+  const classes = useStyles();
   const background = useBackgroundClient();
   const theme = useCustomTheme();
   const namedPublicKeys = useWalletPublicKeys();
@@ -316,6 +338,7 @@ function WalletList({
             <ListItem
               key={publicKey.toString()}
               onClick={() => clickWallet(publicKey)}
+              isFirst={idx === 0}
               isLast={idx === keys.length - 1}
             >
               <WalletAddress
@@ -337,7 +360,12 @@ function WalletList({
           color: theme.custom.colors.secondary,
         }}
       >
-        <ListItem isLast={true} onClick={onAddConnectWallet}>
+        <ListItem
+          isFirst={true}
+          isLast={true}
+          onClick={onAddConnectWallet}
+          classes={{ root: classes.selectedAddConnect }}
+        >
           <div
             style={{
               border: `solid ${theme.custom.colors.nav}`,
@@ -438,6 +466,7 @@ function SettingsList({ close }: { close: () => void }) {
         return (
           <ListItem
             key={s.label}
+            isFirst={idx === 0}
             isLast={idx === settingsMenu.length - 1}
             onClick={s.onClick}
             id={s.label}

@@ -8,7 +8,7 @@ import manifest from "../../build/manifest.json";
 import { walletAddressDisplay } from "../components/common";
 import { Connection, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { DerivationPath } from "@coral-xyz/common";
-import { deriveKeypairs } from "@coral-xyz/background/dist/esm/keyring/crypto";
+import { deriveKeypairs } from "@coral-xyz/background/dist/esm/backend/keyring/crypto";
 
 let clientPage: Page;
 let extensionPopupPage: Page;

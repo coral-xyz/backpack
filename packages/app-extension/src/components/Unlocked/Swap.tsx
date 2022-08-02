@@ -315,7 +315,7 @@ function InputTextField() {
         endAdornment={<InputTokenSelectorButton />}
         rootClass={classes.fromFieldRoot}
         type={"number"}
-        value={fromAmount}
+        value={fromAmount ?? ""}
         setValue={_setFromAmount}
         isError={exceedsBalance}
       />

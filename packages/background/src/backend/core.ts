@@ -357,6 +357,11 @@ export class Backend {
     return pubkey.toString();
   }
 
+  async keynameRead(publicKey: string): Promise<string> {
+    const keyname = await store.getKeyname(publicKey);
+    return keyname;
+  }
+
   async keynameUpdate(publicKey: string, newName: string): Promise<string> {
     await store.setKeyname(publicKey, newName);
     this.events.emit(BACKEND_EVENT, {

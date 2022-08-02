@@ -15,6 +15,7 @@ import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
+import { isFirstLastListItemStyle } from "../../common/List";
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {
@@ -225,6 +226,7 @@ export function _RecentActivityList({ address, style }: any) {
           <RecentActivityListItem
             key={tx.transaction.signatures[0]}
             transaction={tx}
+            isFirst={idx === 0}
             isLast={idx === transactions.length - 1}
           />
         ))
@@ -235,7 +237,7 @@ export function _RecentActivityList({ address, style }: any) {
   );
 }
 
-function RecentActivityListItem({ transaction, isLast }: any) {
+function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const explorer = useSolanaExplorer();
@@ -250,8 +252,6 @@ function RecentActivityListItem({ transaction, isLast }: any) {
     window.open(explorerUrl(explorer, txSig, connectionUrl));
   };
 
-  console.log("tx", transaction.meta.status.Ok);
-
   return (
     <ListItem
       button
@@ -265,9 +265,11 @@ function RecentActivityListItem({ transaction, isLast }: any) {
         paddingBottom: "10px",
         display: "flex",
         height: "68px",
+
         borderBottom: isLast
           ? undefined
           : `solid 1pt ${theme.custom.colors.border}`,
+        ...isFirstLastListItemStyle(isFirst, isLast, 12),
       }}
     >
       <div

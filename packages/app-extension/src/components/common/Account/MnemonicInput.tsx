@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import {
-  Tooltip,
   Box,
   Grid,
   TextField,
@@ -21,6 +20,7 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from "../../common";
+import { WithCopyTooltip } from "../../common/WithCopyTooltip";
 
 const useStyles = makeStyles((theme: any) => ({
   mnemonicInputRoot: {
@@ -297,16 +297,7 @@ export function CopyButton({
     navigator.clipboard.writeText(text);
   };
   return (
-    <Tooltip
-      title={"Copied"}
-      open={tooltipOpen}
-      placement="top"
-      arrow={true}
-      disableFocusListener
-      disableHoverListener
-      disableTouchListener
-    >
-      {/* Box wrapper because Tooltip requires forwarded ref */}
+    <WithCopyTooltip tooltipOpen={tooltipOpen} setToolTipOpen={setTooltipOpen}>
       <Box>
         <SecondaryButton
           onClick={onCopy}
@@ -315,6 +306,6 @@ export function CopyButton({
           endIcon={icon ? icon : null}
         />
       </Box>
-    </Tooltip>
+    </WithCopyTooltip>
   );
 }

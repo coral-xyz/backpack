@@ -1,11 +1,20 @@
 import { useWalletPublicKeys } from "@coral-xyz/recoil";
 import { Blockchain } from "@coral-xyz/common";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { Add, MoreHoriz } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 import { useEffect } from "react";
-import { List, ListItem, walletAddressDisplay } from "../../../common";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { List, ListItem, walletAddressDisplay } from "../../../../common";
+import { useNavStack } from "../../../../common/Layout/NavStack";
+
+const useStyles = styles((theme) => ({
+  selectedAddConnect: {
+    "&:hover": {
+      // Disable hover color.
+      background: "transparent",
+    },
+  },
+}));
 
 export function EditWallets() {
   const theme = useCustomTheme();
@@ -27,7 +36,6 @@ export function EditWallets() {
   return (
     <div style={{ paddingTop: "16px", height: "100%" }}>
       <BlockchainWalletList
-        name={Blockchain.SOLANA}
         wallets={wallets}
         onAddConnectWallet={() => nav.push("add-connect-wallet")}
       />
@@ -37,48 +45,44 @@ export function EditWallets() {
 
 function BlockchainWalletList({
   onAddConnectWallet,
-  name,
   wallets,
 }: {
   onAddConnectWallet: () => void;
-  name: string;
   wallets: ReturnType<typeof useWalletPublicKeys>;
 }) {
+  const classes = useStyles();
   const theme = useCustomTheme();
+  const nav = useNavStack();
 
-  const capitalizedName = name[0].toUpperCase() + name.substring(1);
   const flattenedWallets = [
     ...wallets.hdPublicKeys,
     ...wallets.importedPublicKeys,
     ...wallets.ledgerPublicKeys,
   ];
 
-  // TODO: wire up the onClick for the more details button
   // TODO: replace placeholder wallet avatar with stored image when available
   return (
     <div>
-      <Typography
-        style={{
-          color: theme.custom.colors.fontColor,
-          padding: "0 16px 12px 16px",
-        }}
-      >
-        {capitalizedName}
-      </Typography>
       <List>
         {flattenedWallets.map(({ name, publicKey }, idx) => (
           <ListItem
+            button
             key={publicKey.toString()}
+            isFirst={idx === 0}
             isLast={idx === flattenedWallets.length - 1}
-            button={false}
             detail={
               <MoreHoriz
                 style={{
                   cursor: "pointer",
                   color: theme.custom.colors.secondary,
                 }}
-                onClick={() => {}}
               />
+            }
+            onClick={() =>
+              nav.push("edit-wallets-wallet-detail", {
+                publicKey: publicKey.toString(),
+                name,
+              })
             }
             style={{ display: "flex", width: "100%" }}
           >
@@ -113,7 +117,11 @@ function BlockchainWalletList({
           color: theme.custom.colors.secondary,
         }}
       >
-        <ListItem isLast={true} onClick={onAddConnectWallet}>
+        <ListItem
+          isLast={true}
+          onClick={onAddConnectWallet}
+          classes={{ root: classes.selectedAddConnect }}
+        >
           <div
             style={{
               border: `solid ${theme.custom.colors.nav}`,
