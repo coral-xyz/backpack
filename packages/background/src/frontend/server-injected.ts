@@ -164,7 +164,7 @@ async function handleConnect(
   // If the user approved and unlocked, then we're connected.
   if (didApprove) {
     const activeWallet = await ctx.backend.activeWallet();
-    const connectionUrl = await ctx.backend.solanaConnectionUrl();
+    const connectionUrl = await ctx.backend.solanaConnectionUrlRead();
     const data = { publicKey: activeWallet, connectionUrl };
     ctx.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_CONNECTED,

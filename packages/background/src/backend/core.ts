@@ -5,6 +5,7 @@ import { PublicKey, Transaction } from "@solana/web3.js";
 import type { NamedPublicKey, KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
+import { SolanaCluster } from "@coral-xyz/common";
 import {
   Blockchain,
   SolanaExplorer,
@@ -30,6 +31,7 @@ import type { Nav } from "./store";
 import * as store from "./store";
 import { KeyringStore } from "./keyring";
 import type { Backend as SolanaConnectionBackend } from "./solana-connection";
+import { getWalletData, setWalletData } from "./store";
 
 export function start(events: EventEmitter, solanaB: SolanaConnectionBackend) {
   return new Backend(events, solanaB);
@@ -119,10 +121,37 @@ export class Backend {
     return blockhash;
   }
 
-  async solanaConnectionUrl(): Promise<string> {
-    const blockchain = this.keyringStore.blockchains.get(Blockchain.SOLANA);
-    const url = await blockchain!.connectionUrlRead();
-    return url;
+  async solanaConnectionUrlRead(): Promise<string> {
+    const data = await getWalletData();
+    return data.solana.cluster ?? SolanaCluster.DEFAULT;
+  }
+
+  // Returns true if the url changed.
+  async solanaConnectionUrlUpdate(cluster: string): Promise<boolean> {
+    const data = await getWalletData();
+
+    if (data.solana.cluster === cluster) {
+      return false;
+    }
+
+    await setWalletData({
+      ...data,
+      solana: {
+        ...data.solana,
+        cluster,
+      },
+    });
+
+    const activeWallet = await this.activeWallet();
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_CONNECTION_URL_UPDATED,
+      data: {
+        url: cluster,
+        activeWallet,
+      },
+    });
+
+    return true;
   }
 
   // Creates a brand new keyring store. Should be run once on initializtion.
@@ -153,7 +182,7 @@ export class Backend {
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
 
-    const url = await this.solanaConnectionUrl();
+    const url = await this.solanaConnectionUrlRead();
     const activeWallet = await this.activeWallet();
     const commitment = await this.solanaCommitmentRead();
 
@@ -236,25 +265,6 @@ export class Backend {
   keyringCreate(secretKey: string): string {
     // todo
     return SUCCESS_RESPONSE;
-  }
-
-  async connectionUrlRead(): Promise<string> {
-    return await this.keyringStore.connectionUrlRead();
-  }
-
-  async connectionUrlUpdate(url: string): Promise<boolean> {
-    const didChange = await this.keyringStore.connectionUrlUpdate(url);
-    if (didChange) {
-      const activeWallet = await this.activeWallet();
-      this.events.emit(BACKEND_EVENT, {
-        name: NOTIFICATION_CONNECTION_URL_UPDATED,
-        data: {
-          url,
-          activeWallet,
-        },
-      });
-    }
-    return didChange;
   }
 
   async activeWallet(): Promise<string> {

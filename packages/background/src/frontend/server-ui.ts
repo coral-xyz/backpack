@@ -315,7 +315,7 @@ function handleKeyringStoreKeepAlive(
 async function handleConnectionUrlRead(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.connectionUrlRead();
+  const resp = await ctx.backend.solanaConnectionUrlRead();
   return [resp];
 }
 
@@ -323,7 +323,7 @@ async function handleConnectionUrlUpdate(
   ctx: Context<Backend>,
   url: string
 ): Promise<RpcResponse<boolean>> {
-  const didChange = await ctx.backend.connectionUrlUpdate(url);
+  const didChange = await ctx.backend.solanaConnectionUrlUpdate(url);
   return [didChange];
 }
 
