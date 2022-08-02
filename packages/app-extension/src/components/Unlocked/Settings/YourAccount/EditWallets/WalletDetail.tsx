@@ -27,7 +27,11 @@ export const WalletDetail: React.FC<{ publicKey: string; name: string }> = ({
 
   const menuItems = {
     "Rename wallet": {
-      onClick: () => nav.push("edit-wallets-rename"),
+      onClick: () =>
+        nav.push("edit-wallets-rename", {
+          publicKey,
+          name,
+        }),
     },
     "Copy address": {
       onClick: () => copyAddress(),

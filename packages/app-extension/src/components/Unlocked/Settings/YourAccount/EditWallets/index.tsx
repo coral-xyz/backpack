@@ -68,6 +68,7 @@ function BlockchainWalletList({
           <ListItem
             button
             key={publicKey.toString()}
+            isFirst={idx === 0}
             isLast={idx === flattenedWallets.length - 1}
             detail={
               <MoreHoriz
