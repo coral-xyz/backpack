@@ -103,6 +103,7 @@ export const UI_RPC_METHOD_CONNECTION_URL_UPDATE = "connection-url-update";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET = "wallet-active";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE =
   "wallet-active-update";
+export const UI_RPC_METHOD_KEYNAME_READ = "keyname-read";
 export const UI_RPC_METHOD_KEYNAME_UPDATE = "keyname-update";
 export const UI_RPC_METHOD_PASSWORD_UPDATE = "password-update";
 export const UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY = "export-secret-key";
