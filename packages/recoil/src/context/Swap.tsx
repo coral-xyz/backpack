@@ -1,5 +1,5 @@
 import * as bs58 from "bs58";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import {
   associatedTokenAddress,
@@ -18,6 +18,8 @@ import {
 import { JUPITER_BASE_URL } from "../atoms/solana/jupiter";
 
 const DEFAULT_SLIPPAGE_PERCENT = 1;
+// Poll for new routes every 30 seconds in case of changing market conditions
+const ROUTE_POLL_INTERVAL = 30000;
 
 type JupiterRoute = {
   amount: number;
@@ -103,18 +105,33 @@ export function SwapProvider(props: any) {
   const route = routes && routes[0];
   const toAmount = route && route.outAmount / 10 ** toMintInfo.decimals;
 
+  const pollIdRef: { current: NodeJS.Timeout | null } = useRef(null);
+
   // If swapping from or to native SOL, auto wrap and unwrap
   const wrapUnwrapSOL =
     fromMint === SOL_NATIVE_MINT || toMint === SOL_NATIVE_MINT;
 
+  const stopRoutePolling = () => {
+    if (pollIdRef.current) {
+      clearInterval(pollIdRef.current);
+    }
+  };
+
   useEffect(() => {
-    (async () => {
+    const loadRoutes = async () => {
       if (fromAmount && fromAmount > 0) {
         setRoutes(await fetchRoutes());
+        // Success, clear existing polling and setup next
+        stopRoutePolling();
+        const pollId = setTimeout(loadRoutes, ROUTE_POLL_INTERVAL);
+        pollIdRef.current = pollId;
       } else {
         setRoutes([]);
       }
-    })();
+    };
+    loadRoutes();
+    // Cleanup
+    return stopRoutePolling;
   }, [fromMint, fromAmount, toMint]);
 
   useEffect(() => {
@@ -224,6 +241,8 @@ export function SwapProvider(props: any) {
   };
 
   const executeSwap = async () => {
+    // Stop polling for route updates when swap is finalised
+    stopRoutePolling();
     if (!transactions) return null;
     for (const transactionStep of [
       "setupTransaction",
@@ -259,6 +278,7 @@ export function SwapProvider(props: any) {
             // transactions so the user can retry
             const { setupTransaction, ...rest } = transactions;
             setTransactions(rest);
+            return false;
           } else if (transactionStep === "cleanupTransaction") {
             // Failed on cleanup, we still want to display a success message
             // to the user here as the swap has completed. The cleanup step
