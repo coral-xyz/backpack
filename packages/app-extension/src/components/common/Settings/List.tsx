@@ -7,7 +7,11 @@ export function SettingsList({
 }: {
   style?: React.CSSProperties;
   menuItems: {
-    [key: string]: { onClick: () => void; detail?: React.ReactNode };
+    [key: string]: {
+      onClick: () => void;
+      detail?: React.ReactNode;
+      style?: React.CSSProperties;
+    };
   };
 }) {
   return (
@@ -22,6 +26,7 @@ export function SettingsList({
           style={{
             height: "44px",
             padding: "10px",
+            ...val.style,
           }}
           detail={val.detail ?? <PushDetail />}
         >
