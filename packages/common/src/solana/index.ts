@@ -7,6 +7,7 @@ import type {
 import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import {
   createAssociatedTokenAccountInstruction,
+  createCloseAccountInstruction,
   createSyncNativeInstruction,
   NATIVE_MINT,
 } from "@solana/spl-token";
@@ -175,7 +176,7 @@ export class Solana {
 export const generateWrapSolTx = async (
   ctx: SolanaContext,
   destination: PublicKey,
-  amount: number
+  lamports: number
 ) => {
   const { walletPublicKey, tokenClient, commitment } = ctx;
   const destinationAta = associatedTokenAddress(NATIVE_MINT, destination);
@@ -202,10 +203,11 @@ export const generateWrapSolTx = async (
   tx.instructions = generateWrapSolIx({
     destination,
     destinationAta,
-    destinationAtaAccount,
-    amount,
+    lamports,
     walletPublicKey,
+    createAta: !destinationAtaAccount,
   });
+
   tx.feePayer = walletPublicKey;
   tx.recentBlockhash = (
     await tokenClient.provider.connection.getLatestBlockhash(commitment)
@@ -217,7 +219,7 @@ export const generateWrapSolTx = async (
 export const generateUnwrapSolTx = async (
   ctx: SolanaContext,
   destination: PublicKey,
-  amount: number
+  lamports: number
 ) => {
   const { walletPublicKey, tokenClient, commitment } = ctx;
   // Unwrapping partial SOL amounts appears to not be possible in token program.
@@ -248,16 +250,29 @@ export const generateUnwrapSolTx = async (
     throw new Error("invalid account");
   }
 
+  // If unwrap is for the whole balance the accont is just closed, otherwise
+  // recreate the account with the new balance
+  const rewrapIx =
+    destinationAtaAccount.account.lamports === lamports
+      ? []
+      : generateWrapSolIx({
+          destination,
+          destinationAta,
+          // Set the amount to the account balance minus the unwrapped amount
+          lamports: destinationAtaAccount.account.lamports - lamports,
+          walletPublicKey,
+          // Previous instruction closes the ATA, so create it again
+          createAta: true,
+        });
+
   const tx = new Transaction();
-  const instructions = generateWrapSolIx({
-    destination,
-    destinationAta,
-    destinationAtaAccount,
-    amount,
-    walletPublicKey,
-  });
-  // TODO add close account instruction
-  tx.instructions = instructions;
+  tx.instructions = [
+    // Close the wSOL account
+    createCloseAccountInstruction(destinationAta, destination, destination),
+    // Recreate it
+    ...rewrapIx,
+  ];
+
   tx.feePayer = walletPublicKey;
   tx.recentBlockhash = (
     await tokenClient.provider.connection.getLatestBlockhash(commitment)
@@ -271,12 +286,18 @@ export const generateUnwrapSolTx = async (
 const generateWrapSolIx = ({
   destination,
   destinationAta,
-  destinationAtaAccount,
-  amount,
+  lamports,
   walletPublicKey,
+  createAta = false,
 }) => {
+  console.log("Wrap");
+  console.log("Destination", destination.toString());
+  console.log("Destination ATA", destinationAta.toString());
+  console.log("Amount lamports", lamports);
+  console.log("Wallet public key", walletPublicKey);
   const ix: TransactionInstruction[] = [];
-  if (!destinationAtaAccount) {
+  if (createAta) {
+    console.log("Instruction create ata");
     ix.push(
       createAssociatedTokenAccountInstruction(
         walletPublicKey,
@@ -287,14 +308,16 @@ const generateWrapSolIx = ({
     );
   }
 
+  console.log("Instruction transfer");
+
   ix.push(
     SystemProgram.transfer({
       fromPubkey: walletPublicKey,
       toPubkey: new PublicKey(destinationAta),
-      lamports: amount * 10 ** 9,
+      lamports,
     })
   );
-
+  console.log("Instruction sync native");
   ix.push(createSyncNativeInstruction(new PublicKey(destinationAta)));
   return ix;
 };

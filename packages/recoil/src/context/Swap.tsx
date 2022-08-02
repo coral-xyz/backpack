@@ -187,18 +187,22 @@ export function SwapProvider(props: any) {
   //
   const fetchTransactions = async () => {
     setIsLoadingTransactions(true);
+    //
     // wrapUnableSOL is disabled, so handle wrapping and unwrapping
     let wrapTransaction: string | undefined = undefined;
     let unwrapTransaction: string | undefined = undefined;
     if (fromMint === SOL_NATIVE_MINT) {
       // Swapping from native SOL, need to wrap the equivalent amount
       wrapTransaction = (
-        await generateWrapSolTx(solanaCtx, wallet.publicKey, fromAmount!)
+        await generateWrapSolTx(
+          solanaCtx,
+          wallet.publicKey,
+          fromAmount! * 10 ** 9
+        )
       ).toString("base64");
       if (toMint === WSOL_MINT) {
         // This is not a real swap, we are just wrapping SOL so use the wrap
         // transaction as the main swap
-        console.log(wrapTransaction);
         return {
           swapTransaction: wrapTransaction,
         };
@@ -207,33 +211,49 @@ export function SwapProvider(props: any) {
     if (toMint === SOL_NATIVE_MINT) {
       // To mint is native Solana, so we need to unwrap wSOL in our cleanup
       unwrapTransaction = (
-        await generateUnwrapSolTx(solanaCtx, wallet.publicKey, toAmount!)
+        await generateUnwrapSolTx(
+          solanaCtx,
+          wallet.publicKey,
+          toAmount! * 10 ** 9
+        )
       ).toString("base64");
+      if (fromMint === WSOL_MINT) {
+        // This is not a real swap, we are just unwrapping SOL so use the unwrap
+        // transaction as the main swap
+        return {
+          swapTransaction: unwrapTransaction,
+        };
+      }
     }
-    const body = {
-      route,
-      wrapUnwrapSOL: false,
-      userPublicKey: wallet.publicKey,
-    };
-    const transactions = await (
+    console.log("querying jupiter");
+
+    const jupiterTransactions = await (
       await fetch(`${JUPITER_BASE_URL}swap`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          route,
+          wrapUnwrapSOL: false,
+          userPublicKey: wallet.publicKey,
+        }),
       })
     ).json();
+
     setIsLoadingTransactions(false);
-    return {
+
+    const transactions = {
       ...(wrapTransaction !== undefined && { wrapTransaction }),
-      ...transactions,
+      ...jupiterTransactions,
       // Jupiter should not return cleanup transactions with wrapUnwrapSOL set
       // to false, we set it to our own cleanup transaction
       ...(unwrapTransaction !== undefined && {
         cleanupTransaction: unwrapTransaction,
       }),
     };
+    console.log("Transactions", transactions);
+    return transactions;
   };
 
   //
@@ -242,6 +262,7 @@ export function SwapProvider(props: any) {
   const calculateTransactionFee = async () => {
     let fee = 0;
     if (!transactions) return null;
+    console.log(transactions);
     for (const serializedTransaction of Object.values(transactions)) {
       const transaction = Transaction.from(
         Buffer.from(serializedTransaction, "base64")
@@ -275,10 +296,26 @@ export function SwapProvider(props: any) {
     setFromMintToMint([fromMint, mint]);
   };
 
+  //
+  // Execute the transactions to perform the swap.
+  //
+  // The Jupiter API returns between 1 and 3 transations to perform a swap
+  // (setupTransaction, swapTransaction, cleanupTransaction). Additionally
+  // the wrapping of SOL (if required) is handled here by the wrapTransaction
+  // step at the beginning.
+  //
+  // Jupiter does offer an API parameter to handle wrapping and unwrapping of
+  // SOL but it is not used because it is difficult to ensure that the users
+  // wSOL account and balance are retained.
+  //
   const executeSwap = async () => {
-    if (!transactions) return null;
+    if (!transactions) {
+      console.log("no transactions found to execute swap");
+      return null;
+    }
 
     for (const transactionStep of [
+      "wrapTransaction",
       "setupTransaction",
       "swapTransaction",
       "cleanupTransaction",
@@ -294,21 +331,28 @@ export function SwapProvider(props: any) {
             ],
           });
           await confirmTransaction(connection, signature, "confirmed");
+          console.log("processed", transactionStep);
         } catch (e) {
-          console.log("swap error", e);
-          if (transactionStep === "setupTransaction") {
+          console.log("swap error at", transactionStep, e);
+          if (
+            ["wrapTransaction", "setupTransaction"].includes(transactionStep)
+          ) {
+            // Failure in one of the setup transactions, irrecoverable
             return false;
           } else if (transactionStep === "swapTransaction") {
             // Setup transaction didn't exist or suceeded, so update the
             // transactions required to execute to only the remaining
-            // transactions so the user can retry.
-            const { setupTransaction, ...rest } = transactions;
-            setTransactions(rest);
+            // transactions so the user can retry (i.e. exclude setup transactions)
+            const { swapTransaction, cleanupTransaction } = transactions;
+            setTransactions({
+              swapTransaction,
+              ...(cleanupTransaction !== undefined && { cleanupTransaction }),
+            });
             return false;
           } else if (transactionStep === "cleanupTransaction") {
             // Failed on cleanup, we still want to display a success message
             // to the user here as the swap has completed. The cleanup step
-            // was likely removing a wSOL account or unwrapping SOL.
+            // was unwrapping SOL.
             // TODO - handle this somehow?
             return true;
           }
