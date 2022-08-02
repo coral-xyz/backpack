@@ -182,6 +182,7 @@ export function SecondaryButton({
   const theme = useCustomTheme();
   const buttonStyle = {
     backgroundColor: theme.custom.colors.secondaryButton,
+    color: "inherit",
     ...buttonProps.style,
   };
   return (
