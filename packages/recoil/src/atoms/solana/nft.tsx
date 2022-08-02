@@ -1,5 +1,6 @@
-import { atom, selector } from "recoil";
+import { atomFamily, selector, selectorFamily } from "recoil";
 import { bootstrap } from "../bootstrap";
+import { activeWalletWithName } from "./wallet";
 
 //
 // TODO: this doesn't use the metaplex standard. We should use that instead.
@@ -10,7 +11,8 @@ export const solanaNftCollections = selector({
     //
     // Get all the collections.
     //
-    const metadata = get(solanaNftMetadata);
+    const { publicKey } = get(activeWalletWithName);
+    const metadata = get(solanaNftMetadata(publicKey.toString()));
 
     //
     // Bucket all the nfts by collection name.
@@ -47,16 +49,21 @@ export const solanaNftCollections = selector({
   },
 });
 
-//
-// Full token metadata for all nfts.
-//
-export const solanaNftMetadata = atom<Map<string, any>>({
+/**
+ * Full token metadata for all nfts.
+ *
+ * Note that it's important for this to be an atomFamily keyed on wallet pubkey
+ * so that when the wallet changes, we automatically refresh the state.
+ */
+export const solanaNftMetadata = atomFamily<Map<string, any>, string>({
   key: "solanaNftMap",
-  default: selector({
+  default: selectorFamily({
     key: "solanaNftMapDefault",
-    get: ({ get }: any) => {
-      const b = get(bootstrap);
-      return new Map(b.splNftMetadata);
-    },
+    get:
+      (walletPubkey: string) =>
+      ({ get }: any) => {
+        const b = get(bootstrap);
+        return new Map(b.splNftMetadata);
+      },
   }),
 });

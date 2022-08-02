@@ -250,8 +250,6 @@ function RecentActivityListItem({ transaction, isLast }: any) {
     window.open(explorerUrl(explorer, txSig, connectionUrl));
   };
 
-  console.log("tx", transaction.meta.status.Ok);
-
   return (
     <ListItem
       button

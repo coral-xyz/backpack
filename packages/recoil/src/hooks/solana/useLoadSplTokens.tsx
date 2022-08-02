@@ -61,7 +61,7 @@ export const useUpdateAllSplTokenAccounts = () =>
         // Nfts.
         //
         set(
-          atoms.solanaNftMetadata,
+          atoms.solanaNftMetadata(publicKey),
           new Map(customSplTokenAccounts.nftMetadata)
         );
       }

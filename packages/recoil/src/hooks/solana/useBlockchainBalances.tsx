@@ -1,6 +1,7 @@
 import { useRecoilValue } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
 import * as atoms from "../../atoms";
+import { useActiveWallet } from "./useWallet";
 
 export function useBlockchainTokens(blockchain: Blockchain) {
   return useRecoilValue(atoms.blockchainTokens(blockchain));
@@ -31,7 +32,8 @@ export function useBlockchainTokensSorted(blockchain: Blockchain) {
 }
 
 export function useNftMetadata(): Map<string, any> {
-  return useRecoilValue(atoms.solanaNftMetadata);
+  const { publicKey } = useActiveWallet();
+  return useRecoilValue(atoms.solanaNftMetadata(publicKey.toString()));
 }
 
 export function useNftCollections(): Array<any> {
