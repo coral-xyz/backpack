@@ -25,10 +25,11 @@ import {
 } from "../common";
 import { WithHeaderButton } from "./Balances/TokensWidget/Token";
 import { BottomCard } from "./Balances/TokensWidget/Send";
-import { WithMiniDrawer, useDrawerContext } from "../common/Layout/Drawer";
+import { useDrawerContext } from "../common/Layout/Drawer";
 import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
 import { MaxLabel } from "../common/MaxLabel";
+import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 
 const useStyles = styles((theme) => ({
   container: {
@@ -91,9 +92,6 @@ const useStyles = styles((theme) => ({
     width: "44px",
     height: "44px",
     zIndex: 2,
-    position: "fixed",
-    top: "175px",
-    left: "24px",
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
@@ -233,46 +231,48 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
   };
 
   return (
-    <div className={classes.container}>
-      <div className={classes.topHalf}>
-        <SwapTokensButton onClick={onSwapButtonClick} />
-        <InputTextField />
-      </div>
-      <div className={classes.bottomHalfWrapper}>
-        <div className={classes.bottomHalf}>
-          <div>
-            <OutputTextField />
-            {!!toAmount && toAmount > 0 && (
-              <div
-                style={{
-                  marginTop: "24px",
-                  marginLeft: "8px",
-                  marginRight: "8px",
-                }}
-              >
-                <SwapInfo />
-              </div>
-            )}
-          </div>
-          <ConfirmSwapButton
-            blockchain={blockchain}
-            onClick={() => setSwapState(SwapState.CONFIRMATION)}
+    <>
+      <div className={classes.container}>
+        <div className={classes.topHalf}>
+          <SwapTokensButton
+            onClick={onSwapButtonClick}
+            style={{
+              position: "fixed",
+              top: "175px",
+              left: "24px",
+            }}
           />
+          <InputTextField />
+        </div>
+        <div className={classes.bottomHalfWrapper}>
+          <div className={classes.bottomHalf}>
+            <div>
+              <OutputTextField />
+              {!!toAmount && toAmount > 0 && (
+                <div
+                  style={{
+                    marginTop: "24px",
+                    marginLeft: "8px",
+                    marginRight: "8px",
+                  }}
+                >
+                  <SwapInfo />
+                </div>
+              )}
+            </div>
+            <ConfirmSwapButton
+              blockchain={blockchain}
+              onClick={() => setSwapState(SwapState.CONFIRMATION)}
+            />
+          </div>
         </div>
       </div>
-      <WithMiniDrawer
+      <ApproveTransactionDrawer
         openDrawer={swapState !== SwapState.INITIAL}
-        backdropProps={{
-          style: {
-            opacity: 0.8,
-            background: "#18181b",
-          },
-        }}
-        modalProps={{ onBackdropClick: onDrawerClose }}
-        onClose={onDrawerClose}
+        setOpenDrawer={() => onDrawerClose()}
       >
         {swapState === SwapState.CONFIRMATION && (
-          <SwapConfirmation onConfirm={onConfirm} onClose={onDrawerClose} />
+          <SwapConfirmation onConfirm={onConfirm} />
         )}
         {swapState === SwapState.CONFIRMING && <SwapConfirming />}
         {swapState === SwapState.CONFIRMED && <SwapConfirmed />}
@@ -284,8 +284,8 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
             onRetry={onConfirm}
           />
         )}
-      </WithMiniDrawer>
-    </div>
+      </ApproveTransactionDrawer>
+    </>
   );
 }
 
@@ -409,17 +409,10 @@ const ConfirmSwapButton = ({
 //
 // Bottom drawer displayed so the user can confirm the swap parameters.
 //
-function SwapConfirmation({
-  onConfirm,
-  onClose,
-}: {
-  onConfirm: () => void;
-  onClose: () => void;
-}) {
+function SwapConfirmation({ onConfirm }: { onConfirm: () => void }) {
   const classes = useStyles();
   return (
     <BottomCard onButtonClick={onConfirm} buttonLabel={"Confirm"}>
-      <CloseButton onClick={onClose} />
       <Typography
         className={classes.confirmationTitle}
         style={{ marginTop: "32px" }}
@@ -461,6 +454,7 @@ function SwapConfirming() {
             color: theme.custom.colors.primaryButton,
             marginBottom: "88px",
           }}
+          thickness={6}
         />
       </div>
     </BottomCard>
@@ -618,10 +612,16 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   );
 }
 
-function SwapTokensButton({ onClick }: { onClick: () => void }) {
+function SwapTokensButton({
+  onClick,
+  style,
+}: {
+  onClick: () => void;
+  style: any;
+}) {
   const classes = useStyles();
   return (
-    <div className={classes.swapTokensContainer}>
+    <div className={classes.swapTokensContainer} style={style}>
       <IconButton
         disableRipple
         className={classes.swapTokensButton}
@@ -633,10 +633,16 @@ function SwapTokensButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-function CloseButton({ onClick }: { onClick: () => void }) {
+export function CloseButton({
+  onClick,
+  style,
+}: {
+  onClick: () => void;
+  style?: React.CSSProperties;
+}) {
   const classes = useStyles();
   return (
-    <div className={classes.swapTokensContainer}>
+    <div className={classes.swapTokensContainer} style={style}>
       <IconButton
         disableRipple
         className={`${classes.swapTokensButton} ${classes.closeConfirmButton}`}

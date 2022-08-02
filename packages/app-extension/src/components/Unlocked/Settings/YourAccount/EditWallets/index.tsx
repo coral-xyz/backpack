@@ -12,6 +12,7 @@ const useStyles = styles((theme) => ({
     "&:hover": {
       // Disable hover color.
       background: "transparent",
+      cursor: "default",
     },
   },
 }));
