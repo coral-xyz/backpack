@@ -1,4 +1,5 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-npx lint-staged
+# run `yarn install` to ensure yarn.lock correctly represents package.json
+yarn install && npx lint-staged
