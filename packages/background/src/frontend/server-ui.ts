@@ -35,6 +35,7 @@ import {
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_KEYNAME_READ,
   UI_RPC_METHOD_KEYNAME_UPDATE,
   UI_RPC_METHOD_PASSWORD_UPDATE,
   UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
@@ -212,6 +213,8 @@ async function handle<T = any>(
     //
     // Nicknames for keys.
     //
+    case UI_RPC_METHOD_KEYNAME_READ:
+      return await handleKeynameRead(ctx, params[0]);
     case UI_RPC_METHOD_KEYNAME_UPDATE:
       return await handleKeynameUpdate(ctx, params[0], params[1]);
     //
@@ -353,6 +356,14 @@ async function handleKeyringDeriveWallet(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.keyringDeriveWallet();
+  return [resp];
+}
+
+async function handleKeynameRead(
+  ctx: Context<Backend>,
+  pubkey: string
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.keynameRead(pubkey);
   return [resp];
 }
 

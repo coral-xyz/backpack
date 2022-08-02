@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { ContentCopy } from "@mui/icons-material";
 import { SettingsList } from "../../../../common/Settings/List";
 import { useNavStack } from "../../../../common/Layout/NavStack";
@@ -11,13 +13,25 @@ export const WalletDetail: React.FC<{ publicKey: string; name: string }> = ({
 }) => {
   const nav = useNavStack();
   const theme = useCustomTheme();
+  const background = useBackgroundClient();
   const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [walletName, setWalletName] = useState(name);
 
   useEffect(() => {
     const addr =
       publicKey.slice(0, 4) + "..." + publicKey.slice(publicKey.length - 4);
-    nav.setTitle(`${name} (${addr})`);
-  }, [nav]);
+    nav.setTitle(`${walletName} (${addr})`);
+  }, [nav, walletName]);
+
+  useEffect(() => {
+    (async () => {
+      const keyname = await background.request({
+        method: UI_RPC_METHOD_KEYNAME_READ,
+        params: [publicKey],
+      });
+      setWalletName(keyname);
+    })();
+  }, [publicKey, background]);
 
   const copyAddress = () => {
     setTooltipOpen(true);
@@ -30,7 +44,7 @@ export const WalletDetail: React.FC<{ publicKey: string; name: string }> = ({
       onClick: () =>
         nav.push("edit-wallets-rename", {
           publicKey,
-          name,
+          name: walletName,
         }),
     },
     "Copy address": {
