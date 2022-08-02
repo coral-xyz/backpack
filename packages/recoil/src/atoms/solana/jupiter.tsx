@@ -6,13 +6,15 @@ import { splTokenRegistry } from "./token-registry";
 import { bootstrap } from "../bootstrap";
 import { SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
 import { SOL_LOGO_URI } from "./token-registry";
+import { activeWalletWithName } from "./wallet";
 
 export const JUPITER_BASE_URL = "https://quote-api.jup.ag/v1/";
 
 export const jupiterRouteMap = selector({
   key: "jupiterRouteMap",
   get: async ({ get }) => {
-    const b = get(bootstrap);
+    const { publicKey } = get(activeWalletWithName)!;
+    const b = get(bootstrap(publicKey.toString()));
     return b.jupiterRouteMap;
   },
 });

@@ -5,7 +5,7 @@ import { bootstrap } from "../bootstrap";
 import { priceData } from "../prices";
 import { splTokenRegistry } from "./token-registry";
 import { TokenAccountWithKey } from "../../types";
-import { activeWallet } from "./wallet";
+import { activeWallet, activeWalletWithName } from "./wallet";
 import { connectionUrl } from "../preferences";
 
 /**
@@ -143,7 +143,7 @@ export const solanaTokenAccountKeys = atomFamily<
         publicKey: string;
       }) =>
       ({ get }: any) => {
-        const data = get(bootstrap);
+        const data = get(bootstrap(publicKey));
         return Array.from(data.splTokenAccounts.keys()) as string[];
       },
   }),
@@ -168,7 +168,8 @@ export const solanaTokenAccountsMap = atomFamily<
         tokenAddress: string;
       }) =>
       ({ get }: any) => {
-        const data = get(bootstrap);
+        const { publicKey } = get(activeWalletWithName);
+        const data = get(bootstrap(publicKey.toString()));
         return data.splTokenAccounts.get(tokenAddress);
       },
   }),
