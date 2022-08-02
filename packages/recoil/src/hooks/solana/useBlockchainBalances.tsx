@@ -37,6 +37,5 @@ export function useNftMetadata(): Map<string, any> {
 }
 
 export function useNftCollections(): Array<any> {
-  const { publicKey } = useActiveWallet();
-  return useRecoilValue(atoms.solanaNftCollections(publicKey.toString()));
+  return useRecoilValue(atoms.solanaNftCollections);
 }

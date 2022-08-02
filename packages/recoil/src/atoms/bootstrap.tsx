@@ -1,10 +1,10 @@
-import { atom, selector, selectorFamily } from "recoil";
+import { atom, selector } from "recoil";
 import { ParsedConfirmedTransaction, PublicKey } from "@solana/web3.js";
 import { UI_RPC_METHOD_NAVIGATION_READ } from "@coral-xyz/common";
 import { TokenAccountWithKey } from "../types";
 import { fetchPriceData } from "./prices";
 import { backgroundClient } from "./client";
-import { anchorContext } from "./solana/wallet";
+import { anchorContext, activeWallet } from "./solana/wallet";
 import { fetchRecentTransactions } from "./solana/recent-transactions";
 import { splTokenRegistry } from "./solana/token-registry";
 import { fetchJupiterRouteMap } from "./solana/jupiter";
@@ -12,81 +12,76 @@ import { fetchJupiterRouteMap } from "./solana/jupiter";
 /**
  * Defines the initial app load fetch.
  */
-export const bootstrap = selectorFamily<
-  {
-    splTokenAccounts: Map<string, TokenAccountWithKey>;
-    splTokenMetadata: Array<any>;
-    splNftMetadata: Map<string, any>;
-    coingeckoData: Map<string, any>;
-    recentTransactions: Array<ParsedConfirmedTransaction>;
-    walletPublicKey: PublicKey;
-    jupiterRouteMap: any;
-  },
-  string
->({
+export const bootstrap = selector<{
+  splTokenAccounts: Map<string, TokenAccountWithKey>;
+  splTokenMetadata: Array<any>;
+  splNftMetadata: Map<string, any>;
+  coingeckoData: Map<string, any>;
+  recentTransactions: Array<ParsedConfirmedTransaction>;
+  walletPublicKey: PublicKey;
+  jupiterRouteMap: any;
+}>({
   key: "bootstrap",
-  get:
-    (pubkey: string) =>
-    async ({ get }: any) => {
-      const walletPublicKey = new PublicKey(pubkey);
-      const tokenRegistry = get(splTokenRegistry);
-      const { provider } = get(anchorContext);
+  get: async ({ get }: any) => {
+    const tokenRegistry = get(splTokenRegistry);
+    const { provider } = get(anchorContext);
+    const walletPublicKey = new PublicKey(get(activeWallet));
+
+    //
+    // Perform data fetch.
+    //
+    try {
+      //
+      // Fetch token data.
+      //
+      const { tokenAccountsMap, tokenMetadata, nftMetadata } =
+        await provider.connection.customSplTokenAccounts(walletPublicKey);
+      const splTokenAccounts = new Map<string, TokenAccountWithKey>(
+        tokenAccountsMap
+      );
+
+      const [coingeckoData, recentTransactions, jupiterRouteMap] =
+        await Promise.all([
+          //
+          // Fetch the price data.
+          //
+          fetchPriceData(splTokenAccounts, tokenRegistry),
+          //
+          // Get the transaction data for the wallet's recent transactions.
+          //
+          fetchRecentTransactions(provider.connection, walletPublicKey),
+          //
+          // Preload Jupiter route maps for swapper.
+          //
+          fetchJupiterRouteMap(),
+        ]);
 
       //
-      // Perform data fetch.
+      // Done.
       //
-      try {
-        //
-        // Fetch token data.
-        //
-        const { tokenAccountsMap, tokenMetadata, nftMetadata } =
-          await provider.connection.customSplTokenAccounts(walletPublicKey);
-        const splTokenAccounts = new Map<string, TokenAccountWithKey>(
-          tokenAccountsMap
-        );
-
-        const [coingeckoData, recentTransactions, jupiterRouteMap] =
-          await Promise.all([
-            //
-            // Fetch the price data.
-            //
-            fetchPriceData(splTokenAccounts, tokenRegistry),
-            //
-            // Get the transaction data for the wallet's recent transactions.
-            //
-            fetchRecentTransactions(provider.connection, walletPublicKey),
-            //
-            // Preload Jupiter route maps for swapper.
-            //
-            fetchJupiterRouteMap(),
-          ]);
-
-        //
-        // Done.
-        //
-        return {
-          splTokenAccounts,
-          splTokenMetadata: tokenMetadata,
-          splNftMetadata: new Map(nftMetadata),
-          coingeckoData,
-          recentTransactions,
-          walletPublicKey,
-          jupiterRouteMap,
-        };
-      } catch (err) {
-        // TODO: show error notification.
-        console.error(err);
-        return {
-          splTokenAccounts: new Map(),
-          splTokenMetadata: [],
-          splNftMetadata: new Map(),
-          coingeckoData: new Map(),
-          recentTransactions: [],
-          walletPublicKey,
-          jupiterRouteMap: {},
-        };
-      }
-    },
+      return {
+        splTokenAccounts,
+        splTokenMetadata: tokenMetadata,
+        splNftMetadata: new Map(nftMetadata),
+        coingeckoData,
+        recentTransactions,
+        walletPublicKey,
+        jupiterRouteMap,
+      };
+    } catch (err) {
+      // TODO: show error notification.
+      console.error(err);
+      return {
+        splTokenAccounts: new Map(),
+        splTokenMetadata: [],
+        splNftMetadata: new Map(),
+        coingeckoData: new Map(),
+        recentTransactions: [],
+        walletPublicKey,
+        jupiterRouteMap: {},
+      };
+    }
+  },
 });
 
 // Version of bootstrap for very fast data on load. This shouldn't block the load

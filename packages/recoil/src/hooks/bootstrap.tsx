@@ -3,12 +3,10 @@ import { useNavigation, useTab } from "./navigation";
 import * as atoms from "../atoms";
 import { useSolanaCommitment } from "./preferences";
 import { useKeyringStoreState } from "./keyring";
-import { useActiveWallet } from "./solana/useWallet";
 
 // Bootstrap data for the initial load.
 export function useBootstrap() {
-  const { publicKey } = useActiveWallet();
-  return useRecoilValue(atoms.bootstrap(publicKey.toString()));
+  return useRecoilValue(atoms.bootstrap);
 }
 
 export function useBootstrapFast() {

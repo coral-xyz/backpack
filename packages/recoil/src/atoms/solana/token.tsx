@@ -143,7 +143,7 @@ export const solanaTokenAccountKeys = atomFamily<
         publicKey: string;
       }) =>
       ({ get }: any) => {
-        const data = get(bootstrap(publicKey));
+        const data = get(bootstrap);
         return Array.from(data.splTokenAccounts.keys()) as string[];
       },
   }),
@@ -168,8 +168,7 @@ export const solanaTokenAccountsMap = atomFamily<
         tokenAddress: string;
       }) =>
       ({ get }: any) => {
-        const { publicKey } = get(activeWalletWithName);
-        const data = get(bootstrap(publicKey.toString()));
+        const data = get(bootstrap);
         return data.splTokenAccounts.get(tokenAddress);
       },
   }),

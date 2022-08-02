@@ -5,7 +5,7 @@ import {
   PublicKey,
 } from "@solana/web3.js";
 import { bootstrap } from "../bootstrap";
-import { activeWalletWithName, anchorContext } from "./wallet";
+import { anchorContext } from "./wallet";
 
 export const recentTransactions = atomFamily<
   Array<ParsedTransactionWithMeta> | null,
@@ -17,8 +17,7 @@ export const recentTransactions = atomFamily<
     get:
       (address: string) =>
       async ({ get }: any) => {
-        const { publicKey } = get(activeWalletWithName);
-        const b = get(bootstrap(publicKey.toString()));
+        const b = get(bootstrap);
         const { connection } = get(anchorContext);
         if (b.walletPublicKey.toString() === address) {
           return b.recentTransactions;
