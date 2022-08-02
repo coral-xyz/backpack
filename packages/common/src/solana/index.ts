@@ -8,15 +8,12 @@ import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import {
   createAssociatedTokenAccountInstruction,
   createSyncNativeInstruction,
+  NATIVE_MINT,
 } from "@solana/spl-token";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import * as anchor from "@project-serum/anchor";
 import type { Program, SplToken } from "@project-serum/anchor";
-import {
-  associatedTokenAddress,
-  SOL_NATIVE_MINT,
-  WSOL_MINT,
-} from "./programs/token";
+import { associatedTokenAddress } from "./programs/token";
 import * as assertOwner from "./programs/assert-owner";
 import { SolanaProvider } from "./provider";
 import type { BackgroundClient } from "../";
@@ -181,10 +178,7 @@ export const generateWrapSolTx = async (
   amount: number
 ) => {
   const { walletPublicKey, tokenClient, commitment } = ctx;
-  const destinationAta = associatedTokenAddress(
-    new PublicKey(SOL_NATIVE_MINT),
-    destination
-  );
+  const destinationAta = associatedTokenAddress(NATIVE_MINT, destination);
 
   const [destinationAccount, destinationAtaAccount] =
     await anchor.utils.rpc.getMultipleAccounts(
@@ -230,10 +224,7 @@ export const generateUnwrapSolTx = async (
   // This unwrap works by closing the account, and then creating a new wSOL account
   // and transferring the difference between the previous amount and the requested
   // amount into the newly created account.
-  const destinationAta = associatedTokenAddress(
-    new PublicKey(SOL_NATIVE_MINT),
-    destination
-  );
+  const destinationAta = associatedTokenAddress(NATIVE_MINT, destination);
 
   const [destinationAccount, destinationAtaAccount] =
     await anchor.utils.rpc.getMultipleAccounts(
@@ -291,7 +282,7 @@ const generateWrapSolIx = ({
         walletPublicKey,
         destinationAta,
         destination,
-        new PublicKey(SOL_NATIVE_MINT)
+        NATIVE_MINT
       )
     );
   }
