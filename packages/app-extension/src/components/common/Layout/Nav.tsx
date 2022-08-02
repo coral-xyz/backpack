@@ -190,13 +190,19 @@ function CenterDisplay({ title }: { title: string }) {
 
 export function NavTitleLabel({ title }: any) {
   const classes = useStyles();
-  const titleComponents = title.split("/");
-  return titleComponents.length === 2 ? (
+  const slashTitleComponents = title.split("/");
+  const parenComponents = title.split("(");
+  return slashTitleComponents.length === 2 ? (
     <Typography className={classes.overviewLabel} title={title}>
       <span className={classes.overviewLabelPrefix}>
-        {titleComponents[0]} /
+        {slashTitleComponents[0]} /
       </span>
-      {titleComponents[1]}
+      {slashTitleComponents[1]}
+    </Typography>
+  ) : parenComponents.length === 2 ? (
+    <Typography className={classes.overviewLabel} title={title}>
+      {parenComponents[0]}
+      <span className={classes.overviewLabelPrefix}>({parenComponents[1]}</span>
     </Typography>
   ) : (
     <Typography className={classes.overviewLabel} title={title}>

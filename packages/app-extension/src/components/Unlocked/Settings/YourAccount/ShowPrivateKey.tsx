@@ -94,7 +94,7 @@ const useStyles = styles((theme: any) => ({
   },
 }));
 
-export function ShowPrivateKeyWarning() {
+export function ShowPrivateKeyWarning({ publicKey }: { publicKey?: string }) {
   const classes = useStyles();
   const background = useBackgroundClient();
   const nav = useNavStack();
@@ -110,10 +110,12 @@ export function ShowPrivateKeyWarning() {
   }, []);
 
   const _next = async () => {
-    const activeWallet = await background.request({
-      method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
-      params: [],
-    });
+    const activeWallet =
+      publicKey ??
+      (await background.request({
+        method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
+        params: [],
+      }));
     let privateKey;
     try {
       privateKey = await background.request({

@@ -65,6 +65,9 @@ import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { AddConnectWalletMenu } from "./AddConnectWallet";
 import { YourAccount } from "./YourAccount";
 import { EditWallets } from "./YourAccount/EditWallets";
+import { RemoveWallet } from "./YourAccount/EditWallets/RemoveWallet";
+import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
+import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -187,6 +190,18 @@ function AvatarButton() {
             <NavStackScreen
               name={"edit-wallets"}
               component={(props: any) => <EditWallets {...props} />}
+            />
+            <NavStackScreen
+              name={"edit-wallets-wallet-detail"}
+              component={(props: any) => <WalletDetail {...props} />}
+            />
+            <NavStackScreen
+              name={"edit-wallets-remove"}
+              component={(props: any) => <RemoveWallet {...props} />}
+            />
+            <NavStackScreen
+              name={"edit-wallets-rename"}
+              component={(props: any) => <RenameWallet {...props} />}
             />
             <NavStackScreen
               name={"show-private-key-warning"}
