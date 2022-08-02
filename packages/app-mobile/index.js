@@ -23,13 +23,13 @@ const WEBVIEW_URI = (() => {
   if (process.env.NODE_ENV === "production") {
     return Constants.manifest.extra.url || alert("No WEBVIEW_URI");
   } else {
-    if (Platform.OS === "ios") {
-      // iOS can only use serviceworkers from localhost or WKAppBoundDomains
-      // we can't use WKAppBoundDomains in development, so it must use localhost
-      return LOCALHOST_WEBVIEW_URI;
-    } else {
-      return Constants.manifest.extra.url || LOCALHOST_WEBVIEW_URI;
-    }
+    // if (Platform.OS === "ios") {
+    //   // iOS can only use serviceworkers from localhost or WKAppBoundDomains
+    //   // we can't use WKAppBoundDomains in development, so it must use localhost
+    //   return LOCALHOST_WEBVIEW_URI;
+    // } else {
+    return Constants.manifest.extra.url || LOCALHOST_WEBVIEW_URI;
+    // }
   }
 })();
 
@@ -51,13 +51,12 @@ function Background() {
   const setInjectJavaScript = useStore((state) => state.setInjectJavaScript);
   const ref = useRef(null);
 
-  alert(WEBVIEW_URI);
+  // alert(WEBVIEW_URI);
 
   return (
     <View
       style={{
-        // display: "none",
-        height: 100,
+        display: "none",
       }}
     >
       <WebView
@@ -70,7 +69,7 @@ function Background() {
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
           if (msg.type === BACKGROUND_SERVICE_WORKER_READY) {
-            alert("ready");
+            // alert("ready");
             setInjectJavaScript(ref.current.injectJavaScript);
           } else {
             WEB_VIEW_EVENTS.emit("message", msg);
