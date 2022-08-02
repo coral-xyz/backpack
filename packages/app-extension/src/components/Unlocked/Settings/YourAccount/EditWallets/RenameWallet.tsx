@@ -37,7 +37,7 @@ export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
   const save = async () => {
     await background.request({
       method: UI_RPC_METHOD_KEYNAME_UPDATE,
-      params: [publicKey, name],
+      params: [publicKey, walletName],
     });
     nav.pop();
   };

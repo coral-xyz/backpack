@@ -21,6 +21,7 @@ export function AddConnectWalletMenu() {
   const theme = useCustomTheme();
 
   useEffect(() => {
+    const prevTitle = nav.title;
     const prevStyle = nav.style;
     const prevContentStyle = nav.contentStyle;
     nav.setStyle({
@@ -29,9 +30,11 @@ export function AddConnectWalletMenu() {
     nav.setContentStyle({
       backgroundColor: theme.custom.colors.nav,
     });
+    nav.setTitle("");
     return () => {
       nav.setStyle(prevStyle);
       nav.setContentStyle(prevContentStyle);
+      nav.setTitle(prevTitle);
     };
   }, [nav.setContentStyle]);
 
