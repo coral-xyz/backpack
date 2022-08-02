@@ -46,8 +46,9 @@ export function ListItem({
   button = true,
   borderColor,
   detail,
+  classes,
 }: any) {
-  const classes = useStyles();
+  const _classes = useStyles();
   const theme = useCustomTheme();
   return (
     <>
@@ -55,15 +56,13 @@ export function ListItem({
         disableRipple
         data-testid={id}
         button={button}
-        className={classes.settingsContentListItem}
+        className={_classes.settingsContentListItem}
         onClick={onClick}
         style={{
-          borderTopLeftRadius: isFirst ? "8px" : 0,
-          borderTopRightRadius: isFirst ? "8px" : 0,
-          borderBottomLeftRadius: isLast ? "8px" : 0,
-          borderBottomRightRadius: isLast ? "8px" : 0,
+          ...isFirstLastListItemStyle(isFirst, isLast),
           ...style,
         }}
+        classes={classes}
       >
         <div
           style={{
@@ -84,7 +83,7 @@ export function ListItem({
               : theme.custom.colors.border,
             height: "1px",
           }}
-          classes={{ root: classes.dividerRoot }}
+          classes={{ root: _classes.dividerRoot }}
         />
       )}
     </>
@@ -127,4 +126,21 @@ export function LaunchDetail() {
       />
     </div>
   );
+}
+
+// Styles to properly highlight list item cells with rounded corners.
+// This is a total hack and presumably there's a better way to do this
+// with MUI.
+export function isFirstLastListItemStyle(
+  isFirst: boolean,
+  isLast: boolean,
+  borderRadius?: number
+) {
+  const radius = `${borderRadius ?? 8}px`;
+  return {
+    borderTopLeftRadius: isFirst ? radius : 0,
+    borderTopRightRadius: isFirst ? radius : 0,
+    borderBottomLeftRadius: isLast ? radius : 0,
+    borderBottomRightRadius: isLast ? radius : 0,
+  };
 }

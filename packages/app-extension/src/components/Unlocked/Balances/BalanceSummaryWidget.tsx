@@ -84,7 +84,7 @@ export function BalanceSummaryWidget() {
                   <span
                     style={{
                       marginLeft: "8px",
-                      color: theme.custom.colors.alpha,
+                      color: theme.custom.colors.fontColor2,
                     }}
                   >
                     {pubkeyStr}

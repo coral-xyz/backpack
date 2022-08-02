@@ -4,6 +4,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { TextField, PrimaryButton } from "../common";
+import { Backpack } from "../common/Icon";
 import { LockedMenu } from "./LockedMenu";
 
 export const NAV_BAR_HEIGHT = 56;
@@ -126,14 +127,7 @@ export function BackpackHeader({
       >
         <AlphaLabel />
       </Box>
-      <img
-        src="/backpack.svg"
-        style={{
-          display: "block",
-          marginLeft: "auto",
-          marginRight: "auto",
-        }}
-      />
+      <Backpack fill={theme.custom.colors.fontColor} />
       <Typography
         sx={{
           textAlign: "center",
@@ -141,7 +135,7 @@ export function BackpackHeader({
           fontSize: "16px",
           fontWeight: "500",
           color: theme.custom.colors.secondary,
-          marginTop: "16px",
+          marginTop: "8px",
         }}
       >
         A home for your xNFTs
