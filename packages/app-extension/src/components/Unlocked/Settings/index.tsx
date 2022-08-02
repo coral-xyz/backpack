@@ -70,6 +70,12 @@ const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
     color: theme.custom.colors.fontColor,
   },
+  selectedAddConnect: {
+    "&:hover": {
+      // Disable hover color.
+      background: "transparent",
+    },
+  },
   menuButtonContainer: {
     display: "flex",
     justifyContent: "center",
@@ -290,6 +296,7 @@ function WalletList({
   onAddConnectWallet: () => void;
   close: () => void;
 }) {
+  const classes = useStyles();
   const background = useBackgroundClient();
   const theme = useCustomTheme();
   const namedPublicKeys = useWalletPublicKeys();
@@ -338,7 +345,12 @@ function WalletList({
           color: theme.custom.colors.secondary,
         }}
       >
-        <ListItem isLast={true} onClick={onAddConnectWallet}>
+        <ListItem
+          isFirst={true}
+          isLast={true}
+          onClick={onAddConnectWallet}
+          classes={{ root: classes.selectedAddConnect }}
+        >
           <div
             style={{
               border: `solid ${theme.custom.colors.nav}`,

@@ -34,6 +34,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
       }}
     >
       <IconButton
+        disableRipple
         color="inherit"
         onClick={() => setMenuOpen(true)}
         sx={{ padding: 0 }}
@@ -130,6 +131,7 @@ export function LockedMenuList() {
               height: "44px",
               display: "flex",
             }}
+            isFirst={idx === 0}
             isLast={idx === options.length - 1}
             borderColor={theme.custom.colors.border1}
           >
