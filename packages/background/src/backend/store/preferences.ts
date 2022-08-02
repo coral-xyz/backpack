@@ -16,6 +16,7 @@ export type WalletData = {
 type SolanaData = {
   explorer: string;
   commitment: Commitment;
+  cluster: string;
 };
 
 export async function getWalletData(): Promise<WalletData> {

@@ -92,6 +92,7 @@ export class KeyringStore {
       darkMode: true,
       solana: {
         explorer: SolanaExplorer.DEFAULT,
+        cluster: SolanaCluster.DEFAULT,
         commitment: "confirmed",
       },
     });
@@ -237,20 +238,6 @@ export class KeyringStore {
     return this.withUnlock(async () => {
       await this.activeBlockchain().keyDelete(pubkey);
       await this.persist();
-    });
-  }
-
-  public async connectionUrlRead(): Promise<string> {
-    return this.withUnlock(async () => {
-      return await this.activeBlockchain().connectionUrlRead();
-    });
-  }
-
-  public async connectionUrlUpdate(url: string): Promise<boolean> {
-    return this.withUnlock(async () => {
-      const result = await this.activeBlockchain().connectionUrlUpdate(url);
-      await this.persist();
-      return result;
     });
   }
 
@@ -404,7 +391,6 @@ class BlockchainKeyring {
   public ledgerKeyring?: SolanaLedgerKeyring; // TODO: make interface
   private activeWallet?: string;
   private deletedWallets?: Array<string>;
-  private connectionUrl?: string;
 
   constructor(
     hdKeyringFactory: HdKeyringFactory,
@@ -500,7 +486,6 @@ class BlockchainKeyring {
       importedKeyring,
       activeWallet,
       deletedWallets,
-      connectionUrl,
       ledgerKeyring,
     } = payload;
     this.hdKeyring = this.hdKeyringFactory.fromJson(hdKeyring);
@@ -508,7 +493,6 @@ class BlockchainKeyring {
     this.ledgerKeyring = this.ledgerKeyringFactory.fromJson(ledgerKeyring);
     this.activeWallet = activeWallet;
     this.deletedWallets = deletedWallets;
-    this.connectionUrl = connectionUrl;
   }
 
   public isUnlocked(): boolean {
@@ -551,18 +535,6 @@ class BlockchainKeyring {
     this.deletedWallets = this.deletedWallets!.concat([pubkey]);
   }
 
-  public async connectionUrlRead(): Promise<string> {
-    return this.connectionUrl ?? SolanaCluster.DEFAULT;
-  }
-
-  public async connectionUrlUpdate(url: string): Promise<boolean> {
-    if (this.connectionUrl === url) {
-      return false;
-    }
-    this.connectionUrl = url;
-    return true;
-  }
-
   public toJson(): any {
     if (!this.hdKeyring || !this.importedKeyring || !this.ledgerKeyring) {
       throw new Error("blockchain keyring is locked");
@@ -573,7 +545,6 @@ class BlockchainKeyring {
       ledgerKeyring: this.ledgerKeyring.toJson(),
       activeWallet: this.activeWallet,
       deletedWallets: this.deletedWallets,
-      connectionUrl: this.connectionUrl,
     };
   }
 
