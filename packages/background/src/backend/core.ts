@@ -48,10 +48,9 @@ export class Backend {
     this.events = events;
   }
 
-  disconnect() {
-    // todo
-    return SUCCESS_RESPONSE;
-  }
+  ///////////////////////////////////////////////////////////////////////////////
+  // Solana Provider.
+  ///////////////////////////////////////////////////////////////////////////////
 
   async signAndSendTx(
     txStr: string,
@@ -114,6 +113,15 @@ export class Backend {
     return await this.solanaConnectionBackend.simulateTransaction(tx);
   }
 
+  disconnect() {
+    // todo
+    return SUCCESS_RESPONSE;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  // Solana.
+  ///////////////////////////////////////////////////////////////////////////////
+
   async recentBlockhash(commitment?: Commitment): Promise<string> {
     const { blockhash } = await this.solanaConnectionBackend.getLatestBlockhash(
       commitment
@@ -153,6 +161,60 @@ export class Backend {
 
     return true;
   }
+
+  async solanaExplorerRead(): Promise<string> {
+    const data = await store.getWalletData();
+    return data.solana && data.solana.explorer
+      ? data.solana.explorer
+      : SolanaExplorer.DEFAULT;
+  }
+
+  async solanaExplorerUpdate(explorer: string): Promise<string> {
+    const data = await store.getWalletData();
+    await store.setWalletData({
+      ...data,
+      solana: {
+        ...data.solana,
+        explorer,
+      },
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_SOLANA_EXPLORER_UPDATED,
+      data: {
+        explorer,
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
+  async solanaCommitmentRead(): Promise<Commitment> {
+    const data = await store.getWalletData();
+    return data.solana && data.solana.commitment
+      ? data.solana.commitment
+      : "processed";
+  }
+
+  async solanaCommitmentUpdate(commitment: Commitment): Promise<string> {
+    const data = await store.getWalletData();
+    await store.setWalletData({
+      ...data,
+      solana: {
+        ...data.solana,
+        commitment,
+      },
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
+      data: {
+        commitment,
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  // Keyring.
+  ///////////////////////////////////////////////////////////////////////////////
 
   // Creates a brand new keyring store. Should be run once on initializtion.
   async keyringStoreCreate(
@@ -378,6 +440,110 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async ledgerConnect() {
+    await this.keyringStore.ledgerConnect();
+    return SUCCESS_RESPONSE;
+  }
+
+  async ledgerImport(dPath: string, account: number, pubkey: string) {
+    await this.keyringStore.ledgerImport(dPath, account, pubkey);
+    return SUCCESS_RESPONSE;
+  }
+
+  validateMnemonic(mnemonic: string): boolean {
+    return _validateMnemonic(mnemonic);
+  }
+
+  async mnemonicCreate(strength: number): Promise<string> {
+    return this.keyringStore.createMnemonic(strength);
+  }
+
+  async previewPubkeys(
+    mnemonic: string,
+    derivationPath: DerivationPath,
+    numberOfAccounts: number
+  ) {
+    return this.keyringStore.previewPubkeys(
+      mnemonic,
+      derivationPath,
+      numberOfAccounts
+    );
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  // Preferences.
+  ///////////////////////////////////////////////////////////////////////////////
+
+  async darkModeRead(): Promise<boolean> {
+    const data = await store.getWalletData();
+    return data.darkMode ?? true;
+  }
+
+  async darkModeUpdate(darkMode: boolean): Promise<string> {
+    const data = await store.getWalletData();
+    await store.setWalletData({
+      ...data,
+      darkMode,
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_DARK_MODE_UPDATED,
+      data: {
+        darkMode,
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
+  async isApprovedOrigin(origin: string): Promise<boolean> {
+    const data = await store.getWalletData();
+    if (!data.approvedOrigins) {
+      return false;
+    }
+    const found = data.approvedOrigins.find((o) => o === origin);
+    return found !== undefined;
+  }
+
+  async approvedOriginsRead(): Promise<Array<string>> {
+    const data = await store.getWalletData();
+    return data.approvedOrigins;
+  }
+
+  async approvedOriginsUpdate(approvedOrigins: Array<string>): Promise<string> {
+    const data = await store.getWalletData();
+    await store.setWalletData({
+      ...data,
+      approvedOrigins,
+    });
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_APPROVED_ORIGINS_UPDATE,
+      data: {
+        approvedOrigins,
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
+  async approvedOriginsDelete(origin: string): Promise<string> {
+    const data = await store.getWalletData();
+    const approvedOrigins = data.approvedOrigins.filter((o) => o !== origin);
+    await store.setWalletData({
+      ...data,
+      approvedOrigins,
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_APPROVED_ORIGINS_UPDATE,
+      data: {
+        approvedOrigins,
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  // Navigation.
+  ///////////////////////////////////////////////////////////////////////////////
+
   async navigationPush(url: string): Promise<string> {
     let nav = await store.getNav();
     if (!nav) {
@@ -502,152 +668,6 @@ export class Backend {
       },
     });
 
-    return SUCCESS_RESPONSE;
-  }
-
-  async darkModeRead(): Promise<boolean> {
-    const data = await store.getWalletData();
-    return data.darkMode ?? true;
-  }
-
-  async darkModeUpdate(darkMode: boolean): Promise<string> {
-    const data = await store.getWalletData();
-    await store.setWalletData({
-      ...data,
-      darkMode,
-    });
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_DARK_MODE_UPDATED,
-      data: {
-        darkMode,
-      },
-    });
-    return SUCCESS_RESPONSE;
-  }
-
-  async solanaCommitmentRead(): Promise<Commitment> {
-    const data = await store.getWalletData();
-    return data.solana && data.solana.commitment
-      ? data.solana.commitment
-      : "processed";
-  }
-
-  async solanaCommitmentUpdate(commitment: Commitment): Promise<string> {
-    const data = await store.getWalletData();
-    await store.setWalletData({
-      ...data,
-      solana: {
-        ...data.solana,
-        commitment,
-      },
-    });
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
-      data: {
-        commitment,
-      },
-    });
-    return SUCCESS_RESPONSE;
-  }
-
-  async isApprovedOrigin(origin: string): Promise<boolean> {
-    const data = await store.getWalletData();
-    if (!data.approvedOrigins) {
-      return false;
-    }
-    const found = data.approvedOrigins.find((o) => o === origin);
-    return found !== undefined;
-  }
-
-  async approvedOriginsRead(): Promise<Array<string>> {
-    const data = await store.getWalletData();
-    return data.approvedOrigins;
-  }
-
-  async approvedOriginsUpdate(approvedOrigins: Array<string>): Promise<string> {
-    const data = await store.getWalletData();
-    await store.setWalletData({
-      ...data,
-      approvedOrigins,
-    });
-
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_APPROVED_ORIGINS_UPDATE,
-      data: {
-        approvedOrigins,
-      },
-    });
-    return SUCCESS_RESPONSE;
-  }
-
-  async approvedOriginsDelete(origin: string): Promise<string> {
-    const data = await store.getWalletData();
-    const approvedOrigins = data.approvedOrigins.filter((o) => o !== origin);
-    await store.setWalletData({
-      ...data,
-      approvedOrigins,
-    });
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_APPROVED_ORIGINS_UPDATE,
-      data: {
-        approvedOrigins,
-      },
-    });
-    return SUCCESS_RESPONSE;
-  }
-
-  async ledgerConnect() {
-    await this.keyringStore.ledgerConnect();
-    return SUCCESS_RESPONSE;
-  }
-
-  async ledgerImport(dPath: string, account: number, pubkey: string) {
-    await this.keyringStore.ledgerImport(dPath, account, pubkey);
-    return SUCCESS_RESPONSE;
-  }
-
-  validateMnemonic(mnemonic: string): boolean {
-    return _validateMnemonic(mnemonic);
-  }
-
-  async mnemonicCreate(strength: number): Promise<string> {
-    return this.keyringStore.createMnemonic(strength);
-  }
-
-  async previewPubkeys(
-    mnemonic: string,
-    derivationPath: DerivationPath,
-    numberOfAccounts: number
-  ) {
-    return this.keyringStore.previewPubkeys(
-      mnemonic,
-      derivationPath,
-      numberOfAccounts
-    );
-  }
-
-  async solanaExplorerRead(): Promise<string> {
-    const data = await store.getWalletData();
-    return data.solana && data.solana.explorer
-      ? data.solana.explorer
-      : SolanaExplorer.DEFAULT;
-  }
-
-  async solanaExplorerUpdate(explorer: string): Promise<string> {
-    const data = await store.getWalletData();
-    await store.setWalletData({
-      ...data,
-      solana: {
-        ...data.solana,
-        explorer,
-      },
-    });
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_SOLANA_EXPLORER_UPDATED,
-      data: {
-        explorer,
-      },
-    });
     return SUCCESS_RESPONSE;
   }
 }
