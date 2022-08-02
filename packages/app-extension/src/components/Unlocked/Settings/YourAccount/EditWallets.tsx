@@ -1,11 +1,20 @@
 import { useWalletPublicKeys } from "@coral-xyz/recoil";
 import { Blockchain } from "@coral-xyz/common";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { Add, MoreHoriz } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 import { useEffect } from "react";
 import { List, ListItem, walletAddressDisplay } from "../../../common";
 import { useNavStack } from "../../../common/Layout/NavStack";
+
+const useStyles = styles((theme) => ({
+  selectedAddConnect: {
+    "&:hover": {
+      // Disable hover color.
+      background: "transparent",
+    },
+  },
+}));
 
 export function EditWallets() {
   const theme = useCustomTheme();
@@ -44,6 +53,7 @@ function BlockchainWalletList({
   name: string;
   wallets: ReturnType<typeof useWalletPublicKeys>;
 }) {
+  const classes = useStyles();
   const theme = useCustomTheme();
 
   const capitalizedName = name[0].toUpperCase() + name.substring(1);
@@ -113,7 +123,11 @@ function BlockchainWalletList({
           color: theme.custom.colors.secondary,
         }}
       >
-        <ListItem isLast={true} onClick={onAddConnectWallet}>
+        <ListItem
+          isLast={true}
+          onClick={onAddConnectWallet}
+          classes={{ root: classes.selectedAddConnect }}
+        >
           <div
             style={{
               border: `solid ${theme.custom.colors.nav}`,
