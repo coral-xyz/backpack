@@ -5,7 +5,7 @@ import { bootstrap } from "../bootstrap";
 import { priceData } from "../prices";
 import { splTokenRegistry } from "./token-registry";
 import { TokenAccountWithKey } from "../../types";
-import { activeWallet, activeWalletWithName } from "./wallet";
+import { activeWallet } from "./wallet";
 import { connectionUrl } from "../preferences";
 
 /**
