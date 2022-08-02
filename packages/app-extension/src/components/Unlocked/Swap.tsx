@@ -16,7 +16,7 @@ import {
   SwapProvider,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Blockchain } from "@coral-xyz/common";
+import { Blockchain, SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
 import {
   TextField,
   TextFieldLabel,
@@ -399,7 +399,8 @@ const ConfirmSwapButton = ({
   blockchain: Blockchain;
   onClick: () => void;
 }) => {
-  const { toAmount, fromAmount, fromMint, isJupiterError } = useSwapContext();
+  const { toAmount, toMint, fromAmount, fromMint, isJupiterError } =
+    useSwapContext();
   const tokenAccountsSorted = useJupiterInputMints();
   const balance =
     tokenAccountsSorted.find((t) => t.mint === fromMint)?.nativeBalance || 0;
@@ -409,9 +410,17 @@ const ConfirmSwapButton = ({
   } else if (isJupiterError) {
     return <SwapUnavailableButton />;
   }
+  let label;
+  if (fromMint === SOL_NATIVE_MINT && toMint === WSOL_MINT) {
+    label = "Wrap";
+  } else if (fromMint === WSOL_MINT && toMint === SOL_NATIVE_MINT) {
+    label = "Unwrap";
+  } else {
+    label = "Review";
+  }
   return (
     <PrimaryButton
-      label="Review"
+      label={label}
       onClick={onClick}
       disabled={!fromAmount || !toAmount}
     />

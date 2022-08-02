@@ -4,6 +4,8 @@ import { PublicKey, Transaction } from "@solana/web3.js";
 import {
   associatedTokenAddress,
   confirmTransaction,
+  generateWrapSolTx,
+  generateUnwrapSolTx,
   SOL_NATIVE_MINT,
   USDC_MINT,
   WSOL_MINT,
@@ -30,6 +32,7 @@ type JupiterRoute = {
 };
 
 type JupiterTransactions = {
+  wrapTransaction?: string;
   setupTransaction?: string;
   swapTransaction: string;
   cleanupTransaction?: string;
@@ -65,7 +68,8 @@ const _SwapContext = React.createContext<SwapContext | null>(null);
 export function SwapProvider(props: any) {
   const wallet = useActiveWallet();
   const tokenRegistry = useSplTokenRegistry();
-  const { connection } = useSolanaCtx();
+  const solanaCtx = useSolanaCtx();
+  const { connection } = solanaCtx;
   const background = useBackgroundClient();
 
   // Swap setttings
@@ -103,10 +107,9 @@ export function SwapProvider(props: any) {
   const route = routes && routes[0];
   const toAmount = route && route.outAmount / 10 ** toMintInfo.decimals;
 
-  // If swapping from or to native SOL, auto wrap and unwrap
-  const wrapUnwrapSOL =
-    fromMint === SOL_NATIVE_MINT || toMint === SOL_NATIVE_MINT;
-
+  //
+  // On changes to the swap parameters, fetch the swap routes from Jupiter.
+  //
   useEffect(() => {
     (async () => {
       if (fromAmount && fromAmount > 0) {
@@ -117,6 +120,9 @@ export function SwapProvider(props: any) {
     })();
   }, [fromMint, fromAmount, toMint]);
 
+  //
+  // On changes to the swap routes, fetch the transactions required to execute.
+  //
   useEffect(() => {
     (async () => {
       if (routes && routes.length > 0 && !isLoadingRoutes) {
@@ -127,6 +133,9 @@ export function SwapProvider(props: any) {
     })();
   }, [routes]);
 
+  //
+  // On changes to the swap transactions, recalculate the network fees.
+  //
   useEffect(() => {
     (async () => {
       setTransactionFee(null);
@@ -138,6 +147,9 @@ export function SwapProvider(props: any) {
     })();
   }, [transactions]);
 
+  //
+  // Fetch the Jupiter routes that can be used to execute the swap.
+  //
   const fetchRoutes = async () => {
     setRoutes([]);
     setIsLoadingRoutes(true);
@@ -170,11 +182,37 @@ export function SwapProvider(props: any) {
     }
   };
 
+  //
+  // Load the transactions required to execute the swap.
+  //
   const fetchTransactions = async () => {
     setIsLoadingTransactions(true);
+    // wrapUnableSOL is disabled, so handle wrapping and unwrapping
+    let wrapTransaction: string | undefined = undefined;
+    let unwrapTransaction: string | undefined = undefined;
+    if (fromMint === SOL_NATIVE_MINT) {
+      // Swapping from native SOL, need to wrap the equivalent amount
+      wrapTransaction = (
+        await generateWrapSolTx(solanaCtx, wallet.publicKey, fromAmount!)
+      ).toString("base64");
+      if (toMint === WSOL_MINT) {
+        // This is not a real swap, we are just wrapping SOL so use the wrap
+        // transaction as the main swap
+        console.log(wrapTransaction);
+        return {
+          swapTransaction: wrapTransaction,
+        };
+      }
+    }
+    if (toMint === SOL_NATIVE_MINT) {
+      // To mint is native Solana, so we need to unwrap wSOL in our cleanup
+      unwrapTransaction = (
+        await generateUnwrapSolTx(solanaCtx, wallet.publicKey, toAmount!)
+      ).toString("base64");
+    }
     const body = {
       route,
-      wrapUnwrapSOL,
+      wrapUnwrapSOL: false,
       userPublicKey: wallet.publicKey,
     };
     const transactions = await (
@@ -187,9 +225,20 @@ export function SwapProvider(props: any) {
       })
     ).json();
     setIsLoadingTransactions(false);
-    return transactions;
+    return {
+      ...(wrapTransaction !== undefined && { wrapTransaction }),
+      ...transactions,
+      // Jupiter should not return cleanup transactions with wrapUnwrapSOL set
+      // to false, we set it to our own cleanup transaction
+      ...(unwrapTransaction !== undefined && {
+        cleanupTransaction: unwrapTransaction,
+      }),
+    };
   };
 
+  //
+  // Estimate the network fees the transactions will incur.
+  //
   const calculateTransactionFee = async () => {
     let fee = 0;
     if (!transactions) return null;
@@ -210,6 +259,9 @@ export function SwapProvider(props: any) {
     return fee;
   };
 
+  //
+  // Switch the trade direction.
+  //
   const swapToFromMints = () => {
     setFromMintToMint([toMint, fromMint]);
     setFromAmount(toAmount ?? 0);
@@ -225,19 +277,12 @@ export function SwapProvider(props: any) {
 
   const executeSwap = async () => {
     if (!transactions) return null;
+
     for (const transactionStep of [
       "setupTransaction",
       "swapTransaction",
       "cleanupTransaction",
     ]) {
-      if (wrapUnwrapSOL) {
-        // From or to mint is native SOL and so auto wrap and unwrap is enabled.
-        // This means that the users existing wSOL account (if any) may be
-        // closed. This isn't necessarily part of the cleanup transaction, it
-        // can also happen in the main swap. To handle this we need to recreate
-        // the wSOL account with the pre-swap balance.
-        console.warn("TODO recreate wSOL account and balance");
-      }
       const serializedTransaction = transactions[transactionStep];
       if (serializedTransaction) {
         try {
@@ -256,14 +301,14 @@ export function SwapProvider(props: any) {
           } else if (transactionStep === "swapTransaction") {
             // Setup transaction didn't exist or suceeded, so update the
             // transactions required to execute to only the remaining
-            // transactions so the user can retry
+            // transactions so the user can retry.
             const { setupTransaction, ...rest } = transactions;
             setTransactions(rest);
+            return false;
           } else if (transactionStep === "cleanupTransaction") {
             // Failed on cleanup, we still want to display a success message
             // to the user here as the swap has completed. The cleanup step
-            // was likely removing a wSOL account and so is relatively
-            // inconsequential.
+            // was likely removing a wSOL account or unwrapping SOL.
             // TODO - handle this somehow?
             return true;
           }
