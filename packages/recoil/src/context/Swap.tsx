@@ -379,7 +379,6 @@ export function SwapProvider(props: any) {
             (a) =>
               a.mint === WSOL_MINT && a.owner === wallet.publicKey.toString()
           );
-
           if (preBalanceToken && postBalanceToken) {
             const wrappedSolBalanceDelta =
               transactionData.meta.postBalances[postBalanceToken.accountIndex] -
@@ -392,6 +391,9 @@ export function SwapProvider(props: any) {
               )
             ).toString("base64");
           }
+          // TODO: it might be possible to use similar code to the above to close/burn
+          // dust accounts from the AMM swap path
+          // https://github.com/coral-xyz/backpack/issues/528
         }
       }
     }
