@@ -1,8 +1,12 @@
 import EventEmitter from "eventemitter3";
-import { vanillaStore } from "../zustand-store";
+import {
+  getLogger,
+  vanillaStore,
+  generateUniqueId,
+  isServiceWorker,
+  IS_MOBILE,
+} from "@coral-xyz/common-public";
 import { BrowserRuntimeCommon } from "./common";
-import { getLogger } from "../logging";
-import { generateUniqueId, isServiceWorker, IS_MOBILE } from "../utils";
 import {
   MOBILE_CHANNEL_HOST_RPC_REQUEST,
   MOBILE_CHANNEL_BG_REQUEST,

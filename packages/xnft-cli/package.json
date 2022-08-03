@@ -1,6 +1,6 @@
 {
   "name": "@coral-xyz/xnft-cli",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "bin": {
     "xnft": "./index.js"
   },
