@@ -1,6 +1,6 @@
 {
   "name": "@coral-xyz/common",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "module": "dist/esm/index.js",
   "react-native": "dist/rn/index.js",
   "types": "dist/esm/index.d.ts",
