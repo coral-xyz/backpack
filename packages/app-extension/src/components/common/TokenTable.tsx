@@ -125,19 +125,14 @@ export function TokenTable({
                   width={width}
                   itemCount={tokenAccountsFiltered.length}
                   itemSize={rowHeight}
+                  itemData={{
+                    tokenList: tokenAccountsFiltered,
+                    blockchain,
+                    onClickRow: (token: Token) => onClickRow(blockchain, token),
+                  }}
                   overscanCount={24}
                 >
-                  {({ index, style }) => {
-                    const token = tokenAccountsFiltered[index];
-                    return (
-                      <TokenRow
-                        key={token.mint}
-                        token={token}
-                        onClick={(token) => onClickRow(blockchain, token)}
-                        style={style}
-                      />
-                    );
-                  }}
+                  {WindowedTokenRowRenderer}
                 </WindowedList>
               );
             }}
@@ -157,6 +152,26 @@ export function TokenTable({
     </BalancesTable>
   );
 }
+
+const WindowedTokenRowRenderer = ({
+  index,
+  data,
+  style,
+}: {
+  index: number;
+  data: any;
+  style: any;
+}) => {
+  const token = data.tokenList[index];
+  return (
+    <TokenRow
+      key={token.mint}
+      token={token}
+      onClick={() => data.onClickRow(token)}
+      style={style}
+    />
+  );
+};
 
 function TokenRow({
   onClick,

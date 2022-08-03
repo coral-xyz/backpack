@@ -1,5 +1,5 @@
 import * as bs58 from "bs58";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import {
   associatedTokenAddress,
@@ -20,6 +20,8 @@ import {
 import { JUPITER_BASE_URL } from "../atoms/solana/jupiter";
 
 const DEFAULT_SLIPPAGE_PERCENT = 1;
+// Poll for new routes every 30 seconds in case of changing market conditions
+const ROUTE_POLL_INTERVAL = 30000;
 
 type JupiterRoute = {
   amount: number;
@@ -123,14 +125,29 @@ export function SwapProvider(props: any) {
   //
   // On changes to the swap parameters, fetch the swap routes from Jupiter.
   //
+  const pollIdRef: { current: NodeJS.Timeout | null } = useRef(null);
+
+  const stopRoutePolling = () => {
+    if (pollIdRef.current) {
+      clearInterval(pollIdRef.current);
+    }
+  };
+
   useEffect(() => {
-    (async () => {
+    const loadRoutes = async () => {
       if (fromAmount && fromAmount > 0) {
         setRoutes(await fetchRoutes());
+        // Success, clear existing polling and setup next
+        stopRoutePolling();
+        const pollId = setTimeout(loadRoutes, ROUTE_POLL_INTERVAL);
+        pollIdRef.current = pollId;
       } else {
         setRoutes([]);
       }
-    })();
+    };
+    loadRoutes();
+    // Cleanup
+    return stopRoutePolling;
   }, [fromMint, fromAmount, toMint]);
 
   //
@@ -328,6 +345,8 @@ export function SwapProvider(props: any) {
       return null;
     }
 
+    // Stop polling for route updates when swap is finalised
+    stopRoutePolling();
     for (const transactionStep of [
       "wrapTransaction",
       "setupTransaction",

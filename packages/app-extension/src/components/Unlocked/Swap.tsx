@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   InputAdornment,
@@ -576,8 +576,24 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     fromMintInfo,
     toMintInfo,
     priceImpactPct,
+    isLoadingRoutes,
     transactionFee,
   } = useSwapContext();
+
+  // Loading indicator when routes are being loaded due to polling
+  if (isLoadingRoutes) {
+    return (
+      <div style={{ textAlign: "center" }}>
+        <CircularProgress
+          size={48}
+          style={{
+            color: theme.custom.colors.primaryButton,
+            margin: "39px 0",
+          }}
+        />
+      </div>
+    );
+  }
 
   const rate = fromAmount ? toAmount! / fromAmount : 0;
 
