@@ -7,8 +7,6 @@ export const CHANNEL_PLUGIN_RENDER_REQUEST =
   "anchor-channel-plugin-render-request";
 export const CHANNEL_PLUGIN_LAUNCH_REQUEST =
   "anchor-channel-plugin-launch-request";
-export const CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE =
-  "anchor-channel-plugin-react-reconciler-bridge";
 export const CHANNEL_PLUGIN_NOTIFICATION = "anchor-channel-plugin-notification";
 export const CHANNEL_PLUGIN_CONNECTION_BRIDGE =
   "anchor-channel-plugin-connection-bridge";
@@ -20,7 +18,6 @@ export const CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE =
 //
 // Mobile webview messaging subsystem channels.
 //
-export const MOBILE_CHANNEL_LOGS = "mobile-logs";
 export const MOBILE_CHANNEL_HOST_RPC_REQUEST = "mobile-host-rpc-request";
 export const MOBILE_CHANNEL_HOST_RPC_RESPONSE = "mobile-host-rpc-response";
 export const MOBILE_CHANNEL_BG_REQUEST = "mobile-bg-request";
@@ -29,30 +26,6 @@ export const MOBILE_CHANNEL_BG_RESPONSE_INNER = "mobile-bg-response-inner";
 export const MOBILE_CHANNEL_FE_REQUEST = "mobile-fe-request";
 export const MOBILE_CHANNEL_FE_RESPONSE = "mobile-fe-response";
 export const MOBILE_CHANNEL_FE_RESPONSE_INNER = "mobile-fe-response-inner";
-
-export const RECONCILER_BRIDGE_METHOD_CREATE_INSTANCE =
-  "anchor-reconciler-method-create-instance";
-export const RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE =
-  "reconciler-bridge-method-commit-update";
-export const RECONCILER_BRIDGE_METHOD_MOUNT = "reconciler-bridge-method-mount";
-export const RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE =
-  "reconciler-bridge-method-text-update";
-export const RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER =
-  "reconciler-bridge-method-append-child-to-container";
-export const RECONCILER_BRIDGE_METHOD_APPEND_INITIAL_CHILD =
-  "reconciler-bridge-method-append-initial-child";
-export const RECONCILER_BRIDGE_METHOD_APPEND_CHILD =
-  "reconciler-bridge-method-append-child";
-export const RECONCILER_BRIDGE_METHOD_INSERT_IN_CONTAINER_BEFORE =
-  "reconciler-bridge-method-insert-in-container-before";
-export const RECONCILER_BRIDGE_METHOD_INSERT_BEFORE =
-  "reconciler-bridge-method-insert-before";
-export const RECONCILER_BRIDGE_METHOD_REMOVE_CHILD =
-  "reconciler-bridge-method-remove-child";
-export const RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER =
-  "reconciler-bridge-method-remove-child-from-container";
-export const RECONCILER_BRIDGE_METHOD_RENDER_ROOT =
-  "reconciler-bridge-method-render-root";
 
 export const PLUGIN_NOTIFICATION_RENDER = "render";
 export const PLUGIN_RPC_METHOD_NAV_PUSH = "nav-push";
