@@ -241,7 +241,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
         <div className={classes.bottomHalf}>
           <div>
             <OutputTextField />
-            {!!toAmount && (
+            {toAmount && toAmount > 0 && (
               <div
                 style={{
                   marginTop: "24px",
