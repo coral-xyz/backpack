@@ -406,7 +406,6 @@ const ConfirmSwapButton = ({
     fromAmount,
     fromMint,
     isJupiterError,
-    availableForSwap,
     exceedsBalance,
   } = useSwapContext();
 
@@ -596,7 +595,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
           size={48}
           style={{
             color: theme.custom.colors.primaryButton,
-            margin: "39px 0",
+            margin: "32px 0",
           }}
         />
       </div>
