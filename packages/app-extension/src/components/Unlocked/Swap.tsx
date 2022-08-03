@@ -669,10 +669,10 @@ function CloseButton({ onClick }: { onClick: () => void }) {
 }
 
 function InputTokenSelectorButton() {
-  const { fromMint, setFromMint } = useSwapContext();
+  const { toMint, fromMint, setFromMint } = useSwapContext();
   const tokenAccounts = useJupiterInputMints();
   const tokenAccountsFiltered = tokenAccounts.filter(
-    (token: Token) => token.nativeBalance !== 0 && token.mint !== fromMint
+    (token: Token) => token.nativeBalance !== 0 && token.mint !== toMint
   );
   return (
     <TokenSelectorButton
@@ -687,7 +687,7 @@ function OutputTokenSelectorButton() {
   const { fromMint, toMint, setToMint } = useSwapContext();
   const tokenAccounts = useJupiterOutputMints(fromMint);
   const tokenAccountsFiltered = tokenAccounts.filter(
-    (token: Token) => token.mint !== toMint
+    (token: Token) => token.mint !== fromMint
   );
   return (
     <TokenSelectorButton
