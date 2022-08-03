@@ -617,7 +617,13 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   }
   rows.push([
     "Price Impact",
-    `${priceImpactPct > 0.5 ? priceImpactPct.toFixed(2) : "< 0.5"}%`,
+    `${
+      priceImpactPct === 0
+        ? 0
+        : priceImpactPct > 0.1
+        ? priceImpactPct.toFixed(2)
+        : "< 0.1"
+    }%`,
   ]);
 
   return (
