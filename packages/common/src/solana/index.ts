@@ -125,7 +125,7 @@ export class Solana {
     const rawTx = signedTx.serialize();
 
     return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
-      skipPreflight: true,
+      skipPreflight: false,
       preflightCommitment: commitment,
     });
   }
