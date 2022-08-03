@@ -46,11 +46,12 @@ export const jupiterOutputMints = selectorFamily({
     ({ inputMint }: { inputMint: string }) =>
     ({ get }: any) => {
       const routeMap = get(jupiterRouteMap);
+      const tokenRegistry = get(splTokenRegistry)!;
       // If input mint is SOL native then we can use WSOL with unwrapping
       const routeMapMint =
         inputMint === SOL_NATIVE_MINT ? WSOL_MINT : inputMint;
+      if (!routeMap[routeMapMint]) return [];
       const swapTokens = routeMap[routeMapMint].map((mint: string) => {
-        const tokenRegistry = get(splTokenRegistry)!;
         const tokenMetadata = tokenRegistry.get(mint) ?? ({} as TokenInfo);
         const { name, symbol, logoURI } = tokenMetadata;
         return { name, ticker: symbol, logo: logoURI, mint };
