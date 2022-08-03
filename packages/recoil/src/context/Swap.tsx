@@ -15,6 +15,7 @@ import {
 import {
   useActiveWallet,
   useBackgroundClient,
+  useJupiterInputMints,
   useSplTokenRegistry,
   useSolanaCtx,
 } from "../hooks";
@@ -22,7 +23,7 @@ import { JUPITER_BASE_URL } from "../atoms/solana/jupiter";
 
 const DEFAULT_SLIPPAGE_PERCENT = 1;
 // Poll for new routes every 30 seconds in case of changing market conditions
-const ROUTE_POLL_INTERVAL = 30000;
+const ROUTE_POLL_INTERVAL = 2000;
 
 type JupiterRoute = {
   amount: number;
@@ -67,8 +68,9 @@ type SwapContext = {
   transactionFee: any;
   isLoadingRoutes: boolean;
   isLoadingTransactions: boolean;
-  isLoadingTransactionFee: boolean;
   isJupiterError: boolean;
+  availableForSwap: number;
+  exceedsBalance: boolean | undefined;
 };
 
 const _SwapContext = React.createContext<SwapContext | null>(null);
@@ -79,6 +81,7 @@ export function SwapProvider(props: any) {
   const solanaCtx = useSolanaCtx();
   const { connection } = solanaCtx;
   const background = useBackgroundClient();
+  const tokenAccountsSorted = useJupiterInputMints();
 
   // Swap setttings
   const [[fromMint, toMint], setFromMintToMint] = useState([
@@ -97,7 +100,6 @@ export function SwapProvider(props: any) {
   const [transactionFee, setTransactionFee] = useState<number | null>(null);
   const [isLoadingRoutes, setIsLoadingRoutes] = useState(false);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
-  const [isLoadingTransactionFee, setIsLoadingTransactionFee] = useState(false);
 
   // Error states
   const [isJupiterError, setIsJupiterError] = useState(false);
@@ -137,6 +139,16 @@ export function SwapProvider(props: any) {
   //
   const pollIdRef: { current: NodeJS.Timeout | null } = useRef(null);
 
+  let availableForSwap =
+    tokenAccountsSorted.find((t) => t.mint === fromMint)?.nativeBalance || 0;
+  // If from mint is native SOL, remove the transaction fee from the max swap amount
+  if (fromMint === SOL_NATIVE_MINT && transactionFee) {
+    // Scale up the nativeBalance to avoid rounding errors before scaling everything down
+    availableForSwap = (availableForSwap * 10 ** 9 - transactionFee) / 10 ** 9;
+  }
+  const exceedsBalance =
+    (fromAmount && fromAmount > availableForSwap) || undefined;
+
   const stopRoutePolling = () => {
     if (pollIdRef.current) {
       clearInterval(pollIdRef.current);
@@ -154,7 +166,10 @@ export function SwapProvider(props: any) {
       } else {
         setRoutes([]);
       }
+      setIsLoadingRoutes(false);
     };
+    setIsLoadingRoutes(true);
+    setIsLoadingTransactions(true);
     loadRoutes();
     // Cleanup
     return stopRoutePolling;
@@ -166,29 +181,53 @@ export function SwapProvider(props: any) {
   useEffect(() => {
     (async () => {
       setTransactions(await fetchTransactions());
+      setTransactionFee(await estimateFees());
+      setIsLoadingTransactions(false);
     })();
-  }, [routes, isLoadingRoutes]);
+  }, [routes]);
 
   //
-  // On changes to the swap transactions, recalculate the network fees.
+  // Estimate the network fees the transactions will incur.
   //
-  useEffect(() => {
-    (async () => {
-      setTransactionFee(null);
-      if (transactions && Object.keys(transactions).length > 0) {
-        setIsLoadingTransactionFee(true);
-        setTransactionFee(await calculateTransactionFee());
-        setIsLoadingTransactionFee(false);
+  const estimateFees = async () => {
+    let fee = 0;
+    if (!isJupiterSwap) {
+      // Simple wrap or unwrap, assume 5000
+      fee += 5000;
+    } else if (!routes || routes.length === 0 || transactions === null) {
+      // Haven't got routes yet, assume 5000 for swap
+      fee += 5000;
+      if (needsWrap || needsUnwrap) {
+        // An additional 5000 for wrap or unwrap
+        fee += 5000;
       }
-    })();
-  }, [transactions]);
+    } else {
+      // Unwrap transactions are not included in the transaction array
+      if (needsUnwrap) {
+        fee += 5000;
+      }
+      // Estimate fees for the existing transactions by querying
+      try {
+        for (const serializedTransaction of Object.values(transactions!)) {
+          const transaction = Transaction.from(
+            Buffer.from(serializedTransaction, "base64")
+          );
+          // Under the hood this just calls connection.getFeeForMessage with
+          // the message, it's a convenience method
+          fee += await transaction.getEstimatedFee(connection);
+        }
+      } catch (e) {
+        // Couldn't load fees, assume 5000, not worth failing over
+        fee = 5000;
+      }
+    }
+    return fee;
+  };
 
   //
   // Fetch the Jupiter routes that can be used to execute the swap.
   //
   const fetchRoutes = async () => {
-    setRoutes([]);
-    setIsLoadingRoutes(true);
     const params = {
       // If the swap is to or from native SOL we want Jupiter to return wSOL
       // routes because it does not support native SOL routes.
@@ -212,8 +251,6 @@ export function SwapProvider(props: any) {
       console.error("error fetching swap routes", e);
       setIsJupiterError(true);
       return [];
-    } finally {
-      setIsLoadingRoutes(false);
     }
   };
 
@@ -221,7 +258,6 @@ export function SwapProvider(props: any) {
   // Load the transactions required to execute the swap.
   //
   const fetchTransactions = async () => {
-    setIsLoadingTransactions(true);
     // Setup a wrap transaction if needed
     let wrapTransaction: string | undefined = undefined;
     if (needsWrap) {
@@ -235,7 +271,7 @@ export function SwapProvider(props: any) {
     }
     // Load Jupiter transactions if any
     let jupiterTransactions: JupiterTransactions | undefined = undefined;
-    if (isJupiterSwap && routes && routes.length > 0 && !isLoadingRoutes) {
+    if (isJupiterSwap && routes && routes.length > 0) {
       jupiterTransactions = await (
         await fetch(`${JUPITER_BASE_URL}swap`, {
           method: "POST",
@@ -250,38 +286,12 @@ export function SwapProvider(props: any) {
         })
       ).json();
     }
-    setIsLoadingTransactions(false);
     // We cannot generate the unwrap transaction here because the unwrap amount
     // is dependent on the result of the swap
     return {
       ...(wrapTransaction && { wrapTransaction }),
       ...(jupiterTransactions && { ...jupiterTransactions }),
     };
-  };
-
-  //
-  // Estimate the network fees the transactions will incur.
-  //
-  const calculateTransactionFee = async () => {
-    let fee = 0;
-    if (!transactions) return null;
-    for (const serializedTransaction of Object.values(transactions)) {
-      const transaction = Transaction.from(
-        Buffer.from(serializedTransaction, "base64")
-      );
-      // Under the hood this just calls connection.getFeeForMessage with
-      // the message, it's a convenience method
-      try {
-        fee += await transaction.getEstimatedFee(connection);
-      } catch (e) {
-        // TODO errors here for connection unavailable intermittently, why?
-        console.log("could not retrieve transaction fee", e);
-        return null;
-      }
-    }
-    // Unwrap transaciton not included above, should be fixed cost
-    if (needsUnwrap) fee += 5000;
-    return fee;
   };
 
   //
@@ -465,8 +475,9 @@ export function SwapProvider(props: any) {
         transactions,
         isLoadingTransactions,
         transactionFee,
-        isLoadingTransactionFee,
         isJupiterError,
+        availableForSwap,
+        exceedsBalance,
       }}
     >
       {props.children}

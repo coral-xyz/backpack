@@ -290,11 +290,8 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
 
 function InputTextField() {
   const classes = useStyles();
-  const { fromAmount, fromMint, setFromAmount } = useSwapContext();
-  const tokenAccountsSorted = useJupiterInputMints();
-  const balance =
-    tokenAccountsSorted.find((t) => t.mint === fromMint)?.nativeBalance || 0;
-  const exceedsBalance = fromAmount && fromAmount > balance;
+  const { fromAmount, setFromAmount, availableForSwap, exceedsBalance } =
+    useSwapContext();
 
   const _setFromAmount = (amount: number) => {
     if (amount >= 0) {
@@ -307,7 +304,10 @@ function InputTextField() {
       <TextFieldLabel
         leftLabel={"You Pay"}
         rightLabelComponent={
-          <MaxSwapAmount balance={balance} onSetAmount={_setFromAmount} />
+          <MaxSwapAmount
+            availableForSwap={availableForSwap}
+            onSetAmount={_setFromAmount}
+          />
         }
       />
       <TextField
@@ -338,6 +338,7 @@ function OutputTextField() {
               style={{
                 display: "flex",
                 color: theme.custom.colors.secondary,
+                marginRight: "10px",
               }}
               size={24}
               thickness={5}
@@ -360,16 +361,16 @@ function OutputTextField() {
 }
 
 const MaxSwapAmount = ({
-  balance,
+  availableForSwap,
   onSetAmount,
 }: {
-  balance: number;
+  availableForSwap: number | null;
   onSetAmount: (amount: number) => void;
 }) => {
   const theme = useCustomTheme();
   return (
     <div
-      onClick={() => onSetAmount(balance)}
+      onClick={() => availableForSwap && onSetAmount(availableForSwap)}
       style={{
         fontWeight: 500,
         fontSize: "12px",
@@ -379,7 +380,7 @@ const MaxSwapAmount = ({
       }}
     >
       <span style={{ color: theme.custom.colors.secondary }}>Max: </span>
-      {balance}
+      {availableForSwap ? availableForSwap : "-"}
     </div>
   );
 };
@@ -399,17 +400,22 @@ const ConfirmSwapButton = ({
   blockchain: Blockchain;
   onClick: () => void;
 }) => {
-  const { toAmount, toMint, fromAmount, fromMint, isJupiterError } =
-    useSwapContext();
-  const tokenAccountsSorted = useJupiterInputMints();
-  const balance =
-    tokenAccountsSorted.find((t) => t.mint === fromMint)?.nativeBalance || 0;
-  const exceedsBalance = fromAmount && fromAmount > balance;
+  const {
+    toAmount,
+    toMint,
+    fromAmount,
+    fromMint,
+    isJupiterError,
+    availableForSwap,
+    exceedsBalance,
+  } = useSwapContext();
+
   if (exceedsBalance) {
     return <InsufficientBalanceButton />;
   } else if (isJupiterError) {
     return <SwapUnavailableButton />;
   }
+
   let label;
   if (fromMint === SOL_NATIVE_MINT && toMint === WSOL_MINT) {
     label = "Wrap";
@@ -418,6 +424,7 @@ const ConfirmSwapButton = ({
   } else {
     label = "Review";
   }
+
   return (
     <PrimaryButton
       label={label}
@@ -577,11 +584,12 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     toMintInfo,
     priceImpactPct,
     isLoadingRoutes,
+    isLoadingTransactions,
     transactionFee,
   } = useSwapContext();
 
   // Loading indicator when routes are being loaded due to polling
-  if (isLoadingRoutes) {
+  if (isLoadingRoutes || isLoadingTransactions) {
     return (
       <div style={{ textAlign: "center" }}>
         <CircularProgress
