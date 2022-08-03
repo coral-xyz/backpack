@@ -575,7 +575,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     toAmount,
     fromMintInfo,
     toMintInfo,
-    route,
+    priceImpactPct,
     transactionFee,
   } = useSwapContext();
 
@@ -601,9 +601,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   }
   rows.push([
     "Price Impact",
-    `${
-      route.priceImpactPct > 0.5 ? route.priceImpactPct.toFixed(2) : "< 0.5"
-    }%`,
+    `${priceImpactPct > 0.5 ? priceImpactPct.toFixed(2) : "< 0.5"}%`,
   ]);
 
   return (

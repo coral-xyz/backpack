@@ -284,6 +284,7 @@ export const generateUnwrapSolTx = async (
   tx.recentBlockhash = (
     await tokenClient.provider.connection.getLatestBlockhash(commitment)
   ).blockhash;
+
   // recreate the account with the new balance
   if (destinationAtaAccount.account.lamports === lamports) {
     tx.instructions.push(
@@ -291,12 +292,13 @@ export const generateUnwrapSolTx = async (
     );
   } else {
     const newAccount = Keypair.generate();
+    const rentExemptionLamports = 2039280;
     // Create a new account to transfer wSOL into and then close
     tx.instructions.push(
       SystemProgram.createAccount({
         fromPubkey: walletPublicKey,
         newAccountPubkey: newAccount.publicKey,
-        lamports: 2039280,
+        lamports: rentExemptionLamports,
         space: 165,
         programId: TOKEN_PROGRAM_ID,
       })

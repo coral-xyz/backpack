@@ -54,7 +54,7 @@ type SwapContext = {
   slippage: number;
   setSlippage: (s: number) => void;
   executeSwap: () => Promise<any>;
-  route: JupiterRoute;
+  priceImpactPct: number;
   transactions: any;
   transactionFee: any;
   isLoadingRoutes: boolean;
@@ -104,8 +104,21 @@ export function SwapProvider(props: any) {
   const fromMintInfo = tokenRegistry.get(fromMint)!;
   const toMintInfo = tokenRegistry.get(toMint)!;
 
+  const isWrapUnwrap =
+    fromMint === (SOL_NATIVE_MINT || WSOL_MINT) &&
+    toMint === (SOL_NATIVE_MINT || WSOL_MINT);
+
   const route = routes && routes[0];
-  const toAmount = route && route.outAmount / 10 ** toMintInfo.decimals;
+
+  // If wrapping/unwrapping then same to/from amounts
+  const toAmount = isWrapUnwrap
+    ? fromAmount
+      ? fromAmount
+      : undefined
+    : route && route.outAmount / 10 ** toMintInfo.decimals;
+
+  // If wrapping/unwrapping then no price impact
+  const priceImpactPct = isWrapUnwrap ? 0 : route && route.priceImpactPct;
 
   //
   // On changes to the swap parameters, fetch the swap routes from Jupiter.
@@ -152,11 +165,12 @@ export function SwapProvider(props: any) {
   //
   const fetchRoutes = async () => {
     setRoutes([]);
+    // Wrapping/unwrapping, no need to fetch routes
+    if (isWrapUnwrap) return;
     setIsLoadingRoutes(true);
     const params = {
       // If the swap is to or from native SOL we want Jupiter to return wSOL
-      // routes because it does not support native SOL routes, but it can auto
-      // wrap and unwrap native SOL for a wSOL route.
+      // routes because it does not support native SOL routes.
       inputMint: fromMint === SOL_NATIVE_MINT ? WSOL_MINT : fromMint,
       outputMint: toMint === SOL_NATIVE_MINT ? WSOL_MINT : toMint,
       amount: (fromAmount! * 10 ** fromMintInfo.decimals).toString(),
@@ -214,7 +228,7 @@ export function SwapProvider(props: any) {
         await generateUnwrapSolTx(
           solanaCtx,
           wallet.publicKey,
-          fromAmount! * 10 ** 9
+          toAmount! * 10 ** 9
         )
       ).toString("base64");
 
@@ -264,7 +278,6 @@ export function SwapProvider(props: any) {
       const transaction = Transaction.from(
         Buffer.from(serializedTransaction, "base64")
       );
-      console.log(transaction);
       // Under the hood this just calls connection.getFeeForMessage with
       // the message, it's a convenience method
       try {
@@ -353,7 +366,8 @@ export function SwapProvider(props: any) {
             // Failed on cleanup, we still want to display a success message
             // to the user here as the swap has completed. The cleanup step
             // was unwrapping SOL.
-            // TODO:  handle this somehow?
+            // TODO: handle this somehow?
+            console.warn("swap cleanup failed");
             return true;
           }
         }
@@ -381,7 +395,7 @@ export function SwapProvider(props: any) {
         slippage,
         setSlippage,
         executeSwap,
-        route,
+        priceImpactPct,
         isLoadingRoutes,
         transactions,
         isLoadingTransactions,
