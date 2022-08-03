@@ -2,7 +2,8 @@
 // Communication channels for xNFT plugins and the host.
 //
 
-import type { Event, RpcResponse } from "../types";
+import type { Event } from "@coral-xyz/common-public";
+import type { RpcResponse } from "../types";
 
 export class PluginServer {
   private window?: any;

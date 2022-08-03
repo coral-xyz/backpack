@@ -1,4 +1,5 @@
-import type { Context, RpcRequest, RpcResponse, EventEmitter } from "./types";
+import { RpcRequest } from "@coral-xyz/common-public";
+import type { Context, RpcResponse, EventEmitter } from "./types";
 
 export * from "@coral-xyz/common-public";
 export * from "./constants";
