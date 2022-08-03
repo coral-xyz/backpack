@@ -4,12 +4,20 @@ import type {
   Commitment,
   Connection,
 } from "@solana/web3.js";
-import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import {
+  Keypair,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
 import {
   createAssociatedTokenAccountInstruction,
   createCloseAccountInstruction,
+  createInitializeAccountInstruction,
   createSyncNativeInstruction,
+  createTransferInstruction,
   NATIVE_MINT,
+  TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import * as anchor from "@project-serum/anchor";
@@ -173,6 +181,10 @@ export class Solana {
   }
 }
 
+//
+// Helper method that will generate a transaction to wrap SOL, creating the
+// associated token account if necessary.
+//
 export const generateWrapSolTx = async (
   ctx: SolanaContext,
   destination: PublicKey,
@@ -181,10 +193,9 @@ export const generateWrapSolTx = async (
   const { walletPublicKey, tokenClient, commitment } = ctx;
   const destinationAta = associatedTokenAddress(NATIVE_MINT, destination);
 
-  const [destinationAccount, destinationAtaAccount] =
-    await anchor.utils.rpc.getMultipleAccounts(
-      tokenClient.provider.connection,
-      [destination, destinationAta],
+  const destinationAccount =
+    await tokenClient.provider.connection.getAccountInfo(
+      destination,
       commitment
     );
 
@@ -194,20 +205,32 @@ export const generateWrapSolTx = async (
   //
   if (
     destinationAccount &&
-    !destinationAccount.account.owner.equals(SystemProgram.programId)
+    !destinationAccount.owner.equals(SystemProgram.programId)
   ) {
     throw new Error("invalid account");
   }
 
   const tx = new Transaction();
-  tx.instructions = generateWrapSolIx({
-    destination,
-    destinationAta,
-    lamports,
-    walletPublicKey,
-    createAta: !destinationAtaAccount,
-  });
-
+  if (!destinationAta) {
+    tx.instructions.push(
+      createAssociatedTokenAccountInstruction(
+        walletPublicKey,
+        destinationAta,
+        destination,
+        NATIVE_MINT
+      )
+    );
+  }
+  tx.instructions.push(
+    SystemProgram.transfer({
+      fromPubkey: walletPublicKey,
+      toPubkey: new PublicKey(destinationAta),
+      lamports,
+    })
+  );
+  tx.instructions.push(
+    createSyncNativeInstruction(new PublicKey(destinationAta))
+  );
   tx.feePayer = walletPublicKey;
   tx.recentBlockhash = (
     await tokenClient.provider.connection.getLatestBlockhash(commitment)
@@ -216,6 +239,11 @@ export const generateWrapSolTx = async (
   return signedTx.serialize();
 };
 
+//
+// Helper method to generate a transaction that will unwrap the given amount
+// of wSOL by creating a new account and transferring wSOL into it, then
+// closing the account.
+//
 export const generateUnwrapSolTx = async (
   ctx: SolanaContext,
   destination: PublicKey,
@@ -227,6 +255,7 @@ export const generateUnwrapSolTx = async (
   // and transferring the difference between the previous amount and the requested
   // amount into the newly created account.
   const destinationAta = associatedTokenAddress(NATIVE_MINT, destination);
+  const sourceAta = associatedTokenAddress(NATIVE_MINT, walletPublicKey);
 
   const [destinationAccount, destinationAtaAccount] =
     await anchor.utils.rpc.getMultipleAccounts(
@@ -250,76 +279,57 @@ export const generateUnwrapSolTx = async (
     throw new Error("invalid account");
   }
 
-  // If unwrap is for the whole balance the accont is just closed, otherwise
-  // recreate the account with the new balance
-  const rewrapIx =
-    destinationAtaAccount.account.lamports === lamports
-      ? []
-      : generateWrapSolIx({
-          destination,
-          destinationAta,
-          // Set the amount to the account balance minus the unwrapped amount
-          lamports: destinationAtaAccount.account.lamports - lamports,
-          walletPublicKey,
-          // Previous instruction closes the ATA, so create it again
-          createAta: true,
-        });
-
   const tx = new Transaction();
-  tx.instructions = [
-    // Close the wSOL account
-    createCloseAccountInstruction(destinationAta, destination, destination),
-    // Recreate it
-    ...rewrapIx,
-  ];
-
   tx.feePayer = walletPublicKey;
   tx.recentBlockhash = (
     await tokenClient.provider.connection.getLatestBlockhash(commitment)
   ).blockhash;
-  const signedTx = await SolanaProvider.signTransaction(ctx, tx);
-  return signedTx.serialize();
-};
-
-// General instructions required to create a wSOL account if one doesn't exist
-// and then transfer SOL.
-const generateWrapSolIx = ({
-  destination,
-  destinationAta,
-  lamports,
-  walletPublicKey,
-  createAta = false,
-}) => {
-  console.log("Wrap");
-  console.log("Destination", destination.toString());
-  console.log("Destination ATA", destinationAta.toString());
-  console.log("Amount lamports", lamports);
-  console.log("Wallet public key", walletPublicKey);
-  const ix: TransactionInstruction[] = [];
-  if (createAta) {
-    console.log("Instruction create ata");
-    ix.push(
-      createAssociatedTokenAccountInstruction(
-        walletPublicKey,
-        destinationAta,
-        destination,
-        NATIVE_MINT
+  // recreate the account with the new balance
+  if (destinationAtaAccount.account.lamports === lamports) {
+    tx.instructions.push(
+      createCloseAccountInstruction(destinationAta, destination, destination)
+    );
+  } else {
+    const newAccount = Keypair.generate();
+    // Create a new account to transfer wSOL into and then close
+    tx.instructions.push(
+      SystemProgram.createAccount({
+        fromPubkey: walletPublicKey,
+        newAccountPubkey: newAccount.publicKey,
+        lamports: 2039280,
+        space: 165,
+        programId: TOKEN_PROGRAM_ID,
+      })
+    );
+    // Init the new account with native mint
+    tx.instructions.push(
+      createInitializeAccountInstruction(
+        newAccount.publicKey,
+        NATIVE_MINT,
+        destination
       )
     );
+    // Transfer unwrap amount into the new account
+    tx.instructions.push(
+      createTransferInstruction(
+        sourceAta,
+        newAccount.publicKey,
+        walletPublicKey,
+        lamports
+      )
+    );
+    // Close the new account
+    tx.instructions.push(
+      createCloseAccountInstruction(
+        newAccount.publicKey,
+        destination,
+        destination
+      )
+    );
+    tx.partialSign(newAccount);
   }
-
-  console.log("Instruction transfer");
-
-  ix.push(
-    SystemProgram.transfer({
-      fromPubkey: walletPublicKey,
-      toPubkey: new PublicKey(destinationAta),
-      lamports,
-    })
-  );
-  console.log("Instruction sync native");
-  ix.push(createSyncNativeInstruction(new PublicKey(destinationAta)));
-  return ix;
+  const signedTx = await SolanaProvider.signTransaction(ctx, tx);
+  return signedTx.serialize();
 };
 
 export type TransferTokenRequest = {

@@ -214,9 +214,10 @@ export function SwapProvider(props: any) {
         await generateUnwrapSolTx(
           solanaCtx,
           wallet.publicKey,
-          toAmount! * 10 ** 9
+          fromAmount! * 10 ** 9
         )
       ).toString("base64");
+
       if (fromMint === WSOL_MINT) {
         // This is not a real swap, we are just unwrapping SOL so use the unwrap
         // transaction as the main swap
@@ -225,8 +226,6 @@ export function SwapProvider(props: any) {
         };
       }
     }
-    console.log("querying jupiter");
-
     const jupiterTransactions = await (
       await fetch(`${JUPITER_BASE_URL}swap`, {
         method: "POST",
@@ -252,7 +251,6 @@ export function SwapProvider(props: any) {
         cleanupTransaction: unwrapTransaction,
       }),
     };
-    console.log("Transactions", transactions);
     return transactions;
   };
 
@@ -262,11 +260,11 @@ export function SwapProvider(props: any) {
   const calculateTransactionFee = async () => {
     let fee = 0;
     if (!transactions) return null;
-    console.log(transactions);
     for (const serializedTransaction of Object.values(transactions)) {
       const transaction = Transaction.from(
         Buffer.from(serializedTransaction, "base64")
       );
+      console.log(transaction);
       // Under the hood this just calls connection.getFeeForMessage with
       // the message, it's a convenience method
       try {
@@ -308,6 +306,9 @@ export function SwapProvider(props: any) {
   // SOL but it is not used because it is difficult to ensure that the users
   // wSOL account and balance are retained.
   //
+  // TODO: can we put our wrapping/unwrapping instructions in the returned Jupiter
+  // transactions to cut down on the number of transactions needed?
+  //
   const executeSwap = async () => {
     if (!transactions) {
       console.log("no transactions found to execute swap");
@@ -331,7 +332,6 @@ export function SwapProvider(props: any) {
             ],
           });
           await confirmTransaction(connection, signature, "confirmed");
-          console.log("processed", transactionStep);
         } catch (e) {
           console.log("swap error at", transactionStep, e);
           if (
@@ -353,7 +353,7 @@ export function SwapProvider(props: any) {
             // Failed on cleanup, we still want to display a success message
             // to the user here as the swap has completed. The cleanup step
             // was unwrapping SOL.
-            // TODO - handle this somehow?
+            // TODO:  handle this somehow?
             return true;
           }
         }
