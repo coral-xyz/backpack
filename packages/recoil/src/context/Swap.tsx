@@ -23,7 +23,7 @@ import { JUPITER_BASE_URL } from "../atoms/solana/jupiter";
 
 const DEFAULT_SLIPPAGE_PERCENT = 1;
 // Poll for new routes every 30 seconds in case of changing market conditions
-const ROUTE_POLL_INTERVAL = 2000;
+const ROUTE_POLL_INTERVAL = 30000;
 
 type JupiterRoute = {
   amount: number;
