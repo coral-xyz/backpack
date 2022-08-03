@@ -566,13 +566,13 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     toAmount,
     fromMintInfo,
     toMintInfo,
+    isLoadingRoutes,
     route,
     transactionFee,
   } = useSwapContext();
 
-  // Route us undefined when routes are being reloaded through polling, display
-  // a loading indicator
-  if (!route) {
+  // Loading indicator when routes are being loaded due to polling
+  if (isLoadingRoutes) {
     return (
       <div style={{ textAlign: "center" }}>
         <CircularProgress
@@ -609,7 +609,9 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   rows.push([
     "Price Impact",
     `${
-      route.priceImpactPct > 0.5 ? route.priceImpactPct.toFixed(2) : "< 0.5"
+      route && route.priceImpactPct > 0.5
+        ? route.priceImpactPct.toFixed(2)
+        : "< 0.5"
     }%`,
   ]);
 
