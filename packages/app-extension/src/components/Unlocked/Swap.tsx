@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   InputAdornment,
@@ -28,6 +28,7 @@ import { BottomCard } from "./Balances/TokensWidget/Send";
 import { WithMiniDrawer, useDrawerContext } from "../common/Layout/Drawer";
 import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
+import { MaxLabel } from "../common/MaxLabel";
 
 const useStyles = styles((theme) => ({
   container: {
@@ -304,10 +305,7 @@ function InputTextField() {
       <TextFieldLabel
         leftLabel={"You Pay"}
         rightLabelComponent={
-          <MaxSwapAmount
-            availableForSwap={availableForSwap}
-            onSetAmount={_setFromAmount}
-          />
+          <MaxLabel amount={availableForSwap} onSetAmount={_setFromAmount} />
         }
       />
       <TextField
@@ -359,31 +357,6 @@ function OutputTextField() {
     </>
   );
 }
-
-const MaxSwapAmount = ({
-  availableForSwap,
-  onSetAmount,
-}: {
-  availableForSwap: number | null;
-  onSetAmount: (amount: number) => void;
-}) => {
-  const theme = useCustomTheme();
-  return (
-    <div
-      onClick={() => availableForSwap && onSetAmount(availableForSwap)}
-      style={{
-        fontWeight: 500,
-        fontSize: "12px",
-        lineHeight: "16px",
-        color: theme.custom.colors.fontColor,
-        cursor: "pointer",
-      }}
-    >
-      <span style={{ color: theme.custom.colors.secondary }}>Max: </span>
-      {availableForSwap ? availableForSwap : "-"}
-    </div>
-  );
-};
 
 const SwapUnavailableButton = () => {
   return <DangerButton label="Swaps unavailable" disabled={true} />;
