@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   InputAdornment,
   Typography,
@@ -7,12 +6,12 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Close, ExpandMore, SwapVert } from "@mui/icons-material";
-import { CheckIcon, CrossIcon } from "../common/Icon";
 import {
   useSplTokenRegistry,
   useJupiterInputMints,
   useJupiterOutputMints,
   useSwapContext,
+  useNavigation,
   SwapProvider,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -23,6 +22,7 @@ import {
   PrimaryButton,
   DangerButton,
 } from "../common";
+import { CheckIcon, CrossIcon } from "../common/Icon";
 import { WithHeaderButton } from "./Balances/TokensWidget/Token";
 import { BottomCard } from "./Balances/TokensWidget/Send";
 import { useDrawerContext } from "../common/Layout/Drawer";
@@ -30,6 +30,7 @@ import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
 import { MaxLabel } from "../common/MaxLabel";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
+import { SecondaryButton } from "../common";
 
 const useStyles = styles((theme) => ({
   container: {
@@ -203,7 +204,7 @@ function SwapInner({ blockchain }: any) {
 
 function _Swap({ blockchain }: { blockchain: Blockchain }) {
   const classes = useStyles();
-  const { toAmount, swapToFromMints, executeSwap } = useSwapContext();
+  const { toAmount, swapToFromMints } = useSwapContext();
   const [openDrawer, setOpenDrawer] = useState(false);
 
   const onSwapButtonClick = () => {
@@ -278,8 +279,12 @@ const SwapConfirmationCard: React.FC<{ onClose: () => void }> = ({
       {swapState === SwapState.CONFIRMATION && (
         <SwapConfirmation onConfirm={onConfirm} />
       )}
-      {swapState === SwapState.CONFIRMING && <SwapConfirming />}
-      {swapState === SwapState.CONFIRMED && <SwapConfirmed />}
+      {swapState === SwapState.CONFIRMING && (
+        <SwapConfirming isConfirmed={false} />
+      )}
+      {swapState === SwapState.CONFIRMED && (
+        <SwapConfirming isConfirmed={true} />
+      )}
       {swapState === SwapState.ERROR && (
         <SwapError onCancel={() => onClose()} onRetry={onConfirm} />
       )}
@@ -431,58 +436,68 @@ function SwapConfirmation({ onConfirm }: { onConfirm: () => void }) {
 // Bottom card that is displayed while the swap is confirming (i.e. transactions
 // are being submitted/confirmed)
 //
-function SwapConfirming() {
+function SwapConfirming({ isConfirmed }: { isConfirmed: boolean }) {
   const classes = useStyles();
   const theme = useCustomTheme();
+  const nav = useNavigation();
   return (
-    <BottomCard>
-      <Typography
-        className={classes.confirmationTitle}
-        style={{ marginTop: "52px" }}
-      >
-        Swapping...
-      </Typography>
-      <div style={{ marginTop: "8px", marginBottom: "16px" }}>
-        <SwapReceiveAmount />
-      </div>
-      <div style={{ textAlign: "center" }}>
-        <CircularProgress
-          size={48}
-          style={{
-            color: theme.custom.colors.primaryButton,
-            marginBottom: "88px",
-          }}
-          thickness={6}
-        />
-      </div>
-    </BottomCard>
-  );
-}
-
-//
-// Bottom card displayed on swap success.
-//
-function SwapConfirmed() {
-  const classes = useStyles();
-  const navigate = useNavigate();
-  return (
-    <BottomCard
-      cancelButtonLabel={"View balances"}
-      onCancelButtonClick={() => navigate("/balances")}
+    <div
+      style={{
+        height: "264px",
+        paddingTop: "52px",
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
     >
-      <Typography
-        className={classes.confirmationTitle}
-        style={{ marginTop: "52px" }}
+      <div>
+        <Typography className={classes.confirmationTitle}>
+          {isConfirmed ? "Swap Confirmed!" : "Swapping.."}
+        </Typography>
+        <div style={{ marginTop: "8px", marginBottom: "16px" }}>
+          <SwapReceiveAmount />
+        </div>
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+          }}
+        >
+          {isConfirmed ? (
+            <div
+              style={{
+                textAlign: "center",
+              }}
+            >
+              <CheckIcon />
+            </div>
+          ) : (
+            <CircularProgress
+              size={48}
+              style={{
+                color: theme.custom.colors.primaryButton,
+                display: "flex",
+                marginLeft: "auto",
+                marginRight: "auto",
+              }}
+              thickness={6}
+            />
+          )}
+        </div>
+      </div>
+      <div
+        style={{
+          marginBottom: "16px",
+          marginLeft: "16px",
+          marginRight: "16px",
+        }}
       >
-        Swap Confirmed!
-      </Typography>
-      <div style={{ marginTop: "8px", marginBottom: "16px" }}>
-        <SwapReceiveAmount />
+        <SecondaryButton onClick={() => nav.toRoot()} label={"View Balances"} />
       </div>
-      <div style={{ textAlign: "center", marginBottom: "24px" }}>
-        <CheckIcon />
-      </div>
-    </BottomCard>
+    </div>
   );
 }
 
