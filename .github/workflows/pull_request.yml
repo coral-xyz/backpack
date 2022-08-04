@@ -138,7 +138,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: backpack-build
-          path: packages/app-extension/build.zip
+          path: packages/app-extension/build-${{ github.run_number }}.zip
       - uses: actions/download-artifact@v2
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
@@ -161,8 +161,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build.zip
-          asset_name: build.zip
+          asset_path: ./build-${{ github.run_number }}.zip
+          asset_name: build-${{ github.run_number }}.zip
           asset_content_type: application/zip
 
       - name: "post artifacts to Discord"
@@ -171,4 +171,4 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          args: packages/app-extension/build.zip
+          args: packages/app-extension/build-${{ github.run_number }}.zip
