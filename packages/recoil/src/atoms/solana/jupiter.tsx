@@ -63,6 +63,18 @@ export const jupiterOutputMints = selectorFamily({
         logo: SOL_LOGO_URI,
         mint: SOL_NATIVE_MINT,
       });
+      if (inputMint === SOL_NATIVE_MINT) {
+        // Add wSOL as an output for native SOL. It won't show up here because
+        // we are using routes for wSOL for native SOL, and wSOL is not an
+        // output token for itself.
+        const wrappedSol = tokenRegistry.get(WSOL_MINT);
+        swapTokens.push({
+          name: wrappedSol.name,
+          ticker: wrappedSol.symbol,
+          logo: wrappedSol.logoURI,
+          mint: WSOL_MINT,
+        });
+      }
       // Filter out tokens that don't have at least name and ticker
       return swapTokens.filter((t: any) => t.name && t.ticker);
     },
