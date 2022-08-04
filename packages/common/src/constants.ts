@@ -217,3 +217,6 @@ export const QUERY_CONNECT_HARDWARE = "connect-hardware=true";
 export const QUERY_ONBOARDING = "onboarding=true";
 
 export const SIMULATOR_PORT = 9933;
+
+export const NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 890880;
+export const TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 2039280;

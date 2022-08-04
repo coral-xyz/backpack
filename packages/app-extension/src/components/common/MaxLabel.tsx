@@ -6,6 +6,8 @@ const useStyles = styles((theme) => ({
     fontSize: "12px",
     lineHeight: "16px",
     color: theme.custom.colors.fontColor,
+  },
+  clickable: {
     cursor: "pointer",
     "&:hover": {
       color: theme.custom.colors.primaryButton,
@@ -24,11 +26,14 @@ export const MaxLabel = ({
   const classes = useStyles();
   return (
     <div
-      className={classes.wrapper}
+      className={[
+        classes.wrapper,
+        amount && amount > 0 ? classes.clickable : "",
+      ].join(" ")}
       onClick={() => amount && onSetAmount(amount)}
     >
       <span style={{ color: theme.custom.colors.secondary }}>Max: </span>
-      {amount ? amount : "-"}
+      {amount !== null ? amount : "-"}
     </div>
   );
 };

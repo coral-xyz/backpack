@@ -17,6 +17,7 @@ import {
   explorerUrl,
   Solana,
   SOL_NATIVE_MINT,
+  NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
 } from "@coral-xyz/common";
 import { WithHeaderButton } from "./Token";
 import {
@@ -148,11 +149,10 @@ export function Send({
     //
     // When sending SOL, account for the tx fee and rent exempt minimum.
     //
-    let lamportsOffset = 0.0;
+    let lamportsOffset = 0;
     if (token.mint === SOL_NATIVE_MINT) {
-      const txFee = 0.000005;
-      const rentExemptMinimum = 0.00203928;
-      lamportsOffset = txFee + rentExemptMinimum;
+      lamportsOffset =
+        (5000 + NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS) / 10 ** 9;
     }
     return lamportsOffset;
   })();
@@ -220,7 +220,7 @@ export function Send({
             rightLabel={`${token.nativeBalance} ${token.ticker}`}
             rightLabelComponent={
               <MaxLabel
-                amount={token.nativeBalance - lamportsOffset}
+                amount={Math.max(token.nativeBalance - lamportsOffset, 0)}
                 onSetAmount={_setAmount}
               />
             }
