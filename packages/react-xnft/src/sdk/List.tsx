@@ -6,7 +6,7 @@ export function List({ children, style }) {
   const isArray = children && children.length !== undefined;
   const childrenArray = isArray ? children : [children];
   const newChildrenArray: Array<React.ReactNode> = [];
-  children.forEach((c, idx) => {
+  childrenArray.forEach((c, idx) => {
     newChildrenArray.push(c);
     if (idx !== childrenArray.length - 1) {
       newChildrenArray.push(<Divider />);
