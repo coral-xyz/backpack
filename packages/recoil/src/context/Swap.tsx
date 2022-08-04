@@ -21,6 +21,7 @@ import {
 } from "../hooks";
 import { JUPITER_BASE_URL } from "../atoms/solana/jupiter";
 
+const DEFAULT_DEBOUNCE_DELAY = 400;
 const DEFAULT_SLIPPAGE_PERCENT = 1;
 // Poll for new routes every 30 seconds in case of changing market conditions
 const ROUTE_POLL_INTERVAL = 30000;
@@ -74,6 +75,19 @@ type SwapContext = {
 };
 
 const _SwapContext = React.createContext<SwapContext | null>(null);
+
+function useDebounce(value: any, wait = DEFAULT_DEBOUNCE_DELAY) {
+  const [debounceValue, setDebounceValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebounceValue(value);
+    }, wait);
+    return () => clearTimeout(timer); // cleanup when unmounted
+  }, [value, wait]);
+
+  return debounceValue;
+}
 
 export function SwapProvider(props: any) {
   const wallet = useActiveWallet();
@@ -155,6 +169,9 @@ export function SwapProvider(props: any) {
     }
   };
 
+  // Debounce fromAmount to avoid excessive Jupiter API requests
+  const debouncedFromAmount = useDebounce(fromAmount);
+
   useEffect(() => {
     const loadRoutes = async () => {
       if (fromAmount && fromAmount > 0 && isJupiterSwap) {
@@ -173,7 +190,7 @@ export function SwapProvider(props: any) {
     loadRoutes();
     // Cleanup
     return stopRoutePolling;
-  }, [fromMint, fromAmount, toMint, isJupiterSwap]);
+  }, [fromMint, debouncedFromAmount, toMint, isJupiterSwap]);
 
   //
   // On changes to the swap routes, fetch the transactions required to execute.
