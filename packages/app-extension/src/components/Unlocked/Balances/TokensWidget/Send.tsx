@@ -31,6 +31,7 @@ import {
   WithMiniDrawer,
 } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
+import { MaxLabel } from "../../../common/MaxLabel";
 
 const logger = getLogger("send-component");
 
@@ -224,6 +225,12 @@ export function Send({
           <TextFieldLabel
             leftLabel={"Amount"}
             rightLabel={`${token.nativeBalance} ${token.ticker}`}
+            rightLabelComponent={
+              <MaxLabel
+                amount={token.nativeBalance - lamportsOffset}
+                onSetAmount={_setAmount}
+              />
+            }
             style={{ marginLeft: "24px", marginRight: "24px" }}
           />
           <div style={{ margin: "0 12px" }}>
@@ -237,20 +244,6 @@ export function Send({
               inputProps={{
                 name: "amount",
               }}
-              endAdornment={
-                <SecondaryButton
-                  label="Max"
-                  onClick={() =>
-                    _setAmount(token.nativeBalance - lamportsOffset)
-                  }
-                  style={{
-                    width: "auto",
-                    height: "auto",
-                    backgroundColor: theme.custom.colors.background,
-                    borderRadius: "24px",
-                  }}
-                />
-              }
             />
           </div>
         </div>
