@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import * as bs58 from "bs58";
 import { Transaction, Message } from "@solana/web3.js";
 import {
@@ -14,10 +14,9 @@ import {
 import { Plugin } from "@coral-xyz/react-xnft-renderer";
 import { Typography } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { walletAddressDisplay } from "../common";
+import { walletAddressDisplay, PrimaryButton } from "../common";
 import { Scrollbar } from "../common/Layout/Scrollbar";
-import { WithMiniDrawer } from "../common/Layout/Drawer";
-import { BottomCard } from "../Unlocked/Balances/TokensWidget/Send";
+import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 
 const useStyles = styles((theme) => ({
   confirmRow: {
@@ -40,18 +39,42 @@ const useStyles = styles((theme) => ({
 }));
 
 export function ApproveTransactionRequest() {
-  const background = useBackgroundClient();
   const [request, setRequest] = useTransactionRequest();
-  const plugins = useAllPlugins();
   const { publicKey } = useActiveWallet();
-  const plugin = request
-    ? plugins.find((p) => p.iframeUrl === request.pluginUrl)
-    : undefined;
+  const [openDrawer, setOpenDrawer] = useState(false);
+
+  useEffect(() => {
+    setOpenDrawer(request !== undefined);
+  }, [request]);
 
   // TODO: this check shouldn't be necessary.
   if (request && publicKey.toString() !== request.publicKey) {
     throw new Error("invariant violation");
   }
+
+  return (
+    <ApproveTransactionDrawer
+      openDrawer={openDrawer}
+      setOpenDrawer={setOpenDrawer}
+    >
+      <SendTransactionRequest
+        onClose={() => {
+          setOpenDrawer(false);
+          setRequest(undefined);
+        }}
+      />
+    </ApproveTransactionDrawer>
+  );
+}
+
+function SendTransactionRequest({ onClose }: any) {
+  const [request, setRequest] = useTransactionRequest();
+  const background = useBackgroundClient();
+  const plugins = useAllPlugins();
+  const { publicKey } = useActiveWallet();
+  const plugin = request
+    ? plugins.find((p) => p.iframeUrl === request.pluginUrl)
+    : undefined;
 
   const onConfirm = async () => {
     if (!request) {
@@ -74,19 +97,49 @@ export function ApproveTransactionRequest() {
     setRequest(undefined);
   };
 
-  const onReject = async () => {
-    request!.reject(new Error("user rejected transaction"));
-    setRequest(undefined);
-  };
   return (
-    <WithMiniDrawer
-      openDrawer={request !== undefined}
-      setOpenDrawer={(open: boolean) => {
-        if (!open) {
-          setRequest(undefined);
-        }
+    <div
+      style={{
+        height: "402px",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
+      {request && plugin && (
+        <div style={{ padding: "24px", flex: 1 }}>
+          <Scrollbar>
+            {request?.kind === "sign-tx" ? (
+              <SignTransaction transaction={request?.data} plugin={plugin} />
+            ) : request.kind === "sign-msg" ? (
+              <SignMessage message={request?.data} plugin={plugin} />
+            ) : (
+              <SignAndSendTransaction
+                transaction={request?.data}
+                plugin={plugin}
+              />
+            )}
+          </Scrollbar>
+        </div>
+      )}
+      <div
+        style={{
+          marginLeft: "16px",
+          marginBottom: "16px",
+          marginRight: "16px",
+        }}
+      >
+        <PrimaryButton
+          onClick={() => onConfirm()}
+          label="Send"
+          type="submit"
+          data-testid="Send"
+        />
+      </div>
+    </div>
+  );
+}
+
+/*
       <BottomCard
         style={{
           height: "295px",
@@ -95,27 +148,8 @@ export function ApproveTransactionRequest() {
         onButtonClick={onConfirm}
         cancelButtonLabel={"Cancel"}
         onCancelButtonClick={onReject}
-      >
-        {request && plugin && (
-          <div style={{ padding: "24px", height: "100%" }}>
-            <Scrollbar>
-              {request?.kind === "sign-tx" ? (
-                <SignTransaction transaction={request?.data} plugin={plugin} />
-              ) : request.kind === "sign-msg" ? (
-                <SignMessage message={request?.data} plugin={plugin} />
-              ) : (
-                <SignAndSendTransaction
-                  transaction={request?.data}
-                  plugin={plugin}
-                />
-              )}
-            </Scrollbar>
-          </div>
-        )}
-      </BottomCard>
-    </WithMiniDrawer>
-  );
-}
+>
+*/
 
 function SignAndSendTransaction({
   transaction,
