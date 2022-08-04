@@ -130,7 +130,7 @@ jobs:
       #
 
       - name: "zip build artifacts"
-        #if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         working-directory: packages/app-extension
         run: zip -r build.zip build/
       - name: "upload build artifacts"
@@ -166,7 +166,7 @@ jobs:
           asset_content_type: application/zip
 
       - name: "post artifacts to Discord"
-        #if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: sinshutu/upload-to-discord@master
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
