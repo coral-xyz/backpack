@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Typography, Link } from "@mui/material";
+import { CircularProgress, Typography, Link } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Connection, SystemProgram, PublicKey } from "@solana/web3.js";
 import {
@@ -8,6 +8,7 @@ import {
   useBlockchainTokenAccount,
   useSolanaExplorer,
   useSolanaConnectionUrl,
+  useNavigation,
 } from "@coral-xyz/recoil";
 import {
   Blockchain,
@@ -23,15 +24,14 @@ import {
   TextFieldLabel,
   walletAddressDisplay,
   PrimaryButton,
-  Loading,
   SecondaryButton,
 } from "../../../common";
-import {
-  useDrawerContext,
-  WithMiniDrawer,
-} from "../../../common/Layout/Drawer";
+import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { MaxLabel } from "../../../common/MaxLabel";
+import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
+import { SettingsList } from "../../../common/Settings/List";
+import { CheckIcon } from "../../../common/Icon";
 
 const logger = getLogger("send-component");
 
@@ -66,19 +66,6 @@ const useStyles = styles((theme) => ({
     fontSize: "12px",
     lineHeight: "16px",
   },
-  sendConfirmationContainer: {
-    height: "100%",
-    overflow: "hidden",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    background: theme.custom.colors.background,
-    borderTopLeftRadius: "12px",
-    borderTopRightRadius: "12px",
-  },
-  sendConfirmationTopHalf: {
-    background: theme.custom.colors.drawerGradient,
-  },
   confirmRow: {
     display: "flex",
     justifyContent: "space-between",
@@ -95,6 +82,12 @@ const useStyles = styles((theme) => ({
     lineHeight: "16px",
     fontWeight: 500,
     color: theme.custom.colors.fontColor,
+  },
+  confirmTableListItem: {
+    "&:hover": {
+      // Disable hover color.
+      background: "transparent",
+    },
   },
 }));
 
@@ -255,7 +248,10 @@ export function Send({
           type="submit"
           data-testid="Send"
         />
-        <WithMiniDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+        <ApproveTransactionDrawer
+          openDrawer={openDrawer}
+          setOpenDrawer={setOpenDrawer}
+        >
           <SendConfirmationCard
             token={token}
             address={address}
@@ -265,7 +261,7 @@ export function Send({
               close();
             }}
           />
-        </WithMiniDrawer>
+        </ApproveTransactionDrawer>
       </div>
     </form>
   );
@@ -325,6 +321,7 @@ export function SendConfirmationCard({
   amount: number;
   close: () => void;
 }) {
+  const theme = useCustomTheme();
   const ctx = useSolanaCtx();
   const [cardType, setCardType] = useState<
     "confirm" | "sending" | "complete" | "error"
@@ -379,111 +376,282 @@ export function SendConfirmationCard({
   };
 
   return (
-    <BottomCard
-      onButtonClick={cardType === "confirm" ? onConfirm : close}
-      buttonLabel={cardType === "confirm" ? "Confirm" : "Close"}
-    >
-      <div style={{ padding: "24px", height: "100%" }}>
-        {cardType === "confirm" ? (
-          <ConfirmSend address={address} />
-        ) : cardType === "sending" ? (
-          <Sending signature={txSignature!} />
-        ) : cardType === "complete" ? (
-          <Complete signature={txSignature!} address={address} />
-        ) : (
-          <Error signature={txSignature!} />
-        )}
-      </div>
-    </BottomCard>
-  );
-}
-
-function ConfirmSend({ address }: { address: string }) {
-  const classes = useStyles();
-  const theme = useCustomTheme();
-  const ctx = useSolanaCtx();
-  return (
     <div>
-      <Typography
-        style={{
-          color: theme.custom.colors.fontColor,
-          fontWeight: 500,
-          fontSize: "18px",
-          lineHeight: "24px",
-        }}
-      >
-        Confirm Send
-      </Typography>
-      <div
-        style={{
-          marginTop: "18px",
-        }}
-      >
-        <div className={classes.confirmRow}>
-          <Typography className={classes.confirmRowLabelLeft}>
-            Network
-          </Typography>
-          <Typography className={classes.confirmRowLabelRight}>
-            Solana
-          </Typography>
-        </div>
-        <div className={classes.confirmRow}>
-          <Typography className={classes.confirmRowLabelLeft}>
-            Network Fee
-          </Typography>
-          <Typography className={classes.confirmRowLabelRight}>
-            0.000005 SOL
-          </Typography>
-        </div>
-        <div className={classes.confirmRow}>
-          <Typography className={classes.confirmRowLabelLeft}>
-            Sending from
-          </Typography>
-          <Typography className={classes.confirmRowLabelRight}>
-            {walletAddressDisplay(ctx.walletPublicKey)}
-          </Typography>
-        </div>
-        <div className={classes.confirmRow}>
-          <Typography className={classes.confirmRowLabelLeft}>
-            Sending to
-          </Typography>
-          <Typography className={classes.confirmRowLabelRight}>
-            {walletAddressDisplay(new PublicKey(address))}
-          </Typography>
-        </div>
-      </div>
+      {cardType === "confirm" ? (
+        <ConfirmSend
+          token={token}
+          address={address}
+          amount={amount}
+          onConfirm={onConfirm}
+        />
+      ) : cardType === "sending" ? (
+        <Sending
+          isComplete={false}
+          amount={amount}
+          token={token}
+          signature={txSignature!}
+        />
+      ) : cardType === "complete" ? (
+        <Sending
+          isComplete={true}
+          amount={amount}
+          token={token}
+          signature={txSignature!}
+        />
+      ) : (
+        <Error signature={txSignature!} />
+      )}
     </div>
   );
 }
 
-function Sending({ signature }: { signature: string }) {
+function ConfirmSend({
+  token,
+  address,
+  amount,
+  onConfirm,
+}: {
+  token: any;
+  address: string;
+  amount: number;
+  onConfirm: () => void;
+}) {
   const theme = useCustomTheme();
-  const solanaExplorer = useSolanaExplorer();
-  const connectionUrl = useSolanaConnectionUrl();
+
+  return (
+    <div
+      style={{
+        padding: "16px",
+        height: "402px",
+        display: "flex",
+        justifyContent: "space-between",
+        flexDirection: "column",
+        paddingBottom: "24px",
+      }}
+    >
+      <div>
+        <Typography
+          style={{
+            color: theme.custom.colors.fontColor,
+            fontWeight: 500,
+            fontSize: "18px",
+            lineHeight: "24px",
+            textAlign: "center",
+          }}
+        >
+          Review Send
+        </Typography>
+        <ConfirmSendToken
+          style={{
+            marginTop: "40px",
+            marginBottom: "40px",
+          }}
+          amount={amount}
+          token={token}
+        />
+        <ConfirmSendTable address={address} />
+      </div>
+      <PrimaryButton
+        onClick={() => onConfirm()}
+        label="Send"
+        type="submit"
+        data-testid="Send"
+      />
+    </div>
+  );
+}
+
+const ConfirmSendToken: React.FC<{
+  style: React.CSSProperties;
+  token: any;
+  amount: number;
+}> = ({ style, token, amount }) => {
+  const theme = useCustomTheme();
+
   return (
     <div
       style={{
         display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        height: "100%",
+        ...style,
       }}
     >
-      <div style={{ height: "40px" }}>
-        <Loading />
+      {/* Dummy padding to center flex content */}
+      <div style={{ flex: 1 }} />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+          marginRight: "8px",
+        }}
+      >
+        <img
+          src={token.logo}
+          style={{
+            width: "32px",
+            height: "32px",
+            borderRadius: "16px",
+          }}
+        />
       </div>
       <Typography
-        style={{ textAlign: "center", color: theme.custom.colors.secondary }}
+        style={{
+          color: theme.custom.colors.fontColor,
+          fontWeight: 500,
+          fontSize: "30px",
+          lineHeight: "36px",
+          textAlign: "center",
+        }}
       >
-        Sending...
+        {amount}
+        <span
+          style={{
+            marginLeft: "8px",
+            color: theme.custom.colors.secondary,
+          }}
+        >
+          {token.ticker}
+        </span>
       </Typography>
-      <Link
-        href={explorerUrl(solanaExplorer, signature, connectionUrl)}
-        target="_blank"
-        style={{ textAlign: "center" }}
+      {/* Dummy padding to center flex content */}
+      <div style={{ flex: 1 }} />
+    </div>
+  );
+};
+
+const ConfirmSendTable: React.FC<{ address: string }> = ({ address }) => {
+  const theme = useCustomTheme();
+  const ctx = useSolanaCtx();
+  const classes = useStyles();
+
+  const menuItems = {
+    From: {
+      onClick: () => {},
+      detail: (
+        <Typography>{walletAddressDisplay(ctx.walletPublicKey)}</Typography>
+      ),
+      classes: { root: classes.confirmTableListItem },
+      button: false,
+    },
+    To: {
+      onClick: () => {},
+      detail: (
+        <Typography>{walletAddressDisplay(new PublicKey(address))}</Typography>
+      ),
+      classes: { root: classes.confirmTableListItem },
+      button: false,
+    },
+    "Network fee": {
+      onClick: () => {},
+      detail: (
+        <Typography>
+          0.000005{" "}
+          <span style={{ color: theme.custom.colors.secondary }}>SOL</span>
+        </Typography>
+      ),
+      classes: { root: classes.confirmTableListItem },
+      button: false,
+    },
+  };
+
+  return (
+    <SettingsList
+      menuItems={menuItems}
+      style={{ margin: 0 }}
+      textStyle={{
+        color: theme.custom.colors.secondary,
+      }}
+    />
+  );
+};
+
+function Sending({
+  amount,
+  token,
+  signature,
+  isComplete,
+}: {
+  amount: number;
+  token: any;
+  signature: string;
+  isComplete: boolean;
+}) {
+  const theme = useCustomTheme();
+  const solanaExplorer = useSolanaExplorer();
+  const connectionUrl = useSolanaConnectionUrl();
+  const nav = useNavigation();
+  return (
+    <div
+      style={{
+        height: "264px",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <Typography
+        style={{
+          textAlign: "center",
+          color: theme.custom.colors.secondary,
+          fontSize: "14px",
+          fontWeight: 500,
+          marginTop: "30px",
+        }}
       >
-        View Transaction
-      </Link>
+        {isComplete ? "Sent" : "Sending..."}
+      </Typography>
+      <ConfirmSendToken
+        style={{
+          marginTop: "16px",
+          marginBottom: "0px",
+        }}
+        amount={amount}
+        token={token}
+      />
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        {isComplete ? (
+          <div style={{ textAlign: "center" }}>
+            <CheckIcon />
+          </div>
+        ) : (
+          <CircularProgress
+            size={48}
+            style={{
+              color: theme.custom.colors.primaryButton,
+              display: "flex",
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+            thickness={6}
+          />
+        )}
+      </div>
+      <div
+        style={{
+          marginBottom: "16px",
+          marginLeft: "16px",
+          marginRight: "16px",
+        }}
+      >
+        <SecondaryButton
+          onClick={() => {
+            if (isComplete) {
+              nav.toRoot();
+            } else {
+              window.open(
+                explorerUrl(solanaExplorer, signature, connectionUrl)
+              );
+            }
+          }}
+          label={isComplete ? "View Balances" : "View Explorer"}
+        />
+      </div>
     </div>
   );
 }
@@ -501,10 +669,10 @@ function Complete({
   return (
     <div
       style={{
+        height: "264px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        height: "100%",
       }}
     >
       <Typography
@@ -568,46 +736,75 @@ export function BottomCard({
   cancelButtonStyle,
   cancelButtonLabelStyle,
   children,
-  style,
+  //  style,
   topHalfStyle,
-}: any) {
+  wrapperStyle,
+}: //	buttonContainerStyle,
+any) {
   const classes = useStyles();
+  const theme = useCustomTheme();
   return (
-    <div className={classes.sendConfirmationContainer} style={style}>
-      <div
-        className={classes.sendConfirmationTopHalf}
-        style={{ flex: 1, ...topHalfStyle }}
-      >
-        {children}
-      </div>
+    <div
+      style={{
+        background: "transparent",
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        ...wrapperStyle,
+      }}
+    >
       <div
         style={{
-          marginBottom: "24px",
-          marginLeft: "12px",
-          marginRight: "12px",
+          height: "100%",
+          overflow: "hidden",
           display: "flex",
-          justifyContent: "space-between",
+          flexDirection: "column",
+          justifyContent: "center",
+          background: theme.custom.colors.background,
+          borderTopLeftRadius: "12px",
+          borderTopRightRadius: "12px",
+          //			...style
         }}
       >
-        {cancelButtonLabel && (
-          <SecondaryButton
-            style={{
-              marginRight: "8px",
-              ...cancelButtonStyle,
-            }}
-            buttonLabelStyle={cancelButtonLabelStyle}
-            onClick={onCancelButtonClick}
-            label={cancelButtonLabel}
-          />
-        )}
-        {buttonLabel && (
-          <PrimaryButton
-            style={buttonStyle}
-            buttonLabelStyle={buttonLabelStyle}
-            onClick={onButtonClick}
-            label={buttonLabel}
-          />
-        )}
+        <div
+          style={{
+            flex: 1,
+            background: theme.custom.colors.drawerGradient,
+            ...topHalfStyle,
+          }}
+        >
+          {children}
+        </div>
+        <div
+          style={{
+            marginBottom: "24px",
+            marginLeft: "12px",
+            marginRight: "12px",
+            display: "flex",
+            justifyContent: "space-between",
+            //					...buttonContainerStyle,
+          }}
+        >
+          {cancelButtonLabel && (
+            <SecondaryButton
+              style={{
+                marginRight: "8px",
+                ...cancelButtonStyle,
+              }}
+              buttonLabelStyle={cancelButtonLabelStyle}
+              onClick={onCancelButtonClick}
+              label={cancelButtonLabel}
+            />
+          )}
+          {buttonLabel && (
+            <PrimaryButton
+              style={buttonStyle}
+              buttonLabelStyle={buttonLabelStyle}
+              onClick={onButtonClick}
+              label={buttonLabel}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
