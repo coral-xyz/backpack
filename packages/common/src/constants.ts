@@ -125,7 +125,7 @@ export const NOTIFICATION_KEYRING_KEY_DELETE = "anchor-keyring-key-delete";
 export const NOTIFICATION_KEYRING_DERIVED_WALLET =
   "anchor-keyring-derived-wallet";
 export const NOTIFICATION_ACTIVE_WALLET_UPDATED =
-  "anchor-kerying-active-wallet-updated";
+  "anchor-keyring-active-wallet-updated";
 export const NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY =
   "anchor-keyring-imported-secret-key";
 export const NOTIFICATION_KEYRING_RESET_MNEMONIC =
