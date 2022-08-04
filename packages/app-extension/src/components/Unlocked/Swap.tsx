@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   InputAdornment,
   Typography,
@@ -11,7 +12,6 @@ import {
   useJupiterInputMints,
   useJupiterOutputMints,
   useSwapContext,
-  useNavigation,
   SwapProvider,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -439,7 +439,7 @@ function SwapConfirmation({ onConfirm }: { onConfirm: () => void }) {
 function SwapConfirming({ isConfirmed }: { isConfirmed: boolean }) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const nav = useNavigation();
+  const navigate = useNavigate();
   return (
     <div
       style={{
@@ -488,15 +488,20 @@ function SwapConfirming({ isConfirmed }: { isConfirmed: boolean }) {
           )}
         </div>
       </div>
-      <div
-        style={{
-          marginBottom: "16px",
-          marginLeft: "16px",
-          marginRight: "16px",
-        }}
-      >
-        <SecondaryButton onClick={() => nav.toRoot()} label={"View Balances"} />
-      </div>
+      {isConfirmed && (
+        <div
+          style={{
+            marginBottom: "16px",
+            marginLeft: "16px",
+            marginRight: "16px",
+          }}
+        >
+          <SecondaryButton
+            onClick={() => navigate("/balances")}
+            label={"View Balances"}
+          />
+        </div>
+      )}
     </div>
   );
 }
