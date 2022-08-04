@@ -193,9 +193,10 @@ export const generateWrapSolTx = async (
   const { walletPublicKey, tokenClient, commitment } = ctx;
   const destinationAta = associatedTokenAddress(NATIVE_MINT, destination);
 
-  const destinationAccount =
-    await tokenClient.provider.connection.getAccountInfo(
-      destination,
+  const [destinationAccount, destinationAtaAccount] =
+    await anchor.utils.rpc.getMultipleAccounts(
+      tokenClient.provider.connection,
+      [destination, destinationAta],
       commitment
     );
 
@@ -205,13 +206,13 @@ export const generateWrapSolTx = async (
   //
   if (
     destinationAccount &&
-    !destinationAccount.owner.equals(SystemProgram.programId)
+    !destinationAccount.account.owner.equals(SystemProgram.programId)
   ) {
     throw new Error("invalid account");
   }
 
   const tx = new Transaction();
-  if (!destinationAta) {
+  if (!destinationAtaAccount) {
     tx.instructions.push(
       createAssociatedTokenAccountInstruction(
         walletPublicKey,
