@@ -4,7 +4,7 @@ import { ProviderUiInjection } from "./provider-ui";
 
 const logger = getLogger("provider-injection");
 
-// Script entry.
+// Entry.
 function main() {
   logger.debug("starting injected script");
   initProvider();

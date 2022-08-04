@@ -44,7 +44,7 @@ export class RequestManager {
     delete this._responseResolvers[id];
     const [resolve, reject] = resolver;
     if (error) {
-      reject(error);
+      reject(new Error(error));
     } else {
       resolve(result);
     }

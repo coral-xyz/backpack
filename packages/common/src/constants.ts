@@ -7,8 +7,6 @@ export const CHANNEL_PLUGIN_RENDER_REQUEST =
   "anchor-channel-plugin-render-request";
 export const CHANNEL_PLUGIN_LAUNCH_REQUEST =
   "anchor-channel-plugin-launch-request";
-export const CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE =
-  "anchor-channel-plugin-react-reconciler-bridge";
 export const CHANNEL_PLUGIN_NOTIFICATION = "anchor-channel-plugin-notification";
 export const CHANNEL_PLUGIN_CONNECTION_BRIDGE =
   "anchor-channel-plugin-connection-bridge";
@@ -20,7 +18,6 @@ export const CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE =
 //
 // Mobile webview messaging subsystem channels.
 //
-export const MOBILE_CHANNEL_LOGS = "mobile-logs";
 export const MOBILE_CHANNEL_HOST_RPC_REQUEST = "mobile-host-rpc-request";
 export const MOBILE_CHANNEL_HOST_RPC_RESPONSE = "mobile-host-rpc-response";
 export const MOBILE_CHANNEL_BG_REQUEST = "mobile-bg-request";
@@ -29,30 +26,6 @@ export const MOBILE_CHANNEL_BG_RESPONSE_INNER = "mobile-bg-response-inner";
 export const MOBILE_CHANNEL_FE_REQUEST = "mobile-fe-request";
 export const MOBILE_CHANNEL_FE_RESPONSE = "mobile-fe-response";
 export const MOBILE_CHANNEL_FE_RESPONSE_INNER = "mobile-fe-response-inner";
-
-export const RECONCILER_BRIDGE_METHOD_CREATE_INSTANCE =
-  "anchor-reconciler-method-create-instance";
-export const RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE =
-  "reconciler-bridge-method-commit-update";
-export const RECONCILER_BRIDGE_METHOD_MOUNT = "reconciler-bridge-method-mount";
-export const RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE =
-  "reconciler-bridge-method-text-update";
-export const RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER =
-  "reconciler-bridge-method-append-child-to-container";
-export const RECONCILER_BRIDGE_METHOD_APPEND_INITIAL_CHILD =
-  "reconciler-bridge-method-append-initial-child";
-export const RECONCILER_BRIDGE_METHOD_APPEND_CHILD =
-  "reconciler-bridge-method-append-child";
-export const RECONCILER_BRIDGE_METHOD_INSERT_IN_CONTAINER_BEFORE =
-  "reconciler-bridge-method-insert-in-container-before";
-export const RECONCILER_BRIDGE_METHOD_INSERT_BEFORE =
-  "reconciler-bridge-method-insert-before";
-export const RECONCILER_BRIDGE_METHOD_REMOVE_CHILD =
-  "reconciler-bridge-method-remove-child";
-export const RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER =
-  "reconciler-bridge-method-remove-child-from-container";
-export const RECONCILER_BRIDGE_METHOD_RENDER_ROOT =
-  "reconciler-bridge-method-render-root";
 
 export const PLUGIN_NOTIFICATION_RENDER = "render";
 export const PLUGIN_RPC_METHOD_NAV_PUSH = "nav-push";
@@ -81,6 +54,7 @@ export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS =
 export const UI_RPC_METHOD_KEYRING_STORE_STATE = "keyring-store-state";
 export const UI_RPC_METHOD_APPROVED_ORIGINS_READ = "approved-origins-read";
 export const UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE = "approved-origins-update";
+export const UI_RPC_METHOD_APPROVED_ORIGINS_DELETE = "approved-origins-delete";
 export const UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE =
   "keyring-store-keep-alive";
 export const UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD =
@@ -102,6 +76,7 @@ export const UI_RPC_METHOD_CONNECTION_URL_UPDATE = "connection-url-update";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET = "wallet-active";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE =
   "wallet-active-update";
+export const UI_RPC_METHOD_KEYNAME_READ = "keyname-read";
 export const UI_RPC_METHOD_KEYNAME_UPDATE = "keyname-update";
 export const UI_RPC_METHOD_PASSWORD_UPDATE = "password-update";
 export const UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY = "export-secret-key";
@@ -112,6 +87,7 @@ export const UI_RPC_METHOD_KEYRING_AUTOLOCK_READ = "autolock-read";
 export const UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE = "autolock-update";
 export const UI_RPC_METHOD_NAVIGATION_PUSH = "navigation-push";
 export const UI_RPC_METHOD_NAVIGATION_POP = "navigation-pop";
+export const UI_RPC_METHOD_NAVIGATION_TO_ROOT = "navigation-to-root";
 export const UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE =
   "navigation-current-url-update";
 export const UI_RPC_METHOD_NAVIGATION_READ = "navigation-read";
@@ -129,6 +105,8 @@ export const UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION =
   "ui-rpc-method-sign-and-send-tx";
 export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
 export const UI_RPC_METHOD_LEDGER_IMPORT = "ledger-import";
+export const UI_RPC_METHOD_SOLANA_EXPLORER_READ = "solana-explorer-read";
+export const UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE = "solana-explorer-update";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
@@ -159,6 +137,13 @@ export const NOTIFICATION_SPL_TOKENS_DID_UPDATE =
   "anchor-spl-tokens-did-update";
 export const NOTIFICATION_NAVIGATION_URL_DID_CHANGE =
   "anchor-navigation-url-did-change";
+export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
+  "anchor-auto-lock-secs-updated";
+export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
+  "anchor-solana-explorer-updated";
+export const NOTIFICATION_SOLANA_COMMITMENT_UPDATED =
+  "anchor-solana-commitment-updated";
+export const NOTIFICATION_DARK_MODE_UPDATED = "anchor-dark-mode-updated";
 
 export const SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO = "solana-get-account-info";
 export const SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH =
@@ -181,6 +166,8 @@ export const SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS =
   "solana-custom-spl-token-accounts";
 export const SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS =
   "solana-get-program-accounts";
+export const SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE =
+  "solana-get-fee-for-message";
 
 export const CONNECTION_POPUP_RPC = "anchor-popup-rpc";
 export const CONNECTION_POPUP_RESPONSE = "anchor-popup-response";
@@ -195,6 +182,8 @@ export const LEDGER_METHOD_UNLOCK = "ledger-method-unlock";
 export const LEDGER_METHOD_CONNECT = "ledger-method-connect";
 export const LEDGER_METHOD_SIGN_TRANSACTION = "ledger-method-sign-transaction";
 export const LEDGER_METHOD_SIGN_MESSAGE = "ledger-method-sign-message";
+
+export const BACKGROUND_SERVICE_WORKER_READY = "service-worker-ready";
 
 export const POST_MESSAGE_ORIGIN = "*";
 
@@ -211,6 +200,8 @@ export const TAB_APPS = "apps";
 export const TAB_SET = new Set([TAB_BALANCES, TAB_SWAP, TAB_NFTS, TAB_APPS]);
 
 export const NAV_COMPONENT_TOKEN = "balances/token";
+export const NAV_COMPONENT_NFT_DETAIL = "nfts/detail";
+export const NAV_COMPONENT_NFT_COLLECTION = "nfts/collection";
 
 export const BACKEND_EVENT = "backend-event";
 

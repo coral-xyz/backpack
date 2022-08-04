@@ -5,8 +5,10 @@ import { PublicKey, Transaction } from "@solana/web3.js";
 import type { NamedPublicKey, KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
+import { SolanaCluster } from "@coral-xyz/common";
 import {
   Blockchain,
+  SolanaExplorer,
   BACKEND_EVENT,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_KEYRING_KEY_DELETE,
@@ -20,10 +22,16 @@ import {
   NOTIFICATION_KEYRING_STORE_RESET,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_CONNECTION_URL_UPDATED,
+  NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
+  NOTIFICATION_SOLANA_EXPLORER_UPDATED,
+  NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
+  NOTIFICATION_DARK_MODE_UPDATED,
 } from "@coral-xyz/common";
-import type { Nav } from "../keyring/store";
-import { KeyringStore, setNav, getNav } from "../keyring/store";
-import type { Backend as SolanaConnectionBackend } from "../backend/solana-connection";
+import type { Nav } from "./store";
+import * as store from "./store";
+import { KeyringStore } from "./keyring";
+import type { Backend as SolanaConnectionBackend } from "./solana-connection";
+import { getWalletData, setWalletData } from "./store";
 
 export function start(events: EventEmitter, solanaB: SolanaConnectionBackend) {
   return new Backend(events, solanaB);
@@ -40,14 +48,9 @@ export class Backend {
     this.events = events;
   }
 
-  async isApprovedOrigin(origin: string): Promise<boolean> {
-    return await this.keyringStore.isApprovedOrigin(origin);
-  }
-
-  disconnect() {
-    // todo
-    return SUCCESS_RESPONSE;
-  }
+  ///////////////////////////////////////////////////////////////////////////////
+  // Solana Provider.
+  ///////////////////////////////////////////////////////////////////////////////
 
   async signAndSendTx(
     txStr: string,
@@ -110,6 +113,15 @@ export class Backend {
     return await this.solanaConnectionBackend.simulateTransaction(tx);
   }
 
+  disconnect() {
+    // todo
+    return SUCCESS_RESPONSE;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  // Solana.
+  ///////////////////////////////////////////////////////////////////////////////
+
   async recentBlockhash(commitment?: Commitment): Promise<string> {
     const { blockhash } = await this.solanaConnectionBackend.getLatestBlockhash(
       commitment
@@ -117,11 +129,92 @@ export class Backend {
     return blockhash;
   }
 
-  async solanaConnectionUrl(): Promise<string> {
-    const blockchain = this.keyringStore.blockchains.get(Blockchain.SOLANA);
-    const url = await blockchain!.connectionUrlRead();
-    return url;
+  async solanaConnectionUrlRead(): Promise<string> {
+    const data = await getWalletData();
+    return data.solana.cluster ?? SolanaCluster.DEFAULT;
   }
+
+  // Returns true if the url changed.
+  async solanaConnectionUrlUpdate(cluster: string): Promise<boolean> {
+    const data = await getWalletData();
+
+    if (data.solana.cluster === cluster) {
+      return false;
+    }
+
+    await setWalletData({
+      ...data,
+      solana: {
+        ...data.solana,
+        cluster,
+      },
+    });
+
+    const activeWallet = await this.activeWallet();
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_CONNECTION_URL_UPDATED,
+      data: {
+        url: cluster,
+        activeWallet,
+      },
+    });
+
+    return true;
+  }
+
+  async solanaExplorerRead(): Promise<string> {
+    const data = await store.getWalletData();
+    return data.solana && data.solana.explorer
+      ? data.solana.explorer
+      : SolanaExplorer.DEFAULT;
+  }
+
+  async solanaExplorerUpdate(explorer: string): Promise<string> {
+    const data = await store.getWalletData();
+    await store.setWalletData({
+      ...data,
+      solana: {
+        ...data.solana,
+        explorer,
+      },
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_SOLANA_EXPLORER_UPDATED,
+      data: {
+        explorer,
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
+  async solanaCommitmentRead(): Promise<Commitment> {
+    const data = await store.getWalletData();
+    return data.solana && data.solana.commitment
+      ? data.solana.commitment
+      : "processed";
+  }
+
+  async solanaCommitmentUpdate(commitment: Commitment): Promise<string> {
+    const data = await store.getWalletData();
+    await store.setWalletData({
+      ...data,
+      solana: {
+        ...data.solana,
+        commitment,
+      },
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
+      data: {
+        commitment,
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  // Keyring.
+  ///////////////////////////////////////////////////////////////////////////////
 
   // Creates a brand new keyring store. Should be run once on initializtion.
   async keyringStoreCreate(
@@ -151,7 +244,7 @@ export class Backend {
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
 
-    const url = await this.solanaConnectionUrl();
+    const url = await this.solanaConnectionUrlRead();
     const activeWallet = await this.activeWallet();
     const commitment = await this.solanaCommitmentRead();
 
@@ -193,19 +286,13 @@ export class Backend {
     const pubkeys = this.keyringStore.publicKeys();
     const [hdNames, importedNames, ledgerNames] = await Promise.all([
       Promise.all(
-        pubkeys.hdPublicKeys.map((pk) =>
-          this.keyringStore.getKeyname(pk.toString())
-        )
+        pubkeys.hdPublicKeys.map((pk) => store.getKeyname(pk.toString()))
       ),
       Promise.all(
-        pubkeys.importedPublicKeys.map((pk) =>
-          this.keyringStore.getKeyname(pk.toString())
-        )
+        pubkeys.importedPublicKeys.map((pk) => store.getKeyname(pk.toString()))
       ),
       Promise.all(
-        pubkeys.ledgerPublicKeys.map((pk) =>
-          this.keyringStore.getKeyname(pk.toString())
-        )
+        pubkeys.ledgerPublicKeys.map((pk) => store.getKeyname(pk.toString()))
       ),
     ]);
     return {
@@ -242,25 +329,6 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async connectionUrlRead(): Promise<string> {
-    return await this.keyringStore.connectionUrlRead();
-  }
-
-  async connectionUrlUpdate(url: string): Promise<boolean> {
-    const didChange = await this.keyringStore.connectionUrlUpdate(url);
-    if (didChange) {
-      const activeWallet = await this.activeWallet();
-      this.events.emit(BACKEND_EVENT, {
-        name: NOTIFICATION_CONNECTION_URL_UPDATED,
-        data: {
-          url,
-          activeWallet,
-        },
-      });
-    }
-    return didChange;
-  }
-
   async activeWallet(): Promise<string> {
     return await this.keyringStore.activeWallet();
   }
@@ -289,8 +357,13 @@ export class Backend {
     return pubkey.toString();
   }
 
+  async keynameRead(publicKey: string): Promise<string> {
+    const keyname = await store.getKeyname(publicKey);
+    return keyname;
+  }
+
   async keynameUpdate(publicKey: string, newName: string): Promise<string> {
-    await this.keyringStore.setKeyname(publicKey, newName);
+    await store.setKeyname(publicKey, newName);
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYNAME_UPDATE,
       data: {
@@ -349,11 +422,18 @@ export class Backend {
   }
 
   async keyringAutolockRead(): Promise<number> {
-    return await this.keyringStore.autoLockRead();
+    const data = await store.getWalletData();
+    return data.autoLockSecs;
   }
 
-  async keyringAutolockUpdate(secs: number): Promise<string> {
-    await this.keyringStore.autoLockUpdate(secs);
+  async keyringAutolockUpdate(autoLockSecs: number): Promise<string> {
+    await this.keyringStore.autoLockUpdate(autoLockSecs);
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
+      data: {
+        autoLockSecs,
+      },
+    });
     return SUCCESS_RESPONSE;
   }
 
@@ -361,143 +441,6 @@ export class Backend {
     this.keyringStore.reset();
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_RESET,
-    });
-    return SUCCESS_RESPONSE;
-  }
-
-  async navigationPush(url: string): Promise<string> {
-    let nav = await getNav();
-    if (!nav) {
-      throw new Error("nav not found");
-    }
-    nav.data[nav.activeTab].urls.push(url);
-    await setNav(nav);
-    url = setSearchParam(url, "nav", "push");
-
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-      data: {
-        url,
-      },
-    });
-
-    return SUCCESS_RESPONSE;
-  }
-
-  async navigationPop(): Promise<string> {
-    let nav = await getNav();
-    if (!nav) {
-      throw new Error("nav not found");
-    }
-    nav.data[nav.activeTab].urls.pop();
-    await setNav(nav);
-
-    const urls = nav.data[nav.activeTab].urls;
-    let url = urls[urls.length - 1];
-    url = setSearchParam(url, "nav", "pop");
-
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-      data: {
-        url,
-      },
-    });
-
-    return SUCCESS_RESPONSE;
-  }
-
-  async navRead(): Promise<Nav> {
-    let nav = await getNav();
-    if (!nav) {
-      await setNav(defaultNav);
-      nav = defaultNav;
-    }
-    // @ts-ignore
-    return nav;
-  }
-
-  async navigationActiveTabUpdate(activeTab: string): Promise<string> {
-    const currNav = await getNav();
-    if (!currNav) {
-      throw new Error("invariant violation");
-    }
-    const nav = {
-      ...currNav,
-      activeTab,
-    };
-    await setNav(nav);
-    const navData = nav.data[activeTab];
-    let url = navData.urls[navData.urls.length - 1];
-    url = setSearchParam(url, "nav", "tab");
-
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-      data: {
-        url,
-      },
-    });
-
-    return SUCCESS_RESPONSE;
-  }
-
-  async navigationCurrentUrlUpdate(url: string): Promise<string> {
-    // Get the tab nav.
-    const currNav = await getNav();
-    if (!currNav) {
-      throw new Error("invariant violation");
-    }
-
-    // Update the active tab's nav stack.
-    const navData = currNav.data[currNav.activeTab];
-    navData.urls[navData.urls.length - 1] = url;
-    currNav.data[currNav.activeTab] = navData;
-
-    // Save the change.
-    await setNav(currNav);
-
-    // Notify listeners.
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-      data: {
-        url,
-        nav: "tab",
-      },
-    });
-
-    return SUCCESS_RESPONSE;
-  }
-
-  async darkModeRead(): Promise<boolean> {
-    // todo
-    return true;
-  }
-
-  async darkModeUpdate(darkMode: boolean): Promise<string> {
-    // todo
-    return SUCCESS_RESPONSE;
-  }
-
-  async solanaCommitmentRead(): Promise<Commitment> {
-    // todo
-    return "processed";
-  }
-
-  async solanaCommitmentUpdate(commitment: string): Promise<string> {
-    // todo
-    return SUCCESS_RESPONSE;
-  }
-
-  async approvedOriginsRead(): Promise<Array<string>> {
-    return await this.keyringStore.approvedOrigins();
-  }
-
-  async approvedOriginsUpdate(approvedOrigins: Array<string>): Promise<string> {
-    await this.keyringStore.approvedOriginsUpdate(approvedOrigins);
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_APPROVED_ORIGINS_UPDATE,
-      data: {
-        approvedOrigins,
-      },
     });
     return SUCCESS_RESPONSE;
   }
@@ -530,6 +473,207 @@ export class Backend {
       derivationPath,
       numberOfAccounts
     );
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  // Preferences.
+  ///////////////////////////////////////////////////////////////////////////////
+
+  async darkModeRead(): Promise<boolean> {
+    const data = await store.getWalletData();
+    return data.darkMode ?? true;
+  }
+
+  async darkModeUpdate(darkMode: boolean): Promise<string> {
+    const data = await store.getWalletData();
+    await store.setWalletData({
+      ...data,
+      darkMode,
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_DARK_MODE_UPDATED,
+      data: {
+        darkMode,
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
+  async isApprovedOrigin(origin: string): Promise<boolean> {
+    const data = await store.getWalletData();
+    if (!data.approvedOrigins) {
+      return false;
+    }
+    const found = data.approvedOrigins.find((o) => o === origin);
+    return found !== undefined;
+  }
+
+  async approvedOriginsRead(): Promise<Array<string>> {
+    const data = await store.getWalletData();
+    return data.approvedOrigins;
+  }
+
+  async approvedOriginsUpdate(approvedOrigins: Array<string>): Promise<string> {
+    const data = await store.getWalletData();
+    await store.setWalletData({
+      ...data,
+      approvedOrigins,
+    });
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_APPROVED_ORIGINS_UPDATE,
+      data: {
+        approvedOrigins,
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
+  async approvedOriginsDelete(origin: string): Promise<string> {
+    const data = await store.getWalletData();
+    const approvedOrigins = data.approvedOrigins.filter((o) => o !== origin);
+    await store.setWalletData({
+      ...data,
+      approvedOrigins,
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_APPROVED_ORIGINS_UPDATE,
+      data: {
+        approvedOrigins,
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  // Navigation.
+  ///////////////////////////////////////////////////////////////////////////////
+
+  async navigationPush(url: string): Promise<string> {
+    let nav = await store.getNav();
+    if (!nav) {
+      throw new Error("nav not found");
+    }
+    nav.data[nav.activeTab].urls.push(url);
+    await store.setNav(nav);
+    url = setSearchParam(url, "nav", "push");
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+      data: {
+        url,
+      },
+    });
+
+    return SUCCESS_RESPONSE;
+  }
+
+  async navigationPop(): Promise<string> {
+    let nav = await store.getNav();
+    if (!nav) {
+      throw new Error("nav not found");
+    }
+    nav.data[nav.activeTab].urls.pop();
+    await store.setNav(nav);
+
+    const urls = nav.data[nav.activeTab].urls;
+    let url = urls[urls.length - 1];
+    url = setSearchParam(url, "nav", "pop");
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+      data: {
+        url,
+      },
+    });
+
+    return SUCCESS_RESPONSE;
+  }
+
+  async navigationToRoot(): Promise<string> {
+    let nav = await store.getNav();
+    if (!nav) {
+      throw new Error("nav not found");
+    }
+    const urls = nav.data[nav.activeTab].urls;
+    if (urls.length <= 1) {
+      return SUCCESS_RESPONSE;
+    }
+
+    let url = urls[0];
+    nav.data[nav.activeTab].urls = [url];
+    await store.setNav(nav);
+
+    url = setSearchParam(url, "nav", "pop");
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+      data: {
+        url,
+      },
+    });
+
+    return SUCCESS_RESPONSE;
+  }
+
+  async navRead(): Promise<Nav> {
+    let nav = await store.getNav();
+    if (!nav) {
+      await store.setNav(defaultNav);
+      nav = defaultNav;
+    }
+    // @ts-ignore
+    return nav;
+  }
+
+  async navigationActiveTabUpdate(activeTab: string): Promise<string> {
+    const currNav = await store.getNav();
+    if (!currNav) {
+      throw new Error("invariant violation");
+    }
+    const nav = {
+      ...currNav,
+      activeTab,
+    };
+    await store.setNav(nav);
+    const navData = nav.data[activeTab];
+    let url = navData.urls[navData.urls.length - 1];
+    url = setSearchParam(url, "nav", "tab");
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+      data: {
+        url,
+      },
+    });
+
+    return SUCCESS_RESPONSE;
+  }
+
+  async navigationCurrentUrlUpdate(url: string): Promise<string> {
+    // Get the tab nav.
+    const currNav = await store.getNav();
+    if (!currNav) {
+      throw new Error("invariant violation");
+    }
+
+    // Update the active tab's nav stack.
+    const navData = currNav.data[currNav.activeTab];
+    navData.urls[navData.urls.length - 1] = url;
+    currNav.data[currNav.activeTab] = navData;
+
+    // Save the change.
+    await store.setNav(currNav);
+
+    // Notify listeners.
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+      data: {
+        url,
+        nav: "tab",
+      },
+    });
+
+    return SUCCESS_RESPONSE;
   }
 }
 

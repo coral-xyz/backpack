@@ -1,48 +1,23 @@
 import { Blockchain } from "@coral-xyz/common";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Typography } from "@mui/material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
-import {
-  TextField,
-  BalancesTable,
-  BalancesTableHead,
-  BalancesTableContent,
-  BalancesTableRow,
-  BalancesTableCell,
-} from "@coral-xyz/react-xnft-renderer";
-import {
-  useBlockchainLogo,
-  useBlockchainTokensSorted,
-} from "@coral-xyz/recoil";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
 import { Send } from "./TokensWidget/Send";
-import { useNavStack } from "../../Layout/NavStack";
+import { useNavStack } from "../../common/Layout/NavStack";
+import type { Token } from "../../common/TokenTable";
+import { SearchableTokenTable } from "../../common/TokenTable";
+import { Send as TokenSend } from "./TokensWidget/Send";
 
-type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
-
-const useStyles = styles((theme) => ({
-  searchField: {
-    marginLeft: "12px",
-    marginRight: "12px",
-    marginTop: "16px",
-    marginBottom: "16px",
-    width: "inherit",
-    display: "flex",
-    "& .MuiOutlinedInput-root": {
-      height: "48px !important",
-      "& fieldset": {
-        border: `solid 2pt ${theme.custom.colors.border}`,
-      },
-      "&:hover fieldset": {
-        border: `solid 2pt ${theme.custom.colors.primaryButton}`,
-      },
-    },
-  },
-}));
-
-export function TransferWidget() {
+export function TransferWidget({
+  blockchain,
+  address,
+}: {
+  blockchain?: Blockchain;
+  address?: string;
+}) {
   return (
     <div
       style={{
@@ -50,53 +25,75 @@ export function TransferWidget() {
         width: "120px",
         marginLeft: "auto",
         marginRight: "auto",
-        marginTop: "20px",
-        marginBottom: "20px",
       }}
     >
       <ReceiveButton />
       <div style={{ width: "16px" }} />
-      <SendButton />
+      <SendButton blockchain={blockchain} address={address} />
     </div>
   );
 }
 
-function SendButton() {
+function SendButton({
+  blockchain,
+  address,
+}: {
+  blockchain?: Blockchain;
+  address?: string;
+}) {
+  const theme = useCustomTheme();
   return (
     <TransferButton
       label={"Send"}
       labelComponent={
         <ArrowUpward
           style={{
+            color: theme.custom.colors.fontColor,
             display: "flex",
             marginLeft: "auto",
             marginRight: "auto",
           }}
         />
       }
-      routes={[
-        {
-          name: "select-token",
-          component: SendToken,
-          title: "Select token",
-        },
-        {
-          name: "send",
-          component: (props: any) => <_Send {...props} />,
-          title: "",
-        },
-      ]}
+      routes={
+        blockchain && address
+          ? [
+              {
+                name: "send",
+                component: (props: any) => <TokenSend {...props} />,
+                title: `Send`,
+                props: {
+                  blockchain,
+                  tokenAddress: address,
+                },
+              },
+            ]
+          : [
+              {
+                name: "select-token",
+                component: SendToken,
+                title: "Select token",
+              },
+              {
+                name: "send",
+                component: (props: any) => <_Send {...props} />,
+                title: "",
+              },
+            ]
+      }
     />
   );
 }
 
 function ReceiveButton() {
+  const theme = useCustomTheme();
   return (
     <TransferButton
       label={"Receive"}
       labelComponent={
         <ArrowDownward
           style={{
+            color: theme.custom.colors.fontColor,
             display: "flex",
             marginLeft: "auto",
             marginRight: "auto",
@@ -164,88 +161,17 @@ function TransferButton({
 }
 
 function SendToken() {
-  const classes = useStyles();
-  const [searchFilter, setSearchFilter] = useState("");
-  return (
-    <div>
-      <TextField
-        placeholder={"Search"}
-        value={searchFilter}
-        setValue={setSearchFilter}
-        rootClass={classes.searchField}
-        inputProps={{
-          style: {
-            height: "48px",
-          },
-        }}
-      />
-      <TokenTable searchFilter={searchFilter} />
-    </div>
-  );
-}
-
-function TokenTable({ searchFilter }: { searchFilter?: string }) {
-  const blockchain = Blockchain.SOLANA;
-  const title = "Tokens";
-
-  const blockchainLogo = useBlockchainLogo(blockchain);
-  const tokenAccountsSorted = useBlockchainTokensSorted(blockchain);
-  const [search, setSearch] = useState(searchFilter ?? "");
-
-  const searchLower = search.toLowerCase();
-  const tokenAccountsFiltered = tokenAccountsSorted.filter(
-    (t) =>
-      t.nativeBalance !== 0 &&
-      t.name &&
-      (t.name.toLowerCase().startsWith(searchLower) ||
-        t.ticker.toLowerCase().startsWith(searchLower))
-  );
-
-  useEffect(() => {
-    setSearch(searchFilter ?? "");
-  }, [searchFilter]);
-
-  return (
-    <BalancesTable>
-      <BalancesTableHead
-        props={{ title, iconUrl: blockchainLogo, disableToggle: true }}
-      />
-      <BalancesTableContent>
-        {tokenAccountsFiltered.map((token) => (
-          <TokenRow key={token.address} token={token} blockchain={blockchain} />
-        ))}
-      </BalancesTableContent>
-    </BalancesTable>
-  );
-}
-
-function TokenRow({
-  token,
-  blockchain,
-}: {
-  token: Token;
-  blockchain: Blockchain;
-}) {
   const { push } = useNavStack();
+
+  const onClickRow = (blockchain: Blockchain, token: Token) => {
+    push("send", { blockchain, token });
+  };
+
   return (
-    <BalancesTableRow
-      onClick={() =>
-        push("send", {
-          blockchain,
-          token,
-        })
-      }
-    >
-      <BalancesTableCell
-        props={{
-          icon: token.logo,
-          title: token.name,
-          subtitle: `${token.nativeBalance.toLocaleString()} ${token.ticker}`,
-          usdValue: token.usdBalance,
-          percentChange: token.recentUsdBalanceChange,
-        }}
-      />
-    </BalancesTableRow>
+    <SearchableTokenTable
+      onClickRow={onClickRow}
+      customFilter={(token: Token) => token.nativeBalance !== 0}
+    />
   );
 }
 

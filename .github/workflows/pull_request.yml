@@ -8,102 +8,117 @@ on:
     branches:
       - master
 
-env:
-  solana_version: 1.10.24
-
 jobs:
+  add-labels-based-on-whats-changed:
+    name: Add PR labels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            mobile:
+              - 'packages/app-mobile/**'
+            extension:
+              - 'packages/app-extension/**'
+            xnft:
+              - 'packages/react-xnft/**'
+              - 'packages/react-xnft-renderer/**'
+              - 'packages/xnft/**'
+              - 'packages/xnft-cli/**'
+
+      - if: steps.changes.outputs.mobile == 'true'
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: "mobile"
+
+      - if: steps.changes.outputs.extension == 'true'
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: "extension"
+
+      - if: steps.changes.outputs.xnft == 'true'
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: "xnft"
+
   tests:
     runs-on: ubuntu-latest
-    name: Run tests
+    name: Build and run tests
+    # https://turborepo.org/docs/ci/github-actions
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
     steps:
       ##########################################################################
       # Setup environment.
       ##########################################################################
 
       - uses: actions/checkout@v3
+
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: yarn
 
-      ##########################################################################
-      # Yarn link.
-      ##########################################################################
-
-      #
-      # Wallet Adapter tasks.
-      #
-      # The following [wallet-adapter] tasks are only necessary until the
-      # default 'anchor' branch in https://github.com/coral-xyz/wallet-adapter
-      # gets merged upstream and deployed in @solana/wallet-adapter
-      #
-      - name: "[wallet-adapter] checkout"
-        uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        name: yarn-cache
+        id: yarn-cache
         with:
-          repository: coral-xyz/wallet-adapter
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          path: wallet-adapter
-      - name: "[wallet-adapter] set env var"
-        run: echo "wallet_adapter_sha=$(
-          cd wallet-adapter && git rev-parse --short HEAD
-          )" >> $GITHUB_ENV
-      # cache `yarn build` output based on latest commit SHA as it takes 10+ mins
-      - name: "[wallet-adapter] cache"
-        id: wallet-adapter-cache
-        uses: actions/cache@v3
-        with:
-          path: wallet-adapter
-          key: ${{ runner.OS }}-wallet-adapter-cache-${{ env.wallet_adapter_sha }}
-      - name: "[wallet-adapter] install deps"
-        working-directory: wallet-adapter
-        run: yarn install --frozen-lockfile
-      - name: "[wallet-adapter] build"
-        if: steps.wallet-adapter-cache.outputs.cache-hit != 'true'
-        working-directory: wallet-adapter
-        run: yarn build
-      - name: "[wallet-adapter] yarn link"
-        working-directory: wallet-adapter
-        run: npx lerna exec -- yarn link
+          path: |
+            **/node_modules
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            !**/node_modules/.cache
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn
 
       ##########################################################################
       # Yarn install.
       ##########################################################################
 
-      - run: yarn install --frozen-lockfile
+      - name: yarn install
+        run: yarn install --frozen-lockfile --prefer-offline
 
       ##########################################################################
       # Yarn test.
       ##########################################################################
 
       - run: yarn test
-      - name: "[solana] cache"
-        uses: actions/cache@v3
-        id: cache-solana
-        with:
-          path: |
-            ~/.cache/solana/
-            ~/.local/share/solana/
-          key: solana-${{ runner.os }}-${{ env.solana_version }}
-      - name: "[solana] install solana"
-        if: steps.cache-solana.outputs.cache-hit != 'true'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pkg-config build-essential libudev-dev
-          sh -c "$(curl -sSfL https://release.solana.com/v${{ env.solana_version }}/install)"
-      - name: "[solana] add to PATH"
-        run: echo "/home/runner/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
-      - name: "[e2e] build extension"
+
+      ##########################################################################
+      # Build extension.
+      ##########################################################################
+
+      - name: "build extension"
         # CI!=true so that build warnings aren't treated like errors (for now)
         env:
           CI: ""
         run: yarn build
 
-      #
-      # - name: "[e2e] run puppeteer tests"
-      #   uses: wentokay/hello-world-docker-action@v11
-      #   with:
-      #     command: yarn workspace @coral-xyz/app-extension e2e
-      #
+      ##########################################################################
+      # GitHub Pages.
+      ##########################################################################
+
+      - run: cd packages/background && yarn build:html
+
+      - if: github.event_name == 'pull_request'
+        name: "set env.commit_sha from latest commit in PR"
+        run: echo "commit_sha=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+      - if: github.event_name == 'push'
+        name: "set env.commit_sha from commit or merge commit"
+        run: echo "commit_sha=${{ github.sha }}" >> $GITHUB_ENV
+
+      - name: "set env.short_sha"
+        run: echo "short_sha=`echo "${{ env.commit_sha }}" | cut -c1-8`" >> $GITHUB_ENV
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          publish_dir: packages/background/build
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          destination_dir: "background-scripts/${{ env.short_sha }}"
 
       ##########################################################################
       # Release.

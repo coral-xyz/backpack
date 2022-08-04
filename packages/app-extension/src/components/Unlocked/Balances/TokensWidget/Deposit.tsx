@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Button, Tooltip, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useActiveWallet } from "@coral-xyz/recoil";
 import { WithHeaderButton } from "./Token";
@@ -9,7 +10,8 @@ import {
   TextFieldLabel,
   walletAddressDisplay,
 } from "../../../common";
-import { useDrawerContext } from "../../../Layout/Drawer";
+import { useDrawerContext } from "../../../common/Layout/Drawer";
+import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 
 const useStyles = styles((theme) => ({
   subtext: {
@@ -21,11 +23,40 @@ const useStyles = styles((theme) => ({
     lineHeight: "16px",
     size: "12px",
     fontWeight: 500,
-    fontSize: "12px",
+    fontSize: "14px",
     textAlign: "center",
   },
   depositTextFieldRoot: {
     margin: 0,
+    "& .MuiOutlinedInput-root": {
+      paddingRight: 0,
+      "& fieldset": {
+        border: `solid 1pt ${theme.custom.colors.border}`,
+        borderColor: `${theme.custom.colors.border} !important`,
+        paddingLeft: 0,
+        paddingRight: 0,
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: `${theme.custom.colors.primaryButton} !important`,
+      },
+    },
+    "& .MuiOutlinedInput-input": {
+      cursor: "pointer",
+    },
+    "&:hover .MuiOutlinedInput-root": {
+      paddingLeft: 0,
+      paddingRight: 0,
+    },
+  },
+  copyIcon: {
+    "&:hover": {
+      cursor: "pointer",
+    },
+  },
+  copyContainer: {
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
   copyButton: {
     background: "transparent",
@@ -60,6 +91,13 @@ export function Deposit() {
   const theme = useCustomTheme();
   const { close } = useDrawerContext();
   const activeWallet = useActiveWallet();
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
+  const onCopy = () => {
+    setTooltipOpen(true);
+    setTimeout(() => setTooltipOpen(false), 1000);
+    navigator.clipboard.writeText(activeWallet.publicKey.toString());
+  };
 
   return (
     <div
@@ -88,6 +126,9 @@ export function Deposit() {
           buttonLabelStyle={{
             color: theme.custom.colors.fontColor,
           }}
+          topHalfStyle={{
+            background: "transparent",
+          }}
         >
           <div
             style={{
@@ -104,7 +145,10 @@ export function Deposit() {
           </div>
           <div style={{ marginTop: "163px" }}>
             <div>
-              <TextFieldLabel leftLabel={"Deposit to"} />
+              <TextFieldLabel
+                leftLabel={"Deposit to"}
+                style={{ marginLeft: "24px", marginRight: "24px" }}
+              />
               <div
                 style={{
                   display: "flex",
@@ -112,24 +156,39 @@ export function Deposit() {
                   margin: "0 12px",
                 }}
               >
-                <TextField
-                  value={`${activeWallet.name} (${walletAddressDisplay(
-                    activeWallet.publicKey
-                  )})`}
-                  rootClass={classes.depositTextFieldRoot}
-                  endAdornment={
-                    <CopyButton publicKey={activeWallet.publicKey.toString()} />
-                  }
-                  inputProps={{
-                    readOnly: true,
-                  }}
-                />
+                <WithCopyTooltip tooltipOpen={tooltipOpen}>
+                  <div
+                    onClick={() => onCopy()}
+                    style={{ width: "100%" }}
+                    className={classes.copyContainer}
+                  >
+                    <TextField
+                      value={`${activeWallet.name} (${walletAddressDisplay(
+                        activeWallet.publicKey
+                      )})`}
+                      rootClass={classes.depositTextFieldRoot}
+                      endAdornment={
+                        <ContentCopyIcon
+                          className={classes.copyIcon}
+                          style={{
+                            pointerEvents: "none",
+                            color: theme.custom.colors.secondary,
+                            position: "absolute",
+                            right: "17px",
+                          }}
+                        />
+                      }
+                      inputProps={{
+                        readOnly: true,
+                      }}
+                    />
+                  </div>
+                </WithCopyTooltip>
               </div>
             </div>
             <div>
               <Typography className={classes.subtext}>
-                This address can only receive SOL and SPL tokens on Solana. Any
-                other asset not currently supported.
+                This address can only receive SOL and SPL tokens on Solana.
               </Typography>
             </div>
           </div>
@@ -155,28 +214,5 @@ export function QrCode({ data }: { data: string }) {
     >
       <img src={`https://qr.warp.workers.dev/qz=0?${data}`} alt={data} />
     </div>
-  );
-}
-
-function CopyButton({ publicKey }: { publicKey: string }) {
-  const classes = useStyles();
-  const [tooltipOpen, setTooltipOpen] = useState(false);
-  const onCopy = () => {
-    setTooltipOpen(true);
-    setTimeout(() => setTooltipOpen(false), 1000);
-    navigator.clipboard.writeText(publicKey);
-  };
-  return (
-    <Tooltip
-      title={"Copied"}
-      open={tooltipOpen}
-      disableFocusListener
-      disableHoverListener
-      disableTouchListener
-    >
-      <Button className={classes.copyButton} onClick={onCopy}>
-        <Typography className={classes.copyButtonLabel}>Copy</Typography>
-      </Button>
-    </Tooltip>
   );
 }

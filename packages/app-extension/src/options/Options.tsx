@@ -6,10 +6,10 @@ import {
   NotificationsProvider,
 } from "@coral-xyz/recoil";
 import { WithSuspense } from "../app/Router";
-import { ConnectHardware } from "../components/Settings/ConnectHardware";
+import { ConnectHardware } from "../components/Unlocked/Settings/AddConnectWallet/ConnectHardware";
 import { Onboarding } from "../components/Onboarding";
 import "../app/App.css";
-import { WithTheme } from "../app/theme";
+import { WithTheme } from "../components/common/WithTheme";
 
 //
 // Options provides the "expanded" extension app flows. Namely,

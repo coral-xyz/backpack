@@ -63,6 +63,7 @@ const useStyles = styles((theme) => ({
   },
   cardListRoot: {
     padding: "0 !important",
+    height: "100%",
   },
   tokenListItem: {
     borderTop: `solid 1pt ${theme.custom.colors.border}`,
@@ -167,7 +168,8 @@ const useStyles = styles((theme) => ({
         border: "none",
       },
       "&.Mui-focused fieldset": {
-        border: `solid 2pt ${theme.custom.colors.primaryButton}`,
+        border: `solid 2pt ${theme.custom.colors.primaryButton} !important`,
+        borderColor: `${theme.custom.colors.primaryButton} !important`,
       },
     },
   },
@@ -175,6 +177,10 @@ const useStyles = styles((theme) => ({
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
         border: `solid 2pt ${theme.custom.colors.negative} !important`,
+      },
+      "&.Mui-focused fieldset": {
+        border: `solid 2pt ${theme.custom.colors.negative} !important`,
+        borderColor: `${theme.custom.colors.negative} !important`,
       },
     },
   },
@@ -327,7 +333,7 @@ export function BalancesTable({
   const classes = useStyles();
   return (
     <BalancesTableProvider>
-      <Card className={classes.blockchainCard} elevation={0}>
+      <Card className={classes.blockchainCard} elevation={0} style={style}>
         {children ??
           childrenRenderer.map((c: Element) => (
             <ViewRenderer key={c.id} element={c} />
@@ -423,7 +429,7 @@ export function BalancesTableContent({
   const classes = useStyles();
   const { showContent } = useBalancesContext();
   return (
-    <CardContent classes={{ root: classes.cardContentRoot }}>
+    <CardContent classes={{ root: classes.cardContentRoot }} style={style}>
       <List
         style={{
           display: !showContent ? "none" : undefined,
@@ -497,6 +503,7 @@ function __BalancesTableRow({
       disableRipple
       className={classes.tokenListItem}
       onClick={onClick}
+      style={style}
     >
       {children ??
         childrenRenderer.map((c: Element) => (
@@ -521,7 +528,11 @@ export function BalancesTableCell({ props, style }: any) {
           className={classes.tokenListItemIcon}
           classes={{ root: classes.tokenListItemIconRoot }}
         >
-          <img src={icon} className={classes.logoIcon} />
+          <img
+            src={icon}
+            className={classes.logoIcon}
+            onError={(event) => (event.currentTarget.style.display = "none")}
+          />
         </ListItemIcon>
       )}
       <div className={classes.tokenListItemContent}>
@@ -615,6 +626,8 @@ function _TextField({ id, props, children, style }: any) {
       placeholder={props.placeholder}
       value={props.value}
       setValue={onChange}
+      children={children}
+      style={style}
     />
   );
 }
@@ -625,12 +638,16 @@ export function TextField({
   value,
   setValue,
   rootClass,
+  startAdornment,
   endAdornment,
   isError,
   inputProps,
   disabled,
   autoFocus,
   rows,
+  select,
+  children,
+  style,
 }: any) {
   const classes = useStyles();
   inputProps = Object.assign(
@@ -665,10 +682,14 @@ export function TextField({
         },
       }}
       InputProps={{
+        startAdornment,
         endAdornment,
       }}
       value={value}
       onChange={(e) => setValue(e.target.value)}
+      select={select}
+      children={children}
+      style={style}
     />
   );
 }

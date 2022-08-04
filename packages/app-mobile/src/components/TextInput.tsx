@@ -1,7 +1,9 @@
 import React from "react";
-import { Control, useController } from "react-hook-form";
+import type { Control } from "react-hook-form";
+import { useController } from "react-hook-form";
 import { TextInput as RNTextInput } from "react-native";
 import tw from "twrnc";
+
 import { addTestIdentifier } from "../lib/addTestIdentifier";
 
 export const TextInput: React.FC<

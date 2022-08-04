@@ -112,6 +112,6 @@ class LedgerInjection {
   }
 }
 
-let LEDGER = new LedgerInjection();
+const LEDGER = new LedgerInjection();
 
 main();

@@ -12,13 +12,13 @@ export * from "./List";
 export { TextField } from "@coral-xyz/react-xnft-renderer";
 
 const useStyles = styles((theme) => ({
-  sendTo: {
+  leftLabel: {
     color: theme.custom.colors.fontColor,
     fontSize: "12px",
     lineHeight: "16px",
     fontWeight: 500,
   },
-  addressBook: {
+  rightLabel: {
     fontWeight: 500,
     fontSize: "12px",
     lineHeight: "16px",
@@ -40,8 +40,13 @@ const useStyles = styles((theme) => ({
     width: "100%",
     height: "48px",
     borderRadius: "12px",
+    backgroundColor: theme.custom.colors.primaryButton,
     "&.Mui-disabled": {
       opacity: 0.5,
+      backgroundColor: theme.custom.colors.disabledButton,
+    },
+    "&:hover": {
+      backgroundColor: theme.custom.colors.primaryButton,
     },
   },
   buttonLabel: {
@@ -58,8 +63,9 @@ const useStyles = styles((theme) => ({
     lineHeight: "32px",
   },
   checkBox: {
-    padding: "9px",
     color: theme.custom.colors.primaryButton,
+    width: "18px",
+    height: "18px",
     "&.Mui-disabled": {
       opacity: 0.5,
     },
@@ -73,9 +79,10 @@ const useStyles = styles((theme) => ({
   },
   checkBoxChecked: {
     color: `${theme.custom.colors.primaryButton} !important`,
+    background: "white",
   },
   subtext: {
-    color: "#A1A1AA",
+    color: theme.custom.colors.subtext,
   },
 }));
 
@@ -96,20 +103,33 @@ export function walletAddressDisplay(publicKey: PublicKey) {
   return `${pubkeyStr.slice(0, 4)}...${pubkeyStr.slice(pubkeyStr.length - 4)}`;
 }
 
-export function TextFieldLabel({ leftLabel, rightLabel }: any) {
+export function TextFieldLabel({
+  leftLabel,
+  rightLabel,
+  rightLabelComponent,
+  style,
+}: {
+  leftLabel: string;
+  rightLabel?: string;
+  rightLabelComponent?: React.ReactNode;
+  style?: any;
+}) {
   const classes = useStyles();
   return (
     <div
       style={{
         display: "flex",
         justifyContent: "space-between",
-        marginLeft: "24px",
-        marginRight: "24px",
         marginBottom: "8px",
+        ...style,
       }}
     >
-      <Typography className={classes.sendTo}>{leftLabel}</Typography>
-      <Typography className={classes.addressBook}>{rightLabel}</Typography>
+      <Typography className={classes.leftLabel}>{leftLabel}</Typography>
+      {rightLabelComponent ? (
+        rightLabelComponent
+      ) : (
+        <Typography className={classes.rightLabel}>{rightLabel}</Typography>
+      )}
     </div>
   );
 }
@@ -135,13 +155,6 @@ export function PrimaryButton({
   label?: string;
 } & React.ComponentProps<typeof Button>) {
   const classes = useStyles();
-  const theme = useCustomTheme() as any;
-  const buttonStyle = Object.assign(
-    {
-      backgroundColor: theme.custom.colors.primaryButton,
-    },
-    buttonProps.style
-  );
   return (
     <Button
       disableRipple
@@ -149,7 +162,7 @@ export function PrimaryButton({
       className={classes.button}
       variant="contained"
       {...buttonProps}
-      style={buttonStyle}
+      style={buttonProps.style}
     >
       <Typography style={buttonLabelStyle} className={classes.buttonLabel}>
         {label}
@@ -166,19 +179,18 @@ export function SecondaryButton({
   buttonLabelStyle?: React.CSSProperties;
   label?: string;
 } & React.ComponentProps<typeof Button>) {
-  const theme = useCustomTheme() as any;
-  const buttonStyle = Object.assign(
-    {
-      backgroundColor: theme.custom.colors.secondaryButton,
-    },
-    buttonProps.style
-  );
+  const theme = useCustomTheme();
+  const buttonStyle = {
+    backgroundColor: theme.custom.colors.secondaryButton,
+    color: "inherit",
+    ...buttonProps.style,
+  };
   return (
     <PrimaryButton
-      style={buttonStyle}
       buttonLabelStyle={buttonLabelStyle}
       label={label}
       {...buttonProps}
+      style={buttonStyle}
     />
   );
 }
@@ -274,6 +286,7 @@ export function Checkbox({
   const classes = useStyles();
   return (
     <_Checkbox
+      disableRipple
       className={classes.checkBox}
       checked={checked}
       onChange={() => setChecked(!checked)}
@@ -298,7 +311,19 @@ export function CheckboxForm({
   const classes = useStyles();
   return (
     <div className={classes.checkboxContainer}>
-      <Checkbox checked={checked} setChecked={setChecked} sx={{ padding: 0 }} />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <Checkbox
+          checked={checked}
+          setChecked={setChecked}
+          sx={{ padding: 0 }}
+        />
+      </div>
       <div
         style={{
           display: "flex",

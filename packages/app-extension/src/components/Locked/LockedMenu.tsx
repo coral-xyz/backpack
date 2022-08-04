@@ -8,16 +8,16 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import CallMadeIcon from "@mui/icons-material/CallMade";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List, ListItem } from "../common/List";
-import { WithDrawer, CloseButton } from "../Layout/Drawer";
+import { WithDrawer, CloseButton } from "../common/Layout/Drawer";
 import { Reset } from "./Reset";
 import { ResetWarning } from "./Reset/ResetWarning";
-import { NAV_BAR_HEIGHT } from "../Layout/Nav";
+import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import {
   useNavStack,
   NavStackEphemeral,
   NavStackScreen,
-} from "../Layout/NavStack";
-import { DiscordIcon } from "../Icon";
+} from "../common/Layout/NavStack";
+import { DiscordIcon } from "../common/Icon";
 
 export function LockedMenu({ menuOpen, setMenuOpen }: any) {
   const theme = useCustomTheme() as any;
@@ -34,6 +34,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
       }}
     >
       <IconButton
+        disableRipple
         color="inherit"
         onClick={() => setMenuOpen(true)}
         sx={{ padding: 0 }}
@@ -130,6 +131,7 @@ export function LockedMenuList() {
               height: "44px",
               display: "flex",
             }}
+            isFirst={idx === 0}
             isLast={idx === options.length - 1}
             borderColor={theme.custom.colors.border1}
           >

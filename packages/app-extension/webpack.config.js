@@ -146,7 +146,7 @@ const options = {
       .map((extension) => "." + extension)
       .concat([".js", ".jsx", ".ts", ".tsx", ".css"]),
     fallback: {
-      buffer: require.resolve("buffer/"),
+      buffer: require.resolve("buffer/"), // trailing slash is intentional
       crypto: require.resolve("crypto-browserify"),
       stream: require.resolve("stream-browserify"),
     },

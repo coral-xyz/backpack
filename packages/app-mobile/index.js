@@ -1,13 +1,35 @@
-import "react-native-url-polyfill/auto";
-import { useStore, WEB_VIEW_EVENTS } from "@coral-xyz/common";
+require("react-native-get-random-values");
+require("react-native-url-polyfill/auto");
+
+import {
+  BACKGROUND_SERVICE_WORKER_READY,
+  useStore,
+  WEB_VIEW_EVENTS,
+} from "@coral-xyz/common";
 import { registerRootComponent } from "expo";
+import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
-import { Suspense } from "react";
+import { Suspense, useRef } from "react";
 import { Platform, SafeAreaView, StyleSheet, View } from "react-native";
-import "react-native-get-random-values";
 import { WebView } from "react-native-webview";
 import { RecoilRoot } from "recoil/native/recoil";
 import App from "./src/App";
+
+const LOCALHOST_WEBVIEW_URI = "http://localhost:9333";
+
+const WEBVIEW_URI = (() => {
+  if (process.env.NODE_ENV === "production") {
+    return Constants.manifest.extra.url || alert("No WEBVIEW_URI");
+  } else {
+    if (Platform.OS === "ios") {
+      // iOS can only use serviceworkers from localhost or WKAppBoundDomains
+      // we can't use WKAppBoundDomains in development, so it must use localhost
+      return LOCALHOST_WEBVIEW_URI;
+    } else {
+      return Constants.manifest.extra.url || LOCALHOST_WEBVIEW_URI;
+    }
+  }
+})();
 
 function WrappedApp() {
   return (
@@ -25,6 +47,7 @@ function WrappedApp() {
 
 function Background() {
   const setInjectJavaScript = useStore((state) => state.setInjectJavaScript);
+  const ref = useRef(null);
 
   return (
     <View
@@ -35,36 +58,17 @@ function Background() {
       <WebView
         cacheEnabled
         cacheMode="LOAD_CACHE_ELSE_NETWORK"
-        ref={(ref) => {
-          // XXX: timeout is a temporary hack to ensure page is loaded
-          setTimeout(
-            () => {
-              // put the injectJavaScript function in a global observable
-              // store so that it can be used here & in @coral-xyz/common
-              setInjectJavaScript(ref.injectJavaScript);
-            },
-            // TODO: remove this timeout, trigger event once SW loaded instead
-            Platform.OS === "android" ? 5000 : 1000
-          );
-        }}
+        ref={ref}
         source={{
-          uri:
-            Platform.OS === "android"
-              ? // temporary hack as android can't access localhost. Using
-                // `adb -s emulator-5554 reverse tcp:9333 tcp:9333` is not
-                // reliable. ngrok & localtunnel don't work with dev server.
-                "https://fc9e097a.backpack.pages.dev"
-              : // serviceworkers must be used with SSL (unless its localhost)
-                // & expo iOS apps can only load from localhost in dev mode
-                // because of restrictions imposed by WKAppBoundDomains.
-                // Need to find a workaround to be able to test on iOS devices
-                // in dev, possibly using a custom plugin that'd allow access
-                // to a non-localhost URL that is specific for each build.
-                "http://localhost:9333",
+          uri: WEBVIEW_URI,
         }}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
-          WEB_VIEW_EVENTS.emit("message", msg);
+          if (msg.type === BACKGROUND_SERVICE_WORKER_READY) {
+            setInjectJavaScript(ref.current.injectJavaScript);
+          } else {
+            WEB_VIEW_EVENTS.emit("message", msg);
+          }
         }}
         limitsNavigationsToAppBoundDomains
       />

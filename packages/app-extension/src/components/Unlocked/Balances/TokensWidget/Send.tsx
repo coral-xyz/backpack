@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Typography, Link } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { SystemProgram, PublicKey } from "@solana/web3.js";
+import { Connection, SystemProgram, PublicKey } from "@solana/web3.js";
 import {
   useAnchorContext,
   useSolanaCtx,
   useBlockchainTokenAccount,
+  useSolanaExplorer,
+  useSolanaConnectionUrl,
 } from "@coral-xyz/recoil";
 import {
   Blockchain,
@@ -24,7 +26,11 @@ import {
   Loading,
   SecondaryButton,
 } from "../../../common";
-import { useDrawerContext, WithMiniDrawer } from "../../../Layout/Drawer";
+import {
+  useDrawerContext,
+  WithMiniDrawer,
+} from "../../../common/Layout/Drawer";
+import { useNavStack } from "../../../common/Layout/NavStack";
 
 const logger = getLogger("send-component");
 
@@ -45,12 +51,6 @@ const useStyles = styles((theme) => ({
     paddingBottom: "24px",
     paddingTop: "25px",
     justifyContent: "space-between",
-  },
-  button: {
-    background: "transparent",
-    width: "100%",
-    height: "48px",
-    borderRadius: "12px",
   },
   textRoot: {
     marginTop: "0 !important",
@@ -135,61 +135,50 @@ export function Send({
   const { close } = useDrawerContext();
   const token = useBlockchainTokenAccount(blockchain, tokenAddress);
   const { provider } = useAnchorContext();
+  const nav = useNavStack();
 
   const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState("");
-  const [amount, setAmount] = useState<number>(0.0);
-  const [addressError, setAddressError] = useState<boolean>(false);
+  const [amount, setAmount] = useState<number | null>(null);
   const [amountError, setAmountError] = useState<boolean>(false);
-  const [_isFreshAccount, setIsFreshAccount] = useState<boolean>(false); // Not used for now.
-  const [accountValidated, setAccountValidated] = useState<boolean>(false);
 
-  const amountFloat = parseFloat(amount.toString());
+  const {
+    isValidAddress,
+    isFreshAddress: _,
+    isErrorAddress,
+  } = useIsValidSolanaSendAddress(address, provider.connection);
 
-  //
-  // When sending SOL, account for the tx fee.
-  //
-  let lamportsOffset = 0.0;
-  if (token.mint === SOL_NATIVE_MINT) {
-    lamportsOffset = 0.000005;
-  }
-
-  // This effect validates the account address given.
-  useEffect(() => {
-    if (accountValidated) {
-      setAccountValidated(false);
+  const amountFloat = amount && parseFloat(amount.toString());
+  const isSendDisabled = !isValidAddress || amount === null || amount <= 0;
+  const lamportsOffset = (() => {
+    //
+    // When sending SOL, account for the tx fee and rent exempt minimum.
+    //
+    let lamportsOffset = 0.0;
+    if (token.mint === SOL_NATIVE_MINT) {
+      const txFee = 0.000005;
+      const rentExemptMinimum = 0.00203928;
+      lamportsOffset = txFee + rentExemptMinimum;
     }
-    (async () => {
-      let pubkey;
-      try {
-        pubkey = new PublicKey(address);
-      } catch (err) {
-        // Not valid address so don't bother validating it.
-        return;
-      }
+    return lamportsOffset;
+  })();
 
-      const account = await provider.connection.getAccountInfo(pubkey);
+  useEffect(() => {
+    nav.setTitle(`Send ${token.ticker}`);
+  }, [nav]);
 
-      // Null data means the account has no lamports. This is valid.
-      if (!account) {
-        setIsFreshAccount(true);
-        setAccountValidated(true);
-        return;
-      }
-
-      // Only allow system program accounts to be given. ATAs only!
-      if (!account.owner.equals(SystemProgram.programId)) {
-        setAddressError(true);
-        return;
-      }
-
-      // The account data has been successfully validated.
-      setAccountValidated(true);
-    })();
-  }, [address]);
+  const _setAmount = (amount: number) => {
+    if (amount < 0) {
+      return;
+    }
+    setAmount(amount);
+  };
 
   // On click handler.
   const onNext = () => {
+    if (!amount || !amountFloat) {
+      return;
+    }
     let didAmountError = false;
     if (amountFloat <= 0) {
       didAmountError = true;
@@ -199,26 +188,7 @@ export function Send({
       didAmountError = true;
     }
 
-    let didAddressError = false;
-    try {
-      new PublicKey(address);
-    } catch (_err) {
-      didAddressError = true;
-    }
-
-    // Do this below the above so that we can set the proper error states
-    // on all the fields.
-    if (didAmountError || didAddressError) {
-      setAmountError(didAmountError);
-      setAddressError(didAddressError);
-      return;
-    }
-    if (!accountValidated) {
-      return;
-    }
-
-    setAddressError(false);
-    setAmountError(false);
+    setAmountError(didAmountError);
     setOpenDrawer(true);
   };
 
@@ -232,14 +202,18 @@ export function Send({
     >
       <div className={classes.topHalf}>
         <div style={{ marginBottom: "40px" }}>
-          <TextFieldLabel leftLabel={"Send to"} rightLabel={"Address Book"} />
+          <TextFieldLabel
+            leftLabel={"Send to"}
+            rightLabel={""}
+            style={{ marginLeft: "24px", marginRight: "24px" }}
+          />
           <div style={{ margin: "0 12px" }}>
             <TextField
               rootClass={classes.textRoot}
               placeholder={"SOL Address"}
               value={address}
               setValue={setAddress}
-              isError={addressError}
+              isError={isErrorAddress}
               inputProps={{
                 name: "to",
               }}
@@ -250,14 +224,15 @@ export function Send({
           <TextFieldLabel
             leftLabel={"Amount"}
             rightLabel={`${token.nativeBalance} ${token.ticker}`}
+            style={{ marginLeft: "24px", marginRight: "24px" }}
           />
           <div style={{ margin: "0 12px" }}>
             <TextField
               rootClass={classes.textRoot}
               type={"number"}
-              placeholder={"Amount"}
+              placeholder={"0"}
               value={amount}
-              setValue={setAmount}
+              setValue={_setAmount}
               isError={amountError}
               inputProps={{
                 name: "amount",
@@ -266,7 +241,7 @@ export function Send({
                 <SecondaryButton
                   label="Max"
                   onClick={() =>
-                    setAmount(token.nativeBalance - lamportsOffset)
+                    _setAmount(token.nativeBalance - lamportsOffset)
                   }
                   style={{
                     width: "auto",
@@ -282,7 +257,7 @@ export function Send({
       </div>
       <div className={classes.buttonContainer}>
         <PrimaryButton
-          className={classes.button}
+          disabled={isSendDisabled}
           label="Send"
           type="submit"
           data-testid="Send"
@@ -291,8 +266,11 @@ export function Send({
           <SendConfirmationCard
             token={token}
             address={address}
-            amount={amountFloat}
-            close={() => close()}
+            amount={amountFloat!}
+            close={() => {
+              setOpenDrawer(false);
+              close();
+            }}
           />
         </WithMiniDrawer>
       </div>
@@ -343,7 +321,17 @@ export function NetworkFeeInfo() {
   );
 }
 
-function SendConfirmationCard({ token, address, amount, close }: any) {
+export function SendConfirmationCard({
+  token,
+  address,
+  amount,
+  close,
+}: {
+  token: { mint: string; decimals?: number };
+  address: string;
+  amount: number;
+  close: () => void;
+}) {
   const ctx = useSolanaCtx();
   const [cardType, setCardType] = useState<
     "confirm" | "sending" | "complete" | "error"
@@ -369,6 +357,7 @@ function SendConfirmationCard({ token, address, amount, close }: any) {
           destination: new PublicKey(address),
           mint: new PublicKey(token.mint),
           amount,
+          decimals: token.decimals,
         });
       }
     } catch (err) {
@@ -476,6 +465,8 @@ function ConfirmSend({ address }: { address: string }) {
 
 function Sending({ signature }: { signature: string }) {
   const theme = useCustomTheme();
+  const solanaExplorer = useSolanaExplorer();
+  const connectionUrl = useSolanaConnectionUrl();
   return (
     <div
       style={{
@@ -494,7 +485,7 @@ function Sending({ signature }: { signature: string }) {
         Sending...
       </Typography>
       <Link
-        href={explorerUrl(signature)}
+        href={explorerUrl(solanaExplorer, signature, connectionUrl)}
         target="_blank"
         style={{ textAlign: "center" }}
       >
@@ -512,6 +503,8 @@ function Complete({
   address: string;
 }) {
   const theme = useCustomTheme();
+  const explorer = useSolanaExplorer();
+  const connectionUrl = useSolanaConnectionUrl();
   return (
     <div
       style={{
@@ -533,7 +526,7 @@ function Complete({
         {walletAddressDisplay(new PublicKey(address))}
       </Typography>
       <Link
-        href={explorerUrl(signature)}
+        href={explorerUrl(explorer, signature, connectionUrl)}
         target="_blank"
         style={{ textAlign: "center" }}
       >
@@ -545,6 +538,8 @@ function Complete({
 
 function Error({ signature }: { signature: string }) {
   const theme = useCustomTheme();
+  const explorer = useSolanaExplorer();
+  const connectionUrl = useSolanaConnectionUrl();
   return (
     <div
       style={{
@@ -560,7 +555,7 @@ function Error({ signature }: { signature: string }) {
         There was a problem confirming the transaction.
       </Typography>
       <Link
-        href={explorerUrl(signature)}
+        href={explorerUrl(explorer, signature, connectionUrl)}
         target="_blank"
         style={{ textAlign: "center" }}
       >
@@ -572,18 +567,24 @@ function Error({ signature }: { signature: string }) {
 
 export function BottomCard({
   onButtonClick,
-  onReject,
+  onCancelButtonClick,
   buttonLabel,
   buttonStyle,
-  cancelButton,
   buttonLabelStyle,
+  cancelButtonLabel,
+  cancelButtonStyle,
+  cancelButtonLabelStyle,
   children,
+  style,
+  topHalfStyle,
 }: any) {
   const classes = useStyles();
-  const theme = useCustomTheme();
   return (
-    <div className={classes.sendConfirmationContainer}>
-      <div className={classes.sendConfirmationTopHalf} style={{ flex: 1 }}>
+    <div className={classes.sendConfirmationContainer} style={style}>
+      <div
+        className={classes.sendConfirmationTopHalf}
+        style={{ flex: 1, ...topHalfStyle }}
+      >
         {children}
       </div>
       <div
@@ -595,25 +596,86 @@ export function BottomCard({
           justifyContent: "space-between",
         }}
       >
-        {cancelButton && (
-          <PrimaryButton
+        {cancelButtonLabel && (
+          <SecondaryButton
             style={{
               marginRight: "8px",
-              backgroundColor: theme.custom.colors.nav,
+              ...cancelButtonStyle,
             }}
-            buttonLabelStyle={{ color: theme.custom.colors.fontColor }}
-            onClick={onReject}
-            label={"Cancel"}
+            buttonLabelStyle={cancelButtonLabelStyle}
+            onClick={onCancelButtonClick}
+            label={cancelButtonLabel}
           />
         )}
-
-        <PrimaryButton
-          style={buttonStyle}
-          buttonLabelStyle={buttonLabelStyle}
-          onClick={onButtonClick}
-          label={buttonLabel}
-        />
+        {buttonLabel && (
+          <PrimaryButton
+            style={buttonStyle}
+            buttonLabelStyle={buttonLabelStyle}
+            onClick={onButtonClick}
+            label={buttonLabel}
+          />
+        )}
       </div>
     </div>
   );
+}
+
+export function useIsValidSolanaSendAddress(
+  address: string,
+  connection: Connection
+): {
+  isValidAddress: boolean;
+  isFreshAddress: boolean;
+  isErrorAddress: boolean;
+} {
+  const [addressError, setAddressError] = useState<boolean>(false);
+  const [isFreshAccount, setIsFreshAccount] = useState<boolean>(false); // Not used for now.
+  const [accountValidated, setAccountValidated] = useState<boolean>(false);
+
+  // This effect validates the account address given.
+  useEffect(() => {
+    if (accountValidated) {
+      setAccountValidated(false);
+    }
+    if (address === "") {
+      setAccountValidated(false);
+      setAddressError(false);
+      return;
+    }
+    (async () => {
+      let pubkey;
+      try {
+        pubkey = new PublicKey(address);
+      } catch (err) {
+        setAddressError(true);
+        // Not valid address so don't bother validating it.
+        return;
+      }
+
+      const account = await connection.getAccountInfo(pubkey);
+
+      // Null data means the account has no lamports. This is valid.
+      if (!account) {
+        setIsFreshAccount(true);
+        setAccountValidated(true);
+        return;
+      }
+
+      // Only allow system program accounts to be given. ATAs only!
+      if (!account.owner.equals(SystemProgram.programId)) {
+        setAddressError(true);
+        return;
+      }
+
+      // The account data has been successfully validated.
+      setAddressError(false);
+      setAccountValidated(true);
+    })();
+  }, [address]);
+
+  return {
+    isValidAddress: accountValidated,
+    isFreshAddress: isFreshAccount,
+    isErrorAddress: addressError,
+  };
 }

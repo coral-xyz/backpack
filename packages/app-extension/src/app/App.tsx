@@ -4,8 +4,8 @@ import {
   useBackgroundKeepAlive,
   NotificationsProvider,
 } from "@coral-xyz/recoil";
-import { WithTheme } from "./theme";
 import { Router } from "./Router";
+import { WithTheme } from "../components/common/WithTheme";
 import "./App.css";
 import "@fontsource/inter";
 import "@fontsource/inter/500.css";
@@ -13,11 +13,19 @@ import "@fontsource/inter/600.css";
 
 export default function App() {
   return (
-    <HashRouter>
-      <RecoilRoot>
-        <_App />
-      </RecoilRoot>
-    </HashRouter>
+    <div
+      style={{
+        height: "100vh",
+        minHeight: "600px",
+        minWidth: "375px",
+      }}
+    >
+      <HashRouter>
+        <RecoilRoot>
+          <_App />
+        </RecoilRoot>
+      </HashRouter>
+    </div>
   );
 }
 

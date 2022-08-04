@@ -8,6 +8,7 @@ import type {
   Context,
   EventEmitter,
 } from "@coral-xyz/common";
+import type { Commitment } from "@solana/web3.js";
 import {
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   getLogger,
@@ -34,6 +35,7 @@ import {
   UI_RPC_METHOD_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_KEYNAME_READ,
   UI_RPC_METHOD_KEYNAME_UPDATE,
   UI_RPC_METHOD_PASSWORD_UPDATE,
   UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
@@ -43,6 +45,7 @@ import {
   UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
   UI_RPC_METHOD_NAVIGATION_READ,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+  UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
@@ -52,9 +55,12 @@ import {
   UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
+  UI_RPC_METHOD_APPROVED_ORIGINS_DELETE,
   UI_RPC_METHOD_LEDGER_CONNECT,
   UI_RPC_METHOD_LEDGER_IMPORT,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
+  UI_RPC_METHOD_SOLANA_EXPLORER_READ,
+  UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
   BACKEND_EVENT,
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_NOTIFICATIONS,
@@ -185,6 +191,8 @@ async function handle<T = any>(
       return await handleNavRead(ctx);
     case UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE:
       return await handleNavigationActiveTabUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_NAVIGATION_TO_ROOT:
+      return await handleNavigationToRoot(ctx);
     //
     // Wallet app settings.
     //
@@ -200,9 +208,13 @@ async function handle<T = any>(
       return await handleApprovedOriginsRead(ctx);
     case UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE:
       return await handleApprovedOriginsUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_APPROVED_ORIGINS_DELETE:
+      return await handleApprovedOriginsDelete(ctx, params[0]);
     //
     // Nicknames for keys.
     //
+    case UI_RPC_METHOD_KEYNAME_READ:
+      return await handleKeynameRead(ctx, params[0]);
     case UI_RPC_METHOD_KEYNAME_UPDATE:
       return await handleKeynameUpdate(ctx, params[0], params[1]);
     //
@@ -219,6 +231,10 @@ async function handle<T = any>(
       return await handleSolanaCommitmentRead(ctx);
     case UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE:
       return await handleSolanaCommitmentUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_SOLANA_EXPLORER_READ:
+      return await handleSolanaExplorerRead(ctx);
+    case UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE:
+      return await handleSolanaExplorerUpdate(ctx, params[0]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -302,7 +318,7 @@ function handleKeyringStoreKeepAlive(
 async function handleConnectionUrlRead(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.connectionUrlRead();
+  const resp = await ctx.backend.solanaConnectionUrlRead();
   return [resp];
 }
 
@@ -310,7 +326,7 @@ async function handleConnectionUrlUpdate(
   ctx: Context<Backend>,
   url: string
 ): Promise<RpcResponse<boolean>> {
-  const didChange = await ctx.backend.connectionUrlUpdate(url);
+  const didChange = await ctx.backend.solanaConnectionUrlUpdate(url);
   return [didChange];
 }
 
@@ -340,6 +356,14 @@ async function handleKeyringDeriveWallet(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.keyringDeriveWallet();
+  return [resp];
+}
+
+async function handleKeynameRead(
+  ctx: Context<Backend>,
+  pubkey: string
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.keynameRead(pubkey);
   return [resp];
 }
 
@@ -483,6 +507,13 @@ async function handleNavigationActiveTabUpdate(
   return [resp];
 }
 
+async function handleNavigationToRoot(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.navigationToRoot();
+  return [resp];
+}
+
 async function handleDarkModeRead(
   ctx: Context<Backend>
 ): Promise<RpcResponse<boolean>> {
@@ -509,7 +540,24 @@ async function handleSolanaCommitmentUpdate(
   ctx: Context<Backend>,
   commitment: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaCommitmentUpdate(commitment);
+  const resp = await ctx.backend.solanaCommitmentUpdate(
+    commitment as Commitment
+  );
+  return [resp];
+}
+
+async function handleSolanaExplorerRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.solanaExplorerRead();
+  return [resp];
+}
+
+async function handleSolanaExplorerUpdate(
+  ctx: Context<Backend>,
+  url: string
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.solanaExplorerUpdate(url);
   return [resp];
 }
 
@@ -552,6 +600,14 @@ async function handleApprovedOriginsUpdate(
   approvedOrigins: Array<string>
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.approvedOriginsUpdate(approvedOrigins);
+  return [resp];
+}
+
+async function handleApprovedOriginsDelete(
+  ctx: Context<Backend>,
+  origin: string
+): Promise<RpcResponse> {
+  const resp = await ctx.backend.approvedOriginsDelete(origin);
   return [resp];
 }
 

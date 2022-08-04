@@ -57,7 +57,7 @@ function NavStackInner({
     (c: any) => c.props.name === activeRoute.name
   );
 
-  let { title: titleDefault } = options({
+  const { title: titleDefault } = options({
     route: activeRoute,
   });
   if (!title) {
