@@ -1,6 +1,7 @@
 import AnchorUi, { Tab, View } from "react-xnft";
-import { MonitorIcon } from "../utils/icons";
+import { ChartBar, MonitorIcon } from "../utils/icons";
 import { Monitor } from "../components/monitor";
+import { Defi } from "../components/defi";
 
 //
 // On connection to the host environment, warm the cache.
@@ -15,14 +16,18 @@ export function App() {
       <Tab.Navigator
         style={{
           backgroundColor: "#1f2937",
-          borderTop: "none",
+          borderTop: "1px solid #3730a3",
         }}
         options={({ route }) => {
           return {
             tabBarIcon: ({ focused }) => {
               const color = focused ? "#f9fafb" : "#6b7280";
 
-              return <Tab.Icon element={<MonitorIcon fill={color} />} />;
+              if (route.name === "monitor") {
+                return <Tab.Icon element={<MonitorIcon fill={color} />} />;
+              } else {
+                return <Tab.Icon element={<ChartBar fill={color} />} />;
+              }
             },
           };
         }}
@@ -31,6 +36,11 @@ export function App() {
           name="monitor"
           disableLabel={true}
           component={() => <Monitor />}
+        />
+        <Tab.Screen
+          name="defi"
+          disableLabel={true}
+          component={() => <Defi />}
         />
       </Tab.Navigator>
     </View>
