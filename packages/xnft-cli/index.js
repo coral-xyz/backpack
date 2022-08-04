@@ -67,6 +67,14 @@ program.command("dev").action(async () => {
     sourceMap: true,
     optimize: false,
   });
+
+  if (!fs.existsSync("dist/index.js")) {
+    if (!fs.existsSync("dist")) {
+      fs.mkdirSync("dist");
+    }
+    fs.writeFileSync("dist/index.js", "");
+  }
+
   let js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
   await bundler.watch(() => {
     console.log("build changed");
