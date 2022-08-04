@@ -1,7 +1,6 @@
 import AnchorUi, { Tab, View } from "react-xnft";
 import { MonitorIcon } from "../utils/icons";
-import { THEME } from "../utils/theme";
-import { Monitor } from "../monitor";
+import { Monitor } from "../components/monitor";
 
 //
 // On connection to the host environment, warm the cache.
@@ -12,18 +11,16 @@ AnchorUi.events.on("connect", () => {
 
 export function App() {
   return (
-    <View style={{ height: "100%", backgroundColor: "#111827" }}>
+    <View style={{ height: "100%", backgroundColor: "#1f2937" }}>
       <Tab.Navigator
         style={{
-          backgroundColor: "#111827",
+          backgroundColor: "#1f2937",
           borderTop: "none",
         }}
         options={({ route }) => {
           return {
             tabBarIcon: ({ focused }) => {
-              const color = focused
-                ? THEME.colors.activeTab
-                : THEME.colors.inactiveTab;
+              const color = focused ? "#f9fafb" : "#6b7280";
 
               return <Tab.Icon element={<MonitorIcon fill={color} />} />;
             },
