@@ -141,6 +141,7 @@ export function Loading(props: any) {
       <CircularProgress
         className={classes.loadingIndicator}
         style={props.iconStyle}
+        thickness={6}
       />
     </div>
   );
