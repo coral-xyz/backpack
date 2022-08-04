@@ -204,30 +204,10 @@ function SwapInner({ blockchain }: any) {
 function _Swap({ blockchain }: { blockchain: Blockchain }) {
   const classes = useStyles();
   const { toAmount, swapToFromMints, executeSwap } = useSwapContext();
-  const [swapState, setSwapState] = useState(SwapState.INITIAL);
-
-  // Only allow drawer close if not confirming
-  const onDrawerClose =
-    swapState === SwapState.CONFIRMING
-      ? () => null
-      : () => setSwapState(SwapState.INITIAL);
-
-  const onConfirm = async () => {
-    setSwapState(SwapState.CONFIRMING);
-    const result = await executeSwap();
-    if (result) {
-      setSwapState(SwapState.CONFIRMED);
-    } else {
-      setSwapState(SwapState.ERROR);
-    }
-  };
+  const [openDrawer, setOpenDrawer] = useState(false);
 
   const onSwapButtonClick = () => {
-    if (swapState !== SwapState.INITIAL) {
-      setSwapState(SwapState.INITIAL);
-    } else {
-      swapToFromMints();
-    }
+    swapToFromMints();
   };
 
   return (
@@ -262,32 +242,50 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
             </div>
             <ConfirmSwapButton
               blockchain={blockchain}
-              onClick={() => setSwapState(SwapState.CONFIRMATION)}
+              onClick={() => setOpenDrawer(true)}
             />
           </div>
         </div>
       </div>
       <ApproveTransactionDrawer
-        openDrawer={swapState !== SwapState.INITIAL}
-        setOpenDrawer={() => onDrawerClose()}
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
       >
-        {swapState === SwapState.CONFIRMATION && (
-          <SwapConfirmation onConfirm={onConfirm} />
-        )}
-        {swapState === SwapState.CONFIRMING && <SwapConfirming />}
-        {swapState === SwapState.CONFIRMED && <SwapConfirmed />}
-        {swapState === SwapState.ERROR && (
-          <SwapError
-            onCancel={() => {
-              setSwapState(SwapState.INITIAL);
-            }}
-            onRetry={onConfirm}
-          />
-        )}
+        <SwapConfirmationCard onClose={() => setOpenDrawer(false)} />
       </ApproveTransactionDrawer>
     </>
   );
 }
+
+const SwapConfirmationCard: React.FC<{ onClose: () => void }> = ({
+  onClose,
+}) => {
+  const { executeSwap } = useSwapContext();
+  const [swapState, setSwapState] = useState(SwapState.CONFIRMATION);
+
+  const onConfirm = async () => {
+    setSwapState(SwapState.CONFIRMING);
+    const result = await executeSwap();
+    if (result) {
+      setSwapState(SwapState.CONFIRMED);
+    } else {
+      setSwapState(SwapState.ERROR);
+    }
+  };
+
+  return (
+    <div>
+      {swapState === SwapState.CONFIRMATION && (
+        <SwapConfirmation onConfirm={onConfirm} />
+      )}
+      {swapState === SwapState.CONFIRMING && <SwapConfirming />}
+      {swapState === SwapState.CONFIRMED && <SwapConfirmed />}
+      {swapState === SwapState.ERROR && (
+        <SwapError onCancel={() => onClose()} onRetry={onConfirm} />
+      )}
+    </div>
+  );
+};
 
 function InputTextField() {
   const classes = useStyles();
