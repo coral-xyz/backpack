@@ -94,6 +94,7 @@ export const blockchainTokenAccounts = selectorFamily({
           const nativeBalance = tokenMetadata.decimals
             ? tokenAccount.amount.toNumber() / 10 ** tokenMetadata.decimals
             : tokenAccount.amount.toNumber();
+          const balance = tokenAccount.amount.toNumber();
           const currentUsdBalance =
             price && price.usd ? price.usd * nativeBalance : 0;
           const oldUsdBalance =
@@ -108,6 +109,7 @@ export const blockchainTokenAccounts = selectorFamily({
 
           return {
             name,
+            balance,
             nativeBalance,
             ticker,
             logo,

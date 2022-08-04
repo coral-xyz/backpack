@@ -11,6 +11,7 @@ import {
   USDC_MINT,
   WSOL_MINT,
   UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
+  NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
 } from "@coral-xyz/common";
 import {
   useActiveWallet,
@@ -144,7 +145,13 @@ export function SwapProvider(props: any) {
   // If from mint is native SOL, remove the transaction fee from the max swap amount
   if (fromMint === SOL_NATIVE_MINT && transactionFee) {
     // Scale up the nativeBalance to avoid rounding errors before scaling everything down
-    availableForSwap = (availableForSwap * 10 ** 9 - transactionFee) / 10 ** 9;
+    availableForSwap = Math.max(
+      (availableForSwap * 10 ** 9 -
+        transactionFee -
+        NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS) /
+        10 ** 9,
+      0
+    );
   }
   const exceedsBalance =
     (fromAmount && fromAmount > availableForSwap) || undefined;
