@@ -128,9 +128,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
   }
 
   _handleNotificationActiveWalletUpdated(event: Event) {
-    console.log("active wallet updated");
-    console.log(event);
-    this.publicKey = new PublicKey(event.data.detail.data.publicKey);
+    this.publicKey = new PublicKey(event.data.detail.data.activeWallet);
   }
 
   async connect(onlyIfTrustedMaybe: boolean) {
