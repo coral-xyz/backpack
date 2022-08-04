@@ -582,6 +582,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
             color: theme.custom.colors.primaryButton,
             margin: "32px 0",
           }}
+          thickness={6}
         />
       </div>
     );
