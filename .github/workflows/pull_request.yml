@@ -132,13 +132,13 @@ jobs:
       - name: "zip build artifacts"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         working-directory: packages/app-extension
-        run: zip -r build.zip build/
+        run: zip -r build-${{ github.run_number }}.zip build/
       - name: "upload build artifacts"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v2
         with:
           name: backpack-build
-          path: packages/app-extension/build.zip
+          path: packages/app-extension/build-${{ github.run_number }}.zip
       - uses: actions/download-artifact@v2
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
@@ -161,6 +161,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build.zip
-          asset_name: build.zip
+          asset_path: ./build-${{ github.run_number }}.zip
+          asset_name: build-${{ github.run_number }}.zip
           asset_content_type: application/zip
+
+      - name: "post artifacts to Discord"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: sinshutu/upload-to-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: packages/app-extension/build-${{ github.run_number }}.zip
