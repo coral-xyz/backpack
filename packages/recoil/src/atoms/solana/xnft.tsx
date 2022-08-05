@@ -52,8 +52,8 @@ export const plugins = selector({
       {
         url: NETWORK_MONITOR,
         iconUrl:
-          "https://pbs.twimg.com/profile_images/1537173219693711363/maYBbQGF_400x400.jpg",
-        title: "Network Monitor",
+          "https://pbs.twimg.com/profile_images/1472933274209107976/6u-LQfjG_400x400.jpg",
+        title: "Monitor",
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
       },
