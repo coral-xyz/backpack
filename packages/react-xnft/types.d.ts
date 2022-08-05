@@ -6,6 +6,6 @@ import type {
 declare global {
   interface Window {
     backpack: ProviderInjection;
-    anchorUi: ProviderUiInjection;
+    xnft: ProviderUiInjection;
   }
 }

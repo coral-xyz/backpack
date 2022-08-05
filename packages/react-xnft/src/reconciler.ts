@@ -23,39 +23,39 @@ export const ReactXnft = {
   events,
   render(reactNode: any) {
     window.onload = () => {
-      window.anchorUi.on("click", (event: Event) => {
+      window.xnft.on("click", (event: Event) => {
         logger.debug("on click event", event);
         const { viewId } = event.data;
         const handler = getClickHandler(viewId);
         handler();
       });
 
-      window.anchorUi.on("change", (event: Event) => {
+      window.xnft.on("change", (event: Event) => {
         logger.debug("on change event", event);
         const { viewId } = event.data;
         const handler = getOnChangeHandler(viewId);
         handler(event);
       });
 
-      window.anchorUi.on("connect", () => {
+      window.xnft.on("connect", () => {
         logger.debug("connect");
         NAV_STACK.push(reactNode);
         events.emit("connect");
       });
 
-      window.anchorUi.on("mount", () => {
+      window.xnft.on("mount", () => {
         logger.debug("mount");
         const node = NAV_STACK[NAV_STACK.length - 1];
         reconcilerRender(node);
       });
 
-      window.anchorUi.on("unmount", () => {
+      window.xnft.on("unmount", () => {
         logger.debug("unmount");
         CLICK_HANDLERS = new Map();
         ON_CHANGE_HANDLERS = new Map();
       });
 
-      window.anchorUi.on("pop", () => {
+      window.xnft.on("pop", () => {
         logger.debug("pop");
         NAV_STACK.pop();
       });
