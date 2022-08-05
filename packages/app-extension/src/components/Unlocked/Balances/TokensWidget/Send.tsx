@@ -26,6 +26,7 @@ import {
   walletAddressDisplay,
   PrimaryButton,
   SecondaryButton,
+  DangerButton,
 } from "../../../common";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
@@ -242,12 +243,16 @@ export function Send({
         </div>
       </div>
       <div className={classes.buttonContainer}>
-        <PrimaryButton
-          disabled={isSendDisabled}
-          label="Send"
-          type="submit"
-          data-testid="Send"
-        />
+        {isErrorAddress ? (
+          <DangerButton disabled={true} label="Invalid Address" />
+        ) : (
+          <PrimaryButton
+            disabled={isSendDisabled}
+            label="Send"
+            type="submit"
+            data-testid="Send"
+          />
+        )}
         <ApproveTransactionDrawer
           openDrawer={openDrawer}
           setOpenDrawer={setOpenDrawer}
