@@ -5,8 +5,8 @@ import { PublicKey, Transaction } from "@solana/web3.js";
 import type { NamedPublicKey, KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
-import { SolanaCluster } from "@coral-xyz/common";
 import {
+  SolanaCluster,
   Blockchain,
   SolanaExplorer,
   BACKEND_EVENT,
@@ -131,7 +131,7 @@ export class Backend {
 
   async solanaConnectionUrlRead(): Promise<string> {
     const data = await getWalletData();
-    return data.solana.cluster ?? SolanaCluster.DEFAULT;
+    return (data.solana && data.solana.cluster) ?? SolanaCluster.DEFAULT;
   }
 
   // Returns true if the url changed.
