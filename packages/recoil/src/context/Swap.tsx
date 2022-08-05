@@ -155,10 +155,10 @@ export function SwapProvider(props: any) {
   const pollIdRef: { current: NodeJS.Timeout | null } = useRef(null);
 
   let availableForSwap =
-    tokenAccountsSorted.find((t) => t.mint === fromMint)?.nativeBalance || 0;
+    tokenAccountsSorted.find((t) => t.mint === fromMint)?.displayBalance || 0;
   // If from mint is native SOL, remove the transaction fee from the max swap amount
   if (fromMint === SOL_NATIVE_MINT && transactionFee) {
-    // Scale up the nativeBalance to avoid rounding errors before scaling everything down
+    // Scale up the displayBalance to avoid rounding errors before scaling everything down
     availableForSwap = Math.max(
       (availableForSwap * 10 ** 9 -
         transactionFee -

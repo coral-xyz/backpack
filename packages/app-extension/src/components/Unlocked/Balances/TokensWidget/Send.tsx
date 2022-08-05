@@ -178,7 +178,7 @@ export function Send({
       didAmountError = true;
     }
 
-    if (token.nativeBalance < amountFloat + lamportsOffset) {
+    if (token.displayBalance < amountFloat + lamportsOffset) {
       didAmountError = true;
     }
 
@@ -217,10 +217,10 @@ export function Send({
         <div>
           <TextFieldLabel
             leftLabel={"Amount"}
-            rightLabel={`${token.nativeBalance} ${token.ticker}`}
+            rightLabel={`${token.displayBalance} ${token.ticker}`}
             rightLabelComponent={
               <MaxLabel
-                amount={Math.max(token.nativeBalance - lamportsOffset, 0)}
+                amount={Math.max(token.displayBalance - lamportsOffset, 0)}
                 onSetAmount={_setAmount}
               />
             }

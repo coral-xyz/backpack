@@ -53,7 +53,7 @@ const UnlockedScreen = () => {
   console.log(wallet.publicKey.toString());
 
   const tokenAccountsFiltered = tokenAccountsSorted.filter(
-    (t) => t.nativeBalance !== 0
+    (t) => t.displayBalance !== 0
   );
 
   return (

@@ -21,6 +21,7 @@ import {
   TextFieldLabel,
   PrimaryButton,
   DangerButton,
+  SecondaryButton,
 } from "../common";
 import { CheckIcon, CrossIcon } from "../common/Icon";
 import { WithHeaderButton } from "./Balances/TokensWidget/Token";
@@ -30,7 +31,6 @@ import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
 import { MaxLabel } from "../common/MaxLabel";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
-import { SecondaryButton } from "../common";
 
 const useStyles = styles((theme) => ({
   container: {
@@ -677,7 +677,7 @@ function InputTokenSelectorButton() {
   const { toMint, fromMint, setFromMint } = useSwapContext();
   const tokenAccounts = useJupiterInputMints();
   const tokenAccountsFiltered = tokenAccounts.filter(
-    (token: Token) => token.nativeBalance !== 0 && token.mint !== toMint
+    (token: Token) => token.displayBalance !== 0 && token.mint !== toMint
   );
   return (
     <TokenSelectorButton
