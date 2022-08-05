@@ -1,7 +1,6 @@
 import { Link, List, ListItem, ListItemIcon, Typography } from "@mui/material";
 import _CheckIcon from "@mui/icons-material/Check";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { useApproveOrigin } from "@coral-xyz/recoil";
 import { WithApproval } from ".";
 
 const useStyles = styles((theme) => ({
@@ -41,12 +40,11 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function ApproveOrigin({ origin, title, onCompletion }: any) {
+export function ApproveMessage({ origin, title, message, onCompletion }: any) {
   const classes = useStyles();
-  const approveOrigin = useApproveOrigin();
 
   const onConfirm = async () => {
-    await approveOrigin(origin);
+    console.log("approved message", message);
     await onCompletion(true);
   };
 
@@ -63,37 +61,14 @@ export function ApproveOrigin({ origin, title, onCompletion }: any) {
     >
       <>
         <Typography className={classes.listDescription}>
-          This app would like to
+          Transaction details
         </Typography>
         <List className={classes.listRoot}>
-          <ListItem className={classes.listItemRoot}>
-            <ListItemIcon className={classes.listItemIconRoot}>
-              <CheckIcon />
-            </ListItemIcon>
-            View wallet balance & activity
-          </ListItem>
-          <ListItem className={classes.listItemRoot}>
-            <ListItemIcon className={classes.listItemIconRoot}>
-              <CheckIcon />
-            </ListItemIcon>
-            Request approval for transactions
-          </ListItem>
+          <ListItem className={classes.listItemRoot}>Network</ListItem>
+          <ListItem className={classes.listItemRoot}>Network Fee</ListItem>
         </List>
-        <Typography className={classes.warning}>
-          Only connect to apps you trust.{" "}
-          <Link className={classes.link}>Learn more.</Link>
-        </Typography>
+        <Link className={classes.link}>Advanced transaction details</Link>
       </>
     </WithApproval>
-  );
-}
-
-function CheckIcon() {
-  const theme = useCustomTheme();
-  return (
-    <_CheckIcon
-      htmlColor={theme.custom.colors.positive}
-      style={{ height: "20px", width: "20px" }}
-    />
   );
 }

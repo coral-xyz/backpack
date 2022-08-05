@@ -21,8 +21,9 @@ import {
 } from "@coral-xyz/recoil";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
-import { ApproveTransaction, ApproveMessage } from "../components/Approval";
 import { ApproveOrigin } from "../components/Unlocked/Approvals/ApproveOrigin";
+import { ApproveTransaction } from "../components/Unlocked/Approvals/ApproveTransaction";
+import { ApproveMessage } from "../components/Unlocked/Approvals/ApproveMessage";
 import "./App.css";
 
 const logger = getLogger("router");
