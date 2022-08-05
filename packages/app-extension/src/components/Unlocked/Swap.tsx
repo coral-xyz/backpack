@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   InputAdornment,
   Typography,
@@ -11,6 +10,7 @@ import {
   useSplTokenRegistry,
   useJupiterInputMints,
   useJupiterOutputMints,
+  useNavigation,
   useSwapContext,
   SwapProvider,
 } from "@coral-xyz/recoil";
@@ -21,6 +21,7 @@ import {
   TextFieldLabel,
   PrimaryButton,
   DangerButton,
+  SecondaryButton,
 } from "../common";
 import { CheckIcon, CrossIcon } from "../common/Icon";
 import { WithHeaderButton } from "./Balances/TokensWidget/Token";
@@ -30,7 +31,6 @@ import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
 import { MaxLabel } from "../common/MaxLabel";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
-import { SecondaryButton } from "../common";
 
 const useStyles = styles((theme) => ({
   container: {
@@ -439,7 +439,7 @@ function SwapConfirmation({ onConfirm }: { onConfirm: () => void }) {
 function SwapConfirming({ isConfirmed }: { isConfirmed: boolean }) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const navigate = useNavigate();
+  const nav = useNavigation();
   return (
     <div
       style={{
@@ -497,7 +497,7 @@ function SwapConfirming({ isConfirmed }: { isConfirmed: boolean }) {
           }}
         >
           <SecondaryButton
-            onClick={() => navigate("/balances")}
+            onClick={() => nav.toRoot()}
             label={"View Balances"}
           />
         </div>
