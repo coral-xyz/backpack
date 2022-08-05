@@ -131,7 +131,7 @@ export class Backend {
 
   async solanaConnectionUrlRead(): Promise<string> {
     const data = await getWalletData();
-    return (data.solana && data.solana.cluster) ?? SolanaCluster.DEFAULT;
+    return data.solana.cluster ?? SolanaCluster.DEFAULT;
   }
 
   // Returns true if the url changed.
