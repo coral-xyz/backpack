@@ -22,6 +22,9 @@ const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
 const DEGODS_TABLE_PLUGIN_URL = pluginURL(
   "xnft-program-library/packages/deadgods"
 );
+const NETWORK_MONITOR = pluginURL(
+  "xnft-program-library/packages/network-monitor"
+);
 
 function pluginURL(pluginName: string) {
   return [
@@ -43,6 +46,14 @@ export const plugins = selector({
         url: DEGODS_TABLE_PLUGIN_URL,
         iconUrl: "assets/deadgods.png",
         title: "DeadGods",
+        activeWallet: get(activeWallet),
+        connectionUrl: get(connectionUrl),
+      },
+      {
+        url: NETWORK_MONITOR,
+        iconUrl:
+          "https://pbs.twimg.com/profile_images/1472933274209107976/6u-LQfjG_400x400.jpg",
+        title: "Monitor",
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
       },
