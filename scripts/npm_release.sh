@@ -30,7 +30,7 @@ main () {
 update_package () {
 		local package=$1
 		pushd $package
-		sed -i "" "s/\"version\": \".*\"/\"version\": \"${version}\"/g" package.json
+		sed -i "s/\"version\": \".*\"/\"version\": \"${version}\"/g" package.json
 		popd
 }
 
