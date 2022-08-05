@@ -31,12 +31,12 @@ import {
 import * as cmn from "./common";
 import { RequestManager } from "./request-manager";
 
-const logger = getLogger("provider-ui-injection");
+const logger = getLogger("provider-xnft-injection");
 
 //
 // Injected provider for UI plugins.
 //
-export class ProviderUiInjection extends EventEmitter implements Provider {
+export class ProviderXnftInjection extends EventEmitter implements Provider {
   private _requestManager: RequestManager;
 
   constructor() {
