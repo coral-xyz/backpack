@@ -36,6 +36,15 @@ const SCROLLBAR_THUMB_COLOR = "rgb(153 164 180)";
 const DISABLED_BUTTON_COLOR = BRAND_COLOR;
 
 const componentOverrides = {
+  MuiButton: {
+    styleOverrides: {
+      root: {
+        "&:hover": {
+          opacity: "0.8",
+        },
+      },
+    },
+  },
   MuiPaper: {
     styleOverrides: {
       root: {

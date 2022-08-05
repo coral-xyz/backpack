@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Switch } from "@mui/material";
+import { Typography, Switch } from "@mui/material";
 import {
   Features,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
@@ -8,6 +8,9 @@ import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { useDarkMode, useBackgroundClient } from "@coral-xyz/recoil";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
+
+// Note: this is generated via a pre-build step.
+import { VERSION } from "../../../../version";
 
 export function Preferences() {
   const theme = useCustomTheme();
@@ -69,6 +72,20 @@ export function Preferences() {
     },
   };
 
+  //
+  // Build version.
+  //
+  const buildMenuItems = {
+    Version: {
+      onClick: () => {},
+      detail: (
+        <Typography style={{ color: theme.custom.colors.secondary }}>
+          {VERSION}
+        </Typography>
+      ),
+    },
+  };
+
   useEffect(() => {
     nav.setTitle("Preferences");
     nav.setStyle({
@@ -80,6 +97,7 @@ export function Preferences() {
     <div>
       <SettingsList menuItems={menuItems} />
       <SettingsList menuItems={solanaMenuItems} />
+      <SettingsList menuItems={buildMenuItems} />
     </div>
   );
 }

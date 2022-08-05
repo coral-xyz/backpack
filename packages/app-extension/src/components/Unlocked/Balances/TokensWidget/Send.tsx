@@ -26,6 +26,7 @@ import {
   walletAddressDisplay,
   PrimaryButton,
   SecondaryButton,
+  DangerButton,
 } from "../../../common";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
@@ -126,7 +127,6 @@ export function Send({
   tokenAddress: string;
 }) {
   const classes = useStyles() as any;
-  const theme = useCustomTheme();
   const { close } = useDrawerContext();
   const token = useBlockchainTokenAccount(blockchain, tokenAddress);
   const { provider } = useAnchorContext();
@@ -135,7 +135,6 @@ export function Send({
   const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState<number | null>(null);
-  const [amountError, setAmountError] = useState<boolean>(false);
 
   const {
     isValidAddress,
@@ -144,7 +143,6 @@ export function Send({
   } = useIsValidSolanaSendAddress(address, provider.connection);
 
   const amountFloat = amount && parseFloat(amount.toString());
-  const isSendDisabled = !isValidAddress || amount === null || amount <= 0;
   const lamportsOffset = (() => {
     //
     // When sending SOL, account for the tx fee and rent exempt minimum.
@@ -155,6 +153,23 @@ export function Send({
         (5000 + NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS) / 10 ** 9;
     }
     return lamportsOffset;
+  })();
+  const maxAmount = Math.max(token.displayBalance - lamportsOffset, 0);
+  const isSendDisabled =
+    !isValidAddress || amount === null || amount <= 0 || amount > maxAmount;
+  const amountError = (() => {
+    let didAmountError = false;
+    if (!amountFloat) {
+      return false;
+    }
+    if (amountFloat <= 0) {
+      didAmountError = true;
+    }
+
+    if (token.displayBalance < amountFloat + lamportsOffset) {
+      didAmountError = true;
+    }
+    return didAmountError;
   })();
 
   useEffect(() => {
@@ -173,16 +188,7 @@ export function Send({
     if (!amount || !amountFloat) {
       return;
     }
-    let didAmountError = false;
-    if (amountFloat <= 0) {
-      didAmountError = true;
-    }
 
-    if (token.displayBalance < amountFloat + lamportsOffset) {
-      didAmountError = true;
-    }
-
-    setAmountError(didAmountError);
     setOpenDrawer(true);
   };
 
@@ -219,10 +225,7 @@ export function Send({
             leftLabel={"Amount"}
             rightLabel={`${token.displayBalance} ${token.ticker}`}
             rightLabelComponent={
-              <MaxLabel
-                amount={Math.max(token.displayBalance - lamportsOffset, 0)}
-                onSetAmount={_setAmount}
-              />
+              <MaxLabel amount={maxAmount} onSetAmount={_setAmount} />
             }
             style={{ marginLeft: "24px", marginRight: "24px" }}
           />
@@ -242,12 +245,16 @@ export function Send({
         </div>
       </div>
       <div className={classes.buttonContainer}>
-        <PrimaryButton
-          disabled={isSendDisabled}
-          label="Send"
-          type="submit"
-          data-testid="Send"
-        />
+        {isErrorAddress ? (
+          <DangerButton disabled={true} label="Invalid Address" />
+        ) : (
+          <PrimaryButton
+            disabled={isSendDisabled}
+            label="Send"
+            type="submit"
+            data-testid="Send"
+          />
+        )}
         <ApproveTransactionDrawer
           openDrawer={openDrawer}
           setOpenDrawer={setOpenDrawer}

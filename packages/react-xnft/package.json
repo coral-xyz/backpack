@@ -1,6 +1,6 @@
 {
   "name": "react-xnft",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "module": "dist/esm/index.js",
   "react-native": "dist/esm/index.js",

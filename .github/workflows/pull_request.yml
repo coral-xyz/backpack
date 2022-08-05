@@ -91,11 +91,26 @@ jobs:
       # Build extension.
       ##########################################################################
 
-      - name: "build extension"
+      - name: "tag build version"
+        run: pushd ./packages/app-extension && ./scripts/version.sh latest-${{ github.run_number }} && popd
+
+      - name: "build workspace"
         # CI!=true so that build warnings aren't treated like errors (for now)
         env:
           CI: ""
         run: yarn build
+
+      #
+      # Rebuild the extension with an explicitly tagged version.
+      #
+      - name: "tag build version"
+        run: pushd ./packages/app-extension && ./scripts/version.sh latest-${{ github.run_number }} && popd
+      - name: "build extension for release"
+        # CI!=true so that build warnings aren't treated like errors (for now)
+        env:
+          CI: ""
+        working-directory: packages/app-extension
+        run: yarn build:release
 
       ##########################################################################
       # GitHub Pages.
@@ -121,13 +136,8 @@ jobs:
           destination_dir: "background-scripts/${{ env.short_sha }}"
 
       ##########################################################################
-      # Release.
+      # Upload build artifacts.
       ##########################################################################
-
-      #
-      # TODO: the master branch conditionson all these are bit hacky. Probably
-      #       a cleaner way of doing this.
-      #
 
       - name: "zip build artifacts"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -139,6 +149,16 @@ jobs:
         with:
           name: backpack-build
           path: packages/app-extension/build-${{ github.run_number }}.zip
+
+      ##########################################################################
+      # Release.
+      ##########################################################################
+
+      #
+      # TODO: the master branch conditionson all these are bit hacky. Probably
+      #       a cleaner way of doing this.
+      #
+
       - uses: actions/download-artifact@v2
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
@@ -165,6 +185,10 @@ jobs:
           asset_name: build-${{ github.run_number }}.zip
           asset_content_type: application/zip
 
+      ##########################################################################
+      # Send artifacts to out channels.
+      ##########################################################################
+
       - name: "post artifacts to Discord"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: sinshutu/upload-to-discord@master
@@ -172,3 +196,39 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           args: packages/app-extension/build-${{ github.run_number }}.zip
+
+      ##########################################################################
+      # NPM Publish.
+      ##########################################################################
+
+      - name:  "update npm package version"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: ./scripts/npm_release.sh 0.0.5-latest.${{ github.run_number }}
+      - name: "publish to npm: common-public"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_ACCESS_TOKEN }}
+          tag: latest
+          package: packages/common-public/package.json
+      - name: "publish to npm: themes"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_ACCESS_TOKEN }}
+          tag: latest
+          package: packages/themes/package.json
+      - name: "publish to npm: react-xnft"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_ACCESS_TOKEN }}
+          tag: latest
+          package: packages/react-xnft/package.json
+      - name: "publish to npm: xnft-cli"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_ACCESS_TOKEN }}
+          tag: latest
+          package: packages/xnft-cli/package.json
