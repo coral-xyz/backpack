@@ -45,6 +45,15 @@ const componentOverrides = {
       },
     },
   },
+  MuiIconButton: {
+    styleOverrides: {
+      root: {
+        "&:hover": {
+          opacity: "0.8",
+        },
+      },
+    },
+  },
   MuiPaper: {
     styleOverrides: {
       root: {

@@ -1,4 +1,4 @@
-import { Tabs, Tab } from "@mui/material";
+import { Tabs, Tab, IconButton } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useTab, useBackgroundClient } from "@coral-xyz/recoil";
 import {
@@ -39,6 +39,12 @@ const useStyles = styles((theme) => ({
     color: theme.custom.colors.tabIconSelected,
   },
   tabUnselected: {},
+  tabButton: {
+    padding: 0,
+    "&:hover": {
+      color: "red",
+    },
+  },
 }));
 
 export function WithTabs(props: any) {
