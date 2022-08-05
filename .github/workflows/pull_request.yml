@@ -209,26 +209,26 @@ jobs:
         uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_ACCESS_TOKEN }}
-          tag: latest-${{ github.run_number }}
+          tag: latest
           package: packages/common-public/package.json
       - name: "publish to npm: themes"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_ACCESS_TOKEN }}
-          tag: latest-${{ github.run_number }}
+          tag: latest
           package: packages/themes/package.json
       - name: "publish to npm: react-xnft"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_ACCESS_TOKEN }}
-          tag: latest-${{ github.run_number }}
+          tag: latest
           package: packages/react-xnft/package.json
       - name: "publish to npm: xnft-cli"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_ACCESS_TOKEN }}
-          tag: latest-${{ github.run_number }}
+          tag: latest
           package: packages/xnft-cli/package.json
