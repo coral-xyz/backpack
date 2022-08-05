@@ -10,7 +10,7 @@ ReactXnft.events.on("connect", () => {
 export function App() {
   return (
     <View>
-      <Text>Hello, World!</Text>
+      <Text style={{ color: "blue" }}>Hello, World!</Text>
     </View>
   );
 }

@@ -91,11 +91,26 @@ jobs:
       # Build extension.
       ##########################################################################
 
-      - name: "build extension"
+      - name: "tag build version"
+        run: pushd ./packages/app-extension && ./scripts/version.sh latest-${{ github.run_number }} && popd
+
+      - name: "build workspace"
         # CI!=true so that build warnings aren't treated like errors (for now)
         env:
           CI: ""
         run: yarn build
+
+      #
+      # Rebuild the extension with an explicitly tagged version.
+      #
+      - name: "tag build version"
+        run: pushd ./packages/app-extension && ./scripts/version.sh latest-${{ github.run_number }} && popd
+      - name: "build extension for release"
+        # CI!=true so that build warnings aren't treated like errors (for now)
+        env:
+          CI: ""
+        working-directory: packages/app-extension
+        run: yarn build:release
 
       ##########################################################################
       # GitHub Pages.
