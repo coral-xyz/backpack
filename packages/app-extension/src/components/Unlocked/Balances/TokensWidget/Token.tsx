@@ -33,7 +33,7 @@ const useStyles = styles((theme) => ({
   negativePercent: {
     color: theme.custom.colors.negative,
   },
-  nativeBalanceLabel: {
+  displayBalanceLabel: {
     color: theme.custom.colors.fontColor,
     fontSize: "30px",
     fontWeight: 600,
@@ -80,8 +80,8 @@ function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
   return (
     <div className={classes.tokenHeaderContainer}>
       <div className={classes.balanceContainer}>
-        <Typography className={classes.nativeBalanceLabel}>
-          {token.nativeBalance.toLocaleString()} {token.ticker}
+        <Typography className={classes.displayBalanceLabel}>
+          {token.displayBalance.toLocaleString()} {token.ticker}
         </Typography>
         <Typography className={classes.usdBalanceLabel}>
           ${parseFloat(token.usdBalance.toFixed(2)).toLocaleString()}{" "}

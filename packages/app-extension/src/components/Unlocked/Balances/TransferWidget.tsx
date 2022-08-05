@@ -5,11 +5,10 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
-import { Send } from "./TokensWidget/Send";
+import { Send, Send as TokenSend } from "./TokensWidget/Send";
 import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTable } from "../../common/TokenTable";
-import { Send as TokenSend } from "./TokensWidget/Send";
 
 export function TransferWidget({
   blockchain,
@@ -170,7 +169,7 @@ function SendToken() {
   return (
     <SearchableTokenTable
       onClickRow={onClickRow}
-      customFilter={(token: Token) => token.nativeBalance !== 0}
+      customFilter={(token: Token) => token.displayBalance !== 0}
     />
   );
 }

@@ -154,7 +154,7 @@ export function Send({
     }
     return lamportsOffset;
   })();
-  const maxAmount = Math.max(token.nativeBalance - lamportsOffset, 0);
+  const maxAmount = Math.max(token.displayBalance - lamportsOffset, 0);
   const isSendDisabled =
     !isValidAddress || amount === null || amount <= 0 || amount > maxAmount;
   const amountError = (() => {
@@ -166,7 +166,7 @@ export function Send({
       didAmountError = true;
     }
 
-    if (token.nativeBalance < amountFloat + lamportsOffset) {
+    if (token.displayBalance < amountFloat + lamportsOffset) {
       didAmountError = true;
     }
     return didAmountError;
@@ -188,6 +188,7 @@ export function Send({
     if (!amount || !amountFloat) {
       return;
     }
+
     setOpenDrawer(true);
   };
 
@@ -222,7 +223,7 @@ export function Send({
         <div>
           <TextFieldLabel
             leftLabel={"Amount"}
-            rightLabel={`${token.nativeBalance} ${token.ticker}`}
+            rightLabel={`${token.displayBalance} ${token.ticker}`}
             rightLabelComponent={
               <MaxLabel amount={maxAmount} onSetAmount={_setAmount} />
             }
