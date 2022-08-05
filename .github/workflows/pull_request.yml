@@ -95,6 +95,10 @@ jobs:
         # CI!=true so that build warnings aren't treated like errors (for now)
         env:
           CI: ""
+        #
+        # When building, tag the build with a version.
+        #
+        run: pushd ./packages/app-extension && ./scripts/version.sh ${{ github.run_number }} && popd
         run: yarn build
 
       ##########################################################################
