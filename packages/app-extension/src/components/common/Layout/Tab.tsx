@@ -1,4 +1,4 @@
-import { Tabs, Tab, IconButton } from "@mui/material";
+import { Tabs, Tab } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useTab, useBackgroundClient } from "@coral-xyz/recoil";
 import {

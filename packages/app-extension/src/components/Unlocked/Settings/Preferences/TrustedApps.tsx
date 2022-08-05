@@ -1,11 +1,12 @@
 import { useEffect } from "react";
-import { Typography, ListItemText } from "@mui/material";
-import { CloudOff } from "@mui/icons-material";
+import { ListItemText } from "@mui/material";
+import { GppBad } from "@mui/icons-material";
 import { UI_RPC_METHOD_APPROVED_ORIGINS_DELETE } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { useBackgroundClient, useApprovedOrigins } from "@coral-xyz/recoil";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { List, ListItem, PrimaryButton } from "../../../common";
+import { EmptyState } from "../../../common/EmptyState";
 
 export function PreferencesTrustedApps() {
   const nav = useNavStack();
@@ -16,7 +17,14 @@ export function PreferencesTrustedApps() {
   }, [nav]);
 
   return approvedOrigins.length === 0 ? (
-    <EmptyOrigins />
+    <EmptyState
+      icon={(props: any) => <GppBad {...props} />}
+      title={"No trusted apps"}
+      subtitle={"Trusted apps will be listed here"}
+      contentStyle={{
+        marginBottom: "64px", // Tab height offset.
+      }}
+    />
   ) : (
     <List style={{ marginTop: "16px" }}>
       {Object.entries(approvedOrigins).map(
@@ -37,51 +45,6 @@ export function PreferencesTrustedApps() {
         )
       )}
     </List>
-  );
-}
-
-function EmptyOrigins() {
-  const theme = useCustomTheme();
-  return (
-    <div
-      style={{
-        paddingLeft: "16px",
-        paddingRight: "16px",
-        paddingBottom: "16px",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        height: "100%",
-      }}
-    >
-      <div
-        style={{
-          marginTop: "-30px",
-        }}
-      >
-        <CloudOff
-          style={{
-            color: theme.custom.colors.secondary,
-            width: "100px",
-            height: "100px",
-            marginLeft: "auto",
-            marginRight: "auto",
-            display: "block",
-          }}
-        />
-        <Typography
-          style={{
-            color: theme.custom.colors.secondary,
-            textAlign: "center",
-            fontSize: "22px",
-            lineHeight: "28px",
-            fontWeight: 500,
-          }}
-        >
-          No approved applications
-        </Typography>
-      </div>
-    </div>
   );
 }
 

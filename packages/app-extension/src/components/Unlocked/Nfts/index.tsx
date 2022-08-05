@@ -1,13 +1,24 @@
 import { Grid } from "@mui/material";
+import { Image as ImageIcon } from "@mui/icons-material";
 import {
   NAV_COMPONENT_NFT_DETAIL,
   NAV_COMPONENT_NFT_COLLECTION,
 } from "@coral-xyz/common";
 import { useNavigation, useNftCollections } from "@coral-xyz/recoil";
 import { GridCard } from "./Common";
+import { EmptyState } from "../../common/EmptyState";
 
 export function Nfts() {
-  return (
+  const collections = useNftCollections();
+  return collections.length === 0 ? (
+    <EmptyState
+      icon={(props: any) => <ImageIcon {...props} />}
+      title={"No NFTs"}
+      subtitle={"Get started with your first NFT"}
+      buttonText={"Browse Magic Eden"}
+      onClick={() => window.open("https://magiceden.io")}
+    />
+  ) : (
     <div
       style={{
         paddingLeft: "16px",

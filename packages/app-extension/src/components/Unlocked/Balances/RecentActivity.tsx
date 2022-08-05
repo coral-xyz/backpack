@@ -16,6 +16,7 @@ import {
   NavStackScreen,
 } from "../../common/Layout/NavStack";
 import { isFirstLastListItemStyle } from "../../common/List";
+import { EmptyState } from "../../common/EmptyState";
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {
@@ -127,11 +128,7 @@ export function RecentActivityButton() {
 
 export function RecentActivity() {
   const wallet = useActiveWallet();
-  return (
-    <div style={{ marginTop: "16px" }}>
-      <RecentActivityList address={wallet.publicKey.toString()} />
-    </div>
-  );
+  return <RecentActivityList address={wallet.publicKey.toString()} />;
 }
 
 export function RecentActivitySmall({ address }: any) {
@@ -208,9 +205,10 @@ export function _RecentActivityList({ address, style }: any) {
     style = {};
   }
 
-  return (
+  return transactions.length > 0 ? (
     <List
       style={{
+        marginTop: "16px",
         paddingTop: 0,
         paddingBottom: 0,
         backgroundColor: theme.custom.colors.nav,
@@ -221,19 +219,17 @@ export function _RecentActivityList({ address, style }: any) {
         ...style,
       }}
     >
-      {transactions.length > 0 ? (
-        transactions.map((tx: any, idx: number) => (
-          <RecentActivityListItem
-            key={tx.transaction.signatures[0]}
-            transaction={tx}
-            isFirst={idx === 0}
-            isLast={idx === transactions.length - 1}
-          />
-        ))
-      ) : (
-        <NoRecentActivityLabel />
-      )}
+      {transactions.map((tx: any, idx: number) => (
+        <RecentActivityListItem
+          key={tx.transaction.signatures[0]}
+          transaction={tx}
+          isFirst={idx === 0}
+          isLast={idx === transactions.length - 1}
+        />
+      ))}
     </List>
+  ) : (
+    <NoRecentActivityLabel />
   );
 }
 
@@ -324,12 +320,22 @@ function RecentActivityListItemIcon({ transaction }: any) {
 }
 
 function NoRecentActivityLabel() {
-  const classes = useStyles();
   return (
-    <div>
-      <Typography className={classes.noRecentActivityLabel}>
-        No Recent Activity
-      </Typography>
+    <div
+      style={{
+        height: "100%",
+      }}
+    >
+      <EmptyState
+        icon={(props: any) => <Bolt {...props} />}
+        title={"No Recent Activity"}
+        subtitle={"Get started by adding your first xNFT"}
+        buttonText={"Browse the xNFT Library"}
+        onClick={() => window.open("https://xnft.gg")}
+        contentStyle={{
+          marginBottom: "64px", // Tab height offset.
+        }}
+      />
     </div>
   );
 }
