@@ -587,6 +587,7 @@ function Sending({
   const solanaExplorer = useSolanaExplorer();
   const connectionUrl = useSolanaConnectionUrl();
   const nav = useNavigation();
+  const drawer = useDrawerContext();
   return (
     <div
       style={{
@@ -650,6 +651,7 @@ function Sending({
           onClick={() => {
             if (isComplete) {
               nav.toRoot();
+              drawer.close();
             } else {
               window.open(
                 explorerUrl(solanaExplorer, signature, connectionUrl)
