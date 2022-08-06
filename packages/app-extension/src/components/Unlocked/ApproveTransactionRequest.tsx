@@ -4,8 +4,8 @@ import { Transaction, Message } from "@solana/web3.js";
 import {
   useBackgroundClient,
   useTransactionRequest,
-  useAllPlugins,
   useActiveWallet,
+  usePlugins,
 } from "@coral-xyz/recoil";
 import {
   UI_RPC_METHOD_SIGN_TRANSACTION,
@@ -70,7 +70,7 @@ export function ApproveTransactionRequest() {
 function SendTransactionRequest({ onClose }: any) {
   const [request, setRequest] = useTransactionRequest();
   const background = useBackgroundClient();
-  const plugins = useAllPlugins();
+  const plugins = usePlugins();
   const { publicKey } = useActiveWallet();
   const plugin = request
     ? plugins.find((p) => p.iframeUrl === request.pluginUrl)
