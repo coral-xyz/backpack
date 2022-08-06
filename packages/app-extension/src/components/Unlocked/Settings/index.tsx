@@ -77,6 +77,7 @@ const useStyles = styles((theme) => ({
     "&:hover": {
       // Disable hover color.
       background: "transparent",
+      opacity: 0.8,
     },
   },
   menuButtonContainer: {
@@ -380,7 +381,7 @@ function WalletList({
           >
             <Add
               style={{
-                color: theme.custom.colors.secondary,
+                color: "inherit",
                 display: "block",
                 marginLeft: "auto",
                 marginRight: "auto",
