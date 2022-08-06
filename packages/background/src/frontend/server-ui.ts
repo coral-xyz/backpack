@@ -61,6 +61,8 @@ import {
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_SOLANA_EXPLORER_READ,
   UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
+  UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
+  UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
   BACKEND_EVENT,
   CONNECTION_POPUP_RPC,
   CONNECTION_POPUP_NOTIFICATIONS,
@@ -235,6 +237,18 @@ async function handle<T = any>(
       return await handleSolanaExplorerRead(ctx);
     case UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE:
       return await handleSolanaExplorerUpdate(ctx, params[0]);
+    //
+    // Storage.
+    //
+    case UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET:
+      return await handlePluginLocalStorageGet(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT:
+      return await handlePluginLocalStoragePut(
+        ctx,
+        params[0],
+        params[1],
+        params[2]
+      );
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -637,5 +651,30 @@ async function handlePreviewPubkeys(
     derivationPath,
     numberOfAccounts
   );
+  return [resp];
+}
+
+// This API is only safe because it assumes the frontend UI code is doing
+// the proper gatekeeping. It shouldn't allow other xNFTs to call this
+// api with a fake plugin string.
+async function handlePluginLocalStorageGet(
+  ctx: Context<Backend>,
+  plugin: string,
+  key: string
+): Promise<RpcResponse<any>> {
+  const resp = await ctx.backend.pluginLocalStorageGet(plugin, key);
+  return [resp];
+}
+
+// This API is only safe because it assumes the frontend UI code is doing
+// the proper gatekeeping. It shouldn't allow other xNFTs to call this
+// api with a fake plugin string.
+async function handlePluginLocalStoragePut(
+  ctx: Context<Backend>,
+  plugin: string,
+  key: string,
+  value: any
+): Promise<RpcResponse<any>> {
+  const resp = await ctx.backend.pluginLocalStoragePut(plugin, key, value);
   return [resp];
 }

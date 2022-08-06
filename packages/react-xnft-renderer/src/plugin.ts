@@ -19,6 +19,8 @@ import {
   CHANNEL_PLUGIN_CONNECTION_BRIDGE,
   PLUGIN_RPC_METHOD_NAV_PUSH,
   PLUGIN_RPC_METHOD_NAV_POP,
+  PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
+  PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
   RPC_METHOD_SIGN_TX as PLUGIN_RPC_METHOD_SIGN_TX,
   RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_RPC_METHOD_SIGN_AND_SEND_TX,
   RPC_METHOD_SIMULATE as PLUGIN_RPC_METHOD_SIMULATE_TX,
@@ -38,6 +40,8 @@ import {
   RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
   RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
   RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
+  UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
+  UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
 } from "@coral-xyz/common";
 
 const logger = getLogger("plugin");
@@ -68,6 +72,7 @@ export class Plugin {
   //
   private _navPushFn?: (args: any) => void;
   private _requestTxApprovalFn?: (request: any) => void;
+  private _backgroundClient: BackgroundClient;
   private _connectionBackgroundClient: BackgroundClient;
 
   //
@@ -186,9 +191,16 @@ export class Plugin {
   //
   // Apis set from the outside host.
   //
-  public setHostApi({ push, pop, request, connectionBackgroundClient }) {
+  public setHostApi({
+    push,
+    pop,
+    request,
+    backgroundClient,
+    connectionBackgroundClient,
+  }) {
     this._navPushFn = push;
     this._requestTxApprovalFn = request;
+    this._backgroundClient = backgroundClient;
     this._connectionBackgroundClient = connectionBackgroundClient;
   }
 
@@ -378,6 +390,10 @@ export class Plugin {
         return await this._handleSignAndSendTransaction(params[0], params[1]);
       case PLUGIN_RPC_METHOD_SIMULATE_TX:
         return await this._handleSimulate(params[0], params[1]);
+      case PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET:
+        return await this._handleGet(params[0]);
+      case PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT:
+        return await this._handlePut(params[0], params[1]);
       default:
         logger.error(method);
         throw new Error("unexpected method");
@@ -442,6 +458,20 @@ export class Plugin {
   ): Promise<RpcResponse> {
     // todo
     return ["success"];
+  }
+
+  private async _handleGet(key: string): Promise<RpcResponse> {
+    return await this._backgroundClient.request({
+      method: UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
+      params: [this.iframeUrl, key],
+    });
+  }
+
+  private async _handlePut(key: string, value: any): Promise<RpcResponse> {
+    return await this._backgroundClient.request({
+      method: UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
+      params: [this.iframeUrl, key, value],
+    });
   }
 
   private clickHandlerError(): RpcResponse | null {

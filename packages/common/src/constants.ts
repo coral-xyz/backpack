@@ -28,8 +28,6 @@ export const MOBILE_CHANNEL_FE_RESPONSE = "mobile-fe-response";
 export const MOBILE_CHANNEL_FE_RESPONSE_INNER = "mobile-fe-response-inner";
 
 export const PLUGIN_NOTIFICATION_RENDER = "render";
-export const PLUGIN_RPC_METHOD_NAV_PUSH = "nav-push";
-export const PLUGIN_RPC_METHOD_NAV_POP = "nav-pop";
 export const PLUGIN_NOTIFICATION_CONNECT = "connect";
 export const PLUGIN_NOTIFICATION_ON_CLICK = "on-click";
 export const PLUGIN_NOTIFICATION_ON_CHANGE = "on-change";
@@ -39,6 +37,11 @@ export const PLUGIN_NOTIFICATION_NAVIGATION_POP = "nav-pop";
 export const PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED =
   "connection-url-updated";
 export const PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED = "public-key-updated";
+
+export const PLUGIN_RPC_METHOD_NAV_PUSH = "nav-push";
+export const PLUGIN_RPC_METHOD_NAV_POP = "nav-pop";
+export const PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET = "store-get";
+export const PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT = "store-put";
 
 export const RPC_METHOD_CONNECT = "connect";
 export const RPC_METHOD_DISCONNECT = "disconnect";
@@ -107,6 +110,8 @@ export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
 export const UI_RPC_METHOD_LEDGER_IMPORT = "ledger-import";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_READ = "solana-explorer-read";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE = "solana-explorer-update";
+export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET = "plugin-storage-get";
+export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT = "plugin-storage-put";
 
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";

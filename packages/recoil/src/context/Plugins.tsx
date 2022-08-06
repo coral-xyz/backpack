@@ -5,12 +5,14 @@ import {
   usePlugins,
   useNavigationSegue,
   useConnectionBackgroundClient,
+  useBackgroundClient,
 } from "../hooks";
 
 export function PluginManager(props: any) {
   const plugins = usePlugins();
   const segue = useNavigationSegue();
   const setTransactionRequest = useSetRecoilState(atoms.transactionRequest);
+  const backgroundClient = useBackgroundClient();
   const connectionBackgroundClient = useConnectionBackgroundClient();
 
   //
@@ -24,6 +26,7 @@ export function PluginManager(props: any) {
           push: segue.push,
           pop: segue.pop,
           request: setTransactionRequest,
+          backgroundClient,
           connectionBackgroundClient,
         });
       });
