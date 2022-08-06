@@ -3,13 +3,9 @@ import { SIMULATOR_PORT } from "@coral-xyz/common";
 import { activeWallet } from "./wallet";
 import { connectionUrl } from "../preferences";
 
-const OPEN_ORDERS_PLUGIN_URL = pluginURL("app");
-const OPEN_ORDERS_ICON_URL =
-  "https://pbs.twimg.com/media/FQuhVHfWQAEHTWM?format=jpg&name=4096x4096";
-
-const HELLO_WORLD_PLUGIN_URL =
-  "https://embed.xnfts.dev/5r1jwBmveWJaJVtkFCUFcboqv4sfYheaoEoBicAiJmEJ";
-
+//
+// Private dev plugins.
+//
 const MANGO_TABLE_PLUGIN_URL = pluginURL("xnft/mango");
 const PRICES_PLUGIN_URL = pluginURL("xnft/prices");
 const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
@@ -84,53 +80,6 @@ export const plugins = selector({
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
       },
-    ];
-  },
-});
-
-export const tablePlugins = selector({
-  key: "tablePlugins",
-  get: ({ get }: any) => {
-    const _activeWallet = get(activeWallet);
-    const _connectionUrl = get(connectionUrl);
-    return [
-      /*
-      {
-        url: HELLO_WORLD_PLUGIN_URL,
-        iconUrl: "",
-        title: "Hello World",
-        activeWallet: _activeWallet,
-        connectionUrl: _connectionUrl,
-      },
-      {
-        url: MANGO_TABLE_PLUGIN_URL,
-        iconUrl: "",
-        title: "Margin Accounts",
-        activeWallet: _activeWallet,
-        connectionUrl: _connectionUrl,
-      },
-      {
-        url: DEGODS_TABLE_PLUGIN_URL,
-        iconUrl: "",
-        title: "Staked Degods",
-        activeWallet: _activeWallet,
-        connectionUrl: _connectionUrl,
-      },
-      {
-        url: ANCHOR_TABLE_PLUGIN_URL,
-        iconUrl: "",
-        title: "Anchor Dev Tools",
-        activeWallet: _activeWallet,
-        connectionUrl: _connectionUrl,
-      },
-      {
-        url: PSYFI_TABLE_PLUGIN_URL,
-        iconUrl: "",
-        title: "PsyFinance Vaults",
-        activeWallet: _activeWallet,
-        connectionUrl: _connectionUrl,
-      },
-			*/
     ];
   },
 });

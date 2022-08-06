@@ -3,14 +3,12 @@ import { useSetRecoilState } from "recoil";
 import * as atoms from "../atoms";
 import {
   usePlugins,
-  useTablePlugins,
   useNavigationSegue,
   useConnectionBackgroundClient,
 } from "../hooks";
 
 export function PluginManager(props: any) {
   const plugins = usePlugins();
-  const tablePlugins = useTablePlugins();
   const segue = useNavigationSegue();
   const setTransactionRequest = useSetRecoilState(atoms.transactionRequest);
   const connectionBackgroundClient = useConnectionBackgroundClient();
@@ -19,8 +17,7 @@ export function PluginManager(props: any) {
   // Bootup all the plugins on the initial render.
   //
   useEffect(() => {
-    const allPlugins = plugins.concat(tablePlugins);
-    allPlugins
+    plugins
       .filter((p) => p.needsLoad)
       .forEach((plugin) => {
         plugin.setHostApi({
@@ -30,7 +27,7 @@ export function PluginManager(props: any) {
           connectionBackgroundClient,
         });
       });
-  }, [plugins, tablePlugins]);
+  }, [plugins]);
 
   return (
     <_PluginsContext.Provider value={{}}>
