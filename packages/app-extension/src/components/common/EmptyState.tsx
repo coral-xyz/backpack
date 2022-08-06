@@ -9,7 +9,16 @@ export const EmptyState: React.FC<{
   buttonText?: string;
   onClick?: () => void;
   contentStyle?: React.CSSProperties;
-}> = ({ icon, title, subtitle, buttonText, onClick, contentStyle }) => {
+  minimize?: boolean;
+}> = ({
+  icon,
+  title,
+  subtitle,
+  buttonText,
+  onClick,
+  contentStyle,
+  minimize,
+}) => {
   const theme = useCustomTheme();
   return (
     <div
@@ -45,23 +54,25 @@ export const EmptyState: React.FC<{
             lineHeight: "32px",
             textAlign: "center",
             fontWeight: 500,
-            marginBottom: "8px",
           }}
         >
           {title}
         </Typography>
-        <Typography
-          style={{
-            color: theme.custom.colors.secondary,
-            textAlign: "center",
-            fontSize: "16px",
-            lineHeight: "24px",
-            fontWeight: 500,
-          }}
-        >
-          {subtitle}
-        </Typography>
-        {buttonText && (
+        {minimize !== true && (
+          <Typography
+            style={{
+              marginTop: "8px",
+              color: theme.custom.colors.secondary,
+              textAlign: "center",
+              fontSize: "16px",
+              lineHeight: "24px",
+              fontWeight: 500,
+            }}
+          >
+            {subtitle}
+          </Typography>
+        )}
+        {minimize !== true && buttonText && (
           <SecondaryButton
             onClick={onClick}
             label={buttonText}

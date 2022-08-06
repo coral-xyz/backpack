@@ -1,10 +1,10 @@
-import { styles } from "@coral-xyz/themes";
+import { styles, HOVER_OPACITY } from "@coral-xyz/themes";
 
 const useStyles = styles((theme) => ({
   hoverButton: {
     "&:hover": {
       "& path": {
-        opacity: 0.8,
+        opacity: HOVER_OPACITY,
       },
     },
   },

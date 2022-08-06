@@ -131,43 +131,14 @@ export function RecentActivity() {
   return <RecentActivityList address={wallet.publicKey.toString()} />;
 }
 
-export function RecentActivitySmall({ address }: any) {
-  const theme = useCustomTheme();
-  return (
-    <div>
-      <RecentActivityList
-        address={address}
-        style={{ borderTop: `solid 1pt ${theme.custom.colors.border}` }}
-      />
-    </div>
-  );
-}
-
-export function RecentActivitySmallHeader() {
-  const classes = useStyles();
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        marginLeft: "12px",
-        marginRight: "12px",
-        paddingBottom: "8px",
-      }}
-    >
-      <div>
-        <Typography className={classes.recentActivityLabel}>
-          Recent Activity
-        </Typography>
-      </div>
-    </div>
-  );
-}
-
-export function RecentActivityList({ address, style }: any) {
+export function RecentActivityList({ address, style, minimize }: any) {
   return (
     <Suspense fallback={<RecentActivityLoading />}>
-      <_RecentActivityList style={style} address={address} />
+      <_RecentActivityList
+        style={style}
+        address={address}
+        minimize={minimize}
+      />
     </Suspense>
   );
 }
@@ -197,7 +168,7 @@ function RecentActivityLoading() {
   );
 }
 
-export function _RecentActivityList({ address, style }: any) {
+export function _RecentActivityList({ address, style, minimize }: any) {
   const theme = useCustomTheme();
   const transactions = useRecentTransactions(address);
 
@@ -229,7 +200,7 @@ export function _RecentActivityList({ address, style }: any) {
       ))}
     </List>
   ) : (
-    <NoRecentActivityLabel />
+    <NoRecentActivityLabel minimize={minimize} />
   );
 }
 
@@ -319,7 +290,8 @@ function RecentActivityListItemIcon({ transaction }: any) {
   );
 }
 
-function NoRecentActivityLabel() {
+function NoRecentActivityLabel({ minimize }: any) {
+  const theme = useCustomTheme();
   return (
     <div
       style={{
@@ -333,8 +305,10 @@ function NoRecentActivityLabel() {
         buttonText={"Browse the xNFT Library"}
         onClick={() => window.open("https://xnft.gg")}
         contentStyle={{
-          marginBottom: "64px", // Tab height offset.
+          marginBottom: minimize !== true ? "64px" : 0, // Tab height offset.
+          color: minimize ? theme.custom.colors.secondary : "inherit",
         }}
+        minimize={minimize}
       />
     </div>
   );

@@ -35,12 +35,23 @@ const NEGATIVE_COLOR = "#E95050";
 const SCROLLBAR_THUMB_COLOR = "rgb(153 164 180)";
 const DISABLED_BUTTON_COLOR = BRAND_COLOR;
 
+export const HOVER_OPACITY = 0.8;
+
 const componentOverrides = {
   MuiButton: {
     styleOverrides: {
       root: {
         "&:hover": {
-          opacity: "0.8",
+          opacity: HOVER_OPACITY,
+        },
+      },
+    },
+  },
+  MuiListItem: {
+    styleOverrides: {
+      root: {
+        "&:hover": {
+          opacity: HOVER_OPACITY,
         },
       },
     },
@@ -49,7 +60,7 @@ const componentOverrides = {
     styleOverrides: {
       root: {
         "&:hover": {
-          opacity: "0.8",
+          opacity: HOVER_OPACITY,
         },
       },
     },

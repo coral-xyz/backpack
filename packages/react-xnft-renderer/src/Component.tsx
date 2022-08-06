@@ -28,7 +28,7 @@ const useStyles = styles((theme) => ({
     color: theme.custom.colors.secondary,
   },
   blockchainCard: {
-    backgroundColor: theme.custom.colors.nav,
+    backgroundColor: "inherit",
     marginBottom: "12px",
     marginLeft: "12px",
     marginRight: "12px",
@@ -41,6 +41,7 @@ const useStyles = styles((theme) => ({
     flexDirection: "column",
   },
   cardHeaderRoot: {
+    backgroundColor: theme.custom.colors.nav,
     padding: "6px",
     paddingLeft: "16px",
     paddingRight: "16px",
@@ -67,6 +68,7 @@ const useStyles = styles((theme) => ({
   },
   tokenListItem: {
     borderTop: `solid 1pt ${theme.custom.colors.border}`,
+    backgroundColor: `${theme.custom.colors.nav} !important`,
     paddingTop: 0,
     paddingBottom: 0,
     paddingLeft: "12px",

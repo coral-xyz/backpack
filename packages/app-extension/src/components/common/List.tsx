@@ -6,11 +6,12 @@ import {
 import { ChevronRight, CallMade } from "@mui/icons-material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 
-const useStyles = styles(() => ({
+const useStyles = styles((theme) => ({
   settingsContentListItem: {
     padding: "8px",
     height: "56px",
     display: "flex",
+    backgroundColor: `${theme.custom.colors.nav} !important`,
   },
   dividerRoot: {
     borderColor: "transparent !important",
@@ -23,7 +24,6 @@ export function List({ style, children }: any) {
     <MuiList
       style={{
         color: theme.custom.colors.fontColor,
-        background: theme.custom.colors.nav,
         padding: 0,
         marginLeft: "16px",
         marginRight: "16px",
