@@ -82,21 +82,6 @@ jobs:
         run: yarn install --frozen-lockfile --prefer-offline
 
       ##########################################################################
-      # Yarn test.
-      ##########################################################################
-
-      - run: yarn test
-
-      - name: Run Playwright tests
-        run: yarn e2e
-
-      # - uses: actions/upload-artifact@v2
-      #   with:
-      #     name: playwright-report
-      #     path: playwright-report/
-      #     retention-days: 30
-
-      ##########################################################################
       # Build extension.
       ##########################################################################
 
@@ -120,6 +105,21 @@ jobs:
           CI: ""
         working-directory: packages/app-extension
         run: yarn build:release
+
+      ##########################################################################
+      # Yarn test.
+      ##########################################################################
+
+      - run: yarn test
+
+      - name: Run Playwright tests
+        run: yarn e2e
+
+      # - uses: actions/upload-artifact@v2
+      #   with:
+      #     name: playwright-report
+      #     path: playwright-report/
+      #     retention-days: 30
 
       ##########################################################################
       # GitHub Pages.
