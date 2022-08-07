@@ -103,7 +103,7 @@ export function SwapProvider(props: any) {
     SOL_NATIVE_MINT,
     USDC_MINT,
   ]);
-  const [fromAmount, setFromAmount] = useState<number | null>(null);
+  const [fromAmount, _setFromAmount] = useState<number | null>(null);
   const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE_PERCENT);
 
   // Jupiter data
@@ -155,15 +155,15 @@ export function SwapProvider(props: any) {
   const pollIdRef: { current: NodeJS.Timeout | null } = useRef(null);
 
   let availableForSwap =
-    tokenAccountsSorted.find((t) => t.mint === fromMint)?.displayBalance || 0;
-  // If from mint is native SOL, remove the transaction fee from the max swap amount
+    tokenAccountsSorted.find((t) => t.mint === fromMint)?.nativeBalance || 0;
+
+  // If from mint is native SOL, remove the transaction fee and rent exemption
+  // from from the max swap amount
   if (fromMint === SOL_NATIVE_MINT && transactionFee) {
-    // Scale up the displayBalance to avoid rounding errors before scaling everything down
     availableForSwap = Math.max(
-      (availableForSwap * 10 ** 9 -
+      availableForSwap -
         transactionFee -
-        NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS) /
-        10 ** 9,
+        NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
       0
     );
   }
@@ -332,6 +332,12 @@ export function SwapProvider(props: any) {
 
   const setToMint = (mint: string) => {
     setFromMintToMint([fromMint, mint]);
+  };
+
+  const setFromAmount = (amount: number) => {
+    // Restrict the input to the number of decimals of the from token
+    const truncatedAmount = amount;
+    _setFromAmount(amount);
   };
 
   //

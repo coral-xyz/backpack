@@ -294,8 +294,13 @@ const SwapConfirmationCard: React.FC<{ onClose: () => void }> = ({
 
 function InputTextField() {
   const classes = useStyles();
-  const { fromAmount, setFromAmount, availableForSwap, exceedsBalance } =
-    useSwapContext();
+  const {
+    fromAmount,
+    setFromAmount,
+    fromMintInfo,
+    availableForSwap,
+    exceedsBalance,
+  } = useSwapContext();
 
   const _setFromAmount = (amount: number) => {
     if (amount >= 0) {
@@ -308,7 +313,10 @@ function InputTextField() {
       <TextFieldLabel
         leftLabel={"You Pay"}
         rightLabelComponent={
-          <MaxLabel amount={availableForSwap} onSetAmount={_setFromAmount} />
+          <MaxLabel
+            amount={availableForSwap / 10 ** fromMintInfo.decimals}
+            onSetAmount={_setFromAmount}
+          />
         }
       />
       <TextField

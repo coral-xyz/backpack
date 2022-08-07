@@ -91,7 +91,8 @@ export const blockchainTokenAccounts = selectorFamily({
               ? SOL_NATIVE_MINT
               : tokenAccount.mint.toString();
           const price = get(priceData(priceMint)) as any;
-          const nativeBalance = tokenAccount.amount.toNumber();
+          const nativeBalance = tokenAccount.amount;
+          const decimals = tokenMetadata.decimals;
           const displayBalance = tokenMetadata.decimals
             ? tokenAccount.amount.toNumber() / 10 ** tokenMetadata.decimals
             : tokenAccount.amount.toNumber();
@@ -110,6 +111,7 @@ export const blockchainTokenAccounts = selectorFamily({
           return {
             name,
             nativeBalance,
+            decimals,
             displayBalance,
             ticker,
             logo,

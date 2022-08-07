@@ -142,35 +142,16 @@ export function Send({
     isErrorAddress,
   } = useIsValidSolanaSendAddress(address, provider.connection);
 
-  const amountFloat = amount && parseFloat(amount.toString());
-  const lamportsOffset = (() => {
-    //
-    // When sending SOL, account for the tx fee and rent exempt minimum.
-    //
-    let lamportsOffset = 0;
-    if (token.mint === SOL_NATIVE_MINT) {
-      lamportsOffset =
-        (5000 + NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS) / 10 ** 9;
-    }
-    return lamportsOffset;
-  })();
-  const maxAmount = Math.max(token.displayBalance - lamportsOffset, 0);
-  const isSendDisabled =
-    !isValidAddress || amount === null || amount <= 0 || amount > maxAmount;
-  const amountError = (() => {
-    let didAmountError = false;
-    if (!amountFloat) {
-      return false;
-    }
-    if (amountFloat <= 0) {
-      didAmountError = true;
-    }
-
-    if (token.displayBalance < amountFloat + lamportsOffset) {
-      didAmountError = true;
-    }
-    return didAmountError;
-  })();
+  const amountNative = amount && amount * 10 ** token.decimals;
+  // When sending SOL, account for the tx fee and rent exempt minimum.
+  const lamportsOffset =
+    token.mint === SOL_NATIVE_MINT
+      ? 5000 + NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS
+      : 0;
+  const maxAmount = Math.max(token.nativeBalance - lamportsOffset, 0);
+  const exceedsBalance = amountNative && amountNative > maxAmount;
+  const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
+  const amountError = amount && exceedsBalance;
 
   useEffect(() => {
     nav.setTitle(`Send ${token.ticker}`);
@@ -185,10 +166,9 @@ export function Send({
 
   // On click handler.
   const onNext = () => {
-    if (!amount || !amountFloat) {
+    if (!amount || !amountNative) {
       return;
     }
-
     setOpenDrawer(true);
   };
 
@@ -225,7 +205,10 @@ export function Send({
             leftLabel={"Amount"}
             rightLabel={`${token.displayBalance} ${token.ticker}`}
             rightLabelComponent={
-              <MaxLabel amount={maxAmount} onSetAmount={_setAmount} />
+              <MaxLabel
+                amount={maxAmount / 10 ** token.decimals}
+                onSetAmount={_setAmount}
+              />
             }
             style={{ marginLeft: "24px", marginRight: "24px" }}
           />
@@ -262,7 +245,7 @@ export function Send({
           <SendConfirmationCard
             token={token}
             address={address}
-            amount={amountFloat!}
+            amount={amount!}
             close={() => {
               setOpenDrawer(false);
               close();
@@ -665,47 +648,6 @@ function Sending({
   );
 }
 
-function Complete({
-  signature,
-  address,
-}: {
-  signature: string;
-  address: string;
-}) {
-  const theme = useCustomTheme();
-  const explorer = useSolanaExplorer();
-  const connectionUrl = useSolanaConnectionUrl();
-  return (
-    <div
-      style={{
-        height: "264px",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-      }}
-    >
-      <Typography
-        style={{ textAlign: "center", color: theme.custom.colors.secondary }}
-      >
-        Sent!
-      </Typography>
-      <Typography
-        style={{ textAlign: "center", color: theme.custom.colors.secondary }}
-      >
-        Your tokens were successfully sent to{" "}
-        {walletAddressDisplay(new PublicKey(address))}
-      </Typography>
-      <Link
-        href={explorerUrl(explorer, signature, connectionUrl)}
-        target="_blank"
-        style={{ textAlign: "center" }}
-      >
-        View Transaction
-      </Link>
-    </div>
-  );
-}
-
 function Error({ signature }: { signature: string }) {
   const theme = useCustomTheme();
   const explorer = useSolanaExplorer();
@@ -745,12 +687,9 @@ export function BottomCard({
   cancelButtonStyle,
   cancelButtonLabelStyle,
   children,
-  //  style,
   topHalfStyle,
   wrapperStyle,
-}: //	buttonContainerStyle,
-any) {
-  const classes = useStyles();
+}: any) {
   const theme = useCustomTheme();
   return (
     <div
@@ -772,7 +711,6 @@ any) {
           background: theme.custom.colors.background,
           borderTopLeftRadius: "12px",
           borderTopRightRadius: "12px",
-          //			...style
         }}
       >
         <div
@@ -791,7 +729,6 @@ any) {
             marginRight: "12px",
             display: "flex",
             justifyContent: "space-between",
-            //					...buttonContainerStyle,
           }}
         >
           {cancelButtonLabel && (
