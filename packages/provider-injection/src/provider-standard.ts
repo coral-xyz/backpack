@@ -188,9 +188,9 @@ export class BackpackSolanaWallet
   }
 
   constructor() {
-    window.backpack.on("connect", () => this._connect());
-    window.backpack.on("disconnect", () => this._disconnect());
-    window.backpack.on("connectionDidChange", () => this._reconnect());
+    window.backpack.on("connect", this._connect, this);
+    window.backpack.on("disconnect", this._disconnect, this);
+    window.backpack.on("connectionDidChange", this._reconnect, this);
 
     this._connect();
   }
