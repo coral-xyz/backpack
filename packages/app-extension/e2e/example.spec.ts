@@ -11,7 +11,7 @@ const test = base.extend({
     const browserTypes = { chromium };
     const launchOptions = {
       devtools: false,
-      headless: false,
+      headless: Boolean(process.env.CI),
       args: [`--disable-extensions-except=${extensionPath}`],
       viewport: {
         width: 400,
