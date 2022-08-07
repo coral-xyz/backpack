@@ -107,7 +107,7 @@ jobs:
         env:
           CI: ""
         working-directory: packages/app-extension
-        run: yarn build:release
+        run: VERSION_NUMBER="${{ github.run_number }}" yarn build:release
 
       ##########################################################################
       # Yarn test.

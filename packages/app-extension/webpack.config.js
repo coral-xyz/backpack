@@ -176,7 +176,9 @@ const options = {
               JSON.stringify(
                 {
                   description: process.env.npm_package_description,
-                  version: process.env.npm_package_version,
+                  version:
+                    process.env.VERSION_NUMBER ||
+                    process.env.npm_package_version,
                   name: EXTENSION_NAME,
                   key: EXTENSION_KEY,
                   ...JSON.parse(content.toString()),
