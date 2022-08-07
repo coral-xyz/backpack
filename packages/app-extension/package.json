@@ -36,7 +36,7 @@
     "start": "./scripts/version.sh development && NODE_ENV=development webpack serve",
     "build": "./scripts/version.sh production && NODE_ENV=production webpack",
     "build:release": "NODE_ENV=production webpack",
-    "e2e": "npx playwright-chromium install && playwright test",
+    "e2e": "playwright test",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
   },
   "eslintConfig": {
