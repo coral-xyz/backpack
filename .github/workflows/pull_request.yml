@@ -112,7 +112,7 @@ jobs:
 
       - run: yarn test
 
-      # https://github.com/microsoft/playwright-github-action#run-in-headful-mode
+      # https://playwright.dev/docs/next/ci#running-headed
       - name: run playwright e2e tests
         run: xvfb-run yarn e2e
 

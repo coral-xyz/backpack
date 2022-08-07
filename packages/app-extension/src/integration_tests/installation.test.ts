@@ -31,7 +31,6 @@ describe("Installing Anchor Wallet", () => {
 
       // Now we need to get the unique ID of the browser extension and
       // then we can open a URL like chrome-extension://EXTENSION_ID/popup.html
-
       const extensionID = await (async () => {
         const targets = await browser.targets();
         const extensionTarget = targets.find(
