@@ -72,7 +72,7 @@ export async function send(
   const message = encode(txSerialize);
   return await requestManager.request({
     method: RPC_METHOD_SIGN_AND_SEND_TX,
-    params: [message, publicKey!.toString(), options],
+    params: [message, publicKey.toString(), options],
   });
 }
 
@@ -85,7 +85,7 @@ export async function signTransaction(
   const message = encode(tx.serializeMessage());
   const signature = await requestManager.request({
     method: RPC_METHOD_SIGN_TX,
-    params: [message, publicKey!.toString()],
+    params: [message, publicKey.toString()],
   });
   // @ts-ignore
   tx.addSignature(publicKey, decode(signature));
@@ -107,12 +107,12 @@ export async function signAllTransactions(
   // Get signatures from the background script.
   const signatures: Array<string> = await requestManager.request({
     method: RPC_METHOD_SIGN_ALL_TXS,
-    params: [messages, publicKey!.toString()],
+    params: [messages, publicKey.toString()],
   });
 
   // Add the signatures to the transactions.
   txs.forEach((t, idx) => {
-    t.addSignature(publicKey!, Buffer.from(decode(signatures[idx])));
+    t.addSignature(publicKey, Buffer.from(decode(signatures[idx])));
   });
 
   return txs;
@@ -140,7 +140,7 @@ export async function simulate(
   const message = encode(txSerialize);
   return await requestManager.request({
     method: RPC_METHOD_SIMULATE,
-    params: [message, publicKey!.toString(), commitment],
+    params: [message, publicKey.toString(), commitment],
   });
 }
 
@@ -152,7 +152,7 @@ export async function signMessage(
   const msgStr = encode(msg);
   const signature = await requestManager.request({
     method: RPC_METHOD_SIGN_MESSAGE,
-    params: [msgStr, publicKey!.toString()],
+    params: [msgStr, publicKey.toString()],
   });
   if (!signature) {
     return signature;
