@@ -181,6 +181,16 @@ async function handleConfirmTransaction(
     | TransactionSignature,
   commitment?: Commitment
 ) {
+  if (typeof signature === "string") {
+    const { blockhash, lastValidBlockHeight } =
+      await ctx.backend.getLatestBlockhash();
+    signature = {
+      signature,
+      blockhash,
+      lastValidBlockHeight,
+    };
+  }
+
   const resp = await ctx.backend.confirmTransaction(signature, commitment);
   return [resp];
 }

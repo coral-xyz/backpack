@@ -299,9 +299,7 @@ export class Backend {
   }
 
   async confirmTransaction(
-    strategy:
-      | TransactionSignature
-      | BlockheightBasedTransactionConfirmationStrategy,
+    strategy: BlockheightBasedTransactionConfirmationStrategy,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<SignatureResult>> {
     // @ts-ignore
