@@ -173,12 +173,20 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         working-directory: packages/app-extension
         run: zip -r build-${{ github.run_number }}.zip build/
+
+      - name: "convert build-${{ github.run_number }}.zip into .crx"
+        id: packExtensionDir
+        uses: cardinalby/webext-buildtools-pack-extension-dir-action@v1
+        with:
+          extensionDir: packages/app-extension
+          zipFilePath: build-${{ github.run_number }}.zip
+
       - name: "upload build artifacts"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v2
         with:
           name: backpack-build
-          path: packages/app-extension/build-${{ github.run_number }}.zip
+          path: packages/app-extension/build-${{ github.run_number }}.crx
 
       ##########################################################################
       # Release.
@@ -211,8 +219,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build-${{ github.run_number }}.zip
-          asset_name: build-${{ github.run_number }}.zip
+          asset_path: ./build-${{ github.run_number }}.crx
+          asset_name: build-${{ github.run_number }}.crx
           asset_content_type: application/zip
 
       ##########################################################################
@@ -225,7 +233,7 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          args: packages/app-extension/build-${{ github.run_number }}.zip
+          args: packages/app-extension/build-${{ github.run_number }}.crx
 
       ##########################################################################
       # NPM Publish.
