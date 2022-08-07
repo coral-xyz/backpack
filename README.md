@@ -1,4 +1,18 @@
-# Backpack
+<div align="center">
+  <img height="170x" src="https://pbs.twimg.com/profile_images/1537219386116800513/chacpod0_400x400.jpg" />
+
+  <h1>Backpack</h1>
+
+  <p>
+    <strong>A home for your xNFTs</strong>
+  </p>
+
+  <p>
+    <a href="https://github.com/coral-xyz/anchor/actions"><img alt="Build Status" src="https://github.com/coral-xyz/backpack/actions/workflows/pull_request.yml/badge.svg" /></a>
+    <a href="https://docs.xnft.gg"><img alt="Tutorials" src="https://img.shields.io/badge/docs-tutorials-blueviolet" /></a>
+    <a href="https://discord.gg/PDeRXyVURd"><img alt="Discord Chat" src="https://img.shields.io/discord/889577356681945098?color=blueviolet" /></a>
+  </p>
+</div>
 
 ## Installing the Latest Release
 
