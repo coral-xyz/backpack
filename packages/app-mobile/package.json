@@ -7,7 +7,6 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "e2e": "jest",
     "lint:fix": "eslint 'src/**/*' --fix"
   },
   "dependencies": {
