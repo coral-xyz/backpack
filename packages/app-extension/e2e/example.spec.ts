@@ -7,7 +7,6 @@ const extensionPath = path.join(__dirname, "../build"); // make sure this is cor
 
 const test = base.extend({
   context: async ({ browserName }, use) => {
-    // const browserTypes = { chromium, webkit };
     const browserTypes = { chromium };
     const launchOptions = {
       devtools: false,
@@ -32,6 +31,12 @@ const EXTENSION_ID = "jclcndnaoggcdljhefioenkobihhahge";
 test.describe("Setup", () => {
   test("our extension loads", async ({ page, context }) => {
     const VALID_PASSWORD = "password1234";
+
+    const google = await context.newPage();
+
+    await google.goto(`https://www.google.com`);
+    await google.locator("text=Images").click();
+    await google.close();
 
     await page.goto(
       `chrome-extension://${EXTENSION_ID}/options.html?onboarding=true`
