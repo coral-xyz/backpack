@@ -10,6 +10,7 @@ on:
 
 env:
   solana_version: 1.10.32
+  build_version_number: ${{ github.run_number }}
 
 jobs:
   add-labels-based-on-whats-changed:
@@ -89,7 +90,7 @@ jobs:
       ##########################################################################
 
       - name: "tag build version"
-        run: pushd ./packages/app-extension && ./scripts/version.sh latest-${{ github.run_number }} && popd
+        run: pushd ./packages/app-extension && ./scripts/version.sh latest-${{ env.build_version_number }} && popd
 
       - name: "build workspace"
         # CI!=true so that build warnings aren't treated like errors (for now)
@@ -101,13 +102,13 @@ jobs:
       # Rebuild the extension with an explicitly tagged version.
       #
       - name: "tag build version"
-        run: pushd ./packages/app-extension && ./scripts/version.sh latest-${{ github.run_number }} && popd
+        run: pushd ./packages/app-extension && ./scripts/version.sh latest-${{ env.build_version_number }} && popd
       - name: "build extension for release"
         # CI!=true so that build warnings aren't treated like errors (for now)
         env:
           CI: ""
         working-directory: packages/app-extension
-        run: VERSION_NUMBER="${{ github.run_number }}" yarn build:release
+        run: VERSION_NUMBER="${{ env.build_version_number }}" yarn build:release
 
       ##########################################################################
       # Yarn test.
@@ -170,24 +171,22 @@ jobs:
       ##########################################################################
 
       - name: "zip build artifacts"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         working-directory: packages/app-extension
-        run: zip -r build-${{ github.run_number }}.zip build/
+        run: zip -r build-${{ env.build_version_number }}.zip build/
 
-      - name: "convert build-${{ github.run_number }}.zip into .crx"
+      - name: "convert build-${{ env.build_version_number }}.zip into .crx"
         id: packExtensionDir
         uses: cardinalby/webext-buildtools-chrome-crx-action@v2
         with:
-          zipFilePath: packages/app-extension/build-${{ github.run_number }}.zip
-          crxFilePath: packages/app-extension/build-${{ github.run_number }}.crx
+          zipFilePath: packages/app-extension/build-${{ env.build_version_number }}.zip
+          crxFilePath: packages/app-extension/build-${{ env.build_version_number }}.crx
           privateKey: ${{ secrets.CHROME_CRX_PRIVATE_KEY }}
 
       - name: "upload build artifacts"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v2
         with:
           name: backpack-build
-          path: packages/app-extension/build-${{ github.run_number }}.crx
+          path: packages/app-extension/build-${{ env.build_version_number }}.crx
 
       ##########################################################################
       # Release.
@@ -210,8 +209,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: latest-${{ github.run_number }}
-          release_name: latest-${{ github.run_number }}
+          tag_name: latest-${{ env.build_version_number }}
+          release_name: latest-${{ env.build_version_number }}
           draft: false
           prerelease: false
       - uses: actions/upload-release-asset@v1.0.1
@@ -220,8 +219,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build-${{ github.run_number }}.crx
-          asset_name: build-${{ github.run_number }}.crx
+          asset_path: ./build-${{ env.build_version_number }}.crx
+          asset_name: build-${{ env.build_version_number }}.crx
           asset_content_type: application/zip
 
       ##########################################################################
@@ -234,7 +233,7 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          args: packages/app-extension/build-${{ github.run_number }}.crx
+          args: packages/app-extension/build-${{ env.build_version_number }}.crx
 
       ##########################################################################
       # NPM Publish.
@@ -242,7 +241,7 @@ jobs:
 
       - name: "update npm package version"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: ./scripts/npm_release.sh 0.0.5-latest.${{ github.run_number }}
+        run: ./scripts/npm_release.sh 0.0.5-latest.${{ env.build_version_number }}
       - name: "publish to npm: common-public"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: JS-DevTools/npm-publish@v1
