@@ -49,7 +49,7 @@ export function TokenTable() {
   const tokenAccountsSorted = useBlockchainTokensSorted(blockchain);
   const tokenAccountsFiltered = tokenAccountsSorted.filter(
     (t: any) =>
-      t.nativeBalance !== 0 &&
+      t.displayBalance !== 0 &&
       t.name !== undefined &&
       t.ticker !== undefined &&
       t.logo !== undefined
@@ -94,7 +94,7 @@ function TokenRow({
         props={{
           icon: token.logo,
           title: token.name,
-          subtitle: `${token.nativeBalance.toLocaleString()} ${token.ticker}`,
+          subtitle: `${token.displayBalance.toLocaleString()} ${token.ticker}`,
           usdValue: token.usdBalance,
           percentChange: token.recentUsdBalanceChange,
         }}

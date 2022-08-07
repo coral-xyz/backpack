@@ -14,17 +14,6 @@ export function usePlugins(): Array<Plugin> {
   return pluginData.map((p) => getPlugin(p));
 }
 
-export function useTablePlugins(): Array<Plugin> {
-  const pluginData = useRecoilValue(atoms.tablePlugins);
-  return pluginData.map((p) => getPlugin(p));
-}
-
-export function useAllPlugins(): Array<Plugin> {
-  const a = usePlugins();
-  const b = useTablePlugins();
-  return a.concat(b);
-}
-
 export function getPlugin(p: any): Plugin {
   let plug = PLUGIN_CACHE.get(p.url);
   if (!plug) {

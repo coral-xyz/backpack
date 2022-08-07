@@ -13,12 +13,6 @@ import {
 import { TransferWidget } from "../TransferWidget";
 
 const useStyles = styles((theme) => ({
-  tokenHeaderContainer: {
-    marginBottom: "24px",
-  },
-  balanceContainer: {
-    marginTop: "38px",
-  },
   tokenHeaderButtonContainer: {
     width: "208px",
     display: "flex",
@@ -33,7 +27,7 @@ const useStyles = styles((theme) => ({
   negativePercent: {
     color: theme.custom.colors.negative,
   },
-  nativeBalanceLabel: {
+  displayBalanceLabel: {
     color: theme.custom.colors.fontColor,
     fontSize: "30px",
     fontWeight: 600,
@@ -63,9 +57,21 @@ export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
   }
 
   return (
-    <div>
+    <div
+      style={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <TokenHeader blockchain={blockchain} address={address} />
-      <RecentActivityList address={address} />
+      <div
+        style={{
+          marginTop: "16px",
+        }}
+      >
+        <RecentActivityList address={address} minimize={true} />
+      </div>
     </div>
   );
 }
@@ -78,10 +84,15 @@ function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
       ? classes.positivePercent
       : classes.negativePercent;
   return (
-    <div className={classes.tokenHeaderContainer}>
-      <div className={classes.balanceContainer}>
-        <Typography className={classes.nativeBalanceLabel}>
-          {token.nativeBalance.toLocaleString()} {token.ticker}
+    <div
+      style={{
+        paddingTop: "38px",
+        marginBottom: "24px",
+      }}
+    >
+      <div>
+        <Typography className={classes.displayBalanceLabel}>
+          {token.displayBalance.toLocaleString()} {token.ticker}
         </Typography>
         <Typography className={classes.usdBalanceLabel}>
           ${parseFloat(token.usdBalance.toFixed(2)).toLocaleString()}{" "}

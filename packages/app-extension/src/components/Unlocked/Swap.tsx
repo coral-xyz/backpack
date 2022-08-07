@@ -677,7 +677,7 @@ function InputTokenSelectorButton() {
   const { toMint, fromMint, setFromMint } = useSwapContext();
   const tokenAccounts = useJupiterInputMints();
   const tokenAccountsFiltered = tokenAccounts.filter(
-    (token: Token) => token.nativeBalance !== 0 && token.mint !== toMint
+    (token: Token) => token.displayBalance !== 0 && token.mint !== toMint
   );
   return (
     <TokenSelectorButton

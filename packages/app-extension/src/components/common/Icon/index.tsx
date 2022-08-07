@@ -1,4 +1,14 @@
-import { SvgIcon } from "@mui/material";
+import { styles, HOVER_OPACITY } from "@coral-xyz/themes";
+
+const useStyles = styles((theme) => ({
+  hoverButton: {
+    "&:hover": {
+      "& path": {
+        opacity: HOVER_OPACITY,
+      },
+    },
+  },
+}));
 
 export function WarningIcon({ fill = "#A1A1AA", ...props }) {
   return (
@@ -255,8 +265,15 @@ export function EyeIcon() {
 }
 
 export function BalancesIcon({ fill = "#99A4B4" }) {
+  const classes = useStyles();
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <svg
+      className={classes.hoverButton}
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
       <path
         d="M9 20C13.4183 20 17 16.4183 17 12C17 7.58172 13.4183 4 9 4C4.58172 4 1 7.58172 1 12C1 16.4183 4.58172 20 9 20Z"
         fill={fill}
@@ -270,8 +287,10 @@ export function BalancesIcon({ fill = "#99A4B4" }) {
 }
 
 export function GridIcon({ fill = "#99A4B4" }) {
+  const classes = useStyles();
   return (
     <svg
+      className={classes.hoverButton}
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
@@ -299,8 +318,15 @@ export function GridIcon({ fill = "#99A4B4" }) {
 }
 
 export function ImageIcon({ fill = "#99A4B4" }) {
+  const classes = useStyles();
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <svg
+      className={classes.hoverButton}
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
       <path
         d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.9 13.98L11 16.51L14.1 12.52C14.3 12.26 14.7 12.26 14.9 12.53L18.41 17.21C18.66 17.54 18.42 18.01 18.01 18.01H6.02C5.6 18.01 5.37 17.53 5.63 17.2L8.12 14C8.31 13.74 8.69 13.73 8.9 13.98Z"
         fill={fill}
@@ -340,8 +366,10 @@ export function MoreIcon({ fill = "#99A4B4" }) {
 }
 
 export function SwapIcon({ fill = "#99A4B4" }) {
+  const classes = useStyles();
   return (
     <svg
+      className={classes.hoverButton}
       width="24"
       height="24"
       viewBox="0 0 24 24"
