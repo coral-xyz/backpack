@@ -139,18 +139,6 @@ function SendTransactionRequest({ onClose }: any) {
   );
 }
 
-/*
-      <BottomCard
-        style={{
-          height: "295px",
-        }}
-        buttonLabel={"Confirm"}
-        onButtonClick={onConfirm}
-        cancelButtonLabel={"Cancel"}
-        onCancelButtonClick={onReject}
->
-*/
-
 function SignAndSendTransaction({
   transaction,
   plugin,

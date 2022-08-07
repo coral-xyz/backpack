@@ -299,10 +299,17 @@ export class Backend {
   }
 
   async confirmTransaction(
-    strategy: BlockheightBasedTransactionConfirmationStrategy,
+    strategy:
+      | TransactionSignature
+      | BlockheightBasedTransactionConfirmationStrategy,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<SignatureResult>> {
-    return await this.connection!.confirmTransaction(strategy, commitment);
+    // @ts-ignore
+    const resp = await this.connection!.confirmTransaction(
+      strategy,
+      commitment
+    );
+    return resp;
   }
 
   async simulateTransaction(
