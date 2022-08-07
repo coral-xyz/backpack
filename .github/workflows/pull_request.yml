@@ -176,10 +176,11 @@ jobs:
 
       - name: "convert build-${{ github.run_number }}.zip into .crx"
         id: packExtensionDir
-        uses: cardinalby/webext-buildtools-pack-extension-dir-action@v1
+        uses: cardinalby/webext-buildtools-chrome-crx-action@v2
         with:
-          extensionDir: packages/app-extension
-          zipFilePath: build-${{ github.run_number }}.zip
+          zipFilePath: packages/app-extension/build-${{ github.run_number }}.zip
+          crxFilePath: packages/app-extension/build-${{ github.run_number }}.crx
+          privateKey: ${{ secrets.CHROME_CRX_PRIVATE_KEY }}
 
       - name: "upload build artifacts"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
