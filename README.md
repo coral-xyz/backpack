@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="/assets/coral.png" />
+  <img src="/assets/coral.png" height="170px" />
 
   <h1>Backpack</h1>
 
