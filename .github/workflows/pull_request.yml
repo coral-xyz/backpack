@@ -171,20 +171,35 @@ jobs:
       ##########################################################################
 
       - name: "zip build artifacts"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         working-directory: packages/app-extension
         run: zip -r build-${{ env.build_version_number }}.zip build/
 
       - name: "convert build-${{ env.build_version_number }}.zip into .crx"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: cardinalby/webext-buildtools-chrome-crx-action@v2
         with:
           zipFilePath: packages/app-extension/build-${{ env.build_version_number }}.zip
           crxFilePath: packages/app-extension/build-${{ env.build_version_number }}.crx
           privateKey: ${{ secrets.CHROME_CRX_PRIVATE_KEY }}
 
+      - name: prepare stuff for gh-pages
+        # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        working-directory: packages/app-extension
+        run: mkdir deploy && \
+          cp build-${{ env.build_version_number }}.crx deploy/backpack.crx && \
+          mv updates.template.xml deploy/updates.xml && \
+          sed -i "s/VERSION_PLACEHOLDER/${{ env.build_version_number }}/g" deploy/updates.xml
+
+      - name: deploy crx stuff to gh-pages
+        # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: packages/app-extension/deploy
+
       - name: "upload build artifacts"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v2
         with:
           name: backpack-build
