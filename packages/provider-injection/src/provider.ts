@@ -206,7 +206,10 @@ export class ProviderInjection extends EventEmitter implements Provider {
   }
 
   async signTransaction(tx: Transaction): Promise<Transaction> {
-    return await cmn.signTransaction(this.publicKey!, this._requestManager, tx);
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    return await cmn.signTransaction(this.publicKey, this._requestManager, tx);
   }
 
   async signAllTransactions(
@@ -222,7 +225,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
     );
   }
 
-  async signMessage(msg: Uint8Array): Promise<Uint8Array | null> {
+  async signMessage(msg: Uint8Array): Promise<Uint8Array> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
