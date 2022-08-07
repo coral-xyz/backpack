@@ -25,6 +25,5 @@
     "192": "anchor.png",
     "512": "anchor.png"
   },
-  "permissions": ["storage"],
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApRih0UBPvvTdWIKugxfTtfin6dxc9LKPVcCUOS/iy8EvW59wxJqsdvuJ5vV74nMxtfMSXAdHfUu2JP2i5oIPOktiypNshGbiZxs7pj8dzF5QI4J7qq2eBfPPxoRKQov2syIzxE8vrdKuYnRAcKxC3QJvnJGSv9kX7E6wid+UkGcuSE7Fd6XpekNSpKwjywn9/2j+La9Z61VIUl2fJSZ+BG5CNS5eV6Cn6cIyjvu3KH14EHTDn/mwwrusFIGamDPQWgRhVP/G1WKkDO6iaXZkuiSoyw2czPMO4awUxnd/AX0JL8ZBEuI565wT6iU8yrk0iQhpy96sm6WRpL5/1n5CpQIDAQAB"
+  "permissions": ["storage"]
 }

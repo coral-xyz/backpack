@@ -28,7 +28,12 @@ const test = base.extend({
   },
 });
 
-const EXTENSION_ID = "jclcndnaoggcdljhefioenkobihhahge";
+const ExtensionId = {
+  DEV: "ppbliddanlojgfoeknmmdniicoccellh",
+  PROD: "onehipemlbcjfecgbeimidpecoofepan",
+};
+
+const EXTENSION_ID = ExtensionId.PROD;
 
 test("create a wallet and send SOL", async ({ page, context }) => {
   const VALID_PASSWORD = "password1234";
