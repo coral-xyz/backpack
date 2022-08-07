@@ -112,8 +112,12 @@ jobs:
 
       - run: yarn test
 
-      - name: Run Playwright tests
-        run: yarn e2e
+      - name: install playwright github action
+        uses: microsoft/playwright-github-action@v1
+
+      # https://github.com/microsoft/playwright-github-action#run-in-headful-mode
+      - name: run playwright e2e tests
+        run: xvfb-run --auto-servernum -- yarn e2e
 
       # - uses: actions/upload-artifact@v2
       #   with:
