@@ -171,11 +171,12 @@ jobs:
       ##########################################################################
 
       - name: "zip build artifacts"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         working-directory: packages/app-extension
         run: zip -r build-${{ env.build_version_number }}.zip build/
 
       - name: "convert build-${{ env.build_version_number }}.zip into .crx"
-        id: packExtensionDir
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: cardinalby/webext-buildtools-chrome-crx-action@v2
         with:
           zipFilePath: packages/app-extension/build-${{ env.build_version_number }}.zip
@@ -183,6 +184,7 @@ jobs:
           privateKey: ${{ secrets.CHROME_CRX_PRIVATE_KEY }}
 
       - name: "upload build artifacts"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v2
         with:
           name: backpack-build
