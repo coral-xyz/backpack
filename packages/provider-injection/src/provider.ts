@@ -123,14 +123,14 @@ export class ProviderInjection extends EventEmitter implements Provider {
     );
   }
 
-  async connect(onlyIfTrustedMaybe: boolean) {
+  async connect() {
     if (this.isConnected) {
       throw new Error("provider already connected");
     }
     // Send request to the RPC API.
     const result = await this._requestManager.request({
       method: RPC_METHOD_CONNECT,
-      params: [onlyIfTrustedMaybe],
+      params: [],
     });
 
     this._connect(result.publicKey, result.connectionUrl);
