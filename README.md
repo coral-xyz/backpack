@@ -65,11 +65,11 @@ _If you run into issues with builds try running `yarn clean` and then start agai
 
 ### 5a. Install the development version of the extension
 
-Go to chrome://extensions, enable developer mode (top right) and drag the `packages/extension/dev` dir into the window. This version will have (Dev) in the title and supports live-reloading.
+Go to chrome://extensions, enable developer mode (top right) and drag the `packages/app-extension/dev` dir into the window. This version will have (Dev) in the title and supports live-reloading.
 
 ### 5b. Optionally install the built extension
 
-If you want to try the production build of the extension, run `yarn build` and drag the `packages/extension/build` dir into chrome://extensions as above. This version won't have hot-reloading and local plugins won't be visible unless you also run `yarn start`
+If you want to try the production build of the extension, run `yarn build` and drag the `packages/app-extension/build` dir into chrome://extensions as above. This version won't have hot-reloading and local plugins won't be visible unless you also run `yarn start`
 
 ## License
 
