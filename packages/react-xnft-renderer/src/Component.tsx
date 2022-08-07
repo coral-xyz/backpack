@@ -763,7 +763,7 @@ function Loading({ id, props, style }: any) {
     color: theme.custom.colors.activeNavButton,
     ...style,
   };
-  return <CircularProgress style={style} />;
+  return <CircularProgress style={style} thickness={6} />;
 }
 
 function ScrollBar({ id, props, style, children }: any) {

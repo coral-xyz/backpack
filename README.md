@@ -1,4 +1,18 @@
-# Backpack
+<div align="center">
+  <img src="/assets/coral.png" height="170px" />
+
+  <h1>Backpack</h1>
+
+  <p>
+    <strong>A home for your xNFTs</strong>
+  </p>
+
+  <p>
+    <a href="https://github.com/coral-xyz/backpack/actions"><img alt="Build Status" src="https://github.com/coral-xyz/backpack/actions/workflows/pull_request.yml/badge.svg" /></a>
+    <a href="https://docs.xnft.gg"><img alt="Tutorials" src="https://img.shields.io/badge/docs-tutorials-blueviolet" /></a>
+    <a href="https://discord.gg/w9P85Y9yBR"><img alt="Discord Chat" src="https://img.shields.io/badge/chat-discord-blueviolet" /></a>
+  </p>
+</div>
 
 ## Installing the Latest Release
 
@@ -29,19 +43,31 @@ You can also optionally rename `.env.example` to `.env` and set your own variabl
 
 ### 2. Install dependencies
 
-`yarn install`
+```
+yarn install
+```
 
-### 3. Start all the relevent packages simultaneously
+### 3. Build all packages for production
 
-`yarn start`
+```
+yarn build
+```
+
+### 4. Start packages for development
+
+```
+yarn start
+```
+
+Note: In a fresh repo, you should run `yarn build` before `yarn start`.
 
 _If you run into issues with builds try running `yarn clean` and then start again._
 
-### 4a. Install the development version of the extension
+### 5a. Install the development version of the extension
 
 Go to chrome://extensions, enable developer mode (top right) and drag the `packages/extension/dev` dir into the window. This version will have (Dev) in the title and supports live-reloading.
 
-### 4b. Optionally install the built extension
+### 5b. Optionally install the built extension
 
 If you want to try the production build of the extension, run `yarn build` and drag the `packages/extension/build` dir into chrome://extensions as above. This version won't have hot-reloading and local plugins won't be visible unless you also run `yarn start`
 
