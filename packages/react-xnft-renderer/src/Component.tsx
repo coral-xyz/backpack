@@ -243,6 +243,8 @@ export function Component({ viewData }) {
       return <Svg props={props} children={viewData.children} />;
     case NodeKind.Path:
       return <Path props={props} />;
+    case NodeKind.Circle:
+      return <Circle props={props} />;
     case NodeKind.NavAnimation:
       return <NavAnimation props={props} children={viewData.children} />;
     case NodeKind.BalancesTable:
@@ -313,6 +315,10 @@ function Path({ props }: any) {
       fill={props.fill}
     />
   );
+}
+
+function Circle({ props }: any) {
+  return <circle cx={props.cx} cy={props.cy} r={props.r} fill={props.fill} />;
 }
 
 function NavAnimation({ props, children }: any) {

@@ -136,6 +136,8 @@ const RECONCILER = ReactReconciler({
         return createSvgInstance(kind, props, r, h, o);
       case NodeKind.Path:
         return createPathInstance(kind, props, r, h, o);
+      case NodeKind.Circle:
+        return createCircleInstance(kind, props, r, h, o);
       case NodeKind.NavAnimation:
         return createNavAnimationInstance(kind, props, r, h, o);
       case NodeKind.BalancesTable:
@@ -191,13 +193,17 @@ const RECONCILER = ReactReconciler({
     let payload: UpdateDiff | null = null;
     switch (type) {
       case NodeKind.View:
+        // @ts-ignore
         if (oldProps.style !== newProps.style) {
+          // @ts-ignore
           payload = { style: newProps.style };
         }
         return payload;
       case NodeKind.Text:
+        // @ts-ignore
         if (oldProps.style !== newProps.style) {
           payload = {
+            // @ts-ignore
             style: newProps.style,
           };
         }
@@ -224,11 +230,15 @@ const RECONCILER = ReactReconciler({
         }
         return payload;
       case NodeKind.Button:
+        // @ts-ignore
         if (oldProps.style !== newProps.style) {
+          // @ts-ignore
           payload = { style: newProps.style };
         }
         return payload;
       case NodeKind.Svg:
+        return null;
+      case NodeKind.Circle:
         return null;
       case NodeKind.Image:
         return null;
@@ -352,6 +362,8 @@ const RECONCILER = ReactReconciler({
         break;
       case NodeKind.Svg:
         throw new Error("commitUpdate Svg not yet implemented");
+      case NodeKind.Circle:
+        throw new Error("commitUpdate Circle not yet implemented");
       case NodeKind.ScrollBar:
         throw new Error("commitUpdate ScrollBar not yet implemented");
       case NodeKind.Loading:
@@ -727,6 +739,25 @@ function createPathInstance(
   };
 }
 
+function createCircleInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): CircleNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.Circle,
+    // @ts-ignore
+    props: {
+      ...props,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
 function createNavAnimationInstance(
   _kind: NodeKind,
   props: NodeProps,
@@ -918,6 +949,7 @@ export type NodeSerialized =
   | ScrollBarNodeSerialized
   | SvgNodeSerialized
   | PathNodeSerialized
+  | CircleNodeSerialized
   | NavAnimationNodeSerialized
   | BalancesTableNodeSerialized
   | BalancesTableHeadNodeSerialized
@@ -935,6 +967,10 @@ type NodeProps =
   | ButtonProps
   | LoadingProps
   | ScrollBarProps
+  // TODO: add these and fix the types.
+  //	| SvgProps
+  //	| PathProps
+  //	| CircleProps
   | NavAnimationProps
   | BalancesTableProps
   | BalancesTableHeadProps
@@ -957,6 +993,7 @@ export enum NodeKind {
   ScrollBar = "ScrollBar",
   Svg = "Svg",
   Path = "Path",
+  Circle = "Circle",
   NavAnimation = "NavAnimation",
 
   //
@@ -1087,6 +1124,14 @@ type PathProps = {
   fill: string;
   fillRule?: string;
   clipRule?: string;
+};
+
+type CircleNodeSerialized = DefNodeSerialized<NodeKind.Circle, CircleProps>;
+type CircleProps = {
+  cx: string;
+  cy: string;
+  r: string;
+  fill: string;
 };
 
 //
