@@ -148,14 +148,11 @@ export async function signMessage(
   publicKey: PublicKey,
   requestManager: RequestManager,
   msg: Uint8Array
-): Promise<Uint8Array | null> {
+): Promise<Uint8Array> {
   const msgStr = encode(msg);
   const signature = await requestManager.request({
     method: RPC_METHOD_SIGN_MESSAGE,
     params: [msgStr, publicKey.toString()],
   });
-  if (!signature) {
-    return signature;
-  }
   return decode(signature);
 }

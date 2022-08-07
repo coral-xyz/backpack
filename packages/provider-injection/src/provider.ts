@@ -225,7 +225,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
     );
   }
 
-  async signMessage(msg: Uint8Array): Promise<Uint8Array | null> {
+  async signMessage(msg: Uint8Array): Promise<Uint8Array> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
