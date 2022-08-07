@@ -1,41 +1,42 @@
-import { useState, useEffect } from "react";
-import { ethers, BigNumber } from "ethers";
-import { CircularProgress, Typography, Link } from "@mui/material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Connection, SystemProgram, PublicKey } from "@solana/web3.js";
-import {
-  useAnchorContext,
-  useSolanaCtx,
-  useBlockchainTokenAccount,
-  useSolanaExplorer,
-  useSolanaConnectionUrl,
-  useNavigation,
-} from "@coral-xyz/recoil";
 import {
   Blockchain,
   confirmTransaction,
-  getLogger,
   explorerUrl,
+  getLogger,
+  NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
   Solana,
   SOL_NATIVE_MINT,
-  NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
 } from "@coral-xyz/common";
-import { WithHeaderButton } from "./Token";
 import {
+  useAnchorContext,
+  useBlockchainTokenAccount,
+  useNavigation,
+  useSolanaConnectionUrl,
+  useSolanaCtx,
+  useSolanaExplorer,
+} from "@coral-xyz/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { CircularProgress, Link, Typography } from "@mui/material";
+import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
+import { BigNumber, ethers } from "ethers";
+import { useEffect, useState } from "react";
+import {
+  DangerButton,
+  PrimaryButton,
+  SecondaryButton,
   TextField,
   TextFieldLabel,
   walletAddressDisplay,
-  PrimaryButton,
-  SecondaryButton,
-  DangerButton,
 } from "../../../common";
 import { TokenInputField } from "../../../common/TokenInput";
+
+import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
+import { CheckIcon } from "../../../common/Icon";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { MaxLabel } from "../../../common/MaxLabel";
-import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
 import { SettingsList } from "../../../common/Settings/List";
-import { CheckIcon } from "../../../common/Icon";
+import { WithHeaderButton } from "./Token";
 
 const logger = getLogger("send-component");
 
@@ -443,7 +444,7 @@ function ConfirmSend({
         onClick={() => onConfirm()}
         label="Send"
         type="submit"
-        data-testid="Send"
+        data-testid="confirm-send"
       />
     </div>
   );

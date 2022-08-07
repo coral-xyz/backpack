@@ -1,21 +1,23 @@
 import { Blockchain } from "@coral-xyz/common";
-import { useEffect } from "react";
-import { Typography } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
-import { WithHeaderButton } from "./TokensWidget/Token";
-import { Deposit } from "./TokensWidget/Deposit";
-import { Send, Send as TokenSend } from "./TokensWidget/Send";
+import { ArrowDownward, ArrowUpward } from "@mui/icons-material";
+import { Typography } from "@mui/material";
+import { useEffect } from "react";
 import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTable } from "../../common/TokenTable";
+import { Deposit } from "./TokensWidget/Deposit";
+import { Send, Send as TokenSend } from "./TokensWidget/Send";
+import { WithHeaderButton } from "./TokensWidget/Token";
 
 export function TransferWidget({
   blockchain,
   address,
+  idPrefix,
 }: {
   blockchain?: Blockchain;
   address?: string;
+  idPrefix?: string;
 }) {
   return (
     <div
@@ -26,9 +28,13 @@ export function TransferWidget({
         marginRight: "auto",
       }}
     >
-      <ReceiveButton />
+      <ReceiveButton idPrefix={idPrefix} />
       <div style={{ width: "16px" }} />
-      <SendButton blockchain={blockchain} address={address} />
+      <SendButton
+        blockchain={blockchain}
+        address={address}
+        idPrefix={idPrefix}
+      />
     </div>
   );
 }
@@ -36,14 +42,17 @@ export function TransferWidget({
 function SendButton({
   blockchain,
   address,
+  idPrefix,
 }: {
   blockchain?: Blockchain;
   address?: string;
+  idPrefix?: string;
 }) {
   const theme = useCustomTheme();
   return (
     <TransferButton
-      label={"Send"}
+      idPrefix={idPrefix}
+      label="Send"
       labelComponent={
         <ArrowUpward
           style={{
@@ -84,11 +93,12 @@ function SendButton({
   );
 }
 
-function ReceiveButton() {
+function ReceiveButton({ idPrefix }: { idPrefix?: string }) {
   const theme = useCustomTheme();
   return (
     <TransferButton
-      label={"Receive"}
+      idPrefix={idPrefix}
+      label="Receive"
       labelComponent={
         <ArrowDownward
           style={{
@@ -114,10 +124,12 @@ function TransferButton({
   label,
   labelComponent,
   routes,
+  idPrefix,
 }: {
   label: string;
   labelComponent: any;
   routes: Array<{ props?: any; component: any; title: string; name: string }>;
+  idPrefix?: string;
 }) {
   const theme = useCustomTheme();
   return (
@@ -126,6 +138,7 @@ function TransferButton({
         width: "52px",
         height: "70px",
       }}
+      id={idPrefix ? `${idPrefix}-${label}`.toLowerCase() : undefined}
     >
       <WithHeaderButton
         style={{

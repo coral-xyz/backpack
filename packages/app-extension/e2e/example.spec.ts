@@ -1,6 +1,7 @@
 // import { expect, test } from "@playwright/test";
 
-import { chromium, test as base } from "@playwright/test";
+import { chromium, expect, test as base } from "@playwright/test";
+import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import path from "path";
 
 const extensionPath = path.join(__dirname, "../build"); // make sure this is correct
@@ -21,6 +22,7 @@ const test = base.extend({
       "",
       launchOptions
     );
+    context.grantPermissions(["clipboard-read", "clipboard-write"]);
     await use(context);
     await context.close();
   },
@@ -53,5 +55,36 @@ test.describe("Setup", () => {
     await setup.goto(`chrome-extension://${EXTENSION_ID}/popup.html`);
     await setup.locator('input[type="password"]').fill(VALID_PASSWORD);
     await setup.locator("text=Unlock").click();
+
+    await setup.locator("text=Receive").click();
+    await setup.locator("text=Wallet 1").click();
+    // await setup.locator("text=Close").click();
+    const pubkey = await setup.evaluate(() => navigator.clipboard.readText());
+
+    const conn = new Connection("http://localhost:8899", "confirmed");
+    const wallet = new PublicKey(pubkey);
+    await conn.requestAirdrop(wallet, 1e9);
+
+    await setup.locator("#menu-button").click();
+    await setup.locator("text=Preferences").click();
+    await setup.locator("text=RPC Connection").click();
+    await setup.locator("text=Localnet").click();
+
+    await setup.locator("text=1 SOL").click();
+    await setup.locator("#token-send").click();
+
+    const to = Keypair.generate().publicKey;
+
+    await setup.locator('input[name="to"]').fill(String(to));
+    await setup.locator('input[name="amount"]').fill("0.5");
+    await setup.locator("[data-testid='Send']").click();
+    await setup.locator("[data-testid='confirm-send']").click();
+    await setup.locator("text=View Balances").click();
+
+    expect((await conn.getBalance(wallet)).toString()).toEqual("499995000");
+    expect((await conn.getBalance(to)).toString()).toEqual("500000000");
+
+    // this takes a several seconds to update
+    await setup.locator("text=0.5 SOL").click();
   });
 });

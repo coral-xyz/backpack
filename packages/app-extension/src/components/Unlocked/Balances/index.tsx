@@ -1,6 +1,6 @@
-import { TransferWidget } from "./TransferWidget";
 import { BalanceSummaryWidget } from "./BalanceSummaryWidget";
 import { TokensWidget } from "./TokensWidget";
+import { TransferWidget } from "./TransferWidget";
 
 export function Balances() {
   return (
@@ -12,7 +12,7 @@ export function Balances() {
           marginBottom: "20px",
         }}
       >
-        <TransferWidget />
+        <TransferWidget idPrefix="balances" />
       </div>
       <TokensWidget />
     </div>
