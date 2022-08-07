@@ -186,9 +186,9 @@ jobs:
       - name: prepare stuff for gh-pages
         # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         working-directory: packages/app-extension
-        run: mkdir deploy && \
-          cp build-${{ env.build_version_number }}.crx deploy/backpack.crx && \
-          mv updates.template.xml deploy/updates.xml && \
+        run: mkdir deploy &&
+          cp build-${{ env.build_version_number }}.crx deploy/backpack.crx &&
+          mv updates.template.xml deploy/updates.xml &&
           sed -i "s/VERSION_PLACEHOLDER/${{ env.build_version_number }}/g" deploy/updates.xml
 
       - name: deploy crx stuff to gh-pages
