@@ -1,43 +1,40 @@
 import type {
-  Commitment,
-  TransactionSignature,
-  SendOptions,
-  Finality,
-  ConfirmedSignaturesForAddress2Options,
-  GetProgramAccountsConfig,
-  MessageArgs,
-  BlockheightBasedTransactionConfirmationStrategy,
-} from "@solana/web3.js";
-import { PublicKey, Message } from "@solana/web3.js";
-import type {
-  RpcRequest,
-  RpcResponse,
   Context,
   EventEmitter,
+  RpcRequest,
+  RpcResponse,
 } from "@coral-xyz/common";
 import {
-  getLogger,
-  withContext,
-  withContextPort,
   ChannelAppUi,
   ChannelContentScript,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
-  SOLANA_CONNECTION_RPC_UI,
-  SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
+  getLogger,
   SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
-  SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
-  SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH,
-  SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNTS_BY_OWNER,
-  SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION,
   SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION,
+  SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
+  SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2,
+  SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE,
+  SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH,
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION,
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
   SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS,
-  SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE,
+  SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNTS_BY_OWNER,
+  SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION,
+  SOLANA_CONNECTION_RPC_UI,
+  withContext,
+  withContextPort,
 } from "@coral-xyz/common";
+import type { Connection } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import type { Backend } from "../backend/solana-connection";
 import type { Config, Handle } from "../types";
+
+// prepends ctx:Context<Backend> to params and wraps return value inside an array
+type WithContext<T extends keyof InstanceType<typeof Connection>> =
+  InstanceType<typeof Connection>[T] extends (...a: infer U) => infer R
+    ? (b: Context<Backend>, ...a: U) => Promise<[Awaited<R>]>
+    : never;
 
 const logger = getLogger("solana-connection");
 
@@ -122,122 +119,97 @@ async function handleImpl<T = any>(
   }
 }
 
-async function handleGetAccountInfo(
-  ctx: Context<Backend>,
-  pubkey: string,
-  commitment?: Commitment
+const handleGetAccountInfo: WithContext<"getAccountInfo"> = async function (
+  ctx,
+  pubkey,
+  commitment
 ) {
-  const resp = await ctx.backend.getAccountInfo(
-    new PublicKey(pubkey),
-    commitment
-  );
+  const resp = await ctx.backend.getAccountInfo(pubkey, commitment);
   return [resp];
-}
+};
 
-async function handleGetLatestBlockhash(
-  ctx: Context<Backend>,
-  commitment?: Commitment
-) {
-  const resp = await ctx.backend.getLatestBlockhash(commitment);
-  return [resp];
-}
+const handleGetLatestBlockhash: WithContext<"getLatestBlockhash"> =
+  async function (ctx, commitment) {
+    const resp = await ctx.backend.getLatestBlockhash(commitment);
+    return [resp];
+  };
 
-async function handleGetTokenAccountsByOwner(
-  ctx: Context<Backend>,
-  ownerAddress: string,
-  filter: { mint: string } | { programId: string },
-  commitment?: Commitment
-) {
-  let _filter;
-  // @ts-ignore
-  if (filter.mint) {
+const handleGetTokenAccountsByOwner: WithContext<"getTokenAccountsByOwner"> =
+  async function (ctx, ownerAddress, filter, commitment) {
+    let _filter;
     // @ts-ignore
-    _filter = { mint: new PublicKey(filter.mint) };
-  } else {
-    // @ts-ignore
-    _filter = { programId: new PublicKey(filter.programId) };
-  }
-  const resp = await ctx.backend.getTokenAccountsByOwner(
-    new PublicKey(ownerAddress),
-    _filter,
-    commitment
-  );
-  return [resp];
-}
+    if (filter.mint) {
+      // @ts-ignore
+      _filter = { mint: new PublicKey(filter.mint) };
+    } else {
+      // @ts-ignore
+      _filter = { programId: new PublicKey(filter.programId) };
+    }
+    const resp = await ctx.backend.getTokenAccountsByOwner(
+      new PublicKey(ownerAddress),
+      _filter,
+      commitment
+    );
+    return [resp];
+  };
 
-async function handleSendRawTransaction(
-  ctx: Context<Backend>,
-  rawTransaction: Buffer | Uint8Array | Array<number>,
-  options?: SendOptions
-) {
-  const resp = await ctx.backend.sendRawTransaction(rawTransaction, options);
-  return [resp];
-}
+const handleSendRawTransaction: WithContext<"sendRawTransaction"> =
+  async function (ctx, rawTransaction, options) {
+    const resp = await ctx.backend.sendRawTransaction(rawTransaction, options);
+    return [resp];
+  };
 
-async function handleConfirmTransaction(
-  ctx: Context<Backend>,
-  signature:
-    | BlockheightBasedTransactionConfirmationStrategy
-    | TransactionSignature,
-  commitment?: Commitment
-) {
-  if (typeof signature === "string") {
-    const { blockhash, lastValidBlockHeight } =
-      await ctx.backend.getLatestBlockhash();
-    signature = {
-      signature,
-      blockhash,
-      lastValidBlockHeight,
-    };
-  }
+const handleConfirmTransaction: WithContext<"confirmTransaction"> =
+  async function (ctx, signature, commitment) {
+    let _signature: any = signature;
 
-  const resp = await ctx.backend.confirmTransaction(signature, commitment);
-  return [resp];
-}
+    if (typeof signature === "string") {
+      const { blockhash, lastValidBlockHeight } =
+        await ctx.backend.getLatestBlockhash();
+      _signature = {
+        signature,
+        blockhash,
+        lastValidBlockHeight,
+      };
+    }
 
-async function handleGetMultipleAccountsInfo(
-  ctx: Context<Backend>,
-  pubkeys: string[],
-  commitment?: Commitment
-) {
-  const resp = await ctx.backend.getMultipleAccountsInfo(
-    pubkeys.map((p) => new PublicKey(p)),
-    commitment
-  );
-  return [resp];
-}
+    const resp = await ctx.backend.confirmTransaction(_signature, commitment);
+    return [resp];
+  };
 
-async function handleGetConfirmedSignaturesForAddress2(
-  ctx: Context<Backend>,
-  address: string,
-  options?: ConfirmedSignaturesForAddress2Options,
-  commitment?: Finality
-) {
-  const resp = await ctx.backend.getConfirmedSignaturesForAddress2(
-    new PublicKey(address),
-    options,
-    commitment
-  );
-  return [resp];
-}
+const handleGetMultipleAccountsInfo: WithContext<"getMultipleAccountsInfo"> =
+  async function (ctx, pubkeys, commitment) {
+    const resp = await ctx.backend.getMultipleAccountsInfo(
+      pubkeys.map((p) => new PublicKey(p)),
+      commitment
+    );
+    return [resp];
+  };
 
-async function handleGetParsedTransaction(
-  ctx: Context<Backend>,
-  signature: TransactionSignature,
-  commitment?: Finality
-) {
-  const resp = await ctx.backend.getParsedTransaction(signature, commitment);
-  return [resp];
-}
+const handleGetConfirmedSignaturesForAddress2: WithContext<"getConfirmedSignaturesForAddress2"> =
+  async function (ctx, address, options, commitment) {
+    const resp = await ctx.backend.getConfirmedSignaturesForAddress2(
+      new PublicKey(address),
+      options,
+      commitment
+    );
+    return [resp];
+  };
 
-async function handleGetParsedTransactions(
-  ctx: Context<Backend>,
-  signatures: TransactionSignature[],
-  commitment?: Finality
-) {
-  const resp = await ctx.backend.getParsedTransactions(signatures, commitment);
-  return [resp];
-}
+const handleGetParsedTransaction: WithContext<"getParsedTransaction"> =
+  async function (ctx, signature, commitment) {
+    const resp = await ctx.backend.getParsedTransaction(signature, commitment);
+    return [resp];
+  };
+
+const handleGetParsedTransactions: WithContext<"getParsedTransactions"> =
+  async function (ctx, signatures, commitment) {
+    const resp = await ctx.backend.getParsedTransactions(
+      signatures,
+      commitment
+    );
+    return [resp];
+  };
 
 async function handleCustomSplTokenAccounts(
   ctx: Context<Backend>,
@@ -247,26 +219,20 @@ async function handleCustomSplTokenAccounts(
   return [resp];
 }
 
-async function handleGetProgramAccounts(
-  ctx: Context<Backend>,
-  programId: string,
-  configOrCommitment?: GetProgramAccountsConfig | Commitment
-) {
-  const resp = await ctx.backend.getProgramAccounts(
-    new PublicKey(programId),
-    configOrCommitment
-  );
-  return [resp];
-}
+const handleGetProgramAccounts: WithContext<"getProgramAccounts"> =
+  async function (ctx, programId, configOrCommitment) {
+    const resp = await ctx.backend.getProgramAccounts(
+      new PublicKey(programId),
+      configOrCommitment
+    );
+    return [resp];
+  };
 
-async function handleGetFeeForMessage(
-  ctx: Context<Backend>,
-  message: MessageArgs,
-  commitment?: Finality
+const handleGetFeeForMessage: WithContext<"getFeeForMessage"> = async function (
+  ctx,
+  message,
+  commitment
 ) {
-  const resp = await ctx.backend.getFeeForMessage(
-    new Message(message),
-    commitment
-  );
+  const resp = await ctx.backend.getFeeForMessage(message, commitment);
   return [resp];
-}
+};
