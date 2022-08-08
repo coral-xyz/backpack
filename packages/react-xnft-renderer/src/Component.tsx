@@ -145,16 +145,6 @@ const useStyles = styles((theme) => ({
   tokenListItemIconRoot: {
     minWidth: "44px",
   },
-  button: {
-    borderRadius: "12px",
-    width: "100px",
-    height: "40px",
-    textTransform: "none",
-    backgroundColor: theme.custom.colors.nav,
-    "&:hover": {
-      backgroundColor: theme.custom.colors.nav,
-    },
-  },
   textFieldInput: {
     fontWeight: 500,
     borderRadius: "12px",
@@ -746,13 +736,20 @@ export function __Button({
   childrenRenderer,
 }: any) {
   const classes = useStyles();
+  const theme = useCustomTheme();
   return (
     <MuiButton
       disableElevation
       variant="contained"
-      className={classes.button}
       disableRipple
-      style={style}
+      style={{
+        borderRadius: "12px",
+        width: "100px",
+        height: "40px",
+        textTransform: "none",
+        backgroundColor: theme.custom.colors.nav,
+        ...style,
+      }}
       onClick={onClick}
     >
       {children ??
