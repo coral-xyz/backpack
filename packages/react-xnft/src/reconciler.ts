@@ -138,6 +138,8 @@ const RECONCILER = ReactReconciler({
         return createPathInstance(kind, props, r, h, o);
       case NodeKind.Circle:
         return createCircleInstance(kind, props, r, h, o);
+      case NodeKind.Iframe:
+        return createIframeInstance(kind, props, r, h, o);
       case NodeKind.NavAnimation:
         return createNavAnimationInstance(kind, props, r, h, o);
       case NodeKind.BalancesTable:
@@ -246,6 +248,8 @@ const RECONCILER = ReactReconciler({
           payload = { onClick: newProps.onClick };
         }
         return payload;
+      case NodeKind.Iframe:
+        return null;
       case NodeKind.Svg:
         return null;
       case NodeKind.Circle:
@@ -788,6 +792,25 @@ function createCircleInstance(
   };
 }
 
+function createIframeInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): IframeNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.Iframe,
+    // @ts-ignore
+    props: {
+      ...props,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
 function createNavAnimationInstance(
   _kind: NodeKind,
   props: NodeProps,
@@ -980,6 +1003,7 @@ export type NodeSerialized =
   | SvgNodeSerialized
   | PathNodeSerialized
   | CircleNodeSerialized
+  | IframeNodeSerialized
   | NavAnimationNodeSerialized
   | BalancesTableNodeSerialized
   | BalancesTableHeadNodeSerialized
@@ -997,6 +1021,7 @@ type NodeProps =
   | ButtonProps
   | LoadingProps
   | ScrollBarProps
+  | IframeProps
   // TODO: add these and fix the types.
   //	| SvgProps
   //	| PathProps
@@ -1024,6 +1049,7 @@ export enum NodeKind {
   Svg = "Svg",
   Path = "Path",
   Circle = "Circle",
+  Iframe = "Iframe",
   NavAnimation = "NavAnimation",
 
   //
@@ -1162,6 +1188,17 @@ type CircleProps = {
   cy: string;
   r: string;
   fill: string;
+};
+
+//
+// IFrame.
+//
+type IframeNodeSerialized = DefNodeSerialized<NodeKind.Iframe, IframeProps>;
+type IframeProps = {
+  style: Style;
+  children: undefined;
+  width: string;
+  height: string;
 };
 
 //

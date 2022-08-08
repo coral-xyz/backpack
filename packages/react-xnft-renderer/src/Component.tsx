@@ -237,6 +237,8 @@ export function Component({ viewData }) {
       return <Circle props={props} />;
     case NodeKind.NavAnimation:
       return <NavAnimation props={props} children={viewData.children} />;
+    case NodeKind.Iframe:
+      return <Iframe props={props} style={style} />;
     case NodeKind.BalancesTable:
       return (
         <BalancesTable
@@ -309,6 +311,20 @@ function Path({ props }: any) {
 
 function Circle({ props }: any) {
   return <circle cx={props.cx} cy={props.cy} r={props.r} fill={props.fill} />;
+}
+
+function Iframe({ props, style }: any) {
+  return (
+    <iframe
+      src={props.src}
+      height={props.height}
+      width={props.width}
+      style={{
+        border: "none",
+        ...style,
+      }}
+    ></iframe>
+  );
 }
 
 function NavAnimation({ props, children }: any) {
