@@ -105,6 +105,39 @@ jobs:
         run: yarn build
 
       ##########################################################################
+      # Yarn test.
+      ##########################################################################
+
+      - run: yarn test
+
+      - name: "[solana] cache"
+        uses: actions/cache@v3
+        id: cache-solana
+        with:
+          path: |
+            ~/.cache/solana/
+            ~/.local/share/solana/
+          key: solana-${{ runner.os }}-${{ env.solana_version }}
+      - name: "[solana] install solana"
+        if: steps.cache-solana.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config build-essential libudev-dev
+          sh -c "$(curl -sSfL https://release.solana.com/v${{ env.solana_version }}/install)"
+      - name: "[solana] add to PATH"
+        run: echo "/home/runner/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+
+      # https://playwright.dev/docs/next/ci#running-headed
+      - name: "[e2e tests] run playwright tests on extension"
+        run: xvfb-run yarn e2e
+
+      # - uses: actions/upload-artifact@v2
+      #   with:
+      #     name: playwright-report
+      #     path: playwright-report/
+      #     retention-days: 30
+
+      ##########################################################################
       # GitHub Pages.
       ##########################################################################
 
