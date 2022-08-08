@@ -27,6 +27,8 @@ import {
   PLUGIN_NOTIFICATION_NAVIGATION_POP,
   PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
   PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
+  PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
+  PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
 } from "@coral-xyz/common";
 import * as cmn from "./common";
 import { RequestManager } from "./request-manager";
@@ -131,6 +133,20 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
     await this._requestManager.request({
       method: PLUGIN_RPC_METHOD_NAV_POP,
       params: [],
+    });
+  }
+
+  public async getStorage<T = any>(key: string): Promise<T> {
+    return await this._requestManager.request({
+      method: PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
+      params: [key],
+    });
+  }
+
+  public async setStorage<T = any>(key: string, val: T): Promise<void> {
+    await this._requestManager.request({
+      method: PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
+      params: [key, val],
     });
   }
 

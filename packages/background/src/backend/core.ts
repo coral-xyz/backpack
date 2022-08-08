@@ -675,6 +675,19 @@ export class Backend {
 
     return SUCCESS_RESPONSE;
   }
+
+  async pluginLocalStorageGet(plugin: string, key: string): Promise<any> {
+    return await store.LocalStorageDb.get(`${plugin}:${key}`);
+  }
+
+  async pluginLocalStoragePut(
+    plugin: string,
+    key: string,
+    value: any
+  ): Promise<any> {
+    await store.LocalStorageDb.set(`${plugin}:${key}`, value);
+    return SUCCESS_RESPONSE;
+  }
 }
 
 export const SUCCESS_RESPONSE = "success";
