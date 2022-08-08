@@ -198,6 +198,11 @@ const RECONCILER = ReactReconciler({
           // @ts-ignore
           payload = { style: newProps.style };
         }
+        // @ts-ignore
+        if (oldProps.onClick !== newProps.onClick) {
+          // @ts-ignore
+          payload = { onClick: newProps.onClick };
+        }
         return payload;
       case NodeKind.Text:
         // @ts-ignore
@@ -324,6 +329,16 @@ const RECONCILER = ReactReconciler({
       case NodeKind.View:
         if (updatePayload.style) {
           instance.style = updatePayload.style;
+        }
+        if (
+          updatePayload.onClick !== undefined &&
+          updatePayload.onClick !== null
+        ) {
+          // @ts-ignore
+          instance.props.onClick = updatePayload.onClick;
+          // @ts-ignore
+          CLICK_HANDLERS.set(instance.id, instance.props.onClick);
+          delete updatePayload["onClick"];
         }
         break;
       case NodeKind.Text:
