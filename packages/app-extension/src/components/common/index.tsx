@@ -7,9 +7,10 @@ import {
   Checkbox as _Checkbox,
 } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { TextField } from "@coral-xyz/react-xnft-renderer";
 
 export * from "./List";
-export { TextField } from "@coral-xyz/react-xnft-renderer";
+export { TextField };
 
 const useStyles = styles((theme) => ({
   leftLabel: {
@@ -131,6 +132,41 @@ export function TextFieldLabel({
         <Typography className={classes.rightLabel}>{rightLabel}</Typography>
       )}
     </div>
+  );
+}
+
+export function TokenInputField({
+  decimals,
+  ...props
+}: {
+  decimals: number;
+} & React.ComponentProps<typeof TextField>) {
+  // Truncate token input fields to the native decimals of the token to prevent
+  // floats
+  const handleTokenInput = (
+    amount: string,
+    decimals: number,
+    setAmount: (amount: number | null) => void
+  ) => {
+    if (amount !== "") {
+      const decimalIndex = amount.indexOf(".");
+      const truncatedAmount =
+        decimalIndex >= 0
+          ? amount.substring(0, decimalIndex) +
+            amount.substring(decimalIndex, decimalIndex + decimals + 1)
+          : amount;
+      setAmount(parseFloat(truncatedAmount));
+    } else {
+      setAmount(null);
+    }
+  };
+  return (
+    <TextField
+      {...props}
+      setValue={(amount: string) =>
+        handleTokenInput(amount, decimals, props.setValue)
+      }
+    />
   );
 }
 

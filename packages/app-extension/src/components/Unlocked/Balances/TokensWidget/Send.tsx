@@ -23,6 +23,7 @@ import { WithHeaderButton } from "./Token";
 import {
   TextField,
   TextFieldLabel,
+  TokenInputField,
   walletAddressDisplay,
   PrimaryButton,
   SecondaryButton,
@@ -176,13 +177,6 @@ export function Send({
     nav.setTitle(`Send ${token.ticker}`);
   }, [nav]);
 
-  const _setAmount = (amount: number) => {
-    if (amount < 0) {
-      return;
-    }
-    setAmount(amount);
-  };
-
   // On click handler.
   const onNext = () => {
     if (!amount || !amountFloat) {
@@ -225,17 +219,18 @@ export function Send({
             leftLabel={"Amount"}
             rightLabel={`${token.displayBalance} ${token.ticker}`}
             rightLabelComponent={
-              <MaxLabel amount={maxAmount} onSetAmount={_setAmount} />
+              <MaxLabel amount={maxAmount} onSetAmount={setAmount} />
             }
             style={{ marginLeft: "24px", marginRight: "24px" }}
           />
           <div style={{ margin: "0 12px" }}>
-            <TextField
+            <TokenInputField
+              type="number"
+              placeholder="0"
               rootClass={classes.textRoot}
-              type={"number"}
-              placeholder={"0"}
+              decimals={token.decimals}
               value={amount}
-              setValue={_setAmount}
+              setValue={setAmount}
               isError={amountError}
               inputProps={{
                 name: "amount",
@@ -321,14 +316,12 @@ export function SendConfirmationCard({
   token,
   address,
   amount,
-  close,
 }: {
   token: { mint: string; decimals?: number };
   address: string;
   amount: number;
   close: () => void;
 }) {
-  const theme = useCustomTheme();
   const ctx = useSolanaCtx();
   const [cardType, setCardType] = useState<
     "confirm" | "sending" | "complete" | "error"
