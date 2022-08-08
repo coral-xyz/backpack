@@ -1,21 +1,28 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   InputAdornment,
   Typography,
   IconButton,
   CircularProgress,
 } from "@mui/material";
+import type { Button } from "@mui/material";
 import { Close, ExpandMore, SwapVert } from "@mui/icons-material";
 import {
   useSplTokenRegistry,
   useJupiterInputMints,
   useJupiterOutputMints,
+  useBackgroundClient,
   useSwapContext,
   SwapProvider,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Blockchain, SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
+import {
+  Blockchain,
+  SOL_NATIVE_MINT,
+  WSOL_MINT,
+  TAB_BALANCES,
+  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+} from "@coral-xyz/common";
 import {
   TextField,
   TextFieldLabel,
@@ -212,9 +219,14 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
     swapToFromMints();
   };
 
+  const onSubmit = (e: any) => {
+    e.preventDefault();
+    setOpenDrawer(true);
+  };
+
   return (
     <>
-      <div className={classes.container}>
+      <form onSubmit={onSubmit} className={classes.container}>
         <div className={classes.topHalf}>
           <SwapTokensButton
             onClick={onSwapButtonClick}
@@ -242,13 +254,10 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
                 </div>
               )}
             </div>
-            <ConfirmSwapButton
-              blockchain={blockchain}
-              onClick={() => setOpenDrawer(true)}
-            />
+            <ConfirmSwapButton type="submit" blockchain={blockchain} />
           </div>
         </div>
-      </div>
+      </form>
       <ApproveTransactionDrawer
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}
@@ -372,11 +381,10 @@ const InsufficientBalanceButton = () => {
 
 const ConfirmSwapButton = ({
   blockchain,
-  onClick,
+  ...buttonProps
 }: {
   blockchain: Blockchain;
-  onClick: () => void;
-}) => {
+} & React.ComponentProps<typeof Button>) => {
   const {
     toAmount,
     toMint,
@@ -406,10 +414,10 @@ const ConfirmSwapButton = ({
   return (
     <PrimaryButton
       label={label}
-      onClick={onClick}
       disabled={
         !fromAmount || !toAmount || isLoadingRoutes || isLoadingTransactions
       }
+      {...buttonProps}
     />
   );
 };
@@ -444,7 +452,15 @@ function SwapConfirmation({ onConfirm }: { onConfirm: () => void }) {
 function SwapConfirming({ isConfirmed }: { isConfirmed: boolean }) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const navigate = useNavigate();
+  const background = useBackgroundClient();
+
+  const onViewBalances = () => {
+    background.request({
+      method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+      params: [TAB_BALANCES],
+    });
+  };
+
   return (
     <div
       style={{
@@ -501,10 +517,7 @@ function SwapConfirming({ isConfirmed }: { isConfirmed: boolean }) {
             marginRight: "16px",
           }}
         >
-          <SecondaryButton
-            onClick={() => navigate("/balances")}
-            label={"View Balances"}
-          />
+          <SecondaryButton onClick={onViewBalances} label={"View Balances"} />
         </div>
       )}
     </div>

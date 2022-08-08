@@ -65,13 +65,11 @@ export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
       }}
     >
       <TokenHeader blockchain={blockchain} address={address} />
-      <div
-        style={{
-          marginTop: "16px",
-        }}
-      >
-        <RecentActivityList address={address} minimize={true} />
-      </div>
+      <RecentActivityList
+        address={address}
+        minimize={true}
+        style={{ marginTop: 0 }}
+      />
     </div>
   );
 }
