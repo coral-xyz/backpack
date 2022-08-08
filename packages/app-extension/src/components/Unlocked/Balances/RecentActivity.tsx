@@ -147,7 +147,6 @@ function RecentActivityLoading() {
   const classes = useStyles();
   return (
     <div
-      className={classes.listItem}
       style={{
         height: "68px",
         display: "flex",
@@ -182,7 +181,6 @@ export function _RecentActivityList({ address, style, minimize }: any) {
         marginTop: "16px",
         paddingTop: 0,
         paddingBottom: 0,
-        backgroundColor: theme.custom.colors.nav,
         marginLeft: "16px",
         marginRight: "16px",
         borderRadius: "12px",
@@ -223,7 +221,6 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
     <ListItem
       button
       disableRipple
-      className={classes.listItem}
       onClick={onClick}
       style={{
         paddingLeft: "12px",
@@ -232,7 +229,7 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
         paddingBottom: "10px",
         display: "flex",
         height: "68px",
-
+        backgroundColor: theme.custom.colors.nav,
         borderBottom: isLast
           ? undefined
           : `solid 1pt ${theme.custom.colors.border}`,
