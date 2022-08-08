@@ -1,6 +1,4 @@
-const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const { DuplicatesPlugin } = require("inspectpack/plugin");
 const { ProgressPlugin, ProvidePlugin } = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
@@ -10,6 +8,13 @@ const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin"
 
 const EXTENSION_NAME =
   process.env.NODE_ENV === "development" ? "(DEV) Backpack" : "Backpack";
+
+const EXTENSION_KEY =
+  process.env.NODE_ENV === "development"
+    ? // dev: chrome://extensions/?id=ppbliddanlojgfoeknmmdniicoccellh
+      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0lFAxMWLjYDYpWhWI5DtjXwdNhFsHynebSN2K1sMOUl1F+8s9fUTKShmjMqwRdvb/+pUd9qIUdEUYRf2Y7eF3Be117uL5IvNI61YzWWUCU6r/OtgENpug38ssaPSXFwXVDT7wLq8Y/7w2So9mxlzgsCvJQX3wpziCEzhRExWjJBpfjxXeUSEjzoUAe6OEXQ0R4pRfxBVF5lGZEyQdLUWHKch4rHJrzOS6FqzExuOWC/6YKEwskpieP5OUA3pLKujB4AfAlEAcDndwKYGncBYnOCeki2krw61Grb4oJbTfBIbMUImFaMrkREaSGg531WmsxIMy/QIz8JDR235m9gLsQIDAQAB"
+    : // prod: chrome://extensions/?id=onehipemlbcjfecgbeimidpecoofepan
+      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0F6bwLJ+5sLGbMPT+ssluU30hh0jL9v0z0tu97pv3qCs0R/lxPL8P/CM4/x/6WoHnUuN0MVP8nfaVGheSa03O6h11SfLXDgJEti7OErAXtP4nlX+sg9DxKdHjGl1vsMO4WOvNvaL2surdT0KTp5HK/xd62cISYgKL9C7AZJtKZYsBTCflSG4YDcpvTC2IbFMhRmG2uh/hiVGuRjb+3Ld7YV+Vss+ng0Ow6HE7MLDyuWIJu8L/n6/DbcaU7HuesqnMI+UdaSdOh1cjYazCQPMFTxXn6Uz/iPgwv8i4lKANR5sOg0eyWQkUAxzlE+UMK0VHaqYoMrPI644+a9gL6BdOQIDAQAB";
 
 const fileExtensions = [
   "eot",
@@ -171,8 +176,11 @@ const options = {
               JSON.stringify(
                 {
                   description: process.env.npm_package_description,
-                  version: process.env.npm_package_version,
+                  version:
+                    process.env.VERSION_NUMBER ||
+                    process.env.npm_package_version,
                   name: EXTENSION_NAME,
+                  key: EXTENSION_KEY,
                   ...JSON.parse(content.toString()),
                 },
                 null,
