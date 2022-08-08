@@ -51,9 +51,9 @@ type SwapTransactions = {
 };
 
 type SwapContext = {
-  fromAmount: BigNumber | null;
-  setFromAmount: (a: BigNumber | null) => void;
-  toAmount: BigNumber | null;
+  fromAmount: BigNumber | undefined;
+  setFromAmount: (a: BigNumber | undefined) => void;
+  toAmount: BigNumber | undefined;
   fromMint: string;
   setFromMint: (mint: string) => void;
   toMint: string;
@@ -68,7 +68,7 @@ type SwapContext = {
   executeSwap: () => Promise<any>;
   priceImpactPct: number;
   transactions: any;
-  transactionFee: BigNumber | null;
+  transactionFee: BigNumber | undefined;
   swapFee: BigNumber;
   isLoadingRoutes: boolean;
   isLoadingTransactions: boolean;
@@ -105,16 +105,20 @@ export function SwapProvider(props: any) {
     SOL_NATIVE_MINT,
     USDC_MINT,
   ]);
-  const [fromAmount, _setFromAmount] = useState<BigNumber | null>(null);
+  const [fromAmount, _setFromAmount] = useState<BigNumber | undefined>(
+    undefined
+  );
   const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE_PERCENT);
 
   // Jupiter data
   const [routes, setRoutes] = useState<JupiterRoute[]>([]);
 
-  const [transactions, setTransactions] = useState<SwapTransactions | null>(
-    null
+  const [transactions, setTransactions] = useState<
+    SwapTransactions | undefined
+  >(undefined);
+  const [transactionFee, setTransactionFee] = useState<BigNumber | undefined>(
+    undefined
   );
-  const [transactionFee, setTransactionFee] = useState<BigNumber | null>(null);
   const [isLoadingRoutes, setIsLoadingRoutes] = useState(false);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
 
@@ -225,7 +229,7 @@ export function SwapProvider(props: any) {
     if (!isJupiterSwap) {
       // Simple wrap or unwrap, assume 5000
       fee += 5000;
-    } else if (!routes || routes.length === 0 || transactions === null) {
+    } else if (!routes || routes.length === 0 || transactions === undefined) {
       // Haven't got routes yet, assume 5000 for swap
       fee += 5000;
       if (needsWrap || needsUnwrap) {

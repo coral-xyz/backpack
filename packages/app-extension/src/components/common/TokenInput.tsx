@@ -47,7 +47,7 @@ export function TokenInputField({
   } else if (props.value) {
     value = ethers.utils.formatUnits(props.value, decimals);
   } else {
-    value = props.value;
+    value = "";
   }
 
   return (

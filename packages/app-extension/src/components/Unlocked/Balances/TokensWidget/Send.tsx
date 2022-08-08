@@ -136,8 +136,7 @@ export function Send({
 
   const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState("");
-  const [amount, setAmount] = useState<BigNumber | null>(null);
-  const [tokenInputValue, setTokenInputValue] = useState<string | null>("");
+  const [amount, setAmount] = useState<BigNumber | undefined>(undefined);
 
   const {
     isValidAddress,
