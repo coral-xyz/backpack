@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   InputAdornment,
   Typography,
@@ -12,11 +11,18 @@ import {
   useSplTokenRegistry,
   useJupiterInputMints,
   useJupiterOutputMints,
+  useBackgroundClient,
   useSwapContext,
   SwapProvider,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Blockchain, SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
+import {
+  Blockchain,
+  SOL_NATIVE_MINT,
+  WSOL_MINT,
+  TAB_BALANCES,
+  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+} from "@coral-xyz/common";
 import {
   TextField,
   TextFieldLabel,
@@ -441,7 +447,15 @@ function SwapConfirmation({ onConfirm }: { onConfirm: () => void }) {
 function SwapConfirming({ isConfirmed }: { isConfirmed: boolean }) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const navigate = useNavigate();
+  const background = useBackgroundClient();
+
+  const onViewBalances = () => {
+    background.request({
+      method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+      params: [TAB_BALANCES],
+    });
+  };
+
   return (
     <div
       style={{
@@ -498,10 +512,7 @@ function SwapConfirming({ isConfirmed }: { isConfirmed: boolean }) {
             marginRight: "16px",
           }}
         >
-          <SecondaryButton
-            onClick={() => navigate("/balances")}
-            label={"View Balances"}
-          />
+          <SecondaryButton onClick={onViewBalances} label={"View Balances"} />
         </div>
       )}
     </div>
