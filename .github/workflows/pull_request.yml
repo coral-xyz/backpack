@@ -134,7 +134,7 @@ jobs:
         run: echo "/home/runner/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
 
       # https://playwright.dev/docs/next/ci#running-headed
-      - name: run playwright e2e tests
+      - name: "[e2e tests] run playwright tests on extension"
         run: xvfb-run yarn e2e
 
       # - uses: actions/upload-artifact@v2
@@ -147,7 +147,8 @@ jobs:
       # GitHub Pages.
       ##########################################################################
 
-      - run: cd packages/background && yarn build:html
+      - name: build extension background script for gh-pages
+        run: cd packages/background && yarn build:html
 
       - if: github.event_name == 'pull_request'
         name: "set env.commit_sha from latest commit in PR"
@@ -170,7 +171,7 @@ jobs:
       # Upload build artifacts.
       ##########################################################################
 
-      - name: "zip build artifacts"
+      - name: zip build artifacts
         # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: cardinalby/webext-buildtools-pack-extension-dir-action@v1
         with:
@@ -185,23 +186,24 @@ jobs:
           crxFilePath: packages/app-extension/build-${{ env.build_version_number }}.crx
           privateKey: ${{ secrets.CHROME_CRX_PRIVATE_KEY }}
           updateXmlPath: packages/app-extension/updates.xml
-          updateXmlCodebaseUrl: https://coral-xyz.github.io/backpack/backpack.crx
+          updateXmlCodebaseUrl: https://coral-xyz.github.io/backpack/extension/backpack.crx
 
-      - name: prepare stuff for gh-pages
+      - name: prepare backpack.crx & updates.yml for gh-pages
         # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         working-directory: packages/app-extension
         run: mkdir deploy &&
           cp build-${{ env.build_version_number }}.crx deploy/backpack.crx &&
           mv updates.xml deploy/updates.xml
 
-      - name: deploy crx stuff to gh-pages
+      - name: deploy backpack.crx & updates.xml to gh-pages
         # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: packages/app-extension/deploy
+          destination_dir: extension
 
-      - name: "upload build artifacts"
+      - name: upload build artifacts
         # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v2
         with:

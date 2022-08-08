@@ -25,6 +25,5 @@
     "192": "anchor.png",
     "512": "anchor.png"
   },
-  "permissions": ["storage"],
-  "update_url": "https://coral-xyz.github.io/backpack/updates.xml"
+  "permissions": ["storage"]
 }

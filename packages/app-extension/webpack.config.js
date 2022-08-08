@@ -16,6 +16,11 @@ const EXTENSION_KEY =
     : // prod: chrome://extensions/?id=onehipemlbcjfecgbeimidpecoofepan
       "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0F6bwLJ+5sLGbMPT+ssluU30hh0jL9v0z0tu97pv3qCs0R/lxPL8P/CM4/x/6WoHnUuN0MVP8nfaVGheSa03O6h11SfLXDgJEti7OErAXtP4nlX+sg9DxKdHjGl1vsMO4WOvNvaL2surdT0KTp5HK/xd62cISYgKL9C7AZJtKZYsBTCflSG4YDcpvTC2IbFMhRmG2uh/hiVGuRjb+3Ld7YV+Vss+ng0Ow6HE7MLDyuWIJu8L/n6/DbcaU7HuesqnMI+UdaSdOh1cjYazCQPMFTxXn6Uz/iPgwv8i4lKANR5sOg0eyWQkUAxzlE+UMK0VHaqYoMrPI644+a9gL6BdOQIDAQAB";
 
+const EXTENSION_UPDATE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://coral-xyz.github.io/backpack/extension/updates.xml"
+    : undefined;
+
 const fileExtensions = [
   "eot",
   "gif",
@@ -180,6 +185,7 @@ const options = {
                     process.env.VERSION_NUMBER ||
                     process.env.npm_package_version,
                   name: EXTENSION_NAME,
+                  update_url: EXTENSION_UPDATE_URL,
                   key: EXTENSION_KEY,
                   ...JSON.parse(content.toString()),
                 },
