@@ -16,7 +16,7 @@ import {
 } from "@coral-xyz/common-public";
 import { NAV_STACK } from "./Context";
 
-const logger = getLogger("anchor-ui-reconciler");
+const logger = getLogger("react-xfnt/reconciler");
 const events = new EventEmitter();
 
 export const ReactXnft = {
@@ -235,6 +235,11 @@ const RECONCILER = ReactReconciler({
           // @ts-ignore
           payload = { style: newProps.style };
         }
+        // @ts-ignore
+        if (oldProps.onClick !== newProps.onClick) {
+          // @ts-ignore
+          payload = { onClick: newProps.onClick };
+        }
         return payload;
       case NodeKind.Svg:
         return null;
@@ -350,6 +355,16 @@ const RECONCILER = ReactReconciler({
       case NodeKind.Button:
         if (updatePayload.style !== undefined && updatePayload.style !== null) {
           instance.style = updatePayload.style;
+        }
+        if (
+          updatePayload.onClick !== undefined &&
+          updatePayload.onClick !== null
+        ) {
+          // @ts-ignore
+          instance.props.onClick = updatePayload.onClick;
+          // @ts-ignore
+          CLICK_HANDLERS.set(instance.id, instance.props.onClick);
+          delete updatePayload["onClick"];
         }
         break;
       case NodeKind.Table:
