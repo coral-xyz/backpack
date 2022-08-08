@@ -68,7 +68,8 @@ type SwapContext = {
   executeSwap: () => Promise<any>;
   priceImpactPct: number;
   transactions: any;
-  transactionFee: any;
+  transactionFee: BigNumber | null;
+  swapFee: BigNumber;
   isLoadingRoutes: boolean;
   isLoadingTransactions: boolean;
   isJupiterError: boolean;
@@ -170,8 +171,10 @@ export function SwapProvider(props: any) {
       availableForSwap = Zero;
     }
   }
-  const exceedsBalance =
-    (fromAmount && fromAmount > availableForSwap) || undefined;
+
+  const exceedsBalance = fromAmount
+    ? fromAmount.gt(availableForSwap)
+    : undefined;
 
   const stopRoutePolling = () => {
     if (pollIdRef.current) {
@@ -207,8 +210,9 @@ export function SwapProvider(props: any) {
   //
   useEffect(() => {
     (async () => {
-      setTransactions(await fetchTransactions());
-      setTransactionFee(await estimateFees());
+      const transactions = await fetchTransactions();
+      setTransactions(transactions);
+      setTransactionFee(await estimateFees(transactions));
       setIsLoadingTransactions(false);
     })();
   }, [routes]);
@@ -216,7 +220,7 @@ export function SwapProvider(props: any) {
   //
   // Estimate the network fees the transactions will incur.
   //
-  const estimateFees = async () => {
+  const estimateFees = async (transactions: SwapTransactions) => {
     let fee = 0;
     if (!isJupiterSwap) {
       // Simple wrap or unwrap, assume 5000
@@ -511,6 +515,8 @@ export function SwapProvider(props: any) {
         transactions,
         isLoadingTransactions,
         transactionFee,
+        // TODO backpack fees
+        swapFee: Zero,
         isJupiterError,
         availableForSwap,
         exceedsBalance,

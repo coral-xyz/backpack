@@ -229,7 +229,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
 
   return (
     <>
-      <form onSubmit={onSubmit} className={classes.container}>
+      <form onSubmit={onSubmit} className={classes.container} noValidate>
         <div className={classes.topHalf}>
           <SwapTokensButton
             onClick={onSwapButtonClick}
@@ -599,6 +599,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     isLoadingRoutes,
     isLoadingTransactions,
     transactionFee,
+    swapFee,
   } = useSwapContext();
 
   // Loading indicator when routes are being loaded due to polling
@@ -617,11 +618,23 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     );
   }
 
-  const rate = fromAmount ? toAmount!.toNumber() / fromAmount.toNumber() : 0;
+  if (!fromAmount || !toAmount) return <></>;
+
+  const decimalDifference = fromMintInfo.decimals - toMintInfo.decimals;
+  const toAmountWithFees = toAmount.sub(swapFee);
+  const rate = fromAmount.gt(Zero)
+    ? (toAmountWithFees.toNumber() / fromAmount.toNumber()) *
+      10 ** decimalDifference
+    : 0;
 
   const rows = [];
   if (!compact) {
-    rows.push(["You Pay", `${fromAmount} ${fromMintInfo.symbol}`]);
+    rows.push([
+      "You Pay",
+      `${ethers.utils.formatUnits(fromAmount, fromMintInfo.decimals)} ${
+        fromMintInfo.symbol
+      }`,
+    ]);
   }
   rows.push([
     "Rate",

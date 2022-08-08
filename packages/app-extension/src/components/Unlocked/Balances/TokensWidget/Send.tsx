@@ -178,6 +178,7 @@ export function Send({
         e.preventDefault();
         onNext();
       }}
+      noValidate
     >
       <div className={classes.topHalf}>
         <div style={{ marginBottom: "40px" }}>
