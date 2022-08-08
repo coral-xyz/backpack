@@ -90,7 +90,7 @@ test("create a wallet and send SOL", async ({ page, context }) => {
 
   // ------------------------- CHECK THE AIRDROP WAS RECEIVED
 
-  await setup.locator("text=1 SOL").click();
+  await setup.locator("text=1.0 SOL").click();
   await setup.locator("#token-send").click();
 
   // ------------------------- SEND 0.5 SOL TO ANOTHER PUBKEY
@@ -109,5 +109,5 @@ test("create a wallet and send SOL", async ({ page, context }) => {
   expect((await conn.getBalance(to)).toString()).toEqual("500000000");
 
   // this takes a several seconds to update
-  await setup.locator("text=0.5 SOL").click();
+  await setup.locator("text=0.499995 SOL").click();
 });
