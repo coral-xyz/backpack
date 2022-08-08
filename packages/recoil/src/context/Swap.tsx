@@ -51,7 +51,7 @@ type SwapTransactions = {
 
 type SwapContext = {
   fromAmount: number | null;
-  setFromAmount: (a: number) => void;
+  setFromAmount: (a: number | null) => void;
   toAmount: number | null;
   fromMint: string;
   setFromMint: (mint: string) => void;
@@ -105,6 +105,8 @@ export function SwapProvider(props: any) {
   ]);
   const [fromAmount, _setFromAmount] = useState<number | null>(null);
   const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE_PERCENT);
+
+  console.log(fromAmount);
 
   // Jupiter data
   const [routes, setRoutes] = useState<JupiterRoute[]>([]);

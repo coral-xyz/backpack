@@ -22,6 +22,7 @@ import {
   PrimaryButton,
   DangerButton,
   SecondaryButton,
+  TokenInputField,
 } from "../common";
 import { CheckIcon, CrossIcon } from "../common/Icon";
 import { WithHeaderButton } from "./Balances/TokensWidget/Token";
@@ -302,30 +303,22 @@ function InputTextField() {
     exceedsBalance,
   } = useSwapContext();
 
-  const _setFromAmount = (amount: number) => {
-    if (amount >= 0) {
-      setFromAmount(amount);
-    }
-  };
-
   return (
     <>
       <TextFieldLabel
         leftLabel={"You Pay"}
         rightLabelComponent={
-          <MaxLabel
-            amount={availableForSwap / 10 ** fromMintInfo.decimals}
-            onSetAmount={_setFromAmount}
-          />
+          <MaxLabel amount={availableForSwap} onSetAmount={setFromAmount} />
         }
       />
-      <TextField
-        placeholder={"0"}
+      <TokenInputField
+        type="number"
+        placeholder="0"
         endAdornment={<InputTokenSelectorButton />}
         rootClass={classes.fromFieldRoot}
-        type={"number"}
         value={fromAmount ?? ""}
-        setValue={_setFromAmount}
+        decimals={fromMintInfo.decimals}
+        setValue={setFromAmount}
         isError={exceedsBalance}
       />
     </>
@@ -391,6 +384,8 @@ const ConfirmSwapButton = ({
     fromMint,
     isJupiterError,
     exceedsBalance,
+    isLoadingRoutes,
+    isLoadingTransactions,
   } = useSwapContext();
 
   if (exceedsBalance) {
@@ -412,7 +407,9 @@ const ConfirmSwapButton = ({
     <PrimaryButton
       label={label}
       onClick={onClick}
-      disabled={!fromAmount || !toAmount}
+      disabled={
+        !fromAmount || !toAmount || isLoadingRoutes || isLoadingTransactions
+      }
     />
   );
 };
