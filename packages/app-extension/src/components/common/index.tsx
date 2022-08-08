@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import type { PublicKey } from "@solana/web3.js";
+import { ethers, BigNumber } from "ethers";
 import {
   Box,
   Typography,
@@ -146,7 +148,10 @@ export function TokenInputField({
   const handleTokenInput = (
     amount: string,
     decimals: number,
-    setAmount: (amount: number | null) => void
+    setValue: (
+      displayAmount: string | null,
+      nativeAmount: BigNumber | null
+    ) => void
   ) => {
     if (amount !== "") {
       const decimalIndex = amount.indexOf(".");
@@ -155,17 +160,22 @@ export function TokenInputField({
           ? amount.substring(0, decimalIndex) +
             amount.substring(decimalIndex, decimalIndex + decimals + 1)
           : amount;
-      setAmount(parseFloat(truncatedAmount));
+      setValue(
+        truncatedAmount,
+        ethers.utils.parseUnits(truncatedAmount, decimals)
+      );
     } else {
-      setAmount(null);
+      setValue(null, null);
     }
   };
+
   return (
     <TextField
       {...props}
-      setValue={(amount: string) =>
-        handleTokenInput(amount, decimals, props.setValue)
-      }
+      // Override default TextField setValue with function to truncate decimal inputs
+      setValue={(amount: string) => {
+        handleTokenInput(amount, decimals, props.setValue);
+      }}
     />
   );
 }

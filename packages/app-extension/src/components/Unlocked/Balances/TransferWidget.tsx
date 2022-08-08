@@ -169,7 +169,7 @@ function SendToken() {
   return (
     <SearchableTokenTable
       onClickRow={onClickRow}
-      customFilter={(token: Token) => token.displayBalance !== 0}
+      customFilter={(token: Token) => !token.nativeBalance.isZero()}
     />
   );
 }

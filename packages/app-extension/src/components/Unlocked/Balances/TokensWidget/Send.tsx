@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { ethers, BigNumber } from "ethers";
 import { CircularProgress, Typography, Link } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Connection, SystemProgram, PublicKey } from "@solana/web3.js";
@@ -23,12 +24,12 @@ import { WithHeaderButton } from "./Token";
 import {
   TextField,
   TextFieldLabel,
-  TokenInputField,
   walletAddressDisplay,
   PrimaryButton,
   SecondaryButton,
   DangerButton,
 } from "../../../common";
+import { TokenInputField } from "../../../common/TokenInput";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { MaxLabel } from "../../../common/MaxLabel";
@@ -135,7 +136,8 @@ export function Send({
 
   const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState("");
-  const [amount, setAmount] = useState<number | null>(null);
+  const [amount, setAmount] = useState<BigNumber | null>(null);
+  const [tokenInputValue, setTokenInputValue] = useState<string | null>("");
 
   const {
     isValidAddress,
@@ -143,14 +145,17 @@ export function Send({
     isErrorAddress,
   } = useIsValidSolanaSendAddress(address, provider.connection);
 
-  const amountNative = amount && amount * 10 ** token.decimals;
   // When sending SOL, account for the tx fee and rent exempt minimum.
   const lamportsOffset =
     token.mint === SOL_NATIVE_MINT
-      ? 5000 + NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS
-      : 0;
-  const maxAmount = Math.max(token.nativeBalance - lamportsOffset, 0);
-  const exceedsBalance = amountNative && amountNative > maxAmount;
+      ? BigNumber.from(5000).add(
+          BigNumber.from(NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS)
+        )
+      : BigNumber.from(0);
+
+  const amountWithFee = BigNumber.from(token.nativeBalance).sub(lamportsOffset);
+  const maxAmount = amountWithFee.gt(0) ? amountWithFee : BigNumber.from(0);
+  const exceedsBalance = amount && amount.gt(maxAmount);
   const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
   const amountError = amount && exceedsBalance;
 
@@ -160,7 +165,7 @@ export function Send({
 
   // On click handler.
   const onNext = () => {
-    if (!amount || !amountNative) {
+    if (!amount) {
       return;
     }
     setOpenDrawer(true);
@@ -199,7 +204,18 @@ export function Send({
             leftLabel={"Amount"}
             rightLabel={`${token.displayBalance} ${token.ticker}`}
             rightLabelComponent={
-              <MaxLabel amount={maxAmount} onSetAmount={setAmount} />
+              <MaxLabel
+                amount={maxAmount}
+                onSetAmount={(amount: BigNumber | null) => {
+                  setTokenInputValue(
+                    amount
+                      ? ethers.utils.formatUnits(amount, token.decimals)
+                      : null
+                  );
+                  setAmount(amount);
+                }}
+                decimals={token.decimals}
+              />
             }
             style={{ marginLeft: "24px", marginRight: "24px" }}
           />
@@ -209,8 +225,14 @@ export function Send({
               placeholder="0"
               rootClass={classes.textRoot}
               decimals={token.decimals}
-              value={amount}
-              setValue={setAmount}
+              value={tokenInputValue}
+              setValue={(
+                displayAmount: string | null,
+                nativeAmount: BigNumber | null
+              ) => {
+                setTokenInputValue(displayAmount);
+                setAmount(nativeAmount);
+              }}
               isError={amountError}
               inputProps={{
                 name: "amount",
@@ -297,9 +319,9 @@ export function SendConfirmationCard({
   address,
   amount,
 }: {
-  token: { mint: string; decimals?: number };
+  token: { logo?: string; ticker?: string; mint: string; decimals: number };
   address: string;
-  amount: number;
+  amount: BigNumber;
   close: () => void;
 }) {
   const ctx = useSolanaCtx();
@@ -320,13 +342,13 @@ export function SendConfirmationCard({
         txSig = await Solana.transferSol(ctx, {
           source: ctx.walletPublicKey,
           destination: new PublicKey(address),
-          amount,
+          amount: amount.toNumber(),
         });
       } else {
         txSig = await Solana.transferToken(ctx, {
           destination: new PublicKey(address),
           mint: new PublicKey(token.mint),
-          amount,
+          amount: amount.toNumber(),
           decimals: token.decimals,
         });
       }
@@ -391,9 +413,9 @@ function ConfirmSend({
   amount,
   onConfirm,
 }: {
-  token: any;
+  token: { logo?: string; ticker?: string; mint: string; decimals: number };
   address: string;
-  amount: number;
+  amount: BigNumber;
   onConfirm: () => void;
 }) {
   const theme = useCustomTheme();
@@ -443,8 +465,8 @@ function ConfirmSend({
 
 const ConfirmSendToken: React.FC<{
   style: React.CSSProperties;
-  token: any;
-  amount: number;
+  token: { logo?: string; ticker?: string; mint: string; decimals: number };
+  amount: BigNumber;
 }> = ({ style, token, amount }) => {
   const theme = useCustomTheme();
 
@@ -483,7 +505,7 @@ const ConfirmSendToken: React.FC<{
           textAlign: "center",
         }}
       >
-        {amount}
+        {ethers.utils.formatUnits(amount, token.decimals)}
         <span
           style={{
             marginLeft: "8px",
@@ -551,7 +573,7 @@ function Sending({
   signature,
   isComplete,
 }: {
-  amount: number;
+  amount: BigNumber;
   token: any;
   signature: string;
   isComplete: boolean;

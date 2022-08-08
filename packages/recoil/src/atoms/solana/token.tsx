@@ -1,4 +1,5 @@
 import { atomFamily, selectorFamily } from "recoil";
+import { ethers, BigNumber } from "ethers";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { Blockchain, SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
 import { bootstrap } from "../bootstrap";
@@ -92,12 +93,17 @@ export const blockchainTokenAccounts = selectorFamily({
               : tokenAccount.mint.toString();
           const price = get(priceData(priceMint)) as any;
           const decimals = tokenMetadata.decimals;
-          const nativeBalance = tokenAccount.amount;
-          const displayBalance = decimals
-            ? tokenAccount.amount.toNumber() / 10 ** decimals
-            : tokenAccount.amount.toNumber();
+          // Convert from BN.js to ethers BigNumber
+          // https://github.com/ethers-io/ethers.js/issues/595
+          const nativeBalance = BigNumber.from(tokenAccount.amount.toString());
+          const displayBalance = ethers.utils.formatUnits(
+            nativeBalance,
+            decimals
+          );
           const currentUsdBalance =
-            price && price.usd ? price.usd * displayBalance : 0;
+            price && price.usd
+              ? price.usd * nativeBalance.div(10 ** decimals).toNumber()
+              : 0;
           const oldUsdBalance =
             currentUsdBalance === 0
               ? 0

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ethers, BigNumber } from "ethers";
 import {
   InputAdornment,
   Typography,
@@ -29,8 +30,8 @@ import {
   PrimaryButton,
   DangerButton,
   SecondaryButton,
-  TokenInputField,
 } from "../common";
+import { TokenInputField } from "../common/TokenInput";
 import { CheckIcon, CrossIcon } from "../common/Icon";
 import { WithHeaderButton } from "./Balances/TokensWidget/Token";
 import { BottomCard } from "./Balances/TokensWidget/Send";
@@ -39,6 +40,8 @@ import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
 import { MaxLabel } from "../common/MaxLabel";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
+
+const { Zero } = ethers.constants;
 
 const useStyles = styles((theme) => ({
   container: {
@@ -242,7 +245,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
           <div className={classes.bottomHalf}>
             <div>
               <OutputTextField />
-              {!!toAmount && toAmount > 0 && (
+              {!!toAmount && toAmount.gt(Zero) && (
                 <div
                   style={{
                     marginTop: "24px",
@@ -304,20 +307,27 @@ const SwapConfirmationCard: React.FC<{ onClose: () => void }> = ({
 
 function InputTextField() {
   const classes = useStyles();
-  const {
-    fromAmount,
-    setFromAmount,
-    fromMintInfo,
-    availableForSwap,
-    exceedsBalance,
-  } = useSwapContext();
+  const { setFromAmount, fromMintInfo, availableForSwap, exceedsBalance } =
+    useSwapContext();
+  const [tokenInputValue, setTokenInputValue] = useState<string | null>("");
 
   return (
     <>
       <TextFieldLabel
         leftLabel={"You Pay"}
         rightLabelComponent={
-          <MaxLabel amount={availableForSwap} onSetAmount={setFromAmount} />
+          <MaxLabel
+            amount={availableForSwap}
+            onSetAmount={(amount: BigNumber) => {
+              setTokenInputValue(
+                amount
+                  ? ethers.utils.formatUnits(amount, fromMintInfo.decimals)
+                  : null
+              );
+              setFromAmount(amount);
+            }}
+            decimals={fromMintInfo.decimals}
+          />
         }
       />
       <TokenInputField
@@ -325,9 +335,15 @@ function InputTextField() {
         placeholder="0"
         endAdornment={<InputTokenSelectorButton />}
         rootClass={classes.fromFieldRoot}
-        value={fromAmount ?? ""}
+        value={tokenInputValue}
+        setValue={(
+          displayAmount: string | null,
+          nativeAmount: BigNumber | null
+        ) => {
+          setTokenInputValue(displayAmount);
+          setFromAmount(nativeAmount);
+        }}
         decimals={fromMintInfo.decimals}
-        setValue={setFromAmount}
         isError={exceedsBalance}
       />
     </>
@@ -337,7 +353,7 @@ function InputTextField() {
 function OutputTextField() {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { toAmount, isLoadingRoutes } = useSwapContext();
+  const { toAmount, toMintInfo, isLoadingRoutes } = useSwapContext();
   return (
     <>
       <TextFieldLabel leftLabel={"You Receive"} />
@@ -359,7 +375,11 @@ function OutputTextField() {
         endAdornment={<OutputTokenSelectorButton />}
         rootClass={classes.receiveFieldRoot}
         type={"number"}
-        value={toAmount || ""}
+        value={
+          toAmount
+            ? ethers.utils.formatUnits(toAmount, toMintInfo.decimals)
+            : ""
+        }
         disabled={true}
         inputProps={{
           style: {
@@ -568,7 +588,7 @@ function SwapReceiveAmount() {
         src={logoUri}
         onError={(event) => (event.currentTarget.style.display = "none")}
       />
-      {toAmount}
+      {toAmount ? ethers.utils.formatUnits(toAmount, toMintInfo.decimals) : 0}
       <span style={{ color: theme.custom.colors.secondary, marginLeft: "8px" }}>
         {toMintInfo?.symbol}
       </span>
@@ -606,7 +626,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     );
   }
 
-  const rate = fromAmount ? toAmount! / fromAmount : 0;
+  const rate = fromAmount ? toAmount!.toNumber() / fromAmount.toNumber() : 0;
 
   const rows = [];
   if (!compact) {
@@ -618,7 +638,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   ]);
   rows.push([
     "Network Fee",
-    transactionFee ? `${transactionFee / 10 ** 9} SOL` : "-",
+    transactionFee ? `${ethers.utils.formatUnits(transactionFee, 9)} SOL` : "-",
   ]);
   if (!compact) {
     rows.push([
@@ -695,7 +715,7 @@ function InputTokenSelectorButton() {
   const { toMint, fromMint, setFromMint } = useSwapContext();
   const tokenAccounts = useJupiterInputMints();
   const tokenAccountsFiltered = tokenAccounts.filter(
-    (token: Token) => token.displayBalance !== 0 && token.mint !== toMint
+    (token: Token) => !token.nativeBalance.isZero() && token.mint !== toMint
   );
   return (
     <TokenSelectorButton
