@@ -6,6 +6,7 @@ import {
   IconButton,
   CircularProgress,
 } from "@mui/material";
+import type { Button } from "@mui/material";
 import { Close, ExpandMore, SwapVert } from "@mui/icons-material";
 import {
   useSplTokenRegistry,
@@ -211,9 +212,14 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
     swapToFromMints();
   };
 
+  const onSubmit = (e: any) => {
+    e.preventDefault();
+    setOpenDrawer(true);
+  };
+
   return (
     <>
-      <div className={classes.container}>
+      <form onSubmit={onSubmit} className={classes.container}>
         <div className={classes.topHalf}>
           <SwapTokensButton
             onClick={onSwapButtonClick}
@@ -241,13 +247,10 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
                 </div>
               )}
             </div>
-            <ConfirmSwapButton
-              blockchain={blockchain}
-              onClick={() => setOpenDrawer(true)}
-            />
+            <ConfirmSwapButton type="submit" blockchain={blockchain} />
           </div>
         </div>
-      </div>
+      </form>
       <ApproveTransactionDrawer
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}
@@ -371,11 +374,10 @@ const InsufficientBalanceButton = () => {
 
 const ConfirmSwapButton = ({
   blockchain,
-  onClick,
+  ...buttonProps
 }: {
   blockchain: Blockchain;
-  onClick: () => void;
-}) => {
+} & React.ComponentProps<typeof Button>) => {
   const {
     toAmount,
     toMint,
@@ -403,8 +405,8 @@ const ConfirmSwapButton = ({
   return (
     <PrimaryButton
       label={label}
-      onClick={onClick}
       disabled={!fromAmount || !toAmount}
+      {...buttonProps}
     />
   );
 };
