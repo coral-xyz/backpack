@@ -30,3 +30,8 @@ dist
 
 # Pre build generation.
 src/generated-config.ts
+
+src/version.ts
+/test-results/
+/playwright-report/
+/playwright/.cache/

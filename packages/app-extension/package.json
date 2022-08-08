@@ -20,7 +20,6 @@
     "@mui/styles": "^5.8.4",
     "@project-serum/anchor": "^0.24.2",
     "@solana/web3.js": "^1.35.1",
-    "bip39": "^3.0.4",
     "bs58": "^5.0.0",
     "ethers": "^5.7.0",
     "figma-squircle": "^0.2.1",
@@ -36,13 +35,12 @@
     "start": "NODE_ENV=development webpack serve",
     "build": "NODE_ENV=production webpack",
     "build:release": "NODE_ENV=production webpack",
-    "e2e": "jest --maxWorkers 1 --detectOpenHandles --forceExit --verbose",
+    "e2e": "concurrently --kill-others --success first 'solana-test-validator --quiet' 'npx playwright install chromium --with-deps && playwright test'",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
   },
   "eslintConfig": {
     "extends": [
-      "react-app",
-      "react-app/jest"
+      "react-app"
     ]
   },
   "browserslist": [
@@ -51,12 +49,10 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@playwright/test": "^1.24.2",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
     "@swc/core": "^1.2.203",
-    "@testing-library/jest-dom": "^5.11.4",
     "@types/chrome": "^0.0.190",
-    "@types/jest": "^28.1.1",
-    "@types/jest-environment-puppeteer": "^5.0.2",
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
@@ -65,20 +61,16 @@
     "@typescript-eslint/eslint-plugin": "^5.25.0",
     "@typescript-eslint/parser": "^5.25.0",
     "clean-webpack-plugin": "^4.0.0",
+    "concurrently": "^7.3.0",
     "copy-webpack-plugin": "^11.0.0",
     "crypto-browserify": "^3.12.0",
     "css-loader": "^6.7.1",
-    "esbuild": "^0.14.42",
-    "esbuild-jest": "^0.5.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-mui-unused-classes": "^1.0.3",
-    "expect-puppeteer": "^6.1.0",
     "file-loader": "^6.2.0",
     "fork-ts-checker-webpack-plugin": "^7.2.11",
     "inspectpack": "^4.7.1",
     "isomorphic-fetch": "^3.0.0",
-    "jest": "^28.1.1",
-    "jest-puppeteer": "^6.1.0",
     "mini-css-extract-plugin": "^2.6.0",
     "react-refresh": "^0.14.0",
     "serve": "^13.0.2",

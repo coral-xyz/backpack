@@ -34,7 +34,7 @@ export function Balances() {
           marginBottom: "20px",
         }}
       >
-        <TransferWidget />
+        <TransferWidget idPrefix="balances" />
       </div>
       <TokenTables
         onClickRow={onClickTokenRow}

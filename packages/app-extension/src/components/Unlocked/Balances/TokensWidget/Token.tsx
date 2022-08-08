@@ -1,15 +1,15 @@
-import { useState } from "react";
-import { Typography } from "@mui/material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Button } from "@coral-xyz/react-xnft-renderer";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { useBlockchainTokenAccount } from "@coral-xyz/recoil";
-import { RecentActivityList } from "../RecentActivity";
-import { WithDrawer, CloseButton } from "../../../common/Layout/Drawer";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { Typography } from "@mui/material";
+import { useState } from "react";
+import { CloseButton, WithDrawer } from "../../../common/Layout/Drawer";
 import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../../common/Layout/NavStack";
+import { RecentActivityList } from "../RecentActivity";
 import { TransferWidget } from "../TransferWidget";
 
 const useStyles = styles((theme) => ({
@@ -99,7 +99,11 @@ function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
         </Typography>
       </div>
       <div className={classes.tokenHeaderButtonContainer}>
-        <TransferWidget blockchain={blockchain} address={address} />
+        <TransferWidget
+          blockchain={blockchain}
+          address={address}
+          idPrefix="token"
+        />
       </div>
     </div>
   );
