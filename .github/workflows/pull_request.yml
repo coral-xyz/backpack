@@ -12,6 +12,7 @@ env:
   solana_version: 1.10.32
   build_version_number: ${{ github.run_number }}
   full_semver_version: 0.0.5-latest.${{ github.run_number }}
+
 jobs:
   add-labels-based-on-whats-changed:
     name: Add PR labels

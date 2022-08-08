@@ -108,6 +108,6 @@ test("create a wallet and send SOL", async ({ page, context }) => {
   expect((await conn.getBalance(wallet)).toString()).toEqual("499995000");
   expect((await conn.getBalance(to)).toString()).toEqual("500000000");
 
-  // this takes a several seconds to update
+  // this takes several seconds to update
   await setup.locator("text=0.499995 SOL").click();
 });
