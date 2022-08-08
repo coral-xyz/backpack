@@ -146,7 +146,7 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
   public async setStorage<T = any>(key: string, val: T): Promise<void> {
     await this._requestManager.request({
       method: PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
-      params: [key, JSON.stringify(val)],
+      params: [key, val],
     });
   }
 

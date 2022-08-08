@@ -460,18 +460,24 @@ export class Plugin {
     return ["success"];
   }
 
+  //
+  // TODO: We should use the plugin mint address instead of the iframe url
+  //       to namespace here.
+  //
   private async _handleGet(key: string): Promise<RpcResponse> {
-    return await this._backgroundClient.request({
+    const resp = await this._backgroundClient.request({
       method: UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
       params: [this.iframeUrl, key],
     });
+    return [resp];
   }
 
   private async _handlePut(key: string, value: any): Promise<RpcResponse> {
-    return await this._backgroundClient.request({
+    const resp = await this._backgroundClient.request({
       method: UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
       params: [this.iframeUrl, key, value],
     });
+    return [resp];
   }
 
   private clickHandlerError(): RpcResponse | null {
