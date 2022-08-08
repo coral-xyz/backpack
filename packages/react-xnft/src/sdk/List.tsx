@@ -5,7 +5,8 @@ import { useTheme } from "../Context";
 export const List: React.FC<{
   children: React.ReactNode;
   style?: React.CSSProperties;
-}> = ({ children, style }) => {
+  borderStyle?: React.CSSProperties;
+}> = ({ children, style, borderStyle }) => {
   const theme = useTheme();
   // @ts-ignore
   const isArray = children && children.length !== undefined;
@@ -16,7 +17,7 @@ export const List: React.FC<{
     newChildrenArray.push(c);
     // @ts-ignore
     if (idx !== childrenArray.length - 1) {
-      newChildrenArray.push(<Divider />);
+      newChildrenArray.push(<Divider style={borderStyle} />);
     }
   });
   return (
@@ -49,14 +50,15 @@ export const ListItem: React.FC<{
   );
 };
 
-function Divider() {
+const Divider: React.FC<{ style?: React.CSSProperties }> = ({ style }) => {
   const theme = useTheme();
   return (
     <View
       style={{
         height: "1px",
         backgroundColor: theme.custom.colors.border,
+        ...style,
       }}
     ></View>
   );
-}
+};
