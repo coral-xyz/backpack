@@ -21,6 +21,12 @@ const options = {
       distDir: "dist",
     },
   },
+  additionalReporters: [
+    {
+      packageName: "@parcel/reporter-cli",
+      resolveFrom: __filename,
+    },
+  ],
 };
 
 program.command("build").action(async () => {
@@ -89,7 +95,7 @@ program.command("dev").action(async () => {
 
   app.get("/", (req, res) => {
     const innerHTML = `
-        <script type="module">${js}</script>`;
+        <script>${js}</script>`;
     res.send(`
         <!DOCTYPE html>
         <html lang="en">
