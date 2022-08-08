@@ -113,11 +113,11 @@ jobs:
       - name: "[e2e tests] run playwright tests on extension"
         run: xvfb-run yarn e2e
 
-      # - uses: actions/upload-artifact@v2
-      #   with:
-      #     name: playwright-report
-      #     path: playwright-report/
-      #     retention-days: 30
+      - uses: actions/upload-artifact@v2
+        with:
+          name: playwright-report
+          path: packages/app-extension/playwright-report/
+          retention-days: 1
 
       ##########################################################################
       # Build extension.
@@ -245,7 +245,7 @@ jobs:
       # NPM Publish.
       ##########################################################################
 
-      - name:  "update npm package version"
+      - name: "update npm package version"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: ./scripts/npm_release.sh 0.1.0-latest.${{ github.run_number }}
       - name: "publish to npm: common-public"
