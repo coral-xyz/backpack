@@ -307,9 +307,13 @@ const SwapConfirmationCard: React.FC<{ onClose: () => void }> = ({
 
 function InputTextField() {
   const classes = useStyles();
-  const { setFromAmount, fromMintInfo, availableForSwap, exceedsBalance } =
-    useSwapContext();
-  const [tokenInputValue, setTokenInputValue] = useState<string | null>("");
+  const {
+    fromAmount,
+    setFromAmount,
+    fromMintInfo,
+    availableForSwap,
+    exceedsBalance,
+  } = useSwapContext();
 
   return (
     <>
@@ -318,14 +322,7 @@ function InputTextField() {
         rightLabelComponent={
           <MaxLabel
             amount={availableForSwap}
-            onSetAmount={(amount: BigNumber) => {
-              setTokenInputValue(
-                amount
-                  ? ethers.utils.formatUnits(amount, fromMintInfo.decimals)
-                  : null
-              );
-              setFromAmount(amount);
-            }}
+            onSetAmount={setFromAmount}
             decimals={fromMintInfo.decimals}
           />
         }
@@ -335,14 +332,8 @@ function InputTextField() {
         placeholder="0"
         endAdornment={<InputTokenSelectorButton />}
         rootClass={classes.fromFieldRoot}
-        value={tokenInputValue}
-        setValue={(
-          displayAmount: string | null,
-          nativeAmount: BigNumber | null
-        ) => {
-          setTokenInputValue(displayAmount);
-          setFromAmount(nativeAmount);
-        }}
+        value={fromAmount}
+        setValue={setFromAmount}
         decimals={fromMintInfo.decimals}
         isError={exceedsBalance}
       />

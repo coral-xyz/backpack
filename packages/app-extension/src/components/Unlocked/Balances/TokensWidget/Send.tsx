@@ -206,14 +206,7 @@ export function Send({
             rightLabelComponent={
               <MaxLabel
                 amount={maxAmount}
-                onSetAmount={(amount: BigNumber | null) => {
-                  setTokenInputValue(
-                    amount
-                      ? ethers.utils.formatUnits(amount, token.decimals)
-                      : null
-                  );
-                  setAmount(amount);
-                }}
+                onSetAmount={setAmount}
                 decimals={token.decimals}
               />
             }
@@ -225,14 +218,8 @@ export function Send({
               placeholder="0"
               rootClass={classes.textRoot}
               decimals={token.decimals}
-              value={tokenInputValue}
-              setValue={(
-                displayAmount: string | null,
-                nativeAmount: BigNumber | null
-              ) => {
-                setTokenInputValue(displayAmount);
-                setAmount(nativeAmount);
-              }}
+              value={amount}
+              setValue={setAmount}
               isError={amountError}
               inputProps={{
                 name: "amount",
