@@ -320,7 +320,13 @@ function Iframe({ props, style }: any) {
       height={props.height}
       width={props.width}
       style={{
+        position: "absolute",
         border: "none",
+        width: "100%",
+        height: "100%",
+        maxWidth: "100%",
+        maxHeight: "100%",
+        overflowY: "hidden",
         ...style,
       }}
     ></iframe>
