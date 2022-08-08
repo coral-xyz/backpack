@@ -8,6 +8,10 @@ on:
     branches:
       - master
 
+env:
+  solana_version: 1.10.32
+  build_version_number: ${{ github.run_number }}
+  full_semver_version: 0.0.5-latest.${{ github.run_number }}
 jobs:
   add-labels-based-on-whats-changed:
     name: Add PR labels
@@ -87,29 +91,6 @@ jobs:
 
       - run: yarn test
 
-      ##########################################################################
-      # Build extension.
-      ##########################################################################
-
-      #
-      # Rebuild the extension with an explicit config.
-      #
-      - name: "build for release"
-        env:
-          BACKPACK_CONFIG_VERSION: "latest-${{ github.run_number }}"
-          BACKPACK_CONFIG_LOG_LEVEL: "info"
-          BACKPACK_FEATURE_LIGHT_MODE: "true"
-          BACKPACK_FEATURE_POP_MODE: "true"
-          # CI!=true so that build warnings aren't treated like errors (for now)
-          CI: ""
-        run: yarn build
-
-      ##########################################################################
-      # Yarn test.
-      ##########################################################################
-
-      - run: yarn test
-
       - name: "[solana] cache"
         uses: actions/cache@v3
         id: cache-solana
@@ -136,6 +117,35 @@ jobs:
       #     name: playwright-report
       #     path: playwright-report/
       #     retention-days: 30
+
+      ##########################################################################
+      # Build extension.
+      ##########################################################################
+
+      #
+      # Rebuild the extension with an explicit config.
+      #
+      - name: "build for release"
+        env:
+          BACKPACK_CONFIG_VERSION: "latest-${{ github.run_number }}"
+          BACKPACK_CONFIG_LOG_LEVEL: "info"
+          BACKPACK_FEATURE_LIGHT_MODE: "true"
+          BACKPACK_FEATURE_POP_MODE: "true"
+          # CI!=true so that build warnings aren't treated like errors (for now)
+          CI: ""
+        run: yarn build
+
+      #
+      # Rebuild the extension with an explicitly tagged version.
+      #
+      - name: "tag build version"
+        run: pushd ./packages/app-extension && ./scripts/version.sh latest-${{ github.run_number }} && popd
+      - name: "build extension for release"
+        # CI!=true so that build warnings aren't treated like errors (for now)
+        env:
+          CI: ""
+        working-directory: packages/app-extension
+        run: VERSION_NUMBER="${{ env.full_semver_version }}" yarn build:release
 
       ##########################################################################
       # GitHub Pages.
