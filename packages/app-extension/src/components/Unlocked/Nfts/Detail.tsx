@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BigNumber } from "ethers";
 import { Typography } from "@mui/material";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { useNftMetadata, useAnchorContext } from "@coral-xyz/recoil";
@@ -13,8 +14,10 @@ import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
-import { SendConfirmationCard } from "../Balances/TokensWidget/Send";
-import { useIsValidSolanaSendAddress } from "../Balances/TokensWidget/Send";
+import {
+  SendConfirmationCard,
+  useIsValidSolanaSendAddress,
+} from "../Balances/TokensWidget/Send";
 
 const useStyles = styles((theme) => ({
   textRoot: {
@@ -219,7 +222,7 @@ function SendScreen({ nft }: { nft: any }) {
             decimals: 0, // Are there any NFTs that don't use decimals 0?
           }}
           address={address}
-          amount={1.0}
+          amount={BigNumber.from(1)}
           close={() => close()}
         />
       </WithMiniDrawer>
