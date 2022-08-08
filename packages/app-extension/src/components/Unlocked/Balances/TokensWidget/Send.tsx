@@ -89,8 +89,7 @@ const useStyles = styles((theme) => ({
   },
   confirmTableListItem: {
     "&:hover": {
-      // Disable hover color.
-      background: "transparent",
+      opacity: 1,
     },
   },
 }));
