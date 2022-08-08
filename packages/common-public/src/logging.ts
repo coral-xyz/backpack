@@ -8,9 +8,9 @@ export function getLogger(mod: string) {
     const prefix = isServiceWorker() ? "service-worker:" : "";
     return {
       debug: (str: string, ...args: any) =>
-        debug(`${prefix}anchor: ${_mod}: ${str}`, ...args),
+        debug(`${prefix}backpack: ${_mod}: ${str}`, ...args),
       error: (str: string, ...args: any) =>
-        error(`${prefix}anchor: ${_mod}: ${str}`, ...args),
+        error(`${prefix}backpack: ${_mod}: ${str}`, ...args),
       _log,
     };
   })();

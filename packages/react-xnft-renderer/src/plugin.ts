@@ -44,7 +44,7 @@ import {
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
 } from "@coral-xyz/common";
 
-const logger = getLogger("plugin");
+const logger = getLogger("react-xnft-renderer/plugin");
 
 //
 // A plugin is a react bundle served from a given URL, using the anchor ui
