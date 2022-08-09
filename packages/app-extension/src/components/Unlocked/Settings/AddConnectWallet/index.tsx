@@ -3,11 +3,18 @@ import { Box, Grid, Typography } from "@mui/material";
 import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
 import {
   openConnectHardware,
+  TAB_BALANCES,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+  UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useActiveWallet, useBackgroundClient } from "@coral-xyz/recoil";
+import {
+  useTab,
+  useActiveWallet,
+  useBackgroundClient,
+} from "@coral-xyz/recoil";
 import { ActionCard } from "../../../common/Layout/ActionCard";
 import { HardwareWalletIcon, CheckIcon } from "../../../common/Icon";
 import { Header, SubtextParagraph } from "../../../common";
@@ -113,15 +120,20 @@ export function AddConnectWalletMenu() {
           },
         }}
       >
-        <ConfirmCreateWallet />
+        <ConfirmCreateWallet setOpenDrawer={setOpenDrawer} />
       </WithMiniDrawer>
     </>
   );
 }
 
-export const ConfirmCreateWallet = () => {
+export const ConfirmCreateWallet: React.FC<{
+  setOpenDrawer: (b: boolean) => void;
+}> = ({ setOpenDrawer }) => {
   const theme = useCustomTheme();
   const { publicKey, name } = useActiveWallet();
+  const background = useBackgroundClient();
+  const tab = useTab();
+  const { close } = useDrawerContext();
   return (
     <div
       style={{
@@ -160,6 +172,24 @@ export const ConfirmCreateWallet = () => {
           publicKey={publicKey}
           isFirst={true}
           isLast={true}
+          onClick={() => {
+            console.log("ON CLICK HERE WTF", tab, TAB_BALANCES);
+            if (tab === TAB_BALANCES) {
+              background.request({
+                method: UI_RPC_METHOD_NAVIGATION_TO_ROOT,
+                params: [],
+              });
+            } else {
+              background.request({
+                method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+                params: [TAB_BALANCES],
+              });
+            }
+            // Close mini drawer.
+            setOpenDrawer(false);
+            // Close main drawer.
+            close();
+          }}
         />
       </div>
     </div>

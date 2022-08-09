@@ -618,7 +618,7 @@ export function ImportSecretKey() {
           },
         }}
       >
-        <ConfirmCreateWallet />
+        <ConfirmCreateWallet setOpenDrawer={setOpenDrawer} />
       </WithMiniDrawer>
     </>
   );

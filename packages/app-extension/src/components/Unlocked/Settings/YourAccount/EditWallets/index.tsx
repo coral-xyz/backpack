@@ -67,7 +67,8 @@ export const WalletListItem: React.FC<{
   publicKey: any;
   isFirst: boolean;
   isLast: boolean;
-}> = ({ name, publicKey, isFirst, isLast }) => {
+  onClick?: () => void;
+}> = ({ name, publicKey, isFirst, isLast, onClick }) => {
   const theme = useCustomTheme();
   const nav = useNavStack();
   return (
@@ -84,11 +85,14 @@ export const WalletListItem: React.FC<{
           }}
         />
       }
-      onClick={() =>
-        nav.push("edit-wallets-wallet-detail", {
-          publicKey: publicKey.toString(),
-          name,
-        })
+      onClick={
+        onClick
+          ? onClick
+          : () =>
+              nav.push("edit-wallets-wallet-detail", {
+                publicKey: publicKey.toString(),
+                name,
+              })
       }
       style={{ display: "flex", width: "100%" }}
     >
