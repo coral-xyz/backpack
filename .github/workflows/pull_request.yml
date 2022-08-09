@@ -185,7 +185,8 @@ jobs:
       ##########################################################################
 
       - name: "zip build artifacts"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: ${{ always() }}
         working-directory: packages/app-extension
         run: zip -r build-${{ github.run_number }}.zip build/
 
