@@ -65,6 +65,7 @@ import {
   getLogger,
   customSplTokenAccounts,
   BACKEND_EVENT,
+  NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
@@ -109,6 +110,9 @@ export class Backend {
       logger.debug(`received notification: ${notif.name}`, notif);
 
       switch (notif.name) {
+        case NOTIFICATION_KEYRING_STORE_CREATED:
+          handleKeyringStoreCreated(notif);
+          break;
         case NOTIFICATION_KEYRING_STORE_UNLOCKED:
           handleKeyringStoreUnlocked(notif);
           break;
@@ -126,6 +130,9 @@ export class Backend {
       }
     });
 
+    const handleKeyringStoreCreated = (notif: Notification) => {
+      handleKeyringStoreUnlocked(notif);
+    };
     const handleKeyringStoreUnlocked = (notif: Notification) => {
       const { url, activeWallet, commitment } = notif.data;
       this.connection = new Connection(url, commitment);
@@ -269,7 +276,11 @@ export class Backend {
     blockhash: Blockhash;
     lastValidBlockHeight: number;
   }> {
-    return await this.connection!.getLatestBlockhash(commitment);
+    if (!this.connection) {
+      throw new Error("inner connection not found");
+    }
+    const resp = await this.connection!.getLatestBlockhash(commitment);
+    return resp;
   }
 
   async getTokenAccountsByOwner(

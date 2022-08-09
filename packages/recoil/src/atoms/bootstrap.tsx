@@ -19,7 +19,7 @@ export const bootstrap = selector<{
   coingeckoData: Map<string, any>;
   recentTransactions: Array<ParsedConfirmedTransaction>;
   walletPublicKey: PublicKey;
-  jupiterRouteMap: any;
+  jupiterRouteMap: Promise<any>;
 }>({
   key: "bootstrap",
   get: async ({ get }: any) => {
@@ -39,22 +39,23 @@ export const bootstrap = selector<{
       const splTokenAccounts = new Map<string, TokenAccountWithKey>(
         tokenAccountsMap
       );
-
-      const [coingeckoData, recentTransactions, jupiterRouteMap] =
-        await Promise.all([
-          //
-          // Fetch the price data.
-          //
-          fetchPriceData(splTokenAccounts, tokenRegistry),
-          //
-          // Get the transaction data for the wallet's recent transactions.
-          //
-          fetchRecentTransactions(provider.connection, walletPublicKey),
-          //
-          // Preload Jupiter route maps for swapper.
-          //
-          fetchJupiterRouteMap(),
-        ]);
+      //
+      // Preload Jupiter route maps for swapper, not awaited to avoid blocking
+      // the wallet if the Jupiter API does not respond.
+      //
+      const jupiterRouteMap = fetchJupiterRouteMap().catch((e) =>
+        console.log("failed to load Jupiter route map", e)
+      );
+      const [coingeckoData, recentTransactions] = await Promise.all([
+        //
+        // Fetch the price data.
+        //
+        fetchPriceData(splTokenAccounts, tokenRegistry),
+        //
+        // Get the transaction data for the wallet's recent transactions.
+        //
+        fetchRecentTransactions(provider.connection, walletPublicKey),
+      ]);
 
       //
       // Done.
@@ -78,7 +79,7 @@ export const bootstrap = selector<{
         coingeckoData: new Map(),
         recentTransactions: [],
         walletPublicKey,
-        jupiterRouteMap: {},
+        jupiterRouteMap: Promise.resolve({}),
       };
     }
   },

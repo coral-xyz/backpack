@@ -155,7 +155,7 @@ export function Send({
   const maxAmount = amountWithFee.gt(0) ? amountWithFee : BigNumber.from(0);
   const exceedsBalance = amount && amount.gt(maxAmount);
   const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
-  const amountError = amount && exceedsBalance;
+  const isAmountError = amount && exceedsBalance;
 
   useEffect(() => {
     nav.setTitle(`Send ${token.ticker}`);
@@ -168,6 +168,22 @@ export function Send({
     }
     setOpenDrawer(true);
   };
+
+  let sendButton;
+  if (isErrorAddress) {
+    sendButton = <DangerButton disabled={true} label="Invalid Address" />;
+  } else if (isAmountError) {
+    sendButton = <DangerButton disabled={true} label="Insufficient Balance" />;
+  } else {
+    sendButton = (
+      <PrimaryButton
+        disabled={isSendDisabled}
+        label="Send"
+        type="submit"
+        data-testid="Send"
+      />
+    );
+  }
 
   return (
     <form
@@ -219,7 +235,7 @@ export function Send({
               decimals={token.decimals}
               value={amount}
               setValue={setAmount}
-              isError={amountError}
+              isError={isAmountError}
               inputProps={{
                 name: "amount",
               }}
@@ -228,16 +244,7 @@ export function Send({
         </div>
       </div>
       <div className={classes.buttonContainer}>
-        {isErrorAddress ? (
-          <DangerButton disabled={true} label="Invalid Address" />
-        ) : (
-          <PrimaryButton
-            disabled={isSendDisabled}
-            label="Send"
-            type="submit"
-            data-testid="Send"
-          />
-        )}
+        {sendButton}
         <ApproveTransactionDrawer
           openDrawer={openDrawer}
           setOpenDrawer={setOpenDrawer}

@@ -218,6 +218,7 @@ export const QUERY_LOCKED = "locked=true";
 export const QUERY_APPROVAL = "approval=true";
 export const QUERY_LOCKED_APPROVAL = "locked-approval=true";
 export const QUERY_APPROVE_TRANSACTION = "approve-tx=true";
+export const QUERY_APPROVE_ALL_TRANSACTIONS = "approve-all-txs=true";
 export const QUERY_APPROVE_MESSAGE = "approve-message=true";
 export const QUERY_CONNECT_HARDWARE = "connect-hardware=true";
 export const QUERY_ONBOARDING = "onboarding=true";

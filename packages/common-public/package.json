@@ -12,17 +12,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@project-serum/anchor": "^0.23.0",
-    "@project-serum/token": "^0.1.0",
-    "@solana/buffer-layout": "^4.0.0",
-    "@solana/spl-token": "^0.1.0",
-    "@solana/spl-token-registry": "^0.2.3225",
-    "@solana/wallet-adapter-base": "^0.9.9",
-    "@solana/web3.js": "^1.37.1",
-    "bn.js": "^5.2.1",
-    "bs58": "^5.0.0",
-    "eventemitter3": "^4.0.7",
-    "expo-secure-store": "^11.2.0",
     "uuid": "^8.3.2",
     "zustand": "^4.0.0-rc.2"
   },

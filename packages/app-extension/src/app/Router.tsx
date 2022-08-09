@@ -10,6 +10,7 @@ import {
   QUERY_APPROVAL,
   QUERY_LOCKED_APPROVAL,
   QUERY_APPROVE_TRANSACTION,
+  QUERY_APPROVE_ALL_TRANSACTIONS,
   QUERY_APPROVE_MESSAGE,
 } from "@coral-xyz/common";
 import {
@@ -24,6 +25,7 @@ import { Unlocked } from "../components/Unlocked";
 import { ApproveOrigin } from "../components/Unlocked/Approvals/ApproveOrigin";
 import { ApproveTransaction } from "../components/Unlocked/Approvals/ApproveTransaction";
 import { ApproveMessage } from "../components/Unlocked/Approvals/ApproveMessage";
+// import { ApproveAllTransactions } from "../components/Unlocked/Approvals/ApproveAllTransactions"
 import "./App.css";
 
 const logger = getLogger("router");
@@ -100,6 +102,8 @@ function PopupRouter() {
       return <QueryLockedApproval />;
     case QUERY_APPROVE_TRANSACTION:
       return <QueryApproveTransaction />;
+    case QUERY_APPROVE_ALL_TRANSACTIONS:
+      return <QueryApproveAllTransactions />;
     case QUERY_APPROVE_MESSAGE:
       return <QueryApproveMessage />;
     default:
@@ -186,6 +190,30 @@ function QueryApproveTransaction() {
       origin={origin}
       title={title}
       tx={tx}
+      onCompletion={async (didApprove: boolean) => {
+        await background.response({
+          id: requestId,
+          result: didApprove,
+        });
+        window.close();
+      }}
+    />
+  );
+}
+
+function QueryApproveAllTransactions() {
+  logger.debug("query approve all transactions");
+
+  const background = useBackgroundResponder();
+  const url = new URL(window.location.href);
+  const origin = url.searchParams.get("origin")!;
+  const requestId = parseInt(url.searchParams.get("requestId")!);
+  const txs = JSON.parse(url.searchParams.get("txs")!);
+
+  return (
+    <ApproveAllTransactions
+      txs={txs}
+      origin={origin}
       onCompletion={async (didApprove: boolean) => {
         await background.response({
           id: requestId,

@@ -1,5 +1,4 @@
 import { useWalletPublicKeys } from "@coral-xyz/recoil";
-import { Blockchain } from "@coral-xyz/common";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { Add, MoreHoriz } from "@mui/icons-material";
 import { Typography } from "@mui/material";
@@ -53,7 +52,6 @@ function BlockchainWalletList({
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const nav = useNavStack();
 
   const flattenedWallets = [
     ...wallets.hdPublicKeys,
@@ -66,50 +64,12 @@ function BlockchainWalletList({
     <div>
       <List>
         {flattenedWallets.map(({ name, publicKey }, idx) => (
-          <ListItem
-            button
-            key={publicKey.toString()}
+          <WalletListItem
+            name={name}
+            publicKey={publicKey}
             isFirst={idx === 0}
             isLast={idx === flattenedWallets.length - 1}
-            detail={
-              <MoreHoriz
-                style={{
-                  cursor: "pointer",
-                  color: theme.custom.colors.secondary,
-                }}
-              />
-            }
-            onClick={() =>
-              nav.push("edit-wallets-wallet-detail", {
-                publicKey: publicKey.toString(),
-                name,
-              })
-            }
-            style={{ display: "flex", width: "100%" }}
-          >
-            <img
-              src={"coral.png"}
-              style={{
-                width: "40px",
-                height: "40px",
-                borderRadius: "32px",
-                marginLeft: "auto",
-                marginRight: "auto",
-                display: "block",
-              }}
-            />
-            <Typography style={{ flexGrow: 1, marginLeft: "8px" }}>
-              {name}
-            </Typography>
-            <Typography
-              style={{
-                color: theme.custom.colors.secondary,
-                paddingRight: "11px",
-              }}
-            >
-              {walletAddressDisplay(publicKey)}
-            </Typography>
-          </ListItem>
+          />
         ))}
       </List>
       <List
@@ -159,3 +119,57 @@ function BlockchainWalletList({
     </div>
   );
 }
+
+export const WalletListItem: React.FC<{
+  name: string;
+  publicKey: any;
+  isFirst: boolean;
+  isLast: boolean;
+}> = ({ name, publicKey, isFirst, isLast }) => {
+  const theme = useCustomTheme();
+  const nav = useNavStack();
+  return (
+    <ListItem
+      button
+      key={publicKey.toString()}
+      isFirst={isFirst}
+      isLast={isLast}
+      detail={
+        <MoreHoriz
+          style={{
+            cursor: "pointer",
+            color: theme.custom.colors.secondary,
+          }}
+        />
+      }
+      onClick={() =>
+        nav.push("edit-wallets-wallet-detail", {
+          publicKey: publicKey.toString(),
+          name,
+        })
+      }
+      style={{ display: "flex", width: "100%" }}
+    >
+      <img
+        src={"coral.png"}
+        style={{
+          width: "40px",
+          height: "40px",
+          borderRadius: "32px",
+          marginLeft: "auto",
+          marginRight: "auto",
+          display: "block",
+        }}
+      />
+      <Typography style={{ flexGrow: 1, marginLeft: "8px" }}>{name}</Typography>
+      <Typography
+        style={{
+          color: theme.custom.colors.secondary,
+          paddingRight: "11px",
+        }}
+      >
+        {walletAddressDisplay(publicKey)}
+      </Typography>
+    </ListItem>
+  );
+};
