@@ -119,7 +119,7 @@ export function AddConnectWalletMenu() {
   );
 }
 
-const ConfirmCreateWallet = () => {
+export const ConfirmCreateWallet = () => {
   const theme = useCustomTheme();
   const { publicKey, name } = useActiveWallet();
   return (
