@@ -1,4 +1,3 @@
-import { IconButton } from "@mui/material";
 import _CheckIcon from "@mui/icons-material/Check";
 import _CloseIcon from "@mui/icons-material/Close";
 import { styles } from "@coral-xyz/themes";
@@ -10,13 +9,9 @@ import {
 } from "../../../components/common";
 
 const useStyles = styles((theme) => ({
-  title: {
-    fontWeight: 500,
-    fontSize: "24px",
-    lineHeight: "32px",
-    color: theme.custom.colors.fontColor,
-    marginBottom: "24px",
-    textAlign: "center",
+  contentContainer: {
+    marginLeft: "32px",
+    marginRight: "32px",
   },
   connectablesContainer: {
     display: "flex",
@@ -48,6 +43,7 @@ const useStyles = styles((theme) => ({
 export function WithApproval({
   origin,
   originTitle,
+  title,
   onConfirm,
   onConfirmLabel = "Connect",
   onDeny,
@@ -55,6 +51,7 @@ export function WithApproval({
 }: {
   origin: string;
   originTitle: string;
+  title?: React.ReactNode;
   onConfirm: () => void;
   onConfirmLabel?: string;
   onDeny: () => void;
@@ -72,7 +69,8 @@ export function WithApproval({
       }}
     >
       <div className={classes.contentContainer}>
-        <SiteActiveWalletConnect origin={origin} title={originTitle} />
+        {title}
+        <OriginWalletConnectIcons origin={origin} originTitle={originTitle} />
         {children}
       </div>
       <div
@@ -95,56 +93,32 @@ export function WithApproval({
   );
 }
 
-export function SiteActiveWalletConnect({
+export function OriginWalletConnectIcons({
   origin,
-  title,
+  originTitle,
 }: {
   origin: string;
-  title: string;
+  originTitle: string;
 }) {
   const classes = useStyles();
   const activeWallet = useActiveWallet();
 
-  // TODO this is a naive approach to generating the site title and is prone to abuse,
-  // we should replace it with a whitelist or a public repository similar to
-  // spl-token-registry
-
-  // Pull the title from the request URI and truncate it if above length
-  const titleTruncateLength = 15;
-  let siteTitle;
-  if (title && title.length > titleTruncateLength) {
-    siteTitle = title.substr(0, titleTruncateLength) + "...";
-  } else if (title) {
-    siteTitle = title;
-  } else {
-    siteTitle = "Website";
-  }
-
   // This uses a Google API for favicon retrieval, do we want to parse the page ourselves?
   const siteIcon = `https://www.google.com/s2/favicons?domain=${origin}&sz=180`;
 
-  const walletTitle = activeWallet.name
-    ? activeWallet.name
-    : walletAddressDisplay(activeWallet.publicKey);
-
   return (
-    <>
-      <div className={classes.title}>
-        {siteTitle} would like to connect to {walletTitle}
-      </div>
-      <div className={classes.connectablesContainer}>
-        <Connectable
-          title={siteTitle}
-          description={new URL(origin).host}
-          icon={siteIcon}
-        />
-        <Connectable
-          title={activeWallet.name}
-          description={walletAddressDisplay(activeWallet.publicKey)}
-          icon="/coral.png"
-        />
-      </div>
-    </>
+    <div className={classes.connectablesContainer}>
+      <Connectable
+        title={displayOriginTitle(originTitle)}
+        description={new URL(origin).host}
+        icon={siteIcon}
+      />
+      <Connectable
+        title={activeWallet.name}
+        description={walletAddressDisplay(activeWallet.publicKey)}
+        icon="/coral.png"
+      />
+    </div>
   );
 }
 
@@ -167,4 +141,25 @@ function Connectable({
       <div className={classes.connectableDescription}>{description}</div>
     </div>
   );
+}
+
+export function displayOriginTitle(title: string) {
+  // TODO this is a naive approach to generating the site title and is prone to abuse,
+  // we should replace it with a whitelist or a public repository similar to
+  // spl-token-registry
+
+  // Truncate title if above length
+  const titleTruncateLength = 15;
+
+  let truncatedTitle;
+  if (title && title.length > titleTruncateLength) {
+    truncatedTitle = title.substring(0, titleTruncateLength).trim() + "...";
+  } else if (title) {
+    truncatedTitle = title;
+  } else {
+    // Default title if no title is provided
+    truncatedTitle = "Website";
+  }
+
+  return truncatedTitle;
 }

@@ -1,10 +1,20 @@
 import { Link, List, ListItem, ListItemIcon, Typography } from "@mui/material";
 import _CheckIcon from "@mui/icons-material/Check";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { useApproveOrigin } from "@coral-xyz/recoil";
-import { WithApproval } from ".";
+import { useApproveOrigin, useActiveWallet } from "@coral-xyz/recoil";
+import { WithApproval, displayOriginTitle } from ".";
+import { walletAddressDisplay } from "../../../components/common";
 
 const useStyles = styles((theme) => ({
+  title: {
+    fontWeight: 500,
+    fontSize: "24px",
+    lineHeight: "32px",
+    color: theme.custom.colors.fontColor,
+    marginBottom: "24px",
+    marginTop: "32px",
+    textAlign: "center",
+  },
   listDescription: {
     color: theme.custom.colors.secondary,
     fontSize: "14px",
@@ -44,6 +54,7 @@ const useStyles = styles((theme) => ({
 export function ApproveOrigin({ origin, title, onCompletion }: any) {
   const classes = useStyles();
   const approveOrigin = useApproveOrigin();
+  const activeWallet = useActiveWallet();
 
   const onConfirm = async () => {
     await approveOrigin(origin);
@@ -54,10 +65,19 @@ export function ApproveOrigin({ origin, title, onCompletion }: any) {
     await onCompletion(false);
   };
 
+  const walletTitle = activeWallet.name
+    ? activeWallet.name
+    : walletAddressDisplay(activeWallet.publicKey);
+
   return (
     <WithApproval
       origin={origin}
       originTitle={title}
+      title={
+        <div className={classes.title}>
+          {displayOriginTitle(title)} would like to connect to {walletTitle}
+        </div>
+      }
       onConfirm={onConfirm}
       onDeny={onDeny}
     >

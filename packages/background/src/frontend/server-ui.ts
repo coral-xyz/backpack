@@ -50,6 +50,7 @@ import {
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
+  UI_RPC_METHOD_SIMULATE,
   UI_RPC_METHOD_SIGN_TRANSACTION,
   UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS,
   UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
@@ -167,6 +168,8 @@ async function handle<T = any>(
     //
     // Wallet signing.
     //
+    case UI_RPC_METHOD_SIMULATE:
+      return await handleSimulate(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SIGN_TRANSACTION:
       return await handleSignTransaction(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS:
@@ -572,6 +575,15 @@ async function handleSolanaExplorerUpdate(
   url: string
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.solanaExplorerUpdate(url);
+  return [resp];
+}
+
+async function handleSimulate(
+  ctx: Context<Backend>,
+  messageBs58: string,
+  walletAddress: string
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.simulate(messageBs58, walletAddress);
   return [resp];
 }
 

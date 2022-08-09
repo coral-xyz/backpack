@@ -177,13 +177,15 @@ function QueryApproveTransaction() {
   const background = useBackgroundResponder();
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
-  const requestId = parseInt(url.searchParams.get("requestId")!);
+  const title = url.searchParams.get("title");
   const tx = url.searchParams.get("tx");
+  const requestId = parseInt(url.searchParams.get("requestId")!);
 
   return (
     <ApproveTransaction
-      tx={tx}
       origin={origin}
+      title={title}
+      tx={tx}
       onCompletion={async (didApprove: boolean) => {
         await background.response({
           id: requestId,
@@ -201,13 +203,15 @@ function QueryApproveMessage() {
   const bg = useBackgroundResponder();
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
-  const requestId = parseInt(url.searchParams.get("requestId")!);
+  const title = url.searchParams.get("title");
   const message = url.searchParams.get("message");
+  const requestId = parseInt(url.searchParams.get("requestId")!);
 
   return (
     <ApproveMessage
-      message={message}
       origin={origin}
+      title={title}
+      message={message}
       onCompletion={async (didApprove: boolean) => {
         await bg.response({
           id: requestId,

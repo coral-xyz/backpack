@@ -1,9 +1,21 @@
-import { Link, List, ListItem, ListItemIcon, Typography } from "@mui/material";
+import { useState, useEffect } from "react";
+import { Link, List, ListItem, Typography } from "@mui/material";
 import _CheckIcon from "@mui/icons-material/Check";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { UI_RPC_METHOD_SIMULATE } from "@coral-xyz/common";
+import { useActiveWallet, useBackgroundClient } from "@coral-xyz/recoil";
+import { styles } from "@coral-xyz/themes";
 import { WithApproval } from ".";
 
 const useStyles = styles((theme) => ({
+  title: {
+    fontWeight: 500,
+    fontSize: "18px",
+    lineHeight: "24px",
+    color: theme.custom.colors.fontColor,
+    marginBottom: "48px",
+    marginTop: "16px",
+    textAlign: "center",
+  },
   listDescription: {
     color: theme.custom.colors.secondary,
     fontSize: "14px",
@@ -40,16 +52,27 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function ApproveTransaction({
-  origin,
-  title,
-  transaction,
-  onCompletion,
-}: any) {
+export function ApproveTransaction({ origin, title, tx, onCompletion }: any) {
   const classes = useStyles();
+  const background = useBackgroundClient();
+  const [loading, setLoading] = useState(true);
+  const wallet = useActiveWallet();
+
+  console.log(wallet);
+
+  useEffect(() => {
+    (async () => {
+      console.log(tx);
+      const result = await background.request({
+        method: UI_RPC_METHOD_SIMULATE,
+        params: [tx, wallet.publicKey.toString()],
+      });
+      console.log(result);
+    })();
+  }, []);
 
   const onConfirm = async () => {
-    console.log("approved transaction", transaction);
+    console.log("approved transaction", tx);
     await onCompletion(true);
   };
 
@@ -61,6 +84,7 @@ export function ApproveTransaction({
     <WithApproval
       origin={origin}
       originTitle={title}
+      title={<div className={classes.title}>Approve Transaction</div>}
       onConfirm={onConfirm}
       onDeny={onDeny}
     >
