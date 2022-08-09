@@ -316,6 +316,7 @@ function Circle({ props }: any) {
 function Iframe({ props, style }: any) {
   return (
     <iframe
+      sandbox="allow-same-origin allow-scripts"
       src={props.src}
       height={props.height}
       width={props.width}
