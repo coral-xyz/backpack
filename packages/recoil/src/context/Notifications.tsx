@@ -125,8 +125,7 @@ export function NotificationsProvider(props: any) {
     // Notification handlers.
     //
     const handleKeyringStoreCreated = (_notif: Notification) => {
-      // Keyring store is currently locked immediately after creation
-      setKeyringStoreState(KeyringStoreStateEnum.Locked);
+      setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
     };
     const handleConnectionUrlUpdated = (notif: Notification) => {
       setConnectionUrl(notif.data.url);

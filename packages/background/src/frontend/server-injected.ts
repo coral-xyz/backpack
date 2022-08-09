@@ -241,8 +241,8 @@ async function handleSignAllTxs(
   walletAddress: string
 ): Promise<RpcResponse<Array<string>>> {
   throw new Error("not implemented");
-  // const resp = await ctx.backend.signAllTransactions(txs, walletAddress);
-  // return [resp];
+  //  const resp = await ctx.backend.signAllTransactions(txs, walletAddress);
+  //  return [resp];
 }
 
 async function handleSignMessage(

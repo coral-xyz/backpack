@@ -75,6 +75,17 @@ export class Backend {
     );
   }
 
+  async signAllTransactions(
+    txs: Array<string>,
+    walletAddress
+  ): Promise<Array<string>> {
+    const signed: Array<string> = [];
+    for (let k = 0; k < txs.length; k += 1) {
+      signed.push(await this.signTransaction(txs[k], walletAddress));
+    }
+    return signed;
+  }
+
   // Returns the signature.
   async signTransaction(
     txMessage: string,
@@ -82,16 +93,6 @@ export class Backend {
   ): Promise<string> {
     const blockchainKeyring = this.keyringStore.activeBlockchain();
     return await blockchainKeyring.signTransaction(txMessage, walletAddress);
-  }
-
-  async signAllTransactions(
-    txMessages: Array<string>,
-    walletAddress: string
-  ): Promise<Array<string>> {
-    const blockchainKeyring = this.keyringStore.activeBlockchain();
-    return await Promise.all(
-      txMessages.map((t) => blockchainKeyring.signTransaction(t, walletAddress))
-    );
   }
 
   async signMessage(msg: string, walletAddress: string): Promise<string> {
@@ -230,8 +231,15 @@ export class Backend {
       accountIndices
     );
 
+    // Notify all listeners.
+    const data = await store.getWalletData();
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_CREATED,
+      data: {
+        url: data.solana.cluster,
+        activeWallet: await this.activeWallet(),
+        commitment: data.solana.commitment,
+      },
     });
 
     return SUCCESS_RESPONSE;
