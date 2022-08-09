@@ -126,10 +126,8 @@ export function ApproveAllTransactions({
 }) {
   const classes = useStyles();
   useEffect(() => {
-    const msg = Message.from(bs58.decode(tx));
-    console.log("got msg", msg);
     // TODO: Fetch all IDLS for each program and decode ix name and description.
-  }, [tx]);
+  }, [txs]);
 
   const approve = async () => {
     onCompletion(true);
@@ -144,7 +142,7 @@ export function ApproveAllTransactions({
 
   return (
     <WithApproval
-      title={"Approve Transaction"}
+      title={"Approve All Transactions"}
       onApproval={approve}
       onReject={onReject}
       origin={origin}

@@ -22,7 +22,11 @@ import {
 } from "@coral-xyz/recoil";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
-import { ApproveTransaction, ApproveMessage } from "../components/Approval";
+import {
+  ApproveTransaction,
+  ApproveAllTransactions,
+  ApproveMessage,
+} from "../components/Approval";
 import { ApproveOrigin } from "../components/Unlocked/Approvals/ApproveOrigin";
 import "./App.css";
 
@@ -180,11 +184,11 @@ function QueryApproveTransaction() {
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
   const requestId = parseInt(url.searchParams.get("requestId")!);
-  const txs = JSON.parse(url.searchParams.get("txs"));
+  const tx = url.searchParams.get("tx");
 
   return (
-    <ApproveAllTransactions
-      txs={txs}
+    <ApproveTransaction
+      tx={tx}
       origin={origin}
       onCompletion={async (didApprove: boolean) => {
         await background.response({
@@ -202,13 +206,13 @@ function QueryApproveAllTransactions() {
 
   const background = useBackgroundResponder();
   const url = new URL(window.location.href);
-  const origin = url.searchParams.get("origin");
+  const origin = url.searchParams.get("origin")!;
   const requestId = parseInt(url.searchParams.get("requestId")!);
-  const tx = url.searchParams.get("tx");
+  const txs = JSON.parse(url.searchParams.get("txs")!);
 
   return (
-    <ApproveTransaction
-      tx={tx}
+    <ApproveAllTransactions
+      txs={txs}
       origin={origin}
       onCompletion={async (didApprove: boolean) => {
         await background.response({
