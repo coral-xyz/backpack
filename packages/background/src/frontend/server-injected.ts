@@ -89,7 +89,7 @@ async function handle<T = any>(
   const { method, params } = req;
   switch (method) {
     case RPC_METHOD_CONNECT:
-      return await handleConnect(ctx, params[0]);
+      return await handleConnect(ctx);
     case RPC_METHOD_DISCONNECT:
       return handleDisconnect(ctx);
     case RPC_METHOD_SIGN_AND_SEND_TX:
@@ -115,8 +115,7 @@ async function handle<T = any>(
 // requests because it's both approved and unlocked. There is currently no
 // extra session state or connections that are maintained.
 async function handleConnect(
-  ctx: Context<Backend>,
-  onlyIfTrustedMaybe: boolean
+  ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
   const origin = ctx.sender.origin;
   const keyringStoreState = await ctx.backend.keyringStoreState();

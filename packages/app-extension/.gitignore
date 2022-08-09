@@ -27,3 +27,6 @@ ignore.ts
 
 dist
 .rollup.cache
+
+# Pre build generation.
+src/version.ts

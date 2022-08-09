@@ -57,7 +57,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
           <BackpackHeader />
         </Box>
         <Box sx={{ marginBottom: "84px" }}>
-          <form onSubmit={_onUnlock}>
+          <form onSubmit={_onUnlock} noValidate>
             <Box sx={{ margin: "0 12px 12px 12px" }}>
               <TextField
                 autoFocus={true}

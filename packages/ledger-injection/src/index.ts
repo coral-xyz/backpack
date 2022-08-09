@@ -3,6 +3,7 @@ import Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
 import * as core from "@coral-xyz/ledger-core";
 import {
+  getLogger,
   DerivationPath,
   LEDGER_INJECTED_CHANNEL_REQUEST,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
@@ -11,11 +12,13 @@ import {
   LEDGER_METHOD_SIGN_MESSAGE,
 } from "@coral-xyz/common";
 
+const logger = getLogger("ledger-injection");
+
 // Script entry.
 function main() {
-  console.log("anchor: starting ledger injection");
+  logger.debug("starting ledger injection");
   LEDGER.start();
-  console.log("anchor: ledger injection ready");
+  logger.debug("ledger injection ready");
 }
 
 class LedgerInjection {
@@ -30,6 +33,8 @@ class LedgerInjection {
       if (event.data.type !== LEDGER_INJECTED_CHANNEL_REQUEST) {
         return;
       }
+
+      logger.debug("ledger channel request", event);
       const { id, method, params } = event.data.detail;
 
       let result: any;

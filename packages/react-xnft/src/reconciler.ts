@@ -16,46 +16,46 @@ import {
 } from "@coral-xyz/common-public";
 import { NAV_STACK } from "./Context";
 
-const logger = getLogger("anchor-ui-reconciler");
+const logger = getLogger("react-xfnt/reconciler");
 const events = new EventEmitter();
 
 export const ReactXnft = {
   events,
   render(reactNode: any) {
     window.onload = () => {
-      window.anchorUi.on("click", (event: Event) => {
+      window.xnft.on("click", (event: Event) => {
         logger.debug("on click event", event);
         const { viewId } = event.data;
         const handler = getClickHandler(viewId);
         handler();
       });
 
-      window.anchorUi.on("change", (event: Event) => {
+      window.xnft.on("change", (event: Event) => {
         logger.debug("on change event", event);
         const { viewId } = event.data;
         const handler = getOnChangeHandler(viewId);
         handler(event);
       });
 
-      window.anchorUi.on("connect", () => {
+      window.xnft.on("connect", () => {
         logger.debug("connect");
         NAV_STACK.push(reactNode);
         events.emit("connect");
       });
 
-      window.anchorUi.on("mount", () => {
+      window.xnft.on("mount", () => {
         logger.debug("mount");
         const node = NAV_STACK[NAV_STACK.length - 1];
         reconcilerRender(node);
       });
 
-      window.anchorUi.on("unmount", () => {
+      window.xnft.on("unmount", () => {
         logger.debug("unmount");
         CLICK_HANDLERS = new Map();
         ON_CHANGE_HANDLERS = new Map();
       });
 
-      window.anchorUi.on("pop", () => {
+      window.xnft.on("pop", () => {
         logger.debug("pop");
         NAV_STACK.pop();
       });
@@ -136,6 +136,10 @@ const RECONCILER = ReactReconciler({
         return createSvgInstance(kind, props, r, h, o);
       case NodeKind.Path:
         return createPathInstance(kind, props, r, h, o);
+      case NodeKind.Circle:
+        return createCircleInstance(kind, props, r, h, o);
+      case NodeKind.Iframe:
+        return createIframeInstance(kind, props, r, h, o);
       case NodeKind.NavAnimation:
         return createNavAnimationInstance(kind, props, r, h, o);
       case NodeKind.BalancesTable:
@@ -191,13 +195,22 @@ const RECONCILER = ReactReconciler({
     let payload: UpdateDiff | null = null;
     switch (type) {
       case NodeKind.View:
+        // @ts-ignore
         if (oldProps.style !== newProps.style) {
+          // @ts-ignore
           payload = { style: newProps.style };
+        }
+        // @ts-ignore
+        if (oldProps.onClick !== newProps.onClick) {
+          // @ts-ignore
+          payload = { onClick: newProps.onClick };
         }
         return payload;
       case NodeKind.Text:
+        // @ts-ignore
         if (oldProps.style !== newProps.style) {
           payload = {
+            // @ts-ignore
             style: newProps.style,
           };
         }
@@ -224,11 +237,22 @@ const RECONCILER = ReactReconciler({
         }
         return payload;
       case NodeKind.Button:
+        // @ts-ignore
         if (oldProps.style !== newProps.style) {
+          // @ts-ignore
           payload = { style: newProps.style };
         }
+        // @ts-ignore
+        if (oldProps.onClick !== newProps.onClick) {
+          // @ts-ignore
+          payload = { onClick: newProps.onClick };
+        }
         return payload;
+      case NodeKind.Iframe:
+        return null;
       case NodeKind.Svg:
+        return null;
+      case NodeKind.Circle:
         return null;
       case NodeKind.Image:
         return null;
@@ -310,6 +334,16 @@ const RECONCILER = ReactReconciler({
         if (updatePayload.style) {
           instance.style = updatePayload.style;
         }
+        if (
+          updatePayload.onClick !== undefined &&
+          updatePayload.onClick !== null
+        ) {
+          // @ts-ignore
+          instance.props.onClick = updatePayload.onClick;
+          // @ts-ignore
+          CLICK_HANDLERS.set(instance.id, instance.props.onClick);
+          delete updatePayload["onClick"];
+        }
         break;
       case NodeKind.Text:
         if (updatePayload.style !== undefined && updatePayload.style !== null) {
@@ -341,6 +375,16 @@ const RECONCILER = ReactReconciler({
         if (updatePayload.style !== undefined && updatePayload.style !== null) {
           instance.style = updatePayload.style;
         }
+        if (
+          updatePayload.onClick !== undefined &&
+          updatePayload.onClick !== null
+        ) {
+          // @ts-ignore
+          instance.props.onClick = updatePayload.onClick;
+          // @ts-ignore
+          CLICK_HANDLERS.set(instance.id, instance.props.onClick);
+          delete updatePayload["onClick"];
+        }
         break;
       case NodeKind.Table:
         break;
@@ -352,6 +396,8 @@ const RECONCILER = ReactReconciler({
         break;
       case NodeKind.Svg:
         throw new Error("commitUpdate Svg not yet implemented");
+      case NodeKind.Circle:
+        throw new Error("commitUpdate Circle not yet implemented");
       case NodeKind.ScrollBar:
         throw new Error("commitUpdate ScrollBar not yet implemented");
       case NodeKind.Loading:
@@ -727,6 +773,44 @@ function createPathInstance(
   };
 }
 
+function createCircleInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): CircleNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.Circle,
+    // @ts-ignore
+    props: {
+      ...props,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
+function createIframeInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): IframeNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.Iframe,
+    // @ts-ignore
+    props: {
+      ...props,
+    },
+    style: props.style || {},
+    children: [],
+  };
+}
+
 function createNavAnimationInstance(
   _kind: NodeKind,
   props: NodeProps,
@@ -918,6 +1002,8 @@ export type NodeSerialized =
   | ScrollBarNodeSerialized
   | SvgNodeSerialized
   | PathNodeSerialized
+  | CircleNodeSerialized
+  | IframeNodeSerialized
   | NavAnimationNodeSerialized
   | BalancesTableNodeSerialized
   | BalancesTableHeadNodeSerialized
@@ -935,6 +1021,11 @@ type NodeProps =
   | ButtonProps
   | LoadingProps
   | ScrollBarProps
+  | IframeProps
+  // TODO: add these and fix the types.
+  //	| SvgProps
+  //	| PathProps
+  //	| CircleProps
   | NavAnimationProps
   | BalancesTableProps
   | BalancesTableHeadProps
@@ -957,6 +1048,8 @@ export enum NodeKind {
   ScrollBar = "ScrollBar",
   Svg = "Svg",
   Path = "Path",
+  Circle = "Circle",
+  Iframe = "Iframe",
   NavAnimation = "NavAnimation",
 
   //
@@ -1087,6 +1180,25 @@ type PathProps = {
   fill: string;
   fillRule?: string;
   clipRule?: string;
+};
+
+type CircleNodeSerialized = DefNodeSerialized<NodeKind.Circle, CircleProps>;
+type CircleProps = {
+  cx: string;
+  cy: string;
+  r: string;
+  fill: string;
+};
+
+//
+// IFrame.
+//
+type IframeNodeSerialized = DefNodeSerialized<NodeKind.Iframe, IframeProps>;
+type IframeProps = {
+  style: Style;
+  children: undefined;
+  width: string;
+  height: string;
 };
 
 //

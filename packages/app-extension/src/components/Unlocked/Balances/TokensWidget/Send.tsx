@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { ethers, BigNumber } from "ethers";
 import { CircularProgress, Typography, Link } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Connection, SystemProgram, PublicKey } from "@solana/web3.js";
@@ -26,7 +27,9 @@ import {
   walletAddressDisplay,
   PrimaryButton,
   SecondaryButton,
+  DangerButton,
 } from "../../../common";
+import { TokenInputField } from "../../../common/TokenInput";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { MaxLabel } from "../../../common/MaxLabel";
@@ -86,8 +89,7 @@ const useStyles = styles((theme) => ({
   },
   confirmTableListItem: {
     "&:hover": {
-      // Disable hover color.
-      background: "transparent",
+      opacity: 1,
     },
   },
 }));
@@ -126,7 +128,6 @@ export function Send({
   tokenAddress: string;
 }) {
   const classes = useStyles() as any;
-  const theme = useCustomTheme();
   const { close } = useDrawerContext();
   const token = useBlockchainTokenAccount(blockchain, tokenAddress);
   const { provider } = useAnchorContext();
@@ -134,8 +135,7 @@ export function Send({
 
   const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState("");
-  const [amount, setAmount] = useState<number | null>(null);
-  const [amountError, setAmountError] = useState<boolean>(false);
+  const [amount, setAmount] = useState<BigNumber | undefined>(undefined);
 
   const {
     isValidAddress,
@@ -143,46 +143,29 @@ export function Send({
     isErrorAddress,
   } = useIsValidSolanaSendAddress(address, provider.connection);
 
-  const amountFloat = amount && parseFloat(amount.toString());
-  const isSendDisabled = !isValidAddress || amount === null || amount <= 0;
-  const lamportsOffset = (() => {
-    //
-    // When sending SOL, account for the tx fee and rent exempt minimum.
-    //
-    let lamportsOffset = 0;
-    if (token.mint === SOL_NATIVE_MINT) {
-      lamportsOffset =
-        (5000 + NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS) / 10 ** 9;
-    }
-    return lamportsOffset;
-  })();
+  // When sending SOL, account for the tx fee and rent exempt minimum.
+  const lamportsOffset =
+    token.mint === SOL_NATIVE_MINT
+      ? BigNumber.from(5000).add(
+          BigNumber.from(NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS)
+        )
+      : BigNumber.from(0);
+
+  const amountWithFee = BigNumber.from(token.nativeBalance).sub(lamportsOffset);
+  const maxAmount = amountWithFee.gt(0) ? amountWithFee : BigNumber.from(0);
+  const exceedsBalance = amount && amount.gt(maxAmount);
+  const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
+  const amountError = amount && exceedsBalance;
 
   useEffect(() => {
     nav.setTitle(`Send ${token.ticker}`);
   }, [nav]);
 
-  const _setAmount = (amount: number) => {
-    if (amount < 0) {
-      return;
-    }
-    setAmount(amount);
-  };
-
   // On click handler.
   const onNext = () => {
-    if (!amount || !amountFloat) {
+    if (!amount) {
       return;
     }
-    let didAmountError = false;
-    if (amountFloat <= 0) {
-      didAmountError = true;
-    }
-
-    if (token.nativeBalance < amountFloat + lamportsOffset) {
-      didAmountError = true;
-    }
-
-    setAmountError(didAmountError);
     setOpenDrawer(true);
   };
 
@@ -193,6 +176,7 @@ export function Send({
         e.preventDefault();
         onNext();
       }}
+      noValidate
     >
       <div className={classes.topHalf}>
         <div style={{ marginBottom: "40px" }}>
@@ -217,22 +201,24 @@ export function Send({
         <div>
           <TextFieldLabel
             leftLabel={"Amount"}
-            rightLabel={`${token.nativeBalance} ${token.ticker}`}
+            rightLabel={`${token.displayBalance} ${token.ticker}`}
             rightLabelComponent={
               <MaxLabel
-                amount={Math.max(token.nativeBalance - lamportsOffset, 0)}
-                onSetAmount={_setAmount}
+                amount={maxAmount}
+                onSetAmount={setAmount}
+                decimals={token.decimals}
               />
             }
             style={{ marginLeft: "24px", marginRight: "24px" }}
           />
           <div style={{ margin: "0 12px" }}>
-            <TextField
+            <TokenInputField
+              type="number"
+              placeholder="0"
               rootClass={classes.textRoot}
-              type={"number"}
-              placeholder={"0"}
+              decimals={token.decimals}
               value={amount}
-              setValue={_setAmount}
+              setValue={setAmount}
               isError={amountError}
               inputProps={{
                 name: "amount",
@@ -242,12 +228,16 @@ export function Send({
         </div>
       </div>
       <div className={classes.buttonContainer}>
-        <PrimaryButton
-          disabled={isSendDisabled}
-          label="Send"
-          type="submit"
-          data-testid="Send"
-        />
+        {isErrorAddress ? (
+          <DangerButton disabled={true} label="Invalid Address" />
+        ) : (
+          <PrimaryButton
+            disabled={isSendDisabled}
+            label="Send"
+            type="submit"
+            data-testid="Send"
+          />
+        )}
         <ApproveTransactionDrawer
           openDrawer={openDrawer}
           setOpenDrawer={setOpenDrawer}
@@ -255,7 +245,7 @@ export function Send({
           <SendConfirmationCard
             token={token}
             address={address}
-            amount={amountFloat!}
+            amount={amount!}
             close={() => {
               setOpenDrawer(false);
               close();
@@ -314,14 +304,12 @@ export function SendConfirmationCard({
   token,
   address,
   amount,
-  close,
 }: {
-  token: { mint: string; decimals?: number };
+  token: { logo?: string; ticker?: string; mint: string; decimals: number };
   address: string;
-  amount: number;
+  amount: BigNumber;
   close: () => void;
 }) {
-  const theme = useCustomTheme();
   const ctx = useSolanaCtx();
   const [cardType, setCardType] = useState<
     "confirm" | "sending" | "complete" | "error"
@@ -340,13 +328,13 @@ export function SendConfirmationCard({
         txSig = await Solana.transferSol(ctx, {
           source: ctx.walletPublicKey,
           destination: new PublicKey(address),
-          amount,
+          amount: amount.toNumber(),
         });
       } else {
         txSig = await Solana.transferToken(ctx, {
           destination: new PublicKey(address),
           mint: new PublicKey(token.mint),
-          amount,
+          amount: amount.toNumber(),
           decimals: token.decimals,
         });
       }
@@ -411,9 +399,9 @@ function ConfirmSend({
   amount,
   onConfirm,
 }: {
-  token: any;
+  token: { logo?: string; ticker?: string; mint: string; decimals: number };
   address: string;
-  amount: number;
+  amount: BigNumber;
   onConfirm: () => void;
 }) {
   const theme = useCustomTheme();
@@ -463,8 +451,8 @@ function ConfirmSend({
 
 const ConfirmSendToken: React.FC<{
   style: React.CSSProperties;
-  token: any;
-  amount: number;
+  token: { logo?: string; ticker?: string; mint: string; decimals: number };
+  amount: BigNumber;
 }> = ({ style, token, amount }) => {
   const theme = useCustomTheme();
 
@@ -503,7 +491,7 @@ const ConfirmSendToken: React.FC<{
           textAlign: "center",
         }}
       >
-        {amount}
+        {ethers.utils.formatUnits(amount, token.decimals)}
         <span
           style={{
             marginLeft: "8px",
@@ -571,7 +559,7 @@ function Sending({
   signature,
   isComplete,
 }: {
-  amount: number;
+  amount: BigNumber;
   token: any;
   signature: string;
   isComplete: boolean;
@@ -580,6 +568,7 @@ function Sending({
   const solanaExplorer = useSolanaExplorer();
   const connectionUrl = useSolanaConnectionUrl();
   const nav = useNavigation();
+  const drawer = useDrawerContext();
   return (
     <div
       style={{
@@ -643,6 +632,7 @@ function Sending({
           onClick={() => {
             if (isComplete) {
               nav.toRoot();
+              drawer.close();
             } else {
               window.open(
                 explorerUrl(solanaExplorer, signature, connectionUrl)
@@ -652,47 +642,6 @@ function Sending({
           label={isComplete ? "View Balances" : "View Explorer"}
         />
       </div>
-    </div>
-  );
-}
-
-function Complete({
-  signature,
-  address,
-}: {
-  signature: string;
-  address: string;
-}) {
-  const theme = useCustomTheme();
-  const explorer = useSolanaExplorer();
-  const connectionUrl = useSolanaConnectionUrl();
-  return (
-    <div
-      style={{
-        height: "264px",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-      }}
-    >
-      <Typography
-        style={{ textAlign: "center", color: theme.custom.colors.secondary }}
-      >
-        Sent!
-      </Typography>
-      <Typography
-        style={{ textAlign: "center", color: theme.custom.colors.secondary }}
-      >
-        Your tokens were successfully sent to{" "}
-        {walletAddressDisplay(new PublicKey(address))}
-      </Typography>
-      <Link
-        href={explorerUrl(explorer, signature, connectionUrl)}
-        target="_blank"
-        style={{ textAlign: "center" }}
-      >
-        View Transaction
-      </Link>
     </div>
   );
 }
@@ -736,12 +685,9 @@ export function BottomCard({
   cancelButtonStyle,
   cancelButtonLabelStyle,
   children,
-  //  style,
   topHalfStyle,
   wrapperStyle,
-}: //	buttonContainerStyle,
-any) {
-  const classes = useStyles();
+}: any) {
   const theme = useCustomTheme();
   return (
     <div
@@ -763,7 +709,6 @@ any) {
           background: theme.custom.colors.background,
           borderTopLeftRadius: "12px",
           borderTopRightRadius: "12px",
-          //			...style
         }}
       >
         <div
@@ -782,7 +727,6 @@ any) {
             marginRight: "12px",
             display: "flex",
             justifyContent: "space-between",
-            //					...buttonContainerStyle,
           }}
         >
           {cancelButtonLabel && (

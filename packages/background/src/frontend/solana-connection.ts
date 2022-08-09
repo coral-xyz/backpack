@@ -6,6 +6,7 @@ import type {
   ConfirmedSignaturesForAddress2Options,
   GetProgramAccountsConfig,
   MessageArgs,
+  BlockheightBasedTransactionConfirmationStrategy,
 } from "@solana/web3.js";
 import { PublicKey, Message } from "@solana/web3.js";
 import type {
@@ -175,20 +176,22 @@ async function handleSendRawTransaction(
 
 async function handleConfirmTransaction(
   ctx: Context<Backend>,
-  signature: TransactionSignature,
+  signature:
+    | BlockheightBasedTransactionConfirmationStrategy
+    | TransactionSignature,
   commitment?: Commitment
 ) {
-  const { blockhash, lastValidBlockHeight } =
-    await ctx.backend.getLatestBlockhash();
-
-  const resp = await ctx.backend.confirmTransaction(
-    {
+  if (typeof signature === "string") {
+    const { blockhash, lastValidBlockHeight } =
+      await ctx.backend.getLatestBlockhash();
+    signature = {
       signature,
       blockhash,
       lastValidBlockHeight,
-    },
-    commitment
-  );
+    };
+  }
+
+  const resp = await ctx.backend.confirmTransaction(signature, commitment);
   return [resp];
 }
 

@@ -5,8 +5,8 @@ import { PublicKey, Transaction } from "@solana/web3.js";
 import type { NamedPublicKey, KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
-import { SolanaCluster } from "@coral-xyz/common";
 import {
+  SolanaCluster,
   Blockchain,
   SolanaExplorer,
   BACKEND_EVENT,
@@ -131,7 +131,7 @@ export class Backend {
 
   async solanaConnectionUrlRead(): Promise<string> {
     const data = await getWalletData();
-    return data.solana.cluster ?? SolanaCluster.DEFAULT;
+    return (data.solana && data.solana.cluster) ?? SolanaCluster.DEFAULT;
   }
 
   // Returns true if the url changed.
@@ -243,7 +243,6 @@ export class Backend {
 
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
-
     const url = await this.solanaConnectionUrlRead();
     const activeWallet = await this.activeWallet();
     const commitment = await this.solanaCommitmentRead();
@@ -673,6 +672,19 @@ export class Backend {
       },
     });
 
+    return SUCCESS_RESPONSE;
+  }
+
+  async pluginLocalStorageGet(plugin: string, key: string): Promise<any> {
+    return await store.LocalStorageDb.get(`${plugin}:${key}`);
+  }
+
+  async pluginLocalStoragePut(
+    plugin: string,
+    key: string,
+    value: any
+  ): Promise<any> {
+    await store.LocalStorageDb.set(`${plugin}:${key}`, value);
     return SUCCESS_RESPONSE;
   }
 }

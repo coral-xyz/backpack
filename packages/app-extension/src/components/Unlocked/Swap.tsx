@@ -1,27 +1,37 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { ethers, BigNumber } from "ethers";
 import {
   InputAdornment,
   Typography,
   IconButton,
   CircularProgress,
 } from "@mui/material";
+import type { Button } from "@mui/material";
 import { Close, ExpandMore, SwapVert } from "@mui/icons-material";
 import {
   useSplTokenRegistry,
   useJupiterInputMints,
   useJupiterOutputMints,
+  useBackgroundClient,
   useSwapContext,
   SwapProvider,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Blockchain, SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
+import {
+  Blockchain,
+  SOL_NATIVE_MINT,
+  WSOL_MINT,
+  TAB_BALANCES,
+  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+} from "@coral-xyz/common";
 import {
   TextField,
   TextFieldLabel,
   PrimaryButton,
   DangerButton,
+  SecondaryButton,
 } from "../common";
+import { TokenInputField } from "../common/TokenInput";
 import { CheckIcon, CrossIcon } from "../common/Icon";
 import { WithHeaderButton } from "./Balances/TokensWidget/Token";
 import { BottomCard } from "./Balances/TokensWidget/Send";
@@ -30,7 +40,8 @@ import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
 import { MaxLabel } from "../common/MaxLabel";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
-import { SecondaryButton } from "../common";
+
+const { Zero } = ethers.constants;
 
 const useStyles = styles((theme) => ({
   container: {
@@ -211,9 +222,14 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
     swapToFromMints();
   };
 
+  const onSubmit = (e: any) => {
+    e.preventDefault();
+    setOpenDrawer(true);
+  };
+
   return (
     <>
-      <div className={classes.container}>
+      <form onSubmit={onSubmit} className={classes.container} noValidate>
         <div className={classes.topHalf}>
           <SwapTokensButton
             onClick={onSwapButtonClick}
@@ -229,7 +245,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
           <div className={classes.bottomHalf}>
             <div>
               <OutputTextField />
-              {!!toAmount && toAmount > 0 && (
+              {!!toAmount && toAmount.gt(Zero) && (
                 <div
                   style={{
                     marginTop: "24px",
@@ -241,13 +257,10 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
                 </div>
               )}
             </div>
-            <ConfirmSwapButton
-              blockchain={blockchain}
-              onClick={() => setOpenDrawer(true)}
-            />
+            <ConfirmSwapButton type="submit" blockchain={blockchain} />
           </div>
         </div>
-      </div>
+      </form>
       <ApproveTransactionDrawer
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}
@@ -294,30 +307,34 @@ const SwapConfirmationCard: React.FC<{ onClose: () => void }> = ({
 
 function InputTextField() {
   const classes = useStyles();
-  const { fromAmount, setFromAmount, availableForSwap, exceedsBalance } =
-    useSwapContext();
-
-  const _setFromAmount = (amount: number) => {
-    if (amount >= 0) {
-      setFromAmount(amount);
-    }
-  };
+  const {
+    fromAmount,
+    setFromAmount,
+    fromMintInfo,
+    availableForSwap,
+    exceedsBalance,
+  } = useSwapContext();
 
   return (
     <>
       <TextFieldLabel
         leftLabel={"You Pay"}
         rightLabelComponent={
-          <MaxLabel amount={availableForSwap} onSetAmount={_setFromAmount} />
+          <MaxLabel
+            amount={availableForSwap}
+            onSetAmount={setFromAmount}
+            decimals={fromMintInfo.decimals}
+          />
         }
       />
-      <TextField
-        placeholder={"0"}
+      <TokenInputField
+        type="number"
+        placeholder="0"
         endAdornment={<InputTokenSelectorButton />}
         rootClass={classes.fromFieldRoot}
-        type={"number"}
-        value={fromAmount ?? ""}
-        setValue={_setFromAmount}
+        value={fromAmount}
+        setValue={setFromAmount}
+        decimals={fromMintInfo.decimals}
         isError={exceedsBalance}
       />
     </>
@@ -327,7 +344,7 @@ function InputTextField() {
 function OutputTextField() {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { toAmount, isLoadingRoutes } = useSwapContext();
+  const { toAmount, toMintInfo, isLoadingRoutes } = useSwapContext();
   return (
     <>
       <TextFieldLabel leftLabel={"You Receive"} />
@@ -349,7 +366,11 @@ function OutputTextField() {
         endAdornment={<OutputTokenSelectorButton />}
         rootClass={classes.receiveFieldRoot}
         type={"number"}
-        value={toAmount || ""}
+        value={
+          toAmount
+            ? ethers.utils.formatUnits(toAmount, toMintInfo.decimals)
+            : ""
+        }
         disabled={true}
         inputProps={{
           style: {
@@ -371,11 +392,10 @@ const InsufficientBalanceButton = () => {
 
 const ConfirmSwapButton = ({
   blockchain,
-  onClick,
+  ...buttonProps
 }: {
   blockchain: Blockchain;
-  onClick: () => void;
-}) => {
+} & React.ComponentProps<typeof Button>) => {
   const {
     toAmount,
     toMint,
@@ -383,6 +403,8 @@ const ConfirmSwapButton = ({
     fromMint,
     isJupiterError,
     exceedsBalance,
+    isLoadingRoutes,
+    isLoadingTransactions,
   } = useSwapContext();
 
   if (exceedsBalance) {
@@ -403,8 +425,10 @@ const ConfirmSwapButton = ({
   return (
     <PrimaryButton
       label={label}
-      onClick={onClick}
-      disabled={!fromAmount || !toAmount}
+      disabled={
+        !fromAmount || !toAmount || isLoadingRoutes || isLoadingTransactions
+      }
+      {...buttonProps}
     />
   );
 };
@@ -439,7 +463,15 @@ function SwapConfirmation({ onConfirm }: { onConfirm: () => void }) {
 function SwapConfirming({ isConfirmed }: { isConfirmed: boolean }) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const navigate = useNavigate();
+  const background = useBackgroundClient();
+
+  const onViewBalances = () => {
+    background.request({
+      method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+      params: [TAB_BALANCES],
+    });
+  };
+
   return (
     <div
       style={{
@@ -496,10 +528,7 @@ function SwapConfirming({ isConfirmed }: { isConfirmed: boolean }) {
             marginRight: "16px",
           }}
         >
-          <SecondaryButton
-            onClick={() => navigate("/balances")}
-            label={"View Balances"}
-          />
+          <SecondaryButton onClick={onViewBalances} label={"View Balances"} />
         </div>
       )}
     </div>
@@ -550,7 +579,7 @@ function SwapReceiveAmount() {
         src={logoUri}
         onError={(event) => (event.currentTarget.style.display = "none")}
       />
-      {toAmount}
+      {toAmount ? ethers.utils.formatUnits(toAmount, toMintInfo.decimals) : 0}
       <span style={{ color: theme.custom.colors.secondary, marginLeft: "8px" }}>
         {toMintInfo?.symbol}
       </span>
@@ -570,6 +599,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     isLoadingRoutes,
     isLoadingTransactions,
     transactionFee,
+    swapFee,
   } = useSwapContext();
 
   // Loading indicator when routes are being loaded due to polling
@@ -588,11 +618,23 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     );
   }
 
-  const rate = fromAmount ? toAmount! / fromAmount : 0;
+  if (!fromAmount || !toAmount) return <></>;
+
+  const decimalDifference = fromMintInfo.decimals - toMintInfo.decimals;
+  const toAmountWithFees = toAmount.sub(swapFee);
+  const rate = fromAmount.gt(Zero)
+    ? (toAmountWithFees.toNumber() / fromAmount.toNumber()) *
+      10 ** decimalDifference
+    : 0;
 
   const rows = [];
   if (!compact) {
-    rows.push(["You Pay", `${fromAmount} ${fromMintInfo.symbol}`]);
+    rows.push([
+      "You Pay",
+      `${ethers.utils.formatUnits(fromAmount, fromMintInfo.decimals)} ${
+        fromMintInfo.symbol
+      }`,
+    ]);
   }
   rows.push([
     "Rate",
@@ -600,7 +642,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   ]);
   rows.push([
     "Network Fee",
-    transactionFee ? `${transactionFee / 10 ** 9} SOL` : "-",
+    transactionFee ? `${ethers.utils.formatUnits(transactionFee, 9)} SOL` : "-",
   ]);
   if (!compact) {
     rows.push([
@@ -677,7 +719,7 @@ function InputTokenSelectorButton() {
   const { toMint, fromMint, setFromMint } = useSwapContext();
   const tokenAccounts = useJupiterInputMints();
   const tokenAccountsFiltered = tokenAccounts.filter(
-    (token: Token) => token.nativeBalance !== 0 && token.mint !== toMint
+    (token: Token) => !token.nativeBalance.isZero() && token.mint !== toMint
   );
   return (
     <TokenSelectorButton

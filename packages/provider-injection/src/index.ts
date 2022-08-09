@@ -1,6 +1,7 @@
 import { getLogger } from "@coral-xyz/common";
 import { ProviderInjection } from "./provider";
-import { ProviderUiInjection } from "./provider-ui";
+import { BackpackSolanaWallet } from "./provider-standard";
+import { ProviderXnftInjection } from "./provider-xnft";
 
 const logger = getLogger("provider-injection");
 
@@ -13,7 +14,14 @@ function main() {
 
 function initProvider() {
   window.backpack = new ProviderInjection();
-  window.anchorUi = new ProviderUiInjection();
+  window.xnft = new ProviderXnftInjection();
+
+  window.navigator.wallets = window.navigator.wallets || [];
+  window.navigator.wallets.push({
+    method: "register",
+    wallets: [new BackpackSolanaWallet()],
+    callback() {},
+  });
 }
 
 main();

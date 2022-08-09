@@ -40,7 +40,7 @@ export default {
 
       if (searchParams.has("external")) {
         // TODO: add integrity hash? https://www.srihash.org
-        innerHTML = `<script type="module" src="${bundle}"></script>`;
+        innerHTML = `<script src="${bundle}"></script>`;
       } else {
         const res = await fetch(bundle);
         const js = await res.text();
@@ -48,7 +48,7 @@ export default {
         //       because `new Function(js);` is not possible on a worker
         innerHTML = `
         <!-- code loaded from ${bundle} -->
-        <script type="module">${js}</script>`;
+        <script>${js}</script>`;
       }
 
       return html(`

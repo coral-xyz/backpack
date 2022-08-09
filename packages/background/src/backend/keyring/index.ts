@@ -98,10 +98,10 @@ export class KeyringStore {
     });
 
     // Persist the encrypted data to then store.
-    this.persist(true);
+    await this.persist(true);
 
     // Automatically lock the store when idle.
-    this.autoLockStart();
+    await this.tryUnlock(password);
   }
 
   public async checkPassword(password: string) {
@@ -341,8 +341,9 @@ export class KeyringStore {
     if (!this.isUnlocked()) {
       throw new Error("keyring store is not unlocked");
     }
+    const resp = fn();
     this.updateLastUsed();
-    return fn();
+    return resp;
   }
 
   // Utility for asserting the wallet is currently locked.
@@ -350,8 +351,9 @@ export class KeyringStore {
     if (this.isUnlocked()) {
       throw new Error("keyring store is not locked");
     }
+    const resp = fn();
     this.updateLastUsed();
-    return fn();
+    return resp;
   }
 
   // Utility for asserting the wallet is unlocked and the correct password was

@@ -63,49 +63,35 @@ export function WithApproval({
   const classes = useStyles();
 
   return (
-    <>
-      <IconButton
-        disableRipple
-        style={{
-          left: 0,
-          padding: "16px",
-          position: "absolute",
-        }}
-        onClick={onDeny}
-        size="large"
-      >
-        <_CloseIcon className={classes.closeButtonIcon} />
-      </IconButton>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        justifyContent: "space-between",
+      }}
+    >
+      <div className={classes.contentContainer}>
+        <SiteActiveWalletConnect origin={origin} title={originTitle} />
+        {children}
+      </div>
       <div
         style={{
+          marginLeft: "16px",
+          marginRight: "16px",
+          marginBottom: "16px",
           display: "flex",
-          flexDirection: "column",
-          height: "100%",
           justifyContent: "space-between",
         }}
       >
-        <div className={classes.contentContainer}>
-          <SiteActiveWalletConnect origin={origin} title={originTitle} />
-          {children}
+        <div style={{ width: "167.5px" }}>
+          <SecondaryButton label="Deny" onClick={onDeny} />
         </div>
-        <div
-          style={{
-            marginLeft: "16px",
-            marginRight: "16px",
-            marginBottom: "16px",
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{ width: "167.5px" }}>
-            <SecondaryButton label="Deny" onClick={onDeny} />
-          </div>
-          <div style={{ width: "167.5px" }}>
-            <PrimaryButton label={onConfirmLabel} onClick={onConfirm} />
-          </div>
+        <div style={{ width: "167.5px" }}>
+          <PrimaryButton label={onConfirmLabel} onClick={onConfirm} />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

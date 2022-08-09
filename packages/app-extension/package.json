@@ -22,6 +22,7 @@
     "@solana/web3.js": "^1.35.1",
     "bip39": "^3.0.4",
     "bs58": "^5.0.0",
+    "ethers": "^5.6.9",
     "figma-squircle": "^0.2.1",
     "framer-motion": "^6.5.1",
     "react": "^17.0.2",
@@ -32,8 +33,9 @@
     "recoil": "^0.6.1"
   },
   "scripts": {
-    "start": "NODE_ENV=development webpack serve",
-    "build": "NODE_ENV=production webpack",
+    "start": "./scripts/version.sh development && NODE_ENV=development webpack serve",
+    "build": "./scripts/version.sh production && NODE_ENV=production webpack",
+    "build:release": "NODE_ENV=production webpack",
     "e2e": "jest --maxWorkers 1 --detectOpenHandles --forceExit --verbose",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
   },

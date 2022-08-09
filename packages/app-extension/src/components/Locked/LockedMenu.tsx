@@ -6,7 +6,7 @@ import SupportIcon from "@mui/icons-material/Support";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import CallMadeIcon from "@mui/icons-material/CallMade";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { List, ListItem } from "../common/List";
 import { WithDrawer, CloseButton } from "../common/Layout/Drawer";
 import { Reset } from "./Reset";
@@ -18,6 +18,14 @@ import {
   NavStackScreen,
 } from "../common/Layout/NavStack";
 import { DiscordIcon } from "../common/Icon";
+
+const useStyles = styles((theme) => ({
+  listItemRoot: {
+    height: "44px",
+    display: "flex",
+    backgroundColor: `${theme.custom.colors.bg2} !important`,
+  },
+}));
 
 export function LockedMenu({ menuOpen, setMenuOpen }: any) {
   const theme = useCustomTheme() as any;
@@ -74,6 +82,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
 export function LockedMenuList() {
   const theme = useCustomTheme();
   const nav = useNavStack();
+  const classes = useStyles();
 
   const options = [
     {
@@ -118,7 +127,6 @@ export function LockedMenuList() {
     <Box sx={{ color: theme.custom.colors.fontColor }}>
       <List
         style={{
-          background: theme.custom.colors.bg2,
           marginLeft: "16px",
           marginRight: "16px",
         }}
@@ -127,13 +135,10 @@ export function LockedMenuList() {
           <ListItem
             onClick={o.onClick}
             key={o.text}
-            style={{
-              height: "44px",
-              display: "flex",
-            }}
             isFirst={idx === 0}
             isLast={idx === options.length - 1}
             borderColor={theme.custom.colors.border1}
+            classes={{ root: classes.listItemRoot }}
           >
             <div
               style={{

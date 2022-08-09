@@ -65,7 +65,8 @@ export class Solana {
       const decimals = tokenInfo.decimals;
       return decimals;
     })();
-    const nativeAmount = new BN(amount * 10 ** decimals);
+
+    const nativeAmount = new BN(amount);
 
     const destinationAta = associatedTokenAddress(mint, destination);
     const sourceAta = associatedTokenAddress(mint, walletPublicKey);
@@ -140,7 +141,7 @@ export class Solana {
       SystemProgram.transfer({
         fromPubkey: new PublicKey(req.source),
         toPubkey: new PublicKey(req.destination),
-        lamports: req.amount * 10 ** 9,
+        lamports: req.amount,
       })
     );
     tx.feePayer = walletPublicKey;
