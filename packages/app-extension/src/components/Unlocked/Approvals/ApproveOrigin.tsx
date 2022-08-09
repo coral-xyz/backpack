@@ -127,85 +127,71 @@ export function ApproveOrigin({ origin, title, onCompletion }: any) {
     : walletAddressDisplay(activeWallet.publicKey);
 
   return (
-    <>
-      <IconButton
-        disableRipple
-        style={{
-          left: 0,
-          padding: "16px",
-          position: "absolute",
-        }}
-        onClick={onDeny}
-        size="large"
-      >
-        <_CloseIcon className={classes.closeButtonIcon} />
-      </IconButton>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        justifyContent: "space-between",
+      }}
+    >
+      <div className={classes.contentContainer}>
+        <div className={classes.title}>
+          {siteTitle} would like to connect to {walletTitle}
+        </div>
+        <div className={classes.connectablesContainer}>
+          <Connectable
+            title={siteTitle}
+            description={new URL(origin).host}
+            icon={siteIcon}
+          />
+          <Connectable
+            title={activeWallet.name}
+            description={walletAddressDisplay(activeWallet.publicKey)}
+            icon="/coral.png"
+          />
+        </div>
+        <div>
+          <Typography className={classes.listDescription}>
+            This app would like to
+          </Typography>
+          <List className={classes.listRoot}>
+            <ListItem className={classes.listItemRoot}>
+              <ListItemIcon className={classes.listItemIconRoot}>
+                <CheckIcon />
+              </ListItemIcon>
+              View wallet balance & activity
+            </ListItem>
+            <ListItem className={classes.listItemRoot}>
+              <ListItemIcon className={classes.listItemIconRoot}>
+                <CheckIcon />
+              </ListItemIcon>
+              Request approval for transactions
+            </ListItem>
+          </List>
+          <Typography className={classes.warning}>
+            Only connect to apps you trust.{" "}
+            <Link className={classes.link}>Learn more.</Link>
+          </Typography>
+        </div>
+      </div>
       <div
         style={{
+          marginLeft: "16px",
+          marginRight: "16px",
+          marginBottom: "16px",
           display: "flex",
-          flexDirection: "column",
-          height: "100%",
           justifyContent: "space-between",
         }}
       >
-        <div className={classes.contentContainer}>
-          <div className={classes.title}>
-            {siteTitle} would like to connect to {walletTitle}
-          </div>
-          <div className={classes.connectablesContainer}>
-            <Connectable
-              title={siteTitle}
-              description={new URL(origin).host}
-              icon={siteIcon}
-            />
-            <Connectable
-              title={activeWallet.name}
-              description={walletAddressDisplay(activeWallet.publicKey)}
-              icon="/coral.png"
-            />
-          </div>
-          <div>
-            <Typography className={classes.listDescription}>
-              This app would like to
-            </Typography>
-            <List className={classes.listRoot}>
-              <ListItem className={classes.listItemRoot}>
-                <ListItemIcon className={classes.listItemIconRoot}>
-                  <CheckIcon />
-                </ListItemIcon>
-                View wallet balance & activity
-              </ListItem>
-              <ListItem className={classes.listItemRoot}>
-                <ListItemIcon className={classes.listItemIconRoot}>
-                  <CheckIcon />
-                </ListItemIcon>
-                Request approval for transactions
-              </ListItem>
-            </List>
-            <Typography className={classes.warning}>
-              Only connect to apps you trust.{" "}
-              <Link className={classes.link}>Learn more.</Link>
-            </Typography>
-          </div>
+        <div style={{ width: "167.5px" }}>
+          <SecondaryButton label="Deny" onClick={onDeny} />
         </div>
-        <div
-          style={{
-            marginLeft: "16px",
-            marginRight: "16px",
-            marginBottom: "16px",
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{ width: "167.5px" }}>
-            <SecondaryButton label="Deny" onClick={onDeny} />
-          </div>
-          <div style={{ width: "167.5px" }}>
-            <PrimaryButton label="Connect" onClick={onConnect} />
-          </div>
+        <div style={{ width: "167.5px" }}>
+          <PrimaryButton label="Connect" onClick={onConnect} />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
