@@ -22,7 +22,9 @@ export const allJupiterInputMints = selector({
   key: "allJupiterInputMints",
   get: async ({ get }) => {
     const routeMap = get(jupiterRouteMap);
-    return Object.keys(routeMap);
+    if (routeMap) return Object.keys(routeMap);
+    // API request fail
+    else return [];
   },
 });
 
@@ -50,7 +52,7 @@ export const jupiterOutputMints = selectorFamily({
       // If input mint is SOL native then we can use WSOL with unwrapping
       const routeMapMint =
         inputMint === SOL_NATIVE_MINT ? WSOL_MINT : inputMint;
-      if (!routeMap[routeMapMint]) return [];
+      if (!routeMap || !routeMap[routeMapMint]) return [];
       const swapTokens = routeMap[routeMapMint].map((mint: string) => {
         const tokenMetadata = tokenRegistry.get(mint) ?? ({} as TokenInfo);
         const { name, symbol, logoURI } = tokenMetadata;

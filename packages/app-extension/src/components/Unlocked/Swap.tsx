@@ -406,10 +406,11 @@ const ConfirmSwapButton = ({
     isLoadingRoutes,
     isLoadingTransactions,
   } = useSwapContext();
+  const tokenAccounts = useJupiterOutputMints(fromMint);
 
   if (exceedsBalance) {
     return <InsufficientBalanceButton />;
-  } else if (isJupiterError) {
+  } else if (isJupiterError || tokenAccounts.length === 0) {
     return <SwapUnavailableButton />;
   }
 
