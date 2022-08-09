@@ -104,6 +104,7 @@ export class Backend {
     walletAddress: string,
     commitment?: Commitment // TODO: use this when we have the new anchor api.
   ): Promise<any> {
+    const decodedTxStr = bs58.decode(txStr);
     const tx = Transaction.from(bs58.decode(txStr));
     const txMsg = bs58.encode(tx.serializeMessage());
     const signature = await this.signTransaction(txMsg, walletAddress);
