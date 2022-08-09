@@ -20,6 +20,7 @@ import {
   openApprovalPopupWindow,
   openLockedApprovalPopupWindow,
   openApproveTransactionPopupWindow,
+  openApproveAllTransactionsPopupWindow,
   openApproveMessagePopupWindow,
   RPC_METHOD_CONNECT,
   RPC_METHOD_DISCONNECT,
@@ -240,9 +241,21 @@ async function handleSignAllTxs(
   txs: Array<string>,
   walletAddress: string
 ): Promise<RpcResponse<Array<string>>> {
-  throw new Error("not implemented");
-  //  const resp = await ctx.backend.signAllTransactions(txs, walletAddress);
-  //  return [resp];
+  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
+    return openApproveAllTransactionsPopupWindow(
+      ctx.sender.origin,
+      requestId,
+      txs
+    );
+  });
+  const didApprove = uiResp.result;
+
+  if (didApprove) {
+    const resp = await ctx.backend.signAllTransactions(txs, walletAddress);
+    return [resp];
+  }
+
+  throw new Error("user denied transactions");
 }
 
 async function handleSignMessage(

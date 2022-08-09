@@ -7,6 +7,7 @@ import {
   QUERY_LOCKED_APPROVAL,
   QUERY_APPROVE_MESSAGE,
   QUERY_APPROVE_TRANSACTION,
+  QUERY_APPROVE_ALL_TRANSACTIONS,
   QUERY_CONNECT_HARDWARE,
   QUERY_ONBOARDING,
 } from "../constants";
@@ -132,6 +133,16 @@ export async function openApproveTransactionPopupWindow(
   tx: string
 ): Promise<chrome.windows.Window> {
   const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${origin}&requestId=${requestId}&tx=${tx}`;
+  return await openPopupWindow(url);
+}
+
+export async function openApproveAllTransactionsPopupWindow(
+  origin: string,
+  requestId: number,
+  txs: Array<string>
+): Promise<chrome.windows.Window> {
+  const txsStr = encodeURIComponent(JSON.stringify(txs));
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_ALL_TRANSACTIONS}&origin=${origin}&requestId=${requestId}&txs=${txsStr}`;
   return await openPopupWindow(url);
 }
 
