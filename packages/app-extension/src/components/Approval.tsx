@@ -115,6 +115,58 @@ export function ApproveTransaction({ tx, origin, onCompletion }: any) {
   );
 }
 
+export function ApproveAllTransactions({
+  txs,
+  origin,
+  onCompletion,
+}: {
+  txs: Array<string>;
+  origin: string;
+  onCompletion: (didApprove: boolean) => void;
+}) {
+  const classes = useStyles();
+  useEffect(() => {
+    const msg = Message.from(bs58.decode(tx));
+    console.log("got msg", msg);
+    // TODO: Fetch all IDLS for each program and decode ix name and description.
+  }, [tx]);
+
+  const approve = async () => {
+    onCompletion(true);
+  };
+  const onReject = async () => {
+    onCompletion(false);
+  };
+  const rows = [
+    { left: "Network", right: "Solana" },
+    { left: "Network Fee", right: "- SOL" },
+  ];
+
+  return (
+    <WithApproval
+      title={"Approve Transaction"}
+      onApproval={approve}
+      onReject={onReject}
+      origin={origin}
+    >
+      <Typography
+        className={classes.contentTitle}
+        style={{ marginBottom: "16px" }}
+      >
+        Transaction Changes
+      </Typography>
+      {rows.map((r) => (
+        <div className={classes.txChangesRow}>
+          <Typography className={classes.txChangesRowLeft}>{r.left}</Typography>
+          <Typography className={classes.txChangesRowRight}>
+            {r.right}
+          </Typography>
+        </div>
+      ))}
+    </WithApproval>
+  );
+}
+
 export function ApproveMessage({ message, origin, onCompletion }: any) {
   const classes = useStyles();
   const approve = async () => {

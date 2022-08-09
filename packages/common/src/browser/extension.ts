@@ -135,6 +135,16 @@ export async function openApproveTransactionPopupWindow(
   return await openPopupWindow(url);
 }
 
+export async function openApproveAllTransactionsPopupWindow(
+  origin: string,
+  requestId: number,
+  txs: Array<string>
+): Promise<chrome.windows.Window> {
+  const txsStr = encodeURIComponent(JSON.stringify(txs));
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_ALL_TRANSACTIONS}&origin=${origin}&requestId=${requestId}&txs=${txsStr}`;
+  return await openPopupWindow(url);
+}
+
 export async function openApproveMessagePopupWindow(
   origin: string,
   requestId: number,

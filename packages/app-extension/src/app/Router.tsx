@@ -10,6 +10,7 @@ import {
   QUERY_APPROVAL,
   QUERY_LOCKED_APPROVAL,
   QUERY_APPROVE_TRANSACTION,
+  QUERY_APPROVE_ALL_TRANSACTIONS,
   QUERY_APPROVE_MESSAGE,
 } from "@coral-xyz/common";
 import {
@@ -99,6 +100,8 @@ function PopupRouter() {
       return <QueryLockedApproval />;
     case QUERY_APPROVE_TRANSACTION:
       return <QueryApproveTransaction />;
+    case QUERY_APPROVE_ALL_TRANSACTIONS:
+      return <QueryApproveAllTransactions />;
     case QUERY_APPROVE_MESSAGE:
       return <QueryApproveMessage />;
     default:
@@ -172,6 +175,30 @@ function QueryApproval() {
 
 function QueryApproveTransaction() {
   logger.debug("query approve transaction");
+
+  const background = useBackgroundResponder();
+  const url = new URL(window.location.href);
+  const origin = url.searchParams.get("origin");
+  const requestId = parseInt(url.searchParams.get("requestId")!);
+  const txs = JSON.parse(url.searchParams.get("txs"));
+
+  return (
+    <ApproveAllTransactions
+      txs={txs}
+      origin={origin}
+      onCompletion={async (didApprove: boolean) => {
+        await background.response({
+          id: requestId,
+          result: didApprove,
+        });
+        window.close();
+      }}
+    />
+  );
+}
+
+function QueryApproveAllTransactions() {
+  logger.debug("query approve all transactions");
 
   const background = useBackgroundResponder();
   const url = new URL(window.location.href);

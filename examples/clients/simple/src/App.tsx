@@ -1,5 +1,6 @@
 import { Wallet } from "./Wallet";
 import { SendLamportButton } from "./SendLamportButton";
+import { SendAllButton } from "./SendAllButton";
 import { SignMessageButton } from "./SignMessageButton";
 
 function App() {
@@ -7,6 +8,7 @@ function App() {
     <div className="App">
       <Wallet>
         <SendLamportButton />
+        <SendAllButton />
         <SignMessageButton />
       </Wallet>
     </div>
