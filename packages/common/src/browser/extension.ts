@@ -148,12 +148,16 @@ export async function openPopupWindow(
   url: string
 ): Promise<chrome.windows.Window> {
   const MACOS_TOOLBAR_HEIGHT = 28;
+  const WINDOWS_TOOLBAR_HEIGHT = 28; // TODO: confirm this.
+  function getOs() {
+    const os = ["Windows", "Linux", "Mac"];
+    return os.find((v) => navigator.appVersion.indexOf(v) >= 0);
+  }
   function isMacOs(): boolean {
-    function getOs() {
-      const os = ["Windows", "Linux", "Mac"];
-      return os.find((v) => navigator.appVersion.indexOf(v) >= 0);
-    }
     return getOs() === "Mac";
+  }
+  function isWindows(): boolean {
+    return getOs() === "Windows";
   }
 
   return new Promise((resolve, reject) => {
@@ -162,7 +166,13 @@ export async function openPopupWindow(
         url: `${url}`,
         type: "popup",
         width: EXTENSION_WIDTH,
-        height: EXTENSION_HEIGHT + (isMacOs() ? MACOS_TOOLBAR_HEIGHT : 0),
+        height:
+          EXTENSION_HEIGHT +
+          (isMacOs()
+            ? MACOS_TOOLBAR_HEIGHT
+            : isWindows()
+            ? WINDOWS_TOOLBAR_HEIGHT
+            : 0),
         top: window.top,
         left: window.left + (window.width - EXTENSION_WIDTH),
         focused: true,
