@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import type { PublicKey } from "@solana/web3.js";
 import { ethers, BigNumber } from "ethers";
 import {
@@ -73,10 +72,6 @@ const useStyles = styles((theme) => ({
       opacity: 0.5,
     },
   },
-  checkboxContainer: {
-    display: "flex",
-    marginTop: "8px",
-  },
   checkBoxRoot: {
     padding: 0,
   },
@@ -86,6 +81,14 @@ const useStyles = styles((theme) => ({
   },
   subtext: {
     color: theme.custom.colors.subtext,
+  },
+  checkFormButton: {
+    display: "flex",
+    marginTop: "8px",
+    "&:hover": {
+      backgroundColor: "transparent",
+      opacity: 0.8,
+    },
   },
 }));
 
@@ -357,7 +360,15 @@ export function CheckboxForm({
 }) {
   const classes = useStyles();
   return (
-    <div className={classes.checkboxContainer}>
+    <Button
+      className={classes.checkFormButton}
+      style={{
+        padding: 0,
+        textTransform: "none",
+      }}
+      onClick={() => setChecked(!checked)}
+      disableRipple
+    >
       <div
         style={{
           display: "flex",
@@ -381,6 +392,6 @@ export function CheckboxForm({
       >
         <Typography className={classes.subtext}>{label}</Typography>
       </div>
-    </div>
+    </Button>
   );
 }
