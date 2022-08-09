@@ -113,7 +113,7 @@ jobs:
       - name: "[e2e tests] run playwright tests on extension"
         run: xvfb-run yarn e2e
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
           name: playwright-report
@@ -188,9 +188,11 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         working-directory: packages/app-extension
         run: zip -r build-${{ github.run_number }}.zip build/
+
       - name: "upload build artifacts"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v2
+        # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
         with:
           name: backpack-build
           path: packages/app-extension/build-${{ github.run_number }}.zip
@@ -204,11 +206,12 @@ jobs:
       #       a cleaner way of doing this.
       #
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
           name: backpack-build
           path: ./
+
       - uses: actions/create-release@v1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         name: Create Draft Release
@@ -220,6 +223,7 @@ jobs:
           release_name: latest-${{ github.run_number }}
           draft: false
           prerelease: false
+
       - uses: actions/upload-release-asset@v1.0.1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
