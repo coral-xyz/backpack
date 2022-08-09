@@ -243,7 +243,6 @@ export class Backend {
 
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
-
     const url = await this.solanaConnectionUrlRead();
     const activeWallet = await this.activeWallet();
     const commitment = await this.solanaCommitmentRead();
