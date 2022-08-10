@@ -94,6 +94,7 @@ export function ChangePassword() {
               style={{
                 height: "46px",
                 padding: "10px",
+                borderRadius: "8px",
               }}
               button={false}
             >
@@ -152,6 +153,8 @@ export function ChangePassword() {
               style={{
                 height: "44px",
                 padding: "10px",
+                borderTopLeftRadius: "8px",
+                borderTopRightRadius: "8px",
               }}
             >
               <Typography style={{ width: "80px" }}>New</Typography>
