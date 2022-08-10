@@ -88,19 +88,24 @@ async function handle<T = any>(
   const { method, params } = req;
   switch (method) {
     case SOLANA_RPC_METHOD_CONNECT:
-      return await handleConnect(ctx);
+      return await handleSolanaConnect(ctx);
     case SOLANA_RPC_METHOD_DISCONNECT:
-      return handleDisconnect(ctx);
+      return handleSolanaDisconnect(ctx);
     case SOLANA_RPC_METHOD_SIGN_AND_SEND_TX:
-      return await handleSignAndSendTx(ctx, params[0], params[1], params[2]);
+      return await handleSolanaSignAndSendTx(
+        ctx,
+        params[0],
+        params[1],
+        params[2]
+      );
     case SOLANA_RPC_METHOD_SIGN_TX:
-      return await handleSignTx(ctx, params[0], params[1]);
+      return await handleSolanaSignTx(ctx, params[0], params[1]);
     case SOLANA_RPC_METHOD_SIGN_ALL_TXS:
-      return await handleSignAllTxs(ctx, params[0], params[1]);
+      return await handleSolanaSignAllTxs(ctx, params[0], params[1]);
     case SOLANA_RPC_METHOD_SIGN_MESSAGE:
-      return await handleSignMessage(ctx, params[0], params[1]);
+      return await handleSolanaSignMessage(ctx, params[0], params[1]);
     case SOLANA_RPC_METHOD_SIMULATE:
-      return await handleSimulate(ctx, params[0], params[1], params[2]);
+      return await handleSolanaSimulate(ctx, params[0], params[1], params[2]);
     default:
       throw new Error(`unexpected rpc method: ${method}`);
   }
@@ -113,7 +118,7 @@ async function handle<T = any>(
 // Note that "connected" simply means that the wallet can be used to issue
 // requests because it's both approved and unlocked. There is currently no
 // extra session state or connections that are maintained.
-async function handleConnect(
+async function handleSolanaConnect(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
   const origin = ctx.sender.origin;
@@ -174,15 +179,15 @@ async function handleConnect(
   throw new Error("user did not approve");
 }
 
-function handleDisconnect(ctx: Context<Backend>): RpcResponse<string> {
-  const resp = ctx.backend.disconnect();
+function handleSolanaDisconnect(ctx: Context<Backend>): RpcResponse<string> {
+  const resp = ctx.backend.solanaDisconnect();
   ctx.events.emit(BACKEND_EVENT, {
     name: NOTIFICATION_DISCONNECTED,
   });
   return [resp];
 }
 
-async function handleSignAndSendTx(
+async function handleSolanaSignAndSendTx(
   ctx: Context<Backend>,
   tx: string,
   walletAddress: string,
@@ -201,14 +206,18 @@ async function handleSignAndSendTx(
 
   // Only sign if the user clicked approve.
   if (didApprove) {
-    const sig = await ctx.backend.signAndSendTx(tx, walletAddress, options);
+    const sig = await ctx.backend.solanaSignAndSendTx(
+      tx,
+      walletAddress,
+      options
+    );
     return [sig];
   }
 
   throw new Error("user denied transaction signature");
 }
 
-async function handleSignTx(
+async function handleSolanaSignTx(
   ctx: Context<Backend>,
   tx: string,
   walletAddress: string
@@ -225,14 +234,14 @@ async function handleSignTx(
 
   // Only sign if the user clicked approve.
   if (didApprove) {
-    const sig = await ctx.backend.signTransaction(tx, walletAddress);
+    const sig = await ctx.backend.solanaSignTransaction(tx, walletAddress);
     return [sig];
   }
 
   throw new Error("user denied transaction signature");
 }
 
-async function handleSignAllTxs(
+async function handleSolanaSignAllTxs(
   ctx: Context<Backend>,
   txs: Array<string>,
   walletAddress: string
@@ -249,14 +258,17 @@ async function handleSignAllTxs(
 
   // Sign all if user clicked approve.
   if (didApprove) {
-    const resp = await ctx.backend.signAllTransactions(txs, walletAddress);
+    const resp = await ctx.backend.solanaSignAllTransactions(
+      txs,
+      walletAddress
+    );
     return [resp];
   }
 
   throw new Error("user denied transactions");
 }
 
-async function handleSignMessage(
+async function handleSolanaSignMessage(
   ctx: Context<Backend>,
   msg: string,
   walletAddress: string
@@ -272,20 +284,20 @@ async function handleSignMessage(
   const didApprove = uiResp.result;
 
   if (didApprove) {
-    const sig = await ctx.backend.signMessage(msg, walletAddress);
+    const sig = await ctx.backend.solanaSignMessage(msg, walletAddress);
     return [sig];
   }
 
   throw new Error("user denied message signature");
 }
 
-async function handleSimulate(
+async function handleSolanaSimulate(
   ctx: Context<Backend>,
   txStr: string,
   walletAddress: string,
   includeAccounts?: boolean | Array<string>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.simulate(
+  const resp = await ctx.backend.solanaSimulate(
     txStr,
     walletAddress,
     includeAccounts

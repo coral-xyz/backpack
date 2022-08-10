@@ -98,7 +98,7 @@ export class Backend {
     return await blockchainKeyring.signMessage(msg, walletAddress);
   }
 
-  async simulate(
+  async solanaSimulate(
     txStr: string,
     walletAddress: string,
     includeAccounts?: boolean | Array<string>
@@ -117,7 +117,7 @@ export class Backend {
     );
   }
 
-  disconnect() {
+  solanaDisconnect() {
     // todo
     return SUCCESS_RESPONSE;
   }
@@ -126,7 +126,7 @@ export class Backend {
   // Solana.
   ///////////////////////////////////////////////////////////////////////////////
 
-  async recentBlockhash(commitment?: Commitment): Promise<string> {
+  async solanaRecentBlockhash(commitment?: Commitment): Promise<string> {
     const { blockhash } = await this.solanaConnectionBackend.getLatestBlockhash(
       commitment
     );

@@ -10,7 +10,7 @@ import {
   SOL_NATIVE_MINT,
   USDC_MINT,
   WSOL_MINT,
-  UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
+  UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
 } from "@coral-xyz/common";
 import {
@@ -486,7 +486,7 @@ export function SwapProvider(props: any) {
 
   const sendAndConfirmTransaction = async (serializedTransaction: string) => {
     const signature = await background.request({
-      method: UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
+      method: UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
       params: [
         bs58.encode(Buffer.from(serializedTransaction, "base64")),
         wallet.publicKey,

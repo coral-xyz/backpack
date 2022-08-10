@@ -10,10 +10,10 @@ import type {
 } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
 import {
-  UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   getLogger,
   withContextPort,
   ChannelAppUi,
+  UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
