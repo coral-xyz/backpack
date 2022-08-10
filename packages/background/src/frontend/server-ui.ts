@@ -169,7 +169,7 @@ async function handle<T = any>(
     // Wallet signing.
     //
     case UI_RPC_METHOD_SIMULATE:
-      return await handleSimulate(ctx, params[0], params[1]);
+      return await handleSimulate(ctx, params[0], params[1], params[2]);
     case UI_RPC_METHOD_SIGN_TRANSACTION:
       return await handleSignTransaction(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS:
@@ -581,9 +581,14 @@ async function handleSolanaExplorerUpdate(
 async function handleSimulate(
   ctx: Context<Backend>,
   messageBs58: string,
-  walletAddress: string
+  walletAddress: string,
+  includeAccounts?: boolean | Array<string>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.simulate(messageBs58, walletAddress);
+  const resp = await ctx.backend.simulate(
+    messageBs58,
+    walletAddress,
+    includeAccounts
+  );
   return [resp];
 }
 

@@ -326,8 +326,6 @@ export class Backend {
     signers?: Array<Signer>,
     includeAccounts?: boolean | Array<PublicKey>
   ): Promise<RpcResponseAndContext<SimulatedTransactionResponse>> {
-    console.log(transactionOrMessage);
-    console.log(signers);
     return await this.connection!.simulateTransaction(
       transactionOrMessage,
       signers,

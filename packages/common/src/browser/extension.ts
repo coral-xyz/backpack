@@ -131,20 +131,22 @@ export async function openApproveTransactionPopupWindow(
   origin: string,
   title: string,
   requestId: number,
-  txMsg: string
+  tx: string
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
-  const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&txMsg=${txMsg}`;
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&tx=${tx}`;
   return await openPopupWindow(url);
 }
 
 export async function openApproveAllTransactionsPopupWindow(
   origin: string,
+  title: string,
   requestId: number,
   txs: Array<string>
 ): Promise<chrome.windows.Window> {
+  const encodedTitle = encodeURIComponent(title);
   const txsStr = encodeURIComponent(JSON.stringify(txs));
-  const url = `${POPUP_HTML}?${QUERY_APPROVE_ALL_TRANSACTIONS}&origin=${origin}&requestId=${requestId}&txs=${txsStr}`;
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_ALL_TRANSACTIONS}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&txs=${txsStr}`;
   return await openPopupWindow(url);
 }
 
