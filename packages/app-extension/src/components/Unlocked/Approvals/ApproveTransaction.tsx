@@ -3,7 +3,7 @@ import { ethers, BigNumber } from "ethers";
 import * as bs58 from "bs58";
 import { AccountLayout, u64, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { PublicKey, Transaction } from "@solana/web3.js";
-import { Typography } from "@mui/material";
+import { List, ListItem, Typography } from "@mui/material";
 import _CheckIcon from "@mui/icons-material/Check";
 import { Blockchain, UI_RPC_METHOD_SIMULATE } from "@coral-xyz/common";
 import {
@@ -15,7 +15,6 @@ import {
 } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import { WithApproval } from ".";
-import { SettingsList } from "../../common/Settings/List";
 
 const { Zero } = ethers.constants;
 
@@ -34,10 +33,30 @@ const useStyles = styles((theme) => ({
     fontSize: "14px",
     marginBottom: "8px",
   },
+  listRoot: {
+    color: theme.custom.colors.fontColor,
+    padding: "0",
+    borderRadius: "4px",
+    fontSize: "14px",
+  },
+  listItemRoot: {
+    alignItems: "start",
+    borderBottom: `1px solid #000`,
+    borderRadius: "4px",
+    background: theme.custom.colors.nav,
+    padding: "8px",
+  },
+  listItemIconRoot: {
+    minWidth: "inherit",
+    height: "20px",
+    width: "20px",
+    marginRight: "8px",
+  },
   warning: {
     color: theme.custom.colors.negative,
     fontSize: "14px",
     marginTop: "24px",
+    textAlign: "center",
   },
   link: {
     cursor: "pointer",
@@ -100,8 +119,6 @@ export function ApproveAllTransactions({
 }) {
   const classes = useStyles();
 
-  const txArray = JSON.parse(txs);
-
   const onConfirm = async () => {
     onCompletion(true);
   };
@@ -119,7 +136,7 @@ export function ApproveAllTransactions({
       onConfirmLabel="Approve"
       onDeny={onDeny}
     >
-      <>Hi</>
+      <div className={classes.warning}>Confirming multiple transactions</div>
     </WithApproval>
   );
 }
@@ -177,7 +194,8 @@ function TransactionData({ tx }: { tx: string | null }) {
                     decimals: token.decimals,
                   };
                 } catch {
-                  // ignore, probably not a token account
+                  // ignore, probably not a token account or some other
+                  // failure, we don't want to fail displaying the popup
                 }
               }
               return result;
@@ -212,7 +230,6 @@ function TransactionData({ tx }: { tx: string | null }) {
     ticker: string,
     decimals: number
   ) => {
-    console.log(amount);
     const className = amount.gte(Zero) ? classes.positive : classes.negative;
     return (
       <span className={className}>
@@ -221,49 +238,40 @@ function TransactionData({ tx }: { tx: string | null }) {
     );
   };
 
-  const balanceChangeMenuItems = {
-    ...Object.fromEntries(
-      Object.keys(balanceChanges).map((ticker) => {
-        return [
-          ticker,
-          {
-            onClick: () => {},
-            detail: changeDetail(
-              balanceChanges[ticker].nativeChange,
-              ticker,
-              balanceChanges[ticker].decimals
-            ),
-            button: false,
-          },
-        ];
-      })
-    ),
-  };
-
-  const menuItems = {
-    ...balanceChangeMenuItems,
-    Network: {
-      onClick: () => {},
-      detail: <>Solana</>,
-      button: false,
-    },
-    "Network Fee": {
-      onClick: () => {},
-      detail: (
-        <>
-          {estimatedFee && `${ethers.utils.formatUnits(estimatedFee, 9)} SOL`}
-        </>
+  const balanceChangeRows = Object.keys(balanceChanges).map((ticker) => {
+    return [
+      ticker,
+      changeDetail(
+        balanceChanges[ticker].nativeChange,
+        ticker,
+        balanceChanges[ticker].decimals
       ),
-      button: false,
-    },
-  };
+    ];
+  });
+
+  const menuItems = [
+    ...balanceChangeRows,
+    ["Network", <>Solana</>],
+    [
+      "Network Fee",
+      <>{estimatedFee && `${ethers.utils.formatUnits(estimatedFee, 9)} SOL`}</>,
+    ],
+  ];
 
   return (
     <>
       <Typography className={classes.listDescription}>
         Transaction details
       </Typography>
-      <SettingsList menuItems={menuItems} style={{ margin: 0 }} />
+      <List className={classes.listRoot}>
+        {menuItems.map((row) => {
+          return (
+            <ListItem className={classes.listItemRoot} secondaryAction={row[1]}>
+              {row[0]}
+            </ListItem>
+          );
+        })}
+      </List>
       {simulationError && (
         <div className={classes.warning}>
           This transaction is unlikely to succeed.

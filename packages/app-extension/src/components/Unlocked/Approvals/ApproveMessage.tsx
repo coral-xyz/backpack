@@ -1,7 +1,8 @@
-import { Link, List, ListItem, ListItemIcon, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import _CheckIcon from "@mui/icons-material/Check";
-import { styles } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { WithApproval } from ".";
+import { TextField } from "@coral-xyz/react-xnft-renderer";
 
 const useStyles = styles((theme) => ({
   title: {
@@ -18,10 +19,18 @@ const useStyles = styles((theme) => ({
     fontSize: "14px",
     marginBottom: "8px",
   },
+  textFieldInput: {
+    marginTop: 0,
+    "& .MuiOutlinedInput-root": {
+      padding: 0,
+      fontSize: "12px",
+    },
+  },
 }));
 
 export function ApproveMessage({ origin, title, message, onCompletion }: any) {
   const classes = useStyles();
+  const theme = useCustomTheme();
 
   const onConfirm = async () => {
     await onCompletion(true);
@@ -42,7 +51,18 @@ export function ApproveMessage({ origin, title, message, onCompletion }: any) {
     >
       <>
         <Typography className={classes.listDescription}>Message</Typography>
-        {message}
+        <TextField
+          rootClass={classes.textFieldInput}
+          value={message}
+          rows={8}
+          disabled={true}
+          inputProps={{
+            style: {
+              background: theme.custom.colors.nav,
+              padding: "8px",
+            },
+          }}
+        />
       </>
     </WithApproval>
   );
