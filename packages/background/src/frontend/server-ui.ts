@@ -51,9 +51,9 @@ import {
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
   UI_RPC_METHOD_SIMULATE,
-  UI_RPC_METHOD_SIGN_TRANSACTION,
-  UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS,
-  UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
+  UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
+  UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
+  UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
   UI_RPC_METHOD_APPROVED_ORIGINS_DELETE,
@@ -170,12 +170,16 @@ async function handle<T = any>(
     //
     case UI_RPC_METHOD_SIMULATE:
       return await handleSimulate(ctx, params[0], params[1], params[2]);
-    case UI_RPC_METHOD_SIGN_TRANSACTION:
-      return await handleSignTransaction(ctx, params[0], params[1]);
-    case UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS:
-      return await handleSignAllTransactions(ctx, params[0], params[1]);
-    case UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION:
-      return await handleSignAndSendTransaction(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION:
+      return await handleSolanaSignTransaction(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS:
+      return await handleSolanaSignAllTransactions(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION:
+      return await handleSolanaSignAndSendTransaction(
+        ctx,
+        params[0],
+        params[1]
+      );
     //
     // Connection URL.
     //
@@ -592,30 +596,30 @@ async function handleSimulate(
   return [resp];
 }
 
-async function handleSignTransaction(
+async function handleSolanaSignTransaction(
   ctx: Context<Backend>,
   txStr: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.signTransaction(txStr, walletAddress);
+  const resp = await ctx.backend.solanaSignTransaction(txStr, walletAddress);
   return [resp];
 }
 
-async function handleSignAllTransactions(
+async function handleSolanaSignAllTransactions(
   ctx: Context<Backend>,
   txs: Array<string>,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.signAllTransactions(txs, walletAddress);
+  const resp = await ctx.backend.solanaSignAllTransactions(txs, walletAddress);
   return [resp];
 }
 
-async function handleSignAndSendTransaction(
+async function handleSolanaSignAndSendTransaction(
   ctx: Context<Backend>,
   tx: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.signAndSendTx(tx, walletAddress);
+  const resp = await ctx.backend.solanaSignAndSendTx(tx, walletAddress);
   return [resp];
 }
 

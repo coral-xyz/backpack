@@ -389,11 +389,14 @@ export class Plugin {
       case PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT:
         return await this._handlePut(params[0], params[1]);
       case PLUGIN_SOLANA_RPC_METHOD_SIGN_TX:
-        return await this._handleSignTransaction(params[0], params[1]);
+        return await this._handleSolanaSignTransaction(params[0], params[1]);
       case PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX:
-        return await this._handleSignAndSendTransaction(params[0], params[1]);
+        return await this._handleSolanaSignAndSendTransaction(
+          params[0],
+          params[1]
+        );
       case PLUGIN_SOLANA_RPC_METHOD_SIMULATE_TX:
-        return await this._handleSimulate(params[0], params[1]);
+        return await this._handleSolanaSimulate(params[0], params[1]);
       default:
         logger.error(method);
         throw new Error("unexpected method");
@@ -410,7 +413,7 @@ export class Plugin {
     throw new Error("not implemented");
   }
 
-  private async _handleSignTransaction(
+  private async _handleSolanaSignTransaction(
     transaction: string,
     pubkey: string
   ): Promise<RpcResponse> {
@@ -431,7 +434,7 @@ export class Plugin {
     }
   }
 
-  private async _handleSignAndSendTransaction(
+  private async _handleSolanaSignAndSendTransaction(
     transaction: string,
     pubkey: string
   ): Promise<RpcResponse> {
@@ -452,7 +455,7 @@ export class Plugin {
     }
   }
 
-  private async _handleSimulate(
+  private async _handleSolanaSimulate(
     transaction: string,
     pubkey: string
   ): Promise<RpcResponse> {

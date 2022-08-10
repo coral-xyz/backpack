@@ -102,20 +102,21 @@ export const UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE =
 export const UI_RPC_METHOD_SETTINGS_DARK_MODE_READ = "settings-dark-mode-read";
 export const UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE =
   "settings-dark-mode-update";
+export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
+export const UI_RPC_METHOD_LEDGER_IMPORT = "ledger-import";
+export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET = "plugin-storage-get";
+export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT = "plugin-storage-put";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ = "solana-commitment-read";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE =
   "solana-commitment-update";
 export const UI_RPC_METHOD_SIMULATE = "ui-rpc-method-simulate";
-export const UI_RPC_METHOD_SIGN_TRANSACTION = "ui-rpc-method-sign-tx";
-export const UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS = "ui-rpc-method-sign-all-txs";
-export const UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION =
-  "ui-rpc-method-sign-and-send-tx";
-export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
-export const UI_RPC_METHOD_LEDGER_IMPORT = "ledger-import";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_READ = "solana-explorer-read";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE = "solana-explorer-update";
-export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET = "plugin-storage-get";
-export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT = "plugin-storage-put";
+export const UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION = "ui-rpc-method-sign-tx";
+export const UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS =
+  "ui-rpc-method-sign-all-txs";
+export const UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION =
+  "ui-rpc-method-sign-and-send-tx";
 
 //
 // Notifications sent from the background script to observers.

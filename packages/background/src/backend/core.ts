@@ -52,14 +52,14 @@ export class Backend {
   // Solana Provider.
   ///////////////////////////////////////////////////////////////////////////////
 
-  async signAndSendTx(
+  async solanaSignAndSendTx(
     txStr: string,
     walletAddress: string,
     options?: SendOptions
   ): Promise<string> {
     // Sign the transaction.
     const tx = Transaction.from(bs58.decode(txStr));
-    const signature = await this.signTransaction(txStr, walletAddress);
+    const signature = await this.solanaSignTransaction(txStr, walletAddress);
     const pubkey = new PublicKey(walletAddress);
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
 
@@ -74,26 +74,26 @@ export class Backend {
     );
   }
 
-  async signAllTransactions(
+  async solanaSignAllTransactions(
     txs: Array<string>,
-    walletAddress
+    walletAddress: string
   ): Promise<Array<string>> {
     const signed: Array<string> = [];
     for (let k = 0; k < txs.length; k += 1) {
-      signed.push(await this.signTransaction(txs[k], walletAddress));
+      signed.push(await this.solanaSignTransaction(txs[k], walletAddress));
     }
     return signed;
   }
 
   // Returns the signature.
-  async signTransaction(txStr: string, walletAddress: string): Promise<string> {
+  async solanaSignTransaction(txStr: string, walletAddress: string): Promise<string> {
     const tx = Transaction.from(bs58.decode(txStr));
     const txMessage = bs58.encode(tx.serializeMessage());
     const blockchainKeyring = this.keyringStore.activeBlockchain();
     return await blockchainKeyring.signTransaction(txMessage, walletAddress);
   }
 
-  async signMessage(msg: string, walletAddress: string): Promise<string> {
+  async solanaSignMessage(msg: string, walletAddress: string): Promise<string> {
     const blockchainKeyring = this.keyringStore.activeBlockchain();
     return await blockchainKeyring.signMessage(msg, walletAddress);
   }
@@ -104,7 +104,7 @@ export class Backend {
     includeAccounts?: boolean | Array<string>
   ): Promise<any> {
     const tx = Transaction.from(bs58.decode(txStr));
-    const signature = await this.signTransaction(txStr, walletAddress);
+    const signature = await this.solanaSignTransaction(txStr, walletAddress);
     const pubkey = new PublicKey(walletAddress);
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
 
