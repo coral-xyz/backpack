@@ -7,7 +7,6 @@ import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
 import {
   SolanaCluster,
-  Blockchain,
   SolanaExplorer,
   BACKEND_EVENT,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
@@ -21,11 +20,11 @@ import {
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_RESET,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
-  NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
+  NOTIFICATION_DARK_MODE_UPDATED,
+  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
-  NOTIFICATION_DARK_MODE_UPDATED,
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
 import * as store from "./store";
@@ -156,7 +155,7 @@ export class Backend {
 
     const activeWallet = await this.activeWallet();
     this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_CONNECTION_URL_UPDATED,
+      name: NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
       data: {
         url: cluster,
         activeWallet,

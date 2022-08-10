@@ -21,9 +21,9 @@ import {
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
   SOLANA_RPC_METHOD_CONNECT,
   SOLANA_RPC_METHOD_DISCONNECT,
-  NOTIFICATION_CONNECTED,
-  NOTIFICATION_DISCONNECTED,
-  NOTIFICATION_CONNECTION_URL_UPDATED,
+  NOTIFICATION_SOLANA_CONNECTED,
+  NOTIFICATION_SOLANA_DISCONNECTED,
+  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
 } from "@coral-xyz/common";
 import * as cmn from "./common";
 import { RequestManager } from "./request-manager";
@@ -84,13 +84,13 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
     logger.debug("notification", event);
 
     switch (event.data.detail.name) {
-      case NOTIFICATION_CONNECTED:
+      case NOTIFICATION_SOLANA_CONNECTED:
         this._handleNotificationConnected(event);
         break;
-      case NOTIFICATION_DISCONNECTED:
+      case NOTIFICATION_SOLANA_DISCONNECTED:
         this._handleNotificationDisconnected(event);
         break;
-      case NOTIFICATION_CONNECTION_URL_UPDATED:
+      case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
         this._handleNotificationConnectionUrlUpdated(event);
         break;
       default:

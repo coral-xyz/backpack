@@ -121,8 +121,6 @@ export const UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION =
 //
 // Notifications sent from the background script to observers.
 //
-export const NOTIFICATION_CONNECTED = "anchor-connected";
-export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
 export const NOTIFICATION_KEYRING_STORE_CREATED =
   "notification-keyring-store-created";
 export const NOTIFICATION_KEYRING_STORE_LOCKED =
@@ -131,8 +129,6 @@ export const NOTIFICATION_KEYRING_STORE_UNLOCKED =
   "notification-keyring-store-unlocked";
 export const NOTIFICATION_KEYRING_STORE_RESET =
   "notification-keyring-store-reset";
-export const NOTIFICATION_CONNECTION_URL_UPDATED =
-  "anchor-connection-url-updated";
 export const NOTIFICATION_KEYNAME_UPDATE = "anchor-keyname-update";
 export const NOTIFICATION_KEYRING_KEY_DELETE = "anchor-keyring-key-delete";
 export const NOTIFICATION_KEYRING_DERIVED_WALLET =
@@ -146,17 +142,21 @@ export const NOTIFICATION_KEYRING_RESET_MNEMONIC =
 export const NOTIFICATION_KEYRING_CREATED = "anchor-keyring-created";
 export const NOTIFICATION_APPROVED_ORIGINS_UPDATE =
   "anchor-approved-origins-update";
-export const NOTIFICATION_SPL_TOKENS_DID_UPDATE =
-  "anchor-spl-tokens-did-update";
 export const NOTIFICATION_NAVIGATION_URL_DID_CHANGE =
   "anchor-navigation-url-did-change";
 export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
   "anchor-auto-lock-secs-updated";
+export const NOTIFICATION_DARK_MODE_UPDATED = "anchor-dark-mode-updated";
+export const NOTIFICATION_SOLANA_CONNECTED = "anchor-solana-connected";
+export const NOTIFICATION_SOLANA_DISCONNECTED = "anchor-solana-disconnected";
+export const NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED =
+  "anchor-solana-connection-url-updated";
 export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
   "anchor-solana-explorer-updated";
 export const NOTIFICATION_SOLANA_COMMITMENT_UPDATED =
   "anchor-solana-commitment-updated";
-export const NOTIFICATION_DARK_MODE_UPDATED = "anchor-dark-mode-updated";
+export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
+  "anchor-solana-spl-tokens-did-update";
 
 //
 // Solana web injected provider API.

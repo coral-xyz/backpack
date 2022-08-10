@@ -27,13 +27,13 @@ import {
   SOLANA_RPC_METHOD_SIGN_ALL_TXS,
   SOLANA_RPC_METHOD_SIGN_MESSAGE,
   SOLANA_RPC_METHOD_SIMULATE,
-  NOTIFICATION_CONNECTED,
-  NOTIFICATION_DISCONNECTED,
   CHANNEL_SOLANA_RPC_REQUEST,
   CHANNEL_NOTIFICATION,
   CONNECTION_POPUP_RESPONSE,
   BACKEND_EVENT,
-  NOTIFICATION_CONNECTION_URL_UPDATED,
+  NOTIFICATION_SOLANA_CONNECTED,
+  NOTIFICATION_SOLANA_DISCONNECTED,
+  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
 } from "@coral-xyz/common";
 import type { Backend } from "../backend/core";
 import { SUCCESS_RESPONSE } from "../backend/core";
@@ -57,13 +57,13 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
   //
   events.on(BACKEND_EVENT, (notification) => {
     switch (notification.name) {
-      case NOTIFICATION_CONNECTION_URL_UPDATED:
+      case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
         notificationsInjected.sendMessageActiveTab(notification);
         break;
-      case NOTIFICATION_CONNECTED:
+      case NOTIFICATION_SOLANA_CONNECTED:
         notificationsInjected.sendMessageActiveTab(notification);
         break;
-      case NOTIFICATION_DISCONNECTED:
+      case NOTIFICATION_SOLANA_DISCONNECTED:
         notificationsInjected.sendMessageActiveTab(notification);
         break;
       default:
@@ -172,7 +172,7 @@ async function handleSolanaConnect(
     const connectionUrl = await ctx.backend.solanaConnectionUrlRead();
     const data = { publicKey: activeWallet, connectionUrl };
     ctx.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_CONNECTED,
+      name: NOTIFICATION_SOLANA_CONNECTED,
       data,
     });
     return [data];
@@ -184,7 +184,7 @@ async function handleSolanaConnect(
 function handleSolanaDisconnect(ctx: Context<Backend>): RpcResponse<string> {
   const resp = ctx.backend.solanaDisconnect();
   ctx.events.emit(BACKEND_EVENT, {
-    name: NOTIFICATION_DISCONNECTED,
+    name: NOTIFICATION_SOLANA_DISCONNECTED,
   });
   return [resp];
 }
