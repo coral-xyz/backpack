@@ -15,10 +15,16 @@ export type RaindropsItem = {
   metadata?: any;
 };
 
+export type RaindropsItemClass = {
+  item: State.Item.ItemClass;
+  token: TokenAccountInfo;
+  metadata?: any;
+};
+
 export const getItemProgram = async (): Promise<ItemProgram> => {
   const config: Program.ProgramConfig = {
     asyncSigning: true,
-    provider: window.xnft.provider,
+    provider: window.xnft,
     idl: Idl.Item,
   };
 
@@ -43,12 +49,12 @@ export const hasRaindropsItem = async (mint: PublicKey): Promise<boolean> => {
 
 export const getRaindropsItem = async (
   mint: PublicKey
-): Promise<State.Item.Item | null> => {
+): Promise<State.Item.ItemClass | State.Item.Item | undefined> => {
   console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
   const itemProgram = await getItemProgram();
-  const item = await itemProgram.fetchItem(mint, new BN(0));
+  const item = await itemProgram.fetchItemClass(mint, new BN(0));
   console.log("Raindrops Fetched");
-  return item;
+  return item?.object;
 };
 
 // export const hasRaindropsPlayer = async (mint: PublicKey) => {

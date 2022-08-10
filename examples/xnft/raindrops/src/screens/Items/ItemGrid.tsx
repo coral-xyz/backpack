@@ -12,10 +12,10 @@ export function ItemGrid() {
 
   console.log("loading", loading);
   console.log("raindropsLoading", raindropsLoading);
-  if (loading || raindropsLoading) {
-    console.log("%%%%%%%%%%%%%%%%%%%%%%%%%loading");
-    return <LoadingIndicator />;
-  }
+  // if (loading || raindropsLoading) {
+  //   console.log("%%%%%%%%%%%%%%%%%%%%%%%%%loading");
+  //   return <LoadingIndicator />;
+  // }
 
   console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!", raindropsItems);
   if (raindropsItems.length === 0) {

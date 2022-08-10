@@ -1,6 +1,10 @@
 import React, { useEffect } from "react";
 import { TokenAccountInfo } from "../types";
-import { getRaindropsItem, RaindropsItem } from "../utils/raindrops";
+import {
+  getRaindropsItem,
+  RaindropsItemClass,
+  RaindropsItem,
+} from "../utils/raindrops";
 
 const fetchRaindropItems = async (
   tokens: TokenAccountInfo[],
@@ -28,12 +32,12 @@ export default (tokens: TokenAccountInfo[] | null) => {
     if (tokens) {
       setLoading(true);
       fetchRaindropItems(tokens, (raindropsItems) => {
-        setRaindropsItems(raindropsItems);
         setLoading(false);
+        setRaindropsItems(raindropsItems);
       });
     } else {
-      setRaindropsItems([]);
       setLoading(false);
+      setRaindropsItems([]);
     }
   }, [tokens]);
   return { loading, raindropsItems };
