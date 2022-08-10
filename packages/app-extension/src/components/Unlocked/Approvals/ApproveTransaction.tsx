@@ -14,6 +14,7 @@ import {
   useSplTokenRegistry,
 } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
+import { Loading } from "../../common";
 import { WithApproval } from ".";
 
 const { Zero } = ethers.constants;
@@ -55,8 +56,8 @@ const useStyles = styles((theme) => ({
   warning: {
     color: theme.custom.colors.negative,
     fontSize: "14px",
-    marginTop: "24px",
     textAlign: "center",
+    marginTop: "8px",
   },
   link: {
     cursor: "pointer",
@@ -257,6 +258,10 @@ function TransactionData({ tx }: { tx: string | null }) {
       <>{estimatedFee && `${ethers.utils.formatUnits(estimatedFee, 9)} SOL`}</>,
     ],
   ];
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <>
