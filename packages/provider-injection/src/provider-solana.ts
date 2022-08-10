@@ -16,7 +16,7 @@ import {
   BackgroundSolanaConnection,
   CHANNEL_SOLANA_RPC_REQUEST,
   CHANNEL_SOLANA_RPC_RESPONSE,
-  CHANNEL_NOTIFICATION,
+  CHANNEL_SOLANA_NOTIFICATION,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
   SOLANA_RPC_METHOD_CONNECT,
@@ -80,7 +80,7 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
   }
 
   _handleNotification(event: Event) {
-    if (event.data.type !== CHANNEL_NOTIFICATION) return;
+    if (event.data.type !== CHANNEL_SOLANA_NOTIFICATION) return;
     logger.debug("notification", event);
 
     switch (event.data.detail.name) {

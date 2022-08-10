@@ -28,7 +28,7 @@ import {
   SOLANA_RPC_METHOD_SIGN_MESSAGE,
   SOLANA_RPC_METHOD_SIMULATE,
   CHANNEL_SOLANA_RPC_REQUEST,
-  CHANNEL_NOTIFICATION,
+  CHANNEL_SOLANA_NOTIFICATION,
   CONNECTION_POPUP_RESPONSE,
   BACKEND_EVENT,
   NOTIFICATION_SOLANA_CONNECTED,
@@ -45,11 +45,12 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
   if (cfg.isMobile) {
     return null;
   }
-  const rpcServerInjected = ChannelContentScript.server(
+  const solanaRpcServerInjected = ChannelContentScript.server(
     CHANNEL_SOLANA_RPC_REQUEST
   );
-  const notificationsInjected =
-    ChannelContentScript.client(CHANNEL_NOTIFICATION);
+  const notificationsInjected = ChannelContentScript.client(
+    CHANNEL_SOLANA_NOTIFICATION
+  );
   const popupUiResponse = ChannelAppUi.server(CONNECTION_POPUP_RESPONSE);
 
   //
@@ -71,11 +72,11 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
     }
   });
 
-  rpcServerInjected.handler(withContext(b, events, handle));
+  solanaRpcServerInjected.handler(withContext(b, events, handle));
   popupUiResponse.handler(withContextPort(b, events, handlePopupUiResponse));
 
   return {
-    rpcServerInjected,
+    solanaRpcServerInjected,
     popupUiResponse,
     notificationsInjected,
   };

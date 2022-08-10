@@ -3,7 +3,7 @@
 //
 export const CHANNEL_SOLANA_RPC_REQUEST = "anchor-solana-rpc-request";
 export const CHANNEL_SOLANA_RPC_RESPONSE = "anchor-solana-rpc-response";
-export const CHANNEL_NOTIFICATION = "anchor-notification";
+export const CHANNEL_SOLANA_NOTIFICATION = "anchor-solana-notification";
 export const CHANNEL_PLUGIN_RPC_REQUEST = "anchor-plugin-request";
 export const CHANNEL_PLUGIN_RPC_RESPONSE = "anchor-plugin-response";
 export const CHANNEL_PLUGIN_RENDER_REQUEST =
