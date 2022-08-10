@@ -4746,10 +4746,17 @@
     "@solana/wallet-adapter-tokenpocket" "^0.4.7"
     "@solana/wallet-adapter-torus" "^0.11.14"
 
-"@solana/wallet-standard@0.1.0-alpha.2":
-  version "0.1.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@solana/wallet-standard/-/wallet-standard-0.1.0-alpha.2.tgz#5ee924434867a0323e6ef6b655b99ba7e4f0acf1"
-  integrity sha512-zzSF+CKSnuGo1DBg2Vm2zp/K7kZneu0BqJ5VGAA38z2iqhsxc3IZsmT4/+Qq0Joo1BrnNydS+VA3VOLQTDPCFA==
+"@solana/wallet-standard-util@0.1.0-alpha.0":
+  version "0.1.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@solana/wallet-standard-util/-/wallet-standard-util-0.1.0-alpha.0.tgz#b459c47b11527ee1be5def768b7d21723b923099"
+  integrity sha512-0xpWtMx9QsfUPYytaQKxvTXYrNYMFe+bcEVHrLGqyUnDoXRX6WVwj1VdJucj3E/KvZREfiTU/Pmx6uVoiDrrgg==
+  dependencies:
+    "@solana/wallet-standard" "^0.1.0-alpha.3"
+
+"@solana/wallet-standard@0.1.0-alpha.4", "@solana/wallet-standard@^0.1.0-alpha.3":
+  version "0.1.0-alpha.4"
+  resolved "https://registry.yarnpkg.com/@solana/wallet-standard/-/wallet-standard-0.1.0-alpha.4.tgz#2e41d3bf83dc09993316e84a0d247a9a2d2f9144"
+  integrity sha512-ImvgAq4/qTTOGe0WmtTrAWgOULz97AoivgOg0i9Pmt0LhGjfq3NdnnGSaFRHSeLu2cEBhiPepqL/UospjNdrxg==
 
 "@solana/web3.js@1.43.2", "@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.35.1", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.37.1", "@solana/web3.js@^1.43.2", "@solana/web3.js@^1.50.1":
   version "1.43.2"
