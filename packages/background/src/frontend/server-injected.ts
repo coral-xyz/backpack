@@ -20,13 +20,13 @@ import {
   openApproveTransactionPopupWindow,
   openApproveAllTransactionsPopupWindow,
   openApproveMessagePopupWindow,
-  RPC_METHOD_CONNECT,
-  RPC_METHOD_DISCONNECT,
-  RPC_METHOD_SIGN_AND_SEND_TX,
-  RPC_METHOD_SIGN_TX,
-  RPC_METHOD_SIGN_ALL_TXS,
-  RPC_METHOD_SIGN_MESSAGE,
-  RPC_METHOD_SIMULATE,
+  SOLANA_RPC_METHOD_CONNECT,
+  SOLANA_RPC_METHOD_DISCONNECT,
+  SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
+  SOLANA_RPC_METHOD_SIGN_TX,
+  SOLANA_RPC_METHOD_SIGN_ALL_TXS,
+  SOLANA_RPC_METHOD_SIGN_MESSAGE,
+  SOLANA_RPC_METHOD_SIMULATE,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   CHANNEL_RPC_REQUEST,
@@ -87,19 +87,19 @@ async function handle<T = any>(
 
   const { method, params } = req;
   switch (method) {
-    case RPC_METHOD_CONNECT:
+    case SOLANA_RPC_METHOD_CONNECT:
       return await handleConnect(ctx);
-    case RPC_METHOD_DISCONNECT:
+    case SOLANA_RPC_METHOD_DISCONNECT:
       return handleDisconnect(ctx);
-    case RPC_METHOD_SIGN_AND_SEND_TX:
+    case SOLANA_RPC_METHOD_SIGN_AND_SEND_TX:
       return await handleSignAndSendTx(ctx, params[0], params[1], params[2]);
-    case RPC_METHOD_SIGN_TX:
+    case SOLANA_RPC_METHOD_SIGN_TX:
       return await handleSignTx(ctx, params[0], params[1]);
-    case RPC_METHOD_SIGN_ALL_TXS:
+    case SOLANA_RPC_METHOD_SIGN_ALL_TXS:
       return await handleSignAllTxs(ctx, params[0], params[1]);
-    case RPC_METHOD_SIGN_MESSAGE:
+    case SOLANA_RPC_METHOD_SIGN_MESSAGE:
       return await handleSignMessage(ctx, params[0], params[1]);
-    case RPC_METHOD_SIMULATE:
+    case SOLANA_RPC_METHOD_SIMULATE:
       return await handleSimulate(ctx, params[0], params[1], params[2]);
     default:
       throw new Error(`unexpected rpc method: ${method}`);

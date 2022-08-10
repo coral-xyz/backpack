@@ -19,8 +19,8 @@ import {
   CHANNEL_NOTIFICATION,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
-  RPC_METHOD_CONNECT,
-  RPC_METHOD_DISCONNECT,
+  SOLANA_RPC_METHOD_CONNECT,
+  SOLANA_RPC_METHOD_DISCONNECT,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
   NOTIFICATION_CONNECTION_URL_UPDATED,
@@ -30,7 +30,7 @@ import { RequestManager } from "./request-manager";
 
 const logger = getLogger("provider-injection");
 
-export class ProviderInjection extends EventEmitter implements Provider {
+export class ProviderSolanaInjection extends EventEmitter implements Provider {
   private _options?: ConfirmOptions;
 
   //
@@ -129,7 +129,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
     }
     // Send request to the RPC API.
     const result = await this._requestManager.request({
-      method: RPC_METHOD_CONNECT,
+      method: SOLANA_RPC_METHOD_CONNECT,
       params: [],
     });
 
@@ -138,7 +138,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
 
   async disconnect() {
     await this._requestManager.request({
-      method: RPC_METHOD_DISCONNECT,
+      method: SOLANA_RPC_METHOD_DISCONNECT,
       params: [],
     });
     this.connection = this.defaultConnection();

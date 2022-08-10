@@ -12,11 +12,11 @@ import type {
 } from "@solana/web3.js";
 import type { RequestManager } from "@coral-xyz/common";
 import {
-  RPC_METHOD_SIGN_ALL_TXS,
-  RPC_METHOD_SIGN_AND_SEND_TX,
-  RPC_METHOD_SIGN_MESSAGE,
-  RPC_METHOD_SIGN_TX,
-  RPC_METHOD_SIMULATE,
+  SOLANA_RPC_METHOD_SIGN_ALL_TXS,
+  SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
+  SOLANA_RPC_METHOD_SIGN_MESSAGE,
+  SOLANA_RPC_METHOD_SIGN_TX,
+  SOLANA_RPC_METHOD_SIMULATE,
 } from "@coral-xyz/common";
 
 export async function sendAndConfirm(
@@ -71,7 +71,7 @@ export async function send(
   });
   const txStr = encode(txSerialize);
   return await requestManager.request({
-    method: RPC_METHOD_SIGN_AND_SEND_TX,
+    method: SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
     params: [txStr, publicKey.toString(), options],
   });
 }
@@ -84,7 +84,7 @@ export async function signTransaction(
   tx.feePayer = publicKey;
   const txStr = encode(tx.serialize({ requireAllSignatures: false }));
   const signature = await requestManager.request({
-    method: RPC_METHOD_SIGN_TX,
+    method: SOLANA_RPC_METHOD_SIGN_TX,
     params: [txStr, publicKey.toString()],
   });
   // @ts-ignore
@@ -105,7 +105,7 @@ export async function signAllTransactions(
 
   // Get signatures from the background script.
   const signatures: Array<string> = await requestManager.request({
-    method: RPC_METHOD_SIGN_ALL_TXS,
+    method: SOLANA_RPC_METHOD_SIGN_ALL_TXS,
     params: [txStrs, publicKey.toString()],
   });
 
@@ -138,8 +138,8 @@ export async function simulate(
   });
   const txStr = encode(txSerialize);
   return await requestManager.request({
-    method: RPC_METHOD_SIMULATE,
-    params: [txStr, publicKey.toString(), true],
+    method: SOLANA_RPC_METHOD_SIMULATE,
+    params: [txStr, publicKey.toString(), commitment],
   });
 }
 
@@ -150,7 +150,7 @@ export async function signMessage(
 ): Promise<Uint8Array> {
   const msgStr = encode(msg);
   const signature = await requestManager.request({
-    method: RPC_METHOD_SIGN_MESSAGE,
+    method: SOLANA_RPC_METHOD_SIGN_MESSAGE,
     params: [msgStr, publicKey.toString()],
   });
   return decode(signature);

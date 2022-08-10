@@ -21,9 +21,9 @@ import {
   PLUGIN_RPC_METHOD_NAV_POP,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
-  RPC_METHOD_SIGN_TX as PLUGIN_RPC_METHOD_SIGN_TX,
-  RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_RPC_METHOD_SIGN_AND_SEND_TX,
-  RPC_METHOD_SIMULATE as PLUGIN_RPC_METHOD_SIMULATE_TX,
+  SOLANA_RPC_METHOD_SIGN_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_TX,
+  SOLANA_RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
+  SOLANA_RPC_METHOD_SIMULATE as PLUGIN_SOLANA_RPC_METHOD_SIMULATE_TX,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ON_CLICK,
   PLUGIN_NOTIFICATION_ON_CHANGE,
@@ -380,20 +380,20 @@ export class Plugin {
 
     const { method, params } = req;
     switch (method) {
-      case PLUGIN_RPC_METHOD_NAV_PUSH:
+      case PLUGIN_RPC_METHOD_NAV_PUSH: // TODO: remove
         return await this._handleNavPush();
-      case PLUGIN_RPC_METHOD_NAV_POP:
+      case PLUGIN_RPC_METHOD_NAV_POP: // TODO: remove
         return await this._handleNavPop();
-      case PLUGIN_RPC_METHOD_SIGN_TX:
-        return await this._handleSignTransaction(params[0], params[1]);
-      case PLUGIN_RPC_METHOD_SIGN_AND_SEND_TX:
-        return await this._handleSignAndSendTransaction(params[0], params[1]);
-      case PLUGIN_RPC_METHOD_SIMULATE_TX:
-        return await this._handleSimulate(params[0], params[1]);
       case PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET:
         return await this._handleGet(params[0]);
       case PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT:
         return await this._handlePut(params[0], params[1]);
+      case PLUGIN_SOLANA_RPC_METHOD_SIGN_TX:
+        return await this._handleSignTransaction(params[0], params[1]);
+      case PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX:
+        return await this._handleSignAndSendTransaction(params[0], params[1]);
+      case PLUGIN_SOLANA_RPC_METHOD_SIMULATE_TX:
+        return await this._handleSimulate(params[0], params[1]);
       default:
         logger.error(method);
         throw new Error("unexpected method");

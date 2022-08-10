@@ -1,3 +1,6 @@
+//
+// Messaging communication channel topics.
+//
 export const CHANNEL_RPC_REQUEST = "anchor-rpc-request";
 export const CHANNEL_RPC_RESPONSE = "anchor-rpc-response";
 export const CHANNEL_NOTIFICATION = "anchor-notification";
@@ -27,6 +30,9 @@ export const MOBILE_CHANNEL_FE_REQUEST = "mobile-fe-request";
 export const MOBILE_CHANNEL_FE_RESPONSE = "mobile-fe-response";
 export const MOBILE_CHANNEL_FE_RESPONSE_INNER = "mobile-fe-response-inner";
 
+//
+// xNFT notifications sent from the host to the xNFT.
+//
 export const PLUGIN_NOTIFICATION_RENDER = "render";
 export const PLUGIN_NOTIFICATION_CONNECT = "connect";
 export const PLUGIN_NOTIFICATION_ON_CLICK = "on-click";
@@ -38,19 +44,17 @@ export const PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED =
   "connection-url-updated";
 export const PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED = "public-key-updated";
 
+//
+// xNFT host API.
+//
 export const PLUGIN_RPC_METHOD_NAV_PUSH = "nav-push";
 export const PLUGIN_RPC_METHOD_NAV_POP = "nav-pop";
 export const PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET = "store-get";
 export const PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT = "store-put";
 
-export const RPC_METHOD_CONNECT = "connect";
-export const RPC_METHOD_DISCONNECT = "disconnect";
-export const RPC_METHOD_SIGN_AND_SEND_TX = "sign-and-send-tx";
-export const RPC_METHOD_SIGN_TX = "sign-tx";
-export const RPC_METHOD_SIGN_ALL_TXS = "sign-all-txs";
-export const RPC_METHOD_SIGN_MESSAGE = "sign-message";
-export const RPC_METHOD_SIMULATE = "simulate";
-
+//
+// Trusted app API.
+//
 export const UI_RPC_METHOD_KEYRING_STORE_CREATE = "keyring-store-create";
 export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS =
   "keyring-read-all-pubkeys";
@@ -73,7 +77,6 @@ export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
   "keyring-mnemonic-create";
 export const UI_RPC_METHOD_PREVIEW_PUBKEYS = "keyring-preview-pubkeys";
 export const UI_RPC_METHOD_KEYRING_RESET = "keyring-reset";
-
 export const UI_RPC_METHOD_CONNECTION_URL_READ = "connection-url-read";
 export const UI_RPC_METHOD_CONNECTION_URL_UPDATE = "connection-url-update";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET = "wallet-active";
@@ -114,6 +117,9 @@ export const UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE = "solana-explorer-update";
 export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET = "plugin-storage-get";
 export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT = "plugin-storage-put";
 
+//
+// Notifications sent from the background script to observers.
+//
 export const NOTIFICATION_CONNECTED = "anchor-connected";
 export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
 export const NOTIFICATION_KEYRING_STORE_CREATED =
@@ -151,6 +157,21 @@ export const NOTIFICATION_SOLANA_COMMITMENT_UPDATED =
   "anchor-solana-commitment-updated";
 export const NOTIFICATION_DARK_MODE_UPDATED = "anchor-dark-mode-updated";
 
+//
+// Solana web injected provider API.
+//
+export const SOLANA_RPC_METHOD_CONNECT = "connect";
+export const SOLANA_RPC_METHOD_DISCONNECT = "disconnect";
+export const SOLANA_RPC_METHOD_SIGN_AND_SEND_TX = "sign-and-send-tx";
+export const SOLANA_RPC_METHOD_SIGN_TX = "sign-tx";
+export const SOLANA_RPC_METHOD_SIGN_ALL_TXS = "sign-all-txs";
+export const SOLANA_RPC_METHOD_SIGN_MESSAGE = "sign-message";
+export const SOLANA_RPC_METHOD_SIMULATE = "simulate";
+
+//
+// Solana connection api. These are the methods available for the background
+// connection implementation (which the frontends use via message passing).
+//
 export const SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO = "solana-get-account-info";
 export const SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH =
   "solana-get-latest-blockhash";
@@ -180,6 +201,9 @@ export const CONNECTION_POPUP_RESPONSE = "anchor-popup-response";
 export const CONNECTION_POPUP_NOTIFICATIONS = "anchor-popup-notifications";
 export const SOLANA_CONNECTION_RPC_UI = "solana-connection-rpc-ui";
 
+//
+// Ledger API.
+//
 //const LEDGER_IFRAME_URL = "https://coral-xyz.github.io/anchor-wallet";
 export const LEDGER_IFRAME_URL = "https://localhost:4443/dist";
 export const LEDGER_INJECTED_CHANNEL_REQUEST = "ledger-injected-request";
