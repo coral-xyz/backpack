@@ -104,7 +104,10 @@ export function AddConnectWalletMenu() {
                   />
                 }
                 text="Connect a hardware wallet"
-                onClick={openConnectHardware}
+                onClick={() => {
+                  openConnectHardware();
+                  window.close();
+                }}
               />
             </Grid>
           </Grid>
