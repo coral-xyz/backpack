@@ -14,8 +14,8 @@ import type { Event } from "@coral-xyz/common";
 import {
   getLogger,
   BackgroundSolanaConnection,
-  CHANNEL_RPC_REQUEST,
-  CHANNEL_RPC_RESPONSE,
+  CHANNEL_SOLANA_RPC_REQUEST,
+  CHANNEL_SOLANA_RPC_RESPONSE,
   CHANNEL_NOTIFICATION,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
@@ -51,8 +51,8 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
     super();
     this._options = undefined;
     this._requestManager = new RequestManager(
-      CHANNEL_RPC_REQUEST,
-      CHANNEL_RPC_RESPONSE
+      CHANNEL_SOLANA_RPC_REQUEST,
+      CHANNEL_SOLANA_RPC_RESPONSE
     );
     this._connectionRequestManager = new RequestManager(
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,

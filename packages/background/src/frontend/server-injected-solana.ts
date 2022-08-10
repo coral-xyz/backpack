@@ -29,7 +29,7 @@ import {
   SOLANA_RPC_METHOD_SIMULATE,
   NOTIFICATION_CONNECTED,
   NOTIFICATION_DISCONNECTED,
-  CHANNEL_RPC_REQUEST,
+  CHANNEL_SOLANA_RPC_REQUEST,
   CHANNEL_NOTIFICATION,
   CONNECTION_POPUP_RESPONSE,
   BACKEND_EVENT,
@@ -45,7 +45,9 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
   if (cfg.isMobile) {
     return null;
   }
-  const rpcServerInjected = ChannelContentScript.server(CHANNEL_RPC_REQUEST);
+  const rpcServerInjected = ChannelContentScript.server(
+    CHANNEL_SOLANA_RPC_REQUEST
+  );
   const notificationsInjected =
     ChannelContentScript.client(CHANNEL_NOTIFICATION);
   const popupUiResponse = ChannelAppUi.server(CONNECTION_POPUP_RESPONSE);
