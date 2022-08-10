@@ -65,8 +65,8 @@ import {
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
   BACKEND_EVENT,
-  CONNECTION_POPUP_RPC,
-  CONNECTION_POPUP_NOTIFICATIONS,
+  CHANNEL_POPUP_RPC,
+  CHANNEL_POPUP_NOTIFICATIONS,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import type { Backend } from "../backend/core";
@@ -75,9 +75,9 @@ import type { Config, Handle } from "../types";
 const logger = getLogger("background-server-ui");
 
 export function start(_cfg: Config, events: EventEmitter, b: Backend): Handle {
-  const rpcServerUi = ChannelAppUi.server(CONNECTION_POPUP_RPC);
+  const rpcServerUi = ChannelAppUi.server(CHANNEL_POPUP_RPC);
   const notificationsUi = ChannelAppUi.notifications(
-    CONNECTION_POPUP_NOTIFICATIONS
+    CHANNEL_POPUP_NOTIFICATIONS
   );
 
   //

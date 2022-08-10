@@ -6,7 +6,7 @@ import {
   ChannelAppUi,
   Notification,
   BackgroundSolanaConnection,
-  CONNECTION_POPUP_NOTIFICATIONS,
+  CHANNEL_POPUP_NOTIFICATIONS,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
@@ -242,7 +242,7 @@ export function NotificationsProvider(props: any) {
     //
     // Initiate subscription.
     //
-    ChannelAppUi.notifications(CONNECTION_POPUP_NOTIFICATIONS).onNotification(
+    ChannelAppUi.notifications(CHANNEL_POPUP_NOTIFICATIONS).onNotification(
       notificationsHandler
     );
   }, []);

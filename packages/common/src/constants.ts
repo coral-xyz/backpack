@@ -1,9 +1,6 @@
 //
 // Messaging communication channel topics.
 //
-export const CHANNEL_SOLANA_RPC_REQUEST = "anchor-solana-rpc-request";
-export const CHANNEL_SOLANA_RPC_RESPONSE = "anchor-solana-rpc-response";
-export const CHANNEL_SOLANA_NOTIFICATION = "anchor-solana-notification";
 export const CHANNEL_PLUGIN_RPC_REQUEST = "anchor-plugin-request";
 export const CHANNEL_PLUGIN_RPC_RESPONSE = "anchor-plugin-response";
 export const CHANNEL_PLUGIN_RENDER_REQUEST =
@@ -13,13 +10,20 @@ export const CHANNEL_PLUGIN_LAUNCH_REQUEST =
 export const CHANNEL_PLUGIN_NOTIFICATION = "anchor-channel-plugin-notification";
 export const CHANNEL_PLUGIN_CONNECTION_BRIDGE =
   "anchor-channel-plugin-connection-bridge";
+export const CHANNEL_POPUP_RPC = "anchor-popup-rpc";
+export const CHANNEL_POPUP_RESPONSE = "anchor-popup-response";
+export const CHANNEL_POPUP_NOTIFICATIONS = "anchor-popup-notifications";
+export const CHANNEL_SOLANA_RPC_REQUEST = "anchor-solana-rpc-request";
+export const CHANNEL_SOLANA_RPC_RESPONSE = "anchor-solana-rpc-response";
+export const CHANNEL_SOLANA_NOTIFICATION = "anchor-solana-notification";
+export const CHANNEL_SOLANA_CONNECTION_RPC_UI = "solana-connection-rpc-ui";
 export const CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST =
   "solana-connection-injected-request";
 export const CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE =
   "solana-connection-injected-response";
 
 //
-// Mobile webview messaging subsystem channels.
+// Mobile specific webview messaging subsystem channels.
 //
 export const MOBILE_CHANNEL_HOST_RPC_REQUEST = "mobile-host-rpc-request";
 export const MOBILE_CHANNEL_HOST_RPC_RESPONSE = "mobile-host-rpc-response";
@@ -196,11 +200,6 @@ export const SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS =
   "solana-get-program-accounts";
 export const SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE =
   "solana-get-fee-for-message";
-
-export const CONNECTION_POPUP_RPC = "anchor-popup-rpc";
-export const CONNECTION_POPUP_RESPONSE = "anchor-popup-response";
-export const CONNECTION_POPUP_NOTIFICATIONS = "anchor-popup-notifications";
-export const SOLANA_CONNECTION_RPC_UI = "solana-connection-rpc-ui";
 
 //
 // Ledger API.
