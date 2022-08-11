@@ -79,13 +79,6 @@ const componentOverrides = {
       },
     },
   },
-  MuiInputBase: {
-    styleOverrides: {
-      input: {
-        color: FONT_COLOR,
-      },
-    },
-  },
 };
 
 export const darkTheme: any = {
