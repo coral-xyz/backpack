@@ -1,3 +1,8 @@
+import {
+  clusterApiUrl,
+  Transaction,
+  TransactionSignature,
+} from "@solana/web3.js";
 import type {
   ConnectInput,
   ConnectOutput,
@@ -12,23 +17,19 @@ import type {
   SignTransactionOutputs,
   Wallet,
   WalletAccount,
-  WalletAccountFeatureNames,
+  WalletAccountFeatureName,
+  WalletAccountNonstandardFeatureName,
   WalletEventNames,
   WalletEvents,
-} from "@solana/wallet-standard";
-import { VERSION_1_0_0 } from "@solana/wallet-standard";
+} from "@wallet-standard/standard";
+import { VERSION_1_0_0 } from "@wallet-standard/standard";
 import {
   bytesEqual,
   CHAIN_SOLANA_DEVNET,
   CHAIN_SOLANA_LOCALNET,
   CHAIN_SOLANA_MAINNET,
   CHAIN_SOLANA_TESTNET,
-} from "@solana/wallet-standard-util";
-import {
-  clusterApiUrl,
-  Transaction,
-  TransactionSignature,
-} from "@solana/web3.js";
+} from "@wallet-standard/util";
 import { decode } from "bs58";
 import { icon } from "./icon";
 
@@ -54,9 +55,9 @@ export class BackpackSolanaWalletAccount implements WalletAccount {
     return this.#chain;
   }
 
-  get features(): SignAndSendTransactionFeature<this> &
-    SignTransactionFeature<this> &
-    SignMessageFeature<this> {
+  get features(): SignAndSendTransactionFeature &
+    SignTransactionFeature &
+    SignMessageFeature {
     return {
       signAndSendTransaction: {
         signAndSendTransaction: (...args) =>
@@ -69,14 +70,18 @@ export class BackpackSolanaWalletAccount implements WalletAccount {
     };
   }
 
+  get nonstandardFeatures() {
+    return {} as const;
+  }
+
   constructor(publicKey: Uint8Array, chain: BackpackSolanaWalletChain) {
     this.#publicKey = publicKey;
     this.#chain = chain;
   }
 
   async #signAndSendTransaction(
-    inputs: SignAndSendTransactionInputs<this>
-  ): Promise<SignAndSendTransactionOutputs<this>> {
+    inputs: SignAndSendTransactionInputs
+  ): Promise<SignAndSendTransactionOutputs> {
     if (inputs.some((input) => !!input.extraSigners?.length))
       throw new Error("extraSigners not implemented");
 
@@ -99,8 +104,8 @@ export class BackpackSolanaWalletAccount implements WalletAccount {
   }
 
   async #signTransaction(
-    inputs: SignTransactionInputs<this>
-  ): Promise<SignTransactionOutputs<this>> {
+    inputs: SignTransactionInputs
+  ): Promise<SignTransactionOutputs> {
     if (inputs.some((input) => !!input.extraSigners?.length))
       throw new Error("extraSigners not implemented");
 
@@ -129,9 +134,7 @@ export class BackpackSolanaWalletAccount implements WalletAccount {
     }));
   }
 
-  async #signMessage(
-    inputs: SignMessageInputs<this>
-  ): Promise<SignMessageOutputs<this>> {
+  async #signMessage(inputs: SignMessageInputs): Promise<SignMessageOutputs> {
     if (inputs.some((input) => !!input.extraSigners?.length))
       throw new Error("extraSigners not implemented");
 
@@ -179,6 +182,10 @@ export class BackpackSolanaWallet
     ];
   }
 
+  get nonstandardFeatures() {
+    return [] as const;
+  }
+
   get accounts() {
     return this.#account ? [this.#account] : [];
   }
@@ -197,15 +204,27 @@ export class BackpackSolanaWallet
 
   async connect<
     Chain extends BackpackSolanaWalletAccount["chain"],
-    FeatureNames extends WalletAccountFeatureNames<BackpackSolanaWalletAccount>,
-    Input extends ConnectInput<BackpackSolanaWalletAccount, Chain, FeatureNames>
+    FeatureName extends WalletAccountFeatureName<BackpackSolanaWalletAccount>,
+    NonstandardFeatureName extends WalletAccountNonstandardFeatureName<BackpackSolanaWalletAccount>,
+    Input extends ConnectInput<
+      BackpackSolanaWalletAccount,
+      Chain,
+      FeatureName,
+      NonstandardFeatureName
+    >
   >({
     chains,
     addresses,
     features,
     silent,
   }: Input): Promise<
-    ConnectOutput<BackpackSolanaWalletAccount, Chain, FeatureNames, Input>
+    ConnectOutput<
+      BackpackSolanaWalletAccount,
+      Chain,
+      FeatureName,
+      NonstandardFeatureName,
+      Input
+    >
   > {
     if (!silent && !window.backpack.isConnected) {
       await window.backpack.connect();
