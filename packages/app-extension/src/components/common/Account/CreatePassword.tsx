@@ -23,7 +23,7 @@ export function CreatePassword({
   onNext: (password: string) => void;
 }) {
   const classes = useStyles();
-  const [checked, setChecked] = useState(true);
+  const [checked, setChecked] = useState(false);
   const [password, setPassword] = useState("");
   const [passwordDup, setPasswordDup] = useState("");
   const [error, setError] = useState<null | string>(null);
@@ -39,7 +39,8 @@ export function CreatePassword({
     onNext(password);
   };
 
-  const isNextDisabled = password.length < 8 || password !== passwordDup;
+  const isNextDisabled =
+    password.length < 8 || password !== passwordDup || !checked;
 
   return (
     <Box
