@@ -132,6 +132,8 @@ const RECONCILER = ReactReconciler({
         return createLoadingInstance(kind, props, r, h, o);
       case NodeKind.ScrollBar:
         return createScrollBarInstance(kind, props, r, h, o);
+      case NodeKind.Grid:
+        return createGridInstance(kind, props, r, h, o);
       case NodeKind.Svg:
         return createSvgInstance(kind, props, r, h, o);
       case NodeKind.Path:
@@ -263,6 +265,8 @@ const RECONCILER = ReactReconciler({
       case NodeKind.Loading:
         return null;
       case NodeKind.ScrollBar:
+        return null;
+      case NodeKind.Grid:
         return null;
       case NodeKind.BalancesTable:
         return null;
@@ -396,6 +400,8 @@ const RECONCILER = ReactReconciler({
         throw new Error("commitUpdate Circle not yet implemented");
       case NodeKind.ScrollBar:
         throw new Error("commitUpdate ScrollBar not yet implemented");
+      case NodeKind.Grid:
+        throw new Error("commitUpdate Grid not yet implemented");
       case NodeKind.Loading:
         throw new Error("commitUpdate Loading not yet implemented");
       default:
@@ -730,6 +736,23 @@ function createScrollBarInstance(
   };
 }
 
+function createGridInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): GridNodeSerialized {
+  const id = h.nextId();
+  return {
+    id,
+    kind: NodeKind.Grid,
+    props,
+    style: {},
+    children: [],
+  };
+}
+
 function createSvgInstance(
   _kind: NodeKind,
   props: NodeProps,
@@ -996,6 +1019,7 @@ export type NodeSerialized =
   | ButtonNodeSerialized
   | LoadingNodeSerialized
   | ScrollBarNodeSerialized
+  | GridNodeSerialized
   | SvgNodeSerialized
   | PathNodeSerialized
   | CircleNodeSerialized
@@ -1017,6 +1041,7 @@ type NodeProps =
   | ButtonProps
   | LoadingProps
   | ScrollBarProps
+  | GridProps
   | IframeProps
   // TODO: add these and fix the types.
   //	| SvgProps
@@ -1042,6 +1067,7 @@ export enum NodeKind {
   Button = "Button",
   Loading = "Loading",
   ScrollBar = "ScrollBar",
+  Grid = "Grid",
   Svg = "Svg",
   Path = "Path",
   Circle = "Circle",
@@ -1152,6 +1178,26 @@ type ScrollBarNodeSerialized = DefNodeSerialized<
 type ScrollBarProps = {
   style: Style;
   children: undefined;
+};
+
+//
+// Grid.
+//
+type GridNodeSerialized = DefNodeSerialized<
+  NodeKind.Grid,
+  GridProps
+>;
+type GridProps = {
+  children: undefined;
+  container?: boolean;
+  direction?: 'row' | 'column';
+  item?: boolean;
+  xs?: number;
+  sm?: number;
+  md?: number;
+  lg?: number;
+  xl?: number;
+  style: Style;
 };
 
 //

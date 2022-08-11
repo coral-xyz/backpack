@@ -10,6 +10,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  Grid,
   List,
   ListItem,
   ListItemIcon,
@@ -234,6 +235,8 @@ export function Component({ viewData }) {
           children={viewData.children}
         />
       );
+    case NodeKind.Grid:
+      return <GridImpl id={id} props={props} style={style} children={viewData.children} />
     case NodeKind.Svg:
       return <Svg props={props} children={viewData.children} />;
     case NodeKind.Path:
@@ -853,6 +856,10 @@ export function ScrollBarImpl(props: any) {
       </style>
     </>
   );
+}
+
+function GridImpl({ id, props, style, children }) {
+  return <Grid children={children} style={style} {...props} />
 }
 
 function Raw({ text }: any) {

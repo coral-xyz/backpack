@@ -13,6 +13,7 @@ export const View = c("View");
 export const Button = c("Button");
 export const Loading = c("Loading");
 export const ScrollBar = c("ScrollBar");
+export const Grid = c("Grid");
 export const Svg = c("Svg");
 export const Path = c("Path");
 export const Circle = c("Circle");
