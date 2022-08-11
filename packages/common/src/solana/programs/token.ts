@@ -64,10 +64,10 @@ export async function customSplTokenAccounts(
   //
   // Fetch metadata.
   //
-  const tokenMetadata = await fetchSplMetadata(
-    tokenClient.provider,
-    tokenAccountsArray
-  );
+  const [tokenMetadata, xnftMetadata] = await Promise.all([
+    fetchSplMetadata(tokenClient.provider, tokenAccountsArray),
+    fetchXnftMetadata(tokenClient.provider, tokenAccountsArray),
+  ]);
 
   //
   // Fetch the metadata uri and interpert as NFTs.
@@ -124,6 +124,14 @@ export async function fetchSplMetadata(
   );
 
   return tokenMetaAccounts;
+}
+
+export async function fetchXnftMetadata(
+  provider: Provider,
+  tokens: Array<any>
+): Promise<Array<null | { publicKey: PublicKey; account: any }>> {
+  // todo
+  return [];
 }
 
 export async function fetchSplMetadataUri(
