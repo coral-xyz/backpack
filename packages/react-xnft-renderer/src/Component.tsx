@@ -148,7 +148,6 @@ const useStyles = styles((theme) => ({
   textFieldInput: {
     fontWeight: 500,
     borderRadius: "12px",
-    color: theme.custom.colors.secondary,
     fontSize: "16px",
     lineHeight: "24px",
   },
