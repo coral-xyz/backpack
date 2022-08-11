@@ -15,8 +15,8 @@
   "dependencies": {
     "@coral-xyz/common-public": "*",
     "@coral-xyz/themes": "*",
-    "@solana/wallet-standard": "0.1.0-alpha.4",
     "@solana/web3.js": "^1.50.1",
+    "@wallet-standard/standard": "0.1.0-alpha.0",
     "eventemitter3": "^4.0.7",
     "react": "^17.0.0",
     "react-reconciler": "^0.26.0"
