@@ -1,6 +1,6 @@
 import { EventEmitter } from "eventemitter3";
 import * as serverUi from "./frontend/server-ui";
-import * as serverInjected from "./frontend/server-injected";
+import * as serverInjectedSolana from "./frontend/server-injected-solana";
 import * as solanaConnection from "./frontend/solana-connection";
 import * as coreBackend from "./backend/core";
 import * as solanaConnectionBackend from "./backend/solana-connection";
@@ -20,13 +20,13 @@ export function start(cfg: Config): Background {
   const coreB = coreBackend.start(events, solanaB);
 
   // Frontend.
-  const _serverUi = serverInjected.start(cfg, events, coreB);
-  const _serverInjected = serverUi.start(cfg, events, coreB);
+  const _serverInjectedSolana = serverInjectedSolana.start(cfg, events, coreB);
+  const _serverUi = serverUi.start(cfg, events, coreB);
   const _solanaConnection = solanaConnection.start(cfg, events, solanaB);
 
   return {
     _serverUi,
-    _serverInjected,
+    _serverInjectedSolana,
     _solanaConnection,
   };
 }

@@ -2,9 +2,9 @@ import {
   getLogger,
   ChannelContentScript,
   BrowserRuntimeExtension,
-  CHANNEL_RPC_REQUEST,
-  CHANNEL_RPC_RESPONSE,
-  CHANNEL_NOTIFICATION,
+  CHANNEL_SOLANA_NOTIFICATION,
+  CHANNEL_SOLANA_RPC_REQUEST,
+  CHANNEL_SOLANA_RPC_RESPONSE,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
 } from "@coral-xyz/common";
@@ -46,7 +46,10 @@ function initClientChannels() {
   //
   // Wallet specific rpc requests.
   //
-  ChannelContentScript.proxy(CHANNEL_RPC_REQUEST, CHANNEL_RPC_RESPONSE);
+  ChannelContentScript.proxy(
+    CHANNEL_SOLANA_RPC_REQUEST,
+    CHANNEL_SOLANA_RPC_RESPONSE
+  );
   //
   // Solana Connection forwarding.
   //
@@ -60,7 +63,7 @@ function initClientChannels() {
 // client.
 function initBackgroundChannels() {
   // Forward all notifications from the background script to the injected page.
-  ChannelContentScript.proxyReverse(CHANNEL_NOTIFICATION);
+  ChannelContentScript.proxyReverse(CHANNEL_SOLANA_NOTIFICATION);
 }
 
 main();

@@ -5,7 +5,7 @@ import { AccountLayout, u64, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { List, ListItem, Typography } from "@mui/material";
 import _CheckIcon from "@mui/icons-material/Check";
-import { Blockchain, UI_RPC_METHOD_SIMULATE } from "@coral-xyz/common";
+import { Blockchain, UI_RPC_METHOD_SOLANA_SIMULATE } from "@coral-xyz/common";
 import {
   useActiveWallet,
   useBackgroundClient,
@@ -161,7 +161,7 @@ function TransactionData({ tx }: { tx: string | null }) {
     (async () => {
       if (wallet && tx) {
         const result = await background.request({
-          method: UI_RPC_METHOD_SIMULATE,
+          method: UI_RPC_METHOD_SOLANA_SIMULATE,
           params: [tx, wallet.publicKey.toString(), true],
         });
         if (result.value.err) {

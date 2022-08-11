@@ -3,7 +3,7 @@ import { Check } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import {
   SolanaCluster,
-  UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+  UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient, useSolanaConnectionUrl } from "@coral-xyz/recoil";
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
@@ -54,7 +54,7 @@ export function PreferencesSolanaConnection() {
     try {
       background
         .request({
-          method: UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+          method: UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
           params: [url],
         })
         .then(close)

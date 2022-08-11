@@ -1,6 +1,6 @@
-export const CHANNEL_RPC_REQUEST = "anchor-rpc-request";
-export const CHANNEL_RPC_RESPONSE = "anchor-rpc-response";
-export const CHANNEL_NOTIFICATION = "anchor-notification";
+//
+// Messaging communication channel topics.
+//
 export const CHANNEL_PLUGIN_RPC_REQUEST = "anchor-plugin-request";
 export const CHANNEL_PLUGIN_RPC_RESPONSE = "anchor-plugin-response";
 export const CHANNEL_PLUGIN_RENDER_REQUEST =
@@ -10,13 +10,20 @@ export const CHANNEL_PLUGIN_LAUNCH_REQUEST =
 export const CHANNEL_PLUGIN_NOTIFICATION = "anchor-channel-plugin-notification";
 export const CHANNEL_PLUGIN_CONNECTION_BRIDGE =
   "anchor-channel-plugin-connection-bridge";
+export const CHANNEL_POPUP_RPC = "anchor-popup-rpc";
+export const CHANNEL_POPUP_RESPONSE = "anchor-popup-response";
+export const CHANNEL_POPUP_NOTIFICATIONS = "anchor-popup-notifications";
+export const CHANNEL_SOLANA_RPC_REQUEST = "anchor-solana-rpc-request";
+export const CHANNEL_SOLANA_RPC_RESPONSE = "anchor-solana-rpc-response";
+export const CHANNEL_SOLANA_NOTIFICATION = "anchor-solana-notification";
+export const CHANNEL_SOLANA_CONNECTION_RPC_UI = "solana-connection-rpc-ui";
 export const CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST =
   "solana-connection-injected-request";
 export const CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE =
   "solana-connection-injected-response";
 
 //
-// Mobile webview messaging subsystem channels.
+// Mobile specific webview messaging subsystem channels.
 //
 export const MOBILE_CHANNEL_HOST_RPC_REQUEST = "mobile-host-rpc-request";
 export const MOBILE_CHANNEL_HOST_RPC_RESPONSE = "mobile-host-rpc-response";
@@ -27,6 +34,9 @@ export const MOBILE_CHANNEL_FE_REQUEST = "mobile-fe-request";
 export const MOBILE_CHANNEL_FE_RESPONSE = "mobile-fe-response";
 export const MOBILE_CHANNEL_FE_RESPONSE_INNER = "mobile-fe-response-inner";
 
+//
+// xNFT notifications sent from the host to the xNFT.
+//
 export const PLUGIN_NOTIFICATION_RENDER = "render";
 export const PLUGIN_NOTIFICATION_CONNECT = "connect";
 export const PLUGIN_NOTIFICATION_ON_CLICK = "on-click";
@@ -38,19 +48,17 @@ export const PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED =
   "connection-url-updated";
 export const PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED = "public-key-updated";
 
+//
+// xNFT host API.
+//
 export const PLUGIN_RPC_METHOD_NAV_PUSH = "nav-push";
 export const PLUGIN_RPC_METHOD_NAV_POP = "nav-pop";
 export const PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET = "store-get";
 export const PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT = "store-put";
 
-export const RPC_METHOD_CONNECT = "connect";
-export const RPC_METHOD_DISCONNECT = "disconnect";
-export const RPC_METHOD_SIGN_AND_SEND_TX = "sign-and-send-tx";
-export const RPC_METHOD_SIGN_TX = "sign-tx";
-export const RPC_METHOD_SIGN_ALL_TXS = "sign-all-txs";
-export const RPC_METHOD_SIGN_MESSAGE = "sign-message";
-export const RPC_METHOD_SIMULATE = "simulate";
-
+//
+// Trusted app API.
+//
 export const UI_RPC_METHOD_KEYRING_STORE_CREATE = "keyring-store-create";
 export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS =
   "keyring-read-all-pubkeys";
@@ -73,9 +81,9 @@ export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
   "keyring-mnemonic-create";
 export const UI_RPC_METHOD_PREVIEW_PUBKEYS = "keyring-preview-pubkeys";
 export const UI_RPC_METHOD_KEYRING_RESET = "keyring-reset";
-
-export const UI_RPC_METHOD_CONNECTION_URL_READ = "connection-url-read";
-export const UI_RPC_METHOD_CONNECTION_URL_UPDATE = "connection-url-update";
+export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ = "connection-url-read";
+export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE =
+  "connection-url-update";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET = "wallet-active";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE =
   "wallet-active-update";
@@ -99,23 +107,25 @@ export const UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE =
 export const UI_RPC_METHOD_SETTINGS_DARK_MODE_READ = "settings-dark-mode-read";
 export const UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE =
   "settings-dark-mode-update";
+export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
+export const UI_RPC_METHOD_LEDGER_IMPORT = "ledger-import";
+export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET = "plugin-storage-get";
+export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT = "plugin-storage-put";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ = "solana-commitment-read";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE =
   "solana-commitment-update";
-export const UI_RPC_METHOD_SIMULATE = "ui-rpc-method-simulate";
-export const UI_RPC_METHOD_SIGN_TRANSACTION = "ui-rpc-method-sign-tx";
-export const UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS = "ui-rpc-method-sign-all-txs";
-export const UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION =
-  "ui-rpc-method-sign-and-send-tx";
-export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
-export const UI_RPC_METHOD_LEDGER_IMPORT = "ledger-import";
+export const UI_RPC_METHOD_SOLANA_SIMULATE = "ui-rpc-method-simulate";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_READ = "solana-explorer-read";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE = "solana-explorer-update";
-export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET = "plugin-storage-get";
-export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT = "plugin-storage-put";
+export const UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION = "ui-rpc-method-sign-tx";
+export const UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS =
+  "ui-rpc-method-sign-all-txs";
+export const UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION =
+  "ui-rpc-method-sign-and-send-tx";
 
-export const NOTIFICATION_CONNECTED = "anchor-connected";
-export const NOTIFICATION_DISCONNECTED = "anchor-disconnected";
+//
+// Notifications sent from the background script to observers.
+//
 export const NOTIFICATION_KEYRING_STORE_CREATED =
   "notification-keyring-store-created";
 export const NOTIFICATION_KEYRING_STORE_LOCKED =
@@ -124,8 +134,6 @@ export const NOTIFICATION_KEYRING_STORE_UNLOCKED =
   "notification-keyring-store-unlocked";
 export const NOTIFICATION_KEYRING_STORE_RESET =
   "notification-keyring-store-reset";
-export const NOTIFICATION_CONNECTION_URL_UPDATED =
-  "anchor-connection-url-updated";
 export const NOTIFICATION_KEYNAME_UPDATE = "anchor-keyname-update";
 export const NOTIFICATION_KEYRING_KEY_DELETE = "anchor-keyring-key-delete";
 export const NOTIFICATION_KEYRING_DERIVED_WALLET =
@@ -139,18 +147,37 @@ export const NOTIFICATION_KEYRING_RESET_MNEMONIC =
 export const NOTIFICATION_KEYRING_CREATED = "anchor-keyring-created";
 export const NOTIFICATION_APPROVED_ORIGINS_UPDATE =
   "anchor-approved-origins-update";
-export const NOTIFICATION_SPL_TOKENS_DID_UPDATE =
-  "anchor-spl-tokens-did-update";
 export const NOTIFICATION_NAVIGATION_URL_DID_CHANGE =
   "anchor-navigation-url-did-change";
 export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
   "anchor-auto-lock-secs-updated";
+export const NOTIFICATION_DARK_MODE_UPDATED = "anchor-dark-mode-updated";
+export const NOTIFICATION_SOLANA_CONNECTED = "anchor-solana-connected";
+export const NOTIFICATION_SOLANA_DISCONNECTED = "anchor-solana-disconnected";
+export const NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED =
+  "anchor-solana-connection-url-updated";
 export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
   "anchor-solana-explorer-updated";
 export const NOTIFICATION_SOLANA_COMMITMENT_UPDATED =
   "anchor-solana-commitment-updated";
-export const NOTIFICATION_DARK_MODE_UPDATED = "anchor-dark-mode-updated";
+export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
+  "anchor-solana-spl-tokens-did-update";
 
+//
+// Solana web injected provider API.
+//
+export const SOLANA_RPC_METHOD_CONNECT = "connect";
+export const SOLANA_RPC_METHOD_DISCONNECT = "disconnect";
+export const SOLANA_RPC_METHOD_SIGN_AND_SEND_TX = "sign-and-send-tx";
+export const SOLANA_RPC_METHOD_SIGN_TX = "sign-tx";
+export const SOLANA_RPC_METHOD_SIGN_ALL_TXS = "sign-all-txs";
+export const SOLANA_RPC_METHOD_SIGN_MESSAGE = "sign-message";
+export const SOLANA_RPC_METHOD_SIMULATE = "simulate";
+
+//
+// Solana connection api. These are the methods available for the background
+// connection implementation (which the frontends use via message passing).
+//
 export const SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO = "solana-get-account-info";
 export const SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH =
   "solana-get-latest-blockhash";
@@ -175,11 +202,9 @@ export const SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS =
 export const SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE =
   "solana-get-fee-for-message";
 
-export const CONNECTION_POPUP_RPC = "anchor-popup-rpc";
-export const CONNECTION_POPUP_RESPONSE = "anchor-popup-response";
-export const CONNECTION_POPUP_NOTIFICATIONS = "anchor-popup-notifications";
-export const SOLANA_CONNECTION_RPC_UI = "solana-connection-rpc-ui";
-
+//
+// Ledger API.
+//
 //const LEDGER_IFRAME_URL = "https://coral-xyz.github.io/anchor-wallet";
 export const LEDGER_IFRAME_URL = "https://localhost:4443/dist";
 export const LEDGER_INJECTED_CHANNEL_REQUEST = "ledger-injected-request";

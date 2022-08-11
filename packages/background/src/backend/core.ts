@@ -7,7 +7,6 @@ import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
 import {
   SolanaCluster,
-  Blockchain,
   SolanaExplorer,
   BACKEND_EVENT,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
@@ -21,11 +20,11 @@ import {
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_RESET,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
-  NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
+  NOTIFICATION_DARK_MODE_UPDATED,
+  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
-  NOTIFICATION_DARK_MODE_UPDATED,
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
 import * as store from "./store";
@@ -52,14 +51,14 @@ export class Backend {
   // Solana Provider.
   ///////////////////////////////////////////////////////////////////////////////
 
-  async signAndSendTx(
+  async solanaSignAndSendTx(
     txStr: string,
     walletAddress: string,
     options?: SendOptions
   ): Promise<string> {
     // Sign the transaction.
     const tx = Transaction.from(bs58.decode(txStr));
-    const signature = await this.signTransaction(txStr, walletAddress);
+    const signature = await this.solanaSignTransaction(txStr, walletAddress);
     const pubkey = new PublicKey(walletAddress);
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
 
@@ -74,37 +73,37 @@ export class Backend {
     );
   }
 
-  async signAllTransactions(
+  async solanaSignAllTransactions(
     txs: Array<string>,
-    walletAddress
+    walletAddress: string
   ): Promise<Array<string>> {
     const signed: Array<string> = [];
     for (let k = 0; k < txs.length; k += 1) {
-      signed.push(await this.signTransaction(txs[k], walletAddress));
+      signed.push(await this.solanaSignTransaction(txs[k], walletAddress));
     }
     return signed;
   }
 
   // Returns the signature.
-  async signTransaction(txStr: string, walletAddress: string): Promise<string> {
+  async solanaSignTransaction(txStr: string, walletAddress: string): Promise<string> {
     const tx = Transaction.from(bs58.decode(txStr));
     const txMessage = bs58.encode(tx.serializeMessage());
     const blockchainKeyring = this.keyringStore.activeBlockchain();
     return await blockchainKeyring.signTransaction(txMessage, walletAddress);
   }
 
-  async signMessage(msg: string, walletAddress: string): Promise<string> {
+  async solanaSignMessage(msg: string, walletAddress: string): Promise<string> {
     const blockchainKeyring = this.keyringStore.activeBlockchain();
     return await blockchainKeyring.signMessage(msg, walletAddress);
   }
 
-  async simulate(
+  async solanaSimulate(
     txStr: string,
     walletAddress: string,
     includeAccounts?: boolean | Array<string>
   ): Promise<any> {
     const tx = Transaction.from(bs58.decode(txStr));
-    const signature = await this.signTransaction(txStr, walletAddress);
+    const signature = await this.solanaSignTransaction(txStr, walletAddress);
     const pubkey = new PublicKey(walletAddress);
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
 
@@ -117,7 +116,7 @@ export class Backend {
     );
   }
 
-  disconnect() {
+  solanaDisconnect() {
     // todo
     return SUCCESS_RESPONSE;
   }
@@ -126,7 +125,7 @@ export class Backend {
   // Solana.
   ///////////////////////////////////////////////////////////////////////////////
 
-  async recentBlockhash(commitment?: Commitment): Promise<string> {
+  async solanaRecentBlockhash(commitment?: Commitment): Promise<string> {
     const { blockhash } = await this.solanaConnectionBackend.getLatestBlockhash(
       commitment
     );
@@ -156,7 +155,7 @@ export class Backend {
 
     const activeWallet = await this.activeWallet();
     this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_CONNECTION_URL_UPDATED,
+      name: NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
       data: {
         url: cluster,
         activeWallet,
