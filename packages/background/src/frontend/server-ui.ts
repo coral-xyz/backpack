@@ -580,12 +580,12 @@ async function handleSolanaExplorerUpdate(
 
 async function handleSimulate(
   ctx: Context<Backend>,
-  messageBs58: string,
+  txStr: string,
   walletAddress: string,
   includeAccounts?: boolean | Array<string>
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.simulate(
-    messageBs58,
+    txStr,
     walletAddress,
     includeAccounts
   );
@@ -594,10 +594,10 @@ async function handleSimulate(
 
 async function handleSignTransaction(
   ctx: Context<Backend>,
-  messageBs58: string,
+  txStr: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.signTransaction(messageBs58, walletAddress);
+  const resp = await ctx.backend.signTransaction(txStr, walletAddress);
   return [resp];
 }
 

@@ -210,7 +210,7 @@ async function handleSignAndSendTx(
 
 async function handleSignTx(
   ctx: Context<Backend>,
-  txMsg: string,
+  tx: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
@@ -218,14 +218,14 @@ async function handleSignTx(
       ctx.sender.origin,
       ctx.sender.tab.title,
       requestId,
-      txMsg
+      tx
     );
   });
   const didApprove = uiResp.result;
 
   // Only sign if the user clicked approve.
   if (didApprove) {
-    const sig = await ctx.backend.signTransaction(txMsg, walletAddress);
+    const sig = await ctx.backend.signTransaction(tx, walletAddress);
     return [sig];
   }
 
@@ -247,6 +247,7 @@ async function handleSignAllTxs(
   });
   const didApprove = uiResp.result;
 
+  // Sign all if user clicked approve.
   if (didApprove) {
     const resp = await ctx.backend.signAllTransactions(txs, walletAddress);
     return [resp];

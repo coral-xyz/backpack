@@ -69,10 +69,10 @@ export async function send(
   const txSerialize = tx.serialize({
     requireAllSignatures: false,
   });
-  const message = encode(txSerialize);
+  const txStr = encode(txSerialize);
   return await requestManager.request({
     method: RPC_METHOD_SIGN_AND_SEND_TX,
-    params: [message, publicKey.toString(), options],
+    params: [txStr, publicKey.toString(), options],
   });
 }
 
@@ -82,10 +82,10 @@ export async function signTransaction(
   tx: Transaction
 ): Promise<Transaction> {
   tx.feePayer = publicKey;
-  const message = encode(tx.serializeMessage());
+  const txStr = encode(tx.serialize({ requireAllSignatures: false }));
   const signature = await requestManager.request({
     method: RPC_METHOD_SIGN_TX,
-    params: [message, publicKey.toString()],
+    params: [txStr, publicKey.toString()],
   });
   // @ts-ignore
   tx.addSignature(publicKey, decode(signature));
@@ -98,16 +98,15 @@ export async function signAllTransactions(
   txs: Array<Transaction>
 ): Promise<Array<Transaction>> {
   // Serialize messages.
-  const messages = txs.map((tx) => {
-    const txSerialized = tx.serializeMessage();
-    const message = encode(txSerialized);
-    return message;
+  const txStrs = txs.map((tx) => {
+    const txSerialized = tx.serialize({ requireAllSignatures: false });
+    return encode(txSerialized);
   });
 
   // Get signatures from the background script.
   const signatures: Array<string> = await requestManager.request({
     method: RPC_METHOD_SIGN_ALL_TXS,
-    params: [messages, publicKey.toString()],
+    params: [txStrs, publicKey.toString()],
   });
 
   // Add the signatures to the transactions.
@@ -137,10 +136,10 @@ export async function simulate(
   const txSerialize = tx.serialize({
     requireAllSignatures: false,
   });
-  const message = encode(txSerialize);
+  const txStr = encode(txSerialize);
   return await requestManager.request({
     method: RPC_METHOD_SIMULATE,
-    params: [message, publicKey.toString(), commitment],
+    params: [txStr, publicKey.toString(), true],
   });
 }
 
