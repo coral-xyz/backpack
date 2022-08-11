@@ -50,10 +50,11 @@ export function ListItem({
 }: any) {
   const _classes = useStyles();
   const theme = useCustomTheme();
+  const buttonProps = button ? { disableRipple: true } : {};
   return (
     <>
       <MuiListItem
-        disableRipple
+        {...buttonProps}
         data-testid={id}
         button={button}
         className={_classes.settingsContentListItem}
