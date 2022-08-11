@@ -3,9 +3,9 @@ import {
   ChannelAppUi,
   ChannelAppUiClient,
   ChannelAppUiResponder,
-  CONNECTION_POPUP_RPC,
-  CONNECTION_POPUP_RESPONSE,
-  SOLANA_CONNECTION_RPC_UI,
+  CHANNEL_POPUP_RPC,
+  CHANNEL_POPUP_RESPONSE,
+  CHANNEL_SOLANA_CONNECTION_RPC_UI,
 } from "@coral-xyz/common";
 
 /**
@@ -14,7 +14,7 @@ import {
  */
 export const backgroundClient = atom<ChannelAppUiClient>({
   key: "backgroundClient",
-  default: ChannelAppUi.client(CONNECTION_POPUP_RPC),
+  default: ChannelAppUi.client(CHANNEL_POPUP_RPC),
 });
 
 /**
@@ -24,7 +24,7 @@ export const backgroundClient = atom<ChannelAppUiClient>({
  */
 export const backgroundResponder = atom<ChannelAppUiResponder>({
   key: "backgroundResponseClient",
-  default: ChannelAppUi.responder(CONNECTION_POPUP_RESPONSE),
+  default: ChannelAppUi.responder(CHANNEL_POPUP_RESPONSE),
 });
 
 /**
@@ -34,6 +34,6 @@ export const backgroundResponder = atom<ChannelAppUiResponder>({
 export const connectionBackgroundClient = selector({
   key: "connectionBackgroundClient",
   get: ({ get }) => {
-    return ChannelAppUi.client(SOLANA_CONNECTION_RPC_UI);
+    return ChannelAppUi.client(CHANNEL_SOLANA_CONNECTION_RPC_UI);
   },
 });

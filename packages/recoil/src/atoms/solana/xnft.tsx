@@ -10,6 +10,7 @@ const MANGO_TABLE_PLUGIN_URL = pluginURL("xnft/mango");
 const PRICES_PLUGIN_URL = pluginURL("xnft/prices");
 const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
 const PSYFI_PLUGIN_URL = pluginURL("xnft/psyfi");
+const AURORY_PLUGIN_URL = pluginURL("xnft/aurory");
 
 //
 // xnft-program-library
@@ -41,6 +42,13 @@ export const plugins = selector({
         url: DEGODS_TABLE_PLUGIN_URL,
         iconUrl: "assets/deadgods.png",
         title: "DeadGods",
+        activeWallet: get(activeWallet),
+        connectionUrl: get(connectionUrl),
+      },
+      {
+        url: AURORY_PLUGIN_URL,
+        iconUrl: "assets/aurory.png",
+        title: "Aurory",
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
       },

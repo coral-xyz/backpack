@@ -8,8 +8,8 @@ import {
   usePlugins,
 } from "@coral-xyz/recoil";
 import {
-  UI_RPC_METHOD_SIGN_TRANSACTION,
-  UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
+  UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
+  UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
 } from "@coral-xyz/common";
 import { Plugin } from "@coral-xyz/react-xnft-renderer";
 import { Typography } from "@mui/material";
@@ -83,12 +83,12 @@ function SendTransactionRequest({ onClose }: any) {
     let signature;
     if (request!.kind === "sign-tx") {
       signature = await background.request({
-        method: UI_RPC_METHOD_SIGN_TRANSACTION,
+        method: UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
         params: [request.data, publicKey.toString()],
       });
     } else {
       signature = await background.request({
-        method: UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
+        method: UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
         params: [request.data, publicKey.toString()],
       });
     }

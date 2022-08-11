@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ethers, BigNumber } from "ethers";
+import { ethers } from "ethers";
 import {
   InputAdornment,
   Typography,

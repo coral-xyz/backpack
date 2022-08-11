@@ -148,9 +148,14 @@ const useStyles = styles((theme) => ({
   textFieldInput: {
     fontWeight: 500,
     borderRadius: "12px",
-    color: theme.custom.colors.secondary,
     fontSize: "16px",
     lineHeight: "24px",
+  },
+  textFieldInputColorEmpty: {
+    color: theme.custom.colors.secondary,
+  },
+  textFieldInputColor: {
+    color: theme.custom.colors.fontColor2,
   },
   textFieldRoot: {
     "& .MuiOutlinedInput-root": {
@@ -673,7 +678,9 @@ export function TextField({
   const classes = useStyles();
   inputProps = Object.assign(
     {
-      className: classes.textFieldInput,
+      className: `${classes.textFieldInput} ${
+        value ? classes.textFieldInputColor : classes.textFieldInputColorEmpty
+      }`,
     },
     inputProps
   );

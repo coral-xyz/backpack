@@ -12,11 +12,11 @@ import type {
 } from "@solana/web3.js";
 import type { RequestManager } from "@coral-xyz/common";
 import {
-  RPC_METHOD_SIGN_ALL_TXS,
-  RPC_METHOD_SIGN_AND_SEND_TX,
-  RPC_METHOD_SIGN_MESSAGE,
-  RPC_METHOD_SIGN_TX,
-  RPC_METHOD_SIMULATE,
+  SOLANA_RPC_METHOD_SIGN_ALL_TXS,
+  SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
+  SOLANA_RPC_METHOD_SIGN_MESSAGE,
+  SOLANA_RPC_METHOD_SIGN_TX,
+  SOLANA_RPC_METHOD_SIMULATE,
 } from "@coral-xyz/common";
 
 export async function sendAndConfirm(
@@ -69,10 +69,10 @@ export async function send(
   const txSerialize = tx.serialize({
     requireAllSignatures: false,
   });
-  const message = encode(txSerialize);
+  const txStr = encode(txSerialize);
   return await requestManager.request({
-    method: RPC_METHOD_SIGN_AND_SEND_TX,
-    params: [message, publicKey.toString(), options],
+    method: SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
+    params: [txStr, publicKey.toString(), options],
   });
 }
 
@@ -82,10 +82,10 @@ export async function signTransaction(
   tx: Transaction
 ): Promise<Transaction> {
   tx.feePayer = publicKey;
-  const message = encode(tx.serializeMessage());
+  const txStr = encode(tx.serialize({ requireAllSignatures: false }));
   const signature = await requestManager.request({
-    method: RPC_METHOD_SIGN_TX,
-    params: [message, publicKey.toString()],
+    method: SOLANA_RPC_METHOD_SIGN_TX,
+    params: [txStr, publicKey.toString()],
   });
   // @ts-ignore
   tx.addSignature(publicKey, decode(signature));
@@ -98,16 +98,15 @@ export async function signAllTransactions(
   txs: Array<Transaction>
 ): Promise<Array<Transaction>> {
   // Serialize messages.
-  const messages = txs.map((tx) => {
-    const txSerialized = tx.serializeMessage();
-    const message = encode(txSerialized);
-    return message;
+  const txStrs = txs.map((tx) => {
+    const txSerialized = tx.serialize({ requireAllSignatures: false });
+    return encode(txSerialized);
   });
 
   // Get signatures from the background script.
   const signatures: Array<string> = await requestManager.request({
-    method: RPC_METHOD_SIGN_ALL_TXS,
-    params: [messages, publicKey.toString()],
+    method: SOLANA_RPC_METHOD_SIGN_ALL_TXS,
+    params: [txStrs, publicKey.toString()],
   });
 
   // Add the signatures to the transactions.
@@ -137,10 +136,10 @@ export async function simulate(
   const txSerialize = tx.serialize({
     requireAllSignatures: false,
   });
-  const message = encode(txSerialize);
+  const txStr = encode(txSerialize);
   return await requestManager.request({
-    method: RPC_METHOD_SIMULATE,
-    params: [message, publicKey.toString(), commitment],
+    method: SOLANA_RPC_METHOD_SIMULATE,
+    params: [txStr, publicKey.toString(), commitment],
   });
 }
 
@@ -151,7 +150,7 @@ export async function signMessage(
 ): Promise<Uint8Array> {
   const msgStr = encode(msg);
   const signature = await requestManager.request({
-    method: RPC_METHOD_SIGN_MESSAGE,
+    method: SOLANA_RPC_METHOD_SIGN_MESSAGE,
     params: [msgStr, publicKey.toString()],
   });
   return decode(signature);

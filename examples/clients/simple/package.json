@@ -4,6 +4,7 @@
   "private": true,
   "source": "src/index.html",
   "dependencies": {
+    "@solana/spl-token": "^0.2.0",
     "@solana/wallet-adapter-base": "^0.9.9",
     "@solana/wallet-adapter-react": "^0.15.8",
     "@solana/wallet-adapter-react-ui": "^0.9.11",

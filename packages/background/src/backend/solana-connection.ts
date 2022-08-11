@@ -69,8 +69,8 @@ import {
   NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
-  NOTIFICATION_CONNECTION_URL_UPDATED,
-  NOTIFICATION_SPL_TOKENS_DID_UPDATE,
+  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
+  NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
 } from "@coral-xyz/common";
 
 const logger = getLogger("solana-connection-backend");
@@ -122,7 +122,7 @@ export class Backend {
         case NOTIFICATION_ACTIVE_WALLET_UPDATED:
           handleActiveWalletUpdated(notif);
           break;
-        case NOTIFICATION_CONNECTION_URL_UPDATED:
+        case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
           handleConnectionUrlUpdated(notif);
           break;
         default:
@@ -179,7 +179,7 @@ export class Backend {
           value: data,
         });
         this.events.emit(BACKEND_EVENT, {
-          name: NOTIFICATION_SPL_TOKENS_DID_UPDATE,
+          name: NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
           data: {
             connectionUrl: this.url,
             publicKey: activeWallet.toString(),

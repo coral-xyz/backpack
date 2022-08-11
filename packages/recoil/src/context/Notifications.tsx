@@ -6,7 +6,7 @@ import {
   ChannelAppUi,
   Notification,
   BackgroundSolanaConnection,
-  CONNECTION_POPUP_NOTIFICATIONS,
+  CHANNEL_POPUP_NOTIFICATIONS,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
@@ -18,13 +18,13 @@ import {
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
   NOTIFICATION_KEYRING_RESET_MNEMONIC,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
-  NOTIFICATION_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-  NOTIFICATION_CONNECTION_URL_UPDATED,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
+  NOTIFICATION_DARK_MODE_UPDATED,
+  NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
+  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
-  NOTIFICATION_DARK_MODE_UPDATED,
 } from "@coral-xyz/common";
 import { KeyringStoreStateEnum, useUpdateAllSplTokenAccounts } from "../";
 import * as atoms from "../atoms";
@@ -77,6 +77,9 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_KEYRING_KEY_DELETE:
           handleKeyringKeyDelete(notif);
           break;
+        case NOTIFICATION_KEYRING_RESET_MNEMONIC:
+          handleResetMnemonic(notif);
+          break;
         case NOTIFICATION_KEYNAME_UPDATE:
           handleKeynameUpdate(notif);
           break;
@@ -89,23 +92,17 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_ACTIVE_WALLET_UPDATED:
           handleActiveWalletUpdated(notif);
           break;
-        case NOTIFICATION_KEYRING_RESET_MNEMONIC:
-          handleResetMnemonic(notif);
-          break;
         case NOTIFICATION_APPROVED_ORIGINS_UPDATE:
           handleApprovedOriginsUpdate(notif);
-          break;
-        case NOTIFICATION_SPL_TOKENS_DID_UPDATE:
-          handleSplTokensDidUpdate(notif);
           break;
         case NOTIFICATION_NAVIGATION_URL_DID_CHANGE:
           handleNavigationUrlDidChange(notif);
           break;
-        case NOTIFICATION_CONNECTION_URL_UPDATED:
-          handleConnectionUrlUpdated(notif);
-          break;
         case NOTIFICATION_AUTO_LOCK_SECS_UPDATED:
           handleAutoLockSecsUpdated(notif);
+          break;
+        case NOTIFICATION_DARK_MODE_UPDATED:
+          handleIsDarkModeUpdated(notif);
           break;
         case NOTIFICATION_SOLANA_EXPLORER_UPDATED:
           handleSolanaExplorerUpdated(notif);
@@ -113,8 +110,11 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_SOLANA_COMMITMENT_UPDATED:
           handleSolanaCommitmentUpdated(notif);
           break;
-        case NOTIFICATION_DARK_MODE_UPDATED:
-          handleIsDarkModeUpdated(notif);
+        case NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE:
+          handleSolanaSplTokensDidUpdate(notif);
+          break;
+        case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
+          handleSolanaConnectionUrlUpdated(notif);
           break;
         default:
           break;
@@ -126,12 +126,6 @@ export function NotificationsProvider(props: any) {
     //
     const handleKeyringStoreCreated = (_notif: Notification) => {
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
-    };
-    const handleConnectionUrlUpdated = (notif: Notification) => {
-      setConnectionUrl(notif.data.url);
-      allPlugins().forEach((p) => {
-        p.pushConnectionChangedNotification(notif.data.url);
-      });
     };
     const handleKeyringStoreLocked = (_notif: Notification) => {
       setKeyringStoreState(KeyringStoreStateEnum.Locked);
@@ -208,7 +202,28 @@ export function NotificationsProvider(props: any) {
     const handleApprovedOriginsUpdate = (notif: Notification) => {
       setApprovedOrigins(notif.data.approvedOrigins);
     };
-    const handleSplTokensDidUpdate = (notif: Notification) => {
+    const handleNavigationUrlDidChange = (notif: Notification) => {
+      navigate(notif.data.url);
+    };
+    const handleAutoLockSecsUpdated = (notif: Notification) => {
+      setAutoLockSecs(notif.data.autoLockSecs);
+    };
+    const handleIsDarkModeUpdated = (notif: Notification) => {
+      setIsDarkMode(notif.data.darkMode);
+    };
+    const handleSolanaExplorerUpdated = (notif: Notification) => {
+      setSolanaExplorer(notif.data.explorer);
+    };
+    const handleSolanaCommitmentUpdated = (notif: Notification) => {
+      setSolanaCommitment(notif.data.commitment);
+    };
+    const handleSolanaConnectionUrlUpdated = (notif: Notification) => {
+      setConnectionUrl(notif.data.url);
+      allPlugins().forEach((p) => {
+        p.pushConnectionChangedNotification(notif.data.url);
+      });
+    };
+    const handleSolanaSplTokensDidUpdate = (notif: Notification) => {
       const publicKey = notif.data.publicKey;
       const connectionUrl = notif.data.connectionUrl;
       const result = BackgroundSolanaConnection.customSplTokenAccountsFromJson(
@@ -223,26 +238,11 @@ export function NotificationsProvider(props: any) {
         },
       });
     };
-    const handleNavigationUrlDidChange = (notif: Notification) => {
-      navigate(notif.data.url);
-    };
-    const handleAutoLockSecsUpdated = (notif: Notification) => {
-      setAutoLockSecs(notif.data.autoLockSecs);
-    };
-    const handleSolanaExplorerUpdated = (notif: Notification) => {
-      setSolanaExplorer(notif.data.explorer);
-    };
-    const handleSolanaCommitmentUpdated = (notif: Notification) => {
-      setSolanaCommitment(notif.data.commitment);
-    };
-    const handleIsDarkModeUpdated = (notif: Notification) => {
-      setIsDarkMode(notif.data.darkMode);
-    };
 
     //
     // Initiate subscription.
     //
-    ChannelAppUi.notifications(CONNECTION_POPUP_NOTIFICATIONS).onNotification(
+    ChannelAppUi.notifications(CHANNEL_POPUP_NOTIFICATIONS).onNotification(
       notificationsHandler
     );
   }, []);

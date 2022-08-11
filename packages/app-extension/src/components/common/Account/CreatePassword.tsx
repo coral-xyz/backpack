@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import { Box, Typography } from "@mui/material";
+import { useCustomTheme } from "@coral-xyz/themes";
 import {
   Header,
   SubtextParagraph,
@@ -17,29 +18,39 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+enum PasswordError {
+  TOO_SHORT,
+  NO_MATCH,
+}
+
 export function CreatePassword({
   onNext,
 }: {
   onNext: (password: string) => void;
 }) {
   const classes = useStyles();
-  const [checked, setChecked] = useState(true);
+  const theme = useCustomTheme();
+  const [checked, setChecked] = useState(false);
   const [password, setPassword] = useState("");
   const [passwordDup, setPasswordDup] = useState("");
-  const [error, setError] = useState<null | string>(null);
+  const [error, setError] = useState<PasswordError | null>(null);
+
+  useEffect(() => {
+    setError(null);
+  }, [password, passwordDup]);
 
   const next = async () => {
     if (password.length < 8) {
-      setError("Password must be longer than 8 characters");
+      setError(PasswordError.TOO_SHORT);
       return;
     } else if (password !== passwordDup) {
-      setError(`Passwords don't match`);
+      setError(PasswordError.NO_MATCH);
       return;
     }
     onNext(password);
   };
 
-  const isNextDisabled = password.length < 8 || password !== passwordDup;
+  const isNextDisabled = !checked;
 
   return (
     <Box
@@ -63,8 +74,9 @@ export function CreatePassword({
         >
           <Header text="Create a password" />
           <SubtextParagraph style={{ marginTop: "8px", marginBottom: "40px" }}>
-            Your password should be at least 8 characters. You’ll need this to
-            unlock Backpack.
+            It should be at least 8 characters.
+            <br />
+            You’ll need this to unlock Backpack.
           </SubtextParagraph>
         </Box>
         <Box
@@ -80,6 +92,7 @@ export function CreatePassword({
             value={password}
             setValue={setPassword}
             rootClass={classes.passwordFieldRoot}
+            isError={error === PasswordError.TOO_SHORT}
           />
           <TextField
             inputProps={{ name: "password-confirmation" }}
@@ -88,15 +101,19 @@ export function CreatePassword({
             value={passwordDup}
             setValue={setPasswordDup}
             rootClass={classes.passwordFieldRoot}
+            isError={error === PasswordError.NO_MATCH}
           />
-          {error && (
-            <Typography sx={{ color: "red", mt: "8px" }}>{error}</Typography>
+          {error !== null && (
+            <Typography sx={{ color: theme.custom.colors.negative }}>
+              {
+                {
+                  [PasswordError.TOO_SHORT]:
+                    "Your password must be at least 8 characters.",
+                  [PasswordError.NO_MATCH]: "Your passwords do not match.",
+                }[error]
+              }
+            </Typography>
           )}
-          <CheckboxForm
-            checked={checked}
-            setChecked={setChecked}
-            label="I agree to the terms of service"
-          />
         </Box>
       </Box>
       <Box
@@ -106,6 +123,19 @@ export function CreatePassword({
           marginBottom: "16px",
         }}
       >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "30px",
+          }}
+        >
+          <CheckboxForm
+            checked={checked}
+            setChecked={setChecked}
+            label="I agree to the terms of service"
+          />
+        </Box>
         <PrimaryButton disabled={isNextDisabled} label="Next" onClick={next} />
       </Box>
     </Box>

@@ -10,10 +10,10 @@ import type {
 } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
 import {
-  UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   getLogger,
   withContextPort,
   ChannelAppUi,
+  UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
@@ -31,8 +31,8 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_RESET,
   UI_RPC_METHOD_HD_KEYRING_CREATE,
-  UI_RPC_METHOD_CONNECTION_URL_READ,
-  UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+  UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ,
+  UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYNAME_READ,
@@ -48,11 +48,6 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
-  UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
-  UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
-  UI_RPC_METHOD_SIGN_TRANSACTION,
-  UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS,
-  UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
   UI_RPC_METHOD_APPROVED_ORIGINS_DELETE,
@@ -63,9 +58,15 @@ import {
   UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
+  UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
+  UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
+  UI_RPC_METHOD_SOLANA_SIMULATE,
+  UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
+  UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
+  UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
   BACKEND_EVENT,
-  CONNECTION_POPUP_RPC,
-  CONNECTION_POPUP_NOTIFICATIONS,
+  CHANNEL_POPUP_RPC,
+  CHANNEL_POPUP_NOTIFICATIONS,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import type { Backend } from "../backend/core";
@@ -74,9 +75,9 @@ import type { Config, Handle } from "../types";
 const logger = getLogger("background-server-ui");
 
 export function start(_cfg: Config, events: EventEmitter, b: Backend): Handle {
-  const rpcServerUi = ChannelAppUi.server(CONNECTION_POPUP_RPC);
+  const rpcServerUi = ChannelAppUi.server(CHANNEL_POPUP_RPC);
   const notificationsUi = ChannelAppUi.notifications(
-    CONNECTION_POPUP_NOTIFICATIONS
+    CHANNEL_POPUP_NOTIFICATIONS
   );
 
   //
@@ -165,22 +166,6 @@ async function handle<T = any>(
         params[2]
       );
     //
-    // Wallet signing.
-    //
-    case UI_RPC_METHOD_SIGN_TRANSACTION:
-      return await handleSignTransaction(ctx, params[0], params[1]);
-    case UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS:
-      return await handleSignAllTransactions(ctx, params[0], params[1]);
-    case UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION:
-      return await handleSignAndSendTransaction(ctx, params[0], params[1]);
-    //
-    // Connection URL.
-    //
-    case UI_RPC_METHOD_CONNECTION_URL_READ:
-      return await handleConnectionUrlRead(ctx);
-    case UI_RPC_METHOD_CONNECTION_URL_UPDATE:
-      return await handleConnectionUrlUpdate(ctx, params[0]);
-    //
     // Navigation.
     //
     case UI_RPC_METHOD_NAVIGATION_PUSH:
@@ -227,18 +212,7 @@ async function handle<T = any>(
     case UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD:
       return await handleKeyringStoreCheckPassword(ctx, params[0]);
     //
-    // Solana.
-    //
-    case UI_RPC_METHOD_SOLANA_COMMITMENT_READ:
-      return await handleSolanaCommitmentRead(ctx);
-    case UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE:
-      return await handleSolanaCommitmentUpdate(ctx, params[0]);
-    case UI_RPC_METHOD_SOLANA_EXPLORER_READ:
-      return await handleSolanaExplorerRead(ctx);
-    case UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE:
-      return await handleSolanaExplorerUpdate(ctx, params[0]);
-    //
-    // Storage.
+    // xNFT storage.
     //
     case UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET:
       return await handlePluginLocalStorageGet(ctx, params[0], params[1]);
@@ -249,6 +223,33 @@ async function handle<T = any>(
         params[1],
         params[2]
       );
+    //
+    // Solana.
+    //
+    case UI_RPC_METHOD_SOLANA_SIMULATE:
+      return await handleSolanaSimulate(ctx, params[0], params[1], params[2]);
+    case UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION:
+      return await handleSolanaSignTransaction(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS:
+      return await handleSolanaSignAllTransactions(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION:
+      return await handleSolanaSignAndSendTransaction(
+        ctx,
+        params[0],
+        params[1]
+      );
+    case UI_RPC_METHOD_SOLANA_COMMITMENT_READ:
+      return await handleSolanaCommitmentRead(ctx);
+    case UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE:
+      return await handleSolanaCommitmentUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_SOLANA_EXPLORER_READ:
+      return await handleSolanaExplorerRead(ctx);
+    case UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE:
+      return await handleSolanaExplorerUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ:
+      return await handleSolanaConnectionUrlRead(ctx);
+    case UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE:
+      return await handleSolanaConnectionUrlUpdate(ctx, params[0]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -327,21 +328,6 @@ function handleKeyringStoreKeepAlive(
 ): RpcResponse<string> {
   const resp = ctx.backend.keyringStoreKeepAlive();
   return [resp];
-}
-
-async function handleConnectionUrlRead(
-  ctx: Context<Backend>
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaConnectionUrlRead();
-  return [resp];
-}
-
-async function handleConnectionUrlUpdate(
-  ctx: Context<Backend>,
-  url: string
-): Promise<RpcResponse<boolean>> {
-  const didChange = await ctx.backend.solanaConnectionUrlUpdate(url);
-  return [didChange];
 }
 
 async function handleWalletDataActiveWallet(
@@ -543,6 +529,21 @@ async function handleDarkModeUpdate(
   return [resp];
 }
 
+async function handleSolanaConnectionUrlRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.solanaConnectionUrlRead();
+  return [resp];
+}
+
+async function handleSolanaConnectionUrlUpdate(
+  ctx: Context<Backend>,
+  url: string
+): Promise<RpcResponse<boolean>> {
+  const didChange = await ctx.backend.solanaConnectionUrlUpdate(url);
+  return [didChange];
+}
+
 async function handleSolanaCommitmentRead(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
@@ -575,30 +576,44 @@ async function handleSolanaExplorerUpdate(
   return [resp];
 }
 
-async function handleSignTransaction(
+async function handleSolanaSimulate(
   ctx: Context<Backend>,
-  messageBs58: string,
-  walletAddress: string
+  txStr: string,
+  walletAddress: string,
+  includeAccounts?: boolean | Array<string>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.signTransaction(messageBs58, walletAddress);
+  const resp = await ctx.backend.solanaSimulate(
+    txStr,
+    walletAddress,
+    includeAccounts
+  );
   return [resp];
 }
 
-async function handleSignAllTransactions(
+async function handleSolanaSignTransaction(
+  ctx: Context<Backend>,
+  txStr: string,
+  walletAddress: string
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.solanaSignTransaction(txStr, walletAddress);
+  return [resp];
+}
+
+async function handleSolanaSignAllTransactions(
   ctx: Context<Backend>,
   txs: Array<string>,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.signAllTransactions(txs, walletAddress);
+  const resp = await ctx.backend.solanaSignAllTransactions(txs, walletAddress);
   return [resp];
 }
 
-async function handleSignAndSendTransaction(
+async function handleSolanaSignAndSendTransaction(
   ctx: Context<Backend>,
   tx: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.signAndSendTx(tx, walletAddress);
+  const resp = await ctx.backend.solanaSignAndSendTx(tx, walletAddress);
   return [resp];
 }
 

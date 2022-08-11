@@ -1,35 +1,35 @@
+import {
+  clusterApiUrl,
+  Transaction,
+  TransactionSignature,
+} from "@solana/web3.js";
 import type {
-  Bytes,
   ConnectInput,
   ConnectOutput,
-  SignAndSendTransactionInput,
-  SignAndSendTransactionMethod,
-  SignAndSendTransactionOutput,
-  SignMessageInput,
-  SignMessageMethod,
-  SignMessageOutput,
-  SignTransactionInput,
-  SignTransactionMethod,
-  SignTransactionOutput,
+  SignAndSendTransactionFeature,
+  SignAndSendTransactionInputs,
+  SignAndSendTransactionOutputs,
+  SignMessageFeature,
+  SignMessageInputs,
+  SignMessageOutputs,
+  SignTransactionFeature,
+  SignTransactionInputs,
+  SignTransactionOutputs,
   Wallet,
   WalletAccount,
-  WalletAccountMethodNames,
+  WalletAccountFeatureName,
+  WalletAccountNonstandardFeatureName,
   WalletEventNames,
   WalletEvents,
-} from "@solana/wallet-standard";
+} from "@wallet-standard/standard";
+import { VERSION_1_0_0 } from "@wallet-standard/standard";
 import {
   bytesEqual,
   CHAIN_SOLANA_DEVNET,
   CHAIN_SOLANA_LOCALNET,
   CHAIN_SOLANA_MAINNET,
   CHAIN_SOLANA_TESTNET,
-  concatBytes,
-} from "@solana/wallet-standard";
-import {
-  clusterApiUrl,
-  Transaction,
-  TransactionSignature,
-} from "@solana/web3.js";
+} from "@wallet-standard/util";
 import { decode } from "bs58";
 import { icon } from "./icon";
 
@@ -40,48 +40,53 @@ export type BackpackSolanaWalletChain =
   | typeof CHAIN_SOLANA_LOCALNET;
 
 export class BackpackSolanaWalletAccount implements WalletAccount {
-  private _publicKey: Bytes;
-  private _chain: BackpackSolanaWalletChain;
+  readonly #publicKey: Uint8Array;
+  readonly #chain: BackpackSolanaWalletChain;
 
   get address() {
     return this.publicKey;
   }
 
   get publicKey() {
-    return this._publicKey;
+    return this.#publicKey;
   }
 
   get chain() {
-    return this._chain;
+    return this.#chain;
   }
 
-  get ciphers() {
-    return [];
-  }
-
-  get methods(): SignTransactionMethod<this> &
-    SignAndSendTransactionMethod<this> &
-    SignMessageMethod<this> {
+  get features(): SignAndSendTransactionFeature &
+    SignTransactionFeature &
+    SignMessageFeature {
     return {
-      signAndSendTransaction: (...args) =>
-        this._signAndSendTransaction(...args),
-      signTransaction: (...args) => this._signTransaction(...args),
-      signMessage: (...args) => this._signMessage(...args),
+      signAndSendTransaction: {
+        signAndSendTransaction: (...args) =>
+          this.#signAndSendTransaction(...args),
+      },
+      signTransaction: {
+        signTransaction: (...args) => this.#signTransaction(...args),
+      },
+      signMessage: { signMessage: (...args) => this.#signMessage(...args) },
     };
   }
 
-  constructor(publicKey: Bytes, chain: BackpackSolanaWalletChain) {
-    this._publicKey = publicKey;
-    this._chain = chain;
+  get nonstandardFeatures() {
+    return {} as const;
   }
 
-  private async _signAndSendTransaction(
-    input: SignAndSendTransactionInput<this>
-  ): Promise<SignAndSendTransactionOutput<this>> {
-    if (input.extraSigners?.length)
+  constructor(publicKey: Uint8Array, chain: BackpackSolanaWalletChain) {
+    this.#publicKey = publicKey;
+    this.#chain = chain;
+  }
+
+  async #signAndSendTransaction(
+    inputs: SignAndSendTransactionInputs
+  ): Promise<SignAndSendTransactionOutputs> {
+    if (inputs.some((input) => !!input.extraSigners?.length))
       throw new Error("extraSigners not implemented");
-    const transactions = input.transactions.map((rawTransaction) =>
-      Transaction.from(rawTransaction)
+
+    const transactions = inputs.map(({ transaction }) =>
+      Transaction.from(transaction)
     );
 
     let signatures: TransactionSignature[];
@@ -95,16 +100,17 @@ export class BackpackSolanaWalletAccount implements WalletAccount {
       signatures = [];
     }
 
-    return { signatures: signatures.map((signature) => decode(signature)) };
+    return signatures.map((signature) => ({ signature: decode(signature) }));
   }
 
-  private async _signTransaction(
-    input: SignTransactionInput<this>
-  ): Promise<SignTransactionOutput<this>> {
-    if (input.extraSigners?.length)
+  async #signTransaction(
+    inputs: SignTransactionInputs
+  ): Promise<SignTransactionOutputs> {
+    if (inputs.some((input) => !!input.extraSigners?.length))
       throw new Error("extraSigners not implemented");
-    const transactions = input.transactions.map((rawTransaction) =>
-      Transaction.from(rawTransaction)
+
+    const transactions = inputs.map(({ transaction }) =>
+      Transaction.from(transaction)
     );
 
     let signedTransactions: Transaction[];
@@ -120,43 +126,40 @@ export class BackpackSolanaWalletAccount implements WalletAccount {
       signedTransactions = [];
     }
 
-    return {
-      signedTransactions: signedTransactions.map((transaction) =>
-        transaction.serialize({ requireAllSignatures: false })
-      ),
-    };
+    return signedTransactions.map((transaction) => ({
+      signedTransaction: transaction.serialize({
+        requireAllSignatures: false,
+        verifySignatures: false,
+      }),
+    }));
   }
 
-  private async _signMessage(
-    input: SignMessageInput<this>
-  ): Promise<SignMessageOutput<this>> {
-    if (input.extraSigners?.length)
+  async #signMessage(inputs: SignMessageInputs): Promise<SignMessageOutputs> {
+    if (inputs.some((input) => !!input.extraSigners?.length))
       throw new Error("extraSigners not implemented");
 
-    let signedMessages: Bytes[];
-    if (input.messages.length === 1) {
-      const signature = await window.backpack.signMessage(input.messages[0]);
-      // FIXME: declining sig or being unable to sign should throw an error instead of returning null
-      if (!signature) throw new Error("signMessage returned nothing");
-      signedMessages = [concatBytes(input.messages[0], signature)];
-    } else if (input.messages.length > 1) {
+    if (inputs.length === 1) {
+      const signedMessage = inputs[0].message;
+      const signature = await window.backpack.signMessage(signedMessage);
+      return [{ signedMessage, signatures: [signature] }];
+    } else if (inputs.length > 1) {
       throw new Error("signAllMessages not implemented");
     } else {
-      signedMessages = [];
+      return [];
     }
-
-    return { signedMessages };
   }
 }
 
 export class BackpackSolanaWallet
   implements Wallet<BackpackSolanaWalletAccount>
 {
-  private _listeners: { [E in WalletEventNames]?: WalletEvents[E][] } = {};
-  private _account: BackpackSolanaWalletAccount | undefined;
+  #listeners: {
+    [E in WalletEventNames<BackpackSolanaWalletAccount>]?: WalletEvents<BackpackSolanaWalletAccount>[E][];
+  } = {};
+  #account: BackpackSolanaWalletAccount | undefined;
 
   get version() {
-    return "1.0.0";
+    return VERSION_1_0_0;
   }
 
   get name() {
@@ -167,15 +170,11 @@ export class BackpackSolanaWallet
     return icon;
   }
 
-  get accounts() {
-    return this._account ? [this._account] : [];
-  }
-
   get chains() {
-    return this._account ? [this._account.chain] : [];
+    return this.#account ? [this.#account.chain] : [];
   }
 
-  get methods() {
+  get features() {
     return [
       "signAndSendTransaction" as const,
       "signTransaction" as const,
@@ -183,8 +182,16 @@ export class BackpackSolanaWallet
     ];
   }
 
-  get ciphers() {
-    return [];
+  get nonstandardFeatures() {
+    return [] as const;
+  }
+
+  get accounts() {
+    return this.#account ? [this.#account] : [];
+  }
+
+  get hasMoreAccounts() {
+    return false;
   }
 
   constructor() {
@@ -197,15 +204,27 @@ export class BackpackSolanaWallet
 
   async connect<
     Chain extends BackpackSolanaWalletAccount["chain"],
-    MethodNames extends WalletAccountMethodNames<BackpackSolanaWalletAccount>,
-    Input extends ConnectInput<BackpackSolanaWalletAccount, Chain, MethodNames>
+    FeatureName extends WalletAccountFeatureName<BackpackSolanaWalletAccount>,
+    NonstandardFeatureName extends WalletAccountNonstandardFeatureName<BackpackSolanaWalletAccount>,
+    Input extends ConnectInput<
+      BackpackSolanaWalletAccount,
+      Chain,
+      FeatureName,
+      NonstandardFeatureName
+    >
   >({
     chains,
     addresses,
-    methods,
+    features,
     silent,
   }: Input): Promise<
-    ConnectOutput<BackpackSolanaWalletAccount, Chain, MethodNames, Input>
+    ConnectOutput<
+      BackpackSolanaWalletAccount,
+      Chain,
+      FeatureName,
+      NonstandardFeatureName,
+      Input
+    >
   > {
     if (!silent && !window.backpack.isConnected) {
       await window.backpack.connect();
@@ -219,24 +238,27 @@ export class BackpackSolanaWallet
     };
   }
 
-  on<E extends WalletEventNames>(
+  on<E extends WalletEventNames<BackpackSolanaWalletAccount>>(
     event: E,
-    listener: WalletEvents[E]
+    listener: WalletEvents<BackpackSolanaWalletAccount>[E]
   ): () => void {
-    this._listeners[event]?.push(listener) ||
-      (this._listeners[event] = [listener]);
-    return (): void => this._off(event, listener);
+    this.#listeners[event]?.push(listener) ||
+      (this.#listeners[event] = [listener]);
+    return (): void => this.#off(event, listener);
   }
 
-  private _emit<E extends WalletEventNames>(event: E): void {
-    this._listeners[event]?.forEach((listener) => listener());
-  }
-
-  private _off<E extends WalletEventNames>(
+  #emit<E extends WalletEventNames<BackpackSolanaWalletAccount>>(
     event: E,
-    listener: WalletEvents[E]
+    ...args: Parameters<WalletEvents<BackpackSolanaWalletAccount>[E]>
   ): void {
-    this._listeners[event] = this._listeners[event]?.filter(
+    this.#listeners[event]?.forEach((listener) => listener.apply(null, args));
+  }
+
+  #off<E extends WalletEventNames<BackpackSolanaWalletAccount>>(
+    event: E,
+    listener: WalletEvents<BackpackSolanaWalletAccount>[E]
+  ): void {
+    this.#listeners[event] = this.#listeners[event]?.filter(
       (existingListener) => listener !== existingListener
     );
   }
@@ -254,24 +276,22 @@ export class BackpackSolanaWallet
         chain = CHAIN_SOLANA_LOCALNET;
       }
 
-      const account = this._account;
+      const account = this.#account;
       if (
         !account ||
         account.chain !== chain ||
         !bytesEqual(account.publicKey, publicKey)
       ) {
-        this._account = new BackpackSolanaWalletAccount(publicKey, chain);
-        this._emit("accountsChanged");
-        this._emit("chainsChanged");
+        this.#account = new BackpackSolanaWalletAccount(publicKey, chain);
+        this.#emit("change", ["accounts", "chains"]);
       }
     }
   }
 
   private _disconnect(): void {
-    if (this._account) {
-      this._account = undefined;
-      this._emit("accountsChanged");
-      this._emit("chainsChanged");
+    if (this.#account) {
+      this.#account = undefined;
+      this.#emit("change", ["accounts", "chains"]);
     }
   }
 

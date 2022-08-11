@@ -62,12 +62,13 @@ import { ChangePassword } from "./YourAccount/ChangePassword";
 import { ResetWarning } from "../../Locked/Reset/ResetWarning";
 import { Reset } from "../../Locked/Reset";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
-import { AddConnectWalletMenu } from "./AddConnectWallet";
+import { AddConnectWalletMenu, ConfirmCreateWallet } from "./AddConnectWallet";
 import { YourAccount } from "./YourAccount";
 import { EditWallets } from "./YourAccount/EditWallets";
 import { RemoveWallet } from "./YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
+import { WithMiniDrawer } from "../../common/Layout/Drawer";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -260,10 +261,7 @@ function _SettingsContent() {
   return (
     <div>
       <AvatarHeader />
-      <WalletList
-        onAddConnectWallet={() => nav.push("add-connect-wallet")}
-        close={close}
-      />
+      <WalletList close={close} />
       <SettingsList close={close} />
     </div>
   );
@@ -301,16 +299,8 @@ function AvatarHeader() {
   );
 }
 
-function WalletList({
-  onAddConnectWallet,
-  close,
-}: {
-  onAddConnectWallet: () => void;
-  close: () => void;
-}) {
-  const classes = useStyles();
+function WalletList({ close }: { close: () => void }) {
   const background = useBackgroundClient();
-  const theme = useCustomTheme();
   const namedPublicKeys = useWalletPublicKeys();
 
   const clickWallet = (publicKey: PublicKey) => {
@@ -351,54 +341,63 @@ function WalletList({
           );
         })}
       </List>
-      <List
-        style={{
-          background: theme.custom.colors.background,
-          color: theme.custom.colors.secondary,
-        }}
-      >
-        <ListItem
-          isFirst={true}
-          isLast={true}
-          onClick={onAddConnectWallet}
-          classes={{ root: classes.addConnectRoot }}
-        >
-          <div
-            style={{
-              border: `solid ${theme.custom.colors.nav}`,
-              borderRadius: "40px",
-              width: "40px",
-              height: "40px",
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "column",
-              marginRight: "12px",
-            }}
-          >
-            <Add
-              style={{
-                color: "inherit",
-                display: "block",
-                marginLeft: "auto",
-                marginRight: "auto",
-                fontSize: "14px",
-              }}
-            />
-          </div>
-          <Typography
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "column",
-            }}
-          >
-            Add / Connect Wallet
-          </Typography>
-        </ListItem>
-      </List>
+      <AddConnectWalletButton />
     </>
   );
 }
+
+export const AddConnectWalletButton = () => {
+  const nav = useNavStack();
+  const classes = useStyles();
+  const theme = useCustomTheme();
+  return (
+    <List
+      style={{
+        background: theme.custom.colors.background,
+        color: theme.custom.colors.secondary,
+      }}
+    >
+      <ListItem
+        isFirst={true}
+        isLast={true}
+        onClick={() => nav.push("add-connect-wallet")}
+        classes={{ root: classes.addConnectRoot }}
+      >
+        <div
+          style={{
+            border: `solid ${theme.custom.colors.nav}`,
+            borderRadius: "40px",
+            width: "40px",
+            height: "40px",
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+            marginRight: "12px",
+          }}
+        >
+          <Add
+            style={{
+              color: "inherit",
+              display: "block",
+              marginLeft: "auto",
+              marginRight: "auto",
+              fontSize: "14px",
+            }}
+          />
+        </div>
+        <Typography
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+          }}
+        >
+          Add / Connect Wallet
+        </Typography>
+      </ListItem>
+    </List>
+  );
+};
 
 function SettingsList({ close }: { close: () => void }) {
   const theme = useCustomTheme();
@@ -512,19 +511,23 @@ export function ImportSecretKey() {
   const [name, setName] = useState("");
   const [secretKey, setSecretKey] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [openDrawer, setOpenDrawer] = useState(false);
 
   useEffect(() => {
     const prevStyle = nav.style;
     const prevContentStyle = nav.contentStyle;
+    const prevTitle = nav.title;
     nav.setStyle({
       backgroundColor: theme.custom.colors.nav,
     });
     nav.setContentStyle({
       backgroundColor: theme.custom.colors.nav,
     });
+    nav.setTitle("");
     return () => {
       nav.setStyle(prevStyle);
       nav.setContentStyle(prevContentStyle);
+      nav.setTitle(prevTitle);
     };
   }, [theme]);
 
@@ -546,64 +549,78 @@ export function ImportSecretKey() {
       params: [publicKey],
     });
 
-    close();
+    setOpenDrawer(true);
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        justifyContent: "space-between",
-      }}
-    >
-      <Box sx={{ margin: "24px 0" }}>
-        <Box sx={{ margin: "0 24px" }}>
-          <Header text="Import private key" />
-          <SubtextParagraph style={{ marginBottom: "32px" }}>
-            Enter your private key. It will be encrypted and stored on your
-            device.
-          </SubtextParagraph>
-        </Box>
-        <Box sx={{ margin: "0 16px" }}>
-          <Box sx={{ marginBottom: "4px" }}>
-            <TextField
-              autoFocus={true}
-              placeholder="Name"
-              value={name}
-              setValue={setName}
-            />
-          </Box>
-          <TextField
-            placeholder="Enter private key"
-            value={secretKey}
-            setValue={setSecretKey}
-            rows={4}
-          />
-        </Box>
-        {error && (
-          <Typography style={{ color: "red", marginTop: "8px" }}>
-            {error}
-          </Typography>
-        )}
-      </Box>
+    <>
       <Box
         sx={{
-          marginLeft: "16px",
-          marginRight: "16px",
-          marginBottom: "16px",
           display: "flex",
+          flexDirection: "column",
+          height: "100%",
           justifyContent: "space-between",
         }}
       >
-        <PrimaryButton
-          onClick={onClick}
-          label="Import"
-          disabled={secretKey.length === 0}
-        />
+        <Box sx={{ margin: "24px 0" }}>
+          <Box sx={{ margin: "0 24px" }}>
+            <Header text="Import private key" />
+            <SubtextParagraph style={{ marginBottom: "32px" }}>
+              Enter your private key. It will be encrypted and stored on your
+              device.
+            </SubtextParagraph>
+          </Box>
+          <Box sx={{ margin: "0 16px" }}>
+            <Box sx={{ marginBottom: "4px" }}>
+              <TextField
+                autoFocus={true}
+                placeholder="Name"
+                value={name}
+                setValue={setName}
+              />
+            </Box>
+            <TextField
+              placeholder="Enter private key"
+              value={secretKey}
+              setValue={setSecretKey}
+              rows={4}
+            />
+          </Box>
+          {error && (
+            <Typography style={{ color: "red", marginTop: "8px" }}>
+              {error}
+            </Typography>
+          )}
+        </Box>
+        <Box
+          sx={{
+            marginLeft: "16px",
+            marginRight: "16px",
+            marginBottom: "16px",
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <PrimaryButton
+            onClick={onClick}
+            label="Import"
+            disabled={secretKey.length === 0}
+          />
+        </Box>
       </Box>
-    </Box>
+      <WithMiniDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
+        backdropProps={{
+          style: {
+            opacity: 0.8,
+            background: "#18181b",
+          },
+        }}
+      >
+        <ConfirmCreateWallet setOpenDrawer={setOpenDrawer} />
+      </WithMiniDrawer>
+    </>
   );
 }
 
