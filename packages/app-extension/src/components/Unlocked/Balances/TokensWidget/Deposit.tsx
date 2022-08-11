@@ -42,6 +42,7 @@ const useStyles = styles((theme) => ({
     },
     "& .MuiOutlinedInput-input": {
       cursor: "pointer",
+      color: theme.custom.colors.secondary,
     },
     "&:hover .MuiOutlinedInput-root": {
       paddingLeft: 0,
