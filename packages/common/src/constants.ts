@@ -113,7 +113,7 @@ export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT = "plugin-storage-put";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ = "solana-commitment-read";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE =
   "solana-commitment-update";
-export const UI_RPC_METHOD_SIMULATE = "ui-rpc-method-simulate";
+export const UI_RPC_METHOD_SOLANA_SIMULATE = "ui-rpc-method-simulate";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_READ = "solana-explorer-read";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE = "solana-explorer-update";
 export const UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION = "ui-rpc-method-sign-tx";

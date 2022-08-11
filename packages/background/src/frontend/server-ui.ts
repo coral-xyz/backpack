@@ -48,12 +48,6 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
-  UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
-  UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
-  UI_RPC_METHOD_SIMULATE,
-  UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
-  UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
-  UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
   UI_RPC_METHOD_APPROVED_ORIGINS_DELETE,
@@ -64,6 +58,12 @@ import {
   UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
+  UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
+  UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
+  UI_RPC_METHOD_SOLANA_SIMULATE,
+  UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
+  UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
+  UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
   BACKEND_EVENT,
   CHANNEL_POPUP_RPC,
   CHANNEL_POPUP_NOTIFICATIONS,
@@ -168,8 +168,8 @@ async function handle<T = any>(
     //
     // Wallet signing.
     //
-    case UI_RPC_METHOD_SIMULATE:
-      return await handleSimulate(ctx, params[0], params[1], params[2]);
+    case UI_RPC_METHOD_SOLANA_SIMULATE:
+      return await handleSolanaSimulate(ctx, params[0], params[1], params[2]);
     case UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION:
       return await handleSolanaSignTransaction(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS:
@@ -582,13 +582,13 @@ async function handleSolanaExplorerUpdate(
   return [resp];
 }
 
-async function handleSimulate(
+async function handleSolanaSimulate(
   ctx: Context<Backend>,
   txStr: string,
   walletAddress: string,
   includeAccounts?: boolean | Array<string>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.simulate(
+  const resp = await ctx.backend.solanaSimulate(
     txStr,
     walletAddress,
     includeAccounts
