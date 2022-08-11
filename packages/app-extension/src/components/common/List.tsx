@@ -53,7 +53,6 @@ export function ListItem({
   return (
     <>
       <MuiListItem
-        disableRipple
         data-testid={id}
         button={button}
         className={_classes.settingsContentListItem}
