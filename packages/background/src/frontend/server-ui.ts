@@ -212,7 +212,7 @@ async function handle<T = any>(
     case UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD:
       return await handleKeyringStoreCheckPassword(ctx, params[0]);
     //
-    // Storage.
+    // xNFT storage.
     //
     case UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET:
       return await handlePluginLocalStorageGet(ctx, params[0], params[1]);
