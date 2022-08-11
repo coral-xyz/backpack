@@ -31,8 +31,8 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_RESET,
   UI_RPC_METHOD_HD_KEYRING_CREATE,
-  UI_RPC_METHOD_CONNECTION_URL_READ,
-  UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+  UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ,
+  UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYNAME_READ,
@@ -166,28 +166,6 @@ async function handle<T = any>(
         params[2]
       );
     //
-    // Wallet signing.
-    //
-    case UI_RPC_METHOD_SOLANA_SIMULATE:
-      return await handleSolanaSimulate(ctx, params[0], params[1], params[2]);
-    case UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION:
-      return await handleSolanaSignTransaction(ctx, params[0], params[1]);
-    case UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS:
-      return await handleSolanaSignAllTransactions(ctx, params[0], params[1]);
-    case UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION:
-      return await handleSolanaSignAndSendTransaction(
-        ctx,
-        params[0],
-        params[1]
-      );
-    //
-    // Connection URL.
-    //
-    case UI_RPC_METHOD_CONNECTION_URL_READ:
-      return await handleConnectionUrlRead(ctx);
-    case UI_RPC_METHOD_CONNECTION_URL_UPDATE:
-      return await handleConnectionUrlUpdate(ctx, params[0]);
-    //
     // Navigation.
     //
     case UI_RPC_METHOD_NAVIGATION_PUSH:
@@ -234,17 +212,6 @@ async function handle<T = any>(
     case UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD:
       return await handleKeyringStoreCheckPassword(ctx, params[0]);
     //
-    // Solana.
-    //
-    case UI_RPC_METHOD_SOLANA_COMMITMENT_READ:
-      return await handleSolanaCommitmentRead(ctx);
-    case UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE:
-      return await handleSolanaCommitmentUpdate(ctx, params[0]);
-    case UI_RPC_METHOD_SOLANA_EXPLORER_READ:
-      return await handleSolanaExplorerRead(ctx);
-    case UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE:
-      return await handleSolanaExplorerUpdate(ctx, params[0]);
-    //
     // Storage.
     //
     case UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET:
@@ -256,6 +223,33 @@ async function handle<T = any>(
         params[1],
         params[2]
       );
+    //
+    // Solana.
+    //
+    case UI_RPC_METHOD_SOLANA_SIMULATE:
+      return await handleSolanaSimulate(ctx, params[0], params[1], params[2]);
+    case UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION:
+      return await handleSolanaSignTransaction(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS:
+      return await handleSolanaSignAllTransactions(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION:
+      return await handleSolanaSignAndSendTransaction(
+        ctx,
+        params[0],
+        params[1]
+      );
+    case UI_RPC_METHOD_SOLANA_COMMITMENT_READ:
+      return await handleSolanaCommitmentRead(ctx);
+    case UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE:
+      return await handleSolanaCommitmentUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_SOLANA_EXPLORER_READ:
+      return await handleSolanaExplorerRead(ctx);
+    case UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE:
+      return await handleSolanaExplorerUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ:
+      return await handleSolanaConnectionUrlRead(ctx);
+    case UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE:
+      return await handleSolanaConnectionUrlUpdate(ctx, params[0]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -334,21 +328,6 @@ function handleKeyringStoreKeepAlive(
 ): RpcResponse<string> {
   const resp = ctx.backend.keyringStoreKeepAlive();
   return [resp];
-}
-
-async function handleConnectionUrlRead(
-  ctx: Context<Backend>
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaConnectionUrlRead();
-  return [resp];
-}
-
-async function handleConnectionUrlUpdate(
-  ctx: Context<Backend>,
-  url: string
-): Promise<RpcResponse<boolean>> {
-  const didChange = await ctx.backend.solanaConnectionUrlUpdate(url);
-  return [didChange];
 }
 
 async function handleWalletDataActiveWallet(
@@ -548,6 +527,21 @@ async function handleDarkModeUpdate(
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.darkModeUpdate(darkMode);
   return [resp];
+}
+
+async function handleSolanaConnectionUrlRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.solanaConnectionUrlRead();
+  return [resp];
+}
+
+async function handleSolanaConnectionUrlUpdate(
+  ctx: Context<Backend>,
+  url: string
+): Promise<RpcResponse<boolean>> {
+  const didChange = await ctx.backend.solanaConnectionUrlUpdate(url);
+  return [didChange];
 }
 
 async function handleSolanaCommitmentRead(
