@@ -1,9 +1,7 @@
 // All RPC request handlers for requests that can be sent from the injected
 // provider script to the background script.
 
-import * as bs58 from "bs58";
-import type { SendOptions, Commitment } from "@solana/web3.js";
-import { Transaction } from "@solana/web3.js";
+import type { SendOptions } from "@solana/web3.js";
 import type {
   RpcRequest,
   RpcResponse,
@@ -190,16 +188,13 @@ async function handleSignAndSendTx(
   walletAddress: string,
   options?: SendOptions
 ): Promise<RpcResponse<string>> {
-  // Transform from transaction string to message string.
-  const txObject = Transaction.from(bs58.decode(tx));
-  const txMsg = bs58.encode(txObject.serializeMessage());
-
   // Get user approval.
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
       ctx.sender.origin,
+      ctx.sender.tab.title,
       requestId,
-      txMsg
+      tx
     );
   });
   const didApprove = uiResp.result;
@@ -215,21 +210,22 @@ async function handleSignAndSendTx(
 
 async function handleSignTx(
   ctx: Context<Backend>,
-  txMsg: string,
+  tx: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
       ctx.sender.origin,
+      ctx.sender.tab.title,
       requestId,
-      txMsg
+      tx
     );
   });
   const didApprove = uiResp.result;
 
   // Only sign if the user clicked approve.
   if (didApprove) {
-    const sig = await ctx.backend.signTransaction(txMsg, walletAddress);
+    const sig = await ctx.backend.signTransaction(tx, walletAddress);
     return [sig];
   }
 
@@ -244,12 +240,14 @@ async function handleSignAllTxs(
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveAllTransactionsPopupWindow(
       ctx.sender.origin,
+      ctx.sender.tab.title,
       requestId,
       txs
     );
   });
   const didApprove = uiResp.result;
 
+  // Sign all if user clicked approve.
   if (didApprove) {
     const resp = await ctx.backend.signAllTransactions(txs, walletAddress);
     return [resp];
@@ -264,7 +262,12 @@ async function handleSignMessage(
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveMessagePopupWindow(ctx.sender.origin, requestId, msg);
+    return openApproveMessagePopupWindow(
+      ctx.sender.origin,
+      ctx.sender.tab.title,
+      requestId,
+      msg
+    );
   });
   const didApprove = uiResp.result;
 
@@ -280,9 +283,13 @@ async function handleSimulate(
   ctx: Context<Backend>,
   txStr: string,
   walletAddress: string,
-  commitment: Commitment
+  includeAccounts?: boolean | Array<string>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.simulate(txStr, walletAddress, commitment);
+  const resp = await ctx.backend.simulate(
+    txStr,
+    walletAddress,
+    includeAccounts
+  );
   return [resp];
 }
 

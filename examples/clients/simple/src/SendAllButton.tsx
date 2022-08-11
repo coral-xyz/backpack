@@ -55,12 +55,12 @@ export const SendAllButton: FC = () => {
       },
       "processed"
     );
-		*/
+    */
   }, [wallet.publicKey, wallet.sendTransaction, connection]);
 
   return (
     <button onClick={onClick} disabled={!wallet.publicKey}>
-      Send All 1 lamport to a random address, twice!
+      Send 1 lamport to a random address, twice!
     </button>
   );
 };

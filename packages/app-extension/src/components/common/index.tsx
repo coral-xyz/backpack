@@ -188,6 +188,7 @@ export function Loading(props: any) {
   return (
     <div className={classes.loadingContainer}>
       <CircularProgress
+        size={48}
         className={classes.loadingIndicator}
         style={props.iconStyle}
         thickness={6}

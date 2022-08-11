@@ -102,6 +102,7 @@ export const UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE =
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ = "solana-commitment-read";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE =
   "solana-commitment-update";
+export const UI_RPC_METHOD_SIMULATE = "ui-rpc-method-simulate";
 export const UI_RPC_METHOD_SIGN_TRANSACTION = "ui-rpc-method-sign-tx";
 export const UI_RPC_METHOD_SIGN_ALL_TRANSACTIONS = "ui-rpc-method-sign-all-txs";
 export const UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION =
