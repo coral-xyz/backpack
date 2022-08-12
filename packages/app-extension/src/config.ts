@@ -6,7 +6,7 @@
 // Config for .
 //
 export const privateConfig = {
-  BACKPACK_CONFIG_VERSION: "production",
+  BACKPACK_CONFIG_VERSION: "development",
   BACKPACK_FEATURE_LIGHT_MODE: true,
   BACKPACK_FEATURE_POP_MODE: true,
 };

@@ -1,4 +1,4 @@
-import { configureLogger } from "./logging";
+import { setConfigLogger } from "./logging";
 
 // Environment config.
 export type ConfigPublic = {
@@ -10,5 +10,5 @@ export let CONFIG_PUBLIC: ConfigPublic;
 // This should be called before using the entire package.
 export function setConfigPublic(c: ConfigPublic) {
   CONFIG_PUBLIC = c;
-  configureLogger(c.BACKPACK_CONFIG_LOG_LEVEL);
+  setConfigLogger(c.BACKPACK_CONFIG_LOG_LEVEL);
 }

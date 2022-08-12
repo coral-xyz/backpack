@@ -26,21 +26,23 @@ export function getLogger(mod: string) {
   })();
 }
 
-export function configureLogger(level: string = "debug"): LogLevel {
-  switch (level) {
-    case "trace":
-      return LogLevel.Trace;
-    case "debug":
-      return LogLevel.Debug;
-    case "info":
-      return LogLevel.Info;
-    case "warning":
-      return LogLevel.Warning;
-    case "error":
-      return LogLevel.Error;
-    default:
-      throw new Error("invalid log level");
-  }
+export function setConfigLogger(level = "debug") {
+  _LOG_LEVEL = (() => {
+    switch (level) {
+      case "trace":
+        return LogLevel.Trace;
+      case "debug":
+        return LogLevel.Debug;
+      case "info":
+        return LogLevel.Info;
+      case "warning":
+        return LogLevel.Warning;
+      case "error":
+        return LogLevel.Error;
+      default:
+        throw new Error("invalid log level");
+    }
+  })();
 }
 
 function debug(str: any, ...args: any) {
