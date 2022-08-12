@@ -26,7 +26,7 @@ out_file="./src/generated-config.ts"
 
 main () {
 		if [ -f "./src/generated-config.ts" ]; then
-				rm ./src/config.ts
+				rm ./src/generated-config.ts
 		fi
 
 		cat <<EOF >"$out_file"
