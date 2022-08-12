@@ -2,15 +2,39 @@ import { vanillaStore } from "./zustand-store";
 import { isServiceWorker, IS_MOBILE } from "./utils";
 import { MOBILE_CHANNEL_LOGS } from "./constants";
 
+export type Config = {
+  level: LogLevel;
+};
+
+export enum LogLevel {
+  Trace,
+  Debug,
+  Info,
+  Warning,
+  Error,
+}
+
+// Default  config.
+let _CONFIG: Config = {
+  level: LogLevel.Info,
+};
+
+// Initialize with a config.
+export function start(cfg: Config) {
+  _CONFIG = cfg;
+}
+
 export function getLogger(mod: string) {
   return (() => {
     const _mod = mod;
     const prefix = isServiceWorker() ? "service-worker:" : "";
     return {
       debug: (str: string, ...args: any) =>
-        debug(`${prefix}backpack: ${_mod}: ${str}`, ...args),
+        _CONFIG.level <= LogLevel.Debug &&
+        debug(`backpack:${prefix} ${_mod}: ${str}`, ...args),
       error: (str: string, ...args: any) =>
-        error(`${prefix}backpack: ${_mod}: ${str}`, ...args),
+        _CONFIG.level <= LogLevel.Error &&
+        error(`backpack:${prefix} ${_mod}: ${str}`, ...args),
       _log,
     };
   })();
