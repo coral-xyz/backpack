@@ -8,7 +8,7 @@ export * from "./channel";
 export * from "./browser";
 export * from "./types";
 export * from "./solana";
-export * from "./features";
+export * from "./config";
 
 // Utility to transform the handler API into something a little more friendly.
 export function withContext<Backend>(

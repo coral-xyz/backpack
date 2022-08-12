@@ -2,10 +2,6 @@ import { vanillaStore } from "./zustand-store";
 import { isServiceWorker, IS_MOBILE } from "./utils";
 import { MOBILE_CHANNEL_LOGS } from "./constants";
 
-export type Config = {
-  level: LogLevel;
-};
-
 export enum LogLevel {
   Trace,
   Debug,
@@ -14,15 +10,7 @@ export enum LogLevel {
   Error,
 }
 
-// Default  config.
-let _CONFIG: Config = {
-  level: LogLevel.Info,
-};
-
-// Initialize with a config.
-export function start(cfg: Config) {
-  _CONFIG = cfg;
-}
+let _LOG_LEVEL: LogLevel;
 
 export function getLogger(mod: string) {
   return (() => {
@@ -30,22 +18,41 @@ export function getLogger(mod: string) {
     const prefix = isServiceWorker() ? "service-worker:" : "";
     return {
       debug: (str: string, ...args: any) =>
-        _CONFIG.level <= LogLevel.Debug &&
         debug(`backpack:${prefix} ${_mod}: ${str}`, ...args),
       error: (str: string, ...args: any) =>
-        _CONFIG.level <= LogLevel.Error &&
         error(`backpack:${prefix} ${_mod}: ${str}`, ...args),
       _log,
     };
   })();
 }
 
+export function configureLogger(level: string = "debug"): LogLevel {
+  switch (level) {
+    case "trace":
+      return LogLevel.Trace;
+    case "debug":
+      return LogLevel.Debug;
+    case "info":
+      return LogLevel.Info;
+    case "warning":
+      return LogLevel.Warning;
+    case "error":
+      return LogLevel.Error;
+    default:
+      throw new Error("invalid log level");
+  }
+}
+
 function debug(str: any, ...args: any) {
-  log(str, ...args);
+  if (_LOG_LEVEL <= LogLevel.Debug) {
+    log(str, ...args);
+  }
 }
 
 function error(str: any, ...args: any) {
-  log(`ERROR: ${str}`, ...args);
+  if (_LOG_LEVEL <= LogLevel.Error) {
+    log(`ERROR: ${str}`, ...args);
+  }
 }
 
 function log(str: any, ...args: any) {

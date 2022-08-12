@@ -33,8 +33,8 @@
     "recoil": "^0.6.1"
   },
   "scripts": {
-    "start": "./scripts/version.sh development && NODE_ENV=development webpack serve",
-    "build": "./scripts/version.sh production && NODE_ENV=production webpack",
+    "start": "BACKPACK_CONFIG_VERSION=development ./scripts/config.sh && NODE_ENV=development webpack serve",
+    "build": "BACKPACK_CONFIG_VERSION=production ./scripts/config.sh && NODE_ENV=production webpack",
     "build:release": "NODE_ENV=production webpack",
     "e2e": "jest --maxWorkers 1 --detectOpenHandles --forceExit --verbose",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"

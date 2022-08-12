@@ -6,3 +6,4 @@ export * from "./types";
 export * from "./logging";
 export * from "./utils";
 export * from "./zustand-store";
+export * from "./config";

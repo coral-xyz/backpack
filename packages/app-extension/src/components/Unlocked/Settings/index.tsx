@@ -18,7 +18,7 @@ import {
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
-  Features,
+  CONFIG,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
@@ -433,7 +433,7 @@ function SettingsList({ close }: { close: () => void }) {
       detailIcon: <LaunchDetail />,
     },
   ];
-  if (Features.popMode) {
+  if (CONFIG.BACKPACK_FEATURE_POP_MODE) {
     settingsMenu.push({
       label: "Pop Window",
       onClick: () => {
