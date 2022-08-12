@@ -756,10 +756,17 @@ class Dom {
   // remove the new child and do an insertion each time.
   //
   insertBefore(parentId: number, child: Element, beforeId: number) {
+    //
+    // Get the parent node.
+    //
     const parent = this._vdom.get(parentId) as NodeSerialized;
     if (!parent) {
       throw new Error("parent not found");
     }
+
+    //
+    // Get the before node.
+    //
     const beforeElement = parent.children.find(
       (e: Element) => e.id === beforeId
     ) as NodeSerialized;
@@ -768,15 +775,22 @@ class Dom {
       throw new Error("before element not found");
     }
 
-    const newChildren = beforeElement.children.filter(
+    //
+    // Remove the child from the parent to prepare for insertion.
+    //
+    const newChildren = parent.children.filter(
       (c: Element) => c.id !== child.id
     );
+
+    //
+    // Find the insertion point.
+    //
     const beforeIdx = newChildren.indexOf(beforeElement);
     if (beforeIdx === -1) {
       throw new Error("child not found");
     }
 
-    beforeElement.children = newChildren
+    parent.children = newChildren
       .slice(0, beforeIdx)
       .concat([child])
       .concat(newChildren.slice(beforeIdx));
