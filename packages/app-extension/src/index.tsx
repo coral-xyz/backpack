@@ -5,7 +5,7 @@ import * as cmn from "@coral-xyz/common";
 import * as cmnPublic from "@coral-xyz/common-public";
 import App from "./app/App";
 import LedgerIframe from "./components/LedgerIframe";
-import { privateConfig, publicConfig } from "./config";
+import { privateConfig, publicConfig } from "./generated-config";
 import "./index.css";
 
 //

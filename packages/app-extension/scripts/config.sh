@@ -22,10 +22,10 @@
 
 set -euo pipefail
 
-out_file="./src/config.ts"
+out_file="./src/generated-config.ts"
 
 main () {
-		if [ -f "./src/config.ts" ]; then
+		if [ -f "./src/generated-config.ts" ]; then
 				rm ./src/config.ts
 		fi
 

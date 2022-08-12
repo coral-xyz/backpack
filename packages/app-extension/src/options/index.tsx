@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import * as cmn from "@coral-xyz/common";
 import * as cmnPublic from "@coral-xyz/common-public";
-import { privateConfig, publicConfig } from "../config";
+import { privateConfig, publicConfig } from "../generated-config";
 import Options from "./Options";
 
 //
