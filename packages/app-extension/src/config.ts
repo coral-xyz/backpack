@@ -15,5 +15,5 @@ export const privateConfig = {
 // Config for .
 //
 export const publicConfig = {
-  BACKPACK_CONFIG_LOG_LEVEL: "info",
+  BACKPACK_CONFIG_LOG_LEVEL: "debug",
 };

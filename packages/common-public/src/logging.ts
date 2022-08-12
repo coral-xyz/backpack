@@ -1,16 +1,7 @@
 import { vanillaStore } from "./zustand-store";
 import { isServiceWorker, IS_MOBILE } from "./utils";
 import { MOBILE_CHANNEL_LOGS } from "./constants";
-
-export enum LogLevel {
-  Trace,
-  Debug,
-  Info,
-  Warning,
-  Error,
-}
-
-let _LOG_LEVEL: LogLevel;
+import { CONFIG_PUBLIC } from "./config";
 
 export function getLogger(mod: string) {
   return (() => {
@@ -26,32 +17,19 @@ export function getLogger(mod: string) {
   })();
 }
 
-export function setConfigLogger(level = "debug") {
-  _LOG_LEVEL = (() => {
-    switch (level) {
-      case "trace":
-        return LogLevel.Trace;
-      case "debug":
-        return LogLevel.Debug;
-      case "info":
-        return LogLevel.Info;
-      case "warning":
-        return LogLevel.Warning;
-      case "error":
-        return LogLevel.Error;
-      default:
-        throw new Error("invalid log level");
-    }
-  })();
-}
-
 function debug(str: any, ...args: any) {
+  if (_LOG_LEVEL === undefined) {
+    setupLogLevel();
+  }
   if (_LOG_LEVEL <= LogLevel.Debug) {
     log(str, ...args);
   }
 }
 
 function error(str: any, ...args: any) {
+  if (_LOG_LEVEL === undefined) {
+    setupLogLevel();
+  }
   if (_LOG_LEVEL <= LogLevel.Error) {
     log(`ERROR: ${str}`, ...args);
   }
@@ -104,4 +82,32 @@ async function _mobileLog(...args: any[]) {
       })}); true;`
     );
   }
+}
+
+let _LOG_LEVEL: LogLevel;
+export enum LogLevel {
+  Trace,
+  Debug,
+  Info,
+  Warning,
+  Error,
+}
+
+export function setupLogLevel() {
+  _LOG_LEVEL = (() => {
+    switch (CONFIG_PUBLIC.BACKPACK_CONFIG_LOG_LEVEL) {
+      case "trace":
+        return LogLevel.Trace;
+      case "debug":
+        return LogLevel.Debug;
+      case "info":
+        return LogLevel.Info;
+      case "warning":
+        return LogLevel.Warning;
+      case "error":
+        return LogLevel.Error;
+      default:
+        throw new Error("invalid log level");
+    }
+  })();
 }
