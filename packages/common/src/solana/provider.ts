@@ -16,11 +16,10 @@ export class SolanaProvider {
     tx: Transaction
   ): Promise<Transaction> {
     const { walletPublicKey, backgroundClient } = ctx;
-    const txSerialized = tx.serializeMessage();
-    const message = bs58.encode(txSerialized);
+    const txStr = bs58.encode(tx.serialize({ requireAllSignatures: false }));
     const respSignature = await backgroundClient.request({
       method: UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
-      params: [message, walletPublicKey.toString()],
+      params: [txStr, walletPublicKey.toString()],
     });
     tx.addSignature(walletPublicKey, Buffer.from(bs58.decode(respSignature)));
     return tx;
@@ -32,16 +31,14 @@ export class SolanaProvider {
   ): Promise<Transaction[]> {
     const { walletPublicKey } = ctx;
     // Serialize messages.
-    const messages = txs.map((tx) => {
-      const txSerialized = tx.serializeMessage();
-      const message = bs58.encode(txSerialized);
-      return message;
+    const txStrs = txs.map((tx) => {
+      return bs58.encode(tx.serialize({ requireAllSignatures: false }));
     });
 
     // Get signatures from the background script.
     const signatures: Array<string> = await ctx.backgroundClient.request({
       method: UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
-      params: [messages, walletPublicKey.toString()],
+      params: [txStrs, walletPublicKey.toString()],
     });
 
     // Add the signatures to the transactions.
