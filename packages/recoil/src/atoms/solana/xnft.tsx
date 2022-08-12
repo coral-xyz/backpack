@@ -11,7 +11,6 @@ const PRICES_PLUGIN_URL = pluginURL("xnft/prices");
 const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
 const PSYFI_PLUGIN_URL = pluginURL("xnft/psyfi");
 const AURORY_PLUGIN_URL = pluginURL("xnft/aurory");
-const AURORY_2_PLUGIN_URL = pluginURL("xnft/aurory-new");
 
 //
 // xnft-program-library
@@ -50,13 +49,6 @@ export const plugins = selector({
         url: AURORY_PLUGIN_URL,
         iconUrl: "assets/aurory.png",
         title: "Aurory",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(connectionUrl),
-      },
-      {
-        url: AURORY_2_PLUGIN_URL,
-        iconUrl: "assets/aurory.png",
-        title: "Aurory New",
         activeWallet: get(activeWallet),
         connectionUrl: get(connectionUrl),
       },
