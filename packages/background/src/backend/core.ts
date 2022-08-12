@@ -86,11 +86,13 @@ export class Backend {
 
   // Returns the signature.
   async solanaSignTransaction(
-    tx: string,
+    txStr: string,
     walletAddress: string
   ): Promise<string> {
+    const tx = Transaction.from(bs58.decode(txStr));
+    const txMessage = bs58.encode(tx.serializeMessage());
     const blockchainKeyring = this.keyringStore.activeBlockchain();
-    return await blockchainKeyring.signTransaction(tx, walletAddress);
+    return await blockchainKeyring.signTransaction(txMessage, walletAddress);
   }
 
   async solanaSignMessage(msg: string, walletAddress: string): Promise<string> {
