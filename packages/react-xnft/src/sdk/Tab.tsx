@@ -112,6 +112,7 @@ function TabBar({ tabScreens, style }) {
               background: "transparent",
               borderRadius: 0,
               position: "relative",
+              ...routedOptions.tabBarStyle,
             }}
             onClick={() => setActiveTab(screen.props.name)}
           >
@@ -147,6 +148,7 @@ type RoutedTabsOptions = {
   tabBarIcon: ({ focused }: { focused: boolean }) => React.ReactNode;
   tabBarActiveTintColor: string;
   tabBarInactiveTintColor: string;
+  tabBarStyle?: React.CSSProperties;
 };
 
 type TabContext = {
