@@ -1,7 +1,7 @@
 import { vanillaStore } from "./zustand-store";
 import { isServiceWorker, IS_MOBILE } from "./utils";
 import { MOBILE_CHANNEL_LOGS } from "./constants";
-import { CONFIG_PUBLIC } from "./config";
+import * as cfg from "./generated-config";
 
 export function getLogger(mod: string) {
   return (() => {
@@ -95,10 +95,7 @@ export enum LogLevel {
 
 export function setupLogLevel() {
   _LOG_LEVEL = (() => {
-    if (CONFIG_PUBLIC === undefined) {
-      return LogLevel.Debug;
-    }
-    switch (CONFIG_PUBLIC.BACKPACK_CONFIG_LOG_LEVEL) {
+    switch (cfg.BACKPACK_CONFIG_LOG_LEVEL) {
       case "trace":
         return LogLevel.Trace;
       case "debug":

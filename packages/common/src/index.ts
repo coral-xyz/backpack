@@ -8,7 +8,9 @@ export * from "./channel";
 export * from "./browser";
 export * from "./types";
 export * from "./solana";
-export * from "./config";
+
+// Generated pre-build step.
+export * from "./generated-config";
 
 // Utility to transform the handler API into something a little more friendly.
 export function withContext<Backend>(

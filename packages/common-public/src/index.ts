@@ -6,4 +6,6 @@ export * from "./types";
 export * from "./logging";
 export * from "./utils";
 export * from "./zustand-store";
-export * from "./config";
+
+// Generated pre-build step.
+export * from "./generated-config";

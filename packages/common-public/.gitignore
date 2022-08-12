@@ -24,3 +24,6 @@ yarn-error.log*
 
 .rollup.cache
 dist/
+
+# generated pre-build
+src/generated-config.ts

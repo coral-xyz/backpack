@@ -2,10 +2,9 @@
 
 ################################################################################
 #
-# Versions a given build by creating a typescript file that will be used in the
-# app.
+# Pre build step for this package.
 #
-# Make sure to run this from the packages/app-extesnsion directory.
+# Make sure to run this from the packages/common directory.
 #
 # Usage:
 #
@@ -14,7 +13,6 @@
 # Required ENV Variables:
 #
 # BACKPACK_CONFIG_VERSION
-# BACKPACK_CONFIG_LOG_LEVEL
 # BACKPACK_FEATURE_LIGHT_MODE
 # BACKPACK_FEATURE_POP_MODE
 #
@@ -37,18 +35,10 @@ main () {
 //
 // Config for @coral-xyz/common.
 //
-export const privateConfig = {
-  BACKPACK_CONFIG_VERSION: "${BACKPACK_CONFIG_VERSION:=development}",
-  BACKPACK_FEATURE_LIGHT_MODE: ${BACKPACK_FEATURE_LIGHT_MODE:=true},
-  BACKPACK_FEATURE_POP_MODE: ${BACKPACK_FEATURE_POP_MODE:=true},
-};
+export const BACKPACK_CONFIG_VERSION = "${BACKPACK_CONFIG_VERSION:=development}";
+export const BACKPACK_FEATURE_LIGHT_MODE = ${BACKPACK_FEATURE_LIGHT_MODE:=true};
+export const BACKPACK_FEATURE_POP_MODE = ${BACKPACK_FEATURE_POP_MODE:=true};
 
-//
-// Config for @coral-xyz/common-public.
-//
-export const publicConfig = {
-  BACKPACK_CONFIG_LOG_LEVEL: "${BACKPACK_CONFIG_LOG_LEVEL:=debug}",
-};
 EOF
 }
 

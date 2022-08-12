@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { Typography, Switch } from "@mui/material";
 import {
-  CONFIG,
+  BACKPACK_FEATURE_LIGHT_MODE,
+  BACKPACK_CONFIG_VERSION,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
 } from "@coral-xyz/common";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
@@ -43,7 +44,7 @@ export function Preferences() {
     },
   };
 
-  if (CONFIG.BACKPACK_FEATURE_LIGHT_MODE) {
+  if (BACKPACK_FEATURE_LIGHT_MODE) {
     menuItems["Dark Mode"] = {
       onClick: () => onDarkModeSwitch(!isDarkMode),
       detail: (
@@ -77,7 +78,7 @@ export function Preferences() {
       onClick: () => {},
       detail: (
         <Typography style={{ color: theme.custom.colors.secondary }}>
-          {CONFIG.BACKPACK_CONFIG_VERSION}
+          {BACKPACK_CONFIG_VERSION}
         </Typography>
       ),
     },
