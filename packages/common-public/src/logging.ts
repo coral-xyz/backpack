@@ -95,6 +95,9 @@ export enum LogLevel {
 
 export function setupLogLevel() {
   _LOG_LEVEL = (() => {
+    if (CONFIG_PUBLIC === undefined) {
+      return LogLevel.Debug;
+    }
     switch (CONFIG_PUBLIC.BACKPACK_CONFIG_LOG_LEVEL) {
       case "trace":
         return LogLevel.Trace;

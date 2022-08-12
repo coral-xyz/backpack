@@ -35,7 +35,7 @@ main () {
 ////////////////////////////////////////////////////////////////////////////////
 
 //
-// Config for `@coral-xyz/common`.
+// Config for @coral-xyz/common.
 //
 export const privateConfig = {
   BACKPACK_CONFIG_VERSION: "${BACKPACK_CONFIG_VERSION:=development}",
@@ -44,7 +44,7 @@ export const privateConfig = {
 };
 
 //
-// Config for `@coral-xyz/common-public`.
+// Config for @coral-xyz/common-public.
 //
 export const publicConfig = {
   BACKPACK_CONFIG_LOG_LEVEL: "${BACKPACK_CONFIG_LOG_LEVEL:=debug}",
