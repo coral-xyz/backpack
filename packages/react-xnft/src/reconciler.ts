@@ -386,14 +386,10 @@ const RECONCILER = ReactReconciler({
           delete updatePayload["onClick"];
         }
         break;
-      case NodeKind.Table:
-        break;
-      case NodeKind.TableRow:
-        break;
       case NodeKind.Text:
-        break;
+        throw new Error("commitUpdate Text not yet implemented");
       case NodeKind.Image:
-        break;
+        throw new Error("commitUpdate Image not yet implemented");
       case NodeKind.Svg:
         throw new Error("commitUpdate Svg not yet implemented");
       case NodeKind.Circle:
