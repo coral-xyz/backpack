@@ -4,6 +4,9 @@ import { MOBILE_CHANNEL_LOGS } from "./constants";
 import * as cfg from "./generated-config";
 
 export function getLogger(mod: string) {
+  if (_LOG_LEVEL === undefined) {
+    setupLogLevel();
+  }
   return (() => {
     const _mod = mod;
     const prefix = isServiceWorker() ? "service-worker:" : "";
@@ -18,18 +21,12 @@ export function getLogger(mod: string) {
 }
 
 function debug(str: any, ...args: any) {
-  if (_LOG_LEVEL === undefined) {
-    setupLogLevel();
-  }
   if (_LOG_LEVEL <= LogLevel.Debug) {
     log(str, ...args);
   }
 }
 
 function error(str: any, ...args: any) {
-  if (_LOG_LEVEL === undefined) {
-    setupLogLevel();
-  }
   if (_LOG_LEVEL <= LogLevel.Error) {
     log(`ERROR: ${str}`, ...args);
   }
