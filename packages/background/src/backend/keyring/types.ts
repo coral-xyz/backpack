@@ -15,6 +15,7 @@ export interface Keyring {
   signMessage(tx: Buffer, address: string): Promise<string>;
   exportSecretKey(address: string): string | null;
   importSecretKey(secretKey: string): string;
+  deleteKeyIfNeeded(pubkey: string): number;
   toJson(): any;
 }
 
