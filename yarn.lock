@@ -1323,23 +1323,6 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@coral-xyz/common-public@latest":
-  version "0.0.5-latest.1514"
-  resolved "https://registry.yarnpkg.com/@coral-xyz/common-public/-/common-public-0.0.5-latest.1514.tgz#d2202efc885a5cbabe38f2832c50281ee77024a9"
-  integrity sha512-9xVedXhIqwql8dxFD/iAhy8BVPtV21XW3b6eEOWfsFuASStm6Z+cfGddfIH+V/vCMC0Xganzlkgykeq1RE/ICg==
-  dependencies:
-    uuid "^8.3.2"
-    zustand "^4.0.0-rc.2"
-
-"@coral-xyz/themes@latest":
-  version "0.0.5-latest.1514"
-  resolved "https://registry.yarnpkg.com/@coral-xyz/themes/-/themes-0.0.5-latest.1514.tgz#2bd272d7c8aa27f0d09066b615c3c60b91696611"
-  integrity sha512-CYc4dIhNzknsxLxQHc1nMR6HAynfJlnMfItpxQ5v7w44MSoNGKx7VMlR0NHZbFUrEhkARXsMFp7ut8JNSucCWg==
-  dependencies:
-    "@mui/material" "^5.8.4"
-    "@mui/styles" "^5.8.4"
-    react "^17.0.0"
-
 "@coral-xyz/xnft-cli@^0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@coral-xyz/xnft-cli/-/xnft-cli-0.0.1.tgz#dfda912320d433743ffa75f0c6146e75c8580c7d"

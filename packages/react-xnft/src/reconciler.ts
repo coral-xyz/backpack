@@ -16,7 +16,7 @@ import {
 } from "@coral-xyz/common-public";
 import { NAV_STACK } from "./Context";
 
-const logger = getLogger("react-xfnt/reconciler");
+const logger = getLogger("react-xnft/reconciler");
 const events = new EventEmitter();
 
 export const ReactXnft = {
