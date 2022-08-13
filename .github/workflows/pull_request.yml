@@ -92,7 +92,7 @@ jobs:
       ##########################################################################
 
       - name: "tag build version"
-        run: pushd ./packages/app-extension && ./scripts/version.sh latest-${{ github.run_number }} && popd
+        run: pushd ./packages/app-extension && BACKPACK_VERSION="latest-${{ github.run_number }}" ./scripts/config.sh && popd
 
       - name: "build workspace"
         # CI!=true so that build warnings aren't treated like errors (for now)
@@ -101,10 +101,15 @@ jobs:
         run: yarn build
 
       #
-      # Rebuild the extension with an explicitly tagged version.
+      # Rebuild the extension with an explicit config.
       #
-      - name: "tag build version"
-        run: pushd ./packages/app-extension && ./scripts/version.sh latest-${{ github.run_number }} && popd
+      - name: "configure the build"
+        env:
+          BACKPACK_CONFIG_VERSION: "latest-${{ github.run_number }}"
+          BACKPACK_CONFIG_LOG_LEVEL: "info"
+          BACKPACK_FEATURE_LIGHT_MODE: "true"
+          BACKPACK_FEATURE_POP_MODE: "true"
+        run: pushd ./packages/app-extension && ./scripts/config.sh && popd
       - name: "build extension for release"
         # CI!=true so that build warnings aren't treated like errors (for now)
         env:

@@ -1,27 +1,35 @@
 import { vanillaStore } from "./zustand-store";
 import { isServiceWorker, IS_MOBILE } from "./utils";
 import { MOBILE_CHANNEL_LOGS } from "./constants";
+import * as cfg from "./generated-config";
 
 export function getLogger(mod: string) {
+  if (_LOG_LEVEL === undefined) {
+    setupLogLevel();
+  }
   return (() => {
     const _mod = mod;
     const prefix = isServiceWorker() ? "service-worker:" : "";
     return {
       debug: (str: string, ...args: any) =>
-        debug(`${prefix}backpack: ${_mod}: ${str}`, ...args),
+        debug(`backpack:${prefix} ${_mod}: ${str}`, ...args),
       error: (str: string, ...args: any) =>
-        error(`${prefix}backpack: ${_mod}: ${str}`, ...args),
+        error(`backpack:${prefix} ${_mod}: ${str}`, ...args),
       _log,
     };
   })();
 }
 
 function debug(str: any, ...args: any) {
-  log(str, ...args);
+  if (_LOG_LEVEL <= LogLevel.Debug) {
+    log(str, ...args);
+  }
 }
 
 function error(str: any, ...args: any) {
-  log(`ERROR: ${str}`, ...args);
+  if (_LOG_LEVEL <= LogLevel.Error) {
+    log(`ERROR: ${str}`, ...args);
+  }
 }
 
 function log(str: any, ...args: any) {
@@ -71,4 +79,32 @@ async function _mobileLog(...args: any[]) {
       })}); true;`
     );
   }
+}
+
+let _LOG_LEVEL: LogLevel;
+export enum LogLevel {
+  Trace,
+  Debug,
+  Info,
+  Warning,
+  Error,
+}
+
+export function setupLogLevel() {
+  _LOG_LEVEL = (() => {
+    switch (cfg.BACKPACK_CONFIG_LOG_LEVEL) {
+      case "trace":
+        return LogLevel.Trace;
+      case "debug":
+        return LogLevel.Debug;
+      case "info":
+        return LogLevel.Info;
+      case "warning":
+        return LogLevel.Warning;
+      case "error":
+        return LogLevel.Error;
+      default:
+        throw new Error("invalid log level");
+    }
+  })();
 }
