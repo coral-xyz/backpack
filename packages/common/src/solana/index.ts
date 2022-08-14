@@ -237,8 +237,7 @@ export const generateWrapSolTx = async (
   tx.recentBlockhash = (
     await tokenClient.provider.connection.getLatestBlockhash(commitment)
   ).blockhash;
-  const signedTx = await SolanaProvider.signTransaction(ctx, tx);
-  return signedTx.serialize();
+  return tx.serialize({ requireAllSignatures: false });
 };
 
 //
@@ -332,8 +331,7 @@ export const generateUnwrapSolTx = async (
     );
     tx.partialSign(newAccount);
   }
-  const signedTx = await SolanaProvider.signTransaction(ctx, tx);
-  return signedTx.serialize();
+  return tx.serialize({ requireAllSignatures: false });
 };
 
 export type TransferTokenRequest = {
