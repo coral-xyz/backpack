@@ -133,8 +133,11 @@ export function NotificationsProvider(props: any) {
     const handleKeyringStoreUnlocked = (_notif: Notification) => {
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
     };
-    const handleKeyringKeyDelete = (_notif: Notification) => {
+    const handleKeyringKeyDelete = (notif: Notification) => {
+      const { deletedPublicKey, activeWallet } = notif.data;
       // todo
+      // update wallet list atom
+      // update active wallet atom if needed
     };
     const handleKeynameUpdate = (notif: Notification) => {
       setWalletPublicKeys((current: any) => {
