@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { Typography } from "@mui/material";
+import { UI_RPC_METHOD_KEYRING_KEY_DELETE } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { useActiveWallet, useBackgroundClient } from "@coral-xyz/recoil";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { WarningIcon } from "../../../../common/Icon";
 import { SecondaryButton, PrimaryButton } from "../../../../common";
@@ -12,11 +14,15 @@ export const RemoveWallet: React.FC<{
 }> = ({ publicKey, name, type }) => {
   const theme = useCustomTheme();
   const nav = useNavStack();
+  const background = useBackgroundClient();
+
   useEffect(() => {
     nav.setTitle("Remove Wallet");
   }, [nav]);
+
   const pubkeyStr =
     publicKey.slice(0, 4) + "..." + publicKey.slice(publicKey.length - 4);
+
   return (
     <div
       style={{
@@ -97,7 +103,14 @@ export const RemoveWallet: React.FC<{
         <PrimaryButton
           label={"Remove"}
           style={{ backgroundColor: theme.custom.colors.negative }}
-          onClick={() => {}}
+          onClick={() => {
+            (async () => {
+              await background.request({
+                method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
+                params: [publicKey],
+              });
+            })();
+          }}
         />
       </div>
     </div>
