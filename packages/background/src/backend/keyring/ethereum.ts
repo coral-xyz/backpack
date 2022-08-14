@@ -26,6 +26,11 @@ export class EthereumKeyring implements Keyring {
     // todo
   }
 
+  public deleteKeyIfNeeded(pubkey: string): number {
+    // todo1
+    return -1;
+  }
+
   // @ts-ignore
   public async signTransaction(tx: Buffer, address: string): Promise<string> {
     // todo
