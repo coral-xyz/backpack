@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useWalletPublicKeys, useBackgroundClient } from "@coral-xyz/recoil";
 import { ContentCopy } from "@mui/icons-material";
 import { SettingsList } from "../../../../common/Settings/List";
 import { useNavStack } from "../../../../common/Layout/NavStack";
@@ -17,6 +17,12 @@ export const WalletDetail: React.FC<{
   const background = useBackgroundClient();
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [walletName, setWalletName] = useState(name);
+  const pubkeys = useWalletPublicKeys();
+  const pubkeysFlat = [
+    ...pubkeys.hdPublicKeys,
+    ...pubkeys.importedPublicKeys,
+    ...pubkeys.ledgerPublicKeys,
+  ];
 
   useEffect(() => {
     const addr =
@@ -89,7 +95,7 @@ export const WalletDetail: React.FC<{
         </div>
       </WithCopyTooltip>
       <SettingsList menuItems={secrets} />
-      <SettingsList menuItems={removeWallet} />
+      {pubkeysFlat.length > 1 && <SettingsList menuItems={removeWallet} />}
     </div>
   );
 };
