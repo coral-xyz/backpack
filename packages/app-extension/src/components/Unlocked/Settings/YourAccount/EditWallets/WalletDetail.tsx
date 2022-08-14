@@ -43,7 +43,7 @@ export const WalletDetail: React.FC<{
         background: theme.custom.colors.background,
       });
     })();
-  }, [nav, publicKey, background]);
+  }, []);
 
   const copyAddress = () => {
     setTooltipOpen(true);
@@ -93,7 +93,9 @@ export const WalletDetail: React.FC<{
         </div>
       </WithCopyTooltip>
       <SettingsList menuItems={secrets} />
-      {pubkeysFlat.length > 1 && <SettingsList menuItems={removeWallet} />}
+      {(type !== "derived" || pubkeys.hdPublicKeys.length > 1) && (
+        <SettingsList menuItems={removeWallet} />
+      )}
     </div>
   );
 };
