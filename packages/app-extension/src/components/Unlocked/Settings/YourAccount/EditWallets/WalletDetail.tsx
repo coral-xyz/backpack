@@ -25,27 +25,25 @@ export const WalletDetail: React.FC<{
   ];
 
   useEffect(() => {
-    const addr =
-      publicKey.slice(0, 4) + "..." + publicKey.slice(publicKey.length - 4);
-    nav.setTitle(`${walletName} (${addr})`);
-    nav.setStyle({
-      background: theme.custom.colors.background,
-      borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-    });
-    nav.setContentStyle({
-      background: theme.custom.colors.background,
-    });
-  }, [nav, walletName]);
-
-  useEffect(() => {
     (async () => {
       const keyname = await background.request({
         method: UI_RPC_METHOD_KEYNAME_READ,
         params: [publicKey],
       });
       setWalletName(keyname);
+
+      const addr =
+        publicKey.slice(0, 4) + "..." + publicKey.slice(publicKey.length - 4);
+      nav.setTitle(`${keyname} (${addr})`);
+      nav.setStyle({
+        background: theme.custom.colors.background,
+        borderBottom: `solid 1pt ${theme.custom.colors.border}`,
+      });
+      nav.setContentStyle({
+        background: theme.custom.colors.background,
+      });
     })();
-  }, [publicKey, background]);
+  }, [nav, publicKey, background]);
 
   const copyAddress = () => {
     setTooltipOpen(true);

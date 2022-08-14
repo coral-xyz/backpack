@@ -50,6 +50,7 @@ function BlockchainWalletList({
       <List>
         {flattenedWallets.map(({ name, publicKey, type }, idx) => (
           <WalletListItem
+            key={publicKey.toString()}
             name={name}
             publicKey={publicKey}
             type={type}
