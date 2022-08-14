@@ -16,7 +16,7 @@ export const RemoveWallet: React.FC<{
   const theme = useCustomTheme();
   const nav = useNavStack();
   const background = useBackgroundClient();
-  const [showSuccess, setShowSuccess] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     nav.setTitle("Remove Wallet");
