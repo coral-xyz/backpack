@@ -329,18 +329,6 @@ export class Backend {
     };
   }
 
-  // Adds a new HdKeyring to the store.
-  hdKeyringCreate(mnemonic: string): string {
-    // todo
-    return SUCCESS_RESPONSE;
-  }
-
-  // Adds a new ecretKey to the store (secret key is a private not a mnemonic).
-  keyringCreate(secretKey: string): string {
-    // todo
-    return SUCCESS_RESPONSE;
-  }
-
   async activeWallet(): Promise<string> {
     return await this.keyringStore.activeWallet();
   }

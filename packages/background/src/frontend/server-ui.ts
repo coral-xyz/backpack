@@ -18,7 +18,6 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  UI_RPC_METHOD_KEYRING_CREATE,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
@@ -30,7 +29,6 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_RESET,
-  UI_RPC_METHOD_HD_KEYRING_CREATE,
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ,
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
@@ -121,10 +119,6 @@ async function handle<T = any>(
       return await handleKeyringStoreLock(ctx);
     case UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS:
       return await handleKeyringStoreReadAllPubkeys(ctx);
-    case UI_RPC_METHOD_HD_KEYRING_CREATE:
-      return await handleHdKeyringCreate(ctx, params[0]);
-    case UI_RPC_METHOD_KEYRING_CREATE:
-      return await handleKeyringCreate(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_KEY_DELETE:
       return await handleKeyringKeyDelete(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_STORE_STATE:
@@ -297,22 +291,6 @@ async function handleKeyringStoreUnlock(
 
 async function handleKeyringStoreLock(ctx: Context<Backend>) {
   const resp = ctx.backend.keyringStoreLock();
-  return [resp];
-}
-
-async function handleHdKeyringCreate(
-  ctx: Context<Backend>,
-  mnemonic: string
-): Promise<RpcResponse<string>> {
-  const resp = ctx.backend.hdKeyringCreate(mnemonic);
-  return [resp];
-}
-
-async function handleKeyringCreate(
-  ctx: Context<Backend>,
-  secretKey: string
-): Promise<RpcResponse<string>> {
-  const resp = ctx.backend.keyringCreate(secretKey);
   return [resp];
 }
 
