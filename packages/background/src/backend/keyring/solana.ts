@@ -146,9 +146,9 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
     const kr = new SolanaHdKeyring({
       mnemonic,
       seed,
-      accountIndices,
       derivationPath,
       keypairs,
+      accountIndices,
     });
 
     return kr;
@@ -158,10 +158,10 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
 class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   readonly mnemonic: string;
   private seed: Buffer;
+  private derivationPath: DerivationPath;
   // Invariant: the order of these indices *must* match the order of these
   //            super classes' keypairs.
   private accountIndices: Array<number>;
-  private derivationPath: DerivationPath;
 
   constructor({
     mnemonic,
@@ -172,18 +172,21 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   }: {
     mnemonic: string;
     seed: Buffer;
-    accountIndices: Array<number>;
     keypairs: Array<Keypair>;
     derivationPath: DerivationPath;
+    accountIndices: Array<number>;
   }) {
     super(keypairs);
     this.mnemonic = mnemonic;
     this.seed = seed;
-    this.accountIndices = accountIndices;
     this.derivationPath = derivationPath;
+    this.accountIndices = accountIndices;
   }
 
   public deleteKeyIfNeeded(pubkey: string): number {
+    if (this.keypairs.length <= 1) {
+      throw new Error("cannot delete the last key in the hd keyring");
+    }
     const idx = super.deleteKeyIfNeeded(pubkey);
     if (idx < 0) {
       return idx;
