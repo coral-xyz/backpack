@@ -7,10 +7,11 @@ import { SettingsList } from "../../../../common/Settings/List";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { WithCopyTooltip } from "../../../../common/WithCopyTooltip";
 
-export const WalletDetail: React.FC<{ publicKey: string; name: string }> = ({
-  publicKey,
-  name,
-}) => {
+export const WalletDetail: React.FC<{
+  publicKey: string;
+  name: string;
+  type: string;
+}> = ({ publicKey, name, type }) => {
   const nav = useNavStack();
   const theme = useCustomTheme();
   const background = useBackgroundClient();
@@ -68,7 +69,12 @@ export const WalletDetail: React.FC<{ publicKey: string; name: string }> = ({
 
   const removeWallet = {
     "Remove wallet": {
-      onClick: () => nav.push("edit-wallets-remove"),
+      onClick: () =>
+        nav.push("edit-wallets-remove", {
+          publicKey,
+          name,
+          type,
+        }),
       style: {
         color: theme.custom.colors.negative,
       },

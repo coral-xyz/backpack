@@ -39,19 +39,20 @@ function BlockchainWalletList({
   wallets: ReturnType<typeof useWalletPublicKeys>;
 }) {
   const flattenedWallets = [
-    ...wallets.hdPublicKeys,
-    ...wallets.importedPublicKeys,
-    ...wallets.ledgerPublicKeys,
+    ...wallets.hdPublicKeys.map((k) => ({ ...k, type: "derived" })),
+    ...wallets.importedPublicKeys.map((k) => ({ ...k, type: "imported" })),
+    ...wallets.ledgerPublicKeys.map((k) => ({ ...k, type: "ledger" })),
   ];
 
   // TODO: replace placeholder wallet avatar with stored image when available
   return (
     <div>
       <List>
-        {flattenedWallets.map(({ name, publicKey }, idx) => (
+        {flattenedWallets.map(({ name, publicKey, type }, idx) => (
           <WalletListItem
             name={name}
             publicKey={publicKey}
+            type={type}
             isFirst={idx === 0}
             isLast={idx === flattenedWallets.length - 1}
           />
@@ -65,10 +66,11 @@ function BlockchainWalletList({
 export const WalletListItem: React.FC<{
   name: string;
   publicKey: any;
+  type?: string;
   isFirst: boolean;
   isLast: boolean;
   onClick?: () => void;
-}> = ({ name, publicKey, isFirst, isLast, onClick }) => {
+}> = ({ name, publicKey, type, isFirst, isLast, onClick }) => {
   const theme = useCustomTheme();
   const nav = useNavStack();
   return (
@@ -92,6 +94,7 @@ export const WalletListItem: React.FC<{
               nav.push("edit-wallets-wallet-detail", {
                 publicKey: publicKey.toString(),
                 name,
+                type,
               })
       }
       style={{ display: "flex", width: "100%" }}
