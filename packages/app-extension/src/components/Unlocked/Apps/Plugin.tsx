@@ -1,8 +1,7 @@
 import { Button, Divider } from "@mui/material";
 import { PluginRenderer } from "@coral-xyz/react-xnft-renderer";
-import { usePlugins, useTablePlugins } from "@coral-xyz/recoil";
+import { usePlugins } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { PowerIcon, MoreIcon } from "../../common/Icon";
 
 export function PluginDisplay({ pluginUrl, closePlugin }: any) {
@@ -30,17 +29,6 @@ export function PluginDisplay({ pluginUrl, closePlugin }: any) {
       <PluginRenderer key={p.iframeUrl} plugin={p} />
     </div>
   );
-}
-
-export function PluginTableDetailDisplay({
-  pluginUrl,
-}: SearchParamsFor.Plugin["props"]) {
-  const plugins = useTablePlugins();
-  const p = plugins.find((p) => p.iframeUrl === encodeURI(pluginUrl));
-  if (p === undefined) {
-    throw new Error("unable to find plugin");
-  }
-  return <PluginRenderer key={p.iframeUrl} plugin={p} />;
 }
 
 function PluginControl({ closePlugin }: any) {

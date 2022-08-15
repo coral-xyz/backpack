@@ -65,11 +65,12 @@ import {
   getLogger,
   customSplTokenAccounts,
   BACKEND_EVENT,
+  NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
-  NOTIFICATION_CONNECTION_URL_UPDATED,
-  NOTIFICATION_SPL_TOKENS_DID_UPDATE,
+  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
+  NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
 } from "@coral-xyz/common";
 
 const logger = getLogger("solana-connection-backend");
@@ -109,6 +110,9 @@ export class Backend {
       logger.debug(`received notification: ${notif.name}`, notif);
 
       switch (notif.name) {
+        case NOTIFICATION_KEYRING_STORE_CREATED:
+          handleKeyringStoreCreated(notif);
+          break;
         case NOTIFICATION_KEYRING_STORE_UNLOCKED:
           handleKeyringStoreUnlocked(notif);
           break;
@@ -118,7 +122,7 @@ export class Backend {
         case NOTIFICATION_ACTIVE_WALLET_UPDATED:
           handleActiveWalletUpdated(notif);
           break;
-        case NOTIFICATION_CONNECTION_URL_UPDATED:
+        case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
           handleConnectionUrlUpdated(notif);
           break;
         default:
@@ -126,6 +130,9 @@ export class Backend {
       }
     });
 
+    const handleKeyringStoreCreated = (notif: Notification) => {
+      handleKeyringStoreUnlocked(notif);
+    };
     const handleKeyringStoreUnlocked = (notif: Notification) => {
       const { url, activeWallet, commitment } = notif.data;
       this.connection = new Connection(url, commitment);
@@ -172,7 +179,7 @@ export class Backend {
           value: data,
         });
         this.events.emit(BACKEND_EVENT, {
-          name: NOTIFICATION_SPL_TOKENS_DID_UPDATE,
+          name: NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
           data: {
             connectionUrl: this.url,
             publicKey: activeWallet.toString(),
@@ -269,7 +276,11 @@ export class Backend {
     blockhash: Blockhash;
     lastValidBlockHeight: number;
   }> {
-    return await this.connection!.getLatestBlockhash(commitment);
+    if (!this.connection) {
+      throw new Error("inner connection not found");
+    }
+    const resp = await this.connection!.getLatestBlockhash(commitment);
+    return resp;
   }
 
   async getTokenAccountsByOwner(
@@ -302,7 +313,12 @@ export class Backend {
     strategy: BlockheightBasedTransactionConfirmationStrategy,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<SignatureResult>> {
-    return await this.connection!.confirmTransaction(strategy, commitment);
+    // @ts-ignore
+    const resp = await this.connection!.confirmTransaction(
+      strategy,
+      commitment
+    );
+    return resp;
   }
 
   async simulateTransaction(

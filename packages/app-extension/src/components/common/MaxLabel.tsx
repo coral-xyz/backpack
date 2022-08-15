@@ -1,4 +1,5 @@
 import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { ethers, BigNumber } from "ethers";
 
 const useStyles = styles((theme) => ({
   wrapper: {
@@ -6,6 +7,8 @@ const useStyles = styles((theme) => ({
     fontSize: "12px",
     lineHeight: "16px",
     color: theme.custom.colors.fontColor,
+  },
+  clickable: {
     cursor: "pointer",
     "&:hover": {
       color: theme.custom.colors.primaryButton,
@@ -16,19 +19,24 @@ const useStyles = styles((theme) => ({
 export const MaxLabel = ({
   amount,
   onSetAmount,
+  decimals,
 }: {
-  amount: number | null;
-  onSetAmount: (amount: number) => void;
+  amount: BigNumber | null;
+  onSetAmount: (amount: BigNumber) => void;
+  decimals: number;
 }) => {
   const theme = useCustomTheme();
   const classes = useStyles();
   return (
     <div
-      className={classes.wrapper}
+      className={[
+        classes.wrapper,
+        amount && !amount.isZero() ? classes.clickable : "",
+      ].join(" ")}
       onClick={() => amount && onSetAmount(amount)}
     >
       <span style={{ color: theme.custom.colors.secondary }}>Max: </span>
-      {amount ? amount : "-"}
+      {amount !== null ? ethers.utils.formatUnits(amount, decimals) : "-"}
     </div>
   );
 };

@@ -6,6 +6,7 @@ import type {
   ConfirmedSignaturesForAddress2Options,
   GetProgramAccountsConfig,
   MessageArgs,
+  BlockheightBasedTransactionConfirmationStrategy,
 } from "@solana/web3.js";
 import { PublicKey, Message } from "@solana/web3.js";
 import type {
@@ -21,7 +22,7 @@ import {
   ChannelAppUi,
   ChannelContentScript,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
-  SOLANA_CONNECTION_RPC_UI,
+  CHANNEL_SOLANA_CONNECTION_RPC_UI,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
   SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
@@ -41,7 +42,9 @@ import type { Config, Handle } from "../types";
 const logger = getLogger("solana-connection");
 
 export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
-  const solanaConnection = ChannelAppUi.server(SOLANA_CONNECTION_RPC_UI);
+  const solanaConnection = ChannelAppUi.server(
+    CHANNEL_SOLANA_CONNECTION_RPC_UI
+  );
   solanaConnection.handler(withContextPort(b, events, handle));
 
   const solanaConnectionInjected = (() => {
@@ -175,20 +178,22 @@ async function handleSendRawTransaction(
 
 async function handleConfirmTransaction(
   ctx: Context<Backend>,
-  signature: TransactionSignature,
+  signature:
+    | BlockheightBasedTransactionConfirmationStrategy
+    | TransactionSignature,
   commitment?: Commitment
 ) {
-  const { blockhash, lastValidBlockHeight } =
-    await ctx.backend.getLatestBlockhash();
-
-  const resp = await ctx.backend.confirmTransaction(
-    {
+  if (typeof signature === "string") {
+    const { blockhash, lastValidBlockHeight } =
+      await ctx.backend.getLatestBlockhash();
+    signature = {
       signature,
       blockhash,
       lastValidBlockHeight,
-    },
-    commitment
-  );
+    };
+  }
+
+  const resp = await ctx.backend.confirmTransaction(signature, commitment);
   return [resp];
 }
 

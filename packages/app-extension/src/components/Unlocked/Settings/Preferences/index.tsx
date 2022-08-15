@@ -1,7 +1,8 @@
 import { useEffect } from "react";
-import { Switch } from "@mui/material";
+import { Typography, Switch } from "@mui/material";
 import {
-  Features,
+  BACKPACK_FEATURE_LIGHT_MODE,
+  BACKPACK_CONFIG_VERSION,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
 } from "@coral-xyz/common";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
@@ -43,7 +44,7 @@ export function Preferences() {
     },
   };
 
-  if (Features.lightMode) {
+  if (BACKPACK_FEATURE_LIGHT_MODE) {
     menuItems["Dark Mode"] = {
       onClick: () => onDarkModeSwitch(!isDarkMode),
       detail: (
@@ -69,6 +70,20 @@ export function Preferences() {
     },
   };
 
+  //
+  // Build version.
+  //
+  const buildMenuItems = {
+    Version: {
+      onClick: () => {},
+      detail: (
+        <Typography style={{ color: theme.custom.colors.secondary }}>
+          {BACKPACK_CONFIG_VERSION}
+        </Typography>
+      ),
+    },
+  };
+
   useEffect(() => {
     nav.setTitle("Preferences");
     nav.setStyle({
@@ -80,6 +95,7 @@ export function Preferences() {
     <div>
       <SettingsList menuItems={menuItems} />
       <SettingsList menuItems={solanaMenuItems} />
+      <SettingsList menuItems={buildMenuItems} />
     </div>
   );
 }

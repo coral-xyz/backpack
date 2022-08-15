@@ -10,6 +10,7 @@ import {
   QUERY_APPROVAL,
   QUERY_LOCKED_APPROVAL,
   QUERY_APPROVE_TRANSACTION,
+  QUERY_APPROVE_ALL_TRANSACTIONS,
   QUERY_APPROVE_MESSAGE,
 } from "@coral-xyz/common";
 import {
@@ -21,8 +22,12 @@ import {
 } from "@coral-xyz/recoil";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
-import { ApproveTransaction, ApproveMessage } from "../components/Approval";
 import { ApproveOrigin } from "../components/Unlocked/Approvals/ApproveOrigin";
+import {
+  ApproveTransaction,
+  ApproveAllTransactions,
+} from "../components/Unlocked/Approvals/ApproveTransaction";
+import { ApproveMessage } from "../components/Unlocked/Approvals/ApproveMessage";
 import "./App.css";
 
 const logger = getLogger("router");
@@ -99,6 +104,8 @@ function PopupRouter() {
       return <QueryLockedApproval />;
     case QUERY_APPROVE_TRANSACTION:
       return <QueryApproveTransaction />;
+    case QUERY_APPROVE_ALL_TRANSACTIONS:
+      return <QueryApproveAllTransactions />;
     case QUERY_APPROVE_MESSAGE:
       return <QueryApproveMessage />;
     default:
@@ -176,13 +183,41 @@ function QueryApproveTransaction() {
   const background = useBackgroundResponder();
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
-  const requestId = parseInt(url.searchParams.get("requestId")!);
+  const title = url.searchParams.get("title");
   const tx = url.searchParams.get("tx");
+  const requestId = parseInt(url.searchParams.get("requestId")!);
 
   return (
     <ApproveTransaction
+      origin={origin!}
+      title={title!}
       tx={tx}
-      origin={origin}
+      onCompletion={async (didApprove: boolean) => {
+        await background.response({
+          id: requestId,
+          result: didApprove,
+        });
+        window.close();
+      }}
+    />
+  );
+}
+
+function QueryApproveAllTransactions() {
+  logger.debug("query approve all transactions");
+
+  const background = useBackgroundResponder();
+  const url = new URL(window.location.href);
+  const origin = url.searchParams.get("origin")!;
+  const title = url.searchParams.get("title")!;
+  const requestId = parseInt(url.searchParams.get("requestId")!);
+  const txs = JSON.parse(url.searchParams.get("txs")!);
+
+  return (
+    <ApproveAllTransactions
+      origin={origin!}
+      title={title!}
+      txs={txs}
       onCompletion={async (didApprove: boolean) => {
         await background.response({
           id: requestId,
@@ -200,13 +235,15 @@ function QueryApproveMessage() {
   const bg = useBackgroundResponder();
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
-  const requestId = parseInt(url.searchParams.get("requestId")!);
+  const title = url.searchParams.get("title");
   const message = url.searchParams.get("message");
+  const requestId = parseInt(url.searchParams.get("requestId")!);
 
   return (
     <ApproveMessage
-      message={message}
       origin={origin}
+      title={title}
+      message={message}
       onCompletion={async (didApprove: boolean) => {
         await bg.response({
           id: requestId,

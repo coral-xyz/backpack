@@ -3,6 +3,7 @@ import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import type { EventEmitter, DerivationPath } from "@coral-xyz/common";
 import {
+  getLogger,
   Blockchain,
   SolanaExplorer,
   SolanaCluster,
@@ -25,6 +26,8 @@ import { DefaultKeyname } from "../store";
 export * from "./solana";
 export * from "./ethereum";
 export * from "./types";
+
+const logger = getLogger("background/backend/keyring");
 
 // const BLOCKCHAIN_ETHEREUM = "ethereum";
 const BLOCKCHAIN_DEFAULT = Blockchain.SOLANA;
@@ -98,10 +101,10 @@ export class KeyringStore {
     });
 
     // Persist the encrypted data to then store.
-    this.persist(true);
+    await this.persist(true);
 
     // Automatically lock the store when idle.
-    this.autoLockStart();
+    await this.tryUnlock(password);
   }
 
   public async checkPassword(password: string) {
@@ -121,7 +124,7 @@ export class KeyringStore {
         solana,
         activeBlockchainLabel,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        lastUsedTs,
+        lastUsedTs: _,
       } = JSON.parse(plaintext);
 
       // Unlock the keyring stores.
@@ -341,8 +344,9 @@ export class KeyringStore {
     if (!this.isUnlocked()) {
       throw new Error("keyring store is not unlocked");
     }
+    const resp = fn();
     this.updateLastUsed();
-    return fn();
+    return resp;
   }
 
   // Utility for asserting the wallet is currently locked.
@@ -350,8 +354,9 @@ export class KeyringStore {
     if (this.isUnlocked()) {
       throw new Error("keyring store is not locked");
     }
+    const resp = fn();
     this.updateLastUsed();
-    return fn();
+    return resp;
   }
 
   // Utility for asserting the wallet is unlocked and the correct password was
@@ -532,7 +537,17 @@ class BlockchainKeyring {
   }
 
   public async keyDelete(pubkey: string) {
-    this.deletedWallets = this.deletedWallets!.concat([pubkey]);
+    if (this.hdKeyring!.deleteKeyIfNeeded(pubkey) >= 0) {
+      return;
+    }
+    if (this.importedKeyring!.deleteKeyIfNeeded(pubkey) >= 0) {
+      return;
+    }
+    if (this.ledgerKeyring!.deleteKeyIfNeeded(pubkey) >= 0) {
+      return;
+    }
+    logger.error(`unable to find key to delete in keyring store: ${pubkey}`);
+    throw new Error("key not found");
   }
 
   public toJson(): any {

@@ -1,7 +1,7 @@
 export type Background = {
   _serverUi: Handle;
   _solanaConnection: Handle;
-  _serverInjected?: Handle;
+  _serverInjectedSolana?: Handle;
 };
 
 export type Config = {

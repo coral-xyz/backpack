@@ -1,9 +1,7 @@
 // All RPC request handlers for requests that can be sent from the injected
 // provider script to the background script.
 
-import * as bs58 from "bs58";
-import type { SendOptions, Commitment } from "@solana/web3.js";
-import { Transaction } from "@solana/web3.js";
+import type { SendOptions } from "@solana/web3.js";
 import type {
   RpcRequest,
   RpcResponse,
@@ -20,22 +18,23 @@ import {
   openApprovalPopupWindow,
   openLockedApprovalPopupWindow,
   openApproveTransactionPopupWindow,
+  openApproveAllTransactionsPopupWindow,
   openApproveMessagePopupWindow,
-  RPC_METHOD_CONNECT,
-  RPC_METHOD_DISCONNECT,
-  RPC_METHOD_SIGN_AND_SEND_TX,
-  RPC_METHOD_SIGN_TX,
-  RPC_METHOD_SIGN_ALL_TXS,
-  RPC_METHOD_SIGN_MESSAGE,
-  RPC_METHOD_SIMULATE,
-  NOTIFICATION_CONNECTED,
-  NOTIFICATION_DISCONNECTED,
-  NOTIFICATION_CONNECTION_URL_UPDATED,
-  NOTIFICATION_ACTIVE_WALLET_UPDATED,
-  CHANNEL_RPC_REQUEST,
-  CHANNEL_NOTIFICATION,
-  CONNECTION_POPUP_RESPONSE,
+  SOLANA_RPC_METHOD_CONNECT,
+  SOLANA_RPC_METHOD_DISCONNECT,
+  SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
+  SOLANA_RPC_METHOD_SIGN_TX,
+  SOLANA_RPC_METHOD_SIGN_ALL_TXS,
+  SOLANA_RPC_METHOD_SIGN_MESSAGE,
+  SOLANA_RPC_METHOD_SIMULATE,
+  CHANNEL_SOLANA_RPC_REQUEST,
+  CHANNEL_SOLANA_NOTIFICATION,
+  CHANNEL_POPUP_RESPONSE,
   BACKEND_EVENT,
+  NOTIFICATION_SOLANA_CONNECTED,
+  NOTIFICATION_SOLANA_DISCONNECTED,
+  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
+  NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
 } from "@coral-xyz/common";
 import type { Backend } from "../backend/core";
 import { SUCCESS_RESPONSE } from "../backend/core";
@@ -47,26 +46,29 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
   if (cfg.isMobile) {
     return null;
   }
-  const rpcServerInjected = ChannelContentScript.server(CHANNEL_RPC_REQUEST);
-  const notificationsInjected =
-    ChannelContentScript.client(CHANNEL_NOTIFICATION);
-  const popupUiResponse = ChannelAppUi.server(CONNECTION_POPUP_RESPONSE);
+  const solanaRpcServerInjected = ChannelContentScript.server(
+    CHANNEL_SOLANA_RPC_REQUEST
+  );
+  const notificationsInjected = ChannelContentScript.client(
+    CHANNEL_SOLANA_NOTIFICATION
+  );
+  const popupUiResponse = ChannelAppUi.server(CHANNEL_POPUP_RESPONSE);
 
   //
   // Dispatch notifications to injected web apps.
   //
   events.on(BACKEND_EVENT, (notification) => {
     switch (notification.name) {
-      case NOTIFICATION_CONNECTION_URL_UPDATED:
+      case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
         notificationsInjected.sendMessageActiveTab(notification);
         break;
-      case NOTIFICATION_CONNECTED:
+      case NOTIFICATION_SOLANA_CONNECTED:
         notificationsInjected.sendMessageActiveTab(notification);
         break;
-      case NOTIFICATION_DISCONNECTED:
+      case NOTIFICATION_SOLANA_DISCONNECTED:
         notificationsInjected.sendMessageActiveTab(notification);
         break;
-      case NOTIFICATION_ACTIVE_WALLET_UPDATED:
+      case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
         notificationsInjected.sendMessageActiveTab(notification);
         break;
       default:
@@ -74,11 +76,11 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
     }
   });
 
-  rpcServerInjected.handler(withContext(b, events, handle));
+  solanaRpcServerInjected.handler(withContext(b, events, handle));
   popupUiResponse.handler(withContextPort(b, events, handlePopupUiResponse));
 
   return {
-    rpcServerInjected,
+    solanaRpcServerInjected,
     popupUiResponse,
     notificationsInjected,
   };
@@ -92,20 +94,25 @@ async function handle<T = any>(
 
   const { method, params } = req;
   switch (method) {
-    case RPC_METHOD_CONNECT:
-      return await handleConnect(ctx, params[0]);
-    case RPC_METHOD_DISCONNECT:
-      return handleDisconnect(ctx);
-    case RPC_METHOD_SIGN_AND_SEND_TX:
-      return await handleSignAndSendTx(ctx, params[0], params[1], params[2]);
-    case RPC_METHOD_SIGN_TX:
-      return await handleSignTx(ctx, params[0], params[1]);
-    case RPC_METHOD_SIGN_ALL_TXS:
-      return await handleSignAllTxs(ctx, params[0], params[1]);
-    case RPC_METHOD_SIGN_MESSAGE:
-      return await handleSignMessage(ctx, params[0], params[1]);
-    case RPC_METHOD_SIMULATE:
-      return await handleSimulate(ctx, params[0], params[1], params[2]);
+    case SOLANA_RPC_METHOD_CONNECT:
+      return await handleSolanaConnect(ctx);
+    case SOLANA_RPC_METHOD_DISCONNECT:
+      return handleSolanaDisconnect(ctx);
+    case SOLANA_RPC_METHOD_SIGN_AND_SEND_TX:
+      return await handleSolanaSignAndSendTx(
+        ctx,
+        params[0],
+        params[1],
+        params[2]
+      );
+    case SOLANA_RPC_METHOD_SIGN_TX:
+      return await handleSolanaSignTx(ctx, params[0], params[1]);
+    case SOLANA_RPC_METHOD_SIGN_ALL_TXS:
+      return await handleSolanaSignAllTxs(ctx, params[0], params[1]);
+    case SOLANA_RPC_METHOD_SIGN_MESSAGE:
+      return await handleSolanaSignMessage(ctx, params[0], params[1]);
+    case SOLANA_RPC_METHOD_SIMULATE:
+      return await handleSolanaSimulate(ctx, params[0], params[1], params[2]);
     default:
       throw new Error(`unexpected rpc method: ${method}`);
   }
@@ -118,9 +125,8 @@ async function handle<T = any>(
 // Note that "connected" simply means that the wallet can be used to issue
 // requests because it's both approved and unlocked. There is currently no
 // extra session state or connections that are maintained.
-async function handleConnect(
-  ctx: Context<Backend>,
-  onlyIfTrustedMaybe: boolean
+async function handleSolanaConnect(
+  ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
   const origin = ctx.sender.origin;
   const keyringStoreState = await ctx.backend.keyringStoreState();
@@ -171,7 +177,7 @@ async function handleConnect(
     const connectionUrl = await ctx.backend.solanaConnectionUrlRead();
     const data = { publicKey: activeWallet, connectionUrl };
     ctx.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_CONNECTED,
+      name: NOTIFICATION_SOLANA_CONNECTED,
       data,
     });
     return [data];
@@ -180,101 +186,129 @@ async function handleConnect(
   throw new Error("user did not approve");
 }
 
-function handleDisconnect(ctx: Context<Backend>): RpcResponse<string> {
-  const resp = ctx.backend.disconnect();
+function handleSolanaDisconnect(ctx: Context<Backend>): RpcResponse<string> {
+  const resp = ctx.backend.solanaDisconnect();
   ctx.events.emit(BACKEND_EVENT, {
-    name: NOTIFICATION_DISCONNECTED,
+    name: NOTIFICATION_SOLANA_DISCONNECTED,
   });
   return [resp];
 }
 
-async function handleSignAndSendTx(
+async function handleSolanaSignAndSendTx(
   ctx: Context<Backend>,
   tx: string,
   walletAddress: string,
   options?: SendOptions
 ): Promise<RpcResponse<string>> {
-  // Transform from transaction string to message string.
-  const txObject = Transaction.from(bs58.decode(tx));
-  const txMsg = bs58.encode(txObject.serializeMessage());
-
   // Get user approval.
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
       ctx.sender.origin,
+      ctx.sender.tab.title,
       requestId,
-      txMsg
+      tx
     );
   });
   const didApprove = uiResp.result;
 
   // Only sign if the user clicked approve.
   if (didApprove) {
-    const sig = await ctx.backend.signAndSendTx(tx, walletAddress, options);
+    const sig = await ctx.backend.solanaSignAndSendTx(
+      tx,
+      walletAddress,
+      options
+    );
     return [sig];
   }
 
   throw new Error("user denied transaction signature");
 }
 
-async function handleSignTx(
+async function handleSolanaSignTx(
   ctx: Context<Backend>,
-  txMsg: string,
+  tx: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
       ctx.sender.origin,
+      ctx.sender.tab.title,
       requestId,
-      txMsg
+      tx
     );
   });
   const didApprove = uiResp.result;
 
   // Only sign if the user clicked approve.
   if (didApprove) {
-    const sig = await ctx.backend.signTransaction(txMsg, walletAddress);
+    const sig = await ctx.backend.solanaSignTransaction(tx, walletAddress);
     return [sig];
   }
 
   throw new Error("user denied transaction signature");
 }
 
-async function handleSignAllTxs(
+async function handleSolanaSignAllTxs(
   ctx: Context<Backend>,
   txs: Array<string>,
   walletAddress: string
 ): Promise<RpcResponse<Array<string>>> {
-  throw new Error("not implemented");
-  // const resp = await ctx.backend.signAllTransactions(txs, walletAddress);
-  // return [resp];
+  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
+    return openApproveAllTransactionsPopupWindow(
+      ctx.sender.origin,
+      ctx.sender.tab.title,
+      requestId,
+      txs
+    );
+  });
+  const didApprove = uiResp.result;
+
+  // Sign all if user clicked approve.
+  if (didApprove) {
+    const resp = await ctx.backend.solanaSignAllTransactions(
+      txs,
+      walletAddress
+    );
+    return [resp];
+  }
+
+  throw new Error("user denied transactions");
 }
 
-async function handleSignMessage(
+async function handleSolanaSignMessage(
   ctx: Context<Backend>,
   msg: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveMessagePopupWindow(ctx.sender.origin, requestId, msg);
+    return openApproveMessagePopupWindow(
+      ctx.sender.origin,
+      ctx.sender.tab.title,
+      requestId,
+      msg
+    );
   });
   const didApprove = uiResp.result;
 
   if (didApprove) {
-    const sig = await ctx.backend.signMessage(msg, walletAddress);
+    const sig = await ctx.backend.solanaSignMessage(msg, walletAddress);
     return [sig];
   }
 
   throw new Error("user denied message signature");
 }
 
-async function handleSimulate(
+async function handleSolanaSimulate(
   ctx: Context<Backend>,
   txStr: string,
   walletAddress: string,
-  commitment: Commitment
+  includeAccounts?: boolean | Array<string>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.simulate(txStr, walletAddress, commitment);
+  const resp = await ctx.backend.solanaSimulate(
+    txStr,
+    walletAddress,
+    includeAccounts
+  );
   return [resp];
 }
 

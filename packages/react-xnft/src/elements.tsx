@@ -15,7 +15,9 @@ export const Loading = c("Loading");
 export const ScrollBar = c("ScrollBar");
 export const Svg = c("Svg");
 export const Path = c("Path");
+export const Circle = c("Circle");
 export const NavAnimation = c("NavAnimation");
+export const Iframe = c("Iframe");
 
 export const BalancesTable = c("BalancesTable");
 export const BalancesTableContent = c("BalancesTableContent");

@@ -19,9 +19,11 @@ import {
   CHANNEL_PLUGIN_CONNECTION_BRIDGE,
   PLUGIN_RPC_METHOD_NAV_PUSH,
   PLUGIN_RPC_METHOD_NAV_POP,
-  RPC_METHOD_SIGN_TX as PLUGIN_RPC_METHOD_SIGN_TX,
-  RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_RPC_METHOD_SIGN_AND_SEND_TX,
-  RPC_METHOD_SIMULATE as PLUGIN_RPC_METHOD_SIMULATE_TX,
+  PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
+  PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
+  SOLANA_RPC_METHOD_SIGN_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_TX,
+  SOLANA_RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
+  SOLANA_RPC_METHOD_SIMULATE as PLUGIN_SOLANA_RPC_METHOD_SIMULATE_TX,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ON_CLICK,
   PLUGIN_NOTIFICATION_ON_CHANGE,
@@ -38,9 +40,11 @@ import {
   RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
   RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
   RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
+  UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
+  UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
 } from "@coral-xyz/common";
 
-const logger = getLogger("plugin");
+const logger = getLogger("react-xnft-renderer/plugin");
 
 //
 // A plugin is a react bundle served from a given URL, using the anchor ui
@@ -68,6 +72,7 @@ export class Plugin {
   //
   private _navPushFn?: (args: any) => void;
   private _requestTxApprovalFn?: (request: any) => void;
+  private _backgroundClient: BackgroundClient;
   private _connectionBackgroundClient: BackgroundClient;
 
   //
@@ -186,9 +191,16 @@ export class Plugin {
   //
   // Apis set from the outside host.
   //
-  public setHostApi({ push, pop, request, connectionBackgroundClient }) {
+  public setHostApi({
+    push,
+    pop,
+    request,
+    backgroundClient,
+    connectionBackgroundClient,
+  }) {
     this._navPushFn = push;
     this._requestTxApprovalFn = request;
+    this._backgroundClient = backgroundClient;
     this._connectionBackgroundClient = connectionBackgroundClient;
   }
 
@@ -368,16 +380,23 @@ export class Plugin {
 
     const { method, params } = req;
     switch (method) {
-      case PLUGIN_RPC_METHOD_NAV_PUSH:
+      case PLUGIN_RPC_METHOD_NAV_PUSH: // TODO: remove
         return await this._handleNavPush();
-      case PLUGIN_RPC_METHOD_NAV_POP:
+      case PLUGIN_RPC_METHOD_NAV_POP: // TODO: remove
         return await this._handleNavPop();
-      case PLUGIN_RPC_METHOD_SIGN_TX:
-        return await this._handleSignTransaction(params[0], params[1]);
-      case PLUGIN_RPC_METHOD_SIGN_AND_SEND_TX:
-        return await this._handleSignAndSendTransaction(params[0], params[1]);
-      case PLUGIN_RPC_METHOD_SIMULATE_TX:
-        return await this._handleSimulate(params[0], params[1]);
+      case PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET:
+        return await this._handleGet(params[0]);
+      case PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT:
+        return await this._handlePut(params[0], params[1]);
+      case PLUGIN_SOLANA_RPC_METHOD_SIGN_TX:
+        return await this._handleSolanaSignTransaction(params[0], params[1]);
+      case PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX:
+        return await this._handleSolanaSignAndSendTransaction(
+          params[0],
+          params[1]
+        );
+      case PLUGIN_SOLANA_RPC_METHOD_SIMULATE_TX:
+        return await this._handleSolanaSimulate(params[0], params[1]);
       default:
         logger.error(method);
         throw new Error("unexpected method");
@@ -394,7 +413,7 @@ export class Plugin {
     throw new Error("not implemented");
   }
 
-  private async _handleSignTransaction(
+  private async _handleSolanaSignTransaction(
     transaction: string,
     pubkey: string
   ): Promise<RpcResponse> {
@@ -415,7 +434,7 @@ export class Plugin {
     }
   }
 
-  private async _handleSignAndSendTransaction(
+  private async _handleSolanaSignAndSendTransaction(
     transaction: string,
     pubkey: string
   ): Promise<RpcResponse> {
@@ -436,12 +455,32 @@ export class Plugin {
     }
   }
 
-  private async _handleSimulate(
+  private async _handleSolanaSimulate(
     transaction: string,
     pubkey: string
   ): Promise<RpcResponse> {
     // todo
     return ["success"];
+  }
+
+  //
+  // TODO: We should use the plugin mint address instead of the iframe url
+  //       to namespace here.
+  //
+  private async _handleGet(key: string): Promise<RpcResponse> {
+    const resp = await this._backgroundClient.request({
+      method: UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
+      params: [this.iframeUrl, key],
+    });
+    return [resp];
+  }
+
+  private async _handlePut(key: string, value: any): Promise<RpcResponse> {
+    const resp = await this._backgroundClient.request({
+      method: UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
+      params: [this.iframeUrl, key, value],
+    });
+    return [resp];
   }
 
   private clickHandlerError(): RpcResponse | null {
@@ -717,10 +756,17 @@ class Dom {
   // remove the new child and do an insertion each time.
   //
   insertBefore(parentId: number, child: Element, beforeId: number) {
+    //
+    // Get the parent node.
+    //
     const parent = this._vdom.get(parentId) as NodeSerialized;
     if (!parent) {
       throw new Error("parent not found");
     }
+
+    //
+    // Get the before node.
+    //
     const beforeElement = parent.children.find(
       (e: Element) => e.id === beforeId
     ) as NodeSerialized;
@@ -729,15 +775,22 @@ class Dom {
       throw new Error("before element not found");
     }
 
-    const newChildren = beforeElement.children.filter(
+    //
+    // Remove the child from the parent to prepare for insertion.
+    //
+    const newChildren = parent.children.filter(
       (c: Element) => c.id !== child.id
     );
+
+    //
+    // Find the insertion point.
+    //
     const beforeIdx = newChildren.indexOf(beforeElement);
     if (beforeIdx === -1) {
       throw new Error("child not found");
     }
 
-    beforeElement.children = newChildren
+    parent.children = newChildren
       .slice(0, beforeIdx)
       .concat([child])
       .concat(newChildren.slice(beforeIdx));

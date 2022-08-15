@@ -1,27 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useWalletPublicKeys, useBackgroundClient } from "@coral-xyz/recoil";
 import { ContentCopy } from "@mui/icons-material";
 import { SettingsList } from "../../../../common/Settings/List";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { WithCopyTooltip } from "../../../../common/WithCopyTooltip";
 
-export const WalletDetail: React.FC<{ publicKey: string; name: string }> = ({
-  publicKey,
-  name,
-}) => {
+export const WalletDetail: React.FC<{
+  publicKey: string;
+  name: string;
+  type: string;
+}> = ({ publicKey, name, type }) => {
   const nav = useNavStack();
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [walletName, setWalletName] = useState(name);
-
-  useEffect(() => {
-    const addr =
-      publicKey.slice(0, 4) + "..." + publicKey.slice(publicKey.length - 4);
-    nav.setTitle(`${walletName} (${addr})`);
-  }, [nav, walletName]);
+  const pubkeys = useWalletPublicKeys();
+  const pubkeysFlat = [
+    ...pubkeys.hdPublicKeys,
+    ...pubkeys.importedPublicKeys,
+    ...pubkeys.ledgerPublicKeys,
+  ];
 
   useEffect(() => {
     (async () => {
@@ -30,8 +31,19 @@ export const WalletDetail: React.FC<{ publicKey: string; name: string }> = ({
         params: [publicKey],
       });
       setWalletName(keyname);
+
+      const addr =
+        publicKey.slice(0, 4) + "..." + publicKey.slice(publicKey.length - 4);
+      nav.setTitle(`${keyname} (${addr})`);
+      nav.setStyle({
+        background: theme.custom.colors.background,
+        borderBottom: `solid 1pt ${theme.custom.colors.border}`,
+      });
+      nav.setContentStyle({
+        background: theme.custom.colors.background,
+      });
     })();
-  }, [publicKey, background]);
+  }, []);
 
   const copyAddress = () => {
     setTooltipOpen(true);
@@ -61,7 +73,12 @@ export const WalletDetail: React.FC<{ publicKey: string; name: string }> = ({
 
   const removeWallet = {
     "Remove wallet": {
-      onClick: () => nav.push("edit-wallets-remove"),
+      onClick: () =>
+        nav.push("edit-wallets-remove", {
+          publicKey,
+          name,
+          type,
+        }),
       style: {
         color: theme.custom.colors.negative,
       },
@@ -76,7 +93,9 @@ export const WalletDetail: React.FC<{ publicKey: string; name: string }> = ({
         </div>
       </WithCopyTooltip>
       <SettingsList menuItems={secrets} />
-      <SettingsList menuItems={removeWallet} />
+      {(type !== "derived" || pubkeys.hdPublicKeys.length > 1) && (
+        <SettingsList menuItems={removeWallet} />
+      )}
     </div>
   );
 };

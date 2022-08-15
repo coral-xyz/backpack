@@ -26,8 +26,9 @@ export type WalletPublicKeys = {
 
 export type TokenDisplay = {
   name: string;
-  nativeBalance: number;
   ticker: string;
+  displayBalance: number;
+  nativeBalance: number;
   usdBalance: string;
   recentUsdBalanceChange: string;
   logo: string;

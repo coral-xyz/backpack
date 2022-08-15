@@ -47,7 +47,7 @@ const useStyles = styles((theme) => ({
     flex: 1,
   },
   miniDrawerPaper: {
-    background: "transparent",
+    backgroundColor: "transparent",
     borderTopLeftRadius: "12px",
     borderTopRightRadius: "12px",
   },

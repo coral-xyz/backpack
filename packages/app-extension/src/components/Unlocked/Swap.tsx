@@ -1,34 +1,47 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { ethers } from "ethers";
 import {
   InputAdornment,
   Typography,
   IconButton,
   CircularProgress,
 } from "@mui/material";
+import type { Button } from "@mui/material";
 import { Close, ExpandMore, SwapVert } from "@mui/icons-material";
-import { CheckIcon, CrossIcon } from "../common/Icon";
 import {
   useSplTokenRegistry,
   useJupiterInputMints,
   useJupiterOutputMints,
+  useBackgroundClient,
   useSwapContext,
   SwapProvider,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Blockchain, SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
+import {
+  Blockchain,
+  SOL_NATIVE_MINT,
+  WSOL_MINT,
+  TAB_BALANCES,
+  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+} from "@coral-xyz/common";
 import {
   TextField,
   TextFieldLabel,
   PrimaryButton,
   DangerButton,
+  SecondaryButton,
 } from "../common";
+import { TokenInputField } from "../common/TokenInput";
+import { CheckIcon, CrossIcon } from "../common/Icon";
 import { WithHeaderButton } from "./Balances/TokensWidget/Token";
 import { BottomCard } from "./Balances/TokensWidget/Send";
-import { WithMiniDrawer, useDrawerContext } from "../common/Layout/Drawer";
+import { useDrawerContext } from "../common/Layout/Drawer";
 import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
 import { MaxLabel } from "../common/MaxLabel";
+import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
+
+const { Zero } = ethers.constants;
 
 const useStyles = styles((theme) => ({
   container: {
@@ -91,9 +104,6 @@ const useStyles = styles((theme) => ({
     width: "44px",
     height: "44px",
     zIndex: 2,
-    position: "fixed",
-    top: "175px",
-    left: "24px",
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
@@ -205,14 +215,67 @@ function SwapInner({ blockchain }: any) {
 
 function _Swap({ blockchain }: { blockchain: Blockchain }) {
   const classes = useStyles();
-  const { toAmount, swapToFromMints, executeSwap } = useSwapContext();
-  const [swapState, setSwapState] = useState(SwapState.INITIAL);
+  const { toAmount, swapToFromMints } = useSwapContext();
+  const [openDrawer, setOpenDrawer] = useState(false);
 
-  // Only allow drawer close if not confirming
-  const onDrawerClose =
-    swapState === SwapState.CONFIRMING
-      ? () => null
-      : () => setSwapState(SwapState.INITIAL);
+  const onSwapButtonClick = () => {
+    swapToFromMints();
+  };
+
+  const onSubmit = (e: any) => {
+    e.preventDefault();
+    setOpenDrawer(true);
+  };
+
+  return (
+    <>
+      <form onSubmit={onSubmit} className={classes.container} noValidate>
+        <div className={classes.topHalf}>
+          <SwapTokensButton
+            onClick={onSwapButtonClick}
+            style={{
+              position: "fixed",
+              top: "175px",
+              left: "24px",
+            }}
+          />
+          <InputTextField />
+        </div>
+        <div className={classes.bottomHalfWrapper}>
+          <div className={classes.bottomHalf}>
+            <div>
+              <OutputTextField />
+              {!!toAmount && toAmount.gt(Zero) && (
+                <div
+                  style={{
+                    marginTop: "24px",
+                    marginLeft: "8px",
+                    marginRight: "8px",
+                  }}
+                >
+                  <SwapInfo />
+                </div>
+              )}
+            </div>
+            <ConfirmSwapButton type="submit" blockchain={blockchain} />
+          </div>
+        </div>
+      </form>
+      <ApproveTransactionDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
+      >
+        <SwapConfirmationCard onClose={() => setOpenDrawer(false)} />
+      </ApproveTransactionDrawer>
+    </>
+  );
+}
+
+const SwapConfirmationCard: React.FC<{ onClose: () => void }> = ({
+  onClose,
+}) => {
+  const { executeSwap } = useSwapContext();
+  const [swapState, setSwapState] = useState(SwapState.CONFIRMATION);
 
   const onConfirm = async () => {
     setSwapState(SwapState.CONFIRMING);
@@ -224,97 +287,54 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
     }
   };
 
-  const onSwapButtonClick = () => {
-    if (swapState !== SwapState.INITIAL) {
-      setSwapState(SwapState.INITIAL);
-    } else {
-      swapToFromMints();
-    }
-  };
-
   return (
-    <div className={classes.container}>
-      <div className={classes.topHalf}>
-        <SwapTokensButton onClick={onSwapButtonClick} />
-        <InputTextField />
-      </div>
-      <div className={classes.bottomHalfWrapper}>
-        <div className={classes.bottomHalf}>
-          <div>
-            <OutputTextField />
-            {!!toAmount && toAmount > 0 && (
-              <div
-                style={{
-                  marginTop: "24px",
-                  marginLeft: "8px",
-                  marginRight: "8px",
-                }}
-              >
-                <SwapInfo />
-              </div>
-            )}
-          </div>
-          <ConfirmSwapButton
-            blockchain={blockchain}
-            onClick={() => setSwapState(SwapState.CONFIRMATION)}
-          />
-        </div>
-      </div>
-      <WithMiniDrawer
-        openDrawer={swapState !== SwapState.INITIAL}
-        backdropProps={{
-          style: {
-            opacity: 0.8,
-            background: "#18181b",
-          },
-        }}
-        modalProps={{ onBackdropClick: onDrawerClose }}
-        onClose={onDrawerClose}
-      >
-        {swapState === SwapState.CONFIRMATION && (
-          <SwapConfirmation onConfirm={onConfirm} onClose={onDrawerClose} />
-        )}
-        {swapState === SwapState.CONFIRMING && <SwapConfirming />}
-        {swapState === SwapState.CONFIRMED && <SwapConfirmed />}
-        {swapState === SwapState.ERROR && (
-          <SwapError
-            onCancel={() => {
-              setSwapState(SwapState.INITIAL);
-            }}
-            onRetry={onConfirm}
-          />
-        )}
-      </WithMiniDrawer>
+    <div>
+      {swapState === SwapState.CONFIRMATION && (
+        <SwapConfirmation onConfirm={onConfirm} />
+      )}
+      {swapState === SwapState.CONFIRMING && (
+        <SwapConfirming isConfirmed={false} />
+      )}
+      {swapState === SwapState.CONFIRMED && (
+        <SwapConfirming isConfirmed={true} />
+      )}
+      {swapState === SwapState.ERROR && (
+        <SwapError onCancel={() => onClose()} onRetry={onConfirm} />
+      )}
     </div>
   );
-}
+};
 
 function InputTextField() {
   const classes = useStyles();
-  const { fromAmount, setFromAmount, availableForSwap, exceedsBalance } =
-    useSwapContext();
-
-  const _setFromAmount = (amount: number) => {
-    if (amount >= 0) {
-      setFromAmount(amount);
-    }
-  };
+  const {
+    fromAmount,
+    setFromAmount,
+    fromMintInfo,
+    availableForSwap,
+    exceedsBalance,
+  } = useSwapContext();
 
   return (
     <>
       <TextFieldLabel
         leftLabel={"You Pay"}
         rightLabelComponent={
-          <MaxLabel amount={availableForSwap} onSetAmount={_setFromAmount} />
+          <MaxLabel
+            amount={availableForSwap}
+            onSetAmount={setFromAmount}
+            decimals={fromMintInfo.decimals}
+          />
         }
       />
-      <TextField
-        placeholder={"0"}
+      <TokenInputField
+        type="number"
+        placeholder="0"
         endAdornment={<InputTokenSelectorButton />}
         rootClass={classes.fromFieldRoot}
-        type={"number"}
-        value={fromAmount ?? ""}
-        setValue={_setFromAmount}
+        value={fromAmount}
+        setValue={setFromAmount}
+        decimals={fromMintInfo.decimals}
         isError={exceedsBalance}
       />
     </>
@@ -324,7 +344,7 @@ function InputTextField() {
 function OutputTextField() {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { toAmount, isLoadingRoutes } = useSwapContext();
+  const { toAmount, toMintInfo, isLoadingRoutes } = useSwapContext();
   return (
     <>
       <TextFieldLabel leftLabel={"You Receive"} />
@@ -346,7 +366,11 @@ function OutputTextField() {
         endAdornment={<OutputTokenSelectorButton />}
         rootClass={classes.receiveFieldRoot}
         type={"number"}
-        value={toAmount || ""}
+        value={
+          toAmount
+            ? ethers.utils.formatUnits(toAmount, toMintInfo.decimals)
+            : ""
+        }
         disabled={true}
         inputProps={{
           style: {
@@ -368,11 +392,10 @@ const InsufficientBalanceButton = () => {
 
 const ConfirmSwapButton = ({
   blockchain,
-  onClick,
+  ...buttonProps
 }: {
   blockchain: Blockchain;
-  onClick: () => void;
-}) => {
+} & React.ComponentProps<typeof Button>) => {
   const {
     toAmount,
     toMint,
@@ -380,11 +403,14 @@ const ConfirmSwapButton = ({
     fromMint,
     isJupiterError,
     exceedsBalance,
+    isLoadingRoutes,
+    isLoadingTransactions,
   } = useSwapContext();
+  const tokenAccounts = useJupiterOutputMints(fromMint);
 
   if (exceedsBalance) {
     return <InsufficientBalanceButton />;
-  } else if (isJupiterError) {
+  } else if (isJupiterError || tokenAccounts.length === 0) {
     return <SwapUnavailableButton />;
   }
 
@@ -400,8 +426,10 @@ const ConfirmSwapButton = ({
   return (
     <PrimaryButton
       label={label}
-      onClick={onClick}
-      disabled={!fromAmount || !toAmount}
+      disabled={
+        !fromAmount || !toAmount || isLoadingRoutes || isLoadingTransactions
+      }
+      {...buttonProps}
     />
   );
 };
@@ -409,17 +437,10 @@ const ConfirmSwapButton = ({
 //
 // Bottom drawer displayed so the user can confirm the swap parameters.
 //
-function SwapConfirmation({
-  onConfirm,
-  onClose,
-}: {
-  onConfirm: () => void;
-  onClose: () => void;
-}) {
+function SwapConfirmation({ onConfirm }: { onConfirm: () => void }) {
   const classes = useStyles();
   return (
     <BottomCard onButtonClick={onConfirm} buttonLabel={"Confirm"}>
-      <CloseButton onClick={onClose} />
       <Typography
         className={classes.confirmationTitle}
         style={{ marginTop: "32px" }}
@@ -440,57 +461,78 @@ function SwapConfirmation({
 // Bottom card that is displayed while the swap is confirming (i.e. transactions
 // are being submitted/confirmed)
 //
-function SwapConfirming() {
+function SwapConfirming({ isConfirmed }: { isConfirmed: boolean }) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  return (
-    <BottomCard>
-      <Typography
-        className={classes.confirmationTitle}
-        style={{ marginTop: "52px" }}
-      >
-        Swapping...
-      </Typography>
-      <div style={{ marginTop: "8px", marginBottom: "16px" }}>
-        <SwapReceiveAmount />
-      </div>
-      <div style={{ textAlign: "center" }}>
-        <CircularProgress
-          size={48}
-          style={{
-            color: theme.custom.colors.primaryButton,
-            marginBottom: "88px",
-          }}
-        />
-      </div>
-    </BottomCard>
-  );
-}
+  const background = useBackgroundClient();
 
-//
-// Bottom card displayed on swap success.
-//
-function SwapConfirmed() {
-  const classes = useStyles();
-  const navigate = useNavigate();
+  const onViewBalances = () => {
+    background.request({
+      method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+      params: [TAB_BALANCES],
+    });
+  };
+
   return (
-    <BottomCard
-      cancelButtonLabel={"View balances"}
-      onCancelButtonClick={() => navigate("/balances")}
+    <div
+      style={{
+        height: "264px",
+        paddingTop: "52px",
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
     >
-      <Typography
-        className={classes.confirmationTitle}
-        style={{ marginTop: "52px" }}
-      >
-        Swap Confirmed!
-      </Typography>
-      <div style={{ marginTop: "8px", marginBottom: "16px" }}>
-        <SwapReceiveAmount />
+      <div>
+        <Typography className={classes.confirmationTitle}>
+          {isConfirmed ? "Swap Confirmed!" : "Swapping.."}
+        </Typography>
+        <div style={{ marginTop: "8px", marginBottom: "16px" }}>
+          <SwapReceiveAmount />
+        </div>
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+          }}
+        >
+          {isConfirmed ? (
+            <div
+              style={{
+                textAlign: "center",
+              }}
+            >
+              <CheckIcon />
+            </div>
+          ) : (
+            <CircularProgress
+              size={48}
+              style={{
+                color: theme.custom.colors.primaryButton,
+                display: "flex",
+                marginLeft: "auto",
+                marginRight: "auto",
+              }}
+              thickness={6}
+            />
+          )}
+        </div>
       </div>
-      <div style={{ textAlign: "center", marginBottom: "24px" }}>
-        <CheckIcon />
-      </div>
-    </BottomCard>
+      {isConfirmed && (
+        <div
+          style={{
+            marginBottom: "16px",
+            marginLeft: "16px",
+            marginRight: "16px",
+          }}
+        >
+          <SecondaryButton onClick={onViewBalances} label={"View Balances"} />
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -538,7 +580,7 @@ function SwapReceiveAmount() {
         src={logoUri}
         onError={(event) => (event.currentTarget.style.display = "none")}
       />
-      {toAmount}
+      {toAmount ? ethers.utils.formatUnits(toAmount, toMintInfo.decimals) : 0}
       <span style={{ color: theme.custom.colors.secondary, marginLeft: "8px" }}>
         {toMintInfo?.symbol}
       </span>
@@ -558,6 +600,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     isLoadingRoutes,
     isLoadingTransactions,
     transactionFee,
+    swapFee,
   } = useSwapContext();
 
   // Loading indicator when routes are being loaded due to polling
@@ -570,16 +613,29 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
             color: theme.custom.colors.primaryButton,
             margin: "32px 0",
           }}
+          thickness={6}
         />
       </div>
     );
   }
 
-  const rate = fromAmount ? toAmount! / fromAmount : 0;
+  if (!fromAmount || !toAmount) return <></>;
+
+  const decimalDifference = fromMintInfo.decimals - toMintInfo.decimals;
+  const toAmountWithFees = toAmount.sub(swapFee);
+  const rate = fromAmount.gt(Zero)
+    ? (toAmountWithFees.toNumber() / fromAmount.toNumber()) *
+      10 ** decimalDifference
+    : 0;
 
   const rows = [];
   if (!compact) {
-    rows.push(["You Pay", `${fromAmount} ${fromMintInfo.symbol}`]);
+    rows.push([
+      "You Pay",
+      `${ethers.utils.formatUnits(fromAmount, fromMintInfo.decimals)} ${
+        fromMintInfo.symbol
+      }`,
+    ]);
   }
   rows.push([
     "Rate",
@@ -587,7 +643,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   ]);
   rows.push([
     "Network Fee",
-    transactionFee ? `${transactionFee / 10 ** 9} SOL` : "-",
+    transactionFee ? `${ethers.utils.formatUnits(transactionFee, 9)} SOL` : "-",
   ]);
   if (!compact) {
     rows.push([
@@ -618,10 +674,16 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   );
 }
 
-function SwapTokensButton({ onClick }: { onClick: () => void }) {
+function SwapTokensButton({
+  onClick,
+  style,
+}: {
+  onClick: () => void;
+  style: any;
+}) {
   const classes = useStyles();
   return (
-    <div className={classes.swapTokensContainer}>
+    <div className={classes.swapTokensContainer} style={style}>
       <IconButton
         disableRipple
         className={classes.swapTokensButton}
@@ -633,10 +695,16 @@ function SwapTokensButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-function CloseButton({ onClick }: { onClick: () => void }) {
+export function CloseButton({
+  onClick,
+  style,
+}: {
+  onClick: () => void;
+  style?: React.CSSProperties;
+}) {
   const classes = useStyles();
   return (
-    <div className={classes.swapTokensContainer}>
+    <div className={classes.swapTokensContainer} style={style}>
       <IconButton
         disableRipple
         className={`${classes.swapTokensButton} ${classes.closeConfirmButton}`}
@@ -652,7 +720,7 @@ function InputTokenSelectorButton() {
   const { toMint, fromMint, setFromMint } = useSwapContext();
   const tokenAccounts = useJupiterInputMints();
   const tokenAccountsFiltered = tokenAccounts.filter(
-    (token: Token) => token.nativeBalance !== 0 && token.mint !== toMint
+    (token: Token) => !token.nativeBalance.isZero() && token.mint !== toMint
   );
   return (
     <TokenSelectorButton

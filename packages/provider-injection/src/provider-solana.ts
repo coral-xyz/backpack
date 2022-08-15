@@ -14,16 +14,16 @@ import type { Event } from "@coral-xyz/common";
 import {
   getLogger,
   BackgroundSolanaConnection,
-  CHANNEL_RPC_REQUEST,
-  CHANNEL_RPC_RESPONSE,
-  CHANNEL_NOTIFICATION,
+  CHANNEL_SOLANA_RPC_REQUEST,
+  CHANNEL_SOLANA_RPC_RESPONSE,
+  CHANNEL_SOLANA_NOTIFICATION,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
-  RPC_METHOD_CONNECT,
-  RPC_METHOD_DISCONNECT,
-  NOTIFICATION_CONNECTED,
-  NOTIFICATION_DISCONNECTED,
-  NOTIFICATION_CONNECTION_URL_UPDATED,
+  SOLANA_RPC_METHOD_CONNECT,
+  SOLANA_RPC_METHOD_DISCONNECT,
+  NOTIFICATION_SOLANA_CONNECTED,
+  NOTIFICATION_SOLANA_DISCONNECTED,
+  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_ACTIVE_WALLET_UPDATED,
 } from "@coral-xyz/common";
 import * as cmn from "./common";
@@ -31,7 +31,7 @@ import { RequestManager } from "./request-manager";
 
 const logger = getLogger("provider-injection");
 
-export class ProviderInjection extends EventEmitter implements Provider {
+export class ProviderSolanaInjection extends EventEmitter implements Provider {
   private _options?: ConfirmOptions;
 
   //
@@ -52,8 +52,8 @@ export class ProviderInjection extends EventEmitter implements Provider {
     super();
     this._options = undefined;
     this._requestManager = new RequestManager(
-      CHANNEL_RPC_REQUEST,
-      CHANNEL_RPC_RESPONSE
+      CHANNEL_SOLANA_RPC_REQUEST,
+      CHANNEL_SOLANA_RPC_RESPONSE
     );
     this._connectionRequestManager = new RequestManager(
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
@@ -81,17 +81,17 @@ export class ProviderInjection extends EventEmitter implements Provider {
   }
 
   _handleNotification(event: Event) {
-    if (event.data.type !== CHANNEL_NOTIFICATION) return;
+    if (event.data.type !== CHANNEL_SOLANA_NOTIFICATION) return;
     logger.debug("notification", event);
 
     switch (event.data.detail.name) {
-      case NOTIFICATION_CONNECTED:
+      case NOTIFICATION_SOLANA_CONNECTED:
         this._handleNotificationConnected(event);
         break;
-      case NOTIFICATION_DISCONNECTED:
+      case NOTIFICATION_SOLANA_DISCONNECTED:
         this._handleNotificationDisconnected(event);
         break;
-      case NOTIFICATION_CONNECTION_URL_UPDATED:
+      case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
         this._handleNotificationConnectionUrlUpdated(event);
         break;
       case NOTIFICATION_ACTIVE_WALLET_UPDATED:
@@ -131,14 +131,14 @@ export class ProviderInjection extends EventEmitter implements Provider {
     this.publicKey = new PublicKey(event.data.detail.data.activeWallet);
   }
 
-  async connect(onlyIfTrustedMaybe: boolean) {
+  async connect() {
     if (this.isConnected) {
       throw new Error("provider already connected");
     }
     // Send request to the RPC API.
     const result = await this._requestManager.request({
-      method: RPC_METHOD_CONNECT,
-      params: [onlyIfTrustedMaybe],
+      method: SOLANA_RPC_METHOD_CONNECT,
+      params: [],
     });
 
     this._connect(result.publicKey, result.connectionUrl);
@@ -146,7 +146,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
 
   async disconnect() {
     await this._requestManager.request({
-      method: RPC_METHOD_DISCONNECT,
+      method: SOLANA_RPC_METHOD_DISCONNECT,
       params: [],
     });
     this.connection = this.defaultConnection();
@@ -214,7 +214,10 @@ export class ProviderInjection extends EventEmitter implements Provider {
   }
 
   async signTransaction(tx: Transaction): Promise<Transaction> {
-    return await cmn.signTransaction(this.publicKey!, this._requestManager, tx);
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    return await cmn.signTransaction(this.publicKey, this._requestManager, tx);
   }
 
   async signAllTransactions(
@@ -230,7 +233,7 @@ export class ProviderInjection extends EventEmitter implements Provider {
     );
   }
 
-  async signMessage(msg: Uint8Array): Promise<Uint8Array | null> {
+  async signMessage(msg: Uint8Array): Promise<Uint8Array> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }

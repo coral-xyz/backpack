@@ -1,5 +1,5 @@
 import * as bs58 from "bs58";
-import BN from "bn.js";
+import { ethers, BigNumber } from "ethers";
 import React, { useContext, useEffect, useState, useRef } from "react";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import {
@@ -10,7 +10,8 @@ import {
   SOL_NATIVE_MINT,
   USDC_MINT,
   WSOL_MINT,
-  UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
+  UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
+  NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
 } from "@coral-xyz/common";
 import {
   useActiveWallet,
@@ -21,6 +22,8 @@ import {
 } from "../hooks";
 import { JUPITER_BASE_URL } from "../atoms/solana/jupiter";
 
+const { Zero } = ethers.constants;
+const DEFAULT_DEBOUNCE_DELAY = 400;
 const DEFAULT_SLIPPAGE_PERCENT = 1;
 // Poll for new routes every 30 seconds in case of changing market conditions
 const ROUTE_POLL_INTERVAL = 30000;
@@ -48,9 +51,9 @@ type SwapTransactions = {
 };
 
 type SwapContext = {
-  fromAmount: number | null;
-  setFromAmount: (a: number) => void;
-  toAmount: number | null;
+  fromAmount: BigNumber | undefined;
+  setFromAmount: (a: BigNumber | undefined) => void;
+  toAmount: BigNumber | undefined;
   fromMint: string;
   setFromMint: (mint: string) => void;
   toMint: string;
@@ -65,15 +68,29 @@ type SwapContext = {
   executeSwap: () => Promise<any>;
   priceImpactPct: number;
   transactions: any;
-  transactionFee: any;
+  transactionFee: BigNumber | undefined;
+  swapFee: BigNumber;
   isLoadingRoutes: boolean;
   isLoadingTransactions: boolean;
   isJupiterError: boolean;
-  availableForSwap: number;
+  availableForSwap: BigNumber;
   exceedsBalance: boolean | undefined;
 };
 
 const _SwapContext = React.createContext<SwapContext | null>(null);
+
+function useDebounce(value: any, wait = DEFAULT_DEBOUNCE_DELAY) {
+  const [debounceValue, setDebounceValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebounceValue(value);
+    }, wait);
+    return () => clearTimeout(timer); // cleanup when unmounted
+  }, [value, wait]);
+
+  return debounceValue;
+}
 
 export function SwapProvider(props: any) {
   const wallet = useActiveWallet();
@@ -88,16 +105,20 @@ export function SwapProvider(props: any) {
     SOL_NATIVE_MINT,
     USDC_MINT,
   ]);
-  const [fromAmount, setFromAmount] = useState<number | null>(null);
+  const [fromAmount, _setFromAmount] = useState<BigNumber | undefined>(
+    undefined
+  );
   const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE_PERCENT);
 
   // Jupiter data
   const [routes, setRoutes] = useState<JupiterRoute[]>([]);
 
-  const [transactions, setTransactions] = useState<SwapTransactions | null>(
-    null
+  const [transactions, setTransactions] = useState<
+    SwapTransactions | undefined
+  >(undefined);
+  const [transactionFee, setTransactionFee] = useState<BigNumber | undefined>(
+    undefined
   );
-  const [transactionFee, setTransactionFee] = useState<number | null>(null);
   const [isLoadingRoutes, setIsLoadingRoutes] = useState(false);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
 
@@ -129,7 +150,7 @@ export function SwapProvider(props: any) {
   const route = routes && routes[0];
   // If not a Jupiter swap then 1:1
   const toAmount = isJupiterSwap
-    ? route && route.outAmount / 10 ** toMintInfo.decimals
+    ? route && BigNumber.from(route.outAmount)
     : fromAmount;
   // If not a Jupiter swap then no price impact
   const priceImpactPct = isJupiterSwap ? route && route.priceImpactPct : 0;
@@ -139,15 +160,25 @@ export function SwapProvider(props: any) {
   //
   const pollIdRef: { current: NodeJS.Timeout | null } = useRef(null);
 
-  let availableForSwap =
-    tokenAccountsSorted.find((t) => t.mint === fromMint)?.nativeBalance || 0;
-  // If from mint is native SOL, remove the transaction fee from the max swap amount
+  const swapFromToken = tokenAccountsSorted.find((t) => t.mint === fromMint);
+  let availableForSwap = swapFromToken
+    ? BigNumber.from(swapFromToken.nativeBalance)
+    : Zero;
+
+  // If from mint is native SOL, remove the transaction fee and rent exemption
+  // from from the max swap amount
   if (fromMint === SOL_NATIVE_MINT && transactionFee) {
-    // Scale up the nativeBalance to avoid rounding errors before scaling everything down
-    availableForSwap = (availableForSwap * 10 ** 9 - transactionFee) / 10 ** 9;
+    availableForSwap = availableForSwap
+      .sub(transactionFee)
+      .sub(BigNumber.from(NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS));
+    if (availableForSwap.lt(Zero)) {
+      availableForSwap = Zero;
+    }
   }
-  const exceedsBalance =
-    (fromAmount && fromAmount > availableForSwap) || undefined;
+
+  const exceedsBalance = fromAmount
+    ? fromAmount.gt(availableForSwap)
+    : undefined;
 
   const stopRoutePolling = () => {
     if (pollIdRef.current) {
@@ -155,9 +186,12 @@ export function SwapProvider(props: any) {
     }
   };
 
+  // Debounce fromAmount to avoid excessive Jupiter API requests
+  const debouncedFromAmount = useDebounce(fromAmount);
+
   useEffect(() => {
     const loadRoutes = async () => {
-      if (fromAmount && fromAmount > 0 && isJupiterSwap) {
+      if (fromAmount && fromAmount.gt(Zero) && isJupiterSwap) {
         setRoutes(await fetchRoutes());
         // Success, clear existing polling and setup next
         stopRoutePolling();
@@ -173,15 +207,16 @@ export function SwapProvider(props: any) {
     loadRoutes();
     // Cleanup
     return stopRoutePolling;
-  }, [fromMint, fromAmount, toMint, isJupiterSwap]);
+  }, [fromMint, debouncedFromAmount, toMint, isJupiterSwap]);
 
   //
   // On changes to the swap routes, fetch the transactions required to execute.
   //
   useEffect(() => {
     (async () => {
-      setTransactions(await fetchTransactions());
-      setTransactionFee(await estimateFees());
+      const transactions = await fetchTransactions();
+      setTransactions(transactions);
+      setTransactionFee(await estimateFees(transactions));
       setIsLoadingTransactions(false);
     })();
   }, [routes]);
@@ -189,12 +224,12 @@ export function SwapProvider(props: any) {
   //
   // Estimate the network fees the transactions will incur.
   //
-  const estimateFees = async () => {
+  const estimateFees = async (transactions: SwapTransactions) => {
     let fee = 0;
     if (!isJupiterSwap) {
       // Simple wrap or unwrap, assume 5000
       fee += 5000;
-    } else if (!routes || routes.length === 0 || transactions === null) {
+    } else if (!routes || routes.length === 0 || transactions === undefined) {
       // Haven't got routes yet, assume 5000 for swap
       fee += 5000;
       if (needsWrap || needsUnwrap) {
@@ -221,19 +256,20 @@ export function SwapProvider(props: any) {
         fee = 5000;
       }
     }
-    return fee;
+    return BigNumber.from(fee);
   };
 
   //
   // Fetch the Jupiter routes that can be used to execute the swap.
   //
   const fetchRoutes = async () => {
+    if (!fromAmount) return [];
     const params = {
       // If the swap is to or from native SOL we want Jupiter to return wSOL
       // routes because it does not support native SOL routes.
       inputMint: fromMint === SOL_NATIVE_MINT ? WSOL_MINT : fromMint,
       outputMint: toMint === SOL_NATIVE_MINT ? WSOL_MINT : toMint,
-      amount: (fromAmount! * 10 ** fromMintInfo.decimals).toString(),
+      amount: fromAmount.toString(),
       slippage: slippage.toString(),
     };
     const queryString = new URLSearchParams(params).toString();
@@ -258,6 +294,7 @@ export function SwapProvider(props: any) {
   // Load the transactions required to execute the swap.
   //
   const fetchTransactions = async () => {
+    if (!fromAmount) return {};
     // Setup a wrap transaction if needed
     let wrapTransaction: string | undefined = undefined;
     if (needsWrap) {
@@ -265,7 +302,7 @@ export function SwapProvider(props: any) {
         await generateWrapSolTx(
           solanaCtx,
           wallet.publicKey,
-          fromAmount! * 10 ** 9
+          fromAmount.toNumber()
         )
       ).toString("base64");
     }
@@ -299,7 +336,7 @@ export function SwapProvider(props: any) {
   //
   const swapToFromMints = () => {
     setFromMintToMint([toMint, fromMint]);
-    setFromAmount(toAmount ?? 0);
+    setFromAmount(toAmount ?? Zero);
   };
 
   const setFromMint = (mint: string) => {
@@ -308,6 +345,11 @@ export function SwapProvider(props: any) {
 
   const setToMint = (mint: string) => {
     setFromMintToMint([fromMint, mint]);
+  };
+
+  const setFromAmount = (amount: BigNumber) => {
+    // Restrict the input to the number of decimals of the from token
+    _setFromAmount(amount);
   };
 
   //
@@ -323,6 +365,8 @@ export function SwapProvider(props: any) {
   // wSOL account and balance are retained.
   //
   const executeSwap = async () => {
+    if (!toAmount) return;
+
     // Stop polling for route updates when swap is finalised
     stopRoutePolling();
 
@@ -414,7 +458,7 @@ export function SwapProvider(props: any) {
         await generateUnwrapSolTx(
           solanaCtx,
           wallet.publicKey,
-          toAmount! * 10 ** 9
+          toAmount.toNumber()
         )
       ).toString("base64");
     }
@@ -442,7 +486,7 @@ export function SwapProvider(props: any) {
 
   const sendAndConfirmTransaction = async (serializedTransaction: string) => {
     const signature = await background.request({
-      method: UI_RPC_METHOD_SIGN_AND_SEND_TRANSACTION,
+      method: UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
       params: [
         bs58.encode(Buffer.from(serializedTransaction, "base64")),
         wallet.publicKey,
@@ -475,6 +519,8 @@ export function SwapProvider(props: any) {
         transactions,
         isLoadingTransactions,
         transactionFee,
+        // TODO backpack fees
+        swapFee: Zero,
         isJupiterError,
         availableForSwap,
         exceedsBalance,

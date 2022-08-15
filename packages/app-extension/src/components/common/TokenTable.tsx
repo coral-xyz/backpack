@@ -183,8 +183,8 @@ function TokenRow({
   style?: any;
 }) {
   let subtitle = token.ticker;
-  if (token.nativeBalance) {
-    subtitle = `${token.nativeBalance.toLocaleString()} ${subtitle}`;
+  if (token.displayBalance) {
+    subtitle = `${token.displayBalance.toLocaleString()} ${subtitle}`;
   }
   return (
     <BalancesTableRow onClick={() => onClick(token)} style={style}>

@@ -7,6 +7,7 @@ import {
   QUERY_LOCKED_APPROVAL,
   QUERY_APPROVE_MESSAGE,
   QUERY_APPROVE_TRANSACTION,
+  QUERY_APPROVE_ALL_TRANSACTIONS,
   QUERY_CONNECT_HARDWARE,
   QUERY_ONBOARDING,
 } from "../constants";
@@ -128,19 +129,35 @@ export async function openApprovalPopupWindow(
 
 export async function openApproveTransactionPopupWindow(
   origin: string,
+  title: string,
   requestId: number,
   tx: string
 ): Promise<chrome.windows.Window> {
-  const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${origin}&requestId=${requestId}&tx=${tx}`;
+  const encodedTitle = encodeURIComponent(title);
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&tx=${tx}`;
+  return await openPopupWindow(url);
+}
+
+export async function openApproveAllTransactionsPopupWindow(
+  origin: string,
+  title: string,
+  requestId: number,
+  txs: Array<string>
+): Promise<chrome.windows.Window> {
+  const encodedTitle = encodeURIComponent(title);
+  const txsStr = encodeURIComponent(JSON.stringify(txs));
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_ALL_TRANSACTIONS}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&txs=${txsStr}`;
   return await openPopupWindow(url);
 }
 
 export async function openApproveMessagePopupWindow(
   origin: string,
+  title: string,
   requestId: number,
   message: string
 ): Promise<chrome.windows.Window> {
-  const url = `${POPUP_HTML}?${QUERY_APPROVE_MESSAGE}&origin=${origin}&requestId=${requestId}&message=${message}`;
+  const encodedTitle = encodeURIComponent(title);
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_MESSAGE}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&message=${message}`;
   return await openPopupWindow(url);
 }
 
@@ -148,12 +165,16 @@ export async function openPopupWindow(
   url: string
 ): Promise<chrome.windows.Window> {
   const MACOS_TOOLBAR_HEIGHT = 28;
+  const WINDOWS_TOOLBAR_HEIGHT = 28; // TODO: confirm this.
+  function getOs() {
+    const os = ["Windows", "Linux", "Mac"];
+    return os.find((v) => navigator.appVersion.indexOf(v) >= 0);
+  }
   function isMacOs(): boolean {
-    function getOs() {
-      const os = ["Windows", "Linux", "Mac"];
-      return os.find((v) => navigator.appVersion.indexOf(v) >= 0);
-    }
     return getOs() === "Mac";
+  }
+  function isWindows(): boolean {
+    return getOs() === "Windows";
   }
 
   return new Promise((resolve, reject) => {
@@ -162,7 +183,13 @@ export async function openPopupWindow(
         url: `${url}`,
         type: "popup",
         width: EXTENSION_WIDTH,
-        height: EXTENSION_HEIGHT + (isMacOs() ? MACOS_TOOLBAR_HEIGHT : 0),
+        height:
+          EXTENSION_HEIGHT +
+          (isMacOs()
+            ? MACOS_TOOLBAR_HEIGHT
+            : isWindows()
+            ? WINDOWS_TOOLBAR_HEIGHT
+            : 0),
         top: window.top,
         left: window.left + (window.width - EXTENSION_WIDTH),
         focused: true,

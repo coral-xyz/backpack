@@ -21,6 +21,12 @@ const options = {
       distDir: "dist",
     },
   },
+  additionalReporters: [
+    {
+      packageName: "@parcel/reporter-cli",
+      resolveFrom: __filename,
+    },
+  ],
 };
 
 program.command("build").action(async () => {
@@ -67,15 +73,29 @@ program.command("dev").action(async () => {
     sourceMap: true,
     optimize: false,
   });
+
+  if (!fs.existsSync("dist/index.js")) {
+    if (!fs.existsSync("dist")) {
+      fs.mkdirSync("dist");
+    }
+    fs.writeFileSync("dist/index.js", "");
+  }
+
   let js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
-  await bundler.watch(() => {
+  await bundler.watch((err, buildEvent) => {
     console.log("build changed");
+    if (err) {
+      console.error("build error", JSON.stringify(err));
+    }
+    if (buildEvent.type === "buildFailure") {
+      console.error("build error", JSON.stringify(buildEvent));
+    }
     js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
   });
 
   app.get("/", (req, res) => {
     const innerHTML = `
-        <script type="module">${js}</script>`;
+        <script>${js}</script>`;
     res.send(`
         <!DOCTYPE html>
         <html lang="en">

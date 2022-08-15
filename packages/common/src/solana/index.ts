@@ -65,7 +65,8 @@ export class Solana {
       const decimals = tokenInfo.decimals;
       return decimals;
     })();
-    const nativeAmount = new BN(amount * 10 ** decimals);
+
+    const nativeAmount = new BN(amount);
 
     const destinationAta = associatedTokenAddress(mint, destination);
     const sourceAta = associatedTokenAddress(mint, walletPublicKey);
@@ -140,7 +141,7 @@ export class Solana {
       SystemProgram.transfer({
         fromPubkey: new PublicKey(req.source),
         toPubkey: new PublicKey(req.destination),
-        lamports: req.amount * 10 ** 9,
+        lamports: req.amount,
       })
     );
     tx.feePayer = walletPublicKey;
@@ -193,9 +194,10 @@ export const generateWrapSolTx = async (
   const { walletPublicKey, tokenClient, commitment } = ctx;
   const destinationAta = associatedTokenAddress(NATIVE_MINT, destination);
 
-  const destinationAccount =
-    await tokenClient.provider.connection.getAccountInfo(
-      destination,
+  const [destinationAccount, destinationAtaAccount] =
+    await anchor.utils.rpc.getMultipleAccounts(
+      tokenClient.provider.connection,
+      [destination, destinationAta],
       commitment
     );
 
@@ -205,13 +207,13 @@ export const generateWrapSolTx = async (
   //
   if (
     destinationAccount &&
-    !destinationAccount.owner.equals(SystemProgram.programId)
+    !destinationAccount.account.owner.equals(SystemProgram.programId)
   ) {
     throw new Error("invalid account");
   }
 
   const tx = new Transaction();
-  if (!destinationAta) {
+  if (!destinationAtaAccount) {
     tx.instructions.push(
       createAssociatedTokenAccountInstruction(
         walletPublicKey,
@@ -235,8 +237,7 @@ export const generateWrapSolTx = async (
   tx.recentBlockhash = (
     await tokenClient.provider.connection.getLatestBlockhash(commitment)
   ).blockhash;
-  const signedTx = await SolanaProvider.signTransaction(ctx, tx);
-  return signedTx.serialize();
+  return tx.serialize({ requireAllSignatures: false });
 };
 
 //
@@ -330,8 +331,7 @@ export const generateUnwrapSolTx = async (
     );
     tx.partialSign(newAccount);
   }
-  const signedTx = await SolanaProvider.signTransaction(ctx, tx);
-  return signedTx.serialize();
+  return tx.serialize({ requireAllSignatures: false });
 };
 
 export type TransferTokenRequest = {

@@ -2,11 +2,20 @@ import { useState } from "react";
 import { Button, Typography } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
 import { formatUSD } from "@coral-xyz/common";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
 import { useSolanaBalance, useActiveWallet } from "@coral-xyz/recoil";
 import { WithCopyTooltip } from "../../common/WithCopyTooltip";
 
 const useStyles = styles((theme) => ({
+  button: {
+    color: "#fff",
+    "&:hover": {
+      opacity: 1,
+    },
+    "&:hover p": {
+      opacity: HOVER_OPACITY,
+    },
+  },
   balancesHeaderContainer: {
     display: "flex",
     justifyContent: "center",
@@ -17,7 +26,6 @@ const useStyles = styles((theme) => ({
     background: "url(assets/coral-balances.png)",
     backgroundRepeat: "round",
     height: "104px",
-    color: "#fff",
     width: "100%",
     borderRadius: "12px",
   },
@@ -30,9 +38,10 @@ const useStyles = styles((theme) => ({
     fontWeight: 600,
     fontSize: "30px",
     lineHeight: "36px",
+    color: "inherit",
   },
   positive: {
-    color: theme.custom.colors.positive,
+    color: `${theme.custom.colors.positive} !important`,
     fontSize: "12px",
     lineHeight: "24px",
   },
@@ -62,6 +71,7 @@ export function BalanceSummaryWidget() {
     <WithCopyTooltip tooltipOpen={tooltipOpen}>
       <div style={{ display: "flex" }}>
         <Button
+          className={classes.button}
           disableRipple
           style={{
             flex: 1,

@@ -10,6 +10,8 @@
     "@coral-xyz/common": "*",
     "@project-serum/anchor": "^0.23.0",
     "@solana/web3.js": "^1.36.0",
+    "@wallet-standard/standard": "0.1.0-alpha.0",
+    "@wallet-standard/util": "0.1.0-alpha.0",
     "bs58": "^5.0.0",
     "eventemitter3": "^4.0.7"
   },

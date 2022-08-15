@@ -5,24 +5,14 @@
   "react-native": "dist/rn/index.js",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "build": "yarn lint && tsc && tsc-alias && tsc -p tsconfig.rn.json",
+    "start": "yarn build",
+    "build": "./scripts/config.sh && yarn lint && tsc && tsc-alias && tsc -p tsconfig.rn.json",
     "dev": "tsc --watch",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@project-serum/anchor": "^0.23.0",
-    "@project-serum/token": "^0.1.0",
-    "@solana/buffer-layout": "^4.0.0",
-    "@solana/spl-token": "^0.1.0",
-    "@solana/spl-token-registry": "^0.2.3225",
-    "@solana/wallet-adapter-base": "^0.9.9",
-    "@solana/web3.js": "^1.37.1",
-    "bn.js": "^5.2.1",
-    "bs58": "^5.0.0",
-    "eventemitter3": "^4.0.7",
-    "expo-secure-store": "^11.2.0",
     "uuid": "^8.3.2",
     "zustand": "^4.0.0-rc.2"
   },

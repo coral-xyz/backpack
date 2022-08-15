@@ -39,6 +39,12 @@ const useStyles = styles((theme) => ({
     color: theme.custom.colors.tabIconSelected,
   },
   tabUnselected: {},
+  tabButton: {
+    padding: 0,
+    "&:hover": {
+      color: "red",
+    },
+  },
 }));
 
 export function WithTabs(props: any) {

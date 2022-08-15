@@ -28,7 +28,7 @@ const useStyles = styles((theme) => ({
     color: theme.custom.colors.secondary,
   },
   blockchainCard: {
-    backgroundColor: theme.custom.colors.nav,
+    backgroundColor: "inherit",
     marginBottom: "12px",
     marginLeft: "12px",
     marginRight: "12px",
@@ -41,6 +41,7 @@ const useStyles = styles((theme) => ({
     flexDirection: "column",
   },
   cardHeaderRoot: {
+    backgroundColor: theme.custom.colors.nav,
     padding: "6px",
     paddingLeft: "16px",
     paddingRight: "16px",
@@ -67,6 +68,7 @@ const useStyles = styles((theme) => ({
   },
   tokenListItem: {
     borderTop: `solid 1pt ${theme.custom.colors.border}`,
+    backgroundColor: `${theme.custom.colors.nav} !important`,
     paddingTop: 0,
     paddingBottom: 0,
     paddingLeft: "12px",
@@ -143,22 +145,17 @@ const useStyles = styles((theme) => ({
   tokenListItemIconRoot: {
     minWidth: "44px",
   },
-  button: {
-    borderRadius: "12px",
-    width: "100px",
-    height: "40px",
-    textTransform: "none",
-    backgroundColor: theme.custom.colors.nav,
-    "&:hover": {
-      backgroundColor: theme.custom.colors.nav,
-    },
-  },
   textFieldInput: {
     fontWeight: 500,
     borderRadius: "12px",
-    color: theme.custom.colors.secondary,
     fontSize: "16px",
     lineHeight: "24px",
+  },
+  textFieldInputColorEmpty: {
+    color: theme.custom.colors.secondary,
+  },
+  textFieldInputColor: {
+    color: theme.custom.colors.fontColor2,
   },
   textFieldRoot: {
     "& .MuiOutlinedInput-root": {
@@ -241,8 +238,12 @@ export function Component({ viewData }) {
       return <Svg props={props} children={viewData.children} />;
     case NodeKind.Path:
       return <Path props={props} />;
+    case NodeKind.Circle:
+      return <Circle props={props} />;
     case NodeKind.NavAnimation:
       return <NavAnimation props={props} children={viewData.children} />;
+    case NodeKind.Iframe:
+      return <Iframe props={props} style={style} />;
     case NodeKind.BalancesTable:
       return (
         <BalancesTable
@@ -310,6 +311,31 @@ function Path({ props }: any) {
       clipRule={props.clipRule}
       fill={props.fill}
     />
+  );
+}
+
+function Circle({ props }: any) {
+  return <circle cx={props.cx} cy={props.cy} r={props.r} fill={props.fill} />;
+}
+
+function Iframe({ props, style }: any) {
+  return (
+    <iframe
+      sandbox="allow-same-origin allow-scripts"
+      src={props.src}
+      height={props.height}
+      width={props.width}
+      style={{
+        position: "absolute",
+        border: "none",
+        width: "100%",
+        height: "100%",
+        maxWidth: "100%",
+        maxHeight: "100%",
+        overflowY: "hidden",
+        ...style,
+      }}
+    ></iframe>
   );
 }
 
@@ -652,7 +678,9 @@ export function TextField({
   const classes = useStyles();
   inputProps = Object.assign(
     {
-      className: classes.textFieldInput,
+      className: `${classes.textFieldInput} ${
+        value ? classes.textFieldInputColor : classes.textFieldInputColorEmpty
+      }`,
     },
     inputProps
   );
@@ -738,13 +766,20 @@ export function __Button({
   childrenRenderer,
 }: any) {
   const classes = useStyles();
+  const theme = useCustomTheme();
   return (
     <MuiButton
       disableElevation
       variant="contained"
-      className={classes.button}
       disableRipple
-      style={style}
+      style={{
+        borderRadius: "12px",
+        width: "100px",
+        height: "40px",
+        textTransform: "none",
+        backgroundColor: theme.custom.colors.nav,
+        ...style,
+      }}
       onClick={onClick}
     >
       {children ??
@@ -761,7 +796,7 @@ function Loading({ id, props, style }: any) {
     color: theme.custom.colors.activeNavButton,
     ...style,
   };
-  return <CircularProgress style={style} />;
+  return <CircularProgress style={style} thickness={6} />;
 }
 
 function ScrollBar({ id, props, style, children }: any) {

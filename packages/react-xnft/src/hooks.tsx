@@ -2,20 +2,20 @@ import { useState, useEffect } from "react";
 import { Connection, PublicKey } from "@solana/web3.js";
 
 export function usePublicKey(): PublicKey {
-  const [publicKey, setPublicKey] = useState(window.anchorUi.publicKey);
+  const [publicKey, setPublicKey] = useState(window.xnft.publicKey);
   useEffect(() => {
-    window.anchorUi.on("publicKeyUpdate", () => {
-      setPublicKey(window.anchorUi.publicKey);
+    window.xnft.on("publicKeyUpdate", () => {
+      setPublicKey(window.xnft.publicKey);
     });
   }, [setPublicKey]);
   return publicKey;
 }
 
 export function useConnection(): Connection {
-  const [connection, setConnection] = useState(window.anchorUi.connection);
+  const [connection, setConnection] = useState(window.xnft.connection);
   useEffect(() => {
-    window.anchorUi.on("connectionUpdate", () => {
-      setConnection(window.anchorUi.connection);
+    window.xnft.on("connectionUpdate", () => {
+      setConnection(window.xnft.connection);
     });
   }, [setConnection]);
   return connection;
