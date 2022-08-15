@@ -156,8 +156,8 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
     tx: Transaction,
     signers?: Signer[],
     options?: ConfirmOptions,
-    publicKey?: PublicKey,
-    connection?: Connection
+    connection?: Connection,
+    publicKey?: PublicKey
   ): Promise<TransactionSignature> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
@@ -176,8 +176,8 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
     tx: Transaction,
     signers?: Signer[],
     options?: SendOptions,
-    publicKey?: PublicKey,
-    connection?: Connection
+    connection?: Connection,
+    publicKey?: PublicKey
   ): Promise<TransactionSignature> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
