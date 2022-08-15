@@ -39,10 +39,12 @@ const useStyles = styles((theme) => ({
 }));
 
 export function SearchableTokenTable({
+  blockchain,
   onClickRow,
   tokenAccounts,
   customFilter = () => true,
 }: {
+  blockchain: Blockchain;
   onClickRow: (blockchain: Blockchain, token: Token) => void;
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   customFilter: (token: Token) => boolean;
@@ -63,6 +65,7 @@ export function SearchableTokenTable({
         }}
       />
       <TokenTable
+        blockchain={blockchain}
         onClickRow={onClickRow}
         tokenAccounts={tokenAccounts}
         searchFilter={searchFilter}
@@ -73,17 +76,18 @@ export function SearchableTokenTable({
 }
 
 export function TokenTable({
+  blockchain,
   onClickRow,
   tokenAccounts,
   searchFilter = "",
   customFilter = () => true,
 }: {
+  blockchain: Blockchain;
   onClickRow: (blockchain: Blockchain, token: Token) => void;
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
-  searchFilter: string;
-  customFilter: (token: Token) => boolean;
+  searchFilter?: string;
+  customFilter?: (token: Token) => boolean;
 }) {
-  const blockchain = Blockchain.SOLANA;
   const title = "Tokens";
   const blockchainLogo = useBlockchainLogo(blockchain);
   const tokenAccountsSorted = tokenAccounts
