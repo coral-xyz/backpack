@@ -133,8 +133,28 @@ export function NotificationsProvider(props: any) {
     const handleKeyringStoreUnlocked = (_notif: Notification) => {
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
     };
-    const handleKeyringKeyDelete = (_notif: Notification) => {
-      // todo
+    const handleKeyringKeyDelete = (notif: Notification) => {
+      const { deletedPublicKey } = notif.data;
+      // Remove the deleted key from the key list.
+      setWalletPublicKeys((current) => {
+        return {
+          hdPublicKeys: [
+            ...current.hdPublicKeys
+              .map((pk: any) => ({ ...pk }))
+              .filter((key) => key.publicKey !== deletedPublicKey),
+          ],
+          importedPublicKeys: [
+            ...current.importedPublicKeys
+              .map((pk: any) => ({ ...pk }))
+              .filter((key) => key.publicKey !== deletedPublicKey),
+          ],
+          ledgerPublicKeys: [
+            ...current.ledgerPublicKeys
+              .map((pk: any) => ({ ...pk }))
+              .filter((key) => key.publicKey !== deletedPublicKey),
+          ],
+        };
+      });
     };
     const handleKeynameUpdate = (notif: Notification) => {
       setWalletPublicKeys((current: any) => {

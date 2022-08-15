@@ -90,9 +90,9 @@ function NavStackProvider({
   const push = (route: string, props: any) => {
     setStack([...stack, { name: route, props, navAction: "push" }]);
   };
-  const pop = () => {
+  const pop = (count?: number) => {
     let newStack = [...stack];
-    newStack = newStack.slice(0, newStack.length - 1);
+    newStack = newStack.slice(0, newStack.length - (count ?? 1));
     newStack[newStack.length - 1]["navAction"] = "pop";
     setStack(newStack);
   };
@@ -138,7 +138,7 @@ type RoutedNavStackOptions = {
 type NavStackContext = {
   activeRoute: { name: string; props?: any; navAction?: "push" | "pop" };
   push: (route: string, props?: any) => void;
-  pop: () => void;
+  pop: (count?: number) => void;
   isRoot: boolean;
   toRoot: () => void;
   title: string;

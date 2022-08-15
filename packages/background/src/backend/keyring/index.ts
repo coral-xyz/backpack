@@ -3,6 +3,7 @@ import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import type { EventEmitter, DerivationPath } from "@coral-xyz/common";
 import {
+  getLogger,
   Blockchain,
   SolanaExplorer,
   SolanaCluster,
@@ -25,6 +26,8 @@ import { DefaultKeyname } from "../store";
 export * from "./solana";
 export * from "./ethereum";
 export * from "./types";
+
+const logger = getLogger("background/backend/keyring");
 
 // const BLOCKCHAIN_ETHEREUM = "ethereum";
 const BLOCKCHAIN_DEFAULT = Blockchain.SOLANA;
@@ -121,7 +124,7 @@ export class KeyringStore {
         solana,
         activeBlockchainLabel,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        lastUsedTs,
+        lastUsedTs: _,
       } = JSON.parse(plaintext);
 
       // Unlock the keyring stores.
@@ -534,7 +537,17 @@ class BlockchainKeyring {
   }
 
   public async keyDelete(pubkey: string) {
-    this.deletedWallets = this.deletedWallets!.concat([pubkey]);
+    if (this.hdKeyring!.deleteKeyIfNeeded(pubkey) >= 0) {
+      return;
+    }
+    if (this.importedKeyring!.deleteKeyIfNeeded(pubkey) >= 0) {
+      return;
+    }
+    if (this.ledgerKeyring!.deleteKeyIfNeeded(pubkey) >= 0) {
+      return;
+    }
+    logger.error(`unable to find key to delete in keyring store: ${pubkey}`);
+    throw new Error("key not found");
   }
 
   public toJson(): any {

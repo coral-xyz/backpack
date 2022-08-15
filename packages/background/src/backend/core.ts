@@ -329,18 +329,6 @@ export class Backend {
     };
   }
 
-  // Adds a new HdKeyring to the store.
-  hdKeyringCreate(mnemonic: string): string {
-    // todo
-    return SUCCESS_RESPONSE;
-  }
-
-  // Adds a new ecretKey to the store (secret key is a private not a mnemonic).
-  keyringCreate(secretKey: string): string {
-    // todo
-    return SUCCESS_RESPONSE;
-  }
-
   async activeWallet(): Promise<string> {
     return await this.keyringStore.activeWallet();
   }
@@ -387,13 +375,25 @@ export class Backend {
   }
 
   async keyringKeyDelete(publicKey: string): Promise<string> {
+    const active = await this.activeWallet();
+
+    // If we're removing the currently active key then we need to update it
+    // first.
+    if (publicKey === active) {
+      // Invariant: must have at least one hd pubkey.
+      const { hdPublicKeys } = await this.keyringStoreReadAllPubkeys();
+      await this.activeWalletUpdate(hdPublicKeys[0].publicKey);
+    }
+
     await this.keyringStore.keyDelete(publicKey);
+
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_KEY_DELETE,
       data: {
-        publicKey,
+        deletedPublicKey: publicKey,
       },
     });
+
     return SUCCESS_RESPONSE;
   }
 

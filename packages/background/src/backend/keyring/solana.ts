@@ -42,10 +42,20 @@ export class SolanaKeyringFactory implements KeyringFactory {
 }
 
 class SolanaKeyring implements Keyring {
-  constructor(readonly keypairs: Array<Keypair>) {}
+  constructor(public keypairs: Array<Keypair>) {}
 
   public publicKeys(): Array<string> {
     return this.keypairs.map((kp) => kp.publicKey.toString());
+  }
+
+  public deleteKeyIfNeeded(pubkey: string): number {
+    const index = this.keypairs.findIndex(
+      (kp) => kp.publicKey.toString() === pubkey
+    );
+    this.keypairs = this.keypairs.filter(
+      (kp) => kp.publicKey.toString() !== pubkey
+    );
+    return index;
   }
 
   // `address` is the key on the keyring to use for signing.
@@ -136,9 +146,9 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
     const kr = new SolanaHdKeyring({
       mnemonic,
       seed,
-      accountIndices,
       derivationPath,
       keypairs,
+      accountIndices,
     });
 
     return kr;
@@ -148,8 +158,10 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
 class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   readonly mnemonic: string;
   private seed: Buffer;
-  private accountIndices: Array<number>;
   private derivationPath: DerivationPath;
+  // Invariant: the order of these indices *must* match the order of these
+  //            super classes' keypairs.
+  private accountIndices: Array<number>;
 
   constructor({
     mnemonic,
@@ -160,15 +172,29 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   }: {
     mnemonic: string;
     seed: Buffer;
-    accountIndices: Array<number>;
     keypairs: Array<Keypair>;
     derivationPath: DerivationPath;
+    accountIndices: Array<number>;
   }) {
     super(keypairs);
     this.mnemonic = mnemonic;
     this.seed = seed;
-    this.accountIndices = accountIndices;
     this.derivationPath = derivationPath;
+    this.accountIndices = accountIndices;
+  }
+
+  public deleteKeyIfNeeded(pubkey: string): number {
+    if (this.keypairs.length <= 1) {
+      throw new Error("cannot delete the last key in the hd keyring");
+    }
+    const idx = super.deleteKeyIfNeeded(pubkey);
+    if (idx < 0) {
+      return idx;
+    }
+    this.accountIndices = this.accountIndices
+      .slice(0, idx)
+      .concat(this.accountIndices.slice(idx + 1));
+    return idx;
   }
 
   public deriveNext(): [string, number] {
@@ -241,6 +267,14 @@ export class SolanaLedgerKeyring implements LedgerKeyring {
       params: [],
     });
     return resp;
+  }
+
+  public deleteKeyIfNeeded(pubkey: string): number {
+    const idx = this.derivationPaths.findIndex((dp) => dp.publicKey === pubkey);
+    this.derivationPaths = this.derivationPaths.filter(
+      (dp) => dp.publicKey === pubkey
+    );
+    return idx;
   }
 
   public async ledgerImport(path: string, account: number, publicKey: string) {

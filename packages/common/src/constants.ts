@@ -72,8 +72,6 @@ export const UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD =
   "keyring-store-check-password";
 export const UI_RPC_METHOD_KEYRING_STORE_UNLOCK = "keyring-store-unlock";
 export const UI_RPC_METHOD_KEYRING_STORE_LOCK = "keyring-store-lock";
-export const UI_RPC_METHOD_HD_KEYRING_CREATE = "hd-keyring-create";
-export const UI_RPC_METHOD_KEYRING_CREATE = "keyring-create";
 export const UI_RPC_METHOD_KEYRING_DERIVE_WALLET = "keyring-derive";
 export const UI_RPC_METHOD_KEYRING_KEY_DELETE = "keyring-delete";
 export const UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY = "keyring-import-wallet";
