@@ -537,13 +537,13 @@ class BlockchainKeyring {
   }
 
   public async keyDelete(pubkey: string) {
-    if (this.hdKeyring?.deleteKeyIfNeeded(pubkey) !== null) {
+    if (this.hdKeyring!.deleteKeyIfNeeded(pubkey) >= 0) {
       return;
     }
-    if (this.importedKeyring?.deleteKeyIfNeeded(pubkey) !== null) {
+    if (this.importedKeyring!.deleteKeyIfNeeded(pubkey) >= 0) {
       return;
     }
-    if (this.ledgerKeyring?.deleteKeyIfNeeded(pubkey) !== null) {
+    if (this.ledgerKeyring!.deleteKeyIfNeeded(pubkey) >= 0) {
       return;
     }
     logger.error(`unable to find key to delete in keyring store: ${pubkey}`);

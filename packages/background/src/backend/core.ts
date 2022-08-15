@@ -375,6 +375,16 @@ export class Backend {
   }
 
   async keyringKeyDelete(publicKey: string): Promise<string> {
+    const active = await this.activeWallet();
+
+    // If we're removing the currently active key then we need to update it
+    // first.
+    if (publicKey === active) {
+      // Invariant: must have at least one hd pubkey.
+      const { hdPublicKeys } = await this.keyringStoreReadAllPubkeys();
+      await this.activeWalletUpdate(hdPublicKeys[0].publicKey);
+    }
+
     await this.keyringStore.keyDelete(publicKey);
 
     this.events.emit(BACKEND_EVENT, {
@@ -383,6 +393,7 @@ export class Backend {
         deletedPublicKey: publicKey,
       },
     });
+
     return SUCCESS_RESPONSE;
   }
 
