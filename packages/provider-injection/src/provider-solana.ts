@@ -156,15 +156,16 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
     tx: Transaction,
     signers?: Signer[],
     options?: ConfirmOptions,
-    overrideOptions?: { publicKey: PublicKey; connection: Connection }
+    publicKey?: PublicKey,
+    connection?: Connection
   ): Promise<TransactionSignature> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.sendAndConfirm(
-      overrideOptions ? overrideOptions.publicKey : this.publicKey,
+      publicKey ?? this.publicKey,
       this._requestManager,
-      overrideOptions ? overrideOptions.connection : this.connection,
+      connection ?? this.connection,
       tx,
       signers,
       options
