@@ -80,8 +80,7 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
   async send(
     tx: Transaction,
     signers?: Signer[],
-    options?: SendOptions,
-    connection?: Connection
+    options?: SendOptions
   ): Promise<TransactionSignature> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
@@ -89,7 +88,7 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
     return await cmn.send(
       this.publicKey,
       this._requestManager,
-      connection ? connection : this.connection,
+      this.connection,
       tx,
       signers,
       options

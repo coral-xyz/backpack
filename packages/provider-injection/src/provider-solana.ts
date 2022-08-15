@@ -24,7 +24,7 @@ import {
   NOTIFICATION_SOLANA_CONNECTED,
   NOTIFICATION_SOLANA_DISCONNECTED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
-  NOTIFICATION_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
 } from "@coral-xyz/common";
 import * as cmn from "./common";
 import { RequestManager } from "./request-manager";
@@ -94,7 +94,7 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
       case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
         this._handleNotificationConnectionUrlUpdated(event);
         break;
-      case NOTIFICATION_ACTIVE_WALLET_UPDATED:
+      case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
         this._handleNotificationActiveWalletUpdated(event);
         break;
       default:
@@ -155,15 +155,16 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
   async sendAndConfirm(
     tx: Transaction,
     signers?: Signer[],
-    options?: ConfirmOptions
+    options?: ConfirmOptions,
+    overrideOptions?: { publicKey: PublicKey; connection: Connection }
   ): Promise<TransactionSignature> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.sendAndConfirm(
-      this.publicKey,
+      overrideOptions ? overrideOptions.publicKey : this.publicKey,
       this._requestManager,
-      this.connection,
+      overrideOptions ? overrideOptions.connection : this.connection,
       tx,
       signers,
       options
@@ -173,15 +174,17 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
   async send(
     tx: Transaction,
     signers?: Signer[],
-    options?: SendOptions
+    options?: SendOptions,
+    publicKey?: PublicKey,
+    connection?: Connection
   ): Promise<TransactionSignature> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.send(
-      this.publicKey,
+      publicKey ?? this.publicKey,
       this._requestManager,
-      this.connection,
+      connection ?? this.connection,
       tx,
       signers,
       options
@@ -190,7 +193,9 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
 
   async sendAll(
     _txWithSigners: { tx: Transaction; signers?: Signer[] }[],
-    _opts?: ConfirmOptions
+    _opts?: ConfirmOptions,
+    connection?: Connection,
+    publicKey?: PublicKey
   ): Promise<Array<TransactionSignature>> {
     throw new Error("sendAll not implemented");
   }
@@ -198,59 +203,76 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
   async simulate(
     tx: Transaction,
     signers?: Signer[],
-    commitment?: Commitment
+    commitment?: Commitment,
+    connection?: Connection,
+    publicKey?: PublicKey
   ): Promise<SimulatedTransactionResponse> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.simulate(
-      this.publicKey,
+      publicKey ?? this.publicKey,
       this._requestManager,
-      this.connection,
+      connection ?? this.connection,
       tx,
       signers,
       commitment
     );
   }
 
-  async signTransaction(tx: Transaction): Promise<Transaction> {
+  async signTransaction(
+    tx: Transaction,
+    publicKey?: PublicKey
+  ): Promise<Transaction> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
-    return await cmn.signTransaction(this.publicKey, this._requestManager, tx);
+    return await cmn.signTransaction(
+      publicKey ?? this.publicKey,
+      this._requestManager,
+      tx
+    );
   }
 
   async signAllTransactions(
-    txs: Array<Transaction>
+    txs: Array<Transaction>,
+    publicKey?: PublicKey
   ): Promise<Array<Transaction>> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.signAllTransactions(
-      this.publicKey,
+      publicKey ?? this.publicKey,
       this._requestManager,
       txs
     );
   }
 
-  async signMessage(msg: Uint8Array): Promise<Uint8Array> {
+  async signMessage(
+    msg: Uint8Array,
+    publicKey?: PublicKey
+  ): Promise<Uint8Array> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
-    return await cmn.signMessage(this.publicKey, this._requestManager, msg);
+    return await cmn.signMessage(
+      publicKey ?? this.publicKey,
+      this._requestManager,
+      msg
+    );
   }
 }
 
 // Maps the notification name (internal) to the event name.
 function _mapNotificationName(notificationName: string) {
   switch (notificationName) {
-    case NOTIFICATION_CONNECTED:
+    case NOTIFICATION_SOLANA_CONNECTED:
       return "connect";
-    case NOTIFICATION_DISCONNECTED:
+    case NOTIFICATION_SOLANA_DISCONNECTED:
       return "disconnect";
-    case NOTIFICATION_CONNECTION_URL_UPDATED:
+    case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
       return "connectionDidChange";
-    case NOTIFICATION_ACTIVE_WALLET_UPDATED:
+    case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
       return "activeWalletDidChange";
     default:
       throw new Error(`unexpected notification name ${notificationName}`);
