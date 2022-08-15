@@ -811,6 +811,7 @@ function SelectToken({
 
   return (
     <SearchableTokenTable
+      blockchain={Blockchain.SOLANA}
       onClickRow={onClickRow}
       tokenAccounts={tokenAccounts}
       customFilter={customFilter}

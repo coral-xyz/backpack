@@ -168,6 +168,7 @@ function SendToken() {
 
   return (
     <SearchableTokenTable
+      blockchain={Blockchain.SOLANA}
       onClickRow={onClickRow}
       customFilter={(token: Token) => !token.nativeBalance.isZero()}
     />
