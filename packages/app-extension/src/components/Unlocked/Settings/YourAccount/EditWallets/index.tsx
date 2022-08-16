@@ -90,7 +90,7 @@ function WalletList({
           />
         ))}
       </List>
-      <AddConnectWalletButton />
+      <AddConnectWalletButton blockchain={blockchain} />
     </div>
   );
 }

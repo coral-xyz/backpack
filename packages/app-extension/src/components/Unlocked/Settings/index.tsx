@@ -21,6 +21,7 @@ import {
   toTitleCase,
   Blockchain,
   BACKPACK_FEATURE_POP_MODE,
+  BACKPACK_FEATURE_MULTICHAIN,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
@@ -382,12 +383,16 @@ function WalletList({
           }
         )}
       </List>
-      <AddConnectWalletButton />
+      <AddConnectWalletButton blockchain={blockchain} />
     </div>
   );
 }
 
-export const AddConnectWalletButton = () => {
+export const AddConnectWalletButton = ({
+  blockchain,
+}: {
+  blockchain: Blockchain;
+}) => {
   const nav = useNavStack();
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -401,7 +406,7 @@ export const AddConnectWalletButton = () => {
       <ListItem
         isFirst={true}
         isLast={true}
-        onClick={() => nav.push("add-connect-wallet")}
+        onClick={() => nav.push("add-connect-wallet", { blockchain })}
         classes={{ root: classes.addConnectRoot }}
       >
         <div

@@ -27,12 +27,16 @@ import {
 } from "../../../common/Layout/Drawer";
 import { WalletListItem } from "../YourAccount/EditWallets";
 
-export function AddConnectWalletMenu() {
+export function AddConnectWalletMenu({
+  blockchain: blockchain_,
+}: {
+  blockchain: Blockchain;
+}) {
   const nav = useNavStack();
   const background = useBackgroundClient();
   const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [blockchain, setBlockchain] = useState<Blockchain>(Blockchain.SOLANA);
+  const [blockchain, setBlockchain] = useState<Blockchain>(blockchain_);
 
   useEffect(() => {
     const prevTitle = nav.title;
