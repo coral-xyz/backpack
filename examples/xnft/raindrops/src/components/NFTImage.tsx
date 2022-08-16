@@ -4,6 +4,7 @@ import useFetchNftImage from "../hooks/useFetchNftImage";
 import LoadingIndicator from "./LoadingIndicator";
 
 export default (props: { metadata: Metadata; style?: {} }) => {
+  console.log("#########################NftImage", props.metadata);
   const { loading, imageUrl } = useFetchNftImage(props.metadata);
 
   if (loading) {

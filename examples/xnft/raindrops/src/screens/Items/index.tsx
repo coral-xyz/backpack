@@ -10,7 +10,7 @@ export function ItemsScreen() {
         switch (route.name) {
           case "grid":
             return {
-              title: "My Items",
+              title: "Items",
             };
           case "detail":
             console.log("detail", route.props.item.metadata.data.name);

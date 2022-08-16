@@ -1,6 +1,6 @@
 import ReactXnft, { Text, View, Tab } from "react-xnft";
-import { HomeIcon, ItemsIcon, PlayersIcon, ArcadeIcon } from "./utils/Icon";
-import { HomeScreen } from "./screens/Home";
+import { FeedIcon, ItemsIcon, PlayersIcon, ArcadeIcon } from "./utils/Icon";
+import { FeedScreen } from "./screens/Feed";
 import { PlayersScreen } from "./screens/Players";
 import { ItemsScreen } from "./screens/Items";
 import { ArcadeScreen } from "./screens/Arcade";
@@ -30,8 +30,8 @@ export function App() {
                 ? THEME.colors.activeTab
                 : THEME.colors.inactiveTab;
               switch (route.name) {
-                case "home":
-                  return <Tab.Icon element={<HomeIcon fill={color} />} />;
+                case "feed":
+                  return <Tab.Icon element={<FeedIcon fill={color} />} />;
                 case "items":
                   return <Tab.Icon element={<ItemsIcon fill={color} />} />;
                 case "players":
@@ -39,21 +39,21 @@ export function App() {
                 case "arcade":
                   return <Tab.Icon element={<ArcadeIcon fill={color} />} />;
                 default:
-                  return <Tab.Icon element={<HomeIcon fill={color} />} />;
+                  return <Tab.Icon element={<FeedIcon fill={color} />} />;
               }
             },
           };
         }}
       >
         <Tab.Screen
-          name="home"
+          name="feed"
           disableLabel={true}
-          component={() => <HomeScreen />}
+          component={() => <FeedScreen />}
         />
         <Tab.Screen
-          name="players"
+          name="arcade"
           disableLabel={true}
-          component={() => <PlayersScreen />}
+          component={() => <ArcadeScreen />}
         />
         <Tab.Screen
           name="items"
@@ -61,9 +61,9 @@ export function App() {
           component={() => <ItemsScreen />}
         />
         <Tab.Screen
-          name="arcade"
+          name="players"
           disableLabel={true}
-          component={() => <ArcadeScreen />}
+          component={() => <PlayersScreen />}
         />
       </Tab.Navigator>
     </View>

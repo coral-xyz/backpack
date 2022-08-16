@@ -7,6 +7,7 @@ const fetchNftImage = async (
 ) => {
   const imageMetadata = await fetch(metadata.data.uri);
   if (!imageMetadata) {
+    console.log("fetchNFTImage no image metadata");
     return callback(null);
   }
   const imageMetadataJson = await imageMetadata.json();

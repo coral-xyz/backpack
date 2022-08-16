@@ -38,9 +38,9 @@ export function ItemGrid() {
         justifyContent: "center",
       }}
     >
-      {raindropsItems.map((raindropsItem: RaindropsItem) => (
+      {raindropsItems.map((raindropsItem: RaindropsItem, index) => (
         <View
-          key={raindropsItem.token.mint.toString()}
+          key={`raindropsItem.token.mint?.toString()${index}`}
           style={{
             margin: "10px",
             height: "200px",

@@ -7,6 +7,7 @@ import {
 } from "@metaplex-foundation/mpl-token-metadata";
 
 const getTokenMetadataPDA = async (mint: PublicKey): Promise<PublicKey> => {
+  console.log("mint", mint);
   return (
     await PublicKey.findProgramAddress(
       [
