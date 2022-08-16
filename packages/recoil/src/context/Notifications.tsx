@@ -149,19 +149,19 @@ export function NotificationsProvider(props: any) {
           ...current,
           [notif.data.blockchain]: {
             hdPublicKeys: [
-              ...current[notif.data.blockchain].hdPublicKeys
-                .map((pk: any) => ({ ...pk }))
-                .filter((key) => key.publicKey !== deletedPublicKey),
+              ...current[notif.data.blockchain].hdPublicKeys.filter(
+                (key) => key.publicKey !== deletedPublicKey
+              ),
             ],
             importedPublicKeys: [
-              ...current[notif.data.blockchain].importedPublicKeys
-                .map((pk: any) => ({ ...pk }))
-                .filter((key) => key.publicKey !== deletedPublicKey),
+              ...current[notif.data.blockchain].importedPublicKeys.filter(
+                (key) => key.publicKey !== deletedPublicKey
+              ),
             ],
             ledgerPublicKeys: [
-              ...current[notif.data.blockchain].ledgerPublicKeys
-                .map((pk: any) => ({ ...pk }))
-                .filter((key) => key.publicKey !== deletedPublicKey),
+              ...current[notif.data.blockchain].ledgerPublicKeys.filter(
+                (key) => key.publicKey !== deletedPublicKey
+              ),
             ],
           },
         };
@@ -191,12 +191,38 @@ export function NotificationsProvider(props: any) {
           ...current,
           [notif.data.blockchain]: {
             ...current[notif.data.blockchain],
-            hdPublicKeys: current[notif.data.blockchain].hdPublicKeys.concat([
+            hdPublicKeys: [
+              // hdPublicKeys doesn't necessarily exist for this blockchain if
+              // this keyring derivation resulted in the blockchain keyring
+              // being initialised
+              ...(current[notif.data.blockchain]
+                ? current[notif.data.blockchain].hdPublicKeys
+                : []),
               {
                 publicKey: notif.data.publicKey,
                 name: notif.data.name,
               },
-            ]),
+            ],
+          },
+        };
+      });
+    };
+
+    const handleKeyringImportedSecretKey = (notif: Notification) => {
+      setWalletPublicKeys((current: any) => {
+        return {
+          ...current,
+          [notif.data.blockchain]: {
+            ...current[notif.data.blockchain],
+            importedPublicKeys: [
+              ...(current[notif.data.blockchain]
+                ? current[notif.data.blockchain].importedPublicKeys
+                : []),
+              {
+                publicKey: notif.data.publicKey,
+                name: notif.data.name,
+              },
+            ],
           },
         };
       });
@@ -211,25 +237,6 @@ export function NotificationsProvider(props: any) {
 
     const handleEthereumActiveWalletUpdated = (notif: Notification) => {
       setActiveWallet(notif.data.activeWallet);
-    };
-
-    const handleKeyringImportedSecretKey = (notif: Notification) => {
-      setWalletPublicKeys((current: any) => {
-        return {
-          ...current,
-          [notif.data.blockchain]: {
-            ...current[notif.data.blockchain],
-            importedPublicKeys: current[
-              notif.data.blockchain
-            ].importedPublicKeys.concat([
-              {
-                publicKey: notif.data.publicKey,
-                name: notif.data.name,
-              },
-            ]),
-          },
-        };
-      });
     };
 
     const handleResetMnemonic = (notif: Notification) => {

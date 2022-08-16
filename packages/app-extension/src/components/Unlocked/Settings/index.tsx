@@ -257,7 +257,6 @@ function SettingsMenu() {
 }
 
 function _SettingsContent() {
-  const nav = useNavStack();
   const { close } = useDrawerContext();
   return (
     <div>
@@ -339,7 +338,8 @@ function WalletList({
 
   const keys = keyring.hdPublicKeys
     .concat(keyring.importedPublicKeys)
-    .concat(keyring.ledgerPublicKeys);
+    .concat(keyring.ledgerPublicKeys)
+    .filter((k: any) => k !== undefined);
 
   return (
     <div style={{ marginBottom: "16px" }}>
