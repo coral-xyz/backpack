@@ -325,19 +325,25 @@ function WalletList({ close }: { close: () => void }) {
       }))
     )
     .concat(
-      namedPublicKeys.ledgerPublicKeys.map((k) => ({ ...k, type: "ledger" }))
+      namedPublicKeys.ledgerPublicKeys.map((k) => ({ ...k, type: "hardware" }))
     );
 
   return (
     <>
       <List>
-        {keys.map(({ name, publicKey }, idx: number) => {
+        {keys.map(({ name, publicKey, type }, idx: number) => {
           return (
             <ListItem
               key={publicKey.toString()}
               onClick={() => clickWallet(publicKey)}
               isFirst={idx === 0}
               isLast={idx === keys.length - 1}
+              style={{
+                paddingTop: "16px",
+                paddingBottom: "16px",
+                paddingLeft: "12px",
+                paddingRight: "12px",
+              }}
             >
               <div
                 style={{
@@ -349,19 +355,27 @@ function WalletList({ close }: { close: () => void }) {
                 <div
                   style={{
                     display: "flex",
-                    justifyContent: "center",
-                    flexDirection: "column",
                   }}
                 >
-                  <WalletAddress
-                    name={name}
-                    publicKey={publicKey}
+                  <div
                     style={{
-                      fontWeight: 500,
-                      lineHeight: "24px",
-                      fontSize: "16px",
+                      display: "flex",
+                      justifyContent: "center",
+                      flexDirection: "column",
+                      marginRight: "4px",
                     }}
-                  />
+                  >
+                    <WalletAddress
+                      name={name}
+                      publicKey={publicKey}
+                      style={{
+                        fontWeight: 500,
+                        lineHeight: "24px",
+                        fontSize: "16px",
+                      }}
+                    />
+                  </div>
+                  <ImportTypeBadge type={type} />
                 </div>
                 {publicKey.equals(active.publicKey) && (
                   <CheckIcon
@@ -376,6 +390,36 @@ function WalletList({ close }: { close: () => void }) {
       </List>
       <AddConnectWalletButton />
     </>
+  );
+}
+
+function ImportTypeBadge({ type }: { type: string }) {
+  const theme = useCustomTheme();
+  return type === "derived" ? (
+    <></>
+  ) : (
+    <div
+      style={{
+        paddingLeft: "10px",
+        paddingRight: "10px",
+        paddingTop: "2px",
+        paddingBottom: "2px",
+        backgroundColor: theme.custom.colors.bg2,
+        height: "20px",
+        borderRadius: "10px",
+      }}
+    >
+      <Typography
+        style={{
+          color: theme.custom.colors.fontColor,
+          fontSize: "12px",
+          lineHeight: "16px",
+          fontWeight: 600,
+        }}
+      >
+        {type === "imported" ? "IMPORTED" : "HARDWARE"}
+      </Typography>
+    </div>
   );
 }
 
@@ -501,7 +545,7 @@ function SettingsList({ close }: { close: () => void }) {
             id={s.label}
             style={{
               height: "44px",
-              padding: "10px",
+              padding: "12px",
             }}
             detail={s.detailIcon}
           >
