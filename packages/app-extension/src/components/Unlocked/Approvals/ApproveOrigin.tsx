@@ -78,6 +78,7 @@ export function ApproveOrigin({ origin, title, onCompletion }: any) {
           {displayOriginTitle(title)} would like to connect to {walletTitle}
         </div>
       }
+      wallet={activeWallet.publicKey.toString()}
       onConfirm={onConfirm}
       onDeny={onDeny}
     >

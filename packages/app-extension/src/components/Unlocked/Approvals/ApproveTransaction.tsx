@@ -76,11 +76,13 @@ export function ApproveTransaction({
   origin,
   title,
   tx,
+  wallet,
   onCompletion,
 }: {
   origin: string;
   title: string;
   tx: string | null;
+  wallet: string;
   onCompletion: (confirmed: boolean) => void;
 }) {
   const classes = useStyles();
@@ -97,12 +99,13 @@ export function ApproveTransaction({
     <WithApproval
       origin={origin}
       originTitle={title}
+      wallet={wallet}
       title={<div className={classes.title}>Approve Transaction</div>}
       onConfirm={onConfirm}
       onConfirmLabel="Approve"
       onDeny={onDeny}
     >
-      <TransactionData tx={tx} />
+      <TransactionData wallet={wallet} tx={tx} />
     </WithApproval>
   );
 }
@@ -111,11 +114,13 @@ export function ApproveAllTransactions({
   origin,
   title,
   txs,
+  wallet,
   onCompletion,
 }: {
   origin: string;
   title: string;
   txs: string;
+  wallet: string;
   onCompletion: (confirmed: boolean) => void;
 }) {
   const classes = useStyles();
@@ -133,6 +138,7 @@ export function ApproveAllTransactions({
       origin={origin}
       originTitle={title}
       title={<div className={classes.title}>Approve Transactions</div>}
+      wallet={wallet}
       onConfirm={onConfirm}
       onConfirmLabel="Approve"
       onDeny={onDeny}
@@ -142,7 +148,13 @@ export function ApproveAllTransactions({
   );
 }
 
-function TransactionData({ tx }: { tx: string | null }) {
+function TransactionData({
+  tx,
+  wallet,
+}: {
+  tx: string | null;
+  wallet: string;
+}) {
   const classes = useStyles();
   const background = useBackgroundClient();
   const solanaCtx = useSolanaCtx();
@@ -152,7 +164,6 @@ function TransactionData({ tx }: { tx: string | null }) {
   );
   const [balanceChanges, setBalanceChanges] = useState<any>({});
   const [simulationError, setSimulationError] = useState<boolean>(false);
-  const wallet = useActiveWallet();
   const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
   const tokenRegistry = useSplTokenRegistry();
   const { connection } = solanaCtx;
@@ -162,7 +173,7 @@ function TransactionData({ tx }: { tx: string | null }) {
       if (wallet && tx) {
         const result = await background.request({
           method: UI_RPC_METHOD_SOLANA_SIMULATE,
-          params: [tx, wallet.publicKey.toString(), true],
+          params: [tx, wallet, true],
         });
         if (result.value.err) {
           setSimulationError(true);

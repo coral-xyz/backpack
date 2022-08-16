@@ -53,3 +53,22 @@ export function useWalletPublicKeys(): {
     }),
   };
 }
+
+export function useWalletName(address: string): string {
+  const wallets = useWalletPublicKeys();
+  let w = wallets.hdPublicKeys.find((x) => x.publicKey.toString() === address);
+  if (w) {
+    return w.name;
+  }
+  w = wallets.importedPublicKeys.find(
+    (x) => x.publicKey.toString() === address
+  );
+  if (w) {
+    return w.name;
+  }
+  w = wallets.ledgerPublicKeys.find((x) => x.publicKey.toString() === address);
+  if (w) {
+    return w.name;
+  }
+  throw new Error("key not found");
+}

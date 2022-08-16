@@ -1,7 +1,7 @@
 import _CheckIcon from "@mui/icons-material/Check";
 import _CloseIcon from "@mui/icons-material/Close";
 import { styles } from "@coral-xyz/themes";
-import { useActiveWallet } from "@coral-xyz/recoil";
+import { useActiveWallet, useWalletName } from "@coral-xyz/recoil";
 import {
   walletAddressDisplay,
   PrimaryButton,
@@ -44,6 +44,7 @@ export function WithApproval({
   origin,
   originTitle,
   title,
+  wallet,
   onConfirm,
   onConfirmLabel = "Connect",
   onDeny,
@@ -52,6 +53,7 @@ export function WithApproval({
   origin: string;
   originTitle: string;
   title?: React.ReactNode;
+  wallet: string;
   onConfirm: () => void;
   onConfirmLabel?: string;
   onDeny: () => void;
@@ -70,7 +72,11 @@ export function WithApproval({
     >
       <div className={classes.contentContainer}>
         {title}
-        <OriginWalletConnectIcons origin={origin} originTitle={originTitle} />
+        <OriginWalletConnectIcons
+          wallet={wallet}
+          origin={origin}
+          originTitle={originTitle}
+        />
         {children}
       </div>
       <div
@@ -96,12 +102,14 @@ export function WithApproval({
 export function OriginWalletConnectIcons({
   origin,
   originTitle,
+  wallet,
 }: {
   origin: string;
   originTitle: string;
+  wallet: string;
 }) {
   const classes = useStyles();
-  const activeWallet = useActiveWallet();
+  const walletName = useWalletName(wallet);
 
   // This uses a Google API for favicon retrieval, do we want to parse the page ourselves?
   const siteIcon = `https://www.google.com/s2/favicons?domain=${origin}&sz=180`;
@@ -114,8 +122,8 @@ export function OriginWalletConnectIcons({
         icon={siteIcon}
       />
       <Connectable
-        title={activeWallet.name}
-        description={walletAddressDisplay(activeWallet.publicKey)}
+        title={walletName}
+        description={walletAddressDisplay(wallet)}
         icon="/coral.png"
       />
     </div>

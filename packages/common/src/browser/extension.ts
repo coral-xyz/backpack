@@ -131,10 +131,11 @@ export async function openApproveTransactionPopupWindow(
   origin: string,
   title: string,
   requestId: number,
-  tx: string
+  tx: string,
+  walletAddress: string
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
-  const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&tx=${tx}`;
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&tx=${tx}&wallet=${walletAddress}`;
   return await openPopupWindow(url);
 }
 
@@ -142,11 +143,12 @@ export async function openApproveAllTransactionsPopupWindow(
   origin: string,
   title: string,
   requestId: number,
-  txs: Array<string>
+  txs: Array<string>,
+  walletAddress: string
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
   const txsStr = encodeURIComponent(JSON.stringify(txs));
-  const url = `${POPUP_HTML}?${QUERY_APPROVE_ALL_TRANSACTIONS}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&txs=${txsStr}`;
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_ALL_TRANSACTIONS}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&txs=${txsStr}&wallet=${walletAddress}`;
   return await openPopupWindow(url);
 }
 
@@ -154,10 +156,11 @@ export async function openApproveMessagePopupWindow(
   origin: string,
   title: string,
   requestId: number,
-  message: string
+  message: string,
+  walletAddress: string
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
-  const url = `${POPUP_HTML}?${QUERY_APPROVE_MESSAGE}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&message=${message}`;
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_MESSAGE}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&message=${message}&wallet=${walletAddress}`;
   return await openPopupWindow(url);
 }
 

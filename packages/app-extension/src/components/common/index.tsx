@@ -104,7 +104,7 @@ export function WalletAddress({ publicKey, name, style }: any) {
   );
 }
 
-export function walletAddressDisplay(publicKey: PublicKey) {
+export function walletAddressDisplay(publicKey: PublicKey | string) {
   const pubkeyStr = publicKey.toString();
   return `${pubkeyStr.slice(0, 4)}...${pubkeyStr.slice(pubkeyStr.length - 4)}`;
 }

@@ -206,7 +206,8 @@ async function handleSolanaSignAndSendTx(
       ctx.sender.origin,
       ctx.sender.tab.title,
       requestId,
-      tx
+      tx,
+      walletAddress
     );
   });
   const didApprove = uiResp.result;
@@ -234,7 +235,8 @@ async function handleSolanaSignTx(
       ctx.sender.origin,
       ctx.sender.tab.title,
       requestId,
-      tx
+      tx,
+      walletAddress
     );
   });
   const didApprove = uiResp.result;
@@ -258,7 +260,8 @@ async function handleSolanaSignAllTxs(
       ctx.sender.origin,
       ctx.sender.tab.title,
       requestId,
-      txs
+      txs,
+      walletAddress
     );
   });
   const didApprove = uiResp.result;
@@ -285,7 +288,8 @@ async function handleSolanaSignMessage(
       ctx.sender.origin,
       ctx.sender.tab.title,
       requestId,
-      msg
+      msg,
+      walletAddress
     );
   });
   const didApprove = uiResp.result;
