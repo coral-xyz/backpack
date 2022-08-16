@@ -29,6 +29,7 @@ import {
 import { KeyringStoreStateEnum, useUpdateAllSplTokenAccounts } from "../";
 import * as atoms from "../atoms";
 import { allPlugins } from "../hooks";
+import { WalletPublicKeys } from "../types";
 
 const logger = getLogger("notifications-provider");
 
@@ -138,64 +139,56 @@ export function NotificationsProvider(props: any) {
       // Remove the deleted key from the key list.
       setWalletPublicKeys((current) => {
         return {
-          hdPublicKeys: [
-            ...current.hdPublicKeys
-              .map((pk: any) => ({ ...pk }))
-              .filter((key) => key.publicKey !== deletedPublicKey),
-          ],
-          importedPublicKeys: [
-            ...current.importedPublicKeys
-              .map((pk: any) => ({ ...pk }))
-              .filter((key) => key.publicKey !== deletedPublicKey),
-          ],
-          ledgerPublicKeys: [
-            ...current.ledgerPublicKeys
-              .map((pk: any) => ({ ...pk }))
-              .filter((key) => key.publicKey !== deletedPublicKey),
-          ],
+          ...current,
+          [notif.data.blockchain]: {
+            hdPublicKeys: [
+              ...current[notif.data.blockchain].hdPublicKeys
+                .map((pk: any) => ({ ...pk }))
+                .filter((key) => key.publicKey !== deletedPublicKey),
+            ],
+            importedPublicKeys: [
+              ...current[notif.data.blockchain].importedPublicKeys
+                .map((pk: any) => ({ ...pk }))
+                .filter((key) => key.publicKey !== deletedPublicKey),
+            ],
+            ledgerPublicKeys: [
+              ...current[notif.data.blockchain].ledgerPublicKeys
+                .map((pk: any) => ({ ...pk }))
+                .filter((key) => key.publicKey !== deletedPublicKey),
+            ],
+          },
         };
       });
     };
     const handleKeynameUpdate = (notif: Notification) => {
       setWalletPublicKeys((current: any) => {
-        const next = {
-          hdPublicKeys: [...current.hdPublicKeys.map((pk: any) => ({ ...pk }))],
-          importedPublicKeys: [
-            ...current.importedPublicKeys.map((pk: any) => ({ ...pk })),
-          ],
-          ledgerPublicKeys: [
-            ...current.ledgerPublicKeys.map((pk: any) => ({ ...pk })),
-          ],
-        };
-
-        // Find the key this notification is referring to and then mutate the
-        // name.
-        next.hdPublicKeys.forEach((key) => {
-          if (key.publicKey === notif.data.publicKey) {
-            key.name = notif.data.name;
+        const next: WalletPublicKeys = { ...current };
+        for (const keyring of Object.values(next)) {
+          for (const namedPublicKeys of Object.values(keyring)) {
+            for (const namedPublicKey of namedPublicKeys) {
+              if (namedPublicKey.publicKey === notif.data.publicKey) {
+                namedPublicKey.name = notif.data.name;
+              }
+            }
           }
-        });
-        next.importedPublicKeys.forEach((key) => {
-          if (key.publicKey === notif.data.publicKey) {
-            key.name = notif.data.name;
-          }
-        });
-        next.ledgerPublicKeys.forEach((key) => {
-          if (key.publicKey === notif.data.publicKey) {
-            key.name = notif.data.name;
-          }
-        });
-
+        }
         return next;
       });
     };
     const handleKeyringDerivedWallet = (notif: Notification) => {
       setWalletPublicKeys((current: any) => {
-        const next = {
+        return {
           ...current,
-          hdPublicKeys: current.hdPublicKeys.concat([notif.data]),
+          [notif.data.blockchain]: {
+            ...current[notif.data.blockchain],
+            hdPublicKeys: current[notif.data.blockchain].hdPublicKeys.concat([
+              {
+                publicKey: notif.data.publicKey,
+                name: notif.data.name,
+              },
+            ]),
+          },
         };
-        return next;
       });
     };
     const handleSolanaActiveWalletUpdated = (notif: Notification) => {
@@ -206,11 +199,20 @@ export function NotificationsProvider(props: any) {
     };
     const handleKeyringImportedSecretKey = (notif: Notification) => {
       setWalletPublicKeys((current: any) => {
-        const next = {
+        return {
           ...current,
-          importedPublicKeys: current.importedPublicKeys.concat([notif.data]),
+          [notif.data.blockchain]: {
+            ...current[notif.data.blockchain],
+            importedPublicKeys: current[
+              notif.data.blockchain
+            ].importedPublicKeys.concat([
+              {
+                publicKey: notif.data.publicKey,
+                name: notif.data.name,
+              },
+            ]),
+          },
         };
-        return next;
       });
     };
     const handleResetMnemonic = (notif: Notification) => {

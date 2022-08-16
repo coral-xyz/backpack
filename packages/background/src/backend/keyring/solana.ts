@@ -4,12 +4,12 @@ import nacl from "tweetnacl";
 import * as bs58 from "bs58";
 import {
   generateUniqueId,
+  LEDGER_INJECTED_CHANNEL_RESPONSE,
   LEDGER_INJECTED_CHANNEL_REQUEST,
   LEDGER_METHOD_CONNECT,
-  LEDGER_METHOD_SIGN_TRANSACTION,
   LEDGER_METHOD_SIGN_MESSAGE,
+  LEDGER_METHOD_SIGN_TRANSACTION,
   DerivationPath,
-  LEDGER_INJECTED_CHANNEL_RESPONSE,
 } from "@coral-xyz/common";
 import { deriveKeypairs, deriveKeypair } from "./crypto";
 import type {
@@ -27,7 +27,7 @@ import { postMessageToIframe } from "../../shared";
 
 export class SolanaKeyringFactory implements KeyringFactory {
   public fromJson(payload: KeyringJson): SolanaKeyring {
-    const keypairs = payload.keypairs.map((secret: string) =>
+    const keypairs = payload.secretKeys.map((secret: string) =>
       Keypair.fromSecretKey(Buffer.from(secret, "hex"))
     );
     return new SolanaKeyring(keypairs);
@@ -92,7 +92,7 @@ class SolanaKeyring implements Keyring {
 
   public toJson(): any {
     return {
-      keypairs: this.keypairs.map((kp) =>
+      secretKeys: this.keypairs.map((kp) =>
         Buffer.from(kp.secretKey).toString("hex")
       ),
     };
@@ -314,7 +314,7 @@ export class SolanaLedgerKeyring implements LedgerKeyring {
   }
 
   exportSecretKey(address: string): string | null {
-    throw new Error("ledger keyring cannot secret keys");
+    throw new Error("ledger keyring cannot export secret keys");
   }
 
   importSecretKey(secretKey: string): string {

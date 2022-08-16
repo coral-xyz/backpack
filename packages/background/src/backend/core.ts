@@ -2,7 +2,7 @@ import { validateMnemonic as _validateMnemonic } from "bip39";
 import * as bs58 from "bs58";
 import type { Commitment, SendOptions } from "@solana/web3.js";
 import { PublicKey, Transaction } from "@solana/web3.js";
-import type { NamedPublicKey, KeyringStoreState } from "@coral-xyz/recoil";
+import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
 import {
@@ -25,6 +25,7 @@ import {
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
+  Blockchain,
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
 import * as store from "./store";
@@ -91,12 +92,12 @@ export class Backend {
   ): Promise<string> {
     const tx = Transaction.from(bs58.decode(txStr));
     const txMessage = bs58.encode(tx.serializeMessage());
-    const blockchainKeyring = this.keyringStore.activeBlockchain();
+    const blockchainKeyring = this.keyringStore.activeBlockchainKeyring();
     return await blockchainKeyring.signTransaction(txMessage, walletAddress);
   }
 
   async solanaSignMessage(msg: string, walletAddress: string): Promise<string> {
-    const blockchainKeyring = this.keyringStore.activeBlockchain();
+    const blockchainKeyring = this.keyringStore.activeBlockchainKeyring();
     return await blockchainKeyring.signMessage(msg, walletAddress);
   }
 
@@ -241,8 +242,10 @@ export class Backend {
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_CREATED,
       data: {
-        url: data.solana.cluster,
+        // Hardcoded to Solana for now, but will be dynamic in the future.
+        blockchain: Blockchain.SOLANA,
         activeWallet: await this.activeWallet(),
+        url: data.solana.cluster,
         commitment: data.solana.commitment,
       },
     });
@@ -256,15 +259,15 @@ export class Backend {
 
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
-    const url = await this.solanaConnectionUrlRead();
     const activeWallet = await this.activeWallet();
+    const url = await this.solanaConnectionUrlRead();
     const commitment = await this.solanaCommitmentRead();
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
       data: {
-        url,
         activeWallet,
+        url,
         commitment,
       },
     });
@@ -290,43 +293,34 @@ export class Backend {
   }
 
   // Returns all pubkeys available for signing.
-  async keyringStoreReadAllPubkeys(): Promise<{
-    hdPublicKeys: Array<NamedPublicKey>;
-    importedPublicKeys: Array<NamedPublicKey>;
-    ledgerPublicKeys: Array<NamedPublicKey>;
-  }> {
-    const pubkeys = this.keyringStore.publicKeys();
-    const [hdNames, importedNames, ledgerNames] = await Promise.all([
-      Promise.all(
-        pubkeys.hdPublicKeys.map((pk) => store.getKeyname(pk.toString()))
-      ),
-      Promise.all(
-        pubkeys.importedPublicKeys.map((pk) => store.getKeyname(pk.toString()))
-      ),
-      Promise.all(
-        pubkeys.ledgerPublicKeys.map((pk) => store.getKeyname(pk.toString()))
-      ),
-    ]);
-    return {
-      hdPublicKeys: pubkeys.hdPublicKeys.map((pk, idx) => {
-        return {
-          publicKey: pk.toString(),
-          name: hdNames[idx],
-        };
-      }),
-      importedPublicKeys: pubkeys.importedPublicKeys.map((pk, idx) => {
-        return {
-          publicKey: pk.toString(),
-          name: importedNames[idx],
-        };
-      }),
-      ledgerPublicKeys: pubkeys.ledgerPublicKeys.map((pk, idx) => {
-        return {
-          publicKey: pk.toString(),
-          name: ledgerNames[idx],
-        };
-      }),
-    };
+  async keyringStoreReadAllPubkeys(): Promise<any> {
+    const publicKeys = this.keyringStore.publicKeys();
+    const namedPublicKeys = {};
+    for (const [blockchain, blockchainKeyring] of Object.entries(publicKeys)) {
+      namedPublicKeys[blockchain] = {};
+      for (const [keyring, publicKeys] of Object.entries(blockchainKeyring)) {
+        if (!namedPublicKeys[blockchain][keyring]) {
+          namedPublicKeys[blockchain][keyring] = [];
+        }
+        for (const publicKey of publicKeys) {
+          namedPublicKeys[blockchain][keyring].push({
+            publicKey,
+            name: await store.getKeyname(publicKey),
+          });
+        }
+      }
+    }
+    return namedPublicKeys;
+  }
+
+  // Return currently active blockchain.
+  activeBlockchain(): string {
+    return this.keyringStore.activeBlockchain();
+  }
+
+  // Set the currently active blockchain.
+  activeBlockchainUpdate(blockchain: string) {
+    return this.keyringStore.activeBlockchainUpdate(blockchain);
   }
 
   async activeWallet(): Promise<string> {
@@ -338,6 +332,7 @@ export class Backend {
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
       data: {
+        blockchain: this.activeBlockchain(),
         activeWallet: newWallet,
       },
     });
@@ -349,6 +344,7 @@ export class Backend {
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_DERIVED_WALLET,
       data: {
+        blockchain: this.activeBlockchain(),
         publicKey: pubkey.toString(),
         name,
       },
@@ -413,6 +409,7 @@ export class Backend {
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
       data: {
+        blockchain: this.activeBlockchain(),
         publicKey,
         name: _name,
       },

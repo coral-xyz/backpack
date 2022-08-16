@@ -18,10 +18,17 @@ export interface TokenAccountWithKey extends TokenAccount {
   key: PublicKey;
 }
 
+export type NamedPublicKey = {
+  publicKey: string;
+  name: string;
+};
+
 export type WalletPublicKeys = {
-  hdPublicKeys: Array<NamedPublicKey>;
-  importedPublicKeys: Array<NamedPublicKey>;
-  ledgerPublicKeys: Array<NamedPublicKey>;
+  [key: string]: {
+    hdPublicKeys: Array<NamedPublicKey>;
+    importedPublicKeys: Array<NamedPublicKey>;
+    ledgerPublicKeys: Array<NamedPublicKey>;
+  };
 };
 
 export type TokenDisplay = {
@@ -34,12 +41,6 @@ export type TokenDisplay = {
   logo: string;
   priceData: any;
 };
-
-export type NamedPublicKey = {
-  publicKey: string;
-  name: string;
-};
-
 export const TABS = [
   [TAB_BALANCES, "Balances"],
   [TAB_NFTS, "Nfts"],

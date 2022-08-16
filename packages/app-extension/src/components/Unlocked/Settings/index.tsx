@@ -17,6 +17,7 @@ import {
   useActiveWallet,
 } from "@coral-xyz/recoil";
 import {
+  Blockchain,
   openPopupWindow,
   BACKPACK_FEATURE_POP_MODE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
@@ -38,6 +39,7 @@ import {
   WithDrawer,
   CloseButton,
   useDrawerContext,
+  WithMiniDrawer,
 } from "../../common/Layout/Drawer";
 import {
   useNavStack,
@@ -68,7 +70,6 @@ import { EditWallets } from "./YourAccount/EditWallets";
 import { RemoveWallet } from "./YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
-import { WithMiniDrawer } from "../../common/Layout/Drawer";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -261,7 +262,7 @@ function _SettingsContent() {
   return (
     <div>
       <AvatarHeader />
-      <WalletList close={close} />
+      <WalletLists close={close} />
       <SettingsList close={close} />
     </div>
   );
@@ -299,50 +300,87 @@ function AvatarHeader() {
   );
 }
 
-function WalletList({ close }: { close: () => void }) {
-  const background = useBackgroundClient();
-  const namedPublicKeys = useWalletPublicKeys();
+function WalletLists({ close }: { close: () => void }) {
+  const blockchainKeyrings = useWalletPublicKeys();
+  return (
+    <>
+      {Object.entries(blockchainKeyrings).map(([blockchain, keyring]) => (
+        <WalletList
+          key={blockchain}
+          blockchain={blockchain as Blockchain}
+          keyring={keyring}
+          close={close}
+        />
+      ))}
+    </>
+  );
+}
 
-  const clickWallet = (publicKey: PublicKey) => {
+function WalletList({
+  blockchain,
+  keyring,
+  close,
+}: {
+  blockchain: Blockchain;
+  keyring: any;
+  close: () => void;
+}) {
+  const background = useBackgroundClient();
+
+  const clickWallet = (publicKey: string) => {
     background
       .request({
         method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-        params: [publicKey.toString()],
+        params: [publicKey],
       })
       .then((_resp) => close())
       .catch(console.error);
   };
 
-  const keys = namedPublicKeys.hdPublicKeys
-    .concat(namedPublicKeys.importedPublicKeys)
-    .concat(namedPublicKeys.ledgerPublicKeys);
+  const keys = keyring.hdPublicKeys
+    .concat(keyring.importedPublicKeys)
+    .concat(keyring.ledgerPublicKeys);
 
   return (
-    <>
+    <div style={{ marginBottom: "16px" }}>
+      <Typography
+        style={{
+          marginLeft: "16px",
+          marginRight: "16px",
+          marginBottom: "12px",
+        }}
+      >
+        {blockchain.charAt(0).toUpperCase() + blockchain.substring(1)}
+      </Typography>
       <List>
-        {keys.map(({ name, publicKey }, idx: number) => {
-          return (
-            <ListItem
-              key={publicKey.toString()}
-              onClick={() => clickWallet(publicKey)}
-              isFirst={idx === 0}
-              isLast={idx === keys.length - 1}
-            >
-              <WalletAddress
-                name={name}
-                publicKey={publicKey}
-                style={{
-                  fontWeight: 500,
-                  lineHeight: "24px",
-                  fontSize: "16px",
-                }}
-              />
-            </ListItem>
-          );
-        })}
+        {keys.map(
+          (
+            { name, publicKey }: { name: string; publicKey: string },
+            idx: number
+          ) => {
+            return (
+              <ListItem
+                key={publicKey.toString()}
+                onClick={() => clickWallet(publicKey)}
+                isFirst={idx === 0}
+                isLast={idx === keys.length - 1}
+              >
+                <WalletAddress
+                  name={name}
+                  publicKey={publicKey}
+                  style={{
+                    fontWeight: 500,
+                    lineHeight: "24px",
+                    fontSize: "16px",
+                  }}
+                />
+              </ListItem>
+            );
+          }
+        )}
       </List>
       <AddConnectWalletButton />
-    </>
+    </div>
   );
 }
 
@@ -506,7 +544,6 @@ function SettingsList({ close }: { close: () => void }) {
 export function ImportSecretKey() {
   const background = useBackgroundClient();
   const nav = useNavStack();
-  const { close } = useDrawerContext();
   const theme = useCustomTheme();
   const [name, setName] = useState("");
   const [secretKey, setSecretKey] = useState("");

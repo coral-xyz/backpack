@@ -1,7 +1,7 @@
 import type { DerivationPath } from "@coral-xyz/common";
 
 export type KeyringJson = {
-  keypairs: Array<string>;
+  secretKeys: Array<string>;
 };
 
 export interface KeyringFactory {

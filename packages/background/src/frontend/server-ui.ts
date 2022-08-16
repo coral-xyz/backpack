@@ -29,8 +29,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_RESET,
-  UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ,
-  UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
+  UI_RPC_METHOD_ACTIVE_BLOCKCHAIN_UPDATE,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYNAME_READ,
@@ -56,6 +55,8 @@ import {
   UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
+  UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ,
+  UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
   UI_RPC_METHOD_SOLANA_SIMULATE,
@@ -177,6 +178,8 @@ async function handle<T = any>(
     //
     // Wallet app settings.
     //
+    case UI_RPC_METHOD_ACTIVE_BLOCKCHAIN_UPDATE:
+      return await handleActiveBlockchainUpdate(ctx, params[0]);
     case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET:
       return await handleWalletDataActiveWallet(ctx);
     case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE:
@@ -308,6 +311,14 @@ function handleKeyringStoreKeepAlive(
   return [resp];
 }
 
+async function handleActiveBlockchainUpdate(
+  ctx: Context<Backend>,
+  blockchain: string
+) {
+  const resp = ctx.backend.activeBlockchainUpdate(blockchain);
+  return [resp];
+}
+
 async function handleWalletDataActiveWallet(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
@@ -435,7 +446,7 @@ async function handleKeyringAutolockUpdate(
 async function handleKeyringReset(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.keyringReset();
+  const resp = ctx.backend.keyringReset();
   return [resp];
 }
 

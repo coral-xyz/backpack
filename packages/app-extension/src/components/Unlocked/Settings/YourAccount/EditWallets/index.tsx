@@ -39,9 +39,15 @@ function BlockchainWalletList({
   wallets: ReturnType<typeof useWalletPublicKeys>;
 }) {
   const flattenedWallets = [
-    ...wallets.hdPublicKeys.map((k) => ({ ...k, type: "derived" })),
-    ...wallets.importedPublicKeys.map((k) => ({ ...k, type: "imported" })),
-    ...wallets.ledgerPublicKeys.map((k) => ({ ...k, type: "ledger" })),
+    ...wallets["solana"].hdPublicKeys.map((k) => ({ ...k, type: "derived" })),
+    ...wallets["solana"].importedPublicKeys.map((k) => ({
+      ...k,
+      type: "imported",
+    })),
+    ...wallets["solana"].ledgerPublicKeys.map((k) => ({
+      ...k,
+      type: "ledger",
+    })),
   ];
 
   // TODO: replace placeholder wallet avatar with stored image when available

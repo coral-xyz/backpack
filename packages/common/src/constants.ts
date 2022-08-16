@@ -79,9 +79,9 @@ export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
   "keyring-mnemonic-create";
 export const UI_RPC_METHOD_PREVIEW_PUBKEYS = "keyring-preview-pubkeys";
 export const UI_RPC_METHOD_KEYRING_RESET = "keyring-reset";
-export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ = "connection-url-read";
-export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE =
-  "connection-url-update";
+export const UI_RPC_METHOD_ACTIVE_BLOCKCHAIN = "blockchain-active";
+export const UI_RPC_METHOD_ACTIVE_BLOCKCHAIN_UPDATE =
+  "blockchain-active-update";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET = "wallet-active";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE =
   "wallet-active-update";
@@ -109,6 +109,9 @@ export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
 export const UI_RPC_METHOD_LEDGER_IMPORT = "ledger-import";
 export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET = "plugin-storage-get";
 export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT = "plugin-storage-put";
+export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ = "connection-url-read";
+export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE =
+  "connection-url-update";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ = "solana-commitment-read";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE =
   "solana-commitment-update";

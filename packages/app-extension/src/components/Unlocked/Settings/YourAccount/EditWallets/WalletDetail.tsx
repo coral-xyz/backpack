@@ -19,9 +19,9 @@ export const WalletDetail: React.FC<{
   const [walletName, setWalletName] = useState(name);
   const pubkeys = useWalletPublicKeys();
   const pubkeysFlat = [
-    ...pubkeys.hdPublicKeys,
-    ...pubkeys.importedPublicKeys,
-    ...pubkeys.ledgerPublicKeys,
+    ...pubkeys["solana"].hdPublicKeys,
+    ...pubkeys["solana"].importedPublicKeys,
+    ...pubkeys["solana"].ledgerPublicKeys,
   ];
 
   useEffect(() => {
@@ -93,7 +93,7 @@ export const WalletDetail: React.FC<{
         </div>
       </WithCopyTooltip>
       <SettingsList menuItems={secrets} />
-      {(type !== "derived" || pubkeys.hdPublicKeys.length > 1) && (
+      {(type !== "derived" || pubkeys["solana"].hdPublicKeys.length > 1) && (
         <SettingsList menuItems={removeWallet} />
       )}
     </div>

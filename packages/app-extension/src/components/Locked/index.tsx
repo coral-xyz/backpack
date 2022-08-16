@@ -29,6 +29,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         onUnlock();
       }
     } catch (err) {
+      console.log(err);
       setError(true);
     }
   };
