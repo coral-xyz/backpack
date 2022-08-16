@@ -81,6 +81,7 @@ function WalletList({
       <List>
         {flattenedWallets.map(({ name, publicKey, type }, idx) => (
           <WalletListItem
+            blockchain={blockchain}
             key={publicKey.toString()}
             name={name}
             publicKey={publicKey}
@@ -96,13 +97,14 @@ function WalletList({
 }
 
 export const WalletListItem: React.FC<{
+  blockchain: Blockchain;
   name: string;
-  publicKey: any;
+  publicKey: string;
   type?: string;
   isFirst: boolean;
   isLast: boolean;
   onClick?: () => void;
-}> = ({ name, publicKey, type, isFirst, isLast, onClick }) => {
+}> = ({ blockchain, name, publicKey, type, isFirst, isLast, onClick }) => {
   const theme = useCustomTheme();
   const nav = useNavStack();
   return (
@@ -124,7 +126,8 @@ export const WalletListItem: React.FC<{
           ? onClick
           : () =>
               nav.push("edit-wallets-wallet-detail", {
-                publicKey: publicKey.toString(),
+                blockchain,
+                publicKey,
                 name,
                 type,
               })

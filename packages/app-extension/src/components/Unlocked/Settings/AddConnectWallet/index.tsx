@@ -150,15 +150,19 @@ export function AddConnectWalletMenu({
           },
         }}
       >
-        <ConfirmCreateWallet setOpenDrawer={setOpenDrawer} />
+        <ConfirmCreateWallet
+          blockchain={blockchain}
+          setOpenDrawer={setOpenDrawer}
+        />
       </WithMiniDrawer>
     </>
   );
 }
 
 export const ConfirmCreateWallet: React.FC<{
+  blockchain: Blockchain;
   setOpenDrawer: (b: boolean) => void;
-}> = ({ setOpenDrawer }) => {
+}> = ({ blockchain, setOpenDrawer }) => {
   const theme = useCustomTheme();
   const { publicKey, name } = useActiveWallet();
   const background = useBackgroundClient();
@@ -198,6 +202,7 @@ export const ConfirmCreateWallet: React.FC<{
       </div>
       <div>
         <WalletListItem
+          blockchain={blockchain}
           name={name}
           publicKey={publicKey}
           isFirst={true}

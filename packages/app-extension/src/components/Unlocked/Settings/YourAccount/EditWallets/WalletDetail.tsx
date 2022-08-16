@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
+import { Blockchain, UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { useWalletPublicKeys, useBackgroundClient } from "@coral-xyz/recoil";
 import { ContentCopy } from "@mui/icons-material";
@@ -8,21 +8,18 @@ import { useNavStack } from "../../../../common/Layout/NavStack";
 import { WithCopyTooltip } from "../../../../common/WithCopyTooltip";
 
 export const WalletDetail: React.FC<{
+  blockchain: Blockchain;
   publicKey: string;
   name: string;
   type: string;
-}> = ({ publicKey, name, type }) => {
+}> = ({ blockchain, publicKey, name, type }) => {
   const nav = useNavStack();
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [walletName, setWalletName] = useState(name);
-  const pubkeys = useWalletPublicKeys();
-  const pubkeysFlat = [
-    ...pubkeys["solana"].hdPublicKeys,
-    ...pubkeys["solana"].importedPublicKeys,
-    ...pubkeys["solana"].ledgerPublicKeys,
-  ];
+  const blockchainKeyrings = useWalletPublicKeys();
+  const keyring = blockchainKeyrings[blockchain];
 
   useEffect(() => {
     (async () => {
@@ -93,7 +90,7 @@ export const WalletDetail: React.FC<{
         </div>
       </WithCopyTooltip>
       <SettingsList menuItems={secrets} />
-      {(type !== "derived" || pubkeys["solana"].hdPublicKeys.length > 1) && (
+      {(type !== "derived" || keyring.hdPublicKeys.length > 1) && (
         <SettingsList menuItems={removeWallet} />
       )}
     </div>

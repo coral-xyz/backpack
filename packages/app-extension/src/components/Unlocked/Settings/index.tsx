@@ -763,7 +763,10 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
           },
         }}
       >
-        <ConfirmCreateWallet setOpenDrawer={setOpenDrawer} />
+        <ConfirmCreateWallet
+          blockchain={blockchain}
+          setOpenDrawer={setOpenDrawer}
+        />
       </WithMiniDrawer>
     </>
   );
