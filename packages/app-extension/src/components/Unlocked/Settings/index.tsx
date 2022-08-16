@@ -69,6 +69,7 @@ import { RemoveWallet } from "./YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
 import { WithMiniDrawer } from "../../common/Layout/Drawer";
+import { CheckIcon } from "../../common/Icon";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -302,6 +303,8 @@ function AvatarHeader() {
 function WalletList({ close }: { close: () => void }) {
   const background = useBackgroundClient();
   const namedPublicKeys = useWalletPublicKeys();
+  const active = useActiveWallet();
+  const theme = useCustomTheme();
 
   const clickWallet = (publicKey: PublicKey) => {
     background
@@ -314,8 +317,16 @@ function WalletList({ close }: { close: () => void }) {
   };
 
   const keys = namedPublicKeys.hdPublicKeys
-    .concat(namedPublicKeys.importedPublicKeys)
-    .concat(namedPublicKeys.ledgerPublicKeys);
+    .map((k) => ({ ...k, type: "derived" }))
+    .concat(
+      namedPublicKeys.importedPublicKeys.map((k) => ({
+        ...k,
+        type: "imported",
+      }))
+    )
+    .concat(
+      namedPublicKeys.ledgerPublicKeys.map((k) => ({ ...k, type: "ledger" }))
+    );
 
   return (
     <>
@@ -328,15 +339,37 @@ function WalletList({ close }: { close: () => void }) {
               isFirst={idx === 0}
               isLast={idx === keys.length - 1}
             >
-              <WalletAddress
-                name={name}
-                publicKey={publicKey}
+              <div
                 style={{
-                  fontWeight: 500,
-                  lineHeight: "24px",
-                  fontSize: "16px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  width: "100%",
                 }}
-              />
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    flexDirection: "column",
+                  }}
+                >
+                  <WalletAddress
+                    name={name}
+                    publicKey={publicKey}
+                    style={{
+                      fontWeight: 500,
+                      lineHeight: "24px",
+                      fontSize: "16px",
+                    }}
+                  />
+                </div>
+                {publicKey.equals(active.publicKey) && (
+                  <CheckIcon
+                    fill={theme.custom.colors.activeNavButton}
+                    style={{ width: "24px" }}
+                  />
+                )}
+              </div>
             </ListItem>
           );
         })}
