@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Button, Typography } from "@mui/material";
-import { PublicKey } from "@solana/web3.js";
 import { formatUSD } from "@coral-xyz/common";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
 import { useSolanaBalance, useActiveWallet } from "@coral-xyz/recoil";
+import { walletAddressDisplay } from "../../common";
 import { WithCopyTooltip } from "../../common/WithCopyTooltip";
 
 const useStyles = styles((theme) => ({
@@ -59,7 +59,7 @@ export function BalanceSummaryWidget() {
   const { name, publicKey } = useActiveWallet();
   const activeWallet = useActiveWallet();
   const [tooltipOpen, setTooltipOpen] = useState(false);
-  const pubkeyStr = toDisplayStr(publicKey);
+  const pubkeyStr = walletAddressDisplay(publicKey);
 
   const onCopy = () => {
     setTooltipOpen(true);
@@ -135,9 +135,4 @@ export function BalanceSummaryWidget() {
       </div>
     </WithCopyTooltip>
   );
-}
-
-function toDisplayStr(publicKey: PublicKey) {
-  const str = publicKey.toString();
-  return `(${str.slice(0, 4)}...${str.slice(str.length - 4)})`;
 }
