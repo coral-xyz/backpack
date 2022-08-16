@@ -78,9 +78,6 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_KEYRING_KEY_DELETE:
           handleKeyringKeyDelete(notif);
           break;
-        case NOTIFICATION_KEYRING_RESET_MNEMONIC:
-          handleResetMnemonic(notif);
-          break;
         case NOTIFICATION_KEYNAME_UPDATE:
           handleKeynameUpdate(notif);
           break;
@@ -214,9 +211,6 @@ export function NotificationsProvider(props: any) {
           },
         };
       });
-    };
-    const handleResetMnemonic = (notif: Notification) => {
-      // TODO.
     };
     const handleReset = (_notif: Notification) => {
       setKeyringStoreState(KeyringStoreStateEnum.NeedsOnboarding);
