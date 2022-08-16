@@ -1,4 +1,4 @@
-import type { PublicKey } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import {
   NodeKind,
   UpdateDiff,
@@ -345,29 +345,36 @@ export class Plugin {
   }
 
   public pushConnectionChangedNotification(url: string) {
-    const event = {
-      type: CHANNEL_PLUGIN_NOTIFICATION,
-      detail: {
-        name: PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
-        data: {
-          url,
+    this._connectionUrl = url;
+    if (this._iframe) {
+      const event = {
+        type: CHANNEL_PLUGIN_NOTIFICATION,
+        detail: {
+          name: PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
+          data: {
+            url,
+          },
         },
-      },
-    };
-    this._iframe!.contentWindow!.postMessage(event, "*");
+      };
+      this._iframe.contentWindow!.postMessage(event, "*");
+    }
   }
 
   public pushPublicKeyChangedNotification(publicKey: string) {
-    const event = {
-      type: CHANNEL_PLUGIN_NOTIFICATION,
-      detail: {
-        name: PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
-        data: {
-          publicKey,
+    this._activeWallet = new PublicKey(publicKey);
+    if (this._iframe) {
+      console.log("PLUGIN UPDATED ACTIVE WALLET", publicKey);
+      const event = {
+        type: CHANNEL_PLUGIN_NOTIFICATION,
+        detail: {
+          name: PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
+          data: {
+            publicKey,
+          },
         },
-      },
-    };
-    this._iframe!.contentWindow!.postMessage(event, "*");
+      };
+      this._iframe.contentWindow!.postMessage(event, "*");
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
