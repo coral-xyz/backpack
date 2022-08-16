@@ -203,7 +203,7 @@ export class KeyringStore {
     name: string
   ): Promise<[string, string]> {
     return this.withUnlock(async () => {
-      let blockchainKeyring = this.blockchains.get(blockchain);
+      const blockchainKeyring = this.blockchains.get(blockchain);
       const [publicKey, _name] = await blockchainKeyring!.importSecretKey(
         secretKey,
         name

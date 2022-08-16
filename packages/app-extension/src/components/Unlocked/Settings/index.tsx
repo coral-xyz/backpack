@@ -541,7 +541,7 @@ function SettingsList({ close }: { close: () => void }) {
   );
 }
 
-export function ImportSecretKey() {
+export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   const background = useBackgroundClient();
   const nav = useNavStack();
   const theme = useCustomTheme();
@@ -578,7 +578,7 @@ export function ImportSecretKey() {
 
     const publicKey = await background.request({
       method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-      params: [secretKeyHex, name],
+      params: [blockchain, secretKeyHex, name],
     });
 
     await background.request({

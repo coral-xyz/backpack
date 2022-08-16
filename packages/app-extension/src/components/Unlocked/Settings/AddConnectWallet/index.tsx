@@ -112,7 +112,7 @@ export function AddConnectWalletMenu() {
               <ActionCard
                 icon={<ArrowCircleDown />}
                 text="Import an existing wallet"
-                onClick={() => nav.push("import-secret-key")}
+                onClick={() => nav.push("import-secret-key", { blockchain })}
               />
             </Grid>
             <Grid item xs={6}>

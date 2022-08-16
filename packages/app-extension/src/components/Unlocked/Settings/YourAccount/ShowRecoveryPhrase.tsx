@@ -199,7 +199,6 @@ export function ShowRecoveryPhraseWarning() {
 
 export function ShowRecoveryPhrase({ mnemonic }: { mnemonic: string }) {
   const classes = useStyles();
-  const nav = useNavStack();
   const { close } = useDrawerContext();
   const mnemonicWords = mnemonic.split(" ");
 
