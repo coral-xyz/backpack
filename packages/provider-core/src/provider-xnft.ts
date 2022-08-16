@@ -20,14 +20,11 @@ import {
   CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
-  PLUGIN_RPC_METHOD_NAV_PUSH,
-  PLUGIN_RPC_METHOD_NAV_POP,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ON_CLICK,
   PLUGIN_NOTIFICATION_ON_CHANGE,
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_UNMOUNT,
-  PLUGIN_NOTIFICATION_NAVIGATION_POP,
   PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
   PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
@@ -132,20 +129,6 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
     );
   }
 
-  public async navigationPush() {
-    await this._requestManager.request({
-      method: PLUGIN_RPC_METHOD_NAV_PUSH,
-      params: [],
-    });
-  }
-
-  public async navigationPop() {
-    await this._requestManager.request({
-      method: PLUGIN_RPC_METHOD_NAV_POP,
-      params: [],
-    });
-  }
-
   public async getStorage<T = any>(key: string): Promise<T> {
     return await this._requestManager.request({
       method: PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
@@ -189,9 +172,6 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
       case PLUGIN_NOTIFICATION_ON_CHANGE:
         this._handleOnChange(event);
         break;
-      case PLUGIN_NOTIFICATION_NAVIGATION_POP:
-        this._handleNavigationPop(event);
-        break;
       case PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED:
         this._handleConnectionUrlUpdated(event);
         break;
@@ -224,10 +204,6 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
 
   private _handleOnChange(event: Event) {
     this.emit("change", event.data.detail);
-  }
-
-  private _handleNavigationPop(event: Event) {
-    this.emit("pop", event.data.detail);
   }
 
   private _handleConnectionUrlUpdated(event: Event) {

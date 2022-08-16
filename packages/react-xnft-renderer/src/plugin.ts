@@ -17,8 +17,6 @@ import {
   CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
   CHANNEL_PLUGIN_CONNECTION_BRIDGE,
-  PLUGIN_RPC_METHOD_NAV_PUSH,
-  PLUGIN_RPC_METHOD_NAV_POP,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
   SOLANA_RPC_METHOD_SIGN_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_TX,
@@ -29,7 +27,6 @@ import {
   PLUGIN_NOTIFICATION_ON_CHANGE,
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_UNMOUNT,
-  PLUGIN_NOTIFICATION_NAVIGATION_POP,
   PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
   PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
   RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
@@ -333,17 +330,6 @@ export class Plugin {
     this._iframe?.contentWindow?.postMessage(event, "*");
   }
 
-  public pushNavigationPopNotification() {
-    const event = {
-      type: CHANNEL_PLUGIN_NOTIFICATION,
-      detail: {
-        name: PLUGIN_NOTIFICATION_NAVIGATION_POP,
-        data: {},
-      },
-    };
-    this._iframe?.contentWindow?.postMessage(event, "*");
-  }
-
   public pushConnectionChangedNotification(url: string) {
     this._connectionUrl = url;
     if (this._iframe) {
@@ -363,7 +349,6 @@ export class Plugin {
   public pushPublicKeyChangedNotification(publicKey: string) {
     this._activeWallet = new PublicKey(publicKey);
     if (this._iframe) {
-      console.log("PLUGIN UPDATED ACTIVE WALLET", publicKey);
       const event = {
         type: CHANNEL_PLUGIN_NOTIFICATION,
         detail: {
@@ -387,10 +372,6 @@ export class Plugin {
 
     const { method, params } = req;
     switch (method) {
-      case PLUGIN_RPC_METHOD_NAV_PUSH: // TODO: remove
-        return await this._handleNavPush();
-      case PLUGIN_RPC_METHOD_NAV_POP: // TODO: remove
-        return await this._handleNavPop();
       case PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET:
         return await this._handleGet(params[0]);
       case PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT:
@@ -408,16 +389,6 @@ export class Plugin {
         logger.error(method);
         throw new Error("unexpected method");
     }
-  }
-
-  // todo: can delete with the widget refactor probably
-  private async _handleNavPush(): Promise<RpcResponse> {
-    throw new Error("not implemented");
-  }
-
-  // todo: can delete with the widget refactor probably
-  private async _handleNavPop(): Promise<RpcResponse> {
-    throw new Error("not implemented");
   }
 
   private async _handleSolanaSignTransaction(
