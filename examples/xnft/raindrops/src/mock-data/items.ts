@@ -3,6 +3,7 @@ import { web3 } from "@project-serum/anchor";
 
 const PUBLIC_KEYS = [
   new web3.PublicKey("JCzLLRSDGtrsuNBxtBefPJF7NsitNK1YLySJFjfyYJ6t"),
+  new web3.PublicKey("HsC6pTGE2gy6AVpvx6PXNroqAJVTgMS2yd1zBRcUQxmK"),
 ];
 
 export const Items: State.Item.Item[] = [
@@ -18,7 +19,7 @@ export const Items: State.Item.Item[] = [
     parent: PUBLIC_KEYS[0],
     classIndex: 0,
     mint: PUBLIC_KEYS[0],
-    metadata: PUBLIC_KEYS[0],
+    metadata: PUBLIC_KEYS[1],
     edition: PUBLIC_KEYS[0],
     bump: 255,
     tokensStaked: 0,
@@ -48,7 +49,7 @@ export const Items: State.Item.Item[] = [
     parent: PUBLIC_KEYS[0],
     classIndex: 0,
     mint: PUBLIC_KEYS[0],
-    metadata: PUBLIC_KEYS[0],
+    metadata: PUBLIC_KEYS[1],
     edition: PUBLIC_KEYS[0],
     bump: 255,
     tokensStaked: 0,
