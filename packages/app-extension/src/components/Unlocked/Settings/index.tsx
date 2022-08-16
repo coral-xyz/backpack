@@ -678,7 +678,9 @@ export function ImportSecretKey() {
             />
           </Box>
           {error && (
-            <Typography style={{ color: "red", marginTop: "8px" }}>
+            <Typography
+              style={{ color: "red", marginTop: "8px", marginLeft: "24px" }}
+            >
               {error}
             </Typography>
           )}
