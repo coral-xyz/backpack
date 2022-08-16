@@ -45,6 +45,7 @@ const useStyles = styles((theme) => ({
     backgroundColor: `${theme.custom.colors.bg2} !important`,
     "&:hover": {
       opacity: 1,
+      cursor: "default",
     },
   },
 }));
