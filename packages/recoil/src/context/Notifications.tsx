@@ -170,7 +170,8 @@ export function NotificationsProvider(props: any) {
 
     const handleKeynameUpdate = (notif: Notification) => {
       setWalletPublicKeys((current: any) => {
-        const next: WalletPublicKeys = { ...current };
+        // Using JSON for a deep copy
+        const next: WalletPublicKeys = JSON.parse(JSON.stringify(current));
         for (const keyring of Object.values(next)) {
           for (const namedPublicKeys of Object.values(keyring)) {
             for (const namedPublicKey of namedPublicKeys) {
@@ -186,8 +187,6 @@ export function NotificationsProvider(props: any) {
 
     const handleKeyringDerivedWallet = (notif: Notification) => {
       setWalletPublicKeys((current: any) => {
-        console.log(notif);
-        console.log(current);
         return {
           ...current,
           [notif.data.blockchain]: {
