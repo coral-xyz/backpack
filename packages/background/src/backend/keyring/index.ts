@@ -309,24 +309,13 @@ export class KeyringStore {
   }
 
   private fromJson(json: any) {
-    const {
-      mnemonic,
-      blockchains,
-      activeBlockchainLabel,
-      activeBlockchain_,
-      solana,
-    } = json;
+    const { mnemonic, blockchains, activeBlockchainLabel, activeBlockchain_ } =
+      json;
 
     if (activeBlockchainLabel) {
-      // Migratre from previous store format
+      // Migrate from previous store format
       // TODO can be removed after a while
-      this.mnemonic = solana.hdKeyring.mnemonic;
-      this.activeBlockchain_ = activeBlockchainLabel;
-      this.blockchains = new Map();
-      this.blockchains.set(
-        Blockchain.SOLANA,
-        BlockchainKeyring[Blockchain.SOLANA]().fromJson(solana)
-      );
+      this.fromLegacyJson(json);
     } else {
       this.mnemonic = mnemonic;
       this.blockchains = new Map(
@@ -338,6 +327,22 @@ export class KeyringStore {
       );
       this.activeBlockchain_ = activeBlockchain_;
     }
+  }
+
+  private fromLegacyJson(json: any) {
+    const { activeBlockchainLabel, solana } = json;
+    this.mnemonic = solana.hdKeyring.mnemonic;
+    this.activeBlockchain_ = activeBlockchainLabel;
+    this.blockchains = new Map();
+    const blockchainKeyring = BlockchainKeyring[Blockchain.SOLANA]();
+    blockchainKeyring.fromJson({
+      ...solana,
+      importedKeyring: {
+        // Handle rename of this
+        secretKeys: solana.importedKeyring.keypairs,
+      },
+    });
+    this.blockchains.set(Blockchain.SOLANA, blockchainKeyring);
   }
 
   private async isLocked(): Promise<boolean> {
