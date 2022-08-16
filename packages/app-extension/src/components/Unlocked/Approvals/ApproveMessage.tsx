@@ -28,7 +28,13 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function ApproveMessage({ origin, title, message, onCompletion }: any) {
+export function ApproveMessage({
+  origin,
+  title,
+  message,
+  onCompletion,
+  wallet,
+}: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
 
@@ -44,6 +50,7 @@ export function ApproveMessage({ origin, title, message, onCompletion }: any) {
     <WithApproval
       origin={origin}
       originTitle={title}
+      wallet={wallet}
       title={<div className={classes.title}>Approve Message</div>}
       onConfirm={onConfirm}
       onConfirmLabel="Approve"

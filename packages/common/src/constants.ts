@@ -136,8 +136,6 @@ export const NOTIFICATION_KEYNAME_UPDATE = "anchor-keyname-update";
 export const NOTIFICATION_KEYRING_KEY_DELETE = "anchor-keyring-key-delete";
 export const NOTIFICATION_KEYRING_DERIVED_WALLET =
   "anchor-keyring-derived-wallet";
-export const NOTIFICATION_ACTIVE_WALLET_UPDATED =
-  "anchor-kerying-active-wallet-updated";
 export const NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY =
   "anchor-keyring-imported-secret-key";
 export const NOTIFICATION_KEYRING_RESET_MNEMONIC =
@@ -150,6 +148,8 @@ export const NOTIFICATION_NAVIGATION_URL_DID_CHANGE =
 export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
   "anchor-auto-lock-secs-updated";
 export const NOTIFICATION_DARK_MODE_UPDATED = "anchor-dark-mode-updated";
+export const NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED =
+  "anchor-keyring-solana-active-wallet-updated";
 export const NOTIFICATION_SOLANA_CONNECTED = "anchor-solana-connected";
 export const NOTIFICATION_SOLANA_DISCONNECTED = "anchor-solana-disconnected";
 export const NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED =

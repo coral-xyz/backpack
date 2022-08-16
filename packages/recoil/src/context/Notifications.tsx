@@ -14,13 +14,13 @@ import {
   NOTIFICATION_KEYRING_KEY_DELETE,
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
-  NOTIFICATION_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
   NOTIFICATION_KEYRING_RESET_MNEMONIC,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_DARK_MODE_UPDATED,
+  NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
@@ -89,9 +89,6 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY:
           handleKeyringImportedSecretKey(notif);
           break;
-        case NOTIFICATION_ACTIVE_WALLET_UPDATED:
-          handleActiveWalletUpdated(notif);
-          break;
         case NOTIFICATION_APPROVED_ORIGINS_UPDATE:
           handleApprovedOriginsUpdate(notif);
           break;
@@ -115,6 +112,9 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
           handleSolanaConnectionUrlUpdated(notif);
+          break;
+        case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
+          handleSolanaActiveWalletUpdated(notif);
           break;
         default:
           break;
@@ -198,7 +198,7 @@ export function NotificationsProvider(props: any) {
         return next;
       });
     };
-    const handleActiveWalletUpdated = (notif: Notification) => {
+    const handleSolanaActiveWalletUpdated = (notif: Notification) => {
       setActiveWallet(notif.data.activeWallet);
       allPlugins().forEach((p) => {
         p.pushPublicKeyChangedNotification(notif.data.activeWallet);

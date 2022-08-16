@@ -185,6 +185,7 @@ function QueryApproveTransaction() {
   const origin = url.searchParams.get("origin");
   const title = url.searchParams.get("title");
   const tx = url.searchParams.get("tx");
+  const wallet = url.searchParams.get("wallet")!;
   const requestId = parseInt(url.searchParams.get("requestId")!);
 
   return (
@@ -192,6 +193,7 @@ function QueryApproveTransaction() {
       origin={origin!}
       title={title!}
       tx={tx}
+      wallet={wallet}
       onCompletion={async (didApprove: boolean) => {
         await background.response({
           id: requestId,
@@ -212,12 +214,14 @@ function QueryApproveAllTransactions() {
   const title = url.searchParams.get("title")!;
   const requestId = parseInt(url.searchParams.get("requestId")!);
   const txs = JSON.parse(url.searchParams.get("txs")!);
+  const wallet = url.searchParams.get("wallet")!;
 
   return (
     <ApproveAllTransactions
       origin={origin!}
       title={title!}
       txs={txs}
+      wallet={wallet}
       onCompletion={async (didApprove: boolean) => {
         await background.response({
           id: requestId,
@@ -238,12 +242,14 @@ function QueryApproveMessage() {
   const title = url.searchParams.get("title");
   const message = url.searchParams.get("message");
   const requestId = parseInt(url.searchParams.get("requestId")!);
+  const wallet = url.searchParams.get("wallet")!;
 
   return (
     <ApproveMessage
       origin={origin}
       title={title}
       message={message}
+      wallet={wallet}
       onCompletion={async (didApprove: boolean) => {
         await bg.response({
           id: requestId,

@@ -31,6 +31,7 @@ import {
   CHANNEL_SOLANA_NOTIFICATION,
   CHANNEL_POPUP_RESPONSE,
   BACKEND_EVENT,
+  NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_CONNECTED,
   NOTIFICATION_SOLANA_DISCONNECTED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
@@ -65,6 +66,9 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
         notificationsInjected.sendMessageActiveTab(notification);
         break;
       case NOTIFICATION_SOLANA_DISCONNECTED:
+        notificationsInjected.sendMessageActiveTab(notification);
+        break;
+      case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
         notificationsInjected.sendMessageActiveTab(notification);
         break;
       default:
@@ -202,7 +206,8 @@ async function handleSolanaSignAndSendTx(
       ctx.sender.origin,
       ctx.sender.tab.title,
       requestId,
-      tx
+      tx,
+      walletAddress
     );
   });
   const didApprove = uiResp.result;
@@ -230,7 +235,8 @@ async function handleSolanaSignTx(
       ctx.sender.origin,
       ctx.sender.tab.title,
       requestId,
-      tx
+      tx,
+      walletAddress
     );
   });
   const didApprove = uiResp.result;
@@ -254,7 +260,8 @@ async function handleSolanaSignAllTxs(
       ctx.sender.origin,
       ctx.sender.tab.title,
       requestId,
-      txs
+      txs,
+      walletAddress
     );
   });
   const didApprove = uiResp.result;
@@ -281,7 +288,8 @@ async function handleSolanaSignMessage(
       ctx.sender.origin,
       ctx.sender.tab.title,
       requestId,
-      msg
+      msg,
+      walletAddress
     );
   });
   const didApprove = uiResp.result;
