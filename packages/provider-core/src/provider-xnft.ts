@@ -58,7 +58,6 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
     this._connectionRequestManager = new RequestManager(
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
       CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
-      //			true
     );
     this._setupChannels();
   }
@@ -108,12 +107,7 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
   }
 
   public async signTransaction(tx: Transaction): Promise<Transaction> {
-    return await cmn.signTransaction(
-      // @ts-ignore
-      window.backpack.publicKey,
-      this._requestManager,
-      tx
-    );
+    return await cmn.signTransaction(this.publicKey, this._requestManager, tx);
   }
 
   // @ts-ignore
@@ -209,7 +203,6 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
 
   private _handleConnect(event: Event) {
     const { publicKey, connectionUrl } = event.data.detail.data;
-    console.log("ARMANI HANDLING CONNECT", publicKey, connectionUrl);
     this._connect(publicKey, connectionUrl);
     this.emit("connect", event.data.detail);
   }
@@ -235,24 +228,17 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
   }
 
   private _handleConnectionUrlUpdated(event: Event) {
-    // @ts-ignore
-    //    const publicKey = window.backpack.publicKey.toString();
     const connectionUrl = event.data.detail.data.url;
     this.connection = new BackgroundSolanaConnection(
       this._connectionRequestManager,
       connectionUrl
     );
-    //    window.backpack._connect(publicKey, connectionUrl);
-    //		this._connect(publicKey, connectionUrl);
     this.emit("connectionUpdate", event.data.detail);
   }
 
   private _handlePublicKeyUpdated(event: Event) {
     const publicKey = event.data.detail.data.publicKey;
-    // @ts-ignore
-    const connectionUrl = window.backpack.connection.rpcEndpoint;
-    // @ts-ignore
-    window.backpack._connect(publicKey, connectionUrl);
+    this.publicKey = publicKey;
     this.emit("publicKeyUpdate", event.data.detail);
   }
 }
