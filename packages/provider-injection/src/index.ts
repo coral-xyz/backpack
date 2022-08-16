@@ -1,7 +1,9 @@
+import {
+  ProviderSolanaInjection,
+  ProviderXnftInjection,
+} from "@coral-xyz/provider-core";
 import { getLogger } from "@coral-xyz/common";
 import { register } from "@wallet-standard/wallets-backpack";
-import { ProviderSolanaInjection } from "./provider-solana";
-import { ProviderXnftInjection } from "./provider-xnft";
 
 const logger = getLogger("provider-injection");
 

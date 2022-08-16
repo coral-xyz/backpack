@@ -1,6 +1,5 @@
 import { EventEmitter } from "eventemitter3";
 import type {
-  PublicKey,
   Connection,
   Transaction,
   Signer,
@@ -10,10 +9,14 @@ import type {
   Commitment,
   SimulatedTransactionResponse,
 } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import type { Provider } from "@project-serum/anchor";
 import type { Event } from "@coral-xyz/common";
 import {
   getLogger,
+  BackgroundSolanaConnection,
+  CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
+  CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
@@ -40,6 +43,10 @@ const logger = getLogger("provider-xnft-injection");
 //
 export class ProviderXnftInjection extends EventEmitter implements Provider {
   private _requestManager: RequestManager;
+  private _connectionRequestManager: RequestManager;
+
+  private publicKey?: PublicKey;
+  private connection: Connection;
 
   constructor() {
     super();
@@ -48,15 +55,20 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
       CHANNEL_PLUGIN_RPC_RESPONSE,
       true
     );
+    this._connectionRequestManager = new RequestManager(
+      CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
+      CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
+      //			true
+    );
     this._setupChannels();
   }
 
-  get publicKey(): PublicKey {
-    return window.backpack.publicKey;
-  }
-
-  get connection(): Connection {
-    return window.backpack.connection;
+  private _connect(publicKey: string, connectionUrl: string) {
+    this.publicKey = new PublicKey(publicKey);
+    this.connection = new BackgroundSolanaConnection(
+      this._connectionRequestManager,
+      connectionUrl
+    );
   }
 
   async sendAndConfirm(
@@ -97,12 +109,14 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
 
   public async signTransaction(tx: Transaction): Promise<Transaction> {
     return await cmn.signTransaction(
+      // @ts-ignore
       window.backpack.publicKey,
       this._requestManager,
       tx
     );
   }
 
+  // @ts-ignore
   public async simulate(
     tx: Transaction,
     signers?: Signer[],
@@ -195,7 +209,8 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
 
   private _handleConnect(event: Event) {
     const { publicKey, connectionUrl } = event.data.detail.data;
-    window.backpack._connect(publicKey, connectionUrl);
+    console.log("ARMANI HANDLING CONNECT", publicKey, connectionUrl);
+    this._connect(publicKey, connectionUrl);
     this.emit("connect", event.data.detail);
   }
 
@@ -220,15 +235,23 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
   }
 
   private _handleConnectionUrlUpdated(event: Event) {
-    const publicKey = window.backpack.publicKey.toString();
+    // @ts-ignore
+    //    const publicKey = window.backpack.publicKey.toString();
     const connectionUrl = event.data.detail.data.url;
-    window.backpack._connect(publicKey, connectionUrl);
+    this.connection = new BackgroundSolanaConnection(
+      this._connectionRequestManager,
+      connectionUrl
+    );
+    //    window.backpack._connect(publicKey, connectionUrl);
+    //		this._connect(publicKey, connectionUrl);
     this.emit("connectionUpdate", event.data.detail);
   }
 
   private _handlePublicKeyUpdated(event: Event) {
     const publicKey = event.data.detail.data.publicKey;
+    // @ts-ignore
     const connectionUrl = window.backpack.connection.rpcEndpoint;
+    // @ts-ignore
     window.backpack._connect(publicKey, connectionUrl);
     this.emit("publicKeyUpdate", event.data.detail);
   }

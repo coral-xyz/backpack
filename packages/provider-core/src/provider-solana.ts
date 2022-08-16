@@ -192,6 +192,7 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
     );
   }
 
+  // @ts-ignore
   async sendAll(
     _txWithSigners: { tx: Transaction; signers?: Signer[] }[],
     _opts?: ConfirmOptions,
@@ -201,6 +202,7 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
     throw new Error("sendAll not implemented");
   }
 
+  // @ts-ignore
   async simulate(
     tx: Transaction,
     signers?: Signer[],
