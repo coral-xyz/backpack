@@ -107,6 +107,9 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
   }
 
   public async signTransaction(tx: Transaction): Promise<Transaction> {
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
     return await cmn.signTransaction(this.publicKey, this._requestManager, tx);
   }
 

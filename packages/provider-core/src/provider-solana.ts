@@ -258,7 +258,6 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
-    console.log("armani pubkey injected provider", publicKey, this.publicKey);
     return await cmn.signMessage(
       publicKey ?? this.publicKey,
       this._requestManager,
