@@ -373,9 +373,23 @@ function WalletList({ close }: { close: () => void }) {
                         lineHeight: "24px",
                         fontSize: "16px",
                       }}
+                      nameStyle={{
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        maxWidth: "75px",
+                      }}
                     />
                   </div>
-                  <ImportTypeBadge type={type} />
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <ImportTypeBadge type={type} />
+                  </div>
                 </div>
                 {publicKey.equals(active.publicKey) && (
                   <CheckIcon
