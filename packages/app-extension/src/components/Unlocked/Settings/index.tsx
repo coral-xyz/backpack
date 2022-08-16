@@ -72,6 +72,7 @@ import { EditWallets } from "./YourAccount/EditWallets";
 import { RemoveWallet } from "./YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
+import { CheckIcon } from "../../common/Icon";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -327,6 +328,8 @@ function WalletList({
   close: () => void;
 }) {
   const background = useBackgroundClient();
+  const active = useActiveWallet();
+  const theme = useCustomTheme();
 
   const clickWallet = (publicKey: string) => {
     background
@@ -339,9 +342,20 @@ function WalletList({
   };
 
   const keys = keyring.hdPublicKeys
-    .concat(keyring.importedPublicKeys)
-    .concat(keyring.ledgerPublicKeys)
-    .filter((k: any) => k !== undefined);
+    .map((k: any) => ({ ...k, type: "derived" }))
+    .concat(
+      keyring.importedPublicKeys
+        ? keyring.importedPublicKeys.map((k: any) => ({
+            ...k,
+            type: "imported",
+          }))
+        : []
+    )
+    .concat(
+      keyring.ledgerPublicKeys
+        ? keyring.ledgerPublicKeys.map((k: any) => ({ ...k, type: "hardware" }))
+        : []
+    );
 
   return (
     <div style={{ marginBottom: "16px" }}>
@@ -359,7 +373,11 @@ function WalletList({
       <List>
         {keys.map(
           (
-            { name, publicKey }: { name: string; publicKey: string },
+            {
+              name,
+              publicKey,
+              type,
+            }: { name: string; publicKey: string; type: string },
             idx: number
           ) => {
             return (
@@ -368,22 +386,102 @@ function WalletList({
                 onClick={() => clickWallet(publicKey)}
                 isFirst={idx === 0}
                 isLast={idx === keys.length - 1}
+                style={{
+                  paddingTop: "16px",
+                  paddingBottom: "16px",
+                  paddingLeft: "12px",
+                  paddingRight: "12px",
+                }}
               >
-                <WalletAddress
-                  name={name}
-                  publicKey={publicKey}
+                <div
                   style={{
-                    fontWeight: 500,
-                    lineHeight: "24px",
-                    fontSize: "16px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
                   }}
-                />
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        marginRight: "4px",
+                      }}
+                    >
+                      <WalletAddress
+                        name={name}
+                        publicKey={publicKey}
+                        style={{
+                          fontWeight: 500,
+                          lineHeight: "24px",
+                          fontSize: "16px",
+                        }}
+                        nameStyle={{
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          maxWidth: "75px",
+                        }}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <ImportTypeBadge type={type} />
+                    </div>
+                  </div>
+                  {publicKey === active.publicKey && (
+                    <CheckIcon
+                      fill={theme.custom.colors.activeNavButton}
+                      style={{ width: "24px" }}
+                    />
+                  )}
+                </div>
               </ListItem>
             );
           }
         )}
       </List>
       <AddConnectWalletButton blockchain={blockchain} />
+    </div>
+  );
+}
+
+function ImportTypeBadge({ type }: { type: string }) {
+  const theme = useCustomTheme();
+  return type === "derived" ? (
+    <></>
+  ) : (
+    <div
+      style={{
+        paddingLeft: "10px",
+        paddingRight: "10px",
+        paddingTop: "2px",
+        paddingBottom: "2px",
+        backgroundColor: theme.custom.colors.bg2,
+        height: "20px",
+        borderRadius: "10px",
+      }}
+    >
+      <Typography
+        style={{
+          color: theme.custom.colors.fontColor,
+          fontSize: "12px",
+          lineHeight: "16px",
+          fontWeight: 600,
+        }}
+      >
+        {type === "imported" ? "IMPORTED" : "HARDWARE"}
+      </Typography>
     </div>
   );
 }
@@ -514,7 +612,7 @@ function SettingsList({ close }: { close: () => void }) {
             id={s.label}
             style={{
               height: "44px",
-              padding: "10px",
+              padding: "12px",
             }}
             detail={s.detailIcon}
           >
@@ -632,7 +730,9 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
             />
           </Box>
           {error && (
-            <Typography style={{ color: "red", marginTop: "8px" }}>
+            <Typography
+              style={{ color: "red", marginTop: "8px", marginLeft: "24px" }}
+            >
               {error}
             </Typography>
           )}

@@ -43,7 +43,6 @@ export const PLUGIN_NOTIFICATION_ON_CLICK = "on-click";
 export const PLUGIN_NOTIFICATION_ON_CHANGE = "on-change";
 export const PLUGIN_NOTIFICATION_MOUNT = "mount";
 export const PLUGIN_NOTIFICATION_UNMOUNT = "unmount";
-export const PLUGIN_NOTIFICATION_NAVIGATION_POP = "nav-pop";
 export const PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED =
   "connection-url-updated";
 export const PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED = "public-key-updated";
@@ -51,8 +50,6 @@ export const PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED = "public-key-updated";
 //
 // xNFT host API.
 //
-export const PLUGIN_RPC_METHOD_NAV_PUSH = "nav-push";
-export const PLUGIN_RPC_METHOD_NAV_POP = "nav-pop";
 export const PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET = "store-get";
 export const PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT = "store-put";
 

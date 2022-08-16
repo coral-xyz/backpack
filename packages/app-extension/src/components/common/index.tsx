@@ -92,15 +92,22 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function WalletAddress({ publicKey, name, style }: any) {
+export function WalletAddress({ publicKey, name, style, nameStyle }: any) {
   const theme = useCustomTheme();
   return (
-    <Typography style={style}>
-      <span style={{ marginRight: "8px" }}>{name}</span>
-      <span style={{ color: theme.custom.colors.secondary }}>
+    <div
+      style={{
+        display: "flex",
+        ...style,
+      }}
+    >
+      <Typography style={{ ...nameStyle, marginRight: "8px" }}>
+        {name}
+      </Typography>
+      <Typography style={{ color: theme.custom.colors.secondary }}>
         ({walletAddressDisplay(publicKey)})
-      </span>
-    </Typography>
+      </Typography>
+    </div>
   );
 }
 

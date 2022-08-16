@@ -126,16 +126,16 @@ export function SuccessIcon() {
   );
 }
 
-export function CheckIcon() {
+export function CheckIcon({
+  fill = "#35A63A",
+  style,
+}: {
+  fill?: string;
+  style?: React.CSSProperties;
+}) {
   return (
-    <svg
-      width="48"
-      height="48"
-      viewBox="0 0 48 48"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <rect width="48" height="48" rx="24" fill="#35A63A" />
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style={style}>
+      <rect width="48" height="48" rx="24" fill={fill} />
       <path
         d="M20 29.5598L14.44 23.9998L12.5466 25.8798L20 33.3331L36 17.3331L34.12 15.4531L20 29.5598Z"
         fill="white"
