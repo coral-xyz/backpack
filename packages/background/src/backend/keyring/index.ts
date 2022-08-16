@@ -72,10 +72,9 @@ export class KeyringStore {
     this.password = password;
     this.mnemonic = mnemonic;
 
-    // Init default blockchain keyring (Solana).
+    // Init default keyring.
     this.activeBlockchain_ = BLOCKCHAIN_DEFAULT;
     this.initBlockchainKeyring(
-      mnemonic,
       derivationPath,
       accountIndices,
       BLOCKCHAIN_DEFAULT
@@ -101,7 +100,6 @@ export class KeyringStore {
   }
 
   public initBlockchainKeyring(
-    mnemonic: string,
     derivationPath: DerivationPath,
     accountIndices: Array<number>,
     blockchain: Blockchain
@@ -110,7 +108,7 @@ export class KeyringStore {
       [Blockchain.SOLANA]: BlockchainKeyring.solana,
       [Blockchain.ETHEREUM]: BlockchainKeyring.ethereum,
     }[blockchain]();
-    keyring.init(mnemonic, derivationPath, accountIndices);
+    keyring.init(this.mnemonic, derivationPath, accountIndices);
     this.blockchains.set(blockchain, keyring);
     return keyring;
   }
@@ -189,6 +187,12 @@ export class KeyringStore {
   public exportMnemonic(password: string): string {
     return this.withPassword(password, () => {
       return this.mnemonic;
+    });
+  }
+
+  public resetMnemonic(password: string) {
+    return this.withPassword(password, () => {
+      // TODO.
     });
   }
 
@@ -419,7 +423,6 @@ export class KeyringStore {
     if (!activeBlockchainKeyring) {
       // Init blockchain keyring if required
       this.initBlockchainKeyring(
-        this.mnemonic,
         DerivationPath.Bip44Change,
         [0],
         activeBlockchain as Blockchain
