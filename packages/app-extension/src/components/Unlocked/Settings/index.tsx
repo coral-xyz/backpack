@@ -9,7 +9,7 @@ import {
   Tab as WindowIcon,
   Settings,
 } from "@mui/icons-material";
-import { PublicKey, Keypair } from "@solana/web3.js";
+import { Keypair } from "@solana/web3.js";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   useBackgroundClient,
@@ -17,8 +17,9 @@ import {
   useActiveWallet,
 } from "@coral-xyz/recoil";
 import {
-  Blockchain,
   openPopupWindow,
+  toTitleCase,
+  Blockchain,
   BACKPACK_FEATURE_POP_MODE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
@@ -343,15 +344,17 @@ function WalletList({
 
   return (
     <div style={{ marginBottom: "16px" }}>
-      <Typography
-        style={{
-          marginLeft: "16px",
-          marginRight: "16px",
-          marginBottom: "12px",
-        }}
-      >
-        {blockchain.charAt(0).toUpperCase() + blockchain.substring(1)}
-      </Typography>
+      {BACKPACK_FEATURE_MULTICHAIN && (
+        <Typography
+          style={{
+            marginLeft: "16px",
+            marginRight: "16px",
+            marginBottom: "12px",
+          }}
+        >
+          {toTitleCase(blockchain)}
+        </Typography>
+      )}
       <List>
         {keys.map(
           (

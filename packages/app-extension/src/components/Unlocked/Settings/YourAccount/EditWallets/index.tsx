@@ -1,3 +1,8 @@
+import {
+  toTitleCase,
+  Blockchain,
+  BACKPACK_FEATURE_MULTICHAIN,
+} from "@coral-xyz/common";
 import { useWalletPublicKeys } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { MoreHoriz } from "@mui/icons-material";
@@ -10,7 +15,8 @@ import { AddConnectWalletButton } from "../..";
 export function EditWallets() {
   const theme = useCustomTheme();
   const nav = useNavStack();
-  const wallets = useWalletPublicKeys();
+  const blockchainKeyrings = useWalletPublicKeys();
+
   useEffect(() => {
     const title = nav.title;
     nav.setTitle("Edit wallets");
@@ -23,28 +29,35 @@ export function EditWallets() {
     };
   }, []);
 
-  // TODO: filter wallets by iterated blockchain keyring name
   return (
     <div style={{ paddingTop: "16px", height: "100%" }}>
-      <BlockchainWalletList wallets={wallets} />
+      {Object.entries(blockchainKeyrings).map(([blockchain, keyring]) => (
+        <WalletList
+          key={blockchain}
+          blockchain={blockchain as Blockchain}
+          keyring={keyring}
+        />
+      ))}
       {/* Hack to add margin bottom. */}
       <div style={{ height: "16px" }} />
     </div>
   );
 }
 
-function BlockchainWalletList({
-  wallets,
+function WalletList({
+  blockchain,
+  keyring,
 }: {
-  wallets: ReturnType<typeof useWalletPublicKeys>;
+  blockchain: Blockchain;
+  keyring: any;
 }) {
   const flattenedWallets = [
-    ...wallets["solana"].hdPublicKeys.map((k) => ({ ...k, type: "derived" })),
-    ...wallets["solana"].importedPublicKeys.map((k) => ({
+    ...keyring.hdPublicKeys.map((k: any) => ({ ...k, type: "derived" })),
+    ...keyring.importedPublicKeys.map((k: any) => ({
       ...k,
       type: "imported",
     })),
-    ...wallets["solana"].ledgerPublicKeys.map((k) => ({
+    ...keyring.ledgerPublicKeys.map((k: any) => ({
       ...k,
       type: "ledger",
     })),
@@ -52,7 +65,19 @@ function BlockchainWalletList({
 
   // TODO: replace placeholder wallet avatar with stored image when available
   return (
-    <div>
+    <div style={{ marginBottom: "16px" }}>
+      {BACKPACK_FEATURE_MULTICHAIN && (
+        <Typography
+          style={{
+            marginLeft: "16px",
+            marginRight: "16px",
+            marginBottom: "12px",
+          }}
+        >
+          {toTitleCase(blockchain)}
+        </Typography>
+      )}
+
       <List>
         {flattenedWallets.map(({ name, publicKey, type }, idx) => (
           <WalletListItem
