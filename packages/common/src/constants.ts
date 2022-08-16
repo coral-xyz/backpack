@@ -153,6 +153,8 @@ export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
 export const NOTIFICATION_DARK_MODE_UPDATED = "anchor-dark-mode-updated";
 export const NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED =
   "anchor-keyring-solana-active-wallet-updated";
+export const NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED =
+  "anchor-keyring-active-blockchain-updated";
 export const NOTIFICATION_SOLANA_CONNECTED = "anchor-solana-connected";
 export const NOTIFICATION_SOLANA_DISCONNECTED = "anchor-solana-disconnected";
 export const NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED =
@@ -163,6 +165,8 @@ export const NOTIFICATION_SOLANA_COMMITMENT_UPDATED =
   "anchor-solana-commitment-updated";
 export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
   "anchor-solana-spl-tokens-did-update";
+export const NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED =
+  "anchor-keyring-ethereum-active-wallet-updated";
 
 //
 // Solana web injected provider API.

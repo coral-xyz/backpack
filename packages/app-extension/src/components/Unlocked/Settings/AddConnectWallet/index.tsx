@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Grid, Typography, MenuItem } from "@mui/material";
 import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
 import {
+  Blockchain,
   openConnectHardware,
+  BACKPACK_FEATURE_MULTICHAIN,
   TAB_BALANCES,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
@@ -17,7 +19,7 @@ import {
 } from "@coral-xyz/recoil";
 import { ActionCard } from "../../../common/Layout/ActionCard";
 import { HardwareWalletIcon, CheckIcon } from "../../../common/Icon";
-import { Header, SubtextParagraph } from "../../../common";
+import { Header, SubtextParagraph, TextField } from "../../../common";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import {
   useDrawerContext,
@@ -30,6 +32,7 @@ export function AddConnectWalletMenu() {
   const background = useBackgroundClient();
   const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [blockchain, setBlockchain] = useState<Blockchain>(Blockchain.SOLANA);
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -49,6 +52,11 @@ export function AddConnectWalletMenu() {
     };
   }, [nav.setContentStyle]);
 
+  const blockchainOptions = [
+    { value: Blockchain.SOLANA, label: "Solana" },
+    { value: Blockchain.ETHEREUM, label: "Ethereum" },
+  ];
+
   return (
     <>
       <div
@@ -64,6 +72,22 @@ export function AddConnectWalletMenu() {
           <SubtextParagraph>Add new wallets to Backpack.</SubtextParagraph>
         </Box>
         <Box sx={{ margin: "0 16px" }}>
+          {BACKPACK_FEATURE_MULTICHAIN && (
+            <Box sx={{ marginBottom: "16px" }}>
+              <TextField
+                label="Blockchain"
+                value={blockchain}
+                setValue={setBlockchain}
+                select={true}
+              >
+                {blockchainOptions.map((o, idx) => (
+                  <MenuItem value={o.value} key={idx}>
+                    {o.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Box>
+          )}
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <ActionCard
@@ -72,7 +96,7 @@ export function AddConnectWalletMenu() {
                 onClick={async () => {
                   const newPubkey = await background.request({
                     method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-                    params: [],
+                    params: [blockchain],
                   });
 
                   await background.request({

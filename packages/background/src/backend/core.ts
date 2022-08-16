@@ -25,6 +25,7 @@ import {
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
+  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   Blockchain,
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
@@ -243,7 +244,7 @@ export class Backend {
       name: NOTIFICATION_KEYRING_STORE_CREATED,
       data: {
         // Hardcoded to Solana for now, but will be dynamic in the future.
-        blockchain: Blockchain.SOLANA,
+        activeBlockchain: Blockchain.SOLANA,
         activeWallet: await this.activeWallet(),
         url: data.solana.cluster,
         commitment: data.solana.commitment,
@@ -259,6 +260,8 @@ export class Backend {
 
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
+
+    const activeBlockchain = this.activeBlockchain();
     const activeWallet = await this.activeWallet();
     const url = await this.solanaConnectionUrlRead();
     const commitment = await this.solanaCommitmentRead();
@@ -266,6 +269,7 @@ export class Backend {
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
       data: {
+        activeBlockchain,
         activeWallet,
         url,
         commitment,
@@ -319,7 +323,7 @@ export class Backend {
   }
 
   // Set the currently active blockchain.
-  activeBlockchainUpdate(blockchain: string) {
+  activeBlockchainUpdate(blockchain: Blockchain) {
     return this.keyringStore.activeBlockchainUpdate(blockchain);
   }
 
@@ -329,22 +333,32 @@ export class Backend {
 
   async activeWalletUpdate(newWallet: string): Promise<string> {
     await this.keyringStore.activeWalletUpdate(newWallet);
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
-      data: {
-        blockchain: this.activeBlockchain(),
-        activeWallet: newWallet,
-      },
-    });
+
+    if (this.activeBlockchain() === Blockchain.SOLANA) {
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
+        data: {
+          activeWallet: newWallet,
+        },
+      });
+    } else if (this.activeBlockchain() === Blockchain.ETHEREUM) {
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
+        data: {
+          activeWallet: newWallet,
+        },
+      });
+    }
+
     return SUCCESS_RESPONSE;
   }
 
-  async keyringDeriveWallet(): Promise<string> {
-    const [pubkey, name] = await this.keyringStore.deriveNextKey();
+  async keyringDeriveWallet(blockchain: Blockchain): Promise<string> {
+    const [pubkey, name] = await this.keyringStore.deriveNextKey(blockchain);
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_DERIVED_WALLET,
       data: {
-        blockchain: this.activeBlockchain(),
+        blockchain,
         publicKey: pubkey.toString(),
         name,
       },
@@ -401,15 +415,20 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async importSecretKey(secretKey: string, name: string): Promise<string> {
+  async importSecretKey(
+    blockchain: Blockchain,
+    secretKey: string,
+    name: string
+  ): Promise<string> {
     const [publicKey, _name] = await this.keyringStore.importSecretKey(
+      blockchain,
       secretKey,
       name
     );
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
       data: {
-        blockchain: this.activeBlockchain(),
+        blockchain,
         publicKey,
         name: _name,
       },

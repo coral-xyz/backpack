@@ -25,6 +25,7 @@ import {
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
+  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
 } from "@coral-xyz/common";
 import { KeyringStoreStateEnum, useUpdateAllSplTokenAccounts } from "../";
 import * as atoms from "../atoms";
@@ -117,6 +118,9 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
           handleSolanaActiveWalletUpdated(notif);
           break;
+        case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
+          handleEthereumActiveWalletUpdated(notif);
+          break;
         default:
           break;
       }
@@ -128,12 +132,15 @@ export function NotificationsProvider(props: any) {
     const handleKeyringStoreCreated = (_notif: Notification) => {
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
     };
+
     const handleKeyringStoreLocked = (_notif: Notification) => {
       setKeyringStoreState(KeyringStoreStateEnum.Locked);
     };
+
     const handleKeyringStoreUnlocked = (_notif: Notification) => {
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
     };
+
     const handleKeyringKeyDelete = (notif: Notification) => {
       const { deletedPublicKey } = notif.data;
       // Remove the deleted key from the key list.
@@ -160,6 +167,7 @@ export function NotificationsProvider(props: any) {
         };
       });
     };
+
     const handleKeynameUpdate = (notif: Notification) => {
       setWalletPublicKeys((current: any) => {
         const next: WalletPublicKeys = { ...current };
@@ -175,8 +183,11 @@ export function NotificationsProvider(props: any) {
         return next;
       });
     };
+
     const handleKeyringDerivedWallet = (notif: Notification) => {
       setWalletPublicKeys((current: any) => {
+        console.log(notif);
+        console.log(current);
         return {
           ...current,
           [notif.data.blockchain]: {
@@ -191,12 +202,18 @@ export function NotificationsProvider(props: any) {
         };
       });
     };
+
     const handleSolanaActiveWalletUpdated = (notif: Notification) => {
       setActiveWallet(notif.data.activeWallet);
       allPlugins().forEach((p) => {
         p.pushPublicKeyChangedNotification(notif.data.activeWallet);
       });
     };
+
+    const handleEthereumActiveWalletUpdated = (notif: Notification) => {
+      setActiveWallet(notif.data.activeWallet);
+    };
+
     const handleKeyringImportedSecretKey = (notif: Notification) => {
       setWalletPublicKeys((current: any) => {
         return {
@@ -215,36 +232,46 @@ export function NotificationsProvider(props: any) {
         };
       });
     };
+
     const handleResetMnemonic = (notif: Notification) => {
       // TODO.
     };
+
     const handleReset = (_notif: Notification) => {
       setKeyringStoreState(KeyringStoreStateEnum.NeedsOnboarding);
     };
+
     const handleApprovedOriginsUpdate = (notif: Notification) => {
       setApprovedOrigins(notif.data.approvedOrigins);
     };
+
     const handleNavigationUrlDidChange = (notif: Notification) => {
       navigate(notif.data.url);
     };
+
     const handleAutoLockSecsUpdated = (notif: Notification) => {
       setAutoLockSecs(notif.data.autoLockSecs);
     };
+
     const handleIsDarkModeUpdated = (notif: Notification) => {
       setIsDarkMode(notif.data.darkMode);
     };
+
     const handleSolanaExplorerUpdated = (notif: Notification) => {
       setSolanaExplorer(notif.data.explorer);
     };
+
     const handleSolanaCommitmentUpdated = (notif: Notification) => {
       setSolanaCommitment(notif.data.commitment);
     };
+
     const handleSolanaConnectionUrlUpdated = (notif: Notification) => {
       setConnectionUrl(notif.data.url);
       allPlugins().forEach((p) => {
         p.pushConnectionChangedNotification(notif.data.url);
       });
     };
+
     const handleSolanaSplTokensDidUpdate = (notif: Notification) => {
       const publicKey = notif.data.publicKey;
       const connectionUrl = notif.data.connectionUrl;

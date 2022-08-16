@@ -75,7 +75,7 @@ export class BlockchainKeyring {
     mnemonic: string,
     derivationPath: DerivationPath,
     accountIndices: Array<number>
-  ) {
+  ): Promise<Array<[string, string]>> {
     // Initialize keyrings.
     this.hdKeyring = this.hdKeyringFactory.fromMnemonic(
       mnemonic,
@@ -88,11 +88,14 @@ export class BlockchainKeyring {
     this.deletedWallets = [];
 
     // Persist a given name for this wallet.
+    const newAccounts: Array<[string, string]> = [];
     for (const index of accountIndices) {
       const name = DefaultKeyname.defaultDerived(index);
       const pubkey = this.hdKeyring.getPublicKey(index);
       await store.setKeyname(pubkey, name);
+      newAccounts.push([pubkey, name]);
     }
+    return newAccounts;
   }
 
   public exportSecretKey(pubkey: string): string {
@@ -205,15 +208,28 @@ export class BlockchainKeyring {
     return keyring.signMessage(msgBuffer, walletAddress);
   }
 
-  private getKeyring(walletAddress: string): Keyring {
-    let found = this.hdKeyring!.publicKeys().find((k) => k === walletAddress);
+  private getKeyring(pubkey: string): Keyring {
+    let found = this.hdKeyring!.publicKeys().find((k) => k === pubkey);
     if (found) {
       return this.hdKeyring!;
     }
-    found = this.importedKeyring!.publicKeys().find((k) => k === walletAddress);
+    found = this.importedKeyring!.publicKeys().find((k) => k === pubkey);
     if (found) {
       return this.importedKeyring!;
     }
     return this.ledgerKeyring!;
+  }
+
+  public hasPublicKey(pubkey: string): boolean {
+    for (const keyring of [
+      this.hdKeyring!,
+      this.importedKeyring!,
+      this.ledgerKeyring!,
+    ]) {
+      if (keyring.publicKeys().find((k) => k === pubkey)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

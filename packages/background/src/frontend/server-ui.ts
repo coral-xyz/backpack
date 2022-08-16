@@ -7,6 +7,7 @@ import type {
   DerivationPath,
   Context,
   EventEmitter,
+  Blockchain,
 } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
 import {
@@ -127,9 +128,14 @@ async function handle<T = any>(
     case UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE:
       return handleKeyringStoreKeepAlive(ctx);
     case UI_RPC_METHOD_KEYRING_DERIVE_WALLET:
-      return await handleKeyringDeriveWallet(ctx);
+      return await handleKeyringDeriveWallet(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY:
-      return await handleKeyringImportSecretKey(ctx, params[0], params[1]);
+      return await handleKeyringImportSecretKey(
+        ctx,
+        params[0],
+        params[1],
+        params[2]
+      );
     case UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY:
       return handleKeyringExportSecretKey(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC:
@@ -313,7 +319,7 @@ function handleKeyringStoreKeepAlive(
 
 async function handleActiveBlockchainUpdate(
   ctx: Context<Backend>,
-  blockchain: string
+  blockchain: Blockchain
 ) {
   const resp = ctx.backend.activeBlockchainUpdate(blockchain);
   return [resp];
@@ -342,9 +348,10 @@ async function handleKeyringStoreReadAllPubkeys(
 }
 
 async function handleKeyringDeriveWallet(
-  ctx: Context<Backend>
+  ctx: Context<Backend>,
+  blockchain: Blockchain
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.keyringDeriveWallet();
+  const resp = await ctx.backend.keyringDeriveWallet(blockchain);
   return [resp];
 }
 
@@ -388,10 +395,11 @@ async function handlePasswordUpdate(
 
 async function handleKeyringImportSecretKey(
   ctx: Context<Backend>,
+  blockchain: Blockchain,
   secretKey: string,
   name: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.importSecretKey(secretKey, name);
+  const resp = await ctx.backend.importSecretKey(blockchain, secretKey, name);
   return [resp];
 }
 
