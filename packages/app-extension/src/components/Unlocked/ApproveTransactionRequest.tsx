@@ -14,9 +14,14 @@ import {
 import { Plugin } from "@coral-xyz/react-xnft-renderer";
 import { Typography } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { walletAddressDisplay, PrimaryButton } from "../common";
+import {
+  walletAddressDisplay,
+  PrimaryButton,
+  SecondaryButton,
+} from "../common";
 import { Scrollbar } from "../common/Layout/Scrollbar";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
+import { SettingsList } from "../common/Settings/List";
 
 const useStyles = styles((theme) => ({
   confirmRow: {
@@ -35,6 +40,12 @@ const useStyles = styles((theme) => ({
     lineHeight: "16px",
     fontWeight: 500,
     color: theme.custom.colors.fontColor,
+  },
+  approveTableRoot: {
+    backgroundColor: `${theme.custom.colors.bg2} !important`,
+    "&:hover": {
+      opacity: 1,
+    },
   },
 }));
 
@@ -105,8 +116,8 @@ function SendTransactionRequest({ onClose }: any) {
         flexDirection: "column",
       }}
     >
-      {request && plugin && (
-        <div style={{ padding: "24px", flex: 1 }}>
+      <div style={{ padding: "24px", flex: 1 }}>
+        {request && plugin && (
           <Scrollbar>
             {request?.kind === "sign-tx" ? (
               <SignTransaction transaction={request?.data} plugin={plugin} />
@@ -119,18 +130,26 @@ function SendTransactionRequest({ onClose }: any) {
               />
             )}
           </Scrollbar>
-        </div>
-      )}
+        )}
+      </div>
       <div
         style={{
           marginLeft: "16px",
           marginBottom: "16px",
           marginRight: "16px",
+          display: "flex",
         }}
       >
+        <SecondaryButton
+          onClick={() => setRequest(undefined)}
+          label={"Cancel"}
+          style={{
+            marginRight: "8px",
+          }}
+        />
         <PrimaryButton
           onClick={() => onConfirm()}
-          label="Send"
+          label="Approve"
           type="submit"
           data-testid="Send"
         />
@@ -189,6 +208,64 @@ function _SignTransaction({
 }) {
   const theme = useCustomTheme();
   const classes = useStyles();
+  const menuItems = {
+    xNFT: {
+      onClick: () => {},
+      detail: (
+        <Typography
+          style={{
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: "200px",
+            fontSize: "14px",
+          }}
+        >
+          {plugin.iframeUrl}
+        </Typography>
+      ),
+      classes: { root: classes.approveTableRoot },
+    },
+    Network: {
+      onClick: () => {},
+      detail: (
+        <Typography
+          style={{
+            fontSize: "14px",
+          }}
+        >
+          Solana
+        </Typography>
+      ),
+      classes: { root: classes.approveTableRoot },
+    },
+    "Network Fee": {
+      onClick: () => {},
+      detail: (
+        <Typography
+          style={{
+            fontSize: "14px",
+          }}
+        >
+          0.000005 SOL
+        </Typography>
+      ),
+      classes: { root: classes.approveTableRoot },
+    },
+    "Sending From": {
+      onClick: () => {},
+      detail: (
+        <Typography
+          style={{
+            fontSize: "14px",
+          }}
+        >
+          {walletAddressDisplay(deserializedTx!.feePayer!)}
+        </Typography>
+      ),
+      classes: { root: classes.approveTableRoot },
+    },
+  };
   return (
     <>
       <Typography
@@ -197,57 +274,46 @@ function _SignTransaction({
           fontWeight: 500,
           fontSize: "18px",
           lineHeight: "24px",
+          textAlign: "center",
         }}
       >
-        Confirm Transaction
+        Approve Transaction
       </Typography>
       <div
         style={{
           marginTop: "18px",
         }}
       >
-        {plugin && (
-          <div className={classes.confirmRow}>
-            <Typography className={classes.confirmRowLabelLeft}>
-              xNFT
-            </Typography>
-            <Typography className={classes.confirmRowLabelRight}>
-              {plugin.iframeUrl}
-            </Typography>
-          </div>
-        )}
-        <div className={classes.confirmRow}>
-          <Typography className={classes.confirmRowLabelLeft}>
-            Network
-          </Typography>
-          <Typography className={classes.confirmRowLabelRight}>
-            Solana
-          </Typography>
-        </div>
-        <div className={classes.confirmRow}>
-          <Typography className={classes.confirmRowLabelLeft}>
-            Network Fee
-          </Typography>
-          <Typography className={classes.confirmRowLabelRight}>
-            - SOL
-          </Typography>
-        </div>
-        <div className={classes.confirmRow}>
-          <Typography className={classes.confirmRowLabelLeft}>
-            Sending from
-          </Typography>
-          <Typography className={classes.confirmRowLabelRight}>
-            {walletAddressDisplay(deserializedTx!.feePayer!)}
-          </Typography>
-        </div>
-        <Typography
-          className={classes.confirmRowLabelRight}
+        <SettingsList
+          borderColor={theme.custom.colors.border1}
+          menuItems={menuItems}
           style={{
-            wordBreak: "break-all",
+            marginLeft: 0,
+            marginRight: 0,
+            fontSize: "14px",
+          }}
+          textStyle={{
+            fontSize: "14px",
+            color: theme.custom.colors.fontColor3,
+          }}
+        />
+        <div
+          style={{
+            backgroundColor: theme.custom.colors.bg2,
+            borderRadius: "8px",
+            padding: "12px",
+            marginTop: "12px",
           }}
         >
-          {transaction}
-        </Typography>
+          <Typography
+            className={classes.confirmRowLabelRight}
+            style={{
+              wordBreak: "break-all",
+            }}
+          >
+            {transaction}
+          </Typography>
+        </div>
       </div>
     </>
   );
