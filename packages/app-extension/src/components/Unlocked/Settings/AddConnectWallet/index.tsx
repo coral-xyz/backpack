@@ -26,7 +26,6 @@ import {
 import { WalletListItem } from "../YourAccount/EditWallets";
 
 export function AddConnectWalletMenu() {
-  const { close } = useDrawerContext();
   const nav = useNavStack();
   const background = useBackgroundClient();
   const theme = useCustomTheme();
