@@ -344,17 +344,13 @@ function WalletList({
   const keys = keyring.hdPublicKeys
     .map((k: any) => ({ ...k, type: "derived" }))
     .concat(
-      keyring.importedPublicKeys
-        ? keyring.importedPublicKeys.map((k: any) => ({
-            ...k,
-            type: "imported",
-          }))
-        : []
+      keyring.importedPublicKeys.map((k: any) => ({
+        ...k,
+        type: "imported",
+      }))
     )
     .concat(
-      keyring.ledgerPublicKeys
-        ? keyring.ledgerPublicKeys.map((k: any) => ({ ...k, type: "hardware" }))
-        : []
+      keyring.ledgerPublicKeys.map((k: any) => ({ ...k, type: "hardware" }))
     );
 
   return (
