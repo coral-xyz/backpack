@@ -184,12 +184,12 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   }
 
   public deleteKeyIfNeeded(pubkey: string): number {
-    if (this.keypairs.length <= 1) {
-      throw new Error("cannot delete the last key in the hd keyring");
-    }
     const idx = super.deleteKeyIfNeeded(pubkey);
     if (idx < 0) {
       return idx;
+    }
+    if (this.keypairs.length <= 1) {
+      throw new Error("cannot delete the last key in the hd keyring");
     }
     this.accountIndices = this.accountIndices
       .slice(0, idx)
@@ -272,7 +272,7 @@ export class SolanaLedgerKeyring implements LedgerKeyring {
   public deleteKeyIfNeeded(pubkey: string): number {
     const idx = this.derivationPaths.findIndex((dp) => dp.publicKey === pubkey);
     this.derivationPaths = this.derivationPaths.filter(
-      (dp) => dp.publicKey === pubkey
+      (dp) => dp.publicKey !== pubkey
     );
     return idx;
   }
