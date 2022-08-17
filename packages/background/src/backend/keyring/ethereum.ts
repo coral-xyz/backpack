@@ -70,7 +70,7 @@ export class EthereumKeyring implements Keyring {
 
   public deleteKeyIfNeeded(pubkey: string): number {
     const index = this.wallets.findIndex((w) => w.address === pubkey);
-    this.wallets = this.wallets.filter((w) => w.address === pubkey);
+    this.wallets = this.wallets.filter((w) => w.address !== pubkey);
     return index;
   }
 

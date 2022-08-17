@@ -395,11 +395,13 @@ export class Backend {
     if (publicKey === active) {
       // Invariant: must have at least one hd pubkey.
       const blockchainKeyrings = await this.keyringStoreReadAllPubkeys();
-      // Take the first available hd public key for the same blockchain and set
-      // it to the active wallet
-      await this.activeWalletUpdate(
-        blockchainKeyrings[blockchain].hdPublicKeys[0].publicKey
-      );
+      // Take the first available hd public key from the remainder for the same
+      // blockchain and set it to the active wallet
+      const filteredHdPublicKeys = blockchainKeyrings[
+        blockchain
+      ].hdPublicKeys.filter((k: any) => k.publicKey !== active);
+      console.log("Setting active", filteredHdPublicKeys[0].publicKey);
+      await this.activeWalletUpdate(filteredHdPublicKeys[0].publicKey);
     }
 
     await this.keyringStore.keyDelete(blockchain, publicKey);

@@ -259,8 +259,6 @@ export class KeyringStore {
 
   public async keyDelete(blockchain: Blockchain, pubkey: string) {
     return this.withUnlock(async () => {
-      console.log("Blockchain", blockchain);
-      console.log("Pubkey", pubkey);
       const blockchainKeyring = this.blockchains.get(blockchain);
       await blockchainKeyring!.keyDelete(pubkey);
       await this.persist();
