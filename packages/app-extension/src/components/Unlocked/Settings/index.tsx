@@ -1,5 +1,6 @@
 import { useEffect, useState, Suspense } from "react";
 import * as bs58 from "bs58";
+import { ethers } from "ethers";
 import { Box, Typography, IconButton } from "@mui/material";
 import {
   Add,
@@ -671,12 +672,11 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   }, [theme]);
 
   const onClick = async () => {
-    const kp = decodeAccount(secretKey);
-    if (!kp) {
+    const secretKeyHex = validateSecretKey(blockchain, secretKey);
+    if (!secretKeyHex) {
       setError("Invalid private key");
       return;
     }
-    const secretKeyHex = Buffer.from(kp.secretKey).toString("hex");
 
     const publicKey = await background.request({
       method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
@@ -768,14 +768,33 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   );
 }
 
-function decodeAccount(privateKey: string) {
-  try {
-    return Keypair.fromSecretKey(new Uint8Array(JSON.parse(privateKey)));
-  } catch (_) {
+// Validate a secret key and return a normalised hex representation
+function validateSecretKey(
+  blockchain: Blockchain,
+  secretKey: string
+): string | boolean {
+  if (blockchain === Blockchain.SOLANA) {
+    let keypair;
     try {
-      return Keypair.fromSecretKey(new Uint8Array(bs58.decode(privateKey)));
+      // Attempt to create a keypair from JSON secret key
+      keypair = Keypair.fromSecretKey(new Uint8Array(JSON.parse(secretKey)));
     } catch (_) {
-      return undefined;
+      try {
+        // Attempt to create a keypair from bs58 decode of secret key
+        keypair = Keypair.fromSecretKey(new Uint8Array(bs58.decode(secretKey)));
+      } catch (_) {
+        // Failure
+        return false;
+      }
+      return Buffer.from(keypair.secretKey).toString("hex");
+    }
+  } else if (blockchain === Blockchain.ETHEREUM) {
+    try {
+      const wallet = new ethers.Wallet(secretKey);
+      return wallet.privateKey;
+    } catch (_) {
+      return false;
     }
   }
+  throw new Error("secret key validation not implemented for blockchain");
 }

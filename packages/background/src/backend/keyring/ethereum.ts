@@ -80,14 +80,15 @@ export class EthereumKeyring implements Keyring {
   // @ts-ignore
   public async signMessage(message: Buffer, address: string): Promise<string> {}
 
-  // @ts-ignore
   public exportSecretKey(address: string): string | null {
-    // todo
+    const wallet = this.wallets.find((w) => w.address === address);
+    return wallet ? wallet.privateKey : null;
   }
 
-  // @ts-ignore
   public importSecretKey(secretKey: string): string {
-    // todo
+    const wallet = new ethers.Wallet(secretKey);
+    this.wallets.push(wallet);
+    return wallet.address;
   }
 
   public toJson(): any {
@@ -98,15 +99,8 @@ export class EthereumKeyring implements Keyring {
       ),
     };
   }
-
-  private findWallet(address: string): Wallet {
-    const wallet = this.wallets.find((w) => w.publicKey === address);
-    if (!wallet) {
-      throw new Error("invaild wallet");
-    }
-    return wallet;
-  }
 }
+
 export class EthereumHdKeyringFactory implements HdKeyringFactory {
   public fromMnemonic(
     mnemonic: string,

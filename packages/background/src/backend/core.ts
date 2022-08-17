@@ -400,7 +400,6 @@ export class Backend {
       const filteredHdPublicKeys = blockchainKeyrings[
         blockchain
       ].hdPublicKeys.filter((k: any) => k.publicKey !== active);
-      console.log("Setting active", filteredHdPublicKeys[0].publicKey);
       await this.activeWalletUpdate(filteredHdPublicKeys[0].publicKey);
     }
 
