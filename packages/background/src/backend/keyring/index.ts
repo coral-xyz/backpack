@@ -275,13 +275,18 @@ export class KeyringStore {
     });
   }
 
-  public async ledgerImport(dPath: string, account: number, pubkey: string) {
+  public async ledgerImport(
+    blockchain: Blockchain,
+    dPath: string,
+    account: number,
+    pubkey: string
+  ) {
     return this.withUnlock(async () => {
-      const ledgerKeyring = this.activeBlockchainKeyring().ledgerKeyring!;
+      const blockchainKeyring = this.blockchains.get(blockchain);
+      const ledgerKeyring = blockchainKeyring!.ledgerKeyring!;
       const name = DefaultKeyname.defaultLedger(ledgerKeyring.keyCount());
       await ledgerKeyring.ledgerImport(dPath, account, pubkey);
       await store.setKeyname(pubkey, name);
-
       await this.persist();
     });
   }

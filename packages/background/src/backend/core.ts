@@ -487,8 +487,13 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async ledgerImport(dPath: string, account: number, pubkey: string) {
-    await this.keyringStore.ledgerImport(dPath, account, pubkey);
+  async ledgerImport(
+    blockchain: Blockchain,
+    dPath: string,
+    account: number,
+    pubkey: string
+  ) {
+    await this.keyringStore.ledgerImport(blockchain, dPath, account, pubkey);
     return SUCCESS_RESPONSE;
   }
 

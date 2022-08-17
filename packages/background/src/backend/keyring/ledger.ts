@@ -39,7 +39,7 @@ export class LedgerKeyringBase {
   public deleteKeyIfNeeded(pubkey: string): number {
     const idx = this.derivationPaths.findIndex((dp) => dp.publicKey === pubkey);
     this.derivationPaths = this.derivationPaths.filter(
-      (dp) => dp.publicKey === pubkey
+      (dp) => dp.publicKey !== pubkey
     );
     return idx;
   }

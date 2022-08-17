@@ -179,13 +179,16 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   }
 
   public deleteKeyIfNeeded(pubkey: string): number {
-    if (this.keypairs.length <= 1) {
-      throw new Error("cannot delete the last key in the hd keyring");
-    }
-    const idx = super.deleteKeyIfNeeded(pubkey);
+    const idx = this.keypairs.findIndex(
+      (kp) => kp.publicKey.toString() === pubkey
+    );
     if (idx < 0) {
       return idx;
     }
+    if (this.keypairs.length <= 1) {
+      throw new Error("cannot delete the last key in the hd keyring");
+    }
+    super.deleteKeyIfNeeded(pubkey);
     this.accountIndices = this.accountIndices
       .slice(0, idx)
       .concat(this.accountIndices.slice(idx + 1));

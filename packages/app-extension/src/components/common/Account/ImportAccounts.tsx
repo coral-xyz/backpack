@@ -211,16 +211,28 @@ export function ImportAccounts({
     setSelectedAccounts(newSelectedAccounts);
   };
 
-  const derivationPathOptions = [
-    {
-      path: DerivationPath.Bip44,
-      label: "44'/501'/",
-    },
-    {
-      path: DerivationPath.Bip44Change,
-      label: "44'/501'/0'/",
-    },
-  ];
+  const derivationPathOptions = {
+    [Blockchain.SOLANA]: [
+      {
+        path: DerivationPath.Bip44,
+        label: "44'/501'/",
+      },
+      {
+        path: DerivationPath.Bip44Change,
+        label: "44'/501'/0'/",
+      },
+    ],
+    [Blockchain.ETHEREUM]: [
+      {
+        path: DerivationPath.Bip44,
+        label: "44'/60'/",
+      },
+      {
+        path: DerivationPath.Bip44Change,
+        label: "44'/60'/0'/",
+      },
+    ],
+  }[blockchain];
 
   return (
     <Box
@@ -345,7 +357,7 @@ export function ImportAccounts({
         }}
       >
         <PrimaryButton
-          label="Import accounts"
+          label="Import Accounts"
           onClick={() => onNext(selectedAccounts, derivationPath, mnemonic)}
           disabled={selectedAccounts.length === 0}
         />

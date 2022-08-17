@@ -44,7 +44,12 @@ export function ConnectHardware({
     for (const account of accounts) {
       await background.request({
         method: UI_RPC_METHOD_LEDGER_IMPORT,
-        params: [derivationPath, account.index, account.publicKey.toString()],
+        params: [
+          blockchain,
+          derivationPath,
+          account.index,
+          account.publicKey.toString(),
+        ],
       });
     }
 
