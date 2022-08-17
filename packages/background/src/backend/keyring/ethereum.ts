@@ -9,41 +9,8 @@ import type {
   HdKeyringFactory,
   HdKeyringJson,
 } from "./types";
+import { deriveEthereumWallets, deriveEthereumWallet } from "./crypto";
 import { DerivationPath } from "@coral-xyz/common";
-
-function deriveWallets(
-  seed: Buffer,
-  derivationPath: DerivationPath,
-  accountIndices: Array<number>
-): Array<Wallet> {
-  const wallets: Array<Wallet> = [];
-  for (const accountIndex of accountIndices) {
-    wallets.push(deriveWallet(seed, accountIndex, derivationPath));
-  }
-  return wallets;
-}
-
-function deriveWallet(
-  seed: Buffer,
-  accountIndex: number,
-  derivationPath: DerivationPath
-): Wallet {
-  const hdNode = ethers.utils.HDNode.fromSeed(seed);
-  const path = derivePathStr(derivationPath, accountIndex);
-  const child = hdNode.derivePath(path);
-  return new ethers.Wallet(child.privateKey);
-}
-
-function derivePathStr(derivationPath: DerivationPath, accountIndex: number) {
-  switch (derivationPath) {
-    case DerivationPath.Bip44:
-      return accountIndex === 0 ? `m/44'/60'` : `m/44'/60'/${accountIndex - 1}`;
-    case DerivationPath.Bip44Change:
-      return `m/44'/60'/${accountIndex}/0'`;
-    default:
-      throw new Error(`invalid derivation path: ${derivationPath}`);
-  }
-}
 
 export class EthereumKeyringFactory implements KeyringFactory {
   fromJson(payload: KeyringJson): Keyring {
@@ -74,22 +41,22 @@ export class EthereumKeyring implements Keyring {
     return index;
   }
 
-  // @ts-ignore
-  public async signTransaction(tx: Buffer, address: string): Promise<string> {}
-
-  // @ts-ignore
-  public async signMessage(message: Buffer, address: string): Promise<string> {}
+  public importSecretKey(secretKey: string): string {
+    const wallet = new ethers.Wallet(secretKey);
+    this.wallets.push(wallet);
+    return wallet.address;
+  }
 
   public exportSecretKey(address: string): string | null {
     const wallet = this.wallets.find((w) => w.address === address);
     return wallet ? wallet.privateKey : null;
   }
 
-  public importSecretKey(secretKey: string): string {
-    const wallet = new ethers.Wallet(secretKey);
-    this.wallets.push(wallet);
-    return wallet.address;
-  }
+  // @ts-ignore
+  public async signTransaction(tx: Buffer, address: string): Promise<string> {}
+
+  // @ts-ignore
+  public async signMessage(message: Buffer, address: string): Promise<string> {}
 
   public toJson(): any {
     return {
@@ -114,7 +81,7 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
       throw new Error("Invalid seed words");
     }
     const seed = mnemonicToSeedSync(mnemonic);
-    const wallets = deriveWallets(seed, derivationPath, accountIndices);
+    const wallets = deriveEthereumWallets(seed, derivationPath, accountIndices);
     return new EthereumHdKeyring({
       mnemonic,
       seed,
@@ -133,7 +100,7 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
   public fromJson(obj: HdKeyringJson): HdKeyring {
     const { mnemonic, seed: seedStr, accountIndices, derivationPath } = obj;
     const seed = Buffer.from(seedStr, "hex");
-    const wallets = deriveWallets(seed, derivationPath, accountIndices);
+    const wallets = deriveEthereumWallets(seed, derivationPath, accountIndices);
     return new EthereumHdKeyring({
       mnemonic,
       seed,
@@ -160,7 +127,7 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
 
   public deriveNext(): [string, number] {
     const nextAccountIndex = Math.max(...this.accountIndices) + 1;
-    const wallet = deriveWallet(
+    const wallet = deriveEthereumWallet(
       this.seed,
       nextAccountIndex,
       this.derivationPath

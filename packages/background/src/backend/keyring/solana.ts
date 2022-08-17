@@ -11,7 +11,7 @@ import {
   LEDGER_METHOD_SIGN_TRANSACTION,
   DerivationPath,
 } from "@coral-xyz/common";
-import { deriveKeypairs, deriveKeypair } from "./crypto";
+import { deriveSolanaKeypairs, deriveSolanaKeypair } from "./crypto";
 import type {
   ImportedDerivationPath,
   Keyring,
@@ -112,7 +112,7 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
       throw new Error("Invalid seed words");
     }
     const seed = mnemonicToSeedSync(mnemonic);
-    const keypairs = deriveKeypairs(seed, derivationPath, accountIndices);
+    const keypairs = deriveSolanaKeypairs(seed, derivationPath, accountIndices);
     return new SolanaHdKeyring({
       mnemonic,
       seed,
@@ -127,7 +127,7 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
     const seed = mnemonicToSeedSync(mnemonic);
     const accountIndices = [0];
     const derivationPath = DerivationPath.Bip44;
-    const keypairs = deriveKeypairs(seed, derivationPath, accountIndices);
+    const keypairs = deriveSolanaKeypairs(seed, derivationPath, accountIndices);
 
     return new SolanaHdKeyring({
       mnemonic,
@@ -141,7 +141,7 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
   public fromJson(obj: HdKeyringJson): HdKeyring {
     const { mnemonic, seed: seedStr, accountIndices, derivationPath } = obj;
     const seed = Buffer.from(seedStr, "hex");
-    const keypairs = deriveKeypairs(seed, derivationPath, accountIndices);
+    const keypairs = deriveSolanaKeypairs(seed, derivationPath, accountIndices);
 
     const kr = new SolanaHdKeyring({
       mnemonic,
@@ -200,7 +200,7 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   public deriveNext(): [string, number] {
     // TODO: this may not be the desired behaviour, what about non-contiguous indices?
     const nextAccountIndex = Math.max(...this.accountIndices) + 1;
-    const kp = deriveKeypair(
+    const kp = deriveSolanaKeypair(
       this.seed.toString("hex"),
       nextAccountIndex,
       this.derivationPath
