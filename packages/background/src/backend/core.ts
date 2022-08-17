@@ -18,6 +18,7 @@ import {
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_RESET,
+  NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_DARK_MODE_UPDATED,
@@ -323,8 +324,18 @@ export class Backend {
   }
 
   // Set the currently active blockchain.
-  activeBlockchainUpdate(blockchain: Blockchain) {
-    return this.keyringStore.activeBlockchainUpdate(blockchain);
+  activeBlockchainUpdate(newActiveBlockchain: Blockchain) {
+    const oldActiveBlockchain = this.activeBlockchain();
+    this.keyringStore.activeBlockchainUpdate(newActiveBlockchain);
+    if (oldActiveBlockchain !== newActiveBlockchain) {
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED,
+        data: {
+          oldActiveBlockchain,
+          newActiveBlockchain,
+        },
+      });
+    }
   }
 
   async activeWallet(): Promise<string> {
@@ -332,7 +343,21 @@ export class Backend {
   }
 
   async activeWalletUpdate(newWallet: string): Promise<string> {
+    // Updating the active wallet can change the active blockchain, so save old
+    // blockchain to emit event if it changes
+    const oldActiveBlockchain = this.activeBlockchain();
     await this.keyringStore.activeWalletUpdate(newWallet);
+    const newActiveBlockchain = this.activeBlockchain();
+
+    if (oldActiveBlockchain !== newActiveBlockchain) {
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED,
+        data: {
+          oldActiveBlockchain,
+          newActiveBlockchain,
+        },
+      });
+    }
 
     if (this.activeBlockchain() === Blockchain.SOLANA) {
       this.events.emit(BACKEND_EVENT, {

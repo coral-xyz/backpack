@@ -332,6 +332,7 @@ export class KeyringStore {
     }
   }
 
+  // Load wallet from legacy JSON format (pre multichain)
   private fromLegacyJson(json: any) {
     const { activeBlockchainLabel, solana } = json;
     this.mnemonic = solana.hdKeyring.mnemonic;
@@ -432,6 +433,7 @@ export class KeyringStore {
 
   public async activeWalletUpdate(newWallet: string) {
     return this.withUnlock(async () => {
+      // If the active wallet changes, update the active blockchain to match the active wallet
       this.activeBlockchainUpdate(this.blockchainForPublicKey(newWallet));
       await this.activeBlockchainKeyring().activeWalletUpdate(newWallet);
       await this.persist();
@@ -453,8 +455,8 @@ export class KeyringStore {
     return this.activeBlockchain_!;
   }
 
-  public activeBlockchainUpdate(activeBlockchain: Blockchain) {
-    this.activeBlockchain_ = activeBlockchain;
+  public activeBlockchainUpdate(newActiveBlockchain: Blockchain) {
+    this.activeBlockchain_ = newActiveBlockchain;
   }
 
   public blockchainForPublicKey(pubkey: string): Blockchain {
