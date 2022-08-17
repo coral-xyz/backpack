@@ -6,7 +6,7 @@ import {
   PrimaryButton,
   SubtextParagraph,
 } from "../../../../common";
-import { SolanaIcon } from "../../../../common/Icon";
+import { EthereumIcon, SolanaIcon } from "../../../../common/Icon";
 
 export function ConnectHardwareApp({
   blockchain,
@@ -18,7 +18,7 @@ export function ConnectHardwareApp({
   const header = {
     [Blockchain.SOLANA]: { icon: <SolanaIcon />, text: "Open the Solana app" },
     [Blockchain.ETHEREUM]: {
-      icon: <SolanaIcon />, // TODO replace with Ethereum logo
+      icon: <EthereumIcon />,
       text: "Open the Ethereum app",
     },
   }[blockchain];
