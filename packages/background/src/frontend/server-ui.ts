@@ -122,7 +122,7 @@ async function handle<T = any>(
     case UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS:
       return await handleKeyringStoreReadAllPubkeys(ctx);
     case UI_RPC_METHOD_KEYRING_KEY_DELETE:
-      return await handleKeyringKeyDelete(ctx, params[0]);
+      return await handleKeyringKeyDelete(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_STORE_STATE:
       return await handleKeyringStoreState(ctx);
     case UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE:
@@ -374,9 +374,10 @@ async function handleKeynameUpdate(
 
 async function handleKeyringKeyDelete(
   ctx: Context<Backend>,
+  blockchain: Blockchain,
   pubkey: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.keyringKeyDelete(pubkey);
+  const resp = await ctx.backend.keyringKeyDelete(blockchain, pubkey);
   return [resp];
 }
 

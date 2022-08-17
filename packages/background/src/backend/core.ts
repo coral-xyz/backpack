@@ -384,22 +384,30 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async keyringKeyDelete(publicKey: string): Promise<string> {
+  async keyringKeyDelete(
+    blockchain: Blockchain,
+    publicKey: string
+  ): Promise<string> {
     const active = await this.activeWallet();
 
     // If we're removing the currently active key then we need to update it
     // first.
     if (publicKey === active) {
       // Invariant: must have at least one hd pubkey.
-      const { hdPublicKeys } = await this.keyringStoreReadAllPubkeys();
-      await this.activeWalletUpdate(hdPublicKeys[0].publicKey);
+      const blockchainKeyrings = await this.keyringStoreReadAllPubkeys();
+      // Take the first available hd public key for the same blockchain and set
+      // it to the active wallet
+      await this.activeWalletUpdate(
+        blockchainKeyrings[blockchain].hdPublicKeys[0].publicKey
+      );
     }
 
-    await this.keyringStore.keyDelete(publicKey);
+    await this.keyringStore.keyDelete(blockchain, publicKey);
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_KEY_DELETE,
       data: {
+        blockchain,
         deletedPublicKey: publicKey,
       },
     });

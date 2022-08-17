@@ -62,15 +62,16 @@ export class EthereumKeyringFactory implements KeyringFactory {
 }
 
 export class EthereumKeyring implements Keyring {
-  constructor(readonly wallets: Array<Wallet>) {}
+  constructor(public wallets: Array<Wallet>) {}
 
   public publicKeys(): Array<string> {
     return this.wallets.map((w) => w.address);
   }
 
   public deleteKeyIfNeeded(pubkey: string): number {
-    // todo1
-    return -1;
+    const index = this.wallets.findIndex((w) => w.address === pubkey);
+    this.wallets = this.wallets.filter((w) => w.address === pubkey);
+    return index;
   }
 
   // @ts-ignore

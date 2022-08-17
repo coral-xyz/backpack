@@ -142,24 +142,24 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleKeyringKeyDelete = (notif: Notification) => {
-      const { deletedPublicKey } = notif.data;
+      const { blockchain, deletedPublicKey } = notif.data;
       // Remove the deleted key from the key list.
       setWalletPublicKeys((current) => {
         return {
           ...current,
-          [notif.data.blockchain]: {
+          [blockchain]: {
             hdPublicKeys: [
-              ...current[notif.data.blockchain].hdPublicKeys.filter(
+              ...current[blockchain].hdPublicKeys.filter(
                 (key) => key.publicKey !== deletedPublicKey
               ),
             ],
             importedPublicKeys: [
-              ...current[notif.data.blockchain].importedPublicKeys.filter(
+              ...current[blockchain].importedPublicKeys.filter(
                 (key) => key.publicKey !== deletedPublicKey
               ),
             ],
             ledgerPublicKeys: [
-              ...current[notif.data.blockchain].ledgerPublicKeys.filter(
+              ...current[blockchain].ledgerPublicKeys.filter(
                 (key) => key.publicKey !== deletedPublicKey
               ),
             ],
@@ -186,44 +186,67 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleKeyringDerivedWallet = (notif: Notification) => {
+      const { blockchain, publicKey, name } = notif.data;
       setWalletPublicKeys((current: any) => {
+        // Deriving a new wallet can result in the initialisation of this
+        // keyring so no guarantee the keyrings exist
+        const blockchainKeyrings = {
+          hdPublicKeys: [
+            ...(current[blockchain] ? current[blockchain].hdPublicKeys : []),
+            // Add newly derived key
+            {
+              publicKey,
+              name,
+            },
+          ],
+          importedPublicKeys: [
+            ...(current[blockchain]
+              ? current[blockchain].importedPublicKeys
+              : []),
+          ],
+          ledgerPublicKeys: [
+            ...(current[blockchain]
+              ? current[blockchain].ledgerPublicKeys
+              : []),
+          ],
+        };
+
         return {
           ...current,
-          [notif.data.blockchain]: {
-            ...current[notif.data.blockchain],
-            hdPublicKeys: [
-              // hdPublicKeys doesn't necessarily exist for this blockchain if
-              // this keyring derivation resulted in the blockchain keyring
-              // being initialised
-              ...(current[notif.data.blockchain]
-                ? current[notif.data.blockchain].hdPublicKeys
-                : []),
-              {
-                publicKey: notif.data.publicKey,
-                name: notif.data.name,
-              },
-            ],
-          },
+          [blockchain]: blockchainKeyrings,
         };
       });
     };
 
     const handleKeyringImportedSecretKey = (notif: Notification) => {
+      const { blockchain, publicKey, name } = notif.data;
       setWalletPublicKeys((current: any) => {
+        // Although not possible to initialise a new keyring by importing
+        // a secret key, it may be possible in the future so this is handled
+        // the same way as deriving
+        const blockchainKeyrings = {
+          hdPublicKeys: [
+            ...(current[blockchain] ? current[blockchain].hdPublicKeys : []),
+          ],
+          importedPublicKeys: [
+            ...(current[blockchain]
+              ? current[blockchain].importedPublicKeys
+              : []),
+            // Add newly imported key
+            {
+              publicKey,
+              name,
+            },
+          ],
+          ledgerPublicKeys: [
+            ...(current[blockchain]
+              ? current[blockchain].ledgerPublicKeys
+              : []),
+          ],
+        };
         return {
           ...current,
-          [notif.data.blockchain]: {
-            ...current[notif.data.blockchain],
-            importedPublicKeys: [
-              ...(current[notif.data.blockchain]
-                ? current[notif.data.blockchain].importedPublicKeys
-                : []),
-              {
-                publicKey: notif.data.publicKey,
-                name: notif.data.name,
-              },
-            ],
-          },
+          [blockchain]: blockchainKeyrings,
         };
       });
     };

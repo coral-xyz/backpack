@@ -72,6 +72,7 @@ export const WalletDetail: React.FC<{
     "Remove wallet": {
       onClick: () =>
         nav.push("edit-wallets-remove", {
+          blockchain,
           publicKey,
           name,
           type,
