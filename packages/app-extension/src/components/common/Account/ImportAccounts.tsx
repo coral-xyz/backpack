@@ -12,6 +12,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { useBackgroundClient, useAnchorContext } from "@coral-xyz/recoil";
 import {
+  Blockchain,
   DerivationPath,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
@@ -41,11 +42,13 @@ const LOAD_PUBKEY_AMOUNT = 20;
 const DISPLAY_PUBKEY_AMOUNT = 6;
 
 export function ImportAccounts({
+  blockchain,
   mnemonic,
   transport,
   onNext,
   onError,
 }: {
+  blockchain: Blockchain;
   mnemonic?: string;
   transport?: Transport | null;
   onNext: (
@@ -180,10 +183,12 @@ export function ImportAccounts({
     derivationPath: DerivationPath
   ) => {
     const publicKeys = [];
-    for (let k = 0; k < LOAD_PUBKEY_AMOUNT; k += 1) {
-      publicKeys.push(
-        await ledgerCore.getPublicKey(transport, k, derivationPath)
-      );
+    if (blockchain === Blockchain.SOLANA) {
+      for (let k = 0; k < LOAD_PUBKEY_AMOUNT; k += 1) {
+        publicKeys.push(
+          await ledgerCore.getPublicKey(transport, k, derivationPath)
+        );
+      }
     }
     return publicKeys;
   };

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useCustomTheme } from "@coral-xyz/themes";
 import {
+  Blockchain,
   BrowserRuntimeExtension,
   DerivationPath,
   EXTENSION_WIDTH,
@@ -87,6 +88,7 @@ export function Onboarding() {
       }}
     />,
     <ImportAccounts
+      blockchain={Blockchain.SOLANA}
       mnemonic={mnemonic}
       onNext={(accounts: SelectedAccount[], derivationPath: DerivationPath) => {
         setAccounts(accounts);

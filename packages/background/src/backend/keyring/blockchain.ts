@@ -6,6 +6,8 @@ import type {
   HdKeyring,
   KeyringFactory,
   Keyring,
+  LedgerKeyringFactory,
+  LedgerKeyring,
 } from "./types";
 import type { SolanaLedgerKeyring } from "./solana";
 import {
@@ -13,7 +15,11 @@ import {
   SolanaHdKeyringFactory,
   SolanaLedgerKeyringFactory,
 } from "./solana";
-import { EthereumHdKeyringFactory, EthereumKeyringFactory } from "./ethereum";
+import {
+  EthereumHdKeyringFactory,
+  EthereumKeyringFactory,
+  EthereumLedgerKeyringFactory,
+} from "./ethereum";
 import * as store from "../store";
 import { DefaultKeyname } from "../store";
 
@@ -23,17 +29,17 @@ const logger = getLogger("background/backend/keyring");
 export class BlockchainKeyring {
   private hdKeyringFactory: HdKeyringFactory;
   private keyringFactory: KeyringFactory;
-  private ledgerKeyringFactory: SolanaLedgerKeyringFactory; // TODO: make interface
+  private ledgerKeyringFactory: LedgerKeyringFactory;
   private hdKeyring?: HdKeyring;
   private importedKeyring?: Keyring;
-  public ledgerKeyring?: SolanaLedgerKeyring; // TODO: make interface
+  public ledgerKeyring?: LedgerKeyring;
   private activeWallet?: string;
   private deletedWallets?: Array<string>;
 
   constructor(
     hdKeyringFactory: HdKeyringFactory,
     keyringFactory: KeyringFactory,
-    ledgerKeyringFactory: SolanaLedgerKeyringFactory
+    ledgerKeyringFactory: LedgerKeyringFactory
   ) {
     this.hdKeyringFactory = hdKeyringFactory;
     this.keyringFactory = keyringFactory;
@@ -52,7 +58,7 @@ export class BlockchainKeyring {
     return new BlockchainKeyring(
       new EthereumHdKeyringFactory(),
       new EthereumKeyringFactory(),
-      new SolanaLedgerKeyringFactory() // TODO make ethereum
+      new EthereumLedgerKeyringFactory()
     );
   }
 

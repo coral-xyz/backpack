@@ -1,4 +1,5 @@
 import type { DerivationPath } from "@coral-xyz/common";
+import type { LedgerKeyringBase } from "./ledger";
 
 export type KeyringJson = {
   secretKeys: Array<string>;
@@ -46,7 +47,18 @@ export interface HdKeyring extends Keyring {
   getPublicKey(accountIndex: number): string;
 }
 
-export type LedgerKeyring = Keyring;
+export interface LedgerKeyring extends LedgerKeyringBase {
+  signTransaction(tx: Buffer, address: string): Promise<string>;
+  signMessage(tx: Buffer, address: string): Promise<string>;
+  keyCount(): number;
+  connect(): any;
+  ledgerImport(path: string, account: number, publicKey: string): Promise<void>;
+}
+
+export interface LedgerKeyringFactory {
+  init(): LedgerKeyring;
+  fromJson(obj: LedgerKeyringJson): LedgerKeyring;
+}
 
 export type ImportedDerivationPath = {
   path: string;

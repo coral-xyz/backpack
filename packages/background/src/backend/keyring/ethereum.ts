@@ -1,6 +1,11 @@
 import { ethers } from "ethers";
 import type { Wallet } from "ethers";
-import { validateMnemonic, generateMnemonic, mnemonicToSeedSync } from "bip39";
+import { validateMnemonic, mnemonicToSeedSync } from "bip39";
+import {
+  LEDGER_METHOD_SIGN_MESSAGE,
+  LEDGER_METHOD_SIGN_TRANSACTION,
+  DerivationPath,
+} from "@coral-xyz/common";
 import type {
   Keyring,
   KeyringFactory,
@@ -8,9 +13,11 @@ import type {
   HdKeyring,
   HdKeyringFactory,
   HdKeyringJson,
+  LedgerKeyring,
+  LedgerKeyringJson,
 } from "./types";
 import { deriveEthereumWallets, deriveEthereumWallet } from "./crypto";
-import { DerivationPath } from "@coral-xyz/common";
+import { LedgerKeyringBase } from "./ledger";
 
 export class EthereumKeyringFactory implements KeyringFactory {
   fromJson(payload: KeyringJson): Keyring {
@@ -154,5 +161,60 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
       accountIndices: this.accountIndices,
       derivationPath: this.derivationPath,
     };
+  }
+}
+
+const responseResolvers: {
+  [reqId: string]: {
+    resolve: (value: any) => void;
+    reject: (reason?: string) => void;
+  };
+} = {};
+
+export class EthereumLedgerKeyringFactory {
+  public init(): LedgerKeyring {
+    return new EthereumLedgerKeyring([]);
+  }
+
+  public fromJson(obj: LedgerKeyringJson): LedgerKeyring {
+    return new EthereumLedgerKeyring(obj.derivationPaths);
+  }
+}
+
+export class EthereumLedgerKeyring
+  extends LedgerKeyringBase
+  implements LedgerKeyring
+{
+  public async signTransaction(tx: Buffer, address: string): Promise<string> {
+    const path = this.derivationPaths.find((p) => p.publicKey === address);
+    if (!path) {
+      throw new Error("ledger address not found");
+    }
+    return await this.request({
+      method: LEDGER_METHOD_SIGN_TRANSACTION,
+      params: [tx, path.path, path.account],
+    });
+  }
+
+  public async signMessage(msg: Buffer, address: string): Promise<string> {
+    const path = this.derivationPaths.find((p) => p.publicKey === address);
+    if (!path) {
+      throw new Error("ledger address not found");
+    }
+    return await this.request({
+      method: LEDGER_METHOD_SIGN_MESSAGE,
+      params: [msg, path.path, path.account],
+    });
+  }
+
+  public toString(): string {
+    return JSON.stringify({
+      derivationPath: this.derivationPaths,
+    });
+  }
+
+  public static fromString(str: string): EthereumLedgerKeyring {
+    const { derivationPaths } = JSON.parse(str);
+    return new EthereumLedgerKeyring(derivationPaths);
   }
 }

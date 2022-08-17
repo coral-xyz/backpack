@@ -132,7 +132,7 @@ export function AddConnectWalletMenu({
                 }
                 text="Connect a hardware wallet"
                 onClick={() => {
-                  openConnectHardware();
+                  openConnectHardware(blockchain);
                   window.close();
                 }}
               />

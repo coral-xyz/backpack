@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Transport from "@ledgerhq/hw-transport";
 import {
+  Blockchain,
   DerivationPath,
   UI_RPC_METHOD_LEDGER_IMPORT,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
@@ -15,7 +16,13 @@ import type { SelectedAccount } from "../../../../common/Account/ImportAccounts"
 import { OptionsContainer } from "../../../../Onboarding";
 import { WithNav, NavBackButton } from "../../../../common/Layout/Nav";
 
-export function ConnectHardware({ onComplete }: { onComplete: () => void }) {
+export function ConnectHardware({
+  blockchain,
+  onComplete,
+}: {
+  blockchain: Blockchain;
+  onComplete: () => void;
+}) {
   const background = useBackgroundClient();
   const theme = useCustomTheme();
   const [transport, setTransport] = useState<Transport | null>(null);
@@ -59,6 +66,7 @@ export function ConnectHardware({ onComplete }: { onComplete: () => void }) {
   const connectHardwareFlow = [
     <ConnectHardwareWelcome onNext={() => nextStep()} />,
     <ConnectHardwareSearching
+      blockchain={blockchain}
       onNext={(transport) => {
         setTransport(transport);
         nextStep();
@@ -66,6 +74,7 @@ export function ConnectHardware({ onComplete }: { onComplete: () => void }) {
       isConnectFailure={!!transportError}
     />,
     <ImportAccounts
+      blockchain={blockchain}
       transport={transport}
       onNext={async (
         accounts: SelectedAccount[],
