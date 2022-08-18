@@ -49,7 +49,6 @@ import {
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
   UI_RPC_METHOD_APPROVED_ORIGINS_DELETE,
-  UI_RPC_METHOD_LEDGER_CONNECT,
   UI_RPC_METHOD_LEDGER_IMPORT,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_SOLANA_EXPLORER_READ,
@@ -157,8 +156,6 @@ async function handle<T = any>(
     //
     // Ledger.
     //
-    case UI_RPC_METHOD_LEDGER_CONNECT:
-      return await handleLedgerConnect(ctx);
     case UI_RPC_METHOD_LEDGER_IMPORT:
       return await handleKeyringLedgerImport(
         ctx,
@@ -636,11 +633,6 @@ async function handleApprovedOriginsDelete(
   origin: string
 ): Promise<RpcResponse> {
   const resp = await ctx.backend.approvedOriginsDelete(origin);
-  return [resp];
-}
-
-async function handleLedgerConnect(ctx: Context<Backend>) {
-  const resp = await ctx.backend.ledgerConnect();
   return [resp];
 }
 

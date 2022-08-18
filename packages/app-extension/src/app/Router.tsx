@@ -141,7 +141,6 @@ function QueryLocked() {
           id: requestId,
           result: true,
         });
-        //        window.close();
       }}
     />
   );
@@ -171,7 +170,6 @@ function QueryApproval() {
           id: requestId,
           result: didApprove,
         });
-        //        window.close();
       }}
     />
   );
@@ -199,7 +197,6 @@ function QueryApproveTransaction() {
           id: requestId,
           result: didApprove,
         });
-        //        window.close();
       }}
     />
   );
@@ -227,7 +224,6 @@ function QueryApproveAllTransactions() {
           id: requestId,
           result: didApprove,
         });
-        //        window.close();
       }}
     />
   );
@@ -255,7 +251,6 @@ function QueryApproveMessage() {
           id: requestId,
           result: didApprove,
         });
-        //        window.close();
       }}
     />
   );

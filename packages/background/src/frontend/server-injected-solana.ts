@@ -132,6 +132,7 @@ async function handleSolanaConnect(
   const origin = ctx.sender.origin;
   const keyringStoreState = await ctx.backend.keyringStoreState();
   let didApprove = false;
+  let resp: any;
 
   // Use the UI to ask the user if it should connect.
   if (keyringStoreState === "unlocked") {
@@ -139,7 +140,7 @@ async function handleSolanaConnect(
       logger.debug("already approved so automatically connecting");
       didApprove = true;
     } else {
-      const resp = await RequestManager.requestUiAction((requestId: number) => {
+      resp = await RequestManager.requestUiAction((requestId: number) => {
         return openApprovalPopupWindow(
           ctx.sender.origin,
           ctx.sender.tab.title,
@@ -150,7 +151,7 @@ async function handleSolanaConnect(
     }
   } else if (keyringStoreState === "locked") {
     if (await ctx.backend.isApprovedOrigin(origin)) {
-      const resp = await RequestManager.requestUiAction((requestId: number) => {
+      resp = await RequestManager.requestUiAction((requestId: number) => {
         return openLockedPopupWindow(
           ctx.sender.origin,
           ctx.sender.tab.title,
@@ -159,7 +160,7 @@ async function handleSolanaConnect(
       });
       didApprove = !resp.windowClosed && resp.result;
     } else {
-      const resp = await RequestManager.requestUiAction((requestId: number) => {
+      resp = await RequestManager.requestUiAction((requestId: number) => {
         return openLockedApprovalPopupWindow(
           ctx.sender.origin,
           ctx.sender.tab.title,
@@ -171,6 +172,8 @@ async function handleSolanaConnect(
   } else {
     throw new Error("invariant violation keyring not created");
   }
+
+  BrowserRuntimeExtension.closeWindow(resp.window.id);
 
   // If the user approved and unlocked, then we're connected.
   if (didApprove) {
@@ -211,6 +214,8 @@ async function handleSolanaSignAndSendTx(
       walletAddress
     );
   });
+
+  let resp: RpcResponse<string>;
   const didApprove = uiResp.result;
 
   // Only sign if the user clicked approve.
@@ -220,7 +225,12 @@ async function handleSolanaSignAndSendTx(
       walletAddress,
       options
     );
-    return [sig];
+    resp = [sig];
+  }
+
+  BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  if (resp) {
+    return resp;
   }
 
   throw new Error("user denied transaction signature");
@@ -240,12 +250,19 @@ async function handleSolanaSignTx(
       walletAddress
     );
   });
+
+  let resp: RpcResponse<string>;
   const didApprove = uiResp.result;
 
   // Only sign if the user clicked approve.
   if (didApprove) {
     const sig = await ctx.backend.solanaSignTransaction(tx, walletAddress);
-    return [sig];
+    resp = [sig];
+  }
+
+  BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  if (resp) {
+    return resp;
   }
 
   throw new Error("user denied transaction signature");
@@ -265,15 +282,22 @@ async function handleSolanaSignAllTxs(
       walletAddress
     );
   });
+
+  let resp: RpcResponse<string>;
   const didApprove = uiResp.result;
 
   // Sign all if user clicked approve.
   if (didApprove) {
-    const resp = await ctx.backend.solanaSignAllTransactions(
+    const sigs = await ctx.backend.solanaSignAllTransactions(
       txs,
       walletAddress
     );
-    return [resp];
+    resp = [sigs];
+  }
+
+  BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  if (resp) {
+    return resp;
   }
 
   throw new Error("user denied transactions");
@@ -293,17 +317,16 @@ async function handleSolanaSignMessage(
       walletAddress
     );
   });
-  const didApprove = uiResp.result;
 
   let resp: RpcResponse<string>;
+  const didApprove = uiResp.result;
+
   if (didApprove) {
     const sig = await ctx.backend.solanaSignMessage(msg, walletAddress);
     resp = [sig];
   }
 
-  console.log("ARMANI TEST: UI RESP HERE", uiResp);
   BrowserRuntimeExtension.closeWindow(uiResp.window.id);
-
   if (resp) {
     return resp;
   }
@@ -358,7 +381,6 @@ class RequestManager {
             error: undefined,
             windowClosed: true,
             window,
-            windowId: window.id,
           });
         }
       });

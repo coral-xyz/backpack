@@ -7,7 +7,6 @@ import {
   DerivationPath,
   LEDGER_INJECTED_CHANNEL_REQUEST,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
-  LEDGER_METHOD_CONNECT,
   LEDGER_METHOD_SIGN_TRANSACTION,
   LEDGER_METHOD_SIGN_MESSAGE,
 } from "@coral-xyz/common";
@@ -16,6 +15,7 @@ const logger = getLogger("ledger-injection");
 
 // Script entry.
 function main() {
+  logger.debug("armani test");
   logger.debug("starting ledger injection");
   LEDGER.start();
   logger.debug("ledger injection ready");
@@ -35,49 +35,44 @@ class LedgerInjection {
       }
 
       logger.debug("ledger channel request", event);
-      const { id, method, params } = event.data.detail;
 
-      let result: any;
-      switch (method) {
-        case LEDGER_METHOD_CONNECT:
-          result = await this.handleConnect();
-          break;
-        case LEDGER_METHOD_SIGN_TRANSACTION:
-          result = await this.handleSignTransaction(
-            params[0],
-            params[1],
-            params[2]
-          );
-          break;
-        case LEDGER_METHOD_SIGN_MESSAGE:
-          result = await this.handleSignMessage(
-            params[0],
-            params[1],
-            params[2]
-          );
-          break;
-        default:
-          throw new Error("unexpected event");
+      try {
+        const { id, method, params } = event.data.detail;
+
+        let result: any;
+        switch (method) {
+          case LEDGER_METHOD_SIGN_TRANSACTION:
+            result = await this.handleSignTransaction(
+              params[0],
+              params[1],
+              params[2]
+            );
+            break;
+          case LEDGER_METHOD_SIGN_MESSAGE:
+            result = await this.handleSignMessage(
+              params[0],
+              params[1],
+              params[2]
+            );
+            break;
+          default:
+            throw new Error("unexpected event");
+        }
+
+        const resp = {
+          type: LEDGER_INJECTED_CHANNEL_RESPONSE,
+          detail: {
+            id,
+            result,
+            error: undefined,
+          },
+        };
+        window.parent.postMessage(resp, "*");
+      } catch (err) {
+        logger.error("error here", err);
+        throw err;
       }
-
-      const resp = {
-        type: LEDGER_INJECTED_CHANNEL_RESPONSE,
-        detail: {
-          id,
-          result,
-          error: undefined,
-        },
-      };
-      window.parent.postMessage(resp, "*");
     });
-  }
-
-  async handleConnect() {
-    if (this.transport) {
-      throw new Error("already connected to ledger");
-    }
-    this.transport = await TransportWebHid.create();
-    return "success";
   }
 
   async handleSignTransaction(tx: string, dPath: string, account: number) {

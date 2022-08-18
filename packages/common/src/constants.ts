@@ -212,7 +212,6 @@ export const LEDGER_IFRAME_URL = "https://localhost:4443/dist";
 export const LEDGER_INJECTED_CHANNEL_REQUEST = "ledger-injected-request";
 export const LEDGER_INJECTED_CHANNEL_RESPONSE = "ledger-injected-response";
 export const LEDGER_METHOD_UNLOCK = "ledger-method-unlock";
-export const LEDGER_METHOD_CONNECT = "ledger-method-connect";
 export const LEDGER_METHOD_SIGN_TRANSACTION = "ledger-method-sign-transaction";
 export const LEDGER_METHOD_SIGN_MESSAGE = "ledger-method-sign-message";
 

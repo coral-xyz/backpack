@@ -51,7 +51,6 @@ export interface LedgerKeyring extends LedgerKeyringBase {
   signTransaction(tx: Buffer, address: string): Promise<string>;
   signMessage(tx: Buffer, address: string): Promise<string>;
   keyCount(): number;
-  connect(): any;
   ledgerImport(path: string, account: number, publicKey: string): Promise<void>;
 }
 

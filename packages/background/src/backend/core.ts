@@ -507,11 +507,6 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async ledgerConnect() {
-    await this.keyringStore.ledgerConnect();
-    return SUCCESS_RESPONSE;
-  }
-
   async ledgerImport(
     blockchain: Blockchain,
     dPath: string,

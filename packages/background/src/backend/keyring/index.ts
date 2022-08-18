@@ -280,12 +280,6 @@ export class KeyringStore {
     return this.withUnlock(() => {});
   }
 
-  public ledgerConnect() {
-    return this.withUnlock(() => {
-      return this.activeBlockchainKeyring().ledgerKeyring!.connect();
-    });
-  }
-
   public async ledgerImport(
     blockchain: Blockchain,
     dPath: string,
