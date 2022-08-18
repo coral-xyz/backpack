@@ -786,8 +786,8 @@ function validateSecretKey(
         // Failure
         return false;
       }
-      return Buffer.from(keypair.secretKey).toString("hex");
     }
+    return Buffer.from(keypair.secretKey).toString("hex");
   } else if (blockchain === Blockchain.ETHEREUM) {
     try {
       const wallet = new ethers.Wallet(secretKey);
