@@ -1,5 +1,6 @@
 import { useEffect, useState, Suspense } from "react";
 import * as bs58 from "bs58";
+import { ethers } from "ethers";
 import { Box, Typography, IconButton } from "@mui/material";
 import {
   Add,
@@ -9,7 +10,7 @@ import {
   Tab as WindowIcon,
   Settings,
 } from "@mui/icons-material";
-import { PublicKey, Keypair } from "@solana/web3.js";
+import { Keypair } from "@solana/web3.js";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   useBackgroundClient,
@@ -18,7 +19,10 @@ import {
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
+  toTitleCase,
+  Blockchain,
   BACKPACK_FEATURE_POP_MODE,
+  BACKPACK_FEATURE_MULTICHAIN,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
@@ -38,6 +42,7 @@ import {
   WithDrawer,
   CloseButton,
   useDrawerContext,
+  WithMiniDrawer,
 } from "../../common/Layout/Drawer";
 import {
   useNavStack,
@@ -68,7 +73,6 @@ import { EditWallets } from "./YourAccount/EditWallets";
 import { RemoveWallet } from "./YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
-import { WithMiniDrawer } from "../../common/Layout/Drawer";
 import { CheckIcon } from "../../common/Icon";
 
 const useStyles = styles((theme) => ({
@@ -257,12 +261,11 @@ function SettingsMenu() {
 }
 
 function _SettingsContent() {
-  const nav = useNavStack();
   const { close } = useDrawerContext();
   return (
     <div>
       <AvatarHeader />
-      <WalletList close={close} />
+      <WalletLists close={close} />
       <SettingsList close={close} />
     </div>
   );
@@ -300,110 +303,153 @@ function AvatarHeader() {
   );
 }
 
-function WalletList({ close }: { close: () => void }) {
+function WalletLists({ close }: { close: () => void }) {
+  const blockchainKeyrings = useWalletPublicKeys();
+  return (
+    <>
+      {Object.entries(blockchainKeyrings).map(([blockchain, keyring]) => (
+        <WalletList
+          key={blockchain}
+          blockchain={blockchain as Blockchain}
+          keyring={keyring}
+          close={close}
+        />
+      ))}
+    </>
+  );
+}
+
+function WalletList({
+  blockchain,
+  keyring,
+  close,
+}: {
+  blockchain: Blockchain;
+  keyring: any;
+  close: () => void;
+}) {
   const background = useBackgroundClient();
-  const namedPublicKeys = useWalletPublicKeys();
   const active = useActiveWallet();
   const theme = useCustomTheme();
 
-  const clickWallet = (publicKey: PublicKey) => {
+  const clickWallet = (publicKey: string) => {
     background
       .request({
         method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-        params: [publicKey.toString()],
+        params: [publicKey],
       })
       .then((_resp) => close())
       .catch(console.error);
   };
 
-  const keys = namedPublicKeys.hdPublicKeys
-    .map((k) => ({ ...k, type: "derived" }))
+  const keys = keyring.hdPublicKeys
+    .map((k: any) => ({ ...k, type: "derived" }))
     .concat(
-      namedPublicKeys.importedPublicKeys.map((k) => ({
+      keyring.importedPublicKeys.map((k: any) => ({
         ...k,
         type: "imported",
       }))
     )
     .concat(
-      namedPublicKeys.ledgerPublicKeys.map((k) => ({ ...k, type: "hardware" }))
+      keyring.ledgerPublicKeys.map((k: any) => ({ ...k, type: "hardware" }))
     );
 
   return (
-    <>
+    <div style={{ marginBottom: "16px" }}>
+      {BACKPACK_FEATURE_MULTICHAIN && (
+        <Typography
+          style={{
+            marginLeft: "16px",
+            marginRight: "16px",
+            marginBottom: "12px",
+          }}
+        >
+          {toTitleCase(blockchain)}
+        </Typography>
+      )}
       <List>
-        {keys.map(({ name, publicKey, type }, idx: number) => {
-          return (
-            <ListItem
-              key={publicKey.toString()}
-              onClick={() => clickWallet(publicKey)}
-              isFirst={idx === 0}
-              isLast={idx === keys.length - 1}
-              style={{
-                paddingTop: "16px",
-                paddingBottom: "16px",
-                paddingLeft: "12px",
-                paddingRight: "12px",
-              }}
-            >
-              <div
+        {keys.map(
+          (
+            {
+              name,
+              publicKey,
+              type,
+            }: { name: string; publicKey: string; type: string },
+            idx: number
+          ) => {
+            return (
+              <ListItem
+                key={publicKey.toString()}
+                onClick={() => clickWallet(publicKey)}
+                isFirst={idx === 0}
+                isLast={idx === keys.length - 1}
                 style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%",
+                  paddingTop: "16px",
+                  paddingBottom: "16px",
+                  paddingLeft: "12px",
+                  paddingRight: "12px",
                 }}
               >
                 <div
                   style={{
                     display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
                   }}
                 >
                   <div
                     style={{
                       display: "flex",
-                      justifyContent: "center",
-                      flexDirection: "column",
-                      marginRight: "4px",
                     }}
                   >
-                    <WalletAddress
-                      name={name}
-                      publicKey={publicKey}
+                    <div
                       style={{
-                        fontWeight: 500,
-                        lineHeight: "24px",
-                        fontSize: "16px",
+                        display: "flex",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        marginRight: "4px",
                       }}
-                      nameStyle={{
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        maxWidth: "75px",
+                    >
+                      <WalletAddress
+                        name={name}
+                        publicKey={publicKey}
+                        style={{
+                          fontWeight: 500,
+                          lineHeight: "24px",
+                          fontSize: "16px",
+                        }}
+                        nameStyle={{
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          maxWidth: "75px",
+                        }}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        flexDirection: "column",
                       }}
+                    >
+                      <ImportTypeBadge type={type} />
+                    </div>
+                  </div>
+                  {publicKey === active.publicKey && (
+                    <CheckIcon
+                      fill={theme.custom.colors.activeNavButton}
+                      style={{ width: "24px" }}
                     />
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <ImportTypeBadge type={type} />
-                  </div>
+                  )}
                 </div>
-                {publicKey.equals(active.publicKey) && (
-                  <CheckIcon
-                    fill={theme.custom.colors.activeNavButton}
-                    style={{ width: "24px" }}
-                  />
-                )}
-              </div>
-            </ListItem>
-          );
-        })}
+              </ListItem>
+            );
+          }
+        )}
       </List>
-      <AddConnectWalletButton />
-    </>
+      <AddConnectWalletButton blockchain={blockchain} />
+    </div>
   );
 }
 
@@ -437,7 +483,11 @@ function ImportTypeBadge({ type }: { type: string }) {
   );
 }
 
-export const AddConnectWalletButton = () => {
+export const AddConnectWalletButton = ({
+  blockchain,
+}: {
+  blockchain: Blockchain;
+}) => {
   const nav = useNavStack();
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -451,7 +501,7 @@ export const AddConnectWalletButton = () => {
       <ListItem
         isFirst={true}
         isLast={true}
-        onClick={() => nav.push("add-connect-wallet")}
+        onClick={() => nav.push("add-connect-wallet", { blockchain })}
         classes={{ root: classes.addConnectRoot }}
       >
         <div
@@ -594,10 +644,9 @@ function SettingsList({ close }: { close: () => void }) {
   );
 }
 
-export function ImportSecretKey() {
+export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   const background = useBackgroundClient();
   const nav = useNavStack();
-  const { close } = useDrawerContext();
   const theme = useCustomTheme();
   const [name, setName] = useState("");
   const [secretKey, setSecretKey] = useState("");
@@ -623,16 +672,15 @@ export function ImportSecretKey() {
   }, [theme]);
 
   const onClick = async () => {
-    const kp = decodeAccount(secretKey);
-    if (!kp) {
+    const secretKeyHex = validateSecretKey(blockchain, secretKey);
+    if (!secretKeyHex) {
       setError("Invalid private key");
       return;
     }
-    const secretKeyHex = Buffer.from(kp.secretKey).toString("hex");
 
     const publicKey = await background.request({
       method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-      params: [secretKeyHex, name],
+      params: [blockchain, secretKeyHex, name],
     });
 
     await background.request({
@@ -711,20 +759,42 @@ export function ImportSecretKey() {
           },
         }}
       >
-        <ConfirmCreateWallet setOpenDrawer={setOpenDrawer} />
+        <ConfirmCreateWallet
+          blockchain={blockchain}
+          setOpenDrawer={setOpenDrawer}
+        />
       </WithMiniDrawer>
     </>
   );
 }
 
-function decodeAccount(privateKey: string) {
-  try {
-    return Keypair.fromSecretKey(new Uint8Array(JSON.parse(privateKey)));
-  } catch (_) {
+// Validate a secret key and return a normalised hex representation
+function validateSecretKey(
+  blockchain: Blockchain,
+  secretKey: string
+): string | boolean {
+  if (blockchain === Blockchain.SOLANA) {
+    let keypair;
     try {
-      return Keypair.fromSecretKey(new Uint8Array(bs58.decode(privateKey)));
+      // Attempt to create a keypair from JSON secret key
+      keypair = Keypair.fromSecretKey(new Uint8Array(JSON.parse(secretKey)));
     } catch (_) {
-      return undefined;
+      try {
+        // Attempt to create a keypair from bs58 decode of secret key
+        keypair = Keypair.fromSecretKey(new Uint8Array(bs58.decode(secretKey)));
+      } catch (_) {
+        // Failure
+        return false;
+      }
+    }
+    return Buffer.from(keypair.secretKey).toString("hex");
+  } else if (blockchain === Blockchain.ETHEREUM) {
+    try {
+      const wallet = new ethers.Wallet(secretKey);
+      return wallet.privateKey;
+    } catch (_) {
+      return false;
     }
   }
+  throw new Error("secret key validation not implemented for blockchain");
 }

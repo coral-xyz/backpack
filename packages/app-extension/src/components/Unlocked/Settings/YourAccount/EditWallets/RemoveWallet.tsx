@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Typography } from "@mui/material";
-import { UI_RPC_METHOD_KEYRING_KEY_DELETE } from "@coral-xyz/common";
+import {
+  Blockchain,
+  UI_RPC_METHOD_KEYRING_KEY_DELETE,
+} from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useNavStack } from "../../../../common/Layout/NavStack";
@@ -9,10 +12,10 @@ import { CheckIcon, WarningIcon } from "../../../../common/Icon";
 import { SecondaryButton, PrimaryButton } from "../../../../common";
 
 export const RemoveWallet: React.FC<{
+  blockchain: Blockchain;
   publicKey: string;
-  name: string;
   type: string;
-}> = ({ publicKey, name, type }) => {
+}> = ({ blockchain, publicKey, type }) => {
   const theme = useCustomTheme();
   const nav = useNavStack();
   const background = useBackgroundClient();
@@ -105,7 +108,7 @@ export const RemoveWallet: React.FC<{
               (async () => {
                 await background.request({
                   method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
-                  params: [publicKey],
+                  params: [blockchain, publicKey],
                 });
                 setShowSuccess(true);
               })();

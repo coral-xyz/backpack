@@ -25,7 +25,7 @@ export const bootstrap = selector<{
   get: async ({ get }: any) => {
     const tokenRegistry = get(splTokenRegistry);
     const { provider } = get(anchorContext);
-    const walletPublicKey = new PublicKey(get(activeWallet));
+    const walletPublicKey = get(activeWallet);
 
     //
     // Perform data fetch.

@@ -7,6 +7,7 @@ import type {
   DerivationPath,
   Context,
   EventEmitter,
+  Blockchain,
 } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
 import {
@@ -29,8 +30,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_RESET,
-  UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ,
-  UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
+  UI_RPC_METHOD_ACTIVE_BLOCKCHAIN_UPDATE,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYNAME_READ,
@@ -56,6 +56,8 @@ import {
   UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
+  UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ,
+  UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
   UI_RPC_METHOD_SOLANA_SIMULATE,
@@ -120,15 +122,20 @@ async function handle<T = any>(
     case UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS:
       return await handleKeyringStoreReadAllPubkeys(ctx);
     case UI_RPC_METHOD_KEYRING_KEY_DELETE:
-      return await handleKeyringKeyDelete(ctx, params[0]);
+      return await handleKeyringKeyDelete(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_STORE_STATE:
       return await handleKeyringStoreState(ctx);
     case UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE:
       return handleKeyringStoreKeepAlive(ctx);
     case UI_RPC_METHOD_KEYRING_DERIVE_WALLET:
-      return await handleKeyringDeriveWallet(ctx);
+      return await handleKeyringDeriveWallet(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY:
-      return await handleKeyringImportSecretKey(ctx, params[0], params[1]);
+      return await handleKeyringImportSecretKey(
+        ctx,
+        params[0],
+        params[1],
+        params[2]
+      );
     case UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY:
       return handleKeyringExportSecretKey(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC:
@@ -157,7 +164,8 @@ async function handle<T = any>(
         ctx,
         params[0],
         params[1],
-        params[2]
+        params[2],
+        params[3]
       );
     //
     // Navigation.
@@ -177,6 +185,8 @@ async function handle<T = any>(
     //
     // Wallet app settings.
     //
+    case UI_RPC_METHOD_ACTIVE_BLOCKCHAIN_UPDATE:
+      return await handleActiveBlockchainUpdate(ctx, params[0]);
     case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET:
       return await handleWalletDataActiveWallet(ctx);
     case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE:
@@ -308,6 +318,14 @@ function handleKeyringStoreKeepAlive(
   return [resp];
 }
 
+async function handleActiveBlockchainUpdate(
+  ctx: Context<Backend>,
+  blockchain: Blockchain
+) {
+  const resp = ctx.backend.activeBlockchainUpdate(blockchain);
+  return [resp];
+}
+
 async function handleWalletDataActiveWallet(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
@@ -331,9 +349,10 @@ async function handleKeyringStoreReadAllPubkeys(
 }
 
 async function handleKeyringDeriveWallet(
-  ctx: Context<Backend>
+  ctx: Context<Backend>,
+  blockchain: Blockchain
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.keyringDeriveWallet();
+  const resp = await ctx.backend.keyringDeriveWallet(blockchain);
   return [resp];
 }
 
@@ -356,9 +375,10 @@ async function handleKeynameUpdate(
 
 async function handleKeyringKeyDelete(
   ctx: Context<Backend>,
+  blockchain: Blockchain,
   pubkey: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.keyringKeyDelete(pubkey);
+  const resp = await ctx.backend.keyringKeyDelete(blockchain, pubkey);
   return [resp];
 }
 
@@ -377,10 +397,11 @@ async function handlePasswordUpdate(
 
 async function handleKeyringImportSecretKey(
   ctx: Context<Backend>,
+  blockchain: Blockchain,
   secretKey: string,
   name: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.importSecretKey(secretKey, name);
+  const resp = await ctx.backend.importSecretKey(blockchain, secretKey, name);
   return [resp];
 }
 
@@ -435,7 +456,7 @@ async function handleKeyringAutolockUpdate(
 async function handleKeyringReset(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.keyringReset();
+  const resp = ctx.backend.keyringReset();
   return [resp];
 }
 
@@ -625,11 +646,17 @@ async function handleLedgerConnect(ctx: Context<Backend>) {
 
 async function handleKeyringLedgerImport(
   ctx: Context<Backend>,
+  blockchain: Blockchain,
   dPath: string,
   account: number,
   pubkey: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.ledgerImport(dPath, account, pubkey);
+  const resp = await ctx.backend.ledgerImport(
+    blockchain,
+    dPath,
+    account,
+    pubkey
+  );
   return [resp];
 }
 

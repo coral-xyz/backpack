@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Grid, Typography, MenuItem } from "@mui/material";
 import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
 import {
+  Blockchain,
   openConnectHardware,
+  BACKPACK_FEATURE_MULTICHAIN,
   TAB_BALANCES,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
@@ -17,7 +19,7 @@ import {
 } from "@coral-xyz/recoil";
 import { ActionCard } from "../../../common/Layout/ActionCard";
 import { HardwareWalletIcon, CheckIcon } from "../../../common/Icon";
-import { Header, SubtextParagraph } from "../../../common";
+import { Header, SubtextParagraph, TextField } from "../../../common";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import {
   useDrawerContext,
@@ -25,12 +27,16 @@ import {
 } from "../../../common/Layout/Drawer";
 import { WalletListItem } from "../YourAccount/EditWallets";
 
-export function AddConnectWalletMenu() {
-  const { close } = useDrawerContext();
+export function AddConnectWalletMenu({
+  blockchain: blockchain_,
+}: {
+  blockchain: Blockchain;
+}) {
   const nav = useNavStack();
   const background = useBackgroundClient();
   const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [blockchain, setBlockchain] = useState<Blockchain>(blockchain_);
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -50,6 +56,11 @@ export function AddConnectWalletMenu() {
     };
   }, [nav.setContentStyle]);
 
+  const blockchainOptions = [
+    { value: Blockchain.SOLANA, label: "Solana" },
+    { value: Blockchain.ETHEREUM, label: "Ethereum" },
+  ];
+
   return (
     <>
       <div
@@ -65,6 +76,22 @@ export function AddConnectWalletMenu() {
           <SubtextParagraph>Add new wallets to Backpack.</SubtextParagraph>
         </Box>
         <Box sx={{ margin: "0 16px" }}>
+          {BACKPACK_FEATURE_MULTICHAIN && (
+            <Box sx={{ marginBottom: "16px" }}>
+              <TextField
+                label="Blockchain"
+                value={blockchain}
+                setValue={setBlockchain}
+                select={true}
+              >
+                {blockchainOptions.map((o, idx) => (
+                  <MenuItem value={o.value} key={idx}>
+                    {o.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Box>
+          )}
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <ActionCard
@@ -73,7 +100,7 @@ export function AddConnectWalletMenu() {
                 onClick={async () => {
                   const newPubkey = await background.request({
                     method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-                    params: [],
+                    params: [blockchain],
                   });
 
                   await background.request({
@@ -89,7 +116,7 @@ export function AddConnectWalletMenu() {
               <ActionCard
                 icon={<ArrowCircleDown />}
                 text="Import an existing wallet"
-                onClick={() => nav.push("import-secret-key")}
+                onClick={() => nav.push("import-secret-key", { blockchain })}
               />
             </Grid>
             <Grid item xs={6}>
@@ -105,7 +132,7 @@ export function AddConnectWalletMenu() {
                 }
                 text="Connect a hardware wallet"
                 onClick={() => {
-                  openConnectHardware();
+                  openConnectHardware(blockchain);
                   window.close();
                 }}
               />
@@ -123,15 +150,19 @@ export function AddConnectWalletMenu() {
           },
         }}
       >
-        <ConfirmCreateWallet setOpenDrawer={setOpenDrawer} />
+        <ConfirmCreateWallet
+          blockchain={blockchain}
+          setOpenDrawer={setOpenDrawer}
+        />
       </WithMiniDrawer>
     </>
   );
 }
 
 export const ConfirmCreateWallet: React.FC<{
+  blockchain: Blockchain;
   setOpenDrawer: (b: boolean) => void;
-}> = ({ setOpenDrawer }) => {
+}> = ({ blockchain, setOpenDrawer }) => {
   const theme = useCustomTheme();
   const { publicKey, name } = useActiveWallet();
   const background = useBackgroundClient();
@@ -171,6 +202,7 @@ export const ConfirmCreateWallet: React.FC<{
       </div>
       <div>
         <WalletListItem
+          blockchain={blockchain}
           name={name}
           publicKey={publicKey}
           isFirst={true}
