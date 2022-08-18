@@ -5952,6 +5952,14 @@
     "@wallet-standard/standard" "^0.1.0-alpha.1"
     "@wallet-standard/util" "^0.1.0-alpha.1"
 
+"@wallet-standard/wallets-backpack@0.1.0-alpha.2":
+  version "0.1.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@wallet-standard/wallets-backpack/-/wallets-backpack-0.1.0-alpha.2.tgz#b6a8e82d14f96975f3fbe45d8b3d7ea490646d2b"
+  integrity sha512-AzaLL/dKYuN55QwEuDyigk9E2+zp3Ak/gXmPY+qPcH9T8fG9JAacOPsw8yHzGD4OjTbibbbQ4kWFahrb24GPCA==
+  dependencies:
+    "@wallet-standard/standard" "^0.1.0-alpha.1"
+    "@wallet-standard/util" "^0.1.0-alpha.1"
+
 "@walletconnect/browser-utils@^1.8.0":
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/@walletconnect/browser-utils/-/browser-utils-1.8.0.tgz#33c10e777aa6be86c713095b5206d63d32df0951"
