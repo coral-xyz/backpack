@@ -3,6 +3,7 @@ import { Typography } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useActiveWallet } from "@coral-xyz/recoil";
+import { Blockchain } from "@coral-xyz/common";
 import { WithHeaderButton } from "./Token";
 import { BottomCard } from "./Send";
 import {
@@ -189,7 +190,17 @@ export function Deposit() {
             </div>
             <div>
               <Typography className={classes.subtext}>
-                This address can only receive SOL and SPL tokens on Solana.
+                {activeWallet.blockchain === Blockchain.SOLANA && (
+                  <>
+                    This address can only receive SOL and SPL tokens on Solana.
+                  </>
+                )}
+                {activeWallet.blockchain === Blockchain.ETHEREUM && (
+                  <>
+                    This address can only receive ETH and ERC20 tokens on
+                    Ethereum.
+                  </>
+                )}
               </Typography>
             </div>
           </div>
