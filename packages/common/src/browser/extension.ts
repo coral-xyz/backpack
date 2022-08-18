@@ -89,6 +89,11 @@ export class BrowserRuntimeExtension {
           if (tab?.id) browser.tabs.remove(tab.id);
         });
   }
+
+  public static closeWindow(id: number) {
+    console.log("CLOSING WINDOW HERE", id);
+    chrome.tabs.remove(id, function () {});
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

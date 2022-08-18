@@ -20,6 +20,7 @@ import {
   openApproveTransactionPopupWindow,
   openApproveAllTransactionsPopupWindow,
   openApproveMessagePopupWindow,
+  BrowserRuntimeExtension,
   SOLANA_RPC_METHOD_CONNECT,
   SOLANA_RPC_METHOD_DISCONNECT,
   SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
@@ -292,13 +293,15 @@ async function handleSolanaSignMessage(
       walletAddress
     );
   });
-  console.log("UI RESP HERE", uiResp);
+  console.log("ARMANI: UI RESP HERE", uiResp);
   const didApprove = uiResp.result;
 
   if (didApprove) {
     const sig = await ctx.backend.solanaSignMessage(msg, walletAddress);
     return [sig];
   }
+
+  BrowserRuntimeExtension.closeWindow(uiResp.window.id);
 
   throw new Error("user denied message signature");
 }
@@ -333,9 +336,13 @@ class RequestManager {
     popupFn: (reqId: number) => Promise<chrome.windows.Window>
   ): Promise<T> {
     return new Promise(async (resolve, reject) => {
-      const requestId = RequestManager.addResponseResolver(resolve, reject);
+      const requestId = RequestManager.nextRequestId();
       const window = await popupFn(requestId);
-      console.log("UI RESP WINDOW HERE", window);
+      RequestManager.addResponseResolver(
+        requestId,
+        (input: any) => resolve({ ...input, window }),
+        reject
+      );
       chrome.windows.onRemoved.addListener((windowId) => {
         if (windowId === window.id) {
           RequestManager.removeResponseResolver(requestId);
@@ -377,10 +384,10 @@ class RequestManager {
   }
 
   private static addResponseResolver(
+    requestId: number,
     resolve: Function,
     reject: Function
   ): number {
-    const requestId = RequestManager.nextRequestId();
     RequestManager._responseResolvers[requestId] = [resolve, reject];
     return requestId;
   }
