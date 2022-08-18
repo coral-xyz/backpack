@@ -70,7 +70,7 @@ export const SendTokenButton: FC = () => {
 
   return (
     <button onClick={onClick} disabled={!wallet.publicKey}>
-      Send 0.000001 SRM to AqP1ABfSsRUBcgY3bwiDRB4kiBxgESUqCdcdDLMVSrWS
+      Send 0.000001 SRM to AqP1...VSrWS
     </button>
   );
 };
