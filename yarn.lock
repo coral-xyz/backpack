@@ -5923,34 +5923,41 @@
     eventemitter3 "^4.0.7"
     zustand "^4.0.0"
 
-"@wallet-standard/standard@^0.1.0-alpha.1":
-  version "0.1.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/@wallet-standard/standard/-/standard-0.1.0-alpha.1.tgz#e9cb82d12ed8239eca926d0c882bbe7675779949"
-  integrity sha512-SSUdT1QYJSgNvAde2RJMG0ckC3tnckLo4E3PROYY71swlC9uD0Wlbd0t+rrYpUQWEXdVu7/4JuK9tKBvVtiwJQ==
+"@wallet-standard/features@^0.1.0-alpha.0":
+  version "0.1.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@wallet-standard/features/-/features-0.1.0-alpha.0.tgz#18738a5be892883bcb99abb9d7e3a9cc138ba350"
+  integrity sha512-HRVuYpMCbO3Vmdea1uRll7bL+3eZ0GxCtkMnDnMcT2+QOH9N56cxGo6DmUbZgVkqeWKzt6i+p27QPOdXlipD1g==
   dependencies:
-    "@wallet-standard/types" "^0.1.0-alpha.1"
-    jayson "^4.0.0"
-    rpc-websockets "^7.5.0"
+    "@wallet-standard/standard" "^0.1.0-alpha.2"
+    "@wallet-standard/types" "^0.1.0-alpha.2"
 
-"@wallet-standard/types@^0.1.0-alpha.1":
-  version "0.1.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/@wallet-standard/types/-/types-0.1.0-alpha.1.tgz#0ee11179357df914deae69be05517c20dbda98e7"
-  integrity sha512-1gNRdwAh6hlT4byuXpF3ZpoSp0DGqZD8ZRf64sNdnSoi+sFU5QHcthPijUamjlFFbUw7KsGniLSa1ZWMmwk5Cg==
-
-"@wallet-standard/util@^0.1.0-alpha.1":
-  version "0.1.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/@wallet-standard/util/-/util-0.1.0-alpha.1.tgz#4a5d563da6e507cd7b9d3d02cbb73f7b65fb2a78"
-  integrity sha512-V3f6NuzGZ08gQeEBLN+0IKUUpNyqatpxjrz6Xs1DHdjulpQNVodvkjdeG1EyklTAriRQ5hMmdoRsRqku1Jnavg==
+"@wallet-standard/standard@^0.1.0-alpha.2":
+  version "0.1.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@wallet-standard/standard/-/standard-0.1.0-alpha.2.tgz#5a1f9634e055ee602ae0254931c1db0991c737b4"
+  integrity sha512-NcSrxibQv6duC/ZpNqXviIlOWhZe5eLzQNMstAjAtYRI7tEVS5HjjP6VLp2q+SOBJYNrLXyY4ntGvgEMDLfSMg==
   dependencies:
-    "@wallet-standard/standard" "^0.1.0-alpha.1"
+    "@wallet-standard/types" "^0.1.0-alpha.2"
 
-"@wallet-standard/wallets-backpack@0.1.0-alpha.3":
-  version "0.1.0-alpha.3"
-  resolved "https://registry.yarnpkg.com/@wallet-standard/wallets-backpack/-/wallets-backpack-0.1.0-alpha.3.tgz#5f73376db9a52b0447145d0ee4aa160af48483d1"
-  integrity sha512-DRLSmbQ0vtBNryAomUYMIrtsTC77wLcrtDjsB4OpB8S7HKpJdkHR7XGdJySQIr/WbdL2lwOrRyNo1skLPXASBg==
+"@wallet-standard/types@^0.1.0-alpha.2":
+  version "0.1.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@wallet-standard/types/-/types-0.1.0-alpha.2.tgz#429e25ac7de2c6c50a9e91b578dee7e99fc289c2"
+  integrity sha512-jyTNvKnCpzxPzMNr0mIX1e0Ys2euu3JRVvYYJ4TPac7KWHp8bPFyk/o8PxJooaxuyV+jKrOTbmGgHlzh85koHQ==
+
+"@wallet-standard/util@^0.1.0-alpha.2":
+  version "0.1.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@wallet-standard/util/-/util-0.1.0-alpha.2.tgz#24e9b31c98a44a3aba644653a15fa30c1af67cc5"
+  integrity sha512-vOTCujMpw2Rtjh/xpbcrOJqk+FO0Wthy1nzUghvPvVvj/792iZ+6O0MzUR3vRNhpZNgsDd+akK0eDGN8kjUxdw==
   dependencies:
-    "@wallet-standard/standard" "^0.1.0-alpha.1"
-    "@wallet-standard/util" "^0.1.0-alpha.1"
+    "@wallet-standard/standard" "^0.1.0-alpha.2"
+
+"@wallet-standard/wallets-backpack@0.1.0-alpha.5":
+  version "0.1.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/@wallet-standard/wallets-backpack/-/wallets-backpack-0.1.0-alpha.5.tgz#ddc47f555a921c708783c7fdc031d11e532182ca"
+  integrity sha512-7hSL+5V2fHOGFbtFwkB7iMo1Jx0yIe+vyBgvHROpNBWk8Tc5vgnIjrLydNY2BIHgZfM4YM3WJyfNI0edPMP9aA==
+  dependencies:
+    "@wallet-standard/features" "^0.1.0-alpha.0"
+    "@wallet-standard/standard" "^0.1.0-alpha.2"
+    "@wallet-standard/util" "^0.1.0-alpha.2"
 
 "@walletconnect/browser-utils@^1.8.0":
   version "1.8.0"
@@ -12832,24 +12839,6 @@ jayson@^3.4.4:
     uuid "^8.3.2"
     ws "^7.4.5"
 
-jayson@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/jayson/-/jayson-4.0.0.tgz#145a0ced46f900934c9b307e1332bcb0c7dbdb17"
-  integrity sha512-v2RNpDCMu45fnLzSk47vx7I+QUaOsox6f5X0CUlabAFwxoP+8MfAY0NQRFwOEYXIxm8Ih5y6OaEa5KYiQMkyAA==
-  dependencies:
-    "@types/connect" "^3.4.33"
-    "@types/node" "^12.12.54"
-    "@types/ws" "^7.4.4"
-    JSONStream "^1.3.5"
-    commander "^2.20.3"
-    delay "^5.0.0"
-    es6-promisify "^5.0.0"
-    eyes "^0.1.8"
-    isomorphic-ws "^4.0.1"
-    json-stringify-safe "^5.0.1"
-    uuid "^8.3.2"
-    ws "^7.4.5"
-
 jest-changed-files@^26.6.2:
   version "26.6.2"
   resolved "https://registry.yarnpkg.com/jest-changed-files/-/jest-changed-files-26.6.2.tgz#f6198479e1cc66f22f9ae1e22acaa0b429c042d0"
@@ -17617,19 +17606,6 @@ rpc-websockets@^7.4.2:
   version "7.4.18"
   resolved "https://registry.yarnpkg.com/rpc-websockets/-/rpc-websockets-7.4.18.tgz#274c825c0efadbf6fe75f10289229ae537fe9ffb"
   integrity sha512-bVu+4qM5CkGVlTqJa6FaAxLbb5uRnyH4te7yjFvoCzbnif7PT4BcvXtNTprHlNvsH+/StB81zUQicxMrUrIomA==
-  dependencies:
-    "@babel/runtime" "^7.17.2"
-    eventemitter3 "^4.0.7"
-    uuid "^8.3.2"
-    ws "^8.5.0"
-  optionalDependencies:
-    bufferutil "^4.0.1"
-    utf-8-validate "^5.0.2"
-
-rpc-websockets@^7.5.0:
-  version "7.5.0"
-  resolved "https://registry.yarnpkg.com/rpc-websockets/-/rpc-websockets-7.5.0.tgz#bbeb87572e66703ff151e50af1658f98098e2748"
-  integrity sha512-9tIRi1uZGy7YmDjErf1Ax3wtqdSSLIlnmL5OtOzgd5eqPKbsPpwDP5whUDO2LQay3Xp0CcHlcNSGzacNRluBaQ==
   dependencies:
     "@babel/runtime" "^7.17.2"
     eventemitter3 "^4.0.7"
