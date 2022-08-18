@@ -1,21 +1,29 @@
-import { Wallet } from "./Wallet";
-import { SendLamportButton } from "./SendLamportButton";
-import { SendAllButton } from "./SendAllButton";
-import { SignMessageButton } from "./SignMessageButton";
-import { SendTokenButton } from "./SendTokenButton";
+import { SolanaWallet } from "./SolanaWallet";
+import { SendLamportButton } from "./solana/SendLamportButton";
+import { SendAllButton } from "./solana/SendAllButton";
+import { SignMessageButton } from "./solana/SignMessageButton";
+import { SendTokenButton } from "./solana/SendTokenButton";
+
+import { EthereumWallet } from "./EthereumWallet";
+import { SignMessageButton as EthereumSignMessageButton } from "./ethereum/SignMessageButton";
+import { SendWeiButton } from "./ethereum/SendWeiButton";
 
 function App() {
   return (
     <div className="App">
       <h1>Solana</h1>
-      <Wallet>
+      <SolanaWallet>
         <SendLamportButton />
         <SendAllButton />
         <SendTokenButton />
         <SignMessageButton />
-      </Wallet>
+      </SolanaWallet>
 
       <h1>Ethereum</h1>
+      <EthereumWallet>
+        <SendWeiButton />
+        <EthereumSignMessageButton />
+      </EthereumWallet>
     </div>
   );
 }
