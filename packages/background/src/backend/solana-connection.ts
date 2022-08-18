@@ -64,6 +64,7 @@ import type { Notification, EventEmitter } from "@coral-xyz/common";
 import {
   getLogger,
   customSplTokenAccounts,
+  Blockchain,
   BACKEND_EVENT,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
@@ -133,21 +134,27 @@ export class Backend {
     const handleKeyringStoreCreated = (notif: Notification) => {
       handleKeyringStoreUnlocked(notif);
     };
+
     const handleKeyringStoreUnlocked = (notif: Notification) => {
-      const { url, activeWallet, commitment } = notif.data;
-      this.connection = new Connection(url, commitment);
-      this.url = url;
-      this.hookRpcRequest();
-      this.startPolling(new PublicKey(activeWallet));
+      const { activeBlockchain, activeWallet, url, commitment } = notif.data;
+      if (activeBlockchain === Blockchain.SOLANA) {
+        this.connection = new Connection(url, commitment);
+        this.url = url;
+        this.hookRpcRequest();
+        this.startPolling(new PublicKey(activeWallet));
+      }
     };
+
     const handleKeyringStoreLocked = (notif: Notification) => {
       this.stopPolling();
     };
+
     const handleActiveWalletUpdated = (notif: Notification) => {
       const { activeWallet } = notif.data;
       this.stopPolling();
       this.startPolling(new PublicKey(activeWallet));
     };
+
     const handleConnectionUrlUpdated = (notif: Notification) => {
       const { activeWallet, url } = notif.data;
       this.connection = new Connection(url, this.connection!.commitment);

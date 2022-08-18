@@ -76,9 +76,9 @@ export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
   "keyring-mnemonic-create";
 export const UI_RPC_METHOD_PREVIEW_PUBKEYS = "keyring-preview-pubkeys";
 export const UI_RPC_METHOD_KEYRING_RESET = "keyring-reset";
-export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ = "connection-url-read";
-export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE =
-  "connection-url-update";
+export const UI_RPC_METHOD_ACTIVE_BLOCKCHAIN = "blockchain-active";
+export const UI_RPC_METHOD_ACTIVE_BLOCKCHAIN_UPDATE =
+  "blockchain-active-update";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET = "wallet-active";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE =
   "wallet-active-update";
@@ -106,6 +106,9 @@ export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
 export const UI_RPC_METHOD_LEDGER_IMPORT = "ledger-import";
 export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET = "plugin-storage-get";
 export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT = "plugin-storage-put";
+export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ = "connection-url-read";
+export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE =
+  "connection-url-update";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ = "solana-commitment-read";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE =
   "solana-commitment-update";
@@ -138,6 +141,8 @@ export const NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY =
 export const NOTIFICATION_KEYRING_RESET_MNEMONIC =
   "anchor-keyring-reset-mnemonic";
 export const NOTIFICATION_KEYRING_CREATED = "anchor-keyring-created";
+export const NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED =
+  "anchor-keyring-active-blockchain-updated";
 export const NOTIFICATION_APPROVED_ORIGINS_UPDATE =
   "anchor-approved-origins-update";
 export const NOTIFICATION_NAVIGATION_URL_DID_CHANGE =
@@ -157,6 +162,8 @@ export const NOTIFICATION_SOLANA_COMMITMENT_UPDATED =
   "anchor-solana-commitment-updated";
 export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
   "anchor-solana-spl-tokens-did-update";
+export const NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED =
+  "anchor-keyring-ethereum-active-wallet-updated";
 
 //
 // Solana web injected provider API.

@@ -18,4 +18,5 @@ export type ResponseHandler = [any, any];
 
 export enum Blockchain {
   SOLANA = "solana",
+  ETHEREUM = "ethereum",
 }

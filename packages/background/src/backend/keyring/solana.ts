@@ -3,17 +3,12 @@ import { Keypair, PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import * as bs58 from "bs58";
 import {
-  generateUniqueId,
-  LEDGER_INJECTED_CHANNEL_REQUEST,
-  LEDGER_METHOD_CONNECT,
-  LEDGER_METHOD_SIGN_TRANSACTION,
   LEDGER_METHOD_SIGN_MESSAGE,
+  LEDGER_METHOD_SIGN_TRANSACTION,
   DerivationPath,
-  LEDGER_INJECTED_CHANNEL_RESPONSE,
 } from "@coral-xyz/common";
-import { deriveKeypairs, deriveKeypair } from "./crypto";
+import { deriveSolanaKeypairs, deriveSolanaKeypair } from "./crypto";
 import type {
-  ImportedDerivationPath,
   Keyring,
   KeyringFactory,
   KeyringJson,
@@ -23,11 +18,11 @@ import type {
   LedgerKeyringJson,
   LedgerKeyring,
 } from "./types";
-import { postMessageToIframe } from "../../shared";
+import { LedgerKeyringBase } from "./ledger";
 
 export class SolanaKeyringFactory implements KeyringFactory {
   public fromJson(payload: KeyringJson): SolanaKeyring {
-    const keypairs = payload.keypairs.map((secret: string) =>
+    const keypairs = payload.secretKeys.map((secret: string) =>
       Keypair.fromSecretKey(Buffer.from(secret, "hex"))
     );
     return new SolanaKeyring(keypairs);
@@ -92,7 +87,7 @@ class SolanaKeyring implements Keyring {
 
   public toJson(): any {
     return {
-      keypairs: this.keypairs.map((kp) =>
+      secretKeys: this.keypairs.map((kp) =>
         Buffer.from(kp.secretKey).toString("hex")
       ),
     };
@@ -112,7 +107,7 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
       throw new Error("Invalid seed words");
     }
     const seed = mnemonicToSeedSync(mnemonic);
-    const keypairs = deriveKeypairs(seed, derivationPath, accountIndices);
+    const keypairs = deriveSolanaKeypairs(seed, derivationPath, accountIndices);
     return new SolanaHdKeyring({
       mnemonic,
       seed,
@@ -127,7 +122,7 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
     const seed = mnemonicToSeedSync(mnemonic);
     const accountIndices = [0];
     const derivationPath = DerivationPath.Bip44;
-    const keypairs = deriveKeypairs(seed, derivationPath, accountIndices);
+    const keypairs = deriveSolanaKeypairs(seed, derivationPath, accountIndices);
 
     return new SolanaHdKeyring({
       mnemonic,
@@ -141,7 +136,7 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
   public fromJson(obj: HdKeyringJson): HdKeyring {
     const { mnemonic, seed: seedStr, accountIndices, derivationPath } = obj;
     const seed = Buffer.from(seedStr, "hex");
-    const keypairs = deriveKeypairs(seed, derivationPath, accountIndices);
+    const keypairs = deriveSolanaKeypairs(seed, derivationPath, accountIndices);
 
     const kr = new SolanaHdKeyring({
       mnemonic,
@@ -184,13 +179,16 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   }
 
   public deleteKeyIfNeeded(pubkey: string): number {
-    if (this.keypairs.length <= 1) {
-      throw new Error("cannot delete the last key in the hd keyring");
-    }
-    const idx = super.deleteKeyIfNeeded(pubkey);
+    const idx = this.keypairs.findIndex(
+      (kp) => kp.publicKey.toString() === pubkey
+    );
     if (idx < 0) {
       return idx;
     }
+    if (this.keypairs.length <= 1) {
+      throw new Error("cannot delete the last key in the hd keyring");
+    }
+    super.deleteKeyIfNeeded(pubkey);
     this.accountIndices = this.accountIndices
       .slice(0, idx)
       .concat(this.accountIndices.slice(idx + 1));
@@ -200,7 +198,7 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   public deriveNext(): [string, number] {
     // TODO: this may not be the desired behaviour, what about non-contiguous indices?
     const nextAccountIndex = Math.max(...this.accountIndices) + 1;
-    const kp = deriveKeypair(
+    const kp = deriveSolanaKeypair(
       this.seed.toString("hex"),
       nextAccountIndex,
       this.derivationPath
@@ -230,67 +228,20 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   }
 }
 
-// This code runs inside a ServiceWorker, so the message listener below must be
-// created immediately. That's why `responseResolvers` is in the file's global scope.
-
-const responseResolvers: {
-  [reqId: string]: {
-    resolve: (value: any) => void;
-    reject: (reason?: string) => void;
-  };
-} = {};
-
 export class SolanaLedgerKeyringFactory {
-  public init(): SolanaLedgerKeyring {
+  public init(): LedgerKeyring {
     return new SolanaLedgerKeyring([]);
   }
 
-  public fromJson(obj: LedgerKeyringJson): SolanaLedgerKeyring {
+  public fromJson(obj: LedgerKeyringJson): LedgerKeyring {
     return new SolanaLedgerKeyring(obj.derivationPaths);
   }
 }
 
-export class SolanaLedgerKeyring implements LedgerKeyring {
-  private derivationPaths: Array<ImportedDerivationPath>;
-
-  constructor(derivationPaths: Array<ImportedDerivationPath>) {
-    this.derivationPaths = derivationPaths;
-  }
-
-  public keyCount(): number {
-    return this.derivationPaths.length;
-  }
-
-  public async connect() {
-    const resp = await this.request({
-      method: LEDGER_METHOD_CONNECT,
-      params: [],
-    });
-    return resp;
-  }
-
-  public deleteKeyIfNeeded(pubkey: string): number {
-    const idx = this.derivationPaths.findIndex((dp) => dp.publicKey === pubkey);
-    this.derivationPaths = this.derivationPaths.filter(
-      (dp) => dp.publicKey === pubkey
-    );
-    return idx;
-  }
-
-  public async ledgerImport(path: string, account: number, publicKey: string) {
-    const found = this.derivationPaths.find(
-      ({ path, account, publicKey: pk }) => publicKey === pk
-    );
-    if (found) {
-      throw new Error("ledger account already exists");
-    }
-    this.derivationPaths.push({ path, account, publicKey });
-  }
-
-  public publicKeys(): Array<string> {
-    return this.derivationPaths.map((dp) => dp.publicKey);
-  }
-
+export class SolanaLedgerKeyring
+  extends LedgerKeyringBase
+  implements LedgerKeyring
+{
   public async signTransaction(tx: Buffer, address: string): Promise<string> {
     const path = this.derivationPaths.find((p) => p.publicKey === address);
     if (!path) {
@@ -313,75 +264,8 @@ export class SolanaLedgerKeyring implements LedgerKeyring {
     });
   }
 
-  exportSecretKey(address: string): string | null {
-    throw new Error("ledger keyring cannot secret keys");
-  }
-
-  importSecretKey(secretKey: string): string {
-    throw new Error("ledger keyring cannot import secret keys");
-  }
-
-  public toString(): string {
-    return JSON.stringify({
-      derivationPath: this.derivationPaths,
-    });
-  }
-
   public static fromString(str: string): SolanaLedgerKeyring {
     const { derivationPaths } = JSON.parse(str);
     return new SolanaLedgerKeyring(derivationPaths);
   }
-
-  public toJson(): LedgerKeyringJson {
-    return {
-      derivationPaths: this.derivationPaths,
-    };
-  }
-
-  private async request<T = any>(req: {
-    method: string;
-    params: Array<any>;
-  }): Promise<T> {
-    return new Promise((resolve, reject) => {
-      const id = generateUniqueId();
-      responseResolvers[id] = { resolve, reject };
-      const msg = {
-        type: LEDGER_INJECTED_CHANNEL_REQUEST,
-        detail: {
-          id,
-          ...req,
-        },
-      };
-      postMessageToIframe(msg);
-    });
-  }
 }
-
-// Handle receiving postMessages
-self.addEventListener("message", (msg) => {
-  try {
-    if (msg.data.type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
-      return;
-    }
-
-    const {
-      data: { detail },
-    } = msg;
-    const { id, result, error } = detail;
-
-    const resolver = responseResolvers[id];
-    if (!resolver) {
-      // Why does this get thrown?
-      throw new Error(`resolver not found for request id: ${id}`);
-    }
-    const { resolve, reject } = resolver;
-    delete responseResolvers[id];
-
-    if (error) {
-      reject(error);
-    }
-    resolve(result);
-  } catch (err) {
-    console.error(err);
-  }
-});

@@ -15,5 +15,10 @@ code {
 }
 
 .App {
-  text-align: center;
+  padding: 8px;
+}
+
+button {
+  margin-bottom: 8px;
+  margin-right: 8px;
 }

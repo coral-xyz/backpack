@@ -14,8 +14,6 @@ import {
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
 } from "@coral-xyz/common";
 import {
-  useActiveWallet,
-  useBackgroundClient,
   useJupiterInputMints,
   useSplTokenRegistry,
   useSolanaCtx,
@@ -93,12 +91,10 @@ function useDebounce(value: any, wait = DEFAULT_DEBOUNCE_DELAY) {
 }
 
 export function SwapProvider(props: any) {
-  const wallet = useActiveWallet();
   const tokenRegistry = useSplTokenRegistry();
-  const solanaCtx = useSolanaCtx();
-  const { connection } = solanaCtx;
-  const background = useBackgroundClient();
   const tokenAccountsSorted = useJupiterInputMints();
+  const solanaCtx = useSolanaCtx();
+  const { backgroundClient, connection, walletPublicKey } = solanaCtx;
 
   // Swap setttings
   const [[fromMint, toMint], setFromMintToMint] = useState([
@@ -127,11 +123,11 @@ export function SwapProvider(props: any) {
 
   const fromToken = associatedTokenAddress(
     new PublicKey(fromMint),
-    wallet.publicKey
+    walletPublicKey
   );
   const toToken = associatedTokenAddress(
     new PublicKey(toMint),
-    wallet.publicKey
+    walletPublicKey
   );
   const fromMintInfo = tokenRegistry.get(fromMint)!;
   const toMintInfo = tokenRegistry.get(toMint)!;
@@ -301,7 +297,7 @@ export function SwapProvider(props: any) {
       wrapTransaction = (
         await generateWrapSolTx(
           solanaCtx,
-          wallet.publicKey,
+          walletPublicKey,
           fromAmount.toNumber()
         )
       ).toString("base64");
@@ -318,7 +314,7 @@ export function SwapProvider(props: any) {
           body: JSON.stringify({
             route,
             wrapUnwrapSOL: false,
-            userPublicKey: wallet.publicKey,
+            userPublicKey: walletPublicKey,
           }),
         })
       ).json();
@@ -427,11 +423,11 @@ export function SwapProvider(props: any) {
           // Get the wSOL balance delta from the swap transaction
           const preBalanceToken = transactionData.meta.preTokenBalances?.find(
             (a) =>
-              a.mint === WSOL_MINT && a.owner === wallet.publicKey.toString()
+              a.mint === WSOL_MINT && a.owner === walletPublicKey.toString()
           );
           const postBalanceToken = transactionData.meta.postTokenBalances?.find(
             (a) =>
-              a.mint === WSOL_MINT && a.owner === wallet.publicKey.toString()
+              a.mint === WSOL_MINT && a.owner === walletPublicKey.toString()
           );
           if (preBalanceToken && postBalanceToken) {
             const wrappedSolBalanceDelta =
@@ -440,7 +436,7 @@ export function SwapProvider(props: any) {
             unwrapTransaction = (
               await generateUnwrapSolTx(
                 solanaCtx,
-                wallet.publicKey,
+                walletPublicKey,
                 wrappedSolBalanceDelta
               )
             ).toString("base64");
@@ -457,7 +453,7 @@ export function SwapProvider(props: any) {
       unwrapTransaction = (
         await generateUnwrapSolTx(
           solanaCtx,
-          wallet.publicKey,
+          walletPublicKey,
           toAmount.toNumber()
         )
       ).toString("base64");
@@ -485,11 +481,11 @@ export function SwapProvider(props: any) {
   };
 
   const sendAndConfirmTransaction = async (serializedTransaction: string) => {
-    const signature = await background.request({
+    const signature = await backgroundClient.request({
       method: UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
       params: [
         bs58.encode(Buffer.from(serializedTransaction, "base64")),
-        wallet.publicKey,
+        walletPublicKey,
       ],
     });
     await confirmTransaction(connection, signature, "confirmed");

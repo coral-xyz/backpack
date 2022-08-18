@@ -3,7 +3,9 @@ import nacl, { randomBytes, secretbox } from "tweetnacl";
 import * as bs58 from "bs58";
 import { derivePath } from "ed25519-hd-key";
 import { Keypair } from "@solana/web3.js";
-import { DerivationPath } from "@coral-xyz/common";
+import { ethers } from "ethers";
+import type { Wallet } from "ethers";
+import { Blockchain, DerivationPath } from "@coral-xyz/common";
 import { generateMnemonic, mnemonicToSeed } from "bip39";
 
 // An encrypted secret with associated metadata required for decryption.
@@ -21,42 +23,77 @@ type MnemonicSeed = {
   seed: string;
 };
 
-export function deriveKeypairs(
+export function deriveSolanaKeypairs(
   seed: Buffer,
-  dPath: DerivationPath,
+  derivationPath: DerivationPath,
   accountIndices: Array<number>
 ): Array<Keypair> {
   const kps: Array<Keypair> = [];
   const seedHex = seed.toString("hex");
   for (const accountIndex of accountIndices) {
-    const kp = deriveKeypair(seedHex, accountIndex, dPath);
+    const kp = deriveSolanaKeypair(seedHex, accountIndex, derivationPath);
     kps.push(kp);
   }
   return kps;
 }
 
 // Returns the account Keypair for the given seed and derivation path.
-export function deriveKeypair(
+export function deriveSolanaKeypair(
   seedHex: string,
   accountIndex: number,
-  dPath: DerivationPath
+  derivationPath: DerivationPath
 ): Keypair {
-  let pathStr = derivePathStr(dPath, accountIndex);
+  const pathStr = derivePathStr(
+    Blockchain.SOLANA,
+    derivationPath,
+    accountIndex
+  );
   const dSeed = derivePath(pathStr, seedHex).key;
   const secret = nacl.sign.keyPair.fromSeed(dSeed).secretKey;
   return Keypair.fromSecretKey(secret);
 }
 
-function derivePathStr(dPath: DerivationPath, accountIndex: number): string {
-  switch (dPath) {
+export function deriveEthereumWallets(
+  seed: Buffer,
+  derivationPath: DerivationPath,
+  accountIndices: Array<number>
+): Array<Wallet> {
+  const wallets: Array<Wallet> = [];
+  for (const accountIndex of accountIndices) {
+    wallets.push(deriveEthereumWallet(seed, accountIndex, derivationPath));
+  }
+  return wallets;
+}
+
+export function deriveEthereumWallet(
+  seed: Buffer,
+  accountIndex: number,
+  derivationPath: DerivationPath
+): Wallet {
+  const hdNode = ethers.utils.HDNode.fromSeed(seed);
+  const path = derivePathStr(Blockchain.ETHEREUM, derivationPath, accountIndex);
+  const child = hdNode.derivePath(path);
+  return new ethers.Wallet(child.privateKey);
+}
+
+function derivePathStr(
+  blockchain: Blockchain,
+  derivationPath: DerivationPath,
+  accountIndex: number
+): string {
+  const coinType = {
+    [Blockchain.ETHEREUM]: 60,
+    [Blockchain.SOLANA]: 501,
+  }[blockchain];
+  switch (derivationPath) {
     case DerivationPath.Bip44:
       return accountIndex === 0
-        ? `m/44'/501'`
-        : `m/44'/501'/${accountIndex - 1}'`;
+        ? `m/44'/${coinType}'`
+        : `m/44'/${coinType}'/${accountIndex - 1}'`;
     case DerivationPath.Bip44Change:
-      return `m/44'/501'/${accountIndex}'/0'`;
+      return `m/44'/${coinType}'/${accountIndex}'/0'`;
     default:
-      throw new Error(`invalid derivation path: ${dPath}`);
+      throw new Error(`invalid derivation path: ${derivationPath}`);
   }
 }
 
