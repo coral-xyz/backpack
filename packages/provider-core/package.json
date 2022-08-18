@@ -11,7 +11,6 @@
     "@coral-xyz/common": "*",
     "@project-serum/anchor": "^0.23.0",
     "@solana/web3.js": "^1.36.0",
-    "@wallet-standard/wallets-backpack": "0.1.0-alpha.2",
     "bs58": "^5.0.0",
     "eventemitter3": "^4.0.7"
   },

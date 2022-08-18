@@ -5944,18 +5944,10 @@
   dependencies:
     "@wallet-standard/standard" "^0.1.0-alpha.1"
 
-"@wallet-standard/wallets-backpack@0.1.0-alpha.0":
-  version "0.1.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/@wallet-standard/wallets-backpack/-/wallets-backpack-0.1.0-alpha.0.tgz#a1729d286094c4bd64593a1669a72bee872eb88c"
-  integrity sha512-s0H6MHwvxds44oRy3fLL5iKt7MiwMDMciQNvQU0pElPPG4J5Mch7/Dy5u0rjh6kb5/cTtDRPBNA83+XwC4Fu2g==
-  dependencies:
-    "@wallet-standard/standard" "^0.1.0-alpha.1"
-    "@wallet-standard/util" "^0.1.0-alpha.1"
-
-"@wallet-standard/wallets-backpack@0.1.0-alpha.2":
-  version "0.1.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@wallet-standard/wallets-backpack/-/wallets-backpack-0.1.0-alpha.2.tgz#b6a8e82d14f96975f3fbe45d8b3d7ea490646d2b"
-  integrity sha512-AzaLL/dKYuN55QwEuDyigk9E2+zp3Ak/gXmPY+qPcH9T8fG9JAacOPsw8yHzGD4OjTbibbbQ4kWFahrb24GPCA==
+"@wallet-standard/wallets-backpack@0.1.0-alpha.3":
+  version "0.1.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@wallet-standard/wallets-backpack/-/wallets-backpack-0.1.0-alpha.3.tgz#5f73376db9a52b0447145d0ee4aa160af48483d1"
+  integrity sha512-DRLSmbQ0vtBNryAomUYMIrtsTC77wLcrtDjsB4OpB8S7HKpJdkHR7XGdJySQIr/WbdL2lwOrRyNo1skLPXASBg==
   dependencies:
     "@wallet-standard/standard" "^0.1.0-alpha.1"
     "@wallet-standard/util" "^0.1.0-alpha.1"
