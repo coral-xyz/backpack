@@ -7,12 +7,15 @@ import { SendTokenButton } from "./SendTokenButton";
 function App() {
   return (
     <div className="App">
+      <h1>Solana</h1>
       <Wallet>
         <SendLamportButton />
         <SendAllButton />
         <SendTokenButton />
         <SignMessageButton />
       </Wallet>
+
+      <h1>Ethereum</h1>
     </div>
   );
 }
