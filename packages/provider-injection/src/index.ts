@@ -18,7 +18,11 @@ function initProvider() {
   window.backpack = new ProviderSolanaInjection();
   window.xnft = new ProviderXnftInjection();
 
-  register();
+  try {
+    register();
+  } catch (e) {
+    logger.error("standard wallet registration failed", e);
+  }
 }
 
 main();
