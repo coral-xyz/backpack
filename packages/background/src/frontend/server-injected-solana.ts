@@ -292,6 +292,7 @@ async function handleSolanaSignMessage(
       walletAddress
     );
   });
+  console.log("UI RESP HERE", uiResp);
   const didApprove = uiResp.result;
 
   if (didApprove) {
@@ -334,6 +335,7 @@ class RequestManager {
     return new Promise(async (resolve, reject) => {
       const requestId = RequestManager.addResponseResolver(resolve, reject);
       const window = await popupFn(requestId);
+      console.log("UI RESP WINDOW HERE", window);
       chrome.windows.onRemoved.addListener((windowId) => {
         if (windowId === window.id) {
           RequestManager.removeResponseResolver(requestId);
@@ -343,6 +345,8 @@ class RequestManager {
             result: undefined,
             error: undefined,
             windowClosed: true,
+            window,
+            windowId: window.id,
           });
         }
       });
