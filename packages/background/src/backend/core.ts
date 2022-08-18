@@ -2,7 +2,7 @@ import { validateMnemonic as _validateMnemonic } from "bip39";
 import * as bs58 from "bs58";
 import type { Commitment, SendOptions } from "@solana/web3.js";
 import { PublicKey, Transaction } from "@solana/web3.js";
-import type { NamedPublicKey, KeyringStoreState } from "@coral-xyz/recoil";
+import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
 import {
@@ -18,6 +18,7 @@ import {
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_RESET,
+  NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_DARK_MODE_UPDATED,
@@ -25,6 +26,8 @@ import {
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
+  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
+  Blockchain,
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
 import * as store from "./store";
@@ -91,12 +94,12 @@ export class Backend {
   ): Promise<string> {
     const tx = Transaction.from(bs58.decode(txStr));
     const txMessage = bs58.encode(tx.serializeMessage());
-    const blockchainKeyring = this.keyringStore.activeBlockchain();
+    const blockchainKeyring = this.keyringStore.activeBlockchainKeyring();
     return await blockchainKeyring.signTransaction(txMessage, walletAddress);
   }
 
   async solanaSignMessage(msg: string, walletAddress: string): Promise<string> {
-    const blockchainKeyring = this.keyringStore.activeBlockchain();
+    const blockchainKeyring = this.keyringStore.activeBlockchainKeyring();
     return await blockchainKeyring.signMessage(msg, walletAddress);
   }
 
@@ -241,8 +244,10 @@ export class Backend {
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_CREATED,
       data: {
-        url: data.solana.cluster,
+        // Hardcoded to Solana for now, but will be dynamic in the future.
+        activeBlockchain: Blockchain.SOLANA,
         activeWallet: await this.activeWallet(),
+        url: data.solana.cluster,
         commitment: data.solana.commitment,
       },
     });
@@ -256,15 +261,18 @@ export class Backend {
 
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
-    const url = await this.solanaConnectionUrlRead();
+
+    const activeBlockchain = this.activeBlockchain();
     const activeWallet = await this.activeWallet();
+    const url = await this.solanaConnectionUrlRead();
     const commitment = await this.solanaCommitmentRead();
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
       data: {
-        url,
+        activeBlockchain,
         activeWallet,
+        url,
         commitment,
       },
     });
@@ -290,43 +298,44 @@ export class Backend {
   }
 
   // Returns all pubkeys available for signing.
-  async keyringStoreReadAllPubkeys(): Promise<{
-    hdPublicKeys: Array<NamedPublicKey>;
-    importedPublicKeys: Array<NamedPublicKey>;
-    ledgerPublicKeys: Array<NamedPublicKey>;
-  }> {
-    const pubkeys = this.keyringStore.publicKeys();
-    const [hdNames, importedNames, ledgerNames] = await Promise.all([
-      Promise.all(
-        pubkeys.hdPublicKeys.map((pk) => store.getKeyname(pk.toString()))
-      ),
-      Promise.all(
-        pubkeys.importedPublicKeys.map((pk) => store.getKeyname(pk.toString()))
-      ),
-      Promise.all(
-        pubkeys.ledgerPublicKeys.map((pk) => store.getKeyname(pk.toString()))
-      ),
-    ]);
-    return {
-      hdPublicKeys: pubkeys.hdPublicKeys.map((pk, idx) => {
-        return {
-          publicKey: pk.toString(),
-          name: hdNames[idx],
-        };
-      }),
-      importedPublicKeys: pubkeys.importedPublicKeys.map((pk, idx) => {
-        return {
-          publicKey: pk.toString(),
-          name: importedNames[idx],
-        };
-      }),
-      ledgerPublicKeys: pubkeys.ledgerPublicKeys.map((pk, idx) => {
-        return {
-          publicKey: pk.toString(),
-          name: ledgerNames[idx],
-        };
-      }),
-    };
+  async keyringStoreReadAllPubkeys(): Promise<any> {
+    const publicKeys = this.keyringStore.publicKeys();
+    const namedPublicKeys = {};
+    for (const [blockchain, blockchainKeyring] of Object.entries(publicKeys)) {
+      namedPublicKeys[blockchain] = {};
+      for (const [keyring, publicKeys] of Object.entries(blockchainKeyring)) {
+        if (!namedPublicKeys[blockchain][keyring]) {
+          namedPublicKeys[blockchain][keyring] = [];
+        }
+        for (const publicKey of publicKeys) {
+          namedPublicKeys[blockchain][keyring].push({
+            publicKey,
+            name: await store.getKeyname(publicKey),
+          });
+        }
+      }
+    }
+    return namedPublicKeys;
+  }
+
+  // Return currently active blockchain.
+  activeBlockchain(): string {
+    return this.keyringStore.activeBlockchain();
+  }
+
+  // Set the currently active blockchain.
+  activeBlockchainUpdate(newActiveBlockchain: Blockchain) {
+    const oldActiveBlockchain = this.activeBlockchain();
+    this.keyringStore.activeBlockchainUpdate(newActiveBlockchain);
+    if (oldActiveBlockchain !== newActiveBlockchain) {
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED,
+        data: {
+          oldActiveBlockchain,
+          newActiveBlockchain,
+        },
+      });
+    }
   }
 
   async activeWallet(): Promise<string> {
@@ -334,21 +343,47 @@ export class Backend {
   }
 
   async activeWalletUpdate(newWallet: string): Promise<string> {
+    // Updating the active wallet can change the active blockchain, so save old
+    // blockchain to emit event if it changes
+    const oldActiveBlockchain = this.activeBlockchain();
     await this.keyringStore.activeWalletUpdate(newWallet);
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
-      data: {
-        activeWallet: newWallet,
-      },
-    });
+    const newActiveBlockchain = this.activeBlockchain();
+
+    if (oldActiveBlockchain !== newActiveBlockchain) {
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED,
+        data: {
+          oldActiveBlockchain,
+          newActiveBlockchain,
+        },
+      });
+    }
+
+    if (this.activeBlockchain() === Blockchain.SOLANA) {
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
+        data: {
+          activeWallet: newWallet,
+        },
+      });
+    } else if (this.activeBlockchain() === Blockchain.ETHEREUM) {
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
+        data: {
+          activeWallet: newWallet,
+        },
+      });
+    }
+
     return SUCCESS_RESPONSE;
   }
 
-  async keyringDeriveWallet(): Promise<string> {
-    const [pubkey, name] = await this.keyringStore.deriveNextKey();
+  async keyringDeriveWallet(blockchain: Blockchain): Promise<string> {
+    const [pubkey, name] = await this.keyringStore.deriveNextKey(blockchain);
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_DERIVED_WALLET,
       data: {
+        blockchain,
         publicKey: pubkey.toString(),
         name,
       },
@@ -374,22 +409,31 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async keyringKeyDelete(publicKey: string): Promise<string> {
+  async keyringKeyDelete(
+    blockchain: Blockchain,
+    publicKey: string
+  ): Promise<string> {
     const active = await this.activeWallet();
 
     // If we're removing the currently active key then we need to update it
     // first.
     if (publicKey === active) {
       // Invariant: must have at least one hd pubkey.
-      const { hdPublicKeys } = await this.keyringStoreReadAllPubkeys();
-      await this.activeWalletUpdate(hdPublicKeys[0].publicKey);
+      const blockchainKeyrings = await this.keyringStoreReadAllPubkeys();
+      // Take the first available hd public key from the remainder for the same
+      // blockchain and set it to the active wallet
+      const filteredHdPublicKeys = blockchainKeyrings[
+        blockchain
+      ].hdPublicKeys.filter((k: any) => k.publicKey !== active);
+      await this.activeWalletUpdate(filteredHdPublicKeys[0].publicKey);
     }
 
-    await this.keyringStore.keyDelete(publicKey);
+    await this.keyringStore.keyDelete(blockchain, publicKey);
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_KEY_DELETE,
       data: {
+        blockchain,
         deletedPublicKey: publicKey,
       },
     });
@@ -405,14 +449,20 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async importSecretKey(secretKey: string, name: string): Promise<string> {
+  async importSecretKey(
+    blockchain: Blockchain,
+    secretKey: string,
+    name: string
+  ): Promise<string> {
     const [publicKey, _name] = await this.keyringStore.importSecretKey(
+      blockchain,
       secretKey,
       name
     );
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
       data: {
+        blockchain,
         publicKey,
         name: _name,
       },
@@ -462,8 +512,13 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async ledgerImport(dPath: string, account: number, pubkey: string) {
-    await this.keyringStore.ledgerImport(dPath, account, pubkey);
+  async ledgerImport(
+    blockchain: Blockchain,
+    dPath: string,
+    account: number,
+    pubkey: string
+  ) {
+    await this.keyringStore.ledgerImport(blockchain, dPath, account, pubkey);
     return SUCCESS_RESPONSE;
   }
 

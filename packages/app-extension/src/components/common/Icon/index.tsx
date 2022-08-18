@@ -222,6 +222,61 @@ export function SolanaIcon() {
   );
 }
 
+export function EthereumIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" id="body_1" width="56" height="56">
+      <g transform="matrix(1.6470588 0 0 1.6470588 0 0)">
+        <path
+          d="M17 34C 26.3888 34 34 26.3888 34 17C 34 7.61116 26.3888 0 17 0C 7.61116 0 0 7.61116 0 17C 0 26.3888 7.61116 34 17 34z"
+          stroke="none"
+          fill="#627EEA"
+          fillRule="nonzero"
+        />
+        <path
+          d="M17.5293 4.25L17.5293 13.6744L25.4949 17.2337L17.5293 4.25z"
+          stroke="none"
+          fill="#FFFFFF"
+          fillRule="nonzero"
+          fillOpacity="0.6"
+        />
+        <path
+          d="M17.5291 4.25L9.5625 17.2337L17.5291 13.6744L17.5291 4.25z"
+          stroke="none"
+          fill="#FFFFFF"
+          fillRule="nonzero"
+        />
+        <path
+          d="M17.5293 23.3408L17.5293 29.7445L25.5002 18.7168L17.5293 23.3408z"
+          stroke="none"
+          fill="#FFFFFF"
+          fillRule="nonzero"
+          fillOpacity="0.6"
+        />
+        <path
+          d="M17.5291 29.7445L17.5291 23.3397L9.5625 18.7168L17.5291 29.7445z"
+          stroke="none"
+          fill="#FFFFFF"
+          fillRule="nonzero"
+        />
+        <path
+          d="M17.5293 21.8581L25.4949 17.233L17.5293 13.6758L17.5293 21.8581z"
+          stroke="none"
+          fill="#FFFFFF"
+          fillRule="nonzero"
+          fillOpacity="0.2"
+        />
+        <path
+          d="M9.5625 17.233L17.5291 21.8581L17.5291 13.6758L9.5625 17.233z"
+          stroke="none"
+          fill="#FFFFFF"
+          fillRule="nonzero"
+          fillOpacity="0.6"
+        />
+      </g>
+    </svg>
+  );
+}
+
 export function SadFaceIcon() {
   return (
     <svg

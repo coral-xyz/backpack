@@ -1,6 +1,10 @@
 import { RecoilRoot } from "recoil";
 import { HashRouter } from "react-router-dom";
-import { QUERY_CONNECT_HARDWARE, QUERY_ONBOARDING } from "@coral-xyz/common";
+import {
+  Blockchain,
+  QUERY_CONNECT_HARDWARE,
+  QUERY_ONBOARDING,
+} from "@coral-xyz/common";
 import {
   useBackgroundKeepAlive,
   NotificationsProvider,
@@ -52,7 +56,14 @@ function Router() {
 
   switch (query) {
     case QUERY_CONNECT_HARDWARE:
-      return <ConnectHardware onComplete={window.close} />;
+      const params = new URLSearchParams(window.location.search);
+      const blockchain = params.get("blockchain") || Blockchain.SOLANA;
+      return (
+        <ConnectHardware
+          blockchain={blockchain as Blockchain}
+          onComplete={window.close}
+        />
+      );
     case QUERY_ONBOARDING:
       return <Onboarding />;
     default:

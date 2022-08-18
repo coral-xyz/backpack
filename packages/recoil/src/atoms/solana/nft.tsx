@@ -1,6 +1,6 @@
 import { atomFamily, selector, selectorFamily } from "recoil";
 import { bootstrap } from "../bootstrap";
-import { activeWalletWithName } from "./wallet";
+import { activeWalletWithData } from "./wallet";
 
 //
 // TODO: this doesn't use the metaplex standard. We should use that instead.
@@ -11,7 +11,7 @@ export const solanaNftCollections = selector({
     //
     // Get all the collections.
     //
-    const { publicKey } = get(activeWalletWithName);
+    const { publicKey } = get(activeWalletWithData);
     const metadata = get(solanaNftMetadata(publicKey.toString()));
 
     //

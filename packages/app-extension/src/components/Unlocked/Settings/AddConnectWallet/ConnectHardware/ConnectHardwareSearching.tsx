@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
+import { Blockchain } from "@coral-xyz/common";
 import {
   Header,
   HeaderIcon,
@@ -13,9 +14,11 @@ import { ConnectHardwareFailure } from "./ConnectHardwareFailure";
 import { ConnectHardwareApp } from "./ConnectHardwareApp";
 
 export function ConnectHardwareSearching({
+  blockchain,
   onNext,
   isConnectFailure = false,
 }: {
+  blockchain: Blockchain;
   onNext: (transport: Transport) => void;
   isConnectFailure?: boolean;
 }) {
@@ -84,8 +87,13 @@ export function ConnectHardwareSearching({
   if (connectFailure) {
     return <ConnectHardwareFailure onRetry={() => setConnectFailure(false)} />;
   } else if (connectSuccess) {
-    // Got device, but Solana app is not necessarily open. Remind user to open.
-    return <ConnectHardwareApp onNext={() => onNext(transport!)} />;
+    // Got device, but relevant app is not necessarily open. Remind user to open.
+    return (
+      <ConnectHardwareApp
+        blockchain={blockchain}
+        onNext={() => onNext(transport!)}
+      />
+    );
   }
 
   return (

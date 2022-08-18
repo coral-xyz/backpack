@@ -12,6 +12,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { useBackgroundClient, useAnchorContext } from "@coral-xyz/recoil";
 import {
+  Blockchain,
   DerivationPath,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
@@ -41,11 +42,13 @@ const LOAD_PUBKEY_AMOUNT = 20;
 const DISPLAY_PUBKEY_AMOUNT = 6;
 
 export function ImportAccounts({
+  blockchain,
   mnemonic,
   transport,
   onNext,
   onError,
 }: {
+  blockchain: Blockchain;
   mnemonic?: string;
   transport?: Transport | null;
   onNext: (
@@ -180,10 +183,12 @@ export function ImportAccounts({
     derivationPath: DerivationPath
   ) => {
     const publicKeys = [];
-    for (let k = 0; k < LOAD_PUBKEY_AMOUNT; k += 1) {
-      publicKeys.push(
-        await ledgerCore.getPublicKey(transport, k, derivationPath)
-      );
+    if (blockchain === Blockchain.SOLANA) {
+      for (let k = 0; k < LOAD_PUBKEY_AMOUNT; k += 1) {
+        publicKeys.push(
+          await ledgerCore.getPublicKey(transport, k, derivationPath)
+        );
+      }
     }
     return publicKeys;
   };
@@ -206,16 +211,28 @@ export function ImportAccounts({
     setSelectedAccounts(newSelectedAccounts);
   };
 
-  const derivationPathOptions = [
-    {
-      path: DerivationPath.Bip44,
-      label: "44'/501'/",
-    },
-    {
-      path: DerivationPath.Bip44Change,
-      label: "44'/501'/0'/",
-    },
-  ];
+  const derivationPathOptions = {
+    [Blockchain.SOLANA]: [
+      {
+        path: DerivationPath.Bip44,
+        label: "44'/501'/",
+      },
+      {
+        path: DerivationPath.Bip44Change,
+        label: "44'/501'/0'/",
+      },
+    ],
+    [Blockchain.ETHEREUM]: [
+      {
+        path: DerivationPath.Bip44,
+        label: "44'/60'/",
+      },
+      {
+        path: DerivationPath.Bip44Change,
+        label: "44'/60'/0'/",
+      },
+    ],
+  }[blockchain];
 
   return (
     <Box
@@ -340,7 +357,7 @@ export function ImportAccounts({
         }}
       >
         <PrimaryButton
-          label="Import accounts"
+          label="Import Accounts"
           onClick={() => onNext(selectedAccounts, derivationPath, mnemonic)}
           disabled={selectedAccounts.length === 0}
         />

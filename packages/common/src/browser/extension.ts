@@ -11,6 +11,7 @@ import {
   QUERY_CONNECT_HARDWARE,
   QUERY_ONBOARDING,
 } from "../constants";
+import type { Blockchain } from "../types";
 
 //
 // Browser apis that can be used on extension only.
@@ -208,7 +209,7 @@ export function openOnboarding() {
   window.open(chrome.runtime.getURL(url), "_blank");
 }
 
-export function openConnectHardware() {
-  const url = `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}`;
+export function openConnectHardware(blockchain: Blockchain) {
+  const url = `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}&blockchain=${blockchain}`;
   window.open(chrome.runtime.getURL(url), "_blank");
 }

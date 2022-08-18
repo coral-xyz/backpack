@@ -1,3 +1,8 @@
+import {
+  toTitleCase,
+  Blockchain,
+  BACKPACK_FEATURE_MULTICHAIN,
+} from "@coral-xyz/common";
 import { useWalletPublicKeys } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { MoreHoriz } from "@mui/icons-material";
@@ -10,7 +15,8 @@ import { AddConnectWalletButton } from "../..";
 export function EditWallets() {
   const theme = useCustomTheme();
   const nav = useNavStack();
-  const wallets = useWalletPublicKeys();
+  const blockchainKeyrings = useWalletPublicKeys();
+
   useEffect(() => {
     const title = nav.title;
     nav.setTitle("Edit wallets");
@@ -23,33 +29,59 @@ export function EditWallets() {
     };
   }, []);
 
-  // TODO: filter wallets by iterated blockchain keyring name
   return (
     <div style={{ paddingTop: "16px", height: "100%" }}>
-      <BlockchainWalletList wallets={wallets} />
+      {Object.entries(blockchainKeyrings).map(([blockchain, keyring]) => (
+        <WalletList
+          key={blockchain}
+          blockchain={blockchain as Blockchain}
+          keyring={keyring}
+        />
+      ))}
       {/* Hack to add margin bottom. */}
       <div style={{ height: "16px" }} />
     </div>
   );
 }
 
-function BlockchainWalletList({
-  wallets,
+function WalletList({
+  blockchain,
+  keyring,
 }: {
-  wallets: ReturnType<typeof useWalletPublicKeys>;
+  blockchain: Blockchain;
+  keyring: any;
 }) {
   const flattenedWallets = [
-    ...wallets.hdPublicKeys.map((k) => ({ ...k, type: "derived" })),
-    ...wallets.importedPublicKeys.map((k) => ({ ...k, type: "imported" })),
-    ...wallets.ledgerPublicKeys.map((k) => ({ ...k, type: "ledger" })),
+    ...keyring.hdPublicKeys.map((k: any) => ({ ...k, type: "derived" })),
+    ...keyring.importedPublicKeys.map((k: any) => ({
+      ...k,
+      type: "imported",
+    })),
+    ...keyring.ledgerPublicKeys.map((k: any) => ({
+      ...k,
+      type: "ledger",
+    })),
   ];
 
   // TODO: replace placeholder wallet avatar with stored image when available
   return (
-    <div>
+    <div style={{ marginBottom: "16px" }}>
+      {BACKPACK_FEATURE_MULTICHAIN && (
+        <Typography
+          style={{
+            marginLeft: "16px",
+            marginRight: "16px",
+            marginBottom: "12px",
+          }}
+        >
+          {toTitleCase(blockchain)}
+        </Typography>
+      )}
+
       <List>
         {flattenedWallets.map(({ name, publicKey, type }, idx) => (
           <WalletListItem
+            blockchain={blockchain}
             key={publicKey.toString()}
             name={name}
             publicKey={publicKey}
@@ -59,19 +91,20 @@ function BlockchainWalletList({
           />
         ))}
       </List>
-      <AddConnectWalletButton />
+      <AddConnectWalletButton blockchain={blockchain} />
     </div>
   );
 }
 
 export const WalletListItem: React.FC<{
+  blockchain: Blockchain;
   name: string;
-  publicKey: any;
+  publicKey: string;
   type?: string;
   isFirst: boolean;
   isLast: boolean;
   onClick?: () => void;
-}> = ({ name, publicKey, type, isFirst, isLast, onClick }) => {
+}> = ({ blockchain, name, publicKey, type, isFirst, isLast, onClick }) => {
   const theme = useCustomTheme();
   const nav = useNavStack();
   return (
@@ -93,7 +126,8 @@ export const WalletListItem: React.FC<{
           ? onClick
           : () =>
               nav.push("edit-wallets-wallet-detail", {
-                publicKey: publicKey.toString(),
+                blockchain,
+                publicKey,
                 name,
                 type,
               })
