@@ -293,15 +293,20 @@ async function handleSolanaSignMessage(
       walletAddress
     );
   });
-  console.log("ARMANI: UI RESP HERE", uiResp);
   const didApprove = uiResp.result;
 
+  let resp: RpcResponse<string>;
   if (didApprove) {
     const sig = await ctx.backend.solanaSignMessage(msg, walletAddress);
-    return [sig];
+    resp = [sig];
   }
 
+  console.log("ARMANI TEST: UI RESP HERE", uiResp);
   BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+
+  if (resp) {
+    return resp;
+  }
 
   throw new Error("user denied message signature");
 }

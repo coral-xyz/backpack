@@ -92,7 +92,7 @@ export class BrowserRuntimeExtension {
 
   public static closeWindow(id: number) {
     console.log("CLOSING WINDOW HERE", id);
-    chrome.tabs.remove(id, function () {});
+    chrome.windows.remove(id);
   }
 }
 
