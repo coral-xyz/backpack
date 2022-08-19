@@ -258,7 +258,6 @@ export class SolanaLedgerKeyring
     if (!path) {
       throw new Error("ledger address not found");
     }
-    console.log("SOLANA SIGN MESSAGE", msg, address);
     return await this.request({
       method: LEDGER_METHOD_SIGN_MESSAGE,
       params: [bs58.encode(msg), path.path, path.account],
