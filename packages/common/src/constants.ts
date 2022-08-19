@@ -1,3 +1,5 @@
+import { BACKPACK_CONFIG_VERSION } from "./generated-config";
+
 //
 // Messaging communication channel topics.
 //
@@ -209,8 +211,13 @@ export const SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION =
 //
 // Ledger API.
 //
-//const LEDGER_IFRAME_URL = "https://coral-xyz.github.io/anchor-wallet";
-export const LEDGER_IFRAME_URL = "https://localhost:4443/dist";
+export const LEDGER_IFRAME_URL =
+  BACKPACK_CONFIG_VERSION === "development"
+    ? "https://localhost:4443/dist"
+    : "https://coral-xyz.github.io/ledger-injection/";
+
+console.log("LEDGER IFRAME URL", LEDGER_IFRAME_URL);
+
 export const LEDGER_INJECTED_CHANNEL_REQUEST = "ledger-injected-request";
 export const LEDGER_INJECTED_CHANNEL_RESPONSE = "ledger-injected-response";
 export const LEDGER_METHOD_UNLOCK = "ledger-method-unlock";

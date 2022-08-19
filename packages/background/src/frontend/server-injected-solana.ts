@@ -217,6 +217,12 @@ async function handleSolanaSignAndSendTx(
     );
   });
 
+  if (uiResp.error) {
+    logger.debug("require ui action errror", uiResp);
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+    return;
+  }
+
   let resp: RpcResponse<string>;
   const didApprove = uiResp.result;
 
@@ -253,6 +259,12 @@ async function handleSolanaSignTx(
       walletAddress
     );
   });
+
+  if (uiResp.error) {
+    logger.debug("require ui action errror", uiResp);
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+    return;
+  }
 
   let resp: RpcResponse<string>;
   const didApprove = uiResp.result;
@@ -401,13 +413,9 @@ class RequestManager {
       throw new Error(`unable to find response resolver for: ${id}`);
     }
 
-    const [resolve, reject] = resolver;
+    const [resolve, _reject] = resolver;
 
     RequestManager.removeResponseResolver(id);
-
-    if (error) {
-      reject(error);
-    }
 
     resolve({
       id,
