@@ -173,7 +173,9 @@ async function handleSolanaConnect(
     throw new Error("invariant violation keyring not created");
   }
 
-  BrowserRuntimeExtension.closeWindow(resp.window.id);
+  if (!resp.windowClosed) {
+    BrowserRuntimeExtension.closeWindow(resp.window.id);
+  }
 
   // If the user approved and unlocked, then we're connected.
   if (didApprove) {
