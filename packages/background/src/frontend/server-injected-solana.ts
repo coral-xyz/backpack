@@ -300,6 +300,12 @@ async function handleSolanaSignAllTxs(
     );
   });
 
+  if (uiResp.error) {
+    logger.debug("require ui action errror", uiResp);
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+    return;
+  }
+
   let resp: RpcResponse<string>;
   const didApprove = uiResp.result;
 
@@ -335,6 +341,12 @@ async function handleSolanaSignMessage(
       walletAddress
     );
   });
+
+  if (uiResp.error) {
+    logger.debug("require ui action errror", uiResp);
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+    return;
+  }
 
   let resp: RpcResponse<string>;
   const didApprove = uiResp.result;
