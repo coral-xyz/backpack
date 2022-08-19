@@ -20,6 +20,7 @@ import {
   openApproveTransactionPopupWindow,
   openApproveAllTransactionsPopupWindow,
   openApproveMessagePopupWindow,
+  BrowserRuntimeExtension,
   SOLANA_RPC_METHOD_CONNECT,
   SOLANA_RPC_METHOD_DISCONNECT,
   SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
@@ -131,6 +132,7 @@ async function handleSolanaConnect(
   const origin = ctx.sender.origin;
   const keyringStoreState = await ctx.backend.keyringStoreState();
   let didApprove = false;
+  let resp: any;
 
   // Use the UI to ask the user if it should connect.
   if (keyringStoreState === "unlocked") {
@@ -138,7 +140,7 @@ async function handleSolanaConnect(
       logger.debug("already approved so automatically connecting");
       didApprove = true;
     } else {
-      const resp = await RequestManager.requestUiAction((requestId: number) => {
+      resp = await RequestManager.requestUiAction((requestId: number) => {
         return openApprovalPopupWindow(
           ctx.sender.origin,
           ctx.sender.tab.title,
@@ -149,7 +151,7 @@ async function handleSolanaConnect(
     }
   } else if (keyringStoreState === "locked") {
     if (await ctx.backend.isApprovedOrigin(origin)) {
-      const resp = await RequestManager.requestUiAction((requestId: number) => {
+      resp = await RequestManager.requestUiAction((requestId: number) => {
         return openLockedPopupWindow(
           ctx.sender.origin,
           ctx.sender.tab.title,
@@ -158,7 +160,7 @@ async function handleSolanaConnect(
       });
       didApprove = !resp.windowClosed && resp.result;
     } else {
-      const resp = await RequestManager.requestUiAction((requestId: number) => {
+      resp = await RequestManager.requestUiAction((requestId: number) => {
         return openLockedApprovalPopupWindow(
           ctx.sender.origin,
           ctx.sender.tab.title,
@@ -169,6 +171,10 @@ async function handleSolanaConnect(
     }
   } else {
     throw new Error("invariant violation keyring not created");
+  }
+
+  if (resp && !resp.windowClosed) {
+    BrowserRuntimeExtension.closeWindow(resp.window.id);
   }
 
   // If the user approved and unlocked, then we're connected.
@@ -210,6 +216,8 @@ async function handleSolanaSignAndSendTx(
       walletAddress
     );
   });
+
+  let resp: RpcResponse<string>;
   const didApprove = uiResp.result;
 
   // Only sign if the user clicked approve.
@@ -219,7 +227,13 @@ async function handleSolanaSignAndSendTx(
       walletAddress,
       options
     );
-    return [sig];
+    resp = [sig];
+  }
+  if (!uiResp.windowClosed) {
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  }
+  if (resp) {
+    return resp;
   }
 
   throw new Error("user denied transaction signature");
@@ -239,12 +253,21 @@ async function handleSolanaSignTx(
       walletAddress
     );
   });
+
+  let resp: RpcResponse<string>;
   const didApprove = uiResp.result;
 
   // Only sign if the user clicked approve.
   if (didApprove) {
     const sig = await ctx.backend.solanaSignTransaction(tx, walletAddress);
-    return [sig];
+    resp = [sig];
+  }
+
+  if (!uiResp.windowClosed) {
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  }
+  if (resp) {
+    return resp;
   }
 
   throw new Error("user denied transaction signature");
@@ -264,15 +287,23 @@ async function handleSolanaSignAllTxs(
       walletAddress
     );
   });
+
+  let resp: RpcResponse<string>;
   const didApprove = uiResp.result;
 
   // Sign all if user clicked approve.
   if (didApprove) {
-    const resp = await ctx.backend.solanaSignAllTransactions(
+    const sigs = await ctx.backend.solanaSignAllTransactions(
       txs,
       walletAddress
     );
-    return [resp];
+    resp = [sigs];
+  }
+  if (!uiResp.windowClosed) {
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  }
+  if (resp) {
+    return resp;
   }
 
   throw new Error("user denied transactions");
@@ -292,11 +323,19 @@ async function handleSolanaSignMessage(
       walletAddress
     );
   });
+
+  let resp: RpcResponse<string>;
   const didApprove = uiResp.result;
 
   if (didApprove) {
     const sig = await ctx.backend.solanaSignMessage(msg, walletAddress);
-    return [sig];
+    resp = [sig];
+  }
+  if (!uiResp.windowClosed) {
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  }
+  if (resp) {
+    return resp;
   }
 
   throw new Error("user denied message signature");
@@ -332,8 +371,13 @@ class RequestManager {
     popupFn: (reqId: number) => Promise<chrome.windows.Window>
   ): Promise<T> {
     return new Promise(async (resolve, reject) => {
-      const requestId = RequestManager.addResponseResolver(resolve, reject);
+      const requestId = RequestManager.nextRequestId();
       const window = await popupFn(requestId);
+      RequestManager.addResponseResolver(
+        requestId,
+        (input: any) => resolve({ ...input, window }),
+        reject
+      );
       chrome.windows.onRemoved.addListener((windowId) => {
         if (windowId === window.id) {
           RequestManager.removeResponseResolver(requestId);
@@ -343,6 +387,7 @@ class RequestManager {
             result: undefined,
             error: undefined,
             windowClosed: true,
+            window,
           });
         }
       });
@@ -373,10 +418,10 @@ class RequestManager {
   }
 
   private static addResponseResolver(
+    requestId: number,
     resolve: Function,
     reject: Function
   ): number {
-    const requestId = RequestManager.nextRequestId();
     RequestManager._responseResolvers[requestId] = [resolve, reject];
     return requestId;
   }

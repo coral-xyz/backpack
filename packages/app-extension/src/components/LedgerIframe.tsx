@@ -1,8 +1,11 @@
 import {
+  getLogger,
   LEDGER_IFRAME_URL,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
 } from "@coral-xyz/common";
 import { useEffect, useRef } from "react";
+
+const logger = getLogger("app-extension/ledger-iframe");
 
 /**
  * A hidden iframe that's used to communicate (as a proxy) with a Ledger
@@ -21,6 +24,7 @@ const LedgerIframe = () => {
         if (data.type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
           return;
         }
+        logger.debug("handleMessage", data);
         navigator.serviceWorker.controller?.postMessage(data);
       };
       window.addEventListener("message", handleMessage);
@@ -30,6 +34,7 @@ const LedgerIframe = () => {
       //          iframe so that it has permissions to communicate with
       //          the ledger.
       navigator.serviceWorker.onmessage = ({ data }) => {
+        logger.debug("onmessage", data);
         iframe.current?.contentWindow?.postMessage(data, "*");
       };
     });
@@ -40,6 +45,8 @@ const LedgerIframe = () => {
       window.removeEventListener("message", handleMessage);
     };
   }, []);
+
+  logger.debug("rendering hidden iframe for ledger");
 
   // allow="hid 'src'" is why this component is necessary, because it allows
   // us to communicate with a ledger using the Human Interface Device API.

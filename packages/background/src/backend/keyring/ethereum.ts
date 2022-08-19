@@ -164,13 +164,6 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
   }
 }
 
-const responseResolvers: {
-  [reqId: string]: {
-    resolve: (value: any) => void;
-    reject: (reason?: string) => void;
-  };
-} = {};
-
 export class EthereumLedgerKeyringFactory {
   public init(): LedgerKeyring {
     return new EthereumLedgerKeyring([]);

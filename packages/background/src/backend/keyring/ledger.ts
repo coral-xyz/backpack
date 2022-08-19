@@ -2,7 +2,6 @@ import {
   generateUniqueId,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
   LEDGER_INJECTED_CHANNEL_REQUEST,
-  LEDGER_METHOD_CONNECT,
 } from "@coral-xyz/common";
 import type { ImportedDerivationPath, LedgerKeyringJson } from "./types";
 import { postMessageToIframe } from "../../shared";
@@ -26,14 +25,6 @@ export class LedgerKeyringBase {
 
   public keyCount(): number {
     return this.derivationPaths.length;
-  }
-
-  public async connect() {
-    const resp = await this.request({
-      method: LEDGER_METHOD_CONNECT,
-      params: [],
-    });
-    return resp;
   }
 
   public deleteKeyIfNeeded(pubkey: string): number {
