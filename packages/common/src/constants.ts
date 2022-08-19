@@ -203,6 +203,8 @@ export const SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS =
   "solana-get-program-accounts";
 export const SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE =
   "solana-get-fee-for-message";
+export const SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION =
+  "solana-get-minimum-balance-for-rent-exemption";
 
 //
 // Ledger API.

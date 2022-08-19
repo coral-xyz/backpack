@@ -35,6 +35,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
   SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS,
   SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE,
+  SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION,
 } from "@coral-xyz/common";
 import type { Backend } from "../backend/solana-connection";
 import type { Config, Handle } from "../types";
@@ -119,6 +120,12 @@ async function handleImpl<T = any>(
       return await handleGetProgramAccounts(ctx, params[0], params[1]);
     case SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE:
       return await handleGetFeeForMessage(ctx, params[0], params[1]);
+    case SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION:
+      return await handleGetMinimumBalanceForRentExemption(
+        ctx,
+        params[0],
+        params[1]
+      );
     default:
       throw new Error("invalid rpc method");
   }
@@ -268,6 +275,18 @@ async function handleGetFeeForMessage(
 ) {
   const resp = await ctx.backend.getFeeForMessage(
     new Message(message),
+    commitment
+  );
+  return [resp];
+}
+
+async function handleGetMinimumBalanceForRentExemption(
+  ctx: Context<Backend>,
+  dataLength: number,
+  commitment?: Commitment
+) {
+  const resp = await ctx.backend.getMinimumBalanceForRentExemption(
+    dataLength,
     commitment
   );
   return [resp];

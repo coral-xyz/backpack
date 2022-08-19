@@ -405,6 +405,16 @@ export class Backend {
     return await this.connection!.getFeeForMessage(message, commitment);
   }
 
+  async getMinimumBalanceForRentExemption(
+    dataLength: number,
+    commitment?: Commitment
+  ): Promise<number> {
+    return await this.connection!.getMinimumBalanceForRentExemption(
+      dataLength,
+      commitment
+    );
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Methods below not used currently.
   ///////////////////////////////////////////////////////////////////////////////
@@ -589,13 +599,6 @@ export class Backend {
   }
 
   getLeaderSchedule(): Promise<LeaderSchedule> {
-    throw new Error("not implemented");
-  }
-
-  getMinimumBalanceForRentExemption(
-    dataLength: number,
-    commitment?: Commitment
-  ): Promise<number> {
     throw new Error("not implemented");
   }
 

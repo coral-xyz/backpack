@@ -77,6 +77,7 @@ import {
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
   SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS,
   SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE,
+  SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION,
 } from "../constants";
 import type { BackgroundClient } from "../channel";
 
@@ -264,6 +265,16 @@ export class BackgroundSolanaConnection extends Connection {
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE,
       params: [message, commitment],
+    });
+  }
+
+  async getMinimumBalanceForRentExemption(
+    dataLength: number,
+    commitment?: Commitment
+  ): Promise<number> {
+    return await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION,
+      params: [dataLength, commitment],
     });
   }
 
@@ -459,13 +470,6 @@ export class BackgroundSolanaConnection extends Connection {
   }
 
   getLeaderSchedule(): Promise<LeaderSchedule> {
-    throw new Error("not implemented");
-  }
-
-  getMinimumBalanceForRentExemption(
-    dataLength: number,
-    commitment?: Commitment
-  ): Promise<number> {
     throw new Error("not implemented");
   }
 
