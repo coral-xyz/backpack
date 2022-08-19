@@ -127,6 +127,13 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           destination_dir: "background-scripts/${{ env.short_sha }}"
 
+      - name:  "update ledger injection"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: packages/ledger-injection
+        run: yarn deploy
+
       ##########################################################################
       # Upload build artifacts.
       ##########################################################################
