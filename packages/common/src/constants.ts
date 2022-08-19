@@ -216,8 +216,6 @@ export const LEDGER_IFRAME_URL =
     ? "https://localhost:4443/dist"
     : "https://coral-xyz.github.io/ledger-injection/";
 
-console.log("LEDGER IFRAME URL", LEDGER_IFRAME_URL);
-
 export const LEDGER_INJECTED_CHANNEL_REQUEST = "ledger-injected-request";
 export const LEDGER_INJECTED_CHANNEL_RESPONSE = "ledger-injected-response";
 export const LEDGER_METHOD_UNLOCK = "ledger-method-unlock";
