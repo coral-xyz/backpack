@@ -105,14 +105,10 @@ export class Backend {
 
   async solanaSimulate(
     txStr: string,
-    walletAddress: string,
+    _walletAddress: string,
     includeAccounts?: boolean | Array<string>
   ): Promise<any> {
     const tx = Transaction.from(bs58.decode(txStr));
-    const signature = await this.solanaSignTransaction(txStr, walletAddress);
-    const pubkey = new PublicKey(walletAddress);
-    tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
-
     return await this.solanaConnectionBackend.simulateTransaction(
       tx,
       undefined,
