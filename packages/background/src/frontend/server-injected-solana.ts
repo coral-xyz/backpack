@@ -227,8 +227,9 @@ async function handleSolanaSignAndSendTx(
     );
     resp = [sig];
   }
-
-  BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  if (!uiResp.windowClosed) {
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  }
   if (resp) {
     return resp;
   }
@@ -260,7 +261,9 @@ async function handleSolanaSignTx(
     resp = [sig];
   }
 
-  BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  if (!uiResp.windowClosed) {
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  }
   if (resp) {
     return resp;
   }
@@ -294,8 +297,9 @@ async function handleSolanaSignAllTxs(
     );
     resp = [sigs];
   }
-
-  BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  if (!uiResp.windowClosed) {
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  }
   if (resp) {
     return resp;
   }
@@ -325,8 +329,9 @@ async function handleSolanaSignMessage(
     const sig = await ctx.backend.solanaSignMessage(msg, walletAddress);
     resp = [sig];
   }
-
-  BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  if (!uiResp.windowClosed) {
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  }
   if (resp) {
     return resp;
   }

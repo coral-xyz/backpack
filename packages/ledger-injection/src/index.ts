@@ -15,7 +15,6 @@ const logger = getLogger("ledger-injection");
 
 // Script entry.
 function main() {
-  logger.debug("armani test");
   logger.debug("starting ledger injection");
   LEDGER.start();
   logger.debug("ledger injection ready");
