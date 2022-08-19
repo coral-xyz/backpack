@@ -128,10 +128,11 @@ jobs:
           destination_dir: "background-scripts/${{ env.short_sha }}"
 
       - name: "Deploy ledger injection"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
         with:
           publish_dir: packages/ledger-injection/dist
-          deploy_token: ${{ secrets.LEDGER_INJECTION_DEPLOY_KEY }}
+          deploy_key: ${{ secrets.LEDGER_INJECTION_DEPLOY_KEY }}
           external_repository: coral-xyz/ledger-injection
 
       ##########################################################################
