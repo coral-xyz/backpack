@@ -217,7 +217,6 @@ async function handleSolanaSignAndSendTx(
     );
   });
 
-  logger.debug("require ui action error", uiResp);
   if (uiResp.error) {
     logger.debug("require ui action error", uiResp);
     BrowserRuntimeExtension.closeWindow(uiResp.window.id);
@@ -227,15 +226,20 @@ async function handleSolanaSignAndSendTx(
   let resp: RpcResponse<string>;
   const didApprove = uiResp.result;
 
-  // Only sign if the user clicked approve.
-  if (didApprove) {
-    const sig = await ctx.backend.solanaSignAndSendTx(
-      tx,
-      walletAddress,
-      options
-    );
-    resp = [sig];
+  try {
+    // Only sign if the user clicked approve.
+    if (didApprove) {
+      const sig = await ctx.backend.solanaSignAndSendTx(
+        tx,
+        walletAddress,
+        options
+      );
+      resp = [sig];
+    }
+  } catch (err) {
+    logger.debug("error sign and sending transaction", err.toString());
   }
+
   if (!uiResp.windowClosed) {
     BrowserRuntimeExtension.closeWindow(uiResp.window.id);
   }
@@ -260,7 +264,7 @@ async function handleSolanaSignTx(
       walletAddress
     );
   });
-  logger.debug("require ui action error", uiResp);
+
   if (uiResp.error) {
     logger.debug("require ui action error", uiResp);
     BrowserRuntimeExtension.closeWindow(uiResp.window.id);
@@ -270,10 +274,14 @@ async function handleSolanaSignTx(
   let resp: RpcResponse<string>;
   const didApprove = uiResp.result;
 
-  // Only sign if the user clicked approve.
-  if (didApprove) {
-    const sig = await ctx.backend.solanaSignTransaction(tx, walletAddress);
-    resp = [sig];
+  try {
+    // Only sign if the user clicked approve.
+    if (didApprove) {
+      const sig = await ctx.backend.solanaSignTransaction(tx, walletAddress);
+      resp = [sig];
+    }
+  } catch (err) {
+    logger.debug("error signing transaction", err.toString());
   }
 
   if (!uiResp.windowClosed) {
@@ -310,14 +318,19 @@ async function handleSolanaSignAllTxs(
   let resp: RpcResponse<string>;
   const didApprove = uiResp.result;
 
-  // Sign all if user clicked approve.
-  if (didApprove) {
-    const sigs = await ctx.backend.solanaSignAllTransactions(
-      txs,
-      walletAddress
-    );
-    resp = [sigs];
+  try {
+    // Sign all if user clicked approve.
+    if (didApprove) {
+      const sigs = await ctx.backend.solanaSignAllTransactions(
+        txs,
+        walletAddress
+      );
+      resp = [sigs];
+    }
+  } catch (err) {
+    logger.debug("error signing all transactions", err.toString());
   }
+
   if (!uiResp.windowClosed) {
     BrowserRuntimeExtension.closeWindow(uiResp.window.id);
   }
@@ -352,10 +365,15 @@ async function handleSolanaSignMessage(
   let resp: RpcResponse<string>;
   const didApprove = uiResp.result;
 
-  if (didApprove) {
-    const sig = await ctx.backend.solanaSignMessage(msg, walletAddress);
-    resp = [sig];
+  try {
+    if (didApprove) {
+      const sig = await ctx.backend.solanaSignMessage(msg, walletAddress);
+      resp = [sig];
+    }
+  } catch (err) {
+    logger.debug("error sign message", err.toString());
   }
+
   if (!uiResp.windowClosed) {
     BrowserRuntimeExtension.closeWindow(uiResp.window.id);
   }
