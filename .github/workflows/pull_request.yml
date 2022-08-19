@@ -15,11 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: webfactory/ssh-agent@v0.5.4
-        name: 'Setup ssh key'
-        with:
-            ssh-private-key: ${{ secrets.LEDGER_INJECTION_DEPLOY_KEY }}
-
       - uses: dorny/paths-filter@v2
         id: changes
         with:
@@ -62,6 +57,11 @@ jobs:
       ##########################################################################
 
       - uses: actions/checkout@v3
+
+      - uses: webfactory/ssh-agent@v0.5.4
+        name: 'Setup ssh key'
+        with:
+            ssh-private-key: ${{ secrets.LEDGER_INJECTION_DEPLOY_KEY }}
 
       - uses: actions/setup-node@v3
         with:
