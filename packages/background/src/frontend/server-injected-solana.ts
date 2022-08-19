@@ -217,8 +217,9 @@ async function handleSolanaSignAndSendTx(
     );
   });
 
+  logger.debug("require ui action error", uiResp);
   if (uiResp.error) {
-    logger.debug("require ui action errror", uiResp);
+    logger.debug("require ui action error", uiResp);
     BrowserRuntimeExtension.closeWindow(uiResp.window.id);
     return;
   }
@@ -259,9 +260,9 @@ async function handleSolanaSignTx(
       walletAddress
     );
   });
-
+  logger.debug("require ui action error", uiResp);
   if (uiResp.error) {
-    logger.debug("require ui action errror", uiResp);
+    logger.debug("require ui action error", uiResp);
     BrowserRuntimeExtension.closeWindow(uiResp.window.id);
     return;
   }
@@ -301,7 +302,7 @@ async function handleSolanaSignAllTxs(
   });
 
   if (uiResp.error) {
-    logger.debug("require ui action errror", uiResp);
+    logger.debug("require ui action error", uiResp);
     BrowserRuntimeExtension.closeWindow(uiResp.window.id);
     return;
   }
@@ -343,7 +344,7 @@ async function handleSolanaSignMessage(
   });
 
   if (uiResp.error) {
-    logger.debug("require ui action errror", uiResp);
+    logger.debug("require ui action error", uiResp);
     BrowserRuntimeExtension.closeWindow(uiResp.window.id);
     return;
   }
