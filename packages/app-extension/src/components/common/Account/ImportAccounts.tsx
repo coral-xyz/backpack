@@ -85,23 +85,22 @@ export function ImportAccounts({
 
   useEffect(() => {
     (async () => {
-      if (connection) {
-        try {
-          const accounts = await background.request({
-            method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-            params: [],
-          });
-          setImportedPubkeys(
-            Object.values(accounts)
-              .flat()
-              .map((a: any) => a.publicKey)
-          );
-        } catch {
-          // Keyring store locked, either onboarding or left open
-        }
+      try {
+        const blockchainKeyrings = await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
+          params: [],
+        });
+        const keyring = blockchainKeyrings[blockchain];
+        setImportedPubkeys(
+          Object.values(keyring)
+            .flat()
+            .map((a: any) => a.publicKey)
+        );
+      } catch {
+        // Keyring store locked, either onboarding or left open
       }
     })();
-  }, [connection]);
+  }, [background, blockchain]);
 
   //
   // Load a list of accounts and their associated balances
