@@ -35,9 +35,8 @@ class LedgerInjection {
 
       logger.debug("ledger channel request", event);
 
+      const { id, method, params } = event.data.detail;
       try {
-        const { id, method, params } = event.data.detail;
-
         let result: any;
         switch (method) {
           case LEDGER_METHOD_SIGN_TRANSACTION:
@@ -69,7 +68,15 @@ class LedgerInjection {
         window.parent.postMessage(resp, "*");
       } catch (err) {
         logger.error("error here", err);
-        throw err;
+        const resp = {
+          type: LEDGER_INJECTED_CHANNEL_RESPONSE,
+          detail: {
+            id,
+            result: undefined,
+            error: err.toString(),
+          },
+        };
+        window.parent.postMessage(resp, "*");
       }
     });
   }

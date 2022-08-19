@@ -46,7 +46,7 @@ const LedgerIframe = () => {
     };
   }, []);
 
-  logger.debug("rendering hidden iframe for ledger");
+  logger.debug("rendering hidden iframe for ledger", LEDGER_IFRAME_URL);
 
   // allow="hid 'src'" is why this component is necessary, because it allows
   // us to communicate with a ledger using the Human Interface Device API.
