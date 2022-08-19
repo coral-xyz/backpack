@@ -2,6 +2,7 @@
   "name": "@coral-xyz/ledger-injection",
   "version": "1.0.0",
   "type": "module",
+  "homepage": ".",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "parcel build src/index.html",
