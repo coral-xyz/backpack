@@ -8,7 +8,7 @@ import { useSolanaCommitment } from "../preferences";
 import { useBackgroundClient } from "../client";
 
 export function useSolanaConnectionUrl(): string {
-  return useRecoilValue(atoms.connectionUrl)!;
+  return useRecoilValue(atoms.solanaConnectionUrl)!;
 }
 
 export function useAnchorContext() {

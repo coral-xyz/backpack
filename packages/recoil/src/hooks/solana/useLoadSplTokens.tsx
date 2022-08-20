@@ -4,7 +4,7 @@ import * as atoms from "../../atoms";
 
 export function useTokenAddresses(): string[] {
   const publicKey = useRecoilValue(atoms.activeWallet)!;
-  const connectionUrl = useRecoilValue(atoms.connectionUrl)!;
+  const connectionUrl = useRecoilValue(atoms.solanaConnectionUrl)!;
   return useRecoilValue(
     atoms.solanaTokenAccountKeys({ connectionUrl, publicKey })
   )!;
