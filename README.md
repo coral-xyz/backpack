@@ -14,6 +14,11 @@
   </p>
 </div>
 
+## Note
+
+- Backpack is in active development, so all APIs are subject to change.
+- This code is unaudited. Use at your own risk.
+
 ## Installing the Latest Release
 
 If you'd like to install the latest dev release, grab the latest **build.zip** [here](https://github.com/coral-xyz/backpack/releases)
