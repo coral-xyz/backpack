@@ -122,6 +122,12 @@ export const UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS =
   "ui-rpc-method-sign-all-txs";
 export const UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION =
   "ui-rpc-method-sign-and-send-tx";
+export const UI_RPC_METHOD_ETHEREUM_EXPLORER_READ = "ethereum-exporer-read";
+export const UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE = "ethereum-exporer-update";
+export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ =
+  "ethereum-connection-url-read";
+export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE =
+  "ethereum-connection-url-update";
 
 //
 // Notifications sent from the background script to observers.

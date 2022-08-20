@@ -63,6 +63,10 @@ import {
   UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
+  UI_RPC_METHOD_ETHEREUM_EXPLORER_READ,
+  UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE,
+  UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ,
+  UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
   BACKEND_EVENT,
   CHANNEL_POPUP_RPC,
   CHANNEL_POPUP_NOTIFICATIONS,
@@ -251,6 +255,17 @@ async function handle<T = any>(
       return await handleSolanaConnectionUrlRead(ctx);
     case UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE:
       return await handleSolanaConnectionUrlUpdate(ctx, params[0]);
+    //
+    // Ethereum
+    //
+    case UI_RPC_METHOD_ETHEREUM_EXPLORER_READ:
+      return await handleEthereumExplorerRead(ctx);
+    case UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE:
+      return await handleEthereumExplorerUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ:
+      return await handleEthereumConnectionUrlRead(ctx);
+    case UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE:
+      return await handleEthereumConnectionUrlUpdate(ctx, params[0]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -611,6 +626,36 @@ async function handleSolanaSignAndSendTransaction(
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.solanaSignAndSendTx(tx, walletAddress);
   return [resp];
+}
+
+async function handleEthereumExplorerRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.ethereumExplorerRead();
+  return [resp];
+}
+
+async function handleEthereumExplorerUpdate(
+  ctx: Context<Backend>,
+  url: string
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.ethereumExplorerUpdate(url);
+  return [resp];
+}
+
+async function handleEthereumConnectionUrlRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.ethereumConnectionUrlRead();
+  return [resp];
+}
+
+async function handleEthereumConnectionUrlUpdate(
+  ctx: Context<Backend>,
+  url: string
+): Promise<RpcResponse<boolean>> {
+  const didChange = await ctx.backend.ethereumConnectionUrlUpdate(url);
+  return [didChange];
 }
 
 async function handleApprovedOriginsRead(

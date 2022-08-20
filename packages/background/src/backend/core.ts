@@ -6,6 +6,8 @@ import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
 import {
+  EthereumExplorer,
+  EthereumConnectionUrl,
   SolanaCluster,
   SolanaExplorer,
   BACKEND_EVENT,
@@ -214,6 +216,30 @@ export class Backend {
         commitment,
       },
     });
+    return SUCCESS_RESPONSE;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  // Ethereum.
+  ///////////////////////////////////////////////////////////////////////////////
+
+  async ethereumExplorerRead(): Promise<string> {
+    // TODO
+    return EthereumExplorer.DEFAULT;
+  }
+
+  async ethereumExplorerUpdate(explorer: string): Promise<string> {
+    // TODO
+    return SUCCESS_RESPONSE;
+  }
+
+  async ethereumConnectionUrlRead(): Promise<string> {
+    // TODO
+    return EthereumConnectionUrl.DEFAULT;
+  }
+
+  async ethereumConnectionUrlUpdate(url: string): Promise<string> {
+    // TODO
     return SUCCESS_RESPONSE;
   }
 
