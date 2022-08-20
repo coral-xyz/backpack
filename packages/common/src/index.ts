@@ -1,4 +1,4 @@
-import { RpcRequest } from "@coral-xyz/common-public";
+import type { RpcRequest } from "@coral-xyz/common-public";
 import type { Context, RpcResponse, EventEmitter } from "./types";
 
 export * from "@coral-xyz/common-public";
@@ -8,6 +8,7 @@ export * from "./channel";
 export * from "./browser";
 export * from "./types";
 export * from "./solana";
+export * from "./ethereum";
 
 // Generated pre-build step.
 export * from "./generated-config";
