@@ -1,12 +1,8 @@
 import { atom, selector } from "recoil";
-import { Commitment } from "@solana/web3.js";
 import {
   UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
-  UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ,
-  UI_RPC_METHOD_SOLANA_EXPLORER_READ,
-  UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
 } from "@coral-xyz/common";
 import { backgroundClient } from "../client";
 
