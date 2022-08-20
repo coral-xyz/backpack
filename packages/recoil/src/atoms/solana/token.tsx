@@ -7,7 +7,7 @@ import { priceData } from "../prices";
 import { splTokenRegistry } from "./token-registry";
 import { TokenAccountWithKey } from "../../types";
 import { activeWallet } from "./wallet";
-import { connectionUrl } from "../preferences";
+import { solanaConnectionUrl } from "./preferences";
 
 /**
  * Returns the token accounts sorted by usd notional balances.
@@ -45,7 +45,7 @@ export const blockchainTokens = selectorFamily({
         case Blockchain.SOLANA:
           return get(
             solanaTokenAccountKeys({
-              connectionUrl: get(connectionUrl)!,
+              connectionUrl: get(solanaConnectionUrl)!,
               publicKey: get(activeWallet)!,
             })
           );
@@ -64,7 +64,7 @@ export const blockchainTokenAccounts = selectorFamily({
         case Blockchain.SOLANA:
           const tokenAccount = get(
             solanaTokenAccountsMap({
-              connectionUrl: get(connectionUrl)!,
+              connectionUrl: get(solanaConnectionUrl)!,
               tokenAddress: address,
             })
           );

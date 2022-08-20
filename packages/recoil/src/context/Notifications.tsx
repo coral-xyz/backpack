@@ -44,11 +44,11 @@ export function NotificationsProvider(props: any) {
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveWallet = useSetRecoilState(atoms.activeWallet);
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
-  const setConnectionUrl = useSetRecoilState(atoms.connectionUrl);
   const setAutoLockSecs = useSetRecoilState(atoms.autoLockSecs);
+  const setIsDarkMode = useSetRecoilState(atoms.isDarkMode);
+  const setSolanaConnectionUrl = useSetRecoilState(atoms.solanaConnectionUrl);
   const setSolanaExplorer = useSetRecoilState(atoms.solanaExplorer);
   const setSolanaCommitment = useSetRecoilState(atoms.solanaCommitment);
-  const setIsDarkMode = useSetRecoilState(atoms.isDarkMode);
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   const navigate = useNavigate();
 
@@ -295,7 +295,7 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleSolanaConnectionUrlUpdated = (notif: Notification) => {
-      setConnectionUrl(notif.data.url);
+      setSolanaConnectionUrl(notif.data.url);
       allPlugins().forEach((p) => {
         p.pushConnectionChangedNotification(notif.data.url);
       });

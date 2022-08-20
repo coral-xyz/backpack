@@ -1,7 +1,7 @@
 import { selector } from "recoil";
 import { SIMULATOR_PORT } from "@coral-xyz/common";
 import { activeWallet } from "./wallet";
-import { connectionUrl } from "../preferences";
+import { solanaConnectionUrl } from "./preferences";
 
 //
 // Private dev plugins.
@@ -43,14 +43,14 @@ export const plugins = selector({
         iconUrl: "assets/deadgods.png",
         title: "DeadGods",
         activeWallet: get(activeWallet),
-        connectionUrl: get(connectionUrl),
+        connectionUrl: get(solanaConnectionUrl),
       },
       {
         url: AURORY_PLUGIN_URL,
         iconUrl: "assets/aurory.png",
         title: "Aurory",
         activeWallet: get(activeWallet),
-        connectionUrl: get(connectionUrl),
+        connectionUrl: get(solanaConnectionUrl),
       },
       {
         url: NETWORK_MONITOR,
@@ -58,35 +58,35 @@ export const plugins = selector({
           "https://pbs.twimg.com/profile_images/1472933274209107976/6u-LQfjG_400x400.jpg",
         title: "Monitor",
         activeWallet: get(activeWallet),
-        connectionUrl: get(connectionUrl),
+        connectionUrl: get(solanaConnectionUrl),
       },
       {
         url: PRICES_PLUGIN_URL,
         iconUrl: "assets/prices.png",
         title: "Prices",
         activeWallet: get(activeWallet),
-        connectionUrl: get(connectionUrl),
+        connectionUrl: get(solanaConnectionUrl),
       },
       {
         url: MANGO_TABLE_PLUGIN_URL,
         iconUrl: "assets/mango.png",
         title: "Mango",
         activeWallet: get(activeWallet),
-        connectionUrl: get(connectionUrl),
+        connectionUrl: get(solanaConnectionUrl),
       },
       {
         url: PSYFI_PLUGIN_URL,
         iconUrl: "assets/psyfi.png",
         title: "Psyfi",
         activeWallet: get(activeWallet),
-        connectionUrl: get(connectionUrl),
+        connectionUrl: get(solanaConnectionUrl),
       },
       {
         url: SIMULATOR_URL,
         iconUrl: "assets/simulator.png",
         title: "Simulator",
         activeWallet: get(activeWallet),
-        connectionUrl: get(connectionUrl),
+        connectionUrl: get(solanaConnectionUrl),
       },
     ];
   },

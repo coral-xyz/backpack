@@ -6,3 +6,4 @@ export * from "./wallet";
 export * from "./balance";
 export * from "./nft";
 export * from "./xnft";
+export * from "./preferences";

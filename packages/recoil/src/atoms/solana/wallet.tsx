@@ -8,7 +8,7 @@ import {
 } from "@coral-xyz/common";
 import { WalletPublicKeys } from "../../types";
 import { backgroundClient, connectionBackgroundClient } from "../client";
-import { solanaCommitment, connectionUrl } from "../preferences";
+import { solanaCommitment, solanaConnectionUrl } from "./preferences";
 
 /**
  * List of all public keys for the wallet along with associated nicknames.
@@ -70,7 +70,7 @@ export const activeWalletWithData = selector({
 export const anchorContext = selector({
   key: "anchorContext",
   get: async ({ get }: any) => {
-    const _connectionUrl = get(connectionUrl);
+    const _connectionUrl = get(solanaConnectionUrl);
     const _connectionBackgroundClient = get(connectionBackgroundClient);
     const connection = new BackgroundSolanaConnection(
       _connectionBackgroundClient,
