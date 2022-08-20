@@ -1,7 +1,8 @@
-import { selector } from "recoil";
+import { atom, selector } from "recoil";
 import { SIMULATOR_PORT } from "@coral-xyz/common";
 import { activeWallet } from "./wallet";
 import { solanaConnectionUrl } from "./preferences";
+import { bootstrap } from "../bootstrap";
 
 //
 // Private dev plugins.
@@ -90,4 +91,15 @@ export const plugins = selector({
       },
     ];
   },
+});
+
+export const xnfts = atom({
+  key: "xnfts",
+  default: selector({
+    key: "xnftsDefault",
+    get: ({ get }) => {
+      const b = get(bootstrap);
+      return b.xnfts;
+    },
+  }),
 });

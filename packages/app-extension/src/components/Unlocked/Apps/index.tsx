@@ -7,6 +7,7 @@ import {
   useBackgroundClient,
   useAppIcons,
   useNavigation,
+  useXnfts,
 } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
 import { Simulator } from "./Simulator";
@@ -55,10 +56,13 @@ function PluginGrid() {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const background = useBackgroundClient();
+  const xnfts = useXnfts();
   const pluginUrl = searchParams.get("plugin");
   const [openDrawer, setOpenDrawer] = useState(
     pluginUrl !== undefined && pluginUrl !== null
   );
+
+  console.log("XNFTS HERE", xnfts);
 
   useEffect(() => {
     setOpenDrawer(pluginUrl !== undefined && pluginUrl !== null);
