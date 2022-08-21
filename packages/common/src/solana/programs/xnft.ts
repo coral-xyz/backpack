@@ -1,6 +1,8 @@
 import { PublicKey } from "@solana/web3.js";
+import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import type { Provider } from "@project-serum/anchor";
+import { metadata } from "@project-serum/token";
 
 export const XNFT_PROGRAM_ID = new PublicKey(
   "BdbULx4sJSeLJzvR6h6QxL4fUPJAJw86qmwwXt6jBfXd"
@@ -12,8 +14,9 @@ export async function fetchXnfts(
 ): Promise<Array<any>> {
   const client = xnftClient(provider);
 
-  console.log("FETCH XNFTS NEW", wallet);
-
+  //
+  // Fetch all xnfts installed by this user.
+  //
   const xnfts = await client.account.install.all([
     {
       memcmp: {
@@ -23,7 +26,35 @@ export async function fetchXnfts(
     },
   ]);
 
-  console.log("XNFTS FETCHED HERE", xnfts);
+  //
+  // Get the metadata accounts for all xnfts.
+  //
+  const pubkeys = xnfts.map(({ account }) => account.masterMetadata);
+  const xnftMetadata = (
+    await anchor.utils.rpc.getMultipleAccounts(provider.connection, pubkeys)
+  ).map((t) => {
+    if (!t) {
+      return null;
+    }
+    return metadata.decodeMetadata(t.account.data);
+  });
+
+  const xnftMetadataBlob = await Promise.all(
+    xnftMetadata.map((m) => {
+      if (!m) {
+        return null;
+      }
+      return fetch(m.data.uri).then((r) => r.json());
+    })
+  );
+
+  console.log(
+    "XNFTS FETCHED HERE",
+    xnfts,
+    pubkeys,
+    xnftMetadata,
+    xnftMetadataBlob
+  );
 
   return xnfts;
 }
