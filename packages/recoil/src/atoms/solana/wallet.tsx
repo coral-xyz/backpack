@@ -1,5 +1,6 @@
 import { atom, selector } from "recoil";
-import { Provider, Spl } from "@project-serum/anchor";
+import { AnchorProvider, Spl } from "@project-serum/anchor";
+import { Keypair } from "@solana/web3.js";
 import {
   Blockchain,
   BackgroundSolanaConnection,
@@ -77,10 +78,12 @@ export const anchorContext = selector({
       _connectionUrl
     );
     const _commitment = get(solanaCommitment);
+    //
     // Note: this provider is *read-only*.
     //
+    const dummyWallet = Keypair.generate();
     // @ts-ignore
-    const provider = new Provider(connection, undefined, {
+    const provider = new AnchorProvider(connection, dummyWallet, {
       skipPreflight: false,
       commitment: _commitment,
       preflightCommitment: _commitment,

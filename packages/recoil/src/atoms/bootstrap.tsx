@@ -59,7 +59,7 @@ export const bootstrap = selector<{
         //
         // Fetch xnfts.
         //
-        fetchXnfts(provider, walletPublicKey),
+        fetchXnfts(provider, new PublicKey(walletPublicKey)),
       ]);
 
       //

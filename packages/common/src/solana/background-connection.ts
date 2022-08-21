@@ -252,9 +252,13 @@ export class BackgroundSolanaConnection extends Connection {
       account: AccountInfo<Buffer>;
     }>
   > {
-    return await this._backgroundClient.request({
+    const resp = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS,
       params: [programId.toString(), configOrCommitment],
+    });
+    return resp.map((r) => {
+      r.account.data = Buffer.from(r.account.data.data);
+      return r;
     });
   }
 

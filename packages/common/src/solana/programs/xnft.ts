@@ -12,13 +12,13 @@ export async function fetchXnfts(
 ): Promise<Array<any>> {
   const client = xnftClient(provider);
 
-  console.log("FETCH XNFTS");
+  console.log("FETCH XNFTS NEW", wallet);
 
   const xnfts = await client.account.install.all([
     {
       memcmp: {
         offset: 8, // Discriminator
-        bytes: wallet.toBase58(),
+        bytes: wallet.toString(),
       },
     },
   ]);
