@@ -17,7 +17,7 @@ export async function fetchXnfts(
   //
   // Fetch all xnfts installed by this user.
   //
-  const xnfts = await client.account.install.all([
+  const xnftInstalls = await client.account.install.all([
     {
       memcmp: {
         offset: 8, // Discriminator
@@ -29,7 +29,7 @@ export async function fetchXnfts(
   //
   // Get the metadata accounts for all xnfts.
   //
-  const pubkeys = xnfts.map(({ account }) => account.masterMetadata);
+  const pubkeys = xnftInstalls.map(({ account }) => account.masterMetadata);
   const xnftMetadata = (
     await anchor.utils.rpc.getMultipleAccounts(provider.connection, pubkeys)
   ).map((t) => {
@@ -48,13 +48,16 @@ export async function fetchXnfts(
     })
   );
 
-  console.log(
-    "XNFTS FETCHED HERE",
-    xnfts,
-    pubkeys,
-    xnftMetadata,
-    xnftMetadataBlob
-  );
+  const xnfts = [] as any;
+  pubkeys.forEach((publicKey, idx) => {
+    xnfts.push({
+      publicKey,
+      metadata: xnftMetadata[idx],
+      metadtaBlob: xnftMetadataBlob[idx],
+    });
+  });
+
+  console.log("XNFTS FETCHED HERE", xnfts);
 
   return xnfts;
 }
