@@ -11,7 +11,7 @@ export const XNFT_PROGRAM_ID = new PublicKey(
 export async function fetchXnfts(
   provider: Provider,
   wallet: PublicKey
-): Promise<Array<any>> {
+): Promise<Array<{ publicKey: PublicKey; medtadata: any; metadataBlob: any }>> {
   const client = xnftClient(provider);
 
   //
@@ -39,6 +39,9 @@ export async function fetchXnfts(
     return metadata.decodeMetadata(t.account.data);
   });
 
+  //
+  // Fetch the metadata uri blob.
+  //
   const xnftMetadataBlob = await Promise.all(
     xnftMetadata.map((m) => {
       if (!m) {
@@ -48,16 +51,17 @@ export async function fetchXnfts(
     })
   );
 
+  //
+  // Combine it all into a single list.
+  //
   const xnfts = [] as any;
   pubkeys.forEach((publicKey, idx) => {
     xnfts.push({
       publicKey,
       metadata: xnftMetadata[idx],
-      metadtaBlob: xnftMetadataBlob[idx],
+      metadataBlob: xnftMetadataBlob[idx],
     });
   });
-
-  console.log("XNFTS FETCHED HERE", xnfts);
 
   return xnfts;
 }
