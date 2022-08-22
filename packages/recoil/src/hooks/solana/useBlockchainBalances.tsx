@@ -11,6 +11,8 @@ export function useBlockchainLogo(blockchain: Blockchain): string {
   switch (blockchain) {
     case Blockchain.SOLANA:
       return "/solana.png";
+    case Blockchain.ETHEREUM:
+      return "./ethereum.png";
     default:
       throw new Error("invariant violation");
   }
