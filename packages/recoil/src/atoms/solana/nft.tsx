@@ -1,6 +1,6 @@
 import { atomFamily, selector, selectorFamily } from "recoil";
 import { bootstrap } from "../bootstrap";
-import { activeWalletWithData } from "./wallet";
+import { activeWalletWithData } from "../wallet";
 
 //
 // TODO: this doesn't use the metaplex standard. We should use that instead.

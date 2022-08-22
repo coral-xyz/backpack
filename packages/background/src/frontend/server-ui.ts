@@ -33,6 +33,7 @@ import {
   UI_RPC_METHOD_ACTIVE_BLOCKCHAIN_UPDATE,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS,
   UI_RPC_METHOD_KEYNAME_READ,
   UI_RPC_METHOD_KEYNAME_UPDATE,
   UI_RPC_METHOD_PASSWORD_UPDATE,
@@ -192,6 +193,8 @@ async function handle<T = any>(
       return await handleWalletDataActiveWallet(ctx);
     case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE:
       return await handleWalletDataActiveWalletUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS:
+      return await handleWalletDataActiveWallets(ctx);
     case UI_RPC_METHOD_SETTINGS_DARK_MODE_READ:
       return await handleDarkModeRead(ctx);
     case UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE:
@@ -338,6 +341,7 @@ async function handleActiveBlockchainUpdate(
   return [resp];
 }
 
+// TODO deprecate single active wallet eventually
 async function handleWalletDataActiveWallet(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
@@ -345,11 +349,19 @@ async function handleWalletDataActiveWallet(
   return [pubkey];
 }
 
+// TODO deprecate single active wallet eventually
 async function handleWalletDataActiveWalletUpdate(
   ctx: Context<Backend>,
   newWallet: string
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.activeWalletUpdate(newWallet);
+  return [resp];
+}
+
+async function handleWalletDataActiveWallets(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.activeWallets();
   return [resp];
 }
 

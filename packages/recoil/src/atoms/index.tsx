@@ -5,3 +5,4 @@ export * from "./transaction-request";
 export * from "./solana";
 export * from "./preferences";
 export * from "./client";
+export * from "./wallet";

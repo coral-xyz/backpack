@@ -6,3 +6,4 @@ export * from "./bootstrap";
 export * from "./keyring";
 export * from "./transaction-request";
 export * from "./navigation";
+export * from "./wallet";

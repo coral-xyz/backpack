@@ -1,7 +1,7 @@
 import { useRecoilValue } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
 import * as atoms from "../../atoms";
-import { useActiveWallet } from "./useWallet";
+import { useActiveWallet } from "../wallet";
 
 export function useBlockchainTokens(blockchain: Blockchain) {
   return useRecoilValue(atoms.blockchainTokens(blockchain));

@@ -1,7 +1,7 @@
 import { useRecoilValue, useRecoilValueLoadable, Loadable } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
-import { WalletPublicKeys } from "../../types";
-import * as atoms from "../../atoms";
+import { WalletPublicKeys } from "../types";
+import * as atoms from "../atoms";
 
 export function useActiveWalletLoadable(): Loadable<{
   publicKey: string;
@@ -16,6 +16,14 @@ export function useActiveWallet(): {
   blockchain: Blockchain;
 } {
   return useRecoilValue(atoms.activeWalletWithData)!;
+}
+
+export function useActiveWallets(): Array<{
+  publicKey: string;
+  name: string;
+  blockchain: Blockchain;
+}> {
+  return useRecoilValue(atoms.activeWalletsWithData!);
 }
 
 export function useWalletPublicKeys(): WalletPublicKeys {

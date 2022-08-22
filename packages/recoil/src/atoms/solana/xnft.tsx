@@ -1,6 +1,6 @@
 import { atom, selector } from "recoil";
 import { BACKPACK_CONFIG_XNFT_PROXY, SIMULATOR_PORT } from "@coral-xyz/common";
-import { activeWallet } from "./wallet";
+import { activeWallet } from "../wallet";
 import { solanaConnectionUrl } from "./preferences";
 import { bootstrap } from "../bootstrap";
 

@@ -436,6 +436,12 @@ export class KeyringStore {
     });
   }
 
+  public async activeWallets(): Promise<string[]> {
+    return this.withUnlock(async () => {
+      return [...this.blockchains.values()].map((bc) => bc.getActiveWallet()!);
+    });
+  }
+
   public async activeWalletUpdate(newWallet: string) {
     return this.withUnlock(async () => {
       // If the active wallet changes, update the active blockchain to match the active wallet
