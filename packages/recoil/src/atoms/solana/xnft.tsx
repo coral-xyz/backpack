@@ -1,5 +1,5 @@
 import { atom, selector } from "recoil";
-import { BACKPACK_CONFIG_VERSION, SIMULATOR_PORT } from "@coral-xyz/common";
+import { BACKPACK_CONFIG_XNFT_PROXY, SIMULATOR_PORT } from "@coral-xyz/common";
 import { activeWallet } from "./wallet";
 import { solanaConnectionUrl } from "./preferences";
 import { bootstrap } from "../bootstrap";
@@ -27,7 +27,7 @@ const NETWORK_MONITOR = pluginURL(
 // Cached bundle proxy.
 //
 const PROXY_URL =
-  BACKPACK_CONFIG_VERSION === "development"
+  BACKPACK_CONFIG_XNFT_PROXY === "development"
     ? "https://localhost:9999?inline=1&bundle="
     : "https://embed.xnfts.dev?inline=1&bundle=";
 
@@ -113,7 +113,6 @@ export const xnfts = atom({
       const b = get(bootstrap);
       const _activeWallet = get(activeWallet);
       const _connectionUrl = get(solanaConnectionUrl);
-      console.log("XNFTS HERE", b.xnfts);
       return b.xnfts.map((xnft) => {
         return {
           url: xnftUrl(xnft.metadataBlob.properties.bundle),

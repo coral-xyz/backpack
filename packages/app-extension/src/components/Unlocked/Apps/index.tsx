@@ -7,7 +7,6 @@ import {
   useBackgroundClient,
   useAppIcons,
   useNavigation,
-  useXnfts,
 } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
 import { Simulator } from "./Simulator";
