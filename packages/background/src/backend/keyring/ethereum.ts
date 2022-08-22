@@ -22,7 +22,7 @@ import { LedgerKeyringBase } from "./ledger";
 export class EthereumKeyringFactory implements KeyringFactory {
   fromJson(payload: KeyringJson): Keyring {
     const wallets = payload.secretKeys.map((secret) => {
-      return new ethers.Wallet(Buffer.from(secret, "hex"));
+      return new ethers.Wallet(Buffer.from(secret, "hex").toString());
     });
     return new EthereumKeyring(wallets);
   }
