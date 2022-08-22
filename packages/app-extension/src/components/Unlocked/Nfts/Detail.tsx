@@ -159,6 +159,7 @@ function SendScreen({ nft }: { nft: any }) {
     isErrorAddress,
     isFreshAddress: _,
   } = useIsValidSolanaSendAddress(address, provider.connection);
+  const theme = useCustomTheme();
 
   const onReject = () => {
     close();
@@ -224,6 +225,9 @@ function SendScreen({ nft }: { nft: any }) {
           address={address}
           amount={BigNumber.from(1)}
           close={() => close()}
+          style={{
+            background: theme.custom.colors.background,
+          }}
         />
       </WithMiniDrawer>
     </>
