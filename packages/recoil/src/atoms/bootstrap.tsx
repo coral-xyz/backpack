@@ -33,6 +33,13 @@ export const bootstrap = selector<{
     //
     try {
       //
+      // Fetch xnfts immediately but don't block.
+      //
+      const fetchXnftsPromise = fetchXnfts(
+        provider,
+        new PublicKey(walletPublicKey)
+      );
+      //
       // Fetch token data.
       //
       const { tokenAccountsMap, tokenMetadata, nftMetadata } =
@@ -57,9 +64,9 @@ export const bootstrap = selector<{
         //
         fetchRecentTransactions(provider.connection, walletPublicKey),
         //
-        // Fetch xnfts.
         //
-        fetchXnfts(provider, new PublicKey(walletPublicKey)),
+        //
+        fetchXnftsPromise,
       ]);
 
       //
