@@ -32,6 +32,10 @@ function pluginURL(pluginName: string) {
   ].join("");
 }
 
+function xnftUrl(url: string) {
+  return ["https://localhost:9999?inline=1&bundle=", url].join("");
+}
+
 //
 // For now we just provide some default apps.
 //
@@ -99,7 +103,18 @@ export const xnfts = atom({
     key: "xnftsDefault",
     get: ({ get }) => {
       const b = get(bootstrap);
-      return b.xnfts;
+      const _activeWallet = get(activeWallet);
+      const _connectionUrl = get(solanaConnectionUrl);
+      console.log("XNFTS HERE", b.xnfts);
+      return b.xnfts.map((xnft) => {
+        return {
+          url: xnftUrl(xnft.metadataBlob.properties.bundle),
+          iconUrl: xnft.metadataBlob.image,
+          activeWallet: _activeWallet,
+          connectionUrl: _connectionUrl,
+          title: xnft.metadataBlob.name,
+        };
+      });
     },
   }),
 });
