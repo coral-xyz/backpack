@@ -163,7 +163,7 @@ export const solanaTokenAccountKeys = atomFamily<
  * Store the info from the SPL Token Account owned by the connected wallet.
  */
 export const solanaTokenAccountsMap = atomFamily<
-  TokenAccountWithKey | null,
+  SolanaTokenAccountWithKey | null,
   { connectionUrl: string; tokenAddress: string }
 >({
   key: "solanaTokenAccountsMap",
