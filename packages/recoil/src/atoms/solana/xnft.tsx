@@ -1,6 +1,6 @@
 import { selector } from "recoil";
 import { SIMULATOR_PORT } from "@coral-xyz/common";
-import { activeWallet } from "./wallet";
+import { activeWallet } from "../wallet";
 import { solanaConnectionUrl } from "./preferences";
 
 //

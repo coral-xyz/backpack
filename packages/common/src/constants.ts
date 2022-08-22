@@ -84,6 +84,9 @@ export const UI_RPC_METHOD_ACTIVE_BLOCKCHAIN_UPDATE =
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET = "wallet-active";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE =
   "wallet-active-update";
+export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS = "wallets-active";
+export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS_UPDATE =
+  "wallets-active-update";
 export const UI_RPC_METHOD_KEYNAME_READ = "keyname-read";
 export const UI_RPC_METHOD_KEYNAME_UPDATE = "keyname-update";
 export const UI_RPC_METHOD_PASSWORD_UPDATE = "password-update";

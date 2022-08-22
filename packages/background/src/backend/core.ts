@@ -360,10 +360,12 @@ export class Backend {
     }
   }
 
+  // TODO deprecate single active wallet eventually
   async activeWallet(): Promise<string> {
     return await this.keyringStore.activeWallet();
   }
 
+  // TODO deprecate single active wallet eventually
   async activeWalletUpdate(newWallet: string): Promise<string> {
     // Updating the active wallet can change the active blockchain, so save old
     // blockchain to emit event if it changes
@@ -398,6 +400,10 @@ export class Backend {
     }
 
     return SUCCESS_RESPONSE;
+  }
+
+  async activeWallets(): Promise<Array<string>> {
+    return await this.keyringStore.activeWallets();
   }
 
   async keyringDeriveWallet(blockchain: Blockchain): Promise<string> {
