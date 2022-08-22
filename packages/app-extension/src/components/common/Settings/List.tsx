@@ -41,7 +41,7 @@ export function SettingsList({
           detail={val.detail ?? <PushDetail />}
           borderColor={borderColor}
         >
-          {val.icon()}
+          {val.icon && val.icon()}
           <Typography style={{ fontWeight: 500, ...textStyle }}>
             {key}
           </Typography>
