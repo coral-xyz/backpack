@@ -11,7 +11,7 @@ export function useSolanaConnectionUrl(): string {
   return useRecoilValue(atoms.solanaConnectionUrl)!;
 }
 
-export function useAnchorContext() {
+export function useAnchorContext(): any {
   return useRecoilValue(atoms.anchorContext);
 }
 

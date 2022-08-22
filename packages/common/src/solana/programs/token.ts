@@ -1,8 +1,8 @@
 import { PublicKey } from "@solana/web3.js";
 import type { Connection } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
-import { Provider, Spl } from "@project-serum/anchor";
-import type { Program, SplToken } from "@project-serum/anchor";
+import { AnchorProvider, Spl } from "@project-serum/anchor";
+import type { Provider, Program, SplToken } from "@project-serum/anchor";
 import { metadata } from "@project-serum/token";
 
 export const TOKEN_PROGRAM_ID = new PublicKey(
@@ -41,7 +41,7 @@ export async function customSplTokenAccounts(
   nftMetadata: Array<any>;
 }> {
   // @ts-ignore
-  const provider = new Provider(connection);
+  const provider = new AnchorProvider(connection, { publicKey });
   const tokenClient = Spl.token(provider);
 
   const [accountInfo, tokenAccounts] = await Promise.all([

@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@coral-xyz/common-public": "*",
-    "@project-serum/anchor": "^0.23.0",
+    "@project-serum/anchor": "^0.25.0",
     "@project-serum/token": "^0.1.0",
     "@solana/buffer-layout": "^4.0.0",
     "@solana/spl-token": "^0.2.0",

@@ -36,6 +36,7 @@ main () {
 // Config for @coral-xyz/common.
 //
 export const BACKPACK_CONFIG_VERSION: "development" | "production" | string = "${BACKPACK_CONFIG_VERSION:=development}";
+export const BACKPACK_CONFIG_XNFT_PROXY: "development" | "production" = "${BACKPACK_CONFIG_XNFT_PROXY:=production}";
 export const BACKPACK_FEATURE_LIGHT_MODE = ${BACKPACK_FEATURE_LIGHT_MODE:=true};
 export const BACKPACK_FEATURE_POP_MODE = ${BACKPACK_FEATURE_POP_MODE:=true};
 export const BACKPACK_FEATURE_MULTICHAIN = ${BACKPACK_FEATURE_MULTICHAIN:=false};

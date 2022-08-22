@@ -3,14 +3,16 @@ import { useRecoilValue } from "recoil";
 //      react-xnft-renderer/src/Component.tsx in the background service worker
 import { Plugin } from "@coral-xyz/react-xnft-renderer/dist/esm/plugin";
 import * as atoms from "../../atoms";
+import { useXnfts } from "./useXnfts";
 
 export function useAppIcons() {
+  const xnftData = useXnfts();
   const pluginData = useRecoilValue(atoms.plugins);
-  return pluginData;
+  return xnftData.concat(pluginData);
 }
 
 export function usePlugins(): Array<Plugin> {
-  const pluginData = useRecoilValue(atoms.plugins);
+  const pluginData = useAppIcons();
   return pluginData.map((p) => getPlugin(p));
 }
 

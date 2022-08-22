@@ -1,6 +1,6 @@
 import { atom, selector } from "recoil";
 import { ParsedConfirmedTransaction, PublicKey } from "@solana/web3.js";
-import { UI_RPC_METHOD_NAVIGATION_READ } from "@coral-xyz/common";
+import { fetchXnfts, UI_RPC_METHOD_NAVIGATION_READ } from "@coral-xyz/common";
 import { TokenAccountWithKey } from "../types";
 import { fetchPriceData } from "./prices";
 import { backgroundClient } from "./client";
@@ -21,6 +21,7 @@ export const bootstrap = selector<{
   recentTransactions: Array<ParsedConfirmedTransaction>;
   walletPublicKey: PublicKey;
   jupiterRouteMap: Promise<any>;
+  xnfts: Array<any>;
 }>({
   key: "bootstrap",
   get: async ({ get }: any) => {
@@ -32,6 +33,13 @@ export const bootstrap = selector<{
     // Perform data fetch.
     //
     try {
+      //
+      // Fetch xnfts immediately but don't block.
+      //
+      const fetchXnftsPromise = fetchXnfts(
+        provider,
+        new PublicKey(walletPublicKey)
+      );
       //
       // Fetch token data.
       //
@@ -47,7 +55,7 @@ export const bootstrap = selector<{
       const jupiterRouteMap = fetchJupiterRouteMap().catch((e) =>
         console.log("failed to load Jupiter route map", e)
       );
-      const [coingeckoData, recentTransactions] = await Promise.all([
+      const [coingeckoData, recentTransactions, xnfts] = await Promise.all([
         //
         // Fetch the price data.
         //
@@ -56,6 +64,10 @@ export const bootstrap = selector<{
         // Get the transaction data for the wallet's recent transactions.
         //
         fetchRecentTransactions(provider.connection, walletPublicKey),
+        //
+        //
+        //
+        fetchXnftsPromise,
       ]);
 
       //
@@ -69,6 +81,7 @@ export const bootstrap = selector<{
         recentTransactions,
         walletPublicKey,
         jupiterRouteMap,
+        xnfts,
       };
     } catch (err) {
       // TODO: show error notification.
@@ -81,6 +94,7 @@ export const bootstrap = selector<{
         recentTransactions: [],
         walletPublicKey,
         jupiterRouteMap: Promise.resolve({}),
+        xnfts: [],
       };
     }
   },
