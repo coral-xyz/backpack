@@ -6,7 +6,7 @@ import * as atoms from "../../atoms";
 import { useXnfts } from "./useXnfts";
 
 export function useAppIcons() {
-  const xnftData = [] as any; //useXnfts();
+  const xnftData = useXnfts();
   const pluginData = useRecoilValue(atoms.plugins);
   return xnftData.concat(pluginData);
 }
