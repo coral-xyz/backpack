@@ -9,22 +9,8 @@ import { WalletPublicKeys } from "../types";
 import { backgroundClient } from "./client";
 
 /**
- * Pubkey of the currently selected wallet.
+ * Augment a public key with the name and blockchain and return as an object.
  */
-export const activeWallet = atom<string | null>({
-  key: "activeWallet",
-  default: selector({
-    key: "activeWalletDefault",
-    get: async ({ get }) => {
-      const background = get(backgroundClient);
-      return await background.request({
-        method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
-        params: [],
-      });
-    },
-  }),
-});
-
 export const walletWithData = selectorFamily({
   key: "walletWithData",
   get:
@@ -44,6 +30,23 @@ export const walletWithData = selectorFamily({
       }
       return undefined;
     },
+});
+
+/**
+ * Pubkey of the currently selected wallet.
+ */
+export const activeWallet = atom<string | null>({
+  key: "activeWallet",
+  default: selector({
+    key: "activeWalletDefault",
+    get: async ({ get }) => {
+      const background = get(backgroundClient);
+      return await background.request({
+        method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
+        params: [],
+      });
+    },
+  }),
 });
 
 /**
