@@ -1,7 +1,7 @@
 import { atom, selector } from "recoil";
 import { ParsedConfirmedTransaction, PublicKey } from "@solana/web3.js";
 import { fetchXnfts, UI_RPC_METHOD_NAVIGATION_READ } from "@coral-xyz/common";
-import { TokenAccountWithKey } from "../types";
+import { SolanaTokenAccountWithKey } from "../types";
 import { fetchPriceData } from "./prices";
 import { backgroundClient } from "./client";
 import { activeWallet } from "./wallet";
@@ -14,7 +14,7 @@ import { fetchJupiterRouteMap } from "./solana/jupiter";
  * Defines the initial app load fetch.
  */
 export const bootstrap = selector<{
-  splTokenAccounts: Map<string, TokenAccountWithKey>;
+  splTokenAccounts: Map<string, SolanaTokenAccountWithKey>;
   splTokenMetadata: Array<any>;
   splNftMetadata: Map<string, any>;
   coingeckoData: Map<string, any>;
@@ -45,7 +45,7 @@ export const bootstrap = selector<{
       //
       const { tokenAccountsMap, tokenMetadata, nftMetadata } =
         await provider.connection.customSplTokenAccounts(walletPublicKey);
-      const splTokenAccounts = new Map<string, TokenAccountWithKey>(
+      const splTokenAccounts = new Map<string, SolanaTokenAccountWithKey>(
         tokenAccountsMap
       );
       //

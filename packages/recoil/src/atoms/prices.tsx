@@ -1,6 +1,6 @@
 import { atomFamily, selectorFamily } from "recoil";
 import { TokenInfo } from "@solana/spl-token-registry";
-import { TokenAccountWithKey, TokenDisplay } from "../types";
+import { SolanaTokenAccountWithKey, TokenDisplay } from "../types";
 import { bootstrap } from "./bootstrap";
 
 export const priceData = atomFamily<TokenDisplay | null, string>({
@@ -17,7 +17,7 @@ export const priceData = atomFamily<TokenDisplay | null, string>({
 });
 
 export async function fetchPriceData(
-  splTokenAccounts: Map<string, TokenAccountWithKey>,
+  splTokenAccounts: Map<string, SolanaTokenAccountWithKey>,
   tokenRegistry: Map<string, TokenInfo>
 ): Promise<Map<string, any>> {
   const mintCoingeckoIds = Array.from(splTokenAccounts.keys())

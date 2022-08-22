@@ -1,5 +1,5 @@
 import { useRecoilValue, useRecoilCallback } from "recoil";
-import { TokenAccountWithKey } from "../../types";
+import { SolanaTokenAccountWithKey } from "../../types";
 import * as atoms from "../../atoms";
 
 export function useTokenAddresses(): string[] {
@@ -28,7 +28,7 @@ export const useUpdateAllSplTokenAccounts = () =>
         connectionUrl: string;
         publicKey: string;
         customSplTokenAccounts: {
-          tokenAccounts: TokenAccountWithKey[];
+          tokenAccounts: SolanaTokenAccountWithKey[];
           tokenMetadata: Array<null | any>;
           nftMetadata: Array<[string, any]>;
         };

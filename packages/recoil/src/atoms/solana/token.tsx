@@ -5,7 +5,7 @@ import { Blockchain, SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
 import { bootstrap } from "../bootstrap";
 import { priceData } from "../prices";
 import { splTokenRegistry } from "./token-registry";
-import { TokenAccountWithKey } from "../../types";
+import { SolanaTokenAccountWithKey } from "../../types";
 import { activeWallet } from "../wallet";
 import { solanaConnectionUrl } from "./preferences";
 
@@ -163,7 +163,7 @@ export const solanaTokenAccountKeys = atomFamily<
  * Store the info from the SPL Token Account owned by the connected wallet.
  */
 export const solanaTokenAccountsMap = atomFamily<
-  TokenAccountWithKey | null,
+  SolanaTokenAccountWithKey | null,
   { connectionUrl: string; tokenAddress: string }
 >({
   key: "solanaTokenAccountsMap",
