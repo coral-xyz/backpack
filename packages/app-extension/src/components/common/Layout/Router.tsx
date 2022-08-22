@@ -14,6 +14,7 @@ import {
   useRedirectUrl,
 } from "@coral-xyz/recoil";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
+import { PluginManager } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Balances } from "../../Unlocked/Balances";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
@@ -109,7 +110,9 @@ function NavScreen({ component }: { component: React.ReactNode }) {
           navButtonRight={navButtonRight}
           navbarStyle={style}
         >
-          <NavBootstrap>{component}</NavBootstrap>
+          <NavBootstrap>
+            <PluginManager>{component}</PluginManager>
+          </NavBootstrap>
         </WithNav>
       </div>
     </WithMotionWrapper>

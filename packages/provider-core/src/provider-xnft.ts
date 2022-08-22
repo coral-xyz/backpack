@@ -42,8 +42,8 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
   private _requestManager: RequestManager;
   private _connectionRequestManager: RequestManager;
 
-  private publicKey?: PublicKey;
-  private connection: Connection;
+  public publicKey?: PublicKey;
+  public connection: Connection;
 
   constructor() {
     super();

@@ -6,3 +6,4 @@ export * from "./useLoadSplTokens";
 export * from "./usePlugins";
 export * from "./useBlockchainBalances";
 export * from "./useWallet";
+export * from "./useXnfts";

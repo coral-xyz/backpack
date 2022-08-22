@@ -1,7 +1,8 @@
-import { selector } from "recoil";
-import { SIMULATOR_PORT } from "@coral-xyz/common";
+import { atom, selector } from "recoil";
+import { BACKPACK_CONFIG_XNFT_PROXY, SIMULATOR_PORT } from "@coral-xyz/common";
 import { activeWallet } from "./wallet";
 import { solanaConnectionUrl } from "./preferences";
+import { bootstrap } from "../bootstrap";
 
 //
 // Private dev plugins.
@@ -22,6 +23,14 @@ const NETWORK_MONITOR = pluginURL(
   "xnft-program-library/packages/network-monitor"
 );
 
+//
+// Cached bundle proxy.
+//
+const PROXY_URL =
+  BACKPACK_CONFIG_XNFT_PROXY === "development"
+    ? "https://localhost:9999?inline=1&bundle="
+    : "https://embed.xnfts.dev?inline=1&bundle=";
+
 function pluginURL(pluginName: string) {
   return [
     // xnft wrapper
@@ -29,6 +38,10 @@ function pluginURL(pluginName: string) {
     // [pluginName]'s JS delivered by the local plugin server
     `http://localhost:8001/${pluginName}/dist/index.js`,
   ].join("");
+}
+
+function xnftUrl(url: string) {
+  return [PROXY_URL, url].join("");
 }
 
 //
@@ -90,4 +103,25 @@ export const plugins = selector({
       },
     ];
   },
+});
+
+export const xnfts = atom({
+  key: "xnfts",
+  default: selector({
+    key: "xnftsDefault",
+    get: ({ get }) => {
+      const b = get(bootstrap);
+      const _activeWallet = get(activeWallet);
+      const _connectionUrl = get(solanaConnectionUrl);
+      return b.xnfts.map((xnft) => {
+        return {
+          url: xnftUrl(xnft.metadataBlob.properties.bundle),
+          iconUrl: xnft.metadataBlob.image,
+          activeWallet: _activeWallet,
+          connectionUrl: _connectionUrl,
+          title: xnft.metadataBlob.name,
+        };
+      });
+    },
+  }),
 });
