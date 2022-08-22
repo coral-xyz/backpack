@@ -23,7 +23,7 @@ export function useActiveWallets(): Array<{
   name: string;
   blockchain: Blockchain;
 }> {
-  return useRecoilValue(atoms.activeWalletsWithData);
+  return useRecoilValue(atoms.activeWalletsWithData!);
 }
 
 export function useWalletPublicKeys(): WalletPublicKeys {

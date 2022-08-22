@@ -42,6 +42,7 @@ export const walletWithData = selectorFamily({
           }
         }
       }
+      return undefined;
     },
 });
 
@@ -79,8 +80,8 @@ export const activeWallets = atom<string[]>({
 export const activeWalletsWithData = selector({
   key: "activeWalletsWithData",
   get: ({ get }) => {
-    return get(activeWallets).map((publicKey) =>
-      get(walletWithData(publicKey)!)
+    return get(activeWallets).map(
+      (publicKey) => get(walletWithData(publicKey)!)!
     );
   },
 });

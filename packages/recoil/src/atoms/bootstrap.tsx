@@ -4,7 +4,7 @@ import { UI_RPC_METHOD_NAVIGATION_READ } from "@coral-xyz/common";
 import { TokenAccountWithKey } from "../types";
 import { fetchPriceData } from "./prices";
 import { backgroundClient } from "./client";
-import { activeWalletsWithData } from "./wallet";
+import { activeWallet } from "./wallet";
 import { anchorContext } from "./solana/wallet";
 import { fetchRecentTransactions } from "./solana/recent-transactions";
 import { splTokenRegistry } from "./solana/token-registry";
