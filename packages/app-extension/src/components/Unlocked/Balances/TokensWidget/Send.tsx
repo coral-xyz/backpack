@@ -311,13 +311,11 @@ export function SendConfirmationCard({
   token,
   address,
   amount,
-  style,
 }: {
   token: { logo?: string; ticker?: string; mint: string; decimals: number };
   address: string;
   amount: BigNumber;
   close: () => void;
-  style?: React.CSSProperties;
 }) {
   const ctx = useSolanaCtx();
   const [cardType, setCardType] = useState<
@@ -373,7 +371,7 @@ export function SendConfirmationCard({
   };
 
   return (
-    <div style={style}>
+    <div>
       {cardType === "confirm" ? (
         <ConfirmSend
           token={token}

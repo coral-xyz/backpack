@@ -7,7 +7,6 @@ import { PrimaryButton, SecondaryButton, TextField } from "../../common";
 import {
   useDrawerContext,
   WithDrawer,
-  WithMiniDrawer,
   CloseButton,
 } from "../../common/Layout/Drawer";
 import {
@@ -18,6 +17,7 @@ import {
   SendConfirmationCard,
   useIsValidSolanaSendAddress,
 } from "../Balances/TokensWidget/Send";
+import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
 
 const useStyles = styles((theme) => ({
   textRoot: {
@@ -216,20 +216,21 @@ function SendScreen({ nft }: { nft: any }) {
           </div>
         </div>
       </div>
-      <WithMiniDrawer openDrawer={openConfirm} setOpenDrawer={setOpenConfirm}>
+      <ApproveTransactionDrawer
+        openDrawer={openConfirm}
+        setOpenDrawer={setOpenConfirm}
+      >
         <SendConfirmationCard
           token={{
             mint: nft.metadata.mint,
             decimals: 0, // Are there any NFTs that don't use decimals 0?
+            logo: nft.tokenMetaUriData.image,
           }}
           address={address}
           amount={BigNumber.from(1)}
           close={() => close()}
-          style={{
-            background: theme.custom.colors.background,
-          }}
         />
-      </WithMiniDrawer>
+      </ApproveTransactionDrawer>
     </>
   );
 }
