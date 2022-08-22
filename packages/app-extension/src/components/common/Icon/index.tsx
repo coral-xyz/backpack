@@ -341,7 +341,7 @@ export function BalancesIcon({ fill = "#99A4B4" }) {
   );
 }
 
-export function GridIcon({ fill = "#99A4B4" }) {
+export function GridIcon({ fill = "#99A4B4", ...props }) {
   const classes = useStyles();
   return (
     <svg
@@ -351,6 +351,7 @@ export function GridIcon({ fill = "#99A4B4" }) {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
+      {...props}
     >
       <path
         d="M5 11H9C10.1 11 11 10.1 11 9V5C11 3.9 10.1 3 9 3H5C3.9 3 3 3.9 3 5V9C3 10.1 3.9 11 5 11Z"

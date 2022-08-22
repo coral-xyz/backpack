@@ -17,9 +17,11 @@ export function SettingsList({
       style?: React.CSSProperties;
       classes?: any;
       button?: boolean;
+      icon?: React.ReactNode;
     };
   };
 }) {
+  console.log("menu", menuItems);
   return (
     <List style={{ marginTop: "16px", ...style }}>
       {Object.entries(menuItems).map(([key, val]: any, i, { length }) => (
@@ -39,6 +41,7 @@ export function SettingsList({
           detail={val.detail ?? <PushDetail />}
           borderColor={borderColor}
         >
+          {val.icon && val.icon()}
           <Typography style={{ fontWeight: 500, ...textStyle }}>
             {key}
           </Typography>

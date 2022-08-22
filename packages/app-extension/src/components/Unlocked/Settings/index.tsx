@@ -73,7 +73,8 @@ import { EditWallets } from "./YourAccount/EditWallets";
 import { RemoveWallet } from "./YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
-import { CheckIcon } from "../../common/Icon";
+import { GridIcon, CheckIcon } from "../../common/Icon";
+import { XnftSettings } from "./Xnfts";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -231,6 +232,10 @@ function AvatarButton() {
             <NavStackScreen
               name={"reset"}
               component={(props: any) => <Reset {...props} />}
+            />
+            <NavStackScreen
+              name={"xnfts"}
+              component={(props: any) => <XnftSettings {...props} />}
             />
           </NavStackEphemeral>
         </div>
@@ -568,6 +573,12 @@ function SettingsList({ close }: { close: () => void }) {
       detailIcon: <PushDetail />,
     },
     {
+      label: "xNFTs",
+      onClick: () => nav.push("xnfts"),
+      icon: (props: any) => <GridIcon {...props} />,
+      detailIcon: <PushDetail />,
+    },
+    {
       label: "Help & Support",
       onClick: () => console.log("help and support"),
       icon: (props: any) => <Help {...props} />,
@@ -626,6 +637,7 @@ function SettingsList({ close }: { close: () => void }) {
                   height: "24px",
                   width: "24px",
                 },
+                fill: theme.custom.colors.secondary,
               })}
               <Typography
                 style={{
