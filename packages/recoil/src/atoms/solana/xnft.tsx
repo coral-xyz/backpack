@@ -1,5 +1,5 @@
 import { atom, selector } from "recoil";
-import { SIMULATOR_PORT } from "@coral-xyz/common";
+import { BACKPACK_CONFIG_VERSION, SIMULATOR_PORT } from "@coral-xyz/common";
 import { activeWallet } from "./wallet";
 import { solanaConnectionUrl } from "./preferences";
 import { bootstrap } from "../bootstrap";
@@ -23,6 +23,14 @@ const NETWORK_MONITOR = pluginURL(
   "xnft-program-library/packages/network-monitor"
 );
 
+//
+// Cached bundle proxy.
+//
+const PROXY_URL =
+  BACKPACK_CONFIG_VERSION === "development"
+    ? "https://localhost:9999?inline=1&bundle="
+    : "https://embed.xnfts.dev?inline=1&bundle=";
+
 function pluginURL(pluginName: string) {
   return [
     // xnft wrapper
@@ -33,7 +41,7 @@ function pluginURL(pluginName: string) {
 }
 
 function xnftUrl(url: string) {
-  return ["https://localhost:9999?inline=1&bundle=", url].join("");
+  return [PROXY_URL, url].join("");
 }
 
 //
