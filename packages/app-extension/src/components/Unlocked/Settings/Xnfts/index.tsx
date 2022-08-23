@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Typography } from "@mui/material";
+import { useXnfts } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useAppIcons } from "@coral-xyz/recoil";
 import { SettingsList } from "../../../common/Settings/List";
 import { PushDetail } from "../../../common";
 import { useNavStack } from "../../../common/Layout/NavStack";
@@ -9,7 +9,7 @@ import { useNavStack } from "../../../common/Layout/NavStack";
 export function XnftSettings() {
   const nav = useNavStack();
   const theme = useCustomTheme();
-  const xnfts = useAppIcons();
+  const xnfts = useXnfts();
   const settingsMenu = {} as any;
   xnfts.forEach((xnft) => {
     settingsMenu[xnft.title] = {

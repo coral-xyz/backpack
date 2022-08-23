@@ -5,6 +5,46 @@ import { solanaConnectionUrl } from "./preferences";
 import { bootstrap } from "../bootstrap";
 
 //
+// Cached bundle proxy.
+//
+const PROXY_URL =
+  BACKPACK_CONFIG_XNFT_PROXY === "development"
+    ? "https://localhost:9999?inline=1&bundle="
+    : "https://embed.xnfts.dev?inline=1&bundle=";
+
+export const xnfts = atom({
+  key: "xnfts",
+  default: selector({
+    key: "xnftsDefault",
+    get: async ({ get }) => {
+      const b = get(bootstrap);
+      const _activeWallet = get(activeWallet);
+      const _connectionUrl = get(solanaConnectionUrl);
+      const _xnfts = (await b.xnfts).map((xnft) => {
+        return {
+          url: xnftUrl(xnft.metadataBlob.properties.bundle),
+          iconUrl: xnft.metadataBlob.image,
+          activeWallet: _activeWallet,
+          connectionUrl: _connectionUrl,
+          title: xnft.metadataBlob.name,
+        };
+      });
+      const _defaultXnfts = get(defaultXnfts);
+
+      return _xnfts.concat(_defaultXnfts);
+    },
+  }),
+});
+
+function xnftUrl(url: string) {
+  return [PROXY_URL, url].join("");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Pre-installed.
+////////////////////////////////////////////////////////////////////////////////
+
+//
 // Private dev plugins.
 //
 const MANGO_TABLE_PLUGIN_URL = pluginURL("xnft/mango");
@@ -23,31 +63,7 @@ const NETWORK_MONITOR = pluginURL(
   "xnft-program-library/packages/network-monitor"
 );
 
-//
-// Cached bundle proxy.
-//
-const PROXY_URL =
-  BACKPACK_CONFIG_XNFT_PROXY === "development"
-    ? "https://localhost:9999?inline=1&bundle="
-    : "https://embed.xnfts.dev?inline=1&bundle=";
-
-function pluginURL(pluginName: string) {
-  return [
-    // xnft wrapper
-    "https://localhost:9999?inline=1&bundle=",
-    // [pluginName]'s JS delivered by the local plugin server
-    `http://localhost:8001/${pluginName}/dist/index.js`,
-  ].join("");
-}
-
-function xnftUrl(url: string) {
-  return [PROXY_URL, url].join("");
-}
-
-//
-// For now we just provide some default apps.
-//
-export const plugins = selector({
+const defaultXnfts = selector({
   key: "plugins",
   get: ({ get }: any) => {
     return [
@@ -105,23 +121,11 @@ export const plugins = selector({
   },
 });
 
-export const xnfts = atom({
-  key: "xnfts",
-  default: selector({
-    key: "xnftsDefault",
-    get: async ({ get }) => {
-      const b = get(bootstrap);
-      const _activeWallet = get(activeWallet);
-      const _connectionUrl = get(solanaConnectionUrl);
-      return (await b.xnfts).map((xnft) => {
-        return {
-          url: xnftUrl(xnft.metadataBlob.properties.bundle),
-          iconUrl: xnft.metadataBlob.image,
-          activeWallet: _activeWallet,
-          connectionUrl: _connectionUrl,
-          title: xnft.metadataBlob.name,
-        };
-      });
-    },
-  }),
-});
+function pluginURL(pluginName: string) {
+  return [
+    // xnft wrapper
+    "https://localhost:9999?inline=1&bundle=",
+    // [pluginName]'s JS delivered by the local plugin server
+    `http://localhost:8001/${pluginName}/dist/index.js`,
+  ].join("");
+}

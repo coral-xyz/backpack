@@ -5,7 +5,7 @@ import { Grid, Button, Typography } from "@mui/material";
 import { styles } from "@coral-xyz/themes";
 import {
   useBackgroundClient,
-  useAppIcons,
+  useXnfts,
   useNavigation,
 } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
@@ -51,7 +51,7 @@ export function Apps() {
 
 function PluginGrid() {
   const { push } = useNavigation();
-  const plugins = useAppIcons();
+  const xnfts = useXnfts();
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const background = useBackgroundClient();
@@ -115,7 +115,7 @@ function PluginGrid() {
           marginBottom: "24px",
         }}
       >
-        {plugins.map((p: any, idx: number) => {
+        {xnfts.map((p: any, idx: number) => {
           return (
             <Grid
               item
