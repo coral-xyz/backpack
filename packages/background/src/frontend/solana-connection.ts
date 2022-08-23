@@ -285,7 +285,7 @@ async function handleGetFeeForMessage(
 }
 
 async function handleGetMinimumBalanceForRentExemption(
-  ctx: Context<Backend>,
+  ctx: Context<SolanaConnectionBackend>,
   dataLength: number,
   commitment?: Commitment
 ) {
