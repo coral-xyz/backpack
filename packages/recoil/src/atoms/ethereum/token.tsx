@@ -9,6 +9,7 @@ import { TokenInfo } from "@solana/spl-token-registry";
 import { ethersContext } from "./provider";
 import { bootstrap } from "../bootstrap";
 import { TokenData } from "../../types";
+import { priceData } from "../prices";
 
 export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
   key: "ethereumTokenBalance",
@@ -26,12 +27,16 @@ export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
         : BigNumber.from(0);
       const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
 
-      // TODO pricing
-      // const price = get(ethereumPriceData(contractAddress));
-      const usdBalance = 0;
-      const oldUsdBalance = 0;
-      const recentUsdBalanceChange = 0;
-      const recentPercentChange = 0;
+      const price = get(priceData(contractAddress)) as any;
+      const usdBalance =
+        price && price.usd ? price.usd * parseFloat(displayBalance) : 0;
+      const oldUsdBalance =
+        usdBalance === 0 ? 0 : usdBalance / (1 + price.usd_24h_change);
+      const recentUsdBalanceChange =
+        (usdBalance - oldUsdBalance) / oldUsdBalance;
+      const recentPercentChange = price
+        ? parseFloat(price.usd_24h_change.toFixed(2))
+        : undefined;
 
       return {
         name,
