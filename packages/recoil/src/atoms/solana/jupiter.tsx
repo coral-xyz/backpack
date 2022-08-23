@@ -1,11 +1,10 @@
 import { selector, selectorFamily } from "recoil";
 import { TokenInfo } from "@solana/spl-token-registry";
-import { Blockchain } from "@coral-xyz/common";
-import { blockchainTokensSorted } from "./token";
+import { Blockchain, SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
 import { splTokenRegistry } from "./token-registry";
 import { bootstrap } from "../bootstrap";
-import { SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
 import { SOL_LOGO_URI } from "./token-registry";
+import { blockchainBalancesSorted } from "../balance";
 
 export const JUPITER_BASE_URL = "https://quote-api.jup.ag/v1/";
 
@@ -34,7 +33,7 @@ export const jupiterInputMints = selector({
   key: "jupiterInputMints",
   get: async ({ get }) => {
     const inputMints = get(allJupiterInputMints);
-    const walletTokens = get(blockchainTokensSorted(Blockchain.SOLANA));
+    const walletTokens = get(blockchainBalancesSorted(Blockchain.SOLANA));
     // Only allow tokens that Jupiter allows as well as native SOL.
     return walletTokens.filter(
       (t: any) => inputMints.includes(t.mint) || t.mint === SOL_NATIVE_MINT

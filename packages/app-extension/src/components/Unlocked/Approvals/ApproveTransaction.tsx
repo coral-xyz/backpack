@@ -7,7 +7,6 @@ import { List, ListItem, Typography } from "@mui/material";
 import _CheckIcon from "@mui/icons-material/Check";
 import { Blockchain, UI_RPC_METHOD_SOLANA_SIMULATE } from "@coral-xyz/common";
 import {
-  useActiveWallet,
   useBackgroundClient,
   useBlockchainTokensSorted,
   useSolanaCtx,
@@ -186,7 +185,7 @@ function TransactionData({
                   const account = AccountLayout.decode(buf);
                   const existingTokenAccount = tokenAccountsSorted.find(
                     (t) =>
-                      new PublicKey(t.mint).toString() ===
+                      new PublicKey(t.mint!).toString() ===
                       new PublicKey(account.mint).toString()
                   );
                   const token = tokenRegistry.get(
