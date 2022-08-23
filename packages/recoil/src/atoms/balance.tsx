@@ -17,7 +17,7 @@ export const blockchainBalancesSorted = selectorFamily<
     (blockchain: Blockchain) =>
     ({ get }) => {
       const tokenAddresses = get(blockchainTokenAddresses(blockchain));
-      const tokenAccounts = tokenAddresses
+      const tokenData = tokenAddresses
         .map(
           (address) =>
             get(
@@ -28,7 +28,7 @@ export const blockchainBalancesSorted = selectorFamily<
             )!
         )
         .filter(Boolean);
-      return tokenAccounts.sort((a, b) => b.usdBalance - a.usdBalance);
+      return tokenData.sort((a, b) => b.usdBalance - a.usdBalance);
     },
 });
 
@@ -39,7 +39,7 @@ export const blockchainTokenData = selectorFamily<
   TokenData | null,
   { address: string; blockchain: Blockchain }
 >({
-  key: "blockchainBalance",
+  key: "blockchainTokenData",
   get:
     ({ address, blockchain }: { address: string; blockchain: Blockchain }) =>
     ({ get }) => {
@@ -56,7 +56,7 @@ export const blockchainTokenData = selectorFamily<
  * Selects a blockchain token list based on a network string.
  */
 export const blockchainTokenAddresses = selectorFamily({
-  key: "blockchainTokens",
+  key: "blockchainTokenAddresses",
   get:
     (blockchain: Blockchain) =>
     ({ get }) => {
