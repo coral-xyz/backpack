@@ -109,11 +109,11 @@ export const xnfts = atom({
   key: "xnfts",
   default: selector({
     key: "xnftsDefault",
-    get: ({ get }) => {
+    get: async ({ get }) => {
       const b = get(bootstrap);
       const _activeWallet = get(activeWallet);
       const _connectionUrl = get(solanaConnectionUrl);
-      return b.xnfts.map((xnft) => {
+      return (await b.xnfts).map((xnft) => {
         return {
           url: xnftUrl(xnft.metadataBlob.properties.bundle),
           iconUrl: xnft.metadataBlob.image,

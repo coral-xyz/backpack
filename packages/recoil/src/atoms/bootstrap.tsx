@@ -29,7 +29,7 @@ export const bootstrap = selector<{
   splNftMetadata: Map<string, any>;
   coingeckoData: Map<string, any>;
   jupiterRouteMap: Promise<any>;
-  xnfts: Array<any>;
+  xnfts: Promise<any>;
 }>({
   key: "bootstrap",
   get: async ({ get }: any) => {
@@ -50,8 +50,6 @@ export const bootstrap = selector<{
         ...solanaData,
         ...ethereumData,
         coingeckoData,
-        // TODO add Ethereum recent transactions
-        recentTransactions: solanaData.recentTransactions,
       };
     } catch (err) {
       console.log(err);
@@ -59,8 +57,6 @@ export const bootstrap = selector<{
         ...solanaData,
         ...ethereumData,
         coingeckoData: new Map(),
-        recentTransactions: [],
-        xnfts: [],
       };
     }
   },
@@ -119,7 +115,7 @@ export const solanaBootstrap = selector<{
   splTokenMetadata: Array<any>;
   splNftMetadata: Map<string, any>;
   jupiterRouteMap: Promise<any>;
-  xnfts: any;
+  xnfts: Promise<any>;
 }>({
   key: "solanaBootstrap",
   get: async ({ get }: any) => {
@@ -134,7 +130,7 @@ export const solanaBootstrap = selector<{
       splTokenMetadata: [],
       splNftMetadata: new Map(),
       jupiterRouteMap: Promise.resolve({}),
-      xnfts: [],
+      xnfts: Promise.resolve([]),
     };
 
     if (!publicKey) {
@@ -153,10 +149,7 @@ export const solanaBootstrap = selector<{
     //
     // Fetch xnfts immediately but don't block.
     //
-    const fetchXnftsPromise = await fetchXnfts(
-      provider,
-      new PublicKey(publicKey)
-    );
+    const fetchXnftsPromise = fetchXnfts(provider, new PublicKey(publicKey));
 
     get(
       recentTransactions({ blockchain: Blockchain.SOLANA, address: publicKey })
