@@ -8,6 +8,7 @@ import {
 } from "@coral-xyz/common";
 import { SolanaTokenAccountWithKey } from "../types";
 import { fetchPriceData } from "./prices";
+import { recentTransactions } from "./recent-transactions";
 import { backgroundClient } from "./client";
 import { activeWalletsWithData } from "./wallet";
 import { anchorContext } from "./solana/wallet";
@@ -155,6 +156,10 @@ export const solanaBootstrap = selector<{
     const fetchXnftsPromise = await fetchXnfts(
       provider,
       new PublicKey(publicKey)
+    );
+
+    get(
+      recentTransactions({ blockchain: Blockchain.SOLANA, address: publicKey })
     );
 
     //
