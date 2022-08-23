@@ -388,6 +388,7 @@ export class Backend {
         name: NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
         data: {
           activeWallet: newWallet,
+          activeWallets: await this.activeWallets(),
         },
       });
     } else if (this.activeBlockchain() === Blockchain.ETHEREUM) {
@@ -395,6 +396,7 @@ export class Backend {
         name: NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
         data: {
           activeWallet: newWallet,
+          activeWallets: await this.activeWallets(),
         },
       });
     }
