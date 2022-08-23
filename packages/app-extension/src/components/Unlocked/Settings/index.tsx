@@ -16,6 +16,7 @@ import {
   useBackgroundClient,
   useWalletPublicKeys,
   useActiveWallet,
+  useActiveWallets,
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
@@ -334,7 +335,7 @@ function WalletList({
   close: () => void;
 }) {
   const background = useBackgroundClient();
-  const active = useActiveWallet();
+  const activeWallets = useActiveWallets();
   const theme = useCustomTheme();
 
   const clickWallet = (publicKey: string) => {
@@ -441,7 +442,9 @@ function WalletList({
                       <ImportTypeBadge type={type} />
                     </div>
                   </div>
-                  {publicKey === active.publicKey && (
+                  {activeWallets
+                    .map((p) => p.publicKey)
+                    .includes(publicKey) && (
                     <CheckIcon
                       fill={theme.custom.colors.activeNavButton}
                       style={{ width: "24px" }}
