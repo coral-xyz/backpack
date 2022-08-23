@@ -19,7 +19,8 @@
     "@solana/spl-token-registry": "^0.2.3225",
     "bn.js": "^5.2.1",
     "bs58": "^5.0.0",
-    "ethers": "^5.6.9",
+    "ethereum-multicall": "^2.14.1",
+    "ethers": "^5.7.0",
     "react": "^17.0.0",
     "react-router-dom": "^6.3.0",
     "recoil": "^0.6.1"

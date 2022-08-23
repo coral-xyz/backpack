@@ -1,101 +1,207 @@
 import { atom, selector } from "recoil";
+import { BigNumber } from "ethers";
 import { ParsedConfirmedTransaction, PublicKey } from "@solana/web3.js";
-import { fetchXnfts, UI_RPC_METHOD_NAVIGATION_READ } from "@coral-xyz/common";
+import {
+  fetchXnfts,
+  Blockchain,
+  UI_RPC_METHOD_NAVIGATION_READ,
+} from "@coral-xyz/common";
 import { SolanaTokenAccountWithKey } from "../types";
 import { fetchPriceData } from "./prices";
 import { backgroundClient } from "./client";
-import { activeWallet } from "./wallet";
+import { activeWalletsWithData } from "./wallet";
 import { anchorContext } from "./solana/wallet";
 import { fetchRecentTransactions } from "./solana/recent-transactions";
 import { splTokenRegistry } from "./solana/token-registry";
 import { fetchJupiterRouteMap } from "./solana/jupiter";
+import { ethereumTokenMetadata } from "./ethereum/token-metadata";
+import { ethereumTokenBalances } from "./ethereum/token";
 
 /**
  * Defines the initial app load fetch.
  */
 export const bootstrap = selector<{
+  ethTokenBalances: Map<string, BigNumber>;
+  ethTokenAddresses: Array<string>;
+  ethTokenMetadata: Map<string, any>;
   splTokenAccounts: Map<string, SolanaTokenAccountWithKey>;
   splTokenMetadata: Array<any>;
   splNftMetadata: Map<string, any>;
   coingeckoData: Map<string, any>;
   recentTransactions: Array<ParsedConfirmedTransaction>;
-  walletPublicKey: PublicKey;
   jupiterRouteMap: Promise<any>;
   xnfts: Array<any>;
 }>({
   key: "bootstrap",
   get: async ({ get }: any) => {
-    const tokenRegistry = get(splTokenRegistry);
+    const [ethereumData, solanaData] = await Promise.all([
+      get(ethereumBootstrap),
+      get(solanaBootstrap),
+    ]);
+
+    const tokenRegistry = await get(splTokenRegistry);
+
+    try {
+      //
+      // Fetch the price data.
+      // TODO add Ethereum pricing
+      //
+      const coingeckoData = await fetchPriceData(
+        solanaData.splTokenAccounts,
+        tokenRegistry
+      );
+      return {
+        ...solanaData,
+        ...ethereumData,
+        coingeckoData,
+        // TODO add Ethereum recent transactions
+        recentTransactions: solanaData.recentTransactions,
+      };
+    } catch (err) {
+      console.log(err);
+      return {
+        ...solanaData,
+        ...ethereumData,
+        coingeckoData: new Map(),
+        recentTransactions: [],
+        xnfts: [],
+      };
+    }
+  },
+});
+
+export const ethereumBootstrap = selector<{
+  activePublicKey: string | null;
+  ethTokenBalances: Map<string, BigNumber>;
+  ethTokenAddresses: Array<string>;
+  ethTokenMetadata: Map<string, any>;
+}>({
+  key: "ethereumBootstrap",
+  get: async ({ get }: any) => {
+    const activeWallets = await get(activeWalletsWithData);
+    const publicKey =
+      activeWallets.find((w: any) => w!.blockchain === Blockchain.ETHEREUM)
+        ?.publicKey ?? null;
+
+    const defaultReturn = {
+      activePublicKey: null,
+      ethTokenAddresses: [],
+      ethTokenBalances: new Map(),
+      ethTokenMetadata: new Map(),
+    };
+
+    if (!publicKey) {
+      return defaultReturn;
+    }
+
+    try {
+      const ethTokenMetadata = await get(ethereumTokenMetadata);
+      const ethTokenAddresses = [...ethTokenMetadata.values()].map(
+        (token) => token.address
+      );
+      const ethTokenBalances = await get(
+        ethereumTokenBalances({
+          contractAddresses: ethTokenAddresses,
+          publicKey,
+        })
+      );
+      return {
+        activePublicKey: publicKey,
+        ethTokenAddresses,
+        ethTokenBalances,
+        ethTokenMetadata,
+      };
+    } catch (err) {
+      // TODO: show error notification.
+      console.error("ethereum bootstrap error", err);
+      return defaultReturn;
+    }
+  },
+});
+
+export const solanaBootstrap = selector<{
+  activePublicKey: string | null;
+  splTokenAccounts: Map<string, SolanaTokenAccountWithKey>;
+  splTokenMetadata: Array<any>;
+  splNftMetadata: Map<string, any>;
+  recentTransactions: Promise<any>;
+  jupiterRouteMap: Promise<any>;
+  xnfts: any;
+}>({
+  key: "solanaBootstrap",
+  get: async ({ get }: any) => {
+    const activeWallets = await get(activeWalletsWithData);
+    const publicKey =
+      activeWallets.find((w: any) => w.blockchain === Blockchain.SOLANA)
+        ?.publicKey ?? null;
+
+    const defaultReturn = {
+      activePublicKey: null,
+      splTokenAccounts: new Map(),
+      splTokenMetadata: [],
+      splNftMetadata: new Map(),
+      recentTransactions: Promise.resolve([]),
+      jupiterRouteMap: Promise.resolve({}),
+      xnfts: [],
+    };
+
+    if (!publicKey) {
+      return defaultReturn;
+    }
+
     const { provider } = get(anchorContext);
-    const walletPublicKey = get(activeWallet);
+    //
+    // Preload Jupiter route maps for swapper, not awaited to avoid blocking
+    // the wallet if the Jupiter API does not respond.
+    //
+    const jupiterRouteMap = fetchJupiterRouteMap().catch((e) =>
+      console.log("failed to load Jupiter route map", e)
+    );
+
+    //
+    // Fetch xnfts immediately but don't block.
+    //
+    const fetchXnftsPromise = await fetchXnfts(
+      provider,
+      new PublicKey(publicKey)
+    );
+
+    //
+    // Fetch recent transactions immediately but don't block.
+    //
+    const fetchRecentTransactionsPromise = fetchRecentTransactions(
+      provider.connection,
+      publicKey
+    );
 
     //
     // Perform data fetch.
     //
     try {
       //
-      // Fetch xnfts immediately but don't block.
-      //
-      const fetchXnftsPromise = fetchXnfts(
-        provider,
-        new PublicKey(walletPublicKey)
-      );
-      //
       // Fetch token data.
       //
       const { tokenAccountsMap, tokenMetadata, nftMetadata } =
-        await provider.connection.customSplTokenAccounts(walletPublicKey);
+        await provider.connection.customSplTokenAccounts(publicKey);
       const splTokenAccounts = new Map<string, SolanaTokenAccountWithKey>(
         tokenAccountsMap
       );
       //
-      // Preload Jupiter route maps for swapper, not awaited to avoid blocking
-      // the wallet if the Jupiter API does not respond.
-      //
-      const jupiterRouteMap = fetchJupiterRouteMap().catch((e) =>
-        console.log("failed to load Jupiter route map", e)
-      );
-      const [coingeckoData, recentTransactions, xnfts] = await Promise.all([
-        //
-        // Fetch the price data.
-        //
-        fetchPriceData(splTokenAccounts, tokenRegistry),
-        //
-        // Get the transaction data for the wallet's recent transactions.
-        //
-        fetchRecentTransactions(provider.connection, walletPublicKey),
-        //
-        //
-        //
-        fetchXnftsPromise,
-      ]);
-
-      //
       // Done.
       //
       return {
+        activePublicKey: publicKey,
         splTokenAccounts,
         splTokenMetadata: tokenMetadata,
         splNftMetadata: new Map(nftMetadata),
-        coingeckoData,
-        recentTransactions,
-        walletPublicKey,
+        recentTransactions: fetchRecentTransactionsPromise,
         jupiterRouteMap,
-        xnfts,
+        xnfts: fetchXnftsPromise,
       };
     } catch (err) {
       // TODO: show error notification.
-      console.error(err);
-      return {
-        splTokenAccounts: new Map(),
-        splTokenMetadata: [],
-        splNftMetadata: new Map(),
-        coingeckoData: new Map(),
-        recentTransactions: [],
-        walletPublicKey,
-        jupiterRouteMap: Promise.resolve({}),
-        xnfts: [],
-      };
+      console.error("solana bootstrap error", err);
+      return defaultReturn;
     }
   },
 });
