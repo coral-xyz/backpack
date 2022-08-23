@@ -43,6 +43,7 @@ export function NotificationsProvider(props: any) {
   const setWalletPublicKeys = useSetRecoilState(atoms.walletPublicKeys);
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveWallet = useSetRecoilState(atoms.activeWallet);
+  const setActiveWallets = useSetRecoilState(atoms.activeWallets);
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
   const setAutoLockSecs = useSetRecoilState(atoms.autoLockSecs);
   const setIsDarkMode = useSetRecoilState(atoms.isDarkMode);
@@ -256,10 +257,12 @@ export function NotificationsProvider(props: any) {
       allPlugins().forEach((p) => {
         p.pushPublicKeyChangedNotification(notif.data.activeWallet);
       });
+      setActiveWallets(notif.data.activeWallets);
     };
 
     const handleEthereumActiveWalletUpdated = (notif: Notification) => {
       setActiveWallet(notif.data.activeWallet);
+      setActiveWallets(notif.data.activeWallets);
     };
 
     const handleResetMnemonic = (notif: Notification) => {

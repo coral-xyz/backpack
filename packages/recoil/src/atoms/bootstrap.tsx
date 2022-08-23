@@ -1,101 +1,187 @@
 import { atom, selector } from "recoil";
+import { BigNumber } from "ethers";
 import { ParsedConfirmedTransaction, PublicKey } from "@solana/web3.js";
-import { fetchXnfts, UI_RPC_METHOD_NAVIGATION_READ } from "@coral-xyz/common";
+import {
+  fetchXnfts,
+  Blockchain,
+  UI_RPC_METHOD_NAVIGATION_READ,
+} from "@coral-xyz/common";
 import { SolanaTokenAccountWithKey } from "../types";
 import { fetchPriceData } from "./prices";
+import { recentTransactions } from "./recent-transactions";
 import { backgroundClient } from "./client";
-import { activeWallet } from "./wallet";
+import { activeWalletsWithData } from "./wallet";
 import { anchorContext } from "./solana/wallet";
-import { fetchRecentTransactions } from "./solana/recent-transactions";
 import { splTokenRegistry } from "./solana/token-registry";
 import { fetchJupiterRouteMap } from "./solana/jupiter";
+import { ethereumTokenMetadata } from "./ethereum/token-metadata";
+import { ethereumTokenBalances } from "./ethereum/token";
 
 /**
  * Defines the initial app load fetch.
  */
 export const bootstrap = selector<{
+  ethTokenBalances: Map<string, BigNumber>;
+  ethTokenAddresses: Array<string>;
+  ethTokenMetadata: Map<string, any>;
   splTokenAccounts: Map<string, SolanaTokenAccountWithKey>;
   splTokenMetadata: Array<any>;
   splNftMetadata: Map<string, any>;
   coingeckoData: Map<string, any>;
-  recentTransactions: Array<ParsedConfirmedTransaction>;
-  walletPublicKey: PublicKey;
   jupiterRouteMap: Promise<any>;
-  xnfts: Array<any>;
+  xnfts: Promise<any>;
 }>({
   key: "bootstrap",
   get: async ({ get }: any) => {
+    const ethereumData = get(ethereumBootstrap);
+    const solanaData = get(solanaBootstrap);
     const tokenRegistry = get(splTokenRegistry);
+
+    try {
+      //
+      // Fetch the price data.
+      // TODO add Ethereum pricing
+      //
+      const coingeckoData = await fetchPriceData(
+        solanaData.splTokenAccounts,
+        tokenRegistry
+      );
+      return {
+        ...solanaData,
+        ...ethereumData,
+        coingeckoData,
+      };
+    } catch (err) {
+      console.log(err);
+      return {
+        ...solanaData,
+        ...ethereumData,
+        coingeckoData: new Map(),
+      };
+    }
+  },
+});
+
+export const ethereumBootstrap = selector<{
+  ethActivePublicKey: string | null;
+  ethTokenBalances: Map<string, BigNumber>;
+  ethTokenAddresses: Array<string>;
+  ethTokenMetadata: Map<string, any>;
+}>({
+  key: "ethereumBootstrap",
+  get: ({ get }: any) => {
+    const activeWallets = get(activeWalletsWithData);
+    const publicKey =
+      activeWallets.find((w: any) => w!.blockchain === Blockchain.ETHEREUM)
+        ?.publicKey ?? null;
+
+    const defaultReturn = {
+      ethActivePublicKey: null,
+      ethTokenAddresses: [],
+      ethTokenBalances: new Map(),
+      ethTokenMetadata: new Map(),
+    };
+
+    if (!publicKey) {
+      return defaultReturn;
+    }
+
+    const ethTokenMetadata = get(ethereumTokenMetadata);
+    if (!ethTokenMetadata) {
+      return defaultReturn;
+    }
+
+    const ethTokenAddresses = [...ethTokenMetadata.values()].map(
+      (token) => token.address
+    );
+    const ethTokenBalances = get(
+      ethereumTokenBalances({
+        contractAddresses: ethTokenAddresses,
+        publicKey,
+      })
+    );
+    return {
+      ethActivePublicKey: publicKey,
+      ethTokenAddresses,
+      ethTokenBalances,
+      ethTokenMetadata,
+    };
+  },
+});
+
+export const solanaBootstrap = selector<{
+  solActivePublicKey: string | null;
+  splTokenAccounts: Map<string, SolanaTokenAccountWithKey>;
+  splTokenMetadata: Array<any>;
+  splNftMetadata: Map<string, any>;
+  jupiterRouteMap: Promise<any>;
+  xnfts: Promise<any>;
+}>({
+  key: "solanaBootstrap",
+  get: async ({ get }: any) => {
+    const activeWallets = get(activeWalletsWithData);
+    const publicKey =
+      activeWallets.find((w: any) => w.blockchain === Blockchain.SOLANA)
+        ?.publicKey ?? null;
+
+    const defaultReturn = {
+      solActivePublicKey: null,
+      splTokenAccounts: new Map(),
+      splTokenMetadata: [],
+      splNftMetadata: new Map(),
+      jupiterRouteMap: Promise.resolve({}),
+      xnfts: Promise.resolve([]),
+    };
+
+    if (!publicKey) {
+      return defaultReturn;
+    }
+
     const { provider } = get(anchorContext);
-    const walletPublicKey = get(activeWallet);
+    //
+    // Preload Jupiter route maps for swapper, not awaited to avoid blocking
+    // the wallet if the Jupiter API does not respond.
+    //
+    const jupiterRouteMap = fetchJupiterRouteMap().catch((e) =>
+      console.log("failed to load Jupiter route map", e)
+    );
+
+    //
+    // Fetch xnfts immediately but don't block.
+    //
+    const fetchXnftsPromise = fetchXnfts(provider, new PublicKey(publicKey));
+
+    get(
+      recentTransactions({ blockchain: Blockchain.SOLANA, address: publicKey })
+    );
 
     //
     // Perform data fetch.
     //
     try {
       //
-      // Fetch xnfts immediately but don't block.
-      //
-      const fetchXnftsPromise = fetchXnfts(
-        provider,
-        new PublicKey(walletPublicKey)
-      );
-      //
       // Fetch token data.
       //
       const { tokenAccountsMap, tokenMetadata, nftMetadata } =
-        await provider.connection.customSplTokenAccounts(walletPublicKey);
+        await provider.connection.customSplTokenAccounts(publicKey);
       const splTokenAccounts = new Map<string, SolanaTokenAccountWithKey>(
         tokenAccountsMap
       );
       //
-      // Preload Jupiter route maps for swapper, not awaited to avoid blocking
-      // the wallet if the Jupiter API does not respond.
-      //
-      const jupiterRouteMap = fetchJupiterRouteMap().catch((e) =>
-        console.log("failed to load Jupiter route map", e)
-      );
-      const [coingeckoData, recentTransactions, xnfts] = await Promise.all([
-        //
-        // Fetch the price data.
-        //
-        fetchPriceData(splTokenAccounts, tokenRegistry),
-        //
-        // Get the transaction data for the wallet's recent transactions.
-        //
-        fetchRecentTransactions(provider.connection, walletPublicKey),
-        //
-        //
-        //
-        fetchXnftsPromise,
-      ]);
-
-      //
       // Done.
       //
       return {
+        solActivePublicKey: publicKey,
         splTokenAccounts,
         splTokenMetadata: tokenMetadata,
         splNftMetadata: new Map(nftMetadata),
-        coingeckoData,
-        recentTransactions,
-        walletPublicKey,
         jupiterRouteMap,
-        xnfts,
+        xnfts: fetchXnftsPromise,
       };
     } catch (err) {
       // TODO: show error notification.
-      console.error(err);
-      return {
-        splTokenAccounts: new Map(),
-        splTokenMetadata: [],
-        splNftMetadata: new Map(),
-        coingeckoData: new Map(),
-        recentTransactions: [],
-        walletPublicKey,
-        jupiterRouteMap: Promise.resolve({}),
-        xnfts: [],
-      };
+      console.error("solana bootstrap error", err);
+      return defaultReturn;
     }
   },
 });

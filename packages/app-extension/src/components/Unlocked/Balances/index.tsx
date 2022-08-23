@@ -2,11 +2,12 @@ import {
   toTitleCase,
   Blockchain,
   NAV_COMPONENT_TOKEN,
+  SOL_NATIVE_MINT,
 } from "@coral-xyz/common";
 import { useNavigation, useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import { TransferWidget } from "./TransferWidget";
 import { BalanceSummaryWidget } from "./BalanceSummaryWidget";
-import { TokenTable } from "../../common/TokenTable";
+import { TokenTables } from "../../common/TokenTable";
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
@@ -35,7 +36,15 @@ export function Balances() {
       >
         <TransferWidget />
       </div>
-      <TokenTable blockchain={Blockchain.SOLANA} onClickRow={onClickTokenRow} />
+      <TokenTables
+        onClickRow={onClickTokenRow}
+        customFilter={(token) => {
+          if (token.mint && token.mint === SOL_NATIVE_MINT) {
+            return true;
+          }
+          return !token.nativeBalance.isZero();
+        }}
+      />
     </div>
   );
 }

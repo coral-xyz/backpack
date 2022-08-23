@@ -2,7 +2,7 @@ import { Suspense, useState } from "react";
 import { Typography, List, ListItem, IconButton } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, Check, Clear, Bolt } from "@mui/icons-material";
-import { explorerUrl } from "@coral-xyz/common";
+import { explorerUrl, Blockchain } from "@coral-xyz/common";
 import {
   useSolanaExplorer,
   useActiveWallet,
@@ -128,13 +128,25 @@ export function RecentActivityButton() {
 
 export function RecentActivity() {
   const wallet = useActiveWallet();
-  return <RecentActivityList address={wallet.publicKey.toString()} />;
+  // TODO multichain recent activity view
+  return (
+    <RecentActivityList
+      blockchain={Blockchain.SOLANA}
+      address={wallet.publicKey.toString()}
+    />
+  );
 }
 
-export function RecentActivityList({ address, style, minimize }: any) {
+export function RecentActivityList({
+  blockchain,
+  address,
+  style,
+  minimize,
+}: any) {
   return (
     <Suspense fallback={<RecentActivityLoading />}>
       <_RecentActivityList
+        blockchain={blockchain}
         style={style}
         address={address}
         minimize={minimize}
@@ -144,7 +156,6 @@ export function RecentActivityList({ address, style, minimize }: any) {
 }
 
 function RecentActivityLoading() {
-  const classes = useStyles();
   return (
     <div
       style={{
@@ -167,9 +178,13 @@ function RecentActivityLoading() {
   );
 }
 
-export function _RecentActivityList({ address, style, minimize }: any) {
-  const theme = useCustomTheme();
-  const transactions = useRecentTransactions(address);
+export function _RecentActivityList({
+  blockchain,
+  address,
+  style,
+  minimize,
+}: any) {
+  const transactions = useRecentTransactions(blockchain, address);
 
   if (!style) {
     style = {};
