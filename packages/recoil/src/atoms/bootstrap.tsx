@@ -7,7 +7,7 @@ import {
   UI_RPC_METHOD_NAVIGATION_READ,
 } from "@coral-xyz/common";
 import { SolanaTokenAccountWithKey } from "../types";
-import { fetchPriceData } from "./prices";
+import { fetchSolanaPriceData, fetchEthereumPriceData } from "./prices";
 import { recentTransactions } from "./recent-transactions";
 import { backgroundClient } from "./client";
 import { activeWalletsWithData } from "./wallet";
@@ -40,12 +40,26 @@ export const bootstrap = selector<{
     try {
       //
       // Fetch the price data.
-      // TODO add Ethereum pricing
       //
-      const coingeckoData = await fetchPriceData(
-        solanaData.splTokenAccounts,
-        tokenRegistry
-      );
+      // TODO it'd be nice if we could combine these two queries. The Ethereum
+      // token list doesn't have Coingecko IDs, so we need to fetch the IDs
+      // which is another query anyway.
+      //
+      const coingeckoData = await Promise.all([
+        fetchSolanaPriceData(solanaData.splTokenAccounts, tokenRegistry),
+        fetchEthereumPriceData(
+          // Contract addresses with non zero balances
+          [...ethereumData.ethTokenBalances.entries()]
+            .filter(
+              ([_, balance]) => balance && !BigNumber.from(balance).isZero()
+            )
+            .map(([address, _]) => address)
+        ),
+      ]).then(([solanaPrices, ethereumPrices]) => {
+        // This is a map of SPL token mint to price data or Ethereum contract
+        // to price data.
+        return new Map([...solanaPrices, ...ethereumPrices]);
+      });
       return {
         ...solanaData,
         ...ethereumData,
