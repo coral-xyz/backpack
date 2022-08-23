@@ -805,7 +805,7 @@ function SelectToken({
   const { close } = useDrawerContext();
 
   const onClickRow = (_blockchain: Blockchain, token: Token) => {
-    setMint(token.mint);
+    setMint(token.mint!);
     close();
   };
 
