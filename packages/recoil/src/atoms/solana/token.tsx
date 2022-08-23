@@ -1,136 +1,80 @@
 import { atomFamily, selectorFamily } from "recoil";
 import { ethers, BigNumber } from "ethers";
 import { TokenInfo } from "@solana/spl-token-registry";
-import { Blockchain, SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
+import { SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
 import { bootstrap } from "../bootstrap";
 import { priceData } from "../prices";
 import { splTokenRegistry } from "./token-registry";
-import { SolanaTokenAccountWithKey } from "../../types";
-import { activeWallet } from "../wallet";
+import { SolanaTokenAccountWithKey, TokenData } from "../../types";
 import { solanaConnectionUrl } from "./preferences";
 
-/**
- * Returns the token accounts sorted by usd notional balances.
- */
-export const blockchainTokensSorted = selectorFamily({
-  key: "blockchainTokensSorted",
+export const solanaTokenBalance = selectorFamily<TokenData | null, string>({
+  key: "solanaTokenBalance",
   get:
-    (blockchain: Blockchain) =>
-    ({ get }) => {
-      const tokenAddresses = get(blockchainTokens(blockchain));
-      const tokenAccounts = tokenAddresses
-        .map(
-          (address) =>
-            get(
-              blockchainTokenAccounts({
-                address,
-                blockchain,
-              })
-            )!
-        )
-        .filter(Boolean);
-      return tokenAccounts.sort((a, b) => b.usdBalance - a.usdBalance);
-    },
-});
-
-/**
- * Selects a blockchain token list based on a network string.
- */
-export const blockchainTokens = selectorFamily({
-  key: "blockchainTokens",
-  get:
-    (blockchain: Blockchain) =>
-    ({ get }) => {
-      switch (blockchain) {
-        case Blockchain.SOLANA:
-          return get(
-            solanaTokenAccountKeys({
-              connectionUrl: get(solanaConnectionUrl)!,
-              publicKey: get(activeWallet)!,
-            })
-          );
-        default:
-          throw new Error("invariant violation");
+    (address: string) =>
+    ({ get }: any) => {
+      const tokenAccount = get(
+        solanaTokenAccountsMap({
+          connectionUrl: get(solanaConnectionUrl)!,
+          tokenAddress: address,
+        })
+      );
+      if (!tokenAccount) {
+        return null;
       }
-    },
-});
+      //
+      // Token registry metadata.
+      //
+      const tokenRegistry = get(splTokenRegistry)!;
+      const tokenMetadata =
+        tokenRegistry.get(tokenAccount.mint.toString()) ?? ({} as TokenInfo);
+      const ticker = tokenMetadata.symbol;
+      const logo = tokenMetadata.logoURI;
+      const name = tokenMetadata.name;
 
-export const blockchainTokenAccounts = selectorFamily({
-  key: "blockchainTokenAccountsMap",
-  get:
-    ({ address, blockchain }: { address: string; blockchain: Blockchain }) =>
-    ({ get }) => {
-      switch (blockchain) {
-        case Blockchain.SOLANA:
-          const tokenAccount = get(
-            solanaTokenAccountsMap({
-              connectionUrl: get(solanaConnectionUrl)!,
-              tokenAddress: address,
-            })
-          );
-          if (!tokenAccount) {
-            return null;
-          }
-          //
-          // Token registry metadata.
-          //
-          const tokenRegistry = get(splTokenRegistry)!;
-          const tokenMetadata =
-            tokenRegistry.get(tokenAccount.mint.toString()) ??
-            ({} as TokenInfo);
-          const ticker = tokenMetadata.symbol;
-          const logo = tokenMetadata.logoURI;
-          const name = tokenMetadata.name;
+      //
+      // Price data.
+      //
 
-          //
-          // Price data.
-          //
+      // Use native SOL price for wSOL
+      const priceMint =
+        tokenAccount.mint.toString() === WSOL_MINT
+          ? SOL_NATIVE_MINT
+          : tokenAccount.mint.toString();
+      const price = get(priceData(priceMint)) as any;
+      const decimals = tokenMetadata.decimals;
+      // Convert from BN.js to ethers BigNumber
+      // https://github.com/ethers-io/ethers.js/issues/595
+      const nativeBalance = BigNumber.from(tokenAccount.amount.toString());
+      const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
+      const currentUsdBalance =
+        price && price.usd
+          ? price.usd * nativeBalance.div(10 ** decimals).toNumber()
+          : 0;
+      const oldUsdBalance =
+        currentUsdBalance === 0
+          ? 0
+          : currentUsdBalance / (1 + price.usd_24h_change);
+      const recentUsdBalanceChange =
+        (currentUsdBalance - oldUsdBalance) / oldUsdBalance;
+      const recentPercentChange = price
+        ? parseFloat(price.usd_24h_change.toFixed(2))
+        : undefined;
 
-          // Use native SOL price for wSOL
-          const priceMint =
-            tokenAccount.mint.toString() === WSOL_MINT
-              ? SOL_NATIVE_MINT
-              : tokenAccount.mint.toString();
-          const price = get(priceData(priceMint)) as any;
-          const decimals = tokenMetadata.decimals;
-          // Convert from BN.js to ethers BigNumber
-          // https://github.com/ethers-io/ethers.js/issues/595
-          const nativeBalance = BigNumber.from(tokenAccount.amount.toString());
-          const displayBalance = ethers.utils.formatUnits(
-            nativeBalance,
-            decimals
-          );
-          const currentUsdBalance =
-            price && price.usd
-              ? price.usd * nativeBalance.div(10 ** decimals).toNumber()
-              : 0;
-          const oldUsdBalance =
-            currentUsdBalance === 0
-              ? 0
-              : currentUsdBalance / (1 + price.usd_24h_change);
-          const recentUsdBalanceChange =
-            (currentUsdBalance - oldUsdBalance) / oldUsdBalance;
-          const recentPercentChange = price
-            ? parseFloat(price.usd_24h_change.toFixed(2))
-            : undefined;
-
-          return {
-            name,
-            decimals,
-            nativeBalance,
-            displayBalance,
-            ticker,
-            logo,
-            address,
-            mint: tokenAccount.mint.toString(),
-            usdBalance: currentUsdBalance,
-            recentPercentChange,
-            recentUsdBalanceChange,
-            priceData: price,
-          };
-        default:
-          throw new Error("invariant violation");
-      }
+      return {
+        name,
+        decimals,
+        nativeBalance,
+        displayBalance,
+        ticker,
+        logo,
+        address,
+        mint: tokenAccount.mint.toString(),
+        usdBalance: currentUsdBalance,
+        recentPercentChange,
+        recentUsdBalanceChange,
+        priceData: price,
+      } as TokenData;
     },
 });
 
@@ -139,7 +83,7 @@ export const blockchainTokenAccounts = selectorFamily({
  */
 export const solanaTokenAccountKeys = atomFamily<
   Array<string>,
-  { connectionUrl: string; publicKey: string }
+  { connectionUrl: string; publicKey: string | null }
 >({
   key: "solanaTokenAccountKeys",
   default: selectorFamily({

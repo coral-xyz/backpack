@@ -1,3 +1,4 @@
+export * from "./balance";
 export * from "./bootstrap";
 export * from "./keyring";
 export * from "./prices";

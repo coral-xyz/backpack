@@ -4,7 +4,7 @@ import * as atoms from "../../atoms";
 import { useActiveWallet } from "../wallet";
 
 export function useBlockchainTokens(blockchain: Blockchain) {
-  return useRecoilValue(atoms.blockchainTokens(blockchain));
+  return useRecoilValue(atoms.blockchainTokenAddresses(blockchain));
 }
 
 export function useBlockchainLogo(blockchain: Blockchain): string {
@@ -19,18 +19,18 @@ export function useBlockchainLogo(blockchain: Blockchain): string {
 }
 
 export function useSolanaBalance(): any {
-  return useRecoilValue(atoms.solanaBalance);
+  return useRecoilValue(atoms.blockchainTotalBalance(Blockchain.SOLANA));
 }
 
 export function useBlockchainTokenAccount(
   blockchain: Blockchain,
   address: string
 ): any {
-  return useRecoilValue(atoms.blockchainTokenAccounts({ blockchain, address }));
+  return useRecoilValue(atoms.blockchainTokenData({ blockchain, address }));
 }
 
 export function useBlockchainTokensSorted(blockchain: Blockchain) {
-  return useRecoilValue(atoms.blockchainTokensSorted(blockchain));
+  return useRecoilValue(atoms.blockchainBalancesSorted(blockchain));
 }
 
 export function useNftMetadata(): Map<string, any> {
