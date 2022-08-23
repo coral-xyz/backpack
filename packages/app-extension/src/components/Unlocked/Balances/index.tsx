@@ -2,8 +2,8 @@ import {
   toTitleCase,
   Blockchain,
   NAV_COMPONENT_TOKEN,
+  SOL_NATIVE_MINT,
 } from "@coral-xyz/common";
-import { ethers, BigNumber } from "ethers";
 import { useNavigation, useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import { TransferWidget } from "./TransferWidget";
 import { BalanceSummaryWidget } from "./BalanceSummaryWidget";
@@ -38,7 +38,12 @@ export function Balances() {
       </div>
       <TokenTables
         onClickRow={onClickTokenRow}
-        customFilter={(token) => !token.nativeBalance.isZero()}
+        customFilter={(token) => {
+          if (token.mint && token.mint === SOL_NATIVE_MINT) {
+            return true;
+          }
+          return !token.nativeBalance.isZero();
+        }}
       />
     </div>
   );
