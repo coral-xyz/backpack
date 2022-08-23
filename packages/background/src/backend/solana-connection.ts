@@ -79,13 +79,13 @@ const logger = getLogger("solana-connection-backend");
 export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
 export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;
 
-export function start(events: EventEmitter): Backend {
-  const b = new Backend(events);
+export function start(events: EventEmitter): SolanaConnectionBackend {
+  const b = new SolanaConnectionBackend(events);
   b.start();
   return b;
 }
 
-export class Backend {
+export class SolanaConnectionBackend {
   private cache = new Map<string, CachedValue<any>>();
   private connection?: Connection;
   private url?: string;

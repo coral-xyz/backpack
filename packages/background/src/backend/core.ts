@@ -34,21 +34,32 @@ import {
 import type { Nav } from "./store";
 import * as store from "./store";
 import { KeyringStore } from "./keyring";
-import type { Backend as SolanaConnectionBackend } from "./solana-connection";
+import type { SolanaConnectionBackend } from "./solana-connection";
+import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { getWalletData, setWalletData } from "./store";
 
-export function start(events: EventEmitter, solanaB: SolanaConnectionBackend) {
-  return new Backend(events, solanaB);
+export function start(
+  events: EventEmitter,
+  solanaB: SolanaConnectionBackend,
+  ethereumB: EthereumConnectionBackend
+) {
+  return new Backend(events, solanaB, ethereumB);
 }
 
 export class Backend {
   private keyringStore: KeyringStore;
   private solanaConnectionBackend: SolanaConnectionBackend;
+  private ethereumConnectionBackend: EthereumConnectionBackend;
   private events: EventEmitter;
 
-  constructor(events: EventEmitter, solanaB: SolanaConnectionBackend) {
+  constructor(
+    events: EventEmitter,
+    solanaB: SolanaConnectionBackend,
+    ethereumB: EthereumConnectionBackend
+  ) {
     this.keyringStore = new KeyringStore(events);
     this.solanaConnectionBackend = solanaB;
+    this.ethereumConnectionBackend = ethereumB;
     this.events = events;
   }
 

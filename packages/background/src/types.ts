@@ -2,6 +2,7 @@ export type Background = {
   _serverUi: Handle;
   _solanaConnection: Handle;
   _serverInjectedSolana?: Handle;
+  _ethereumConnection: Handle;
 };
 
 export type Config = {
