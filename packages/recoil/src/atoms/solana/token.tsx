@@ -28,9 +28,7 @@ export const solanaTokenBalance = selectorFamily<TokenData | null, string>({
       const tokenRegistry = get(splTokenRegistry)!;
       const tokenMetadata =
         tokenRegistry.get(tokenAccount.mint.toString()) ?? ({} as TokenInfo);
-      const ticker = tokenMetadata.symbol;
-      const logo = tokenMetadata.logoURI;
-      const name = tokenMetadata.name;
+      const { symbol: ticker, logoURI: logo, name, decimals } = tokenMetadata;
 
       //
       // Price data.
@@ -42,21 +40,16 @@ export const solanaTokenBalance = selectorFamily<TokenData | null, string>({
           ? SOL_NATIVE_MINT
           : tokenAccount.mint.toString();
       const price = get(priceData(priceMint)) as any;
-      const decimals = tokenMetadata.decimals;
       // Convert from BN.js to ethers BigNumber
       // https://github.com/ethers-io/ethers.js/issues/595
       const nativeBalance = BigNumber.from(tokenAccount.amount.toString());
       const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
-      const currentUsdBalance =
-        price && price.usd
-          ? price.usd * nativeBalance.div(10 ** decimals).toNumber()
-          : 0;
+      const usdBalance =
+        price && price.usd ? price.usd * parseFloat(displayBalance) : 0;
       const oldUsdBalance =
-        currentUsdBalance === 0
-          ? 0
-          : currentUsdBalance / (1 + price.usd_24h_change);
+        usdBalance === 0 ? 0 : usdBalance / (1 + price.usd_24h_change);
       const recentUsdBalanceChange =
-        (currentUsdBalance - oldUsdBalance) / oldUsdBalance;
+        (usdBalance - oldUsdBalance) / oldUsdBalance;
       const recentPercentChange = price
         ? parseFloat(price.usd_24h_change.toFixed(2))
         : undefined;
@@ -70,7 +63,7 @@ export const solanaTokenBalance = selectorFamily<TokenData | null, string>({
         logo,
         address,
         mint: tokenAccount.mint.toString(),
-        usdBalance: currentUsdBalance,
+        usdBalance,
         recentPercentChange,
         recentUsdBalanceChange,
         priceData: price,
