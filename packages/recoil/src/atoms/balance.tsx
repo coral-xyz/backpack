@@ -2,8 +2,6 @@ import { selectorFamily } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
 import { solanaTokenBalance, solanaTokenAccountKeys } from "./solana/token";
 import { solanaConnectionUrl } from "./solana";
-import { ethereumTokenBalance } from "./ethereum/token";
-import { ethereumTokenMetadata } from "./ethereum/token-metadata";
 import { activeWallet } from "./wallet";
 import { TokenData } from "../types";
 
@@ -48,8 +46,6 @@ export const blockchainTokenData = selectorFamily<
       switch (blockchain) {
         case Blockchain.SOLANA:
           return get(solanaTokenBalance(address));
-        case Blockchain.ETHEREUM:
-          return get(ethereumTokenBalance(address));
         default:
           throw new Error("invariant violation");
       }
@@ -72,9 +68,6 @@ export const blockchainTokenAddresses = selectorFamily({
               publicKey: get(activeWallet),
             })
           );
-        case Blockchain.ETHEREUM:
-          const ethTokenMetadata = get(ethereumTokenMetadata);
-          return [...ethTokenMetadata.values()].map((t) => t.address);
         default:
           throw new Error("invariant violation");
       }
