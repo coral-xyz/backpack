@@ -8,7 +8,7 @@ import { Deposit } from "./TokensWidget/Deposit";
 import { Send, Send as TokenSend } from "./TokensWidget/Send";
 import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
-import { SearchableTokenTable } from "../../common/TokenTable";
+import { SearchableTokenTables } from "../../common/TokenTable";
 
 export function TransferWidget({
   blockchain,
@@ -167,8 +167,7 @@ function SendToken() {
   };
 
   return (
-    <SearchableTokenTable
-      blockchain={Blockchain.SOLANA}
+    <SearchableTokenTables
       onClickRow={onClickRow}
       customFilter={(token: Token) => !token.nativeBalance.isZero()}
     />

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FixedSizeList as WindowedList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { styles } from "@coral-xyz/themes";
-import { Blockchain } from "@coral-xyz/common";
+import { Blockchain, toTitleCase } from "@coral-xyz/common";
 import {
   TextField,
   BalancesTable,
@@ -12,6 +12,7 @@ import {
   BalancesTableCell,
 } from "@coral-xyz/react-xnft-renderer";
 import {
+  useActiveWallets,
   useBlockchainLogo,
   useBlockchainTokensSorted,
 } from "@coral-xyz/recoil";
@@ -37,6 +38,37 @@ const useStyles = styles((theme) => ({
     },
   },
 }));
+
+export function SearchableTokenTables({
+  onClickRow,
+  customFilter = () => true,
+}: {
+  onClickRow: (blockchain: Blockchain, token: Token) => void;
+  customFilter: (token: Token) => boolean;
+}) {
+  const classes = useStyles();
+  const [searchFilter, setSearchFilter] = useState("");
+  return (
+    <>
+      <TextField
+        placeholder={"Search"}
+        value={searchFilter}
+        setValue={setSearchFilter}
+        rootClass={classes.searchField}
+        inputProps={{
+          style: {
+            height: "48px",
+          },
+        }}
+      />
+      <TokenTables
+        searchFilter={searchFilter}
+        onClickRow={onClickRow}
+        customFilter={customFilter}
+      />
+    </>
+  );
+}
 
 export function SearchableTokenTable({
   blockchain,
@@ -75,6 +107,40 @@ export function SearchableTokenTable({
   );
 }
 
+export function TokenTables({
+  blockchains,
+  onClickRow,
+  searchFilter = "",
+  customFilter = () => true,
+}: {
+  blockchains?: Array<Blockchain>;
+  onClickRow: (blockchain: Blockchain, token: Token) => void;
+  searchFilter?: string;
+  customFilter?: (token: Token) => boolean;
+}) {
+  const activeWallets = useActiveWallets();
+  const availableBlockchains = [
+    ...new Set(activeWallets.map((a: any) => a.blockchain)),
+  ];
+  const filteredBlockchains =
+    blockchains?.filter((b) => availableBlockchains.includes(b)) ||
+    availableBlockchains;
+
+  return (
+    <>
+      {filteredBlockchains.map((blockchain) => (
+        <TokenTable
+          key={blockchain}
+          blockchain={blockchain}
+          onClickRow={onClickRow}
+          searchFilter={searchFilter}
+          customFilter={customFilter}
+        />
+      ))}
+    </>
+  );
+}
+
 export function TokenTable({
   blockchain,
   onClickRow,
@@ -88,7 +154,7 @@ export function TokenTable({
   searchFilter?: string;
   customFilter?: (token: Token) => boolean;
 }) {
-  const title = "Tokens";
+  const title = toTitleCase(blockchain);
   const blockchainLogo = useBlockchainLogo(blockchain);
   const tokenAccountsSorted = tokenAccounts
     ? tokenAccounts
@@ -145,7 +211,7 @@ export function TokenTable({
           <>
             {tokenAccountsFiltered.map((token: any) => (
               <TokenRow
-                key={token.mint}
+                key={token.address}
                 token={token}
                 onClick={(token) => onClickRow(blockchain, token)}
               />

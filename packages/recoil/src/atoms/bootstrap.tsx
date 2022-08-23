@@ -34,12 +34,9 @@ export const bootstrap = selector<{
 }>({
   key: "bootstrap",
   get: async ({ get }: any) => {
-    const [ethereumData, solanaData] = await Promise.all([
-      get(ethereumBootstrap),
-      get(solanaBootstrap),
-    ]);
-
-    const tokenRegistry = await get(splTokenRegistry);
+    const ethereumData = get(ethereumBootstrap);
+    const solanaData = get(solanaBootstrap);
+    const tokenRegistry = get(splTokenRegistry);
 
     try {
       //
@@ -77,8 +74,8 @@ export const ethereumBootstrap = selector<{
   ethTokenMetadata: Map<string, any>;
 }>({
   key: "ethereumBootstrap",
-  get: async ({ get }: any) => {
-    const activeWallets = await get(activeWalletsWithData);
+  get: ({ get }: any) => {
+    const activeWallets = get(activeWalletsWithData);
     const publicKey =
       activeWallets.find((w: any) => w!.blockchain === Blockchain.ETHEREUM)
         ?.publicKey ?? null;
@@ -94,28 +91,26 @@ export const ethereumBootstrap = selector<{
       return defaultReturn;
     }
 
-    try {
-      const ethTokenMetadata = await get(ethereumTokenMetadata);
-      const ethTokenAddresses = [...ethTokenMetadata.values()].map(
-        (token) => token.address
-      );
-      const ethTokenBalances = await get(
-        ethereumTokenBalances({
-          contractAddresses: ethTokenAddresses,
-          publicKey,
-        })
-      );
-      return {
-        activePublicKey: publicKey,
-        ethTokenAddresses,
-        ethTokenBalances,
-        ethTokenMetadata,
-      };
-    } catch (err) {
-      // TODO: show error notification.
-      console.error("ethereum bootstrap error", err);
+    const ethTokenMetadata = get(ethereumTokenMetadata);
+    if (!ethTokenMetadata) {
       return defaultReturn;
     }
+
+    const ethTokenAddresses = [...ethTokenMetadata.values()].map(
+      (token) => token.address
+    );
+    const ethTokenBalances = get(
+      ethereumTokenBalances({
+        contractAddresses: ethTokenAddresses,
+        publicKey,
+      })
+    );
+    return {
+      activePublicKey: publicKey,
+      ethTokenAddresses,
+      ethTokenBalances,
+      ethTokenMetadata,
+    };
   },
 });
 
@@ -130,7 +125,7 @@ export const solanaBootstrap = selector<{
 }>({
   key: "solanaBootstrap",
   get: async ({ get }: any) => {
-    const activeWallets = await get(activeWalletsWithData);
+    const activeWallets = get(activeWalletsWithData);
     const publicKey =
       activeWallets.find((w: any) => w.blockchain === Blockchain.SOLANA)
         ?.publicKey ?? null;

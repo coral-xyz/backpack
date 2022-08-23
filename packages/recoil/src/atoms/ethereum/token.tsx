@@ -21,8 +21,9 @@ export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
         data.ethTokenMetadata.get(contractAddress) ?? ({} as TokenInfo);
       const { symbol: ticker, logoURI: logo, name, decimals } = tokenMetadata;
 
-      const nativeBalance =
-        data.ethTokenBalances.get(contractAddress) ?? BigNumber.from(0);
+      const nativeBalance = data.ethTokenBalances.get(contractAddress)
+        ? BigNumber.from(data.ethTokenBalances.get(contractAddress))
+        : BigNumber.from(0);
       const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
 
       // TODO pricing

@@ -74,7 +74,9 @@ export const blockchainTokenAddresses = selectorFamily({
           );
         case Blockchain.ETHEREUM:
           const ethTokenMetadata = get(ethereumTokenMetadata);
-          return [...ethTokenMetadata.values()].map((t) => t.address);
+          return ethTokenMetadata
+            ? [...ethTokenMetadata.values()].map((t) => t.address)
+            : [];
         default:
           throw new Error("invariant violation");
       }
