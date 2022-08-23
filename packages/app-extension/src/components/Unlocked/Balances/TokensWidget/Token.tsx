@@ -66,6 +66,7 @@ export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
     >
       <TokenHeader blockchain={blockchain} address={address} />
       <RecentActivityList
+        blockchain={blockchain}
         address={address}
         minimize={true}
         style={{ marginTop: 0 }}

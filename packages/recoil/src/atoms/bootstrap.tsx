@@ -11,7 +11,6 @@ import { fetchPriceData } from "./prices";
 import { backgroundClient } from "./client";
 import { activeWalletsWithData } from "./wallet";
 import { anchorContext } from "./solana/wallet";
-import { fetchRecentTransactions } from "./solana/recent-transactions";
 import { splTokenRegistry } from "./solana/token-registry";
 import { fetchJupiterRouteMap } from "./solana/jupiter";
 import { ethereumTokenMetadata } from "./ethereum/token-metadata";
@@ -28,7 +27,6 @@ export const bootstrap = selector<{
   splTokenMetadata: Array<any>;
   splNftMetadata: Map<string, any>;
   coingeckoData: Map<string, any>;
-  recentTransactions: Array<ParsedConfirmedTransaction>;
   jupiterRouteMap: Promise<any>;
   xnfts: Array<any>;
 }>({
@@ -68,7 +66,7 @@ export const bootstrap = selector<{
 });
 
 export const ethereumBootstrap = selector<{
-  activePublicKey: string | null;
+  ethActivePublicKey: string | null;
   ethTokenBalances: Map<string, BigNumber>;
   ethTokenAddresses: Array<string>;
   ethTokenMetadata: Map<string, any>;
@@ -81,7 +79,7 @@ export const ethereumBootstrap = selector<{
         ?.publicKey ?? null;
 
     const defaultReturn = {
-      activePublicKey: null,
+      ethActivePublicKey: null,
       ethTokenAddresses: [],
       ethTokenBalances: new Map(),
       ethTokenMetadata: new Map(),
@@ -106,7 +104,7 @@ export const ethereumBootstrap = selector<{
       })
     );
     return {
-      activePublicKey: publicKey,
+      ethActivePublicKey: publicKey,
       ethTokenAddresses,
       ethTokenBalances,
       ethTokenMetadata,
@@ -115,11 +113,10 @@ export const ethereumBootstrap = selector<{
 });
 
 export const solanaBootstrap = selector<{
-  activePublicKey: string | null;
+  solActivePublicKey: string | null;
   splTokenAccounts: Map<string, SolanaTokenAccountWithKey>;
   splTokenMetadata: Array<any>;
   splNftMetadata: Map<string, any>;
-  recentTransactions: Promise<any>;
   jupiterRouteMap: Promise<any>;
   xnfts: any;
 }>({
@@ -131,11 +128,10 @@ export const solanaBootstrap = selector<{
         ?.publicKey ?? null;
 
     const defaultReturn = {
-      activePublicKey: null,
+      solActivePublicKey: null,
       splTokenAccounts: new Map(),
       splTokenMetadata: [],
       splNftMetadata: new Map(),
-      recentTransactions: Promise.resolve([]),
       jupiterRouteMap: Promise.resolve({}),
       xnfts: [],
     };
@@ -162,14 +158,6 @@ export const solanaBootstrap = selector<{
     );
 
     //
-    // Fetch recent transactions immediately but don't block.
-    //
-    const fetchRecentTransactionsPromise = fetchRecentTransactions(
-      provider.connection,
-      publicKey
-    );
-
-    //
     // Perform data fetch.
     //
     try {
@@ -185,11 +173,10 @@ export const solanaBootstrap = selector<{
       // Done.
       //
       return {
-        activePublicKey: publicKey,
+        solActivePublicKey: publicKey,
         splTokenAccounts,
         splTokenMetadata: tokenMetadata,
         splNftMetadata: new Map(nftMetadata),
-        recentTransactions: fetchRecentTransactionsPromise,
         jupiterRouteMap,
         xnfts: fetchXnftsPromise,
       };
