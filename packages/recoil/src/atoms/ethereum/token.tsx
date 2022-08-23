@@ -19,10 +19,7 @@ export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
 
       const tokenMetadata =
         data.ethTokenMetadata.get(contractAddress) ?? ({} as TokenInfo);
-      const ticker = tokenMetadata.symbol;
-      const logo = tokenMetadata.logoURI;
-      const name = tokenMetadata.name;
-      const decimals = tokenMetadata.decimals;
+      const { symbol: ticker, logoURI: logo, name, decimals } = tokenMetadata;
 
       const nativeBalance =
         data.ethTokenBalances.get(contractAddress) ?? BigNumber.from(0);
@@ -66,6 +63,15 @@ export const ethereumTokenBalances = atomFamily<
         publicKey: string;
       }) =>
       async ({ get }) => {
+        //
+        // Use a multicall contract to load Ethereum balances.
+        // There might be other more performant options if this needs improving:
+        //
+        // - GraphQL API on Ethereum node
+        // - Alchemy extended API methods
+        // - Other APIs (e.g. Etherscan)
+        // - Custom infrastructure
+        //
         const provider = get(ethersContext).provider;
 
         const multicall = new Multicall({
