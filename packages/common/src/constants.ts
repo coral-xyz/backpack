@@ -119,9 +119,10 @@ export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
 export const UI_RPC_METHOD_LEDGER_IMPORT = "ledger-import";
 export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET = "plugin-storage-get";
 export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT = "plugin-storage-put";
-export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ = "connection-url-read";
+export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ =
+  "solana-connection-url-read";
 export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE =
-  "connection-url-update";
+  "solana-connection-url-update";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ = "solana-commitment-read";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE =
   "solana-commitment-update";
