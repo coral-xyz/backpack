@@ -1184,6 +1184,11 @@ type CircleProps = {
   cy: string;
   r: string;
   fill: string;
+  stroke: string;
+  strokeWidth: string;
+  pathLength: string;
+  strokeDasharray: string;
+  strokeDashoffset: string;
 };
 
 //

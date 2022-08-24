@@ -315,7 +315,19 @@ function Path({ props }: any) {
 }
 
 function Circle({ props }: any) {
-  return <circle cx={props.cx} cy={props.cy} r={props.r} fill={props.fill} />;
+  return (
+    <circle
+      cx={props.cx}
+      cy={props.cy}
+      r={props.r}
+      fill={props.fill}
+      stroke={props.stroke}
+      stroke-width={props.strokeWidth}
+      pathLength={props.pathLength}
+      stroke-dasharray={props.strokeDasharray}
+      stroke-dashoffset={props.strokeDashoffset}
+    />
+  );
 }
 
 function Iframe({ props, style }: any) {
