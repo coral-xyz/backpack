@@ -1,5 +1,7 @@
+import { ethers } from "ethers";
 import type { Notification, EventEmitter } from "@coral-xyz/common";
 import {
+  ethereumBalances,
   getLogger,
   Blockchain,
   BACKEND_EVENT,
@@ -26,6 +28,7 @@ export class EthereumConnectionBackend {
   private url?: string;
   private pollIntervals: Array<any>;
   private events: EventEmitter;
+  private provider?: ethers.providers.Provider;
 
   constructor(events: EventEmitter) {
     this.pollIntervals = [];
@@ -72,6 +75,9 @@ export class EthereumConnectionBackend {
 
     const handleKeyringStoreUnlocked = (notif: Notification) => {
       const { blockchainActiveWallets, ethereumConnectionUrl } = notif.data;
+      this.provider = new ethers.providers.JsonRpcProvider(
+        ethereumConnectionUrl
+      );
       this.url = ethereumConnectionUrl;
       const activeWallet = blockchainActiveWallets[Blockchain.ETHEREUM];
       if (activeWallet) {
@@ -91,6 +97,7 @@ export class EthereumConnectionBackend {
 
     const handleConnectionUrlUpdated = (notif: Notification) => {
       const { activeWallet, url } = notif.data;
+      this.provider = new ethers.providers.JsonRpcProvider(url);
       this.url = url;
       this.stopPolling();
       this.startPolling(activeWallet);
@@ -104,7 +111,7 @@ export class EthereumConnectionBackend {
   private async startPolling(activeWallet: string) {
     this.pollIntervals.push(
       setInterval(async () => {
-        const data = {};
+        const data = await ethereumBalances(this.provider!, [], activeWallet);
         const key = JSON.stringify({
           url: this.url,
           method: "ethereumTokens",
@@ -117,10 +124,9 @@ export class EthereumConnectionBackend {
         this.events.emit(BACKEND_EVENT, {
           name: NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
           data: {
+            connectionUrl: this.url,
             publicKey: activeWallet,
-            ethereumTokens: {
-              ...data,
-            },
+            balances: data,
           },
         });
       }, ETHEREUM_TOKENS_REFRESH_INTERVAL)

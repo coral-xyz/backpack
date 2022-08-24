@@ -26,8 +26,14 @@ import {
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
+  NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
 } from "@coral-xyz/common";
-import { KeyringStoreStateEnum, useUpdateAllSplTokenAccounts } from "../";
+import {
+  KeyringStoreStateEnum,
+  useUpdateEthereumBalances,
+  useUpdateAllSplTokenAccounts,
+} from "../";
 import * as atoms from "../atoms";
 import { allPlugins } from "../hooks";
 import { WalletPublicKeys } from "../types";
@@ -50,6 +56,10 @@ export function NotificationsProvider(props: any) {
   const setSolanaConnectionUrl = useSetRecoilState(atoms.solanaConnectionUrl);
   const setSolanaExplorer = useSetRecoilState(atoms.solanaExplorer);
   const setSolanaCommitment = useSetRecoilState(atoms.solanaCommitment);
+  const setEthereumConnectionUrl = useSetRecoilState(
+    atoms.ethereumConnectionUrl
+  );
+  const updateEthereumBalances = useUpdateEthereumBalances();
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   const navigate = useNavigate();
 
@@ -121,6 +131,12 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
           handleEthereumActiveWalletUpdated(notif);
+          break;
+        case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
+          handleEthereumConnectionUrlUpdated(notif);
+          break;
+        case NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE:
+          handleEthereumTokensDidUpdate(notif);
           break;
         default:
           break;
@@ -260,11 +276,6 @@ export function NotificationsProvider(props: any) {
       setActiveWallets(notif.data.activeWallets);
     };
 
-    const handleEthereumActiveWalletUpdated = (notif: Notification) => {
-      setActiveWallet(notif.data.activeWallet);
-      setActiveWallets(notif.data.activeWallets);
-    };
-
     const handleResetMnemonic = (notif: Notification) => {
       // TODO.
     };
@@ -318,6 +329,24 @@ export function NotificationsProvider(props: any) {
           tokenAccounts: result.tokenAccountsMap.map((t: any) => t[1]),
         },
       });
+    };
+
+    const handleEthereumActiveWalletUpdated = (notif: Notification) => {
+      setActiveWallet(notif.data.activeWallet);
+      setActiveWallets(notif.data.activeWallets);
+    };
+
+    const handleEthereumTokensDidUpdate = (notif: Notification) => {
+      const { connectionUrl, activeWallet, balances } = notif.data;
+      updateEthereumBalances({
+        connectionUrl,
+        publicKey: activeWallet,
+        balances,
+      });
+    };
+
+    const handleEthereumConnectionUrlUpdated = (notif: Notification) => {
+      setEthereumConnectionUrl(notif.data.url);
     };
 
     //

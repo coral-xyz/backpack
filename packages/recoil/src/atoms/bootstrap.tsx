@@ -16,13 +16,13 @@ import { splTokenRegistry } from "./solana/token-registry";
 import { fetchJupiterRouteMap } from "./solana/jupiter";
 import { ethereumTokenMetadata } from "./ethereum/token-metadata";
 import { ethereumTokenBalances } from "./ethereum/token";
+import { ethereumConnectionUrl } from "./ethereum/preferences";
 
 /**
  * Defines the initial app load fetch.
  */
 export const bootstrap = selector<{
   ethTokenBalances: Map<string, BigNumber>;
-  ethTokenAddresses: Array<string>;
   ethTokenMetadata: Map<string, any>;
   splTokenAccounts: Map<string, SolanaTokenAccountWithKey>;
   splTokenMetadata: Array<any>;
@@ -71,7 +71,6 @@ export const bootstrap = selector<{
 export const ethereumBootstrap = selector<{
   ethActivePublicKey: string | null;
   ethTokenBalances: Map<string, BigNumber>;
-  ethTokenAddresses: Array<string>;
   ethTokenMetadata: Map<string, any>;
 }>({
   key: "ethereumBootstrap",
@@ -83,7 +82,6 @@ export const ethereumBootstrap = selector<{
 
     const defaultReturn = {
       ethActivePublicKey: null,
-      ethTokenAddresses: [],
       ethTokenBalances: new Map(),
       ethTokenMetadata: new Map(),
     };
@@ -97,18 +95,14 @@ export const ethereumBootstrap = selector<{
       return defaultReturn;
     }
 
-    const ethTokenAddresses = [...ethTokenMetadata.values()].map(
-      (token) => token.address
-    );
     const ethTokenBalances = get(
       ethereumTokenBalances({
-        contractAddresses: ethTokenAddresses,
+        connectionUrl: get(ethereumConnectionUrl),
         publicKey,
       })
     );
     return {
       ethActivePublicKey: publicKey,
-      ethTokenAddresses,
       ethTokenBalances,
       ethTokenMetadata,
     };

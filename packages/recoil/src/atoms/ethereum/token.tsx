@@ -1,11 +1,12 @@
 import { atomFamily, selectorFamily } from "recoil";
 import { ethers, BigNumber } from "ethers";
 import { TokenInfo } from "@solana/spl-token-registry";
-import { ethereumBalances } from "@coral-xyz/common";
+import { ethereumBalances, Blockchain } from "@coral-xyz/common";
 import { ethersContext } from "./provider";
 import { bootstrap } from "../bootstrap";
 import { TokenData } from "../../types";
 import { priceData } from "../prices";
+import { blockchainTokenAddresses } from "../balance";
 
 export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
   key: "ethereumTokenBalance",
@@ -51,21 +52,24 @@ export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
 
 export const ethereumTokenBalances = atomFamily<
   Map<string, BigNumber>,
-  { contractAddresses: string[]; publicKey: string }
+  { connectionUrl: string; publicKey: string }
 >({
   key: "ethereumTokenBalances",
   default: selectorFamily({
     key: "ethereumTokenBalancesDefault",
     get:
       ({
-        contractAddresses,
+        connectionUrl,
         publicKey,
       }: {
-        contractAddresses: Array<string>;
+        connectionUrl: string;
         publicKey: string;
       }) =>
       async ({ get }) => {
         const provider = get(ethersContext).provider;
+        const contractAddresses: string[] = get(
+          blockchainTokenAddresses(Blockchain.ETHEREUM)
+        );
         return ethereumBalances(provider, contractAddresses, publicKey);
       },
   }),
