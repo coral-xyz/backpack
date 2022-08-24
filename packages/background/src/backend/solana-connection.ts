@@ -136,16 +136,21 @@ export class SolanaConnectionBackend {
     };
 
     const handleKeyringStoreUnlocked = (notif: Notification) => {
-      const { activeBlockchain, activeWallet, url, commitment } = notif.data;
-      if (activeBlockchain === Blockchain.SOLANA) {
-        this.connection = new Connection(url, commitment);
-        this.url = url;
-        this.hookRpcRequest();
+      const { blockchainActiveWallets, solanaConnectionUrl, solanaCommitment } =
+        notif.data;
+
+      this.connection = new Connection(solanaConnectionUrl, solanaCommitment);
+      this.url = solanaConnectionUrl;
+
+      this.hookRpcRequest();
+
+      const activeWallet = blockchainActiveWallets[Blockchain.SOLANA];
+      if (activeWallet) {
         this.startPolling(new PublicKey(activeWallet));
       }
     };
 
-    const handleKeyringStoreLocked = (notif: Notification) => {
+    const handleKeyringStoreLocked = (_notif: Notification) => {
       this.stopPolling();
     };
 

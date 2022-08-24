@@ -295,18 +295,23 @@ export class Backend {
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
 
-    const activeBlockchain = this.activeBlockchain();
-    const activeWallet = await this.activeWallet();
-    const url = await this.solanaConnectionUrlRead();
-    const commitment = await this.solanaCommitmentRead();
+    // Map of blockchain to the active public key for that blockchain.
+    const blockchainActiveWallets = Object.fromEntries(
+      (await this.activeWallets()).map((publicKey) => {
+        return [this.keyringStore.blockchainForPublicKey(publicKey), publicKey];
+      })
+    );
+    const ethereumConnectionUrl = await this.ethereumConnectionUrlRead();
+    const solanaConnectionUrl = await this.solanaConnectionUrlRead();
+    const solanaCommitment = await this.solanaCommitmentRead();
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
       data: {
-        activeBlockchain,
-        activeWallet,
-        url,
-        commitment,
+        blockchainActiveWallets,
+        ethereumConnectionUrl,
+        solanaConnectionUrl,
+        solanaCommitment,
       },
     });
 

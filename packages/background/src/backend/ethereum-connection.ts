@@ -11,7 +11,7 @@ import {
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
 } from "@coral-xyz/common";
 
-const logger = getLogger("solana-connection-backend");
+const logger = getLogger("ethereum-connection-backend");
 
 export const ETHEREUM_TOKENS_REFRESH_INTERVAL = 10 * 1000;
 
@@ -23,6 +23,7 @@ export function start(events: EventEmitter): EthereumConnectionBackend {
 
 export class EthereumConnectionBackend {
   private cache = new Map<string, CachedValue<any>>();
+  private url?: string;
   private pollIntervals: Array<any>;
   private events: EventEmitter;
 
@@ -70,13 +71,15 @@ export class EthereumConnectionBackend {
     };
 
     const handleKeyringStoreUnlocked = (notif: Notification) => {
-      const { activeBlockchain, activeWallet, url } = notif.data;
-      if (activeBlockchain === Blockchain.ETHEREUM) {
+      const { blockchainActiveWallets, ethereumConnectionUrl } = notif.data;
+      this.url = ethereumConnectionUrl;
+      const activeWallet = blockchainActiveWallets[Blockchain.ETHEREUM];
+      if (activeWallet) {
         this.startPolling(activeWallet);
       }
     };
 
-    const handleKeyringStoreLocked = (notif: Notification) => {
+    const handleKeyringStoreLocked = (_notif: Notification) => {
       this.stopPolling();
     };
 
@@ -88,6 +91,7 @@ export class EthereumConnectionBackend {
 
     const handleConnectionUrlUpdated = (notif: Notification) => {
       const { activeWallet, url } = notif.data;
+      this.url = url;
       this.stopPolling();
       this.startPolling(activeWallet);
     };
@@ -102,6 +106,7 @@ export class EthereumConnectionBackend {
       setInterval(async () => {
         const data = {};
         const key = JSON.stringify({
+          url: this.url,
           method: "ethereumTokens",
           args: [activeWallet.toString()],
         });
