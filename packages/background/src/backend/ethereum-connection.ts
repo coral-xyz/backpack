@@ -115,7 +115,7 @@ export class EthereumConnectionBackend {
         const key = JSON.stringify({
           url: this.url,
           method: "ethereumTokens",
-          args: [activeWallet.toString()],
+          args: [activeWallet],
         });
         this.cache.set(key, {
           ts: Date.now(),
@@ -125,7 +125,7 @@ export class EthereumConnectionBackend {
           name: NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
           data: {
             connectionUrl: this.url,
-            publicKey: activeWallet,
+            activeWallet,
             balances: data,
           },
         });
