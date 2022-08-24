@@ -64,7 +64,9 @@ export async function send(
   const { blockhash } = await connection!.getLatestBlockhash(
     options?.preflightCommitment
   );
-  tx.feePayer = publicKey;
+  if (!tx.feePayer) {
+    tx.feePayer = publicKey;
+  }
   tx.recentBlockhash = blockhash;
   const txSerialize = tx.serialize({
     requireAllSignatures: false,
@@ -81,7 +83,9 @@ export async function signTransaction(
   requestManager: RequestManager,
   tx: Transaction
 ): Promise<Transaction> {
-  tx.feePayer = publicKey;
+  if (!tx.feePayer) {
+    tx.feePayer = publicKey;
+  }
   const txStr = encode(tx.serialize({ requireAllSignatures: false }));
   const signature = await requestManager.request({
     method: SOLANA_RPC_METHOD_SIGN_TX,
@@ -131,7 +135,9 @@ export async function simulate(
     });
   }
   const { blockhash } = await connection!.getLatestBlockhash(commitment);
-  tx.feePayer = publicKey;
+  if (!tx.feePayer) {
+    tx.feePayer = publicKey;
+  }
   tx.recentBlockhash = blockhash;
   const txSerialize = tx.serialize({
     requireAllSignatures: false,
