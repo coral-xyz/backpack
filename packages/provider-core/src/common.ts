@@ -27,6 +27,13 @@ export async function sendAndConfirm(
   signers?: Signer[],
   options?: ConfirmOptions
 ): Promise<TransactionSignature> {
+  if (!tx.recentBlockhash) {
+    const { blockhash } = await connection!.getLatestBlockhash(
+      options?.preflightCommitment
+    );
+    tx.recentBlockhash = blockhash;
+  }
+
   const [signature, { blockhash, lastValidBlockHeight }] = await Promise.all([
     send(publicKey, requestManager, connection, tx, signers, options),
     connection.getLatestBlockhash(options?.preflightCommitment),
@@ -61,13 +68,15 @@ export async function send(
       tx.partialSign(s);
     });
   }
-  const { blockhash } = await connection!.getLatestBlockhash(
-    options?.preflightCommitment
-  );
   if (!tx.feePayer) {
     tx.feePayer = publicKey;
   }
-  tx.recentBlockhash = blockhash;
+  if (!tx.recentBlockhash) {
+    const { blockhash } = await connection!.getLatestBlockhash(
+      options?.preflightCommitment
+    );
+    tx.recentBlockhash = blockhash;
+  }
   const txSerialize = tx.serialize({
     requireAllSignatures: false,
   });
@@ -134,11 +143,13 @@ export async function simulate(
       tx.partialSign(s);
     });
   }
-  const { blockhash } = await connection!.getLatestBlockhash(commitment);
   if (!tx.feePayer) {
     tx.feePayer = publicKey;
   }
-  tx.recentBlockhash = blockhash;
+  if (!tx.recentBlockhash) {
+    const { blockhash } = await connection!.getLatestBlockhash(commitment);
+    tx.recentBlockhash = blockhash;
+  }
   const txSerialize = tx.serialize({
     requireAllSignatures: false,
   });
