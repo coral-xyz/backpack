@@ -18,7 +18,7 @@ export const useUpdateEthereumBalances = () =>
             connectionUrl,
             publicKey,
           }),
-          balances
+          new Map(Object.entries(balances))
         );
       }
   );
