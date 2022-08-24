@@ -186,7 +186,7 @@ function SignTransaction({
   plugin: Plugin;
 }) {
   const deserializedTx = useMemo(() => {
-    return Transaction.populate(Message.from(bs58.decode(transaction!)));
+    return Transaction.from(bs58.decode(transaction!));
   }, [transaction]);
 
   return (
