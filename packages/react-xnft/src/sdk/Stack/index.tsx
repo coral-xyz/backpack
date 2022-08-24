@@ -20,12 +20,14 @@ function Navigator({
   children,
   options,
   style,
+  titleStyle,
   navButtonRight,
 }: {
   initialRoute: { name: string; props?: any };
   children: any;
   options: NavStackOptions;
   style?: React.CSSProperties;
+  titleStyle?: React.CSSProperties;
   navButtonRight?: React.ReactNode;
 }) {
   const isArray = children && children.length !== undefined;
@@ -35,6 +37,7 @@ function Navigator({
     <NavStackProvider
       initialRoute={initialRoute}
       style={style}
+      titleStyle={titleStyle}
       navButtonRight={navButtonRight}
     >
       <NavStackInner navScreens={navScreens} options={options} />
@@ -49,8 +52,16 @@ function NavStackInner({
   navScreens: any;
   options: NavStackOptions;
 }) {
-  let { isRoot, activeRoute, pop, navButtonRight, title, style, contentStyle } =
-    useNavigation();
+  let {
+    isRoot,
+    activeRoute,
+    pop,
+    navButtonRight,
+    title,
+    style,
+    contentStyle,
+    titleStyle,
+  } = useNavigation();
 
   const navButtonLeft = isRoot ? null : <NavBackButton onClick={() => pop()} />;
   const activeScreen = navScreens.find(
@@ -71,6 +82,7 @@ function NavStackInner({
         navButtonLeft={navButtonLeft}
         navButtonRight={navButtonRight}
         navbarStyle={style}
+        navbarTitleStyle={titleStyle}
         navContentStyle={contentStyle}
       >
         {activeScreen.props.component({ ...(activeRoute.props ?? {}) })}
@@ -90,6 +102,7 @@ function WithNav({
   navButtonRight,
   children,
   navbarStyle = {},
+  navbarTitleStyle = {},
   navContentStyle = {},
 }: {
   title?: string;
@@ -97,6 +110,7 @@ function WithNav({
   navButtonRight?: React.ReactNode;
   children?: React.ReactNode;
   navbarStyle?: React.CSSProperties;
+  navbarTitleStyle?: React.CSSProperties;
   navContentStyle?: React.CSSProperties;
 }) {
   return (
@@ -106,6 +120,7 @@ function WithNav({
         navButtonLeft={navButtonLeft}
         navButtonRight={navButtonRight}
         style={navbarStyle}
+        titleStyle={navbarTitleStyle}
       />
       <NavContent style={navContentStyle} renderComponent={children} />
     </View>
@@ -117,11 +132,13 @@ function NavBar({
   navButtonLeft,
   navButtonRight,
   style = {},
+  titleStyle = {},
 }: {
   title: string;
   navButtonLeft: React.ReactNode;
   navButtonRight: React.ReactNode;
-  style?: any;
+  style?: React.CSSProperties;
+  titleStyle?: React.CSSProperties;
 }) {
   return (
     <View
@@ -136,7 +153,7 @@ function NavBar({
     >
       <View style={{ position: "relative", width: "100%", display: "flex" }}>
         <NavButton button={navButtonLeft} />
-        <CenterDisplay title={title} />
+        <CenterDisplay title={title} titleStyle={titleStyle} />
         <NavButton button={navButtonRight} align="right" />
       </View>
     </View>
@@ -213,7 +230,13 @@ function NavContent({
   );
 }
 
-function CenterDisplay({ title }: { title: string }) {
+function CenterDisplay({
+  title,
+  titleStyle,
+}: {
+  title: string;
+  titleStyle?: React.CSSProperties;
+}) {
   return (
     <View
       style={{
@@ -225,12 +248,18 @@ function CenterDisplay({ title }: { title: string }) {
         alignItems: "center",
       }}
     >
-      <NavTitleLabel title={title} />
+      <NavTitleLabel title={title} style={titleStyle} />
     </View>
   );
 }
 
-function NavTitleLabel({ title }: any) {
+function NavTitleLabel({
+  title,
+  style,
+}: {
+  title?: string;
+  style?: React.CSSProperties;
+}) {
   const theme = useTheme();
   return (
     <Text
@@ -243,6 +272,7 @@ function NavTitleLabel({ title }: any) {
         whiteSpace: "nowrap",
         textAlign: "center",
         lineHeight: "24px",
+        ...style,
       }}
     >
       {title}

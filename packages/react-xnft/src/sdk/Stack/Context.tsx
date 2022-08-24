@@ -10,10 +10,12 @@ type NavStackContext = {
   setTitle: any;
   navButtonRight: any;
   setNavButtonRight: any;
-  style: any;
-  setStyle: any;
-  contentStyle: any;
-  setContentStyle: any;
+  style: React.CSSProperties;
+  setStyle: (s: React.CSSProperties) => void;
+  contentStyle: React.CSSProperties;
+  setContentStyle: (s: React.CSSProperties) => void;
+  titleStyle: React.CSSProperties;
+  setTitleStyle: (s: React.CSSProperties) => void;
 };
 
 const _NavStackContext = React.createContext<NavStackContext | null>(null);
@@ -27,7 +29,7 @@ type RoutedNavStackOptions = {
   title: string;
   rightNavButton?: any;
   leftNavButton?: any;
-  style?: any;
+  style?: React.CSSProperties;
 };
 
 export function useNavigation(): NavStackContext {
@@ -42,6 +44,7 @@ export function NavStackProvider({
   initialRoute,
   navButtonRight,
   style,
+  titleStyle,
   children,
 }: any) {
   const [stack, setStack] = useState([{ navAction: "push", ...initialRoute }]);
@@ -50,6 +53,7 @@ export function NavStackProvider({
     useState<any>(navButtonRight);
   const [_style, setStyle] = useState(style);
   const [contentStyle, setContentStyle] = useState({});
+  const [_titleStyle, _setTitleStyle] = useState(titleStyle);
 
   const push = (route: string, props: any) => {
     setStack((oldStack) => [
@@ -85,6 +89,8 @@ export function NavStackProvider({
         setStyle,
         contentStyle,
         setContentStyle,
+        titleStyle: _titleStyle,
+        setTitleStyle: _setTitleStyle,
       }}
     >
       {children}
