@@ -37,6 +37,8 @@ export async function ethereumTokenBalances(
   // - Other APIs (e.g. Etherscan)
   // - Custom infrastructure
   //
+  if (contractAddresses.length === 0) return new Map();
+
   const multicall = new Multicall({
     ethersProvider: provider,
     tryAggregate: true,
