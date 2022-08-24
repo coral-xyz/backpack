@@ -134,6 +134,8 @@ export class Plugin {
     this._didFinishSetup = new Promise((resolve) => {
       this._didFinishSetupResolver = resolve;
     });
+
+    this.handleIframeOnload = this.handleIframeOnload.bind(this);
   }
 
   public get needsLoad() {
@@ -152,19 +154,21 @@ export class Plugin {
     this._iframe.src = this.iframeUrl;
     this._iframe.sandbox.add("allow-same-origin");
     this._iframe.sandbox.add("allow-scripts");
-    this._iframe.onload = async () => {
-      this._rpcServer.setWindow(this._iframe!.contentWindow);
-      this._bridgeServer.setWindow(this._iframe!.contentWindow);
-      this._dom = new Dom();
-      this._pendingBridgeRequests = [];
-      this.pushConnectNotification();
+    this._iframe.onload = () => this.handleIframeOnload(this._iframe!);
 
-      //
-      // Done.
-      //
-      this._didFinishSetupResolver!();
-    };
     document.head.appendChild(this._iframe);
+  }
+
+  public handleIframeOnload(iframe: HTMLIFrameElement) {
+    this._rpcServer.setWindow(iframe.contentWindow);
+    this._bridgeServer.setWindow(iframe.contentWindow);
+    this._dom = new Dom();
+    this._pendingBridgeRequests = [];
+    this.pushConnectNotification();
+    //
+    // Done.
+    //
+    this._didFinishSetupResolver!();
   }
 
   //

@@ -331,6 +331,7 @@ function Circle({ props }: any) {
 }
 
 function Iframe({ props, style }: any) {
+  const { plugin } = usePluginContext();
   return (
     <iframe
       sandbox="allow-same-origin allow-scripts"
@@ -347,6 +348,7 @@ function Iframe({ props, style }: any) {
         overflowY: "hidden",
         ...style,
       }}
+      onLoad={({ currentTarget }) => plugin.handleIframeOnload(currentTarget)}
     ></iframe>
   );
 }
