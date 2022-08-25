@@ -213,7 +213,14 @@ export function Component({ viewData }) {
     case NodeKind.Table:
       return <Table props={props} style={style} />;
     case NodeKind.Image:
-      return <Image props={props} style={style} children={viewData.children} />;
+      return (
+        <Image
+          id={id}
+          props={props}
+          style={style}
+          children={viewData.children}
+        />
+      );
     case NodeKind.Button:
       return (
         <_Button
@@ -734,8 +741,14 @@ export function TextField({
   );
 }
 
-function Image({ props, style }: any) {
-  return <img src={props.src} style={style} />;
+function Image({ id, props, style }: any) {
+  const { plugin } = usePluginContext();
+  const onClick = !props.onClick
+    ? undefined
+    : (_event) => {
+        plugin.pushClickNotification(id);
+      };
+  return <img src={props.src} style={style} onClick={onClick} />;
 }
 
 export function Button({ id, props, style, onClick, children }: any) {
