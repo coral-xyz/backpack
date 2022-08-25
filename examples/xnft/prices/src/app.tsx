@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useConnection, usePublicKey, Image, Text, View } from "react-xnft";
+import { useConnection, usePublicKey, Text, View } from "react-xnft";
 
 export function App() {
   const pk = usePublicKey();
@@ -16,14 +16,7 @@ export function App() {
 
   return (
     <View>
-      <Image
-        src={
-          "https://pbs.twimg.com/profile_images/1543714094301192193/NxpY8NiL_400x400.jpg"
-        }
-        onClick={() => {
-          console.log("ONCLICK HEANDLER HERE ARMANI");
-        }}
-      />
+      <Text>Hello, World! {pk.toString()}</Text>
     </View>
   );
 }
