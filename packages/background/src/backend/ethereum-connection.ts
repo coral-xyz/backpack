@@ -12,6 +12,7 @@ import {
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
 } from "@coral-xyz/common";
+import type { CachedValue } from "../types";
 
 const logger = getLogger("ethereum-connection-backend");
 
@@ -139,8 +140,3 @@ export class EthereumConnectionBackend {
     });
   }
 }
-
-type CachedValue<T> = {
-  ts: number;
-  value: T;
-};

@@ -11,3 +11,8 @@ export type Config = {
 
 // Opaque handle.
 export type Handle = any;
+
+export type CachedValue<T> = {
+  ts: number;
+  value: T;
+};
