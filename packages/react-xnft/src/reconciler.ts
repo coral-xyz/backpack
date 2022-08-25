@@ -676,7 +676,7 @@ function createImageInstance(
     onClick = true;
   }
   return {
-    id: h.nextId(),
+    id,
     kind: NodeKind.Image,
     props: {
       ...props,
