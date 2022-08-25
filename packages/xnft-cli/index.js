@@ -81,7 +81,7 @@ program
       // If an iframe URL has been provided then serve the iframe xNFT example,
       // but replace the source URL with the provided one
       js = fs
-        .readFileSync(join(__dirname, "dist", "iframe.js"), {
+        .readFileSync(join(__dirname, "iframe.js"), {
           encoding: "utf-8",
         })
         .replace("https://example.com", iframe);
