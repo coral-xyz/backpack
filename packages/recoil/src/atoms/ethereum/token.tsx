@@ -67,10 +67,7 @@ export const ethereumTokenBalances = atomFamily<
       }) =>
       async ({ get }) => {
         const provider = get(ethersContext).provider;
-        const contractAddresses: string[] = get(
-          blockchainTokenAddresses(Blockchain.ETHEREUM)
-        );
-        return ethereumBalances(provider, contractAddresses, publicKey);
+        return ethereumBalances(provider, publicKey);
       },
   }),
 });

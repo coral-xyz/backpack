@@ -1,21 +1,22 @@
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 import type {
   ContractCallResults,
   ContractCallContext,
 } from "ethereum-multicall";
 import { Multicall } from "ethereum-multicall";
 
+import UniswapTokenList from "./tokens-uniswap";
+
 // Dummy representation of native ETH.
 export const ETH_NATIVE_MINT = ethers.constants.AddressZero;
 
 export async function ethereumBalances(
   provider: ethers.providers.Provider,
-  contractAddresses: string[],
   publicKey: string
 ) {
   const [ethBalance, tokenBalances] = await Promise.all([
     provider.getBalance(publicKey),
-    ethereumTokenBalances(provider, contractAddresses, publicKey),
+    ethereumTokenBalances(provider, publicKey),
   ]);
 
   const balanceMap = tokenBalances;
@@ -25,7 +26,6 @@ export async function ethereumBalances(
 
 export async function ethereumTokenBalances(
   provider: ethers.providers.Provider,
-  contractAddresses: string[],
   publicKey: string
 ) {
   //
@@ -37,7 +37,10 @@ export async function ethereumTokenBalances(
   // - Other APIs (e.g. Etherscan)
   // - Custom infrastructure
   //
-  if (contractAddresses.length === 0) return new Map();
+
+  const contractAddresses = UniswapTokenList.tokens.map(
+    (token) => token.address
+  );
 
   const multicall = new Multicall({
     ethersProvider: provider,
@@ -66,30 +69,60 @@ export async function ethereumTokenBalances(
     },
   ];
 
-  const contractCallContext = contractAddresses.map((contractAddress) => {
-    return {
-      reference: contractAddress,
-      contractAddress: contractAddress,
-      abi: abi,
-      calls: [
-        {
-          reference: "balanceOf",
-          methodName: "balanceOf",
-          methodParameters: [publicKey],
-        },
-      ],
-    } as ContractCallContext;
-  });
+  const contractCallContext = contractAddresses
+    .filter((c) => c !== ETH_NATIVE_MINT)
+    .map((contractAddress) => {
+      return {
+        reference: contractAddress,
+        contractAddress: contractAddress,
+        abi: abi,
+        calls: [
+          {
+            reference: "balanceOf",
+            methodName: "balanceOf",
+            methodParameters: [publicKey],
+          },
+        ],
+      } as ContractCallContext;
+    });
 
   const contractCall: ContractCallResults = await multicall.call(
     contractCallContext
   );
 
   return new Map(
-    Object.entries(contractCall.results).map(
-      ([contractAddress, { callsReturnContext }]) => {
+    Object.entries(contractCall.results)
+      .filter(([_, { callsReturnContext }]) => {
+        return (
+          callsReturnContext[0].returnValues[0] &&
+          !BigNumber.from(callsReturnContext[0].returnValues[0]).isZero()
+        );
+      })
+      .map(([contractAddress, { callsReturnContext }]) => {
         return [contractAddress, callsReturnContext[0].returnValues[0]];
-      }
-    )
+      })
   );
+}
+
+export function ethereumTokenData() {
+  const ETH_LOGO_URI =
+    "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png";
+
+  const tokenMap: Map<string, any> = new Map(
+    UniswapTokenList.tokens.map((t: any) => {
+      return [t.address, t];
+    })
+  );
+  tokenMap.set(ETH_NATIVE_MINT, {
+    name: "Ethereum",
+    address: ETH_NATIVE_MINT,
+    chainId: 1,
+    decimals: 18,
+    symbol: "ETH",
+    logoURI: ETH_LOGO_URI,
+    extensions: {
+      coingeckoId: "ethereum",
+    },
+  });
+  return tokenMap;
 }

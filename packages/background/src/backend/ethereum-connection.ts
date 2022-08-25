@@ -112,7 +112,7 @@ export class EthereumConnectionBackend {
   private async startPolling(activeWallet: string) {
     this.pollIntervals.push(
       setInterval(async () => {
-        const data = await ethereumBalances(this.provider!, [], activeWallet);
+        const data = await ethereumBalances(this.provider!, activeWallet);
         const key = JSON.stringify({
           url: this.url,
           method: "ethereumTokens",
@@ -127,7 +127,7 @@ export class EthereumConnectionBackend {
           data: {
             connectionUrl: this.url,
             activeWallet,
-            balances: data,
+            balances: Object.fromEntries(data),
           },
         });
       }, ETHEREUM_TOKENS_REFRESH_INTERVAL)
