@@ -6,11 +6,11 @@
     "start": "xnft watch"
   },
   "devDependencies": {
-    "@coral-xyz/xnft-cli": "^0.0.1",
+    "@coral-xyz/xnft-cli": "*",
     "@parcel/config-default": "^2.7.0"
   },
   "dependencies": {
     "react": "^17.0.2",
-    "react-xnft": "^0.1.0"
+    "react-xnft": "*"
   }
 }
