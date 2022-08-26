@@ -362,11 +362,16 @@ function Iframe({ props, style }: any) {
   ) : null;
 }
 
-// only allow external https:// domains for iframe src
 const isValidSecureUrl = (url: string): boolean => {
   try {
-    const { protocol } = new URL(url);
-    return protocol === "https:";
+    const { protocol, hostname } = new URL(url);
+    if (["localhost", "0.0.0.0", "127.0.0.1"].includes(hostname)) {
+      // allow http:// or https:// for localhost urls during development
+      return ["http:", "https:"].includes(protocol);
+    } else {
+      // only allow https:// for external urls
+      return protocol === "https:";
+    }
   } catch (e) {
     return false;
   }
