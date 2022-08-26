@@ -192,24 +192,25 @@ const RECONCILER = ReactReconciler({
     host: Host
   ): UpdateDiff => {
     logger.debug("prepareUpdate", instance, type, oldProps, newProps);
-    let payload: UpdateDiff | null = null;
+    let payload: UpdateDiff = {};
     switch (type) {
       case NodeKind.View:
         // @ts-ignore
         if (oldProps.style !== newProps.style) {
           // @ts-ignore
-          payload = { style: newProps.style };
+          payload = { ...payload, style: newProps.style };
         }
         // @ts-ignore
         if (oldProps.onClick !== newProps.onClick) {
           // @ts-ignore
-          payload = { onClick: newProps.onClick };
+          payload = { ...payload, onClick: newProps.onClick };
         }
         return payload;
       case NodeKind.Text:
         // @ts-ignore
         if (oldProps.style !== newProps.style) {
           payload = {
+            ...payload,
             // @ts-ignore
             style: newProps.style,
           };
@@ -219,40 +220,40 @@ const RECONCILER = ReactReconciler({
         // @ts-ignore
         if (oldProps.value !== newProps.value) {
           // @ts-ignore
-          payload = { value: newProps.value };
+          payload = { ...payload, value: newProps.value };
         }
         return payload;
       case NodeKind.NavAnimation:
         // @ts-ignore
         if (oldProps.routeName !== newProps.routeName) {
           // @ts-ignore
-          payload = { routeName: newProps.routeName };
+          payload = { ...payload, routeName: newProps.routeName };
         }
         return payload;
       case NodeKind.Path:
         // @ts-ignore
         if (oldProps.fill !== newProps.fill) {
           // @ts-ignore
-          payload = { fill: newProps.fill };
+          payload = { ...payload, fill: newProps.fill };
         }
         return payload;
       case NodeKind.Button:
         // @ts-ignore
         if (oldProps.style !== newProps.style) {
           // @ts-ignore
-          payload = { style: newProps.style };
+          payload = { ...payload, style: newProps.style };
         }
         // @ts-ignore
         if (oldProps.onClick !== newProps.onClick) {
           // @ts-ignore
-          payload = { onClick: newProps.onClick };
+          payload = { ...payload, onClick: newProps.onClick };
         }
         return payload;
       case NodeKind.Image:
         // @ts-ignore
         if (oldProps.onClick !== newProps.onClick) {
           // @ts-ignore
-          payload = { onClick: newProps.onClick };
+          payload = { ...payload, onClick: newProps.onClick };
         }
         return payload;
       case NodeKind.Iframe:
@@ -330,7 +331,7 @@ const RECONCILER = ReactReconciler({
     //
     // If there's no update payload, then don't rerender!
     //
-    if (updatePayload === null) {
+    if (updatePayload === null || Object.keys(updatePayload).length === 0) {
       return;
     }
 
