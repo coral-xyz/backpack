@@ -317,6 +317,7 @@ function Path({ props }: any) {
       fillRule={props.fillRule}
       clipRule={props.clipRule}
       fill={props.fill}
+      stroke={props.stroke}
     />
   );
 }

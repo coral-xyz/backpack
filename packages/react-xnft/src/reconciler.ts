@@ -1200,6 +1200,7 @@ type PathProps = {
   fill: string;
   fillRule?: string;
   clipRule?: string;
+  stroke?: string;
 };
 
 type CircleNodeSerialized = DefNodeSerialized<NodeKind.Circle, CircleProps>;
