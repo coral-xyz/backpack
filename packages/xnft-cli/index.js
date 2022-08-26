@@ -84,7 +84,10 @@ program
         .readFileSync(join(__dirname, "iframe.js"), {
           encoding: "utf-8",
         })
-        .replace("https://example.com", iframe);
+        .replace(
+          "https://coral-xyz.github.io/backpack/iframe-example.html",
+          iframe
+        );
     } else {
       // https://parceljs.org/features/parcel-api/#watching
       const bundler = new Parcel({

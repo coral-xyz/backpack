@@ -160,6 +160,8 @@ export class Plugin {
   }
 
   public handleIframeOnload(iframe: HTMLIFrameElement) {
+    this._iframe = iframe;
+
     this._rpcServer.setWindow(iframe.contentWindow);
     this._bridgeServer.setWindow(iframe.contentWindow);
     this._dom = new Dom();
