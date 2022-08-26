@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <style>
+      body {
+        background-image: linear-gradient(#59518a, #16f195);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        font-family: "Comic Sans MS", "Comic Sans", sans-serif;
+        color: white;
+      }
+
+      #publicKey {
+        animation: cssmarquee 5s linear infinite;
+      }
+
+      @keyframes cssmarquee {
+        0% {
+          transform: translateX(100%);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="publicKey"></div>
+    <script type="text/javascript">
+      // TODO: remove the need for this timeout
+      setTimeout(() => {
+        document.getElementById(
+          "publicKey"
+        ).innerText = `Your public key is ${window.xnft.publicKey.toString()}`;
+      }, 500);
+    </script>
+  </body>
+</html>
