@@ -339,7 +339,9 @@ function Circle({ props }: any) {
 }
 
 function Iframe({ props, style }: any) {
-  return (
+  const { plugin } = usePluginContext();
+
+  return isValidSecureUrl(props.src) ? (
     <iframe
       sandbox="allow-same-origin allow-scripts"
       src={props.src}
@@ -355,9 +357,20 @@ function Iframe({ props, style }: any) {
         overflowY: "hidden",
         ...style,
       }}
+      onLoad={({ currentTarget }) => plugin.handleIframeOnload(currentTarget)}
     ></iframe>
-  );
+  ) : null;
 }
+
+// only allow external https:// domains for iframe src
+const isValidSecureUrl = (url: string): boolean => {
+  try {
+    const { protocol } = new URL(url);
+    return protocol === "https:";
+  } catch (e) {
+    return false;
+  }
+};
 
 function NavAnimation({ props, children }: any) {
   return (
