@@ -248,13 +248,18 @@ const RECONCILER = ReactReconciler({
           payload = { onClick: newProps.onClick };
         }
         return payload;
+      case NodeKind.Image:
+        // @ts-ignore
+        if (oldProps.onClick !== newProps.onClick) {
+          // @ts-ignore
+          payload = { onClick: newProps.onClick };
+        }
+        return payload;
       case NodeKind.Iframe:
         return null;
       case NodeKind.Svg:
         return null;
       case NodeKind.Circle:
-        return null;
-      case NodeKind.Image:
         return null;
       case NodeKind.Table:
         return null;
@@ -386,10 +391,20 @@ const RECONCILER = ReactReconciler({
           delete updatePayload["onClick"];
         }
         break;
+      case NodeKind.Image:
+        if (
+          updatePayload.onClick !== undefined &&
+          updatePayload.onClick !== null
+        ) {
+          // @ts-ignore
+          instance.props.onClick = updatePayload.onClick;
+          // @ts-ignore
+          CLICK_HANDLERS.set(instance.id, instance.props.onClick);
+          delete updatePayload["onClick"];
+        }
+        break;
       case NodeKind.Text:
         throw new Error("commitUpdate Text not yet implemented");
-      case NodeKind.Image:
-        throw new Error("commitUpdate Image not yet implemented");
       case NodeKind.Svg:
         throw new Error("commitUpdate Svg not yet implemented");
       case NodeKind.Circle:
@@ -653,11 +668,19 @@ function createImageInstance(
   h: Host,
   _o: OpaqueHandle
 ): ImageNodeSerialized {
+  const id = h.nextId();
+  let onClick = false;
+  const vProps = props as ImageProps;
+  if (vProps.onClick && typeof vProps.onClick === "function") {
+    CLICK_HANDLERS.set(id, vProps.onClick);
+    onClick = true;
+  }
   return {
-    id: h.nextId(),
+    id,
     kind: NodeKind.Image,
     props: {
       ...props,
+      onClick,
       children: undefined,
     },
     style: props.style || {},
@@ -1110,6 +1133,7 @@ type TextFieldProps = {
 type ImageNodeSerialized = DefNodeSerialized<NodeKind.Image, ImageProps>;
 type ImageProps = {
   style: Style;
+  onClick?: (() => Promise<void>) | boolean;
   children: undefined;
 };
 
@@ -1176,6 +1200,7 @@ type PathProps = {
   fill: string;
   fillRule?: string;
   clipRule?: string;
+  stroke?: string;
 };
 
 type CircleNodeSerialized = DefNodeSerialized<NodeKind.Circle, CircleProps>;
