@@ -1,8 +1,7 @@
-import ReactXnft, { AnchorDom } from "react-xnft";
-import { App } from "./app";
+import ReactXnft, { AnchorDom, Iframe } from "react-xnft";
 
 ReactXnft.render(
   <AnchorDom>
-    <App />
+    <Iframe src="https://example.com" />
   </AnchorDom>
 );
