@@ -365,7 +365,7 @@ export function CheckboxForm({
 }: {
   checked: boolean;
   setChecked: (value: boolean) => void;
-  label: string;
+  label: string | React.ReactNode;
 }) {
   const classes = useStyles();
   return (
