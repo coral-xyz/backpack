@@ -5,7 +5,8 @@
 
 const { Parcel } = require("@parcel/core");
 const { program } = require("commander");
-const { resolve } = require("path");
+const { join, resolve } = require("path");
+
 const { SIMULATOR_PORT } = { SIMULATOR_PORT: 9933 }; // TODO: replace with import.
 
 const options = {
@@ -58,45 +59,64 @@ program.command("watch").action(async () => {
   await bundler.watch();
 });
 
-program.command("dev").action(async () => {
-  console.debug(`👀 watching ${resolve()}`);
+program
+  .command("dev")
+  .option(
+    "-i, --iframe <string>",
+    "a URL to load inside an iframe xNFT in the simulator",
+    (url) => new URL(url)?.href
+  )
+  .action(async ({ iframe }) => {
+    console.debug(`👀 watching ${resolve()}`);
 
-  const express = require("express");
-  const fs = require("fs");
-  const app = express();
-  const port = SIMULATOR_PORT;
+    const express = require("express");
+    const fs = require("fs");
+    const app = express();
 
-  // https://parceljs.org/features/parcel-api/#watching
-  const bundler = new Parcel({
-    ...options,
-    mode: "development",
-    sourceMap: true,
-    optimize: false,
-  });
+    const port = SIMULATOR_PORT;
 
-  if (!fs.existsSync("dist/index.js")) {
-    if (!fs.existsSync("dist")) {
-      fs.mkdirSync("dist");
+    let js;
+
+    if (iframe) {
+      // If an iframe URL has been provided then serve the iframe xNFT example,
+      // but replace the source URL with the provided one
+      js = fs
+        .readFileSync(join(__dirname, "iframe.js"), {
+          encoding: "utf-8",
+        })
+        .replace("https://example.com", iframe);
+    } else {
+      // https://parceljs.org/features/parcel-api/#watching
+      const bundler = new Parcel({
+        ...options,
+        mode: "development",
+        sourceMap: true,
+        optimize: false,
+      });
+
+      if (!fs.existsSync("dist/index.js")) {
+        if (!fs.existsSync("dist")) {
+          fs.mkdirSync("dist");
+        }
+        fs.writeFileSync("dist/index.js", "");
+      }
+
+      let js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
+      await bundler.watch((err, buildEvent) => {
+        console.log("build changed");
+        if (err) {
+          console.error("build error", JSON.stringify(err));
+        }
+        if (buildEvent.type === "buildFailure") {
+          console.error("build error", JSON.stringify(buildEvent));
+        }
+        js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
+      });
     }
-    fs.writeFileSync("dist/index.js", "");
-  }
 
-  let js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
-  await bundler.watch((err, buildEvent) => {
-    console.log("build changed");
-    if (err) {
-      console.error("build error", JSON.stringify(err));
-    }
-    if (buildEvent.type === "buildFailure") {
-      console.error("build error", JSON.stringify(buildEvent));
-    }
-    js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
-  });
-
-  app.get("/", (req, res) => {
-    const innerHTML = `
-        <script>${js}</script>`;
-    res.send(`
+    app.get("/", (req, res) => {
+      const innerHTML = `<script>${js}</script>`;
+      res.send(`
         <!DOCTYPE html>
         <html lang="en">
           <head>
@@ -104,11 +124,12 @@ program.command("dev").action(async () => {
           </head>
           <body>${innerHTML}</body>
         </html>
-        `);
+      `);
+    });
+
+    app.listen(port, () => {
+      console.log(`listening on port ${port}`);
+    });
   });
-  app.listen(port, () => {
-    console.log(`listening on port ${port}`);
-  });
-});
 
 program.parse();

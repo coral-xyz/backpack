@@ -4,6 +4,10 @@
   "bin": {
     "xnft": "./index.js"
   },
+  "scripts": {
+    "prebuild": "cd ../../examples/xnft/iframe && npm run build",
+    "build": "cp ../../examples/xnft/iframe/dist/index.js iframe.js"
+  },
   "dependencies": {
     "@parcel/config-default": "^2.7.0",
     "@parcel/core": "^2.7.0",
