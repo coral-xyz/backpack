@@ -1,10 +1,12 @@
 import { useEffect } from "react";
 import { Typography } from "@mui/material";
+import { Apps } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { useAppIcons } from "@coral-xyz/recoil";
 import { SettingsList } from "../../../common/Settings/List";
 import { PushDetail } from "../../../common";
 import { useNavStack } from "../../../common/Layout/NavStack";
+import { EmptyState } from "../../../common/EmptyState";
 
 export function XnftSettings() {
   const nav = useNavStack();
@@ -43,28 +45,39 @@ export function XnftSettings() {
     nav.setTitle("xNFTs");
   }, [nav.setContentStyle, theme]);
 
-  return (
+  return xnfts.length === 0 ? (
+    <EmptyState
+      icon={(props: any) => <Apps {...props} />}
+      title={"No installed xNFTs"}
+      subtitle={"Installed xNFTs will be listed here"}
+      contentStyle={{
+        marginBottom: "64px", // Tab height offset.
+      }}
+    />
+  ) : (
     <div
       style={{
         marginTop: "16px",
         marginBottom: "16px",
       }}
     >
-      <Typography
-        style={{
-          fontSize: "16px",
-          lineHeight: "24px",
-          marginLeft: "16px",
-        }}
-      >
-        Installed xNFTs
-      </Typography>
-      <SettingsList
-        menuItems={settingsMenu}
-        style={{
-          marginTop: "12px",
-        }}
-      />
+      <>
+        <Typography
+          style={{
+            fontSize: "16px",
+            lineHeight: "24px",
+            marginLeft: "16px",
+          }}
+        >
+          Installed xNFTs
+        </Typography>
+        <SettingsList
+          menuItems={settingsMenu}
+          style={{
+            marginTop: "12px",
+          }}
+        />
+      </>
     </div>
   );
 }
