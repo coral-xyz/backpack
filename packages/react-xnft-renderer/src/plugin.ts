@@ -179,7 +179,13 @@ export class Plugin {
   public destroyIframe() {
     logger.debug("destroying iframe element");
 
-    document.head.removeChild(this._iframe!);
+    try {
+      document.head.removeChild(this._iframe!);
+    } catch (err) {
+      // error thrown if the this.iframe was not created in createIframe,
+      // but was assigned in handleIframeOnload instead
+    }
+
     this._iframe!.remove();
     this._iframe = undefined;
     this._rpcServer.setWindow(undefined);
