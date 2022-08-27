@@ -1,26 +1,32 @@
 import { atomFamily, selectorFamily } from "recoil";
 import { ethers, BigNumber } from "ethers";
 import { TokenInfo } from "@solana/spl-token-registry";
-import { ethereumBalances, Blockchain } from "@coral-xyz/common";
-import { ethersContext } from "./provider";
 import { bootstrap } from "../bootstrap";
 import { TokenData } from "../../types";
 import { priceData } from "../prices";
-import { blockchainTokenAddresses } from "../balance";
+import { ethereumTokenMetadata } from "./token-metadata";
+import { ethereumConnectionUrl } from "./preferences";
+import { ethereumPublicKey } from "../wallet";
 
 export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
   key: "ethereumTokenBalance",
   get:
     (contractAddress: string) =>
     ({ get }) => {
-      const data = get(bootstrap);
+      const ethTokenMetadata = get(ethereumTokenMetadata);
+      const ethTokenBalances: Map<String, BigNumber> = get(
+        ethereumTokenBalances({
+          connectionUrl: get(ethereumConnectionUrl)!,
+          publicKey: get(ethereumPublicKey)!,
+        })
+      );
 
       const tokenMetadata =
-        data.ethTokenMetadata.get(contractAddress) ?? ({} as TokenInfo);
+        ethTokenMetadata!.get(contractAddress) ?? ({} as TokenInfo);
       const { symbol: ticker, logoURI: logo, name, decimals } = tokenMetadata;
 
-      const nativeBalance = data.ethTokenBalances.get(contractAddress)
-        ? BigNumber.from(data.ethTokenBalances.get(contractAddress))
+      const nativeBalance = ethTokenBalances.get(contractAddress)
+        ? BigNumber.from(ethTokenBalances.get(contractAddress))
         : BigNumber.from(0);
       const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
 
@@ -66,8 +72,8 @@ export const ethereumTokenBalances = atomFamily<
         publicKey: string;
       }) =>
       async ({ get }) => {
-        const provider = get(ethersContext).provider;
-        return ethereumBalances(provider, publicKey);
+        const data = get(bootstrap);
+        return data.ethTokenBalances;
       },
   }),
 });

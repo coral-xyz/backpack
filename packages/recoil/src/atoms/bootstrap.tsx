@@ -4,19 +4,19 @@ import { ParsedConfirmedTransaction, PublicKey } from "@solana/web3.js";
 import {
   fetchXnfts,
   Blockchain,
+  ethereumBalances,
   UI_RPC_METHOD_NAVIGATION_READ,
 } from "@coral-xyz/common";
 import { SolanaTokenAccountWithKey } from "../types";
 import { fetchPriceData } from "./prices";
 import { recentTransactions } from "./recent-transactions";
 import { backgroundClient } from "./client";
-import { activeWalletsWithData } from "./wallet";
+import { ethereumPublicKey, solanaPublicKey } from "./wallet";
 import { anchorContext } from "./solana/wallet";
 import { splTokenRegistry } from "./solana/token-registry";
 import { fetchJupiterRouteMap } from "./solana/jupiter";
 import { ethereumTokenMetadata } from "./ethereum/token-metadata";
-import { ethereumTokenBalances } from "./ethereum/token";
-import { ethereumConnectionUrl } from "./ethereum/preferences";
+import { ethersContext } from "./ethereum/provider";
 
 /**
  * Defines the initial app load fetch.
@@ -41,16 +41,10 @@ export const bootstrap = selector<{
       //
       // Fetch the price data.
       //
-      const nonZeroEthereumAddresses = [
-        ...ethereumData.ethTokenBalances.entries(),
-      ]
-        .filter(([_, balance]) => balance && !BigNumber.from(balance).isZero())
-        .map(([address, _]) => address);
-
       const coingeckoData = await fetchPriceData(
         solanaData.splTokenAccounts,
         tokenRegistry,
-        nonZeroEthereumAddresses
+        [...ethereumData.ethTokenBalances.keys()]
       );
       return {
         ...solanaData,
@@ -74,11 +68,8 @@ export const ethereumBootstrap = selector<{
   ethTokenMetadata: Map<string, any>;
 }>({
   key: "ethereumBootstrap",
-  get: ({ get }: any) => {
-    const activeWallets = get(activeWalletsWithData);
-    const publicKey =
-      activeWallets.find((w: any) => w!.blockchain === Blockchain.ETHEREUM)
-        ?.publicKey ?? null;
+  get: async ({ get }: any) => {
+    const publicKey = get(ethereumPublicKey);
 
     const defaultReturn = {
       ethActivePublicKey: null,
@@ -95,12 +86,9 @@ export const ethereumBootstrap = selector<{
       return defaultReturn;
     }
 
-    const ethTokenBalances = get(
-      ethereumTokenBalances({
-        connectionUrl: get(ethereumConnectionUrl),
-        publicKey,
-      })
-    );
+    const provider = get(ethersContext).provider;
+    const ethTokenBalances = await ethereumBalances(provider, publicKey);
+
     return {
       ethActivePublicKey: publicKey,
       ethTokenBalances,
@@ -119,10 +107,7 @@ export const solanaBootstrap = selector<{
 }>({
   key: "solanaBootstrap",
   get: async ({ get }: any) => {
-    const activeWallets = get(activeWalletsWithData);
-    const publicKey =
-      activeWallets.find((w: any) => w.blockchain === Blockchain.SOLANA)
-        ?.publicKey ?? null;
+    const publicKey = get(solanaPublicKey);
 
     const defaultReturn = {
       solActivePublicKey: null,
