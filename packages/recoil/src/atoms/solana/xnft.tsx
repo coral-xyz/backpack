@@ -1,4 +1,5 @@
 import { atom, selector } from "recoil";
+import { PublicKey } from "@solana/web3.js";
 import { BACKPACK_CONFIG_XNFT_PROXY, SIMULATOR_PORT } from "@coral-xyz/common";
 import { activeWallet } from "../wallet";
 import { solanaConnectionUrl } from "./preferences";
@@ -114,7 +115,9 @@ export const xnfts = atom({
       const _activeWallet = get(activeWallet);
       const _connectionUrl = get(solanaConnectionUrl);
       return (await b.xnfts).map((xnft) => {
+        console.log("XNFT HERE", xnft);
         return {
+          ...xnft,
           url: xnftUrl(xnft.metadataBlob.properties.bundle),
           iconUrl: xnft.metadataBlob.image,
           activeWallet: _activeWallet,

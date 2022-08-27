@@ -180,6 +180,11 @@ export class Solana {
       preflightCommitment: ctx.commitment,
     });
   }
+
+  public static async uninstallXnft(ctx: SolanaContext): Promise<string> {
+    // todo
+    return "";
+  }
 }
 
 //
