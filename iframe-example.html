@@ -28,12 +28,13 @@
   <body>
     <div id="publicKey"></div>
     <script type="text/javascript">
-      // TODO: remove the need for this timeout
-      setTimeout(() => {
-        document.getElementById(
-          "publicKey"
-        ).innerText = `Your public key is ${window.xnft.publicKey.toString()}`;
-      }, 500);
+      addEventListener("message", ({ data }) => {
+        if (data === "xnft-ready") {
+          document.getElementById(
+            "publicKey"
+          ).innerText = `Your public key is ${window.xnft.publicKey.toString()}`;
+        }
+      });
     </script>
   </body>
 </html>
