@@ -162,8 +162,8 @@ export class Plugin {
   public handleIframeOnload(iframe: HTMLIFrameElement) {
     this._iframe = iframe;
 
-    this._rpcServer.setWindow(iframe.contentWindow);
-    this._bridgeServer.setWindow(iframe.contentWindow);
+    this._rpcServer.setWindow(this._iframe.contentWindow);
+    this._bridgeServer.setWindow(this._iframe.contentWindow);
     this._dom = new Dom();
     this._pendingBridgeRequests = [];
     this.pushConnectNotification();
@@ -172,7 +172,7 @@ export class Plugin {
     //
     this._didFinishSetupResolver!();
 
-    this._iframe.contentWindow?.postMessage("xnft-ready", iframe.src);
+    this._iframe.contentWindow?.postMessage("xnft-ready", this._iframe.src);
   }
 
   //
