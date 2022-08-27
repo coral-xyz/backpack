@@ -16,7 +16,7 @@ export function XnftSettings() {
   xnfts.forEach((xnft) => {
     settingsMenu[xnft.title] = {
       label: xnft.title,
-      onClick: () => {}, // todo
+      onClick: () => nav.push("xnfts-detail", { xnft }),
       icon: (props: any) => (
         <img
           style={{
