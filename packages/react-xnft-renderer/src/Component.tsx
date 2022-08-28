@@ -357,7 +357,9 @@ function Iframe({ props, style }: any) {
         overflowY: "hidden",
         ...style,
       }}
-      onLoad={({ currentTarget }) => plugin.handleIframeOnload(currentTarget)}
+      onLoad={({ currentTarget }) =>
+        plugin.handleChildIframeOnload(currentTarget)
+      }
     ></iframe>
   ) : null;
 }

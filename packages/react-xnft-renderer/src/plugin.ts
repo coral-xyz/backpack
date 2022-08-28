@@ -57,6 +57,7 @@ export class Plugin {
   private _bridgeServer: PluginServer;
   private _connectionBridge: PluginServer;
   private _iframe?: HTMLIFrameElement;
+  private _iframeChildren: Array<HTMLIFrameElement>;
   private _nextRenderId?: number;
   private _pendingBridgeRequests?: Array<any>;
   private _dom?: Dom;
@@ -95,6 +96,7 @@ export class Plugin {
     //
     this._activeWallet = activeWallet;
     this._connectionUrl = connectionUrl;
+    this._iframeChildren = [];
     this.title = title;
     this.iframeUrl = url;
     this.iconUrl = iconUrl;
@@ -135,7 +137,7 @@ export class Plugin {
       this._didFinishSetupResolver = resolve;
     });
 
-    this.handleIframeOnload = this.handleIframeOnload.bind(this);
+    this._handleIframeOnload = this._handleIframeOnload.bind(this);
   }
 
   public get needsLoad() {
@@ -154,16 +156,19 @@ export class Plugin {
     this._iframe.src = this.iframeUrl;
     this._iframe.sandbox.add("allow-same-origin");
     this._iframe.sandbox.add("allow-scripts");
-    this._iframe.onload = () => this.handleIframeOnload(this._iframe!);
-
-    document.head.appendChild(this._iframe);
+    this._iframe.onload = () => {
+      this._bridgeServer.setWindow(this._iframe!.contentWindow);
+      this._handleIframeOnload(this._iframe!);
+    };
   }
 
-  public handleIframeOnload(iframe: HTMLIFrameElement) {
-    this._iframe = iframe;
+  public handleChildIframeOnload(iframe: HTMLIFrameElement) {
+    this._iframeChildren.push(iframe);
+    this._handleIframeOnload(iframe);
+  }
 
-    this._rpcServer.setWindow(this._iframe.contentWindow);
-    this._bridgeServer.setWindow(this._iframe.contentWindow);
+  private _handleIframeOnload(iframe: HTMLIFrameElement) {
+    this._rpcServer.setWindow(iframe.contentWindow);
     this._dom = new Dom();
     this._pendingBridgeRequests = [];
     this.pushConnectNotification();
@@ -179,13 +184,7 @@ export class Plugin {
   public destroyIframe() {
     logger.debug("destroying iframe element");
 
-    try {
-      document.head.removeChild(this._iframe!);
-    } catch (err) {
-      // error thrown if the this.iframe was not created in createIframe,
-      // but was assigned in handleIframeOnload instead
-    }
-
+    document.head.removeChild(this._iframe!);
     this._iframe!.remove();
     this._iframe = undefined;
     this._rpcServer.setWindow(undefined);
@@ -269,14 +268,6 @@ export class Plugin {
   // TODO: serialize ordering of  notification delivery.
   //////////////////////////////////////////////////////////////////////////////
 
-  public pushNotification(notif: any) {
-    const event = {
-      type: CHANNEL_PLUGIN_NOTIFICATION,
-      detail: notif,
-    };
-    this._iframe?.contentWindow?.postMessage(event, "*");
-  }
-
   public pushClickNotification(viewId: number) {
     this._lastClickTsMs = Date.now();
     const event = {
@@ -306,20 +297,6 @@ export class Plugin {
     this._iframe?.contentWindow?.postMessage(event, "*");
   }
 
-  public pushConnectNotification() {
-    const event = {
-      type: CHANNEL_PLUGIN_NOTIFICATION,
-      detail: {
-        name: PLUGIN_NOTIFICATION_CONNECT,
-        data: {
-          publicKey: this._activeWallet.toString(),
-          connectionUrl: this._connectionUrl,
-        },
-      },
-    };
-    this._iframe?.contentWindow?.postMessage(event, "*");
-  }
-
   public pushMountNotification() {
     const event = {
       type: CHANNEL_PLUGIN_NOTIFICATION,
@@ -342,6 +319,20 @@ export class Plugin {
     this._iframe?.contentWindow?.postMessage(event, "*");
   }
 
+  public pushConnectNotification() {
+    const event = {
+      type: CHANNEL_PLUGIN_NOTIFICATION,
+      detail: {
+        name: PLUGIN_NOTIFICATION_CONNECT,
+        data: {
+          publicKey: this._activeWallet.toString(),
+          connectionUrl: this._connectionUrl,
+        },
+      },
+    };
+    this.iframeGroupPostMessage(event);
+  }
+
   public pushConnectionChangedNotification(url: string) {
     this._connectionUrl = url;
     if (this._iframe) {
@@ -354,7 +345,7 @@ export class Plugin {
           },
         },
       };
-      this._iframe.contentWindow!.postMessage(event, "*");
+      this.iframeGroupPostMessage(event);
     }
   }
 
@@ -370,8 +361,15 @@ export class Plugin {
           },
         },
       };
-      this._iframe.contentWindow!.postMessage(event, "*");
+      this.iframeGroupPostMessage(event);
     }
+  }
+
+  private iframeGroupPostMessage(event: any) {
+    this._iframe?.contentWindow!.postMessage(event, "*");
+    this._iframeChildren.forEach((iframe) => {
+      iframe.contentWindow!.postMessage(event, "*");
+    });
   }
 
   //////////////////////////////////////////////////////////////////////////////
