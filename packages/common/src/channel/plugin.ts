@@ -7,22 +7,21 @@ import type { RpcResponse } from "../types";
 
 export class PluginServer {
   private window?: any;
-  private url?: string;
   constructor(
+    private url: string,
     private requestChannel: string,
     private responseChannel?: string
   ) {}
 
-  public setWindow(window: any, url: string) {
+  public setWindow(window: any, url?: string) {
     this.window = window;
-    this.url = url;
+    if (url) {
+      this.url = url;
+    }
   }
 
   public handler(handlerFn: (event: Event) => Promise<RpcResponse>) {
     return window.addEventListener("message", async (event: Event) => {
-      if (!this.url) {
-        throw new Error("plugin server expected url not found");
-      }
       const url = new URL(this.url);
       if (
         // TODO: hardcode allowed origin(s)

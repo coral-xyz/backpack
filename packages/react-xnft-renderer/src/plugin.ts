@@ -102,6 +102,7 @@ export class Plugin {
     // RPC Server channel from plugin -> extension-ui.
     //
     this._rpcServer = new PluginServer(
+      url,
       CHANNEL_PLUGIN_RPC_REQUEST,
       CHANNEL_PLUGIN_RPC_RESPONSE
     );
@@ -111,6 +112,7 @@ export class Plugin {
     // React reconciler bridge messages for custom React rendering.
     //
     this._bridgeServer = new PluginServer(
+      url,
       CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE
     );
     this._bridgeServer.handler(this._handleBridge.bind(this));
