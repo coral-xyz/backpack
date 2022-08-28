@@ -137,6 +137,7 @@ export class Plugin {
       this._didFinishSetupResolver = resolve;
     });
 
+    this.handleIframeOnLoad = this.handleIframeOnLoad.bind(this);
     this._handleIframeOnload = this._handleIframeOnload.bind(this);
   }
 
@@ -156,12 +157,23 @@ export class Plugin {
     this._iframe.src = this.iframeUrl;
     this._iframe.sandbox.add("allow-same-origin");
     this._iframe.sandbox.add("allow-scripts");
-    this._iframe.onload = () => {
-      this._bridgeServer.setWindow(this._iframe!.contentWindow);
-      this._handleIframeOnload(this._iframe!);
-    };
+    this._iframe.onload = () => this.handleIframeOnLoad();
+    document.head.appendChild(this._iframe);
   }
 
+  // Onload handler for the top level iframe representing the xNFT.
+  private handleIframeOnLoad() {
+    this._bridgeServer.setWindow(this._iframe!.contentWindow);
+    this._dom = new Dom();
+    this._pendingBridgeRequests = [];
+    this._handleIframeOnload(this._iframe!);
+    //
+    // Done.
+    //
+    this._didFinishSetupResolver!();
+  }
+
+  // Onload handler for iframes within an xNFT.
   public handleChildIframeOnload(iframe: HTMLIFrameElement) {
     this._iframeChildren.push(iframe);
     this._handleIframeOnload(iframe);
@@ -169,13 +181,7 @@ export class Plugin {
 
   private _handleIframeOnload(iframe: HTMLIFrameElement) {
     this._rpcServer.setWindow(iframe.contentWindow);
-    this._dom = new Dom();
-    this._pendingBridgeRequests = [];
     this.pushConnectNotification();
-    //
-    // Done.
-    //
-    this._didFinishSetupResolver!();
   }
 
   //
