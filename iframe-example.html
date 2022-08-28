@@ -28,12 +28,12 @@
   <body>
     <div id="publicKey"></div>
     <script type="text/javascript">
-      addEventListener("message", ({ data }) => {
-        if (data === "xnft-ready") {
+      addEventListener("load", () => {
+        window.xnft.on("connect", () => {
           document.getElementById(
             "publicKey"
           ).innerText = `Your public key is ${window.xnft.publicKey.toString()}`;
-        }
+        });
       });
     </script>
   </body>
