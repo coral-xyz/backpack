@@ -123,9 +123,6 @@ export class Plugin {
     this._didFinishSetup = new Promise((resolve) => {
       this._didFinishSetupResolver = resolve;
     });
-
-    this.handleRootIframeOnLoad = this.handleRootIframeOnLoad.bind(this);
-    this.setActiveIframe = this.setActiveIframe.bind(this);
   }
 
   public get needsLoad() {
