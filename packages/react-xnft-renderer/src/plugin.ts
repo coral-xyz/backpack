@@ -171,8 +171,6 @@ export class Plugin {
     // Done.
     //
     this._didFinishSetupResolver!();
-
-    this._iframe.contentWindow?.postMessage("xnft-ready", this._iframe.src);
   }
 
   //
