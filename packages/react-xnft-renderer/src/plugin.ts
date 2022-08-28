@@ -180,6 +180,7 @@ export class Plugin {
   }
 
   private _handleIframeOnload(iframe: HTMLIFrameElement) {
+    // TODO: allow array of iframes and pass through the URL to whitelist.
     this._rpcServer.setWindow(iframe.contentWindow);
     this.pushConnectNotification();
   }
