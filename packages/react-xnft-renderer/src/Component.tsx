@@ -358,7 +358,10 @@ function Iframe({ props, style }: any) {
         ...style,
       }}
       onLoad={({ currentTarget }) =>
-        plugin.handleChildIframeOnload(currentTarget)
+        plugin.handleChildIframeOnload(
+          currentTarget,
+          props.xnft ? props.src : undefined
+        )
       }
     ></iframe>
   ) : null;

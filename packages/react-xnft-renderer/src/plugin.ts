@@ -56,8 +56,8 @@ export class Plugin {
   private _rpcServer: PluginServer;
   private _bridgeServer: PluginServer;
   private _connectionBridge: PluginServer;
-  private _iframe?: HTMLIFrameElement;
-  private _iframeChildren: Array<HTMLIFrameElement>;
+  private _iframeRoot?: HTMLIFrameElement;
+  private _iframeActive?: HTMLIFrameElement;
   private _nextRenderId?: number;
   private _pendingBridgeRequests?: Array<any>;
   private _dom?: Dom;
@@ -80,7 +80,7 @@ export class Plugin {
   //
   private _lastClickTsMs?: number;
 
-  readonly iframeUrl: string;
+  readonly iframeRootUrl: string;
   readonly iconUrl: string;
   readonly title: string;
 
@@ -96,9 +96,8 @@ export class Plugin {
     //
     this._activeWallet = activeWallet;
     this._connectionUrl = connectionUrl;
-    this._iframeChildren = [];
     this.title = title;
-    this.iframeUrl = url;
+    this.iframeRootUrl = url;
     this.iconUrl = iconUrl;
 
     //
@@ -137,7 +136,7 @@ export class Plugin {
       this._didFinishSetupResolver = resolve;
     });
 
-    this.handleIframeOnLoad = this.handleIframeOnLoad.bind(this);
+    this.handleRootIframeOnLoad = this.handleRootIframeOnLoad.bind(this);
     this._handleIframeOnload = this._handleIframeOnload.bind(this);
   }
 
@@ -152,21 +151,24 @@ export class Plugin {
     logger.debug("creating iframe element");
 
     this._nextRenderId = 0;
-    this._iframe = document.createElement("iframe");
-    this._iframe.setAttribute("fetchpriority", "low");
-    this._iframe.src = this.iframeUrl;
-    this._iframe.sandbox.add("allow-same-origin");
-    this._iframe.sandbox.add("allow-scripts");
-    this._iframe.onload = () => this.handleIframeOnLoad();
-    document.head.appendChild(this._iframe);
+    this._iframeRoot = document.createElement("iframe");
+    this._iframeRoot.setAttribute("fetchpriority", "low");
+    this._iframeRoot.src = this.iframeRootUrl;
+    this._iframeRoot.sandbox.add("allow-same-origin");
+    this._iframeRoot.sandbox.add("allow-scripts");
+    this._iframeRoot.onload = () => this.handleRootIframeOnLoad();
+    document.head.appendChild(this._iframeRoot);
   }
 
   // Onload handler for the top level iframe representing the xNFT.
-  private handleIframeOnLoad() {
-    this._bridgeServer.setWindow(this._iframe!.contentWindow);
+  private handleRootIframeOnLoad() {
+    this._bridgeServer.setWindow(
+      this._iframeRoot!.contentWindow,
+      this.iframeRootUrl
+    );
     this._dom = new Dom();
     this._pendingBridgeRequests = [];
-    this._handleIframeOnload(this._iframe!);
+    this._handleIframeOnload(this._iframeRoot!, this.iframeRootUrl);
     //
     // Done.
     //
@@ -174,14 +176,19 @@ export class Plugin {
   }
 
   // Onload handler for iframes within an xNFT.
-  public handleChildIframeOnload(iframe: HTMLIFrameElement) {
-    this._iframeChildren.push(iframe);
-    this._handleIframeOnload(iframe);
+  //
+  // If xnftUrl is given, the iframe will hijack the xnft context, taking over
+  // the ability to use the RPC API and thus accesss the trusted transaction
+  // signing view.
+  public handleChildIframeOnload(iframe: HTMLIFrameElement, xnftUrl?: string) {
+    this._handleIframeOnload(iframe, xnftUrl);
   }
 
-  private _handleIframeOnload(iframe: HTMLIFrameElement) {
-    // TODO: allow array of iframes and pass through the URL to whitelist.
-    this._rpcServer.setWindow(iframe.contentWindow);
+  private _handleIframeOnload(iframe: HTMLIFrameElement, xnftUrl?: string) {
+    if (xnftUrl) {
+      this._iframeActive = iframe;
+      this._rpcServer.setWindow(iframe.contentWindow, xnftUrl);
+    }
     this.pushConnectNotification();
   }
 
@@ -191,9 +198,9 @@ export class Plugin {
   public destroyIframe() {
     logger.debug("destroying iframe element");
 
-    document.head.removeChild(this._iframe!);
-    this._iframe!.remove();
-    this._iframe = undefined;
+    document.head.removeChild(this._iframeRoot!);
+    this._iframeRoot!.remove();
+    this._iframeRoot = undefined;
     this._rpcServer.setWindow(undefined);
     this._bridgeServer.setWindow(undefined);
     this._nextRenderId = undefined;
@@ -286,7 +293,7 @@ export class Plugin {
         },
       },
     };
-    this._iframe?.contentWindow?.postMessage(event, "*");
+    this._iframeRoot?.contentWindow?.postMessage(event, "*");
   }
 
   public pushOnChangeNotification(viewId: number, value: any) {
@@ -301,7 +308,7 @@ export class Plugin {
         },
       },
     };
-    this._iframe?.contentWindow?.postMessage(event, "*");
+    this._iframeRoot?.contentWindow?.postMessage(event, "*");
   }
 
   public pushMountNotification() {
@@ -312,7 +319,7 @@ export class Plugin {
         data: {},
       },
     };
-    this._iframe?.contentWindow?.postMessage(event, "*");
+    this._iframeRoot?.contentWindow?.postMessage(event, "*");
   }
 
   public pushUnmountNotification() {
@@ -323,7 +330,7 @@ export class Plugin {
         data: {},
       },
     };
-    this._iframe?.contentWindow?.postMessage(event, "*");
+    this._iframeRoot?.contentWindow?.postMessage(event, "*");
   }
 
   public pushConnectNotification() {
@@ -337,12 +344,12 @@ export class Plugin {
         },
       },
     };
-    this.iframeGroupPostMessage(event);
+    this._iframeActive?.contentWindow!.postMessage(event, "*");
   }
 
   public pushConnectionChangedNotification(url: string) {
     this._connectionUrl = url;
-    if (this._iframe) {
+    if (this._iframeActive) {
       const event = {
         type: CHANNEL_PLUGIN_NOTIFICATION,
         detail: {
@@ -352,13 +359,13 @@ export class Plugin {
           },
         },
       };
-      this.iframeGroupPostMessage(event);
+      this._iframeActive?.contentWindow!.postMessage(event, "*");
     }
   }
 
   public pushPublicKeyChangedNotification(publicKey: string) {
     this._activeWallet = new PublicKey(publicKey);
-    if (this._iframe) {
+    if (this._iframeActive) {
       const event = {
         type: CHANNEL_PLUGIN_NOTIFICATION,
         detail: {
@@ -368,15 +375,8 @@ export class Plugin {
           },
         },
       };
-      this.iframeGroupPostMessage(event);
+      this._iframeActive?.contentWindow!.postMessage(event, "*");
     }
-  }
-
-  private iframeGroupPostMessage(event: any) {
-    this._iframe?.contentWindow!.postMessage(event, "*");
-    this._iframeChildren.forEach((iframe) => {
-      iframe.contentWindow!.postMessage(event, "*");
-    });
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -462,10 +462,13 @@ export class Plugin {
   // TODO: We should use the plugin mint address instead of the iframe url
   //       to namespace here.
   //
+  // Note: when an iframe is used *within* an xNFT, we namespace the storage
+  //       according to the root (not the child iframe).
+  //
   private async _handleGet(key: string): Promise<RpcResponse> {
     const resp = await this._backgroundClient.request({
       method: UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
-      params: [this.iframeUrl, key],
+      params: [this.iframeRootUrl, key],
     });
     return [resp];
   }
@@ -473,7 +476,7 @@ export class Plugin {
   private async _handlePut(key: string, value: any): Promise<RpcResponse> {
     const resp = await this._backgroundClient.request({
       method: UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
-      params: [this.iframeUrl, key, value],
+      params: [this.iframeRootUrl, key, value],
     });
     return [resp];
   }
@@ -501,7 +504,7 @@ export class Plugin {
       this._requestTxApprovalFn!({
         kind,
         data: transaction,
-        pluginUrl: this.iframeUrl,
+        pluginUrl: this.iframeRootUrl,
         publicKey,
         resolve,
         reject,
