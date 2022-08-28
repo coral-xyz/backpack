@@ -160,8 +160,10 @@ export class Plugin {
   }
 
   public handleIframeOnload(iframe: HTMLIFrameElement) {
-    this._rpcServer.setWindow(iframe.contentWindow);
-    this._bridgeServer.setWindow(iframe.contentWindow);
+    this._iframe = iframe;
+
+    this._rpcServer.setWindow(this._iframe.contentWindow);
+    this._bridgeServer.setWindow(this._iframe.contentWindow);
     this._dom = new Dom();
     this._pendingBridgeRequests = [];
     this.pushConnectNotification();
@@ -177,7 +179,13 @@ export class Plugin {
   public destroyIframe() {
     logger.debug("destroying iframe element");
 
-    document.head.removeChild(this._iframe!);
+    try {
+      document.head.removeChild(this._iframe!);
+    } catch (err) {
+      // error thrown if the this.iframe was not created in createIframe,
+      // but was assigned in handleIframeOnload instead
+    }
+
     this._iframe!.remove();
     this._iframe = undefined;
     this._rpcServer.setWindow(undefined);
