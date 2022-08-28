@@ -85,7 +85,7 @@ function SendTransactionRequest({ onClose }: any) {
   const plugins = usePlugins();
   const { publicKey } = useActiveWallet();
   const plugin = request
-    ? plugins.find((p) => p.iframeUrl === request.pluginUrl)
+    ? plugins.find((p) => p.iframeRootUrl === request.pluginUrl)
     : undefined;
 
   const onConfirm = async () => {
@@ -222,7 +222,7 @@ function _SignTransaction({
             fontSize: "14px",
           }}
         >
-          {plugin.iframeUrl}
+          {plugin.iframeRootUrl}
         </Typography>
       ),
       classes: { root: classes.approveTableRoot },

@@ -16,7 +16,6 @@ import {
   CHANNEL_PLUGIN_RPC_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
-  CHANNEL_PLUGIN_CONNECTION_BRIDGE,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
   SOLANA_RPC_METHOD_SIGN_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_TX,
@@ -55,7 +54,6 @@ export class Plugin {
   private _connectionUrl: string;
   private _rpcServer: PluginServer;
   private _bridgeServer: PluginServer;
-  private _connectionBridge: PluginServer;
   private _iframeRoot?: HTMLIFrameElement;
   private _iframeActive?: HTMLIFrameElement;
   private _nextRenderId?: number;
@@ -104,7 +102,6 @@ export class Plugin {
     // RPC Server channel from plugin -> extension-ui.
     //
     this._rpcServer = new PluginServer(
-      url,
       CHANNEL_PLUGIN_RPC_REQUEST,
       CHANNEL_PLUGIN_RPC_RESPONSE
     );
@@ -114,20 +111,9 @@ export class Plugin {
     // React reconciler bridge messages for custom React rendering.
     //
     this._bridgeServer = new PluginServer(
-      url,
       CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE
     );
     this._bridgeServer.handler(this._handleBridge.bind(this));
-
-    //
-    // Bridges messages for the solana connection object from the plugin
-    // to the background script.
-    //
-    this._connectionBridge = new PluginServer(
-      url,
-      CHANNEL_PLUGIN_CONNECTION_BRIDGE
-    );
-    this._connectionBridge.handler(this._handleConnectionBridge.bind(this));
 
     //
     // Effectively take a lock that's held until the setup is complete.
@@ -201,8 +187,8 @@ export class Plugin {
     document.head.removeChild(this._iframeRoot!);
     this._iframeRoot!.remove();
     this._iframeRoot = undefined;
-    this._rpcServer.setWindow(undefined);
-    this._bridgeServer.setWindow(undefined);
+    this._rpcServer.setWindow(undefined, "");
+    this._bridgeServer.setWindow(undefined, "");
     this._nextRenderId = undefined;
     this._dom = undefined;
     this._pendingBridgeRequests = undefined;
