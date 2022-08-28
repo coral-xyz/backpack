@@ -1226,6 +1226,7 @@ type IframeProps = {
   children: undefined;
   width: string;
   height: string;
+  xnft: boolean;
 };
 
 //

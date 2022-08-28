@@ -83,10 +83,15 @@ export async function send(
 export async function signTransaction(
   publicKey: PublicKey,
   requestManager: RequestManager,
+  connection: Connection,
   tx: Transaction
 ): Promise<Transaction> {
   if (!tx.feePayer) {
     tx.feePayer = publicKey;
+  }
+  if (!tx.recentBlockhash) {
+    const { blockhash } = await connection!.getLatestBlockhash();
+    tx.recentBlockhash = blockhash;
   }
   const txStr = encode(tx.serialize({ requireAllSignatures: false }));
   const signature = await requestManager.request({
@@ -101,8 +106,21 @@ export async function signTransaction(
 export async function signAllTransactions(
   publicKey: PublicKey,
   requestManager: RequestManager,
+  connection: Connection,
   txs: Array<Transaction>
 ): Promise<Array<Transaction>> {
+  let _blockhash: string | undefined;
+  for (let k = 0; k < txs.length; k += 1) {
+    const tx = txs[k];
+    if (!tx.recentBlockhash) {
+      if (!_blockhash) {
+        const { blockhash } = await connection!.getLatestBlockhash();
+        _blockhash = blockhash;
+      }
+      tx.recentBlockhash = _blockhash;
+    }
+  }
+
   // Serialize messages.
   const txStrs = txs.map((tx) => {
     const txSerialized = tx.serialize({ requireAllSignatures: false });

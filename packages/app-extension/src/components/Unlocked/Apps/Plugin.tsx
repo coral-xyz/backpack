@@ -7,7 +7,7 @@ import { PowerIcon, MoreIcon } from "../../common/Icon";
 export function PluginDisplay({ pluginUrl, closePlugin }: any) {
   const theme = useCustomTheme();
   const plugins = usePlugins();
-  const p = plugins.find((p) => p.iframeUrl === encodeURI(pluginUrl));
+  const p = plugins.find((p) => p.iframeRootUrl === encodeURI(pluginUrl));
 
   // Hack: This is hit due to the framer-motion animation.
   if (!pluginUrl) {
@@ -26,7 +26,7 @@ export function PluginDisplay({ pluginUrl, closePlugin }: any) {
       }}
     >
       <PluginControl closePlugin={closePlugin} />
-      <PluginRenderer key={p.iframeUrl} plugin={p} />
+      <PluginRenderer key={p.iframeRootUrl} plugin={p} />
     </div>
   );
 }

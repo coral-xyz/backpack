@@ -225,7 +225,8 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
 
   async signTransaction(
     tx: Transaction,
-    publicKey?: PublicKey
+    publicKey?: PublicKey,
+    connection?: Connection
   ): Promise<Transaction> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
@@ -233,13 +234,15 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
     return await cmn.signTransaction(
       publicKey ?? this.publicKey,
       this._requestManager,
+      connection ?? this.connection,
       tx
     );
   }
 
   async signAllTransactions(
     txs: Array<Transaction>,
-    publicKey?: PublicKey
+    publicKey?: PublicKey,
+    connection?: Connection
   ): Promise<Array<Transaction>> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
@@ -247,6 +250,7 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
     return await cmn.signAllTransactions(
       publicKey ?? this.publicKey,
       this._requestManager,
+      connection ?? this.connection,
       txs
     );
   }
