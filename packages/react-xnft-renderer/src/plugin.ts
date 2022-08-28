@@ -147,26 +147,41 @@ export class Plugin {
 
   // Onload handler for the top level iframe representing the xNFT.
   private handleRootIframeOnLoad() {
+    //
+    // Setup react reconciler.
+    //
     this._bridgeServer.setWindow(this._iframeRoot!.contentWindow);
     this._dom = new Dom();
     this._pendingBridgeRequests = [];
+
+    //
+    // Context switch to this iframe.
+    //
     this.setActiveIframe(this._iframeRoot!, this.iframeRootUrl);
+
     //
     // Done.
     //
     this._didFinishSetupResolver!();
   }
 
-  // Onload handler for iframes within an xNFT.
+  // Note: Each time this is called, the previous active iframe no longer
+  //       has the ability to make rpc invocations. Furthermore, the state
+  //       will become stale, e.g., window.xnft.publicKey will be incorrect
+  //       for the old active iframe since it will not receive the wallet
+  //       changed notification.
   //
-  // If xnftUrl is given, the iframe will hijack the xnft context, taking over
-  // the ability to use the RPC API and thus accesss the trusted transaction
-  // signing view.
+  //       In the future, we should properly cleanup the state for old iframes
+  //       e.g., push down a disconnect event and/or provide the ability
+  //       for multiple iframes within a single xNFT to have an active
+  //       connection to the host at once.
+  //
+  //       For now, we make the simplifying assumption that if this is called
+  //       it's meant for the iframe to fully hijack the xnft context.
+  //
   public setActiveIframe(iframe: HTMLIFrameElement, xnftUrl: string) {
-    if (xnftUrl) {
-      this._iframeActive = iframe;
-      this._rpcServer.setWindow(iframe.contentWindow, xnftUrl);
-    }
+    this._iframeActive = iframe;
+    this._rpcServer.setWindow(iframe.contentWindow, xnftUrl);
     this.pushConnectNotification();
   }
 
