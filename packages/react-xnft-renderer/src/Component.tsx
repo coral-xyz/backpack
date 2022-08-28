@@ -357,12 +357,11 @@ function Iframe({ props, style }: any) {
         overflowY: "hidden",
         ...style,
       }}
-      onLoad={({ currentTarget }) =>
-        plugin.handleChildIframeOnload(
-          currentTarget,
-          props.xnft ? props.src : undefined
-        )
-      }
+      onLoad={({ currentTarget }) => {
+        if (props.xnft) {
+          plugin.setActiveIframe(currentTarget, props.src);
+        }
+      }}
     ></iframe>
   ) : null;
 }

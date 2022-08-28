@@ -125,7 +125,7 @@ export class Plugin {
     });
 
     this.handleRootIframeOnLoad = this.handleRootIframeOnLoad.bind(this);
-    this._handleIframeOnload = this._handleIframeOnload.bind(this);
+    this.setActiveIframe = this.setActiveIframe.bind(this);
   }
 
   public get needsLoad() {
@@ -150,13 +150,10 @@ export class Plugin {
 
   // Onload handler for the top level iframe representing the xNFT.
   private handleRootIframeOnLoad() {
-    this._bridgeServer.setWindow(
-      this._iframeRoot!.contentWindow,
-      this.iframeRootUrl
-    );
+    this._bridgeServer.setWindow(this._iframeRoot!.contentWindow);
     this._dom = new Dom();
     this._pendingBridgeRequests = [];
-    this._handleIframeOnload(this._iframeRoot!, this.iframeRootUrl);
+    this.setActiveIframe(this._iframeRoot!, this.iframeRootUrl);
     //
     // Done.
     //
@@ -168,11 +165,7 @@ export class Plugin {
   // If xnftUrl is given, the iframe will hijack the xnft context, taking over
   // the ability to use the RPC API and thus accesss the trusted transaction
   // signing view.
-  public handleChildIframeOnload(iframe: HTMLIFrameElement, xnftUrl?: string) {
-    this._handleIframeOnload(iframe, xnftUrl);
-  }
-
-  private _handleIframeOnload(iframe: HTMLIFrameElement, xnftUrl?: string) {
+  public setActiveIframe(iframe: HTMLIFrameElement, xnftUrl: string) {
     if (xnftUrl) {
       this._iframeActive = iframe;
       this._rpcServer.setWindow(iframe.contentWindow, xnftUrl);
