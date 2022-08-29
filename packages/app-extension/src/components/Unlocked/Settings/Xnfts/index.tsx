@@ -3,6 +3,7 @@ import { Typography } from "@mui/material";
 import { Apps } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { useAppIcons } from "@coral-xyz/recoil";
+import { XNFT_GG_LINK } from "@coral-xyz/common";
 import { SettingsList } from "../../../common/Settings/List";
 import { PushDetail } from "../../../common";
 import { useNavStack } from "../../../common/Layout/NavStack";
@@ -55,7 +56,7 @@ export function XnftSettings() {
         marginBottom: "64px", // Tab height offset.
       }}
       buttonText={"Browse the xNFT Library"}
-      onClick={() => window.open("https://xnft.gg")}
+      onClick={() => window.open(XNFT_GG_LINK, "_blank")}
     />
   ) : (
     <div
