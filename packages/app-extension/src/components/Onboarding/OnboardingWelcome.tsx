@@ -28,13 +28,19 @@ import {
   BACKPACK_LINK,
 } from "@coral-xyz/common";
 import { DiscordIcon } from "../common/Icon";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { ActionCard } from "../common/Layout/ActionCard";
 import { BackpackHeader } from "../Locked";
 import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import { List, ListItem } from "../common/List";
 import { WithContaineredDrawer } from "../common/Layout/Drawer";
 import type { OnboardingFlows } from "./";
+
+const useStyles = styles((theme) => ({
+  listItemRoot: {
+    backgroundColor: "transparent !important",
+  },
+}));
 
 export function OnboardingWelcome({
   onSelect,
@@ -112,7 +118,11 @@ function OnboardingMenu({
         height: NAV_BAR_HEIGHT,
       }}
     >
-      <IconButton onClick={() => setMenuOpen(true)} sx={{ padding: 0 }}>
+      <IconButton
+        disableRipple
+        onClick={() => setMenuOpen(true)}
+        sx={{ padding: 0 }}
+      >
         <Menu sx={{ color: theme.custom.colors.secondary }} />
       </IconButton>
       <WithContaineredDrawer
@@ -131,6 +141,7 @@ function OnboardingMenu({
 }
 
 function OnboardingMenuList() {
+  const classes = useStyles();
   const theme = useCustomTheme();
 
   const options = [
@@ -160,7 +171,7 @@ function OnboardingMenuList() {
     <Box sx={{ color: theme.custom.colors.fontColor }}>
       <List
         style={{
-          background: theme.custom.colors.bg2,
+          backgroundColor: theme.custom.colors.bg2,
           marginLeft: "16px",
           marginRight: "16px",
           marginTop: "40px",
@@ -177,6 +188,9 @@ function OnboardingMenuList() {
             }}
             isLast={idx === options.length - 1}
             borderColor={theme.custom.colors.border1}
+            classes={{
+              root: classes.listItemRoot,
+            }}
           >
             <div
               style={{
