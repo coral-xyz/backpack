@@ -14,7 +14,8 @@ export function XnftSettings() {
   const xnfts = useAppIcons();
   const settingsMenu = {} as any;
   xnfts.forEach((xnft) => {
-    settingsMenu[xnft.install.publicKey.toString()] = {
+    const pubkeyStr = xnft.install.publicKey.toString();
+    settingsMenu[pubkeyStr] = {
       label: xnft.title,
       onClick: () => nav.push("xnfts-detail", { xnft }),
       icon: (props: any) => (

@@ -53,6 +53,17 @@ export const plugins = selector({
   get: ({ get }: any) => {
     return [
       {
+        url: SIMULATOR_URL,
+        iconUrl: "assets/simulator.png",
+        title: "Simulator",
+        activeWallet: get(activeWallet),
+        connectionUrl: get(solanaConnectionUrl),
+        install: {
+          publicKey: PublicKey.default.toString(),
+        },
+      },
+      /*
+      {
         url: DEGODS_TABLE_PLUGIN_URL,
         iconUrl: "assets/deadgods.png",
         title: "DeadGods",
@@ -113,16 +124,7 @@ export const plugins = selector({
           publicKey: Keypair.generate().publicKey,
         },
       },
-      {
-        url: SIMULATOR_URL,
-        iconUrl: "assets/simulator.png",
-        title: "Simulator",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(solanaConnectionUrl),
-        install: {
-          publicKey: Keypair.generate().publicKey,
-        },
-      },
+			*/
     ];
   },
 });

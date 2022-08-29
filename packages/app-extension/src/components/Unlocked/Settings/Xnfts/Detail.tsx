@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { CircularProgress, Typography, Button, Link } from "@mui/material";
+import { PublicKey } from "@solana/web3.js";
 import {
   getLogger,
   confirmTransaction,
@@ -25,6 +26,8 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   const theme = useCustomTheme();
   const [openConfirm, setOpenConfirm] = useState(false);
   const nav = useNavStack();
+
+  const isDisabled = xnft.install.publicKey === PublicKey.default.toString();
 
   useEffect(() => {
     nav.setTitle(xnft.title);
@@ -54,6 +57,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
           }}
         />
         <Button
+          disabled={isDisabled}
           disableRipple
           variant="contained"
           style={{
@@ -66,6 +70,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
             height: "48px",
             display: "flex",
             position: "relative",
+            opacity: isDisabled ? 0.5 : 1,
           }}
           onClick={() =>
             window.open(
@@ -84,6 +89,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
       </div>
       <div>
         <PrimaryButton
+          disabled={isDisabled}
           label={"Uninstall xNFT"}
           style={{
             backgroundColor: theme.custom.colors.negative,
