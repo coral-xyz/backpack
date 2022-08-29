@@ -77,6 +77,7 @@ import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
 import { GridIcon, CheckIcon } from "../../common/Icon";
 import { XnftSettings } from "./Xnfts";
+import { XnftDetail } from "./Xnfts/Detail";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -238,6 +239,10 @@ function AvatarButton() {
             <NavStackScreen
               name={"xnfts"}
               component={(props: any) => <XnftSettings {...props} />}
+            />
+            <NavStackScreen
+              name={"xnfts-detail"}
+              component={(props: any) => <XnftDetail {...props} />}
             />
           </NavStackEphemeral>
         </div>

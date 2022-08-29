@@ -29,9 +29,14 @@ export async function fetchXnfts(
   //
   // Get the metadata accounts for all xnfts.
   //
-  const pubkeys = xnftInstalls.map(({ account }) => account.masterMetadata);
+  const metadataPubkeys = xnftInstalls.map(
+    ({ account }) => account.masterMetadata
+  );
   const xnftMetadata = (
-    await anchor.utils.rpc.getMultipleAccounts(provider.connection, pubkeys)
+    await anchor.utils.rpc.getMultipleAccounts(
+      provider.connection,
+      metadataPubkeys
+    )
   ).map((t) => {
     if (!t) {
       return null;
@@ -55,11 +60,12 @@ export async function fetchXnfts(
   // Combine it all into a single list.
   //
   const xnfts = [] as any;
-  pubkeys.forEach((publicKey, idx) => {
+  metadataPubkeys.forEach((metadataPublicKey, idx) => {
     xnfts.push({
-      publicKey,
+      metadataPublicKey,
       metadata: xnftMetadata[idx],
       metadataBlob: xnftMetadataBlob[idx],
+      install: xnftInstalls[idx],
     });
   });
 
