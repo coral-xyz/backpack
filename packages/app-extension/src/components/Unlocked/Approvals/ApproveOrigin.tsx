@@ -101,8 +101,7 @@ export function ApproveOrigin({ origin, title, onCompletion }: any) {
           </ListItem>
         </List>
         <Typography className={classes.warning}>
-          Only connect to apps you trust.{" "}
-          <Link className={classes.link}>Learn more.</Link>
+          Only connect to apps you trust.
         </Typography>
       </>
     </WithApproval>
