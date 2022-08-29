@@ -27,6 +27,7 @@ import {
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+  DISCORD_INVITE_LINK,
 } from "@coral-xyz/common";
 import {
   Header,
@@ -583,7 +584,7 @@ function SettingsList({ close }: { close: () => void }) {
     },
     {
       label: "Help & Support",
-      onClick: () => console.log("help and support"),
+      onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
       icon: (props: any) => <Help {...props} />,
       detailIcon: <LaunchDetail />,
     },

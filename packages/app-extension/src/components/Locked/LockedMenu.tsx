@@ -7,6 +7,11 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import CallMadeIcon from "@mui/icons-material/CallMade";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
+import {
+  DISCORD_INVITE_LINK,
+  TWITTER_LINK,
+  BACKPACK_LINK,
+} from "@coral-xyz/common";
 import { List, ListItem } from "../common/List";
 import { WithDrawer, CloseButton } from "../common/Layout/Drawer";
 import { Reset } from "./Reset";
@@ -104,22 +109,22 @@ export function LockedMenuList() {
     {
       icon: <SupportIcon style={{ color: theme.custom.colors.secondary }} />,
       text: "Help & Support",
-      onClick: () => console.log("help & support"), // TODO:
+      onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
     },
     {
       icon: <LockIcon style={{ color: theme.custom.colors.secondary }} />,
       text: "Backpack.app",
-      onClick: () => window.open("https://backpack.app", "_blank"),
+      onClick: () => window.open(BACKPACK_LINK, "_blank"),
     },
     {
       icon: <TwitterIcon style={{ color: theme.custom.colors.secondary }} />,
       text: "Twitter",
-      onClick: () => window.open("https://twitter.com/xNFT_Backpack", "_blank"),
+      onClick: () => window.open(TWITTER_LINK, "_blank"),
     },
     {
       icon: <DiscordIcon fill={theme.custom.colors.secondary} />,
       text: "Discord",
-      onClick: () => console.log("discord"), // TODO:
+      onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
     },
   ];
 

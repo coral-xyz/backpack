@@ -22,6 +22,11 @@ import {
   Support,
   Twitter,
 } from "@mui/icons-material";
+import {
+  DISCORD_INVITE_LINK,
+  TWITTER_LINK,
+  BACKPACK_LINK,
+} from "@coral-xyz/common";
 import { DiscordIcon } from "../common/Icon";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ActionCard } from "../common/Layout/ActionCard";
@@ -132,22 +137,22 @@ function OnboardingMenuList() {
     {
       icon: <Support style={{ color: theme.custom.colors.secondary }} />,
       text: "Help & Support",
-      onClick: () => console.log("help & support"), // TODO:
+      onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
     },
     {
       icon: <Lock style={{ color: theme.custom.colors.secondary }} />,
       text: "Backpack.app",
-      onClick: () => window.open("https://backpack.app", "_blank"),
+      onClick: () => window.open(BACKPACK_LINK, "_blank"),
     },
     {
       icon: <Twitter style={{ color: theme.custom.colors.secondary }} />,
       text: "Twitter",
-      onClick: () => window.open("https://twitter.com/xNFT_Backpack", "_blank"),
+      onClick: () => window.open(TWITTER_LINK, "_blank"),
     },
     {
       icon: <DiscordIcon fill={theme.custom.colors.secondary} />,
       text: "Discord",
-      onClick: () => console.log("discord"), // TODO:
+      onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
     },
   ];
 
