@@ -7,6 +7,7 @@ import {
   InputAdornment,
   Link,
 } from "@mui/material";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import makeStyles from "@mui/styles/makeStyles";
 import {
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
@@ -214,7 +215,11 @@ export function MnemonicInput({
           )}
           {readOnly && (
             <Box sx={{ marginBottom: "12px" }}>
-              <CopyButton text={mnemonic} disabled={!copyEnabled} />
+              <CopyButton
+                text={mnemonic}
+                icon={<ContentCopyIcon />}
+                disabled={!copyEnabled}
+              />
             </Box>
           )}
           <PrimaryButton
