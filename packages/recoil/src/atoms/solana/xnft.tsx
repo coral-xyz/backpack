@@ -1,5 +1,5 @@
 import { atom, selector } from "recoil";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, Keypair } from "@solana/web3.js";
 import { BACKPACK_CONFIG_XNFT_PROXY, SIMULATOR_PORT } from "@coral-xyz/common";
 import { activeWallet } from "../wallet";
 import { solanaConnectionUrl } from "./preferences";
@@ -58,6 +58,9 @@ export const plugins = selector({
         title: "DeadGods",
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
+        install: {
+          publicKey: Keypair.generate().publicKey,
+        },
       },
       {
         url: AURORY_PLUGIN_URL,
@@ -65,6 +68,9 @@ export const plugins = selector({
         title: "Aurory",
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
+        install: {
+          publicKey: Keypair.generate().publicKey,
+        },
       },
       {
         url: NETWORK_MONITOR,
@@ -73,6 +79,9 @@ export const plugins = selector({
         title: "Monitor",
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
+        install: {
+          publicKey: Keypair.generate().publicKey,
+        },
       },
       {
         url: PRICES_PLUGIN_URL,
@@ -80,6 +89,9 @@ export const plugins = selector({
         title: "Prices",
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
+        install: {
+          publicKey: Keypair.generate().publicKey,
+        },
       },
       {
         url: MANGO_TABLE_PLUGIN_URL,
@@ -87,6 +99,9 @@ export const plugins = selector({
         title: "Mango",
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
+        install: {
+          publicKey: Keypair.generate().publicKey,
+        },
       },
       {
         url: PSYFI_PLUGIN_URL,
@@ -94,6 +109,9 @@ export const plugins = selector({
         title: "Psyfi",
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
+        install: {
+          publicKey: Keypair.generate().publicKey,
+        },
       },
       {
         url: SIMULATOR_URL,
@@ -101,6 +119,9 @@ export const plugins = selector({
         title: "Simulator",
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
+        install: {
+          publicKey: Keypair.generate().publicKey,
+        },
       },
     ];
   },
