@@ -690,6 +690,11 @@ class Dom {
           instance.style = updatePayload.style;
         }
         break;
+      case NodeKind.Image:
+        if (updatePayload.style) {
+          instance.style = updatePayload.style;
+        }
+        break;
       default:
         throw new Error("invariant violation");
     }

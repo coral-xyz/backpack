@@ -251,6 +251,11 @@ const RECONCILER = ReactReconciler({
         return payload;
       case NodeKind.Image:
         // @ts-ignore
+        if (oldProps.style !== newProps.style) {
+          // @ts-ignore
+          payload = { ...payload, style: newProps.style };
+        }
+        // @ts-ignore
         if (oldProps.onClick !== newProps.onClick) {
           // @ts-ignore
           payload = { ...payload, onClick: newProps.onClick };
@@ -393,6 +398,9 @@ const RECONCILER = ReactReconciler({
         }
         break;
       case NodeKind.Image:
+        if (updatePayload.style) {
+          instance.style = updatePayload.style;
+        }
         if (
           updatePayload.onClick !== undefined &&
           updatePayload.onClick !== null
