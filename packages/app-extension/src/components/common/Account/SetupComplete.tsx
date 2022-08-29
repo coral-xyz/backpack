@@ -56,6 +56,7 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
             }}
           >
             <Grid container spacing={2}>
+              {/*
               <Grid item xs={6}>
                 <ActionCard
                   icon={<CashIcon />}
@@ -63,13 +64,12 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
                   onClick={() => {}}
                 />
               </Grid>
+								*/}
               <Grid item xs={6}>
                 <ActionCard
                   icon={<WidgetIcon />}
                   text="Browse the xNFT library"
-                  onClick={() =>
-                    window.open("https://backpack.app/library", "_blank")
-                  }
+                  onClick={() => window.open("https://xnft.gg", "_blank")}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -85,7 +85,9 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
                 <ActionCard
                   icon={<DiscordIcon />}
                   text="Join the Discord community"
-                  onClick={() => {}} // TODO:
+                  onClick={() =>
+                    window.open("https://discord.gg/RfwUqWrn7T", "_blank")
+                  }
                 />
               </Grid>
             </Grid>
