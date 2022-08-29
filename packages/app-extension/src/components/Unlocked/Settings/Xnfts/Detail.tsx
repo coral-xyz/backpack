@@ -82,7 +82,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
             height: "48px",
             display: "flex",
             position: "relative",
-            opacity: isDisabled ? 0.5 : 1,
+            opacity: isDisabled ? 0.5 : undefined,
           }}
           onClick={() =>
             window.open(
