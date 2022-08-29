@@ -14,6 +14,8 @@ import {
   useSolanaConnectionUrl,
   useNavigation,
 } from "@coral-xyz/recoil";
+import { SwitchToggle } from "../Preferences";
+import { SettingsList } from "../../../common/Settings/List";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { PrimaryButton, SecondaryButton, LaunchDetail } from "../../../common";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
@@ -32,6 +34,16 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   useEffect(() => {
     nav.setTitle(xnft.title);
   }, []);
+
+  const menuItems = {
+    Display: {
+      detail: <SwitchToggle enabled={true} onChange={() => {}} />,
+      onClick: () => {},
+      style: {
+        opacity: 0.5,
+      },
+    },
+  };
 
   return (
     <div
@@ -88,6 +100,24 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
         </Button>
       </div>
       <div>
+        <SettingsList
+          menuItems={menuItems}
+          style={{
+            marginLeft: 0,
+            marginRight: 0,
+          }}
+        />
+        <Typography
+          style={{
+            fontSize: "14px",
+            marginTop: "36px",
+            marginBottom: "36px",
+            textAlign: "center",
+            color: theme.custom.colors.secondary,
+          }}
+        >
+          Uninstalling will remove this xNFT from your account.
+        </Typography>
         <PrimaryButton
           disabled={isDisabled}
           label={"Uninstall xNFT"}
