@@ -104,7 +104,7 @@ program
         fs.writeFileSync("dist/index.js", "");
       }
 
-      let js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
+      js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
       await bundler.watch((err, buildEvent) => {
         console.log("build changed");
         if (err) {
