@@ -24,6 +24,7 @@ import * as anchor from "@project-serum/anchor";
 import type { Program, SplToken } from "@project-serum/anchor";
 import { associatedTokenAddress } from "./programs/token";
 import * as assertOwner from "./programs/assert-owner";
+import { xnftClient } from "./programs/xnft";
 import { SolanaProvider } from "./provider";
 import type { BackgroundClient } from "../";
 
@@ -44,7 +45,9 @@ export type SolanaContext = {
 };
 
 //
-// API for performing Solana actions.
+// API for performing Solana actions from within the wallet. Careful, invoking
+// these methods will automatically execute within the wallet without an
+// approval screen.
 //
 export class Solana {
   public static async transferToken(
@@ -181,9 +184,32 @@ export class Solana {
     });
   }
 
-  public static async uninstallXnft(ctx: SolanaContext): Promise<string> {
-    // todo
-    return "";
+  public static async uninstallXnft(
+    ctx: SolanaContext,
+    req: DeleteInstallRequest
+  ): Promise<string> {
+    const client = xnftClient(ctx.tokenClient.provider);
+    const { install } = req;
+    const receiver = ctx.walletPublicKey;
+    const authority = ctx.walletPublicKey;
+    const tx = await client.methods
+      .deleteInstall()
+      .accounts({
+        install,
+        receiver,
+        authority,
+      })
+      .transaction();
+    tx.feePayer = ctx.walletPublicKey;
+    tx.recentBlockhash = (
+      await ctx.connection.getLatestBlockhash(ctx.commitment)
+    ).blockhash;
+    const signedTx = await SolanaProvider.signTransaction(ctx, tx);
+    const rawTx = signedTx.serialize();
+    return await ctx.tokenClient.provider.connection.sendRawTransaction(rawTx, {
+      skipPreflight: false,
+      preflightCommitment: ctx.commitment,
+    });
   }
 }
 
@@ -365,4 +391,8 @@ export type UnwrapSolRequest = {
   // SOL address.
   destination: PublicKey;
   amount: number;
+};
+
+export type DeleteInstallRequest = {
+  install: PublicKey;
 };

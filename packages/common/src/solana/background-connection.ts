@@ -746,10 +746,21 @@ export async function confirmTransaction(
   txSig: string,
   commitment: Finality
 ) {
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-  let tx = await c.getParsedTransaction(txSig, commitment);
-  while (tx === null) {
-    tx = await c.getParsedTransaction(txSig, commitment);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  }
+  return new Promise(async (resolve, reject) => {
+    setTimeout(
+      () =>
+        reject(
+          new Error(
+            `30 second timeout: unable to confirm transaction: ${txSig}`
+          )
+        ),
+      30000
+    );
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    let tx = await c.getParsedTransaction(txSig, commitment);
+    while (tx === null) {
+      tx = await c.getParsedTransaction(txSig, commitment);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  });
 }

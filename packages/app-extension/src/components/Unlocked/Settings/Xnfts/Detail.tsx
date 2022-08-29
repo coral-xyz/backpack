@@ -118,8 +118,9 @@ const UninstallConfirmationCard = ({ xnft }: { xnft: any }) => {
     //
     let txSig = "";
     try {
-      txSig = await Solana.uninstallXnft(ctx);
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      txSig = await Solana.uninstallXnft(ctx, {
+        install: xnft.install.publicKey,
+      });
     } catch (err) {
       logger.error("unable to send transaction", err);
       setCardType("error");

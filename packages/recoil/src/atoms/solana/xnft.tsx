@@ -115,7 +115,6 @@ export const xnfts = atom({
       const _activeWallet = get(activeWallet);
       const _connectionUrl = get(solanaConnectionUrl);
       return (await b.xnfts).map((xnft) => {
-        console.log("XNFT HERE", xnft);
         return {
           ...xnft,
           url: xnftUrl(xnft.metadataBlob.properties.bundle),
