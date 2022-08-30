@@ -108,7 +108,7 @@ function SendTransactionRequest({ onClose }: any) {
     request!.resolve(signature);
     setRequest(undefined);
   };
-
+  console.log("ARMANI REQUEST HERE", request);
   return (
     <div
       style={{
@@ -321,6 +321,27 @@ function _SignTransaction({
 }
 
 function SignMessage({ message }: any) {
-  // todo
-  return <></>;
+  const theme = useCustomTheme();
+  return (
+    <div>
+      <Typography
+        style={{
+          color: theme.custom.colors.fontColor,
+          fontWeight: 500,
+          fontSize: "18px",
+          lineHeight: "24px",
+          textAlign: "center",
+        }}
+      >
+        Approve Transaction
+      </Typography>
+      <div
+        style={{
+          marginTop: "18px",
+        }}
+      >
+        {message}
+      </div>
+    </div>
+  );
 }
