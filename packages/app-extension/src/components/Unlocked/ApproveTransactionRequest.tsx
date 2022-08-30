@@ -8,6 +8,7 @@ import {
   usePlugins,
 } from "@coral-xyz/recoil";
 import {
+  UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
   UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
 } from "@coral-xyz/common";
@@ -96,6 +97,11 @@ function SendTransactionRequest({ onClose }: any) {
     if (request!.kind === "sign-tx") {
       signature = await background.request({
         method: UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
+        params: [request.data, publicKey.toString()],
+      });
+    } else if (request!.kind === "sign-msg") {
+      signature = await background.request({
+        method: UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
         params: [request.data, publicKey.toString()],
       });
     } else {
@@ -321,6 +327,30 @@ function _SignTransaction({
 }
 
 function SignMessage({ message }: any) {
-  // todo
-  return <></>;
+  const theme = useCustomTheme();
+  return (
+    <div>
+      <Typography
+        style={{
+          color: theme.custom.colors.fontColor,
+          fontWeight: 500,
+          fontSize: "18px",
+          lineHeight: "24px",
+          textAlign: "center",
+        }}
+      >
+        Approve Transaction
+      </Typography>
+      <div
+        style={{
+          marginTop: "18px",
+          backgroundColor: theme.custom.colors.bg2,
+          padding: "8px",
+          borderRadius: "8px",
+        }}
+      >
+        {message}
+      </div>
+    </div>
+  );
 }

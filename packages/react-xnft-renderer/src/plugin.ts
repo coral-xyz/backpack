@@ -21,6 +21,7 @@ import {
   SOLANA_RPC_METHOD_SIGN_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_TX,
   SOLANA_RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
   SOLANA_RPC_METHOD_SIMULATE as PLUGIN_SOLANA_RPC_METHOD_SIMULATE_TX,
+  SOLANA_RPC_METHOD_SIGN_MESSAGE as PLUGIN_SOLANA_RPC_METHOD_SIGN_MESSAGE,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ON_CLICK,
   PLUGIN_NOTIFICATION_ON_CHANGE,
@@ -393,6 +394,8 @@ export class Plugin {
           params[0],
           params[1]
         );
+      case PLUGIN_SOLANA_RPC_METHOD_SIGN_MESSAGE:
+        return await this._handleSolanaSignMessage(params[0], params[1]);
       case PLUGIN_SOLANA_RPC_METHOD_SIMULATE_TX:
         return await this._handleSolanaSimulate(params[0], params[1]);
       default:
@@ -405,11 +408,6 @@ export class Plugin {
     transaction: string,
     pubkey: string
   ): Promise<RpcResponse> {
-    const err = this.clickHandlerError();
-    if (err) {
-      return err;
-    }
-
     try {
       const signature = await this._requestTransactionApproval(
         "sign-tx",
@@ -426,15 +424,26 @@ export class Plugin {
     transaction: string,
     pubkey: string
   ): Promise<RpcResponse> {
-    const err = this.clickHandlerError();
-    if (err) {
-      return err;
-    }
-
     try {
       const signature = await this._requestTransactionApproval(
         "sign-and-send-tx",
         transaction,
+        pubkey
+      );
+      return [signature];
+    } catch (err) {
+      return [null, err.toString()];
+    }
+  }
+
+  private async _handleSolanaSignMessage(
+    msg: string,
+    pubkey: string
+  ): Promise<RpcResponse> {
+    try {
+      const signature = await this._requestTransactionApproval(
+        "sign-msg",
+        msg,
         pubkey
       );
       return [signature];

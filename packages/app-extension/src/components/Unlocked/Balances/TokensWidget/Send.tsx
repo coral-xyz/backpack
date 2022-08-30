@@ -370,6 +370,10 @@ export function SendConfirmationCard({
     }
   };
 
+  const retry = () => {
+    // todo
+  };
+
   return (
     <div>
       {cardType === "confirm" ? (
@@ -394,7 +398,7 @@ export function SendConfirmationCard({
           signature={txSignature!}
         />
       ) : (
-        <Error signature={txSignature!} />
+        <Error signature={txSignature!} onRetry={() => retry()} />
       )}
     </div>
   );
@@ -653,31 +657,47 @@ function Sending({
   );
 }
 
-function Error({ signature }: { signature: string }) {
+function Error({
+  signature,
+  onRetry,
+}: {
+  signature: string;
+  onRetry: () => void;
+}) {
   const theme = useCustomTheme();
   const explorer = useSolanaExplorer();
   const connectionUrl = useSolanaConnectionUrl();
   return (
     <div
       style={{
+        height: "340px",
         display: "flex",
+        justifyContent: "space-between",
         flexDirection: "column",
-        justifyContent: "center",
-        height: "100%",
       }}
     >
-      <Typography
-        style={{ textAlign: "center", color: theme.custom.colors.secondary }}
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
       >
-        There was a problem confirming the transaction.
-      </Typography>
-      <Link
-        href={explorerUrl(explorer, signature, connectionUrl)}
-        target="_blank"
-        style={{ textAlign: "center" }}
-      >
-        View Transaction
-      </Link>
+        <Typography
+          style={{ textAlign: "center", color: theme.custom.colors.secondary }}
+        >
+          There was a problem confirming the transaction.
+        </Typography>
+        <Link
+          href={explorerUrl(explorer, signature, connectionUrl)}
+          target="_blank"
+          style={{ textAlign: "center" }}
+        >
+          View Transaction
+        </Link>
+      </div>
+      <div>TODO</div>
     </div>
   );
 }
