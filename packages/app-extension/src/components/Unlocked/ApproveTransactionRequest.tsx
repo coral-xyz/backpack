@@ -8,6 +8,7 @@ import {
   usePlugins,
 } from "@coral-xyz/recoil";
 import {
+  UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
   UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
 } from "@coral-xyz/common";
@@ -98,6 +99,11 @@ function SendTransactionRequest({ onClose }: any) {
         method: UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
         params: [request.data, publicKey.toString()],
       });
+    } else if (request!.kind === "sign-msg") {
+      signature = await background.request({
+        method: UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
+        params: [request.data, publicKey.toString()],
+      });
     } else {
       signature = await background.request({
         method: UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
@@ -108,7 +114,7 @@ function SendTransactionRequest({ onClose }: any) {
     request!.resolve(signature);
     setRequest(undefined);
   };
-  console.log("ARMANI REQUEST HERE", request);
+
   return (
     <div
       style={{
@@ -338,6 +344,9 @@ function SignMessage({ message }: any) {
       <div
         style={{
           marginTop: "18px",
+          backgroundColor: theme.custom.colors.bg2,
+          padding: "8px",
+          borderRadius: "8px",
         }}
       >
         {message}

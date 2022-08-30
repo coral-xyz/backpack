@@ -408,11 +408,6 @@ export class Plugin {
     transaction: string,
     pubkey: string
   ): Promise<RpcResponse> {
-    const err = this.clickHandlerError();
-    if (err) {
-      return err;
-    }
-
     try {
       const signature = await this._requestTransactionApproval(
         "sign-tx",
@@ -429,11 +424,6 @@ export class Plugin {
     transaction: string,
     pubkey: string
   ): Promise<RpcResponse> {
-    const err = this.clickHandlerError();
-    if (err) {
-      return err;
-    }
-
     try {
       const signature = await this._requestTransactionApproval(
         "sign-and-send-tx",
@@ -450,11 +440,6 @@ export class Plugin {
     msg: string,
     pubkey: string
   ): Promise<RpcResponse> {
-    const err = this.clickHandlerError();
-    if (err) {
-      return err;
-    }
-    console.log("ARMANI: HANDLING SOLAN ASIGN", msg, pubkey);
     try {
       const signature = await this._requestTransactionApproval(
         "sign-msg",

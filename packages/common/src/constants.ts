@@ -121,6 +121,7 @@ export const UI_RPC_METHOD_SOLANA_SIMULATE = "ui-rpc-method-simulate";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_READ = "solana-explorer-read";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE = "solana-explorer-update";
 export const UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION = "ui-rpc-method-sign-tx";
+export const UI_RPC_METHOD_SOLANA_SIGN_MESSAGE = "solana-sign-message";
 export const UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS =
   "ui-rpc-method-sign-all-txs";
 export const UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION =
