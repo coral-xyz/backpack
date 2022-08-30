@@ -639,7 +639,7 @@ async function handleSolanaSignMessage(
   msg: string,
   publicKey: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaSignTransaction(msg, publicKey);
+  const resp = await ctx.backend.solanaSignMessage(msg, publicKey);
   return [resp];
 }
 
