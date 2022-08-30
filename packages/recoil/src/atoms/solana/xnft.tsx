@@ -62,7 +62,7 @@ export const plugins = selector({
           publicKey: PublicKey.default.toString(),
         },
       },
-      /*
+
       {
         url: DEGODS_TABLE_PLUGIN_URL,
         iconUrl: "assets/deadgods.png",
@@ -124,7 +124,6 @@ export const plugins = selector({
           publicKey: Keypair.generate().publicKey,
         },
       },
-			*/
     ];
   },
 });

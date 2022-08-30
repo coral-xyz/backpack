@@ -260,6 +260,11 @@ const RECONCILER = ReactReconciler({
           // @ts-ignore
           payload = { ...payload, onClick: newProps.onClick };
         }
+        // @ts-ignore
+        if (oldProps.src !== newProps.src) {
+          // @ts-ignore
+          payload = { ...payload, src: newProps.src };
+        }
         return payload;
       case NodeKind.Iframe:
         return null;
@@ -400,6 +405,10 @@ const RECONCILER = ReactReconciler({
       case NodeKind.Image:
         if (updatePayload.style) {
           instance.style = updatePayload.style;
+        }
+        if (updatePayload.src) {
+          // @ts-ignore
+          instance.props.src = updatePayload.src;
         }
         if (
           updatePayload.onClick !== undefined &&
@@ -684,11 +693,13 @@ function createImageInstance(
     CLICK_HANDLERS.set(id, vProps.onClick);
     onClick = true;
   }
+  const src = (props as ImageProps).src;
   return {
     id,
     kind: NodeKind.Image,
     props: {
       ...props,
+      src,
       onClick,
       children: undefined,
     },
@@ -1144,6 +1155,7 @@ type ImageProps = {
   style: Style;
   onClick?: (() => Promise<void>) | boolean;
   children: undefined;
+  src: string;
 };
 
 //

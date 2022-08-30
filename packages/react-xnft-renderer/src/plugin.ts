@@ -694,6 +694,9 @@ class Dom {
         if (updatePayload.style) {
           instance.style = updatePayload.style;
         }
+        if (updatePayload.src) {
+          instance.props.src = updatePayload.src;
+        }
         break;
       default:
         throw new Error("invariant violation");
