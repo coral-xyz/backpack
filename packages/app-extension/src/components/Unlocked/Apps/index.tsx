@@ -42,6 +42,9 @@ const useStyles = styles((theme) => ({
     fontSize: "12px",
     lineHeight: "16px",
     textAlign: "center",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   },
 }));
 
