@@ -106,24 +106,34 @@ export const walletPublicKeys = atom<WalletPublicKeys>({
   }),
 });
 
+export const activeEthereumWallet = selector({
+  key: "activeEthereumWallet",
+  get: ({ get }) => {
+    const activeWallets = get(activeWalletsWithData);
+    return activeWallets.find(
+      (w: any) => w!.blockchain === Blockchain.ETHEREUM
+    );
+  },
+});
+
 export const ethereumPublicKey = selector({
   key: "ethereumPublicKey",
   get: ({ get }) => {
+    return get(activeEthereumWallet)?.publicKey ?? null;
+  },
+});
+
+export const activeSolanaWallet = selector({
+  key: "ethereumWallet",
+  get: ({ get }) => {
     const activeWallets = get(activeWalletsWithData);
-    return (
-      activeWallets.find((w: any) => w!.blockchain === Blockchain.ETHEREUM)
-        ?.publicKey ?? null
-    );
+    return activeWallets.find((w: any) => w!.blockchain === Blockchain.SOLANA);
   },
 });
 
 export const solanaPublicKey = selector({
   key: "solanaPublicKey",
   get: ({ get }) => {
-    const activeWallets = get(activeWalletsWithData);
-    return (
-      activeWallets.find((w: any) => w!.blockchain === Blockchain.SOLANA)
-        ?.publicKey ?? null
-    );
+    return get(activeSolanaWallet)?.publicKey ?? null;
   },
 });
