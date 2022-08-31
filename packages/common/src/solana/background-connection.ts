@@ -198,6 +198,7 @@ export class BackgroundSolanaConnection extends Connection {
         return a;
       }
       a.data = Buffer.from(a.data);
+      a.owner = new PublicKey(a.owner.toString());
       return a;
     });
   }
@@ -749,11 +750,7 @@ export async function confirmTransaction(
   return new Promise(async (resolve, reject) => {
     setTimeout(
       () =>
-        reject(
-          new Error(
-            `30 second timeout: unable to confirm transaction: ${txSig}`
-          )
-        ),
+        reject(new Error(`30 second timeout: unable to confirm transaction`)),
       30000
     );
     await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -762,5 +759,6 @@ export async function confirmTransaction(
       tx = await c.getParsedTransaction(txSig, commitment);
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
+    resolve(tx);
   });
 }

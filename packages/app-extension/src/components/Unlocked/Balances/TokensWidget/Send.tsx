@@ -41,7 +41,7 @@ import { useNavStack } from "../../../common/Layout/NavStack";
 import { MaxLabel } from "../../../common/MaxLabel";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
 import { SettingsList } from "../../../common/Settings/List";
-import { CheckIcon } from "../../../common/Icon";
+import { CheckIcon, CrossIcon } from "../../../common/Icon";
 
 const logger = getLogger("send-component");
 
@@ -308,12 +308,17 @@ export function SendConfirmationCard({
   const solanaCtx = useSolanaCtx();
   const ethereumCtx = useEthereumCtx();
   const [txSignature, setTxSignature] = useState<string | null>(null);
+  const [txSettings, setTxSettings] = useState<any>({});
+  const [error, setError] = useState(
+    "Error 422. Transaction time out. Runtime error. Reticulating splines."
+  );
   const [cardType, setCardType] = useState<
     "confirm" | "sending" | "complete" | "error"
   >("confirm");
 
   const onConfirm = async (txSettings: object) => {
     setCardType("sending");
+    setTxSettings(txSettings);
     switch (blockchain) {
       case Blockchain.SOLANA:
         return await onSolanaTransfer();
@@ -389,8 +394,9 @@ export function SendConfirmationCard({
           decimals: token.decimals,
         });
       }
-    } catch (err) {
+    } catch (err: any) {
       logger.error("solana transaction failed", err);
+      setError(err.toString());
       setCardType("error");
       return;
     }
@@ -410,14 +416,15 @@ export function SendConfirmationCard({
           : solanaCtx.commitment
       );
       setCardType("complete");
-    } catch (err) {
+    } catch (err: any) {
       logger.error("unable to confirm", err);
+      setError(err.toString());
       setCardType("error");
     }
   };
 
   const retry = () => {
-    // todo
+    onConfirm(txSettings);
   };
 
   return (
@@ -451,6 +458,7 @@ export function SendConfirmationCard({
           blockchain={blockchain}
           signature={txSignature!}
           onRetry={() => retry()}
+          error={error}
         />
       )}
     </div>
@@ -895,13 +903,15 @@ function Sending({
   );
 }
 
-function Error({
+export function Error({
   blockchain,
   signature,
   onRetry,
+  error,
 }: {
   blockchain: Blockchain;
   signature: string;
+  error: string;
   onRetry: () => void;
 }) {
   const theme = useCustomTheme();
@@ -924,30 +934,57 @@ function Error({
         display: "flex",
         justifyContent: "space-between",
         flexDirection: "column",
+        padding: "16px",
       }}
     >
       <div
         style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
+          marginTop: "8px",
+          textAlign: "center",
         }}
       >
         <Typography
-          style={{ textAlign: "center", color: theme.custom.colors.secondary }}
+          style={{
+            marginBottom: "16px",
+          }}
         >
-          There was a problem confirming the transaction.
+          Error
         </Typography>
-        <Link
-          href={explorerUrl(explorer, signature, connectionUrl)}
-          target="_blank"
-          style={{ textAlign: "center" }}
+        <div
+          style={{
+            height: "48px",
+          }}
         >
-          View Transaction
-        </Link>
+          <CrossIcon />
+        </div>
+        <Typography
+          style={{
+            marginTop: "16px",
+            marginBottom: "16px",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {error}
+        </Typography>
+        <SecondaryButton
+          style={{
+            height: "40px",
+            width: "147px",
+          }}
+          buttonLabelStyle={{
+            fontSize: "14px",
+          }}
+          label={"View Explorer"}
+          onClick={() =>
+            window.open(
+              explorerUrl(explorer, signature, connectionUrl),
+              "_blank"
+            )
+          }
+        />
       </div>
-      <div>TODO</div>
+      <PrimaryButton label={"Retry"} onClick={() => onRetry()} />
     </div>
   );
 }

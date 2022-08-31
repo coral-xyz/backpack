@@ -5,6 +5,7 @@ import {
   getLogger,
   confirmTransaction,
   explorerUrl,
+  Blockchain,
   Solana,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -21,6 +22,7 @@ import { PrimaryButton, SecondaryButton, LaunchDetail } from "../../../common";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
 import { CheckIcon } from "../../../common/Icon";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
+import { Error } from "../../Balances/TokensWidget/Send";
 
 const logger = getLogger("xnft-detail");
 
@@ -139,6 +141,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
 
 const UninstallConfirmationCard = ({ xnft }: { xnft: any }) => {
   const ctx = useSolanaCtx();
+  const [error, setError] = useState("");
   const [cardType, setCardType] = useState<
     "confirm" | "sending" | "complete" | "error"
   >("confirm");
@@ -175,11 +178,17 @@ const UninstallConfirmationCard = ({ xnft }: { xnft: any }) => {
           ? "confirmed"
           : ctx.commitment
       );
-    } catch (err) {
+    } catch (err: any) {
       logger.error("unable to confirm", err);
+      setError(err.toString());
       setCardType("error");
     }
   };
+
+  const retry = () => {
+    onConfirm();
+  };
+
   return cardType === "confirm" ? (
     <ConfirmUninstall xnft={xnft} onConfirm={onConfirm} />
   ) : cardType === "sending" ? (
@@ -187,7 +196,12 @@ const UninstallConfirmationCard = ({ xnft }: { xnft: any }) => {
   ) : cardType === "complete" ? (
     <Sending signature={txSignature!} isComplete={true} />
   ) : (
-    <Error signature={txSignature!} />
+    <Error
+      blockchain={Blockchain.SOLANA}
+      signature={txSignature!}
+      error={error}
+      onRetry={() => retry()}
+    />
   );
 };
 
@@ -235,35 +249,6 @@ const ConfirmUninstall = ({
     </div>
   );
 };
-
-function Error({ signature }: { signature: string }) {
-  const theme = useCustomTheme();
-  const explorer = useSolanaExplorer();
-  const connectionUrl = useSolanaConnectionUrl();
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        height: "100%",
-      }}
-    >
-      <Typography
-        style={{ textAlign: "center", color: theme.custom.colors.secondary }}
-      >
-        There was a problem confirming the transaction.
-      </Typography>
-      <Link
-        href={explorerUrl(explorer, signature, connectionUrl)}
-        target="_blank"
-        style={{ textAlign: "center" }}
-      >
-        View Transaction
-      </Link>
-    </div>
-  );
-}
 
 function Sending({
   signature,
