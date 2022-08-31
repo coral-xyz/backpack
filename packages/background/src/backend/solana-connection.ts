@@ -73,19 +73,22 @@ import {
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
 } from "@coral-xyz/common";
+import type { CachedValue } from "../types";
 
 const logger = getLogger("solana-connection-backend");
 
 export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
 export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;
+// Time until cached values expire. This is arbitrary.
+const CACHE_EXPIRY = 15000;
 
-export function start(events: EventEmitter): Backend {
-  const b = new Backend(events);
+export function start(events: EventEmitter): SolanaConnectionBackend {
+  const b = new SolanaConnectionBackend(events);
   b.start();
   return b;
 }
 
-export class Backend {
+export class SolanaConnectionBackend {
   private cache = new Map<string, CachedValue<any>>();
   private connection?: Connection;
   private url?: string;
@@ -136,16 +139,21 @@ export class Backend {
     };
 
     const handleKeyringStoreUnlocked = (notif: Notification) => {
-      const { activeBlockchain, activeWallet, url, commitment } = notif.data;
-      if (activeBlockchain === Blockchain.SOLANA) {
-        this.connection = new Connection(url, commitment);
-        this.url = url;
-        this.hookRpcRequest();
+      const { blockchainActiveWallets, solanaConnectionUrl, solanaCommitment } =
+        notif.data;
+
+      this.connection = new Connection(solanaConnectionUrl, solanaCommitment);
+      this.url = solanaConnectionUrl;
+
+      this.hookRpcRequest();
+
+      const activeWallet = blockchainActiveWallets[Blockchain.SOLANA];
+      if (activeWallet) {
         this.startPolling(new PublicKey(activeWallet));
       }
     };
 
-    const handleKeyringStoreLocked = (notif: Notification) => {
+    const handleKeyringStoreLocked = (_notif: Notification) => {
       this.stopPolling();
     };
 
@@ -862,11 +870,3 @@ export class Backend {
     throw new Error("not implemented");
   }
 }
-
-type CachedValue<T> = {
-  ts: number;
-  value: T;
-};
-
-// Time until cached values expire. This is arbitrary.
-const CACHE_EXPIRY = 15000;

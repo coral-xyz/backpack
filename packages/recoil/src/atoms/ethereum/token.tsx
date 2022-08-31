@@ -1,29 +1,32 @@
 import { atomFamily, selectorFamily } from "recoil";
 import { ethers, BigNumber } from "ethers";
-import {
-  Multicall,
-  ContractCallResults,
-  ContractCallContext,
-} from "ethereum-multicall";
 import { TokenInfo } from "@solana/spl-token-registry";
-import { ethersContext } from "./provider";
 import { bootstrap } from "../bootstrap";
 import { TokenData } from "../../types";
 import { priceData } from "../prices";
+import { ethereumTokenMetadata } from "./token-metadata";
+import { ethereumConnectionUrl } from "./preferences";
+import { ethereumPublicKey } from "../wallet";
 
 export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
   key: "ethereumTokenBalance",
   get:
     (contractAddress: string) =>
     ({ get }) => {
-      const data = get(bootstrap);
+      const ethTokenMetadata = get(ethereumTokenMetadata);
+      const ethTokenBalances: Map<String, BigNumber> = get(
+        ethereumTokenBalances({
+          connectionUrl: get(ethereumConnectionUrl)!,
+          publicKey: get(ethereumPublicKey)!,
+        })
+      );
 
       const tokenMetadata =
-        data.ethTokenMetadata.get(contractAddress) ?? ({} as TokenInfo);
+        ethTokenMetadata!.get(contractAddress) ?? ({} as TokenInfo);
       const { symbol: ticker, logoURI: logo, name, decimals } = tokenMetadata;
 
-      const nativeBalance = data.ethTokenBalances.get(contractAddress)
-        ? BigNumber.from(data.ethTokenBalances.get(contractAddress))
+      const nativeBalance = ethTokenBalances.get(contractAddress)
+        ? BigNumber.from(ethTokenBalances.get(contractAddress))
         : BigNumber.from(0);
       const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
 
@@ -55,84 +58,22 @@ export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
 
 export const ethereumTokenBalances = atomFamily<
   Map<string, BigNumber>,
-  { contractAddresses: string[]; publicKey: string }
+  { connectionUrl: string; publicKey: string }
 >({
   key: "ethereumTokenBalances",
   default: selectorFamily({
     key: "ethereumTokenBalancesDefault",
     get:
       ({
-        contractAddresses,
+        connectionUrl,
         publicKey,
       }: {
-        contractAddresses: Array<string>;
+        connectionUrl: string;
         publicKey: string;
       }) =>
       async ({ get }) => {
-        //
-        // Use a multicall contract to load Ethereum balances.
-        // There might be other more performant options if this needs improving:
-        //
-        // - GraphQL API on Ethereum node
-        // - Alchemy extended API methods
-        // - Other APIs (e.g. Etherscan)
-        // - Custom infrastructure
-        //
-        const provider = get(ethersContext).provider;
-
-        const multicall = new Multicall({
-          ethersProvider: provider,
-          tryAggregate: true,
-        });
-
-        // Only balanceOf ERC20 ABI
-        const abi = [
-          {
-            constant: true,
-            inputs: [
-              {
-                name: "_owner",
-                type: "address",
-              },
-            ],
-            name: "balanceOf",
-            outputs: [
-              {
-                name: "balance",
-                type: "uint256",
-              },
-            ],
-            payable: false,
-            type: "function",
-          },
-        ];
-
-        const contractCallContext = contractAddresses.map((contractAddress) => {
-          return {
-            reference: contractAddress,
-            contractAddress: contractAddress,
-            abi: abi,
-            calls: [
-              {
-                reference: "balanceOf",
-                methodName: "balanceOf",
-                methodParameters: [publicKey],
-              },
-            ],
-          } as ContractCallContext;
-        });
-
-        const contractCall: ContractCallResults = await multicall.call(
-          contractCallContext
-        );
-
-        return new Map(
-          Object.entries(contractCall.results).map(
-            ([contractAddress, { callsReturnContext }]) => {
-              return [contractAddress, callsReturnContext[0].returnValues[0]];
-            }
-          )
-        );
+        const data = get(bootstrap);
+        return data.ethTokenBalances;
       },
   }),
 });

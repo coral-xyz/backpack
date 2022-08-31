@@ -3,6 +3,7 @@ import {
   Blockchain,
   NAV_COMPONENT_TOKEN,
   SOL_NATIVE_MINT,
+  ETH_NATIVE_MINT,
 } from "@coral-xyz/common";
 import { useNavigation, useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import { TransferWidget } from "./TransferWidget";
@@ -39,7 +40,10 @@ export function Balances() {
       <TokenTables
         onClickRow={onClickTokenRow}
         customFilter={(token) => {
-          if (token.mint && token.mint === SOL_NATIVE_MINT) {
+          if (
+            token.mint &&
+            [SOL_NATIVE_MINT, ETH_NATIVE_MINT].includes(token.mint)
+          ) {
             return true;
           }
           return !token.nativeBalance.isZero();

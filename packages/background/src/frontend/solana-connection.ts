@@ -37,12 +37,16 @@ import {
   SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE,
   SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION,
 } from "@coral-xyz/common";
-import type { Backend } from "../backend/solana-connection";
+import type { SolanaConnectionBackend } from "../backend/solana-connection";
 import type { Config, Handle } from "../types";
 
 const logger = getLogger("solana-connection");
 
-export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
+export function start(
+  cfg: Config,
+  events: EventEmitter,
+  b: SolanaConnectionBackend
+): Handle {
   const solanaConnection = ChannelAppUi.server(
     CHANNEL_SOLANA_CONNECTION_RPC_UI
   );
@@ -65,7 +69,7 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
 }
 
 async function handleInjected<T = any>(
-  ctx: Context<Backend>,
+  ctx: Context<SolanaConnectionBackend>,
   msg: RpcRequest
 ): Promise<RpcResponse<T>> {
   logger.debug(`handle solana connection injection ${msg.method}`, ctx, msg);
@@ -73,7 +77,7 @@ async function handleInjected<T = any>(
 }
 
 async function handle<T = any>(
-  ctx: Context<Backend>,
+  ctx: Context<SolanaConnectionBackend>,
   msg: RpcRequest
 ): Promise<RpcResponse<T>> {
   logger.debug(`handle solana connection extension ui ${msg.method}`, msg);
@@ -81,7 +85,7 @@ async function handle<T = any>(
 }
 
 async function handleImpl<T = any>(
-  ctx: Context<Backend>,
+  ctx: Context<SolanaConnectionBackend>,
   msg: RpcRequest
 ): Promise<RpcResponse<T>> {
   const { method, params } = msg;
@@ -132,7 +136,7 @@ async function handleImpl<T = any>(
 }
 
 async function handleGetAccountInfo(
-  ctx: Context<Backend>,
+  ctx: Context<SolanaConnectionBackend>,
   pubkey: string,
   commitment?: Commitment
 ) {
@@ -144,7 +148,7 @@ async function handleGetAccountInfo(
 }
 
 async function handleGetLatestBlockhash(
-  ctx: Context<Backend>,
+  ctx: Context<SolanaConnectionBackend>,
   commitment?: Commitment
 ) {
   const resp = await ctx.backend.getLatestBlockhash(commitment);
@@ -152,7 +156,7 @@ async function handleGetLatestBlockhash(
 }
 
 async function handleGetTokenAccountsByOwner(
-  ctx: Context<Backend>,
+  ctx: Context<SolanaConnectionBackend>,
   ownerAddress: string,
   filter: { mint: string } | { programId: string },
   commitment?: Commitment
@@ -175,7 +179,7 @@ async function handleGetTokenAccountsByOwner(
 }
 
 async function handleSendRawTransaction(
-  ctx: Context<Backend>,
+  ctx: Context<SolanaConnectionBackend>,
   rawTransaction: Buffer | Uint8Array | Array<number>,
   options?: SendOptions
 ) {
@@ -184,7 +188,7 @@ async function handleSendRawTransaction(
 }
 
 async function handleConfirmTransaction(
-  ctx: Context<Backend>,
+  ctx: Context<SolanaConnectionBackend>,
   signature:
     | BlockheightBasedTransactionConfirmationStrategy
     | TransactionSignature,
@@ -205,7 +209,7 @@ async function handleConfirmTransaction(
 }
 
 async function handleGetMultipleAccountsInfo(
-  ctx: Context<Backend>,
+  ctx: Context<SolanaConnectionBackend>,
   pubkeys: string[],
   commitment?: Commitment
 ) {
@@ -217,7 +221,7 @@ async function handleGetMultipleAccountsInfo(
 }
 
 async function handleGetConfirmedSignaturesForAddress2(
-  ctx: Context<Backend>,
+  ctx: Context<SolanaConnectionBackend>,
   address: string,
   options?: ConfirmedSignaturesForAddress2Options,
   commitment?: Finality
@@ -231,7 +235,7 @@ async function handleGetConfirmedSignaturesForAddress2(
 }
 
 async function handleGetParsedTransaction(
-  ctx: Context<Backend>,
+  ctx: Context<SolanaConnectionBackend>,
   signature: TransactionSignature,
   commitment?: Finality
 ) {
@@ -240,7 +244,7 @@ async function handleGetParsedTransaction(
 }
 
 async function handleGetParsedTransactions(
-  ctx: Context<Backend>,
+  ctx: Context<SolanaConnectionBackend>,
   signatures: TransactionSignature[],
   commitment?: Finality
 ) {
@@ -249,7 +253,7 @@ async function handleGetParsedTransactions(
 }
 
 async function handleCustomSplTokenAccounts(
-  ctx: Context<Backend>,
+  ctx: Context<SolanaConnectionBackend>,
   pubkey: string
 ) {
   const resp = await ctx.backend.customSplTokenAccounts(new PublicKey(pubkey));
@@ -257,7 +261,7 @@ async function handleCustomSplTokenAccounts(
 }
 
 async function handleGetProgramAccounts(
-  ctx: Context<Backend>,
+  ctx: Context<SolanaConnectionBackend>,
   programId: string,
   configOrCommitment?: GetProgramAccountsConfig | Commitment
 ) {
@@ -269,7 +273,7 @@ async function handleGetProgramAccounts(
 }
 
 async function handleGetFeeForMessage(
-  ctx: Context<Backend>,
+  ctx: Context<SolanaConnectionBackend>,
   message: MessageArgs,
   commitment?: Finality
 ) {
@@ -281,7 +285,7 @@ async function handleGetFeeForMessage(
 }
 
 async function handleGetMinimumBalanceForRentExemption(
-  ctx: Context<Backend>,
+  ctx: Context<SolanaConnectionBackend>,
   dataLength: number,
   commitment?: Commitment
 ) {

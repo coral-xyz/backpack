@@ -34,21 +34,32 @@ import {
 import type { Nav } from "./store";
 import * as store from "./store";
 import { KeyringStore } from "./keyring";
-import type { Backend as SolanaConnectionBackend } from "./solana-connection";
+import type { SolanaConnectionBackend } from "./solana-connection";
+import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
 
-export function start(events: EventEmitter, solanaB: SolanaConnectionBackend) {
-  return new Backend(events, solanaB);
+export function start(
+  events: EventEmitter,
+  solanaB: SolanaConnectionBackend,
+  ethereumB: EthereumConnectionBackend
+) {
+  return new Backend(events, solanaB, ethereumB);
 }
 
 export class Backend {
   private keyringStore: KeyringStore;
   private solanaConnectionBackend: SolanaConnectionBackend;
+  private ethereumConnectionBackend: EthereumConnectionBackend;
   private events: EventEmitter;
 
-  constructor(events: EventEmitter, solanaB: SolanaConnectionBackend) {
+  constructor(
+    events: EventEmitter,
+    solanaB: SolanaConnectionBackend,
+    ethereumB: EthereumConnectionBackend
+  ) {
     this.keyringStore = new KeyringStore(events);
     this.solanaConnectionBackend = solanaB;
+    this.ethereumConnectionBackend = ethereumB;
     this.events = events;
   }
 
@@ -284,18 +295,23 @@ export class Backend {
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
 
-    const activeBlockchain = this.activeBlockchain();
-    const activeWallet = await this.activeWallet();
-    const url = await this.solanaConnectionUrlRead();
-    const commitment = await this.solanaCommitmentRead();
+    // Map of blockchain to the active public key for that blockchain.
+    const blockchainActiveWallets = Object.fromEntries(
+      (await this.activeWallets()).map((publicKey) => {
+        return [this.keyringStore.blockchainForPublicKey(publicKey), publicKey];
+      })
+    );
+    const ethereumConnectionUrl = await this.ethereumConnectionUrlRead();
+    const solanaConnectionUrl = await this.solanaConnectionUrlRead();
+    const solanaCommitment = await this.solanaCommitmentRead();
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
       data: {
-        activeBlockchain,
-        activeWallet,
-        url,
-        commitment,
+        blockchainActiveWallets,
+        ethereumConnectionUrl,
+        solanaConnectionUrl,
+        solanaCommitment,
       },
     });
 

@@ -4,25 +4,25 @@ import { ParsedConfirmedTransaction, PublicKey } from "@solana/web3.js";
 import {
   fetchXnfts,
   Blockchain,
+  ethereumBalances,
   UI_RPC_METHOD_NAVIGATION_READ,
 } from "@coral-xyz/common";
 import { SolanaTokenAccountWithKey } from "../types";
-import { fetchSolanaPriceData, fetchEthereumPriceData } from "./prices";
+import { fetchPriceData } from "./prices";
 import { recentTransactions } from "./recent-transactions";
 import { backgroundClient } from "./client";
-import { activeWalletsWithData } from "./wallet";
+import { ethereumPublicKey, solanaPublicKey } from "./wallet";
 import { anchorContext } from "./solana/wallet";
 import { splTokenRegistry } from "./solana/token-registry";
 import { fetchJupiterRouteMap } from "./solana/jupiter";
 import { ethereumTokenMetadata } from "./ethereum/token-metadata";
-import { ethereumTokenBalances } from "./ethereum/token";
+import { ethersContext } from "./ethereum/provider";
 
 /**
  * Defines the initial app load fetch.
  */
 export const bootstrap = selector<{
   ethTokenBalances: Map<string, BigNumber>;
-  ethTokenAddresses: Array<string>;
   ethTokenMetadata: Map<string, any>;
   splTokenAccounts: Map<string, SolanaTokenAccountWithKey>;
   splTokenMetadata: Array<any>;
@@ -41,25 +41,11 @@ export const bootstrap = selector<{
       //
       // Fetch the price data.
       //
-      // TODO it'd be nice if we could combine these two queries. The Ethereum
-      // token list doesn't have Coingecko IDs, so we need to fetch the IDs
-      // which is another query anyway.
-      //
-      const coingeckoData = await Promise.all([
-        fetchSolanaPriceData(solanaData.splTokenAccounts, tokenRegistry),
-        fetchEthereumPriceData(
-          // Contract addresses with non zero balances
-          [...ethereumData.ethTokenBalances.entries()]
-            .filter(
-              ([_, balance]) => balance && !BigNumber.from(balance).isZero()
-            )
-            .map(([address, _]) => address)
-        ),
-      ]).then(([solanaPrices, ethereumPrices]) => {
-        // This is a map of SPL token mint to price data or Ethereum contract
-        // to price data.
-        return new Map([...solanaPrices, ...ethereumPrices]);
-      });
+      const coingeckoData = await fetchPriceData(
+        solanaData.splTokenAccounts,
+        tokenRegistry,
+        [...ethereumData.ethTokenBalances.keys()]
+      );
       return {
         ...solanaData,
         ...ethereumData,
@@ -79,19 +65,14 @@ export const bootstrap = selector<{
 export const ethereumBootstrap = selector<{
   ethActivePublicKey: string | null;
   ethTokenBalances: Map<string, BigNumber>;
-  ethTokenAddresses: Array<string>;
   ethTokenMetadata: Map<string, any>;
 }>({
   key: "ethereumBootstrap",
-  get: ({ get }: any) => {
-    const activeWallets = get(activeWalletsWithData);
-    const publicKey =
-      activeWallets.find((w: any) => w!.blockchain === Blockchain.ETHEREUM)
-        ?.publicKey ?? null;
+  get: async ({ get }: any) => {
+    const publicKey = get(ethereumPublicKey);
 
     const defaultReturn = {
       ethActivePublicKey: null,
-      ethTokenAddresses: [],
       ethTokenBalances: new Map(),
       ethTokenMetadata: new Map(),
     };
@@ -105,18 +86,11 @@ export const ethereumBootstrap = selector<{
       return defaultReturn;
     }
 
-    const ethTokenAddresses = [...ethTokenMetadata.values()].map(
-      (token) => token.address
-    );
-    const ethTokenBalances = get(
-      ethereumTokenBalances({
-        contractAddresses: ethTokenAddresses,
-        publicKey,
-      })
-    );
+    const provider = get(ethersContext).provider;
+    const ethTokenBalances = await ethereumBalances(provider, publicKey);
+
     return {
       ethActivePublicKey: publicKey,
-      ethTokenAddresses,
       ethTokenBalances,
       ethTokenMetadata,
     };
@@ -133,10 +107,7 @@ export const solanaBootstrap = selector<{
 }>({
   key: "solanaBootstrap",
   get: async ({ get }: any) => {
-    const activeWallets = get(activeWalletsWithData);
-    const publicKey =
-      activeWallets.find((w: any) => w.blockchain === Blockchain.SOLANA)
-        ?.publicKey ?? null;
+    const publicKey = get(solanaPublicKey);
 
     const defaultReturn = {
       solActivePublicKey: null,

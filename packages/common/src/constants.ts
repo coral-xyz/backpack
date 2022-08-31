@@ -23,6 +23,14 @@ export const CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST =
   "solana-connection-injected-request";
 export const CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE =
   "solana-connection-injected-response";
+export const CHANNEL_ETHEREUM_RPC_REQUEST = "anchor-ethereum-rpc-request";
+export const CHANNEL_ETHEREUM_RPC_RESPONSE = "anchor-ethereum-rpc-response";
+export const CHANNEL_ETHEREUM_NOTIFICATION = "anchor-ethereum-rpc-notification";
+export const CHANNEL_ETHEREUM_CONNECTION_RPC_UI = "ethereum-connection-rpc-ui";
+export const CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST =
+  "ethereum-connection-injected-request";
+export const CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE =
+  "ethereum-connection-injected-response";
 
 //
 // Mobile specific webview messaging subsystem channels.
@@ -111,9 +119,10 @@ export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
 export const UI_RPC_METHOD_LEDGER_IMPORT = "ledger-import";
 export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET = "plugin-storage-get";
 export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT = "plugin-storage-put";
-export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ = "connection-url-read";
+export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ =
+  "solana-connection-url-read";
 export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE =
-  "connection-url-update";
+  "solana-connection-url-update";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ = "solana-commitment-read";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE =
   "solana-commitment-update";
@@ -162,6 +171,7 @@ export const NOTIFICATION_NAVIGATION_URL_DID_CHANGE =
 export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
   "anchor-auto-lock-secs-updated";
 export const NOTIFICATION_DARK_MODE_UPDATED = "anchor-dark-mode-updated";
+// Solana specific
 export const NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED =
   "anchor-keyring-solana-active-wallet-updated";
 export const NOTIFICATION_SOLANA_CONNECTED = "anchor-solana-connected";
@@ -174,19 +184,29 @@ export const NOTIFICATION_SOLANA_COMMITMENT_UPDATED =
   "anchor-solana-commitment-updated";
 export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
   "anchor-solana-spl-tokens-did-update";
+// Ethereum specific
+export const NOTIFICATION_ETHEREUM_CONNECTED = "anchor-ethereum-connected";
+export const NOTIFICATION_ETHEREUM_DISCONNECTED =
+  "anchor-ethereum-disconnected";
+export const NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED =
+  "anchor-ethereum-connection-url-updated";
+export const NOTIFICATION_ETHEREUM_EXPLORER_UPDATED =
+  "anchor-ethereum-explorer-updated";
 export const NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED =
   "anchor-keyring-ethereum-active-wallet-updated";
+export const NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE =
+  "anchor-ethereum-tokens-did-update";
 
 //
 // Solana web injected provider API.
 //
-export const SOLANA_RPC_METHOD_CONNECT = "connect";
-export const SOLANA_RPC_METHOD_DISCONNECT = "disconnect";
-export const SOLANA_RPC_METHOD_SIGN_AND_SEND_TX = "sign-and-send-tx";
-export const SOLANA_RPC_METHOD_SIGN_TX = "sign-tx";
-export const SOLANA_RPC_METHOD_SIGN_ALL_TXS = "sign-all-txs";
-export const SOLANA_RPC_METHOD_SIGN_MESSAGE = "sign-message";
-export const SOLANA_RPC_METHOD_SIMULATE = "simulate";
+export const SOLANA_RPC_METHOD_CONNECT = "solana-connect";
+export const SOLANA_RPC_METHOD_DISCONNECT = "solana-disconnect";
+export const SOLANA_RPC_METHOD_SIGN_AND_SEND_TX = "solana-sign-and-send-tx";
+export const SOLANA_RPC_METHOD_SIGN_TX = "solana-sign-tx";
+export const SOLANA_RPC_METHOD_SIGN_ALL_TXS = "solana-sign-all-txs";
+export const SOLANA_RPC_METHOD_SIGN_MESSAGE = "solana-sign-message";
+export const SOLANA_RPC_METHOD_SIMULATE = "solana-simulate";
 
 //
 // Solana connection api. These are the methods available for the background
@@ -217,6 +237,17 @@ export const SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE =
   "solana-get-fee-for-message";
 export const SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION =
   "solana-get-minimum-balance-for-rent-exemption";
+
+//
+// Ethereum web injected provider API.
+//
+export const ETHEREUM_RPC_METHOD_CONNECT = "ethereum-connect";
+export const ETHEREUM_RPC_METHOD_DISCONNECT = "ethereum-disconnect";
+export const ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX = "ethereum-sign-and-send-tx";
+export const ETHEREUM_RPC_METHOD_SIGN_TX = "ethereum-sign-tx";
+export const ETHEREUM_RPC_METHOD_SIGN_ALL_TXS = "ethereum-sign-all-txs";
+export const ETHEREUM_RPC_METHOD_SIGN_MESSAGE = "ethereum-sign-message";
+export const ETHEREUM_RPC_METHOD_SIMULATE = "ethereum-simulate";
 
 //
 // Ledger API.
