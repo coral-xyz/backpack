@@ -3,7 +3,7 @@ import { PublicKey, Connection } from "@solana/web3.js";
 import { SolanaContext, BackgroundClient } from "@coral-xyz/common";
 import * as atoms from "../../atoms";
 import { useSplTokenRegistry } from "./useSplTokenRegistry";
-import { useActiveWallet } from "../wallet";
+import { useActiveSolanaWallet } from "../wallet";
 import { useSolanaCommitment } from "../preferences";
 import { useBackgroundClient } from "../client";
 
@@ -20,7 +20,7 @@ export function useAnchorContextLoadable(): Loadable<any> {
 }
 
 export function useSolanaCtx(): SolanaContext {
-  const { publicKey } = useActiveWallet();
+  const { publicKey } = useActiveSolanaWallet();
   const { tokenClient, provider } = useAnchorContext();
   const registry = useSplTokenRegistry();
   const commitment = useSolanaCommitment();
