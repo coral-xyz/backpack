@@ -138,6 +138,7 @@ export function Send({
   const nav = useNavStack();
   const token = useBlockchainTokenAccount(blockchain, tokenAddress);
   const { provider: solanaProvider } = useAnchorContext();
+  const ethereumCtx = useEthereumCtx();
 
   const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState("");
@@ -160,12 +161,20 @@ export function Send({
       );
     } else if (token.address === ETH_NATIVE_MINT) {
       // 21,000 GWEI for a standard ETH transfer
-      setFeeOffset(BigNumber.from("21000000000000"));
+      setFeeOffset(
+        BigNumber.from("21000")
+          .mul(ethereumCtx.feeData.maxFeePerGas!)
+          .add(
+            BigNumber.from("21000").mul(
+              ethereumCtx.feeData.maxPriorityFeePerGas!
+            )
+          )
+      );
     }
   }, [blockchain, tokenAddress]);
 
-  const amountWithFee = BigNumber.from(token.nativeBalance).sub(feeOffset);
-  const maxAmount = amountWithFee.gt(0) ? amountWithFee : BigNumber.from(0);
+  const amountSubFee = BigNumber.from(token.nativeBalance).sub(feeOffset);
+  const maxAmount = amountSubFee.gt(0) ? amountSubFee : BigNumber.from(0);
   const exceedsBalance = amount && amount.gt(maxAmount);
   const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
   const isAmountError = amount && exceedsBalance;
@@ -474,7 +483,6 @@ function ConfirmSend({
   // Ethereum specific
   const [gasLimit, setGasLimit] = useState(BigNumber.from(0));
   const [nonce, setNonce] = useState(0);
-  const [feeData, setFeeData] = useState<any | null>(null);
 
   useEffect(() => {
     if (blockchain === Blockchain.ETHEREUM) {
@@ -509,37 +517,28 @@ function ConfirmSend({
           }
         );
 
-        const [nonceResult, feeDataResult, estimatedGasResult] =
-          await Promise.allSettled([
-            ethereumCtx.provider.getTransactionCount(
-              ethereumCtx.walletPublicKey
-            ),
-            ethereumCtx.provider.getFeeData(),
-            estimatedGasPromise,
-          ]);
+        const [nonceResult, estimatedGasResult] = await Promise.allSettled([
+          ethereumCtx.provider.getTransactionCount(ethereumCtx.walletPublicKey),
+          estimatedGasPromise,
+        ]);
 
         if (nonceResult.status === "fulfilled") {
           setNonce(nonceResult.value);
         }
-        if (feeDataResult.status === "fulfilled") {
-          setFeeData(feeDataResult.value);
-        }
         if (estimatedGasResult.status === "fulfilled") {
           setGasLimit(estimatedGasResult.value);
-          if (feeDataResult.status === "fulfilled") {
-            setEstimatedFee(
-              estimatedGasResult.value
-                .mul(feeDataResult.value.maxFeePerGas!)
-                .add(
-                  estimatedGasResult.value.mul(
-                    feeDataResult.value.maxPriorityFeePerGas!
-                  )
+          setEstimatedFee(
+            estimatedGasResult.value
+              .mul(ethereumCtx.feeData.maxFeePerGas!)
+              .add(
+                estimatedGasResult.value.mul(
+                  ethereumCtx.feeData.maxPriorityFeePerGas!
                 )
-            );
-          } else {
-            // Fee estimate failed, transaction is unlikely to succeed
-            setEstimatedFeeError(true);
-          }
+              )
+          );
+        } else {
+          // Fee estimate failed, transaction is unlikely to succeed
+          setEstimatedFeeError(true);
         }
       })();
     } else {
@@ -553,10 +552,8 @@ function ConfirmSend({
           type: 2,
           nonce: nonce,
           gasLimit,
-          maxFeePerGas: feeData ? feeData.maxFeePerGas : BigNumber.from(0),
-          maxPriorityFeePerGas: feeData
-            ? feeData.maxPriorityFeePerGas
-            : BigNumber.from(0),
+          maxFeePerGas: ethereumCtx.feeData.maxFeePerGas,
+          maxPriorityFeePerGas: ethereumCtx.feeData.maxPriorityFeePerGas,
         }
       : // No additional settings for Solana
         {};
@@ -595,13 +592,11 @@ function ConfirmSend({
         {blockchain === Blockchain.ETHEREUM && (
           <ConfirmEthereumSendTable
             destinationAddress={address}
-            estimatedFee={estimatedFee}
-            gasPrice={feeData ? feeData.gasPrice : BigNumber.from(0)}
-            maxFeePerGas={feeData ? feeData.maxFeePerGas : BigNumber.from(0)}
-            maxPriorityFeePerGas={
-              feeData ? feeData.maxPriorityFeePerGas : BigNumber.from(0)
-            }
             nonce={nonce}
+            estimatedFee={estimatedFee}
+            gasPrice={ethereumCtx.feeData.gasPrice!}
+            maxFeePerGas={ethereumCtx.feeData.maxFeePerGas!}
+            maxPriorityFeePerGas={ethereumCtx.feeData.maxPriorityFeePerGas!}
           />
         )}
         {blockchain === Blockchain.SOLANA && (

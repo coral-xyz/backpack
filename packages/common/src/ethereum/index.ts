@@ -1,5 +1,6 @@
 import { ethers, BigNumber } from "ethers";
 import type { UnsignedTransaction } from "@ethersproject/transactions";
+import type { FeeData } from "@ethersproject/abstract-provider";
 import type { BackgroundClient } from "../";
 import { EthereumProvider } from "./provider";
 
@@ -10,6 +11,7 @@ export * from "./token";
 export type EthereumContext = {
   walletPublicKey: string;
   provider: ethers.providers.Provider;
+  feeData: FeeData;
   backgroundClient: BackgroundClient;
 };
 
