@@ -118,7 +118,11 @@ program
     }
 
     app.get("/", (req, res) => {
-      const innerHTML = `<script>${js}</script>`;
+      const innerHTML = `<script>
+      <!--//<![CDATA[
+      ${js}
+      //]]>-->
+      </script>`;
       res.send(`
         <!DOCTYPE html>
         <html lang="en">
