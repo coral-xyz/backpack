@@ -22,14 +22,25 @@ import {
   Support,
   Twitter,
 } from "@mui/icons-material";
+import {
+  DISCORD_INVITE_LINK,
+  TWITTER_LINK,
+  BACKPACK_LINK,
+} from "@coral-xyz/common";
 import { DiscordIcon } from "../common/Icon";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { ActionCard } from "../common/Layout/ActionCard";
 import { BackpackHeader } from "../Locked";
 import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import { List, ListItem } from "../common/List";
 import { WithContaineredDrawer } from "../common/Layout/Drawer";
 import type { OnboardingFlows } from "./";
+
+const useStyles = styles((theme) => ({
+  listItemRoot: {
+    backgroundColor: "transparent !important",
+  },
+}));
 
 export function OnboardingWelcome({
   onSelect,
@@ -107,7 +118,11 @@ function OnboardingMenu({
         height: NAV_BAR_HEIGHT,
       }}
     >
-      <IconButton onClick={() => setMenuOpen(true)} sx={{ padding: 0 }}>
+      <IconButton
+        disableRipple
+        onClick={() => setMenuOpen(true)}
+        sx={{ padding: 0 }}
+      >
         <Menu sx={{ color: theme.custom.colors.secondary }} />
       </IconButton>
       <WithContaineredDrawer
@@ -126,28 +141,29 @@ function OnboardingMenu({
 }
 
 function OnboardingMenuList() {
+  const classes = useStyles();
   const theme = useCustomTheme();
 
   const options = [
     {
       icon: <Support style={{ color: theme.custom.colors.secondary }} />,
       text: "Help & Support",
-      onClick: () => console.log("help & support"), // TODO:
+      onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
     },
     {
       icon: <Lock style={{ color: theme.custom.colors.secondary }} />,
       text: "Backpack.app",
-      onClick: () => window.open("https://backpack.app", "_blank"),
+      onClick: () => window.open(BACKPACK_LINK, "_blank"),
     },
     {
       icon: <Twitter style={{ color: theme.custom.colors.secondary }} />,
       text: "Twitter",
-      onClick: () => window.open("https://twitter.com/xNFT_Backpack", "_blank"),
+      onClick: () => window.open(TWITTER_LINK, "_blank"),
     },
     {
       icon: <DiscordIcon fill={theme.custom.colors.secondary} />,
       text: "Discord",
-      onClick: () => console.log("discord"), // TODO:
+      onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
     },
   ];
 
@@ -155,7 +171,7 @@ function OnboardingMenuList() {
     <Box sx={{ color: theme.custom.colors.fontColor }}>
       <List
         style={{
-          background: theme.custom.colors.bg2,
+          backgroundColor: theme.custom.colors.bg2,
           marginLeft: "16px",
           marginRight: "16px",
           marginTop: "40px",
@@ -172,6 +188,9 @@ function OnboardingMenuList() {
             }}
             isLast={idx === options.length - 1}
             borderColor={theme.custom.colors.border1}
+            classes={{
+              root: classes.listItemRoot,
+            }}
           >
             <div
               style={{

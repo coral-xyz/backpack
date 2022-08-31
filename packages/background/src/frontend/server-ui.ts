@@ -64,6 +64,7 @@ import {
   UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
+  UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
   UI_RPC_METHOD_ETHEREUM_EXPLORER_READ,
   UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE,
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ,
@@ -240,6 +241,8 @@ async function handle<T = any>(
       return await handleSolanaSignTransaction(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS:
       return await handleSolanaSignAllTransactions(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_SOLANA_SIGN_MESSAGE:
+      return await handleSolanaSignMessage(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION:
       return await handleSolanaSignAndSendTransaction(
         ctx,
@@ -628,6 +631,15 @@ async function handleSolanaSignAllTransactions(
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.solanaSignAllTransactions(txs, walletAddress);
+  return [resp];
+}
+
+async function handleSolanaSignMessage(
+  ctx: Context<Backend>,
+  msg: string,
+  publicKey: string
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.solanaSignMessage(msg, publicKey);
   return [resp];
 }
 

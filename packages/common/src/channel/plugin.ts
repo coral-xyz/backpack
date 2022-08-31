@@ -13,8 +13,11 @@ export class PluginServer {
     private responseChannel?: string
   ) {}
 
-  public setWindow(window: any) {
+  public setWindow(window: any, url?: string) {
     this.window = window;
+    if (url) {
+      this.url = url;
+    }
   }
 
   public handler(handlerFn: (event: Event) => Promise<RpcResponse>) {

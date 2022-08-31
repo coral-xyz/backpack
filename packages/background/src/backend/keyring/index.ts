@@ -250,6 +250,9 @@ export class KeyringStore {
   }
 
   public reset() {
+    // First lock to clear the keyring memory.
+    this.lock();
+    // Then reset persistent disk storage.
     return store.reset();
   }
 

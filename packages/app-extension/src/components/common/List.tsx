@@ -110,7 +110,7 @@ export function PushDetail() {
   );
 }
 
-export function LaunchDetail() {
+export function LaunchDetail({ style }: { style?: React.CSSProperties }) {
   const theme = useCustomTheme();
   return (
     <div
@@ -118,6 +118,7 @@ export function LaunchDetail() {
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
+        ...style,
       }}
     >
       <CallMade

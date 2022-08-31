@@ -133,7 +133,17 @@ export function CreatePassword({
           <CheckboxForm
             checked={checked}
             setChecked={setChecked}
-            label="I agree to the terms of service"
+            label={
+              <>
+                I agree to the{" "}
+                <span
+                  onClick={() => window.open("https://backpack.app/terms")}
+                  style={{ color: theme.custom.colors.activeNavButton }}
+                >
+                  terms of service
+                </span>
+              </>
+            }
           />
         </Box>
         <PrimaryButton disabled={isNextDisabled} label="Next" onClick={next} />

@@ -16,12 +16,12 @@ import {
   CHANNEL_PLUGIN_RPC_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
-  CHANNEL_PLUGIN_CONNECTION_BRIDGE,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
   SOLANA_RPC_METHOD_SIGN_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_TX,
   SOLANA_RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
   SOLANA_RPC_METHOD_SIMULATE as PLUGIN_SOLANA_RPC_METHOD_SIMULATE_TX,
+  SOLANA_RPC_METHOD_SIGN_MESSAGE as PLUGIN_SOLANA_RPC_METHOD_SIGN_MESSAGE,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ON_CLICK,
   PLUGIN_NOTIFICATION_ON_CHANGE,
@@ -55,8 +55,8 @@ export class Plugin {
   private _connectionUrl: string;
   private _rpcServer: PluginServer;
   private _bridgeServer: PluginServer;
-  private _connectionBridge: PluginServer;
-  private _iframe?: HTMLIFrameElement;
+  private _iframeRoot?: HTMLIFrameElement;
+  private _iframeActive?: HTMLIFrameElement;
   private _nextRenderId?: number;
   private _pendingBridgeRequests?: Array<any>;
   private _dom?: Dom;
@@ -79,7 +79,7 @@ export class Plugin {
   //
   private _lastClickTsMs?: number;
 
-  readonly iframeUrl: string;
+  readonly iframeRootUrl: string;
   readonly iconUrl: string;
   readonly title: string;
 
@@ -96,7 +96,7 @@ export class Plugin {
     this._activeWallet = activeWallet;
     this._connectionUrl = connectionUrl;
     this.title = title;
-    this.iframeUrl = url;
+    this.iframeRootUrl = url;
     this.iconUrl = iconUrl;
 
     //
@@ -119,16 +119,6 @@ export class Plugin {
     this._bridgeServer.handler(this._handleBridge.bind(this));
 
     //
-    // Bridges messages for the solana connection object from the plugin
-    // to the background script.
-    //
-    this._connectionBridge = new PluginServer(
-      url,
-      CHANNEL_PLUGIN_CONNECTION_BRIDGE
-    );
-    this._connectionBridge.handler(this._handleConnectionBridge.bind(this));
-
-    //
     // Effectively take a lock that's held until the setup is complete.
     //
     this._didFinishSetup = new Promise((resolve) => {
@@ -147,24 +137,53 @@ export class Plugin {
     logger.debug("creating iframe element");
 
     this._nextRenderId = 0;
-    this._iframe = document.createElement("iframe");
-    this._iframe.setAttribute("fetchpriority", "low");
-    this._iframe.src = this.iframeUrl;
-    this._iframe.sandbox.add("allow-same-origin");
-    this._iframe.sandbox.add("allow-scripts");
-    this._iframe.onload = async () => {
-      this._rpcServer.setWindow(this._iframe!.contentWindow);
-      this._bridgeServer.setWindow(this._iframe!.contentWindow);
-      this._dom = new Dom();
-      this._pendingBridgeRequests = [];
-      this.pushConnectNotification();
+    this._iframeRoot = document.createElement("iframe");
+    this._iframeRoot.setAttribute("fetchpriority", "low");
+    this._iframeRoot.src = this.iframeRootUrl;
+    this._iframeRoot.sandbox.add("allow-same-origin");
+    this._iframeRoot.sandbox.add("allow-scripts");
+    this._iframeRoot.onload = () => this.handleRootIframeOnLoad();
+    document.head.appendChild(this._iframeRoot);
+  }
 
-      //
-      // Done.
-      //
-      this._didFinishSetupResolver!();
-    };
-    document.head.appendChild(this._iframe);
+  // Onload handler for the top level iframe representing the xNFT.
+  private handleRootIframeOnLoad() {
+    //
+    // Setup react reconciler.
+    //
+    this._bridgeServer.setWindow(this._iframeRoot!.contentWindow);
+    this._dom = new Dom();
+    this._pendingBridgeRequests = [];
+
+    //
+    // Context switch to this iframe.
+    //
+    this.setActiveIframe(this._iframeRoot!, this.iframeRootUrl);
+
+    //
+    // Done.
+    //
+    this._didFinishSetupResolver!();
+  }
+
+  // Note: Each time this is called, the previous active iframe no longer
+  //       has the ability to make rpc invocations. Furthermore, the state
+  //       will become stale, e.g., window.xnft.publicKey will be incorrect
+  //       for the old active iframe since it will not receive the wallet
+  //       changed notification.
+  //
+  //       In the future, we should properly cleanup the state for old iframes
+  //       e.g., push down a disconnect event and/or provide the ability
+  //       for multiple iframes within a single xNFT to have an active
+  //       connection to the host at once.
+  //
+  //       For now, we make the simplifying assumption that if this is called
+  //       it's meant for the iframe to fully hijack the xnft context.
+  //
+  public setActiveIframe(iframe: HTMLIFrameElement, xnftUrl: string) {
+    this._iframeActive = iframe;
+    this._rpcServer.setWindow(iframe.contentWindow, xnftUrl);
+    this.pushConnectNotification();
   }
 
   //
@@ -173,11 +192,11 @@ export class Plugin {
   public destroyIframe() {
     logger.debug("destroying iframe element");
 
-    document.head.removeChild(this._iframe!);
-    this._iframe!.remove();
-    this._iframe = undefined;
-    this._rpcServer.setWindow(undefined);
-    this._bridgeServer.setWindow(undefined);
+    document.head.removeChild(this._iframeRoot!);
+    this._iframeRoot!.remove();
+    this._iframeRoot = undefined;
+    this._rpcServer.setWindow(undefined, "");
+    this._bridgeServer.setWindow(undefined, "");
     this._nextRenderId = undefined;
     this._dom = undefined;
     this._pendingBridgeRequests = undefined;
@@ -257,14 +276,6 @@ export class Plugin {
   // TODO: serialize ordering of  notification delivery.
   //////////////////////////////////////////////////////////////////////////////
 
-  public pushNotification(notif: any) {
-    const event = {
-      type: CHANNEL_PLUGIN_NOTIFICATION,
-      detail: notif,
-    };
-    this._iframe?.contentWindow?.postMessage(event, "*");
-  }
-
   public pushClickNotification(viewId: number) {
     this._lastClickTsMs = Date.now();
     const event = {
@@ -276,7 +287,7 @@ export class Plugin {
         },
       },
     };
-    this._iframe?.contentWindow?.postMessage(event, "*");
+    this._iframeRoot?.contentWindow?.postMessage(event, "*");
   }
 
   public pushOnChangeNotification(viewId: number, value: any) {
@@ -291,7 +302,29 @@ export class Plugin {
         },
       },
     };
-    this._iframe?.contentWindow?.postMessage(event, "*");
+    this._iframeRoot?.contentWindow?.postMessage(event, "*");
+  }
+
+  public pushMountNotification() {
+    const event = {
+      type: CHANNEL_PLUGIN_NOTIFICATION,
+      detail: {
+        name: PLUGIN_NOTIFICATION_MOUNT,
+        data: {},
+      },
+    };
+    this._iframeRoot?.contentWindow?.postMessage(event, "*");
+  }
+
+  public pushUnmountNotification() {
+    const event = {
+      type: CHANNEL_PLUGIN_NOTIFICATION,
+      detail: {
+        name: PLUGIN_NOTIFICATION_UNMOUNT,
+        data: {},
+      },
+    };
+    this._iframeRoot?.contentWindow?.postMessage(event, "*");
   }
 
   public pushConnectNotification() {
@@ -305,34 +338,12 @@ export class Plugin {
         },
       },
     };
-    this._iframe?.contentWindow?.postMessage(event, "*");
-  }
-
-  public pushMountNotification() {
-    const event = {
-      type: CHANNEL_PLUGIN_NOTIFICATION,
-      detail: {
-        name: PLUGIN_NOTIFICATION_MOUNT,
-        data: {},
-      },
-    };
-    this._iframe?.contentWindow?.postMessage(event, "*");
-  }
-
-  public pushUnmountNotification() {
-    const event = {
-      type: CHANNEL_PLUGIN_NOTIFICATION,
-      detail: {
-        name: PLUGIN_NOTIFICATION_UNMOUNT,
-        data: {},
-      },
-    };
-    this._iframe?.contentWindow?.postMessage(event, "*");
+    this._iframeActive?.contentWindow!.postMessage(event, "*");
   }
 
   public pushConnectionChangedNotification(url: string) {
     this._connectionUrl = url;
-    if (this._iframe) {
+    if (this._iframeActive) {
       const event = {
         type: CHANNEL_PLUGIN_NOTIFICATION,
         detail: {
@@ -342,13 +353,13 @@ export class Plugin {
           },
         },
       };
-      this._iframe.contentWindow!.postMessage(event, "*");
+      this._iframeActive?.contentWindow!.postMessage(event, "*");
     }
   }
 
   public pushPublicKeyChangedNotification(publicKey: string) {
     this._activeWallet = new PublicKey(publicKey);
-    if (this._iframe) {
+    if (this._iframeActive) {
       const event = {
         type: CHANNEL_PLUGIN_NOTIFICATION,
         detail: {
@@ -358,7 +369,7 @@ export class Plugin {
           },
         },
       };
-      this._iframe.contentWindow!.postMessage(event, "*");
+      this._iframeActive?.contentWindow!.postMessage(event, "*");
     }
   }
 
@@ -383,6 +394,8 @@ export class Plugin {
           params[0],
           params[1]
         );
+      case PLUGIN_SOLANA_RPC_METHOD_SIGN_MESSAGE:
+        return await this._handleSolanaSignMessage(params[0], params[1]);
       case PLUGIN_SOLANA_RPC_METHOD_SIMULATE_TX:
         return await this._handleSolanaSimulate(params[0], params[1]);
       default:
@@ -395,11 +408,6 @@ export class Plugin {
     transaction: string,
     pubkey: string
   ): Promise<RpcResponse> {
-    const err = this.clickHandlerError();
-    if (err) {
-      return err;
-    }
-
     try {
       const signature = await this._requestTransactionApproval(
         "sign-tx",
@@ -416,15 +424,26 @@ export class Plugin {
     transaction: string,
     pubkey: string
   ): Promise<RpcResponse> {
-    const err = this.clickHandlerError();
-    if (err) {
-      return err;
-    }
-
     try {
       const signature = await this._requestTransactionApproval(
         "sign-and-send-tx",
         transaction,
+        pubkey
+      );
+      return [signature];
+    } catch (err) {
+      return [null, err.toString()];
+    }
+  }
+
+  private async _handleSolanaSignMessage(
+    msg: string,
+    pubkey: string
+  ): Promise<RpcResponse> {
+    try {
+      const signature = await this._requestTransactionApproval(
+        "sign-msg",
+        msg,
         pubkey
       );
       return [signature];
@@ -445,10 +464,13 @@ export class Plugin {
   // TODO: We should use the plugin mint address instead of the iframe url
   //       to namespace here.
   //
+  // Note: when an iframe is used *within* an xNFT, we namespace the storage
+  //       according to the root (not the child iframe).
+  //
   private async _handleGet(key: string): Promise<RpcResponse> {
     const resp = await this._backgroundClient.request({
       method: UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
-      params: [this.iframeUrl, key],
+      params: [this.iframeRootUrl, key],
     });
     return [resp];
   }
@@ -456,7 +478,7 @@ export class Plugin {
   private async _handlePut(key: string, value: any): Promise<RpcResponse> {
     const resp = await this._backgroundClient.request({
       method: UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
-      params: [this.iframeUrl, key, value],
+      params: [this.iframeRootUrl, key, value],
     });
     return [resp];
   }
@@ -484,7 +506,7 @@ export class Plugin {
       this._requestTxApprovalFn!({
         kind,
         data: transaction,
-        pluginUrl: this.iframeUrl,
+        pluginUrl: this.iframeRootUrl,
         publicKey,
         resolve,
         reject,
@@ -675,6 +697,14 @@ class Dom {
       case NodeKind.Button:
         if (updatePayload.style !== undefined && updatePayload.style !== null) {
           instance.style = updatePayload.style;
+        }
+        break;
+      case NodeKind.Image:
+        if (updatePayload.style) {
+          instance.style = updatePayload.style;
+        }
+        if (updatePayload.src) {
+          instance.props.src = updatePayload.src;
         }
         break;
       default:

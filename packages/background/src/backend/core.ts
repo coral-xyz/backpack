@@ -36,7 +36,7 @@ import * as store from "./store";
 import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
-import { getWalletData, setWalletData } from "./store";
+import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
 
 export function start(
   events: EventEmitter,
@@ -588,8 +588,12 @@ export class Backend {
   ///////////////////////////////////////////////////////////////////////////////
 
   async darkModeRead(): Promise<boolean> {
+    const state = await this.keyringStoreState();
+    if (state === "needs-onboarding") {
+      return DEFAULT_DARK_MODE;
+    }
     const data = await store.getWalletData();
-    return data.darkMode ?? true;
+    return data.darkMode ?? DEFAULT_DARK_MODE;
   }
 
   async darkModeUpdate(darkMode: boolean): Promise<string> {

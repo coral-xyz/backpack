@@ -213,7 +213,14 @@ export function Component({ viewData }) {
     case NodeKind.Table:
       return <Table props={props} style={style} />;
     case NodeKind.Image:
-      return <Image props={props} style={style} children={viewData.children} />;
+      return (
+        <Image
+          id={id}
+          props={props}
+          style={style}
+          children={viewData.children}
+        />
+      );
     case NodeKind.Button:
       return (
         <_Button
@@ -310,16 +317,31 @@ function Path({ props }: any) {
       fillRule={props.fillRule}
       clipRule={props.clipRule}
       fill={props.fill}
+      stroke={props.stroke}
     />
   );
 }
 
 function Circle({ props }: any) {
-  return <circle cx={props.cx} cy={props.cy} r={props.r} fill={props.fill} />;
+  return (
+    <circle
+      cx={props.cx}
+      cy={props.cy}
+      r={props.r}
+      fill={props.fill}
+      stroke={props.stroke}
+      stroke-width={props.strokeWidth}
+      pathLength={props.pathLength}
+      stroke-dasharray={props.strokeDasharray}
+      stroke-dashoffset={props.strokeDashoffset}
+    />
+  );
 }
 
 function Iframe({ props, style }: any) {
-  return (
+  const { plugin } = usePluginContext();
+
+  return isValidSecureUrl(props.src) ? (
     <iframe
       sandbox="allow-same-origin allow-scripts"
       src={props.src}
@@ -335,9 +357,29 @@ function Iframe({ props, style }: any) {
         overflowY: "hidden",
         ...style,
       }}
+      onLoad={({ currentTarget }) => {
+        if (props.xnft) {
+          plugin.setActiveIframe(currentTarget, props.src);
+        }
+      }}
     ></iframe>
-  );
+  ) : null;
 }
+
+const isValidSecureUrl = (url: string): boolean => {
+  try {
+    const { protocol, hostname } = new URL(url);
+    if (["localhost", "0.0.0.0", "127.0.0.1"].includes(hostname)) {
+      // allow http:// or https:// for localhost urls during development
+      return ["http:", "https:"].includes(protocol);
+    } else {
+      // only allow https:// for external urls
+      return protocol === "https:";
+    }
+  } catch (e) {
+    return false;
+  }
+};
 
 function NavAnimation({ props, children }: any) {
   return (
@@ -722,8 +764,14 @@ export function TextField({
   );
 }
 
-function Image({ props, style }: any) {
-  return <img src={props.src} style={style} />;
+function Image({ id, props, style }: any) {
+  const { plugin } = usePluginContext();
+  const onClick = !props.onClick
+    ? undefined
+    : (_event) => {
+        plugin.pushClickNotification(id);
+      };
+  return <img src={props.src} style={style} onClick={onClick} />;
 }
 
 export function Button({ id, props, style, onClick, children }: any) {

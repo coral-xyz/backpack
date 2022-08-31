@@ -130,6 +130,7 @@ export const UI_RPC_METHOD_SOLANA_SIMULATE = "ui-rpc-method-simulate";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_READ = "solana-explorer-read";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE = "solana-explorer-update";
 export const UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION = "ui-rpc-method-sign-tx";
+export const UI_RPC_METHOD_SOLANA_SIGN_MESSAGE = "solana-sign-message";
 export const UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS =
   "ui-rpc-method-sign-all-txs";
 export const UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION =
@@ -300,3 +301,8 @@ export const SIMULATOR_PORT = 9933;
 
 export const NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 890880;
 export const TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 2039280;
+
+export const DISCORD_INVITE_LINK = "https://discord.gg/RfwUqWrn7T";
+export const TWITTER_LINK = "https://twitter.com/xNFT_Backpack";
+export const XNFT_GG_LINK = "https://xnft.gg";
+export const BACKPACK_LINK = "https://backpack.app";

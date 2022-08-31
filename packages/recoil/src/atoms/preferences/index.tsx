@@ -11,17 +11,11 @@ export const isDarkMode = atom<boolean | null>({
   default: selector({
     key: "isDarkModeDefault",
     get: async ({ get }) => {
-      try {
-        const background = get(backgroundClient);
-        return await background.request({
-          method: UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
-          params: [],
-        });
-      } catch (e) {
-        // An error is thrown on first time wallet onboarding.
-        console.error(e);
-        return true;
-      }
+      const background = get(backgroundClient);
+      return await background.request({
+        method: UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
+        params: [],
+      });
     },
   }),
 });

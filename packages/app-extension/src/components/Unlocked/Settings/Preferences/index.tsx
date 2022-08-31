@@ -106,15 +106,27 @@ function DarkModeSwitch({
   onSwitch: (isDarkMode: boolean) => void;
 }) {
   const isDarkMode = useDarkMode();
+  return (
+    <SwitchToggle enabled={isDarkMode} onChange={() => onSwitch(!isDarkMode)} />
+  );
+}
+
+export function SwitchToggle({
+  enabled,
+  onChange,
+}: {
+  enabled: boolean;
+  onChange: () => void;
+}) {
   const classes = useStyles();
   return (
     <Switch
-      checked={isDarkMode}
+      checked={enabled}
       disableRipple
-      onChange={() => onSwitch(!isDarkMode)}
+      onChange={onChange}
       classes={{
         switchBase: classes.switchBase,
-        track: isDarkMode ? classes.trackChecked : classes.track,
+        track: enabled ? classes.trackChecked : classes.track,
         colorPrimary: classes.colorPrimary,
       }}
     />

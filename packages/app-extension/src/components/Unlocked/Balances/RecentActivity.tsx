@@ -302,12 +302,13 @@ function RecentActivityListItemIcon({ transaction }: any) {
   );
 }
 
-function NoRecentActivityLabel({ minimize }: any) {
+function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
   const theme = useCustomTheme();
   return (
     <div
       style={{
         height: "100%",
+        display: minimize ? "none" : undefined,
       }}
     >
       <EmptyState
