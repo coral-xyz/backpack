@@ -530,24 +530,23 @@ function ConfirmSend({
           estimatedGasPromise,
         ]);
 
+        let estimatedGas;
         if (nonceResult.status === "fulfilled") {
           setNonce(nonceResult.value);
         }
         if (estimatedGasResult.status === "fulfilled") {
-          setGasLimit(estimatedGasResult.value);
-          setEstimatedFee(
-            estimatedGasResult.value
-              .mul(ethereumCtx.feeData.maxFeePerGas!)
-              .add(
-                estimatedGasResult.value.mul(
-                  ethereumCtx.feeData.maxPriorityFeePerGas!
-                )
-              )
-          );
+          estimatedGas = estimatedGasResult.value;
         } else {
           // Fee estimate failed, transaction is unlikely to succeed
+          estimatedGas = BigNumber.from("150000");
           setEstimatedFeeError(true);
         }
+        setGasLimit(estimatedGas);
+        setEstimatedFee(
+          estimatedGas
+            .mul(ethereumCtx.feeData.maxFeePerGas!)
+            .add(estimatedGas.mul(ethereumCtx.feeData.maxPriorityFeePerGas!))
+        );
       })();
     } else {
       setEstimatedFee(BigNumber.from(5000));
@@ -609,6 +608,17 @@ function ConfirmSend({
         )}
         {blockchain === Blockchain.SOLANA && (
           <ConfirmSolanaSendTable destinationAddress={address} />
+        )}
+        {estimatedFeeError && (
+          <Typography
+            style={{
+              color: theme.custom.colors.negative,
+              marginTop: "8px",
+              textAlign: "center",
+            }}
+          >
+            This transaction is unlikely to succeed.
+          </Typography>
         )}
       </div>
       <PrimaryButton
