@@ -107,7 +107,19 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
-    return await cmn.signTransaction(this.publicKey, this._requestManager, tx);
+    return await cmn.signTransaction(
+      this.publicKey,
+      this._requestManager,
+      this.connection,
+      tx
+    );
+  }
+
+  async signMessage(msg: Uint8Array): Promise<Uint8Array> {
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    return await cmn.signMessage(this.publicKey, this._requestManager, msg);
   }
 
   // @ts-ignore

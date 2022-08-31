@@ -1,4 +1,5 @@
 import { atom, selector } from "recoil";
+import { PublicKey, Keypair } from "@solana/web3.js";
 import { BACKPACK_CONFIG_XNFT_PROXY, SIMULATOR_PORT } from "@coral-xyz/common";
 import { activeWallet } from "../wallet";
 import { solanaConnectionUrl } from "./preferences";
@@ -52,11 +53,25 @@ export const plugins = selector({
   get: ({ get }: any) => {
     return [
       {
+        url: SIMULATOR_URL,
+        iconUrl: "assets/simulator.png",
+        title: "Simulator",
+        activeWallet: get(activeWallet),
+        connectionUrl: get(solanaConnectionUrl),
+        install: {
+          publicKey: PublicKey.default.toString(),
+        },
+      },
+
+      {
         url: DEGODS_TABLE_PLUGIN_URL,
         iconUrl: "assets/deadgods.png",
         title: "DeadGods",
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
+        install: {
+          publicKey: Keypair.generate().publicKey,
+        },
       },
       {
         url: AURORY_PLUGIN_URL,
@@ -64,6 +79,9 @@ export const plugins = selector({
         title: "Aurory",
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
+        install: {
+          publicKey: Keypair.generate().publicKey,
+        },
       },
       {
         url: NETWORK_MONITOR,
@@ -72,6 +90,9 @@ export const plugins = selector({
         title: "Monitor",
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
+        install: {
+          publicKey: Keypair.generate().publicKey,
+        },
       },
       {
         url: PRICES_PLUGIN_URL,
@@ -79,6 +100,9 @@ export const plugins = selector({
         title: "Prices",
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
+        install: {
+          publicKey: Keypair.generate().publicKey,
+        },
       },
       {
         url: MANGO_TABLE_PLUGIN_URL,
@@ -86,6 +110,9 @@ export const plugins = selector({
         title: "Mango",
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
+        install: {
+          publicKey: Keypair.generate().publicKey,
+        },
       },
       {
         url: PSYFI_PLUGIN_URL,
@@ -93,13 +120,9 @@ export const plugins = selector({
         title: "Psyfi",
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
-      },
-      {
-        url: SIMULATOR_URL,
-        iconUrl: "assets/simulator.png",
-        title: "Simulator",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(solanaConnectionUrl),
+        install: {
+          publicKey: Keypair.generate().publicKey,
+        },
       },
     ];
   },
@@ -115,6 +138,7 @@ export const xnfts = atom({
       const _connectionUrl = get(solanaConnectionUrl);
       return (await b.xnfts).map((xnft) => {
         return {
+          ...xnft,
           url: xnftUrl(xnft.metadataBlob.properties.bundle),
           iconUrl: xnft.metadataBlob.image,
           activeWallet: _activeWallet,

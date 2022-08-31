@@ -27,6 +27,7 @@ import {
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+  DISCORD_INVITE_LINK,
 } from "@coral-xyz/common";
 import {
   Header,
@@ -76,6 +77,7 @@ import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
 import { GridIcon, CheckIcon } from "../../common/Icon";
 import { XnftSettings } from "./Xnfts";
+import { XnftDetail } from "./Xnfts/Detail";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -237,6 +239,10 @@ function AvatarButton() {
             <NavStackScreen
               name={"xnfts"}
               component={(props: any) => <XnftSettings {...props} />}
+            />
+            <NavStackScreen
+              name={"xnfts-detail"}
+              component={(props: any) => <XnftDetail {...props} />}
             />
           </NavStackEphemeral>
         </div>
@@ -583,7 +589,7 @@ function SettingsList({ close }: { close: () => void }) {
     },
     {
       label: "Help & Support",
-      onClick: () => console.log("help and support"),
+      onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
       icon: (props: any) => <Help {...props} />,
       detailIcon: <LaunchDetail />,
     },

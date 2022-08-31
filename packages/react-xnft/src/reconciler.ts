@@ -192,24 +192,25 @@ const RECONCILER = ReactReconciler({
     host: Host
   ): UpdateDiff => {
     logger.debug("prepareUpdate", instance, type, oldProps, newProps);
-    let payload: UpdateDiff | null = null;
+    let payload: UpdateDiff = {};
     switch (type) {
       case NodeKind.View:
         // @ts-ignore
         if (oldProps.style !== newProps.style) {
           // @ts-ignore
-          payload = { style: newProps.style };
+          payload = { ...payload, style: newProps.style };
         }
         // @ts-ignore
         if (oldProps.onClick !== newProps.onClick) {
           // @ts-ignore
-          payload = { onClick: newProps.onClick };
+          payload = { ...payload, onClick: newProps.onClick };
         }
         return payload;
       case NodeKind.Text:
         // @ts-ignore
         if (oldProps.style !== newProps.style) {
           payload = {
+            ...payload,
             // @ts-ignore
             style: newProps.style,
           };
@@ -219,33 +220,50 @@ const RECONCILER = ReactReconciler({
         // @ts-ignore
         if (oldProps.value !== newProps.value) {
           // @ts-ignore
-          payload = { value: newProps.value };
+          payload = { ...payload, value: newProps.value };
         }
         return payload;
       case NodeKind.NavAnimation:
         // @ts-ignore
         if (oldProps.routeName !== newProps.routeName) {
           // @ts-ignore
-          payload = { routeName: newProps.routeName };
+          payload = { ...payload, routeName: newProps.routeName };
         }
         return payload;
       case NodeKind.Path:
         // @ts-ignore
         if (oldProps.fill !== newProps.fill) {
           // @ts-ignore
-          payload = { fill: newProps.fill };
+          payload = { ...payload, fill: newProps.fill };
         }
         return payload;
       case NodeKind.Button:
         // @ts-ignore
         if (oldProps.style !== newProps.style) {
           // @ts-ignore
-          payload = { style: newProps.style };
+          payload = { ...payload, style: newProps.style };
         }
         // @ts-ignore
         if (oldProps.onClick !== newProps.onClick) {
           // @ts-ignore
-          payload = { onClick: newProps.onClick };
+          payload = { ...payload, onClick: newProps.onClick };
+        }
+        return payload;
+      case NodeKind.Image:
+        // @ts-ignore
+        if (oldProps.style !== newProps.style) {
+          // @ts-ignore
+          payload = { ...payload, style: newProps.style };
+        }
+        // @ts-ignore
+        if (oldProps.onClick !== newProps.onClick) {
+          // @ts-ignore
+          payload = { ...payload, onClick: newProps.onClick };
+        }
+        // @ts-ignore
+        if (oldProps.src !== newProps.src) {
+          // @ts-ignore
+          payload = { ...payload, src: newProps.src };
         }
         return payload;
       case NodeKind.Iframe:
@@ -253,8 +271,6 @@ const RECONCILER = ReactReconciler({
       case NodeKind.Svg:
         return null;
       case NodeKind.Circle:
-        return null;
-      case NodeKind.Image:
         return null;
       case NodeKind.Table:
         return null;
@@ -325,7 +341,7 @@ const RECONCILER = ReactReconciler({
     //
     // If there's no update payload, then don't rerender!
     //
-    if (updatePayload === null) {
+    if (updatePayload === null || Object.keys(updatePayload).length === 0) {
       return;
     }
 
@@ -386,10 +402,27 @@ const RECONCILER = ReactReconciler({
           delete updatePayload["onClick"];
         }
         break;
+      case NodeKind.Image:
+        if (updatePayload.style) {
+          instance.style = updatePayload.style;
+        }
+        if (updatePayload.src) {
+          // @ts-ignore
+          instance.props.src = updatePayload.src;
+        }
+        if (
+          updatePayload.onClick !== undefined &&
+          updatePayload.onClick !== null
+        ) {
+          // @ts-ignore
+          instance.props.onClick = updatePayload.onClick;
+          // @ts-ignore
+          CLICK_HANDLERS.set(instance.id, instance.props.onClick);
+          delete updatePayload["onClick"];
+        }
+        break;
       case NodeKind.Text:
         throw new Error("commitUpdate Text not yet implemented");
-      case NodeKind.Image:
-        throw new Error("commitUpdate Image not yet implemented");
       case NodeKind.Svg:
         throw new Error("commitUpdate Svg not yet implemented");
       case NodeKind.Circle:
@@ -653,11 +686,21 @@ function createImageInstance(
   h: Host,
   _o: OpaqueHandle
 ): ImageNodeSerialized {
+  const id = h.nextId();
+  let onClick = false;
+  const vProps = props as ImageProps;
+  if (vProps.onClick && typeof vProps.onClick === "function") {
+    CLICK_HANDLERS.set(id, vProps.onClick);
+    onClick = true;
+  }
+  const src = (props as ImageProps).src;
   return {
-    id: h.nextId(),
+    id,
     kind: NodeKind.Image,
     props: {
       ...props,
+      src,
+      onClick,
       children: undefined,
     },
     style: props.style || {},
@@ -1110,7 +1153,9 @@ type TextFieldProps = {
 type ImageNodeSerialized = DefNodeSerialized<NodeKind.Image, ImageProps>;
 type ImageProps = {
   style: Style;
+  onClick?: (() => Promise<void>) | boolean;
   children: undefined;
+  src: string;
 };
 
 //
@@ -1176,6 +1221,7 @@ type PathProps = {
   fill: string;
   fillRule?: string;
   clipRule?: string;
+  stroke?: string;
 };
 
 type CircleNodeSerialized = DefNodeSerialized<NodeKind.Circle, CircleProps>;
@@ -1184,6 +1230,11 @@ type CircleProps = {
   cy: string;
   r: string;
   fill: string;
+  stroke: string;
+  strokeWidth: string;
+  pathLength: string;
+  strokeDasharray: string;
+  strokeDashoffset: string;
 };
 
 //
@@ -1195,6 +1246,7 @@ type IframeProps = {
   children: undefined;
   width: string;
   height: string;
+  xnft: boolean;
 };
 
 //

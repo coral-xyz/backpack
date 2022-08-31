@@ -6,7 +6,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "parcel build src/index.html --public-url /ledger-injection/",
-    "start": "parcel src/index.html --https --port 4443",
+    "start": "rimraf dist && parcel build src/index.html && parcel src/index.html --https --port 4443",
     "deploy": "gh-pages -d dist -r git@github.com:coral-xyz/ledger-injection.git"
   },
   "author": "",

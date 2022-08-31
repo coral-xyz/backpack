@@ -61,11 +61,15 @@ export async function send(
       tx.partialSign(s);
     });
   }
-  const { blockhash } = await connection!.getLatestBlockhash(
-    options?.preflightCommitment
-  );
-  tx.feePayer = publicKey;
-  tx.recentBlockhash = blockhash;
+  if (!tx.feePayer) {
+    tx.feePayer = publicKey;
+  }
+  if (!tx.recentBlockhash) {
+    const { blockhash } = await connection!.getLatestBlockhash(
+      options?.preflightCommitment
+    );
+    tx.recentBlockhash = blockhash;
+  }
   const txSerialize = tx.serialize({
     requireAllSignatures: false,
   });
@@ -79,9 +83,16 @@ export async function send(
 export async function signTransaction(
   publicKey: PublicKey,
   requestManager: RequestManager,
+  connection: Connection,
   tx: Transaction
 ): Promise<Transaction> {
-  tx.feePayer = publicKey;
+  if (!tx.feePayer) {
+    tx.feePayer = publicKey;
+  }
+  if (!tx.recentBlockhash) {
+    const { blockhash } = await connection!.getLatestBlockhash();
+    tx.recentBlockhash = blockhash;
+  }
   const txStr = encode(tx.serialize({ requireAllSignatures: false }));
   const signature = await requestManager.request({
     method: SOLANA_RPC_METHOD_SIGN_TX,
@@ -95,8 +106,21 @@ export async function signTransaction(
 export async function signAllTransactions(
   publicKey: PublicKey,
   requestManager: RequestManager,
+  connection: Connection,
   txs: Array<Transaction>
 ): Promise<Array<Transaction>> {
+  let _blockhash: string | undefined;
+  for (let k = 0; k < txs.length; k += 1) {
+    const tx = txs[k];
+    if (!tx.recentBlockhash) {
+      if (!_blockhash) {
+        const { blockhash } = await connection!.getLatestBlockhash();
+        _blockhash = blockhash;
+      }
+      tx.recentBlockhash = _blockhash;
+    }
+  }
+
   // Serialize messages.
   const txStrs = txs.map((tx) => {
     const txSerialized = tx.serialize({ requireAllSignatures: false });
@@ -130,9 +154,13 @@ export async function simulate(
       tx.partialSign(s);
     });
   }
-  const { blockhash } = await connection!.getLatestBlockhash(commitment);
-  tx.feePayer = publicKey;
-  tx.recentBlockhash = blockhash;
+  if (!tx.feePayer) {
+    tx.feePayer = publicKey;
+  }
+  if (!tx.recentBlockhash) {
+    const { blockhash } = await connection!.getLatestBlockhash(commitment);
+    tx.recentBlockhash = blockhash;
+  }
   const txSerialize = tx.serialize({
     requireAllSignatures: false,
   });

@@ -1,5 +1,10 @@
 import { Typography, Box, Grid } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
+import {
+  XNFT_GG_LINK,
+  TWITTER_LINK,
+  DISCORD_INVITE_LINK,
+} from "@coral-xyz/common";
 import { Header, SubtextParagraph, PrimaryButton } from "../../common";
 import { ActionCard } from "../../common/Layout/ActionCard";
 import {
@@ -56,6 +61,7 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
             }}
           >
             <Grid container spacing={2}>
+              {/*
               <Grid item xs={6}>
                 <ActionCard
                   icon={<CashIcon />}
@@ -63,29 +69,26 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
                   onClick={() => {}}
                 />
               </Grid>
+								*/}
               <Grid item xs={6}>
                 <ActionCard
                   icon={<WidgetIcon />}
                   text="Browse the xNFT library"
-                  onClick={() =>
-                    window.open("https://backpack.app/library", "_blank")
-                  }
+                  onClick={() => window.open(XNFT_GG_LINK, "_blank")}
                 />
               </Grid>
               <Grid item xs={6}>
                 <ActionCard
                   icon={<TwitterIcon />}
                   text="Follow us on Twitter"
-                  onClick={() =>
-                    window.open("https://twitter.com/xNFT_Backpack", "_blank")
-                  }
+                  onClick={() => window.open(TWITTER_LINK, "_blank")}
                 />
               </Grid>
               <Grid item xs={6}>
                 <ActionCard
                   icon={<DiscordIcon />}
                   text="Join the Discord community"
-                  onClick={() => {}} // TODO:
+                  onClick={() => window.open(DISCORD_INVITE_LINK, "_blank")}
                 />
               </Grid>
             </Grid>

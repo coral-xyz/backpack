@@ -18,6 +18,7 @@
 
 - Backpack is in active development, so all APIs are subject to change.
 - This code is unaudited. Use at your own risk.
+- I repeat. This is not ready for production.
 
 ## Installing the Latest Release
 

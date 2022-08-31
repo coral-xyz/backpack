@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { SecondaryButton } from ".";
+import { PrimaryButton } from ".";
 
 export const EmptyState: React.FC<{
   icon: (props: any) => React.ReactNode;
@@ -34,6 +34,9 @@ export const EmptyState: React.FC<{
     >
       <div
         style={{
+          borderRadius: "12px",
+          background: theme.custom.colors.nav,
+          padding: "16px",
           ...contentStyle,
         }}
       >
@@ -73,7 +76,7 @@ export const EmptyState: React.FC<{
           </Typography>
         )}
         {minimize !== true && buttonText && (
-          <SecondaryButton
+          <PrimaryButton
             onClick={onClick}
             label={buttonText}
             style={{

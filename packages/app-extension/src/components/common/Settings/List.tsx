@@ -18,10 +18,10 @@ export function SettingsList({
       classes?: any;
       button?: boolean;
       icon?: React.ReactNode;
+      label?: string;
     };
   };
 }) {
-  console.log("menu", menuItems);
   return (
     <List style={{ marginTop: "16px", ...style }}>
       {Object.entries(menuItems).map(([key, val]: any, i, { length }) => (
@@ -43,7 +43,7 @@ export function SettingsList({
         >
           {val.icon && val.icon()}
           <Typography style={{ fontWeight: 500, ...textStyle }}>
-            {key}
+            {val.label ?? key}
           </Typography>
         </ListItem>
       ))}

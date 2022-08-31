@@ -79,9 +79,9 @@ function TabBar() {
     }
   };
 
-  return (
+  return tab === "" ? null : (
     <Tabs
-      value={tab === "" ? undefined : tab}
+      value={tab}
       variant="fullWidth"
       classes={{
         root: classes.tabRoot,
