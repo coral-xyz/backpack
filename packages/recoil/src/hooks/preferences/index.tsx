@@ -1,5 +1,4 @@
 import { useRecoilValue, useRecoilState } from "recoil";
-import { Commitment } from "@solana/web3.js";
 import { UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE } from "@coral-xyz/common";
 import { useBackgroundClient } from "../client";
 import * as atoms from "../../atoms";
@@ -29,12 +28,4 @@ export function useAutolockSecs(): number {
 
 export function useDarkMode(): boolean {
   return useRecoilValue(atoms.isDarkMode)!;
-}
-
-export function useSolanaExplorer(): string {
-  return useRecoilValue(atoms.solanaExplorer)!;
-}
-
-export function useSolanaCommitment(): Commitment {
-  return useRecoilValue(atoms.solanaCommitment)!;
 }

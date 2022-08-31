@@ -4,8 +4,8 @@ import { SolanaContext, BackgroundClient } from "@coral-xyz/common";
 import * as atoms from "../../atoms";
 import { useSplTokenRegistry } from "./useSplTokenRegistry";
 import { useActiveSolanaWallet } from "../wallet";
-import { useSolanaCommitment } from "../preferences";
 import { useBackgroundClient } from "../client";
+import { useSolanaCommitment } from "./";
 
 export function useSolanaConnectionUrl(): string {
   return useRecoilValue(atoms.solanaConnectionUrl)!;
