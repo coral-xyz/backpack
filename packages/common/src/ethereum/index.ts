@@ -1,4 +1,5 @@
 import { ethers, BigNumber } from "ethers";
+import type { UnsignedTransaction } from "@ethersproject/transactions";
 import type { BackgroundClient } from "../";
 import { EthereumProvider } from "./provider";
 
@@ -12,31 +13,27 @@ export type EthereumContext = {
   backgroundClient: BackgroundClient;
 };
 
-export type TransferEthRequest = {
-  to: string;
-  amount: string;
-};
+export type TransferEthRequest = UnsignedTransaction;
 
 export type TransferEthereumTokenRequest = {
   to: string;
   tokenAddress: string;
   amount: string;
+  // Overrides
+  type?: number;
+  gasLimit?: BigNumber;
+  gasPrice?: BigNumber;
+  nonce?: BigNumber;
+  maxFeePerGas?: BigNumber;
+  maxPriorityFeePerGas?: BigNumber;
 };
 
 export class Ethereum {
   public static async transferEth(
     ctx: EthereumContext,
-    req: TransferEthRequest
+    unsignedTx: TransferEthRequest
   ): Promise<string> {
-    const unsignedTx = {
-      to: req.to,
-      value: BigNumber.from(req.amount),
-    };
-    const receipt = await EthereumProvider.signAndSendTransaction(
-      ctx,
-      unsignedTx
-    );
-    return receipt.hash;
+    return await EthereumProvider.signAndSendTransaction(ctx, unsignedTx);
   }
 
   public static async transferToken(
@@ -47,12 +44,16 @@ export class Ethereum {
     const erc20 = new ethers.Contract(req.tokenAddress, abi, ctx.provider);
     const unsignedTx = await erc20.populateTransaction.transfer(
       req.to,
-      BigNumber.from(req.amount)
+      BigNumber.from(req.amount),
+      {
+        type: req.type ?? null,
+        nonce: req.nonce ?? null,
+        gasLimit: req.gasLimit ?? null,
+        gasPrice: req.gasPrice ?? null,
+        maxFeePerGas: req.maxFeePerGas ?? null,
+        maxPriorityFeePerGas: req.maxPriorityFeePerGas ?? null,
+      }
     );
-    const receipt = await EthereumProvider.signAndSendTransaction(
-      ctx,
-      unsignedTx
-    );
-    return receipt.hash;
+    return await EthereumProvider.signAndSendTransaction(ctx, unsignedTx);
   }
 }

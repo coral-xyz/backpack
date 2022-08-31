@@ -9,6 +9,7 @@ export * from "./browser";
 export * from "./types";
 export * from "./solana";
 export * from "./ethereum";
+export * from "./explorer";
 
 // Generated pre-build step.
 export * from "./generated-config";
