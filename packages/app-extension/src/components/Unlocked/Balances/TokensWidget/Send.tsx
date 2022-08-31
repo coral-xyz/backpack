@@ -662,7 +662,7 @@ function Sending({
   );
 }
 
-function Error({
+export function Error({
   signature,
   onRetry,
   error,
@@ -671,7 +671,6 @@ function Error({
   error: string;
   onRetry: () => void;
 }) {
-  const theme = useCustomTheme();
   const explorer = useSolanaExplorer();
   const connectionUrl = useSolanaConnectionUrl();
   return (
