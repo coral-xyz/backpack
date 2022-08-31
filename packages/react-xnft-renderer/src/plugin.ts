@@ -82,8 +82,10 @@ export class Plugin {
   readonly iframeRootUrl: string;
   readonly iconUrl: string;
   readonly title: string;
+  readonly xnftAddress: PublicKey;
 
   constructor(
+    xnftAddress: PublicKey,
     url: string,
     iconUrl: string,
     title: string,
@@ -98,6 +100,7 @@ export class Plugin {
     this.title = title;
     this.iframeRootUrl = url;
     this.iconUrl = iconUrl;
+    this.xnftAddress = xnftAddress;
 
     //
     // RPC Server channel from plugin -> extension-ui.

@@ -4,13 +4,13 @@ import { usePlugins } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { PowerIcon, MoreIcon } from "../../common/Icon";
 
-export function PluginDisplay({ pluginUrl, closePlugin }: any) {
+export function PluginDisplay({ xnft, closePlugin }: any) {
   const theme = useCustomTheme();
   const plugins = usePlugins();
-  const p = plugins.find((p) => p.iframeRootUrl === encodeURI(pluginUrl));
+  const p = plugins.find((p) => p.xnftAddress.toString() === xnft);
 
   // Hack: This is hit due to the framer-motion animation.
-  if (!pluginUrl) {
+  if (!xnft) {
     return <></>;
   }
   if (p === undefined) {

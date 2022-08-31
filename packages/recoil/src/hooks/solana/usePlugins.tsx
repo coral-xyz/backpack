@@ -20,6 +20,7 @@ export function getPlugin(p: any): Plugin {
   let plug = PLUGIN_CACHE.get(p.url);
   if (!plug) {
     plug = new Plugin(
+      p.install.account.xnft,
       p.url,
       p.iconUrl,
       p.title,
