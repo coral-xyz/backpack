@@ -59,7 +59,6 @@ export class EthereumKeyring implements Keyring {
     return wallet ? wallet.privateKey : null;
   }
 
-  // @ts-ignore
   public async signTransaction(
     serializedTx: Buffer,
     signerAddress: string
@@ -76,7 +75,6 @@ export class EthereumKeyring implements Keyring {
     );
   }
 
-  // @ts-ignore
   public async signMessage(
     message: Buffer,
     signerAddress: string
