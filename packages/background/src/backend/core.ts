@@ -1,4 +1,5 @@
 import { validateMnemonic as _validateMnemonic } from "bip39";
+import { ethers } from "ethers";
 import * as bs58 from "bs58";
 import type { Commitment, SendOptions } from "@solana/web3.js";
 import { PublicKey, Transaction } from "@solana/web3.js";
@@ -228,6 +229,32 @@ export class Backend {
       },
     });
     return SUCCESS_RESPONSE;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  // Ethereum provider.
+  ///////////////////////////////////////////////////////////////////////////////
+
+  async ethereumSignTransaction(
+    serializedTx: string,
+    walletAddress: string
+  ): Promise<string> {
+    const blockchainKeyring = this.keyringStore.keyringForBlockchain(
+      Blockchain.ETHEREUM
+    );
+    return await blockchainKeyring.signTransaction(serializedTx, walletAddress);
+  }
+
+  async ethereumSignAndSendTransaction(
+    serializedTx: string,
+    walletAddress: string
+  ): Promise<string> {
+    const signedTx = await this.ethereumSignTransaction(
+      serializedTx,
+      walletAddress
+    );
+    return (await this.ethereumConnectionBackend.sendTransaction(signedTx))
+      .hash;
   }
 
   ///////////////////////////////////////////////////////////////////////////////

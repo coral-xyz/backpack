@@ -126,20 +126,23 @@ export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE =
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ = "solana-commitment-read";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE =
   "solana-commitment-update";
-export const UI_RPC_METHOD_SOLANA_SIMULATE = "ui-rpc-method-simulate";
+export const UI_RPC_METHOD_SOLANA_SIMULATE = "solana-simulate";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_READ = "solana-explorer-read";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE = "solana-explorer-update";
-export const UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION = "ui-rpc-method-sign-tx";
-export const UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS =
-  "ui-rpc-method-sign-all-txs";
+export const UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION = "solana-sign-tx";
+export const UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS = "solana-sign-all-txs";
 export const UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION =
-  "ui-rpc-method-sign-and-send-tx";
-export const UI_RPC_METHOD_ETHEREUM_EXPLORER_READ = "ethereum-exporer-read";
-export const UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE = "ethereum-exporer-update";
+  "solana-sign-and-send-tx";
+export const UI_RPC_METHOD_ETHEREUM_EXPLORER_READ = "ethereum-explorer-read";
+export const UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE =
+  "ethereum-explorer-update";
 export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ =
   "ethereum-connection-url-read";
 export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE =
   "ethereum-connection-url-update";
+export const UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION = "ethereum-sign-tx";
+export const UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION =
+  "ethereum-sign-and-send-tx";
 
 //
 // Notifications sent from the background script to observers.

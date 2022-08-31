@@ -194,8 +194,9 @@ export class BlockchainKeyring {
     this.deletedWallets = deletedWallets;
   }
 
-  // txMsg is base58 encoded for solana. Note that `txMsg` is the *Message*.
-  // Distinctly different from the full transaction.
+  // For Solana txMsg is a Message, i.e. not a full transaction.
+  // Ref https://docs.solana.com/developing/programming-model/transactions#message-format
+  // For Ethereum txMsg is the full transaction, base58 encoded to keep the argument types same.
   public async signTransaction(
     txMsg: string,
     walletAddress: string

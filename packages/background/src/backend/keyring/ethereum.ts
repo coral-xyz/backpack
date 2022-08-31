@@ -60,10 +60,33 @@ export class EthereumKeyring implements Keyring {
   }
 
   // @ts-ignore
-  public async signTransaction(tx: Buffer, address: string): Promise<string> {}
+  public async signTransaction(
+    serializedTx: Buffer,
+    signerAddress: string
+  ): Promise<string> {
+    const wallet = this.wallets.find((w) => w.address === signerAddress);
+    if (!wallet) {
+      throw new Error(`unable to find ${signerAddress.toString()}`);
+    }
+    const tx = ethers.utils.parseTransaction(
+      ethers.utils.hexlify(serializedTx)
+    );
+    return await wallet.signTransaction(
+      tx as ethers.providers.TransactionRequest
+    );
+  }
 
   // @ts-ignore
-  public async signMessage(message: Buffer, address: string): Promise<string> {}
+  public async signMessage(
+    message: Buffer,
+    signerAddress: string
+  ): Promise<string> {
+    const wallet = this.wallets.find((w) => w.address === signerAddress);
+    if (!wallet) {
+      throw new Error(`unable to find ${signerAddress.toString()}`);
+    }
+    return await wallet.signMessage(message.toString());
+  }
 
   public toJson(): any {
     return {
