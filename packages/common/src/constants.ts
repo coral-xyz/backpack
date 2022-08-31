@@ -130,12 +130,12 @@ export const UI_RPC_METHOD_SOLANA_SIMULATE = "solana-simulate";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_READ = "solana-explorer-read";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE = "solana-explorer-update";
 export const UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION = "solana-sign-tx";
+export const UI_RPC_METHOD_SOLANA_SIGN_MESSAGE = "solana-sign-message";
 export const UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS = "solana-sign-all-txs";
 export const UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION =
   "solana-sign-and-send-tx";
-export const UI_RPC_METHOD_ETHEREUM_EXPLORER_READ = "ethereum-explorer-read";
-export const UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE =
-  "ethereum-explorer-update";
+export const UI_RPC_METHOD_ETHEREUM_EXPLORER_READ = "ethereum-exporer-read";
+export const UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE = "ethereum-exporer-update";
 export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ =
   "ethereum-connection-url-read";
 export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE =
