@@ -12,10 +12,20 @@ export class EthereumProvider {
     tx: any
   ): Promise<any> {
     const { walletPublicKey, backgroundClient } = ctx;
-    // Add the nonce
-    // TODO allow custom nonce
-    tx.nonce = await ctx.provider.getTransactionCount(walletPublicKey);
-    tx.gasLimit = await ctx.provider.estimateGas(tx);
+    // TODO make these methods configurable
+    const nonce = await ctx.provider.getTransactionCount(walletPublicKey);
+    const gasLimit = await ctx.provider.estimateGas(tx);
+    const feeData = await ctx.provider.getFeeData();
+    const network = await ctx.provider.getNetwork();
+    tx = {
+      ...tx,
+      nonce,
+      gasLimit,
+      chainId: network.chainId,
+      type: 2,
+      maxFeePerGas: feeData.maxFeePerGas,
+      maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
+    };
     const serializedTx = ethers.utils.base58.encode(
       ethers.utils.serializeTransaction(tx)
     );
@@ -31,11 +41,20 @@ export class EthereumProvider {
     tx: any
   ): Promise<any> {
     const { walletPublicKey, backgroundClient } = ctx;
-    // Add the nonce
-    // TODO allow custom nonce
-    tx.nonce = await ctx.provider.getTransactionCount(walletPublicKey);
-    tx.gasLimit = await ctx.provider.estimateGas(tx);
-    console.log(tx);
+    // TODO make these parameters configurable
+    const nonce = await ctx.provider.getTransactionCount(walletPublicKey);
+    const gasLimit = await ctx.provider.estimateGas(tx);
+    const feeData = await ctx.provider.getFeeData();
+    const network = await ctx.provider.getNetwork();
+    tx = {
+      ...tx,
+      nonce,
+      gasLimit,
+      chainId: network.chainId,
+      type: 2,
+      maxFeePerGas: feeData.maxFeePerGas,
+      maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
+    };
     const serializedTx = ethers.utils.base58.encode(
       ethers.utils.serializeTransaction(tx)
     );
