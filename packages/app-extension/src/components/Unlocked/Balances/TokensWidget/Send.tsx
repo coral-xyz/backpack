@@ -347,7 +347,11 @@ export function SendConfirmationCard({
     // Confirm the tx.
     //
     try {
+      // Wait for mining
+      await ethereumCtx.provider.waitForTransaction(txSig);
+      // Grab the transaction
       const transaction = await ethereumCtx.provider.getTransaction(txSig);
+      // We already waited, but calling .wait will throw if the transaction failed
       await transaction.wait();
       setCardType("complete");
     } catch (err) {
@@ -475,10 +479,10 @@ function ConfirmSend({
   useEffect(() => {
     if (blockchain === Blockchain.ETHEREUM) {
       (async () => {
-        let estimatedFeePromise = new Promise(
+        let estimatedGasPromise = new Promise(
           async (resolve: (value: BigNumber) => void, reject) => {
             if (token.address === ETH_NATIVE_MINT) {
-              resolve(BigNumber.from("21000000000000"));
+              resolve(BigNumber.from("21000"));
             } else {
               // Estimate gas for an ERC20 transfer, the transfer cost can vary depending on the
               // ERC20 transfer method in the contract.
@@ -491,8 +495,8 @@ function ConfirmSend({
                 ethereumCtx.provider
               );
               const tx = await erc20.populateTransaction.transfer(
-                ethers.constants.AddressZero,
-                BigNumber.from(0)
+                address,
+                amount
               );
               try {
                 const gasEstimate = await ethereumCtx.provider.estimateGas(tx);
@@ -511,7 +515,7 @@ function ConfirmSend({
               ethereumCtx.walletPublicKey
             ),
             ethereumCtx.provider.getFeeData(),
-            estimatedFeePromise,
+            estimatedGasPromise,
           ]);
 
         if (nonceResult.status === "fulfilled") {
