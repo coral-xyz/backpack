@@ -1,10 +1,10 @@
 import { selector } from "recoil";
-import { ethers, BigNumber } from "ethers";
+import { ethers } from "ethers";
 import { ethereumConnectionUrl } from "./preferences";
 
 export const ethersContext = selector({
   key: "ethersContext",
-  get: async ({ get }) => {
+  get: ({ get }) => {
     const connectionUrl = get(ethereumConnectionUrl);
     const provider = new ethers.providers.JsonRpcProvider(connectionUrl);
     return {
