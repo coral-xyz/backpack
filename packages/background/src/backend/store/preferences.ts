@@ -11,12 +11,18 @@ export type WalletData = {
   approvedOrigins: Array<string>;
   darkMode: boolean;
   solana: SolanaData;
+  ethereum?: EthereumData;
 };
 
 type SolanaData = {
   explorer: string;
   commitment: Commitment;
   cluster: string;
+};
+
+type EthereumData = {
+  explorer?: string;
+  connectionUrl?: string;
 };
 
 export async function getWalletData(): Promise<WalletData> {
