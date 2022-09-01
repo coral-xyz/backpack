@@ -141,11 +141,9 @@ export class KeyringStore {
   }
 
   public lock() {
-    return this.withUnlock(() => {
-      this.blockchains = new Map();
-      this.lastUsedTs = 0;
-      this.activeBlockchain_ = undefined;
-    });
+    this.blockchains = new Map();
+    this.lastUsedTs = 0;
+    this.activeBlockchain_ = undefined;
   }
 
   // Return the public keys of all blockchain keyrings in the keyring.
