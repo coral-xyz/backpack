@@ -24,6 +24,10 @@ function _Grid({ name }: { name: string }) {
   if (name === undefined) {
     return <></>;
   }
+  // Hack: required when looking at a collection not in the current wallet.
+  if (!c) {
+    return <></>;
+  }
 
   return (
     <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
