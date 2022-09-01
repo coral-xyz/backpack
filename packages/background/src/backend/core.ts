@@ -30,6 +30,8 @@ import {
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
+  NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
   Blockchain,
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
@@ -262,22 +264,52 @@ export class Backend {
   ///////////////////////////////////////////////////////////////////////////////
 
   async ethereumExplorerRead(): Promise<string> {
-    // TODO
-    return EthereumExplorer.DEFAULT;
+    const data = await store.getWalletData();
+    return data.ethereum && data.ethereum.explorer
+      ? data.ethereum.explorer
+      : EthereumExplorer.DEFAULT;
   }
 
   async ethereumExplorerUpdate(explorer: string): Promise<string> {
-    // TODO
+    const data = await store.getWalletData();
+    await store.setWalletData({
+      ...data,
+      ethereum: {
+        ...(data.ethereum || {}),
+        explorer,
+      },
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
+      data: {
+        explorer,
+      },
+    });
     return SUCCESS_RESPONSE;
   }
 
   async ethereumConnectionUrlRead(): Promise<string> {
-    // TODO
-    return EthereumConnectionUrl.DEFAULT;
+    const data = await store.getWalletData();
+    return data.ethereum && data.ethereum.connectionUrl
+      ? data.ethereum.connectionUrl
+      : EthereumConnectionUrl.DEFAULT;
   }
 
-  async ethereumConnectionUrlUpdate(url: string): Promise<string> {
-    // TODO
+  async ethereumConnectionUrlUpdate(connectionUrl: string): Promise<string> {
+    const data = await store.getWalletData();
+    await store.setWalletData({
+      ...data,
+      ethereum: {
+        ...(data.ethereum || {}),
+        connectionUrl,
+      },
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
+      data: {
+        connectionUrl,
+      },
+    });
     return SUCCESS_RESPONSE;
   }
 
@@ -300,15 +332,13 @@ export class Backend {
     );
 
     // Notify all listeners.
-    const data = await store.getWalletData();
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_CREATED,
       data: {
-        // Hardcoded to Solana for now, but will be dynamic in the future.
-        activeBlockchain: Blockchain.SOLANA,
-        activeWallet: await this.activeWallet(),
-        url: data.solana.cluster,
-        commitment: data.solana.commitment,
+        blockchainActiveWallets: await this.blockchainActiveWallets(),
+        ethereumConnectionUrl: await this.ethereumConnectionUrlRead(),
+        solanaConnectionUrl: await this.solanaConnectionUrlRead(),
+        solanaCommitment: await this.solanaCommitmentRead(),
       },
     });
 
@@ -322,12 +352,8 @@ export class Backend {
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
 
-    // Map of blockchain to the active public key for that blockchain.
-    const blockchainActiveWallets = Object.fromEntries(
-      (await this.activeWallets()).map((publicKey) => {
-        return [this.keyringStore.blockchainForPublicKey(publicKey), publicKey];
-      })
-    );
+    const blockchainActiveWallets = this.blockchainActiveWallets();
+
     const ethereumConnectionUrl = await this.ethereumConnectionUrlRead();
     const solanaConnectionUrl = await this.solanaConnectionUrlRead();
     const solanaCommitment = await this.solanaCommitmentRead();
@@ -449,6 +475,15 @@ export class Backend {
 
   async activeWallets(): Promise<Array<string>> {
     return await this.keyringStore.activeWallets();
+  }
+
+  // Map of blockchain to the active public key for that blockchain.
+  async blockchainActiveWallets() {
+    return Object.fromEntries(
+      (await this.activeWallets()).map((publicKey) => {
+        return [this.keyringStore.blockchainForPublicKey(publicKey), publicKey];
+      })
+    );
   }
 
   async keyringDeriveWallet(blockchain: Blockchain): Promise<string> {
