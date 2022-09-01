@@ -20,3 +20,10 @@ export enum Blockchain {
   SOLANA = "solana",
   ETHEREUM = "ethereum",
 }
+
+export type RecentTransaction = {
+  blockchain: Blockchain;
+  date: Date;
+  signature: string;
+  didError: boolean;
+};

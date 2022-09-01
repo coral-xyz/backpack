@@ -8,3 +8,4 @@ export * from "./transaction-request";
 export * from "./navigation";
 export * from "./wallet";
 export * from "./ethereum";
+export * from "./useBlockchain";
