@@ -3,7 +3,7 @@ import { BigNumber } from "ethers";
 import { Typography } from "@mui/material";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { useNftMetadata, useAnchorContext } from "@coral-xyz/recoil";
-import { Blockchain } from "@coral-xyz/common";
+import { toTitleCase, Blockchain } from "@coral-xyz/common";
 import { PrimaryButton, SecondaryButton, TextField } from "../../common";
 import {
   useDrawerContext,
@@ -282,7 +282,7 @@ function Attributes({ nft }: { nft: any }) {
                       fontSize: "14px",
                     }}
                   >
-                    {attr.trait_type}
+                    {toTitleCase(attr.trait_type)}
                   </Typography>
                   <Typography
                     style={{
