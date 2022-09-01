@@ -141,12 +141,17 @@ export function RecentActivity() {
 export function _RecentActivity() {
   const activeEthereumWallet = useActiveEthereumWallet();
   const activeSolanaWallet = useActiveSolanaWallet();
-  const recentEthereumTransactions = useRecentEthereumTransactions({
-    address: activeEthereumWallet.publicKey,
-  });
-  const recentSolanaTransactions = useRecentSolanaTransactions({
-    address: activeSolanaWallet.publicKey,
-  });
+
+  const recentEthereumTransactions = activeEthereumWallet
+    ? useRecentEthereumTransactions({
+        address: activeEthereumWallet.publicKey,
+      })
+    : [];
+  const recentSolanaTransactions = activeSolanaWallet
+    ? useRecentSolanaTransactions({
+        address: activeSolanaWallet.publicKey,
+      })
+    : [];
 
   const mergedTransactions = [
     ...recentEthereumTransactions,
