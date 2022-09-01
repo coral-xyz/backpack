@@ -3,6 +3,7 @@ import { BigNumber } from "ethers";
 import { Typography } from "@mui/material";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { useNftMetadata, useAnchorContext } from "@coral-xyz/recoil";
+import { Blockchain } from "@coral-xyz/common";
 import { PrimaryButton, SecondaryButton, TextField } from "../../common";
 import {
   useDrawerContext,
@@ -15,7 +16,7 @@ import {
 } from "../../common/Layout/NavStack";
 import {
   SendConfirmationCard,
-  useIsValidSolanaSendAddress,
+  useIsValidAddress,
 } from "../Balances/TokensWidget/Send";
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
 
@@ -158,8 +159,7 @@ function SendScreen({ nft }: { nft: any }) {
     isValidAddress,
     isErrorAddress,
     isFreshAddress: _,
-  } = useIsValidSolanaSendAddress(address, provider.connection);
-  const theme = useCustomTheme();
+  } = useIsValidAddress(Blockchain.SOLANA, address, provider.connection);
 
   const onReject = () => {
     close();
@@ -221,6 +221,7 @@ function SendScreen({ nft }: { nft: any }) {
         setOpenDrawer={setOpenConfirm}
       >
         <SendConfirmationCard
+          blockchain={Blockchain.SOLANA}
           token={{
             mint: nft.metadata.mint,
             decimals: 0, // Are there any NFTs that don't use decimals 0?

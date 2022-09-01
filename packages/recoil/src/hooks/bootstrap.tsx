@@ -1,7 +1,7 @@
 import { useRecoilValue } from "recoil";
-import { useNavigation, useTab } from "./navigation";
 import * as atoms from "../atoms";
-import { useSolanaCommitment } from "./preferences";
+import { useNavigation, useTab } from "./navigation";
+import { useSolanaCommitment } from "./solana";
 import { useKeyringStoreState } from "./keyring";
 
 // Bootstrap data for the initial load.

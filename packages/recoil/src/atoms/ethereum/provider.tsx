@@ -15,3 +15,11 @@ export const ethersContext = selector({
   // Ethers provider extends itself, there will be errors if this is disabled
   dangerouslyAllowMutability: true,
 });
+
+export const ethereumFeeData = selector({
+  key: "ethereumFeeData",
+  get: async ({ get }) => {
+    const { provider } = get(ethersContext);
+    return await provider.getFeeData();
+  },
+});

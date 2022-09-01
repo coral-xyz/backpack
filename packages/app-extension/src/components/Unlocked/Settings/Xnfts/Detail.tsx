@@ -5,6 +5,7 @@ import {
   getLogger,
   confirmTransaction,
   explorerUrl,
+  Blockchain,
   Solana,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -195,7 +196,12 @@ const UninstallConfirmationCard = ({ xnft }: { xnft: any }) => {
   ) : cardType === "complete" ? (
     <Sending signature={txSignature!} isComplete={true} />
   ) : (
-    <Error signature={txSignature!} error={error} onRetry={() => retry()} />
+    <Error
+      blockchain={Blockchain.SOLANA}
+      signature={txSignature!}
+      error={error}
+      onRetry={() => retry()}
+    />
   );
 };
 

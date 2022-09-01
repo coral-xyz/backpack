@@ -18,6 +18,20 @@ export function useActiveWallet(): {
   return useRecoilValue(atoms.activeWalletWithData)!;
 }
 
+export function useActiveEthereumWallet(): {
+  publicKey: string;
+  name: string;
+} {
+  return useRecoilValue(atoms.activeEthereumWallet)!;
+}
+
+export function useActiveSolanaWallet(): {
+  publicKey: string;
+  name: string;
+} {
+  return useRecoilValue(atoms.activeSolanaWallet)!;
+}
+
 export function useActiveWallets(): Array<{
   publicKey: string;
   name: string;

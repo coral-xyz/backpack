@@ -481,4 +481,8 @@ export class KeyringStore {
     }
     throw new Error("invalid public key");
   }
+
+  public keyringForBlockchain(blockchain: Blockchain): BlockchainKeyring {
+    return this.blockchains.get(blockchain)!;
+  }
 }

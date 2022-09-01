@@ -69,6 +69,8 @@ import {
   UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE,
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ,
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
+  UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
+  UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   BACKEND_EVENT,
   CHANNEL_POPUP_RPC,
   CHANNEL_POPUP_NOTIFICATIONS,
@@ -272,6 +274,14 @@ async function handle<T = any>(
       return await handleEthereumConnectionUrlRead(ctx);
     case UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE:
       return await handleEthereumConnectionUrlUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION:
+      return await handleEthereumSignTransaction(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION:
+      return await handleEthereumSignAndSendTransaction(
+        ctx,
+        params[0],
+        params[1]
+      );
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -680,6 +690,30 @@ async function handleEthereumConnectionUrlUpdate(
 ): Promise<RpcResponse<boolean>> {
   const didChange = await ctx.backend.ethereumConnectionUrlUpdate(url);
   return [didChange];
+}
+
+async function handleEthereumSignTransaction(
+  ctx: Context<Backend>,
+  serializedTx: string,
+  walletAddress: string
+) {
+  const resp = await ctx.backend.ethereumSignTransaction(
+    serializedTx,
+    walletAddress
+  );
+  return [resp];
+}
+
+async function handleEthereumSignAndSendTransaction(
+  ctx: Context<Backend>,
+  serializedTx: string,
+  walletAddress: string
+) {
+  const resp = await ctx.backend.ethereumSignAndSendTransaction(
+    serializedTx,
+    walletAddress
+  );
+  return [resp];
 }
 
 async function handleApprovedOriginsRead(

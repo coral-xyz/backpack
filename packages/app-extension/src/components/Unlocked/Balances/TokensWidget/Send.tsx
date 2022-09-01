@@ -5,19 +5,25 @@ import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Connection, SystemProgram, PublicKey } from "@solana/web3.js";
 import {
   useAnchorContext,
-  useSolanaCtx,
   useBlockchainTokenAccount,
-  useSolanaExplorer,
+  useEthereumCtx,
+  useEthereumExplorer,
+  useEthereumConnectionUrl,
   useSolanaConnectionUrl,
+  useSolanaCtx,
+  useSolanaExplorer,
   useNavigation,
 } from "@coral-xyz/recoil";
 import {
   Blockchain,
+  Ethereum,
+  Solana,
   confirmTransaction,
   getLogger,
   explorerUrl,
-  Solana,
+  toTitleCase,
   SOL_NATIVE_MINT,
+  ETH_NATIVE_MINT,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
 } from "@coral-xyz/common";
 import { WithHeaderButton } from "./Token";
@@ -129,30 +135,46 @@ export function Send({
 }) {
   const classes = useStyles() as any;
   const { close } = useDrawerContext();
-  const token = useBlockchainTokenAccount(blockchain, tokenAddress);
-  const { provider } = useAnchorContext();
   const nav = useNavStack();
+  const token = useBlockchainTokenAccount(blockchain, tokenAddress);
+  const { provider: solanaProvider } = useAnchorContext();
+  const ethereumCtx = useEthereumCtx();
 
   const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState<BigNumber | undefined>(undefined);
+  const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
 
   const {
     isValidAddress,
     isFreshAddress: _,
     isErrorAddress,
-  } = useIsValidSolanaSendAddress(address, provider.connection);
+  } = useIsValidAddress(blockchain, address, solanaProvider.connection);
 
-  // When sending SOL, account for the tx fee and rent exempt minimum.
-  const lamportsOffset =
-    token.mint === SOL_NATIVE_MINT
-      ? BigNumber.from(5000).add(
+  useEffect(() => {
+    if (token.mint === SOL_NATIVE_MINT) {
+      // When sending SOL, account for the tx fee and rent exempt minimum.
+      setFeeOffset(
+        BigNumber.from(5000).add(
           BigNumber.from(NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS)
         )
-      : BigNumber.from(0);
+      );
+    } else if (token.address === ETH_NATIVE_MINT) {
+      // 21,000 GWEI for a standard ETH transfer
+      setFeeOffset(
+        BigNumber.from("21000")
+          .mul(ethereumCtx.feeData.maxFeePerGas!)
+          .add(
+            BigNumber.from("21000").mul(
+              ethereumCtx.feeData.maxPriorityFeePerGas!
+            )
+          )
+      );
+    }
+  }, [blockchain, tokenAddress]);
 
-  const amountWithFee = BigNumber.from(token.nativeBalance).sub(lamportsOffset);
-  const maxAmount = amountWithFee.gt(0) ? amountWithFee : BigNumber.from(0);
+  const amountSubFee = BigNumber.from(token.nativeBalance).sub(feeOffset);
+  const maxAmount = amountSubFee.gt(0) ? amountSubFee : BigNumber.from(0);
   const exceedsBalance = amount && amount.gt(maxAmount);
   const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
   const isAmountError = amount && exceedsBalance;
@@ -204,7 +226,7 @@ export function Send({
           <div style={{ margin: "0 12px" }}>
             <TextField
               rootClass={classes.textRoot}
-              placeholder={"SOL Address"}
+              placeholder={`${toTitleCase(blockchain)} address`}
               value={address}
               setValue={setAddress}
               isError={isErrorAddress}
@@ -250,6 +272,7 @@ export function Send({
           setOpenDrawer={setOpenDrawer}
         >
           <SendConfirmationCard
+            blockchain={blockchain}
             token={token}
             address={address}
             amount={amount!}
@@ -264,84 +287,107 @@ export function Send({
   );
 }
 
-export function NetworkFeeInfo() {
-  const classes = useStyles();
-  const networkFee = "-"; // TODO
-  return (
-    <div
-      style={{
-        marginLeft: "24px",
-        marginRight: "24px",
-        marginTop: "28px",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        <Typography className={classes.bottomHalfLabel}>Network</Typography>
-        <Typography className={classes.bottomHalfLabel}>Solana</Typography>
-      </div>
-      <div
-        style={{
-          marginTop: "10px",
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        <Typography className={classes.bottomHalfLabel}>Network Fee</Typography>
-        <Typography className={classes.bottomHalfLabel}>
-          {networkFee}
-        </Typography>
-      </div>
-      <div
-        style={{
-          marginTop: "10px",
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      ></div>
-    </div>
-  );
-}
-
 export function SendConfirmationCard({
+  blockchain,
   token,
   address,
   amount,
 }: {
-  token: { logo?: string; ticker?: string; mint: string; decimals: number };
+  blockchain: Blockchain;
+  token: {
+    address?: string;
+    logo?: string;
+    ticker?: string;
+    mint: string;
+    decimals: number;
+  };
   address: string;
   amount: BigNumber;
   close: () => void;
 }) {
-  const ctx = useSolanaCtx();
+  const solanaCtx = useSolanaCtx();
+  const ethereumCtx = useEthereumCtx();
+  const [txSignature, setTxSignature] = useState<string | null>(null);
+  const [txSettings, setTxSettings] = useState<any>({});
   const [error, setError] = useState(
     "Error 422. Transaction time out. Runtime error. Reticulating splines."
   );
   const [cardType, setCardType] = useState<
     "confirm" | "sending" | "complete" | "error"
   >("confirm");
-  const [txSignature, setTxSignature] = useState<string | null>(null);
 
-  const onConfirm = async () => {
+  const onConfirm = async (txSettings: object) => {
     setCardType("sending");
+    setTxSettings(txSettings);
+    switch (blockchain) {
+      case Blockchain.SOLANA:
+        return await onSolanaTransfer();
+      case Blockchain.ETHEREUM:
+        return await onEthereumTransfer(txSettings);
+    }
+  };
 
+  const onEthereumTransfer = async (txSettings = {}) => {
+    //
+    // Send the tx.
+    //
+    //
+    let txSig;
+    try {
+      if (token.address === ethers.constants.AddressZero) {
+        // Zero address token is native ETH
+        txSig = await Ethereum.transferEth(ethereumCtx, {
+          to: address,
+          value: amount.toString(),
+          ...txSettings,
+        });
+      } else {
+        txSig = await Ethereum.transferToken(ethereumCtx, {
+          to: address,
+          tokenAddress: token.address!,
+          amount: amount.toString(),
+          ...txSettings,
+        });
+      }
+    } catch (err) {
+      logger.error("unable to send ethereum transaction", err);
+      setCardType("error");
+      return;
+    }
+
+    setTxSignature(txSig);
+
+    //
+    // Confirm the tx.
+    //
+    try {
+      // Wait for mining
+      await ethereumCtx.provider.waitForTransaction(txSig);
+      // Grab the transaction
+      const transaction = await ethereumCtx.provider.getTransaction(txSig);
+      // We already waited, but calling .wait will throw if the transaction failed
+      await transaction.wait();
+      setCardType("complete");
+    } catch (err) {
+      logger.error("ethereum transaction failed", err);
+      setCardType("error");
+    }
+  };
+
+  const onSolanaTransfer = async () => {
     //
     // Send the tx.
     //
     let txSig;
     try {
       if (token.mint === SOL_NATIVE_MINT.toString()) {
-        txSig = await Solana.transferSol(ctx, {
-          source: ctx.walletPublicKey,
+        txSig = await Solana.transferSol(solanaCtx, {
+          source: solanaCtx.walletPublicKey,
           destination: new PublicKey(address),
           amount: amount.toNumber(),
         });
       } else {
-        txSig = await Solana.transferToken(ctx, {
+        txSig = await Solana.transferToken(solanaCtx, {
           destination: new PublicKey(address),
           mint: new PublicKey(token.mint),
           amount: amount.toNumber(),
@@ -349,11 +395,12 @@ export function SendConfirmationCard({
         });
       }
     } catch (err: any) {
-      logger.error("unable to send transaction", err);
+      logger.error("solana transaction failed", err);
       setError(err.toString());
       setCardType("error");
       return;
     }
+
     setTxSignature(txSig);
 
     //
@@ -361,11 +408,12 @@ export function SendConfirmationCard({
     //
     try {
       await confirmTransaction(
-        ctx.connection,
+        solanaCtx.connection,
         txSig,
-        ctx.commitment !== "confirmed" && ctx.commitment !== "finalized"
+        solanaCtx.commitment !== "confirmed" &&
+          solanaCtx.commitment !== "finalized"
           ? "confirmed"
-          : ctx.commitment
+          : solanaCtx.commitment
       );
       setCardType("complete");
     } catch (err: any) {
@@ -376,13 +424,14 @@ export function SendConfirmationCard({
   };
 
   const retry = () => {
-    onConfirm();
+    onConfirm(txSettings);
   };
 
   return (
     <div>
       {cardType === "confirm" ? (
         <ConfirmSend
+          blockchain={blockchain}
           token={token}
           address={address}
           amount={amount}
@@ -390,6 +439,7 @@ export function SendConfirmationCard({
         />
       ) : cardType === "sending" ? (
         <Sending
+          blockchain={blockchain}
           isComplete={false}
           amount={amount}
           token={token}
@@ -397,30 +447,123 @@ export function SendConfirmationCard({
         />
       ) : cardType === "complete" ? (
         <Sending
+          blockchain={blockchain}
           isComplete={true}
           amount={amount}
           token={token}
           signature={txSignature!}
         />
       ) : (
-        <Error signature={txSignature!} onRetry={() => retry()} error={error} />
+        <Error
+          blockchain={blockchain}
+          signature={txSignature!}
+          onRetry={() => retry()}
+          error={error}
+        />
       )}
     </div>
   );
 }
 
 function ConfirmSend({
+  blockchain,
   token,
   address,
   amount,
   onConfirm,
 }: {
-  token: { logo?: string; ticker?: string; mint: string; decimals: number };
+  blockchain: Blockchain;
+  token: {
+    address?: string;
+    logo?: string;
+    ticker?: string;
+    mint: string;
+    decimals: number;
+  };
   address: string;
   amount: BigNumber;
-  onConfirm: () => void;
+  onConfirm: (txSettings: any) => void;
 }) {
   const theme = useCustomTheme();
+  const ethereumCtx = useEthereumCtx();
+  const [estimatedFee, setEstimatedFee] = useState(BigNumber.from(0));
+  const [estimatedFeeError, setEstimatedFeeError] = useState(false);
+  // Ethereum specific
+  const [gasLimit, setGasLimit] = useState(BigNumber.from(0));
+  const [nonce, setNonce] = useState(0);
+
+  useEffect(() => {
+    if (blockchain === Blockchain.ETHEREUM) {
+      (async () => {
+        let estimatedGasPromise = new Promise(
+          async (resolve: (value: BigNumber) => void, reject) => {
+            if (token.address === ETH_NATIVE_MINT) {
+              resolve(BigNumber.from("21000"));
+            } else {
+              // Estimate gas for an ERC20 transfer, the transfer cost can vary depending on the
+              // ERC20 transfer method in the contract.
+              const abi = [
+                "function transfer(address to, uint amount) returns (bool)",
+              ];
+              const erc20 = new ethers.Contract(
+                token.address!,
+                abi,
+                ethereumCtx.provider
+              );
+              const tx = await erc20.populateTransaction.transfer(
+                address,
+                amount
+              );
+              try {
+                const gasEstimate = await ethereumCtx.provider.estimateGas(tx);
+                resolve(gasEstimate);
+              } catch (error) {
+                console.log("could not estimate transaction fee", error);
+                reject(error);
+              }
+            }
+          }
+        );
+
+        const [nonceResult, estimatedGasResult] = await Promise.allSettled([
+          ethereumCtx.provider.getTransactionCount(ethereumCtx.walletPublicKey),
+          estimatedGasPromise,
+        ]);
+
+        let estimatedGas;
+        if (nonceResult.status === "fulfilled") {
+          setNonce(nonceResult.value);
+        }
+        if (estimatedGasResult.status === "fulfilled") {
+          estimatedGas = estimatedGasResult.value;
+        } else {
+          // Fee estimate failed, transaction is unlikely to succeed
+          estimatedGas = BigNumber.from("150000");
+          setEstimatedFeeError(true);
+        }
+        setGasLimit(estimatedGas);
+        setEstimatedFee(
+          estimatedGas
+            .mul(ethereumCtx.feeData.maxFeePerGas!)
+            .add(estimatedGas.mul(ethereumCtx.feeData.maxPriorityFeePerGas!))
+        );
+      })();
+    } else {
+      setEstimatedFee(BigNumber.from(5000));
+    }
+  }, []);
+
+  const txSettings =
+    blockchain === Blockchain.ETHEREUM
+      ? {
+          type: 2,
+          nonce: nonce,
+          gasLimit,
+          maxFeePerGas: ethereumCtx.feeData.maxFeePerGas,
+          maxPriorityFeePerGas: ethereumCtx.feeData.maxPriorityFeePerGas,
+        }
+      : // No additional settings for Solana
+        {};
 
   return (
     <div
@@ -453,10 +596,33 @@ function ConfirmSend({
           amount={amount}
           token={token}
         />
-        <ConfirmSendTable address={address} />
+        {blockchain === Blockchain.ETHEREUM && (
+          <ConfirmEthereumSendTable
+            destinationAddress={address}
+            nonce={nonce}
+            estimatedFee={estimatedFee}
+            gasPrice={ethereumCtx.feeData.gasPrice!}
+            maxFeePerGas={ethereumCtx.feeData.maxFeePerGas!}
+            maxPriorityFeePerGas={ethereumCtx.feeData.maxPriorityFeePerGas!}
+          />
+        )}
+        {blockchain === Blockchain.SOLANA && (
+          <ConfirmSolanaSendTable destinationAddress={address} />
+        )}
+        {estimatedFeeError && (
+          <Typography
+            style={{
+              color: theme.custom.colors.negative,
+              marginTop: "8px",
+              textAlign: "center",
+            }}
+          >
+            This transaction is unlikely to succeed.
+          </Typography>
+        )}
       </div>
       <PrimaryButton
-        onClick={() => onConfirm()}
+        onClick={() => onConfirm(txSettings)}
         label="Send"
         type="submit"
         data-testid="Send"
@@ -523,16 +689,20 @@ const ConfirmSendToken: React.FC<{
   );
 };
 
-const ConfirmSendTable: React.FC<{ address: string }> = ({ address }) => {
+const ConfirmSolanaSendTable: React.FC<{
+  destinationAddress: string;
+}> = ({ destinationAddress }) => {
   const theme = useCustomTheme();
-  const ctx = useSolanaCtx();
   const classes = useStyles();
+  const solanaCtx = useSolanaCtx();
 
   const menuItems = {
     From: {
       onClick: () => {},
       detail: (
-        <Typography>{walletAddressDisplay(ctx.walletPublicKey)}</Typography>
+        <Typography>
+          {walletAddressDisplay(solanaCtx.walletPublicKey)}
+        </Typography>
       ),
       classes: { root: classes.confirmTableListItem },
       button: false,
@@ -540,7 +710,7 @@ const ConfirmSendTable: React.FC<{ address: string }> = ({ address }) => {
     To: {
       onClick: () => {},
       detail: (
-        <Typography>{walletAddressDisplay(new PublicKey(address))}</Typography>
+        <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
       ),
       classes: { root: classes.confirmTableListItem },
       button: false,
@@ -569,22 +739,105 @@ const ConfirmSendTable: React.FC<{ address: string }> = ({ address }) => {
   );
 };
 
+const ConfirmEthereumSendTable: React.FC<{
+  destinationAddress: string;
+  estimatedFee: BigNumber;
+  nonce: number;
+  gasPrice: BigNumber;
+  maxFeePerGas: BigNumber;
+  maxPriorityFeePerGas: BigNumber;
+}> = ({
+  destinationAddress,
+  estimatedFee,
+  nonce,
+  gasPrice,
+  maxFeePerGas,
+  maxPriorityFeePerGas,
+}) => {
+  const theme = useCustomTheme();
+  const classes = useStyles();
+  const ethereumCtx = useEthereumCtx();
+
+  const menuItems = {
+    From: {
+      onClick: () => {},
+      detail: (
+        <Typography>
+          {walletAddressDisplay(ethereumCtx.walletPublicKey)}
+        </Typography>
+      ),
+      classes: { root: classes.confirmTableListItem },
+      button: false,
+    },
+    To: {
+      onClick: () => {},
+      detail: (
+        <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
+      ),
+      classes: { root: classes.confirmTableListItem },
+      button: false,
+    },
+    "Network fee": {
+      onClick: () => {},
+      detail: (
+        <Typography>
+          {ethers.utils.formatUnits(estimatedFee).substring(0, 10)}{" "}
+          <span style={{ color: theme.custom.colors.secondary }}>ETH</span>
+        </Typography>
+      ),
+      classes: { root: classes.confirmTableListItem },
+      button: false,
+    },
+    /**
+*   TODO make configurable via advanced option along with gas limit and gas pricing
+    Nonce: {
+      onClick: () => {},
+      detail: <Typography>{nonce}</Typography>,
+      classes: { root: classes.confirmTableListItem },
+      button: false,
+    },
+  **/
+  };
+
+  return (
+    <SettingsList
+      menuItems={menuItems}
+      style={{ margin: 0 }}
+      textStyle={{
+        color: theme.custom.colors.secondary,
+      }}
+    />
+  );
+};
+
 function Sending({
+  blockchain,
   amount,
   token,
   signature,
   isComplete,
 }: {
+  blockchain: Blockchain;
   amount: BigNumber;
   token: any;
   signature: string;
   isComplete: boolean;
 }) {
   const theme = useCustomTheme();
-  const solanaExplorer = useSolanaExplorer();
-  const connectionUrl = useSolanaConnectionUrl();
   const nav = useNavigation();
   const drawer = useDrawerContext();
+  const solanaExplorer = useSolanaExplorer();
+  const solanaConnectionUrl = useSolanaConnectionUrl();
+  const ethereumExplorer = useEthereumExplorer();
+  const ethereumConnectionUrl = useEthereumConnectionUrl();
+
+  const explorer =
+    blockchain === Blockchain.SOLANA ? solanaExplorer : ethereumExplorer;
+  const connectionUrl =
+    blockchain === Blockchain.SOLANA
+      ? solanaConnectionUrl
+      : ethereumConnectionUrl;
+
   return (
     <div
       style={{
@@ -650,9 +903,7 @@ function Sending({
               nav.toRoot();
               drawer.close();
             } else {
-              window.open(
-                explorerUrl(solanaExplorer, signature, connectionUrl)
-              );
+              window.open(explorerUrl(explorer, signature, connectionUrl));
             }
           }}
           label={isComplete ? "View Balances" : "View Explorer"}
@@ -663,16 +914,29 @@ function Sending({
 }
 
 export function Error({
+  blockchain,
   signature,
   onRetry,
   error,
 }: {
+  blockchain: Blockchain;
   signature: string;
   error: string;
   onRetry: () => void;
 }) {
-  const explorer = useSolanaExplorer();
-  const connectionUrl = useSolanaConnectionUrl();
+  const theme = useCustomTheme();
+  const solanaExplorer = useSolanaExplorer();
+  const solanaConnectionUrl = useSolanaConnectionUrl();
+  const ethereumExplorer = useEthereumExplorer();
+  const ethereumConnectionUrl = useEthereumConnectionUrl();
+
+  const explorer =
+    blockchain === Blockchain.SOLANA ? solanaExplorer : ethereumExplorer;
+  const connectionUrl =
+    blockchain === Blockchain.SOLANA
+      ? solanaConnectionUrl
+      : ethereumConnectionUrl;
+
   return (
     <div
       style={{
@@ -814,14 +1078,11 @@ export function BottomCard({
   );
 }
 
-export function useIsValidSolanaSendAddress(
+export function useIsValidAddress(
+  blockchain: Blockchain,
   address: string,
-  connection: Connection
-): {
-  isValidAddress: boolean;
-  isFreshAddress: boolean;
-  isErrorAddress: boolean;
-} {
+  solanaConnection?: Connection
+) {
   const [addressError, setAddressError] = useState<boolean>(false);
   const [isFreshAccount, setIsFreshAccount] = useState<boolean>(false); // Not used for now.
   const [accountValidated, setAccountValidated] = useState<boolean>(false);
@@ -837,33 +1098,49 @@ export function useIsValidSolanaSendAddress(
       return;
     }
     (async () => {
-      let pubkey;
-      try {
-        pubkey = new PublicKey(address);
-      } catch (err) {
-        setAddressError(true);
-        // Not valid address so don't bother validating it.
-        return;
-      }
+      if (blockchain === Blockchain.SOLANA) {
+        // Solana address validation
+        let pubkey;
+        try {
+          pubkey = new PublicKey(address);
+        } catch (err) {
+          setAddressError(true);
+          // Not valid address so don't bother validating it.
+          return;
+        }
 
-      const account = await connection.getAccountInfo(pubkey);
+        if (!solanaConnection) {
+          return;
+        }
 
-      // Null data means the account has no lamports. This is valid.
-      if (!account) {
-        setIsFreshAccount(true);
+        const account = await solanaConnection.getAccountInfo(pubkey);
+
+        // Null data means the account has no lamports. This is valid.
+        if (!account) {
+          setIsFreshAccount(true);
+          setAccountValidated(true);
+          return;
+        }
+
+        // Only allow system program accounts to be given. ATAs only!
+        if (!account.owner.equals(SystemProgram.programId)) {
+          setAddressError(true);
+          return;
+        }
+
+        // The account data has been successfully validated.
+        setAddressError(false);
         setAccountValidated(true);
-        return;
+      } else if (blockchain === Blockchain.ETHEREUM) {
+        // Ethereum address validation
+        try {
+          ethers.utils.getAddress(address);
+        } catch (e) {
+          setAddressError(true);
+          return;
+        }
+        setAccountValidated(true);
       }
-
-      // Only allow system program accounts to be given. ATAs only!
-      if (!account.owner.equals(SystemProgram.programId)) {
-        setAddressError(true);
-        return;
-      }
-
-      // The account data has been successfully validated.
-      setAddressError(false);
-      setAccountValidated(true);
     })();
   }, [address]);
 

@@ -139,4 +139,28 @@ export class EthereumConnectionBackend {
       clearInterval(interval);
     });
   }
+
+  //
+  // Ethereum Connection API.
+  //
+  async sendTransaction(signedTx: string) {
+    const tx = await this.provider!.sendTransaction(signedTx);
+    return tx;
+  }
+
+  async getFeeData() {
+    return await this.provider!.getFeeData();
+  }
+
+  async getTransactionCount(publicKey: string) {
+    return await this.provider!.getTransactionCount(publicKey);
+  }
+
+  async getNetwork() {
+    return await this.provider!.getNetwork();
+  }
+
+  async estimateGas(tx: any) {
+    return await this.provider!.estimateGas(tx);
+  }
 }

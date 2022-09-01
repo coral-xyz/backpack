@@ -1,5 +1,7 @@
 export * from "./useSplTokenRegistry";
 export * from "./useSolanaConnection";
+export * from "./useSolanaExplorer";
+export * from "./useSolanaCommitment";
 export * from "./useJupiter";
 export * from "./useRecentTransactions";
 export * from "./useLoadSplTokens";
