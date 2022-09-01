@@ -7,7 +7,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import Transport from "@ledgerhq/hw-transport";
-import * as ledgerCore from "@coral-xyz/ledger-core";
+import Solana from "@ledgerhq/hw-app-solana";
 import { Connection, PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { useBackgroundClient, useAnchorContext } from "@coral-xyz/recoil";
@@ -183,9 +183,21 @@ export function ImportAccounts({
   ) => {
     const publicKeys = [];
     if (blockchain === Blockchain.SOLANA) {
+      const solanaLedger = new Solana(transport);
+      const derivationPathValue = derivationPathOptions.find(
+        (d) => d.path == derivationPath
+      )!.label;
+      // Add root
+      publicKeys.push(
+        new PublicKey(
+          (await solanaLedger.getAddress(derivationPathValue)).address
+        )
+      );
+      // Add remaining accounts
       for (let k = 0; k < LOAD_PUBKEY_AMOUNT; k += 1) {
+        const completePath = `${derivationPathValue}/${k}`;
         publicKeys.push(
-          await ledgerCore.getPublicKey(transport, k, derivationPath)
+          new PublicKey((await solanaLedger.getAddress(completePath)).address)
         );
       }
     }
@@ -214,21 +226,21 @@ export function ImportAccounts({
     [Blockchain.SOLANA]: [
       {
         path: DerivationPath.Bip44,
-        label: "44'/501'/",
+        label: "44'/501'",
       },
       {
         path: DerivationPath.Bip44Change,
-        label: "44'/501'/0'/",
+        label: "44'/501'/0'",
       },
     ],
     [Blockchain.ETHEREUM]: [
       {
         path: DerivationPath.Bip44,
-        label: "44'/60'/",
+        label: "44'/60'",
       },
       {
         path: DerivationPath.Bip44Change,
-        label: "44'/60'/0'/",
+        label: "44'/60'/0'",
       },
     ],
   }[blockchain];
