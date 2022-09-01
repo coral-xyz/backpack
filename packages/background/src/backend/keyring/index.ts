@@ -4,6 +4,8 @@ import type { EventEmitter } from "@coral-xyz/common";
 import {
   Blockchain,
   DerivationPath,
+  EthereumExplorer,
+  EthereumConnectionUrl,
   SolanaExplorer,
   SolanaCluster,
   NOTIFICATION_KEYRING_STORE_LOCKED,
@@ -83,6 +85,10 @@ export class KeyringStore {
         explorer: SolanaExplorer.DEFAULT,
         cluster: SolanaCluster.DEFAULT,
         commitment: "confirmed",
+      },
+      ethereum: {
+        explorer: EthereumExplorer.DEFAULT,
+        connectionUrl: EthereumConnectionUrl.DEFAULT,
       },
     });
 
