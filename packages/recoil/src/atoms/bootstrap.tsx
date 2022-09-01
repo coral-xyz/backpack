@@ -19,7 +19,6 @@ import { splTokenRegistry } from "./solana/token-registry";
 import { fetchJupiterRouteMap } from "./solana/jupiter";
 import { ethereumTokenMetadata } from "./ethereum/token-metadata";
 import { ethersContext } from "./ethereum/provider";
-import { ethereumNft } from "./ethereum/nft";
 
 /**
  * Defines the initial app load fetch.
