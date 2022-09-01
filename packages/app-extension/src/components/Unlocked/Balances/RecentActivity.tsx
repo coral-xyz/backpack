@@ -9,8 +9,9 @@ import {
   useRecentTransactions,
   useRecentSolanaTransactions,
   useRecentEthereumTransactions,
-  useBlockchainExplorer,
   useBlockchainConnectionUrl,
+  useBlockchainExplorer,
+  useBlockchainLogo,
 } from "@coral-xyz/recoil";
 import { Loading } from "../../common";
 import { WithDrawer, CloseButton } from "../../common/Layout/Drawer";
@@ -267,6 +268,7 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
   const theme = useCustomTheme();
   const explorer = useBlockchainExplorer(transaction.blockchain);
   const connectionUrl = useBlockchainConnectionUrl(transaction.blockchain);
+  const blockchainLogo = useBlockchainLogo(transaction.blockchain);
 
   const onClick = () => {
     window.open(explorerUrl(explorer!, transaction.signature, connectionUrl!));
@@ -310,6 +312,14 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
           </div>
           <div>
             <Typography className={classes.txSig}>
+              <img
+                style={{
+                  width: "12px",
+                  borderRadius: "2px",
+                  marginRight: "10px",
+                }}
+                src={blockchainLogo}
+              />
               {transaction.signature.slice(0, 4)}...
               {transaction.signature.slice(transaction.signature.length - 5)}
             </Typography>
