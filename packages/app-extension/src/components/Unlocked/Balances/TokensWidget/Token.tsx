@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Typography } from "@mui/material";
+import { Blockchain, ETH_NATIVE_MINT } from "@coral-xyz/common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Button } from "@coral-xyz/react-xnft-renderer";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
-import { useBlockchainTokenAccount } from "@coral-xyz/recoil";
+import {
+  useActiveEthereumWallet,
+  useBlockchainTokenAccount,
+} from "@coral-xyz/recoil";
 import { RecentActivityList } from "../RecentActivity";
 import { WithDrawer, CloseButton } from "../../../common/Layout/Drawer";
 import {
@@ -51,10 +55,16 @@ const useStyles = styles((theme) => ({
 }));
 
 export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
+  const ethereumWallet = useActiveEthereumWallet();
   // Hack: This is hit for some reason due to the framer-motion animation.
   if (!blockchain || !address) {
     return <></>;
   }
+
+  const activityAddress =
+    blockchain === Blockchain.ETHEREUM ? ethereumWallet.publicKey : address;
+  const contractAddresses =
+    blockchain === Blockchain.ETHEREUM ? [address] : undefined;
 
   return (
     <div
@@ -67,7 +77,8 @@ export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
       <TokenHeader blockchain={blockchain} address={address} />
       <RecentActivityList
         blockchain={blockchain}
-        address={address}
+        address={activityAddress}
+        contractAddresses={contractAddresses}
         minimize={true}
         style={{ marginTop: 0 }}
       />

@@ -4,10 +4,13 @@ import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, Check, Clear, Bolt } from "@mui/icons-material";
 import { explorerUrl, Blockchain } from "@coral-xyz/common";
 import {
-  useSolanaExplorer,
-  useActiveWallet,
+  useActiveEthereumWallet,
+  useActiveSolanaWallet,
   useRecentTransactions,
-  useSolanaConnectionUrl,
+  useRecentSolanaTransactions,
+  useRecentEthereumTransactions,
+  useBlockchainExplorer,
+  useBlockchainConnectionUrl,
 } from "@coral-xyz/recoil";
 import { Loading } from "../../common";
 import { WithDrawer, CloseButton } from "../../common/Layout/Drawer";
@@ -127,28 +130,58 @@ export function RecentActivityButton() {
 }
 
 export function RecentActivity() {
-  const wallet = useActiveWallet();
-  // TODO multichain recent activity view
   return (
-    <RecentActivityList
-      blockchain={Blockchain.SOLANA}
-      address={wallet.publicKey.toString()}
-    />
+    <Suspense fallback={<RecentActivityLoading />}>
+      <_RecentActivity />
+    </Suspense>
+  );
+}
+
+export function _RecentActivity() {
+  const activeEthereumWallet = useActiveEthereumWallet();
+  const activeSolanaWallet = useActiveSolanaWallet();
+  const recentEthereumTransactions = useRecentEthereumTransactions({
+    address: activeEthereumWallet.publicKey,
+  });
+  const recentSolanaTransactions = useRecentSolanaTransactions({
+    address: activeSolanaWallet.publicKey,
+  });
+
+  const mergedTransactions = [
+    ...recentEthereumTransactions,
+    ...recentSolanaTransactions,
+  ].sort((a, b) => b.date.getTime() - a.date.getTime());
+
+  return (
+    <Suspense fallback={<RecentActivityLoading />}>
+      <_RecentActivityList transactions={mergedTransactions} />
+    </Suspense>
   );
 }
 
 export function RecentActivityList({
   blockchain,
   address,
+  contractAddresses,
+  transactions,
   style,
-  minimize,
-}: any) {
+  minimize = false,
+}: {
+  blockchain?: Blockchain;
+  address?: string;
+  contractAddresses?: Array<string>;
+  transactions?: Array<any>;
+  style?: any;
+  minimize?: boolean;
+}) {
   return (
     <Suspense fallback={<RecentActivityLoading />}>
       <_RecentActivityList
         blockchain={blockchain}
-        style={style}
         address={address}
+        contractAddresses={contractAddresses}
+        transactions={transactions}
+        style={style}
         minimize={minimize}
       />
     </Suspense>
@@ -181,10 +214,22 @@ function RecentActivityLoading() {
 export function _RecentActivityList({
   blockchain,
   address,
+  contractAddresses,
+  transactions: _transactions,
   style,
   minimize,
-}: any) {
-  const transactions = useRecentTransactions(blockchain, address);
+}: {
+  blockchain?: Blockchain;
+  address?: string;
+  contractAddresses?: Array<string>;
+  transactions?: Array<any>;
+  style?: any;
+  minimize?: boolean;
+}) {
+  // Load transactions if not passed in as a prop
+  const transactions = _transactions
+    ? _transactions
+    : useRecentTransactions(blockchain!, address!, contractAddresses!);
 
   if (!style) {
     style = {};
@@ -205,7 +250,7 @@ export function _RecentActivityList({
     >
       {transactions.map((tx: any, idx: number) => (
         <RecentActivityListItem
-          key={tx.transaction.signatures[0]}
+          key={idx}
           transaction={tx}
           isFirst={idx === 0}
           isLast={idx === transactions.length - 1}
@@ -213,23 +258,18 @@ export function _RecentActivityList({
       ))}
     </List>
   ) : (
-    <NoRecentActivityLabel minimize={minimize} />
+    <NoRecentActivityLabel minimize={!!minimize} />
   );
 }
 
 function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const explorer = useSolanaExplorer();
-  const connectionUrl = useSolanaConnectionUrl();
-
-  const txSig = transaction.transaction.signatures[0];
-  const unixTimestamp = transaction.blockTime;
-  const date = new Date(unixTimestamp * 1000);
-  const dateStr = date.toLocaleDateString();
+  const explorer = useBlockchainExplorer(transaction.blockchain);
+  const connectionUrl = useBlockchainConnectionUrl(transaction.blockchain);
 
   const onClick = () => {
-    window.open(explorerUrl(explorer, txSig, connectionUrl));
+    window.open(explorerUrl(explorer!, transaction.signature, connectionUrl!));
   };
 
   return (
@@ -270,9 +310,12 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
           </div>
           <div>
             <Typography className={classes.txSig}>
-              {txSig.slice(0, 4)}...{txSig.slice(txSig.length - 5)}
+              {transaction.signature.slice(0, 4)}...
+              {transaction.signature.slice(transaction.signature.length - 5)}
             </Typography>
-            <Typography className={classes.txDate}>{dateStr}</Typography>
+            <Typography className={classes.txDate}>
+              {transaction.date.toLocaleDateString()}
+            </Typography>
           </div>
         </div>
         <div
@@ -293,7 +336,7 @@ function RecentActivityListItemIcon({ transaction }: any) {
   const classes = useStyles();
   return (
     <div className={classes.recentActivityListItemIconContainer}>
-      {transaction.transaction.err ? (
+      {transaction.didError ? (
         <Clear className={classes.recentActivityListItemIconNegative} />
       ) : (
         <Check className={classes.recentActivityListItemIcon} />

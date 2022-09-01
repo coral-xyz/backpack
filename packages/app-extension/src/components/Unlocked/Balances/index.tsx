@@ -40,10 +40,10 @@ export function Balances() {
       <TokenTables
         onClickRow={onClickTokenRow}
         customFilter={(token) => {
-          if (
-            token.mint &&
-            [SOL_NATIVE_MINT, ETH_NATIVE_MINT].includes(token.mint)
-          ) {
+          if (token.mint && token.mint === SOL_NATIVE_MINT) {
+            return true;
+          }
+          if (token.address && token.address === ETH_NATIVE_MINT) {
             return true;
           }
           return !token.nativeBalance.isZero();

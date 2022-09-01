@@ -3,13 +3,15 @@ import { BigNumber } from "ethers";
 import { ParsedConfirmedTransaction, PublicKey } from "@solana/web3.js";
 import {
   fetchXnfts,
-  Blockchain,
   ethereumBalances,
   UI_RPC_METHOD_NAVIGATION_READ,
 } from "@coral-xyz/common";
 import { SolanaTokenAccountWithKey } from "../types";
 import { fetchPriceData } from "./prices";
-import { recentTransactions } from "./recent-transactions";
+import {
+  recentEthereumTransactions,
+  recentSolanaTransactions,
+} from "./recent-transactions";
 import { backgroundClient } from "./client";
 import { ethereumPublicKey, solanaPublicKey } from "./wallet";
 import { anchorContext } from "./solana/wallet";
@@ -17,6 +19,7 @@ import { splTokenRegistry } from "./solana/token-registry";
 import { fetchJupiterRouteMap } from "./solana/jupiter";
 import { ethereumTokenMetadata } from "./ethereum/token-metadata";
 import { ethersContext } from "./ethereum/provider";
+import { ethereumNft } from "./ethereum/nft";
 
 /**
  * Defines the initial app load fetch.
@@ -89,6 +92,14 @@ export const ethereumBootstrap = selector<{
     const provider = get(ethersContext).provider;
     const ethTokenBalances = await ethereumBalances(provider, publicKey);
 
+    // get(ethereumNft({ address: publicKey }));
+
+    get(
+      recentEthereumTransactions({
+        address: publicKey,
+      })
+    );
+
     return {
       ethActivePublicKey: publicKey,
       ethTokenBalances,
@@ -136,9 +147,7 @@ export const solanaBootstrap = selector<{
     //
     const fetchXnftsPromise = fetchXnfts(provider, new PublicKey(publicKey));
 
-    get(
-      recentTransactions({ blockchain: Blockchain.SOLANA, address: publicKey })
-    );
+    get(recentSolanaTransactions({ address: publicKey }));
 
     //
     // Perform data fetch.
