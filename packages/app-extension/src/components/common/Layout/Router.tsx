@@ -19,6 +19,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { Balances } from "../../Unlocked/Balances";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { Apps } from "../../Unlocked/Apps";
+import { PluginApp } from "../../Unlocked/Apps/Plugin";
 import { Nfts } from "../../Unlocked/Nfts";
 import { Swap } from "../../Unlocked/Swap";
 import { NftsDetail } from "../../Unlocked/Nfts/Detail";
@@ -35,6 +36,7 @@ export function Router() {
         <Route path="/balances" element={<BalancesPage />} />
         <Route path="/balances/token" element={<TokenPage />} />
         <Route path="/apps" element={<AppsPage />} />
+        <Route path="/apps/plugin" element={<PluginPage />} />
         <Route path="/nfts" element={<NftsPage />} />
         <Route path="/swap" element={<SwapPage />} />
         <Route path="/nfts/collection" element={<NftsCollectionPage />} />
@@ -48,6 +50,35 @@ export function Router() {
 function Redirect() {
   const url = useRedirectUrl();
   return <Navigate to={url} replace />;
+}
+
+// This is only shown from the window.backpack.openXnft API.
+function PluginPage() {
+  return <NavScreen component={<_PluginPage />} />;
+}
+
+function _PluginPage() {
+  const [searchParams] = useSearchParams();
+  const { xnftAddress } = JSON.parse(
+    decodeURIComponent(searchParams.get("props")!)
+  );
+  return (
+    <div
+      style={{
+        position: "fixed",
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        zIndex: 1,
+      }}
+    >
+      <PluginApp
+        xnftAddress={xnftAddress!}
+        closePlugin={() => window.close()}
+      />
+    </div>
+  );
 }
 
 function BalancesPage() {

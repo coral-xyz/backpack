@@ -198,6 +198,8 @@ export class Plugin {
     document.head.removeChild(this._iframeRoot!);
     this._iframeRoot!.remove();
     this._iframeRoot = undefined;
+    // Don't need to remove the active iframe because we've removed the root.
+    this._iframeActive = undefined;
     this._rpcServer.setWindow(undefined, "");
     this._bridgeServer.setWindow(undefined, "");
     this._nextRenderId = undefined;

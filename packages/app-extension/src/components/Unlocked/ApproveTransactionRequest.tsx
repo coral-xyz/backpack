@@ -68,7 +68,12 @@ export function ApproveTransactionRequest() {
   return (
     <ApproveTransactionDrawer
       openDrawer={openDrawer}
-      setOpenDrawer={setOpenDrawer}
+      setOpenDrawer={(b) => {
+        if (b === false) {
+          setRequest(undefined);
+        }
+        setOpenDrawer(false);
+      }}
     >
       <SendTransactionRequest
         onClose={() => {

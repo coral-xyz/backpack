@@ -102,6 +102,14 @@ export class BrowserRuntimeExtension {
 const POPUP_HTML = "popup.html";
 const EXPANDED_HTML = "options.html";
 
+export async function openXnft(
+  xnftAddress: string
+): Promise<chrome.windows.Window> {
+  const props = encodeURIComponent(JSON.stringify({ xnftAddress }));
+  const url = `${POPUP_HTML}#/apps/plugin?props=${props}`;
+  return openPopupWindow(url);
+}
+
 export async function openLockedApprovalPopupWindow(
   origin: string,
   title: string,

@@ -1,10 +1,32 @@
 import { Button, Divider } from "@mui/material";
+import { PublicKey } from "@solana/web3.js";
 import { PluginRenderer } from "@coral-xyz/react-xnft-renderer";
 import { usePlugins } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { PowerIcon, MoreIcon } from "../../common/Icon";
+import { Simulator } from "./Simulator";
 
-export function PluginDisplay({ xnft, closePlugin }: any) {
+export function PluginApp({
+  xnftAddress,
+  closePlugin,
+}: {
+  xnftAddress: string;
+  closePlugin: () => void;
+}) {
+  return xnftAddress! === PublicKey.default.toString() ? (
+    <Simulator xnft={xnftAddress} closePlugin={closePlugin} />
+  ) : (
+    <PluginDisplay xnft={xnftAddress!} closePlugin={() => closePlugin()} />
+  );
+}
+
+export function PluginDisplay({
+  xnft,
+  closePlugin,
+}: {
+  xnft: string;
+  closePlugin: () => void;
+}) {
   const theme = useCustomTheme();
   const plugins = usePlugins();
   const p = plugins.find((p) => p.xnftAddress.toString() === xnft);

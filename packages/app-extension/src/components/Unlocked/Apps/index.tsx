@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
-import { PublicKey } from "@solana/web3.js";
 import { getSvgPath } from "figma-squircle";
 import { Grid, Button, Typography } from "@mui/material";
 import { styles } from "@coral-xyz/themes";
@@ -10,9 +9,8 @@ import {
   useNavigation,
 } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
-import { Simulator } from "./Simulator";
 import { WithDrawer } from "../../common/Layout/Drawer";
-import { PluginDisplay } from "./Plugin";
+import { PluginApp } from "./Plugin";
 
 const ICON_WIDTH = 64;
 
@@ -135,13 +133,8 @@ function PluginGrid() {
         })}
       </Grid>
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        {xnftAddress! === PublicKey.default.toString() ? (
-          <Simulator xnft={xnftAddress} closePlugin={closePlugin} />
-        ) : (
-          <PluginDisplay
-            xnft={xnftAddress!}
-            closePlugin={() => closePlugin()}
-          />
+        {xnftAddress && (
+          <PluginApp xnftAddress={xnftAddress} closePlugin={closePlugin} />
         )}
       </WithDrawer>
     </>
