@@ -1,4 +1,4 @@
-import { ethers, BigNumber, VoidSigner } from "ethers";
+import { ethers, BigNumber } from "ethers";
 import type { UnsignedTransaction } from "@ethersproject/transactions";
 import type { FeeData } from "@ethersproject/abstract-provider";
 import type { BackgroundClient } from "../";
