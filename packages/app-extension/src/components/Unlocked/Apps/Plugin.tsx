@@ -1,6 +1,6 @@
 import { Button, Divider } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
-import { PluginRenderer } from "@coral-xyz/react-xnft-renderer";
+import { Plugin, PluginRenderer } from "@coral-xyz/react-xnft-renderer";
 import { usePlugins } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { PowerIcon, MoreIcon } from "../../common/Icon";
@@ -27,7 +27,6 @@ export function PluginDisplay({
   xnft: string;
   closePlugin: () => void;
 }) {
-  const theme = useCustomTheme();
   const plugins = usePlugins();
   const p = plugins.find((p) => p.xnftAddress.toString() === xnft);
 
@@ -39,6 +38,18 @@ export function PluginDisplay({
     throw new Error("unable to find plugin");
   }
 
+  return <_PluginDisplay plugin={p!} closePlugin={closePlugin} />;
+}
+
+export function _PluginDisplay({
+  plugin,
+  closePlugin,
+}: {
+  plugin: Plugin;
+  closePlugin: () => void;
+}) {
+  const theme = useCustomTheme();
+
   // TODO: splash loading page.
   return (
     <div
@@ -48,7 +59,7 @@ export function PluginDisplay({
       }}
     >
       <PluginControl closePlugin={closePlugin} />
-      <PluginRenderer key={p.iframeRootUrl} plugin={p} />
+      <PluginRenderer key={plugin.iframeRootUrl} plugin={plugin} />
     </div>
   );
 }

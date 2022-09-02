@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useRecoilValue } from "recoil";
 // XXX: this full path is currently necessary as it avoids loading the jsx in
 //      react-xnft-renderer/src/Component.tsx in the background service worker
@@ -14,6 +15,22 @@ export function useAppIcons() {
 export function usePlugins(): Array<Plugin> {
   const pluginData = useAppIcons();
   return pluginData.map((p) => getPlugin(p));
+}
+
+export function usePlugin(address: string): Promise<Plugin> {
+  const [plugin, setPlugin] = useState(null);
+  let _resolve, _reject;
+
+  useEffect(() => {
+    (async () => {
+      // todo
+    })();
+  }, []);
+
+  return new Promise((resolve, reject) => {
+    _resolve = resolve;
+    _reject = reject;
+  });
 }
 
 export function getPlugin(p: any): Plugin {
