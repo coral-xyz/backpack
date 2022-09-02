@@ -29,6 +29,7 @@ export type RecentTransaction = {
 };
 
 export type NftCollection = {
+  id: string;
   name: string;
   symbol: string;
   tokenType: string;

@@ -79,8 +79,8 @@ export function NftTable({
             flexWrap: "wrap",
           }}
         >
-          {collections.map((c: NftCollection, index: number) => (
-            <NftCollectionCard key={index} name={c.name} collection={c.items} />
+          {collections.map((collection: NftCollection, index: number) => (
+            <NftCollectionCard key={index} collection={collection} />
           ))}
         </div>
       </BalancesTableContent>
@@ -88,34 +88,31 @@ export function NftTable({
   );
 }
 
-function NftCollectionCard({
-  name,
-  collection,
-}: {
-  name: string;
-  collection: any;
-}) {
-  const display = collection[0];
+function NftCollectionCard({ collection }: { collection: NftCollection }) {
   const { push } = useNavigation();
+  // Display the first NFT in the collection as the thumbnail in the grid
+  const collectionDisplayNft = collection.items[0];
 
   const onClick = () => {
-    if (collection.length === 1) {
-      if (!display.name || !display.id) {
+    if (collection.items.length === 1) {
+      if (!collectionDisplayNft.name || !collectionDisplayNft.id) {
         throw new Error("invalid NFT data");
       }
+      // If there is only one item in the collection, link straight to its detail page
       push({
-        title: display.name,
+        title: collectionDisplayNft.name,
         componentId: NAV_COMPONENT_NFT_DETAIL,
         componentProps: {
-          nftId: display.id,
+          nftId: collectionDisplayNft.id,
         },
       });
     } else {
+      // Multiple items in connection, display a grid
       push({
-        title: name,
+        title: collection.name,
         componentId: NAV_COMPONENT_NFT_COLLECTION,
         componentProps: {
-          name,
+          id: collection.id,
         },
       });
     }
@@ -124,8 +121,8 @@ function NftCollectionCard({
   return (
     <GridCard
       onClick={onClick}
-      nft={display}
-      subtitle={{ name, length: collection.length }}
+      nft={collectionDisplayNft}
+      subtitle={{ name: collection.name, length: collection.items.length }}
     />
   );
 }

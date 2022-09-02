@@ -1,5 +1,5 @@
 import { Grid } from "@mui/material";
-import { NAV_COMPONENT_NFT_DETAIL } from "@coral-xyz/common";
+import { NftCollection, NAV_COMPONENT_NFT_DETAIL } from "@coral-xyz/common";
 import {
   useNavigation,
   useSolanaNftCollections,
@@ -7,7 +7,7 @@ import {
 } from "@coral-xyz/recoil";
 import { GridCard } from "./Common";
 
-export function NftsCollection({ name }: { name: string }) {
+export function NftsCollection({ id }: { id: string }) {
   return (
     <div
       style={{
@@ -15,29 +15,27 @@ export function NftsCollection({ name }: { name: string }) {
         paddingRight: "16px",
       }}
     >
-      <_Grid name={name} />
+      <_Grid id={id} />
     </div>
   );
 }
 
-function _Grid({ name }: { name: string }) {
+function _Grid({ id }: { id: string }) {
   const solanaCollections = useSolanaNftCollections();
   const ethereumCollections = useEthereumNftCollections();
   const collections = [...solanaCollections, ...ethereumCollections];
-  const c = collections?.filter((col: any) => col.name === name)[0];
+  const collection = collections?.find((c: NftCollection) => c.id === id);
 
-  // Hack: required due to framer-motion for some reason.
-  if (name === undefined) {
-    return <></>;
-  }
-  // Hack: required when looking at a collection not in the current wallet.
-  if (!c) {
+  // Hack: id can be undefined due to framer-motion animation, and
+  // collection can be undefined when looking at a collection not in current
+  // wallet.
+  if (id === undefined || !collection) {
     return <></>;
   }
 
   return (
     <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
-      {c.items.map((nft: any, index: number) => (
+      {collection.items.map((nft: any, index: number) => (
         <Grid item xs={6} sm={4} md={3} lg={2} key={index}>
           <NftCard nft={nft} />
         </Grid>

@@ -21,9 +21,11 @@ export const ethereumNftCollections = selector<NftCollection[]>({
     const collections: Map<string, any> = new Map();
     for (const nft of data.ownedNfts) {
       if (!nft.contractMetadata) continue;
-      const collection = collections.get(nft.contract.address);
+      const collectionId = nft.contract.address;
+      const collection = collections.get(collectionId);
       if (!collection) {
-        collections.set(nft.contract.address, {
+        collections.set(collectionId, {
+          id: collectionId,
           name: nft.contractMetadata.name,
           symbol: nft.contractMetadata.symbol,
           tokenType: nft.contractMetadata.tokenType,
@@ -31,9 +33,10 @@ export const ethereumNftCollections = selector<NftCollection[]>({
           items: [],
         });
       }
-      collections.get(nft.contract.address).items.push({
-        blockchain: Blockchain.ETHEREUM,
+      collections.get(collectionId).items.push({
+        // Token ID is not unique so prepend with contract address
         id: `${nft.contract.address}/${nft.id.tokenId}`,
+        blockchain: Blockchain.ETHEREUM,
         tokenId: nft.id.tokenId,
         contractAddress: nft.contract.address,
         name: nft.metadata.name || nft.contractMetadata.name,
