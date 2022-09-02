@@ -110,12 +110,16 @@ export class Backend {
   ): Promise<string> {
     const tx = Transaction.from(bs58.decode(txStr));
     const txMessage = bs58.encode(tx.serializeMessage());
-    const blockchainKeyring = this.keyringStore.activeBlockchainKeyring();
+    const blockchainKeyring = this.keyringStore.keyringForBlockchain(
+      Blockchain.SOLANA
+    );
     return await blockchainKeyring.signTransaction(txMessage, walletAddress);
   }
 
   async solanaSignMessage(msg: string, walletAddress: string): Promise<string> {
-    const blockchainKeyring = this.keyringStore.activeBlockchainKeyring();
+    const blockchainKeyring = this.keyringStore.keyringForBlockchain(
+      Blockchain.SOLANA
+    );
     return await blockchainKeyring.signMessage(msg, walletAddress);
   }
 

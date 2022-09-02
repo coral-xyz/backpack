@@ -1,25 +1,18 @@
 import { useState, useEffect } from "react";
 import { ethers, BigNumber } from "ethers";
-import { CircularProgress, Typography, Link } from "@mui/material";
+import { CircularProgress, Typography } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Connection, SystemProgram, PublicKey } from "@solana/web3.js";
 import {
   useAnchorContext,
   useBlockchainTokenAccount,
+  useBlockchainExplorer,
+  useBlockchainConnectionUrl,
   useEthereumCtx,
-  useEthereumExplorer,
-  useEthereumConnectionUrl,
-  useSolanaConnectionUrl,
-  useSolanaCtx,
-  useSolanaExplorer,
   useNavigation,
 } from "@coral-xyz/recoil";
 import {
   Blockchain,
-  Ethereum,
-  Solana,
-  confirmTransaction,
-  getLogger,
   explorerUrl,
   toTitleCase,
   SOL_NATIVE_MINT,
@@ -27,10 +20,11 @@ import {
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
 } from "@coral-xyz/common";
 import { WithHeaderButton } from "./Token";
+import { SendEthereumConfirmationCard } from "./Ethereum";
+import { SendSolanaConfirmationCard } from "./Solana";
 import {
   TextField,
   TextFieldLabel,
-  walletAddressDisplay,
   PrimaryButton,
   SecondaryButton,
   DangerButton,
@@ -40,10 +34,7 @@ import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { MaxLabel } from "../../../common/MaxLabel";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
-import { SettingsList } from "../../../common/Settings/List";
 import { CheckIcon, CrossIcon } from "../../../common/Icon";
-
-const logger = getLogger("send-component");
 
 const useStyles = styles((theme) => ({
   container: {
@@ -271,369 +262,46 @@ export function Send({
           openDrawer={openDrawer}
           setOpenDrawer={setOpenDrawer}
         >
-          <SendConfirmationCard
-            blockchain={blockchain}
-            token={token}
-            address={address}
-            amount={amount!}
-            close={() => {
-              setOpenDrawer(false);
-              close();
-            }}
-          />
+          {blockchain === Blockchain.SOLANA && (
+            <SendSolanaConfirmationCard
+              token={token}
+              destinationAddress={address}
+              amount={amount!}
+              close={() => {
+                setOpenDrawer(false);
+                close();
+              }}
+            />
+          )}
+          {blockchain === Blockchain.ETHEREUM && (
+            <SendEthereumConfirmationCard
+              token={token}
+              destinationAddress={address}
+              amount={amount!}
+              close={() => {
+                setOpenDrawer(false);
+                close();
+              }}
+            />
+          )}
         </ApproveTransactionDrawer>
       </div>
     </form>
   );
 }
 
-export function SendConfirmationCard({
-  blockchain,
-  token,
-  address,
-  amount,
-}: {
-  blockchain: Blockchain;
-  token: {
-    address?: string;
-    logo?: string;
-    ticker?: string;
-    mint: string;
-    decimals: number;
-  };
-  address: string;
-  amount: BigNumber;
-  close: () => void;
-}) {
-  const solanaCtx = useSolanaCtx();
-  const ethereumCtx = useEthereumCtx();
-  const [txSignature, setTxSignature] = useState<string | null>(null);
-  const [txSettings, setTxSettings] = useState<any>({});
-  const [error, setError] = useState(
-    "Error 422. Transaction time out. Runtime error. Reticulating splines."
-  );
-  const [cardType, setCardType] = useState<
-    "confirm" | "sending" | "complete" | "error"
-  >("confirm");
-
-  const onConfirm = async (txSettings: object) => {
-    setCardType("sending");
-    setTxSettings(txSettings);
-    switch (blockchain) {
-      case Blockchain.SOLANA:
-        return await onSolanaTransfer();
-      case Blockchain.ETHEREUM:
-        return await onEthereumTransfer(txSettings);
-    }
-  };
-
-  const onEthereumTransfer = async (txSettings = {}) => {
-    //
-    // Send the tx.
-    //
-    //
-    let txSig;
-    try {
-      if (token.address === ethers.constants.AddressZero) {
-        // Zero address token is native ETH
-        txSig = await Ethereum.transferEth(ethereumCtx, {
-          to: address,
-          value: amount.toString(),
-          ...txSettings,
-        });
-      } else {
-        txSig = await Ethereum.transferToken(ethereumCtx, {
-          to: address,
-          tokenAddress: token.address!,
-          amount: amount.toString(),
-          ...txSettings,
-        });
-      }
-    } catch (err) {
-      logger.error("unable to send ethereum transaction", err);
-      setCardType("error");
-      return;
-    }
-
-    setTxSignature(txSig);
-
-    //
-    // Confirm the tx.
-    //
-    try {
-      // Wait for mining
-      await ethereumCtx.provider.waitForTransaction(txSig);
-      // Grab the transaction
-      const transaction = await ethereumCtx.provider.getTransaction(txSig);
-      // We already waited, but calling .wait will throw if the transaction failed
-      await transaction.wait();
-      setCardType("complete");
-    } catch (err) {
-      logger.error("ethereum transaction failed", err);
-      setCardType("error");
-    }
-  };
-
-  const onSolanaTransfer = async () => {
-    //
-    // Send the tx.
-    //
-    let txSig;
-    try {
-      if (token.mint === SOL_NATIVE_MINT.toString()) {
-        txSig = await Solana.transferSol(solanaCtx, {
-          source: solanaCtx.walletPublicKey,
-          destination: new PublicKey(address),
-          amount: amount.toNumber(),
-        });
-      } else {
-        txSig = await Solana.transferToken(solanaCtx, {
-          destination: new PublicKey(address),
-          mint: new PublicKey(token.mint),
-          amount: amount.toNumber(),
-          decimals: token.decimals,
-        });
-      }
-    } catch (err: any) {
-      logger.error("solana transaction failed", err);
-      setError(err.toString());
-      setCardType("error");
-      return;
-    }
-
-    setTxSignature(txSig);
-
-    //
-    // Confirm the tx.
-    //
-    try {
-      await confirmTransaction(
-        solanaCtx.connection,
-        txSig,
-        solanaCtx.commitment !== "confirmed" &&
-          solanaCtx.commitment !== "finalized"
-          ? "confirmed"
-          : solanaCtx.commitment
-      );
-      setCardType("complete");
-    } catch (err: any) {
-      logger.error("unable to confirm", err);
-      setError(err.toString());
-      setCardType("error");
-    }
-  };
-
-  const retry = () => {
-    onConfirm(txSettings);
-  };
-
-  return (
-    <div>
-      {cardType === "confirm" ? (
-        <ConfirmSend
-          blockchain={blockchain}
-          token={token}
-          address={address}
-          amount={amount}
-          onConfirm={onConfirm}
-        />
-      ) : cardType === "sending" ? (
-        <Sending
-          blockchain={blockchain}
-          isComplete={false}
-          amount={amount}
-          token={token}
-          signature={txSignature!}
-        />
-      ) : cardType === "complete" ? (
-        <Sending
-          blockchain={blockchain}
-          isComplete={true}
-          amount={amount}
-          token={token}
-          signature={txSignature!}
-        />
-      ) : (
-        <Error
-          blockchain={blockchain}
-          signature={txSignature!}
-          onRetry={() => retry()}
-          error={error}
-        />
-      )}
-    </div>
-  );
-}
-
-function ConfirmSend({
-  blockchain,
-  token,
-  address,
-  amount,
-  onConfirm,
-}: {
-  blockchain: Blockchain;
-  token: {
-    address?: string;
-    logo?: string;
-    ticker?: string;
-    mint: string;
-    decimals: number;
-  };
-  address: string;
-  amount: BigNumber;
-  onConfirm: (txSettings: any) => void;
-}) {
-  const theme = useCustomTheme();
-  const ethereumCtx = useEthereumCtx();
-  const [estimatedFee, setEstimatedFee] = useState(BigNumber.from(0));
-  const [estimatedFeeError, setEstimatedFeeError] = useState(false);
-  // Ethereum specific
-  const [gasLimit, setGasLimit] = useState(BigNumber.from(0));
-  const [nonce, setNonce] = useState(0);
-
-  useEffect(() => {
-    if (blockchain === Blockchain.ETHEREUM) {
-      (async () => {
-        let estimatedGasPromise = new Promise(
-          async (resolve: (value: BigNumber) => void, reject) => {
-            if (token.address === ETH_NATIVE_MINT) {
-              resolve(BigNumber.from("21000"));
-            } else {
-              // Estimate gas for an ERC20 transfer, the transfer cost can vary depending on the
-              // ERC20 transfer method in the contract.
-              const abi = [
-                "function transfer(address to, uint amount) returns (bool)",
-              ];
-              const erc20 = new ethers.Contract(
-                token.address!,
-                abi,
-                ethereumCtx.provider
-              );
-              const tx = await erc20.populateTransaction.transfer(
-                address,
-                amount
-              );
-              try {
-                const gasEstimate = await ethereumCtx.provider.estimateGas(tx);
-                resolve(gasEstimate);
-              } catch (error) {
-                console.log("could not estimate transaction fee", error);
-                reject(error);
-              }
-            }
-          }
-        );
-
-        const [nonceResult, estimatedGasResult] = await Promise.allSettled([
-          ethereumCtx.provider.getTransactionCount(ethereumCtx.walletPublicKey),
-          estimatedGasPromise,
-        ]);
-
-        let estimatedGas;
-        if (nonceResult.status === "fulfilled") {
-          setNonce(nonceResult.value);
-        }
-        if (estimatedGasResult.status === "fulfilled") {
-          estimatedGas = estimatedGasResult.value;
-        } else {
-          // Fee estimate failed, transaction is unlikely to succeed
-          estimatedGas = BigNumber.from("150000");
-          setEstimatedFeeError(true);
-        }
-        setGasLimit(estimatedGas);
-        setEstimatedFee(
-          estimatedGas
-            .mul(ethereumCtx.feeData.maxFeePerGas!)
-            .add(estimatedGas.mul(ethereumCtx.feeData.maxPriorityFeePerGas!))
-        );
-      })();
-    } else {
-      setEstimatedFee(BigNumber.from(5000));
-    }
-  }, []);
-
-  const txSettings =
-    blockchain === Blockchain.ETHEREUM
-      ? {
-          type: 2,
-          nonce: nonce,
-          gasLimit,
-          maxFeePerGas: ethereumCtx.feeData.maxFeePerGas,
-          maxPriorityFeePerGas: ethereumCtx.feeData.maxPriorityFeePerGas,
-        }
-      : // No additional settings for Solana
-        {};
-
-  return (
-    <div
-      style={{
-        padding: "16px",
-        height: "402px",
-        display: "flex",
-        justifyContent: "space-between",
-        flexDirection: "column",
-        paddingBottom: "24px",
-      }}
-    >
-      <div>
-        <Typography
-          style={{
-            color: theme.custom.colors.fontColor,
-            fontWeight: 500,
-            fontSize: "18px",
-            lineHeight: "24px",
-            textAlign: "center",
-          }}
-        >
-          Review Send
-        </Typography>
-        <ConfirmSendToken
-          style={{
-            marginTop: "40px",
-            marginBottom: "40px",
-          }}
-          amount={amount}
-          token={token}
-        />
-        {blockchain === Blockchain.ETHEREUM && (
-          <ConfirmEthereumSendTable
-            destinationAddress={address}
-            nonce={nonce}
-            estimatedFee={estimatedFee}
-            gasPrice={ethereumCtx.feeData.gasPrice!}
-            maxFeePerGas={ethereumCtx.feeData.maxFeePerGas!}
-            maxPriorityFeePerGas={ethereumCtx.feeData.maxPriorityFeePerGas!}
-          />
-        )}
-        {blockchain === Blockchain.SOLANA && (
-          <ConfirmSolanaSendTable destinationAddress={address} />
-        )}
-        {estimatedFeeError && (
-          <Typography
-            style={{
-              color: theme.custom.colors.negative,
-              marginTop: "8px",
-              textAlign: "center",
-            }}
-          >
-            This transaction is unlikely to succeed.
-          </Typography>
-        )}
-      </div>
-      <PrimaryButton
-        onClick={() => onConfirm(txSettings)}
-        label="Send"
-        type="submit"
-        data-testid="Send"
-      />
-    </div>
-  );
-}
-
-const ConfirmSendToken: React.FC<{
+//
+// Displays token amount header with logo.
+//
+// TODO: similar compoennt in swap code, make one and move to common.
+//
+export const TokenAmountDisplay: React.FC<{
   style: React.CSSProperties;
-  token: { logo?: string; ticker?: string; mint: string; decimals: number };
+  token: {
+    logo?: string;
+    ticker?: string;
+    decimals: number;
+  };
   amount: BigNumber;
 }> = ({ style, token, amount }) => {
   const theme = useCustomTheme();
@@ -689,128 +357,7 @@ const ConfirmSendToken: React.FC<{
   );
 };
 
-const ConfirmSolanaSendTable: React.FC<{
-  destinationAddress: string;
-}> = ({ destinationAddress }) => {
-  const theme = useCustomTheme();
-  const classes = useStyles();
-  const solanaCtx = useSolanaCtx();
-
-  const menuItems = {
-    From: {
-      onClick: () => {},
-      detail: (
-        <Typography>
-          {walletAddressDisplay(solanaCtx.walletPublicKey)}
-        </Typography>
-      ),
-      classes: { root: classes.confirmTableListItem },
-      button: false,
-    },
-    To: {
-      onClick: () => {},
-      detail: (
-        <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
-      ),
-      classes: { root: classes.confirmTableListItem },
-      button: false,
-    },
-    "Network fee": {
-      onClick: () => {},
-      detail: (
-        <Typography>
-          0.000005{" "}
-          <span style={{ color: theme.custom.colors.secondary }}>SOL</span>
-        </Typography>
-      ),
-      classes: { root: classes.confirmTableListItem },
-      button: false,
-    },
-  };
-
-  return (
-    <SettingsList
-      menuItems={menuItems}
-      style={{ margin: 0 }}
-      textStyle={{
-        color: theme.custom.colors.secondary,
-      }}
-    />
-  );
-};
-
-const ConfirmEthereumSendTable: React.FC<{
-  destinationAddress: string;
-  estimatedFee: BigNumber;
-  nonce: number;
-  gasPrice: BigNumber;
-  maxFeePerGas: BigNumber;
-  maxPriorityFeePerGas: BigNumber;
-}> = ({
-  destinationAddress,
-  estimatedFee,
-  nonce,
-  gasPrice,
-  maxFeePerGas,
-  maxPriorityFeePerGas,
-}) => {
-  const theme = useCustomTheme();
-  const classes = useStyles();
-  const ethereumCtx = useEthereumCtx();
-
-  const menuItems = {
-    From: {
-      onClick: () => {},
-      detail: (
-        <Typography>
-          {walletAddressDisplay(ethereumCtx.walletPublicKey)}
-        </Typography>
-      ),
-      classes: { root: classes.confirmTableListItem },
-      button: false,
-    },
-    To: {
-      onClick: () => {},
-      detail: (
-        <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
-      ),
-      classes: { root: classes.confirmTableListItem },
-      button: false,
-    },
-    "Network fee": {
-      onClick: () => {},
-      detail: (
-        <Typography>
-          {ethers.utils.formatUnits(estimatedFee).substring(0, 10)}{" "}
-          <span style={{ color: theme.custom.colors.secondary }}>ETH</span>
-        </Typography>
-      ),
-      classes: { root: classes.confirmTableListItem },
-      button: false,
-    },
-    /**
-*   TODO make configurable via advanced option along with gas limit and gas pricing
-    Nonce: {
-      onClick: () => {},
-      detail: <Typography>{nonce}</Typography>,
-      classes: { root: classes.confirmTableListItem },
-      button: false,
-    },
-  **/
-  };
-
-  return (
-    <SettingsList
-      menuItems={menuItems}
-      style={{ margin: 0 }}
-      textStyle={{
-        color: theme.custom.colors.secondary,
-      }}
-    />
-  );
-};
-
-function Sending({
+export function Sending({
   blockchain,
   amount,
   token,
@@ -826,17 +373,8 @@ function Sending({
   const theme = useCustomTheme();
   const nav = useNavigation();
   const drawer = useDrawerContext();
-  const solanaExplorer = useSolanaExplorer();
-  const solanaConnectionUrl = useSolanaConnectionUrl();
-  const ethereumExplorer = useEthereumExplorer();
-  const ethereumConnectionUrl = useEthereumConnectionUrl();
-
-  const explorer =
-    blockchain === Blockchain.SOLANA ? solanaExplorer : ethereumExplorer;
-  const connectionUrl =
-    blockchain === Blockchain.SOLANA
-      ? solanaConnectionUrl
-      : ethereumConnectionUrl;
+  const explorer = useBlockchainExplorer(blockchain);
+  const connectionUrl = useBlockchainConnectionUrl(blockchain);
 
   return (
     <div
@@ -857,7 +395,7 @@ function Sending({
       >
         {isComplete ? "Sent" : "Sending..."}
       </Typography>
-      <ConfirmSendToken
+      <TokenAmountDisplay
         style={{
           marginTop: "16px",
           marginBottom: "0px",
@@ -897,17 +435,19 @@ function Sending({
           marginRight: "16px",
         }}
       >
-        <SecondaryButton
-          onClick={() => {
-            if (isComplete) {
-              nav.toRoot();
-              drawer.close();
-            } else {
-              window.open(explorerUrl(explorer, signature, connectionUrl));
-            }
-          }}
-          label={isComplete ? "View Balances" : "View Explorer"}
-        />
+        {explorer && connectionUrl && (
+          <SecondaryButton
+            onClick={() => {
+              if (isComplete) {
+                nav.toRoot();
+                drawer.close();
+              } else {
+                window.open(explorerUrl(explorer, signature, connectionUrl));
+              }
+            }}
+            label={isComplete ? "View Balances" : "View Explorer"}
+          />
+        )}
       </div>
     </div>
   );
@@ -924,18 +464,8 @@ export function Error({
   error: string;
   onRetry: () => void;
 }) {
-  const theme = useCustomTheme();
-  const solanaExplorer = useSolanaExplorer();
-  const solanaConnectionUrl = useSolanaConnectionUrl();
-  const ethereumExplorer = useEthereumExplorer();
-  const ethereumConnectionUrl = useEthereumConnectionUrl();
-
-  const explorer =
-    blockchain === Blockchain.SOLANA ? solanaExplorer : ethereumExplorer;
-  const connectionUrl =
-    blockchain === Blockchain.SOLANA
-      ? solanaConnectionUrl
-      : ethereumConnectionUrl;
+  const explorer = useBlockchainExplorer(blockchain);
+  const connectionUrl = useBlockchainConnectionUrl(blockchain);
 
   return (
     <div
@@ -977,22 +507,24 @@ export function Error({
         >
           {error}
         </Typography>
-        <SecondaryButton
-          style={{
-            height: "40px",
-            width: "147px",
-          }}
-          buttonLabelStyle={{
-            fontSize: "14px",
-          }}
-          label={"View Explorer"}
-          onClick={() =>
-            window.open(
-              explorerUrl(explorer, signature, connectionUrl),
-              "_blank"
-            )
-          }
-        />
+        {explorer && connectionUrl && signature && (
+          <SecondaryButton
+            style={{
+              height: "40px",
+              width: "147px",
+            }}
+            buttonLabelStyle={{
+              fontSize: "14px",
+            }}
+            label={"View Explorer"}
+            onClick={() =>
+              window.open(
+                explorerUrl(explorer, signature, connectionUrl),
+                "_blank"
+              )
+            }
+          />
+        )}
       </div>
       <PrimaryButton label={"Retry"} onClick={() => onRetry()} />
     </div>

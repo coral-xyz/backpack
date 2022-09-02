@@ -7,6 +7,9 @@ import type { EthereumContext } from ".";
 
 // Provider API to be used by the app UI.
 export class EthereumProvider {
+  /**
+   * Serialize a transaction and send it to the background script for signing.
+   */
   public static async signTransaction(
     ctx: EthereumContext,
     tx: any
@@ -27,6 +30,10 @@ export class EthereumProvider {
     return signedTx;
   }
 
+  /**
+   * Serialize a transaction and send it to the background script for signing
+   * and sending.
+   */
   public static async signAndSendTransaction(
     ctx: EthereumContext,
     tx: any

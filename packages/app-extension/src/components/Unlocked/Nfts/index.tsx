@@ -1,45 +1,90 @@
 import { Grid } from "@mui/material";
 import { Image as ImageIcon } from "@mui/icons-material";
 import {
+  toTitleCase,
+  Blockchain,
+  NftCollection,
   NAV_COMPONENT_NFT_DETAIL,
   NAV_COMPONENT_NFT_COLLECTION,
 } from "@coral-xyz/common";
-import { useNavigation, useNftCollections } from "@coral-xyz/recoil";
+import {
+  useBlockchainLogo,
+  useEthereumNftCollections,
+  useSolanaNftCollections,
+  useNavigation,
+} from "@coral-xyz/recoil";
+import {
+  BalancesTable,
+  BalancesTableHead,
+  BalancesTableContent,
+  BalancesTableRow,
+} from "@coral-xyz/react-xnft-renderer";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { GridCard } from "./Common";
 import { EmptyState } from "../../common/EmptyState";
 
 export function Nfts() {
-  const collections = useNftCollections();
-  return collections.length === 0 ? (
-    <EmptyState
-      icon={(props: any) => <ImageIcon {...props} />}
-      title={"No NFTs"}
-      subtitle={"Get started with your first NFT"}
-      buttonText={"Browse Magic Eden"}
-      onClick={() => window.open("https://magiceden.io")}
-    />
-  ) : (
-    <div
-      style={{
-        paddingLeft: "16px",
-        paddingRight: "16px",
-      }}
-    >
-      <NftGrid />
-    </div>
+  const solanaCollections = useSolanaNftCollections();
+  const ethereumCollections = useEthereumNftCollections();
+
+  const collections = {
+    [Blockchain.SOLANA]: solanaCollections,
+    [Blockchain.ETHEREUM]: ethereumCollections,
+  };
+
+  return (
+    <>
+      {Object.values(collections).flat().length === 0 ? (
+        <EmptyState
+          icon={(props: any) => <ImageIcon {...props} />}
+          title={"No NFTs"}
+          subtitle={"Get started with your first NFT"}
+          buttonText={"Browse Magic Eden"}
+          onClick={() => window.open("https://magiceden.io")}
+        />
+      ) : (
+        Object.entries(collections).map(
+          ([blockchain, collections]) =>
+            collections.length > 0 && (
+              <NftTable
+                key={blockchain}
+                blockchain={blockchain as Blockchain}
+                collections={collections}
+              />
+            )
+        )
+      )}
+    </>
   );
 }
 
-function NftGrid() {
-  const collections = useNftCollections();
+export function NftTable({
+  blockchain,
+  collections,
+}: {
+  blockchain: Blockchain;
+  collections: NftCollection[];
+}) {
+  const theme = useCustomTheme();
+  const blockchainLogo = useBlockchainLogo(blockchain);
+  const title = toTitleCase(blockchain);
   return (
-    <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
-      {collections.map((c: any) => (
-        <Grid item xs={6} sm={4} md={3} lg={2} key={c.name}>
-          <NftCollectionCard key={c.name} name={c.name} collection={c.items} />
-        </Grid>
-      ))}
-    </Grid>
+    <BalancesTable>
+      <BalancesTableHead props={{ title, iconUrl: blockchainLogo }} />
+      <BalancesTableContent style={{ padding: "12px" }}>
+        <div
+          style={{
+            backgroundColor: theme.custom.colors.nav,
+            padding: "12px",
+            flexWrap: "wrap",
+          }}
+        >
+          {collections.map((c: NftCollection, index: number) => (
+            <NftCollectionCard key={index} name={c.name} collection={c.items} />
+          ))}
+        </div>
+      </BalancesTableContent>
+    </BalancesTable>
   );
 }
 
@@ -55,14 +100,14 @@ function NftCollectionCard({
 
   const onClick = () => {
     if (collection.length === 1) {
-      if (!display.tokenMetaUriData.name || !display.publicKey) {
-        throw new Error("invalid nft data");
+      if (!display.name || !display.id) {
+        throw new Error("invalid NFT data");
       }
       push({
-        title: display.tokenMetaUriData.name,
+        title: display.name,
         componentId: NAV_COMPONENT_NFT_DETAIL,
         componentProps: {
-          publicKey: display.publicKey,
+          nftId: display.id,
         },
       });
     } else {
