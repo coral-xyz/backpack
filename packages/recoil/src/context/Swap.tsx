@@ -187,7 +187,12 @@ export function SwapProvider(props: any) {
 
   useEffect(() => {
     const loadRoutes = async () => {
-      if (fromAmount && fromAmount.gt(Zero) && isJupiterSwap) {
+      if (
+        fromAmount &&
+        fromAmount.gt(Zero) &&
+        isJupiterSwap &&
+        fromMint !== toMint
+      ) {
         setRoutes(await fetchRoutes());
         // Success, clear existing polling and setup next
         stopRoutePolling();
