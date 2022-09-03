@@ -1,4 +1,8 @@
-import { Blockchain } from "@coral-xyz/common";
+import {
+  Blockchain,
+  SOL_NATIVE_MINT,
+  ETH_NATIVE_MINT,
+} from "@coral-xyz/common";
 import { useEffect } from "react";
 import { Typography } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -169,7 +173,15 @@ function SendToken() {
   return (
     <SearchableTokenTables
       onClickRow={onClickRow}
-      customFilter={(token: Token) => !token.nativeBalance.isZero()}
+      customFilter={(token: Token) => {
+        if (token.mint && token.mint === SOL_NATIVE_MINT) {
+          return true;
+        }
+        if (token.address && token.address === ETH_NATIVE_MINT) {
+          return true;
+        }
+        return !token.nativeBalance.isZero();
+      }}
     />
   );
 }
