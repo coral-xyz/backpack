@@ -20,6 +20,7 @@ import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   Blockchain,
   SOL_NATIVE_MINT,
+  ETH_NATIVE_MINT,
   WSOL_MINT,
   TAB_BALANCES,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
@@ -386,6 +387,10 @@ const SwapUnavailableButton = () => {
   return <DangerButton label="Swaps unavailable" disabled={true} />;
 };
 
+const SwapInvalidButton = () => {
+  return <DangerButton label="Invalid swap" disabled={true} />;
+};
+
 const InsufficientBalanceButton = () => {
   return <DangerButton label="Insufficient balance" disabled={true} />;
 };
@@ -408,7 +413,9 @@ const ConfirmSwapButton = ({
   } = useSwapContext();
   const tokenAccounts = useJupiterOutputMints(fromMint);
 
-  if (exceedsBalance) {
+  if (fromMint === toMint) {
+    return <SwapInvalidButton />;
+  } else if (exceedsBalance) {
     return <InsufficientBalanceButton />;
   } else if (isJupiterError || tokenAccounts.length === 0) {
     return <SwapUnavailableButton />;
@@ -717,11 +724,18 @@ export function CloseButton({
 }
 
 function InputTokenSelectorButton() {
-  const { toMint, fromMint, setFromMint } = useSwapContext();
+  const { fromMint, setFromMint } = useSwapContext();
   const tokenAccounts = useJupiterInputMints();
-  const tokenAccountsFiltered = tokenAccounts.filter(
-    (token: Token) => !token.nativeBalance.isZero() && token.mint !== toMint
-  );
+  const tokenAccountsFiltered = tokenAccounts.filter((token: Token) => {
+    if (token.mint && token.mint === SOL_NATIVE_MINT) {
+      return true;
+    }
+    if (token.address && token.address === ETH_NATIVE_MINT) {
+      return true;
+    }
+
+    return !token.nativeBalance.isZero();
+  });
   return (
     <TokenSelectorButton
       selectedMint={fromMint}
@@ -734,13 +748,10 @@ function InputTokenSelectorButton() {
 function OutputTokenSelectorButton() {
   const { fromMint, toMint, setToMint } = useSwapContext();
   const tokenAccounts = useJupiterOutputMints(fromMint);
-  const tokenAccountsFiltered = tokenAccounts.filter(
-    (token: Token) => token.mint !== fromMint
-  );
   return (
     <TokenSelectorButton
       selectedMint={toMint}
-      tokenAccounts={tokenAccountsFiltered}
+      tokenAccounts={tokenAccounts}
       setMint={setToMint}
     />
   );
