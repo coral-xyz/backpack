@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Typography } from "@mui/material";
+import { Typography, MenuItem } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { useActiveWallet } from "@coral-xyz/recoil";
+import { useActiveWallets } from "@coral-xyz/recoil";
 import { Blockchain } from "@coral-xyz/common";
 import { WithHeaderButton } from "./Token";
 import { BottomCard } from "./Send";
@@ -92,14 +92,25 @@ export function Deposit() {
   const classes = useStyles();
   const theme = useCustomTheme();
   const { close } = useDrawerContext();
-  const activeWallet = useActiveWallet();
+  const activeWallets = useActiveWallets();
   const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [blockchain, setBlockchain] = useState<Blockchain>(Blockchain.SOLANA);
+  const activeWallet = activeWallets.find((w) => w.blockchain === blockchain);
+
+  if (!activeWallet) {
+    return <></>;
+  }
 
   const onCopy = () => {
     setTooltipOpen(true);
     setTimeout(() => setTooltipOpen(false), 1000);
     navigator.clipboard.writeText(activeWallet.publicKey.toString());
   };
+
+  const blockchainOptions = [
+    { value: Blockchain.SOLANA, label: "Solana" },
+    { value: Blockchain.ETHEREUM, label: "Ethereum" },
+  ];
 
   return (
     <div
@@ -135,17 +146,36 @@ export function Deposit() {
           <div
             style={{
               position: "absolute",
-              top: 48,
+              top: 28,
               left: 0,
               right: 0,
               marginLeft: "auto",
               marginRight: "auto",
-              width: "168px",
+              width: "148px",
             }}
           >
             <QrCode data={activeWallet.publicKey.toString()} />
           </div>
-          <div style={{ marginTop: "163px" }}>
+          <div style={{ marginTop: "100px" }}>
+            <TextFieldLabel
+              leftLabel={"Blockchain"}
+              style={{ marginLeft: "24px", marginRight: "24px" }}
+            />
+            <div style={{ margin: "0 12px 16px 12px" }}>
+              <TextField
+                label="Blockchain"
+                value={blockchain}
+                setValue={setBlockchain}
+                select={true}
+                rootClass={classes.depositTextFieldRoot}
+              >
+                {blockchainOptions.map((o, idx) => (
+                  <MenuItem value={o.value} key={idx}>
+                    {o.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </div>
             <div>
               <TextFieldLabel
                 leftLabel={"Deposit to"}
@@ -216,8 +246,8 @@ export function QrCode({ data }: { data: string }) {
       style={{
         backgroundColor: "#fff",
         borderRadius: "8px",
-        height: "168px",
-        width: "168px",
+        height: "148px",
+        width: "148px",
         display: "flex",
         justifyContent: "center",
         flexDirection: "column",
