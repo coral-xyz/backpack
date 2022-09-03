@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   useLocation,
   useSearchParams,
@@ -63,7 +63,14 @@ function _PluginPage() {
     decodeURIComponent(searchParams.get("props")!)
   );
   const xnftPlugin = useFreshPlugin(xnftAddress);
-  console.log("ARMANI XNF THERE", xnftPlugin);
+  const [redirect, setRedirect] = useState(false);
+
+  // TODO: this is a bit jank, since we lose the nice drawer
+  //       close animation.
+  if (redirect) {
+    return <Redirect />;
+  }
+
   return xnftPlugin.state === "done" ? (
     <div
       style={{
@@ -77,7 +84,7 @@ function _PluginPage() {
     >
       <_PluginDisplay
         plugin={xnftPlugin.result!}
-        closePlugin={() => window.close()}
+        closePlugin={() => setRedirect(true)}
       />
     </div>
   ) : (
