@@ -106,7 +106,8 @@ export async function openXnft(
   xnftAddress: string
 ): Promise<chrome.windows.Window> {
   const props = encodeURIComponent(JSON.stringify({ xnftAddress }));
-  const url = `${POPUP_HTML}#/apps/plugin?props=${props}`;
+  const url = `${POPUP_HTML}?pluginProps=${props}`;
+  console.log("ARMANI USING URL", url);
   return openPopupWindow(url);
 }
 

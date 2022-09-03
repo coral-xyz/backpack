@@ -827,6 +827,20 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async navigationCurrentUrlRead(url: string): Promise<string> {
+    // Get the tab nav.
+    const currNav = await store.getNav();
+    if (!currNav) {
+      throw new Error("invariant violation");
+    }
+
+    // Update the active tab's nav stack.
+    const navData = currNav.data[currNav.activeTab];
+    navData.urls[navData.urls.length - 1] = url;
+
+    return navData.urls[navData.urls.length - 1];
+  }
+
   async navigationCurrentUrlUpdate(url: string): Promise<string> {
     // Get the tab nav.
     const currNav = await store.getNav();

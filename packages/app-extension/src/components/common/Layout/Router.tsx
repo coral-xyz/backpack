@@ -36,7 +36,6 @@ export function Router() {
         <Route path="/balances" element={<BalancesPage />} />
         <Route path="/balances/token" element={<TokenPage />} />
         <Route path="/apps" element={<AppsPage />} />
-        <Route path="/apps/plugin" element={<PluginPage />} />
         <Route path="/nfts" element={<NftsPage />} />
         <Route path="/swap" element={<SwapPage />} />
         <Route path="/nfts/collection" element={<NftsCollectionPage />} />
@@ -48,15 +47,15 @@ export function Router() {
 }
 
 function Redirect() {
-  const url = useRedirectUrl();
-  return <Navigate to={url} replace />;
+  let url = useRedirectUrl();
+  const [searchParams] = useSearchParams();
+  const pluginProps = searchParams.get("pluginProps");
+  //	url = `url&pluginProps=${pluginProps}`;
+  console.log("ARMANI URL", url, pluginProps);
+  return <div>test</div>; // <Navigate to={url} replace />;
 }
 
-// This is only shown from the window.backpack.openXnft API.
-function PluginPage() {
-  return <NavScreen component={<_PluginPage />} />;
-}
-
+/*
 function _PluginPage() {
   const [searchParams] = useSearchParams();
   const { xnftAddress } = JSON.parse(
@@ -91,6 +90,7 @@ function _PluginPage() {
     <></>
   );
 }
+*/
 
 function BalancesPage() {
   return <NavScreen component={<Balances />} />;
@@ -153,11 +153,46 @@ function NavScreen({ component }: { component: React.ReactNode }) {
           navbarStyle={style}
         >
           <NavBootstrap>
-            <PluginManager>{component}</PluginManager>
+            <PluginManager>
+              <NavScreenComponent component={component} />
+            </PluginManager>
           </NavBootstrap>
         </WithNav>
       </div>
     </WithMotionWrapper>
+  );
+}
+
+function NavScreenComponent({ component }: { component: React.ReactNode }) {
+  const [searchParams] = useSearchParams();
+  const pluginProps = searchParams.get("pluginProps");
+
+  if (pluginProps) {
+    return (
+      <>
+        <PluginDrawer />
+      </>
+    );
+  }
+
+  return <>{component}</>;
+}
+
+function PluginDrawer() {
+  const [openDrawer, setOpenDrawer] = useState(true);
+  const [redirect, setRedirect] = useState(false);
+  const [searchParams] = useSearchParams();
+  const pluginProps = searchParams.get("pluginProps");
+  const { xnftAddress } = JSON.parse(decodeURIComponent(pluginProps!));
+  const xnftPlugin = useFreshPlugin(xnftAddress);
+
+  return xnftPlugin.state === "loading" ? (
+    <_PluginDisplay
+      plugin={xnftPlugin.result!}
+      closePlugin={() => setRedirect(true)}
+    />
+  ) : (
+    <></>
   );
 }
 
