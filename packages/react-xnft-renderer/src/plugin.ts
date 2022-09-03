@@ -151,6 +151,8 @@ export class Plugin {
 
   // Onload handler for the top level iframe representing the xNFT.
   private handleRootIframeOnLoad() {
+    logger.debug("iframe on load");
+
     //
     // Setup react reconciler.
     //

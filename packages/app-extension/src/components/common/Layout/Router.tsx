@@ -63,6 +63,7 @@ function _PluginPage() {
     decodeURIComponent(searchParams.get("props")!)
   );
   const xnftPlugin = useFreshPlugin(xnftAddress);
+  console.log("ARMANI XNF THERE", xnftPlugin);
   return xnftPlugin.state === "done" ? (
     <div
       style={{
