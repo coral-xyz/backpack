@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   useLocation,
   useSearchParams,
@@ -27,6 +27,7 @@ import { NftsCollection } from "../../Unlocked/Nfts/Collection";
 import { SettingsButton } from "../../Unlocked/Settings";
 import { WithNav, NavBackButton } from "./Nav";
 import { WithMotion } from "./NavStack";
+import { WithDrawer } from "../../common/Layout/Drawer";
 
 export function Router() {
   const location = useLocation();
@@ -50,47 +51,11 @@ function Redirect() {
   let url = useRedirectUrl();
   const [searchParams] = useSearchParams();
   const pluginProps = searchParams.get("pluginProps");
-  //	url = `url&pluginProps=${pluginProps}`;
-  console.log("ARMANI URL", url, pluginProps);
-  return <div>test</div>; // <Navigate to={url} replace />;
-}
-
-/*
-function _PluginPage() {
-  const [searchParams] = useSearchParams();
-  const { xnftAddress } = JSON.parse(
-    decodeURIComponent(searchParams.get("props")!)
-  );
-  const xnftPlugin = useFreshPlugin(xnftAddress);
-  const [redirect, setRedirect] = useState(false);
-
-  // TODO: this is a bit jank, since we lose the nice drawer
-  //       close animation.
-  if (redirect) {
-    return <Redirect />;
+  if (pluginProps) {
+    url = `${url}&pluginProps=${encodeURIComponent(pluginProps)}`;
   }
-
-  return xnftPlugin.state === "done" ? (
-    <div
-      style={{
-        position: "fixed",
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        zIndex: 1,
-      }}
-    >
-      <_PluginDisplay
-        plugin={xnftPlugin.result!}
-        closePlugin={() => setRedirect(true)}
-      />
-    </div>
-  ) : (
-    <></>
-  );
+  return <Navigate to={url} replace />;
 }
-*/
 
 function BalancesPage() {
   return <NavScreen component={<Balances />} />;
@@ -170,6 +135,7 @@ function NavScreenComponent({ component }: { component: React.ReactNode }) {
   if (pluginProps) {
     return (
       <>
+        {component}
         <PluginDrawer />
       </>
     );
@@ -179,20 +145,27 @@ function NavScreenComponent({ component }: { component: React.ReactNode }) {
 }
 
 function PluginDrawer() {
-  const [openDrawer, setOpenDrawer] = useState(true);
-  const [redirect, setRedirect] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
   const [searchParams] = useSearchParams();
   const pluginProps = searchParams.get("pluginProps");
   const { xnftAddress } = JSON.parse(decodeURIComponent(pluginProps!));
   const xnftPlugin = useFreshPlugin(xnftAddress);
 
-  return xnftPlugin.state === "loading" ? (
-    <_PluginDisplay
-      plugin={xnftPlugin.result!}
-      closePlugin={() => setRedirect(true)}
-    />
-  ) : (
-    <></>
+  useEffect(() => {
+    if (!openDrawer && xnftPlugin.state) {
+      setOpenDrawer(true);
+    }
+  }, [xnftPlugin.state]);
+
+  return (
+    <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+      {xnftPlugin.result && (
+        <_PluginDisplay
+          plugin={xnftPlugin.result!}
+          closePlugin={() => setOpenDrawer(false)}
+        />
+      )}
+    </WithDrawer>
   );
 }
 
