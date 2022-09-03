@@ -19,9 +19,15 @@ import {
   BalancesTableContent,
   BalancesTableRow,
 } from "@coral-xyz/react-xnft-renderer";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { GridCard } from "./Common";
 import { EmptyState } from "../../common/EmptyState";
+
+const useStyles = styles((theme) => ({
+  cardContentContainer: {
+    marginTop: "36px",
+  },
+}));
 
 export function Nfts() {
   const solanaCollections = useSolanaNftCollections();
@@ -65,25 +71,45 @@ export function NftTable({
   blockchain: Blockchain;
   collections: NftCollection[];
 }) {
+  const classes = useStyles();
   const theme = useCustomTheme();
   const blockchainLogo = useBlockchainLogo(blockchain);
   const title = toTitleCase(blockchain);
+  // Note: the absolute positioning below is a total hack due to weird
+  //       padding + overlap issues on the table head and its content.
   return (
-    <BalancesTable>
-      <BalancesTableHead props={{ title, iconUrl: blockchainLogo }} />
-      <BalancesTableContent style={{ padding: "12px" }}>
-        <div
-          style={{
-            backgroundColor: theme.custom.colors.nav,
-            padding: "12px",
-            flexWrap: "wrap",
-          }}
-        >
-          {collections.map((collection: NftCollection, index: number) => (
-            <NftCollectionCard key={index} collection={collection} />
-          ))}
-        </div>
-      </BalancesTableContent>
+    <BalancesTable style={{ position: "relative" }}>
+      <BalancesTableHead
+        props={{ title, iconUrl: blockchainLogo }}
+        style={{
+          position: "absolute",
+          zIndex: 1,
+          left: 0,
+          right: 0,
+          top: 0,
+        }}
+      />
+      <div className={classes.cardContentContainer}>
+        <BalancesTableContent>
+          <div
+            style={{
+              backgroundColor: theme.custom.colors.nav,
+              paddingLeft: "12px",
+              paddingRight: "12px",
+              paddingBottom: "12px",
+              flexWrap: "wrap",
+            }}
+          >
+            <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
+              {collections.map((collection: NftCollection, index: number) => (
+                <Grid item xs={6} sm={4} md={3} lg={2} key={collection.name}>
+                  <NftCollectionCard key={index} collection={collection} />
+                </Grid>
+              ))}
+            </Grid>
+          </div>
+        </BalancesTableContent>
+      </div>
     </BalancesTable>
   );
 }

@@ -444,47 +444,51 @@ export function BalancesTableHead({ props, style }: any) {
   const classes = useStyles();
   const { showContent, setShowContent } = useBalancesContext();
   return (
-    <CardHeader
-      onClick={() => !disableToggle && setShowContent(!showContent)}
-      avatar={
-        iconUrl ? (
-          <img className={classes.blockchainLogo} src={iconUrl} />
-        ) : undefined
-      }
-      title={
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <Typography
+    <div style={style}>
+      <CardHeader
+        onClick={() => !disableToggle && setShowContent(!showContent)}
+        avatar={
+          iconUrl ? (
+            <img className={classes.blockchainLogo} src={iconUrl} />
+          ) : undefined
+        }
+        title={
+          <div
             style={{
-              fontWeight: 500,
-              lineHeight: "24px",
-              fontSize: "14px",
+              display: "flex",
+              justifyContent: "space-between",
             }}
           >
-            {title}
-          </Typography>
-          {!disableToggle && (
-            <>
-              {showContent ? (
-                <ExpandMore className={classes.expand} />
-              ) : (
-                <ExpandLess className={classes.expand} />
-              )}
-            </>
-          )}
-        </div>
-      }
-      classes={{
-        root: `${classes.cardHeaderRoot} ${disableToggle ? "" : classes.hover}`,
-        content: classes.cardHeaderContent,
-        title: classes.cardHeaderTitle,
-        avatar: classes.cardHeaderAvatar,
-      }}
-    />
+            <Typography
+              style={{
+                fontWeight: 500,
+                lineHeight: "24px",
+                fontSize: "14px",
+              }}
+            >
+              {title}
+            </Typography>
+            {!disableToggle && (
+              <>
+                {showContent ? (
+                  <ExpandMore className={classes.expand} />
+                ) : (
+                  <ExpandLess className={classes.expand} />
+                )}
+              </>
+            )}
+          </div>
+        }
+        classes={{
+          root: `${classes.cardHeaderRoot} ${
+            disableToggle ? "" : classes.hover
+          }`,
+          content: classes.cardHeaderContent,
+          title: classes.cardHeaderTitle,
+          avatar: classes.cardHeaderAvatar,
+        }}
+      />
+    </div>
   );
 }
 

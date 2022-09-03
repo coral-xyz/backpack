@@ -13,8 +13,8 @@ export function GridCard({ onClick, nft, subtitle }: any) {
         borderRadius: "8px",
         position: "relative",
         overflow: "hidden",
-        width: "150px",
-        margin: "6px",
+        minWidth: "150px",
+        minHeight: "150px",
         aspectRatio: "1",
       }}
     >
