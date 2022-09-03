@@ -79,7 +79,6 @@ export function Deposit({ ...props }: any) {
   const { close } = useDrawerContext();
   const activeWallets = useActiveWallets();
   const [tooltipOpen, setTooltipOpen] = useState(false);
-  console.log(props);
   const [blockchain, setBlockchain] = useState<Blockchain>(
     props.blockchain || Blockchain.SOLANA
   );
