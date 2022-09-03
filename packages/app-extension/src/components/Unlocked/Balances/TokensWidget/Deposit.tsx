@@ -73,28 +73,16 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function DepositButton({ token }: any) {
-  return (
-    <WithHeaderButton
-      label={"Deposit"}
-      routes={[
-        {
-          component: Deposit,
-          title: `${token.ticker} / Deposit`,
-          name: "deposit",
-        },
-      ]}
-    />
-  );
-}
-
-export function Deposit() {
+export function Deposit({ ...props }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const { close } = useDrawerContext();
   const activeWallets = useActiveWallets();
   const [tooltipOpen, setTooltipOpen] = useState(false);
-  const [blockchain, setBlockchain] = useState<Blockchain>(Blockchain.SOLANA);
+  console.log(props);
+  const [blockchain, setBlockchain] = useState<Blockchain>(
+    props.blockchain || Blockchain.SOLANA
+  );
   const activeWallet = activeWallets.find((w) => w.blockchain === blockchain);
 
   if (!activeWallet) {
@@ -157,25 +145,29 @@ export function Deposit() {
             <QrCode data={activeWallet.publicKey.toString()} />
           </div>
           <div style={{ marginTop: "100px" }}>
-            <TextFieldLabel
-              leftLabel={"Blockchain"}
-              style={{ marginLeft: "24px", marginRight: "24px" }}
-            />
-            <div style={{ margin: "0 12px 16px 12px" }}>
-              <TextField
-                label="Blockchain"
-                value={blockchain}
-                setValue={setBlockchain}
-                select={true}
-                rootClass={classes.depositTextFieldRoot}
-              >
-                {blockchainOptions.map((o, idx) => (
-                  <MenuItem value={o.value} key={idx}>
-                    {o.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </div>
+            {!props.blockchain && (
+              <>
+                <TextFieldLabel
+                  leftLabel={"Blockchain"}
+                  style={{ marginLeft: "24px", marginRight: "24px" }}
+                />
+                <div style={{ margin: "0 12px 16px 12px" }}>
+                  <TextField
+                    label="Blockchain"
+                    value={blockchain}
+                    setValue={setBlockchain}
+                    select={true}
+                    rootClass={classes.depositTextFieldRoot}
+                  >
+                    {blockchainOptions.map((o, idx) => (
+                      <MenuItem value={o.value} key={idx}>
+                        {o.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </div>
+              </>
+            )}
             <div>
               <TextFieldLabel
                 leftLabel={"Deposit to"}
