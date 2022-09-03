@@ -14,12 +14,12 @@ import {
   useRedirectUrl,
 } from "@coral-xyz/recoil";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
-import { PluginManager } from "@coral-xyz/recoil";
+import { useFreshPlugin, PluginManager } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Balances } from "../../Unlocked/Balances";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { Apps } from "../../Unlocked/Apps";
-import { PluginApp } from "../../Unlocked/Apps/Plugin";
+import { _PluginDisplay } from "../../Unlocked/Apps/Plugin";
 import { Nfts } from "../../Unlocked/Nfts";
 import { Swap } from "../../Unlocked/Swap";
 import { NftsDetail } from "../../Unlocked/Nfts/Detail";
@@ -62,7 +62,8 @@ function _PluginPage() {
   const { xnftAddress } = JSON.parse(
     decodeURIComponent(searchParams.get("props")!)
   );
-  return (
+  const xnftPlugin = useFreshPlugin(xnftAddress);
+  return xnftPlugin.state === "done" ? (
     <div
       style={{
         position: "fixed",
@@ -73,11 +74,13 @@ function _PluginPage() {
         zIndex: 1,
       }}
     >
-      <PluginApp
-        xnftAddress={xnftAddress!}
+      <_PluginDisplay
+        plugin={xnftPlugin.result!}
         closePlugin={() => window.close()}
       />
     </div>
+  ) : (
+    <></>
   );
 }
 

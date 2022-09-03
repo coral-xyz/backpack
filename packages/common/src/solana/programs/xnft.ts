@@ -75,7 +75,12 @@ export async function fetchXnfts(
 export async function fetchXnft(
   provider: Provider,
   xnft: PublicKey
-): Promise<{ metadataPublicKey: any; metadata: any; metadataBlob: any }> {
+): Promise<{
+  xnftAccount: any;
+  metadataPublicKey: any;
+  metadata: any;
+  metadataBlob: any;
+}> {
   const client = xnftClient(provider);
   const xnftAccount = await client.account.xnft.fetch(xnft);
 
@@ -95,6 +100,7 @@ export async function fetchXnft(
     metadataPublicKey,
     metadata: xnftMetadata,
     metadataBlob: xnftMetadataBlob,
+    xnftAccount,
   };
 }
 
