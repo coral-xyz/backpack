@@ -30,7 +30,7 @@ export function TransferWidget({
         marginRight: "auto",
       }}
     >
-      <ReceiveButton />
+      <ReceiveButton blockchain={blockchain} />
       <div style={{ width: "16px" }} />
       <SendButton blockchain={blockchain} address={address} />
     </div>
@@ -88,7 +88,7 @@ function SendButton({
   );
 }
 
-function ReceiveButton() {
+function ReceiveButton({ blockchain }: { blockchain?: Blockchain }) {
   const theme = useCustomTheme();
   return (
     <TransferButton
@@ -108,6 +108,9 @@ function ReceiveButton() {
           component: Deposit,
           title: "Deposit",
           name: "deposit",
+          props: {
+            blockchain,
+          },
         },
       ]}
     />
