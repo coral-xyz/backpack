@@ -47,7 +47,7 @@ export const solanaNftCollections = selector<NftCollection[]>({
           description: value.tokenMetaUriData.description,
           externalUrl: externalResourceUri(value.tokenMetaUriData.external_url),
           imageUrl: externalResourceUri(value.tokenMetaUriData.image),
-          attributes: value.tokenMetaUriData.attributes.map(
+          attributes: value.tokenMetaUriData.attributes?.map(
             (a: { trait_type: string; value: string }) => ({
               traitType: a.trait_type,
               value: a.value,

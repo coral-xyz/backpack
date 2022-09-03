@@ -44,7 +44,7 @@ export type Nft = {
   externalUrl: string;
   imageUrl: string;
   imageData?: string;
-  attributes: NftAttribute[];
+  attributes?: NftAttribute[];
 };
 
 export type SolanaNft = Nft & {
