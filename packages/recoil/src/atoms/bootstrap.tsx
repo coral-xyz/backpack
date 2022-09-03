@@ -19,6 +19,7 @@ import { splTokenRegistry } from "./solana/token-registry";
 import { fetchJupiterRouteMap } from "./solana/jupiter";
 import { ethereumTokenMetadata } from "./ethereum/token-metadata";
 import { ethersContext } from "./ethereum/provider";
+import { ethereumNftCollections } from "./ethereum/nft";
 
 /**
  * Defines the initial app load fetch.
@@ -91,7 +92,7 @@ export const ethereumBootstrap = selector<{
     const provider = get(ethersContext).provider;
     const ethTokenBalances = await ethereumBalances(provider, publicKey);
 
-    // get(ethereumNft({ address: publicKey }));
+    get(ethereumNftCollections);
 
     get(
       recentEthereumTransactions({

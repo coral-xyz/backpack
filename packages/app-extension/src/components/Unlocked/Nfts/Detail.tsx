@@ -3,7 +3,7 @@ import { BigNumber } from "ethers";
 import { Typography } from "@mui/material";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { useNftMetadata, useAnchorContext } from "@coral-xyz/recoil";
-import { Blockchain } from "@coral-xyz/common";
+import { toTitleCase, Blockchain } from "@coral-xyz/common";
 import { PrimaryButton, SecondaryButton, TextField } from "../../common";
 import {
   useDrawerContext,
@@ -14,10 +14,9 @@ import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
-import {
-  SendConfirmationCard,
-  useIsValidAddress,
-} from "../Balances/TokensWidget/Send";
+import { SendSolanaConfirmationCard } from "../Balances/TokensWidget/Solana";
+import { SendEthereumConfirmationCard } from "../Balances/TokensWidget/Ethereum";
+import { useIsValidAddress } from "../Balances/TokensWidget/Send";
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
 
 const useStyles = styles((theme) => ({
@@ -30,12 +29,12 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function NftsDetail({ publicKey }: { publicKey: string }) {
+export function NftsDetail({ nftId }: { nftId: string }) {
   const nfts = useNftMetadata();
-  const nft = nfts.get(publicKey);
+  const nft = nfts.get(nftId);
 
   // Hack: needed because this is undefined due to framer-motion animation.
-  if (!publicKey) {
+  if (!nftId) {
     return <></>;
   }
 
@@ -58,21 +57,29 @@ export function NftsDetail({ publicKey }: { publicKey: string }) {
       <Image nft={nft} />
       <Description nft={nft} />
       <SendButton nft={nft} />
-      {nft.tokenMetaUriData.attributes && <Attributes nft={nft} />}
+      {nft.attributes && <Attributes nft={nft} />}
     </div>
   );
 }
 
 function Image({ nft }: { nft: any }) {
   return (
-    <img
+    <div
       style={{
         width: "100%",
         minHeight: "343px",
-        borderRadius: "8px",
       }}
-      src={nft.tokenMetaUriData.image}
-    />
+    >
+      <img
+        style={{
+          width: "100%",
+          minHeight: "343px",
+          borderRadius: "8px",
+        }}
+        src={nft.imageUrl}
+        onError={(event) => (event.currentTarget.style.display = "none")}
+      />
+    </div>
   );
 }
 
@@ -103,7 +110,7 @@ function Description({ nft }: { nft: any }) {
           fontSize: "16px",
         }}
       >
-        {nft.tokenMetaUriData.description}
+        {nft.description}
       </Typography>
     </div>
   );
@@ -131,8 +138,8 @@ function SendButton({ nft }: { nft: any }) {
         >
           <NavStackEphemeral
             initialRoute={{ name: "send" }}
-            options={(args) => ({
-              title: `${nft.tokenMetaUriData.name} / Send`,
+            options={() => ({
+              title: `${nft.name} / Send`,
             })}
             navButtonRight={
               <CloseButton onClick={() => setOpenDrawer(false)} />
@@ -152,14 +159,18 @@ function SendButton({ nft }: { nft: any }) {
 function SendScreen({ nft }: { nft: any }) {
   const classes = useStyles();
   const { close } = useDrawerContext();
-  const [address, setAddress] = useState("");
+  const { provider: solanaProvider } = useAnchorContext();
+  const [destinationAddress, setDestinationAddress] = useState("");
   const [openConfirm, setOpenConfirm] = useState(false);
-  const { provider } = useAnchorContext();
   const {
     isValidAddress,
     isErrorAddress,
     isFreshAddress: _,
-  } = useIsValidAddress(Blockchain.SOLANA, address, provider.connection);
+  } = useIsValidAddress(
+    nft.blockchain,
+    destinationAddress,
+    solanaProvider.connection
+  );
 
   const onReject = () => {
     close();
@@ -191,9 +202,9 @@ function SendScreen({ nft }: { nft: any }) {
             <TextField
               autoFocus
               rootClass={classes.textRoot}
-              placeholder={"Recipient's SOL Address"}
-              value={address}
-              setValue={setAddress}
+              placeholder={`Recipient's ${toTitleCase(nft.blockchain)} Address`}
+              value={destinationAddress}
+              setValue={setDestinationAddress}
               isError={isErrorAddress}
               inputProps={{
                 name: "to",
@@ -220,17 +231,32 @@ function SendScreen({ nft }: { nft: any }) {
         openDrawer={openConfirm}
         setOpenDrawer={setOpenConfirm}
       >
-        <SendConfirmationCard
-          blockchain={Blockchain.SOLANA}
-          token={{
-            mint: nft.metadata.mint,
-            decimals: 0, // Are there any NFTs that don't use decimals 0?
-            logo: nft.tokenMetaUriData.image,
-          }}
-          address={address}
-          amount={BigNumber.from(1)}
-          close={() => close()}
-        />
+        {nft.blockchain === Blockchain.SOLANA && (
+          <SendSolanaConfirmationCard
+            token={{
+              address: nft.publicKey,
+              logo: nft.imageUrl,
+              decimals: 0, // Are there any NFTs that don't use decimals 0?
+              mint: nft.mint,
+            }}
+            destinationAddress={destinationAddress}
+            amount={BigNumber.from(1)}
+            close={() => close()}
+          />
+        )}
+        {nft.blockchain === Blockchain.ETHEREUM && (
+          <SendEthereumConfirmationCard
+            token={{
+              logo: nft.imageUrl,
+              decimals: 0, // Are there any NFTs that don't use decimals 0?
+              address: nft.contractAddress,
+              tokenId: nft.tokenId,
+            }}
+            destinationAddress={destinationAddress}
+            amount={BigNumber.from(1)}
+            close={() => close()}
+          />
+        )}
       </ApproveTransactionDrawer>
     </>
   );
@@ -258,10 +284,10 @@ function Attributes({ nft }: { nft: any }) {
             marginRight: "-4px",
           }}
         >
-          {nft.tokenMetaUriData.attributes.map((attr: any) => {
+          {nft.attributes.map((attr: { traitType: string; value: string }) => {
             return (
               <div
-                key={attr.trait_type}
+                key={attr.traitType}
                 style={{
                   padding: "4px",
                 }}
@@ -282,7 +308,7 @@ function Attributes({ nft }: { nft: any }) {
                       fontSize: "14px",
                     }}
                   >
-                    {attr.trait_type}
+                    {toTitleCase(attr.traitType)}
                   </Typography>
                   <Typography
                     style={{

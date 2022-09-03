@@ -13,8 +13,8 @@ export function GridCard({ onClick, nft, subtitle }: any) {
         borderRadius: "8px",
         position: "relative",
         overflow: "hidden",
-        minHeight: "163.4px",
-        minWidth: "163.4px",
+        width: "150px",
+        margin: "6px",
         aspectRatio: "1",
       }}
     >
@@ -22,7 +22,8 @@ export function GridCard({ onClick, nft, subtitle }: any) {
         style={{
           width: "100%",
         }}
-        src={nft.tokenMetaUriData.image}
+        src={nft.imageUrl}
+        onError={(event) => (event.currentTarget.style.display = "none")}
       />
       {subtitle && (
         <div
