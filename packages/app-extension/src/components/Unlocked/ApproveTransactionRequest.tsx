@@ -1,13 +1,23 @@
 import { useMemo, useEffect, useState } from "react";
 import * as bs58 from "bs58";
-import { Transaction, Message } from "@solana/web3.js";
+import { Transaction } from "@solana/web3.js";
 import {
   useBackgroundClient,
   useTransactionRequest,
-  useActiveWallet,
+  useActivePublicKeys,
   useFreshPlugin,
 } from "@coral-xyz/recoil";
 import {
+  Blockchain,
+  PLUGIN_REQUEST_ETHEREUM_SIGN_TRANSACTION,
+  PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE,
+  PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
+  PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION,
+  PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE,
+  PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION,
+  UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
+  UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
+  UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
   UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
@@ -53,7 +63,7 @@ const useStyles = styles((theme) => ({
 
 export function ApproveTransactionRequest() {
   const [request, setRequest] = useTransactionRequest();
-  const { publicKey } = useActiveWallet();
+  const activePublicKeys = useActivePublicKeys();
   const [openDrawer, setOpenDrawer] = useState(false);
 
   useEffect(() => {
@@ -61,7 +71,7 @@ export function ApproveTransactionRequest() {
   }, [request]);
 
   // TODO: this check shouldn't be necessary.
-  if (request && publicKey.toString() !== request.publicKey) {
+  if (request && !Object.values(activePublicKeys).includes(request.publicKey)) {
     throw new Error("invariant violation");
   }
 
@@ -88,7 +98,7 @@ export function ApproveTransactionRequest() {
 function SendTransactionRequest({ onClose }: any) {
   const [request, setRequest] = useTransactionRequest();
   const background = useBackgroundClient();
-  const { publicKey } = useActiveWallet();
+  const activePublicKeys = useActivePublicKeys();
   const { result: plugin } = useFreshPlugin(request?.xnftAddress);
 
   const onConfirm = async () => {
@@ -96,23 +106,43 @@ function SendTransactionRequest({ onClose }: any) {
       throw new Error("request not found");
     }
     let signature;
-    if (request!.kind === "sign-tx") {
+    if (request!.kind === PLUGIN_REQUEST_ETHEREUM_SIGN_TRANSACTION) {
+      signature = await background.request({
+        method: UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
+        params: [request.data, activePublicKeys[Blockchain.ETHEREUM]],
+      });
+    } else if (
+      request!.kind === PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION
+    ) {
+      signature = await background.request({
+        method: UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
+        params: [request.data, activePublicKeys[Blockchain.ETHEREUM]],
+      });
+    } else if (request!.kind === PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE) {
+      signature = await background.request({
+        method: UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
+        params: [request.data, activePublicKeys[Blockchain.ETHEREUM]],
+      });
+    } else if (request!.kind === PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION) {
       signature = await background.request({
         method: UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
-        params: [request.data, publicKey.toString()],
+        params: [request.data, activePublicKeys[Blockchain.SOLANA]],
       });
-    } else if (request!.kind === "sign-msg") {
-      signature = await background.request({
-        method: UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
-        params: [request.data, publicKey.toString()],
-      });
-    } else {
+    } else if (
+      request!.kind === PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION
+    ) {
       signature = await background.request({
         method: UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
-        params: [request.data, publicKey.toString()],
+        params: [request.data, activePublicKeys[Blockchain.SOLANA]],
       });
+    } else if (request!.kind === PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE) {
+      signature = await background.request({
+        method: UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
+        params: [request.data, activePublicKeys[Blockchain.SOLANA]],
+      });
+    } else {
+      throw "invalid request";
     }
-
     request!.resolve(signature);
     setRequest(undefined);
   };
@@ -128,9 +158,19 @@ function SendTransactionRequest({ onClose }: any) {
       <div style={{ padding: "24px", flex: 1 }}>
         {request && plugin && (
           <Scrollbar>
-            {request?.kind === "sign-tx" ? (
+            {request?.kind === PLUGIN_REQUEST_ETHEREUM_SIGN_TRANSACTION ? (
               <SignTransaction transaction={request?.data} plugin={plugin} />
-            ) : request.kind === "sign-msg" ? (
+            ) : request.kind ===
+              PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION ? (
+              <SignAndSendTransaction
+                transaction={request?.data}
+                plugin={plugin}
+              />
+            ) : request.kind === PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE ? (
+              <SignMessage message={request?.data} plugin={plugin} />
+            ) : request.kind === PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION ? (
+              <SignTransaction transaction={request?.data} plugin={plugin} />
+            ) : request.kind === PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE ? (
               <SignMessage message={request?.data} plugin={plugin} />
             ) : (
               <SignAndSendTransaction

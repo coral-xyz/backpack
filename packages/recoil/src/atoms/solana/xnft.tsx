@@ -1,8 +1,9 @@
 import { atom, selector } from "recoil";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import { BACKPACK_CONFIG_XNFT_PROXY, SIMULATOR_PORT } from "@coral-xyz/common";
-import { activeWallet } from "../wallet";
+import { solanaPublicKey, activePublicKeys } from "../wallet";
 import { solanaConnectionUrl } from "./preferences";
+import { connectionUrls } from "../preferences";
 import { bootstrap } from "../bootstrap";
 
 //
@@ -56,8 +57,8 @@ export const plugins = selector({
         url: SIMULATOR_URL,
         iconUrl: "assets/simulator.png",
         title: "Simulator",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(solanaConnectionUrl),
+        activeWallets: get(activePublicKeys),
+        connectionUrls: get(connectionUrls),
         install: {
           publicKey: PublicKey.default.toString(),
           account: {
@@ -70,8 +71,8 @@ export const plugins = selector({
         url: DEGODS_TABLE_PLUGIN_URL,
         iconUrl: "assets/deadgods.png",
         title: "DeadGods",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(solanaConnectionUrl),
+        activeWallet: get(activePublicKeys),
+        connectionUrls: get(connectionUrls),
         install: {
           publicKey: Keypair.generate().publicKey.toString(),
           account: {
@@ -83,8 +84,8 @@ export const plugins = selector({
         url: AURORY_PLUGIN_URL,
         iconUrl: "assets/aurory.png",
         title: "Aurory",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(solanaConnectionUrl),
+        activeWallet: get(activePublicKeys),
+        connectionUrls: get(connectionUrls),
         install: {
           publicKey: Keypair.generate().publicKey.toString(),
           account: {
@@ -97,8 +98,8 @@ export const plugins = selector({
         iconUrl:
           "https://pbs.twimg.com/profile_images/1472933274209107976/6u-LQfjG_400x400.jpg",
         title: "Monitor",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(solanaConnectionUrl),
+        activeWallet: get(activePublicKeys),
+        connectionUrls: get(connectionUrls),
         install: {
           publicKey: Keypair.generate().publicKey.toString(),
           account: {
@@ -110,8 +111,8 @@ export const plugins = selector({
         url: PRICES_PLUGIN_URL,
         iconUrl: "assets/prices.png",
         title: "Prices",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(solanaConnectionUrl),
+        activeWallet: get(activePublicKeys),
+        connectionUrls: get(connectionUrls),
         install: {
           publicKey: Keypair.generate().publicKey.toString(),
           account: {
@@ -123,8 +124,8 @@ export const plugins = selector({
         url: MANGO_TABLE_PLUGIN_URL,
         iconUrl: "assets/mango.png",
         title: "Mango",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(solanaConnectionUrl),
+        activeWallet: get(activePublicKeys),
+        connectionUrls: get(connectionUrls),
         install: {
           publicKey: Keypair.generate().publicKey.toString(),
           account: {
@@ -136,8 +137,8 @@ export const plugins = selector({
         url: PSYFI_PLUGIN_URL,
         iconUrl: "assets/psyfi.png",
         title: "Psyfi",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(solanaConnectionUrl),
+        activeWallet: get(activePublicKeys),
+        connectionUrls: get(connectionUrls),
         install: {
           publicKey: Keypair.generate().publicKey.toString(),
           account: {
@@ -156,7 +157,7 @@ export const xnfts = atom({
     key: "xnftsDefault",
     get: async ({ get }) => {
       const b = get(bootstrap);
-      const _activeWallet = get(activeWallet);
+      const _activeWallet = get(solanaPublicKey);
       const _connectionUrl = get(solanaConnectionUrl);
       return (await b.xnfts).map((xnft) => {
         return {
