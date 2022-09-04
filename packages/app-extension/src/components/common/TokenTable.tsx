@@ -183,7 +183,7 @@ export function TokenTable({
       style={useVirtualization ? { height: "calc(100% - 92px)" } : {}}
     >
       <BalancesTableHead
-        props={{ title, iconUrl: blockchainLogo, disableToggle: true }}
+        props={{ title, iconUrl: blockchainLogo, disableToggle: false }}
       />
       <BalancesTableContent style={useVirtualization ? { height: "100%" } : {}}>
         {useVirtualization ? (
