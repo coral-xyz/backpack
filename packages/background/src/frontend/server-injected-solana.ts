@@ -12,6 +12,7 @@ import {
   getLogger,
   withContext,
   withContextPort,
+  Blockchain,
   ChannelContentScript,
   ChannelAppUi,
   openLockedPopupWindow,
@@ -184,7 +185,9 @@ async function handleSolanaConnect(
 
   // If the user approved and unlocked, then we're connected.
   if (didApprove) {
-    const activeWallet = await ctx.backend.activeWallet();
+    const activeWallet = (await ctx.backend.blockchainActiveWallets())[
+      Blockchain.SOLANA
+    ];
     const connectionUrl = await ctx.backend.solanaConnectionUrlRead();
     const data = { publicKey: activeWallet, connectionUrl };
     ctx.events.emit(BACKEND_EVENT, {
