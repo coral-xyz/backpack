@@ -854,16 +854,16 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async pluginLocalStorageGet(plugin: string, key: string): Promise<any> {
-    return await store.LocalStorageDb.get(`${plugin}:${key}`);
+  async pluginLocalStorageGet(xnftAddress: string, key: string): Promise<any> {
+    return await store.LocalStorageDb.get(`${xnftAddress}:${key}`);
   }
 
   async pluginLocalStoragePut(
-    plugin: string,
+    xnftAddress: string,
     key: string,
     value: any
   ): Promise<any> {
-    await store.LocalStorageDb.set(`${plugin}:${key}`, value);
+    await store.LocalStorageDb.set(`${xnftAddress}:${key}`, value);
     return SUCCESS_RESPONSE;
   }
 }

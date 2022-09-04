@@ -774,10 +774,10 @@ async function handlePreviewPubkeys(
 // api with a fake plugin string.
 async function handlePluginLocalStorageGet(
   ctx: Context<Backend>,
-  plugin: string,
+  xnftAddress: string,
   key: string
 ): Promise<RpcResponse<any>> {
-  const resp = await ctx.backend.pluginLocalStorageGet(plugin, key);
+  const resp = await ctx.backend.pluginLocalStorageGet(xnftAddress, key);
   return [resp];
 }
 
@@ -786,10 +786,10 @@ async function handlePluginLocalStorageGet(
 // api with a fake plugin string.
 async function handlePluginLocalStoragePut(
   ctx: Context<Backend>,
-  plugin: string,
+  xnftAddress: string,
   key: string,
   value: any
 ): Promise<RpcResponse<any>> {
-  const resp = await ctx.backend.pluginLocalStoragePut(plugin, key, value);
+  const resp = await ctx.backend.pluginLocalStoragePut(xnftAddress, key, value);
   return [resp];
 }

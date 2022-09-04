@@ -477,7 +477,7 @@ export class Plugin {
   private async _handleGet(key: string): Promise<RpcResponse> {
     const resp = await this._backgroundClient.request({
       method: UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
-      params: [this.iframeRootUrl, key],
+      params: [this.xnftAddress.toString(), key],
     });
     return [resp];
   }
@@ -485,7 +485,7 @@ export class Plugin {
   private async _handlePut(key: string, value: any): Promise<RpcResponse> {
     const resp = await this._backgroundClient.request({
       method: UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
-      params: [this.iframeRootUrl, key, value],
+      params: [this.xnftAddress.toString(), key, value],
     });
     return [resp];
   }
