@@ -52,6 +52,7 @@ function Redirect() {
   const [searchParams] = useSearchParams();
   const pluginProps = searchParams.get("pluginProps");
   if (pluginProps) {
+    // TODO: probably want to use some API to append the search param instead.
     url = `${url}&pluginProps=${encodeURIComponent(pluginProps)}`;
   }
   return <Navigate to={url} replace />;

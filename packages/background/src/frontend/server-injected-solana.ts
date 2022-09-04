@@ -89,6 +89,7 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
   };
 }
 
+// TODO: add a guard for approved origins (DUH!).
 async function handle<T = any>(
   ctx: Context<Backend>,
   req: RpcRequest
