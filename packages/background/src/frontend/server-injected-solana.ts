@@ -63,9 +63,6 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
   //
   events.on(BACKEND_EVENT, (notification) => {
     switch (notification.name) {
-      case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
-        notificationsInjected.sendMessageActiveTab(notification);
-        break;
       case NOTIFICATION_SOLANA_CONNECTED:
         notificationsInjected.sendMessageActiveTab(notification);
         break;
@@ -73,6 +70,9 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
         notificationsInjected.sendMessageActiveTab(notification);
         break;
       case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
+        notificationsInjected.sendMessageActiveTab(notification);
+        break;
+      case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
         notificationsInjected.sendMessageActiveTab(notification);
         break;
       default:
