@@ -209,6 +209,7 @@ export const SOLANA_RPC_METHOD_SIGN_TX = "solana-sign-tx";
 export const SOLANA_RPC_METHOD_SIGN_ALL_TXS = "solana-sign-all-txs";
 export const SOLANA_RPC_METHOD_SIGN_MESSAGE = "solana-sign-message";
 export const SOLANA_RPC_METHOD_SIMULATE = "solana-simulate";
+export const SOLANA_RPC_METHOD_OPEN_XNFT = "solana-open-xnft";
 
 //
 // Solana connection api. These are the methods available for the background

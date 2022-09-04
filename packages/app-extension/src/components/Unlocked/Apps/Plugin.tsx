@@ -1,21 +1,54 @@
 import { Button, Divider } from "@mui/material";
-import { PluginRenderer } from "@coral-xyz/react-xnft-renderer";
+import { PublicKey } from "@solana/web3.js";
+import { Plugin, PluginRenderer } from "@coral-xyz/react-xnft-renderer";
 import { usePlugins } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { PowerIcon, MoreIcon } from "../../common/Icon";
+import { Simulator } from "./Simulator";
 
-export function PluginDisplay({ pluginUrl, closePlugin }: any) {
-  const theme = useCustomTheme();
+export function PluginApp({
+  xnftAddress,
+  closePlugin,
+}: {
+  xnftAddress: string;
+  closePlugin: () => void;
+}) {
+  return xnftAddress! === PublicKey.default.toString() ? (
+    <Simulator xnft={xnftAddress} closePlugin={closePlugin} />
+  ) : (
+    <PluginDisplay xnft={xnftAddress!} closePlugin={() => closePlugin()} />
+  );
+}
+
+export function PluginDisplay({
+  xnft,
+  closePlugin,
+}: {
+  xnft: string;
+  closePlugin: () => void;
+}) {
   const plugins = usePlugins();
-  const p = plugins.find((p) => p.iframeRootUrl === encodeURI(pluginUrl));
+  const p = plugins.find((p) => p.xnftAddress.toString() === xnft);
 
   // Hack: This is hit due to the framer-motion animation.
-  if (!pluginUrl) {
+  if (!xnft) {
     return <></>;
   }
   if (p === undefined) {
     throw new Error("unable to find plugin");
   }
+
+  return <_PluginDisplay plugin={p!} closePlugin={closePlugin} />;
+}
+
+export function _PluginDisplay({
+  plugin,
+  closePlugin,
+}: {
+  plugin: Plugin;
+  closePlugin: () => void;
+}) {
+  const theme = useCustomTheme();
 
   // TODO: splash loading page.
   return (
@@ -26,7 +59,7 @@ export function PluginDisplay({ pluginUrl, closePlugin }: any) {
       }}
     >
       <PluginControl closePlugin={closePlugin} />
-      <PluginRenderer key={p.iframeRootUrl} plugin={p} />
+      <PluginRenderer key={plugin.iframeRootUrl} plugin={plugin} />
     </div>
   );
 }

@@ -72,6 +72,38 @@ export async function fetchXnfts(
   return xnfts;
 }
 
+export async function fetchXnft(
+  provider: Provider,
+  xnft: PublicKey
+): Promise<{
+  xnftAccount: any;
+  metadataPublicKey: any;
+  metadata: any;
+  metadataBlob: any;
+}> {
+  const client = xnftClient(provider);
+  const xnftAccount = await client.account.xnft.fetch(xnft);
+
+  const metadataPublicKey = xnftAccount.masterMetadata;
+  const xnftMetadata = await (async () => {
+    const info = await provider.connection.getAccountInfo(metadataPublicKey);
+    if (!info) {
+      throw new Error("account info not found");
+    }
+    return metadata.decodeMetadata(info.data);
+  })();
+
+  const xnftMetadataBlob = await fetch(xnftMetadata.data.uri).then((r) =>
+    r.json()
+  );
+  return {
+    metadataPublicKey,
+    metadata: xnftMetadata,
+    metadataBlob: xnftMetadataBlob,
+    xnftAccount,
+  };
+}
+
 export function xnftClient(provider: Provider): Program<Xnft> {
   return new Program<Xnft>(IDL, XNFT_PROGRAM_ID, provider);
 }

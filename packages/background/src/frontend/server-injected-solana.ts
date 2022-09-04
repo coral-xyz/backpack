@@ -20,6 +20,7 @@ import {
   openApproveTransactionPopupWindow,
   openApproveAllTransactionsPopupWindow,
   openApproveMessagePopupWindow,
+  openXnft,
   BrowserRuntimeExtension,
   SOLANA_RPC_METHOD_CONNECT,
   SOLANA_RPC_METHOD_DISCONNECT,
@@ -28,6 +29,7 @@ import {
   SOLANA_RPC_METHOD_SIGN_ALL_TXS,
   SOLANA_RPC_METHOD_SIGN_MESSAGE,
   SOLANA_RPC_METHOD_SIMULATE,
+  SOLANA_RPC_METHOD_OPEN_XNFT,
   CHANNEL_SOLANA_RPC_REQUEST,
   CHANNEL_SOLANA_NOTIFICATION,
   CHANNEL_POPUP_RESPONSE,
@@ -87,6 +89,7 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
   };
 }
 
+// TODO: add a guard for approved origins (DUH!).
 async function handle<T = any>(
   ctx: Context<Backend>,
   req: RpcRequest
@@ -114,6 +117,8 @@ async function handle<T = any>(
       return await handleSolanaSignMessage(ctx, params[0], params[1]);
     case SOLANA_RPC_METHOD_SIMULATE:
       return await handleSolanaSimulate(ctx, params[0], params[1], params[2]);
+    case SOLANA_RPC_METHOD_OPEN_XNFT:
+      return await handleSolanaOpenXnft(ctx, params[0]);
     default:
       throw new Error(`unexpected rpc method: ${method}`);
   }
@@ -398,11 +403,19 @@ async function handleSolanaSimulate(
   return [resp];
 }
 
+async function handleSolanaOpenXnft(
+  ctx: Context<Backend>,
+  xnftAddress: string
+): Promise<RpcResponse<string>> {
+  await openXnft(xnftAddress);
+  return ["success"];
+}
+
 class RequestManager {
   static _requestId = 0;
   static _responseResolvers: any = {};
 
-  // Initiate a request. The given popupFn should relay the given requestId to
+  // Initiate a request. The given popupFn should relay the given requestmanagerId to
   // the UI, which will send it back with a response.
   //
   // Note that there are two ways we can receive a response.

@@ -82,8 +82,10 @@ export class Plugin {
   readonly iframeRootUrl: string;
   readonly iconUrl: string;
   readonly title: string;
+  readonly xnftAddress: PublicKey;
 
   constructor(
+    xnftAddress: PublicKey,
     url: string,
     iconUrl: string,
     title: string,
@@ -98,6 +100,7 @@ export class Plugin {
     this.title = title;
     this.iframeRootUrl = url;
     this.iconUrl = iconUrl;
+    this.xnftAddress = xnftAddress;
 
     //
     // RPC Server channel from plugin -> extension-ui.
@@ -148,6 +151,8 @@ export class Plugin {
 
   // Onload handler for the top level iframe representing the xNFT.
   private handleRootIframeOnLoad() {
+    logger.debug("iframe on load");
+
     //
     // Setup react reconciler.
     //
@@ -195,6 +200,8 @@ export class Plugin {
     document.head.removeChild(this._iframeRoot!);
     this._iframeRoot!.remove();
     this._iframeRoot = undefined;
+    // Don't need to remove the active iframe because we've removed the root.
+    this._iframeActive = undefined;
     this._rpcServer.setWindow(undefined, "");
     this._bridgeServer.setWindow(undefined, "");
     this._nextRenderId = undefined;

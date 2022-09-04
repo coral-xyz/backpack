@@ -8,9 +8,9 @@ import { bootstrap } from "../bootstrap";
 //
 // Private dev plugins.
 //
+const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
 const MANGO_TABLE_PLUGIN_URL = pluginURL("xnft/mango");
 const PRICES_PLUGIN_URL = pluginURL("xnft/prices");
-const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
 const PSYFI_PLUGIN_URL = pluginURL("xnft/psyfi");
 const AURORY_PLUGIN_URL = pluginURL("xnft/aurory");
 
@@ -41,7 +41,7 @@ function pluginURL(pluginName: string) {
   ].join("");
 }
 
-function xnftUrl(url: string) {
+export function xnftUrl(url: string) {
   return [PROXY_URL, url].join("");
 }
 
@@ -60,9 +60,12 @@ export const plugins = selector({
         connectionUrl: get(solanaConnectionUrl),
         install: {
           publicKey: PublicKey.default.toString(),
+          account: {
+            xnft: Keypair.generate().publicKey.toString(),
+          },
         },
       },
-
+      /*
       {
         url: DEGODS_TABLE_PLUGIN_URL,
         iconUrl: "assets/deadgods.png",
@@ -70,7 +73,10 @@ export const plugins = selector({
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
         install: {
-          publicKey: Keypair.generate().publicKey,
+          publicKey: Keypair.generate().publicKey.toString(),
+          account: {
+            xnft: Keypair.generate().publicKey.toString(),
+          },
         },
       },
       {
@@ -80,7 +86,10 @@ export const plugins = selector({
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
         install: {
-          publicKey: Keypair.generate().publicKey,
+          publicKey: Keypair.generate().publicKey.toString(),
+          account: {
+            xnft: Keypair.generate().publicKey.toString(),
+          },
         },
       },
       {
@@ -91,7 +100,10 @@ export const plugins = selector({
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
         install: {
-          publicKey: Keypair.generate().publicKey,
+          publicKey: Keypair.generate().publicKey.toString(),
+          account: {
+            xnft: Keypair.generate().publicKey.toString(),
+          },
         },
       },
       {
@@ -101,7 +113,10 @@ export const plugins = selector({
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
         install: {
-          publicKey: Keypair.generate().publicKey,
+          publicKey: Keypair.generate().publicKey.toString(),
+          account: {
+            xnft: Keypair.generate().publicKey.toString(),
+          },
         },
       },
       {
@@ -111,7 +126,10 @@ export const plugins = selector({
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
         install: {
-          publicKey: Keypair.generate().publicKey,
+          publicKey: Keypair.generate().publicKey.toString(),
+          account: {
+            xnft: Keypair.generate().publicKey.toString(),
+          },
         },
       },
       {
@@ -121,9 +139,13 @@ export const plugins = selector({
         activeWallet: get(activeWallet),
         connectionUrl: get(solanaConnectionUrl),
         install: {
-          publicKey: Keypair.generate().publicKey,
+          publicKey: Keypair.generate().publicKey.toString(),
+          account: {
+            xnft: Keypair.generate().publicKey.toString(),
+          },
         },
       },
+			*/
     ];
   },
 });
