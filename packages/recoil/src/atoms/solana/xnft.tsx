@@ -71,7 +71,7 @@ export const plugins = selector({
         url: DEGODS_TABLE_PLUGIN_URL,
         iconUrl: "assets/deadgods.png",
         title: "DeadGods",
-        activeWallet: get(activePublicKeys),
+        activeWallets: get(activePublicKeys),
         connectionUrls: get(connectionUrls),
         install: {
           publicKey: Keypair.generate().publicKey.toString(),
@@ -84,7 +84,7 @@ export const plugins = selector({
         url: AURORY_PLUGIN_URL,
         iconUrl: "assets/aurory.png",
         title: "Aurory",
-        activeWallet: get(activePublicKeys),
+        activeWallets: get(activePublicKeys),
         connectionUrls: get(connectionUrls),
         install: {
           publicKey: Keypair.generate().publicKey.toString(),
@@ -98,7 +98,7 @@ export const plugins = selector({
         iconUrl:
           "https://pbs.twimg.com/profile_images/1472933274209107976/6u-LQfjG_400x400.jpg",
         title: "Monitor",
-        activeWallet: get(activePublicKeys),
+        activeWallets: get(activePublicKeys),
         connectionUrls: get(connectionUrls),
         install: {
           publicKey: Keypair.generate().publicKey.toString(),
@@ -111,7 +111,7 @@ export const plugins = selector({
         url: PRICES_PLUGIN_URL,
         iconUrl: "assets/prices.png",
         title: "Prices",
-        activeWallet: get(activePublicKeys),
+        activeWallets: get(activePublicKeys),
         connectionUrls: get(connectionUrls),
         install: {
           publicKey: Keypair.generate().publicKey.toString(),
@@ -137,7 +137,7 @@ export const plugins = selector({
         url: PSYFI_PLUGIN_URL,
         iconUrl: "assets/psyfi.png",
         title: "Psyfi",
-        activeWallet: get(activePublicKeys),
+        activeWallets: get(activePublicKeys),
         connectionUrls: get(connectionUrls),
         install: {
           publicKey: Keypair.generate().publicKey.toString(),
