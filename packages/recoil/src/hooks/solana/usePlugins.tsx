@@ -27,13 +27,15 @@ export function usePlugins(): Array<Plugin> {
   return pluginData.map((p) => getPlugin(p));
 }
 
-export function useFreshPlugin(address: string): {
+export function useFreshPlugin(address?: string): {
   state: "loading" | "done" | "error";
-  result: Plugin | null;
+  result: Plugin | undefined;
 } {
   const { provider, connectionUrl } = useAnchorContext();
   const { publicKey: activeWallet } = useActiveSolanaWallet();
-  const [result, setResult] = useState<Plugin | null>(null);
+  const [result, setResult] = useState<Plugin | undefined>(
+    PLUGIN_CACHE.get(address ?? "")
+  );
   const [state, setState] = useState<"loading" | "done" | "error">("loading");
 
   //
@@ -45,6 +47,9 @@ export function useFreshPlugin(address: string): {
   const connectionBackgroundClient = useConnectionBackgroundClient();
 
   useEffect(() => {
+    if (!address || result) {
+      return;
+    }
     (async () => {
       try {
         const xnft = await fetchXnft(provider, new PublicKey(address));
@@ -63,6 +68,7 @@ export function useFreshPlugin(address: string): {
           backgroundClient,
           connectionBackgroundClient,
         });
+        PLUGIN_CACHE.set(address, plugin);
         setResult(plugin);
         setState("done");
       } catch (err) {
@@ -78,7 +84,7 @@ export function useFreshPlugin(address: string): {
 }
 
 export function getPlugin(p: any): Plugin {
-  let plug = PLUGIN_CACHE.get(p.url);
+  let plug = PLUGIN_CACHE.get(p.install.account.xnft.toString());
   if (!plug) {
     plug = new Plugin(
       p.install.account.xnft,
@@ -88,7 +94,7 @@ export function getPlugin(p: any): Plugin {
       p.activeWallet,
       p.connectionUrl
     );
-    PLUGIN_CACHE.set(p.url, plug);
+    PLUGIN_CACHE.set(p.install.account.xnft.toString(), plug);
   }
   return plug;
 }

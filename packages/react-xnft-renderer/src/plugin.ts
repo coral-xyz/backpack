@@ -467,13 +467,6 @@ export class Plugin {
     return ["success"];
   }
 
-  //
-  // TODO: We should use the plugin mint address instead of the iframe url
-  //       to namespace here.
-  //
-  // Note: when an iframe is used *within* an xNFT, we namespace the storage
-  //       according to the root (not the child iframe).
-  //
   private async _handleGet(key: string): Promise<RpcResponse> {
     const resp = await this._backgroundClient.request({
       method: UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
@@ -513,6 +506,7 @@ export class Plugin {
       this._requestTxApprovalFn!({
         kind,
         data: transaction,
+        xnftAddress: this.xnftAddress,
         pluginUrl: this.iframeRootUrl,
         publicKey,
         resolve,

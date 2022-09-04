@@ -9,6 +9,7 @@ export const transactionRequest = atom<TransactionRequest | undefined>({
 });
 
 export type TransactionRequest = {
+  xnftAddress: string;
   pluginUrl?: string;
   data: string;
   publicKey: string;

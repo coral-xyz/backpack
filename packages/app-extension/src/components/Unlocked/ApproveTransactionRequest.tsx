@@ -5,7 +5,7 @@ import {
   useBackgroundClient,
   useTransactionRequest,
   useActiveWallet,
-  usePlugins,
+  useFreshPlugin,
 } from "@coral-xyz/recoil";
 import {
   UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
@@ -88,11 +88,8 @@ export function ApproveTransactionRequest() {
 function SendTransactionRequest({ onClose }: any) {
   const [request, setRequest] = useTransactionRequest();
   const background = useBackgroundClient();
-  const plugins = usePlugins();
   const { publicKey } = useActiveWallet();
-  const plugin = request
-    ? plugins.find((p) => p.iframeRootUrl === request.pluginUrl)
-    : undefined;
+  const { result: plugin } = useFreshPlugin(request?.xnftAddress);
 
   const onConfirm = async () => {
     if (!request) {
