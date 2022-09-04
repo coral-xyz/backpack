@@ -14,6 +14,7 @@ import {
   useConnectionBackgroundClient,
   useBackgroundClient,
 } from "../";
+import { xnftUrl } from "../../atoms/solana/xnft";
 
 export function useAppIcons() {
   const xnftData = useXnfts();
@@ -49,7 +50,7 @@ export function useFreshPlugin(address: string): {
         const xnft = await fetchXnft(provider, new PublicKey(address));
         const plugin = new Plugin(
           new PublicKey(address),
-          xnft.metadataBlob.properties.bundle,
+          xnftUrl(xnft.metadataBlob.properties.bundle),
           xnft.metadataBlob.image,
           xnft.xnftAccount.name,
           new PublicKey(activeWallet),

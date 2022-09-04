@@ -41,7 +41,7 @@ function pluginURL(pluginName: string) {
   ].join("");
 }
 
-function xnftUrl(url: string) {
+export function xnftUrl(url: string) {
   return [PROXY_URL, url].join("");
 }
 
