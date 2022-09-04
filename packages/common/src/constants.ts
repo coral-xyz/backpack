@@ -19,11 +19,12 @@ export const CHANNEL_POPUP_NOTIFICATIONS = "channel-popup-notifications";
 export const CHANNEL_SOLANA_RPC_REQUEST = "channel-solana-rpc-request";
 export const CHANNEL_SOLANA_RPC_RESPONSE = "channel-solana-rpc-response";
 export const CHANNEL_SOLANA_NOTIFICATION = "channel-solana-notification";
-export const CHANNEL_SOLANA_CONNECTION_RPC_UI = "solana-connection-rpc-ui";
+export const CHANNEL_SOLANA_CONNECTION_RPC_UI =
+  "channel-solana-connection-rpc-ui";
 export const CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST =
-  "solana-connection-injected-request";
+  "channel-solana-connection-injected-request";
 export const CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE =
-  "solana-connection-injected-response";
+  "channel-solana-connection-injected-response";
 export const CHANNEL_ETHEREUM_RPC_REQUEST = "channel-ethereum-rpc-request";
 export const CHANNEL_ETHEREUM_RPC_RESPONSE = "channel-ethereum-rpc-response";
 export const CHANNEL_ETHEREUM_NOTIFICATION =
