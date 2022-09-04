@@ -1,6 +1,7 @@
 import { atom, selector } from "recoil";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import { BACKPACK_CONFIG_XNFT_PROXY, SIMULATOR_PORT } from "@coral-xyz/common";
+import { externalResourceUri } from "@coral-xyz/common-public";
 import { activeWallet } from "../wallet";
 import { solanaConnectionUrl } from "./preferences";
 import { bootstrap } from "../bootstrap";
@@ -42,7 +43,8 @@ function pluginURL(pluginName: string) {
 }
 
 export function xnftUrl(url: string) {
-  return [PROXY_URL, url].join("");
+  const uri = externalResourceUri(url);
+  return [PROXY_URL, uri].join("");
 }
 
 //
