@@ -78,6 +78,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS,
   SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE,
   SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION,
+  SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNT_BALANCE,
 } from "../constants";
 import type { BackgroundClient } from "../channel";
 
@@ -283,6 +284,16 @@ export class BackgroundSolanaConnection extends Connection {
     });
   }
 
+  async getTokenAccountBalance(
+    tokenAddress: PublicKey,
+    commitment?: Commitment
+  ): Promise<RpcResponseAndContext<TokenAmount>> {
+    return await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNT_BALANCE,
+      params: [tokenAddress.toString(), commitment],
+    });
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Below this not yet implemented.
   ///////////////////////////////////////////////////////////////////////////////
@@ -329,13 +340,6 @@ export class BackgroundSolanaConnection extends Connection {
 
   async getTokenSupply(
     tokenMintAddress: PublicKey,
-    commitment?: Commitment
-  ): Promise<RpcResponseAndContext<TokenAmount>> {
-    throw new Error("not implemented");
-  }
-
-  async getTokenAccountBalance(
-    tokenAddress: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<TokenAmount>> {
     throw new Error("not implemented");

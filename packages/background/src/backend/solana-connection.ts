@@ -423,6 +423,16 @@ export class SolanaConnectionBackend {
     );
   }
 
+  async getTokenAccountBalance(
+    tokenAddress: PublicKey,
+    commitment?: Commitment
+  ): Promise<RpcResponseAndContext<TokenAmount>> {
+    return await this.connection!.getTokenAccountBalance(
+      tokenAddress,
+      commitment
+    );
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Methods below not used currently.
   ///////////////////////////////////////////////////////////////////////////////
@@ -461,13 +471,6 @@ export class SolanaConnectionBackend {
 
   async getTokenSupply(
     tokenMintAddress: PublicKey,
-    commitment?: Commitment
-  ): Promise<RpcResponseAndContext<TokenAmount>> {
-    throw new Error("not implemented");
-  }
-
-  async getTokenAccountBalance(
-    tokenAddress: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<TokenAmount>> {
     throw new Error("not implemented");

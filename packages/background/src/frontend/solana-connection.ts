@@ -36,6 +36,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS,
   SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE,
   SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION,
+  SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNT_BALANCE,
 } from "@coral-xyz/common";
 import type { SolanaConnectionBackend } from "../backend/solana-connection";
 import type { Config, Handle } from "../types";
@@ -130,6 +131,8 @@ async function handleImpl<T = any>(
         params[0],
         params[1]
       );
+    case SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNT_BALANCE:
+      return await handleGetTokenAccountBalance(ctx, params[0], params[1]);
     default:
       throw new Error("invalid rpc method");
   }
@@ -291,6 +294,18 @@ async function handleGetMinimumBalanceForRentExemption(
 ) {
   const resp = await ctx.backend.getMinimumBalanceForRentExemption(
     dataLength,
+    commitment
+  );
+  return [resp];
+}
+
+async function handleGetTokenAccountBalance(
+  ctx: Context<SolanaConnectionBackend>,
+  tokenAddress: string,
+  commitment?: Commitment
+) {
+  const resp = await ctx.backend.getTokenAccountBalance(
+    new PublicKey(tokenAddress),
     commitment
   );
   return [resp];
