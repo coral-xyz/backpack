@@ -72,7 +72,7 @@ export function ApproveTransactionRequest() {
         if (b === false) {
           setRequest(undefined);
         }
-        setOpenDrawer(false);
+        setOpenDrawer(b);
       }}
     >
       <SendTransactionRequest
