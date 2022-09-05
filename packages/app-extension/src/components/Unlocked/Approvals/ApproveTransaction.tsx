@@ -156,7 +156,7 @@ function TransactionData({
 }) {
   const classes = useStyles();
   const background = useBackgroundClient();
-  const solanaCtx = useSolanaCtx();
+  const { connection, walletPublicKey } = useSolanaCtx();
   const [loading, setLoading] = useState(true);
   const [estimatedFee, setEstimatedFee] = useState<number | undefined>(
     undefined
@@ -165,7 +165,6 @@ function TransactionData({
   const [simulationError, setSimulationError] = useState<boolean>(false);
   const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
   const tokenRegistry = useSplTokenRegistry();
-  const { connection } = solanaCtx;
 
   useEffect(() => {
     (async () => {
@@ -175,6 +174,7 @@ function TransactionData({
           params: [tx, wallet, true],
         });
         if (result.value.err) {
+          console.warn("failed to simulate", result.value.err);
           setSimulationError(true);
         } else {
           const balanceChanges = result.value.accounts.reduce(
@@ -183,6 +183,14 @@ function TransactionData({
                 try {
                   const buf = Buffer.from(a.data[0], a.data[1]);
                   const account = AccountLayout.decode(buf);
+                  // Check account owner is active Solana public key
+                  if (
+                    !new PublicKey(account.owner).equals(
+                      new PublicKey(walletPublicKey)
+                    )
+                  ) {
+                    return result;
+                  }
                   const existingTokenAccount = tokenAccountsSorted.find(
                     (t) =>
                       new PublicKey(t.mint!).toString() ===
@@ -197,6 +205,7 @@ function TransactionData({
                   const existingNativeBalance = existingTokenAccount
                     ? existingTokenAccount.nativeBalance
                     : Zero;
+
                   const nativeChange = BigNumber.from(
                     u64.fromBuffer(account.amount).toString()
                   ).sub(existingNativeBalance);
@@ -204,9 +213,10 @@ function TransactionData({
                     nativeChange,
                     decimals: token.decimals,
                   };
-                } catch {
+                } catch (err) {
                   // ignore, probably not a token account or some other
                   // failure, we don't want to fail displaying the popup
+                  console.warn("failed to get balance changes", err);
                 }
               }
               return result;
@@ -218,23 +228,22 @@ function TransactionData({
         setLoading(false);
       }
     })();
-  }, [tx]);
+  }, [wallet, tx]);
 
   useEffect(() => {
     (async () => {
-      if (tx) {
+      if (tx && connection) {
         const transaction = Transaction.from(bs58.decode(tx));
         let fee;
         try {
           fee = await transaction.getEstimatedFee(connection);
-        } catch (e) {
-          // Asssume 5000 lamports if estimation fails
-          fee = 5000;
+        } catch {
+          // ignore
         }
-        setEstimatedFee(fee);
+        setEstimatedFee(fee || 5000);
       }
     })();
-  }, [tx]);
+  }, [connection, tx]);
 
   const changeDetail = (
     amount: BigNumber,
@@ -244,7 +253,8 @@ function TransactionData({
     const className = amount.gte(Zero) ? classes.positive : classes.negative;
     return (
       <span className={className}>
-        {ethers.utils.formatUnits(amount, decimals)} {ticker}
+        {ethers.utils.commify(ethers.utils.formatUnits(amount, decimals))}{" "}
+        {ticker}
       </span>
     );
   };
@@ -279,9 +289,13 @@ function TransactionData({
         Transaction details
       </Typography>
       <List className={classes.listRoot}>
-        {menuItems.map((row) => {
+        {menuItems.map((row, index) => {
           return (
-            <ListItem className={classes.listItemRoot} secondaryAction={row[1]}>
+            <ListItem
+              key={index}
+              className={classes.listItemRoot}
+              secondaryAction={row[1]}
+            >
               {row[0]}
             </ListItem>
           );
