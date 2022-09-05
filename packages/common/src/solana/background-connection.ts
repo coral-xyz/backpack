@@ -750,7 +750,7 @@ export async function confirmTransaction(
   c: Connection,
   txSig: string,
   commitment: Finality
-) {
+): Promise<ParsedConfirmedTransaction> {
   return new Promise(async (resolve, reject) => {
     setTimeout(
       () =>

@@ -65,6 +65,7 @@ import {
   getLogger,
   customSplTokenAccounts,
   Blockchain,
+  confirmTransaction,
   BACKEND_EVENT,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
@@ -328,12 +329,21 @@ export class SolanaConnectionBackend {
     strategy: BlockheightBasedTransactionConfirmationStrategy,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<SignatureResult>> {
-    // @ts-ignore
-    const resp = await this.connection!.confirmTransaction(
-      strategy,
-      commitment
+    const tx = await confirmTransaction(
+      this.connection!,
+      strategy.signature,
+      commitment === "confirmed" || commitment === "finalized"
+        ? commitment
+        : "confirmed"
     );
-    return resp;
+    return {
+      context: {
+        slot: tx.slot,
+      },
+      value: {
+        err: null,
+      },
+    };
   }
 
   async simulateTransaction(
