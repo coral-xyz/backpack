@@ -1,3 +1,4 @@
+import { SIMULATOR_URL } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { useState, useEffect } from "react";
 import { PluginDisplay } from "./Plugin";
@@ -12,7 +13,7 @@ export function Simulator({
 }) {
   const theme = useCustomTheme();
   const props = { xnft, closePlugin };
-  const refresh = useJavaScriptRefresh(props.xnft);
+  const refresh = useJavaScriptRefresh(SIMULATOR_URL);
   return refresh % 2 === 1 ? (
     <div style={{ backgroundColor: theme.custom.colors.background }}></div>
   ) : (
