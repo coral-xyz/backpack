@@ -202,7 +202,7 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
     const publicKey = publicKeys[Blockchain.SOLANA];
     const connectionUrl = connectionUrls[Blockchain.SOLANA];
     if (publicKey && connectionUrl) {
-      this._connect(publicKeys, connectionUrl);
+      this._connect(publicKey, connectionUrl);
       this.emit("connect", event.data.detail);
     }
   }
