@@ -39,20 +39,19 @@ const logger = getLogger("provider-xnft-injection");
 //
 // Injected provider for UI plugins.
 //
-export class ProviderXnftInjection extends EventEmitter implements Provider {
+export class ProviderSolanaXnftInjection
+  extends EventEmitter
+  implements Provider
+{
   private _requestManager: RequestManager;
   private _connectionRequestManager: RequestManager;
 
   public publicKey?: PublicKey;
   public connection: Connection;
 
-  constructor() {
+  constructor(requestManager: RequestManager) {
     super();
-    this._requestManager = new RequestManager(
-      CHANNEL_PLUGIN_RPC_REQUEST,
-      CHANNEL_PLUGIN_RPC_RESPONSE,
-      true
-    );
+    this._requestManager = requestManager;
     this._connectionRequestManager = new RequestManager(
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
       CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
