@@ -1,9 +1,12 @@
 import { atom, selector } from "recoil";
 import {
+  Blockchain,
   UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
 } from "@coral-xyz/common";
+import { solanaConnectionUrl } from "../solana";
+import { ethereumConnectionUrl } from "../ethereum";
 import { backgroundClient } from "../client";
 
 export const isDarkMode = atom<boolean | null>({
@@ -44,6 +47,19 @@ export const approvedOrigins = atom<Array<string> | null>({
         method: UI_RPC_METHOD_APPROVED_ORIGINS_READ,
         params: [],
       });
+    },
+  }),
+});
+
+export const connectionUrls = atom<{ [key: string]: string | null }>({
+  key: "connectionUrls",
+  default: selector({
+    key: "connectionUrlsDefault",
+    get: async ({ get }) => {
+      return {
+        [Blockchain.SOLANA as string]: get(solanaConnectionUrl),
+        [Blockchain.ETHEREUM as string]: get(ethereumConnectionUrl),
+      };
     },
   }),
 });

@@ -8,7 +8,8 @@ import { fetchXnft } from "@coral-xyz/common";
 import * as atoms from "../../atoms";
 import { useXnfts } from "./useXnfts";
 import { useAnchorContext } from "./useSolanaConnection";
-import { useActiveSolanaWallet } from "../";
+import { useConnectionUrls } from "../preferences";
+import { useActivePublicKeys } from "../";
 import {
   useNavigationSegue,
   useConnectionBackgroundClient,
@@ -31,8 +32,9 @@ export function useFreshPlugin(address?: string): {
   state: "loading" | "done" | "error";
   result: Plugin | undefined;
 } {
-  const { provider, connectionUrl } = useAnchorContext();
-  const { publicKey: activeWallet } = useActiveSolanaWallet();
+  const { provider } = useAnchorContext();
+  const connectionUrls = useConnectionUrls();
+  const activePublicKeys = useActivePublicKeys();
   const [result, setResult] = useState<Plugin | undefined>(
     PLUGIN_CACHE.get(address ?? "")
   );
@@ -58,8 +60,8 @@ export function useFreshPlugin(address?: string): {
           xnftUrl(xnft.metadataBlob.properties.bundle),
           xnft.metadataBlob.image,
           xnft.xnftAccount.name,
-          new PublicKey(activeWallet),
-          connectionUrl
+          activePublicKeys,
+          connectionUrls
         );
         plugin.setHostApi({
           push: segue.push,
@@ -91,8 +93,8 @@ export function getPlugin(p: any): Plugin {
       p.url,
       p.iconUrl,
       p.title,
-      p.activeWallet,
-      p.connectionUrl
+      p.activeWallets,
+      p.connectionUrls
     );
     PLUGIN_CACHE.set(p.install.account.xnft.toString(), plug);
   }

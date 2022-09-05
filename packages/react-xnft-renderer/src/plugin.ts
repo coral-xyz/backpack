@@ -8,6 +8,7 @@ import {
 } from "react-xnft";
 import {
   getLogger,
+  Blockchain,
   BackgroundClient,
   Event,
   PluginServer,
@@ -18,6 +19,9 @@ import {
   CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
+  ETHEREUM_RPC_METHOD_SIGN_TX as PLUGIN_ETHEREUM_RPC_METHOD_SIGN_TX,
+  ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX,
+  ETHEREUM_RPC_METHOD_SIGN_MESSAGE as PLUGIN_ETHEREUM_RPC_METHOD_SIGN_MESSAGE,
   SOLANA_RPC_METHOD_SIGN_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_TX,
   SOLANA_RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
   SOLANA_RPC_METHOD_SIMULATE as PLUGIN_SOLANA_RPC_METHOD_SIMULATE_TX,
@@ -27,8 +31,14 @@ import {
   PLUGIN_NOTIFICATION_ON_CHANGE,
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_UNMOUNT,
-  PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
-  PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
+  PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
+  PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED,
+  PLUGIN_REQUEST_ETHEREUM_SIGN_TRANSACTION,
+  PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
+  PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE,
+  PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION,
+  PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION,
+  PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE,
   RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
   RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
   RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
@@ -44,15 +54,15 @@ import {
 const logger = getLogger("react-xnft-renderer/plugin");
 
 //
-// A plugin is a react bundle served from a given URL, using the anchor ui
+// A plugin is a react bundle served from a given URL, using the Backpack
 // framework + protocol to render its views inside the native wallet interface.
 //
 // This class is effectively the model. To display a plugin, create one of
 // these objects and then pass it into the renderer component.
 //
 export class Plugin {
-  private _activeWallet: PublicKey;
-  private _connectionUrl: string;
+  private _activeWallets: { [blockchain: string]: string };
+  private _connectionUrls: { [blockchain: string]: string | null };
   private _rpcServer: PluginServer;
   private _bridgeServer: PluginServer;
   private _iframeRoot?: HTMLIFrameElement;
@@ -89,14 +99,14 @@ export class Plugin {
     url: string,
     iconUrl: string,
     title: string,
-    activeWallet: PublicKey,
-    connectionUrl: string
+    activeWallets: { [blockchain: string]: string },
+    connectionUrls: { [blockchain: string]: string | null }
   ) {
     //
     // Provide connection for the plugin.
     //
-    this._activeWallet = activeWallet;
-    this._connectionUrl = connectionUrl;
+    this._activeWallets = activeWallets;
+    this._connectionUrls = connectionUrls;
     this.title = title;
     this.iframeRootUrl = url;
     this.iconUrl = iconUrl;
@@ -280,7 +290,7 @@ export class Plugin {
   //////////////////////////////////////////////////////////////////////////////
   // Push Notifications to Plugin iFrame.
   //
-  // TODO: serialize ordering of  notification delivery.
+  // TODO: serialize ordering of notification delivery.
   //////////////////////////////////////////////////////////////////////////////
 
   public pushClickNotification(viewId: number) {
@@ -340,21 +350,28 @@ export class Plugin {
       detail: {
         name: PLUGIN_NOTIFICATION_CONNECT,
         data: {
-          publicKey: this._activeWallet.toString(),
-          connectionUrl: this._connectionUrl,
+          // Deprecate in favour of publicKeys
+          publicKey: this._activeWallets[Blockchain.SOLANA],
+          publicKeys: this._activeWallets,
+          // Deprecate in favor of connectionUrls
+          connectionUrl: this._connectionUrls[Blockchain.SOLANA],
+          connectionUrls: this._connectionUrls,
         },
       },
     };
     this._iframeActive?.contentWindow!.postMessage(event, "*");
   }
 
-  public pushConnectionChangedNotification(url: string) {
-    this._connectionUrl = url;
+  public pushSolanaConnectionChangedNotification(url: string) {
+    this._connectionUrls = {
+      ...this._connectionUrls,
+      [Blockchain.SOLANA]: url,
+    };
     if (this._iframeActive) {
       const event = {
         type: CHANNEL_PLUGIN_NOTIFICATION,
         detail: {
-          name: PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
+          name: PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
           data: {
             url,
           },
@@ -364,13 +381,16 @@ export class Plugin {
     }
   }
 
-  public pushPublicKeyChangedNotification(publicKey: string) {
-    this._activeWallet = new PublicKey(publicKey);
+  public pushSolanaPublicKeyChangedNotification(publicKey: string) {
+    this._activeWallets = {
+      ...this._activeWallets,
+      [Blockchain.SOLANA]: publicKey,
+    };
     if (this._iframeActive) {
       const event = {
         type: CHANNEL_PLUGIN_NOTIFICATION,
         detail: {
-          name: PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
+          name: PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED,
           data: {
             publicKey,
           },
@@ -394,6 +414,15 @@ export class Plugin {
         return await this._handleGet(params[0]);
       case PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT:
         return await this._handlePut(params[0], params[1]);
+      case PLUGIN_ETHEREUM_RPC_METHOD_SIGN_TX:
+        return await this._handleEthereumSignTransaction(params[0], params[1]);
+      case PLUGIN_ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX:
+        return await this._handleEthereumSignAndSendTransaction(
+          params[0],
+          params[1]
+        );
+      case PLUGIN_ETHEREUM_RPC_METHOD_SIGN_MESSAGE:
+        return await this._handleEthereumSignMessage(params[0], params[1]);
       case PLUGIN_SOLANA_RPC_METHOD_SIGN_TX:
         return await this._handleSolanaSignTransaction(params[0], params[1]);
       case PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX:
@@ -411,13 +440,61 @@ export class Plugin {
     }
   }
 
+  private async _handleEthereumSignTransaction(
+    transaction: string,
+    pubkey: string
+  ): Promise<RpcResponse> {
+    try {
+      const signature = await this._requestTransactionApproval(
+        PLUGIN_REQUEST_ETHEREUM_SIGN_TRANSACTION,
+        transaction,
+        pubkey
+      );
+      return [signature];
+    } catch (err) {
+      return [null, err.toString()];
+    }
+  }
+
+  private async _handleEthereumSignAndSendTransaction(
+    transaction: string,
+    pubkey: string
+  ): Promise<RpcResponse> {
+    try {
+      const signature = await this._requestTransactionApproval(
+        PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
+        transaction,
+        pubkey
+      );
+      return [signature];
+    } catch (err) {
+      return [null, err.toString()];
+    }
+  }
+
+  private async _handleEthereumSignMessage(
+    transaction: string,
+    pubkey: string
+  ): Promise<RpcResponse> {
+    try {
+      const signature = await this._requestTransactionApproval(
+        PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE,
+        transaction,
+        pubkey
+      );
+      return [signature];
+    } catch (err) {
+      return [null, err.toString()];
+    }
+  }
+
   private async _handleSolanaSignTransaction(
     transaction: string,
     pubkey: string
   ): Promise<RpcResponse> {
     try {
       const signature = await this._requestTransactionApproval(
-        "sign-tx",
+        PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION,
         transaction,
         pubkey
       );
@@ -433,7 +510,7 @@ export class Plugin {
   ): Promise<RpcResponse> {
     try {
       const signature = await this._requestTransactionApproval(
-        "sign-and-send-tx",
+        PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION,
         transaction,
         pubkey
       );
@@ -449,7 +526,7 @@ export class Plugin {
   ): Promise<RpcResponse> {
     try {
       const signature = await this._requestTransactionApproval(
-        "sign-msg",
+        PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE,
         msg,
         pubkey
       );

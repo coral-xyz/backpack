@@ -40,6 +40,10 @@ export function useActiveWallets(): Array<{
   return useRecoilValue(atoms.activeWalletsWithData!);
 }
 
+export function useActivePublicKeys() {
+  return useRecoilValue(atoms.activePublicKeys)!;
+}
+
 export function useWalletPublicKeys(): WalletPublicKeys {
   return useRecoilValue(atoms.walletPublicKeys);
 }

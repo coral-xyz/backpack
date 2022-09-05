@@ -90,6 +90,18 @@ export const activeWalletsWithData = selector({
 });
 
 /**
+ * Object mapping blockchain => publicKey.
+ */
+export const activePublicKeys = selector({
+  key: "activePublicKeys",
+  get: ({ get }) => {
+    return Object.fromEntries(
+      get(activeWalletsWithData).map((w) => [w.blockchain, w.publicKey])
+    );
+  },
+});
+
+/**
  * List of all public keys for the wallet along with associated nicknames.
  */
 export const walletPublicKeys = atom<WalletPublicKeys>({

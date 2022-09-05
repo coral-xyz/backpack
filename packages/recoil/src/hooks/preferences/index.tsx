@@ -29,3 +29,7 @@ export function useAutolockSecs(): number {
 export function useDarkMode(): boolean {
   return useRecoilValue(atoms.isDarkMode)!;
 }
+
+export function useConnectionUrls() {
+  return useRecoilValue(atoms.connectionUrls);
+}

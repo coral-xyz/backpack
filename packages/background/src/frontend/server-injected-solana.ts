@@ -12,6 +12,7 @@ import {
   getLogger,
   withContext,
   withContextPort,
+  Blockchain,
   ChannelContentScript,
   ChannelAppUi,
   openLockedPopupWindow,
@@ -62,9 +63,6 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
   //
   events.on(BACKEND_EVENT, (notification) => {
     switch (notification.name) {
-      case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
-        notificationsInjected.sendMessageActiveTab(notification);
-        break;
       case NOTIFICATION_SOLANA_CONNECTED:
         notificationsInjected.sendMessageActiveTab(notification);
         break;
@@ -72,6 +70,9 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
         notificationsInjected.sendMessageActiveTab(notification);
         break;
       case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
+        notificationsInjected.sendMessageActiveTab(notification);
+        break;
+      case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
         notificationsInjected.sendMessageActiveTab(notification);
         break;
       default:
@@ -184,7 +185,9 @@ async function handleSolanaConnect(
 
   // If the user approved and unlocked, then we're connected.
   if (didApprove) {
-    const activeWallet = await ctx.backend.activeWallet();
+    const activeWallet = (await ctx.backend.blockchainActiveWallets())[
+      Blockchain.SOLANA
+    ];
     const connectionUrl = await ctx.backend.solanaConnectionUrlRead();
     const data = { publicKey: activeWallet, connectionUrl };
     ctx.events.emit(BACKEND_EVENT, {

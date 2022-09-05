@@ -15,6 +15,7 @@ import type { Event } from "@coral-xyz/common";
 import {
   getLogger,
   BackgroundSolanaConnection,
+  Blockchain,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
@@ -25,8 +26,8 @@ import {
   PLUGIN_NOTIFICATION_ON_CHANGE,
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_UNMOUNT,
-  PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED,
-  PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED,
+  PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
+  PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
 } from "@coral-xyz/common";
@@ -184,10 +185,10 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
       case PLUGIN_NOTIFICATION_ON_CHANGE:
         this._handleOnChange(event);
         break;
-      case PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED:
+      case PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
         this._handleConnectionUrlUpdated(event);
         break;
-      case PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED:
+      case PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED:
         this._handlePublicKeyUpdated(event);
         break;
       default:
@@ -197,7 +198,9 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
   }
 
   private _handleConnect(event: Event) {
-    const { publicKey, connectionUrl } = event.data.detail.data;
+    const { publicKeys, connectionUrls } = event.data.detail.data;
+    const publicKey = publicKeys[Blockchain.SOLANA];
+    const connectionUrl = connectionUrls[Blockchain.SOLANA];
     this._connect(publicKey, connectionUrl);
     this.emit("connect", event.data.detail);
   }

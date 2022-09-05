@@ -263,6 +263,13 @@ export class Backend {
       .hash;
   }
 
+  async ethereumSignMessage(msg: string, walletAddress: string) {
+    const blockchainKeyring = this.keyringStore.keyringForBlockchain(
+      Blockchain.ETHEREUM
+    );
+    return await blockchainKeyring.signMessage(msg, walletAddress);
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Ethereum.
   ///////////////////////////////////////////////////////////////////////////////
