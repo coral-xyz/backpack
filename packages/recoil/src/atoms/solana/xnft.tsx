@@ -68,7 +68,7 @@ export const plugins = selector({
         install: {
           publicKey: PublicKey.default.toString(),
           account: {
-            xnft: Keypair.generate().publicKey.toString(),
+            xnft: PublicKey.default.toString(),
           },
         },
       },
