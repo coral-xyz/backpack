@@ -2,6 +2,7 @@ import { atom, selector } from "recoil";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import { BACKPACK_CONFIG_XNFT_PROXY, SIMULATOR_PORT } from "@coral-xyz/common";
 import { solanaPublicKey, activePublicKeys } from "../wallet";
+import { externalResourceUri } from "@coral-xyz/common-public";
 import { solanaConnectionUrl } from "./preferences";
 import { connectionUrls } from "../preferences";
 import { bootstrap } from "../bootstrap";
@@ -43,7 +44,8 @@ function pluginURL(pluginName: string) {
 }
 
 export function xnftUrl(url: string) {
-  return [PROXY_URL, url].join("");
+  const uri = externalResourceUri(url);
+  return [PROXY_URL, uri].join("");
 }
 
 //
@@ -163,7 +165,7 @@ export const xnfts = atom({
         return {
           ...xnft,
           url: xnftUrl(xnft.metadataBlob.properties.bundle),
-          iconUrl: xnft.metadataBlob.image,
+          iconUrl: externalResourceUri(xnft.metadataBlob.image),
           activeWallet: _activeWallet,
           connectionUrl: _connectionUrl,
           title: xnft.metadataBlob.name,
