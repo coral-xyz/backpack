@@ -1,5 +1,5 @@
 export const RECONCILER_BRIDGE_METHOD_CREATE_INSTANCE =
-  "reconciler-bridge-method-create-instance";
+  "anchor-reconciler-method-create-instance";
 export const RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE =
   "reconciler-bridge-method-commit-update";
 export const RECONCILER_BRIDGE_METHOD_MOUNT = "reconciler-bridge-method-mount";
@@ -23,6 +23,6 @@ export const RECONCILER_BRIDGE_METHOD_RENDER_ROOT =
   "reconciler-bridge-method-render-root";
 
 export const CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE =
-  "channel-plugin-react-reconciler-bridge";
+  "anchor-channel-plugin-react-reconciler-bridge";
 
 export const MOBILE_CHANNEL_LOGS = "mobile-logs";
