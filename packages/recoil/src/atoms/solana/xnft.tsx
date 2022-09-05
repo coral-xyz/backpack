@@ -164,7 +164,7 @@ export const xnfts = atom({
         return {
           ...xnft,
           url: xnftUrl(xnft.metadataBlob.properties.bundle),
-          iconUrl: xnft.metadataBlob.image,
+          iconUrl: externalResourceUri(xnft.metadataBlob.image),
           activeWallet: _activeWallet,
           connectionUrl: _connectionUrl,
           title: xnft.metadataBlob.name,
