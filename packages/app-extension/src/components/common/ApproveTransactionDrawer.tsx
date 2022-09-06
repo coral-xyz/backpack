@@ -1,8 +1,8 @@
 import { useCustomTheme, styles } from "@coral-xyz/themes";
-import { useDrawerContext, WithMiniDrawer } from "./Layout/Drawer";
+import { WithMiniDrawer } from "./Layout/Drawer";
 import { CloseButton } from "../Unlocked/Swap";
 
-const useStyles = styles((theme) => ({
+const useStyles = styles(() => ({
   paperAnchorBottom: {
     boxShadow: "none",
   },
@@ -15,9 +15,6 @@ export const ApproveTransactionDrawer: React.FC<{
 }> = ({ openDrawer, setOpenDrawer, children }) => {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const onClose = () => {
-    setOpenDrawer(false);
-  };
   return (
     <WithMiniDrawer
       openDrawer={openDrawer}

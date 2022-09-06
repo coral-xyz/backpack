@@ -1,17 +1,8 @@
-import { useState, useEffect } from "react";
 import { ethers, BigNumber } from "ethers";
-import * as bs58 from "bs58";
-import { AccountLayout, u64, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { PublicKey, Transaction } from "@solana/web3.js";
 import { List, ListItem, Typography } from "@mui/material";
 import _CheckIcon from "@mui/icons-material/Check";
-import { Blockchain, UI_RPC_METHOD_SOLANA_SIMULATE } from "@coral-xyz/common";
-import {
-  useBackgroundClient,
-  useBlockchainTokensSorted,
-  useSolanaCtx,
-  useSplTokenRegistry,
-} from "@coral-xyz/recoil";
+import { useTransactionData } from "@coral-xyz/recoil";
+import { Blockchain } from "@coral-xyz/common";
 import { styles } from "@coral-xyz/themes";
 import { Loading } from "../../common";
 import { WithApproval } from ".";
@@ -104,7 +95,7 @@ export function ApproveTransaction({
       onConfirmLabel="Approve"
       onDeny={onDeny}
     >
-      <TransactionData wallet={wallet} tx={tx} />
+      <TransactionData tx={tx} />
     </WithApproval>
   );
 }
@@ -147,141 +138,40 @@ export function ApproveAllTransactions({
   );
 }
 
-function TransactionData({
-  tx,
-  wallet,
-}: {
-  tx: string | null;
-  wallet: string;
-}) {
+function TransactionData({ tx }: { tx: string | null }) {
   const classes = useStyles();
-  const background = useBackgroundClient();
-  const { connection, walletPublicKey } = useSolanaCtx();
-  const [loading, setLoading] = useState(true);
-  const [estimatedFee, setEstimatedFee] = useState<number | undefined>(
-    undefined
-  );
-  const [balanceChanges, setBalanceChanges] = useState<any>({});
-  const [simulationError, setSimulationError] = useState<boolean>(false);
-  const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
-  const tokenRegistry = useSplTokenRegistry();
 
-  useEffect(() => {
-    (async () => {
-      if (wallet && tx) {
-        const result = await background.request({
-          method: UI_RPC_METHOD_SOLANA_SIMULATE,
-          params: [tx, wallet, true],
-        });
-        if (result.value.err) {
-          console.warn("failed to simulate", result.value.err);
-          setSimulationError(true);
-        } else {
-          const balanceChanges = result.value.accounts.reduce(
-            (result: any, a: any) => {
-              if (a.owner === TOKEN_PROGRAM_ID.toString()) {
-                try {
-                  const buf = Buffer.from(a.data[0], a.data[1]);
-                  const account = AccountLayout.decode(buf);
-                  // Check account owner is active Solana public key
-                  if (
-                    !new PublicKey(account.owner).equals(
-                      new PublicKey(walletPublicKey)
-                    )
-                  ) {
-                    return result;
-                  }
-                  const existingTokenAccount = tokenAccountsSorted.find(
-                    (t) =>
-                      new PublicKey(t.mint!).toString() ===
-                      new PublicKey(account.mint).toString()
-                  );
-                  const token = tokenRegistry.get(
-                    new PublicKey(account.mint).toString()
-                  );
-                  if (!token) {
-                    return result;
-                  }
-                  const existingNativeBalance = existingTokenAccount
-                    ? existingTokenAccount.nativeBalance
-                    : Zero;
-
-                  const nativeChange = BigNumber.from(
-                    u64.fromBuffer(account.amount).toString()
-                  ).sub(existingNativeBalance);
-                  result[token.symbol] = {
-                    nativeChange,
-                    decimals: token.decimals,
-                  };
-                } catch (err) {
-                  // ignore, probably not a token account or some other
-                  // failure, we don't want to fail displaying the popup
-                  console.warn("failed to get balance changes", err);
-                }
-              }
-              return result;
-            },
-            {}
-          );
-          setBalanceChanges(balanceChanges);
-        }
-        setLoading(false);
-      }
-    })();
-  }, [wallet, tx]);
-
-  useEffect(() => {
-    (async () => {
-      if (tx && connection) {
-        const transaction = Transaction.from(bs58.decode(tx));
-        let fee;
-        try {
-          fee = await transaction.getEstimatedFee(connection);
-        } catch {
-          // ignore
-        }
-        setEstimatedFee(fee || 5000);
-      }
-    })();
-  }, [connection, tx]);
-
-  const changeDetail = (
-    amount: BigNumber,
-    ticker: string,
-    decimals: number
-  ) => {
-    const className = amount.gte(Zero) ? classes.positive : classes.negative;
-    return (
-      <span className={className}>
-        {ethers.utils.commify(ethers.utils.formatUnits(amount, decimals))}{" "}
-        {ticker}
-      </span>
-    );
-  };
-
-  const balanceChangeRows = Object.keys(balanceChanges).map((ticker) => {
-    return [
-      ticker,
-      changeDetail(
-        balanceChanges[ticker].nativeChange,
-        ticker,
-        balanceChanges[ticker].decimals
-      ),
-    ];
-  });
-
-  const menuItems = [
-    ...balanceChangeRows,
-    ["Network", <>Solana</>],
-    [
-      "Network Fee",
-      <>{estimatedFee && `${ethers.utils.formatUnits(estimatedFee, 9)} SOL`}</>,
-    ],
-  ];
+  const { loading, simulationError, balanceChanges, network, networkFee } =
+    useTransactionData(Blockchain.SOLANA, tx);
 
   if (loading) {
     return <Loading />;
   }
+
+  const balanceChangeRows = balanceChanges
+    ? Object.entries(balanceChanges).map(
+        ([symbol, { nativeChange, decimals }]) => {
+          const className = nativeChange.gte(Zero)
+            ? classes.positive
+            : classes.negative;
+          return [
+            symbol,
+            <span className={className}>
+              {ethers.utils.commify(
+                ethers.utils.formatUnits(nativeChange, BigNumber.from(decimals))
+              )}{" "}
+              {symbol}
+            </span>,
+          ];
+        }
+      )
+    : [];
+
+  const menuItems = [
+    ...balanceChangeRows,
+    ["Network", network],
+    ["Network Fee", networkFee],
+  ];
 
   return (
     <>
