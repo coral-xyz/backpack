@@ -63,6 +63,11 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
         estimatedGas = BigNumber.from("150000");
         setSimulationError(true);
       }
+      setEstimatedTxFee(
+        estimatedGas
+          .mul(ethereumCtx.feeData.maxFeePerGas!)
+          .add(estimatedGas.mul(ethereumCtx.feeData.maxPriorityFeePerGas!))
+      );
       setLoading(false);
     };
     estimateTxFee();
@@ -74,7 +79,7 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
     balanceChanges: null,
     simulationError,
     network: "Ethereum",
-    networkFee: ethers.utils.formatUnits(estimatedTxFee, 18),
+    networkFee: `${ethers.utils.formatUnits(estimatedTxFee, 18)} ETH`,
   };
 }
 
