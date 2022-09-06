@@ -36,7 +36,7 @@ const useStyles = styles((theme: CustomTheme) => ({
     display: "block",
     marginLeft: "auto",
     marginRight: "auto",
-    color: theme.custom.colors.activeNavButton,
+    color: theme.custom.colors.brandColor,
   },
   button: {
     width: "100%",

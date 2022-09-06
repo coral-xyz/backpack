@@ -144,11 +144,11 @@ const useStyles = styles((theme) => ({
   },
   colorPrimary: {
     "&.Mui-checked": {
-      color: theme.custom.colors.activeNavButton,
+      color: theme.custom.colors.brandColor,
     },
   },
   track: {},
   trackChecked: {
-    backgroundColor: `${theme.custom.colors.activeNavButton} !important`,
+    backgroundColor: `${theme.custom.colors.brandColor} !important`,
   },
 }));

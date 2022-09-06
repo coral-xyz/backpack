@@ -114,7 +114,7 @@ function PinNotification() {
   return (
     <div
       style={{
-        background: theme.custom.colors.activeNavButton,
+        background: theme.custom.colors.brandColor,
         paddingLeft: "24px",
         paddingRight: "24px",
         paddingTop: "16px",

@@ -452,7 +452,7 @@ function WalletList({
                     .map((p) => p.publicKey)
                     .includes(publicKey) && (
                     <CheckIcon
-                      fill={theme.custom.colors.activeNavButton}
+                      fill={theme.custom.colors.brandColor}
                       style={{ width: "24px" }}
                     />
                   )}
