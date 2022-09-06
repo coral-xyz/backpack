@@ -31,7 +31,7 @@ import {
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
 } from "@coral-xyz/common";
-import * as cmn from "./common";
+import * as cmn from "./common/solana";
 import { RequestManager } from "./request-manager";
 
 const logger = getLogger("provider-xnft-injection");
@@ -49,9 +49,13 @@ export class ProviderSolanaXnftInjection
   public publicKey?: PublicKey;
   public connection: Connection;
 
-  constructor(requestManager: RequestManager) {
+  constructor() {
     super();
-    this._requestManager = requestManager;
+    this._requestManager = new RequestManager(
+      CHANNEL_PLUGIN_RPC_REQUEST,
+      CHANNEL_PLUGIN_RPC_RESPONSE,
+      true
+    );
     this._connectionRequestManager = new RequestManager(
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
       CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE

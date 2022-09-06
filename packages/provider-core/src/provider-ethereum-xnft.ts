@@ -1,10 +1,13 @@
 import { EventEmitter } from "eventemitter3";
+import { ethers } from "ethers";
 import type { Event } from "@coral-xyz/common";
 import { UnsignedTransaction } from "@ethersproject/transactions";
 import { TransactionRequest } from "@ethersproject/abstract-provider";
 import {
   getLogger,
   Blockchain,
+  CHANNEL_PLUGIN_RPC_REQUEST,
+  CHANNEL_PLUGIN_RPC_RESPONSE,
   CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST,
   CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
@@ -30,10 +33,15 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
 
   public publicKey?: string;
   public connectionUrl?: string;
+  public provider?: ethers.providers.JsonRpcProvider;
 
-  constructor(requestManager: RequestManager) {
+  constructor() {
     super();
-    this._requestManager = requestManager;
+    this._requestManager = new RequestManager(
+      CHANNEL_PLUGIN_RPC_REQUEST,
+      CHANNEL_PLUGIN_RPC_RESPONSE,
+      true
+    );
     this._connectionRequestManager = new RequestManager(
       CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST,
       CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE
@@ -44,26 +52,29 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
   private _connect(publicKey: string, connectionUrl: string) {
     this.publicKey = publicKey;
     this.connectionUrl = connectionUrl;
+    this.provider = new ethers.providers.JsonRpcProvider(connectionUrl);
   }
 
-  async sendAndConfirmTransaction(transaction: TransactionRequest) {
+  async sendAndConfirmTransaction(transaction: UnsignedTransaction) {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.sendAndConfirmTransaction(
       this.publicKey,
       this._requestManager,
+      this.provider!,
       transaction
     );
   }
 
-  async sendTransaction(transaction: TransactionRequest) {
+  async sendTransaction(transaction: UnsignedTransaction) {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.sendTransaction(
       this.publicKey,
       this._requestManager,
+      this.provider!,
       transaction
     );
   }
@@ -75,6 +86,7 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
     return await cmn.signTransaction(
       this.publicKey,
       this._requestManager,
+      this.provider!,
       transaction
     );
   }
@@ -83,6 +95,7 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
+    console.log(cmn);
     return await cmn.signMessage(this.publicKey, this._requestManager, message);
   }
 

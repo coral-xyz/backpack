@@ -11,32 +11,59 @@ import {
 export async function signTransaction(
   publicKey: string,
   requestManager: RequestManager,
+  provider: ethers.providers.JsonRpcProvider,
   transaction: UnsignedTransaction
-): Promise<any> {
+): Promise<TransactionRequest> {
+  // This is just a void signer, it can't really sign things
+  const voidSigner = new ethers.VoidSigner(publicKey, provider);
+  // Populate any missing fields, e.g. nonce, gas settings
+  const populatedTx = await voidSigner.populateTransaction(
+    transaction as ethers.providers.TransactionRequest
+  );
+  const serializedTx = ethers.utils.base58.encode(
+    ethers.utils.serializeTransaction(populatedTx as UnsignedTransaction)
+  );
   return await requestManager.request({
     method: ETHEREUM_RPC_METHOD_SIGN_TX,
-    params: [transaction, publicKey],
+    params: [serializedTx, publicKey],
   });
 }
 
 export async function sendTransaction(
   publicKey: string,
   requestManager: RequestManager,
-  transaction: TransactionRequest
+  provider: ethers.providers.JsonRpcProvider,
+  transaction: UnsignedTransaction
 ): Promise<any> {
+  // This is just a void signer, it can't really sign things
+  const voidSigner = new ethers.VoidSigner(publicKey, provider);
+  // Populate any missing fields, e.g. nonce, gas settings
+  const populatedTx = await voidSigner.populateTransaction(
+    transaction as ethers.providers.TransactionRequest
+  );
+  const serializedTx = ethers.utils.base58.encode(
+    ethers.utils.serializeTransaction(populatedTx as UnsignedTransaction)
+  );
   return await requestManager.request({
     method: ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX,
-    params: [transaction, publicKey],
+    params: [serializedTx, publicKey],
   });
 }
 
 export async function sendAndConfirmTransaction(
   publicKey: string,
   requestManager: RequestManager,
-  transaction: TransactionRequest
+  provider: ethers.providers.JsonRpcProvider,
+  transaction: UnsignedTransaction
 ): Promise<any> {
-  this.sendTransaction(publicKey, requestManager, transaction);
-  // TODO: wait for confirmation
+  const signature = this.sendTransaction(
+    publicKey,
+    requestManager,
+    provider,
+    transaction
+  );
+  // TODO wait
+  return signature;
 }
 
 export async function signMessage(

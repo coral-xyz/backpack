@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import type { UnsignedTransaction } from "@ethersproject/transactions";
 import {
   UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
@@ -14,14 +15,15 @@ export class EthereumProvider {
     ctx: EthereumContext,
     tx: any
   ): Promise<any> {
-    const { walletPublicKey, backgroundClient } = ctx;
-    const network = await ctx.provider.getNetwork();
-    tx = {
-      ...tx,
-      chainId: network.chainId,
-    };
+    const { walletPublicKey, backgroundClient, provider } = ctx;
+    // This is just a void signer, it can't really sign things
+    const voidSigner = new ethers.VoidSigner(walletPublicKey, provider);
+    // Populate any missing fields, e.g. nonce, gas settings
+    const populatedTx = await voidSigner.populateTransaction(
+      tx as ethers.providers.TransactionRequest
+    );
     const serializedTx = ethers.utils.base58.encode(
-      ethers.utils.serializeTransaction(tx)
+      ethers.utils.serializeTransaction(populatedTx as UnsignedTransaction)
     );
     const signedTx = await backgroundClient.request({
       method: UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
@@ -38,14 +40,15 @@ export class EthereumProvider {
     ctx: EthereumContext,
     tx: any
   ): Promise<any> {
-    const { walletPublicKey, backgroundClient } = ctx;
-    const network = await ctx.provider.getNetwork();
-    tx = {
-      ...tx,
-      chainId: network.chainId,
-    };
+    const { walletPublicKey, backgroundClient, provider } = ctx;
+    // This is just a void signer, it can't really sign things
+    const voidSigner = new ethers.VoidSigner(walletPublicKey, provider);
+    // Populate any missing fields, e.g. nonce, gas settings
+    const populatedTx = await voidSigner.populateTransaction(
+      tx as ethers.providers.TransactionRequest
+    );
     const serializedTx = ethers.utils.base58.encode(
-      ethers.utils.serializeTransaction(tx)
+      ethers.utils.serializeTransaction(populatedTx as UnsignedTransaction)
     );
     const txHash = await backgroundClient.request({
       method: UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
