@@ -99,13 +99,6 @@ const componentOverrides = {
 
 export const darkTheme: any = {
   ...baseTheme,
-  palette: {
-    mode: "dark",
-    background: {
-      default: BACKGROUND_COLOR_0,
-      paper: BACKGROUND_COLOR_1,
-    },
-  },
   components: componentOverrides,
   custom: {
     colors: {
