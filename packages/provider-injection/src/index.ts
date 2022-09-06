@@ -1,15 +1,10 @@
 import {
-  RequestManager,
   ProviderEthereumInjection,
   ProviderEthereumXnftInjection,
   ProviderSolanaInjection,
   ProviderSolanaXnftInjection,
 } from "@coral-xyz/provider-core";
-import {
-  getLogger,
-  CHANNEL_PLUGIN_RPC_REQUEST,
-  CHANNEL_PLUGIN_RPC_RESPONSE,
-} from "@coral-xyz/common";
+import { getLogger } from "@coral-xyz/common";
 import { register } from "@wallet-standard/wallets-backpack";
 
 const logger = getLogger("provider-injection");
@@ -28,37 +23,7 @@ function initProvider() {
   // XNFT Providers
   //
   const solanaXnftInjection = new ProviderSolanaXnftInjection();
-
   window.xnft = solanaXnftInjection;
-
-  window.xnft.signTransaction = (...args: any) => {
-    console.warn(
-      "this method is deprecated, use window.xnft.solana.signTransaction instead"
-    );
-    return solanaXnftInjection.signTransaction(...args);
-  };
-
-  window.xnft.send = (...args: any) => {
-    console.warn(
-      "this method is deprecated, use window.xnft.solana.send instead"
-    );
-    return solanaXnftInjection.send(...args);
-  };
-
-  window.xnft.sendAndConfirm = (...args: any) => {
-    console.warn(
-      "this method is deprecated, use window.xnft.solana.sendAndConfirm instead"
-    );
-    return solanaXnftInjection.sendAndConfirm(...args);
-  };
-
-  window.xnft.simulate = (...args: any) => {
-    console.warn(
-      "this method is deprecated, use window.xnft.solana.simulate instead"
-    );
-    return solanaXnftInjection.simulate(...args);
-  };
-
   window.xnft.solana = solanaXnftInjection;
   window.xnft.ethereum = new ProviderEthereumXnftInjection();
 
