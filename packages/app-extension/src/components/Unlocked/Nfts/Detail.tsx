@@ -252,7 +252,7 @@ function SendScreen({ nft }: { nft: any }) {
               address: nft.contractAddress,
               tokenId: nft.tokenId,
             }}
-            destinationAddress={destinationAddress}
+            to={destinationAddress}
             amount={BigNumber.from(1)}
             close={() => close()}
           />

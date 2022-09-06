@@ -1,12 +1,10 @@
-import { useMemo, useEffect, useState } from "react";
-import { ethers } from "ethers";
-import * as bs58 from "bs58";
-import { Transaction } from "@solana/web3.js";
+import { useEffect, useState } from "react";
 import {
-  useBackgroundClient,
-  useTransactionRequest,
   useActivePublicKeys,
+  useBackgroundClient,
   useFreshPlugin,
+  useTransactionData,
+  useTransactionRequest,
 } from "@coral-xyz/recoil";
 import {
   Blockchain,
@@ -87,17 +85,12 @@ export function ApproveTransactionRequest() {
         setOpenDrawer(b);
       }}
     >
-      <SendTransactionRequest
-        onClose={() => {
-          setOpenDrawer(false);
-          setRequest(undefined);
-        }}
-      />
+      <SendTransactionRequest />
     </ApproveTransactionDrawer>
   );
 }
 
-function SendTransactionRequest({ onClose }: any) {
+function SendTransactionRequest() {
   const [request, setRequest] = useTransactionRequest();
   const background = useBackgroundClient();
   const activePublicKeys = useActivePublicKeys();
@@ -160,22 +153,19 @@ function SendTransactionRequest({ onClose }: any) {
       <div style={{ padding: "24px", flex: 1 }}>
         {request && plugin && (
           <Scrollbar>
-            {request?.kind === PLUGIN_REQUEST_ETHEREUM_SIGN_TRANSACTION ? (
-              <SignTransaction
-                blockchain={Blockchain.ETHEREUM}
-                transaction={request?.data}
-                plugin={plugin}
-              />
-            ) : request.kind ===
+            {request?.kind === PLUGIN_REQUEST_ETHEREUM_SIGN_TRANSACTION ||
+            request?.kind ===
               PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION ? (
-              <SignAndSendTransaction
+              <SignTransaction
                 blockchain={Blockchain.ETHEREUM}
                 transaction={request?.data}
                 plugin={plugin}
               />
             ) : request.kind === PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE ? (
               <SignMessage message={request?.data} plugin={plugin} />
-            ) : request.kind === PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION ? (
+            ) : request.kind === PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION ||
+              request?.kind ===
+                PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION ? (
               <SignTransaction
                 blockchain={Blockchain.SOLANA}
                 transaction={request?.data}
@@ -184,11 +174,7 @@ function SendTransactionRequest({ onClose }: any) {
             ) : request.kind === PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE ? (
               <SignMessage message={request?.data} plugin={plugin} />
             ) : (
-              <SignAndSendTransaction
-                blockchain={Blockchain.SOLANA}
-                transaction={request?.data}
-                plugin={plugin}
-              />
+              <>Invalid request</>
             )}
           </Scrollbar>
         )}
@@ -219,32 +205,6 @@ function SendTransactionRequest({ onClose }: any) {
   );
 }
 
-function SignAndSendTransaction({
-  blockchain,
-  transaction,
-  plugin,
-}: {
-  blockchain: Blockchain;
-  transaction: string;
-  plugin: Plugin;
-}) {
-  const deserializedTx = useMemo(() => {
-    if (blockchain === Blockchain.ETHEREUM) {
-      return ethers.utils.parseTransaction(bs58.decode(transaction!));
-    } else if (blockchain === Blockchain.SOLANA) {
-      return Transaction.from(bs58.decode(transaction!));
-    }
-  }, [transaction]);
-
-  return (
-    <_SignTransaction
-      deserializedTx={deserializedTx}
-      transaction={transaction}
-      plugin={plugin}
-    />
-  );
-}
-
 function SignTransaction({
   blockchain,
   transaction,
@@ -254,35 +214,15 @@ function SignTransaction({
   transaction: string;
   plugin: Plugin;
 }) {
-  const deserializedTx = useMemo(() => {
-    if (blockchain === Blockchain.ETHEREUM) {
-      return ethers.utils.parseTransaction(bs58.decode(transaction!));
-    } else if (blockchain === Blockchain.SOLANA) {
-      return Transaction.from(bs58.decode(transaction!));
-    }
-    throw new Error("invalid transaction");
-  }, [transaction]);
-
-  return (
-    <_SignTransaction
-      deserializedTx={deserializedTx}
-      transaction={transaction}
-      plugin={plugin}
-    />
-  );
-}
-
-function _SignTransaction({
-  transaction,
-  plugin,
-  deserializedTx,
-}: {
-  transaction: string;
-  deserializedTx: any;
-  plugin: Plugin;
-}) {
   const theme = useCustomTheme();
   const classes = useStyles();
+  const { loading, from, network, networkFee } = useTransactionData(
+    blockchain,
+    transaction
+  );
+
+  if (loading) return <></>;
+
   const menuItems = {
     xNFT: {
       onClick: () => {},
@@ -309,7 +249,7 @@ function _SignTransaction({
             fontSize: "14px",
           }}
         >
-          Solana
+          {network}
         </Typography>
       ),
       classes: { root: classes.approveTableRoot },
@@ -322,7 +262,7 @@ function _SignTransaction({
             fontSize: "14px",
           }}
         >
-          0.000005 SOL
+          {networkFee}
         </Typography>
       ),
       classes: { root: classes.approveTableRoot },
@@ -334,7 +274,9 @@ function _SignTransaction({
           style={{
             fontSize: "14px",
           }}
-        ></Typography>
+        >
+          {walletAddressDisplay(from)}
+        </Typography>
       ),
       classes: { root: classes.approveTableRoot },
     },

@@ -1,20 +1,20 @@
 import { useState, useEffect } from "react";
 import { ethers, BigNumber } from "ethers";
-import type { TransactionRequest } from "@ethersproject/abstract-provider";
 import type { UnsignedTransaction } from "@ethersproject/transactions";
 import { Typography } from "@mui/material";
 import { getLogger, Blockchain, Ethereum } from "@coral-xyz/common";
-import { useEthereumCtx } from "@coral-xyz/recoil";
+import { useEthereumCtx, useTransactionData } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { TokenAmountDisplay, Sending, Error } from "../Send";
 import { walletAddressDisplay, PrimaryButton } from "../../../../common";
 import { SettingsList } from "../../../../common/Settings/List";
 
 const logger = getLogger("send-ethereum-confirmation-card");
+const { base58: bs58 } = ethers.utils;
 
 export function SendEthereumConfirmationCard({
   token,
-  destinationAddress,
+  to,
   amount,
 }: {
   token: {
@@ -24,7 +24,7 @@ export function SendEthereumConfirmationCard({
     // For ERC721 sends
     tokenId?: string;
   };
-  destinationAddress: string;
+  to: string;
   amount: BigNumber;
   close: (transactionToSend: UnsignedTransaction) => void;
 }) {
@@ -51,22 +51,22 @@ export function SendEthereumConfirmationCard({
       let transaction;
       if (token.address === ethers.constants.AddressZero) {
         // Zero address token is native ETH
-        transaction = await Ethereum.transferEthTransaction(ethereumCtx, {
-          to: destinationAddress,
+        transaction = await Ethereum.transferEthTransaction({
+          to: to,
           value: amount.toString(),
         });
       } else if (token.tokenId) {
         // Token has a tokenId, must be an ERC721 token
         transaction = await Ethereum.transferErc721Transaction(ethereumCtx, {
           from: ethereumCtx.walletPublicKey,
-          to: destinationAddress,
+          to: to,
           contractAddress: token.address!,
           tokenId: token.tokenId,
         });
       } else {
         // Otherwise assume it is an ERC20 token
         transaction = await Ethereum.transferErc20Transaction(ethereumCtx, {
-          to: destinationAddress,
+          to: to,
           contractAddress: token.address!,
           amount: amount.toString(),
         });
@@ -114,7 +114,7 @@ export function SendEthereumConfirmationCard({
       {cardType === "confirm" ? (
         <ConfirmSendEthereum
           token={token}
-          destinationAddress={destinationAddress}
+          to={to}
           transaction={transaction}
           amount={amount}
           onConfirm={onConfirm}
@@ -149,7 +149,7 @@ export function SendEthereumConfirmationCard({
 
 export function ConfirmSendEthereum({
   token,
-  destinationAddress,
+  to,
   amount,
   transaction,
   onConfirm,
@@ -160,56 +160,20 @@ export function ConfirmSendEthereum({
     ticker?: string;
     decimals: number;
   };
-  destinationAddress: string;
+  to: string;
   amount: BigNumber;
   transaction: UnsignedTransaction;
   onConfirm: (transactionToSend: UnsignedTransaction) => void;
 }) {
   const theme = useCustomTheme();
   const ethereumCtx = useEthereumCtx();
-
-  console.log("Confirm send", transaction);
-
-  const [estimatedFee, setEstimatedFee] = useState(BigNumber.from(0));
-  const [estimatedFeeError, setEstimatedFeeError] = useState(false);
-  const [gasLimit, setGasLimit] = useState(BigNumber.from(0));
-  const [nonce, setNonce] = useState(0);
-
-  useEffect(() => {
-    (async () => {
-      const nonce = await ethereumCtx.provider.getTransactionCount(
-        ethereumCtx.walletPublicKey
-      );
-      setNonce(nonce);
-    })();
-  });
-
-  useEffect(() => {
-    (async () => {
-      let estimatedGas;
-      try {
-        estimatedGas = await ethereumCtx.provider.estimateGas(
-          transaction as TransactionRequest
-        );
-      } catch (error) {
-        // Fee estimate failed, transaction is unlikely to succeed
-        console.error("could not estimate gas", error);
-        estimatedGas = BigNumber.from("150000");
-        setEstimatedFeeError(true);
-      }
-      setGasLimit(estimatedGas);
-      setEstimatedFee(
-        estimatedGas
-          .mul(ethereumCtx.feeData.maxFeePerGas!)
-          .add(estimatedGas.mul(ethereumCtx.feeData.maxPriorityFeePerGas!))
-      );
-    })();
-  }, [transaction]);
+  const { from, simulationError, network, networkFee } = useTransactionData(
+    Blockchain.ETHEREUM,
+    bs58.encode(ethers.utils.serializeTransaction(transaction))
+  );
 
   const transactionOverrides = {
     type: 2,
-    nonce: nonce,
-    gasLimit,
     maxFeePerGas: ethereumCtx.feeData.maxFeePerGas,
     maxPriorityFeePerGas: ethereumCtx.feeData.maxPriorityFeePerGas,
   };
@@ -218,7 +182,6 @@ export function ConfirmSendEthereum({
     <div
       style={{
         padding: "16px",
-        height: "402px",
         display: "flex",
         justifyContent: "space-between",
         flexDirection: "column",
@@ -246,14 +209,12 @@ export function ConfirmSendEthereum({
           token={token}
         />
         <ConfirmEthereumSendTable
-          destinationAddress={destinationAddress}
-          nonce={nonce}
-          estimatedFee={estimatedFee}
-          gasPrice={ethereumCtx.feeData.gasPrice!}
-          maxFeePerGas={ethereumCtx.feeData.maxFeePerGas!}
-          maxPriorityFeePerGas={ethereumCtx.feeData.maxPriorityFeePerGas!}
+          to={to}
+          from={from}
+          network={network}
+          networkFee={networkFee}
         />
-        {estimatedFeeError && (
+        {simulationError && (
           <Typography
             style={{
               color: theme.custom.colors.negative,
@@ -266,6 +227,7 @@ export function ConfirmSendEthereum({
         )}
       </div>
       <PrimaryButton
+        style={{ marginTop: "16px" }}
         onClick={() =>
           onConfirm({
             ...transaction,
@@ -281,59 +243,34 @@ export function ConfirmSendEthereum({
 }
 
 const ConfirmEthereumSendTable: React.FC<{
-  destinationAddress: string;
-  estimatedFee: BigNumber;
-  nonce: number;
-  gasPrice: BigNumber;
-  maxFeePerGas: BigNumber;
-  maxPriorityFeePerGas: BigNumber;
-}> = ({
-  destinationAddress,
-  estimatedFee,
-  nonce,
-  gasPrice,
-  maxFeePerGas,
-  maxPriorityFeePerGas,
-}) => {
+  to: string;
+  from: string;
+  network: string;
+  networkFee: string;
+}> = ({ to, from, network, networkFee }) => {
   const theme = useCustomTheme();
-  const ethereumCtx = useEthereumCtx();
 
   const menuItems = {
     From: {
       onClick: () => {},
-      detail: (
-        <Typography>
-          {walletAddressDisplay(ethereumCtx.walletPublicKey)}
-        </Typography>
-      ),
+      detail: <Typography>{walletAddressDisplay(from)}</Typography>,
       button: false,
     },
     To: {
       onClick: () => {},
-      detail: (
-        <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
-      ),
+      detail: <Typography>{walletAddressDisplay(to)}</Typography>,
+      button: false,
+    },
+    Network: {
+      onClick: () => {},
+      detail: <Typography>{network}</Typography>,
       button: false,
     },
     "Network fee": {
       onClick: () => {},
-      detail: (
-        <Typography>
-          {ethers.utils.formatUnits(estimatedFee).substring(0, 10)}{" "}
-          <span style={{ color: theme.custom.colors.secondary }}>ETH</span>
-        </Typography>
-      ),
+      detail: <Typography>{networkFee}</Typography>,
       button: false,
     },
-    /**
-*   TODO make configurable via advanced option along with gas limit and gas pricing
-    Nonce: {
-      onClick: () => {},
-      detail: <Typography>{nonce}</Typography>,
-      classes: { root: classes.confirmTableListItem },
-      button: false,
-    },
-  **/
   };
 
   return (

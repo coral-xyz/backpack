@@ -276,7 +276,7 @@ export function Send({
           {blockchain === Blockchain.ETHEREUM && (
             <SendEthereumConfirmationCard
               token={token}
-              destinationAddress={address}
+              to={address}
               amount={amount!}
               close={() => {
                 setOpenDrawer(false);

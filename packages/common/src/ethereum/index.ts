@@ -31,15 +31,15 @@ export type TransferEthRequest = EthereumTransactionOverrides & {
 };
 
 export type TransferErc20Request = EthereumTransactionOverrides & {
-  contractAddress: string;
   to: string;
+  contractAddress: string;
   amount: string;
 };
 
 export type TransferErc721Request = EthereumTransactionOverrides & {
-  contractAddress: string;
   from: string;
   to: string;
+  contractAddress: string;
   tokenId: string;
 };
 
@@ -48,26 +48,26 @@ export class Ethereum {
     ctx: EthereumContext,
     req: TransferEthRequest
   ) {
-    const unsignedTx = await Ethereum.transferEthTransaction(ctx, req);
+    const unsignedTx = await Ethereum.transferEthTransaction(req);
     return await Ethereum.signAndSendTransaction(ctx, unsignedTx);
   }
 
   public static async transferEthTransaction(
-    ctx: EthereumContext,
     req: TransferEthRequest
   ): Promise<UnsignedTransaction> {
     // Hack: no way to generate an UnsignedTransaction like there is for contracts?
-    return {
-      from: ctx.walletPublicKey,
-      to: req.to,
-      value: BigNumber.from(req.value),
-      type: req.type ?? undefined,
-      nonce: req.nonce ?? undefined,
-      gasLimit: req.gasLimit ?? undefined,
-      gasPrice: req.gasPrice ?? undefined,
-      maxFeePerGas: req.maxFeePerGas ?? undefined,
-      maxPriorityFeePerGas: req.maxPriorityFeePerGas ?? undefined,
-    } as UnsignedTransaction;
+    return Object.fromEntries(
+      Object.entries({
+        to: req.to,
+        value: BigNumber.from(req.value),
+        type: req.type ?? null,
+        nonce: req.nonce ?? undefined,
+        gasLimit: req.gasLimit ?? null,
+        gasPrice: req.gasPrice ?? null,
+        maxFeePerGas: req.maxFeePerGas ?? null,
+        maxPriorityFeePerGas: req.maxPriorityFeePerGas ?? null,
+      }).filter(([_, v]) => v != null)
+    ) as UnsignedTransaction;
   }
 
   public static async transferErc20(
