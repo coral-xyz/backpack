@@ -27,13 +27,7 @@ function initProvider() {
   //
   // XNFT Providers
   //
-  const requestManager = new RequestManager(
-    CHANNEL_PLUGIN_RPC_REQUEST,
-    CHANNEL_PLUGIN_RPC_RESPONSE,
-    true
-  );
-
-  const solanaXnftInjection = new ProviderSolanaXnftInjection(requestManager);
+  const solanaXnftInjection = new ProviderSolanaXnftInjection();
 
   window.xnft = solanaXnftInjection;
 
@@ -66,7 +60,7 @@ function initProvider() {
   };
 
   window.xnft.solana = solanaXnftInjection;
-  window.xnft.ethereum = new ProviderEthereumXnftInjection(requestManager);
+  window.xnft.ethereum = new ProviderEthereumXnftInjection();
 
   try {
     register();
