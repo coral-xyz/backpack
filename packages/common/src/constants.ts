@@ -312,6 +312,7 @@ export const SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION =
   "solana-get-minimum-balance-for-rent-exemption";
 export const SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNT_BALANCE =
   "get-token-account-balance";
+export const SOLANA_CONNECTION_RPC_GET_BALANCE = "solana-get-balance";
 
 //
 // Ledger API.
