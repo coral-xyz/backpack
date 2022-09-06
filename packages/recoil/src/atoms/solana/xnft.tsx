@@ -14,7 +14,7 @@ import { bootstrap } from "../bootstrap";
 //
 // Private dev plugins.
 //
-const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
+export const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
 const MANGO_TABLE_PLUGIN_URL = pluginURL("xnft/mango");
 const PRICES_PLUGIN_URL = pluginURL("xnft/prices");
 const PSYFI_PLUGIN_URL = pluginURL("xnft/psyfi");

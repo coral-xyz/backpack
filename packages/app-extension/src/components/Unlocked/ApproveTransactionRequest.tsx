@@ -26,6 +26,7 @@ import {
 import { Plugin } from "@coral-xyz/react-xnft-renderer";
 import { Typography } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
+import * as anchor from "@project-serum/anchor";
 import {
   walletAddressDisplay,
   PrimaryButton,
@@ -393,6 +394,14 @@ function _SignTransaction({
 
 function SignMessage({ message }: any) {
   const theme = useCustomTheme();
+  let msg;
+  try {
+    msg = anchor.utils.bytes.utf8.decode(
+      anchor.utils.bytes.bs58.decode(message)
+    );
+  } catch (err) {
+    msg = message;
+  }
   return (
     <div>
       <Typography
@@ -404,7 +413,7 @@ function SignMessage({ message }: any) {
           textAlign: "center",
         }}
       >
-        Approve Transaction
+        Sign Message
       </Typography>
       <div
         style={{
@@ -412,9 +421,10 @@ function SignMessage({ message }: any) {
           backgroundColor: theme.custom.colors.bg2,
           padding: "8px",
           borderRadius: "8px",
+          wordBreak: "break-all",
         }}
       >
-        {message}
+        {msg}
       </div>
     </div>
   );

@@ -443,6 +443,13 @@ export class SolanaConnectionBackend {
     );
   }
 
+  async getBalance(
+    publicKey: PublicKey,
+    commitment?: Commitment
+  ): Promise<number> {
+    return await this.connection!.getBalance(publicKey, commitment);
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Methods below not used currently.
   ///////////////////////////////////////////////////////////////////////////////
@@ -451,13 +458,6 @@ export class SolanaConnectionBackend {
     publicKey: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<number>> {
-    throw new Error("not implemented");
-  }
-
-  async getBalance(
-    publicKey: PublicKey,
-    commitment?: Commitment
-  ): Promise<number> {
     throw new Error("not implemented");
   }
 
