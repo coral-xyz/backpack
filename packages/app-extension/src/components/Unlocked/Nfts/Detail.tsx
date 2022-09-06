@@ -211,7 +211,14 @@ function SendScreen({ nft }: { nft: any }) {
               }}
             />
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              paddingTop: "18px",
+              paddingBottom: "12px",
+            }}
+          >
             <SecondaryButton
               style={{
                 marginRight: "8px",
