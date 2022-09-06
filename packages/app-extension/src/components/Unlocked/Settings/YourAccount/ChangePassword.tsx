@@ -127,7 +127,7 @@ export function ChangePassword() {
               marginLeft: "26px",
               marginBottom: "26px",
               textTransform: "none",
-              color: theme.custom.colors.activeNavButton,
+              color: theme.custom.colors.brandColor,
             }}
           >
             <Typography

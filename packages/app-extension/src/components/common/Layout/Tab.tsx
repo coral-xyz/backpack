@@ -36,7 +36,7 @@ const useStyles = styles((theme) => ({
     color: "none",
   },
   tabSelected: {
-    color: theme.custom.colors.tabIconSelected,
+    color: theme.custom.colors.brandColor,
   },
   tabUnselected: {},
   tabButton: {
@@ -102,7 +102,7 @@ function TabBar() {
           <BalancesIcon
             fill={
               tab === TAB_BALANCES
-                ? theme.custom.colors.tabIconSelected
+                ? theme.custom.colors.brandColor
                 : theme.custom.colors.secondary
             }
           />
@@ -117,7 +117,7 @@ function TabBar() {
           <GridIcon
             fill={
               tab === TAB_APPS
-                ? theme.custom.colors.tabIconSelected
+                ? theme.custom.colors.brandColor
                 : theme.custom.colors.secondary
             }
           />
@@ -132,7 +132,7 @@ function TabBar() {
           <SwapIcon
             fill={
               tab === TAB_SWAP
-                ? theme.custom.colors.tabIconSelected
+                ? theme.custom.colors.brandColor
                 : theme.custom.colors.secondary
             }
           />
@@ -147,7 +147,7 @@ function TabBar() {
           <ImageIcon
             fill={
               tab === TAB_NFTS
-                ? theme.custom.colors.tabIconSelected
+                ? theme.custom.colors.brandColor
                 : theme.custom.colors.secondary
             }
           />

@@ -72,7 +72,7 @@ export function Checkmark() {
   return (
     <Check
       style={{
-        color: theme.custom.colors.activeNavButton,
+        color: theme.custom.colors.brandColor,
       }}
     />
   );

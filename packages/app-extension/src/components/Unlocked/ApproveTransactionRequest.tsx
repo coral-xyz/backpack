@@ -399,6 +399,7 @@ function SignMessage({ message }: any) {
           padding: "8px",
           borderRadius: "8px",
           wordBreak: "break-all",
+          color: theme.custom.colors.fontColor,
         }}
       >
         {msg}

@@ -65,7 +65,7 @@ const useStyles = styles((theme) => ({
     padding: 0,
   },
   copyButtonLabel: {
-    color: theme.custom.colors.activeNavButton,
+    color: theme.custom.colors.brandColor,
     fontWeight: 500,
     fontSize: "14px",
     lineHeight: "24px",

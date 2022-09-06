@@ -14,6 +14,7 @@ import {
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
 import {
   CheckboxForm,
   Header,
@@ -74,6 +75,7 @@ export function MnemonicInput({
   readOnly?: boolean;
   buttonLabel: string;
 }) {
+  const theme = useCustomTheme();
   const classes = useStyles();
   const background = useBackgroundClient();
   const [mnemonicWords, setMnemonicWords] = useState<string[]>([
@@ -217,7 +219,11 @@ export function MnemonicInput({
             <Box sx={{ marginBottom: "12px" }}>
               <CopyButton
                 text={mnemonic}
-                icon={<ContentCopyIcon />}
+                icon={
+                  <ContentCopyIcon
+                    style={{ color: theme.custom.colors.fontColor }}
+                  />
+                }
                 disabled={!copyEnabled}
               />
             </Box>
