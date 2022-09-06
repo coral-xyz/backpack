@@ -138,7 +138,7 @@ export function CreatePassword({
                 I agree to the{" "}
                 <span
                   onClick={() => window.open("https://backpack.app/terms")}
-                  style={{ color: theme.custom.colors.activeNavButton }}
+                  style={{ color: theme.custom.colors.brandColor }}
                 >
                   terms of service
                 </span>
