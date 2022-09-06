@@ -108,10 +108,10 @@ export const darkTheme: any = {
       fontColor2: FONT_COLOR_2,
       fontColor3: FONT_COLOR_3,
       border: BORDER_COLOR,
+      brandColor: BRAND_COLOR,
       activeNavButton: BRAND_COLOR,
       scrollbarTrack: BACKGROUND_COLOR_0,
       scrollbarThumb: SCROLLBAR_THUMB_COLOR,
-      tabIconSelected: BRAND_COLOR,
       secondary: FONT_COLOR_1,
       positive: POSITIVE_COLOR,
       negative: NEGATIVE_COLOR,
@@ -123,8 +123,6 @@ export const darkTheme: any = {
       bg2: BACKGROUND_COLOR_2,
       border1: BORDER_COLOR_1,
       subtext: FONT_COLOR_3,
-      sendGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_0} 0%, rgba(27, 29, 35, 0) 100%)`,
-      swapGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
       drawerGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
     },
   },
@@ -142,9 +140,9 @@ export const lightTheme: any = {
       fontColor3: LIGHT_FONT_COLOR_3,
       border: LIGHT_BORDER_COLOR,
       activeNavButton: LIGHT_BRAND_COLOR,
+      brandColor: LIGHT_BRAND_COLOR,
       scrollbarTrack: LIGHT_BACKGROUND_COLOR_0,
       scrollbarThumb: LIGHT_SCROLLBAR_THUMB_COLOR,
-      tabIconSelected: LIGHT_BRAND_COLOR,
       secondary: LIGHT_FONT_COLOR_1,
       positive: LIGHT_POSITIVE_COLOR,
       negative: LIGHT_NEGATIVE_COLOR,
@@ -156,13 +154,11 @@ export const lightTheme: any = {
       bg2: LIGHT_BACKGROUND_COLOR_2,
       border1: LIGHT_BORDER_COLOR_1,
       subtext: LIGHT_FONT_COLOR_3,
-      sendGradient: `linear-gradient(180deg, ${LIGHT_BACKGROUND_COLOR_0} 0%, rgba(27, 29, 35, 0) 100%)`,
-      swapGradient: `linear-gradient(180deg, ${LIGHT_BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
       drawerGradient: `linear-gradient(180deg, ${LIGHT_BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
     },
   },
 };
 
-type CustomTheme = typeof lightTheme & typeof darkTheme;
+export type CustomTheme = typeof lightTheme & typeof darkTheme;
 export const styles = _makeStyles<CustomTheme>;
 export const useCustomTheme = useTheme<CustomTheme>;

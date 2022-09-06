@@ -57,6 +57,7 @@ export const EmptyState: React.FC<{
             lineHeight: "32px",
             textAlign: "center",
             fontWeight: 500,
+            color: theme.custom.colors.fontColor,
           }}
         >
           {title}

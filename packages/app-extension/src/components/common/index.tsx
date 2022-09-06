@@ -7,13 +7,13 @@ import {
   CircularProgress,
   Checkbox as _Checkbox,
 } from "@mui/material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles, useCustomTheme, CustomTheme } from "@coral-xyz/themes";
 import { TextField } from "@coral-xyz/react-xnft-renderer";
 
 export * from "./List";
 export { TextField };
 
-const useStyles = styles((theme) => ({
+const useStyles = styles((theme: CustomTheme) => ({
   leftLabel: {
     color: theme.custom.colors.fontColor,
     fontSize: "12px",
@@ -45,7 +45,7 @@ const useStyles = styles((theme) => ({
     backgroundColor: theme.custom.colors.primaryButton,
     "&.Mui-disabled": {
       opacity: 0.5,
-      backgroundColor: theme.custom.colors.disabledButton,
+      backgroundColor: theme.custom.colors.primaryButton,
     },
     "&:hover": {
       backgroundColor: theme.custom.colors.primaryButton,
