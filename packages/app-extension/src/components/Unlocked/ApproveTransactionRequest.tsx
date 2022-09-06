@@ -1,4 +1,5 @@
 import { useMemo, useEffect, useState } from "react";
+import { ethers } from "ethers";
 import * as bs58 from "bs58";
 import { Transaction } from "@solana/web3.js";
 import {
@@ -159,21 +160,31 @@ function SendTransactionRequest({ onClose }: any) {
         {request && plugin && (
           <Scrollbar>
             {request?.kind === PLUGIN_REQUEST_ETHEREUM_SIGN_TRANSACTION ? (
-              <SignTransaction transaction={request?.data} plugin={plugin} />
+              <SignTransaction
+                blockchain={Blockchain.ETHEREUM}
+                transaction={request?.data}
+                plugin={plugin}
+              />
             ) : request.kind ===
               PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION ? (
               <SignAndSendTransaction
+                blockchain={Blockchain.ETHEREUM}
                 transaction={request?.data}
                 plugin={plugin}
               />
             ) : request.kind === PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE ? (
               <SignMessage message={request?.data} plugin={plugin} />
             ) : request.kind === PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION ? (
-              <SignTransaction transaction={request?.data} plugin={plugin} />
+              <SignTransaction
+                blockchain={Blockchain.SOLANA}
+                transaction={request?.data}
+                plugin={plugin}
+              />
             ) : request.kind === PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE ? (
               <SignMessage message={request?.data} plugin={plugin} />
             ) : (
               <SignAndSendTransaction
+                blockchain={Blockchain.SOLANA}
                 transaction={request?.data}
                 plugin={plugin}
               />
@@ -208,15 +219,22 @@ function SendTransactionRequest({ onClose }: any) {
 }
 
 function SignAndSendTransaction({
+  blockchain,
   transaction,
   plugin,
 }: {
+  blockchain: Blockchain;
   transaction: string;
   plugin: Plugin;
 }) {
   const deserializedTx = useMemo(() => {
-    return Transaction.from(bs58.decode(transaction));
+    if (blockchain === Blockchain.ETHEREUM) {
+      return ethers.utils.parseTransaction(bs58.decode(transaction!));
+    } else if (blockchain === Blockchain.SOLANA) {
+      return Transaction.from(bs58.decode(transaction!));
+    }
   }, [transaction]);
+
   return (
     <_SignTransaction
       deserializedTx={deserializedTx}
@@ -227,14 +245,21 @@ function SignAndSendTransaction({
 }
 
 function SignTransaction({
+  blockchain,
   transaction,
   plugin,
 }: {
+  blockchain: Blockchain;
   transaction: string;
   plugin: Plugin;
 }) {
   const deserializedTx = useMemo(() => {
-    return Transaction.from(bs58.decode(transaction!));
+    if (blockchain === Blockchain.ETHEREUM) {
+      return ethers.utils.parseTransaction(bs58.decode(transaction!));
+    } else if (blockchain === Blockchain.SOLANA) {
+      return Transaction.from(bs58.decode(transaction!));
+    }
+    throw new Error("invalid transaction");
   }, [transaction]);
 
   return (
@@ -252,7 +277,7 @@ function _SignTransaction({
   deserializedTx,
 }: {
   transaction: string;
-  deserializedTx: Transaction;
+  deserializedTx: any;
   plugin: Plugin;
 }) {
   const theme = useCustomTheme();
@@ -308,9 +333,7 @@ function _SignTransaction({
           style={{
             fontSize: "14px",
           }}
-        >
-          {walletAddressDisplay(deserializedTx!.feePayer!)}
-        </Typography>
+        ></Typography>
       ),
       classes: { root: classes.approveTableRoot },
     },
