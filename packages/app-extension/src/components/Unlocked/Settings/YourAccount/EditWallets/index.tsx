@@ -51,6 +51,7 @@ function WalletList({
   blockchain: Blockchain;
   keyring: any;
 }) {
+  const theme = useCustomTheme();
   const flattenedWallets = [
     ...keyring.hdPublicKeys.map((k: any) => ({ ...k, type: "derived" })),
     ...keyring.importedPublicKeys.map((k: any) => ({
@@ -72,6 +73,7 @@ function WalletList({
             marginLeft: "16px",
             marginRight: "16px",
             marginBottom: "12px",
+            color: theme.custom.colors.fontColor,
           }}
         >
           {toTitleCase(blockchain)}

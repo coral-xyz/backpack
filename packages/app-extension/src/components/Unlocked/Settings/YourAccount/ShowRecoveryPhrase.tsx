@@ -7,6 +7,7 @@ import LockOpenIcon from "@mui/icons-material/LockOpen";
 import { styles } from "@coral-xyz/themes";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC } from "@coral-xyz/common";
+import { useCustomTheme } from "@coral-xyz/themes";
 import {
   CopyButton,
   MnemonicInputFields,
@@ -198,6 +199,7 @@ export function ShowRecoveryPhraseWarning() {
 }
 
 export function ShowRecoveryPhrase({ mnemonic }: { mnemonic: string }) {
+  const theme = useCustomTheme();
   const classes = useStyles();
   const { close } = useDrawerContext();
   const mnemonicWords = mnemonic.split(" ");
@@ -225,7 +227,14 @@ export function ShowRecoveryPhrase({ mnemonic }: { mnemonic: string }) {
           rootClass={classes.mnemonicInputRoot}
         />
         <Box sx={{ marginTop: "4px" }}>
-          <CopyButton text={mnemonic} icon={<ContentCopyIcon />} />
+          <CopyButton
+            text={mnemonic}
+            icon={
+              <ContentCopyIcon
+                style={{ color: theme.custom.colors.fontColor }}
+              />
+            }
+          />
         </Box>
       </Box>
       <Box

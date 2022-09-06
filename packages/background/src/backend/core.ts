@@ -363,7 +363,7 @@ export class Backend {
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
 
-    const blockchainActiveWallets = this.blockchainActiveWallets();
+    const blockchainActiveWallets = await this.blockchainActiveWallets();
 
     const ethereumConnectionUrl = await this.ethereumConnectionUrlRead();
     const solanaConnectionUrl = await this.solanaConnectionUrlRead();
