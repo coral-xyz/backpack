@@ -30,6 +30,7 @@ import {
   PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
+  PLUGIN_RPC_METHOD_WINDOW_OPEN,
 } from "@coral-xyz/common";
 import * as cmn from "./common";
 import { RequestManager } from "./request-manager";
@@ -153,6 +154,13 @@ export class ProviderXnftInjection extends EventEmitter implements Provider {
     await this._requestManager.request({
       method: PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
       params: [key, val],
+    });
+  }
+
+  public async openWindow(url: string) {
+    await this._requestManager.request({
+      method: PLUGIN_RPC_METHOD_WINDOW_OPEN,
+      params: [url],
     });
   }
 
