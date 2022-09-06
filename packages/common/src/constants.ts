@@ -282,6 +282,47 @@ export const SOLANA_RPC_METHOD_SIMULATE = "solana-simulate";
 export const SOLANA_RPC_METHOD_OPEN_XNFT = "solana-open-xnft";
 
 //
+// Ethereum connection api. These are the methods available for the background
+// connection implementation (which the frontends use via message passing).
+//
+export const ETHEREUM_PROVIDER_RPC_GET_BALANCE =
+  "ethereum-provider-rpc-get-balance";
+export const ETHEREUM_PROVIDER_RPC_GET_CODE = "ethereum-provider-rpc-get-code";
+export const ETHEREUM_PROVIDER_RPC_GET_STORAGE_AT =
+  "ethereum-provider-rpc-get-storage-at";
+export const ETHEREUM_PROVIDER_RPC_GET_TRANSACTION_COUNT =
+  "ethereum-provider-rpc-get-transaction-count";
+export const ETHEREUM_PROVIDER_RPC_GET_BLOCK =
+  "ethereum-provider-rpc-get-block";
+export const ETHEREUM_PROVIDER_RPC_GET_BLOCK_WITH_TRANSACTIONS =
+  "ethereum-provider-rpc-get-block-with-transactions";
+export const ETHEREUM_PROVIDER_RPC_GET_AVATAR =
+  "ethereum-provider-rpc-get-avatar";
+export const ETHEREUM_PROVIDER_RPC_GET_RESOLVER =
+  "ethereum-provider-rpc-get-resolver";
+export const ETHEREUM_PROVIDER_RPC_LOOKUP_ADDRESS =
+  "ethereum-provider-rpc-lookup-address";
+export const ETHEREUM_PROVIDER_RPC_RESOLVE_NAME =
+  "ethereum-provider-rpc-resolve-name";
+export const ETHEREUM_PROVIDER_RPC_GET_NETWORK =
+  "ethereum-provider-rpc-get-network";
+export const ETHEREUM_PROVIDER_RPC_GET_BLOCK_NUMBER =
+  "ethereum-provider-rpc-get-block-number";
+export const ETHEREUM_PROVIDER_RPC_GET_GAS_PRICE =
+  "ethereum-provider-rpc-get-gas-price";
+export const ETHEREUM_PROVIDER_RPC_GET_FEE_DATA =
+  "ethereum-provider-rpc-get-fee-data";
+export const ETHEREUM_PROVIDER_RPC_CALL = "ethereum-provider-rpc-call";
+export const ETHEREUM_PROVIDER_RPC_ESTIMATE_GAS =
+  "ethereum-provider-rpc-estimate-gas";
+export const ETHEREUM_PROVIDER_RPC_GET_TRANSACTION =
+  "ethereum-provider-rpc-get-transaction";
+export const ETHEREUM_PROVIDER_RPC_GET_TRANSACTION_RECEIPT =
+  "ethereum-provider-rpc-get-transaction-receipt";
+export const ETHEREUM_PROVIDER_RPC_WAIT_FOR_TRANSACTION =
+  "ethereum-provider-rpc-wait-for-transaction";
+
+//
 // Solana connection api. These are the methods available for the background
 // connection implementation (which the frontends use via message passing).
 //
