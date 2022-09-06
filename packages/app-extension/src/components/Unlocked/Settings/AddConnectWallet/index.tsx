@@ -187,6 +187,7 @@ export const ConfirmCreateWallet: React.FC<{
             fontWeight: 500,
             fontSize: "18px",
             lineHeight: "24px",
+            color: theme.custom.colors.fontColor,
           }}
         >
           Wallet Created
@@ -208,7 +209,6 @@ export const ConfirmCreateWallet: React.FC<{
           isFirst={true}
           isLast={true}
           onClick={() => {
-            console.log("ON CLICK HERE WTF", tab, TAB_BALANCES);
             if (tab === TAB_BALANCES) {
               background.request({
                 method: UI_RPC_METHOD_NAVIGATION_TO_ROOT,
