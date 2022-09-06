@@ -374,6 +374,7 @@ function WalletList({
             marginLeft: "16px",
             marginRight: "16px",
             marginBottom: "12px",
+            color: theme.custom.colors.fontColor,
           }}
         >
           {toTitleCase(blockchain)}

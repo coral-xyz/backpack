@@ -71,6 +71,7 @@ export function XnftSettings() {
             fontSize: "16px",
             lineHeight: "24px",
             marginLeft: "16px",
+            color: theme.custom.colors.fontColor,
           }}
         >
           Installed xNFTs

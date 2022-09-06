@@ -4,7 +4,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ChatIcon from "@mui/icons-material/Chat";
 import WebIcon from "@mui/icons-material/Web";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
-import { styles } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import {
   UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
@@ -217,6 +217,7 @@ export function ShowPrivateKeyWarning({ publicKey }: { publicKey?: string }) {
 }
 
 export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
+  const theme = useCustomTheme();
   const classes = useStyles();
   const { close } = useDrawerContext();
   const nav = useNavStack();
@@ -253,7 +254,14 @@ export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
             rootClass={classes.privateKeyField}
           />
           <Box sx={{ marginTop: "4px" }}>
-            <CopyButton text={privateKey} icon={<ContentCopyIcon />} />
+            <CopyButton
+              text={privateKey}
+              icon={
+                <ContentCopyIcon
+                  style={{ color: theme.custom.colors.fontColor }}
+                />
+              }
+            />
           </Box>
         </Box>
       </Box>
