@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
-import makeStyles from "@mui/styles/makeStyles";
-import { Box, Typography } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { Box, Typography } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import { useEffect, useState } from "react";
+import { supabase } from "../../../supabase";
 import {
-  Header,
-  SubtextParagraph,
-  PrimaryButton,
-  TextField,
   CheckboxForm,
+  Header,
+  PrimaryButton,
+  SubtextParagraph,
+  TextField,
 } from "../../common";
 
 const useStyles = makeStyles(() => ({
@@ -18,6 +19,10 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+enum UsernameError {
+  NOT_AVAILABLE,
+}
+
 enum PasswordError {
   TOO_SHORT,
   NO_MATCH,
@@ -26,13 +31,15 @@ enum PasswordError {
 export function CreatePassword({
   onNext,
 }: {
-  onNext: (password: string) => void;
+  onNext: (username: string, password: string) => void;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const [checked, setChecked] = useState(false);
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordDup, setPasswordDup] = useState("");
+  const [usernameError, setUsernameError] = useState<string | null>(null);
   const [error, setError] = useState<PasswordError | null>(null);
 
   useEffect(() => {
@@ -47,7 +54,18 @@ export function CreatePassword({
       setError(PasswordError.NO_MATCH);
       return;
     }
-    onNext(password);
+    const { user, session, error } = await supabase.auth.signUp({
+      email: `${username}@example.com`,
+      password,
+    });
+    // console.log({ user, session, error });
+
+    if (error) {
+      setUsernameError(error.message);
+      return;
+    }
+
+    onNext(username, password);
   };
 
   const isNextDisabled = !checked;
@@ -72,12 +90,32 @@ export function CreatePassword({
             marginRight: "24px",
           }}
         >
-          <Header text="Create a password" />
+          <Header text="Create an account" />
           <SubtextParagraph style={{ marginTop: "8px", marginBottom: "40px" }}>
-            It should be at least 8 characters.
-            <br />
-            You’ll need this to unlock Backpack.
+            You'll need this to unlock Backpack.
           </SubtextParagraph>
+        </Box>
+        <Box
+          sx={{
+            marginLeft: "16px",
+            marginRight: "16px",
+            marginBottom: "32px",
+          }}
+        >
+          <TextField
+            inputProps={{ name: "username" }}
+            placeholder="Username"
+            type="text"
+            value={username}
+            setValue={setUsername}
+            rootClass={classes.passwordFieldRoot}
+            isError={usernameError}
+          />
+          {usernameError && (
+            <Typography sx={{ color: theme.custom.colors.negative }}>
+              {usernameError}
+            </Typography>
+          )}
         </Box>
         <Box
           sx={{

@@ -145,6 +145,7 @@ export const UI_RPC_METHOD_KEYRING_RESET_MNEMONIC =
   "ui-rpc-method-reset-mnemonic";
 export const UI_RPC_METHOD_KEYRING_AUTOLOCK_READ =
   "ui-rpc-method-autolock-read";
+export const UI_RPC_METHOD_USERNAME_READ = "ui-rpc-method-username-read";
 export const UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE =
   "ui-rpc-method-autolock-update";
 export const UI_RPC_METHOD_NAVIGATION_PUSH = "ui-rpc-method-navigation-push";

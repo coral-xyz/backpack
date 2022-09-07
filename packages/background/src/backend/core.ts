@@ -335,12 +335,14 @@ export class Backend {
   async keyringStoreCreate(
     mnemonic: string,
     derivationPath: DerivationPath,
+    username: string,
     password: string,
     accountIndices: Array<number>
   ): Promise<string> {
     await this.keyringStore.init(
       mnemonic,
       derivationPath,
+      username,
       password,
       accountIndices
     );
@@ -366,8 +368,10 @@ export class Backend {
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
 
+    const { username } = await store.getWalletData();
+
     const { user, session, error } = await supabase.auth.signIn({
-      email: "supa@bitsushi.com",
+      email: `${username}@example.com`,
       password,
     });
     if (error) throw new Error(error.message);
@@ -609,6 +613,11 @@ export class Backend {
   keyringResetMnemonic(password: string): string {
     this.keyringStore.resetMnemonic(password);
     return SUCCESS_RESPONSE;
+  }
+
+  async usernameRead(): Promise<string> {
+    const { username } = await store.getWalletData();
+    return username;
   }
 
   async keyringAutolockRead(): Promise<number> {

@@ -1,7 +1,7 @@
-import { useRecoilValue, useRecoilState } from "recoil";
 import { UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE } from "@coral-xyz/common";
-import { useBackgroundClient } from "../client";
+import { useRecoilState, useRecoilValue } from "recoil";
 import * as atoms from "../../atoms";
+import { useBackgroundClient } from "../client";
 
 export function useApprovedOrigins(): Array<string> {
   return useRecoilValue(atoms.approvedOrigins)!;
@@ -24,6 +24,10 @@ export function useApproveOrigin(): (origin: string) => Promise<void> {
 
 export function useAutolockSecs(): number {
   return useRecoilValue(atoms.autoLockSecs)!;
+}
+
+export function useUsername() {
+  return useRecoilValue(atoms.username);
 }
 
 export function useDarkMode(): boolean {

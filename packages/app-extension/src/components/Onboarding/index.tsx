@@ -1,27 +1,28 @@
-import { useState } from "react";
-import { useCustomTheme } from "@coral-xyz/themes";
 import {
   Blockchain,
   BrowserRuntimeExtension,
   DerivationPath,
-  EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
+  EXTENSION_WIDTH,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { useState } from "react";
 import { CreatePassword } from "../common/Account/CreatePassword";
+import type { SelectedAccount } from "../common/Account/ImportAccounts";
+import { ImportAccounts } from "../common/Account/ImportAccounts";
 import { MnemonicInput } from "../common/Account/MnemonicInput";
 import { SetupComplete } from "../common/Account/SetupComplete";
-import { ImportAccounts } from "../common/Account/ImportAccounts";
-import type { SelectedAccount } from "../common/Account/ImportAccounts";
+import { NavBackButton, WithNav } from "../common/Layout/Nav";
 import { OnboardingWelcome } from "./OnboardingWelcome";
-import { WithNav, NavBackButton } from "../common/Layout/Nav";
 
 export type OnboardingFlows = "create-wallet" | "import-wallet" | null;
 
 export function Onboarding() {
   const [mnemonic, setMnemonic] = useState("");
   const [derivationPath, setDerivationPath] = useState<DerivationPath>();
+  const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [accounts, setAccounts] = useState<SelectedAccount[]>([]);
   const [step, setStep] = useState(0);
@@ -33,12 +34,13 @@ export function Onboarding() {
     mnemonic: string,
     // TODO
     derivationPath: DerivationPath | undefined,
+    username: string,
     password: string,
     accountIndices: number[]
   ) => {
     await background.request({
       method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-      params: [mnemonic, derivationPath, password, accountIndices],
+      params: [mnemonic, derivationPath, username, password, accountIndices],
     });
   };
 
@@ -58,7 +60,8 @@ export function Onboarding() {
   //
   const createWalletFlow = [
     <CreatePassword
-      onNext={(password: string) => {
+      onNext={(username: string, password: string) => {
+        setUsername(username);
         setPassword(password);
         nextStep();
       }}
@@ -66,7 +69,9 @@ export function Onboarding() {
     <MnemonicInput
       buttonLabel="Next"
       onNext={(mnemonic: string) => {
-        createStore(mnemonic, DerivationPath.Bip44Change, password, [0]);
+        createStore(mnemonic, DerivationPath.Bip44Change, username, password, [
+          0,
+        ]);
         nextStep();
       }}
       readOnly={true}
@@ -97,9 +102,15 @@ export function Onboarding() {
       }}
     />,
     <CreatePassword
-      onNext={(password: string) => {
+      onNext={(username: string, password: string) => {
         const accountIndices = accounts.map((account) => account.index);
-        createStore(mnemonic, derivationPath, password, accountIndices);
+        createStore(
+          mnemonic,
+          derivationPath,
+          username,
+          password,
+          accountIndices
+        );
         nextStep();
       }}
     />,

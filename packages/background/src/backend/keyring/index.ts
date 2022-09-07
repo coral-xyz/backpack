@@ -1,22 +1,22 @@
-import type { KeyringStoreState } from "@coral-xyz/recoil";
-import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import type { EventEmitter } from "@coral-xyz/common";
 import {
-  Blockchain,
-  DerivationPath,
-  EthereumExplorer,
-  EthereumConnectionUrl,
-  SolanaExplorer,
-  SolanaCluster,
-  NOTIFICATION_KEYRING_STORE_LOCKED,
   BACKEND_EVENT,
   BACKPACK_FEATURE_MULTICHAIN,
+  Blockchain,
+  DerivationPath,
+  EthereumConnectionUrl,
+  EthereumExplorer,
+  NOTIFICATION_KEYRING_STORE_LOCKED,
+  SolanaCluster,
+  SolanaExplorer,
 } from "@coral-xyz/common";
-import * as crypto from "./crypto";
-import { SolanaHdKeyringFactory } from "./solana";
+import type { KeyringStoreState } from "@coral-xyz/recoil";
+import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import * as store from "../store";
 import { DefaultKeyname } from "../store";
 import { BlockchainKeyring } from "./blockchain";
+import * as crypto from "./crypto";
+import { SolanaHdKeyringFactory } from "./solana";
 
 const BLOCKCHAIN_DEFAULT = Blockchain.SOLANA;
 
@@ -52,6 +52,7 @@ export class KeyringStore {
   public async init(
     mnemonic: string,
     derivationPath: DerivationPath,
+    username: string,
     password: string,
     accountIndices: Array<number>
   ) {
@@ -78,6 +79,7 @@ export class KeyringStore {
 
     // Persist the initial wallet ui metadata.
     await store.setWalletData({
+      username,
       autoLockSecs: store.DEFAULT_LOCK_INTERVAL_SECS,
       approvedOrigins: [],
       darkMode: true,
