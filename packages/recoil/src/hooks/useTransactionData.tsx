@@ -42,17 +42,19 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
 
   const [loading, setLoading] = useState(true);
   const [simulationError, setSimulationError] = useState(false);
-  const [estimatedTxFee, setEstimatedTxFee] = useState(0);
+  const [estimatedTxFee, setEstimatedTxFee] = useState(BigNumber.from(0));
 
   const transaction = ethers.utils.parseTransaction(bs58.decode(serializedTx));
 
   useEffect(() => {
     const estimateTxFee = async () => {
       // Estimate gas for the transaction
-      let estimatedGas;
+      let estimatedGas: BigNumber;
       try {
-        estimatedGas = await ethereumCtx.provider.estimateGas(
-          transaction as TransactionRequest
+        estimatedGas = BigNumber.from(
+          await ethereumCtx.provider.estimateGas(
+            transaction as TransactionRequest
+          )
         );
       } catch (error) {
         // Fee estimate failed, transaction is unlikely to succeed
@@ -122,7 +124,6 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
           console.warn("failed to simulate", result.value.err);
           setSimulationError(true);
         } else {
-          console.log(result);
           const balanceChanges = result.value.accounts.reduce(
             (result: any, a: any) => {
               if (a.owner === TOKEN_PROGRAM_ID.toString()) {
