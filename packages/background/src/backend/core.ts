@@ -1,44 +1,46 @@
-import { validateMnemonic as _validateMnemonic } from "bip39";
+import { validateMnemonic as _validateMnemonic , validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
-import type { Commitment, SendOptions } from "@solana/web3.js";
-import { PublicKey, Transaction } from "@solana/web3.js";
-import type { KeyringStoreState } from "@coral-xyz/recoil";
-import { makeDefaultNav } from "@coral-xyz/recoil";
+import type { Commitment, SendOptions , Commitment, SendOptions } from "@solana/web3.js";
+import { PublicKey, Transaction , PublicKey, Transaction } from "@solana/web3.js";
+import type { KeyringStoreState , KeyringStoreState } from "@coral-xyz/recoil";
+import { makeDefaultNav , makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
 import {
-  EthereumExplorer,
-  EthereumConnectionUrl,
-  SolanaCluster,
-  SolanaExplorer,
   BACKEND_EVENT,
-  NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-  NOTIFICATION_KEYRING_KEY_DELETE,
-  NOTIFICATION_KEYNAME_UPDATE,
-  NOTIFICATION_KEYRING_DERIVED_WALLET,
-  NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
-  NOTIFICATION_KEYRING_STORE_CREATED,
-  NOTIFICATION_KEYRING_STORE_UNLOCKED,
-  NOTIFICATION_KEYRING_STORE_LOCKED,
-  NOTIFICATION_KEYRING_STORE_RESET,
-  NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED,
+  Blockchain,
+  EthereumConnectionUrl,
+  EthereumExplorer,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_DARK_MODE_UPDATED,
-  NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
-  NOTIFICATION_SOLANA_EXPLORER_UPDATED,
-  NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
-  Blockchain,
+  NOTIFICATION_KEYNAME_UPDATE,
+  NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED,
+  NOTIFICATION_KEYRING_DERIVED_WALLET,
+  NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
+  NOTIFICATION_KEYRING_KEY_DELETE,
+  NOTIFICATION_KEYRING_STORE_CREATED,
+  NOTIFICATION_KEYRING_STORE_LOCKED,
+  NOTIFICATION_KEYRING_STORE_RESET,
+  NOTIFICATION_KEYRING_STORE_UNLOCKED,
+  NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+  NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
+  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
+  NOTIFICATION_SOLANA_EXPLORER_UPDATED,
+  SolanaCluster,
+  SolanaExplorer,
 } from "@coral-xyz/common";
-import type { Nav } from "./store";
-import * as store from "./store";
+import * as bs58 from "bs58";
+import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
-import type { EthereumConnectionBackend } from "./ethereum-connection";
-import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
+import type { Nav } from "./store";
+import * as store from "./store";
+import { DEFAULT_DARK_MODE, getWalletData, setWalletData } from "./store";
+import { supabase } from "./supabase";
 
 const { base58: bs58 } = ethers.utils;
 
@@ -363,6 +365,12 @@ export class Backend {
 
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
+
+    const { user, session, error } = await supabase.auth.signIn({
+      email: "supa@bitsushi.com",
+      password,
+    });
+    if (error) throw new Error(error.message);
 
     const blockchainActiveWallets = await this.blockchainActiveWallets();
 

@@ -1,7 +1,6 @@
+import { BACKPACK_FEATURE_POP_MODE, openPopupWindow } from "@coral-xyz/common";
 import React from "react";
 import ReactDOM from "react-dom";
-import { openPopupWindow } from "@coral-xyz/common";
-import { BACKPACK_FEATURE_POP_MODE } from "@coral-xyz/common";
 import App from "./app/App";
 import LedgerIframe from "./components/LedgerIframe";
 import "./index.css";

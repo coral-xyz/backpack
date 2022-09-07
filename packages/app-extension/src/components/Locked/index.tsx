@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { Box, Typography } from "@mui/material";
-import { useCustomTheme } from "@coral-xyz/themes";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { TextField, PrimaryButton } from "../common";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { Box, Typography } from "@mui/material";
+import { useState } from "react";
+import { PrimaryButton, TextField } from "../common";
 import { Backpack } from "../common/Icon";
 import { LockedMenu } from "./LockedMenu";
 
@@ -19,6 +19,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
 
   const _onUnlock = async (e: any) => {
     e.preventDefault();
+
     try {
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
