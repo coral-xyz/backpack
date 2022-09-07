@@ -30,7 +30,7 @@ export class EthereumConnectionBackend {
   private url?: string;
   private pollIntervals: Array<any>;
   private events: EventEmitter;
-  private provider?: ethers.providers.Provider;
+  private provider?: ethers.providers.JsonRpcProvider;
 
   constructor(events: EventEmitter) {
     this.pollIntervals = [];
@@ -75,7 +75,7 @@ export class EthereumConnectionBackend {
       handleKeyringStoreUnlocked(notif);
     };
 
-    const handleKeyringStoreUnlocked = (notif: Notification) => {
+    const handleKeyringStoreUnlocked = async (notif: Notification) => {
       const { blockchainActiveWallets, ethereumConnectionUrl } = notif.data;
       this.provider = new ethers.providers.JsonRpcProvider(
         ethereumConnectionUrl
@@ -171,16 +171,6 @@ export class EthereumConnectionBackend {
   async getBlockWithTransactions(block: number) {
     return await this.provider!.getBlockWithTransactions(block);
   }
-
-  /**
-  async getAvatar(name: string) {
-    return await this.provider!.getAvatar(name);
-  }
-
-  async getResolver(name: string) {
-    return await this.provider!.getResolver(name);
-  }
-  **/
 
   async lookupAddress(name: string) {
     return await this.provider!.lookupAddress(name);

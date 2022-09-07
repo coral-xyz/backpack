@@ -6,6 +6,7 @@ import {
   CHANNEL_POPUP_RPC,
   CHANNEL_POPUP_RESPONSE,
   CHANNEL_SOLANA_CONNECTION_RPC_UI,
+  CHANNEL_ETHEREUM_CONNECTION_RPC_UI,
 } from "@coral-xyz/common";
 
 /**
@@ -28,12 +29,23 @@ export const backgroundResponder = atom<ChannelAppUiResponder>({
 });
 
 /**
- * Channel for proxying solana Connection requests to be fulfilled by
+ * Channel for proxying Solana Connection requests to be fulfilled by
  * the background.
  */
 export const connectionBackgroundClient = selector({
   key: "connectionBackgroundClient",
-  get: ({ get }) => {
+  get: () => {
     return ChannelAppUi.client(CHANNEL_SOLANA_CONNECTION_RPC_UI);
+  },
+});
+
+/**
+ * Channel for proxying Ethereum provider requests to be fulfilled by
+ * the background.
+ */
+export const providerBackgroundClient = selector({
+  key: "providerBackgroundClient",
+  get: () => {
+    return ChannelAppUi.client(CHANNEL_ETHEREUM_CONNECTION_RPC_UI);
   },
 });

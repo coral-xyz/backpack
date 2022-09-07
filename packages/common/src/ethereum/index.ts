@@ -4,6 +4,7 @@ import type { FeeData } from "@ethersproject/abstract-provider";
 import type { BackgroundClient } from "../";
 import { EthereumProvider } from "./provider";
 
+export * from "./background-provider";
 export * from "./explorer";
 export * from "./connection-url";
 export * from "./token";

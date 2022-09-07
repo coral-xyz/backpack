@@ -41,6 +41,7 @@ export function start(
   events: EventEmitter,
   b: EthereumConnectionBackend
 ): Handle {
+  console.log("starting");
   const ethereumConnection = ChannelAppUi.server(
     CHANNEL_ETHEREUM_CONNECTION_RPC_UI
   );
@@ -133,7 +134,8 @@ async function handleGetBalance(
   publicKey: string,
   blockTag?: string
 ) {
-  return await ctx.backend.getBalance(publicKey, blockTag);
+  const resp = await ctx.backend.getBalance(publicKey, blockTag);
+  return [resp];
 }
 
 async function handleGetCode(
@@ -141,7 +143,8 @@ async function handleGetCode(
   address: string,
   blockTag?: string
 ) {
-  return await ctx.backend.getCode(address, blockTag);
+  const resp = await ctx.backend.getCode(address, blockTag);
+  return [resp];
 }
 
 async function handleGetStorageAt(
@@ -150,7 +153,8 @@ async function handleGetStorageAt(
   position: BigNumber,
   blockTag?: string
 ) {
-  return await ctx.backend.getStorageAt(address, position, blockTag);
+  const resp = await ctx.backend.getStorageAt(address, position, blockTag);
+  return [resp];
 }
 
 async function handleGetTransactionCount(
@@ -158,50 +162,60 @@ async function handleGetTransactionCount(
   address: string,
   blockTag?: string
 ) {
-  return await ctx.backend.getTransactionCount(address, blockTag);
+  const resp = await ctx.backend.getTransactionCount(address, blockTag);
+  return [resp];
 }
 
 async function handleGetBlock(
   ctx: Context<EthereumConnectionBackend>,
   block: number
 ) {
-  return await ctx.backend.getBlock(block);
+  const resp = await ctx.backend.getBlock(block);
+  return [resp];
 }
 
 async function handleGetBlockWithTransactions(
   ctx: Context<EthereumConnectionBackend>,
   block: number
 ) {
-  return await ctx.backend.getBlockWithTransactions(block);
+  const resp = await ctx.backend.getBlockWithTransactions(block);
+  return [resp];
 }
 
 async function handleLookupAddress(
   ctx: Context<EthereumConnectionBackend>,
   address: string
 ) {
-  return await ctx.backend.lookupAddress(address);
+  const resp = await ctx.backend.lookupAddress(address);
+  return [resp];
 }
 
 async function handleResolveName(
   ctx: Context<EthereumConnectionBackend>,
   name: string
 ) {
-  return await ctx.backend.resolveName(name);
+  const resp = await ctx.backend.resolveName(name);
+  return [resp];
 }
+
 async function handleGetNetwork(ctx: Context<EthereumConnectionBackend>) {
-  return await ctx.backend.getNetwork();
+  const resp = await ctx.backend.getNetwork();
+  return [resp];
 }
 
 async function handleGetBlockNumber(ctx: Context<EthereumConnectionBackend>) {
-  return await ctx.backend.getBlockNumber();
+  const resp = await ctx.backend.getBlockNumber();
+  return [resp];
 }
 
 async function handleGetGasPrice(ctx: Context<EthereumConnectionBackend>) {
-  return await ctx.backend.getGasPrice();
+  const resp = await ctx.backend.getGasPrice();
+  return [resp];
 }
 
 async function handleGetFeeData(ctx: Context<EthereumConnectionBackend>) {
-  return await ctx.backend.getFeeData();
+  const resp = await ctx.backend.getFeeData();
+  return [resp];
 }
 
 async function handleCall(
@@ -209,28 +223,32 @@ async function handleCall(
   transaction: string,
   blockTag?: string
 ) {
-  return await ctx.backend.call(transaction, blockTag);
+  const resp = await ctx.backend.call(transaction, blockTag);
+  return [resp];
 }
 
 async function handleEstimateGas(
   ctx: Context<EthereumConnectionBackend>,
   transaction: string
 ) {
-  return await ctx.backend.estimateGas(transaction);
+  const resp = await ctx.backend.estimateGas(transaction);
+  return [resp];
 }
 
 async function handleGetTransaction(
   ctx: Context<EthereumConnectionBackend>,
   hash: string
 ) {
-  return await ctx.backend.getTransaction(hash);
+  const resp = await ctx.backend.getTransaction(hash);
+  return [resp];
 }
 
 async function handleGetTransactionReceipt(
   ctx: Context<EthereumConnectionBackend>,
   hash: string
 ) {
-  return await ctx.backend.getTransactionReceipt(hash);
+  const resp = await ctx.backend.getTransactionReceipt(hash);
+  return [resp];
 }
 
 async function handleWaitForTransaction(
@@ -239,5 +257,6 @@ async function handleWaitForTransaction(
   confirms?: number,
   timeout?: number
 ) {
-  return await ctx.backend.waitForTransaction(hash, confirms, timeout);
+  const resp = await ctx.backend.waitForTransaction(hash, confirms, timeout);
+  return [resp];
 }
