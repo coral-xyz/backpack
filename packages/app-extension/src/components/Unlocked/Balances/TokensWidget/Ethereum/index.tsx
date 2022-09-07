@@ -14,7 +14,7 @@ const { base58: bs58 } = ethers.utils;
 
 export function SendEthereumConfirmationCard({
   token,
-  to,
+  destinationAddress,
   amount,
 }: {
   token: {
@@ -24,7 +24,7 @@ export function SendEthereumConfirmationCard({
     // For ERC721 sends
     tokenId?: string;
   };
-  to: string;
+  destinationAddress: string;
   amount: BigNumber;
   close: (transactionToSend: UnsignedTransaction) => void;
 }) {
@@ -51,22 +51,22 @@ export function SendEthereumConfirmationCard({
       let transaction;
       if (token.address === ethers.constants.AddressZero) {
         // Zero address token is native ETH
-        transaction = await Ethereum.transferEthTransaction({
-          to: to,
+        transaction = await Ethereum.transferEthTransaction(ethereumCtx, {
+          to: destinationAddress,
           value: amount.toString(),
         });
       } else if (token.tokenId) {
         // Token has a tokenId, must be an ERC721 token
         transaction = await Ethereum.transferErc721Transaction(ethereumCtx, {
           from: ethereumCtx.walletPublicKey,
-          to: to,
+          to: destinationAddress,
           contractAddress: token.address!,
           tokenId: token.tokenId,
         });
       } else {
         // Otherwise assume it is an ERC20 token
         transaction = await Ethereum.transferErc20Transaction(ethereumCtx, {
-          to: to,
+          to: destinationAddress,
           contractAddress: token.address!,
           amount: amount.toString(),
         });
@@ -114,7 +114,7 @@ export function SendEthereumConfirmationCard({
       {cardType === "confirm" ? (
         <ConfirmSendEthereum
           token={token}
-          to={to}
+          destinationAddress={destinationAddress}
           transaction={transaction}
           amount={amount}
           onConfirm={onConfirm}
@@ -149,7 +149,7 @@ export function SendEthereumConfirmationCard({
 
 export function ConfirmSendEthereum({
   token,
-  to,
+  destinationAddress,
   amount,
   transaction,
   onConfirm,
@@ -160,7 +160,7 @@ export function ConfirmSendEthereum({
     ticker?: string;
     decimals: number;
   };
-  to: string;
+  destinationAddress: string;
   amount: BigNumber;
   transaction: UnsignedTransaction;
   onConfirm: (transactionToSend: UnsignedTransaction) => void;
@@ -209,7 +209,7 @@ export function ConfirmSendEthereum({
           token={token}
         />
         <ConfirmEthereumSendTable
-          to={destinationAddress}
+          to={to}
           from={from}
           network={network}
           networkFee={networkFee}
