@@ -23,6 +23,7 @@ function main() {
 
 function initProvider() {
   window.backpack = new ProviderSolanaInjection();
+  window.ethereum = new ProviderEthereumInjection();
 
   //
   // XNFT Providers

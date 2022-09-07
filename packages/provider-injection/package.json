@@ -13,6 +13,7 @@
     "@solana/web3.js": "^1.36.0",
     "@wallet-standard/wallets-backpack": "0.1.0-alpha.5",
     "bs58": "^5.0.0",
+    "eth-rpc-errors": "^4.0.3",
     "eventemitter3": "^4.0.7"
   },
   "devDependencies": {

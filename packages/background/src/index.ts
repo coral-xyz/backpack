@@ -1,6 +1,7 @@
 import { EventEmitter } from "eventemitter3";
 import * as serverUi from "./frontend/server-ui";
 import * as serverInjectedSolana from "./frontend/server-injected-solana";
+import * as serverInjectedEthereum from "./frontend/server-injected-ethereum";
 import * as solanaConnection from "./frontend/solana-connection";
 import * as ethereumConnection from "./frontend/ethereum-connection";
 import * as coreBackend from "./backend/core";
@@ -24,6 +25,11 @@ export function start(cfg: Config): Background {
 
   // Frontend.
   const _serverInjectedSolana = serverInjectedSolana.start(cfg, events, coreB);
+  const _serverInjectedEthereum = serverInjectedEthereum.start(
+    cfg,
+    events,
+    coreB
+  );
   const _serverUi = serverUi.start(cfg, events, coreB);
   const _solanaConnection = solanaConnection.start(cfg, events, solanaB);
   const _ethereumConnection = ethereumConnection.start(cfg, events, ethereumB);
@@ -31,6 +37,7 @@ export function start(cfg: Config): Background {
   return {
     _serverUi,
     _serverInjectedSolana,
+    _serverInjectedEthereum,
     _solanaConnection,
     _ethereumConnection,
   };
