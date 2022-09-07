@@ -38,6 +38,8 @@ import {
   SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION,
   SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNT_BALANCE,
   SOLANA_CONNECTION_RPC_GET_BALANCE,
+  SOLANA_CONNECTION_RPC_GET_SLOT,
+  SOLANA_CONNECTION_RPC_GET_BLOCK_TIME,
 } from "@coral-xyz/common";
 import type { SolanaConnectionBackend } from "../backend/solana-connection";
 import type { Config, Handle } from "../types";
@@ -136,6 +138,10 @@ async function handleImpl<T = any>(
       return await handleGetTokenAccountBalance(ctx, params[0], params[1]);
     case SOLANA_CONNECTION_RPC_GET_BALANCE:
       return await handleGetBalance(ctx, params[0], params[1]);
+    case SOLANA_CONNECTION_RPC_GET_SLOT:
+      return await handleGetSlot(ctx, params[0]);
+    case SOLANA_CONNECTION_RPC_GET_BLOCK_TIME:
+      return await handleGetBlockTime(ctx, params[0]);
     default:
       throw new Error("invalid rpc method");
   }
@@ -323,5 +329,21 @@ async function handleGetBalance(
     new PublicKey(publicKey),
     commitment
   );
+  return [resp];
+}
+
+async function handleGetSlot(
+  ctx: Context<SolanaConnectionBackend>,
+  c?: Commitment
+) {
+  const resp = await ctx.backend.getSlot(c);
+  return [resp];
+}
+
+async function handleGetBlockTime(
+  ctx: Context<SolanaConnectionBackend>,
+  slot: number
+) {
+  const resp = await ctx.backend.getBlockTime(slot);
   return [resp];
 }

@@ -80,6 +80,8 @@ import {
   SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION,
   SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNT_BALANCE,
   SOLANA_CONNECTION_RPC_GET_BALANCE,
+  SOLANA_CONNECTION_RPC_GET_SLOT,
+  SOLANA_CONNECTION_RPC_GET_BLOCK_TIME,
 } from "../constants";
 import type { BackgroundClient } from "../channel";
 
@@ -305,6 +307,20 @@ export class BackgroundSolanaConnection extends Connection {
     });
   }
 
+  async getSlot(commitment?: Commitment): Promise<number> {
+    return await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_SLOT,
+      params: [commitment],
+    });
+  }
+
+  async getBlockTime(slot: number): Promise<number | null> {
+    return await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_BLOCK_TIME,
+      params: [slot],
+    });
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Below this not yet implemented.
   ///////////////////////////////////////////////////////////////////////////////
@@ -321,10 +337,6 @@ export class BackgroundSolanaConnection extends Connection {
     publicKey: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<number>> {
-    throw new Error("not implemented");
-  }
-
-  async getBlockTime(slot: number): Promise<number | null> {
     throw new Error("not implemented");
   }
 
@@ -425,10 +437,6 @@ export class BackgroundSolanaConnection extends Connection {
   }
 
   getVoteAccounts(commitment?: Commitment): Promise<VoteAccountStatus> {
-    throw new Error("not implemented");
-  }
-
-  getSlot(commitment?: Commitment): Promise<number> {
     throw new Error("not implemented");
   }
 
