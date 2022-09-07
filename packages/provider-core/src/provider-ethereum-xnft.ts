@@ -31,7 +31,7 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
 
   public publicKey?: string;
   public connectionUrl?: string;
-  public provider?: ethers.providers.BaseProvider;
+  public provider?: ethers.providers.JsonRpcProvider;
 
   constructor(requestManager: RequestManager) {
     super();
