@@ -10,10 +10,6 @@ import {
   CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
   PLUGIN_NOTIFICATION_CONNECT,
-  PLUGIN_NOTIFICATION_ON_CLICK,
-  PLUGIN_NOTIFICATION_ON_CHANGE,
-  PLUGIN_NOTIFICATION_MOUNT,
-  PLUGIN_NOTIFICATION_UNMOUNT,
   PLUGIN_NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED,
 } from "@coral-xyz/common";
@@ -109,18 +105,6 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
       case PLUGIN_NOTIFICATION_CONNECT:
         this._handleConnect(event);
         break;
-      case PLUGIN_NOTIFICATION_MOUNT:
-        this._handleMount(event);
-        break;
-      case PLUGIN_NOTIFICATION_UNMOUNT:
-        this._handleUnmount(event);
-        break;
-      case PLUGIN_NOTIFICATION_ON_CLICK:
-        this._handleOnClick(event);
-        break;
-      case PLUGIN_NOTIFICATION_ON_CHANGE:
-        this._handleOnChange(event);
-        break;
       case PLUGIN_NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
         this._handleConnectionUrlUpdated(event);
         break;
@@ -139,23 +123,7 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
       publicKeys[Blockchain.ETHEREUM],
       connectionUrls[Blockchain.ETHEREUM]
     );
-    this.emit("connect", event.data.detail);
-  }
-
-  private _handleMount(event: Event) {
-    this.emit("mount", event.data.detail);
-  }
-
-  private _handleUnmount(event: Event) {
-    this.emit("unmount", event.data.detail);
-  }
-
-  private _handleOnClick(event: Event) {
-    this.emit("click", event.data.detail);
-  }
-
-  private _handleOnChange(event: Event) {
-    this.emit("change", event.data.detail);
+    // Don't emit a connect even because the Solana xnft provider handles that
   }
 
   private _handleConnectionUrlUpdated(event: Event) {
