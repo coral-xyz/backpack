@@ -81,6 +81,7 @@ export function ApproveTransactionRequest() {
       setOpenDrawer={(b) => {
         if (b === false) {
           setRequest(undefined);
+          request!.reject(new Error("user rejected signature request"));
         }
         setOpenDrawer(b);
       }}
@@ -188,7 +189,10 @@ function SendTransactionRequest() {
         }}
       >
         <SecondaryButton
-          onClick={() => setRequest(undefined)}
+          onClick={() => {
+            setRequest(undefined);
+            request!.reject(new Error("user rejected signature request"));
+          }}
           label={"Cancel"}
           style={{
             marginRight: "8px",
