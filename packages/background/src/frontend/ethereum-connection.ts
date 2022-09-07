@@ -41,7 +41,6 @@ export function start(
   events: EventEmitter,
   b: EthereumConnectionBackend
 ): Handle {
-  console.log("starting");
   const ethereumConnection = ChannelAppUi.server(
     CHANNEL_ETHEREUM_CONNECTION_RPC_UI
   );
