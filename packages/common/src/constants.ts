@@ -354,6 +354,8 @@ export const SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION =
 export const SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNT_BALANCE =
   "get-token-account-balance";
 export const SOLANA_CONNECTION_RPC_GET_BALANCE = "solana-get-balance";
+export const SOLANA_CONNECTION_RPC_GET_SLOT = "solana-get-slot";
+export const SOLANA_CONNECTION_RPC_GET_BLOCK_TIME = "solana-get-block-time";
 
 //
 // Ledger API.
@@ -368,6 +370,8 @@ export const LEDGER_INJECTED_CHANNEL_RESPONSE = "ledger-injected-response";
 export const LEDGER_METHOD_UNLOCK = "ledger-method-unlock";
 export const LEDGER_METHOD_SIGN_TRANSACTION = "ledger-method-sign-transaction";
 export const LEDGER_METHOD_SIGN_MESSAGE = "ledger-method-sign-message";
+
+export const PLUGIN_RPC_METHOD_WINDOW_OPEN = "rpc-method-window-open";
 
 export const BACKGROUND_SERVICE_WORKER_READY = "service-worker-ready";
 

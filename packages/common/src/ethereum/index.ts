@@ -49,11 +49,12 @@ export class Ethereum {
     ctx: EthereumContext,
     req: TransferEthRequest
   ) {
-    const unsignedTx = await Ethereum.transferEthTransaction(req);
+    const unsignedTx = await Ethereum.transferEthTransaction(ctx, req);
     return await Ethereum.signAndSendTransaction(ctx, unsignedTx);
   }
 
   public static async transferEthTransaction(
+    ctx: EthereumContext,
     req: TransferEthRequest
   ): Promise<UnsignedTransaction> {
     // Hack: no way to generate an UnsignedTransaction like there is for contracts?

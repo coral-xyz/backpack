@@ -55,6 +55,7 @@ export const RemoveWallet: React.FC<{
               lineHeight: "32px",
               textAlign: "center",
               marginTop: "30px",
+              color: theme.custom.colors.fontColor,
             }}
           >
             {`Are you sure you want to remove ${pubkeyStr}?`}

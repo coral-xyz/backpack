@@ -52,7 +52,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
         onClick={() => setMenuOpen(true)}
         sx={{ padding: 0 }}
       >
-        <MenuIcon sx={{ color: theme.custom.colors.hamburger }} />
+        <MenuIcon sx={{ color: theme.custom.colors.secondary }} />
       </IconButton>
       <WithDrawer openDrawer={menuOpen} setOpenDrawer={setMenuOpen}>
         <div style={{ height: "100%", background: theme.custom.colors.nav }}>

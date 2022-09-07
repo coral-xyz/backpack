@@ -450,6 +450,14 @@ export class SolanaConnectionBackend {
     return await this.connection!.getBalance(publicKey, commitment);
   }
 
+  async getSlot(commitment?: Commitment): Promise<number> {
+    return await this.connection!.getSlot(commitment);
+  }
+
+  async getBlockTime(slot: number): Promise<number | null> {
+    return await this.connection!.getBlockTime(slot);
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Methods below not used currently.
   ///////////////////////////////////////////////////////////////////////////////
@@ -458,10 +466,6 @@ export class SolanaConnectionBackend {
     publicKey: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<number>> {
-    throw new Error("not implemented");
-  }
-
-  async getBlockTime(slot: number): Promise<number | null> {
     throw new Error("not implemented");
   }
 
@@ -562,10 +566,6 @@ export class SolanaConnectionBackend {
   }
 
   getVoteAccounts(commitment?: Commitment): Promise<VoteAccountStatus> {
-    throw new Error("not implemented");
-  }
-
-  getSlot(commitment?: Commitment): Promise<number> {
     throw new Error("not implemented");
   }
 

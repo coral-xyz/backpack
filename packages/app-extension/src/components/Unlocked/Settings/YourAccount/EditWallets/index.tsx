@@ -147,7 +147,15 @@ export const WalletListItem: React.FC<{
           display: "block",
         }}
       />
-      <Typography style={{ flexGrow: 1, marginLeft: "8px" }}>{name}</Typography>
+      <Typography
+        style={{
+          flexGrow: 1,
+          marginLeft: "8px",
+          color: theme.custom.colors.fontColor,
+        }}
+      >
+        {name}
+      </Typography>
       <Typography
         style={{
           color: theme.custom.colors.secondary,

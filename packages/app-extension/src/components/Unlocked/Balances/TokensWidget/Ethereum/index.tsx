@@ -209,7 +209,7 @@ export function ConfirmSendEthereum({
           token={token}
         />
         <ConfirmEthereumSendTable
-          to={to}
+          to={destinationAddress}
           from={from}
           network={network}
           networkFee={networkFee}

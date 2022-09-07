@@ -26,6 +26,7 @@ import {
   SOLANA_RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
   SOLANA_RPC_METHOD_SIMULATE as PLUGIN_SOLANA_RPC_METHOD_SIMULATE_TX,
   SOLANA_RPC_METHOD_SIGN_MESSAGE as PLUGIN_SOLANA_RPC_METHOD_SIGN_MESSAGE,
+  PLUGIN_RPC_METHOD_WINDOW_OPEN,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ON_CLICK,
   PLUGIN_NOTIFICATION_ON_CHANGE,
@@ -414,6 +415,8 @@ export class Plugin {
         return await this._handleGet(params[0]);
       case PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT:
         return await this._handlePut(params[0], params[1]);
+      case PLUGIN_RPC_METHOD_WINDOW_OPEN:
+        return await this._handleWindowOpen(params[0]);
       case PLUGIN_ETHEREUM_RPC_METHOD_SIGN_TX:
         return await this._handleEthereumSignTransaction(params[0], params[1]);
       case PLUGIN_ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX:
@@ -558,6 +561,11 @@ export class Plugin {
       params: [this.xnftAddress.toString(), key, value],
     });
     return [resp];
+  }
+
+  private async _handleWindowOpen(url: string): Promise<RpcResponse> {
+    window.open(url, "_blank");
+    return ["success"];
   }
 
   private clickHandlerError(): RpcResponse | null {
