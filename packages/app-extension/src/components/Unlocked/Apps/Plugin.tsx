@@ -6,6 +6,20 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { PowerIcon, MoreIcon } from "../../common/Icon";
 import { Simulator } from "./Simulator";
 
+/*
+export function PluginAppContainer({
+	xnftAddress,
+	closePlugin,
+}: {
+  xnftAddress: string;
+  closePlugin: () => void;
+}) {
+	return (
+
+	);
+}
+*/
+
 export function PluginApp({
   xnftAddress,
   closePlugin,
@@ -20,7 +34,7 @@ export function PluginApp({
   );
 }
 
-export function PluginDisplay({
+function PluginDisplay({
   xnft,
   closePlugin,
 }: {

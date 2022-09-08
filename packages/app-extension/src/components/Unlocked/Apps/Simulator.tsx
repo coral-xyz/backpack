@@ -1,7 +1,7 @@
-import { SIMULATOR_URL } from "@coral-xyz/recoil";
+import { usePlugins, SIMULATOR_URL } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { useState, useEffect } from "react";
-import { PluginDisplay } from "./Plugin";
+import { _PluginDisplay } from "./Plugin";
 
 // The refresh code is a big hack. :)
 export function Simulator({
@@ -12,12 +12,22 @@ export function Simulator({
   closePlugin: () => void;
 }) {
   const theme = useCustomTheme();
-  const props = { xnft, closePlugin };
   const refresh = useJavaScriptRefresh(SIMULATOR_URL);
+  const plugins = usePlugins();
+  const p = plugins.find((p) => p.xnftAddress.toString() === xnft);
+
+  // Hack: This is hit due to the framer-motion animation.
+  if (!xnft) {
+    return <></>;
+  }
+  if (p === undefined) {
+    throw new Error("unable to find plugin");
+  }
+
   return refresh % 2 === 1 ? (
     <div style={{ backgroundColor: theme.custom.colors.background }}></div>
   ) : (
-    <PluginDisplay {...props} />
+    <_PluginDisplay plugin={p!} closePlugin={closePlugin} />
   );
 }
 
