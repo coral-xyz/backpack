@@ -20,7 +20,6 @@ import {
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
 } from "@coral-xyz/common";
-import * as cmn from "./common/ethereum";
 import { RequestManager } from "./request-manager";
 
 const logger = getLogger("provider-ethereum-injection");
@@ -89,11 +88,9 @@ export class ProviderEthereumInjection extends EventEmitter {
 
   public isBackpack: boolean;
   public isConnected: boolean;
-  public chainId: string | null;
-  public address?: string;
-  public selectedAddress?: string;
   public publicKey?: string;
-  public provider?: ethers.providers.JsonRpcProvider;
+  public provider: ethers.providers.JsonRpcProvider | null;
+  public chainId: string | null;
 
   constructor() {
     super();
@@ -109,6 +106,8 @@ export class ProviderEthereumInjection extends EventEmitter {
 
     this.isBackpack = true;
     this.isConnected = false;
+    this.provider = null;
+    this.chainId = null;
   }
 
   // Setup channels with the content script.
