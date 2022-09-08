@@ -30,7 +30,7 @@ import {
 import * as cmn from "./common/solana";
 import { RequestManager } from "./request-manager";
 
-const logger = getLogger("provider-injection");
+const logger = getLogger("provider-solana-injection");
 
 export class ProviderSolanaInjection extends EventEmitter implements Provider {
   private _options?: ConfirmOptions;

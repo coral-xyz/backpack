@@ -6,6 +6,10 @@ import {
   getLogger,
   BackgroundEthereumProvider,
   ETHEREUM_RPC_METHOD_CONNECT,
+  ETHEREUM_RPC_METHOD_DISCONNECT,
+  ETHEREUM_RPC_METHOD_SIGN_TX,
+  ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX,
+  ETHEREUM_RPC_METHOD_SIGN_MESSAGE,
   CHANNEL_ETHEREUM_RPC_REQUEST,
   CHANNEL_ETHEREUM_RPC_RESPONSE,
   CHANNEL_ETHEREUM_NOTIFICATION,
@@ -20,6 +24,8 @@ import * as cmn from "./common/ethereum";
 import { RequestManager } from "./request-manager";
 
 const logger = getLogger("provider-ethereum-injection");
+
+const { base58: bs58 } = ethers.utils;
 
 interface RequestArguments {
   readonly method: string;
@@ -135,32 +141,35 @@ export class ProviderEthereumInjection extends EventEmitter {
   }
 
   async _handleNotificationConnected(event) {
-    const { publicKey, connectionUrl } = event.data.detail.data;
-    this.publicKey = publicKey;
-    this.provider = new ethers.providers.JsonRpcProvider(connectionUrl);
-    this.isConnected = true;
+    // Nothing to be done here, init is handled in the eth_accounts handler below
   }
 
   async _handleNotificationDisconnected(event) {}
 
-  async _handleNotificationConnectionUrlUpdated(event) {}
+  async _handleNotificationConnectionUrlUpdated(event) {
+    const { connectionUrl } = event.data.detail.data;
+    this.provider = new BackgroundEthereumProvider(
+      this._connectionRequestManager,
+      connectionUrl
+    );
+  }
 
-  async _handleNotificationActiveWalletUpdated(event) {}
+  async _handleNotificationActiveWalletUpdated(event) {
+    const { publicKey } = event.data.detail.data;
+    this.publicKey = publicKey;
+  }
 
-  /**
-   * Submits an RPC request for the given method, with the given params.
-   * Resolves with the result of the method call, or rejects on error.
-   *
-   * @param args - The RPC request arguments.
-   * @param args.method - The RPC method name.
-   * @param args.params - The parameters for the RPC method.
-   * @returns A Promise that resolves with the result of the RPC method,
-   * or rejects if an error is encountered.
-   */
+  _encodeTransaction(transaction: any) {
+    // Remove eth_sendTransaction gas key since it is incompatible with ethers.
+    // Backpack will set gas parameters.
+    delete transaction.gas;
+    // As above
+    delete transaction.from;
+    return bs58.encode(ethers.utils.serializeTransaction(transaction));
+  }
+
   async request(args: RequestArguments): Promise<JsonRpcResponse> {
-    console.log(args);
     if (!args || typeof args !== "object" || Array.isArray(args)) {
-      console.log(args);
       throw ethErrors.rpc.invalidRequest({
         message: messages.errors.invalidRequestArgs(),
         data: args,
@@ -193,7 +202,40 @@ export class ProviderEthereumInjection extends EventEmitter {
         method: ETHEREUM_RPC_METHOD_CONNECT,
         params: [],
       });
+      this.publicKey = result.publicKey;
+      this.provider = new ethers.providers.JsonRpcProvider(
+        result.connectionUrl
+      );
+      this.isConnected = true;
       return [result.publicKey];
+    };
+
+    const signTransaction = async (transaction: any) => {
+      const serializedTx = this._encodeTransaction(transaction);
+      const result = await this._requestManager.request({
+        method: ETHEREUM_RPC_METHOD_SIGN_TX,
+        params: [serializedTx, this.publicKey],
+      });
+      console.log("Sign result", result);
+      return result;
+    };
+
+    const signAndSendTransaction = async (transaction: any) => {
+      const serializedTx = this._encodeTransaction(transaction);
+      const result = await this._requestManager.request({
+        method: ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX,
+        params: [serializedTx, this.publicKey],
+      });
+      console.log("Sign and send", result);
+      return result;
+    };
+
+    const signMessage = async (message: string) => {
+      const result = await this._requestManager.request({
+        method: ETHEREUM_RPC_METHOD_SIGN_MESSAGE,
+        params: [message, this.publicKey],
+      });
+      return result;
     };
 
     const functionMap = {
@@ -217,29 +259,15 @@ export class ProviderEthereumInjection extends EventEmitter {
         this.provider!.getTransaction(hash),
       eth_getTransactionReceipt: (hash: string) =>
         this.provider!.getTransactionReceipt(hash),
-      eth_sign: (_address, msg) =>
-        cmn.signMessage(this.publicKey!, this._requestManager, msg),
-      eth_signTypedData: (_address, msg) =>
-        cmn.signMessage(this.publicKey!, this._requestManager, msg),
-      eth_signTransaction: (transaction) =>
-        cmn.signTransaction(
-          this.publicKey!,
-          this._requestManager,
-          this.provider!,
-          transaction
-        ),
-      eth_sendTransaction: (transaction) =>
-        cmn.sendTransaction(
-          this.publicKey!,
-          this._requestManager,
-          this.provider!,
-          transaction
-        ),
+      eth_sign: (_address, message) => signMessage(message),
+      eth_signTypedData: (_address, message) => signMessage(message),
+      eth_signTransaction: (transaction) => signTransaction(transaction),
+      eth_sendTransaction: (transaction) => signAndSendTransaction(transaction),
+      personal_sign: (_address, message) => signMessage(message),
     };
 
     const func = functionMap[method];
     if (func === undefined) {
-      console.log("no function for rpc method", method);
       throw ethErrors.rpc.invalidRequest({
         message: messages.errors.invalidRequestMethod(),
         data: args,
@@ -250,7 +278,6 @@ export class ProviderEthereumInjection extends EventEmitter {
       let rpcResult;
       try {
         rpcResult = await func(...(<[]>(params ? params : [])));
-        console.log("rpc result", rpcResult);
       } catch (error) {
         console.error("rpc response error", error);
         return reject(error);

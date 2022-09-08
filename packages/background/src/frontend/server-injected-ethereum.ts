@@ -15,9 +15,7 @@ import {
   openApprovalPopupWindow,
   openLockedApprovalPopupWindow,
   openApproveTransactionPopupWindow,
-  openApproveAllTransactionsPopupWindow,
   openApproveMessagePopupWindow,
-  openXnft,
   BrowserRuntimeExtension,
   ETHEREUM_RPC_METHOD_CONNECT,
   ETHEREUM_RPC_METHOD_DISCONNECT,
@@ -94,21 +92,14 @@ async function handle<T = any>(
   switch (method) {
     case ETHEREUM_RPC_METHOD_CONNECT:
       return await handleEthereumConnect(ctx);
-    /**
     case ETHEREUM_RPC_METHOD_DISCONNECT:
-      return handleEthereumDisconnect(ctx);
+      return await handleEthereumDisconnect(ctx);
     case ETHEREUM_RPC_METHOD_SIGN_MESSAGE:
       return await handleEthereumSignMessage(ctx, params[0], params[1]);
     case ETHEREUM_RPC_METHOD_SIGN_TX:
       return await handleEthereumSignTx(ctx, params[0], params[1]);
     case ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX:
-      return await handleEthereumSignAndSendTx(
-        ctx,
-        params[0],
-        params[1],
-        params[2]
-      );
-        **/
+      return await handleEthereumSignAndSendTx(ctx, params[0], params[1]);
     default:
       throw new Error(`unexpected rpc method: ${method}`);
   }
@@ -187,4 +178,152 @@ async function handleEthereumConnect(
   }
 
   throw new Error("user did not approve");
+}
+
+async function handleEthereumDisconnect(
+  ctx: Context<Backend>
+): Promise<RpcResponse<void>> {
+  await ctx.events.emit(BACKEND_EVENT, {
+    name: NOTIFICATION_ETHEREUM_DISCONNECTED,
+  });
+  return [];
+}
+
+async function handleEthereumSignAndSendTx(
+  ctx: Context<Backend>,
+  tx: string,
+  walletAddress: string
+): Promise<RpcResponse<string>> {
+  // Get user approval.
+  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
+    return openApproveTransactionPopupWindow(
+      ctx.sender.origin,
+      ctx.sender.tab.title,
+      requestId,
+      tx,
+      walletAddress
+    );
+  });
+
+  if (uiResp.error) {
+    logger.debug("require ui action error", uiResp);
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+    return;
+  }
+
+  let resp: RpcResponse<string>;
+  const didApprove = uiResp.result;
+
+  try {
+    // Only sign if the user clicked approve.
+    if (didApprove) {
+      const sig = await ctx.backend.ethereumSignAndSendTransaction(
+        tx,
+        walletAddress
+      );
+      console.log(sig);
+      resp = [sig];
+    }
+  } catch (err) {
+    logger.debug("error sign and sending transaction", err.toString());
+  }
+
+  if (!uiResp.windowClosed) {
+    // BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  }
+  if (resp) {
+    return resp;
+  }
+
+  throw new Error("user denied ethereum transaction sign and send");
+}
+
+async function handleEthereumSignTx(
+  ctx: Context<Backend>,
+  tx: string,
+  walletAddress: string
+): Promise<RpcResponse<string>> {
+  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
+    return openApproveTransactionPopupWindow(
+      ctx.sender.origin,
+      ctx.sender.tab.title,
+      requestId,
+      tx,
+      walletAddress
+    );
+  });
+
+  if (uiResp.error) {
+    logger.debug("require ui action error", uiResp);
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+    return;
+  }
+
+  let resp: RpcResponse<string>;
+  const didApprove = uiResp.result;
+
+  try {
+    // Only sign if the user clicked approve.
+    if (didApprove) {
+      const sig = await ctx.backend.ethereumSignTransaction(tx, walletAddress);
+      resp = [sig];
+    }
+  } catch (err) {
+    logger.debug("error signing transaction", err.toString());
+  }
+
+  console.log(uiResp);
+  console.log(resp);
+
+  if (!uiResp.windowClosed) {
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  }
+  if (resp) {
+    return resp;
+  }
+
+  throw new Error("user denied ethereum transaction signature");
+}
+
+async function handleEthereumSignMessage(
+  ctx: Context<Backend>,
+  msg: string,
+  walletAddress: string
+): Promise<RpcResponse<string>> {
+  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
+    return openApproveMessagePopupWindow(
+      ctx.sender.origin,
+      ctx.sender.tab.title,
+      requestId,
+      msg,
+      walletAddress
+    );
+  });
+
+  if (uiResp.error) {
+    logger.debug("require ui action error", uiResp);
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+    return;
+  }
+
+  let resp: RpcResponse<string>;
+  const didApprove = uiResp.result;
+
+  try {
+    if (didApprove) {
+      const sig = await ctx.backend.ethereumSignMessage(msg, walletAddress);
+      resp = [sig];
+    }
+  } catch (err) {
+    logger.debug("error sign message", err.toString());
+  }
+
+  if (!uiResp.windowClosed) {
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+  }
+  if (resp) {
+    return resp;
+  }
+
+  throw new Error("user denied ethereum message signature");
 }
