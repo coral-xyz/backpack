@@ -1,8 +1,7 @@
 export type Background = {
   _serverUi: Handle;
   _solanaConnection: Handle;
-  _serverInjectedSolana?: Handle;
-  _serverInjectedEthereum?: Handle;
+  _serverInjected?: Handle;
   _ethereumConnection: Handle;
 };
 
