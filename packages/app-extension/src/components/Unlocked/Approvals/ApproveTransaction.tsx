@@ -1,7 +1,7 @@
 import { ethers, BigNumber } from "ethers";
 import { List, ListItem, Typography } from "@mui/material";
 import _CheckIcon from "@mui/icons-material/Check";
-import { useTransactionData } from "@coral-xyz/recoil";
+import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
 import { Blockchain } from "@coral-xyz/common";
 import { styles } from "@coral-xyz/themes";
 import { Loading } from "../../common";
@@ -77,6 +77,8 @@ export function ApproveTransaction({
 }) {
   const classes = useStyles();
 
+  const blockchain = useWalletBlockchain(wallet);
+
   const onConfirm = async () => {
     onCompletion(true);
   };
@@ -95,7 +97,7 @@ export function ApproveTransaction({
       onConfirmLabel="Approve"
       onDeny={onDeny}
     >
-      <TransactionData tx={tx} />
+      <TransactionData blockchain={blockchain as Blockchain} tx={tx} />
     </WithApproval>
   );
 }
@@ -138,11 +140,17 @@ export function ApproveAllTransactions({
   );
 }
 
-function TransactionData({ tx }: { tx: string | null }) {
+function TransactionData({
+  blockchain,
+  tx,
+}: {
+  blockchain: Blockchain;
+  tx: string | null;
+}) {
   const classes = useStyles();
 
   const { loading, simulationError, balanceChanges, network, networkFee } =
-    useTransactionData(Blockchain.SOLANA, tx);
+    useTransactionData(blockchain, tx);
 
   if (loading) {
     return <Loading />;
