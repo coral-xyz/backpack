@@ -34,6 +34,8 @@ import {
   PLUGIN_NOTIFICATION_UNMOUNT,
   PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED,
+  PLUGIN_NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
+  PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED,
   PLUGIN_REQUEST_ETHEREUM_SIGN_TRANSACTION,
   PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE,
@@ -392,6 +394,44 @@ export class Plugin {
         type: CHANNEL_PLUGIN_NOTIFICATION,
         detail: {
           name: PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED,
+          data: {
+            publicKey,
+          },
+        },
+      };
+      this._iframeActive?.contentWindow!.postMessage(event, "*");
+    }
+  }
+
+  public pushEthereumConnectionChangedNotification(url: string) {
+    this._connectionUrls = {
+      ...this._connectionUrls,
+      [Blockchain.ETHEREUM]: url,
+    };
+    if (this._iframeActive) {
+      const event = {
+        type: CHANNEL_PLUGIN_NOTIFICATION,
+        detail: {
+          name: PLUGIN_NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
+          data: {
+            url,
+          },
+        },
+      };
+      this._iframeActive?.contentWindow!.postMessage(event, "*");
+    }
+  }
+
+  public pushEthereumPublicKeyChangedNotification(publicKey: string) {
+    this._activeWallets = {
+      ...this._activeWallets,
+      [Blockchain.ETHEREUM]: publicKey,
+    };
+    if (this._iframeActive) {
+      const event = {
+        type: CHANNEL_PLUGIN_NOTIFICATION,
+        detail: {
+          name: PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED,
           data: {
             publicKey,
           },

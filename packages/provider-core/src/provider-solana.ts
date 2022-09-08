@@ -27,7 +27,7 @@ import {
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
 } from "@coral-xyz/common";
-import * as cmn from "./common";
+import * as cmn from "./common/solana";
 import { RequestManager } from "./request-manager";
 
 const logger = getLogger("provider-injection");

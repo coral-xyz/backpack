@@ -3,13 +3,13 @@ import { useSignMessage } from "wagmi";
 
 export const SignMessageButton: FC = () => {
   const { data, isError, isLoading, isSuccess, signMessage } = useSignMessage({
-    message: "WAO",
+    message: "Hello, world!",
   });
 
   return (
     <div>
       <button disabled={isLoading} onClick={() => signMessage()}>
-        Sign the message: WAO
+        Sign the message: Hello, world!
       </button>
       {isSuccess && <div>Signature: {data}</div>}
       {isError && <div>Error signing message</div>}

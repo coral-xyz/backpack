@@ -7,6 +7,11 @@ import {
   CHANNEL_SOLANA_RPC_RESPONSE,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
+  CHANNEL_ETHEREUM_NOTIFICATION,
+  CHANNEL_ETHEREUM_RPC_REQUEST,
+  CHANNEL_ETHEREUM_RPC_RESPONSE,
+  CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST,
+  CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE,
 } from "@coral-xyz/common";
 
 const logger = getLogger("content-script");
@@ -44,11 +49,18 @@ function initChannels() {
 // script.
 function initClientChannels() {
   //
-  // Wallet specific rpc requests.
+  // Wallet Solana specific rpc requests.
   //
   ChannelContentScript.proxy(
     CHANNEL_SOLANA_RPC_REQUEST,
     CHANNEL_SOLANA_RPC_RESPONSE
+  );
+  //
+  // Wallet Ethereum specific rpc requests.
+  //
+  ChannelContentScript.proxy(
+    CHANNEL_ETHEREUM_RPC_REQUEST,
+    CHANNEL_ETHEREUM_RPC_RESPONSE
   );
   //
   // Solana Connection forwarding.
@@ -57,12 +69,20 @@ function initClientChannels() {
     CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
     CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
   );
+  //
+  // Ethereum Provider forwarding.
+  //
+  ChannelContentScript.proxy(
+    CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST,
+    CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE
+  );
 }
 
 // Initialize all communication channels from the background script to the
 // client.
 function initBackgroundChannels() {
   // Forward all notifications from the background script to the injected page.
+  ChannelContentScript.proxyReverse(CHANNEL_ETHEREUM_NOTIFICATION);
   ChannelContentScript.proxyReverse(CHANNEL_SOLANA_NOTIFICATION);
 }
 

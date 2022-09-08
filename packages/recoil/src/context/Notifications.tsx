@@ -333,6 +333,9 @@ export function NotificationsProvider(props: any) {
 
     const handleEthereumActiveWalletUpdated = (notif: Notification) => {
       setActiveWallet(notif.data.activeWallet);
+      allPlugins().forEach((p) => {
+        p.pushEthereumPublicKeyChangedNotification(notif.data.activeWallet);
+      });
       setActiveWallets(notif.data.activeWallets);
     };
 
@@ -347,6 +350,9 @@ export function NotificationsProvider(props: any) {
 
     const handleEthereumConnectionUrlUpdated = (notif: Notification) => {
       setEthereumConnectionUrl(notif.data.url);
+      allPlugins().forEach((p) => {
+        p.pushEthereumConnectionChangedNotification(notif.data.url);
+      });
     };
 
     //
