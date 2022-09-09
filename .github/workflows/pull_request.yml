@@ -92,22 +92,6 @@ jobs:
       ##########################################################################
 
       #
-      # Build the extension, stable release.
-      #
-      - name: "build stable"
-        env:
-          BACKPACK_CONFIG_VERSION: "latest-${{ github.run_number }}"
-          BACKPACK_CONFIG_LOG_LEVEL: "info"
-          BACKPACK_FEATURE_LIGHT_MODE: "true"
-          BACKPACK_FEATURE_POP_MODE: "true"
-          # CI!=true so that build warnings aren't treated like errors (for now)
-          CI: ""
-        run: yarn build
-      - name: "rename stable build"
-        working-directory: packages/app-extension
-        run: mv build build-stable
-
-      #
       # Build the extension, edge release.
       #
       - name: "build edge"
@@ -120,9 +104,22 @@ jobs:
           # CI!=true so that build warnings aren't treated like errors (for now)
           CI: ""
         run: yarn build
-      - name: "rename stable build"
+      - name: "rename edge build"
         working-directory: packages/app-extension
         run: mv build build-edge
+
+      #
+      # Build the extension, stable release.
+      #
+      - name: "build stable"
+        env:
+          BACKPACK_CONFIG_VERSION: "latest-${{ github.run_number }}"
+          BACKPACK_CONFIG_LOG_LEVEL: "info"
+          BACKPACK_FEATURE_LIGHT_MODE: "true"
+          BACKPACK_FEATURE_POP_MODE: "true"
+          # CI!=true so that build warnings aren't treated like errors (for now)
+          CI: ""
+        run: yarn build
 
       ##########################################################################
       # GitHub Pages.
@@ -165,13 +162,13 @@ jobs:
       - name: "zip stable build artifacts"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         working-directory: packages/app-extension
-        run: zip -r build-stable-${{ github.run_number }}.zip build-stable/
+        run: zip -r build-${{ github.run_number }}.zip build/
       - name: "upload build artifacts"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v2
         with:
-          name: backpack-build-stable
-          path: packages/app-extension/build-stable-${{ github.run_number }}.zip
+          name: backpack-build
+          path: packages/app-extension/build-${{ github.run_number }}.zip
 
       #
       # Upload edge artifact.
@@ -202,7 +199,7 @@ jobs:
       - uses: actions/download-artifact@v2
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
-          name: backpack-build-stable
+          name: backpack-build
           path: ./
       - uses: actions/download-artifact@v2
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -234,8 +231,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build-stable-${{ github.run_number }}.zip
-          asset_name: build-stable-${{ github.run_number }}.zip
+          asset_path: ./build-${{ github.run_number }}.zip
+          asset_name: build-${{ github.run_number }}.zip
           asset_content_type: application/zip
       - uses: actions/upload-release-asset@v1.0.1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -257,7 +254,7 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          args: packages/app-extension/build-stable-${{ github.run_number }}.zip
+          args: packages/app-extension/build-${{ github.run_number }}.zip
 
       ##########################################################################
       # NPM Publish.
