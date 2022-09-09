@@ -105,7 +105,7 @@ jobs:
         run: yarn build
       - name: "rename stable build"
         working-directory: packages/app-extension
-        run: cp build build-stable
+        run: mv build build-stable
 
       #
       # Build the extension, edge release.
@@ -122,7 +122,7 @@ jobs:
         run: yarn build
       - name: "rename stable build"
         working-directory: packages/app-extension
-        run: cp build build-edge
+        run: mv build build-edge
 
       ##########################################################################
       # GitHub Pages.
