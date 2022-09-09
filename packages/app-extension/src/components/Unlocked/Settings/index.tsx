@@ -1,87 +1,87 @@
-import { useEffect, useState, Suspense } from "react";
-import * as bs58 from "bs58";
-import { ethers } from "ethers";
-import { Button, Box, Typography, IconButton } from "@mui/material";
-import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import {
-  Add,
-  Lock,
-  Help,
-  AccountCircleOutlined,
-  Tab as WindowIcon,
-  Settings,
-} from "@mui/icons-material";
-import { Keypair } from "@solana/web3.js";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import {
-  useBackgroundClient,
-  useWalletPublicKeys,
-  useActiveWallet,
-  useActiveWallets,
-  useBlockchainLogo,
-} from "@coral-xyz/recoil";
-import {
-  openPopupWindow,
-  toTitleCase,
-  Blockchain,
   BACKPACK_FEATURE_POP_MODE,
-  BACKPACK_FEATURE_MULTICHAIN,
+  Blockchain,
+  DISCORD_INVITE_LINK,
+  openPopupWindow,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-  DISCORD_INVITE_LINK,
 } from "@coral-xyz/common";
 import {
+  useActiveWallet,
+  useActiveWallets,
+  useBackgroundClient,
+  useBlockchainLogo,
+  useUsername,
+  useWalletPublicKeys,
+} from "@coral-xyz/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import {
+  AccountCircleOutlined,
+  Add,
+  ExpandLess,
+  ExpandMore,
+  Help,
+  Lock,
+  Settings,
+  Tab as WindowIcon,
+} from "@mui/icons-material";
+import { Box, IconButton, Typography } from "@mui/material";
+import { Keypair } from "@solana/web3.js";
+import * as bs58 from "bs58";
+import { ethers } from "ethers";
+import { Suspense, useEffect, useState } from "react";
+import {
   Header,
+  LaunchDetail,
   List,
   ListItem,
-  PushDetail,
-  LaunchDetail,
   PrimaryButton,
+  PushDetail,
   SubtextParagraph,
   TextField,
   WalletAddress,
 } from "../../../components/common";
+import { CheckIcon, GridIcon } from "../../common/Icon";
 import {
-  WithDrawer,
   CloseButton,
   useDrawerContext,
+  WithDrawer,
   WithMiniDrawer,
 } from "../../common/Layout/Drawer";
 import {
-  useNavStack,
   NavStackEphemeral,
   NavStackScreen,
+  useNavStack,
 } from "../../common/Layout/NavStack";
-import {
-  ShowPrivateKeyWarning,
-  ShowPrivateKey,
-} from "./YourAccount/ShowPrivateKey";
-import {
-  ShowRecoveryPhraseWarning,
-  ShowRecoveryPhrase,
-} from "./YourAccount/ShowRecoveryPhrase";
+import { Reset } from "../../Locked/Reset";
+import { ResetWarning } from "../../Locked/Reset/ResetWarning";
+import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
+import { AddConnectWalletMenu, ConfirmCreateWallet } from "./AddConnectWallet";
 import { Preferences } from "./Preferences";
 import { PreferencesSolana } from "./Preferences/Solana";
 import { PreferencesEthereum } from "./Preferences/Ethereum";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
-import { PreferencesTrustedApps } from "./Preferences/TrustedApps";
-import { PreferencesSolanaConnection } from "./Preferences/Solana/ConnectionSwitch";
 import { PreferencesSolanaCommitment } from "./Preferences/Solana/Commitment";
+import { PreferencesSolanaConnection } from "./Preferences/Solana/ConnectionSwitch";
 import { PreferencesSolanaExplorer } from "./Preferences/Solana/Explorer";
-import { ChangePassword } from "./YourAccount/ChangePassword";
-import { ResetWarning } from "../../Locked/Reset/ResetWarning";
-import { Reset } from "../../Locked/Reset";
-import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
-import { AddConnectWalletMenu, ConfirmCreateWallet } from "./AddConnectWallet";
+import { PreferencesTrustedApps } from "./Preferences/TrustedApps";
+import { XnftSettings } from "./Xnfts";
+import { XnftDetail } from "./Xnfts/Detail";
 import { YourAccount } from "./YourAccount";
+import { ChangePassword } from "./YourAccount/ChangePassword";
 import { EditWallets } from "./YourAccount/EditWallets";
 import { RemoveWallet } from "./YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
-import { GridIcon, CheckIcon } from "../../common/Icon";
-import { XnftSettings } from "./Xnfts";
-import { XnftDetail } from "./Xnfts/Detail";
+import {
+  ShowPrivateKey,
+  ShowPrivateKeyWarning,
+} from "./YourAccount/ShowPrivateKey";
+import {
+  ShowRecoveryPhrase,
+  ShowRecoveryPhraseWarning,
+} from "./YourAccount/ShowRecoveryPhrase";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -679,6 +679,7 @@ function SettingsList({ close }: { close: () => void }) {
   const theme = useCustomTheme();
   const nav = useNavStack();
   const background = useBackgroundClient();
+  const username = useUsername();
 
   const lockWallet = () => {
     background
@@ -691,7 +692,7 @@ function SettingsList({ close }: { close: () => void }) {
 
   const settingsMenu = [
     {
-      label: "Your Account",
+      label: `Your Account (${username})`,
       onClick: () => nav.push("your-account"),
       icon: (props: any) => <AccountCircleOutlined {...props} />,
       detailIcon: <PushDetail />,
