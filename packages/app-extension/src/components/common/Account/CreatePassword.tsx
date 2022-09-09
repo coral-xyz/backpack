@@ -54,7 +54,10 @@ export function CreatePassword({
       setError(PasswordError.NO_MATCH);
       return;
     }
-    const { user, session, error } = await supabase.auth.signUp({
+    const {
+      data: { user, session },
+      error,
+    } = await supabase.auth.signUp({
       email: `${username}@example.com`,
       password,
     });

@@ -370,7 +370,10 @@ export class Backend {
 
     const { username } = await store.getWalletData();
 
-    const { user, session, error } = await supabase.auth.signIn({
+    const {
+      data: { user, session },
+      error,
+    } = await supabase.auth.signInWithPassword({
       email: `${username}@example.com`,
       password,
     });
