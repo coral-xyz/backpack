@@ -466,6 +466,7 @@ export function Error({
 }) {
   const explorer = useBlockchainExplorer(blockchain);
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
+  const theme = useCustomTheme();
 
   return (
     <div
@@ -486,6 +487,7 @@ export function Error({
         <Typography
           style={{
             marginBottom: "16px",
+            color: theme.custom.colors.fontColor,
           }}
         >
           Error
@@ -503,6 +505,7 @@ export function Error({
             marginBottom: "16px",
             overflow: "hidden",
             textOverflow: "ellipsis",
+            color: theme.custom.colors.fontColor,
           }}
         >
           {error}
