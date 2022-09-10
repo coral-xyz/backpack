@@ -375,114 +375,112 @@ function WalletList({
   )[0];
   return (
     <div style={{ marginBottom: "16px" }}>
-      {BACKPACK_FEATURE_MULTICHAIN && (
-        <div
+      <div
+        style={{
+          display: "flex",
+        }}
+      >
+        <ListItem
+          disableRipple
           style={{
+            marginLeft: "16px",
+            marginRight: "16px",
+            background: theme.custom.colors.nav,
+            borderTopLeftRadius: "8px",
+            borderTopRightRadius: "8px",
+            borderBottomLeftRadius: showAll ? "0px" : "8px",
+            borderBottomRightRadius: showAll ? "0px" : "8px",
+            height: "56px",
             display: "flex",
+            paddingLeft: "12px",
+            paddingRight: "12px",
+            flex: 1,
+            borderBottom: showAll
+              ? `solid 1pt ${theme.custom.colors.border}`
+              : undefined,
           }}
+          onClick={() => setShowAll((s) => !s)}
         >
-          <ListItem
-            disableRipple
+          <div
             style={{
-              marginLeft: "16px",
-              marginRight: "16px",
-              background: theme.custom.colors.nav,
-              borderTopLeftRadius: "8px",
-              borderTopRightRadius: "8px",
-              borderBottomLeftRadius: showAll ? "0px" : "8px",
-              borderBottomRightRadius: showAll ? "0px" : "8px",
-              height: "56px",
               display: "flex",
-              paddingLeft: "12px",
-              paddingRight: "12px",
-              flex: 1,
-              borderBottom: showAll
-                ? `solid 1pt ${theme.custom.colors.border}`
-                : undefined,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "100%",
             }}
-            onClick={() => setShowAll((s) => !s)}
           >
             <div
               style={{
                 display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                width: "100%",
               }}
             >
               <div
                 style={{
                   display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
                 }}
               >
-                <div
+                <img
+                  src={blockchainLogo}
                   style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    flexDirection: "column",
+                    width: "12px",
+                    borderRadius: "2px",
                   }}
-                >
-                  <img
-                    src={blockchainLogo}
-                    style={{
-                      width: "12px",
-                      borderRadius: "2px",
-                    }}
-                  />
-                </div>
-                <div
-                  style={{
-                    marginLeft: "8px",
-                    display: "flex",
-                    justifyContent: "center",
-                    flexDirection: "column",
-                  }}
-                >
-                  <WalletAddress
-                    name={name}
-                    publicKey={publicKey}
-                    style={{
-                      fontWeight: 500,
-                      lineHeight: "24px",
-                      fontSize: "16px",
-                    }}
-                    nameStyle={{
-                      color: theme.custom.colors.fontColor,
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      maxWidth: "75px",
-                    }}
-                  />
-                </div>
+                />
               </div>
               <div
                 style={{
+                  marginLeft: "8px",
                   display: "flex",
-                  flexDirection: "column",
                   justifyContent: "center",
+                  flexDirection: "column",
                 }}
               >
-                {showAll ? (
-                  <ExpandMore
-                    style={{
-                      width: "22px",
-                      color: theme.custom.colors.secondary,
-                    }}
-                  />
-                ) : (
-                  <ExpandLess
-                    style={{
-                      width: "22px",
-                      color: theme.custom.colors.secondary,
-                    }}
-                  />
-                )}
+                <WalletAddress
+                  name={name}
+                  publicKey={publicKey}
+                  style={{
+                    fontWeight: 500,
+                    lineHeight: "24px",
+                    fontSize: "16px",
+                  }}
+                  nameStyle={{
+                    color: theme.custom.colors.fontColor,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: "75px",
+                  }}
+                />
               </div>
             </div>
-          </ListItem>
-        </div>
-      )}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              {showAll ? (
+                <ExpandMore
+                  style={{
+                    width: "22px",
+                    color: theme.custom.colors.secondary,
+                  }}
+                />
+              ) : (
+                <ExpandLess
+                  style={{
+                    width: "22px",
+                    color: theme.custom.colors.secondary,
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        </ListItem>
+      </div>
       {showAll && (
         <div style={{}}>
           <List
