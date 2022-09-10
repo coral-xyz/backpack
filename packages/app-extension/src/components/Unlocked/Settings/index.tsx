@@ -501,7 +501,7 @@ function WalletList({
                   <ListItem
                     key={publicKey.toString()}
                     onClick={() => clickWallet(publicKey)}
-                    isFirst={BACKPACK_FEATURE_MULTICHAIN ? false : idx === 0}
+                    isFirst={false}
                     isLast={idx === keys.length - 1}
                     style={{
                       paddingTop: "16px",
