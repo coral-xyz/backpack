@@ -6,25 +6,28 @@ import {
   EXTENSION_WIDTH,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
 } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
+
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useState } from "react";
 import { CreatePassword } from "../common/Account/CreatePassword";
-import type { SelectedAccount } from "../common/Account/ImportAccounts";
-import { ImportAccounts } from "../common/Account/ImportAccounts";
+import {
+  ImportAccounts,
+  SelectedAccount,
+} from "../common/Account/ImportAccounts";
 import { MnemonicInput } from "../common/Account/MnemonicInput";
 import { SetupComplete } from "../common/Account/SetupComplete";
 import { NavBackButton, WithNav } from "../common/Layout/Nav";
+import { InviteCode } from "./InviteCode";
 import { OnboardingWelcome } from "./OnboardingWelcome";
 
 export type OnboardingFlows = "create-wallet" | "import-wallet" | null;
 
 export function Onboarding() {
   const [mnemonic, setMnemonic] = useState("");
-  const [derivationPath, setDerivationPath] = useState<DerivationPath>();
+  const [inviteCode, setInviteCode] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [accounts, setAccounts] = useState<SelectedAccount[]>([]);
   const [step, setStep] = useState(0);
   const [onboardingFlow, setOnboardingFlow] = useState<OnboardingFlows>(null);
   const theme = useCustomTheme();
@@ -59,13 +62,6 @@ export function Onboarding() {
   // and sets a password.
   //
   const createWalletFlow = [
-    <CreatePassword
-      onNext={(username: string, password: string) => {
-        setUsername(username);
-        setPassword(password);
-        nextStep();
-      }}
-    />,
     <MnemonicInput
       buttonLabel="Next"
       onNext={(mnemonic: string) => {
@@ -96,13 +92,8 @@ export function Onboarding() {
       blockchain={Blockchain.SOLANA}
       mnemonic={mnemonic}
       onNext={(accounts: SelectedAccount[], derivationPath: DerivationPath) => {
-        setAccounts(accounts);
-        setDerivationPath(derivationPath);
-        nextStep();
-      }}
-    />,
-    <CreatePassword
-      onNext={(username: string, password: string) => {
+        // setAccounts(accounts);
+        // setDerivationPath(derivationPath);
         const accountIndices = accounts.map((account) => account.index);
         createStore(
           mnemonic,
@@ -111,6 +102,7 @@ export function Onboarding() {
           password,
           accountIndices
         );
+
         nextStep();
       }}
     />,
@@ -119,12 +111,28 @@ export function Onboarding() {
 
   let renderComponent;
   if (onboardingFlow === null) {
-    renderComponent = <OnboardingWelcome onSelect={setOnboardingFlow} />;
+    if (inviteCode) {
+      if (username) {
+        renderComponent = <OnboardingWelcome onSelect={setOnboardingFlow} />;
+      } else {
+        renderComponent = (
+          <CreatePassword
+            onNext={(username: string, password: string) => {
+              setUsername(username);
+              setPassword(password);
+            }}
+          />
+        );
+      }
+    } else {
+      renderComponent = <InviteCode onNext={setInviteCode} />;
+    }
   } else {
     const flow = {
       "create-wallet": createWalletFlow,
       "import-wallet": importWalletFlow,
     }[onboardingFlow];
+
     renderComponent = (
       <WithNav
         navButtonLeft={
