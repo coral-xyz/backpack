@@ -15,6 +15,7 @@ import {
   useActiveWallets,
   useBlockchainLogo,
   useBlockchainTokensSorted,
+  useSolanaConnectionUrl,
 } from "@coral-xyz/recoil";
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
@@ -154,6 +155,7 @@ export function TokenTable({
   searchFilter?: string;
   customFilter?: (token: Token) => boolean;
 }) {
+  const connectionUrl = useSolanaConnectionUrl();
   const title = toTitleCase(blockchain);
   const blockchainLogo = useBlockchainLogo(blockchain);
   const tokenAccountsSorted = tokenAccounts
@@ -161,14 +163,18 @@ export function TokenTable({
     : useBlockchainTokensSorted(blockchain);
   const [search, setSearch] = useState(searchFilter);
   const searchLower = search.toLowerCase();
-  const tokenAccountsFiltered = tokenAccountsSorted
-    .filter(
-      (t) =>
-        t.name &&
-        (t.name.toLowerCase().startsWith(searchLower) ||
-          t.ticker.toLowerCase().startsWith(searchLower))
-    )
-    .filter(customFilter);
+  // TODO: support more than 100 tokens.
+  const tokenAccountsFiltered =
+    blockchain === "solana" && connectionUrl === "https://api.devnet.solana.com"
+      ? tokenAccountsSorted.slice(0, 100)
+      : tokenAccountsSorted
+          .filter(
+            (t) =>
+              t.name &&
+              (t.name.toLowerCase().startsWith(searchLower) ||
+                t.ticker.toLowerCase().startsWith(searchLower))
+          )
+          .filter(customFilter);
 
   useEffect(() => {
     setSearch(searchFilter);
