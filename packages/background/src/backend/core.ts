@@ -1,6 +1,7 @@
 import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
-import * as bs58 from "bs58";
+import type { UnsignedTransaction } from "@ethersproject/transactions";
+import type { TransactionRequest } from "@ethersproject/abstract-provider";
 import type { Commitment, SendOptions } from "@solana/web3.js";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
@@ -40,6 +41,8 @@ import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
+
+const { base58: bs58 } = ethers.utils;
 
 export function start(
   events: EventEmitter,
@@ -241,6 +244,29 @@ export class Backend {
   // Ethereum provider.
   ///////////////////////////////////////////////////////////////////////////////
 
+  //
+  // Populate an Ethereum transaction with gas and nonce settings using a void
+  // signer.
+  //
+  async _populateEthereumTx(serializedTx: string, walletAddress: string) {
+    const voidSigner = new ethers.VoidSigner(
+      walletAddress,
+      this.ethereumConnectionBackend.provider
+    );
+    // Decode bs58 and parse transaction
+    const transaction = bs58.decode(serializedTx);
+    console.log(transaction);
+    // Populate missing fields
+    const populatedTx = await voidSigner.populateTransaction(
+      transaction as TransactionRequest
+    );
+    console.log("populated", populatedTx);
+    // Serialize and encode with bs58 again
+    return bs58.encode(
+      ethers.utils.serializeTransaction(populatedTx as UnsignedTransaction)
+    );
+  }
+
   async ethereumSignTransaction(
     serializedTx: string,
     walletAddress: string
@@ -248,15 +274,26 @@ export class Backend {
     const blockchainKeyring = this.keyringStore.keyringForBlockchain(
       Blockchain.ETHEREUM
     );
-    return await blockchainKeyring.signTransaction(serializedTx, walletAddress);
+    const populatedSerializedTx = await this._populateEthereumTx(
+      serializedTx,
+      walletAddress
+    );
+    return await blockchainKeyring.signTransaction(
+      populatedSerializedTx,
+      walletAddress
+    );
   }
 
   async ethereumSignAndSendTransaction(
     serializedTx: string,
     walletAddress: string
   ): Promise<string> {
-    const signedTx = await this.ethereumSignTransaction(
+    const populatedSerializedTx = await this._populateEthereumTx(
       serializedTx,
+      walletAddress
+    );
+    const signedTx = await this.ethereumSignTransaction(
+      populatedSerializedTx,
       walletAddress
     );
     return (await this.ethereumConnectionBackend.sendTransaction(signedTx))

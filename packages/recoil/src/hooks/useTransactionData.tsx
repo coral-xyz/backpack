@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ethers, BigNumber } from "ethers";
+import { UnsignedTransaction } from "@ethersproject/transactions";
 import { TransactionRequest } from "@ethersproject/abstract-provider";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { AccountLayout, u64, TOKEN_PROGRAM_ID } from "@solana/spl-token";
@@ -16,6 +17,9 @@ const { base58: bs58 } = ethers.utils;
 
 type TransactionData = {
   loading: boolean;
+  transaction: string;
+  transactionOverrides?: Object;
+  setTransactionOverrides?: (overrides: object) => void;
   from: string;
   simulationError: boolean;
   balanceChanges: {
@@ -27,27 +31,31 @@ type TransactionData = {
 
 export function useTransactionData(
   blockchain: Blockchain,
-  serializedTx: any
+  transaction: any
 ): TransactionData {
   return blockchain === Blockchain.ETHEREUM
-    ? useEthereumTxData(serializedTx)
-    : useSolanaTxData(serializedTx);
+    ? useEthereumTxData(transaction)
+    : useSolanaTxData(transaction);
 }
 
 //
 // Transaction data for Ethereum
 //
-export function useEthereumTxData(serializedTx: any): TransactionData {
+export function useEthereumTxData(transaction: any): TransactionData {
   const ethereumCtx = useEthereumCtx();
 
   const [loading, setLoading] = useState(true);
   const [simulationError, setSimulationError] = useState(false);
+  const [estimatedGas, setEstimatedGas] = useState(BigNumber.from(0));
   const [estimatedTxFee, setEstimatedTxFee] = useState(BigNumber.from(0));
-
-  const transaction = ethers.utils.parseTransaction(bs58.decode(serializedTx));
+  const [transactionOverrides, setTransactionOverrides] = useState({
+    type: 2,
+    maxFeePerGas: ethereumCtx.feeData.maxFeePerGas,
+    maxPriorityFeePerGas: ethereumCtx.feeData.maxPriorityFeePerGas,
+  });
 
   useEffect(() => {
-    const estimateTxFee = async () => {
+    (async () => {
       // Estimate gas for the transaction
       let estimatedGas: BigNumber;
       try {
@@ -65,18 +73,43 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
         estimatedGas = BigNumber.from("150000");
         setSimulationError(true);
       }
+      setEstimatedGas(estimatedGas);
+      setLoading(false);
+    })();
+  }, [transaction]);
+
+  //
+  // Updated the estimated transaction fee on changes to the gas estimate.
+  // TODO: update on user configured gas settings
+  //
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
       setEstimatedTxFee(
         estimatedGas
-          .mul(ethereumCtx.feeData.maxFeePerGas!)
-          .add(estimatedGas.mul(ethereumCtx.feeData.maxPriorityFeePerGas!))
+          .mul(transactionOverrides.maxFeePerGas!)
+          .add(transactionOverrides.maxPriorityFeePerGas!)
       );
       setLoading(false);
-    };
-    estimateTxFee();
-  }, [serializedTx]);
+    })();
+  }, [
+    estimatedGas,
+    transactionOverrides.maxFeePerGas,
+    transactionOverrides.maxPriorityFeePerGas,
+  ]);
+
+  console.log({ ...transaction, ...transactionOverrides });
 
   return {
     loading,
+    transaction: bs58.encode(
+      ethers.utils.serializeTransaction({
+        ...transaction,
+        ...transactionOverrides,
+      } as UnsignedTransaction)
+    ),
+    transactionOverrides,
+    setTransactionOverrides,
     from: ethereumCtx.walletPublicKey,
     balanceChanges: null,
     simulationError,
@@ -182,6 +215,7 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
 
   return {
     loading,
+    transaction: serializedTx,
     from: walletPublicKey.toString(),
     simulationError,
     balanceChanges,

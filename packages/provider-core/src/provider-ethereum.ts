@@ -5,26 +5,22 @@ import type { Event } from "@coral-xyz/common";
 import {
   getLogger,
   BackgroundEthereumProvider,
-  ETHEREUM_RPC_METHOD_CONNECT,
-  ETHEREUM_RPC_METHOD_DISCONNECT,
-  ETHEREUM_RPC_METHOD_SIGN_TX,
-  ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX,
-  ETHEREUM_RPC_METHOD_SIGN_MESSAGE,
   CHANNEL_ETHEREUM_RPC_REQUEST,
   CHANNEL_ETHEREUM_RPC_RESPONSE,
   CHANNEL_ETHEREUM_NOTIFICATION,
   CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST,
   CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE,
+  ETHEREUM_RPC_METHOD_CONNECT,
+  ETHEREUM_RPC_METHOD_DISCONNECT,
   NOTIFICATION_ETHEREUM_CONNECTED,
   NOTIFICATION_ETHEREUM_DISCONNECTED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
 } from "@coral-xyz/common";
+import * as cmn from "./common/ethereum";
 import { RequestManager } from "./request-manager";
 
 const logger = getLogger("provider-ethereum-injection");
-
-const { base58: bs58 } = ethers.utils;
 
 interface RequestArguments {
   readonly method: string;
@@ -158,15 +154,6 @@ export class ProviderEthereumInjection extends EventEmitter {
     this.publicKey = publicKey;
   }
 
-  _encodeTransaction(transaction: any) {
-    // Remove eth_sendTransaction gas key since it is incompatible with ethers.
-    // Backpack will set gas parameters.
-    delete transaction.gas;
-    // As above
-    delete transaction.from;
-    return bs58.encode(ethers.utils.serializeTransaction(transaction));
-  }
-
   async request(args: RequestArguments): Promise<JsonRpcResponse> {
     if (!args || typeof args !== "object" || Array.isArray(args)) {
       throw ethErrors.rpc.invalidRequest({
@@ -210,31 +197,36 @@ export class ProviderEthereumInjection extends EventEmitter {
     };
 
     const signTransaction = async (transaction: any) => {
-      const serializedTx = this._encodeTransaction(transaction);
-      const result = await this._requestManager.request({
-        method: ETHEREUM_RPC_METHOD_SIGN_TX,
-        params: [serializedTx, this.publicKey],
-      });
-      console.log("Sign result", result);
-      return result;
+      if (!this.publicKey) {
+        throw new Error("wallet not connected");
+      }
+      return await cmn.signTransaction(
+        this.publicKey,
+        this._requestManager,
+        transaction
+      );
     };
 
     const signAndSendTransaction = async (transaction: any) => {
-      const serializedTx = this._encodeTransaction(transaction);
-      const result = await this._requestManager.request({
-        method: ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX,
-        params: [serializedTx, this.publicKey],
-      });
-      console.log("Sign and send", result);
-      return result;
+      if (!this.publicKey) {
+        throw new Error("wallet not connected");
+      }
+      return await cmn.sendTransaction(
+        this.publicKey,
+        this._requestManager,
+        transaction
+      );
     };
 
     const signMessage = async (message: string) => {
-      const result = await this._requestManager.request({
-        method: ETHEREUM_RPC_METHOD_SIGN_MESSAGE,
-        params: [message, this.publicKey],
-      });
-      return result;
+      if (!this.publicKey) {
+        throw new Error("wallet not connected");
+      }
+      return await cmn.signMessage(
+        this.publicKey,
+        this._requestManager,
+        message
+      );
     };
 
     const functionMap = {

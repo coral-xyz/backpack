@@ -61,3 +61,17 @@ export function useWalletName(address: string): string {
   }
   throw new Error("key not found");
 }
+
+export function useWalletBlockchain(address: string): string {
+  const wallets = useWalletPublicKeys();
+  for (const [blockchain, keyring] of Object.entries(wallets)) {
+    for (const namedPublicKeys of Object.values(keyring)) {
+      for (const namedPublicKey of namedPublicKeys) {
+        if (namedPublicKey.publicKey === address) {
+          return blockchain;
+        }
+      }
+    }
+  }
+  throw new Error("key not found");
+}
