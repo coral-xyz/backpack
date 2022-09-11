@@ -1,12 +1,18 @@
 import { useEffect } from "react";
 import { Typography, Switch } from "@mui/material";
 import {
+  Blockchain,
   BACKPACK_FEATURE_LIGHT_MODE,
   BACKPACK_CONFIG_VERSION,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
+  BACKPACK_FEATURE_MULTICHAIN,
 } from "@coral-xyz/common";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
-import { useDarkMode, useBackgroundClient } from "@coral-xyz/recoil";
+import {
+  useDarkMode,
+  useBackgroundClient,
+  useBlockchainLogo,
+} from "@coral-xyz/recoil";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 
@@ -55,20 +61,42 @@ export function Preferences() {
     };
   }
 
-  //
-  // Solana.
-  //
-  const solanaMenuItems = {
-    "RPC Connection": {
-      onClick: () => nav.push("preferences-solana-rpc-connection"),
-    },
-    "Confirmation Commitment": {
-      onClick: () => nav.push("preferences-solana-commitment"),
-    },
-    Explorer: {
-      onClick: () => nav.push("preferences-solana-explorer"),
+  const blockchainMenuItems: any = {
+    Solana: {
+      onClick: () => nav.push("preferences-solana"),
+      icon: () => {
+        const blockchainLogo = useBlockchainLogo(Blockchain.SOLANA);
+        return (
+          <img
+            src={blockchainLogo}
+            style={{
+              width: "12px",
+              height: "12px",
+              marginRight: "10px",
+            }}
+          />
+        );
+      },
     },
   };
+  if (BACKPACK_FEATURE_MULTICHAIN) {
+    blockchainMenuItems["Ethereum"] = {
+      onClick: () => nav.push("preferences-ethereum"),
+      icon: () => {
+        const blockchainLogo = useBlockchainLogo(Blockchain.ETHEREUM);
+        return (
+          <img
+            src={blockchainLogo}
+            style={{
+              width: "12px",
+              height: "12px",
+              marginRight: "10px",
+            }}
+          />
+        );
+      },
+    };
+  }
 
   //
   // Build version.
@@ -94,7 +122,7 @@ export function Preferences() {
   return (
     <div>
       <SettingsList menuItems={menuItems} />
-      <SettingsList menuItems={solanaMenuItems} />
+      <SettingsList menuItems={blockchainMenuItems} />
       <SettingsList menuItems={buildMenuItems} />
     </div>
   );

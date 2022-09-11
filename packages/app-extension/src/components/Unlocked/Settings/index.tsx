@@ -62,6 +62,8 @@ import {
   ShowRecoveryPhrase,
 } from "./YourAccount/ShowRecoveryPhrase";
 import { Preferences } from "./Preferences";
+import { PreferencesSolana } from "./Preferences/Solana";
+import { PreferencesEthereum } from "./Preferences/Ethereum";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
 import { PreferencesTrustedApps } from "./Preferences/TrustedApps";
 import { PreferencesSolanaConnection } from "./Preferences/Solana/ConnectionSwitch";
@@ -173,6 +175,14 @@ function AvatarButton() {
             <NavStackScreen
               name={"preferences-trusted-apps"}
               component={(props: any) => <PreferencesTrustedApps {...props} />}
+            />
+            <NavStackScreen
+              name={"preferences-solana"}
+              component={(props: any) => <PreferencesSolana {...props} />}
+            />
+            <NavStackScreen
+              name={"preferences-ethereum"}
+              component={(props: any) => <PreferencesEthereum {...props} />}
             />
             <NavStackScreen
               name={"preferences-solana-rpc-connection"}
