@@ -92,9 +92,26 @@ jobs:
       ##########################################################################
 
       #
-      # Rebuild the extension with an explicit config.
+      # Build the extension, edge release.
       #
-      - name: "build for release"
+      - name: "build edge"
+        env:
+          BACKPACK_CONFIG_VERSION: "latest-edge-${{ github.run_number }}"
+          BACKPACK_CONFIG_LOG_LEVEL: "info"
+          BACKPACK_FEATURE_LIGHT_MODE: "true"
+          BACKPACK_FEATURE_POP_MODE: "true"
+          BACKPACK_FEATURE_MULTICHAIN: "true"
+          # CI!=true so that build warnings aren't treated like errors (for now)
+          CI: ""
+        run: yarn build
+      - name: "rename edge build"
+        working-directory: packages/app-extension
+        run: mv build build-edge
+
+      #
+      # Build the extension, stable release.
+      #
+      - name: "build stable"
         env:
           BACKPACK_CONFIG_VERSION: "latest-${{ github.run_number }}"
           BACKPACK_CONFIG_LOG_LEVEL: "info"
@@ -139,7 +156,10 @@ jobs:
       # Upload build artifacts.
       ##########################################################################
 
-      - name: "zip build artifacts"
+      #
+      # Upload stable artifact.
+      #
+      - name: "zip stable build artifacts"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         working-directory: packages/app-extension
         run: zip -r build-${{ github.run_number }}.zip build/
@@ -150,6 +170,20 @@ jobs:
           name: backpack-build
           path: packages/app-extension/build-${{ github.run_number }}.zip
 
+      #
+      # Upload edge artifact.
+      #
+      - name: "zip edge build artifacts"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        working-directory: packages/app-extension
+        run: zip -r build-edge-${{ github.run_number }}.zip build-edge/
+      - name: "upload build artifacts"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v2
+        with:
+          name: backpack-build-edge
+          path: packages/app-extension/build-edge-${{ github.run_number }}.zip
+
       ##########################################################################
       # Release.
       ##########################################################################
@@ -159,11 +193,23 @@ jobs:
       #       a cleaner way of doing this.
       #
 
+      #
+      # Download artifacts.
+      #
       - uses: actions/download-artifact@v2
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
           name: backpack-build
           path: ./
+      - uses: actions/download-artifact@v2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          name: backpack-build-edge
+          path: ./
+
+      #
+      # Create release.
+      #
       - uses: actions/create-release@v1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         name: Create Draft Release
@@ -175,6 +221,10 @@ jobs:
           release_name: latest-${{ github.run_number }}
           draft: false
           prerelease: false
+
+      #
+      # Attach files to the release.
+      #
       - uses: actions/upload-release-asset@v1.0.1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
@@ -184,12 +234,21 @@ jobs:
           asset_path: ./build-${{ github.run_number }}.zip
           asset_name: build-${{ github.run_number }}.zip
           asset_content_type: application/zip
+      - uses: actions/upload-release-asset@v1.0.1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build-edge-${{ github.run_number }}.zip
+          asset_name: build-edge-${{ github.run_number }}.zip
+          asset_content_type: application/zip
 
       ##########################################################################
       # Send artifacts to out channels.
       ##########################################################################
 
-      - name: "post artifacts to Discord"
+      - name: "post stable artifacts to Discord"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: sinshutu/upload-to-discord@master
         env:

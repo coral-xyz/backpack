@@ -30,7 +30,8 @@ const useStyles = styles((theme) => ({
   tabRoot: {
     height: `${TAB_HEIGHT}px`,
     minHeight: `${TAB_HEIGHT}px`,
-    backgroundColor: "transparent",
+    backgroundColor: theme.custom.colors.nav,
+    borderTop: `solid 1pt ${theme.custom.colors.border}`,
   },
   tabIndicator: {
     color: "none",

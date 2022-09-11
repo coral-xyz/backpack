@@ -1,7 +1,8 @@
 import { useEffect, useState, Suspense } from "react";
 import * as bs58 from "bs58";
 import { ethers } from "ethers";
-import { Box, Typography, IconButton } from "@mui/material";
+import { Button, Box, Typography, IconButton } from "@mui/material";
+import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import {
   Add,
   Lock,
@@ -17,6 +18,7 @@ import {
   useWalletPublicKeys,
   useActiveWallet,
   useActiveWallets,
+  useBlockchainLogo,
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
@@ -60,6 +62,8 @@ import {
   ShowRecoveryPhrase,
 } from "./YourAccount/ShowRecoveryPhrase";
 import { Preferences } from "./Preferences";
+import { PreferencesSolana } from "./Preferences/Solana";
+import { PreferencesEthereum } from "./Preferences/Ethereum";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
 import { PreferencesTrustedApps } from "./Preferences/TrustedApps";
 import { PreferencesSolanaConnection } from "./Preferences/Solana/ConnectionSwitch";
@@ -171,6 +175,14 @@ function AvatarButton() {
             <NavStackScreen
               name={"preferences-trusted-apps"}
               component={(props: any) => <PreferencesTrustedApps {...props} />}
+            />
+            <NavStackScreen
+              name={"preferences-solana"}
+              component={(props: any) => <PreferencesSolana {...props} />}
+            />
+            <NavStackScreen
+              name={"preferences-ethereum"}
+              component={(props: any) => <PreferencesEthereum {...props} />}
             />
             <NavStackScreen
               name={"preferences-solana-rpc-connection"}
@@ -343,6 +355,8 @@ function WalletList({
   const background = useBackgroundClient();
   const activeWallets = useActiveWallets();
   const theme = useCustomTheme();
+  const blockchainLogo = useBlockchainLogo(blockchain);
+  const [showAll, setShowAll] = useState(false);
 
   const clickWallet = (publicKey: string) => {
     background
@@ -366,104 +380,210 @@ function WalletList({
       keyring.ledgerPublicKeys.map((k: any) => ({ ...k, type: "hardware" }))
     );
 
+  const { name, publicKey } = activeWallets.filter(
+    (a) => a.blockchain === blockchain
+  )[0];
   return (
     <div style={{ marginBottom: "16px" }}>
-      {BACKPACK_FEATURE_MULTICHAIN && (
-        <Typography
+      <div
+        style={{
+          display: "flex",
+        }}
+      >
+        <ListItem
+          disableRipple
           style={{
             marginLeft: "16px",
             marginRight: "16px",
-            marginBottom: "12px",
-            color: theme.custom.colors.fontColor,
+            background: theme.custom.colors.nav,
+            borderTopLeftRadius: "8px",
+            borderTopRightRadius: "8px",
+            borderBottomLeftRadius: showAll ? "0px" : "8px",
+            borderBottomRightRadius: showAll ? "0px" : "8px",
+            height: "56px",
+            display: "flex",
+            paddingLeft: "12px",
+            paddingRight: "12px",
+            flex: 1,
+            borderBottom: showAll
+              ? `solid 1pt ${theme.custom.colors.border}`
+              : undefined,
           }}
+          onClick={() => setShowAll((s) => !s)}
         >
-          {toTitleCase(blockchain)}
-        </Typography>
-      )}
-      <List>
-        {keys.map(
-          (
-            {
-              name,
-              publicKey,
-              type,
-            }: { name: string; publicKey: string; type: string },
-            idx: number
-          ) => {
-            return (
-              <ListItem
-                key={publicKey.toString()}
-                onClick={() => clickWallet(publicKey)}
-                isFirst={idx === 0}
-                isLast={idx === keys.length - 1}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+              }}
+            >
+              <div
                 style={{
-                  paddingTop: "16px",
-                  paddingBottom: "16px",
-                  paddingLeft: "12px",
-                  paddingRight: "12px",
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
                 }}
               >
-                <div
+                <img
+                  src={blockchainLogo}
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    width: "100%",
+                    width: "12px",
+                    borderRadius: "2px",
                   }}
-                >
-                  <div
+                />
+              </div>
+              <div
+                style={{
+                  marginLeft: "8px",
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                }}
+              >
+                <WalletAddress
+                  name={name}
+                  publicKey={publicKey}
+                  style={{
+                    fontWeight: 500,
+                    lineHeight: "24px",
+                    fontSize: "16px",
+                  }}
+                  nameStyle={{
+                    color: theme.custom.colors.fontColor,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: "75px",
+                  }}
+                />
+              </div>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              {showAll ? (
+                <ExpandMore
+                  style={{
+                    width: "22px",
+                    color: theme.custom.colors.secondary,
+                  }}
+                />
+              ) : (
+                <ExpandLess
+                  style={{
+                    width: "22px",
+                    color: theme.custom.colors.secondary,
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        </ListItem>
+      </div>
+      {showAll && (
+        <div style={{}}>
+          <List
+            style={{
+              borderRadius: 0,
+            }}
+          >
+            {keys.map(
+              (
+                {
+                  name,
+                  publicKey,
+                  type,
+                }: { name: string; publicKey: string; type: string },
+                idx: number
+              ) => {
+                return (
+                  <ListItem
+                    key={publicKey.toString()}
+                    onClick={() => clickWallet(publicKey)}
+                    isFirst={false}
+                    isLast={idx === keys.length - 1}
                     style={{
-                      display: "flex",
+                      paddingTop: "16px",
+                      paddingBottom: "16px",
+                      paddingLeft: "12px",
+                      paddingRight: "12px",
                     }}
                   >
                     <div
                       style={{
                         display: "flex",
-                        justifyContent: "center",
-                        flexDirection: "column",
-                        marginRight: "4px",
+                        justifyContent: "space-between",
+                        width: "100%",
+                        marginLeft: "20px",
                       }}
                     >
-                      <WalletAddress
-                        name={name}
-                        publicKey={publicKey}
+                      <div
                         style={{
-                          fontWeight: 500,
-                          lineHeight: "24px",
-                          fontSize: "16px",
+                          display: "flex",
                         }}
-                        nameStyle={{
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          maxWidth: "75px",
-                        }}
-                      />
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            flexDirection: "column",
+                            marginRight: "4px",
+                          }}
+                        >
+                          <WalletAddress
+                            name={name}
+                            publicKey={publicKey}
+                            style={{
+                              fontWeight: 500,
+                              lineHeight: "24px",
+                              fontSize: "16px",
+                            }}
+                            nameStyle={{
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              maxWidth: "75px",
+                            }}
+                          />
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            flexDirection: "column",
+                          }}
+                        >
+                          <ImportTypeBadge type={type} />
+                        </div>
+                      </div>
+                      {activeWallets
+                        .map((p) => p.publicKey)
+                        .includes(publicKey) && (
+                        <CheckIcon
+                          fill={theme.custom.colors.brandColor}
+                          style={{ width: "24px" }}
+                        />
+                      )}
                     </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <ImportTypeBadge type={type} />
-                    </div>
-                  </div>
-                  {activeWallets
-                    .map((p) => p.publicKey)
-                    .includes(publicKey) && (
-                    <CheckIcon
-                      fill={theme.custom.colors.brandColor}
-                      style={{ width: "24px" }}
-                    />
-                  )}
-                </div>
-              </ListItem>
-            );
-          }
-        )}
-      </List>
-      <AddConnectWalletButton blockchain={blockchain} />
+                  </ListItem>
+                );
+              }
+            )}
+          </List>
+          <AddConnectWalletButton blockchain={blockchain} />
+        </div>
+      )}
     </div>
   );
 }

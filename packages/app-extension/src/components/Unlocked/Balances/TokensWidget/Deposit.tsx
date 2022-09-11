@@ -1,103 +1,25 @@
-import { useState } from "react";
-import { Typography, MenuItem } from "@mui/material";
+import { useState, useEffect } from "react";
+import { IconButton, Typography, Modal } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { useActiveWallets } from "@coral-xyz/recoil";
+import QrCodeIcon from "@mui/icons-material/QrCode";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { useActiveWallets, useBlockchainLogo } from "@coral-xyz/recoil";
 import { Blockchain } from "@coral-xyz/common";
-import { WithHeaderButton } from "./Token";
-import { BottomCard } from "./Send";
-import {
-  TextField,
-  TextFieldLabel,
-  walletAddressDisplay,
-} from "../../../common";
+import { walletAddressDisplay, SecondaryButton } from "../../../common";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
-
-const useStyles = styles((theme) => ({
-  subtext: {
-    width: "264px",
-    marginLeft: "auto",
-    marginRight: "auto",
-    marginTop: "35px",
-    color: theme.custom.colors.secondary,
-    lineHeight: "16px",
-    size: "12px",
-    fontWeight: 500,
-    fontSize: "14px",
-    textAlign: "center",
-  },
-  depositTextFieldRoot: {
-    margin: 0,
-    "& .MuiOutlinedInput-root": {
-      paddingRight: 0,
-      "& fieldset": {
-        border: `solid 1pt ${theme.custom.colors.border}`,
-        borderColor: `${theme.custom.colors.border} !important`,
-        paddingLeft: 0,
-        paddingRight: 0,
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: `${theme.custom.colors.primaryButton} !important`,
-      },
-    },
-    "& .MuiOutlinedInput-input": {
-      cursor: "pointer",
-      color: theme.custom.colors.secondary,
-    },
-    "&:hover .MuiOutlinedInput-root": {
-      paddingLeft: 0,
-      paddingRight: 0,
-    },
-  },
-  copyIcon: {
-    "&:hover": {
-      cursor: "pointer",
-    },
-  },
-  copyContainer: {
-    "&:hover": {
-      cursor: "pointer",
-    },
-  },
-  copyButton: {
-    background: "transparent",
-    padding: 0,
-  },
-  copyButtonLabel: {
-    color: theme.custom.colors.brandColor,
-    fontWeight: 500,
-    fontSize: "14px",
-    lineHeight: "24px",
-    textTransform: "none",
-  },
-}));
+import { useNavStack } from "../../../common/Layout/NavStack";
 
 export function Deposit({ ...props }: any) {
-  const classes = useStyles();
-  const theme = useCustomTheme();
+  const nav = useNavStack();
   const { close } = useDrawerContext();
   const activeWallets = useActiveWallets();
-  const [tooltipOpen, setTooltipOpen] = useState(false);
-  const [blockchain, setBlockchain] = useState<Blockchain>(
-    props.blockchain || Blockchain.SOLANA
-  );
-  const activeWallet = activeWallets.find((w) => w.blockchain === blockchain);
 
-  if (!activeWallet) {
-    return <></>;
-  }
-
-  const onCopy = () => {
-    setTooltipOpen(true);
-    setTimeout(() => setTooltipOpen(false), 1000);
-    navigator.clipboard.writeText(activeWallet.publicKey.toString());
-  };
-
-  const blockchainOptions = [
-    { value: Blockchain.SOLANA, label: "Solana" },
-    { value: Blockchain.ETHEREUM, label: "Ethereum" },
-  ];
+  useEffect(() => {
+    nav.setStyle({
+      borderBottom: "none",
+    });
+  }, []);
 
   return (
     <div
@@ -105,129 +27,161 @@ export function Deposit({ ...props }: any) {
         height: "100%",
         display: "flex",
         flexDirection: "column",
+        justifyContent: "space-between",
+        padding: "12px",
       }}
     >
       <div
         style={{
           flex: 1,
         }}
-      ></div>
+      >
+        {activeWallets.map(({ blockchain, name, publicKey }) => (
+          <BlockchainDepositCard
+            key={blockchain}
+            blockchain={blockchain}
+            name={name}
+            publicKey={publicKey}
+          />
+        ))}
+      </div>
+      <SecondaryButton label="Close" onClick={() => close()} />
+    </div>
+  );
+}
+
+function BlockchainDepositCard({
+  blockchain,
+  name,
+  publicKey,
+}: {
+  blockchain: Blockchain;
+  name: string;
+  publicKey: string;
+}) {
+  const theme = useCustomTheme();
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [showQrCode, setShowQrCode] = useState(false);
+  const blockchainLogo = useBlockchainLogo(blockchain);
+
+  const onCopy = () => {
+    setTooltipOpen(true);
+    setTimeout(() => setTooltipOpen(false), 1000);
+    navigator.clipboard.writeText(publicKey.toString());
+  };
+  const onQrCode = () => {
+    setShowQrCode(true);
+  };
+
+  return (
+    <>
       <div
         style={{
-          height: "439px",
+          marginBottom: "12px",
+          borderRadius: "8px",
+          padding: "16px",
+          background: theme.custom.colors.nav,
         }}
       >
-        <BottomCard
-          buttonLabel={"Close"}
-          onButtonClick={close}
-          buttonStyle={{
-            backgroundColor: `${theme.custom.colors.nav}`,
-          }}
-          buttonLabelStyle={{
+        <Typography
+          style={{
             color: theme.custom.colors.fontColor,
+            fontWeight: 500,
           }}
-          topHalfStyle={{
-            background: "transparent",
+        >
+          Your {blockchain.slice(0, 1).toUpperCase() + blockchain.slice(1)}{" "}
+          address
+        </Typography>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <Typography
+              style={{
+                fontWeight: 500,
+                fontSize: "14px",
+                marginTop: "6px",
+                marginBottom: "6px",
+                color: theme.custom.colors.secondary,
+              }}
+            >
+              {`${name} (${walletAddressDisplay(publicKey)})`}
+            </Typography>
+            <img
+              src={blockchainLogo}
+              style={{
+                width: "14px",
+                borderRadius: "2px",
+              }}
+            />
+          </div>
+          <div style={{ display: "flex" }}>
+            <IconButton
+              disableRipple
+              onClick={() => onQrCode()}
+              style={{
+                backgroundColor: theme.custom.colors.bg2,
+                padding: "10px",
+                marginRight: "6px",
+                width: "40px",
+                height: "40px",
+              }}
+            >
+              <QrCodeIcon
+                style={{
+                  color: theme.custom.colors.fontColor,
+                  width: "20px",
+                  height: "20px",
+                }}
+              />
+            </IconButton>
+            <WithCopyTooltip tooltipOpen={tooltipOpen}>
+              <IconButton
+                disableRipple
+                onClick={() => onCopy()}
+                style={{
+                  backgroundColor: theme.custom.colors.bg2,
+                  padding: "10px",
+                  width: "40px",
+                  height: "40px",
+                }}
+              >
+                <ContentCopyIcon
+                  style={{
+                    color: theme.custom.colors.fontColor,
+                    width: "20px",
+                    height: "20px",
+                  }}
+                />
+              </IconButton>
+            </WithCopyTooltip>
+          </div>
+        </div>
+      </div>
+      <Modal open={showQrCode} onClose={() => setShowQrCode(false)}>
+        <div
+          style={{
+            margin: 0,
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
           }}
         >
           <div
             style={{
-              position: "absolute",
-              top: 28,
-              left: 0,
-              right: 0,
               marginLeft: "auto",
               marginRight: "auto",
-              width: "148px",
             }}
           >
-            <QrCode data={activeWallet.publicKey.toString()} />
+            <QrCode data={publicKey.toString()} />
           </div>
-          <div style={{ marginTop: "100px" }}>
-            {!props.blockchain && (
-              <>
-                <TextFieldLabel
-                  leftLabel={"Blockchain"}
-                  style={{ marginLeft: "24px", marginRight: "24px" }}
-                />
-                <div style={{ margin: "0 12px 16px 12px" }}>
-                  <TextField
-                    label="Blockchain"
-                    value={blockchain}
-                    setValue={setBlockchain}
-                    select={true}
-                    rootClass={classes.depositTextFieldRoot}
-                  >
-                    {blockchainOptions.map((o, idx) => (
-                      <MenuItem value={o.value} key={idx}>
-                        {o.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </div>
-              </>
-            )}
-            <div>
-              <TextFieldLabel
-                leftLabel={"Deposit to"}
-                style={{ marginLeft: "24px", marginRight: "24px" }}
-              />
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  margin: "0 12px",
-                }}
-              >
-                <WithCopyTooltip tooltipOpen={tooltipOpen}>
-                  <div
-                    onClick={() => onCopy()}
-                    style={{ width: "100%" }}
-                    className={classes.copyContainer}
-                  >
-                    <TextField
-                      value={`${activeWallet.name} (${walletAddressDisplay(
-                        activeWallet.publicKey
-                      )})`}
-                      rootClass={classes.depositTextFieldRoot}
-                      endAdornment={
-                        <ContentCopyIcon
-                          className={classes.copyIcon}
-                          style={{
-                            pointerEvents: "none",
-                            color: theme.custom.colors.secondary,
-                            position: "absolute",
-                            right: "17px",
-                          }}
-                        />
-                      }
-                      inputProps={{
-                        readOnly: true,
-                      }}
-                    />
-                  </div>
-                </WithCopyTooltip>
-              </div>
-            </div>
-            <div>
-              <Typography className={classes.subtext}>
-                {activeWallet.blockchain === Blockchain.SOLANA && (
-                  <>
-                    This address can only receive SOL and SPL tokens on Solana.
-                  </>
-                )}
-                {activeWallet.blockchain === Blockchain.ETHEREUM && (
-                  <>
-                    This address can only receive ETH and ERC20 tokens on
-                    Ethereum.
-                  </>
-                )}
-              </Typography>
-            </div>
-          </div>
-        </BottomCard>
-      </div>
-    </div>
+        </div>
+      </Modal>
+    </>
   );
 }
 
