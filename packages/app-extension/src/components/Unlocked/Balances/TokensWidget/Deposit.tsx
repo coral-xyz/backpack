@@ -78,9 +78,9 @@ function BlockchainDepositCard({
       <div
         style={{
           marginBottom: "12px",
-          border: `solid 1pt ${theme.custom.colors.border}`,
           borderRadius: "8px",
           padding: "16px",
+          background: theme.custom.colors.nav,
         }}
       >
         <Typography
@@ -123,7 +123,7 @@ function BlockchainDepositCard({
               disableRipple
               onClick={() => onQrCode()}
               style={{
-                backgroundColor: theme.custom.colors.nav,
+                backgroundColor: theme.custom.colors.bg2,
                 padding: "10px",
                 marginRight: "6px",
                 width: "40px",
@@ -143,7 +143,7 @@ function BlockchainDepositCard({
                 disableRipple
                 onClick={() => onCopy()}
                 style={{
-                  backgroundColor: theme.custom.colors.nav,
+                  backgroundColor: theme.custom.colors.bg2,
                   padding: "10px",
                   width: "40px",
                   height: "40px",
