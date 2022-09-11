@@ -28,6 +28,7 @@ import { SettingsButton } from "../../Unlocked/Settings";
 import { WithNav, NavBackButton } from "./Nav";
 import { WithMotion } from "./NavStack";
 import { WithDrawer } from "../../common/Layout/Drawer";
+import { NftOptionsButton } from "../../Unlocked/Nfts/Detail";
 
 export function Router() {
   const location = useLocation();
@@ -202,6 +203,8 @@ function useNavBar() {
     navButtonRight = <SettingsButton />;
   } else if (pathname === "/balances/token") {
     navButtonRight = null;
+  } else if (pathname === "/nfts/detail") {
+    navButtonRight = <NftOptionsButton />;
   }
 
   return {

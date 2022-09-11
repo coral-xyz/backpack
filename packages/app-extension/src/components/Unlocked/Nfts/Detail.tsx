@@ -1,9 +1,19 @@
 import { useState } from "react";
 import { BigNumber } from "ethers";
-import { Typography } from "@mui/material";
+import { Typography, IconButton, Popover } from "@mui/material";
+import { CallMade } from "@mui/icons-material";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
-import { useNftMetadata, useAnchorContext } from "@coral-xyz/recoil";
-import { toTitleCase, Blockchain } from "@coral-xyz/common";
+import {
+  useDecodedSearchParams,
+  useNftMetadata,
+  useAnchorContext,
+  useSolanaConnectionUrl,
+  useEthereumConnectionUrl,
+  useSolanaExplorer,
+  useEthereumExplorer,
+} from "@coral-xyz/recoil";
+import { explorerNftUrl, toTitleCase, Blockchain } from "@coral-xyz/common";
 import { PrimaryButton, SecondaryButton, TextField } from "../../common";
 import {
   useDrawerContext,
@@ -18,6 +28,7 @@ import { SendSolanaConfirmationCard } from "../Balances/TokensWidget/Solana";
 import { SendEthereumConfirmationCard } from "../Balances/TokensWidget/Ethereum";
 import { useIsValidAddress } from "../Balances/TokensWidget/Send";
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
+import { List, ListItem } from "../../common/List";
 
 const useStyles = styles((theme) => ({
   textRoot: {
@@ -332,5 +343,96 @@ function Attributes({ nft }: { nft: any }) {
         </div>
       </div>
     </div>
+  );
+}
+
+export function NftOptionsButton() {
+  const theme = useCustomTheme();
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const searchParams = useDecodedSearchParams();
+  const nfts = useNftMetadata();
+  // @ts-ignore
+  const nft: any = nfts.get(searchParams.props.nftId);
+  const isEthereum = nft && nft.contractAddress;
+  const explorer = isEthereum ? useEthereumExplorer() : useSolanaExplorer();
+  const connectionUrl = isEthereum
+    ? useEthereumConnectionUrl()
+    : useSolanaConnectionUrl();
+
+  const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const onClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <>
+      <IconButton
+        disableRipple
+        style={{
+          padding: 0,
+        }}
+        onClick={(e) => onClick(e)}
+      >
+        <MoreHorizIcon
+          style={{
+            color: theme.custom.colors.secondary,
+          }}
+        />
+      </IconButton>
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={onClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        PaperProps={{
+          style: {
+            background: theme.custom.colors.nav,
+          },
+        }}
+      >
+        <div
+          style={{
+            padding: "4px",
+          }}
+        >
+          <List
+            style={{
+              margin: 0,
+            }}
+          >
+            <ListItem
+              style={{
+                width: "100%",
+                height: "30px",
+              }}
+              isFirst={true}
+              isLast={true}
+              onClick={() => {
+                const url = explorerNftUrl(explorer, nft, connectionUrl);
+                window.open(url, "_blank");
+              }}
+            >
+              <Typography
+                style={{
+                  fontSize: "14px",
+                }}
+              >
+                View on Explorer
+              </Typography>
+              <CallMade
+                style={{
+                  color: theme.custom.colors.secondary,
+                }}
+              />
+            </ListItem>
+          </List>
+        </div>
+      </Popover>
+    </>
   );
 }
