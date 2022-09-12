@@ -1,7 +1,5 @@
 import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
-import type { UnsignedTransaction } from "@ethersproject/transactions";
-import type { TransactionRequest } from "@ethersproject/abstract-provider";
 import type { Commitment, SendOptions } from "@solana/web3.js";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";

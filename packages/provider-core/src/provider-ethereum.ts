@@ -11,7 +11,6 @@ import {
   CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST,
   CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE,
   ETHEREUM_RPC_METHOD_CONNECT,
-  ETHEREUM_RPC_METHOD_DISCONNECT,
   NOTIFICATION_ETHEREUM_CONNECTED,
   NOTIFICATION_ETHEREUM_DISCONNECTED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
@@ -22,21 +21,19 @@ import { RequestManager } from "./request-manager";
 
 const logger = getLogger("provider-ethereum-injection");
 
+// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#request
 interface RequestArguments {
   readonly method: string;
   readonly params?: readonly unknown[] | object;
 }
 
+// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#rpc-errors
 interface ProviderRpcError extends Error {
   code: number;
   data?: unknown;
 }
 
-interface ProviderMessage {
-  readonly type: string;
-  readonly data: unknown;
-}
-
+// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#connect-1
 interface ProviderConnectInfo {
   readonly chainId: string;
 }
@@ -72,21 +69,55 @@ const messages = {
   },
 };
 
+export interface BaseProviderState {
+  accounts: null | string[];
+  isConnected: boolean;
+  isPermanentlyDisconnected: boolean;
+}
+
 export class ProviderEthereumInjection extends EventEmitter {
-  //
-  // Channel to send extension specific RPC requests to the extension.
-  //
+  protected _state: BaseProviderState;
+
+  protected static _defaultState: BaseProviderState = {
+    accounts: null,
+    isConnected: false,
+    isPermanentlyDisconnected: false,
+  };
+
+  /**
+   * Channel to send extension specific RPC requests to the extension.
+   */
   private _requestManager: RequestManager;
-  //
-  // Channel to send Solana Connection API requests to the extension.
-  //
+
+  /**
+   *  Channel to send Solana connection API requests to the extension.
+   */
   private _connectionRequestManager: RequestManager;
 
-  public isBackpack: boolean;
-  public isConnected: boolean;
-  public publicKey?: string;
-  public provider: ethers.providers.JsonRpcProvider | null;
+  /**
+   * The chain ID of the currently connected Ethereum chain.
+   */
   public chainId: string | null;
+
+  /**
+   * The user's currently selected Ethereum address.
+   */
+  public publicKey: string | null;
+
+  /**
+   *
+   */
+  public networkVersion?: string;
+
+  /**
+   * Boolean indicating that the provider is Backpack.
+   */
+  public static isBackpack: boolean = true;
+
+  /**
+   * Ethereum JSON RPC provider.
+   */
+  public provider?: ethers.providers.JsonRpcProvider;
 
   constructor() {
     super();
@@ -100,10 +131,14 @@ export class ProviderEthereumInjection extends EventEmitter {
     );
     this._initChannels();
 
-    this.isBackpack = true;
-    this.isConnected = false;
-    this.provider = null;
-    this.chainId = null;
+    this._state = {
+      ...ProviderEthereumInjection._defaultState,
+    };
+
+    this._handleEthRequestAccounts = this._handleEthRequestAccounts.bind(this);
+    this._handleEthSignMessage = this._handleEthSignMessage.bind(this);
+    this._handleEthSignTransaction = this._handleEthSignTransaction.bind(this);
+    this._handleEthSendTransaction = this._handleEthSendTransaction.bind(this);
   }
 
   // Setup channels with the content script.
@@ -111,49 +146,20 @@ export class ProviderEthereumInjection extends EventEmitter {
     window.addEventListener("message", this._handleNotification.bind(this));
   }
 
-  _handleNotification(event: Event) {
-    if (event.data.type !== CHANNEL_ETHEREUM_NOTIFICATION) return;
-    logger.debug("notification", event);
+  //
+  // Public methods
+  //
 
-    switch (event.data.detail.name) {
-      case NOTIFICATION_ETHEREUM_CONNECTED:
-        this._handleNotificationConnected(event);
-        break;
-      case NOTIFICATION_ETHEREUM_DISCONNECTED:
-        this._handleNotificationDisconnected(event);
-        break;
-      case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
-        this._handleNotificationConnectionUrlUpdated(event);
-        break;
-      case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
-        this._handleNotificationActiveWalletUpdated(event);
-        break;
-      default:
-        throw new Error(`unexpected notification ${event.data.detail.name}`);
-    }
-
-    this.emit(_mapNotificationName(event.data.detail.name));
+  /**
+   * Returns whether the provider can process RPC requests.
+   */
+  isConnected(): boolean {
+    return this._state.isConnected;
   }
 
-  async _handleNotificationConnected(event) {
-    // Nothing to be done here, init is handled in the eth_accounts handler below
-  }
-
-  async _handleNotificationDisconnected(event) {}
-
-  async _handleNotificationConnectionUrlUpdated(event) {
-    const { connectionUrl } = event.data.detail.data;
-    this.provider = new BackgroundEthereumProvider(
-      this._connectionRequestManager,
-      connectionUrl
-    );
-  }
-
-  async _handleNotificationActiveWalletUpdated(event) {
-    const { publicKey } = event.data.detail.data;
-    this.publicKey = publicKey;
-  }
-
+  /**
+   *
+   */
   async request(args: RequestArguments): Promise<JsonRpcResponse> {
     if (!args || typeof args !== "object" || Array.isArray(args)) {
       throw ethErrors.rpc.invalidRequest({
@@ -182,57 +188,12 @@ export class ProviderEthereumInjection extends EventEmitter {
       });
     }
 
-    const requestAccounts = async () => {
-      // Send request to the RPC API.
-      const result = await this._requestManager.request({
-        method: ETHEREUM_RPC_METHOD_CONNECT,
-        params: [],
-      });
-      this.publicKey = result.publicKey;
-      this.provider = new ethers.providers.JsonRpcProvider(
-        result.connectionUrl
-      );
-      this.isConnected = true;
-      return [result.publicKey];
-    };
-
-    const signTransaction = async (transaction: any) => {
-      if (!this.publicKey) {
-        throw new Error("wallet not connected");
-      }
-      return await cmn.signTransaction(
-        this.publicKey,
-        this._requestManager,
-        transaction
-      );
-    };
-
-    const signAndSendTransaction = async (transaction: any) => {
-      if (!this.publicKey) {
-        throw new Error("wallet not connected");
-      }
-      return await cmn.sendTransaction(
-        this.publicKey,
-        this._requestManager,
-        transaction
-      );
-    };
-
-    const signMessage = async (message: string) => {
-      if (!this.publicKey) {
-        throw new Error("wallet not connected");
-      }
-      return await cmn.signMessage(
-        this.publicKey,
-        this._requestManager,
-        message
-      );
-    };
-
     const functionMap = {
-      eth_accounts: requestAccounts,
-      eth_requestAccounts: requestAccounts,
+      eth_accounts: this._handleEthRequestAccounts,
+      eth_requestAccounts: this._handleEthRequestAccounts,
       eth_chainId: () =>
+        // TODO this should be preloaded and cached, so it doesn't cause a delay
+        // after the connect button is pressed
         this.provider!.getNetwork().then((network) =>
           network.chainId.toString()
         ),
@@ -250,11 +211,16 @@ export class ProviderEthereumInjection extends EventEmitter {
         this.provider!.getTransaction(hash),
       eth_getTransactionReceipt: (hash: string) =>
         this.provider!.getTransactionReceipt(hash),
-      eth_sign: (_address, message) => signMessage(message),
-      eth_signTypedData: (_address, message) => signMessage(message),
-      eth_signTransaction: (transaction) => signTransaction(transaction),
-      eth_sendTransaction: (transaction) => signAndSendTransaction(transaction),
-      personal_sign: (_address, message) => signMessage(message),
+      eth_sign: (_address: string, message: string) =>
+        this._handleEthSignMessage(message),
+      eth_signTypedData: (_address: string, message: any) =>
+        this._handleEthSignMessage(message),
+      personal_sign: (message: string, _address: string) =>
+        this._handleEthSignMessage(message),
+      eth_signTransaction: (transaction: any) =>
+        this._handleEthSignTransaction(transaction),
+      eth_sendTransaction: (transaction: any) =>
+        this._handleEthSendTransaction(transaction),
     };
 
     const func = functionMap[method];
@@ -273,23 +239,148 @@ export class ProviderEthereumInjection extends EventEmitter {
         console.error("rpc response error", error);
         return reject(error);
       }
+      console.log("got result", rpcResult);
       return resolve(rpcResult);
     });
   }
-}
 
-/// Maps the notification name (internal) to the event name.
-function _mapNotificationName(notificationName: string) {
-  switch (notificationName) {
-    case NOTIFICATION_ETHEREUM_CONNECTED:
-      return "connect";
-    case NOTIFICATION_ETHEREUM_DISCONNECTED:
-      return "disconnect";
-    case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
-      return "chainChanged";
-    case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
-      return "activeWalletDidChange";
-    default:
-      throw new Error(`unexpected notification name ${notificationName}`);
+  //
+  // Private methods
+  //
+
+  /**
+   *  Handle notifications from Backpack.
+   */
+  _handleNotification(event: Event) {
+    if (event.data.type !== CHANNEL_ETHEREUM_NOTIFICATION) return;
+    logger.debug("notification", event);
+
+    switch (event.data.detail.name) {
+      case NOTIFICATION_ETHEREUM_CONNECTED:
+        break;
+      case NOTIFICATION_ETHEREUM_DISCONNECTED:
+        this._handleNotificationDisconnected();
+        break;
+      case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
+        this._handleNotificationConnectionUrlUpdated(event);
+        break;
+      case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
+        this._handleNotificationActiveWalletUpdated(event);
+        break;
+      default:
+        throw new Error(`unexpected notification ${event.data.detail.name}`);
+    }
+  }
+
+  /**
+   * Handle a disconnection notification from Backpack.
+   */
+  async _handleNotificationDisconnected() {
+    if (this.isConnected()) {
+      // Reset public state
+      this.chainId = null;
+      this.publicKey = null;
+      // Reset private state
+      this._state = {
+        ...ProviderEthereumInjection._defaultState,
+      };
+    }
+    // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#disconnect
+    this.emit("disconnect", {
+      code: 4900,
+      message: "User disconnected",
+    } as ProviderRpcError);
+  }
+
+  /**
+   * Handle a change of the RPC connection URL in Backpack. This may also be a change
+   * of the chainId/network if the change was to a different network RPC.
+   */
+  async _handleNotificationConnectionUrlUpdated(event: any) {
+    const { connectionUrl } = event.data.detail.data;
+    this.provider = new BackgroundEthereumProvider(
+      this._connectionRequestManager,
+      connectionUrl
+    );
+    const newChainId = `${(await this.provider.getNetwork()).chainId}`;
+    if (this.isConnected() && this.chainId !== newChainId) {
+      // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#chainchanged
+      this.emit("chainChanged", {
+        chainId: newChainId,
+      } as ProviderConnectInfo);
+    }
+  }
+
+  /**
+   * Handle a change of the active wallet in Backpack.
+   */
+  async _handleNotificationActiveWalletUpdated(event: any) {
+    const { publicKey } = event.data.detail.data;
+    if (this.publicKey !== publicKey) {
+      this.publicKey = publicKey;
+      // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#accountschanged
+      this.emit("accountsChanged", {
+        accounts: [this.publicKey],
+      });
+    }
+  }
+
+  /**
+   * Handle eth_accounts and eth_requestAccounts requests
+   */
+  async _handleEthRequestAccounts() {
+    // Send request to the RPC API.
+    const result = await this._requestManager.request({
+      method: ETHEREUM_RPC_METHOD_CONNECT,
+      params: [],
+    });
+    // Public state
+    this.publicKey = result.publicKey;
+    this.provider = new ethers.providers.JsonRpcProvider(result.connectionUrl);
+    // TODO not hardcoded
+    this.chainId = "1";
+    // Private state
+    this._state.isConnected = true;
+    // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#connect
+    this.emit("connect", { chainId: this.chainId } as ProviderConnectInfo);
+    return [result.publicKey];
+  }
+
+  /**
+   * Handle eth_sign, eth_signTypedData, personal_sign RPC requests.
+   */
+  async _handleEthSignMessage(message: string) {
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    return await cmn.signMessage(this.publicKey, this._requestManager, message);
+  }
+
+  /**
+   * Handle eth_signTransaction RPC requests.
+   */
+  async _handleEthSignTransaction(transaction: any) {
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    return await cmn.signTransaction(
+      this.publicKey,
+      this._requestManager,
+      transaction
+    );
+  }
+
+  /**
+   * Handle eth_sendTransaction RPC requests.
+   */
+  async _handleEthSendTransaction(transaction: any) {
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    return await cmn.sendTransaction(
+      this.publicKey,
+      this._requestManager,
+      transaction
+    );
   }
 }
