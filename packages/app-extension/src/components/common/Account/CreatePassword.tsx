@@ -1,5 +1,6 @@
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Box, Typography } from "@mui/material";
+import { AlternateEmail, AlternateEmailSharp } from "@mui/icons-material";
+import { Box, InputAdornment, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { useEffect, useState } from "react";
 import { supabase } from "../../../supabase";
@@ -18,10 +19,6 @@ const useStyles = makeStyles(() => ({
     marginBottom: "12px",
   },
 }));
-
-enum UsernameError {
-  NOT_AVAILABLE,
-}
 
 enum PasswordError {
   TOO_SHORT,
@@ -93,9 +90,11 @@ export function CreatePassword({
             marginRight: "24px",
           }}
         >
-          <Header text="Create an account" />
+          <Header text="Claim your username" />
           <SubtextParagraph style={{ marginTop: "8px", marginBottom: "40px" }}>
-            You'll need this to unlock Backpack.
+            Others can see and find you by this username, so choose wisely if
+            you'd like to remain anonymous. You will not be able to change this
+            later.
           </SubtextParagraph>
         </Box>
         <Box
@@ -113,6 +112,13 @@ export function CreatePassword({
             setValue={setUsername}
             rootClass={classes.passwordFieldRoot}
             isError={usernameError}
+            startAdornment={
+              <InputAdornment position="start">
+                <AlternateEmailSharp
+                  style={{ color: theme.custom.colors.secondary }}
+                />
+              </InputAdornment>
+            }
           />
           {usernameError && (
             <Typography sx={{ color: theme.custom.colors.negative }}>

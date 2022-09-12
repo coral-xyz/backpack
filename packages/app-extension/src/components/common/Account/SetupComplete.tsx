@@ -12,7 +12,6 @@ import {
   ExtensionIcon,
   WidgetIcon,
   TwitterIcon,
-  CashIcon,
   DiscordIcon,
 } from "../../common/Icon";
 

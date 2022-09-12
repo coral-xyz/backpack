@@ -30,11 +30,11 @@ import {
 import { DiscordIcon } from "../common/Icon";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { ActionCard } from "../common/Layout/ActionCard";
-import { BackpackHeader } from "../Locked";
 import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import { List, ListItem } from "../common/List";
 import { WithContaineredDrawer } from "../common/Layout/Drawer";
 import type { OnboardingFlows } from "./";
+import { BackpackHeader } from "../common/BackpackHeader";
 
 const useStyles = styles((theme) => ({
   listItemRoot: {

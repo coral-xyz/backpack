@@ -2,11 +2,14 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { Box, Typography } from "@mui/material";
 import { useState } from "react";
 import { Header, PrimaryButton, SubtextParagraph, TextField } from "../common";
+import { BackpackHeader } from "../common/BackpackHeader";
 
 export const InviteCode = ({
   onNext,
+  showExistingUserFlow,
 }: {
   onNext: (inviteCode: string) => void;
+  showExistingUserFlow: any;
 }) => {
   const [code, setCode] = useState("");
   const [inviteCodeError, setInviteCodeError] = useState<string>();
@@ -28,31 +31,22 @@ export const InviteCode = ({
         flexDirection: "column",
         height: "100%",
         justifyContent: "space-between",
+        backgroundColor: theme.custom.colors.nav,
+        textAlign: "center",
       }}
     >
+      <Box>
+        <BackpackHeader />
+      </Box>
       <Box
         sx={{
-          marginTop: "24px",
+          marginLeft: "16px",
+          marginRight: "16px",
+          marginBottom: "16px",
+          textAlign: "center",
         }}
       >
-        <Box
-          sx={{
-            marginLeft: "24px",
-            marginRight: "24px",
-          }}
-        >
-          <Header text="Enter your code" />
-          <SubtextParagraph style={{ marginTop: "8px", marginBottom: "40px" }}>
-            This is the invitation code that you received from Backpack.
-          </SubtextParagraph>
-        </Box>
-        <Box
-          sx={{
-            marginLeft: "16px",
-            marginRight: "16px",
-            marginBottom: "32px",
-          }}
-        >
+        <Box style={{ marginBottom: 8 }}>
           <TextField
             inputProps={{ name: "invite-code" }}
             placeholder="Invite code"
@@ -67,19 +61,14 @@ export const InviteCode = ({
             </Typography>
           )}
         </Box>
-      </Box>
-      <Box
-        sx={{
-          marginLeft: "16px",
-          marginRight: "16px",
-          marginBottom: "16px",
-        }}
-      >
-        <PrimaryButton disabled={!code} label="Next" onClick={handleSubmit} />
 
-        <SubtextParagraph style={{ marginTop: "8px", marginBottom: "40px" }}>
-          I already have an account
-        </SubtextParagraph>
+        <PrimaryButton disabled={!code} label="Go" onClick={handleSubmit} />
+
+        <Box onClick={showExistingUserFlow}>
+          <SubtextParagraph style={{ marginTop: "8px" }}>
+            I already have an account
+          </SubtextParagraph>
+        </Box>
       </Box>
     </Box>
   );

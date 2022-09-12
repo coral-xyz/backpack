@@ -20,10 +20,12 @@ import { SetupComplete } from "../common/Account/SetupComplete";
 import { NavBackButton, WithNav } from "../common/Layout/Nav";
 import { InviteCode } from "./InviteCode";
 import { OnboardingWelcome } from "./OnboardingWelcome";
+import { LoginAsExistingUser } from "../common/Account/LoginAsExistingUser";
 
 export type OnboardingFlows = "create-wallet" | "import-wallet" | null;
 
 export function Onboarding() {
+  const [isExistingUser, setIsExistingUser] = useState(false);
   const [mnemonic, setMnemonic] = useState("");
   const [inviteCode, setInviteCode] = useState<string>("");
   const [username, setUsername] = useState<string>("");
@@ -111,7 +113,7 @@ export function Onboarding() {
 
   let renderComponent;
   if (onboardingFlow === null) {
-    if (inviteCode) {
+    if (inviteCode || username) {
       if (username) {
         renderComponent = <OnboardingWelcome onSelect={setOnboardingFlow} />;
       } else {
@@ -125,7 +127,24 @@ export function Onboarding() {
         );
       }
     } else {
-      renderComponent = <InviteCode onNext={setInviteCode} />;
+      if (isExistingUser) {
+        renderComponent = (
+          <LoginAsExistingUser
+            onNext={(username: string, password: string) => {
+              setUsername(username);
+              setPassword(password);
+            }}
+            showInviteCodeFlow={() => setIsExistingUser(false)}
+          />
+        );
+      } else {
+        renderComponent = (
+          <InviteCode
+            onNext={setInviteCode}
+            showExistingUserFlow={() => setIsExistingUser(true)}
+          />
+        );
+      }
     }
   } else {
     const flow = {
