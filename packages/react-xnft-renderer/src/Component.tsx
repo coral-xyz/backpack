@@ -440,7 +440,7 @@ export function useBalancesContext() {
 }
 
 export function BalancesTableHead({ props, style }: any) {
-  const { title, iconUrl, disableToggle } = props;
+  const { subtitle, title, iconUrl, disableToggle } = props;
   const classes = useStyles();
   const { showContent, setShowContent } = useBalancesContext();
   return (
@@ -459,15 +459,25 @@ export function BalancesTableHead({ props, style }: any) {
               justifyContent: "space-between",
             }}
           >
-            <Typography
+            <div
               style={{
-                fontWeight: 500,
-                lineHeight: "24px",
-                fontSize: "14px",
+                display: "flex",
               }}
             >
-              {title}
-            </Typography>
+              <Typography
+                style={{
+                  fontWeight: 500,
+                  lineHeight: "24px",
+                  fontSize: "14px",
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                }}
+              >
+                {title}
+              </Typography>
+              {subtitle}
+            </div>
             {!disableToggle && (
               <>
                 {showContent ? (

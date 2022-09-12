@@ -1,8 +1,14 @@
 import { useState, useEffect } from "react";
 import { FixedSizeList as WindowedList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
+import { Button as MuiButton } from "@mui/material";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { styles } from "@coral-xyz/themes";
-import { Blockchain, toTitleCase } from "@coral-xyz/common";
+import {
+  Blockchain,
+  toTitleCase,
+  walletAddressDisplay,
+} from "@coral-xyz/common";
 import {
   TextField,
   BalancesTable,
@@ -17,6 +23,7 @@ import {
   useBlockchainTokensSorted,
   useSolanaConnectionUrl,
 } from "@coral-xyz/recoil";
+import { WithCopyTooltip } from "./WithCopyTooltip";
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
@@ -37,6 +44,26 @@ const useStyles = styles((theme) => ({
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
       },
     },
+  },
+  addressButton: {
+    padding: 0,
+    color: theme.custom.colors.secondary,
+    textTransform: "none",
+    fontWeight: 500,
+    lineHeight: "24px",
+    fontSize: "14px",
+    marginLeft: "8px",
+    "&:hover": {
+      backgroundColor: "transparent",
+      "& svg": {
+        visibility: "visible",
+      },
+    },
+  },
+  copyIcon: {
+    visibility: "hidden",
+    width: "16px",
+    marginLeft: "6px",
   },
 }));
 
@@ -155,6 +182,7 @@ export function TokenTable({
   searchFilter?: string;
   customFilter?: (token: Token) => boolean;
 }) {
+  const classes = useStyles();
   const connectionUrl = useSolanaConnectionUrl();
   const title = toTitleCase(blockchain);
   const blockchainLogo = useBlockchainLogo(blockchain);
@@ -162,6 +190,10 @@ export function TokenTable({
     ? tokenAccounts
     : useBlockchainTokensSorted(blockchain);
   const [search, setSearch] = useState(searchFilter);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const activeWallets = useActiveWallets();
+  const wallet = activeWallets.filter((w) => w.blockchain === blockchain)[0];
+
   const searchLower = search.toLowerCase();
   // TODO: support more than 100 tokens.
   const tokenAccountsFiltered =
@@ -180,6 +212,12 @@ export function TokenTable({
     setSearch(searchFilter);
   }, [searchFilter]);
 
+  const onCopy = () => {
+    setTooltipOpen(true);
+    setTimeout(() => setTooltipOpen(false), 1000);
+    navigator.clipboard.writeText(wallet.publicKey.toString());
+  };
+
   const useVirtualization = tokenAccountsFiltered.length > 100;
   // Note: if this fixed height changes in react-xnft-renderer it'll need to be changed here
   const rowHeight = 68;
@@ -189,7 +227,26 @@ export function TokenTable({
       style={useVirtualization ? { height: "calc(100% - 92px)" } : {}}
     >
       <BalancesTableHead
-        props={{ title, iconUrl: blockchainLogo, disableToggle: false }}
+        props={{
+          title,
+          iconUrl: blockchainLogo,
+          disableToggle: false,
+          subtitle: (
+            <WithCopyTooltip tooltipOpen={tooltipOpen}>
+              <MuiButton
+                disableRipple
+                className={classes.addressButton}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCopy();
+                }}
+              >
+                {walletAddressDisplay(wallet?.publicKey)}
+                <ContentCopyIcon className={classes.copyIcon} />
+              </MuiButton>
+            </WithCopyTooltip>
+          ),
+        }}
       />
       <BalancesTableContent style={useVirtualization ? { height: "100%" } : {}}>
         {useVirtualization ? (
