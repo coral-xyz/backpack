@@ -170,7 +170,7 @@ function WithDrawerContent({ children, setOpenDrawer }: any) {
   );
 }
 
-export function CloseButton({ onClick }: any) {
+export function CloseButton({ onClick, buttonStyle }: any) {
   const classes = useStyles();
   return (
     <div
@@ -189,6 +189,7 @@ export function CloseButton({ onClick }: any) {
           padding: 0,
           position: "absolute",
           right: 0,
+          ...buttonStyle,
         }}
         onClick={onClick}
         size="large"

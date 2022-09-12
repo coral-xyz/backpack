@@ -9,6 +9,7 @@ import { walletAddressDisplay, SecondaryButton } from "../../../common";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 import { useNavStack } from "../../../common/Layout/NavStack";
+import { CloseButton } from "../../../common/Layout/Drawer";
 
 export function Deposit({ ...props }: any) {
   const nav = useNavStack();
@@ -61,12 +62,20 @@ function BlockchainDepositCard({
 }) {
   const theme = useCustomTheme();
   const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [tooltipOpenModal, setTooltipOpenModal] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
   const blockchainLogo = useBlockchainLogo(blockchain);
+  const blockchainDisplay =
+    blockchain.slice(0, 1).toUpperCase() + blockchain.slice(1);
 
   const onCopy = () => {
     setTooltipOpen(true);
     setTimeout(() => setTooltipOpen(false), 1000);
+    navigator.clipboard.writeText(publicKey.toString());
+  };
+  const onCopyModal = () => {
+    setTooltipOpenModal(true);
+    setTimeout(() => setTooltipOpenModal(false), 1000);
     navigator.clipboard.writeText(publicKey.toString());
   };
   const onQrCode = () => {
@@ -89,8 +98,7 @@ function BlockchainDepositCard({
             fontWeight: 500,
           }}
         >
-          Your {blockchain.slice(0, 1).toUpperCase() + blockchain.slice(1)}{" "}
-          address
+          Your {blockchainDisplay} address
         </Typography>
         <div
           style={{
@@ -164,20 +172,122 @@ function BlockchainDepositCard({
       <Modal open={showQrCode} onClose={() => setShowQrCode(false)}>
         <div
           style={{
-            margin: 0,
-            position: "absolute",
+            width: "300px",
+            height: "325px",
             top: "50%",
             left: "50%",
+            position: "absolute",
             transform: "translate(-50%, -50%)",
+            backgroundColor: theme.custom.colors.nav,
+            margin: 0,
+            borderRadius: "12px",
           }}
         >
           <div
             style={{
-              marginLeft: "auto",
-              marginRight: "auto",
+              width: "100%",
+              height: "100%",
+              position: "relative",
             }}
           >
-            <QrCode data={publicKey.toString()} />
+            <div
+              style={{
+                position: "absolute",
+                top: 10,
+                right: 10,
+              }}
+            >
+              <CloseButton
+                buttonStyle={{ position: "relative" }}
+                onClick={() => setShowQrCode(false)}
+              />
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                flexDirection: "column",
+                height: "100%",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    flexDirection: "column",
+                    marginRight: "8px",
+                  }}
+                >
+                  <img
+                    src={blockchainLogo}
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      borderRadius: "2px",
+                    }}
+                  />
+                </div>
+                <Typography
+                  style={{
+                    fontSize: "22px",
+                    color: theme.custom.colors.fontColor,
+                  }}
+                >
+                  {blockchainDisplay}
+                </Typography>
+              </div>
+              <div
+                style={{
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                  marginTop: "24px",
+                  marginBottom: "16px",
+                }}
+              >
+                <QrCode data={publicKey.toString()} />
+              </div>
+              <WithCopyTooltip tooltipOpen={tooltipOpenModal}>
+                <div style={{ display: "relative" }}>
+                  <IconButton
+                    disableRipple
+                    style={{
+                      padding: 0,
+                      textTransform: "none",
+                      display: "flex",
+                      flexDirection: "column",
+                      marginLeft: "auto",
+                      marginRight: "auto",
+                    }}
+                    onClick={() => onCopyModal()}
+                  >
+                    <Typography
+                      style={{
+                        textAlign: "center",
+                        color: theme.custom.colors.fontColor,
+                        fontSize: "16px",
+                      }}
+                    >
+                      {name}
+                    </Typography>
+                    <Typography
+                      style={{
+                        textAlign: "center",
+                        color: theme.custom.colors.secondary,
+                      }}
+                    >
+                      ({walletAddressDisplay(publicKey)})
+                    </Typography>
+                  </IconButton>
+                </div>
+              </WithCopyTooltip>
+            </div>
           </div>
         </div>
       </Modal>
