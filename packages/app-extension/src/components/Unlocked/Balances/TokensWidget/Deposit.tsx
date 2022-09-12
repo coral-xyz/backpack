@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { IconButton, Typography, Modal } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import QrCodeIcon from "@mui/icons-material/QrCode";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { useActiveWallets, useBlockchainLogo } from "@coral-xyz/recoil";
 import { Blockchain } from "@coral-xyz/common";
 import { walletAddressDisplay, SecondaryButton } from "../../../common";
@@ -10,8 +10,16 @@ import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { CloseButton } from "../../../common/Layout/Drawer";
+import { TextField } from "../../../common";
 
 export function Deposit({ ...props }: any) {
+  if (props.blockchain) {
+    return <_Deposit {...props} />;
+  }
+  return <DepositMultichain {...props} />;
+}
+
+function DepositMultichain({ ...props }: any) {
   const nav = useNavStack();
   const { close } = useDrawerContext();
   const activeWallets = useActiveWallets();
@@ -21,7 +29,6 @@ export function Deposit({ ...props }: any) {
       borderBottom: "none",
     });
   }, []);
-
   return (
     <div
       style={{
@@ -295,7 +302,187 @@ function BlockchainDepositCard({
   );
 }
 
-export function QrCode({ data }: { data: string }) {
+const useStyles = styles((theme) => ({
+  subtext: {
+    width: "264px",
+    marginLeft: "auto",
+    marginRight: "auto",
+    marginTop: "16px",
+    color: theme.custom.colors.secondary,
+    size: "14px",
+    fontWeight: 500,
+    fontSize: "14px",
+    textAlign: "center",
+    lineHeight: "20px",
+  },
+  depositTextFieldRoot: {
+    margin: 0,
+    "& .MuiOutlinedInput-root": {
+      paddingRight: 0,
+      "& fieldset": {
+        border: `solid 1pt ${theme.custom.colors.border}`,
+        borderColor: `${theme.custom.colors.border} !important`,
+        paddingLeft: 0,
+        paddingRight: 0,
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: `${theme.custom.colors.primaryButton} !important`,
+      },
+    },
+    "& .MuiOutlinedInput-input": {
+      cursor: "pointer",
+      color: theme.custom.colors.secondary,
+    },
+    "&:hover .MuiOutlinedInput-root": {
+      paddingLeft: 0,
+      paddingRight: 0,
+    },
+  },
+  copyIcon: {
+    "&:hover": {
+      cursor: "pointer",
+    },
+  },
+  copyContainer: {
+    "&:hover": {
+      cursor: "pointer",
+    },
+  },
+  copyButton: {
+    background: "transparent",
+    padding: 0,
+  },
+  copyButtonLabel: {
+    color: theme.custom.colors.brandColor,
+    fontWeight: 500,
+    fontSize: "14px",
+    lineHeight: "24px",
+    textTransform: "none",
+  },
+}));
+
+export function _Deposit({ ...props }: any) {
+  const classes = useStyles();
+  const theme = useCustomTheme();
+  const activeWallets = useActiveWallets();
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const nav = useNavStack();
+  const activeWallet = activeWallets.find(
+    (w) => w.blockchain === props.blockchain
+  );
+
+  useEffect(() => {
+    nav.setStyle({
+      borderBottom: `solid 1pt ${theme.custom.colors.border}`,
+    });
+  }, []);
+
+  if (!activeWallet) {
+    return <></>;
+  }
+
+  const walletDisplay =
+    activeWallet.publicKey.toString().slice(0, 12) +
+    "..." +
+    activeWallet.publicKey
+      .toString()
+      .slice(activeWallet.publicKey.toString().length - 12);
+
+  const onCopy = () => {
+    setTooltipOpen(true);
+    setTimeout(() => setTooltipOpen(false), 1000);
+    navigator.clipboard.writeText(activeWallet.publicKey.toString());
+  };
+
+  return (
+    <div
+      style={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <div
+        style={{
+          marginLeft: "auto",
+          marginRight: "auto",
+          marginTop: "64px",
+          marginBottom: "80px",
+          width: "180px",
+        }}
+      >
+        <QrCode
+          data={activeWallet.publicKey.toString()}
+          style={{ width: "180px", height: "180px", padding: "7.83px" }}
+        />
+      </div>
+      <div>
+        <Typography
+          style={{
+            fontSize: "16px",
+            textAlign: "center",
+            marginBottom: "8px",
+            color: theme.custom.colors.fontColor,
+          }}
+        >
+          {activeWallet.name}
+        </Typography>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            margin: "0 12px",
+          }}
+        >
+          <WithCopyTooltip tooltipOpen={tooltipOpen}>
+            <div
+              onClick={() => onCopy()}
+              style={{ width: "100%" }}
+              className={classes.copyContainer}
+            >
+              <TextField
+                value={walletDisplay}
+                rootClass={classes.depositTextFieldRoot}
+                endAdornment={
+                  <ContentCopyIcon
+                    className={classes.copyIcon}
+                    style={{
+                      pointerEvents: "none",
+                      color: theme.custom.colors.secondary,
+                      position: "absolute",
+                      right: "17px",
+                    }}
+                  />
+                }
+                inputProps={{
+                  readOnly: true,
+                }}
+              />
+            </div>
+          </WithCopyTooltip>
+        </div>
+      </div>
+      <div>
+        <Typography className={classes.subtext}>
+          {activeWallet.blockchain === Blockchain.SOLANA && (
+            <>This address can only receive SOL and SPL tokens on Solana.</>
+          )}
+          {activeWallet.blockchain === Blockchain.ETHEREUM && (
+            <>This address can only receive ETH and ERC20 tokens on Ethereum.</>
+          )}
+        </Typography>
+      </div>
+    </div>
+  );
+}
+
+export function QrCode({
+  data,
+  style,
+}: {
+  data: string;
+  style?: React.CSSProperties;
+}) {
   return (
     <div
       style={{
@@ -307,6 +494,7 @@ export function QrCode({ data }: { data: string }) {
         justifyContent: "center",
         flexDirection: "column",
         padding: "8px",
+        ...style,
       }}
     >
       <img src={`https://qr.warp.workers.dev/qz=0?${data}`} alt={data} />
