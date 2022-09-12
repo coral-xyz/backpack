@@ -239,7 +239,6 @@ export class ProviderEthereumInjection extends EventEmitter {
         console.error("rpc response error", error);
         return reject(error);
       }
-      console.log("got result", rpcResult);
       return resolve(rpcResult);
     });
   }
