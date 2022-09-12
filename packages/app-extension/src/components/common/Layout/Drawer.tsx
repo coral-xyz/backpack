@@ -129,27 +129,29 @@ export function WithMiniDrawer(props: any) {
     onClose,
   } = props;
   return (
-    <Drawer
-      anchor={"bottom"}
-      open={openDrawer}
-      onClose={() => (onClose ? onClose() : setOpenDrawer(false))}
-      classes={{
-        root: classes.miniDrawerRoot,
-        paper: classes.miniDrawerPaper,
-        paperAnchorBottom: paperAnchorBottom,
-      }}
-      BackdropProps={{
-        style: {
-          background: "transparent",
-        },
-        ...backdropProps,
-      }}
-      ModalProps={{
-        ...modalProps,
-      }}
-    >
-      {children}
-    </Drawer>
+    <DrawerProvider setOpenDrawer={setOpenDrawer}>
+      <Drawer
+        anchor={"bottom"}
+        open={openDrawer}
+        onClose={() => (onClose ? onClose() : setOpenDrawer(false))}
+        classes={{
+          root: classes.miniDrawerRoot,
+          paper: classes.miniDrawerPaper,
+          paperAnchorBottom: paperAnchorBottom,
+        }}
+        BackdropProps={{
+          style: {
+            background: "transparent",
+          },
+          ...backdropProps,
+        }}
+        ModalProps={{
+          ...modalProps,
+        }}
+      >
+        {children}
+      </Drawer>
+    </DrawerProvider>
   );
 }
 

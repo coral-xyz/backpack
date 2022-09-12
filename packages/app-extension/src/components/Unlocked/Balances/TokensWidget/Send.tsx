@@ -363,19 +363,20 @@ export function Sending({
   token,
   signature,
   isComplete,
+  titleOverride,
 }: {
   blockchain: Blockchain;
   amount: BigNumber;
   token: any;
   signature: string;
   isComplete: boolean;
+  titleOverride?: string;
 }) {
   const theme = useCustomTheme();
   const nav = useNavigation();
   const drawer = useDrawerContext();
   const explorer = useBlockchainExplorer(blockchain);
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
-
   return (
     <div
       style={{
@@ -393,7 +394,7 @@ export function Sending({
           marginTop: "30px",
         }}
       >
-        {isComplete ? "Sent" : "Sending..."}
+        {titleOverride ? titleOverride : isComplete ? "Sent" : "Sending..."}
       </Typography>
       <TokenAmountDisplay
         style={{
