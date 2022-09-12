@@ -48,7 +48,9 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
   const [simulationError, setSimulationError] = useState(false);
   const [estimatedGas, setEstimatedGas] = useState(BigNumber.from(0));
   const [estimatedTxFee, setEstimatedTxFee] = useState(BigNumber.from(0));
-  const [transaction, setTransaction] = useState({});
+  const [transaction, setTransaction] = useState<TransactionRequest | null>(
+    null
+  );
   const [transactionOverrides, setTransactionOverrides] = useState({
     type: 2,
     gasLimit: estimatedGas,
@@ -99,6 +101,7 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
   useEffect(() => {
     (async () => {
       if (transaction) {
+        setLoading(true);
         // Estimate gas for the transaction
         let estimatedGas: BigNumber;
         try {
@@ -121,6 +124,7 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
           ...transactionOverrides,
           gasLimit: estimatedGas,
         });
+        setLoading(false);
       }
     })();
   }, [transaction]);
@@ -131,14 +135,12 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
   //
   useEffect(() => {
     (async () => {
-      setLoading(true);
       if (estimatedGas) {
         setEstimatedTxFee(
           estimatedGas
             .mul(transactionOverrides.maxFeePerGas!)
             .add(estimatedGas.mul(transactionOverrides.maxPriorityFeePerGas!))
         );
-        setLoading(false);
       }
     })();
   }, [

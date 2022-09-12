@@ -518,7 +518,7 @@ async function handleEthereumSignAndSendTx(
   }
 
   if (!uiResp.windowClosed) {
-    // BrowserRuntimeExtension.closeWindow(uiResp.window.id);
+    BrowserRuntimeExtension.closeWindow(uiResp.window.id);
   }
   if (resp) {
     return resp;
