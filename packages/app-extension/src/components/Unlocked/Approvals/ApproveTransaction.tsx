@@ -73,14 +73,52 @@ export function ApproveTransaction({
   title: string;
   tx: string | null;
   wallet: string;
-  onCompletion: (confirmed: boolean) => void;
+  onCompletion: (transaction: any) => void;
 }) {
   const classes = useStyles();
-
   const blockchain = useWalletBlockchain(wallet);
+  const {
+    loading,
+    simulationError,
+    balanceChanges,
+    network,
+    networkFee,
+    // Possibly modified transaction object if user overrides settings
+    // (i.e. Ethereum gas or nonce)
+    transaction,
+  } = useTransactionData(blockchain as Blockchain, tx);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  const balanceChangeRows = balanceChanges
+    ? Object.entries(balanceChanges).map(
+        ([symbol, { nativeChange, decimals }]) => {
+          const className = nativeChange.gte(Zero)
+            ? classes.positive
+            : classes.negative;
+          return [
+            symbol,
+            <span className={className}>
+              {ethers.utils.commify(
+                ethers.utils.formatUnits(nativeChange, BigNumber.from(decimals))
+              )}{" "}
+              {symbol}
+            </span>,
+          ];
+        }
+      )
+    : [];
+
+  const menuItems = [
+    ...balanceChangeRows,
+    ["Network", network],
+    ["Network Fee", networkFee],
+  ];
 
   const onConfirm = async () => {
-    onCompletion(true);
+    onCompletion(transaction);
   };
 
   const onDeny = async () => {
@@ -97,7 +135,14 @@ export function ApproveTransaction({
       onConfirmLabel="Approve"
       onDeny={onDeny}
     >
-      <TransactionData blockchain={blockchain as Blockchain} tx={tx} />
+      {loading ? (
+        <Loading />
+      ) : (
+        <TransactionData
+          menuItems={menuItems}
+          simulationError={simulationError}
+        />
+      )}
     </WithApproval>
   );
 }
@@ -141,45 +186,13 @@ export function ApproveAllTransactions({
 }
 
 function TransactionData({
-  blockchain,
-  tx,
+  menuItems,
+  simulationError = false,
 }: {
-  blockchain: Blockchain;
-  tx: string | null;
+  menuItems: (string | JSX.Element)[][];
+  simulationError: boolean;
 }) {
   const classes = useStyles();
-
-  const { loading, simulationError, balanceChanges, network, networkFee } =
-    useTransactionData(blockchain, tx);
-
-  if (loading) {
-    return <Loading />;
-  }
-
-  const balanceChangeRows = balanceChanges
-    ? Object.entries(balanceChanges).map(
-        ([symbol, { nativeChange, decimals }]) => {
-          const className = nativeChange.gte(Zero)
-            ? classes.positive
-            : classes.negative;
-          return [
-            symbol,
-            <span className={className}>
-              {ethers.utils.commify(
-                ethers.utils.formatUnits(nativeChange, BigNumber.from(decimals))
-              )}{" "}
-              {symbol}
-            </span>,
-          ];
-        }
-      )
-    : [];
-
-  const menuItems = [
-    ...balanceChangeRows,
-    ["Network", network],
-    ["Network Fee", networkFee],
-  ];
 
   return (
     <>
@@ -187,7 +200,7 @@ function TransactionData({
         Transaction details
       </Typography>
       <List className={classes.listRoot}>
-        {menuItems.map((row, index) => {
+        {menuItems.map((row, index: number) => {
           return (
             <ListItem
               key={index}

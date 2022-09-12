@@ -63,6 +63,7 @@ export async function signMessage(
 function encodeTransaction(transaction: any) {
   // Remove eth_sendTransaction gas key since it is incompatible with ethers.
   // Backpack will set gas parameters.
+  // https://github.com/ethers-io/ethers.js/issues/299
   delete transaction.gas;
   // As above
   delete transaction.from;

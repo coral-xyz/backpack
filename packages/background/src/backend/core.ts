@@ -244,29 +244,6 @@ export class Backend {
   // Ethereum provider.
   ///////////////////////////////////////////////////////////////////////////////
 
-  //
-  // Populate an Ethereum transaction with gas and nonce settings using a void
-  // signer.
-  //
-  async _populateEthereumTx(serializedTx: string, walletAddress: string) {
-    const voidSigner = new ethers.VoidSigner(
-      walletAddress,
-      this.ethereumConnectionBackend.provider
-    );
-    // Decode bs58 and parse transaction
-    const transaction = bs58.decode(serializedTx);
-    console.log(transaction);
-    // Populate missing fields
-    const populatedTx = await voidSigner.populateTransaction(
-      transaction as TransactionRequest
-    );
-    console.log("populated", populatedTx);
-    // Serialize and encode with bs58 again
-    return bs58.encode(
-      ethers.utils.serializeTransaction(populatedTx as UnsignedTransaction)
-    );
-  }
-
   async ethereumSignTransaction(
     serializedTx: string,
     walletAddress: string
@@ -274,26 +251,15 @@ export class Backend {
     const blockchainKeyring = this.keyringStore.keyringForBlockchain(
       Blockchain.ETHEREUM
     );
-    const populatedSerializedTx = await this._populateEthereumTx(
-      serializedTx,
-      walletAddress
-    );
-    return await blockchainKeyring.signTransaction(
-      populatedSerializedTx,
-      walletAddress
-    );
+    return await blockchainKeyring.signTransaction(serializedTx, walletAddress);
   }
 
   async ethereumSignAndSendTransaction(
     serializedTx: string,
     walletAddress: string
   ): Promise<string> {
-    const populatedSerializedTx = await this._populateEthereumTx(
-      serializedTx,
-      walletAddress
-    );
     const signedTx = await this.ethereumSignTransaction(
-      populatedSerializedTx,
+      serializedTx,
       walletAddress
     );
     return (await this.ethereumConnectionBackend.sendTransaction(signedTx))

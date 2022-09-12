@@ -52,11 +52,10 @@ import {
   Blockchain,
 } from "@coral-xyz/common";
 import type { Backend } from "../backend/core";
-import { SUCCESS_RESPONSE } from "../backend/core";
 import type { Config, Handle } from "../types";
 import { handlePopupUiResponse, RequestManager } from "./common";
 
-const logger = getLogger("server-injected-solana");
+const logger = getLogger("server-injected");
 
 export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
   if (cfg.isMobile) {
@@ -502,16 +501,16 @@ async function handleEthereumSignAndSendTx(
   }
 
   let resp: RpcResponse<string>;
-  const didApprove = uiResp.result;
-
+  // The transaction may be modified and returned as result to accomodate user
+  // tweaked gas settings/nonce.
+  const approvedTransaction = uiResp.result;
   try {
     // Only sign if the user clicked approve.
-    if (didApprove) {
+    if (approvedTransaction) {
       const sig = await ctx.backend.ethereumSignAndSendTransaction(
-        tx,
+        approvedTransaction,
         walletAddress
       );
-      console.log(sig);
       resp = [sig];
     }
   } catch (err) {
@@ -550,20 +549,22 @@ async function handleEthereumSignTx(
   }
 
   let resp: RpcResponse<string>;
-  const didApprove = uiResp.result;
+  // The transaction may be modified and returned as result to accomodate user
+  // tweaked gas settings/nonce.
+  const approvedTransaction = uiResp.result;
 
   try {
     // Only sign if the user clicked approve.
-    if (didApprove) {
-      const sig = await ctx.backend.ethereumSignTransaction(tx, walletAddress);
+    if (approvedTransaction) {
+      const sig = await ctx.backend.ethereumSignTransaction(
+        approvedTransaction,
+        walletAddress
+      );
       resp = [sig];
     }
   } catch (err) {
     logger.debug("error signing transaction", err.toString());
   }
-
-  console.log(uiResp);
-  console.log(resp);
 
   if (!uiResp.windowClosed) {
     BrowserRuntimeExtension.closeWindow(uiResp.window.id);

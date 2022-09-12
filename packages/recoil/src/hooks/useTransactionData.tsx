@@ -41,40 +41,87 @@ export function useTransactionData(
 //
 // Transaction data for Ethereum
 //
-export function useEthereumTxData(transaction: any): TransactionData {
+export function useEthereumTxData(serializedTx: any): TransactionData {
   const ethereumCtx = useEthereumCtx();
 
   const [loading, setLoading] = useState(true);
   const [simulationError, setSimulationError] = useState(false);
   const [estimatedGas, setEstimatedGas] = useState(BigNumber.from(0));
   const [estimatedTxFee, setEstimatedTxFee] = useState(BigNumber.from(0));
+  const [transaction, setTransaction] = useState({});
   const [transactionOverrides, setTransactionOverrides] = useState({
     type: 2,
+    gasLimit: estimatedGas,
     maxFeePerGas: ethereumCtx.feeData.maxFeePerGas,
     maxPriorityFeePerGas: ethereumCtx.feeData.maxPriorityFeePerGas,
   });
 
+  //
+  // Parse the serialized transaction and remove defaults ethers adds, then
+  // repopulate with our own data.
+  //
   useEffect(() => {
     (async () => {
-      // Estimate gas for the transaction
-      let estimatedGas: BigNumber;
-      try {
-        estimatedGas = BigNumber.from(
-          await ethereumCtx.provider.estimateGas(
-            transaction as TransactionRequest
-          )
-        );
-      } catch (error) {
-        // Fee estimate failed, transaction is unlikely to succeed
-        console.error("could not estimate gas", error);
-        // Use a fallback value for estimate gas, but this is not likely to be
-        // accurate given the gas estimate call failed. 150k is a good value
-        // for all ERC20 methods.
-        estimatedGas = BigNumber.from("150000");
-        setSimulationError(true);
+      const parsed = ethers.utils.parseTransaction(bs58.decode(serializedTx));
+      // Remove defaults that get added by ethers.utils.serializeTransaction so
+      // we can populate them using a void signer and the Ethereum provider
+      const transaction = Object.fromEntries(
+        Object.entries({
+          ...parsed,
+          chainId: parsed.chainId !== 0 ? parsed.chainId : null,
+          nonce: parsed.nonce !== 0 ? parsed.nonce : null,
+          maxPriorityFeePerGas:
+            parsed.maxPriorityFeePerGas && !parsed.maxPriorityFeePerGas.isZero()
+              ? parsed.maxPriorityFeePerGas
+              : null,
+          maxFeePerGas:
+            parsed.maxFeePerGas && !parsed.maxFeePerGas.isZero()
+              ? parsed.maxFeePerGas
+              : null,
+          gasPrice: parsed.gasPrice ? parsed.gasPrice : null,
+          gasLimit: parsed.gasLimit ? parsed.gasLimit : null,
+        }).filter(([_, v]) => v != null)
+      );
+      const voidSigner = new ethers.VoidSigner(
+        ethereumCtx.walletPublicKey,
+        ethereumCtx.provider
+      );
+      const populatedTx = await voidSigner.populateTransaction(
+        transaction as TransactionRequest
+      );
+      setTransaction(populatedTx);
+    })();
+  }, [serializedTx]);
+
+  //
+  // Estimate gas for the transaction
+  //
+  useEffect(() => {
+    (async () => {
+      if (transaction) {
+        // Estimate gas for the transaction
+        let estimatedGas: BigNumber;
+        try {
+          estimatedGas = BigNumber.from(
+            await ethereumCtx.provider.estimateGas(
+              transaction as TransactionRequest
+            )
+          );
+        } catch (error) {
+          // Fee estimate failed, transaction is unlikely to succeed
+          console.error("could not estimate gas", error);
+          // Use a fallback value for estimate gas, but this is not likely to be
+          // accurate given the gas estimate call failed. 150k is a good value
+          // for all ERC20 methods.
+          estimatedGas = BigNumber.from("150000");
+          setSimulationError(true);
+        }
+        setEstimatedGas(estimatedGas);
+        setTransactionOverrides({
+          ...transactionOverrides,
+          gasLimit: estimatedGas,
+        });
       }
-      setEstimatedGas(estimatedGas);
-      setLoading(false);
     })();
   }, [transaction]);
 
@@ -85,20 +132,20 @@ export function useEthereumTxData(transaction: any): TransactionData {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      setEstimatedTxFee(
-        estimatedGas
-          .mul(transactionOverrides.maxFeePerGas!)
-          .add(transactionOverrides.maxPriorityFeePerGas!)
-      );
-      setLoading(false);
+      if (estimatedGas) {
+        setEstimatedTxFee(
+          estimatedGas
+            .mul(transactionOverrides.maxFeePerGas!)
+            .add(estimatedGas.mul(transactionOverrides.maxPriorityFeePerGas!))
+        );
+        setLoading(false);
+      }
     })();
   }, [
     estimatedGas,
     transactionOverrides.maxFeePerGas,
     transactionOverrides.maxPriorityFeePerGas,
   ]);
-
-  console.log({ ...transaction, ...transactionOverrides });
 
   return {
     loading,
