@@ -39,7 +39,7 @@ export function Router() {
         <Route path="/balances/token" element={<TokenPage />} />
         <Route path="/apps" element={<AppsPage />} />
         <Route path="/nfts" element={<NftsPage />} />
-        <Route path="/swap" element={<SwapPage />} />
+        {/*<Route path="/swap" element={<SwapPage />} />*/}
         <Route path="/nfts/collection" element={<NftsCollectionPage />} />
         <Route path="/nfts/detail" element={<NftsDetailPage />} />
         <Route path="*" element={<Redirect />} />
@@ -86,9 +86,11 @@ function TokenPage() {
   return <NavScreen component={<Token {...props} />} />;
 }
 
+/*
 function SwapPage() {
   return <NavScreen component={<Swap />} />;
 }
+*/
 
 function NavScreen({ component }: { component: React.ReactNode }) {
   const { title, isRoot, pop } = useNavigation();

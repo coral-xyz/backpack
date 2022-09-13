@@ -12,7 +12,6 @@ import {
   useSplTokenRegistry,
   useJupiterInputMints,
   useJupiterOutputMints,
-  useBackgroundClient,
   useSwapContext,
   SwapProvider,
 } from "@coral-xyz/recoil";
@@ -202,13 +201,33 @@ enum SwapState {
   ERROR,
 }
 
-export function Swap() {
-  return <SwapInner blockchain={Blockchain.SOLANA} />;
+export function Swap({
+  blockchain,
+  tokenAddress,
+}: {
+  blockchain: Blockchain;
+  tokenAddress: string;
+}) {
+  if (blockchain && blockchain !== Blockchain.SOLANA) {
+    throw new Error("only Solana swaps are supported currently");
+  }
+  return (
+    <SwapInner
+      blockchain={blockchain ?? Blockchain.SOLANA}
+      tokenAddress={tokenAddress}
+    />
+  );
 }
 
-function SwapInner({ blockchain }: any) {
+function SwapInner({
+  blockchain,
+  tokenAddress,
+}: {
+  blockchain: Blockchain;
+  tokenAddress?: string;
+}) {
   return (
-    <SwapProvider>
+    <SwapProvider blockchain={blockchain} tokenAddress={tokenAddress}>
       <_Swap blockchain={blockchain} />
     </SwapProvider>
   );
@@ -218,6 +237,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
   const classes = useStyles();
   const { toAmount, swapToFromMints } = useSwapContext();
   const [openDrawer, setOpenDrawer] = useState(false);
+  const { close } = useDrawerContext();
 
   const onSwapButtonClick = () => {
     swapToFromMints();
@@ -226,6 +246,11 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
   const onSubmit = (e: any) => {
     e.preventDefault();
     setOpenDrawer(true);
+  };
+
+  const onViewBalances = () => {
+    setOpenDrawer(false);
+    close();
   };
 
   return (
@@ -266,15 +291,19 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}
       >
-        <SwapConfirmationCard onClose={() => setOpenDrawer(false)} />
+        <SwapConfirmationCard
+          onClose={() => setOpenDrawer(false)}
+          onViewBalances={() => onViewBalances()}
+        />
       </ApproveTransactionDrawer>
     </>
   );
 }
 
-const SwapConfirmationCard: React.FC<{ onClose: () => void }> = ({
-  onClose,
-}) => {
+const SwapConfirmationCard: React.FC<{
+  onClose: () => void;
+  onViewBalances: () => void;
+}> = ({ onClose, onViewBalances }) => {
   const { executeSwap } = useSwapContext();
   const [swapState, setSwapState] = useState(SwapState.CONFIRMATION);
 
@@ -294,10 +323,10 @@ const SwapConfirmationCard: React.FC<{ onClose: () => void }> = ({
         <SwapConfirmation onConfirm={onConfirm} />
       )}
       {swapState === SwapState.CONFIRMING && (
-        <SwapConfirming isConfirmed={false} />
+        <SwapConfirming isConfirmed={false} onViewBalances={onViewBalances} />
       )}
       {swapState === SwapState.CONFIRMED && (
-        <SwapConfirming isConfirmed={true} />
+        <SwapConfirming isConfirmed={true} onViewBalances={onViewBalances} />
       )}
       {swapState === SwapState.ERROR && (
         <SwapError onCancel={() => onClose()} onRetry={onConfirm} />
@@ -468,16 +497,18 @@ function SwapConfirmation({ onConfirm }: { onConfirm: () => void }) {
 // Bottom card that is displayed while the swap is confirming (i.e. transactions
 // are being submitted/confirmed)
 //
-function SwapConfirming({ isConfirmed }: { isConfirmed: boolean }) {
+function SwapConfirming({
+  isConfirmed,
+  onViewBalances,
+}: {
+  isConfirmed: boolean;
+  onViewBalances: () => void;
+}) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const background = useBackgroundClient();
 
-  const onViewBalances = () => {
-    background.request({
-      method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-      params: [TAB_BALANCES],
-    });
+  const _onViewBalances = () => {
+    onViewBalances();
   };
 
   return (
@@ -536,7 +567,10 @@ function SwapConfirming({ isConfirmed }: { isConfirmed: boolean }) {
             marginRight: "16px",
           }}
         >
-          <SecondaryButton onClick={onViewBalances} label={"View Balances"} />
+          <SecondaryButton
+            onClick={() => _onViewBalances()}
+            label={"View Balances"}
+          />
         </div>
       )}
     </div>

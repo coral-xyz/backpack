@@ -124,6 +124,7 @@ function TabBar() {
           />
         }
       />
+      {/*
       <Tab
         onClick={() => onTabClick(TAB_SWAP)}
         value={TAB_SWAP}
@@ -139,6 +140,7 @@ function TabBar() {
           />
         }
       />
+			*/}
       <Tab
         onClick={() => onTabClick(TAB_NFTS)}
         value={TAB_NFTS}

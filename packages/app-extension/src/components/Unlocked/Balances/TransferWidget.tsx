@@ -6,13 +6,14 @@ import {
 import { useEffect } from "react";
 import { Typography } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
+import { ArrowUpward, ArrowDownward, SwapHoriz } from "@mui/icons-material";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
 import { Send, Send as TokenSend } from "./TokensWidget/Send";
 import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";
+import { Swap } from "../../Unlocked/Swap";
 
 export function TransferWidget({
   blockchain,
@@ -25,7 +26,7 @@ export function TransferWidget({
     <div
       style={{
         display: "flex",
-        width: "120px",
+        width: "178px",
         marginLeft: "auto",
         marginRight: "auto",
       }}
@@ -33,7 +34,45 @@ export function TransferWidget({
       <ReceiveButton blockchain={blockchain} />
       <div style={{ width: "16px" }} />
       <SendButton blockchain={blockchain} address={address} />
+      <div style={{ width: "16px" }} />
+      <SwapButton blockchain={blockchain} address={address} />
     </div>
+  );
+}
+
+function SwapButton({
+  blockchain,
+  address,
+}: {
+  blockchain?: Blockchain;
+  address?: string;
+}) {
+  const theme = useCustomTheme();
+  return (
+    <TransferButton
+      label={"Swap"}
+      labelComponent={
+        <SwapHoriz
+          style={{
+            color: theme.custom.colors.fontColor,
+            display: "flex",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        />
+      }
+      routes={[
+        {
+          name: "swap",
+          component: (props: any) => <Swap {...props} />,
+          title: `Swap`,
+          props: {
+            blockchain,
+            tokenAddress: address,
+          },
+        },
+      ]}
+    />
   );
 }
 
