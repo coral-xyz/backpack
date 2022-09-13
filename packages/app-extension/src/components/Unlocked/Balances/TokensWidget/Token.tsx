@@ -164,9 +164,6 @@ export function WithHeaderButton({
           <NavStackEphemeral
             initialRoute={initialRoute}
             options={(args) => routeOptions(routes, args)}
-            style={{
-              borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-            }}
             navButtonRight={
               <CloseButton onClick={() => setOpenDrawer(false)} />
             }

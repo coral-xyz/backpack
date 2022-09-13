@@ -367,16 +367,9 @@ export function _Deposit({ ...props }: any) {
   const theme = useCustomTheme();
   const activeWallets = useActiveWallets();
   const [tooltipOpen, setTooltipOpen] = useState(false);
-  const nav = useNavStack();
   const activeWallet = activeWallets.find(
     (w) => w.blockchain === props.blockchain
   );
-
-  useEffect(() => {
-    nav.setStyle({
-      borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-    });
-  }, []);
 
   if (!activeWallet) {
     return <></>;

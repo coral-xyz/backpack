@@ -184,7 +184,6 @@ function WithMotionWrapper({ children }: { children: any }) {
 }
 
 function useNavBar() {
-  const theme = useCustomTheme();
   let { isRoot } = useNavigation();
   const pathname = useLocation().pathname;
 
@@ -193,10 +192,6 @@ function useNavBar() {
 
   let navStyle = {
     fontSize: "18px",
-    borderBottom:
-      !isRoot && !pathname.startsWith("/nfts")
-        ? `solid 1pt ${theme.custom.colors.border}`
-        : undefined,
   } as React.CSSProperties;
 
   if (isRoot) {
