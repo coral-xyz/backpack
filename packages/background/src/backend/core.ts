@@ -1,9 +1,9 @@
-import { validateMnemonic as _validateMnemonic , validateMnemonic as _validateMnemonic } from "bip39";
+import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
-import type { Commitment, SendOptions , Commitment, SendOptions } from "@solana/web3.js";
-import { PublicKey, Transaction , PublicKey, Transaction } from "@solana/web3.js";
-import type { KeyringStoreState , KeyringStoreState } from "@coral-xyz/recoil";
-import { makeDefaultNav , makeDefaultNav } from "@coral-xyz/recoil";
+import type { Commitment, SendOptions } from "@solana/web3.js";
+import { PublicKey, Transaction } from "@solana/web3.js";
+import type { KeyringStoreState } from "@coral-xyz/recoil";
+import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
 import {
   BACKEND_EVENT,
