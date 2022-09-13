@@ -219,7 +219,7 @@ export function Send({
               rootClass={classes.textRoot}
               placeholder={`${toTitleCase(blockchain)} address`}
               value={address}
-              setValue={setAddress}
+              setValue={(address: string) => setAddress(address.trim())}
               isError={isErrorAddress}
               inputProps={{
                 name: "to",
@@ -675,6 +675,7 @@ export function useIsValidAddress(
           setAddressError(true);
           return;
         }
+        setAddressError(false);
         setAccountValidated(true);
       }
     })();
