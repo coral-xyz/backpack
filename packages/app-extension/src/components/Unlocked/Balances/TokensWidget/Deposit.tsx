@@ -37,6 +37,7 @@ function DepositMultichain({ ...props }: any) {
         flexDirection: "column",
         justifyContent: "space-between",
         padding: "12px",
+        paddingBottom: "16px",
       }}
     >
       <div
