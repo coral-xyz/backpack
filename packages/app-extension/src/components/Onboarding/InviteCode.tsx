@@ -5,6 +5,10 @@ import { supabase } from "../../supabase";
 import { PrimaryButton, SubtextParagraph, TextField } from "../common";
 import { BackpackHeader } from "../common/BackpackHeader";
 
+const v4Regex = new RegExp(
+  /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
+);
+
 export const InviteCode = ({
   onNext,
   showExistingUserFlow,
@@ -18,19 +22,24 @@ export const InviteCode = ({
 
   const handleSubmit = async () => {
     try {
+      const cleanCode = code.trim();
+
+      if (!cleanCode.match(v4Regex)) throw new Error("Invalid invite code");
+
       const { data, error } = await supabase
         .from("invitations")
         .select("*")
         .limit(1)
-        .eq("id", code);
+        .eq("id", cleanCode);
+
       if (data?.[0]) {
         if (data[0].user_id) {
           throw new Error("Invite code has been used");
         } else {
-          onNext(code);
+          onNext(cleanCode);
         }
       } else {
-        throw new Error(error?.message || "Invalid invite code");
+        throw new Error(error?.message || "Invite code not found");
       }
     } catch (err: any) {
       setInviteCodeError(err.message);
