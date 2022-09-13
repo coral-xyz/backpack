@@ -136,8 +136,8 @@ export function ApproveTransactionRequest() {
           publicKey={publicKey}
           message={request!.data}
           uiRpcMethod={rpcMethod}
-          onReject={onReject}
           onResolve={onResolve}
+          onReject={onReject}
         />
       ) : (
         <SendTransactionRequest
@@ -145,8 +145,8 @@ export function ApproveTransactionRequest() {
           uiRpcMethod={rpcMethod}
           blockchain={blockchain}
           transaction={request!.data}
-          onReject={onReject}
           onResolve={onResolve}
+          onReject={onReject}
         />
       )}
     </ApproveTransactionDrawer>
@@ -183,7 +183,7 @@ function Request({ onConfirm, onReject, buttonsDisabled, children }: any) {
         />
         <PrimaryButton
           disabled={buttonsDisabled}
-          onClick={onConfirm}
+          onClick={(event) => onConfirm()}
           label="Approve"
           type="submit"
           data-testid="Send"
@@ -230,7 +230,7 @@ function SendTransactionRequest({
   // into this component because it can be modified by the user to set
   // transaction specific settings (i.e. Etheruem gas).
   //
-  const onConfirm = async (transactionToSend: string) => {
+  const onConfirm = async () => {
     const signature = await background.request({
       method: uiRpcMethod,
       params: [transactionToSend, publicKey],
