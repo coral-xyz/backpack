@@ -23,8 +23,12 @@ export const InviteCode = ({
         .select("*")
         .limit(1)
         .eq("id", code);
-      if (data?.[0] && !data[0].user_id) {
-        onNext(code);
+      if (data?.[0]) {
+        if (data[0].user_id) {
+          throw new Error("Invite code has been used");
+        } else {
+          onNext(code);
+        }
       } else {
         throw new Error(error?.message || "Invalid invite code");
       }
@@ -58,12 +62,17 @@ export const InviteCode = ({
       >
         <Box style={{ marginBottom: 8 }}>
           <TextField
-            inputProps={{ name: "invite-code" }}
+            inputProps={{
+              name: "invite-code",
+              autoComplete: false,
+              spellCheck: false,
+            }}
             placeholder="Invite code"
             type="text"
             value={code}
             setValue={setCode}
             isError={inviteCodeError}
+            auto
           />
           {inviteCodeError && (
             <Typography sx={{ color: theme.custom.colors.negative }}>

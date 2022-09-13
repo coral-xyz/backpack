@@ -26,10 +26,11 @@ enum PasswordError {
 }
 
 type Props = {
+  inviteCode: string;
   onNext: (username: string, password: string) => void;
 };
 
-export function CreatePassword({ onNext }: Props) {
+export function CreatePassword({ inviteCode, onNext }: Props) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const [checked, setChecked] = useState(false);
@@ -51,6 +52,7 @@ export function CreatePassword({ onNext }: Props) {
       setError(PasswordError.NO_MATCH);
       return;
     }
+
     const {
       data: { user, session },
       error,
@@ -58,6 +60,11 @@ export function CreatePassword({ onNext }: Props) {
       email: `${username}@example.com`,
       password,
     });
+    await supabase
+      .from("invitations")
+      .update({ user_id: user?.id })
+      .eq("id", inviteCode);
+
     // console.log({ user, session, error });
 
     if (error) {
@@ -105,7 +112,11 @@ export function CreatePassword({ onNext }: Props) {
           }}
         >
           <TextField
-            inputProps={{ name: "username" }}
+            inputProps={{
+              name: "username",
+              autoComplete: false,
+              spellCheck: false,
+            }}
             placeholder="Username"
             type="text"
             value={username}

@@ -119,6 +119,7 @@ export function Onboarding() {
       } else {
         renderComponent = (
           <CreatePassword
+            inviteCode={inviteCode}
             onNext={(username: string, password: string) => {
               setUsername(username);
               setPassword(password);
