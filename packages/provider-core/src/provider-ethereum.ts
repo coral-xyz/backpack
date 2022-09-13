@@ -272,6 +272,7 @@ export class ProviderEthereumInjection extends EventEmitter {
 
     switch (event.data.detail.name) {
       case NOTIFICATION_ETHEREUM_CONNECTED:
+        this._handleNotificationConnected(event);
         break;
       case NOTIFICATION_ETHEREUM_DISCONNECTED:
         this._handleNotificationDisconnected();
@@ -285,6 +286,23 @@ export class ProviderEthereumInjection extends EventEmitter {
       default:
         throw new Error(`unexpected notification ${event.data.detail.name}`);
     }
+  }
+
+  /**
+   * Handle a connect notification from Backpack.
+   */
+  async _handleNotificationConnected(event) {
+    const { publicKey, connectionUrl } = event.data.detail.data;
+    this.publicKey = publicKey;
+    // TODO not hardcoded
+    const chainId = 1;
+    this.provider = new ethers.providers.JsonRpcProvider(
+      connectionUrl,
+      chainId
+    );
+    this._handleConnect(`${chainId}`);
+    this._handleAccountsChanged([this.publicKey]);
+    this._handleChainChanged(`${chainId}`);
   }
 
   /**
@@ -336,18 +354,18 @@ export class ProviderEthereumInjection extends EventEmitter {
   }
 
   /**
-   *
+   * Update local state and emit required event for connect.
    */
   protected async _handleConnect(chainId: string) {
     if (!this._state.isConnected) {
       this._state.isConnected = true;
-      // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#connect
-      this.emit("connect", { chainId } as ProviderConnectInfo);
     }
+    // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#connect
+    this.emit("connect", { chainId } as ProviderConnectInfo);
   }
 
   /**
-   *
+   * Update local state and emit required event for chain change.
    */
   protected async _handleChainChanged(chainId: string) {
     this.chainId = chainId;
@@ -358,7 +376,7 @@ export class ProviderEthereumInjection extends EventEmitter {
   }
 
   /**
-   *
+   * Emit the required event for a change of accounts.
    */
   protected async _handleAccountsChanged(accounts: unknown[]) {
     this.emit("accountsChanged", accounts);
@@ -373,16 +391,6 @@ export class ProviderEthereumInjection extends EventEmitter {
       method: ETHEREUM_RPC_METHOD_CONNECT,
       params: [],
     });
-    this.publicKey = result.publicKey;
-    // TODO not hardcoded
-    const chainId = 1;
-    this.provider = new ethers.providers.JsonRpcProvider(
-      result.connectionUrl,
-      chainId
-    );
-    this._handleConnect(`${chainId}`);
-    this._handleAccountsChanged([this.publicKey]);
-    this._handleChainChanged(`${chainId}`);
     return [result.publicKey];
   }
 
