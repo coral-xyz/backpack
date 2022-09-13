@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Typography } from "@mui/material";
+import { Blockchain, ETH_NATIVE_MINT } from "@coral-xyz/common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Button } from "@coral-xyz/react-xnft-renderer";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
-import { useBlockchainTokenAccount } from "@coral-xyz/recoil";
+import {
+  useActiveEthereumWallet,
+  useBlockchainTokenAccount,
+} from "@coral-xyz/recoil";
 import { RecentActivityList } from "../RecentActivity";
 import { WithDrawer, CloseButton } from "../../../common/Layout/Drawer";
 import {
@@ -51,10 +55,16 @@ const useStyles = styles((theme) => ({
 }));
 
 export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
+  const ethereumWallet = useActiveEthereumWallet();
   // Hack: This is hit for some reason due to the framer-motion animation.
   if (!blockchain || !address) {
     return <></>;
   }
+
+  const activityAddress =
+    blockchain === Blockchain.ETHEREUM ? ethereumWallet.publicKey : address;
+  const contractAddresses =
+    blockchain === Blockchain.ETHEREUM ? [address] : undefined;
 
   return (
     <div
@@ -67,7 +77,8 @@ export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
       <TokenHeader blockchain={blockchain} address={address} />
       <RecentActivityList
         blockchain={blockchain}
-        address={address}
+        address={activityAddress}
+        contractAddresses={contractAddresses}
         minimize={true}
         style={{ marginTop: 0 }}
       />
@@ -90,9 +101,31 @@ function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
       }}
     >
       <div>
-        <Typography className={classes.displayBalanceLabel}>
-          {token.displayBalance.toLocaleString()} {token.ticker}
-        </Typography>
+        <div
+          style={{ display: "flex", marginLeft: "16px", marginRight: "16px" }}
+        >
+          <div style={{ flex: 1 }} />
+          <Typography
+            className={classes.displayBalanceLabel}
+            style={{
+              display: "flex",
+            }}
+          >
+            <span
+              style={{
+                display: "inline-block",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                maxWidth: "250px",
+              }}
+            >
+              {token.displayBalance.toLocaleString()}
+            </span>{" "}
+            <span style={{ whiteSpace: "pre" }}> {token.ticker}</span>
+          </Typography>
+          <div style={{ flex: 1 }} />
+        </div>
         <Typography className={classes.usdBalanceLabel}>
           ${parseFloat(token.usdBalance.toFixed(2)).toLocaleString()}{" "}
           <span className={percentClass}>{token.recentPercentChange}%</span>
@@ -131,9 +164,6 @@ export function WithHeaderButton({
           <NavStackEphemeral
             initialRoute={initialRoute}
             options={(args) => routeOptions(routes, args)}
-            style={{
-              borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-            }}
             navButtonRight={
               <CloseButton onClick={() => setOpenDrawer(false)} />
             }

@@ -3,6 +3,7 @@ import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import type { Provider } from "@project-serum/anchor";
 import { metadata } from "@project-serum/token";
+import { externalResourceUri } from "@coral-xyz/common-public";
 
 export const XNFT_PROGRAM_ID = new PublicKey(
   "BdbULx4sJSeLJzvR6h6QxL4fUPJAJw86qmwwXt6jBfXd"
@@ -52,7 +53,7 @@ export async function fetchXnfts(
       if (!m) {
         return null;
       }
-      return fetch(m.data.uri).then((r) => r.json());
+      return fetch(externalResourceUri(m.data.uri)).then((r) => r.json());
     })
   );
 
@@ -70,6 +71,38 @@ export async function fetchXnfts(
   });
 
   return xnfts;
+}
+
+export async function fetchXnft(
+  provider: Provider,
+  xnft: PublicKey
+): Promise<{
+  xnftAccount: any;
+  metadataPublicKey: any;
+  metadata: any;
+  metadataBlob: any;
+}> {
+  const client = xnftClient(provider);
+  const xnftAccount = await client.account.xnft.fetch(xnft);
+
+  const metadataPublicKey = xnftAccount.masterMetadata;
+  const xnftMetadata = await (async () => {
+    const info = await provider.connection.getAccountInfo(metadataPublicKey);
+    if (!info) {
+      throw new Error("account info not found");
+    }
+    return metadata.decodeMetadata(info.data);
+  })();
+
+  const xnftMetadataBlob = await fetch(
+    externalResourceUri(xnftMetadata.data.uri)
+  ).then((r) => r.json());
+  return {
+    metadataPublicKey,
+    metadata: xnftMetadata,
+    metadataBlob: xnftMetadataBlob,
+    xnftAccount,
+  };
 }
 
 export function xnftClient(provider: Provider): Program<Xnft> {

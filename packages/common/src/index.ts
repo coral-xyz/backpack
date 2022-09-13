@@ -1,3 +1,4 @@
+import type { PublicKey } from "@solana/web3.js";
 import type { RpcRequest } from "@coral-xyz/common-public";
 import type { Context, RpcResponse, EventEmitter } from "./types";
 
@@ -35,4 +36,10 @@ export function withContextPort<Backend>(
     const ctx = { backend, events, sender: undefined };
     return await handler(ctx, data);
   };
+}
+
+export function walletAddressDisplay(publicKey: PublicKey | string) {
+  const pubkeyStr: string =
+    typeof publicKey === "string" ? publicKey : publicKey.toString();
+  return `${pubkeyStr.slice(0, 4)}...${pubkeyStr.slice(pubkeyStr.length - 4)}`;
 }

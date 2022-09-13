@@ -1,16 +1,22 @@
 import { atom, selector } from "recoil";
 import { PublicKey, Keypair } from "@solana/web3.js";
-import { BACKPACK_CONFIG_XNFT_PROXY, SIMULATOR_PORT } from "@coral-xyz/common";
-import { activeWallet } from "../wallet";
+import {
+  Blockchain,
+  BACKPACK_CONFIG_XNFT_PROXY,
+  SIMULATOR_PORT,
+} from "@coral-xyz/common";
+import { solanaPublicKey, activePublicKeys } from "../wallet";
+import { externalResourceUri } from "@coral-xyz/common-public";
 import { solanaConnectionUrl } from "./preferences";
+import { connectionUrls } from "../preferences";
 import { bootstrap } from "../bootstrap";
 
 //
 // Private dev plugins.
 //
+export const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
 const MANGO_TABLE_PLUGIN_URL = pluginURL("xnft/mango");
 const PRICES_PLUGIN_URL = pluginURL("xnft/prices");
-const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
 const PSYFI_PLUGIN_URL = pluginURL("xnft/psyfi");
 const AURORY_PLUGIN_URL = pluginURL("xnft/aurory");
 
@@ -41,8 +47,9 @@ function pluginURL(pluginName: string) {
   ].join("");
 }
 
-function xnftUrl(url: string) {
-  return [PROXY_URL, url].join("");
+export function xnftUrl(url: string) {
+  const uri = externalResourceUri(url);
+  return [PROXY_URL, uri].join("");
 }
 
 //
@@ -56,31 +63,40 @@ export const plugins = selector({
         url: SIMULATOR_URL,
         iconUrl: "assets/simulator.png",
         title: "Simulator",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(solanaConnectionUrl),
+        activeWallets: get(activePublicKeys),
+        connectionUrls: get(connectionUrls),
         install: {
           publicKey: PublicKey.default.toString(),
+          account: {
+            xnft: PublicKey.default.toString(),
+          },
         },
       },
-
+      /*
       {
         url: DEGODS_TABLE_PLUGIN_URL,
         iconUrl: "assets/deadgods.png",
         title: "DeadGods",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(solanaConnectionUrl),
+        activeWallets: get(activePublicKeys),
+        connectionUrls: get(connectionUrls),
         install: {
-          publicKey: Keypair.generate().publicKey,
+          publicKey: Keypair.generate().publicKey.toString(),
+          account: {
+            xnft: Keypair.generate().publicKey.toString(),
+          },
         },
       },
       {
         url: AURORY_PLUGIN_URL,
         iconUrl: "assets/aurory.png",
         title: "Aurory",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(solanaConnectionUrl),
+        activeWallets: get(activePublicKeys),
+        connectionUrls: get(connectionUrls),
         install: {
-          publicKey: Keypair.generate().publicKey,
+          publicKey: Keypair.generate().publicKey.toString(),
+          account: {
+            xnft: Keypair.generate().publicKey.toString(),
+          },
         },
       },
       {
@@ -88,42 +104,55 @@ export const plugins = selector({
         iconUrl:
           "https://pbs.twimg.com/profile_images/1472933274209107976/6u-LQfjG_400x400.jpg",
         title: "Monitor",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(solanaConnectionUrl),
+        activeWallets: get(activePublicKeys),
+        connectionUrls: get(connectionUrls),
         install: {
-          publicKey: Keypair.generate().publicKey,
+          publicKey: Keypair.generate().publicKey.toString(),
+          account: {
+            xnft: Keypair.generate().publicKey.toString(),
+          },
         },
       },
       {
         url: PRICES_PLUGIN_URL,
         iconUrl: "assets/prices.png",
         title: "Prices",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(solanaConnectionUrl),
+        activeWallets: get(activePublicKeys),
+        connectionUrls: get(connectionUrls),
         install: {
-          publicKey: Keypair.generate().publicKey,
+          publicKey: Keypair.generate().publicKey.toString(),
+          account: {
+            xnft: Keypair.generate().publicKey.toString(),
+          },
         },
       },
       {
         url: MANGO_TABLE_PLUGIN_URL,
         iconUrl: "assets/mango.png",
         title: "Mango",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(solanaConnectionUrl),
+        activeWallet: get(activePublicKeys),
+        connectionUrls: get(connectionUrls),
         install: {
-          publicKey: Keypair.generate().publicKey,
+          publicKey: Keypair.generate().publicKey.toString(),
+          account: {
+            xnft: Keypair.generate().publicKey.toString(),
+          },
         },
       },
       {
         url: PSYFI_PLUGIN_URL,
         iconUrl: "assets/psyfi.png",
         title: "Psyfi",
-        activeWallet: get(activeWallet),
-        connectionUrl: get(solanaConnectionUrl),
+        activeWallets: get(activePublicKeys),
+        connectionUrls: get(connectionUrls),
         install: {
-          publicKey: Keypair.generate().publicKey,
+          publicKey: Keypair.generate().publicKey.toString(),
+          account: {
+            xnft: Keypair.generate().publicKey.toString(),
+          },
         },
       },
+			*/
     ];
   },
 });
@@ -134,15 +163,17 @@ export const xnfts = atom({
     key: "xnftsDefault",
     get: async ({ get }) => {
       const b = get(bootstrap);
-      const _activeWallet = get(activeWallet);
-      const _connectionUrl = get(solanaConnectionUrl);
+      const _activeWallets = get(activePublicKeys);
+      const _connectionUrls = get(connectionUrls);
       return (await b.xnfts).map((xnft) => {
         return {
           ...xnft,
           url: xnftUrl(xnft.metadataBlob.properties.bundle),
-          iconUrl: xnft.metadataBlob.image,
-          activeWallet: _activeWallet,
-          connectionUrl: _connectionUrl,
+          iconUrl: externalResourceUri(xnft.metadataBlob.image),
+          activeWallet: _activeWallets[Blockchain.SOLANA],
+          activeWallets: _activeWallets,
+          connectionUrl: _connectionUrls[Blockchain.SOLANA],
+          connectionUrls: _connectionUrls,
           title: xnft.metadataBlob.name,
         };
       });

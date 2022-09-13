@@ -15,9 +15,9 @@ export function WithCopyTooltip({ children, tooltipOpen }: any) {
         tooltip: {
           sx: {
             fontSize: "14px",
-            bgcolor: theme.custom.colors.activeNavButton,
+            bgcolor: theme.custom.colors.brandColor,
             "& .MuiTooltip-arrow": {
-              color: theme.custom.colors.activeNavButton,
+              color: theme.custom.colors.brandColor,
             },
           },
         },

@@ -17,6 +17,7 @@ import {
   useJupiterInputMints,
   useSplTokenRegistry,
   useSolanaCtx,
+  useBlockchainTokenAccount,
 } from "../hooks";
 import { JUPITER_BASE_URL } from "../atoms/solana/jupiter";
 
@@ -95,11 +96,18 @@ export function SwapProvider(props: any) {
   const tokenAccountsSorted = useJupiterInputMints();
   const solanaCtx = useSolanaCtx();
   const { backgroundClient, connection, walletPublicKey } = solanaCtx;
+  const token = props.tokenAddress
+    ? useBlockchainTokenAccount(props.blockchain, props.tokenAddress)
+    : undefined;
 
   // Swap setttings
   const [[fromMint, toMint], setFromMintToMint] = useState([
-    SOL_NATIVE_MINT,
-    USDC_MINT,
+    token ? token.mint : SOL_NATIVE_MINT,
+    token
+      ? token.mint === USDC_MINT.toString()
+        ? SOL_NATIVE_MINT
+        : USDC_MINT
+      : USDC_MINT,
   ]);
   const [fromAmount, _setFromAmount] = useState<BigNumber | undefined>(
     undefined
@@ -187,7 +195,12 @@ export function SwapProvider(props: any) {
 
   useEffect(() => {
     const loadRoutes = async () => {
-      if (fromAmount && fromAmount.gt(Zero) && isJupiterSwap) {
+      if (
+        fromAmount &&
+        fromAmount.gt(Zero) &&
+        isJupiterSwap &&
+        fromMint !== toMint
+      ) {
         setRoutes(await fetchRoutes());
         // Success, clear existing polling and setup next
         stopRoutePolling();

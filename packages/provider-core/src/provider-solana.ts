@@ -21,15 +21,16 @@ import {
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
   SOLANA_RPC_METHOD_CONNECT,
   SOLANA_RPC_METHOD_DISCONNECT,
+  SOLANA_RPC_METHOD_OPEN_XNFT,
   NOTIFICATION_SOLANA_CONNECTED,
   NOTIFICATION_SOLANA_DISCONNECTED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
 } from "@coral-xyz/common";
-import * as cmn from "./common";
+import * as cmn from "./common/solana";
 import { RequestManager } from "./request-manager";
 
-const logger = getLogger("provider-injection");
+const logger = getLogger("provider-solana-injection");
 
 export class ProviderSolanaInjection extends EventEmitter implements Provider {
   private _options?: ConfirmOptions;
@@ -150,6 +151,13 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
       params: [],
     });
     this.connection = this.defaultConnection();
+  }
+
+  async openXnft(xnftAddress: PublicKey) {
+    await this._requestManager.request({
+      method: SOLANA_RPC_METHOD_OPEN_XNFT,
+      params: [xnftAddress.toString()],
+    });
   }
 
   async sendAndConfirm(

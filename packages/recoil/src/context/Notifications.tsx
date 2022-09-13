@@ -271,7 +271,7 @@ export function NotificationsProvider(props: any) {
     const handleSolanaActiveWalletUpdated = (notif: Notification) => {
       setActiveWallet(notif.data.activeWallet);
       allPlugins().forEach((p) => {
-        p.pushPublicKeyChangedNotification(notif.data.activeWallet);
+        p.pushSolanaPublicKeyChangedNotification(notif.data.activeWallet);
       });
       setActiveWallets(notif.data.activeWallets);
     };
@@ -311,7 +311,7 @@ export function NotificationsProvider(props: any) {
     const handleSolanaConnectionUrlUpdated = (notif: Notification) => {
       setSolanaConnectionUrl(notif.data.url);
       allPlugins().forEach((p) => {
-        p.pushConnectionChangedNotification(notif.data.url);
+        p.pushSolanaConnectionChangedNotification(notif.data.url);
       });
     };
 
@@ -333,6 +333,9 @@ export function NotificationsProvider(props: any) {
 
     const handleEthereumActiveWalletUpdated = (notif: Notification) => {
       setActiveWallet(notif.data.activeWallet);
+      allPlugins().forEach((p) => {
+        p.pushEthereumPublicKeyChangedNotification(notif.data.activeWallet);
+      });
       setActiveWallets(notif.data.activeWallets);
     };
 
@@ -347,6 +350,9 @@ export function NotificationsProvider(props: any) {
 
     const handleEthereumConnectionUrlUpdated = (notif: Notification) => {
       setEthereumConnectionUrl(notif.data.url);
+      allPlugins().forEach((p) => {
+        p.pushEthereumConnectionChangedNotification(notif.data.url);
+      });
     };
 
     //

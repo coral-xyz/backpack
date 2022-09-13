@@ -1,24 +1,25 @@
 import { ethers } from "ethers";
+import type { UnsignedTransaction } from "@ethersproject/transactions";
 import {
   UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
 } from "../constants";
 import type { EthereumContext } from ".";
 
-// Provider API to be used by the app UI.
+// Provider api used by the app UI. Spiritually the same as the injected
+// provider with a slightly different API. Eventually it would be nice to
+// combine the two.
 export class EthereumProvider {
+  /**
+   * Serialize a transaction and send it to the background script for signing.
+   */
   public static async signTransaction(
     ctx: EthereumContext,
     tx: any
   ): Promise<any> {
     const { walletPublicKey, backgroundClient } = ctx;
-    const network = await ctx.provider.getNetwork();
-    tx = {
-      ...tx,
-      chainId: network.chainId,
-    };
     const serializedTx = ethers.utils.base58.encode(
-      ethers.utils.serializeTransaction(tx)
+      ethers.utils.serializeTransaction(tx as UnsignedTransaction)
     );
     const signedTx = await backgroundClient.request({
       method: UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
@@ -27,18 +28,18 @@ export class EthereumProvider {
     return signedTx;
   }
 
+  /**
+   * Serialize a transaction and send it to the background script for signing
+   * and sending.
+   */
   public static async signAndSendTransaction(
     ctx: EthereumContext,
     tx: any
   ): Promise<any> {
     const { walletPublicKey, backgroundClient } = ctx;
-    const network = await ctx.provider.getNetwork();
-    tx = {
-      ...tx,
-      chainId: network.chainId,
-    };
+    console.log("Transaction", tx);
     const serializedTx = ethers.utils.base58.encode(
-      ethers.utils.serializeTransaction(tx)
+      ethers.utils.serializeTransaction(tx as UnsignedTransaction)
     );
     const txHash = await backgroundClient.request({
       method: UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,

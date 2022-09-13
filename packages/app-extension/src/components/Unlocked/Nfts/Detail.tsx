@@ -1,9 +1,28 @@
 import { useState } from "react";
 import { BigNumber } from "ethers";
-import { Typography } from "@mui/material";
+import { PublicKey } from "@solana/web3.js";
+import { Typography, IconButton, Popover } from "@mui/material";
+import { Whatshot, CallMade } from "@mui/icons-material";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
-import { useNftMetadata, useAnchorContext } from "@coral-xyz/recoil";
-import { Blockchain } from "@coral-xyz/common";
+import {
+  useDecodedSearchParams,
+  useNftMetadata,
+  useAnchorContext,
+  useSolanaConnectionUrl,
+  useEthereumConnectionUrl,
+  useSolanaExplorer,
+  useEthereumExplorer,
+  useSolanaCtx,
+} from "@coral-xyz/recoil";
+import {
+  explorerNftUrl,
+  toTitleCase,
+  Blockchain,
+  Solana,
+  confirmTransaction,
+  getLogger,
+} from "@coral-xyz/common";
 import { PrimaryButton, SecondaryButton, TextField } from "../../common";
 import {
   useDrawerContext,
@@ -14,11 +33,17 @@ import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
-import {
-  SendConfirmationCard,
-  useIsValidAddress,
-} from "../Balances/TokensWidget/Send";
+import { SendSolanaConfirmationCard } from "../Balances/TokensWidget/Solana";
+import { SendEthereumConfirmationCard } from "../Balances/TokensWidget/Ethereum";
+import { useIsValidAddress } from "../Balances/TokensWidget/Send";
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
+import { List, ListItem } from "../../common/List";
+import {
+  Sending,
+  Error as ErrorConfirmation,
+} from "../../Unlocked/Balances/TokensWidget/Send";
+
+const logger = getLogger("app-extension/nft-detail");
 
 const useStyles = styles((theme) => ({
   textRoot: {
@@ -30,12 +55,12 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function NftsDetail({ publicKey }: { publicKey: string }) {
+export function NftsDetail({ nftId }: { nftId: string }) {
   const nfts = useNftMetadata();
-  const nft = nfts.get(publicKey);
+  const nft = nfts.get(nftId);
 
   // Hack: needed because this is undefined due to framer-motion animation.
-  if (!publicKey) {
+  if (!nftId) {
     return <></>;
   }
 
@@ -58,21 +83,29 @@ export function NftsDetail({ publicKey }: { publicKey: string }) {
       <Image nft={nft} />
       <Description nft={nft} />
       <SendButton nft={nft} />
-      {nft.tokenMetaUriData.attributes && <Attributes nft={nft} />}
+      {nft.attributes && <Attributes nft={nft} />}
     </div>
   );
 }
 
 function Image({ nft }: { nft: any }) {
   return (
-    <img
+    <div
       style={{
         width: "100%",
         minHeight: "343px",
-        borderRadius: "8px",
       }}
-      src={nft.tokenMetaUriData.image}
-    />
+    >
+      <img
+        style={{
+          width: "100%",
+          minHeight: "343px",
+          borderRadius: "8px",
+        }}
+        src={nft.imageUrl}
+        onError={(event) => (event.currentTarget.style.display = "none")}
+      />
+    </div>
   );
 }
 
@@ -103,7 +136,7 @@ function Description({ nft }: { nft: any }) {
           fontSize: "16px",
         }}
       >
-        {nft.tokenMetaUriData.description}
+        {nft.description}
       </Typography>
     </div>
   );
@@ -131,8 +164,8 @@ function SendButton({ nft }: { nft: any }) {
         >
           <NavStackEphemeral
             initialRoute={{ name: "send" }}
-            options={(args) => ({
-              title: `${nft.tokenMetaUriData.name} / Send`,
+            options={() => ({
+              title: `${nft.name} / Send`,
             })}
             navButtonRight={
               <CloseButton onClick={() => setOpenDrawer(false)} />
@@ -152,14 +185,18 @@ function SendButton({ nft }: { nft: any }) {
 function SendScreen({ nft }: { nft: any }) {
   const classes = useStyles();
   const { close } = useDrawerContext();
-  const [address, setAddress] = useState("");
+  const { provider: solanaProvider } = useAnchorContext();
+  const [destinationAddress, setDestinationAddress] = useState("");
   const [openConfirm, setOpenConfirm] = useState(false);
-  const { provider } = useAnchorContext();
   const {
     isValidAddress,
     isErrorAddress,
     isFreshAddress: _,
-  } = useIsValidAddress(Blockchain.SOLANA, address, provider.connection);
+  } = useIsValidAddress(
+    nft.blockchain,
+    destinationAddress,
+    solanaProvider.connection
+  );
 
   const onReject = () => {
     close();
@@ -191,16 +228,23 @@ function SendScreen({ nft }: { nft: any }) {
             <TextField
               autoFocus
               rootClass={classes.textRoot}
-              placeholder={"Recipient's SOL Address"}
-              value={address}
-              setValue={setAddress}
+              placeholder={`Recipient's ${toTitleCase(nft.blockchain)} Address`}
+              value={destinationAddress}
+              setValue={setDestinationAddress}
               isError={isErrorAddress}
               inputProps={{
                 name: "to",
               }}
             />
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              paddingTop: "18px",
+              paddingBottom: "12px",
+            }}
+          >
             <SecondaryButton
               style={{
                 marginRight: "8px",
@@ -220,17 +264,32 @@ function SendScreen({ nft }: { nft: any }) {
         openDrawer={openConfirm}
         setOpenDrawer={setOpenConfirm}
       >
-        <SendConfirmationCard
-          blockchain={Blockchain.SOLANA}
-          token={{
-            mint: nft.metadata.mint,
-            decimals: 0, // Are there any NFTs that don't use decimals 0?
-            logo: nft.tokenMetaUriData.image,
-          }}
-          address={address}
-          amount={BigNumber.from(1)}
-          close={() => close()}
-        />
+        {nft.blockchain === Blockchain.SOLANA && (
+          <SendSolanaConfirmationCard
+            token={{
+              address: nft.publicKey,
+              logo: nft.imageUrl,
+              decimals: 0, // Are there any NFTs that don't use decimals 0?
+              mint: nft.mint,
+            }}
+            destinationAddress={destinationAddress}
+            amount={BigNumber.from(1)}
+            close={() => close()}
+          />
+        )}
+        {nft.blockchain === Blockchain.ETHEREUM && (
+          <SendEthereumConfirmationCard
+            token={{
+              logo: nft.imageUrl,
+              decimals: 0, // Are there any NFTs that don't use decimals 0?
+              address: nft.contractAddress,
+              tokenId: nft.tokenId,
+            }}
+            destinationAddress={destinationAddress}
+            amount={BigNumber.from(1)}
+            close={() => close()}
+          />
+        )}
       </ApproveTransactionDrawer>
     </>
   );
@@ -258,10 +317,10 @@ function Attributes({ nft }: { nft: any }) {
             marginRight: "-4px",
           }}
         >
-          {nft.tokenMetaUriData.attributes.map((attr: any) => {
+          {nft.attributes.map((attr: { traitType: string; value: string }) => {
             return (
               <div
-                key={attr.trait_type}
+                key={attr.traitType}
                 style={{
                   padding: "4px",
                 }}
@@ -282,7 +341,7 @@ function Attributes({ nft }: { nft: any }) {
                       fontSize: "14px",
                     }}
                   >
-                    {attr.trait_type}
+                    {toTitleCase(attr.traitType)}
                   </Typography>
                   <Typography
                     style={{
@@ -297,6 +356,261 @@ function Attributes({ nft }: { nft: any }) {
             );
           })}
         </div>
+      </div>
+    </div>
+  );
+}
+
+export function NftOptionsButton() {
+  const theme = useCustomTheme();
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const searchParams = useDecodedSearchParams();
+  const nfts = useNftMetadata();
+  // @ts-ignore
+  const nft: any = nfts.get(searchParams.props.nftId);
+  const isEthereum = nft && nft.contractAddress;
+  const explorer = isEthereum ? useEthereumExplorer() : useSolanaExplorer();
+  const connectionUrl = isEthereum
+    ? useEthereumConnectionUrl()
+    : useSolanaConnectionUrl();
+
+  const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const onClose = () => {
+    setAnchorEl(null);
+  };
+  const onBurn = () => {
+    onClose();
+    setOpenDrawer(true);
+  };
+
+  return (
+    <>
+      <IconButton
+        disableRipple
+        style={{
+          padding: 0,
+        }}
+        onClick={(e) => onClick(e)}
+      >
+        <MoreHorizIcon
+          style={{
+            color: theme.custom.colors.secondary,
+          }}
+        />
+      </IconButton>
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={onClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        PaperProps={{
+          style: {
+            background: theme.custom.colors.nav,
+          },
+        }}
+      >
+        <div
+          style={{
+            padding: "4px",
+          }}
+        >
+          <List
+            style={{
+              margin: 0,
+            }}
+          >
+            <ListItem
+              style={{
+                width: "100%",
+                height: "30px",
+              }}
+              isFirst={true}
+              isLast={isEthereum}
+              onClick={() => {
+                const url = explorerNftUrl(explorer, nft, connectionUrl);
+                window.open(url, "_blank");
+              }}
+            >
+              <Typography
+                style={{
+                  fontSize: "14px",
+                }}
+              >
+                View on Explorer
+              </Typography>
+              <CallMade
+                style={{
+                  color: theme.custom.colors.secondary,
+                }}
+              />
+            </ListItem>
+            {!isEthereum && (
+              <ListItem
+                style={{
+                  width: "100%",
+                  height: "30px",
+                }}
+                isLast={true}
+                onClick={() => onBurn()}
+              >
+                <Typography
+                  style={{
+                    fontSize: "14px",
+                    color: theme.custom.colors.negative,
+                  }}
+                >
+                  Burn Token
+                </Typography>
+              </ListItem>
+            )}
+          </List>
+        </div>
+      </Popover>
+      <ApproveTransactionDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
+      >
+        <BurnConfirmationCard nft={nft} />
+      </ApproveTransactionDrawer>
+    </>
+  );
+}
+
+function BurnConfirmationCard({ nft }: { nft: any }) {
+  const [state, setState] = useState<
+    "confirm" | "sending" | "confirmed" | "error"
+  >("confirm");
+  const [signature, setSignature] = useState<string | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const solanaCtx = useSolanaCtx();
+  const blockchain = Blockchain.SOLANA;
+  const token = {
+    address: nft.publicKey,
+    logo: nft.imageUrl,
+    mint: nft.mint,
+    decimals: 0,
+  };
+
+  const onConfirm = async () => {
+    try {
+      const _signature = await Solana.burnNft(solanaCtx, {
+        solDestination: solanaCtx.walletPublicKey,
+        mint: new PublicKey(nft.mint.toString()),
+      });
+      setSignature(_signature);
+      setState("sending");
+
+      //
+      // Confirm the tx.
+      //
+      try {
+        await confirmTransaction(
+          solanaCtx.connection,
+          _signature,
+          solanaCtx.commitment !== "confirmed" &&
+            solanaCtx.commitment !== "finalized"
+            ? "confirmed"
+            : solanaCtx.commitment
+        );
+        setState("confirmed");
+      } catch (err: any) {
+        logger.error("unable to confirm", err);
+        setError(err.toString());
+        setState("error");
+      }
+    } catch (err: any) {
+      console.log("ERROR", err);
+      setError(err);
+      setState("error");
+    }
+  };
+
+  return state === "confirm" ? (
+    <BurnConfirmation onConfirm={onConfirm} />
+  ) : state === "sending" ? (
+    <Sending
+      blockchain={Blockchain.SOLANA}
+      isComplete={false}
+      amount={BigNumber.from(1)}
+      token={token}
+      signature={signature!}
+      titleOverride={"Burning"}
+    />
+  ) : state === "confirmed" ? (
+    <Sending
+      blockchain={Blockchain.SOLANA}
+      isComplete={true}
+      amount={BigNumber.from(1)}
+      token={token}
+      signature={signature!}
+      titleOverride={"Burnt"}
+    />
+  ) : (
+    <ErrorConfirmation
+      blockchain={blockchain}
+      signature={signature!}
+      error={error!.toString()}
+      onRetry={() => onConfirm()}
+    />
+  );
+}
+
+function BurnConfirmation({ onConfirm }: { onConfirm: () => void }) {
+  const theme = useCustomTheme();
+
+  return (
+    <div
+      style={{
+        height: "400px",
+        display: "flex",
+        justifyContent: "space-between",
+        flexDirection: "column",
+        padding: "16px",
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+        }}
+      >
+        <Whatshot
+          style={{
+            color: theme.custom.colors.negative,
+            display: "block",
+            marginLeft: "auto",
+            marginRight: "auto",
+            fontSize: "60px",
+            marginTop: "24px",
+            marginBottom: "24px",
+          }}
+        />
+        <Typography
+          style={{
+            backgroundColor: theme.custom.colors.bg2,
+            padding: "16px",
+            color: theme.custom.colors.fontColor,
+            fontSize: "20px",
+            textAlign: "center",
+            borderRadius: "8px",
+          }}
+        >
+          Are you sure you want to burn this token? This action can't be undone.
+        </Typography>
+      </div>
+      <div>
+        <PrimaryButton
+          label="Confirm"
+          onClick={() => onConfirm()}
+          style={{
+            backgroundColor: theme.custom.colors.negative,
+          }}
+        />
       </div>
     </div>
   );

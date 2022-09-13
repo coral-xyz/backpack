@@ -16,9 +16,6 @@ export function YourAccount() {
     "Edit wallets": {
       onClick: () => nav.push("edit-wallets"),
     },
-    "Show private key": {
-      onClick: () => nav.push("show-private-key-warning"),
-    },
     "Show secret recovery phrase": {
       onClick: () => nav.push("show-secret-phrase-warning"),
     },

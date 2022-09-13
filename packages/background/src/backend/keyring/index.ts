@@ -4,6 +4,8 @@ import type { EventEmitter } from "@coral-xyz/common";
 import {
   Blockchain,
   DerivationPath,
+  EthereumExplorer,
+  EthereumConnectionUrl,
   SolanaExplorer,
   SolanaCluster,
   NOTIFICATION_KEYRING_STORE_LOCKED,
@@ -84,6 +86,10 @@ export class KeyringStore {
         cluster: SolanaCluster.DEFAULT,
         commitment: "confirmed",
       },
+      ethereum: {
+        explorer: EthereumExplorer.DEFAULT,
+        connectionUrl: EthereumConnectionUrl.DEFAULT,
+      },
     });
 
     // Persist the encrypted data to then store.
@@ -141,11 +147,9 @@ export class KeyringStore {
   }
 
   public lock() {
-    return this.withUnlock(() => {
-      this.blockchains = new Map();
-      this.lastUsedTs = 0;
-      this.activeBlockchain_ = undefined;
-    });
+    this.blockchains = new Map();
+    this.lastUsedTs = 0;
+    this.activeBlockchain_ = undefined;
   }
 
   // Return the public keys of all blockchain keyrings in the keyring.

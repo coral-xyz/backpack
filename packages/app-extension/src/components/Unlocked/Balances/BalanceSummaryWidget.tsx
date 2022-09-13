@@ -1,10 +1,7 @@
-import { useState } from "react";
-import { Button, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { formatUSD } from "@coral-xyz/common";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
 import { useSolanaBalance, useActiveWallet } from "@coral-xyz/recoil";
-import { walletAddressDisplay } from "../../common";
-import { WithCopyTooltip } from "../../common/WithCopyTooltip";
 
 const useStyles = styles((theme) => ({
   button: {
@@ -17,15 +14,13 @@ const useStyles = styles((theme) => ({
     },
   },
   balancesHeaderContainer: {
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
     paddingLeft: "24px",
     paddingRight: "24px",
+    paddingTop: "20px",
     boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
     background: "url(assets/coral-balances.png)",
     backgroundRepeat: "round",
-    height: "104px",
+    height: "110px",
     width: "100%",
     borderRadius: "12px",
   },
@@ -36,8 +31,8 @@ const useStyles = styles((theme) => ({
   },
   totalBalance: {
     fontWeight: 600,
-    fontSize: "30px",
-    lineHeight: "36px",
+    fontSize: "36px",
+    lineHeight: "40px",
     color: "inherit",
   },
   positive: {
@@ -56,83 +51,65 @@ export function BalanceSummaryWidget() {
   const theme = useCustomTheme();
   const classes = useStyles();
   const { totalBalance, totalChange, percentChange } = useSolanaBalance();
-  const { name, publicKey } = useActiveWallet();
-  const activeWallet = useActiveWallet();
-  const [tooltipOpen, setTooltipOpen] = useState(false);
-  const pubkeyStr = walletAddressDisplay(publicKey);
-
-  const onCopy = () => {
-    setTooltipOpen(true);
-    setTimeout(() => setTooltipOpen(false), 1000);
-    navigator.clipboard.writeText(activeWallet.publicKey.toString());
-  };
 
   return (
-    <WithCopyTooltip tooltipOpen={tooltipOpen}>
-      <div style={{ display: "flex" }}>
-        <Button
-          className={classes.button}
-          disableRipple
+    <div style={{ display: "flex" }}>
+      <div
+        className={classes.balancesHeaderContainer}
+        style={{
+          textAlign: "left",
+          marginLeft: "12px",
+          marginRight: "12px",
+          borderRadius: "12px",
+        }}
+      >
+        <Typography
+          className={classes.totalBalance}
           style={{
-            flex: 1,
-            padding: 0,
-            textTransform: "none",
-            textAlign: "left",
-            marginLeft: "12px",
-            marginRight: "12px",
-            borderRadius: "12px",
+            color: theme.custom.colors.fontColor,
           }}
         >
-          <div
-            onClick={() => onCopy()}
-            className={classes.balancesHeaderContainer}
+          {formatUSD(totalBalance)}
+        </Typography>
+        <div
+          style={{
+            display: "flex",
+            marginTop: "6px",
+          }}
+        >
+          <Typography
+            style={{
+              color: theme.custom.colors.fontColor,
+              paddingLeft: "0px",
+              paddingRight: "0px",
+              paddingTop: "2px",
+              paddingBottom: "2px",
+              marginRight: "10px",
+              lineHeight: "24px",
+            }}
           >
-            <div>
-              <div>
-                <Typography className={classes.headerLabel}>
-                  {name}
-                  <span
-                    style={{
-                      marginLeft: "8px",
-                      color: theme.custom.colors.fontColor2,
-                    }}
-                  >
-                    {pubkeyStr}
-                  </span>
-                </Typography>
-              </div>
-              <Typography className={classes.totalBalance}>
-                {formatUSD(totalBalance)}
-              </Typography>
-            </div>
-            {Number.isFinite(percentChange) && (
-              <div
-                style={{
-                  backgroundColor: theme.custom.colors.nav,
-                  height: "20px",
-                  borderRadius: "20px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  padding: "8px",
-                  position: "absolute",
-                  top: 12,
-                  right: 22,
-                }}
-              >
-                <Typography
-                  className={
-                    totalChange > 0 ? classes.positive : classes.negative
-                  }
-                >
-                  {/*{formatUSD(totalChange)} ({`${percentChange.toFixed(2)}%`})*/}
-                  {`${percentChange.toFixed(2)}%`}
-                </Typography>
-              </div>
-            )}
-          </div>
-        </Button>
+            {totalChange > 0 ? "+" : ""}
+            {formatUSD(totalChange)}
+          </Typography>
+          {Number.isFinite(percentChange) && (
+            <Typography
+              style={{
+                color: theme.custom.colors.fontColor,
+                paddingLeft: "8px",
+                paddingRight: "8px",
+                paddingTop: "2px",
+                paddingBottom: "2px",
+                background: "rgba(255, 255, 255, 0.2)",
+                borderRadius: "28px",
+                lineHeight: "24px",
+              }}
+            >
+              {totalChange > 0 ? "+" : ""}
+              {`${percentChange.toFixed(2)}%`}
+            </Typography>
+          )}
+        </div>
       </div>
-    </WithCopyTooltip>
+    </div>
   );
 }

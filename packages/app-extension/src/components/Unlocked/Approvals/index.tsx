@@ -1,7 +1,7 @@
 import _CheckIcon from "@mui/icons-material/Check";
 import _CloseIcon from "@mui/icons-material/Close";
 import { styles } from "@coral-xyz/themes";
-import { useActiveWallet, useWalletName } from "@coral-xyz/recoil";
+import { useWalletName } from "@coral-xyz/recoil";
 import {
   walletAddressDisplay,
   PrimaryButton,

@@ -1,4 +1,3 @@
-import type { PublicKey } from "@solana/web3.js";
 import { ethers, BigNumber } from "ethers";
 import {
   Box,
@@ -7,13 +6,15 @@ import {
   CircularProgress,
   Checkbox as _Checkbox,
 } from "@mui/material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles, useCustomTheme, CustomTheme } from "@coral-xyz/themes";
 import { TextField } from "@coral-xyz/react-xnft-renderer";
+import { walletAddressDisplay } from "@coral-xyz/common";
 
 export * from "./List";
 export { TextField };
+export { walletAddressDisplay } from "@coral-xyz/common";
 
-const useStyles = styles((theme) => ({
+const useStyles = styles((theme: CustomTheme) => ({
   leftLabel: {
     color: theme.custom.colors.fontColor,
     fontSize: "12px",
@@ -36,7 +37,7 @@ const useStyles = styles((theme) => ({
     display: "block",
     marginLeft: "auto",
     marginRight: "auto",
-    color: theme.custom.colors.activeNavButton,
+    color: theme.custom.colors.brandColor,
   },
   button: {
     width: "100%",
@@ -45,7 +46,7 @@ const useStyles = styles((theme) => ({
     backgroundColor: theme.custom.colors.primaryButton,
     "&.Mui-disabled": {
       opacity: 0.5,
-      backgroundColor: theme.custom.colors.disabledButton,
+      backgroundColor: theme.custom.colors.primaryButton,
     },
     "&:hover": {
       backgroundColor: theme.custom.colors.primaryButton,
@@ -109,12 +110,6 @@ export function WalletAddress({ publicKey, name, style, nameStyle }: any) {
       </Typography>
     </div>
   );
-}
-
-export function walletAddressDisplay(publicKey: PublicKey | string) {
-  const pubkeyStr: string =
-    typeof publicKey === "string" ? publicKey : publicKey.toString();
-  return `${pubkeyStr.slice(0, 4)}...${pubkeyStr.slice(pubkeyStr.length - 4)}`;
 }
 
 export function TextFieldLabel({

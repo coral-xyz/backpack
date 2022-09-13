@@ -1,3 +1,4 @@
+import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 import type { Notification, EventEmitter } from "@coral-xyz/common";
 import {
@@ -29,7 +30,7 @@ export class EthereumConnectionBackend {
   private url?: string;
   private pollIntervals: Array<any>;
   private events: EventEmitter;
-  private provider?: ethers.providers.Provider;
+  public provider?: ethers.providers.JsonRpcProvider;
 
   constructor(events: EventEmitter) {
     this.pollIntervals = [];
@@ -74,7 +75,7 @@ export class EthereumConnectionBackend {
       handleKeyringStoreUnlocked(notif);
     };
 
-    const handleKeyringStoreUnlocked = (notif: Notification) => {
+    const handleKeyringStoreUnlocked = async (notif: Notification) => {
       const { blockchainActiveWallets, ethereumConnectionUrl } = notif.data;
       this.provider = new ethers.providers.JsonRpcProvider(
         ethereumConnectionUrl
@@ -140,27 +141,78 @@ export class EthereumConnectionBackend {
     });
   }
 
+  async sendTransaction(signedTx: string) {
+    return await this.provider!.sendTransaction(signedTx);
+  }
+
   //
   // Ethereum Connection API.
   //
-  async sendTransaction(signedTx: string) {
-    const tx = await this.provider!.sendTransaction(signedTx);
-    return tx;
+  async getBalance(address: string, blockTag?: string) {
+    return await this.provider!.getBalance(address, blockTag);
   }
 
-  async getFeeData() {
-    return await this.provider!.getFeeData();
+  async getCode(address: string, blockTag?: string) {
+    return await this.provider!.getCode(address, blockTag);
   }
 
-  async getTransactionCount(publicKey: string) {
-    return await this.provider!.getTransactionCount(publicKey);
+  async getStorageAt(address: string, position: BigNumber, blockTag?: string) {
+    return await this.provider!.getStorageAt(address, position, blockTag);
+  }
+
+  async getTransactionCount(address: string, blockTag?: string) {
+    return await this.provider!.getTransactionCount(address, blockTag);
+  }
+
+  async getBlock(block: number) {
+    return await this.provider!.getBlock(block);
+  }
+
+  async getBlockWithTransactions(block: number) {
+    return await this.provider!.getBlockWithTransactions(block);
+  }
+
+  async lookupAddress(name: string) {
+    return await this.provider!.lookupAddress(name);
+  }
+
+  async resolveName(name: string) {
+    return await this.provider!.resolveName(name);
   }
 
   async getNetwork() {
     return await this.provider!.getNetwork();
   }
 
+  async getBlockNumber() {
+    return await this.provider!.getBlockNumber();
+  }
+
+  async getGasPrice() {
+    return await this.provider!.getGasPrice();
+  }
+
+  async getFeeData() {
+    return await this.provider!.getFeeData();
+  }
+
+  async call(tx: any, blockTag?: string) {
+    return await this.provider!.call(tx, blockTag);
+  }
+
   async estimateGas(tx: any) {
     return await this.provider!.estimateGas(tx);
+  }
+
+  async getTransaction(hash: any) {
+    return await this.provider!.getTransaction(hash);
+  }
+
+  async getTransactionReceipt(hash: string) {
+    return await this.provider!.getTransactionReceipt(hash);
+  }
+
+  async waitForTransaction(hash: string, confirms?: number, timeout?: number) {
+    return await this.provider!.waitForTransaction(hash, confirms, timeout);
   }
 }

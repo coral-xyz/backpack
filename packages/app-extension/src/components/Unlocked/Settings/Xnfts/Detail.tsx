@@ -234,6 +234,7 @@ const ConfirmUninstall = ({
           style={{
             textAlign: "center",
             fontSize: "24px",
+            color: theme.custom.colors.fontColor,
           }}
         >
           Are you sure you want to uninstall {xnft.title}?

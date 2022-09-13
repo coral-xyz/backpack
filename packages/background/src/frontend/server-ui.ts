@@ -71,6 +71,7 @@ import {
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
+  UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
   BACKEND_EVENT,
   CHANNEL_POPUP_RPC,
   CHANNEL_POPUP_NOTIFICATIONS,
@@ -243,14 +244,14 @@ async function handle<T = any>(
       return await handleSolanaSignTransaction(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS:
       return await handleSolanaSignAllTransactions(ctx, params[0], params[1]);
-    case UI_RPC_METHOD_SOLANA_SIGN_MESSAGE:
-      return await handleSolanaSignMessage(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION:
       return await handleSolanaSignAndSendTransaction(
         ctx,
         params[0],
         params[1]
       );
+    case UI_RPC_METHOD_SOLANA_SIGN_MESSAGE:
+      return await handleSolanaSignMessage(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SOLANA_COMMITMENT_READ:
       return await handleSolanaCommitmentRead(ctx);
     case UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE:
@@ -282,6 +283,8 @@ async function handle<T = any>(
         params[0],
         params[1]
       );
+    case UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE:
+      return await handleEthereumSignMessage(ctx, params[0], params[1]);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -716,6 +719,15 @@ async function handleEthereumSignAndSendTransaction(
   return [resp];
 }
 
+async function handleEthereumSignMessage(
+  ctx: Context<Backend>,
+  msg: string,
+  walletAddress: string
+) {
+  const resp = await ctx.backend.ethereumSignMessage(msg, walletAddress);
+  return [resp];
+}
+
 async function handleApprovedOriginsRead(
   ctx: Context<Backend>
 ): Promise<RpcResponse<Array<string>>> {
@@ -774,10 +786,10 @@ async function handlePreviewPubkeys(
 // api with a fake plugin string.
 async function handlePluginLocalStorageGet(
   ctx: Context<Backend>,
-  plugin: string,
+  xnftAddress: string,
   key: string
 ): Promise<RpcResponse<any>> {
-  const resp = await ctx.backend.pluginLocalStorageGet(plugin, key);
+  const resp = await ctx.backend.pluginLocalStorageGet(xnftAddress, key);
   return [resp];
 }
 
@@ -786,10 +798,10 @@ async function handlePluginLocalStorageGet(
 // api with a fake plugin string.
 async function handlePluginLocalStoragePut(
   ctx: Context<Backend>,
-  plugin: string,
+  xnftAddress: string,
   key: string,
   value: any
 ): Promise<RpcResponse<any>> {
-  const resp = await ctx.backend.pluginLocalStoragePut(plugin, key, value);
+  const resp = await ctx.backend.pluginLocalStoragePut(xnftAddress, key, value);
   return [resp];
 }

@@ -51,6 +51,7 @@ function WalletList({
   blockchain: Blockchain;
   keyring: any;
 }) {
+  const theme = useCustomTheme();
   const flattenedWallets = [
     ...keyring.hdPublicKeys.map((k: any) => ({ ...k, type: "derived" })),
     ...keyring.importedPublicKeys.map((k: any) => ({
@@ -72,6 +73,7 @@ function WalletList({
             marginLeft: "16px",
             marginRight: "16px",
             marginBottom: "12px",
+            color: theme.custom.colors.fontColor,
           }}
         >
           {toTitleCase(blockchain)}
@@ -145,7 +147,15 @@ export const WalletListItem: React.FC<{
           display: "block",
         }}
       />
-      <Typography style={{ flexGrow: 1, marginLeft: "8px" }}>{name}</Typography>
+      <Typography
+        style={{
+          flexGrow: 1,
+          marginLeft: "8px",
+          color: theme.custom.colors.fontColor,
+        }}
+      >
+        {name}
+      </Typography>
       <Typography
         style={{
           color: theme.custom.colors.secondary,

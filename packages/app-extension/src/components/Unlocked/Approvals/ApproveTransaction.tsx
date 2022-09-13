@@ -1,17 +1,8 @@
-import { useState, useEffect } from "react";
 import { ethers, BigNumber } from "ethers";
-import * as bs58 from "bs58";
-import { AccountLayout, u64, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { PublicKey, Transaction } from "@solana/web3.js";
 import { List, ListItem, Typography } from "@mui/material";
 import _CheckIcon from "@mui/icons-material/Check";
-import { Blockchain, UI_RPC_METHOD_SOLANA_SIMULATE } from "@coral-xyz/common";
-import {
-  useBackgroundClient,
-  useBlockchainTokensSorted,
-  useSolanaCtx,
-  useSplTokenRegistry,
-} from "@coral-xyz/recoil";
+import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
+import { Blockchain } from "@coral-xyz/common";
 import { styles } from "@coral-xyz/themes";
 import { Loading } from "../../common";
 import { WithApproval } from ".";
@@ -82,12 +73,52 @@ export function ApproveTransaction({
   title: string;
   tx: string | null;
   wallet: string;
-  onCompletion: (confirmed: boolean) => void;
+  onCompletion: (transaction: any) => void;
 }) {
   const classes = useStyles();
+  const blockchain = useWalletBlockchain(wallet);
+  const {
+    loading,
+    simulationError,
+    balanceChanges,
+    network,
+    networkFee,
+    // Possibly modified transaction object if user overrides settings
+    // (i.e. Ethereum gas or nonce)
+    transaction,
+  } = useTransactionData(blockchain as Blockchain, tx);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  const balanceChangeRows = balanceChanges
+    ? Object.entries(balanceChanges).map(
+        ([symbol, { nativeChange, decimals }]) => {
+          const className = nativeChange.gte(Zero)
+            ? classes.positive
+            : classes.negative;
+          return [
+            symbol,
+            <span className={className}>
+              {ethers.utils.commify(
+                ethers.utils.formatUnits(nativeChange, BigNumber.from(decimals))
+              )}{" "}
+              {symbol}
+            </span>,
+          ];
+        }
+      )
+    : [];
+
+  const menuItems = [
+    ...balanceChangeRows,
+    ["Network", network],
+    ["Network Fee", networkFee],
+  ];
 
   const onConfirm = async () => {
-    onCompletion(true);
+    onCompletion(transaction);
   };
 
   const onDeny = async () => {
@@ -104,7 +135,14 @@ export function ApproveTransaction({
       onConfirmLabel="Approve"
       onDeny={onDeny}
     >
-      <TransactionData wallet={wallet} tx={tx} />
+      {loading ? (
+        <Loading />
+      ) : (
+        <TransactionData
+          menuItems={menuItems}
+          simulationError={simulationError}
+        />
+      )}
     </WithApproval>
   );
 }
@@ -148,130 +186,13 @@ export function ApproveAllTransactions({
 }
 
 function TransactionData({
-  tx,
-  wallet,
+  menuItems,
+  simulationError = false,
 }: {
-  tx: string | null;
-  wallet: string;
+  menuItems: (string | JSX.Element)[][];
+  simulationError: boolean;
 }) {
   const classes = useStyles();
-  const background = useBackgroundClient();
-  const solanaCtx = useSolanaCtx();
-  const [loading, setLoading] = useState(true);
-  const [estimatedFee, setEstimatedFee] = useState<number | undefined>(
-    undefined
-  );
-  const [balanceChanges, setBalanceChanges] = useState<any>({});
-  const [simulationError, setSimulationError] = useState<boolean>(false);
-  const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
-  const tokenRegistry = useSplTokenRegistry();
-  const { connection } = solanaCtx;
-
-  useEffect(() => {
-    (async () => {
-      if (wallet && tx) {
-        const result = await background.request({
-          method: UI_RPC_METHOD_SOLANA_SIMULATE,
-          params: [tx, wallet, true],
-        });
-        if (result.value.err) {
-          setSimulationError(true);
-        } else {
-          const balanceChanges = result.value.accounts.reduce(
-            (result: any, a: any) => {
-              if (a.owner === TOKEN_PROGRAM_ID.toString()) {
-                try {
-                  const buf = Buffer.from(a.data[0], a.data[1]);
-                  const account = AccountLayout.decode(buf);
-                  const existingTokenAccount = tokenAccountsSorted.find(
-                    (t) =>
-                      new PublicKey(t.mint!).toString() ===
-                      new PublicKey(account.mint).toString()
-                  );
-                  const token = tokenRegistry.get(
-                    new PublicKey(account.mint).toString()
-                  );
-                  if (!token) {
-                    return result;
-                  }
-                  const existingNativeBalance = existingTokenAccount
-                    ? existingTokenAccount.nativeBalance
-                    : Zero;
-                  const nativeChange = BigNumber.from(
-                    u64.fromBuffer(account.amount).toString()
-                  ).sub(existingNativeBalance);
-                  result[token.symbol] = {
-                    nativeChange,
-                    decimals: token.decimals,
-                  };
-                } catch {
-                  // ignore, probably not a token account or some other
-                  // failure, we don't want to fail displaying the popup
-                }
-              }
-              return result;
-            },
-            {}
-          );
-          setBalanceChanges(balanceChanges);
-        }
-        setLoading(false);
-      }
-    })();
-  }, [tx]);
-
-  useEffect(() => {
-    (async () => {
-      if (tx) {
-        const transaction = Transaction.from(bs58.decode(tx));
-        let fee;
-        try {
-          fee = await transaction.getEstimatedFee(connection);
-        } catch (e) {
-          // Asssume 5000 lamports if estimation fails
-          fee = 5000;
-        }
-        setEstimatedFee(fee);
-      }
-    })();
-  }, [tx]);
-
-  const changeDetail = (
-    amount: BigNumber,
-    ticker: string,
-    decimals: number
-  ) => {
-    const className = amount.gte(Zero) ? classes.positive : classes.negative;
-    return (
-      <span className={className}>
-        {ethers.utils.formatUnits(amount, decimals)} {ticker}
-      </span>
-    );
-  };
-
-  const balanceChangeRows = Object.keys(balanceChanges).map((ticker) => {
-    return [
-      ticker,
-      changeDetail(
-        balanceChanges[ticker].nativeChange,
-        ticker,
-        balanceChanges[ticker].decimals
-      ),
-    ];
-  });
-
-  const menuItems = [
-    ...balanceChangeRows,
-    ["Network", <>Solana</>],
-    [
-      "Network Fee",
-      <>{estimatedFee && `${ethers.utils.formatUnits(estimatedFee, 9)} SOL`}</>,
-    ],
-  ];
-
-  if (loading) {
-    return <Loading />;
-  }
 
   return (
     <>
@@ -279,9 +200,13 @@ function TransactionData({
         Transaction details
       </Typography>
       <List className={classes.listRoot}>
-        {menuItems.map((row) => {
+        {menuItems.map((row, index: number) => {
           return (
-            <ListItem className={classes.listItemRoot} secondaryAction={row[1]}>
+            <ListItem
+              key={index}
+              className={classes.listItemRoot}
+              secondaryAction={row[1]}
+            >
               {row[0]}
             </ListItem>
           );

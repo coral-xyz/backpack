@@ -40,6 +40,10 @@ export function useActiveWallets(): Array<{
   return useRecoilValue(atoms.activeWalletsWithData!);
 }
 
+export function useActivePublicKeys() {
+  return useRecoilValue(atoms.activePublicKeys)!;
+}
+
 export function useWalletPublicKeys(): WalletPublicKeys {
   return useRecoilValue(atoms.walletPublicKeys);
 }
@@ -51,6 +55,20 @@ export function useWalletName(address: string): string {
       for (const namedPublicKey of namedPublicKeys) {
         if (namedPublicKey.publicKey === address) {
           return namedPublicKey.name;
+        }
+      }
+    }
+  }
+  throw new Error("key not found");
+}
+
+export function useWalletBlockchain(address: string): string {
+  const wallets = useWalletPublicKeys();
+  for (const [blockchain, keyring] of Object.entries(wallets)) {
+    for (const namedPublicKeys of Object.values(keyring)) {
+      for (const namedPublicKey of namedPublicKeys) {
+        if (namedPublicKey.publicKey === address) {
+          return blockchain;
         }
       }
     }

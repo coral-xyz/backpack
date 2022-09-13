@@ -45,11 +45,55 @@ export type SolanaContext = {
 };
 
 //
-// API for performing Solana actions from within the wallet. Careful, invoking
+// API for performing Solana actions from within the wallet. Beware! Invoking
 // these methods will automatically execute within the wallet without an
 // approval screen.
 //
 export class Solana {
+  public static async burnNft(
+    ctx: SolanaContext,
+    req: BurnNftRequest
+  ): Promise<string> {
+    const { solDestination, mint } = req;
+    const { walletPublicKey, tokenClient, commitment } = ctx;
+
+    const provider = tokenClient.provider;
+    const associatedToken = associatedTokenAddress(mint, walletPublicKey);
+
+    const tx = new Transaction();
+    tx.add(
+      await tokenClient.methods
+        .burn(new BN(1))
+        .accounts({
+          source: associatedToken,
+          mint,
+          authority: walletPublicKey,
+        })
+        .instruction()
+    );
+    tx.add(
+      await tokenClient.methods
+        .closeAccount()
+        .accounts({
+          account: associatedToken,
+          destination: solDestination,
+          authority: walletPublicKey,
+        })
+        .instruction()
+    );
+    tx.feePayer = walletPublicKey;
+    tx.recentBlockhash = (
+      await provider.connection.getLatestBlockhash(commitment)
+    ).blockhash;
+    const signedTx = await SolanaProvider.signTransaction(ctx, tx);
+    const rawTx = signedTx.serialize();
+
+    return await provider.connection.sendRawTransaction(rawTx, {
+      skipPreflight: false,
+      preflightCommitment: commitment,
+    });
+  }
+
   public static async transferToken(
     ctx: SolanaContext,
     req: TransferTokenRequest
@@ -395,4 +439,9 @@ export type UnwrapSolRequest = {
 
 export type DeleteInstallRequest = {
   install: PublicKey;
+};
+
+export type BurnNftRequest = {
+  solDestination: PublicKey;
+  mint: PublicKey;
 };

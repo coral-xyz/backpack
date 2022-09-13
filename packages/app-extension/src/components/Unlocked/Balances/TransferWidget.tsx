@@ -1,14 +1,19 @@
-import { Blockchain } from "@coral-xyz/common";
+import {
+  Blockchain,
+  SOL_NATIVE_MINT,
+  ETH_NATIVE_MINT,
+} from "@coral-xyz/common";
 import { useEffect } from "react";
 import { Typography } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
+import { ArrowUpward, ArrowDownward, SwapHoriz } from "@mui/icons-material";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
 import { Send, Send as TokenSend } from "./TokensWidget/Send";
 import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";
+import { Swap } from "../../Unlocked/Swap";
 
 export function TransferWidget({
   blockchain,
@@ -21,15 +26,53 @@ export function TransferWidget({
     <div
       style={{
         display: "flex",
-        width: "120px",
+        width: "178px",
         marginLeft: "auto",
         marginRight: "auto",
       }}
     >
-      <ReceiveButton />
+      <ReceiveButton blockchain={blockchain} />
       <div style={{ width: "16px" }} />
       <SendButton blockchain={blockchain} address={address} />
+      <div style={{ width: "16px" }} />
+      <SwapButton blockchain={blockchain} address={address} />
     </div>
+  );
+}
+
+function SwapButton({
+  blockchain,
+  address,
+}: {
+  blockchain?: Blockchain;
+  address?: string;
+}) {
+  const theme = useCustomTheme();
+  return (
+    <TransferButton
+      label={"Swap"}
+      labelComponent={
+        <SwapHoriz
+          style={{
+            color: theme.custom.colors.fontColor,
+            display: "flex",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        />
+      }
+      routes={[
+        {
+          name: "swap",
+          component: (props: any) => <Swap {...props} />,
+          title: `Swap`,
+          props: {
+            blockchain,
+            tokenAddress: address,
+          },
+        },
+      ]}
+    />
   );
 }
 
@@ -84,7 +127,7 @@ function SendButton({
   );
 }
 
-function ReceiveButton() {
+function ReceiveButton({ blockchain }: { blockchain?: Blockchain }) {
   const theme = useCustomTheme();
   return (
     <TransferButton
@@ -104,6 +147,9 @@ function ReceiveButton() {
           component: Deposit,
           title: "Deposit",
           name: "deposit",
+          props: {
+            blockchain,
+          },
         },
       ]}
     />
@@ -169,7 +215,15 @@ function SendToken() {
   return (
     <SearchableTokenTables
       onClickRow={onClickRow}
-      customFilter={(token: Token) => !token.nativeBalance.isZero()}
+      customFilter={(token: Token) => {
+        if (token.mint && token.mint === SOL_NATIVE_MINT) {
+          return true;
+        }
+        if (token.address && token.address === ETH_NATIVE_MINT) {
+          return true;
+        }
+        return !token.nativeBalance.isZero();
+      }}
     />
   );
 }

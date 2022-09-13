@@ -3,6 +3,7 @@ import { SendLamportButton } from "./solana/SendLamportButton";
 import { SendAllButton } from "./solana/SendAllButton";
 import { SignMessageButton } from "./solana/SignMessageButton";
 import { SendTokenButton } from "./solana/SendTokenButton";
+import { OpenXnftButton } from "./solana/OpenXnftButton";
 
 import { EthereumWallet } from "./EthereumWallet";
 import { SignMessageButton as EthereumSignMessageButton } from "./ethereum/SignMessageButton";
@@ -17,6 +18,7 @@ function App() {
         <SendAllButton />
         <SendTokenButton />
         <SignMessageButton />
+        <OpenXnftButton />
       </SolanaWallet>
 
       <h1>Ethereum</h1>

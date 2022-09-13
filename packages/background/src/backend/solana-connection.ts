@@ -65,6 +65,7 @@ import {
   getLogger,
   customSplTokenAccounts,
   Blockchain,
+  confirmTransaction,
   BACKEND_EVENT,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
@@ -328,12 +329,21 @@ export class SolanaConnectionBackend {
     strategy: BlockheightBasedTransactionConfirmationStrategy,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<SignatureResult>> {
-    // @ts-ignore
-    const resp = await this.connection!.confirmTransaction(
-      strategy,
-      commitment
+    const tx = await confirmTransaction(
+      this.connection!,
+      strategy.signature,
+      commitment === "confirmed" || commitment === "finalized"
+        ? commitment
+        : "confirmed"
     );
-    return resp;
+    return {
+      context: {
+        slot: tx.slot,
+      },
+      value: {
+        err: null,
+      },
+    };
   }
 
   async simulateTransaction(
@@ -423,6 +433,31 @@ export class SolanaConnectionBackend {
     );
   }
 
+  async getTokenAccountBalance(
+    tokenAddress: PublicKey,
+    commitment?: Commitment
+  ): Promise<RpcResponseAndContext<TokenAmount>> {
+    return await this.connection!.getTokenAccountBalance(
+      tokenAddress,
+      commitment
+    );
+  }
+
+  async getBalance(
+    publicKey: PublicKey,
+    commitment?: Commitment
+  ): Promise<number> {
+    return await this.connection!.getBalance(publicKey, commitment);
+  }
+
+  async getSlot(commitment?: Commitment): Promise<number> {
+    return await this.connection!.getSlot(commitment);
+  }
+
+  async getBlockTime(slot: number): Promise<number | null> {
+    return await this.connection!.getBlockTime(slot);
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Methods below not used currently.
   ///////////////////////////////////////////////////////////////////////////////
@@ -431,17 +466,6 @@ export class SolanaConnectionBackend {
     publicKey: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<number>> {
-    throw new Error("not implemented");
-  }
-
-  async getBalance(
-    publicKey: PublicKey,
-    commitment?: Commitment
-  ): Promise<number> {
-    throw new Error("not implemented");
-  }
-
-  async getBlockTime(slot: number): Promise<number | null> {
     throw new Error("not implemented");
   }
 
@@ -461,13 +485,6 @@ export class SolanaConnectionBackend {
 
   async getTokenSupply(
     tokenMintAddress: PublicKey,
-    commitment?: Commitment
-  ): Promise<RpcResponseAndContext<TokenAmount>> {
-    throw new Error("not implemented");
-  }
-
-  async getTokenAccountBalance(
-    tokenAddress: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<TokenAmount>> {
     throw new Error("not implemented");
@@ -549,10 +566,6 @@ export class SolanaConnectionBackend {
   }
 
   getVoteAccounts(commitment?: Commitment): Promise<VoteAccountStatus> {
-    throw new Error("not implemented");
-  }
-
-  getSlot(commitment?: Commitment): Promise<number> {
     throw new Error("not implemented");
   }
 

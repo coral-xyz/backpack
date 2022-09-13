@@ -19,7 +19,7 @@ import {
 } from "@coral-xyz/recoil";
 import { ActionCard } from "../../../common/Layout/ActionCard";
 import { HardwareWalletIcon, CheckIcon } from "../../../common/Icon";
-import { Header, SubtextParagraph, TextField } from "../../../common";
+import { Header, SubtextParagraph } from "../../../common";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import {
   useDrawerContext,
@@ -56,11 +56,6 @@ export function AddConnectWalletMenu({
     };
   }, [nav.setContentStyle]);
 
-  const blockchainOptions = [
-    { value: Blockchain.SOLANA, label: "Solana" },
-    { value: Blockchain.ETHEREUM, label: "Ethereum" },
-  ];
-
   return (
     <>
       <div
@@ -76,22 +71,6 @@ export function AddConnectWalletMenu({
           <SubtextParagraph>Add new wallets to Backpack.</SubtextParagraph>
         </Box>
         <Box sx={{ margin: "0 16px" }}>
-          {BACKPACK_FEATURE_MULTICHAIN && (
-            <Box sx={{ marginBottom: "16px" }}>
-              <TextField
-                label="Blockchain"
-                value={blockchain}
-                setValue={setBlockchain}
-                select={true}
-              >
-                {blockchainOptions.map((o, idx) => (
-                  <MenuItem value={o.value} key={idx}>
-                    {o.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Box>
-          )}
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <ActionCard
@@ -187,6 +166,7 @@ export const ConfirmCreateWallet: React.FC<{
             fontWeight: 500,
             fontSize: "18px",
             lineHeight: "24px",
+            color: theme.custom.colors.fontColor,
           }}
         >
           Wallet Created
@@ -208,7 +188,6 @@ export const ConfirmCreateWallet: React.FC<{
           isFirst={true}
           isLast={true}
           onClick={() => {
-            console.log("ON CLICK HERE WTF", tab, TAB_BALANCES);
             if (tab === TAB_BALANCES) {
               background.request({
                 method: UI_RPC_METHOD_NAVIGATION_TO_ROOT,

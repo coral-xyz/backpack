@@ -1,2 +1,5 @@
+export { RequestManager } from "./request-manager";
 export { ProviderSolanaInjection } from "./provider-solana";
-export { ProviderXnftInjection } from "./provider-xnft";
+export { ProviderSolanaXnftInjection } from "./provider-solana-xnft";
+export { ProviderEthereumInjection } from "./provider-ethereum";
+export { ProviderEthereumXnftInjection } from "./provider-ethereum-xnft";

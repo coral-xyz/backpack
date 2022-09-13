@@ -9,9 +9,8 @@ import {
   useNavigation,
 } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
-import { Simulator } from "./Simulator";
 import { WithDrawer } from "../../common/Layout/Drawer";
-import { PluginDisplay } from "./Plugin";
+import { PluginApp } from "./Plugin";
 
 const ICON_WIDTH = 64;
 
@@ -58,14 +57,14 @@ function PluginGrid() {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const background = useBackgroundClient();
-  const pluginUrl = searchParams.get("plugin");
+  const xnftAddress = searchParams.get("plugin");
   const [openDrawer, setOpenDrawer] = useState(
-    pluginUrl !== undefined && pluginUrl !== null
+    xnftAddress !== undefined && xnftAddress !== null
   );
 
   useEffect(() => {
-    setOpenDrawer(pluginUrl !== undefined && pluginUrl !== null);
-  }, [pluginUrl]);
+    setOpenDrawer(xnftAddress !== undefined && xnftAddress !== null);
+  }, [xnftAddress]);
 
   const onClickPlugin = (p: any) => {
     // Update the URL to use the plugin.
@@ -79,7 +78,7 @@ function PluginGrid() {
     //
     const newUrl = `${location.pathname}${
       location.search
-    }&plugin=${encodeURIComponent(p.url)}`;
+    }&plugin=${encodeURIComponent(p.install.account.xnft.toString())}`;
     background
       .request({
         method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
@@ -134,13 +133,8 @@ function PluginGrid() {
         })}
       </Grid>
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        {pluginUrl! === "http://localhost:9933" ? (
-          <Simulator pluginUrl={pluginUrl} closePlugin={closePlugin} />
-        ) : (
-          <PluginDisplay
-            pluginUrl={pluginUrl!}
-            closePlugin={() => closePlugin()}
-          />
+        {xnftAddress && (
+          <PluginApp xnftAddress={xnftAddress} closePlugin={closePlugin} />
         )}
       </WithDrawer>
     </>

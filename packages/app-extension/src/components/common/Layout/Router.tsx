@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   useLocation,
   useSearchParams,
@@ -14,11 +14,12 @@ import {
   useRedirectUrl,
 } from "@coral-xyz/recoil";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
-import { PluginManager } from "@coral-xyz/recoil";
+import { useFreshPlugin, PluginManager } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Balances } from "../../Unlocked/Balances";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { Apps } from "../../Unlocked/Apps";
+import { _PluginDisplay } from "../../Unlocked/Apps/Plugin";
 import { Nfts } from "../../Unlocked/Nfts";
 import { Swap } from "../../Unlocked/Swap";
 import { NftsDetail } from "../../Unlocked/Nfts/Detail";
@@ -26,6 +27,8 @@ import { NftsCollection } from "../../Unlocked/Nfts/Collection";
 import { SettingsButton } from "../../Unlocked/Settings";
 import { WithNav, NavBackButton } from "./Nav";
 import { WithMotion } from "./NavStack";
+import { WithDrawer } from "../../common/Layout/Drawer";
+import { NftOptionsButton } from "../../Unlocked/Nfts/Detail";
 
 export function Router() {
   const location = useLocation();
@@ -36,7 +39,7 @@ export function Router() {
         <Route path="/balances/token" element={<TokenPage />} />
         <Route path="/apps" element={<AppsPage />} />
         <Route path="/nfts" element={<NftsPage />} />
-        <Route path="/swap" element={<SwapPage />} />
+        {/*<Route path="/swap" element={<SwapPage />} />*/}
         <Route path="/nfts/collection" element={<NftsCollectionPage />} />
         <Route path="/nfts/detail" element={<NftsDetailPage />} />
         <Route path="*" element={<Redirect />} />
@@ -46,7 +49,13 @@ export function Router() {
 }
 
 function Redirect() {
-  const url = useRedirectUrl();
+  let url = useRedirectUrl();
+  const [searchParams] = useSearchParams();
+  const pluginProps = searchParams.get("pluginProps");
+  if (pluginProps) {
+    // TODO: probably want to use some API to append the search param instead.
+    url = `${url}&pluginProps=${encodeURIComponent(pluginProps)}`;
+  }
   return <Navigate to={url} replace />;
 }
 
@@ -77,9 +86,11 @@ function TokenPage() {
   return <NavScreen component={<Token {...props} />} />;
 }
 
+/*
 function SwapPage() {
   return <NavScreen component={<Swap />} />;
 }
+*/
 
 function NavScreen({ component }: { component: React.ReactNode }) {
   const { title, isRoot, pop } = useNavigation();
@@ -111,11 +122,54 @@ function NavScreen({ component }: { component: React.ReactNode }) {
           navbarStyle={style}
         >
           <NavBootstrap>
-            <PluginManager>{component}</PluginManager>
+            <PluginManager>
+              <NavScreenComponent component={component} />
+            </PluginManager>
           </NavBootstrap>
         </WithNav>
       </div>
     </WithMotionWrapper>
+  );
+}
+
+function NavScreenComponent({ component }: { component: React.ReactNode }) {
+  const [searchParams] = useSearchParams();
+  const pluginProps = searchParams.get("pluginProps");
+
+  if (pluginProps) {
+    return (
+      <>
+        {component}
+        <PluginDrawer />
+      </>
+    );
+  }
+
+  return <>{component}</>;
+}
+
+function PluginDrawer() {
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [searchParams] = useSearchParams();
+  const pluginProps = searchParams.get("pluginProps");
+  const { xnftAddress } = JSON.parse(decodeURIComponent(pluginProps!));
+  const xnftPlugin = useFreshPlugin(xnftAddress);
+
+  useEffect(() => {
+    if (!openDrawer && xnftPlugin.state) {
+      setOpenDrawer(true);
+    }
+  }, [xnftPlugin.state]);
+
+  return (
+    <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+      {xnftPlugin.result && (
+        <_PluginDisplay
+          plugin={xnftPlugin.result!}
+          closePlugin={() => setOpenDrawer(false)}
+        />
+      )}
+    </WithDrawer>
   );
 }
 
@@ -132,7 +186,6 @@ function WithMotionWrapper({ children }: { children: any }) {
 }
 
 function useNavBar() {
-  const theme = useCustomTheme();
   let { isRoot } = useNavigation();
   const pathname = useLocation().pathname;
 
@@ -141,16 +194,14 @@ function useNavBar() {
 
   let navStyle = {
     fontSize: "18px",
-    borderBottom:
-      !isRoot && !pathname.startsWith("/nfts")
-        ? `solid 1pt ${theme.custom.colors.border}`
-        : undefined,
   } as React.CSSProperties;
 
   if (isRoot) {
     navButtonRight = <SettingsButton />;
   } else if (pathname === "/balances/token") {
     navButtonRight = null;
+  } else if (pathname === "/nfts/detail") {
+    navButtonRight = <NftOptionsButton />;
   }
 
   return {

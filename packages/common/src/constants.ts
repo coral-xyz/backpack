@@ -3,34 +3,38 @@ import { BACKPACK_CONFIG_VERSION } from "./generated-config";
 //
 // Messaging communication channel topics.
 //
-export const CHANNEL_PLUGIN_RPC_REQUEST = "anchor-plugin-request";
-export const CHANNEL_PLUGIN_RPC_RESPONSE = "anchor-plugin-response";
+export const CHANNEL_PLUGIN_RPC_REQUEST = "channel-plugin-request";
+export const CHANNEL_PLUGIN_RPC_RESPONSE = "channel-plugin-response";
 export const CHANNEL_PLUGIN_RENDER_REQUEST =
-  "anchor-channel-plugin-render-request";
+  "channel-channel-plugin-render-request";
 export const CHANNEL_PLUGIN_LAUNCH_REQUEST =
-  "anchor-channel-plugin-launch-request";
-export const CHANNEL_PLUGIN_NOTIFICATION = "anchor-channel-plugin-notification";
+  "channel-channel-plugin-launch-request";
+export const CHANNEL_PLUGIN_NOTIFICATION =
+  "channel-channel-plugin-notification";
 export const CHANNEL_PLUGIN_CONNECTION_BRIDGE =
-  "anchor-channel-plugin-connection-bridge";
-export const CHANNEL_POPUP_RPC = "anchor-popup-rpc";
-export const CHANNEL_POPUP_RESPONSE = "anchor-popup-response";
-export const CHANNEL_POPUP_NOTIFICATIONS = "anchor-popup-notifications";
-export const CHANNEL_SOLANA_RPC_REQUEST = "anchor-solana-rpc-request";
-export const CHANNEL_SOLANA_RPC_RESPONSE = "anchor-solana-rpc-response";
-export const CHANNEL_SOLANA_NOTIFICATION = "anchor-solana-notification";
-export const CHANNEL_SOLANA_CONNECTION_RPC_UI = "solana-connection-rpc-ui";
+  "channel-channel-plugin-connection-bridge";
+export const CHANNEL_POPUP_RPC = "channel-popup-rpc";
+export const CHANNEL_POPUP_RESPONSE = "channel-popup-response";
+export const CHANNEL_POPUP_NOTIFICATIONS = "channel-popup-notifications";
+export const CHANNEL_SOLANA_RPC_REQUEST = "channel-solana-rpc-request";
+export const CHANNEL_SOLANA_RPC_RESPONSE = "channel-solana-rpc-response";
+export const CHANNEL_SOLANA_NOTIFICATION = "channel-solana-notification";
+export const CHANNEL_SOLANA_CONNECTION_RPC_UI =
+  "channel-solana-connection-rpc-ui";
 export const CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST =
-  "solana-connection-injected-request";
+  "channel-solana-connection-injected-request";
 export const CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE =
-  "solana-connection-injected-response";
-export const CHANNEL_ETHEREUM_RPC_REQUEST = "anchor-ethereum-rpc-request";
-export const CHANNEL_ETHEREUM_RPC_RESPONSE = "anchor-ethereum-rpc-response";
-export const CHANNEL_ETHEREUM_NOTIFICATION = "anchor-ethereum-rpc-notification";
-export const CHANNEL_ETHEREUM_CONNECTION_RPC_UI = "ethereum-connection-rpc-ui";
+  "channel-solana-connection-injected-response";
+export const CHANNEL_ETHEREUM_RPC_REQUEST = "channel-ethereum-rpc-request";
+export const CHANNEL_ETHEREUM_RPC_RESPONSE = "channel-ethereum-rpc-response";
+export const CHANNEL_ETHEREUM_NOTIFICATION =
+  "channel-ethereum-rpc-notification";
+export const CHANNEL_ETHEREUM_CONNECTION_RPC_UI =
+  "channel-ethereum-connection-rpc-ui";
 export const CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST =
-  "ethereum-connection-injected-request";
+  "channel-ethereum-connection-injected-request";
 export const CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE =
-  "ethereum-connection-injected-response";
+  "channel-ethereum-connection-injected-response";
 
 //
 // Mobile specific webview messaging subsystem channels.
@@ -47,15 +51,33 @@ export const MOBILE_CHANNEL_FE_RESPONSE_INNER = "mobile-fe-response-inner";
 //
 // xNFT notifications sent from the host to the xNFT.
 //
-export const PLUGIN_NOTIFICATION_RENDER = "render";
-export const PLUGIN_NOTIFICATION_CONNECT = "connect";
-export const PLUGIN_NOTIFICATION_ON_CLICK = "on-click";
-export const PLUGIN_NOTIFICATION_ON_CHANGE = "on-change";
-export const PLUGIN_NOTIFICATION_MOUNT = "mount";
-export const PLUGIN_NOTIFICATION_UNMOUNT = "unmount";
-export const PLUGIN_NOTIFICATION_CONNECTION_URL_UPDATED =
-  "connection-url-updated";
-export const PLUGIN_NOTIFICATION_PUBLIC_KEY_UPDATED = "public-key-updated";
+export const PLUGIN_NOTIFICATION_RENDER = "plugin-notification-render";
+export const PLUGIN_NOTIFICATION_CONNECT = "plugin-notification-connect";
+export const PLUGIN_NOTIFICATION_ON_CLICK = "plugin-notification-on-click";
+export const PLUGIN_NOTIFICATION_ON_CHANGE = "plugin-notification-on-change";
+export const PLUGIN_NOTIFICATION_MOUNT = "plugin-notification-mount";
+export const PLUGIN_NOTIFICATION_UNMOUNT = "plugin-notification-unmount";
+export const PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED =
+  "plugin-notification-solana-connection-url-updated";
+export const PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED =
+  "plugin-notification-solana-public-key-updated";
+export const PLUGIN_NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED =
+  "plugin-notification-ethereum-connection-url-updated";
+export const PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED =
+  "plugin-notification-ethereum-public-key-updated";
+
+export const PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION =
+  "plugin-request-solana-sign-tx";
+export const PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION =
+  "plugin-request-solana-sign-and-send-tx";
+export const PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE =
+  "plugin-request-solana-sign-message";
+export const PLUGIN_REQUEST_ETHEREUM_SIGN_TRANSACTION =
+  "plugin-request-ethereum-sign-tx";
+export const PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION =
+  "plugin-request-ethereum-sign-and-send-tx";
+export const PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE =
+  "plugin-request-ethereum-sign-message";
 
 //
 // xNFT host API.
@@ -66,83 +88,119 @@ export const PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT = "store-put";
 //
 // Trusted app API.
 //
-export const UI_RPC_METHOD_KEYRING_STORE_CREATE = "keyring-store-create";
+export const UI_RPC_METHOD_KEYRING_STORE_CREATE =
+  "ui-rpc-method-keyring-store-create";
 export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS =
-  "keyring-read-all-pubkeys";
-export const UI_RPC_METHOD_KEYRING_STORE_STATE = "keyring-store-state";
-export const UI_RPC_METHOD_APPROVED_ORIGINS_READ = "approved-origins-read";
-export const UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE = "approved-origins-update";
-export const UI_RPC_METHOD_APPROVED_ORIGINS_DELETE = "approved-origins-delete";
+  "ui-rpc-method-keyring-read-all-pubkeys";
+export const UI_RPC_METHOD_KEYRING_STORE_STATE =
+  "ui-rpc-method-keyring-store-state";
+export const UI_RPC_METHOD_APPROVED_ORIGINS_READ =
+  "ui-rpc-method-approved-origins-read";
+export const UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE =
+  "ui-rpc-method-approved-origins-update";
+export const UI_RPC_METHOD_APPROVED_ORIGINS_DELETE =
+  "ui-rpc-method-approved-origins-delete";
 export const UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE =
-  "keyring-store-keep-alive";
+  "ui-rpc-method-keyring-store-keep-alive";
 export const UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD =
-  "keyring-store-check-password";
-export const UI_RPC_METHOD_KEYRING_STORE_UNLOCK = "keyring-store-unlock";
-export const UI_RPC_METHOD_KEYRING_STORE_LOCK = "keyring-store-lock";
-export const UI_RPC_METHOD_KEYRING_DERIVE_WALLET = "keyring-derive";
-export const UI_RPC_METHOD_KEYRING_KEY_DELETE = "keyring-delete";
-export const UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY = "keyring-import-wallet";
+  "ui-rpc-method-keyring-store-check-password";
+export const UI_RPC_METHOD_KEYRING_STORE_UNLOCK =
+  "ui-rpc-method-keyring-store-unlock";
+export const UI_RPC_METHOD_KEYRING_STORE_LOCK =
+  "ui-rpc-method-keyring-store-lock";
+export const UI_RPC_METHOD_KEYRING_DERIVE_WALLET =
+  "ui-rpc-method-keyring-derive";
+export const UI_RPC_METHOD_KEYRING_KEY_DELETE = "ui-rpc-method-keyring-delete";
+export const UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY =
+  "ui-rpc-method-keyring-import-wallet";
 export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
-  "keyring-mnemonic-create";
-export const UI_RPC_METHOD_PREVIEW_PUBKEYS = "keyring-preview-pubkeys";
-export const UI_RPC_METHOD_KEYRING_RESET = "keyring-reset";
-export const UI_RPC_METHOD_ACTIVE_BLOCKCHAIN = "blockchain-active";
+  "ui-rpc-method-keyring-mnemonic-create";
+export const UI_RPC_METHOD_PREVIEW_PUBKEYS =
+  "ui-rpc-method-keyring-preview-pubkeys";
+export const UI_RPC_METHOD_KEYRING_RESET = "ui-rpc-method-keyring-reset";
+export const UI_RPC_METHOD_ACTIVE_BLOCKCHAIN =
+  "ui-rpc-method-blockchain-active";
 export const UI_RPC_METHOD_ACTIVE_BLOCKCHAIN_UPDATE =
-  "blockchain-active-update";
-export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET = "wallet-active";
+  "ui-rpc-method-blockchain-active-update";
+export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET =
+  "ui-rpc-method-wallet-active";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE =
-  "wallet-active-update";
-export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS = "wallets-active";
+  "ui-rpc-method-wallet-active-update";
+export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS =
+  "ui-rpc-method-wallets-active";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS_UPDATE =
-  "wallets-active-update";
-export const UI_RPC_METHOD_KEYNAME_READ = "keyname-read";
-export const UI_RPC_METHOD_KEYNAME_UPDATE = "keyname-update";
-export const UI_RPC_METHOD_PASSWORD_UPDATE = "password-update";
-export const UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY = "export-secret-key";
-export const UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC = "validate-mnemonic";
-export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC = "export-mnemonic";
-export const UI_RPC_METHOD_KEYRING_RESET_MNEMONIC = "reset-mnemonic";
-export const UI_RPC_METHOD_KEYRING_AUTOLOCK_READ = "autolock-read";
-export const UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE = "autolock-update";
-export const UI_RPC_METHOD_NAVIGATION_PUSH = "navigation-push";
-export const UI_RPC_METHOD_NAVIGATION_POP = "navigation-pop";
-export const UI_RPC_METHOD_NAVIGATION_TO_ROOT = "navigation-to-root";
+  "ui-rpc-method-wallets-active-update";
+export const UI_RPC_METHOD_KEYNAME_READ = "ui-rpc-method-keyname-read";
+export const UI_RPC_METHOD_KEYNAME_UPDATE = "ui-rpc-method-keyname-update";
+export const UI_RPC_METHOD_PASSWORD_UPDATE = "ui-rpc-method-password-update";
+export const UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY =
+  "ui-rpc-method-export-secret-key";
+export const UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC =
+  "ui-rpc-method-validate-mnemonic";
+export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC =
+  "ui-rpc-method-export-mnemonic";
+export const UI_RPC_METHOD_KEYRING_RESET_MNEMONIC =
+  "ui-rpc-method-reset-mnemonic";
+export const UI_RPC_METHOD_KEYRING_AUTOLOCK_READ =
+  "ui-rpc-method-autolock-read";
+export const UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE =
+  "ui-rpc-method-autolock-update";
+export const UI_RPC_METHOD_NAVIGATION_PUSH = "ui-rpc-method-navigation-push";
+export const UI_RPC_METHOD_NAVIGATION_POP = "ui-rpc-method-navigation-pop";
+export const UI_RPC_METHOD_NAVIGATION_TO_ROOT =
+  "ui-rpc-method-navigation-to-root";
 export const UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE =
-  "navigation-current-url-update";
-export const UI_RPC_METHOD_NAVIGATION_READ = "navigation-read";
+  "ui-rpc-method-navigation-current-url-update";
+export const UI_RPC_METHOD_NAVIGATION_READ = "ui-rpc-method-navigation-read";
 export const UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE =
-  "navigation-active-tab-update";
-export const UI_RPC_METHOD_SETTINGS_DARK_MODE_READ = "settings-dark-mode-read";
+  "ui-rpc-method-navigation-active-tab-update";
+export const UI_RPC_METHOD_SETTINGS_DARK_MODE_READ =
+  "ui-rpc-method-settings-dark-mode-read";
 export const UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE =
-  "settings-dark-mode-update";
+  "ui-rpc-method-settings-dark-mode-update";
 export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
-export const UI_RPC_METHOD_LEDGER_IMPORT = "ledger-import";
-export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET = "plugin-storage-get";
-export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT = "plugin-storage-put";
+export const UI_RPC_METHOD_LEDGER_IMPORT = "ui-rpc-method-ledger-import";
+export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET =
+  "ui-rpc-method-plugin-storage-get";
+export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT =
+  "ui-rpc-method-plugin-storage-put";
+// Solana
 export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ =
-  "solana-connection-url-read";
+  "ui-rpc-method-solana-connection-url-read";
 export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE =
-  "solana-connection-url-update";
-export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ = "solana-commitment-read";
+  "ui-rpc-method-solana-connection-url-update";
+export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ =
+  "ui-rpc-method-solana-commitment-read";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE =
-  "solana-commitment-update";
-export const UI_RPC_METHOD_SOLANA_SIMULATE = "solana-simulate";
-export const UI_RPC_METHOD_SOLANA_EXPLORER_READ = "solana-explorer-read";
-export const UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE = "solana-explorer-update";
-export const UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION = "solana-sign-tx";
-export const UI_RPC_METHOD_SOLANA_SIGN_MESSAGE = "solana-sign-message";
-export const UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS = "solana-sign-all-txs";
+  "ui-rpc-method-solana-commitment-update";
+export const UI_RPC_METHOD_SOLANA_SIMULATE = "ui-rpc-method-solana-simulate";
+export const UI_RPC_METHOD_SOLANA_EXPLORER_READ =
+  "ui-rpc-method-solana-explorer-read";
+export const UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE =
+  "ui-rpc-method-solana-explorer-update";
+export const UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION =
+  "ui-rpc-method-solana-sign-tx";
+export const UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS =
+  "ui-rpc-method-solana-sign-all-txs";
 export const UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION =
-  "solana-sign-and-send-tx";
-export const UI_RPC_METHOD_ETHEREUM_EXPLORER_READ = "ethereum-exporer-read";
-export const UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE = "ethereum-exporer-update";
+  "ui-rpc-method-solana-sign-and-send-tx";
+export const UI_RPC_METHOD_SOLANA_SIGN_MESSAGE =
+  "ui-rpc-method-solana-sign-message";
+// Ethereum
+export const UI_RPC_METHOD_ETHEREUM_EXPLORER_READ =
+  "ui-rpc-method-ethereum-exporer-read";
+export const UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE =
+  "ui-rpc-method-ethereum-exporer-update";
 export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ =
-  "ethereum-connection-url-read";
+  "ui-rpc-method-ethereum-connection-url-read";
 export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE =
-  "ethereum-connection-url-update";
-export const UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION = "ethereum-sign-tx";
+  "ui-rpc-method-ethereum-connection-url-update";
+export const UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION =
+  "ui-rpc-method-ethereum-sign-tx";
 export const UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION =
-  "ethereum-sign-and-send-tx";
+  "ui-rpc-method-ethereum-sign-and-send-tx";
+export const UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE =
+  "ui-rpc-method-ethereum-sign-message";
 
 //
 // Notifications sent from the background script to observers.
@@ -155,49 +213,61 @@ export const NOTIFICATION_KEYRING_STORE_UNLOCKED =
   "notification-keyring-store-unlocked";
 export const NOTIFICATION_KEYRING_STORE_RESET =
   "notification-keyring-store-reset";
-export const NOTIFICATION_KEYNAME_UPDATE = "anchor-keyname-update";
-export const NOTIFICATION_KEYRING_KEY_DELETE = "anchor-keyring-key-delete";
+export const NOTIFICATION_KEYNAME_UPDATE = "notification-keyname-update";
+export const NOTIFICATION_KEYRING_KEY_DELETE =
+  "notification-keyring-key-delete";
 export const NOTIFICATION_KEYRING_DERIVED_WALLET =
-  "anchor-keyring-derived-wallet";
+  "notification-keyring-derived-wallet";
 export const NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY =
-  "anchor-keyring-imported-secret-key";
+  "notification-keyring-imported-secret-key";
 export const NOTIFICATION_KEYRING_RESET_MNEMONIC =
-  "anchor-keyring-reset-mnemonic";
-export const NOTIFICATION_KEYRING_CREATED = "anchor-keyring-created";
+  "notification-keyring-reset-mnemonic";
+export const NOTIFICATION_KEYRING_CREATED = "notification-keyring-created";
 export const NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED =
-  "anchor-keyring-active-blockchain-updated";
+  "notification-keyring-active-blockchain-updated";
 export const NOTIFICATION_APPROVED_ORIGINS_UPDATE =
-  "anchor-approved-origins-update";
+  "notification-approved-origins-update";
 export const NOTIFICATION_NAVIGATION_URL_DID_CHANGE =
-  "anchor-navigation-url-did-change";
+  "notification-navigation-url-did-change";
 export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
-  "anchor-auto-lock-secs-updated";
-export const NOTIFICATION_DARK_MODE_UPDATED = "anchor-dark-mode-updated";
+  "notification-auto-lock-secs-updated";
+export const NOTIFICATION_DARK_MODE_UPDATED = "notification-dark-mode-updated";
 // Solana specific
 export const NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED =
-  "anchor-keyring-solana-active-wallet-updated";
-export const NOTIFICATION_SOLANA_CONNECTED = "anchor-solana-connected";
-export const NOTIFICATION_SOLANA_DISCONNECTED = "anchor-solana-disconnected";
+  "notification-keyring-solana-active-wallet-updated";
+export const NOTIFICATION_SOLANA_CONNECTED = "notification-solana-connected";
+export const NOTIFICATION_SOLANA_DISCONNECTED =
+  "notification-solana-disconnected";
 export const NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED =
-  "anchor-solana-connection-url-updated";
+  "notification-solana-connection-url-updated";
 export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
-  "anchor-solana-explorer-updated";
+  "notification-solana-explorer-updated";
 export const NOTIFICATION_SOLANA_COMMITMENT_UPDATED =
-  "anchor-solana-commitment-updated";
+  "notification-solana-commitment-updated";
 export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
-  "anchor-solana-spl-tokens-did-update";
+  "notification-solana-spl-tokens-did-update";
 // Ethereum specific
-export const NOTIFICATION_ETHEREUM_CONNECTED = "anchor-ethereum-connected";
+export const NOTIFICATION_ETHEREUM_CONNECTED =
+  "notification-ethereum-connected";
 export const NOTIFICATION_ETHEREUM_DISCONNECTED =
-  "anchor-ethereum-disconnected";
+  "notification-ethereum-disconnected";
 export const NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED =
-  "anchor-ethereum-connection-url-updated";
+  "notification-ethereum-connection-url-updated";
 export const NOTIFICATION_ETHEREUM_EXPLORER_UPDATED =
-  "anchor-ethereum-explorer-updated";
+  "notification-ethereum-explorer-updated";
 export const NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED =
-  "anchor-keyring-ethereum-active-wallet-updated";
+  "notification-keyring-ethereum-active-wallet-updated";
 export const NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE =
-  "anchor-ethereum-tokens-did-update";
+  "notification-ethereum-tokens-did-update";
+
+//
+// Ethereum web injected provider API.
+//
+export const ETHEREUM_RPC_METHOD_CONNECT = "ethereum-connect";
+export const ETHEREUM_RPC_METHOD_DISCONNECT = "ethereum-disconnect";
+export const ETHEREUM_RPC_METHOD_SIGN_TX = "ethereum-sign-tx";
+export const ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX = "ethereum-sign-and-send-tx";
+export const ETHEREUM_RPC_METHOD_SIGN_MESSAGE = "ethereum-sign-message";
 
 //
 // Solana web injected provider API.
@@ -209,6 +279,48 @@ export const SOLANA_RPC_METHOD_SIGN_TX = "solana-sign-tx";
 export const SOLANA_RPC_METHOD_SIGN_ALL_TXS = "solana-sign-all-txs";
 export const SOLANA_RPC_METHOD_SIGN_MESSAGE = "solana-sign-message";
 export const SOLANA_RPC_METHOD_SIMULATE = "solana-simulate";
+export const SOLANA_RPC_METHOD_OPEN_XNFT = "solana-open-xnft";
+
+//
+// Ethereum connection api. These are the methods available for the background
+// connection implementation (which the frontends use via message passing).
+//
+export const ETHEREUM_PROVIDER_RPC_GET_BALANCE =
+  "ethereum-provider-rpc-get-balance";
+export const ETHEREUM_PROVIDER_RPC_GET_CODE = "ethereum-provider-rpc-get-code";
+export const ETHEREUM_PROVIDER_RPC_GET_STORAGE_AT =
+  "ethereum-provider-rpc-get-storage-at";
+export const ETHEREUM_PROVIDER_RPC_GET_TRANSACTION_COUNT =
+  "ethereum-provider-rpc-get-transaction-count";
+export const ETHEREUM_PROVIDER_RPC_GET_BLOCK =
+  "ethereum-provider-rpc-get-block";
+export const ETHEREUM_PROVIDER_RPC_GET_BLOCK_WITH_TRANSACTIONS =
+  "ethereum-provider-rpc-get-block-with-transactions";
+export const ETHEREUM_PROVIDER_RPC_GET_AVATAR =
+  "ethereum-provider-rpc-get-avatar";
+export const ETHEREUM_PROVIDER_RPC_GET_RESOLVER =
+  "ethereum-provider-rpc-get-resolver";
+export const ETHEREUM_PROVIDER_RPC_LOOKUP_ADDRESS =
+  "ethereum-provider-rpc-lookup-address";
+export const ETHEREUM_PROVIDER_RPC_RESOLVE_NAME =
+  "ethereum-provider-rpc-resolve-name";
+export const ETHEREUM_PROVIDER_RPC_GET_NETWORK =
+  "ethereum-provider-rpc-get-network";
+export const ETHEREUM_PROVIDER_RPC_GET_BLOCK_NUMBER =
+  "ethereum-provider-rpc-get-block-number";
+export const ETHEREUM_PROVIDER_RPC_GET_GAS_PRICE =
+  "ethereum-provider-rpc-get-gas-price";
+export const ETHEREUM_PROVIDER_RPC_GET_FEE_DATA =
+  "ethereum-provider-rpc-get-fee-data";
+export const ETHEREUM_PROVIDER_RPC_CALL = "ethereum-provider-rpc-call";
+export const ETHEREUM_PROVIDER_RPC_ESTIMATE_GAS =
+  "ethereum-provider-rpc-estimate-gas";
+export const ETHEREUM_PROVIDER_RPC_GET_TRANSACTION =
+  "ethereum-provider-rpc-get-transaction";
+export const ETHEREUM_PROVIDER_RPC_GET_TRANSACTION_RECEIPT =
+  "ethereum-provider-rpc-get-transaction-receipt";
+export const ETHEREUM_PROVIDER_RPC_WAIT_FOR_TRANSACTION =
+  "ethereum-provider-rpc-wait-for-transaction";
 
 //
 // Solana connection api. These are the methods available for the background
@@ -239,17 +351,11 @@ export const SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE =
   "solana-get-fee-for-message";
 export const SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION =
   "solana-get-minimum-balance-for-rent-exemption";
-
-//
-// Ethereum web injected provider API.
-//
-export const ETHEREUM_RPC_METHOD_CONNECT = "ethereum-connect";
-export const ETHEREUM_RPC_METHOD_DISCONNECT = "ethereum-disconnect";
-export const ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX = "ethereum-sign-and-send-tx";
-export const ETHEREUM_RPC_METHOD_SIGN_TX = "ethereum-sign-tx";
-export const ETHEREUM_RPC_METHOD_SIGN_ALL_TXS = "ethereum-sign-all-txs";
-export const ETHEREUM_RPC_METHOD_SIGN_MESSAGE = "ethereum-sign-message";
-export const ETHEREUM_RPC_METHOD_SIMULATE = "ethereum-simulate";
+export const SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNT_BALANCE =
+  "get-token-account-balance";
+export const SOLANA_CONNECTION_RPC_GET_BALANCE = "solana-get-balance";
+export const SOLANA_CONNECTION_RPC_GET_SLOT = "solana-get-slot";
+export const SOLANA_CONNECTION_RPC_GET_BLOCK_TIME = "solana-get-block-time";
 
 //
 // Ledger API.
@@ -264,6 +370,8 @@ export const LEDGER_INJECTED_CHANNEL_RESPONSE = "ledger-injected-response";
 export const LEDGER_METHOD_UNLOCK = "ledger-method-unlock";
 export const LEDGER_METHOD_SIGN_TRANSACTION = "ledger-method-sign-transaction";
 export const LEDGER_METHOD_SIGN_MESSAGE = "ledger-method-sign-message";
+
+export const PLUGIN_RPC_METHOD_WINDOW_OPEN = "rpc-method-window-open";
 
 export const BACKGROUND_SERVICE_WORKER_READY = "service-worker-ready";
 
@@ -308,3 +416,6 @@ export const DISCORD_INVITE_LINK = "https://discord.gg/RfwUqWrn7T";
 export const TWITTER_LINK = "https://twitter.com/xNFT_Backpack";
 export const XNFT_GG_LINK = "https://xnft.gg";
 export const BACKPACK_LINK = "https://backpack.app";
+
+export const ALCHEMY_ETHEREUM_MAINNET_API_KEY =
+  "DlJr6QuBC2EaE-L60-iqQQGq9hi9-XSZ";

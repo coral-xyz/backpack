@@ -10,7 +10,7 @@ import type {
   TransactionSignature,
   SimulatedTransactionResponse,
 } from "@solana/web3.js";
-import type { RequestManager } from "./request-manager";
+import type { RequestManager } from "../request-manager";
 import {
   SOLANA_RPC_METHOD_SIGN_ALL_TXS,
   SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,

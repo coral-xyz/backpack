@@ -30,13 +30,14 @@ const useStyles = styles((theme) => ({
   tabRoot: {
     height: `${TAB_HEIGHT}px`,
     minHeight: `${TAB_HEIGHT}px`,
-    backgroundColor: "transparent",
+    backgroundColor: theme.custom.colors.nav,
+    borderTop: `solid 1pt ${theme.custom.colors.border}`,
   },
   tabIndicator: {
     color: "none",
   },
   tabSelected: {
-    color: theme.custom.colors.tabIconSelected,
+    color: theme.custom.colors.brandColor,
   },
   tabUnselected: {},
   tabButton: {
@@ -102,7 +103,7 @@ function TabBar() {
           <BalancesIcon
             fill={
               tab === TAB_BALANCES
-                ? theme.custom.colors.tabIconSelected
+                ? theme.custom.colors.brandColor
                 : theme.custom.colors.secondary
             }
           />
@@ -117,12 +118,13 @@ function TabBar() {
           <GridIcon
             fill={
               tab === TAB_APPS
-                ? theme.custom.colors.tabIconSelected
+                ? theme.custom.colors.brandColor
                 : theme.custom.colors.secondary
             }
           />
         }
       />
+      {/*
       <Tab
         onClick={() => onTabClick(TAB_SWAP)}
         value={TAB_SWAP}
@@ -132,12 +134,13 @@ function TabBar() {
           <SwapIcon
             fill={
               tab === TAB_SWAP
-                ? theme.custom.colors.tabIconSelected
+                ? theme.custom.colors.brandColor
                 : theme.custom.colors.secondary
             }
           />
         }
       />
+			*/}
       <Tab
         onClick={() => onTabClick(TAB_NFTS)}
         value={TAB_NFTS}
@@ -147,7 +150,7 @@ function TabBar() {
           <ImageIcon
             fill={
               tab === TAB_NFTS
-                ? theme.custom.colors.tabIconSelected
+                ? theme.custom.colors.brandColor
                 : theme.custom.colors.secondary
             }
           />

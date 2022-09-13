@@ -12,7 +12,6 @@ export async function fetchRecentSolanaTransactions(
     const resp = await connection.getConfirmedSignaturesForAddress2(publicKey, {
       limit: 15,
     });
-
     const signatures = resp.map((s) => s.signature);
     const transactions: Array<ParsedTransactionWithMeta | null> =
       await connection.getParsedTransactions(signatures);

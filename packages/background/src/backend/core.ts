@@ -1,6 +1,5 @@
 import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
-import * as bs58 from "bs58";
 import type { Commitment, SendOptions } from "@solana/web3.js";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
@@ -30,6 +29,8 @@ import {
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
+  NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
   Blockchain,
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
@@ -38,6 +39,8 @@ import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
+
+const { base58: bs58 } = ethers.utils;
 
 export function start(
   events: EventEmitter,
@@ -108,12 +111,16 @@ export class Backend {
   ): Promise<string> {
     const tx = Transaction.from(bs58.decode(txStr));
     const txMessage = bs58.encode(tx.serializeMessage());
-    const blockchainKeyring = this.keyringStore.activeBlockchainKeyring();
+    const blockchainKeyring = this.keyringStore.keyringForBlockchain(
+      Blockchain.SOLANA
+    );
     return await blockchainKeyring.signTransaction(txMessage, walletAddress);
   }
 
   async solanaSignMessage(msg: string, walletAddress: string): Promise<string> {
-    const blockchainKeyring = this.keyringStore.activeBlockchainKeyring();
+    const blockchainKeyring = this.keyringStore.keyringForBlockchain(
+      Blockchain.SOLANA
+    );
     return await blockchainKeyring.signMessage(msg, walletAddress);
   }
 
@@ -257,27 +264,64 @@ export class Backend {
       .hash;
   }
 
+  async ethereumSignMessage(msg: string, walletAddress: string) {
+    const blockchainKeyring = this.keyringStore.keyringForBlockchain(
+      Blockchain.ETHEREUM
+    );
+    return await blockchainKeyring.signMessage(msg, walletAddress);
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Ethereum.
   ///////////////////////////////////////////////////////////////////////////////
 
   async ethereumExplorerRead(): Promise<string> {
-    // TODO
-    return EthereumExplorer.DEFAULT;
+    const data = await store.getWalletData();
+    return data.ethereum && data.ethereum.explorer
+      ? data.ethereum.explorer
+      : EthereumExplorer.DEFAULT;
   }
 
   async ethereumExplorerUpdate(explorer: string): Promise<string> {
-    // TODO
+    const data = await store.getWalletData();
+    await store.setWalletData({
+      ...data,
+      ethereum: {
+        ...(data.ethereum || {}),
+        explorer,
+      },
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
+      data: {
+        explorer,
+      },
+    });
     return SUCCESS_RESPONSE;
   }
 
   async ethereumConnectionUrlRead(): Promise<string> {
-    // TODO
-    return EthereumConnectionUrl.DEFAULT;
+    const data = await store.getWalletData();
+    return data.ethereum && data.ethereum.connectionUrl
+      ? data.ethereum.connectionUrl
+      : EthereumConnectionUrl.DEFAULT;
   }
 
-  async ethereumConnectionUrlUpdate(url: string): Promise<string> {
-    // TODO
+  async ethereumConnectionUrlUpdate(connectionUrl: string): Promise<string> {
+    const data = await store.getWalletData();
+    await store.setWalletData({
+      ...data,
+      ethereum: {
+        ...(data.ethereum || {}),
+        connectionUrl,
+      },
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
+      data: {
+        connectionUrl,
+      },
+    });
     return SUCCESS_RESPONSE;
   }
 
@@ -300,15 +344,13 @@ export class Backend {
     );
 
     // Notify all listeners.
-    const data = await store.getWalletData();
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_CREATED,
       data: {
-        // Hardcoded to Solana for now, but will be dynamic in the future.
-        activeBlockchain: Blockchain.SOLANA,
-        activeWallet: await this.activeWallet(),
-        url: data.solana.cluster,
-        commitment: data.solana.commitment,
+        blockchainActiveWallets: await this.blockchainActiveWallets(),
+        ethereumConnectionUrl: await this.ethereumConnectionUrlRead(),
+        solanaConnectionUrl: await this.solanaConnectionUrlRead(),
+        solanaCommitment: await this.solanaCommitmentRead(),
       },
     });
 
@@ -322,12 +364,8 @@ export class Backend {
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
 
-    // Map of blockchain to the active public key for that blockchain.
-    const blockchainActiveWallets = Object.fromEntries(
-      (await this.activeWallets()).map((publicKey) => {
-        return [this.keyringStore.blockchainForPublicKey(publicKey), publicKey];
-      })
-    );
+    const blockchainActiveWallets = await this.blockchainActiveWallets();
+
     const ethereumConnectionUrl = await this.ethereumConnectionUrlRead();
     const solanaConnectionUrl = await this.solanaConnectionUrlRead();
     const solanaCommitment = await this.solanaCommitmentRead();
@@ -449,6 +487,15 @@ export class Backend {
 
   async activeWallets(): Promise<Array<string>> {
     return await this.keyringStore.activeWallets();
+  }
+
+  // Map of blockchain to the active public key for that blockchain.
+  async blockchainActiveWallets() {
+    return Object.fromEntries(
+      (await this.activeWallets()).map((publicKey) => {
+        return [this.keyringStore.blockchainForPublicKey(publicKey), publicKey];
+      })
+    );
   }
 
   async keyringDeriveWallet(blockchain: Blockchain): Promise<string> {
@@ -815,16 +862,16 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async pluginLocalStorageGet(plugin: string, key: string): Promise<any> {
-    return await store.LocalStorageDb.get(`${plugin}:${key}`);
+  async pluginLocalStorageGet(xnftAddress: string, key: string): Promise<any> {
+    return await store.LocalStorageDb.get(`${xnftAddress}:${key}`);
   }
 
   async pluginLocalStoragePut(
-    plugin: string,
+    xnftAddress: string,
     key: string,
     value: any
   ): Promise<any> {
-    await store.LocalStorageDb.set(`${plugin}:${key}`, value);
+    await store.LocalStorageDb.set(`${xnftAddress}:${key}`, value);
     return SUCCESS_RESPONSE;
   }
 }

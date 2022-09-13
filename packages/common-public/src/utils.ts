@@ -40,3 +40,16 @@ export const IS_MOBILE = globalThis.chrome
 export function isServiceWorker(): boolean {
   return globalThis.clients !== undefined;
 }
+
+/**
+ * Make any necessary changes to URIs before the client queries them.
+ *
+ * TODO: replace host with host of caching layer for thumbnail generation, caching,
+ * SVG sanitization, etc.
+ */
+export function externalResourceUri(uri: string): string {
+  if (uri && uri.startsWith("ipfs://")) {
+    return uri.replace("ipfs://", "https://ipfs.io/ipfs/");
+  }
+  return uri;
+}

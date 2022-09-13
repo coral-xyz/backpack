@@ -192,10 +192,10 @@ function QueryApproveTransaction() {
       title={title!}
       tx={tx}
       wallet={wallet}
-      onCompletion={async (didApprove: boolean) => {
+      onCompletion={async (transaction: any) => {
         await background.response({
           id: requestId,
-          result: didApprove,
+          result: transaction,
         });
       }}
     />
