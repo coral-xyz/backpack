@@ -28,7 +28,7 @@ import {
 import { WalletListItem } from "../YourAccount/EditWallets";
 
 export function AddConnectWalletMenu({
-  blockchain: blockchain_,
+  blockchain,
 }: {
   blockchain: Blockchain;
 }) {
@@ -36,7 +36,6 @@ export function AddConnectWalletMenu({
   const background = useBackgroundClient();
   const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [blockchain, setBlockchain] = useState<Blockchain>(blockchain_);
 
   useEffect(() => {
     const prevTitle = nav.title;
