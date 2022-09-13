@@ -92,7 +92,7 @@ export function BalanceSummaryWidget() {
               lineHeight: "24px",
             }}
           >
-            {totalChange > 0 ? "+" : totalChange < 0 ? "-" : ""}
+            {totalChange > 0 ? "+" : ""}
             {formatUSD(totalChange)}
           </Typography>
           {Number.isFinite(percentChange) && (
@@ -108,7 +108,7 @@ export function BalanceSummaryWidget() {
                 lineHeight: "24px",
               }}
             >
-              {totalChange > 0 ? "+" : totalChange < 0 ? "-" : ""}
+              {totalChange > 0 ? "+" : ""}
               {`${percentChange.toFixed(2)}%`}
             </Typography>
           )}
