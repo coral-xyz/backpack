@@ -47,12 +47,12 @@ export function LoginAsExistingUser({
   return (
     <Box
       sx={{
-        backgroundColor: theme.custom.colors.nav,
-        textAlign: "center",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
         height: "100%",
+        justifyContent: "space-between",
+        backgroundColor: theme.custom.colors.nav,
+        textAlign: "center",
       }}
     >
       <Box>
@@ -64,38 +64,41 @@ export function LoginAsExistingUser({
           marginLeft: "16px",
           marginRight: "16px",
           marginBottom: "16px",
+          textAlign: "center",
         }}
       >
-        <TextField
-          inputProps={{ name: "username" }}
-          placeholder="Username"
-          type="text"
-          value={username}
-          setValue={setUsername}
-          isError={error}
-        />
-        <TextField
-          inputProps={{ name: "password" }}
-          placeholder="Password"
-          type="password"
-          value={password}
-          setValue={setPassword}
-          rootClass={classes.passwordFieldRoot}
-          isError={error}
-        />
-        {error && (
-          <Typography sx={{ color: theme.custom.colors.negative }}>
-            {error}
-          </Typography>
-        )}
+        <Box style={{ marginBottom: 8 }}>
+          <TextField
+            inputProps={{ name: "username" }}
+            placeholder="Username"
+            type="text"
+            value={username}
+            setValue={setUsername}
+            isError={error}
+          />
+          <TextField
+            inputProps={{ name: "password" }}
+            placeholder="Password"
+            type="password"
+            value={password}
+            setValue={setPassword}
+            rootClass={classes.passwordFieldRoot}
+            isError={error}
+          />
+          {error && (
+            <Typography sx={{ color: theme.custom.colors.negative }}>
+              {error}
+            </Typography>
+          )}
+        </Box>
 
         <PrimaryButton label="Unlock" onClick={next} />
-      </Box>
 
-      <Box onClick={showInviteCodeFlow}>
-        <SubtextParagraph style={{ marginTop: "8px", marginBottom: "40px" }}>
-          I have an invite code
-        </SubtextParagraph>
+        <Box onClick={showInviteCodeFlow}>
+          <SubtextParagraph style={{ marginTop: "8px" }}>
+            I have an invite code
+          </SubtextParagraph>
+        </Box>
       </Box>
     </Box>
   );

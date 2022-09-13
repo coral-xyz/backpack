@@ -1,5 +1,5 @@
 import { useCustomTheme } from "@coral-xyz/themes";
-import { AlternateEmail, AlternateEmailSharp } from "@mui/icons-material";
+import { AlternateEmailSharp } from "@mui/icons-material";
 import { Box, InputAdornment, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { useEffect, useState } from "react";
@@ -25,18 +25,18 @@ enum PasswordError {
   NO_MATCH,
 }
 
-export function CreatePassword({
-  onNext,
-}: {
+type Props = {
   onNext: (username: string, password: string) => void;
-}) {
+};
+
+export function CreatePassword({ onNext }: Props) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const [checked, setChecked] = useState(false);
   const [username, setUsername] = useState("");
+  const [usernameError, setUsernameError] = useState("");
   const [password, setPassword] = useState("");
   const [passwordDup, setPasswordDup] = useState("");
-  const [usernameError, setUsernameError] = useState<string | null>(null);
   const [error, setError] = useState<PasswordError | null>(null);
 
   useEffect(() => {

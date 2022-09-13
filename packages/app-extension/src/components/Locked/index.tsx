@@ -65,7 +65,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
               sx={{ margin: "0 12px 12px 12px" }}
               fontStyle={{ color: "white" }}
             >
-              {username}
+              gm @{username}
             </Box>
 
             <Box sx={{ margin: "0 12px 12px 12px" }}>
