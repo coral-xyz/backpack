@@ -56,7 +56,7 @@ export function TokenInputField({
       value={value}
       // Override default TextField setValue with function to truncate decimal inputs
       setValue={(amount: string) => {
-        handleTokenInput(amount, decimals, props.setValue);
+        handleTokenInput(amount.replace("-", ""), decimals, props.setValue);
       }}
       inputProps={{
         ...props.inputProps,
