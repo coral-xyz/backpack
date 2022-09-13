@@ -8,21 +8,14 @@ import {
   ETHEREUM_RPC_METHOD_SIGN_MESSAGE,
 } from "@coral-xyz/common";
 
+const { base58: bs58 } = ethers.utils;
+
 export async function signTransaction(
   publicKey: string,
   requestManager: RequestManager,
-  provider: ethers.providers.JsonRpcProvider,
   transaction: UnsignedTransaction
 ): Promise<TransactionRequest> {
-  // This is just a void signer, it can't really sign things
-  const voidSigner = new ethers.VoidSigner(publicKey, provider);
-  // Populate any missing fields, e.g. nonce, gas settings
-  const populatedTx = await voidSigner.populateTransaction(
-    transaction as ethers.providers.TransactionRequest
-  );
-  const serializedTx = ethers.utils.base58.encode(
-    ethers.utils.serializeTransaction(populatedTx as UnsignedTransaction)
-  );
+  const serializedTx = encodeTransaction(transaction);
   return await requestManager.request({
     method: ETHEREUM_RPC_METHOD_SIGN_TX,
     params: [serializedTx, publicKey],
@@ -32,18 +25,9 @@ export async function signTransaction(
 export async function sendTransaction(
   publicKey: string,
   requestManager: RequestManager,
-  provider: ethers.providers.JsonRpcProvider,
   transaction: UnsignedTransaction
 ): Promise<any> {
-  // This is just a void signer, it can't really sign things
-  const voidSigner = new ethers.VoidSigner(publicKey, provider);
-  // Populate any missing fields, e.g. nonce, gas settings
-  const populatedTx = await voidSigner.populateTransaction(
-    transaction as ethers.providers.TransactionRequest
-  );
-  const serializedTx = ethers.utils.base58.encode(
-    ethers.utils.serializeTransaction(populatedTx as UnsignedTransaction)
-  );
+  const serializedTx = encodeTransaction(transaction);
   return await requestManager.request({
     method: ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX,
     params: [serializedTx, publicKey],
@@ -53,13 +37,11 @@ export async function sendTransaction(
 export async function sendAndConfirmTransaction(
   publicKey: string,
   requestManager: RequestManager,
-  provider: ethers.providers.JsonRpcProvider,
   transaction: UnsignedTransaction
 ): Promise<any> {
   const signature = this.sendTransaction(
     publicKey,
     requestManager,
-    provider,
     transaction
   );
   // TODO wait
@@ -76,4 +58,14 @@ export async function signMessage(
     method: ETHEREUM_RPC_METHOD_SIGN_MESSAGE,
     params: [encodedMsg, publicKey],
   });
+}
+
+function encodeTransaction(transaction: any) {
+  // Remove eth_sendTransaction gas key since it is incompatible with ethers
+  // https://github.com/ethers-io/ethers.js/issues/299
+  transaction.gasLimit = transaction.gas;
+  delete transaction.gas;
+  // As above
+  delete transaction.from;
+  return bs58.encode(ethers.utils.serializeTransaction(transaction));
 }

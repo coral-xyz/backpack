@@ -1,7 +1,7 @@
 import { ethers, BigNumber } from "ethers";
 import { List, ListItem, Typography } from "@mui/material";
 import _CheckIcon from "@mui/icons-material/Check";
-import { useTransactionData } from "@coral-xyz/recoil";
+import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
 import { Blockchain } from "@coral-xyz/common";
 import { styles } from "@coral-xyz/themes";
 import { Loading } from "../../common";
@@ -73,12 +73,52 @@ export function ApproveTransaction({
   title: string;
   tx: string | null;
   wallet: string;
-  onCompletion: (confirmed: boolean) => void;
+  onCompletion: (transaction: any) => void;
 }) {
   const classes = useStyles();
+  const blockchain = useWalletBlockchain(wallet);
+  const {
+    loading,
+    simulationError,
+    balanceChanges,
+    network,
+    networkFee,
+    // Possibly modified transaction object if user overrides settings
+    // (i.e. Ethereum gas or nonce)
+    transaction,
+  } = useTransactionData(blockchain as Blockchain, tx);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  const balanceChangeRows = balanceChanges
+    ? Object.entries(balanceChanges).map(
+        ([symbol, { nativeChange, decimals }]) => {
+          const className = nativeChange.gte(Zero)
+            ? classes.positive
+            : classes.negative;
+          return [
+            symbol,
+            <span className={className}>
+              {ethers.utils.commify(
+                ethers.utils.formatUnits(nativeChange, BigNumber.from(decimals))
+              )}{" "}
+              {symbol}
+            </span>,
+          ];
+        }
+      )
+    : [];
+
+  const menuItems = [
+    ...balanceChangeRows,
+    ["Network", network],
+    ["Network Fee", networkFee],
+  ];
 
   const onConfirm = async () => {
-    onCompletion(true);
+    onCompletion(transaction);
   };
 
   const onDeny = async () => {
@@ -95,7 +135,14 @@ export function ApproveTransaction({
       onConfirmLabel="Approve"
       onDeny={onDeny}
     >
-      <TransactionData tx={tx} />
+      {loading ? (
+        <Loading />
+      ) : (
+        <TransactionData
+          menuItems={menuItems}
+          simulationError={simulationError}
+        />
+      )}
     </WithApproval>
   );
 }
@@ -138,40 +185,14 @@ export function ApproveAllTransactions({
   );
 }
 
-function TransactionData({ tx }: { tx: string | null }) {
+function TransactionData({
+  menuItems,
+  simulationError = false,
+}: {
+  menuItems: (string | JSX.Element)[][];
+  simulationError: boolean;
+}) {
   const classes = useStyles();
-
-  const { loading, simulationError, balanceChanges, network, networkFee } =
-    useTransactionData(Blockchain.SOLANA, tx);
-
-  if (loading) {
-    return <Loading />;
-  }
-
-  const balanceChangeRows = balanceChanges
-    ? Object.entries(balanceChanges).map(
-        ([symbol, { nativeChange, decimals }]) => {
-          const className = nativeChange.gte(Zero)
-            ? classes.positive
-            : classes.negative;
-          return [
-            symbol,
-            <span className={className}>
-              {ethers.utils.commify(
-                ethers.utils.formatUnits(nativeChange, BigNumber.from(decimals))
-              )}{" "}
-              {symbol}
-            </span>,
-          ];
-        }
-      )
-    : [];
-
-  const menuItems = [
-    ...balanceChangeRows,
-    ["Network", network],
-    ["Network Fee", networkFee],
-  ];
 
   return (
     <>
@@ -179,7 +200,7 @@ function TransactionData({ tx }: { tx: string | null }) {
         Transaction details
       </Typography>
       <List className={classes.listRoot}>
-        {menuItems.map((row, index) => {
+        {menuItems.map((row, index: number) => {
           return (
             <ListItem
               key={index}

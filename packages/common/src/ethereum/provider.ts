@@ -6,7 +6,9 @@ import {
 } from "../constants";
 import type { EthereumContext } from ".";
 
-// Provider API to be used by the app UI.
+// Provider api used by the app UI. Spiritually the same as the injected
+// provider with a slightly different API. Eventually it would be nice to
+// combine the two.
 export class EthereumProvider {
   /**
    * Serialize a transaction and send it to the background script for signing.
@@ -15,15 +17,9 @@ export class EthereumProvider {
     ctx: EthereumContext,
     tx: any
   ): Promise<any> {
-    const { walletPublicKey, backgroundClient, provider } = ctx;
-    // This is just a void signer, it can't really sign things
-    const voidSigner = new ethers.VoidSigner(walletPublicKey, provider);
-    // Populate any missing fields, e.g. nonce, gas settings
-    const populatedTx = await voidSigner.populateTransaction(
-      tx as ethers.providers.TransactionRequest
-    );
+    const { walletPublicKey, backgroundClient } = ctx;
     const serializedTx = ethers.utils.base58.encode(
-      ethers.utils.serializeTransaction(populatedTx as UnsignedTransaction)
+      ethers.utils.serializeTransaction(tx as UnsignedTransaction)
     );
     const signedTx = await backgroundClient.request({
       method: UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
@@ -40,15 +36,10 @@ export class EthereumProvider {
     ctx: EthereumContext,
     tx: any
   ): Promise<any> {
-    const { walletPublicKey, backgroundClient, provider } = ctx;
-    // This is just a void signer, it can't really sign things
-    const voidSigner = new ethers.VoidSigner(walletPublicKey, provider);
-    // Populate any missing fields, e.g. nonce, gas settings
-    const populatedTx = await voidSigner.populateTransaction(
-      tx as ethers.providers.TransactionRequest
-    );
+    const { walletPublicKey, backgroundClient } = ctx;
+    console.log("Transaction", tx);
     const serializedTx = ethers.utils.base58.encode(
-      ethers.utils.serializeTransaction(populatedTx as UnsignedTransaction)
+      ethers.utils.serializeTransaction(tx as UnsignedTransaction)
     );
     const txHash = await backgroundClient.request({
       method: UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,

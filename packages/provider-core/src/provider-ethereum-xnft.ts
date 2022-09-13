@@ -55,7 +55,6 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
     return await cmn.sendAndConfirmTransaction(
       this.publicKey,
       this._requestManager,
-      this.provider!,
       transaction
     );
   }
@@ -67,7 +66,6 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
     return await cmn.sendTransaction(
       this.publicKey,
       this._requestManager,
-      this.provider!,
       transaction
     );
   }
@@ -79,7 +77,6 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
     return await cmn.signTransaction(
       this.publicKey,
       this._requestManager,
-      this.provider!,
       transaction
     );
   }

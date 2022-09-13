@@ -1,6 +1,5 @@
 import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
-import * as bs58 from "bs58";
 import type { Commitment, SendOptions } from "@solana/web3.js";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
@@ -40,6 +39,8 @@ import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
+
+const { base58: bs58 } = ethers.utils;
 
 export function start(
   events: EventEmitter,

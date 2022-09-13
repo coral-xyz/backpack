@@ -30,7 +30,7 @@ export class EthereumConnectionBackend {
   private url?: string;
   private pollIntervals: Array<any>;
   private events: EventEmitter;
-  private provider?: ethers.providers.JsonRpcProvider;
+  public provider?: ethers.providers.JsonRpcProvider;
 
   constructor(events: EventEmitter) {
     this.pollIntervals = [];

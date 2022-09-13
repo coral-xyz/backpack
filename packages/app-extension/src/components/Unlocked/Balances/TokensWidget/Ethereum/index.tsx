@@ -6,7 +6,11 @@ import { getLogger, Blockchain, Ethereum } from "@coral-xyz/common";
 import { useEthereumCtx, useTransactionData } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { TokenAmountDisplay, Sending, Error } from "../Send";
-import { walletAddressDisplay, PrimaryButton } from "../../../../common";
+import {
+  walletAddressDisplay,
+  Loading,
+  PrimaryButton,
+} from "../../../../common";
 import { SettingsList } from "../../../../common/Settings/List";
 
 const logger = getLogger("send-ethereum-confirmation-card");
@@ -166,16 +170,41 @@ export function ConfirmSendEthereum({
   onConfirm: (transactionToSend: UnsignedTransaction) => void;
 }) {
   const theme = useCustomTheme();
-  const ethereumCtx = useEthereumCtx();
-  const { from, simulationError, network, networkFee } = useTransactionData(
+  const {
+    from,
+    loading,
+    transaction: transactionToSend,
+    simulationError,
+    network,
+    networkFee,
+  } = useTransactionData(
     Blockchain.ETHEREUM,
     bs58.encode(ethers.utils.serializeTransaction(transaction))
   );
 
-  const transactionOverrides = {
-    type: 2,
-    maxFeePerGas: ethereumCtx.feeData.maxFeePerGas,
-    maxPriorityFeePerGas: ethereumCtx.feeData.maxPriorityFeePerGas,
+  const menuItems = {
+    From: {
+      onClick: () => {},
+      detail: <Typography>{walletAddressDisplay(from)}</Typography>,
+      button: false,
+    },
+    To: {
+      onClick: () => {},
+      detail: (
+        <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
+      ),
+      button: false,
+    },
+    Network: {
+      onClick: () => {},
+      detail: <Typography>{network}</Typography>,
+      button: false,
+    },
+    "Network fee": {
+      onClick: () => {},
+      detail: <Typography>{!loading && networkFee}</Typography>,
+      button: false,
+    },
   };
 
   return (
@@ -208,12 +237,14 @@ export function ConfirmSendEthereum({
           amount={amount}
           token={token}
         />
-        <ConfirmEthereumSendTable
-          to={destinationAddress}
-          from={from}
-          network={network}
-          networkFee={networkFee}
+        <SettingsList
+          menuItems={menuItems}
+          style={{ margin: 0 }}
+          textStyle={{
+            color: theme.custom.colors.secondary,
+          }}
         />
+
         {simulationError && (
           <Typography
             style={{
@@ -227,12 +258,12 @@ export function ConfirmSendEthereum({
         )}
       </div>
       <PrimaryButton
+        disabled={loading}
         style={{ marginTop: "16px" }}
         onClick={() =>
-          onConfirm({
-            ...transaction,
-            ...transactionOverrides,
-          } as UnsignedTransaction)
+          onConfirm(
+            ethers.utils.parseTransaction(bs58.decode(transactionToSend))
+          )
         }
         label="Send"
         type="submit"
@@ -241,45 +272,3 @@ export function ConfirmSendEthereum({
     </div>
   );
 }
-
-const ConfirmEthereumSendTable: React.FC<{
-  to: string;
-  from: string;
-  network: string;
-  networkFee: string;
-}> = ({ to, from, network, networkFee }) => {
-  const theme = useCustomTheme();
-
-  const menuItems = {
-    From: {
-      onClick: () => {},
-      detail: <Typography>{walletAddressDisplay(from)}</Typography>,
-      button: false,
-    },
-    To: {
-      onClick: () => {},
-      detail: <Typography>{walletAddressDisplay(to)}</Typography>,
-      button: false,
-    },
-    Network: {
-      onClick: () => {},
-      detail: <Typography>{network}</Typography>,
-      button: false,
-    },
-    "Network fee": {
-      onClick: () => {},
-      detail: <Typography>{networkFee}</Typography>,
-      button: false,
-    },
-  };
-
-  return (
-    <SettingsList
-      menuItems={menuItems}
-      style={{ margin: 0 }}
-      textStyle={{
-        color: theme.custom.colors.secondary,
-      }}
-    />
-  );
-};
