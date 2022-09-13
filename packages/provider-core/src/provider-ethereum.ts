@@ -5,6 +5,7 @@ import type { Event } from "@coral-xyz/common";
 import {
   getLogger,
   BackgroundEthereumProvider,
+  ALCHEMY_ETHEREUM_MAINNET_API_KEY,
   CHANNEL_ETHEREUM_RPC_REQUEST,
   CHANNEL_ETHEREUM_RPC_RESPONSE,
   CHANNEL_ETHEREUM_NOTIFICATION,
@@ -112,7 +113,7 @@ export class ProviderEthereumInjection extends EventEmitter {
   /**
    * Boolean indicating that the provider is Backpack.
    */
-  public static isBackpack: boolean = true;
+  public isBackpack: boolean;
 
   /**
    * Ethereum JSON RPC provider.
@@ -135,10 +136,25 @@ export class ProviderEthereumInjection extends EventEmitter {
       ...ProviderEthereumInjection._defaultState,
     };
 
+    this.isBackpack = true;
+    this.chainId = null;
+    this.publicKey = null;
+    this.provider = this.defaultProvider();
+
+    this._handleConnect = this._handleConnect.bind(this);
+    this._handleChainChanged = this._handleChainChanged.bind(this);
     this._handleEthRequestAccounts = this._handleEthRequestAccounts.bind(this);
     this._handleEthSignMessage = this._handleEthSignMessage.bind(this);
     this._handleEthSignTransaction = this._handleEthSignTransaction.bind(this);
     this._handleEthSendTransaction = this._handleEthSendTransaction.bind(this);
+  }
+
+  defaultProvider(): ethers.providers.JsonRpcProvider {
+    // TODO the connection URL and chain id parameters should come from Backpack
+    return new ethers.providers.JsonRpcProvider(
+      `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_ETHEREUM_MAINNET_API_KEY}`,
+      1
+    );
   }
 
   // Setup channels with the content script.
@@ -301,12 +317,9 @@ export class ProviderEthereumInjection extends EventEmitter {
       this._connectionRequestManager,
       connectionUrl
     );
-    const newChainId = `${(await this.provider.getNetwork()).chainId}`;
+    const newChainId = `${(await this.provider!.getNetwork()).chainId}`;
     if (this.isConnected() && this.chainId !== newChainId) {
-      // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#chainchanged
-      this.emit("chainChanged", {
-        chainId: newChainId,
-      } as ProviderConnectInfo);
+      this._handleChainChanged(newChainId);
     }
   }
 
@@ -314,41 +327,69 @@ export class ProviderEthereumInjection extends EventEmitter {
    * Handle a change of the active wallet in Backpack.
    */
   async _handleNotificationActiveWalletUpdated(event: any) {
-    const { publicKey } = event.data.detail.data;
-    if (this.publicKey !== publicKey) {
-      this.publicKey = publicKey;
+    const { activeWallet } = event.data.detail.data;
+    if (this.publicKey !== activeWallet) {
+      this.publicKey = activeWallet;
       // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#accountschanged
-      this.emit("accountsChanged", {
-        accounts: [this.publicKey],
-      });
+      this._handleAccountsChanged([this.publicKey]);
     }
+  }
+
+  /**
+   *
+   */
+  protected async _handleConnect(chainId: string) {
+    if (!this._state.isConnected) {
+      this._state.isConnected = true;
+      // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#connect
+      this.emit("connect", { chainId } as ProviderConnectInfo);
+    }
+  }
+
+  /**
+   *
+   */
+  protected async _handleChainChanged(chainId: string) {
+    this.chainId = chainId;
+    // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#chainchanged
+    this.emit("chainChanged", {
+      chainId,
+    } as ProviderConnectInfo);
+  }
+
+  /**
+   *
+   */
+  protected async _handleAccountsChanged(accounts: unknown[]) {
+    this.emit("accountsChanged", accounts);
   }
 
   /**
    * Handle eth_accounts and eth_requestAccounts requests
    */
-  async _handleEthRequestAccounts() {
+  protected async _handleEthRequestAccounts() {
     // Send request to the RPC API.
     const result = await this._requestManager.request({
       method: ETHEREUM_RPC_METHOD_CONNECT,
       params: [],
     });
-    // Public state
     this.publicKey = result.publicKey;
-    this.provider = new ethers.providers.JsonRpcProvider(result.connectionUrl);
     // TODO not hardcoded
-    this.chainId = "1";
-    // Private state
-    this._state.isConnected = true;
-    // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#connect
-    this.emit("connect", { chainId: this.chainId } as ProviderConnectInfo);
+    const chainId = 1;
+    this.provider = new ethers.providers.JsonRpcProvider(
+      result.connectionUrl,
+      chainId
+    );
+    this._handleConnect(`${chainId}`);
+    this._handleAccountsChanged([this.publicKey]);
+    this._handleChainChanged(`${chainId}`);
     return [result.publicKey];
   }
 
   /**
    * Handle eth_sign, eth_signTypedData, personal_sign RPC requests.
    */
-  async _handleEthSignMessage(message: string) {
+  protected async _handleEthSignMessage(message: string) {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
@@ -358,7 +399,7 @@ export class ProviderEthereumInjection extends EventEmitter {
   /**
    * Handle eth_signTransaction RPC requests.
    */
-  async _handleEthSignTransaction(transaction: any) {
+  protected async _handleEthSignTransaction(transaction: any) {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
@@ -372,7 +413,7 @@ export class ProviderEthereumInjection extends EventEmitter {
   /**
    * Handle eth_sendTransaction RPC requests.
    */
-  async _handleEthSendTransaction(transaction: any) {
+  protected async _handleEthSendTransaction(transaction: any) {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
