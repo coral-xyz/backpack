@@ -129,27 +129,29 @@ export function WithMiniDrawer(props: any) {
     onClose,
   } = props;
   return (
-    <Drawer
-      anchor={"bottom"}
-      open={openDrawer}
-      onClose={() => (onClose ? onClose() : setOpenDrawer(false))}
-      classes={{
-        root: classes.miniDrawerRoot,
-        paper: classes.miniDrawerPaper,
-        paperAnchorBottom: paperAnchorBottom,
-      }}
-      BackdropProps={{
-        style: {
-          background: "transparent",
-        },
-        ...backdropProps,
-      }}
-      ModalProps={{
-        ...modalProps,
-      }}
-    >
-      {children}
-    </Drawer>
+    <DrawerProvider setOpenDrawer={setOpenDrawer}>
+      <Drawer
+        anchor={"bottom"}
+        open={openDrawer}
+        onClose={() => (onClose ? onClose() : setOpenDrawer(false))}
+        classes={{
+          root: classes.miniDrawerRoot,
+          paper: classes.miniDrawerPaper,
+          paperAnchorBottom: paperAnchorBottom,
+        }}
+        BackdropProps={{
+          style: {
+            background: "transparent",
+          },
+          ...backdropProps,
+        }}
+        ModalProps={{
+          ...modalProps,
+        }}
+      >
+        {children}
+      </Drawer>
+    </DrawerProvider>
   );
 }
 
@@ -170,7 +172,7 @@ function WithDrawerContent({ children, setOpenDrawer }: any) {
   );
 }
 
-export function CloseButton({ onClick }: any) {
+export function CloseButton({ onClick, buttonStyle }: any) {
   const classes = useStyles();
   return (
     <div
@@ -189,6 +191,7 @@ export function CloseButton({ onClick }: any) {
           padding: 0,
           position: "absolute",
           right: 0,
+          ...buttonStyle,
         }}
         onClick={onClick}
         size="large"

@@ -114,8 +114,8 @@ export const darkTheme: any = {
       primaryButton: BRAND_COLOR,
       secondaryButton: BACKGROUND_COLOR_2,
       buttonFontColor: BUTTON_FONT_COLOR,
-      border1: BORDER_COLOR_1,
-      border: BORDER_COLOR,
+      border1: BACKGROUND_COLOR_2,
+      border: BACKGROUND_COLOR_1,
 
       dangerButton: DANGER_COLOR,
       alpha: FONT_COLOR_2,

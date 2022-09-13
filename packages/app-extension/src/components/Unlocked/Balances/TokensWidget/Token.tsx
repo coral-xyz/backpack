@@ -101,9 +101,31 @@ function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
       }}
     >
       <div>
-        <Typography className={classes.displayBalanceLabel}>
-          {token.displayBalance.toLocaleString()} {token.ticker}
-        </Typography>
+        <div
+          style={{ display: "flex", marginLeft: "16px", marginRight: "16px" }}
+        >
+          <div style={{ flex: 1 }} />
+          <Typography
+            className={classes.displayBalanceLabel}
+            style={{
+              display: "flex",
+            }}
+          >
+            <span
+              style={{
+                display: "inline-block",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                maxWidth: "250px",
+              }}
+            >
+              {token.displayBalance.toLocaleString()}
+            </span>{" "}
+            <span style={{ whiteSpace: "pre" }}> {token.ticker}</span>
+          </Typography>
+          <div style={{ flex: 1 }} />
+        </div>
         <Typography className={classes.usdBalanceLabel}>
           ${parseFloat(token.usdBalance.toFixed(2)).toLocaleString()}{" "}
           <span className={percentClass}>{token.recentPercentChange}%</span>
