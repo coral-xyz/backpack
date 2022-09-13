@@ -1,7 +1,8 @@
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box, Typography } from "@mui/material";
 import { useState } from "react";
-import { Header, PrimaryButton, SubtextParagraph, TextField } from "../common";
+import { supabase } from "../../supabase";
+import { PrimaryButton, SubtextParagraph, TextField } from "../common";
 import { BackpackHeader } from "../common/BackpackHeader";
 
 export const InviteCode = ({
@@ -16,11 +17,19 @@ export const InviteCode = ({
   const theme = useCustomTheme();
 
   const handleSubmit = async () => {
-    // TODO: check invite code is valid in background script
-    if (code === "test") {
-      onNext(code);
-    } else {
-      setInviteCodeError("Invalid invite code");
+    try {
+      const { data, error } = await supabase
+        .from("invitations")
+        .select("*")
+        .limit(1)
+        .eq("id", code);
+      if (data?.[0] && !data[0].user_id) {
+        onNext(code);
+      } else {
+        throw new Error(error?.message || "Invalid invite code");
+      }
+    } catch (err: any) {
+      setInviteCodeError(err.message);
     }
   };
 
@@ -38,6 +47,7 @@ export const InviteCode = ({
       <Box>
         <BackpackHeader />
       </Box>
+
       <Box
         sx={{
           marginLeft: "16px",
