@@ -33,7 +33,6 @@ import {
   SolanaCluster,
   SolanaExplorer,
 } from "@coral-xyz/common";
-import * as bs58 from "bs58";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
