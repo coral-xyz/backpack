@@ -41,7 +41,6 @@ export class EthereumProvider {
     const serializedTx = ethers.utils.base58.encode(
       ethers.utils.serializeTransaction(tx as UnsignedTransaction)
     );
-    console.log("Serialized transaction", serializedTx);
     const txHash = await backgroundClient.request({
       method: UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
       params: [serializedTx, walletPublicKey],
