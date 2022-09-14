@@ -23,6 +23,7 @@ import {
   ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX,
   ETHEREUM_RPC_METHOD_SIGN_MESSAGE as PLUGIN_ETHEREUM_RPC_METHOD_SIGN_MESSAGE,
   SOLANA_RPC_METHOD_SIGN_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_TX,
+  SOLANA_RPC_METHOD_SIGN_ALL_TXS as PLUGIN_SOLANA_RPC_METHOD_SIGN_ALL_TXS,
   SOLANA_RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
   SOLANA_RPC_METHOD_SIMULATE as PLUGIN_SOLANA_RPC_METHOD_SIMULATE_TX,
   SOLANA_RPC_METHOD_SIGN_MESSAGE as PLUGIN_SOLANA_RPC_METHOD_SIGN_MESSAGE,
@@ -40,6 +41,7 @@ import {
   PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE,
   PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION,
+  PLUGIN_REQUEST_SOLANA_SIGN_ALL_TRANSACTIONS,
   PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION,
   PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE,
   RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
@@ -468,6 +470,11 @@ export class Plugin {
         return await this._handleEthereumSignMessage(params[0], params[1]);
       case PLUGIN_SOLANA_RPC_METHOD_SIGN_TX:
         return await this._handleSolanaSignTransaction(params[0], params[1]);
+      case PLUGIN_SOLANA_RPC_METHOD_SIGN_ALL_TXS:
+        return await this._handleSolanaSignAllTransactions(
+          params[0],
+          params[1]
+        );
       case PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX:
         return await this._handleSolanaSignAndSendTransaction(
           params[0],
@@ -539,6 +546,22 @@ export class Plugin {
       const signature = await this._requestTransactionApproval(
         PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION,
         transaction,
+        pubkey
+      );
+      return [signature];
+    } catch (err) {
+      return [null, err.toString()];
+    }
+  }
+
+  private async _handleSolanaSignAllTransactions(
+    transactions: Array<string>,
+    pubkey: string
+  ): Promise<RpcResponse> {
+    try {
+      const signature = await this._requestTransactionApproval(
+        PLUGIN_REQUEST_SOLANA_SIGN_ALL_TRANSACTIONS,
+        transactions,
         pubkey
       );
       return [signature];
@@ -624,7 +647,7 @@ export class Plugin {
   //
   private async _requestTransactionApproval(
     kind: string,
-    transaction: string,
+    transaction: string | string[],
     publicKey: string
   ): Promise<string | null> {
     return new Promise<string | null>((resolve, reject) => {

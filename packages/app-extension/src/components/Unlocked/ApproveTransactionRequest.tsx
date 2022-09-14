@@ -5,6 +5,7 @@ import {
   useFreshPlugin,
   useTransactionData,
   useTransactionRequest,
+  useSolanaCtx,
 } from "@coral-xyz/recoil";
 import {
   Blockchain,
@@ -12,6 +13,7 @@ import {
   PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE,
   PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION,
+  PLUGIN_REQUEST_SOLANA_SIGN_ALL_TRANSACTIONS,
   PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE,
   PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
@@ -20,6 +22,7 @@ import {
   UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
   UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
+  UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
 } from "@coral-xyz/common";
 import { Plugin } from "@coral-xyz/react-xnft-renderer";
 import { Typography } from "@mui/material";
@@ -71,6 +74,8 @@ const pluginUiRpcMap = {
   [PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE]: UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
   [PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION]:
     UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
+  [PLUGIN_REQUEST_SOLANA_SIGN_ALL_TRANSACTIONS]:
+    UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
   [PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION]:
     UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
 };
@@ -81,6 +86,7 @@ const pluginRpcBlockchainMap = {
   [PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION]: Blockchain.ETHEREUM,
   [PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE]: Blockchain.SOLANA,
   [PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION]: Blockchain.SOLANA,
+  [PLUGIN_REQUEST_SOLANA_SIGN_ALL_TRANSACTIONS]: Blockchain.SOLANA,
   [PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION]: Blockchain.SOLANA,
 };
 
@@ -134,8 +140,17 @@ export function ApproveTransactionRequest() {
       {isMessageSign ? (
         <SignMessageRequest
           publicKey={publicKey}
-          message={request!.data}
+          message={request!.data as string}
           uiRpcMethod={rpcMethod}
+          onResolve={onResolve}
+          onReject={onReject}
+        />
+      ) : request.kind! === PLUGIN_REQUEST_SOLANA_SIGN_ALL_TRANSACTIONS ? (
+        <SignAllTransactionsRequest
+          publicKey={publicKey}
+          uiRpcMethod={rpcMethod}
+          blockchain={blockchain}
+          transactions={request!.data as string[]}
           onResolve={onResolve}
           onReject={onReject}
         />
@@ -144,7 +159,7 @@ export function ApproveTransactionRequest() {
           publicKey={publicKey}
           uiRpcMethod={rpcMethod}
           blockchain={blockchain}
-          transaction={request!.data}
+          transaction={request!.data as string}
           onResolve={onResolve}
           onReject={onReject}
         />
@@ -193,6 +208,37 @@ function Request({ onConfirm, onReject, buttonsDisabled, children }: any) {
   );
 }
 
+function SignAllTransactionsRequest({
+  publicKey,
+  transactions,
+  uiRpcMethod,
+  blockchain,
+  onResolve,
+  onReject,
+}: {
+  publicKey: string;
+  transactions: Array<string>;
+  uiRpcMethod: string;
+  blockchain: Blockchain;
+  onResolve: (signature: string) => void;
+  onReject: () => void;
+}) {
+  const { walletPublicKey } = useSolanaCtx();
+  return (
+    <_SendTransactionRequest
+      publicKey={publicKey}
+      uiRpcMethod={uiRpcMethod}
+      onResolve={onResolve}
+      onReject={onReject}
+      loading={false}
+      transactionToSend={transactions}
+      from={walletPublicKey.toString()}
+      network={"Solana"}
+      networkFee={"-"}
+    />
+  );
+}
+
 //
 //
 //
@@ -211,11 +257,6 @@ function SendTransactionRequest({
   onResolve: (signature: string) => void;
   onReject: () => void;
 }) {
-  const classes = useStyles();
-  const theme = useCustomTheme();
-  const [request] = useTransactionRequest();
-  const background = useBackgroundClient();
-  const { result: plugin } = useFreshPlugin(request?.xnftAddress);
   const {
     loading,
     transaction: transactionToSend,
@@ -223,6 +264,48 @@ function SendTransactionRequest({
     network,
     networkFee,
   } = useTransactionData(blockchain, transaction);
+
+  return (
+    <_SendTransactionRequest
+      publicKey={publicKey}
+      uiRpcMethod={uiRpcMethod}
+      onResolve={onResolve}
+      onReject={onReject}
+      loading={loading}
+      transactionToSend={transactionToSend}
+      from={from}
+      network={network}
+      networkFee={networkFee}
+    />
+  );
+}
+
+function _SendTransactionRequest({
+  publicKey,
+  uiRpcMethod,
+  onResolve,
+  onReject,
+  loading,
+  transactionToSend,
+  from,
+  network,
+  networkFee,
+}: {
+  publicKey: string;
+  transactionToSend: string | Array<string>;
+  uiRpcMethod: string;
+  onResolve: (signature: string) => void;
+  onReject: () => void;
+  loading: boolean;
+  from: string;
+  network: string;
+  networkFee: string;
+}) {
+  const classes = useStyles();
+  const theme = useCustomTheme();
+  const [request] = useTransactionRequest();
+  const background = useBackgroundClient();
+  const { result: plugin } = useFreshPlugin(request?.xnftAddress);
 
   //
   // Executes when the modal clicks "Approve" in the drawer popup
