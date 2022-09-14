@@ -78,3 +78,8 @@ export const username = atom<string | null>({
     },
   }),
 });
+
+export const lockScreenUrl = atom<string>({
+  key: "lockScreenUrl",
+  default: "",
+});

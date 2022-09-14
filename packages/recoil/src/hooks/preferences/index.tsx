@@ -37,3 +37,7 @@ export function useConnectionUrls() {
 export function useUsername() {
   return useRecoilValue(atoms.username);
 }
+
+export function useLockScreenUrl(): string {
+  return useRecoilValue(atoms.lockScreenUrl);
+}

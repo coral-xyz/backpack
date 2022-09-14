@@ -275,6 +275,16 @@ type Xnft = {
           isSigner: false;
         },
         {
+          name: "metadataProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "rent";
+          isMut: false;
+          isSigner: false;
+        },
+        {
           name: "associatedTokenProgram";
           isMut: false;
           isSigner: false;
@@ -299,6 +309,12 @@ type Xnft = {
           name: "params";
           type: {
             defined: "CreateXnftParams";
+          };
+        },
+        {
+          name: "l1";
+          type: {
+            defined: "L1";
           };
         }
       ];
@@ -348,6 +364,74 @@ type Xnft = {
     },
     {
       name: "createReview";
+      docs: [
+        'Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.'
+      ];
+      accounts: [
+        {
+          name: "review";
+          isMut: true;
+          isSigner: false;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                type: "string";
+                value: "review";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                account: "Xnft";
+                path: "xnft";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                path: "author";
+              }
+            ];
+          };
+        },
+        {
+          name: "install";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "masterToken";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "xnft";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "author";
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: "systemProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "uri";
+          type: "string";
+        },
+        {
+          name: "rating";
+          type: "u8";
+        }
+      ];
+    },
+    {
+      name: "createInstall";
       docs: [
         'Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.'
       ];
@@ -1274,6 +1358,12 @@ const IDL: Xnft = {
             defined: "UpdateParams",
           },
         },
+        {
+          name: "l1",
+          type: {
+            defined: "L1",
+          },
+        },
       ],
     },
     {
@@ -1321,6 +1411,74 @@ const IDL: Xnft = {
               },
             ],
           },
+        },
+        {
+          name: "author",
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "uri",
+          type: "string",
+        },
+        {
+          name: "rating",
+          type: "u8",
+        },
+      ],
+    },
+    {
+      name: "createReview",
+      docs: [
+        'Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.',
+      ],
+      accounts: [
+        {
+          name: "review",
+          isMut: true,
+          isSigner: false,
+          pda: {
+            seeds: [
+              {
+                kind: "const",
+                type: "string",
+                value: "review",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                account: "Xnft",
+                path: "xnft",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                path: "author",
+              },
+            ],
+          },
+        },
+        {
+          name: "install",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "masterToken",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "xnft",
+          isMut: true,
+          isSigner: false,
         },
         {
           name: "author",
@@ -1426,6 +1584,35 @@ const IDL: Xnft = {
         },
         {
           name: "authority",
+          isMut: false,
+          isSigner: true,
+        },
+      ],
+      args: [],
+    },
+    {
+      name: "deleteReview",
+      docs: [
+        "Closes the review account and removes metrics from xNFT account.",
+      ],
+      accounts: [
+        {
+          name: "review",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "xnft",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "receiver",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "author",
           isMut: false,
           isSigner: true,
         },
@@ -1700,6 +1887,36 @@ const IDL: Xnft = {
         ],
       },
     },
+    {
+      name: "review",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "author",
+            type: "publicKey",
+          },
+          {
+            name: "xnft",
+            type: "publicKey",
+          },
+          {
+            name: "rating",
+            type: "u8",
+          },
+          {
+            name: "uri",
+            type: "string",
+          },
+          {
+            name: "reserved",
+            type: {
+              array: ["u8", 32],
+            },
+          },
+        ],
+      },
+    },
   ],
   types: [
     {
@@ -1834,6 +2051,20 @@ const IDL: Xnft = {
           },
           {
             name: "Collection",
+          },
+        ],
+      },
+    },
+    {
+      name: "L1",
+      type: {
+        kind: "enum",
+        variants: [
+          {
+            name: "Solana",
+          },
+          {
+            name: "Ethereum",
           },
         ],
       },
