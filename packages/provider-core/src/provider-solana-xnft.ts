@@ -116,6 +116,20 @@ export class ProviderSolanaXnftInjection
     );
   }
 
+  async signAllTransactions(
+    txs: Array<Transaction>
+  ): Promise<Array<Transaction>> {
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    return await cmn.signAllTransactions(
+      this.publicKey,
+      this._requestManager,
+      this.connection,
+      txs
+    );
+  }
+
   async signMessage(msg: Uint8Array): Promise<Uint8Array> {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
