@@ -3,7 +3,7 @@ import TransportWebHid from "@ledgerhq/hw-transport-webhid";
 import Solana from "@ledgerhq/hw-app-solana";
 import Ethereum, { ledgerService } from "@ledgerhq/hw-app-eth";
 import { ethers } from "ethers";
-import { SignatureLike } from "@ethersproject/bytes";
+import { UnsignedTransaction } from "@ethersproject/transactions";
 import {
   accountDerivationPath,
   getLogger,
@@ -111,18 +111,16 @@ class LedgerInjection {
   }
 
   async handleEthereumSignTransaction(
-    transaction: string,
+    transaction: UnsignedTransaction,
     derivationPath: DerivationPath,
     account: number
   ) {
     await this.connectIfNeeded();
     const result = await this.ethereum!.signTransaction(
       accountDerivationPath(Blockchain.ETHEREUM, derivationPath, account),
-      transaction
+      ethers.utils.serializeTransaction(transaction).substring(2)
     );
-    // Might be a better way to do this?
-    const parsedTransaction = ethers.utils.parseTransaction(transaction);
-    return ethers.utils.serializeTransaction(parsedTransaction, {
+    return ethers.utils.serializeTransaction(transaction, {
       r: "0x" + result.r,
       s: "0x" + result.s,
       v: parseInt(result.v),
@@ -139,7 +137,11 @@ class LedgerInjection {
       accountDerivationPath(Blockchain.ETHEREUM, derivationPath, account),
       message
     );
-    return result;
+    return ethers.utils.joinSignature({
+      r: "0x" + result.r,
+      s: "0x" + result.s,
+      v: result.v,
+    });
   }
 
   async handleEthereumSignEIP712Message(
