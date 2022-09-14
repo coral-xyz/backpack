@@ -760,14 +760,14 @@ export class Backend {
 
   async lockScreenUrlRead(): Promise<string> {
     const data = await store.getWalletData();
-    return data.lockScreenUrl;
+    return data.lockScreenUrl ?? "";
   }
 
   async lockScreenUrlUpdate(url: string): Promise<string> {
     const data = await store.getWalletData();
     await store.setWalletData({
       ...data,
-      lockScreenUrl: url,
+      lockScreenUrl: url.replace("ipfs://", "https://ipfs.io/ipfs/"),
     });
     return SUCCESS_RESPONSE;
   }

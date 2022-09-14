@@ -8,3 +8,4 @@ export * from "./useLoadSplTokens";
 export * from "./usePlugins";
 export * from "./useBlockchainBalances";
 export * from "./useXnfts";
+export * from "./usePakkus";

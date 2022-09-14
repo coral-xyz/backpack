@@ -3,6 +3,7 @@ import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
+  UI_RPC_METHOD_SETTINGS_LOCK_SCREEN_URL_READ,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
   UI_RPC_METHOD_USERNAME_READ,
 } from "@coral-xyz/common";
@@ -81,5 +82,14 @@ export const username = atom<string | null>({
 
 export const lockScreenUrl = atom<string>({
   key: "lockScreenUrl",
-  default: "",
+  default: selector({
+    key: "lockScreenUrlDefault",
+    get: async ({ get }) => {
+      const background = get(backgroundClient);
+      return await background.request({
+        method: UI_RPC_METHOD_SETTINGS_LOCK_SCREEN_URL_READ,
+        params: [],
+      });
+    },
+  }),
 });
