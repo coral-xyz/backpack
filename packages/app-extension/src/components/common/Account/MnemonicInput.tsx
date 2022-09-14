@@ -40,8 +40,6 @@ const useStyles = makeStyles((theme: any) => ({
     },
     "& .MuiInputBase-input": {
       color: theme.custom.colors.fontColor,
-      position: "absolute",
-      left: "32px",
       borderRadius: "8px",
       fontSize: "14px",
       fontWeight: 700,
@@ -50,6 +48,7 @@ const useStyles = makeStyles((theme: any) => ({
     "& .MuiInputAdornment-root": {
       color: theme.custom.colors.secondary,
       fontWeight: 500,
+      minWidth: "15px",
     },
     "&:hover": {
       backgroundColor: theme.custom.colors.primary,
