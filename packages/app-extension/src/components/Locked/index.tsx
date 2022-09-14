@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
-import { useBackgroundClient, useUsername } from "@coral-xyz/recoil";
+import { useBackgroundClient, useUsername, useLockScreenUrl } from "@coral-xyz/recoil";
 import { TextField, PrimaryButton } from "../common";
 import { RedBackpack, Backpack } from "../common/Icon";
 import { LockedMenu } from "./LockedMenu";
@@ -13,6 +13,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const username = useUsername();
+  const lockScreen = useLockScreenUrl();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
@@ -44,7 +45,16 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
     >
       <Box
         sx={{
+<<<<<<< HEAD
           backgroundColor: theme.custom.colors.backdropColor,
+=======
+          ...(lockScreen === ""
+            ? { backgroundColor: theme.custom.colors.nav }
+            : {
+                backgroundImage: `url("${lockScreen}")`,
+                backgroundPosition: "center",
+              }),
+>>>>>>> f2f7d3f9 (set lock screen url as background image if not empty)
           textAlign: "center",
           display: "flex",
           flexDirection: "column",
