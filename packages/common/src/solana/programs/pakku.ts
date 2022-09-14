@@ -22,7 +22,7 @@ export async function fetchPakkus(
       {
         memcmp: {
           offset: 8 + 5,
-          bytes: m.toBase58(),
+          bytes: m.toString(),
         },
       },
     ]);

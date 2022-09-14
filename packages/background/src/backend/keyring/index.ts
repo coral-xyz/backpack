@@ -83,6 +83,7 @@ export class KeyringStore {
       autoLockSecs: store.DEFAULT_LOCK_INTERVAL_SECS,
       approvedOrigins: [],
       darkMode: DEFAULT_DARK_MODE,
+      lockScreenUrl: "",
       solana: {
         explorer: SolanaExplorer.DEFAULT,
         cluster: SolanaCluster.DEFAULT,

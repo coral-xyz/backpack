@@ -758,6 +758,20 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async lockScreenUrlRead(): Promise<string> {
+    const data = await store.getWalletData();
+    return data.lockScreenUrl;
+  }
+
+  async lockScreenUrlUpdate(url: string): Promise<string> {
+    const data = await store.getWalletData();
+    await store.setWalletData({
+      ...data,
+      lockScreenUrl: url,
+    });
+    return SUCCESS_RESPONSE;
+  }
+
   async isApprovedOrigin(origin: string): Promise<boolean> {
     const data = await store.getWalletData();
     if (!data.approvedOrigins) {

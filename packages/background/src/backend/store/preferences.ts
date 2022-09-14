@@ -11,6 +11,7 @@ export type WalletData = {
   autoLockSecs: number;
   approvedOrigins: Array<string>;
   darkMode: boolean;
+  lockScreenUrl: string;
   solana: SolanaData;
   ethereum?: EthereumData;
 };

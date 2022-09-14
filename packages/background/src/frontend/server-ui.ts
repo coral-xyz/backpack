@@ -47,6 +47,8 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
+  UI_RPC_METHOD_SETTINGS_LOCK_SCREEN_URL_READ,
+  UI_RPC_METHOD_SETTINGS_LOCK_SCREEN_URL_UPDATE,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
   UI_RPC_METHOD_APPROVED_ORIGINS_DELETE,
@@ -204,6 +206,10 @@ async function handle<T = any>(
       return await handleDarkModeRead(ctx);
     case UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE:
       return await handleDarkModeUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_SETTINGS_LOCK_SCREEN_URL_READ:
+      return await handleLockScreenUrlRead(ctx);
+    case UI_RPC_METHOD_SETTINGS_LOCK_SCREEN_URL_UPDATE:
+      return await handleLockScreenUrlUpdate(ctx, params[0]);
     case UI_RPC_METHOD_APPROVED_ORIGINS_READ:
       return await handleApprovedOriginsRead(ctx);
     case UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE:
@@ -574,6 +580,21 @@ async function handleDarkModeUpdate(
   darkMode: boolean
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.darkModeUpdate(darkMode);
+  return [resp];
+}
+
+async function handleLockScreenUrlRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.lockScreenUrlRead();
+  return [resp];
+}
+
+async function handleLockScreenUrlUpdate(
+  ctx: Context<Backend>,
+  url: string
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.lockScreenUrlUpdate(url);
   return [resp];
 }
 

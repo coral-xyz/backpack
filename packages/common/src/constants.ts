@@ -161,6 +161,10 @@ export const UI_RPC_METHOD_SETTINGS_DARK_MODE_READ =
   "ui-rpc-method-settings-dark-mode-read";
 export const UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE =
   "ui-rpc-method-settings-dark-mode-update";
+export const UI_RPC_METHOD_SETTINGS_LOCK_SCREEN_URL_READ =
+  "ui-rpc-method-settings-lock-screen-url-read";
+export const UI_RPC_METHOD_SETTINGS_LOCK_SCREEN_URL_UPDATE =
+  "ui-rpc-method-settings-lock-screen-url-update";
 export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
 export const UI_RPC_METHOD_LEDGER_IMPORT = "ui-rpc-method-ledger-import";
 export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET =
