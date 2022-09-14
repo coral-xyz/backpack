@@ -35,6 +35,8 @@ import {
 type Account = {
   publicKey: string;
   balance: BigNumber;
+  // The account index for the derivation path
+  index: number;
 };
 
 export type SelectedAccount = {
@@ -160,12 +162,13 @@ export function ImportAccounts({
           publicKeys.map((p) => new PublicKey(p))
         )
       ).map((result, index) => {
-        return result === null
-          ? { publicKey: publicKeys[index], balance: BigNumber.from(0) }
-          : {
-              publicKey: result.publicKey.toString(),
-              balance: BigNumber.from(result.account.lamports),
-            };
+        return {
+          publicKey: publicKeys[index],
+          balance: result
+            ? BigNumber.from(result.account.lamports)
+            : BigNumber.from(0),
+          index,
+        };
       });
       return accounts;
     } else if (blockchain === Blockchain.ETHEREUM) {
@@ -180,7 +183,7 @@ export function ImportAccounts({
         publicKeys.map((p) => ethereumProvider.getBalance(p))
       );
       return publicKeys.map((p, index) => {
-        return { publicKey: p, balance: balances[index] };
+        return { publicKey: p, balance: balances[index], index };
       });
     } else {
       throw new Error("invalid blockchain");
@@ -221,11 +224,6 @@ export function ImportAccounts({
       (d) => d.path == derivationPath
     )!.label;
 
-    // Add root
-    publicKeys.push(
-      (await ledger.getAddress(derivationPathValue)).address.toString()
-    );
-    //
     // Add remaining accounts
     for (let k = 0; k < LOAD_PUBKEY_AMOUNT; k += 1) {
       const completePath = `${derivationPathValue}/${k}`;
@@ -349,7 +347,7 @@ export function ImportAccounts({
             >
               {accounts
                 .slice(0, DISPLAY_PUBKEY_AMOUNT)
-                .map(({ publicKey, balance }, index) => (
+                .map(({ publicKey, balance, index }) => (
                   <ListItemButton
                     key={publicKey.toString()}
                     onClick={handleSelect(index, publicKey)}
