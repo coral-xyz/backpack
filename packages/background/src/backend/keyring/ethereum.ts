@@ -199,15 +199,22 @@ export class EthereumLedgerKeyring
   extends LedgerKeyringBase
   implements LedgerKeyring
 {
-  public async signTransaction(tx: Buffer, address: string): Promise<string> {
+  public async signTransaction(
+    serializedTx: Buffer,
+    address: string
+  ): Promise<string> {
     const path = this.derivationPaths.find((p) => p.publicKey === address);
     if (!path) {
       throw new Error("ledger address not found");
     }
-    return await this.request({
+    const tx = ethers.utils.parseTransaction(
+      ethers.utils.hexlify(serializedTx)
+    );
+    const result = await this.request({
       method: LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
       params: [tx, path.path, path.account],
     });
+    return result;
   }
 
   public async signMessage(msg: Buffer, address: string): Promise<string> {
