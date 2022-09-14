@@ -45,7 +45,7 @@ class LedgerInjection {
         return;
       }
 
-      logger.debug("ledger debug channel request", event);
+      logger.debug("ledger channel request", event);
 
       const { id, method, params } = event.data.detail;
       try {
@@ -120,7 +120,6 @@ class LedgerInjection {
       accountDerivationPath(Blockchain.ETHEREUM, derivationPath, account),
       transaction
     );
-    console.log(result);
     // Might be a better way to do this?
     const parsedTransaction = ethers.utils.parseTransaction(transaction);
     return ethers.utils.serializeTransaction(parsedTransaction, {
