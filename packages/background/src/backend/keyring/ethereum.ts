@@ -2,8 +2,8 @@ import { ethers } from "ethers";
 import type { Wallet } from "ethers";
 import { validateMnemonic, mnemonicToSeedSync } from "bip39";
 import {
-  LEDGER_METHOD_SIGN_MESSAGE,
-  LEDGER_METHOD_SIGN_TRANSACTION,
+  LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
+  LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
   DerivationPath,
 } from "@coral-xyz/common";
 import type {
@@ -205,7 +205,7 @@ export class EthereumLedgerKeyring
       throw new Error("ledger address not found");
     }
     return await this.request({
-      method: LEDGER_METHOD_SIGN_TRANSACTION,
+      method: LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
       params: [tx, path.path, path.account],
     });
   }
@@ -216,7 +216,7 @@ export class EthereumLedgerKeyring
       throw new Error("ledger address not found");
     }
     return await this.request({
-      method: LEDGER_METHOD_SIGN_MESSAGE,
+      method: LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
       params: [msg, path.path, path.account],
     });
   }

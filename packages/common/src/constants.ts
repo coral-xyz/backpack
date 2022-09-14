@@ -368,8 +368,18 @@ export const LEDGER_IFRAME_URL =
 export const LEDGER_INJECTED_CHANNEL_REQUEST = "ledger-injected-request";
 export const LEDGER_INJECTED_CHANNEL_RESPONSE = "ledger-injected-response";
 export const LEDGER_METHOD_UNLOCK = "ledger-method-unlock";
-export const LEDGER_METHOD_SIGN_TRANSACTION = "ledger-method-sign-transaction";
-export const LEDGER_METHOD_SIGN_MESSAGE = "ledger-method-sign-message";
+export const LEDGER_METHOD_SOLANA_SIGN_TRANSACTION =
+  "ledger-method-solana-sign-transaction";
+export const LEDGER_METHOD_SOLANA_SIGN_MESSAGE =
+  "ledger-method-solana-sign-message";
+export const LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION =
+  "ledger-method-ethereum-sign-transaction";
+export const LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE =
+  "ledger-method-ethereum-sign-message";
+export const LEDGER_METHOD_ETHEREUM_SIGN_EIP712_MESSAGE =
+  "ledger-method-ethereum-sign-eip712-message";
+export const LEDGER_METHOD_ETHEREUM_SIGN_EIP712_HASHED_MESSAGE =
+  "ledger-method-ethereum-sign-eip712-hashed-message";
 
 export const PLUGIN_RPC_METHOD_WINDOW_OPEN = "rpc-method-window-open";
 

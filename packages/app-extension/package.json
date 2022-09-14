@@ -6,7 +6,6 @@
   "dependencies": {
     "@coral-xyz/background": "*",
     "@coral-xyz/common": "*",
-    "@coral-xyz/ledger-core": "*",
     "@coral-xyz/react-xnft-renderer": "*",
     "@coral-xyz/recoil": "*",
     "@coral-xyz/themes": "*",
