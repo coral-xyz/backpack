@@ -14,6 +14,7 @@ import { useBackgroundClient, useAnchorContext } from "@coral-xyz/recoil";
 import {
   Blockchain,
   DerivationPath,
+  DEFAULT_SOLANA_CLUSTER,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
 } from "@coral-xyz/common";
@@ -78,8 +79,7 @@ export function ImportAccounts({
     // Default to mainnet if the keyring store is locked
     // TODO share this constant with components/Settings/ConnectionSwitch.tsx
     const mainnetRpc =
-      process.env.DEFAULT_SOLANA_CONNECTION_URL ||
-      "https://solana-api.projectserum.com";
+      process.env.DEFAULT_SOLANA_CONNECTION_URL || DEFAULT_SOLANA_CLUSTER;
     connection = new Connection(mainnetRpc, "confirmed");
   }
 

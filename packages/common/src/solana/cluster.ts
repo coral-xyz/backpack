@@ -1,9 +1,9 @@
+export const DEFAULT_SOLANA_CLUSTER =
+  "https://solana-rpc-nodes.projectserum.com";
 export const SolanaCluster = {
-  MAINNET: "https://solana-api.projectserum.com",
+  MAINNET: DEFAULT_SOLANA_CLUSTER,
   DEVNET: "https://api.devnet.solana.com",
   LOCALNET: "http://localhost:8899",
 
-  DEFAULT:
-    process.env.DEFAULT_SOLANA_CONNECTION_URL ||
-    "https://solana-api.projectserum.com",
+  DEFAULT: process.env.DEFAULT_SOLANA_CONNECTION_URL || DEFAULT_SOLANA_CLUSTER,
 };
