@@ -59,6 +59,11 @@ export function CreatePassword({ inviteCode, onNext }: Props) {
     } = await supabase.auth.signUp({
       email: `${username}@example.com`,
       password,
+      options: {
+        data: {
+          invitation_code: inviteCode,
+        },
+      },
     });
     await supabase
       .from("invitations")

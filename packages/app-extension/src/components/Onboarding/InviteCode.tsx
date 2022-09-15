@@ -26,20 +26,16 @@ export const InviteCode = ({
 
       if (!cleanCode.match(v4Regex)) throw new Error("Invalid invite code");
 
-      const { data, error } = await supabase
-        .from("invitations")
-        .select("*")
-        .limit(1)
-        .eq("id", cleanCode);
+      const { data, error } = await supabase.rpc("invitation_exists", {
+        id: cleanCode,
+      });
 
-      if (data?.[0]) {
-        if (data[0].user_id) {
-          throw new Error("Invite code has been used");
-        } else {
-          onNext(cleanCode);
-        }
+      if (error) throw new Error(error.message);
+
+      if (data) {
+        onNext(cleanCode);
       } else {
-        throw new Error(error?.message || "Invite code not found");
+        throw new Error("Invite code has been used or does not exist");
       }
     } catch (err: any) {
       setInviteCodeError(err.message);
