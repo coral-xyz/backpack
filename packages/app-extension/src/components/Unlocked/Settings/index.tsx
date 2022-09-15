@@ -64,6 +64,7 @@ import { Preferences } from "./Preferences";
 import { PreferencesSolana } from "./Preferences/Solana";
 import { PreferencesEthereum } from "./Preferences/Ethereum";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
+import { PreferencesLockScreen } from "./Preferences/LockScreen";
 import { PreferencesTrustedApps } from "./Preferences/TrustedApps";
 import { PreferencesSolanaConnection } from "./Preferences/Solana/ConnectionSwitch";
 import { PreferencesSolanaCommitment } from "./Preferences/Solana/Commitment";
@@ -195,6 +196,10 @@ function AvatarButton() {
             <NavStackScreen
               name={"preferences-trusted-apps"}
               component={(props: any) => <PreferencesTrustedApps {...props} />}
+            />
+            <NavStackScreen
+              name={"preferences-lock-screen"}
+              component={(props: any) => <PreferencesLockScreen {...props} />}
             />
             <NavStackScreen
               name={"preferences-solana"}
