@@ -1,6 +1,7 @@
 version: 2
 endpoint: http://localhost:8001
 metadata_directory: metadata
+admin_secret: myadminsecretkey
 # actions:
 #   kind: synchronous
 #   handler_webhook_baseurl: http://localhost:3000

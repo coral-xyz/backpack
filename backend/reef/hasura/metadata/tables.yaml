@@ -1,6 +1,42 @@
 - table:
+    name: active_users
+    schema: public
+  select_permissions:
+    - role: anonymous
+      permission:
+        columns:
+          - last_active_at
+          - username
+        filter: {}
+- table:
     name: invitations
     schema: public
+  object_relationships:
+    - name: claimer
+      using:
+        manual_configuration:
+          column_mapping:
+            claimer_id: id
+          insertion_order: null
+          remote_table:
+            name: users
+            schema: public
 - table:
     name: users
     schema: public
+  object_relationships:
+    - name: invitation
+      using:
+        manual_configuration:
+          column_mapping:
+            id: claimer_id
+          insertion_order: null
+          remote_table:
+            name: invitations
+            schema: public
+  select_permissions:
+    - role: anonymous
+      permission:
+        columns:
+          - username
+        filter: {}
