@@ -4,7 +4,11 @@ import type { Commitment, SendOptions } from "@solana/web3.js";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
-import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
+import {
+  DerivationPath,
+  EventEmitter,
+  externalResourceUri,
+} from "@coral-xyz/common";
 import {
   BACKPACK_FEATURE_USERNAMES,
   EthereumExplorer,
@@ -767,7 +771,7 @@ export class Backend {
     const data = await store.getWalletData();
     await store.setWalletData({
       ...data,
-      lockScreenUrl: url.replace("ipfs://", "https://ipfs.io/ipfs/"),
+      lockScreenUrl: externalResourceUri(url),
     });
     return SUCCESS_RESPONSE;
   }

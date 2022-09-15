@@ -275,16 +275,6 @@ type Xnft = {
           isSigner: false;
         },
         {
-          name: "metadataProgram";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "rent";
-          isMut: false;
-          isSigner: false;
-        },
-        {
           name: "associatedTokenProgram";
           isMut: false;
           isSigner: false;
@@ -309,12 +299,6 @@ type Xnft = {
           name: "params";
           type: {
             defined: "CreateXnftParams";
-          };
-        },
-        {
-          name: "l1";
-          type: {
-            defined: "L1";
           };
         }
       ];
@@ -364,74 +348,6 @@ type Xnft = {
     },
     {
       name: "createReview";
-      docs: [
-        'Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.'
-      ];
-      accounts: [
-        {
-          name: "review";
-          isMut: true;
-          isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: "const";
-                type: "string";
-                value: "review";
-              },
-              {
-                kind: "account";
-                type: "publicKey";
-                account: "Xnft";
-                path: "xnft";
-              },
-              {
-                kind: "account";
-                type: "publicKey";
-                path: "author";
-              }
-            ];
-          };
-        },
-        {
-          name: "install";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "masterToken";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "xnft";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "author";
-          isMut: true;
-          isSigner: true;
-        },
-        {
-          name: "systemProgram";
-          isMut: false;
-          isSigner: false;
-        }
-      ];
-      args: [
-        {
-          name: "uri";
-          type: "string";
-        },
-        {
-          name: "rating";
-          type: "u8";
-        }
-      ];
-    },
-    {
-      name: "createInstall";
       docs: [
         'Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.'
       ];
@@ -518,8 +434,63 @@ type Xnft = {
           isSigner: false;
         },
         {
-          name: "masterMetadata";
+          name: "install";
+          isMut: true;
+          isSigner: false;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                type: "string";
+                value: "install";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                path: "target";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                account: "Xnft";
+                path: "xnft";
+              }
+            ];
+          };
+        },
+        {
+          name: "authority";
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: "target";
           isMut: false;
+          isSigner: true;
+        },
+        {
+          name: "systemProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "createPermissionedInstall";
+      docs: [
+        'Creates an "installation" of a private xNFT through prior access approval',
+        "granted by the xNFT's installation authority."
+      ];
+      accounts: [
+        {
+          name: "xnft";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "installVault";
+          isMut: true;
           isSigner: false;
         },
         {
@@ -532,6 +503,31 @@ type Xnft = {
                 kind: "const";
                 type: "string";
                 value: "install";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                path: "authority";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                account: "Xnft";
+                path: "xnft";
+              }
+            ];
+          };
+        },
+        {
+          name: "access";
+          isMut: false;
+          isSigner: false;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                type: "string";
+                value: "access";
               },
               {
                 kind: "account";
@@ -562,11 +558,7 @@ type Xnft = {
     },
     {
       name: "deleteInstall";
-      docs: [
-        "Variant of `create_xnft_installation` where the install authority is",
-        "required to sign.",
-        "Closes the install account."
-      ];
+      docs: ["Closes the install account."];
       accounts: [
         {
           name: "install";
@@ -641,6 +633,111 @@ type Xnft = {
           type: "bool";
         }
       ];
+    },
+    {
+      name: "grantAccess";
+      docs: [
+        "Creates an access program account that indicates a wallet's",
+        "access permission to install a private xNFT."
+      ];
+      accounts: [
+        {
+          name: "xnft";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "wallet";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "access";
+          isMut: true;
+          isSigner: false;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                type: "string";
+                value: "access";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                path: "wallet";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                account: "Xnft";
+                path: "xnft";
+              }
+            ];
+          };
+        },
+        {
+          name: "authority";
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: "systemProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "revokeAccess";
+      docs: [
+        "Closes the access program account for a given wallet on a private xNFT,",
+        "effectively revoking their permission to create installations of the xNFT."
+      ];
+      accounts: [
+        {
+          name: "xnft";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "wallet";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "access";
+          isMut: true;
+          isSigner: false;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                type: "string";
+                value: "access";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                path: "wallet";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                account: "Xnft";
+                path: "xnft";
+              }
+            ];
+          };
+        },
+        {
+          name: "authority";
+          isMut: true;
+          isSigner: true;
+        }
+      ];
+      args: [];
     }
   ];
   accounts: [
@@ -818,6 +915,32 @@ type Xnft = {
       };
     },
     {
+      name: "access";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "wallet";
+            type: "publicKey";
+          },
+          {
+            name: "xnft";
+            type: "publicKey";
+          },
+          {
+            name: "bump";
+            type: "u8";
+          },
+          {
+            name: "reserved";
+            type: {
+              array: ["u8", 32];
+            };
+          }
+        ];
+      };
+    },
+    {
       name: "review";
       type: {
         kind: "struct";
@@ -848,7 +971,7 @@ type Xnft = {
             name: "reserved";
             docs: ["Unused reserved byte space for future additive changes."];
             type: {
-              array: ["u8", 64];
+              array: ["u8", 32];
             };
           }
         ];
@@ -878,14 +1001,32 @@ type Xnft = {
         kind: "struct";
         fields: [
           {
-            name: "symbol";
-            type: "string";
+            name: "collection";
+            type: {
+              option: "publicKey";
+            };
           },
           {
-            name: "tag";
+            name: "creators";
             type: {
-              defined: "Tag";
+              vec: {
+                defined: "CreatorsParam";
+              };
             };
+          },
+          {
+            name: "installAuthority";
+            type: {
+              option: "publicKey";
+            };
+          },
+          {
+            name: "installPrice";
+            type: "u64";
+          },
+          {
+            name: "installVault";
+            type: "publicKey";
           },
           {
             name: "kind";
@@ -900,20 +1041,8 @@ type Xnft = {
             };
           },
           {
-            name: "uri";
-            type: "string";
-          },
-          {
             name: "sellerFeeBasisPoints";
             type: "u16";
-          },
-          {
-            name: "installPrice";
-            type: "u64";
-          },
-          {
-            name: "installVault";
-            type: "publicKey";
           },
           {
             name: "supply";
@@ -922,18 +1051,18 @@ type Xnft = {
             };
           },
           {
-            name: "collection";
+            name: "symbol";
+            type: "string";
+          },
+          {
+            name: "tag";
             type: {
-              option: "publicKey";
+              defined: "Tag";
             };
           },
           {
-            name: "creators";
-            type: {
-              vec: {
-                defined: "CreatorsParam";
-              };
-            };
+            name: "uri";
+            type: "string";
           }
         ];
       };
@@ -1029,6 +1158,21 @@ type Xnft = {
   ];
   events: [
     {
+      name: "AccessGranted";
+      fields: [
+        {
+          name: "wallet";
+          type: "publicKey";
+          index: false;
+        },
+        {
+          name: "xnft";
+          type: "publicKey";
+          index: false;
+        }
+      ];
+    },
+    {
       name: "InstallationCreated";
       fields: [
         {
@@ -1093,32 +1237,42 @@ type Xnft = {
     {
       code: 6002;
       name: "InstallAuthorityMismatch";
-      msg: "The asserted authority did not match that of the Install account";
+      msg: "The provided xNFT install authority did not match";
     },
     {
       code: 6003;
+      name: "InstallOwnerMismatch";
+      msg: "The asserted authority/owner did not match that of the Install account";
+    },
+    {
+      code: 6004;
       name: "InstallExceedsSupply";
       msg: "The max supply has been reached for the xNFT.";
     },
     {
-      code: 6004;
+      code: 6005;
       name: "NameTooLong";
       msg: "The name provided for creating the xNFT exceeded the byte limit";
     },
     {
-      code: 6005;
+      code: 6006;
       name: "RatingOutOfBounds";
       msg: "The rating for a review must be between 0 and 5";
     },
     {
-      code: 6006;
+      code: 6007;
       name: "ReviewInstallMismatch";
       msg: "The installation provided for the review does not match the xNFT";
     },
     {
-      code: 6007;
+      code: 6008;
       name: "SuspendedInstallation";
       msg: "Attempting to install a currently suspended xNFT";
+    },
+    {
+      code: 6009;
+      name: "UnauthorizedInstall";
+      msg: "The access account provided is not associated with the wallet";
     }
   ];
 };
@@ -1358,12 +1512,6 @@ const IDL: Xnft = {
             defined: "UpdateParams",
           },
         },
-        {
-          name: "l1",
-          type: {
-            defined: "L1",
-          },
-        },
       ],
     },
     {
@@ -1411,74 +1559,6 @@ const IDL: Xnft = {
               },
             ],
           },
-        },
-        {
-          name: "author",
-          isMut: true,
-          isSigner: true,
-        },
-        {
-          name: "systemProgram",
-          isMut: false,
-          isSigner: false,
-        },
-      ],
-      args: [
-        {
-          name: "uri",
-          type: "string",
-        },
-        {
-          name: "rating",
-          type: "u8",
-        },
-      ],
-    },
-    {
-      name: "createReview",
-      docs: [
-        'Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.',
-      ],
-      accounts: [
-        {
-          name: "review",
-          isMut: true,
-          isSigner: false,
-          pda: {
-            seeds: [
-              {
-                kind: "const",
-                type: "string",
-                value: "review",
-              },
-              {
-                kind: "account",
-                type: "publicKey",
-                account: "Xnft",
-                path: "xnft",
-              },
-              {
-                kind: "account",
-                type: "publicKey",
-                path: "author",
-              },
-            ],
-          },
-        },
-        {
-          name: "install",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "masterToken",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "xnft",
-          isMut: true,
-          isSigner: false,
         },
         {
           name: "author",
@@ -1522,8 +1602,63 @@ const IDL: Xnft = {
           isSigner: false,
         },
         {
-          name: "masterMetadata",
+          name: "install",
+          isMut: true,
+          isSigner: false,
+          pda: {
+            seeds: [
+              {
+                kind: "const",
+                type: "string",
+                value: "install",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                path: "target",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                account: "Xnft",
+                path: "xnft",
+              },
+            ],
+          },
+        },
+        {
+          name: "authority",
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: "target",
           isMut: false,
+          isSigner: true,
+        },
+        {
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
+      name: "createPermissionedInstall",
+      docs: [
+        'Creates an "installation" of a private xNFT through prior access approval',
+        "granted by the xNFT's installation authority.",
+      ],
+      accounts: [
+        {
+          name: "xnft",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "installVault",
+          isMut: true,
           isSigner: false,
         },
         {
@@ -1536,6 +1671,31 @@ const IDL: Xnft = {
                 kind: "const",
                 type: "string",
                 value: "install",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                path: "authority",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                account: "Xnft",
+                path: "xnft",
+              },
+            ],
+          },
+        },
+        {
+          name: "access",
+          isMut: false,
+          isSigner: false,
+          pda: {
+            seeds: [
+              {
+                kind: "const",
+                type: "string",
+                value: "access",
               },
               {
                 kind: "account",
@@ -1566,11 +1726,7 @@ const IDL: Xnft = {
     },
     {
       name: "deleteInstall",
-      docs: [
-        "Variant of `create_xnft_installation` where the install authority is",
-        "required to sign.",
-        "Closes the install account.",
-      ],
+      docs: ["Closes the install account."],
       accounts: [
         {
           name: "install",
@@ -1584,35 +1740,6 @@ const IDL: Xnft = {
         },
         {
           name: "authority",
-          isMut: false,
-          isSigner: true,
-        },
-      ],
-      args: [],
-    },
-    {
-      name: "deleteReview",
-      docs: [
-        "Closes the review account and removes metrics from xNFT account.",
-      ],
-      accounts: [
-        {
-          name: "review",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "xnft",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "receiver",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "author",
           isMut: false,
           isSigner: true,
         },
@@ -1674,6 +1801,111 @@ const IDL: Xnft = {
           type: "bool",
         },
       ],
+    },
+    {
+      name: "grantAccess",
+      docs: [
+        "Creates an access program account that indicates a wallet's",
+        "access permission to install a private xNFT.",
+      ],
+      accounts: [
+        {
+          name: "xnft",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "wallet",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "access",
+          isMut: true,
+          isSigner: false,
+          pda: {
+            seeds: [
+              {
+                kind: "const",
+                type: "string",
+                value: "access",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                path: "wallet",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                account: "Xnft",
+                path: "xnft",
+              },
+            ],
+          },
+        },
+        {
+          name: "authority",
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
+      name: "revokeAccess",
+      docs: [
+        "Closes the access program account for a given wallet on a private xNFT,",
+        "effectively revoking their permission to create installations of the xNFT.",
+      ],
+      accounts: [
+        {
+          name: "xnft",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "wallet",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "access",
+          isMut: true,
+          isSigner: false,
+          pda: {
+            seeds: [
+              {
+                kind: "const",
+                type: "string",
+                value: "access",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                path: "wallet",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                account: "Xnft",
+                path: "xnft",
+              },
+            ],
+          },
+        },
+        {
+          name: "authority",
+          isMut: true,
+          isSigner: true,
+        },
+      ],
+      args: [],
     },
   ],
   accounts: [
@@ -1851,6 +2083,32 @@ const IDL: Xnft = {
       },
     },
     {
+      name: "access",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "wallet",
+            type: "publicKey",
+          },
+          {
+            name: "xnft",
+            type: "publicKey",
+          },
+          {
+            name: "bump",
+            type: "u8",
+          },
+          {
+            name: "reserved",
+            type: {
+              array: ["u8", 32],
+            },
+          },
+        ],
+      },
+    },
+    {
       name: "review",
       type: {
         kind: "struct",
@@ -1880,36 +2138,6 @@ const IDL: Xnft = {
           {
             name: "reserved",
             docs: ["Unused reserved byte space for future additive changes."],
-            type: {
-              array: ["u8", 64],
-            },
-          },
-        ],
-      },
-    },
-    {
-      name: "review",
-      type: {
-        kind: "struct",
-        fields: [
-          {
-            name: "author",
-            type: "publicKey",
-          },
-          {
-            name: "xnft",
-            type: "publicKey",
-          },
-          {
-            name: "rating",
-            type: "u8",
-          },
-          {
-            name: "uri",
-            type: "string",
-          },
-          {
-            name: "reserved",
             type: {
               array: ["u8", 32],
             },
@@ -1941,14 +2169,32 @@ const IDL: Xnft = {
         kind: "struct",
         fields: [
           {
-            name: "symbol",
-            type: "string",
+            name: "collection",
+            type: {
+              option: "publicKey",
+            },
           },
           {
-            name: "tag",
+            name: "creators",
             type: {
-              defined: "Tag",
+              vec: {
+                defined: "CreatorsParam",
+              },
             },
+          },
+          {
+            name: "installAuthority",
+            type: {
+              option: "publicKey",
+            },
+          },
+          {
+            name: "installPrice",
+            type: "u64",
+          },
+          {
+            name: "installVault",
+            type: "publicKey",
           },
           {
             name: "kind",
@@ -1963,20 +2209,8 @@ const IDL: Xnft = {
             },
           },
           {
-            name: "uri",
-            type: "string",
-          },
-          {
             name: "sellerFeeBasisPoints",
             type: "u16",
-          },
-          {
-            name: "installPrice",
-            type: "u64",
-          },
-          {
-            name: "installVault",
-            type: "publicKey",
           },
           {
             name: "supply",
@@ -1985,18 +2219,18 @@ const IDL: Xnft = {
             },
           },
           {
-            name: "collection",
+            name: "symbol",
+            type: "string",
+          },
+          {
+            name: "tag",
             type: {
-              option: "publicKey",
+              defined: "Tag",
             },
           },
           {
-            name: "creators",
-            type: {
-              vec: {
-                defined: "CreatorsParam",
-              },
-            },
+            name: "uri",
+            type: "string",
           },
         ],
       },
@@ -2070,20 +2304,6 @@ const IDL: Xnft = {
       },
     },
     {
-      name: "L1",
-      type: {
-        kind: "enum",
-        variants: [
-          {
-            name: "Solana",
-          },
-          {
-            name: "Ethereum",
-          },
-        ],
-      },
-    },
-    {
       name: "Tag",
       type: {
         kind: "enum",
@@ -2105,6 +2325,21 @@ const IDL: Xnft = {
     },
   ],
   events: [
+    {
+      name: "AccessGranted",
+      fields: [
+        {
+          name: "wallet",
+          type: "publicKey",
+          index: false,
+        },
+        {
+          name: "xnft",
+          type: "publicKey",
+          index: false,
+        },
+      ],
+    },
     {
       name: "InstallationCreated",
       fields: [
@@ -2170,32 +2405,42 @@ const IDL: Xnft = {
     {
       code: 6002,
       name: "InstallAuthorityMismatch",
-      msg: "The asserted authority did not match that of the Install account",
+      msg: "The provided xNFT install authority did not match",
     },
     {
       code: 6003,
+      name: "InstallOwnerMismatch",
+      msg: "The asserted authority/owner did not match that of the Install account",
+    },
+    {
+      code: 6004,
       name: "InstallExceedsSupply",
       msg: "The max supply has been reached for the xNFT.",
     },
     {
-      code: 6004,
+      code: 6005,
       name: "NameTooLong",
       msg: "The name provided for creating the xNFT exceeded the byte limit",
     },
     {
-      code: 6005,
+      code: 6006,
       name: "RatingOutOfBounds",
       msg: "The rating for a review must be between 0 and 5",
     },
     {
-      code: 6006,
+      code: 6007,
       name: "ReviewInstallMismatch",
       msg: "The installation provided for the review does not match the xNFT",
     },
     {
-      code: 6007,
+      code: 6008,
       name: "SuspendedInstallation",
       msg: "Attempting to install a currently suspended xNFT",
+    },
+    {
+      code: 6009,
+      name: "UnauthorizedInstall",
+      msg: "The access account provided is not associated with the wallet",
     },
   ],
 };
