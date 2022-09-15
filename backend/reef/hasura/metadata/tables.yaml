@@ -1,1 +1,6 @@
-[]
+- table:
+    name: invitations
+    schema: public
+- table:
+    name: users
+    schema: public
