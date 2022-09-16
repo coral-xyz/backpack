@@ -112,6 +112,20 @@ export function xnftClient(provider: Provider): Program<Xnft> {
 type Xnft = {
   version: "0.1.0";
   name: "xnft";
+  constants: [
+    {
+      name: "MAX_NAME_LEN";
+      type: {
+        defined: "usize";
+      };
+      value: "30";
+    },
+    {
+      name: "MAX_RATING";
+      type: "u8";
+      value: "5";
+    }
+  ];
   instructions: [
     {
       name: "createXnft";
@@ -127,11 +141,6 @@ type Xnft = {
         'Once this is invoked, an xNFT exists and can be "installed" by users.'
       ];
       accounts: [
-        {
-          name: "metadataProgram";
-          isMut: false;
-          isSigner: false;
-        },
         {
           name: "masterMint";
           isMut: true;
@@ -160,27 +169,11 @@ type Xnft = {
           name: "masterToken";
           isMut: true;
           isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: "const";
-                type: "string";
-                value: "token";
-              },
-              {
-                kind: "account";
-                type: "publicKey";
-                account: "Mint";
-                path: "master_mint";
-              }
-            ];
-          };
         },
         {
           name: "masterMetadata";
           isMut: true;
           isSigner: false;
-          docs: ["metadata program."];
           pda: {
             seeds: [
               {
@@ -211,7 +204,6 @@ type Xnft = {
           name: "masterEdition";
           isMut: true;
           isSigner: false;
-          docs: ["metadata program."];
           pda: {
             seeds: [
               {
@@ -273,17 +265,27 @@ type Xnft = {
           isSigner: true;
         },
         {
-          name: "rent";
-          isMut: false;
-          isSigner: false;
-        },
-        {
           name: "systemProgram";
           isMut: false;
           isSigner: false;
         },
         {
           name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "associatedTokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "metadataProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "rent";
           isMut: false;
           isSigner: false;
         }
@@ -330,6 +332,12 @@ type Xnft = {
           type: {
             option: "u64";
           };
+        },
+        {
+          name: "l1";
+          type: {
+            defined: "L1";
+          };
         }
       ];
     },
@@ -344,6 +352,11 @@ type Xnft = {
         {
           name: "xnft";
           isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "masterToken";
+          isMut: false;
           isSigner: false;
         },
         {
@@ -372,6 +385,74 @@ type Xnft = {
       ];
     },
     {
+      name: "createReview";
+      docs: [
+        'Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.'
+      ];
+      accounts: [
+        {
+          name: "install";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "masterToken";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "xnft";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "review";
+          isMut: true;
+          isSigner: false;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                type: "string";
+                value: "review";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                account: "Xnft";
+                path: "xnft";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                path: "author";
+              }
+            ];
+          };
+        },
+        {
+          name: "author";
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: "systemProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "uri";
+          type: "string";
+        },
+        {
+          name: "rating";
+          type: "u8";
+        }
+      ];
+    },
+    {
       name: "createInstall";
       docs: [
         'Creates an "installation" of an xNFT.',
@@ -383,6 +464,16 @@ type Xnft = {
         {
           name: "xnft";
           isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "installVault";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "masterMetadata";
+          isMut: false;
           isSigner: false;
         },
         {
@@ -409,11 +500,6 @@ type Xnft = {
               }
             ];
           };
-        },
-        {
-          name: "installVault";
-          isMut: false;
-          isSigner: false;
         },
         {
           name: "authority";
@@ -506,12 +592,46 @@ type Xnft = {
       args: [];
     },
     {
+      name: "deleteReview";
+      docs: [
+        "Closes the review account and removes metrics from xNFT account."
+      ];
+      accounts: [
+        {
+          name: "review";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "xnft";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "receiver";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "author";
+          isMut: false;
+          isSigner: true;
+        }
+      ];
+      args: [];
+    },
+    {
       name: "setSuspended";
       docs: ["Sets the install suspension flag on the xnft."];
       accounts: [
         {
           name: "xnft";
           isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "masterToken";
+          isMut: false;
           isSigner: false;
         },
         {
@@ -534,10 +654,6 @@ type Xnft = {
       type: {
         kind: "struct";
         fields: [
-          {
-            name: "authority";
-            type: "publicKey";
-          },
           {
             name: "publisher";
             type: "publicKey";
@@ -605,9 +721,23 @@ type Xnft = {
             type: "bool";
           },
           {
-            name: "reserved";
+            name: "totalRating";
+            type: "u64";
+          },
+          {
+            name: "numRatings";
+            type: "u32";
+          },
+          {
+            name: "l1";
             type: {
-              array: ["u8", 32];
+              defined: "L1";
+            };
+          },
+          {
+            name: "reserved1";
+            type: {
+              array: ["u8", 19];
             };
           }
         ];
@@ -631,13 +761,43 @@ type Xnft = {
             type: "publicKey";
           },
           {
-            name: "id";
+            name: "edition";
             type: "u64";
           },
           {
             name: "reserved";
             type: {
               array: ["u8", 64];
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "review";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "author";
+            type: "publicKey";
+          },
+          {
+            name: "xnft";
+            type: "publicKey";
+          },
+          {
+            name: "rating";
+            type: "u8";
+          },
+          {
+            name: "uri";
+            type: "string";
+          },
+          {
+            name: "reserved";
+            type: {
+              array: ["u8", 32];
             };
           }
         ];
@@ -654,6 +814,12 @@ type Xnft = {
             name: "installVault";
             type: {
               option: "publicKey";
+            };
+          },
+          {
+            name: "name";
+            type: {
+              option: "string";
             };
           },
           {
@@ -691,6 +857,20 @@ type Xnft = {
       };
     },
     {
+      name: "L1";
+      type: {
+        kind: "enum";
+        variants: [
+          {
+            name: "Solana";
+          },
+          {
+            name: "Ethereum";
+          }
+        ];
+      };
+    },
+    {
       name: "Tag";
       type: {
         kind: "enum";
@@ -711,14 +891,91 @@ type Xnft = {
       };
     }
   ];
+  events: [
+    {
+      name: "InstallationCreated";
+      fields: [
+        {
+          name: "installer";
+          type: "publicKey";
+          index: false;
+        },
+        {
+          name: "xnft";
+          type: "publicKey";
+          index: false;
+        }
+      ];
+    },
+    {
+      name: "ReviewCreated";
+      fields: [
+        {
+          name: "author";
+          type: "publicKey";
+          index: false;
+        },
+        {
+          name: "rating";
+          type: "u8";
+          index: false;
+        },
+        {
+          name: "xnft";
+          type: "publicKey";
+          index: false;
+        }
+      ];
+    },
+    {
+      name: "XnftUpdated";
+      fields: [
+        {
+          name: "metadataUri";
+          type: "string";
+          index: false;
+        },
+        {
+          name: "xnft";
+          type: "publicKey";
+          index: false;
+        }
+      ];
+    }
+  ];
   errors: [
     {
       code: 6000;
+      name: "CannotReviewOwned";
+      msg: "You cannot create a review for an xNFT that you currently own or published";
+    },
+    {
+      code: 6001;
+      name: "InstallAuthorityMismatch";
+      msg: "The asserted authority did not match that of the Install account";
+    },
+    {
+      code: 6002;
+      name: "InstallExceedsSupply";
+      msg: "The max supply has been reached for the xNFT.";
+    },
+    {
+      code: 6003;
       name: "NameTooLong";
       msg: "The name provided for creating the xNFT exceeded the byte limit";
     },
     {
-      code: 6001;
+      code: 6004;
+      name: "RatingOutOfBounds";
+      msg: "The rating for a review must be between 0 and 5";
+    },
+    {
+      code: 6005;
+      name: "ReviewInstallMismatch";
+      msg: "The installation provided for the review does not match the xNFT";
+    },
+    {
+      code: 6006;
       name: "SuspendedInstallation";
       msg: "Attempting to install a currently suspended xNFT";
     }
@@ -728,6 +985,20 @@ type Xnft = {
 const IDL: Xnft = {
   version: "0.1.0",
   name: "xnft",
+  constants: [
+    {
+      name: "MAX_NAME_LEN",
+      type: {
+        defined: "usize",
+      },
+      value: "30",
+    },
+    {
+      name: "MAX_RATING",
+      type: "u8",
+      value: "5",
+    },
+  ],
   instructions: [
     {
       name: "createXnft",
@@ -743,11 +1014,6 @@ const IDL: Xnft = {
         'Once this is invoked, an xNFT exists and can be "installed" by users.',
       ],
       accounts: [
-        {
-          name: "metadataProgram",
-          isMut: false,
-          isSigner: false,
-        },
         {
           name: "masterMint",
           isMut: true,
@@ -776,27 +1042,11 @@ const IDL: Xnft = {
           name: "masterToken",
           isMut: true,
           isSigner: false,
-          pda: {
-            seeds: [
-              {
-                kind: "const",
-                type: "string",
-                value: "token",
-              },
-              {
-                kind: "account",
-                type: "publicKey",
-                account: "Mint",
-                path: "master_mint",
-              },
-            ],
-          },
         },
         {
           name: "masterMetadata",
           isMut: true,
           isSigner: false,
-          docs: ["metadata program."],
           pda: {
             seeds: [
               {
@@ -827,7 +1077,6 @@ const IDL: Xnft = {
           name: "masterEdition",
           isMut: true,
           isSigner: false,
-          docs: ["metadata program."],
           pda: {
             seeds: [
               {
@@ -889,17 +1138,27 @@ const IDL: Xnft = {
           isSigner: true,
         },
         {
-          name: "rent",
-          isMut: false,
-          isSigner: false,
-        },
-        {
           name: "systemProgram",
           isMut: false,
           isSigner: false,
         },
         {
           name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "associatedTokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "metadataProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "rent",
           isMut: false,
           isSigner: false,
         },
@@ -947,6 +1206,12 @@ const IDL: Xnft = {
             option: "u64",
           },
         },
+        {
+          name: "l1",
+          type: {
+            defined: "L1",
+          },
+        },
       ],
     },
     {
@@ -960,6 +1225,11 @@ const IDL: Xnft = {
         {
           name: "xnft",
           isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "masterToken",
+          isMut: false,
           isSigner: false,
         },
         {
@@ -988,6 +1258,74 @@ const IDL: Xnft = {
       ],
     },
     {
+      name: "createReview",
+      docs: [
+        'Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.',
+      ],
+      accounts: [
+        {
+          name: "install",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "masterToken",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "xnft",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "review",
+          isMut: true,
+          isSigner: false,
+          pda: {
+            seeds: [
+              {
+                kind: "const",
+                type: "string",
+                value: "review",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                account: "Xnft",
+                path: "xnft",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                path: "author",
+              },
+            ],
+          },
+        },
+        {
+          name: "author",
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "uri",
+          type: "string",
+        },
+        {
+          name: "rating",
+          type: "u8",
+        },
+      ],
+    },
+    {
       name: "createInstall",
       docs: [
         'Creates an "installation" of an xNFT.',
@@ -999,6 +1337,16 @@ const IDL: Xnft = {
         {
           name: "xnft",
           isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "installVault",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "masterMetadata",
+          isMut: false,
           isSigner: false,
         },
         {
@@ -1025,11 +1373,6 @@ const IDL: Xnft = {
               },
             ],
           },
-        },
-        {
-          name: "installVault",
-          isMut: false,
-          isSigner: false,
         },
         {
           name: "authority",
@@ -1122,12 +1465,46 @@ const IDL: Xnft = {
       args: [],
     },
     {
+      name: "deleteReview",
+      docs: [
+        "Closes the review account and removes metrics from xNFT account.",
+      ],
+      accounts: [
+        {
+          name: "review",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "xnft",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "receiver",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "author",
+          isMut: false,
+          isSigner: true,
+        },
+      ],
+      args: [],
+    },
+    {
       name: "setSuspended",
       docs: ["Sets the install suspension flag on the xnft."],
       accounts: [
         {
           name: "xnft",
           isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "masterToken",
+          isMut: false,
           isSigner: false,
         },
         {
@@ -1150,10 +1527,6 @@ const IDL: Xnft = {
       type: {
         kind: "struct",
         fields: [
-          {
-            name: "authority",
-            type: "publicKey",
-          },
           {
             name: "publisher",
             type: "publicKey",
@@ -1221,9 +1594,23 @@ const IDL: Xnft = {
             type: "bool",
           },
           {
-            name: "reserved",
+            name: "totalRating",
+            type: "u64",
+          },
+          {
+            name: "numRatings",
+            type: "u32",
+          },
+          {
+            name: "l1",
             type: {
-              array: ["u8", 32],
+              defined: "L1",
+            },
+          },
+          {
+            name: "reserved1",
+            type: {
+              array: ["u8", 19],
             },
           },
         ],
@@ -1247,13 +1634,43 @@ const IDL: Xnft = {
             type: "publicKey",
           },
           {
-            name: "id",
+            name: "edition",
             type: "u64",
           },
           {
             name: "reserved",
             type: {
               array: ["u8", 64],
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: "review",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "author",
+            type: "publicKey",
+          },
+          {
+            name: "xnft",
+            type: "publicKey",
+          },
+          {
+            name: "rating",
+            type: "u8",
+          },
+          {
+            name: "uri",
+            type: "string",
+          },
+          {
+            name: "reserved",
+            type: {
+              array: ["u8", 32],
             },
           },
         ],
@@ -1270,6 +1687,12 @@ const IDL: Xnft = {
             name: "installVault",
             type: {
               option: "publicKey",
+            },
+          },
+          {
+            name: "name",
+            type: {
+              option: "string",
             },
           },
           {
@@ -1307,6 +1730,20 @@ const IDL: Xnft = {
       },
     },
     {
+      name: "L1",
+      type: {
+        kind: "enum",
+        variants: [
+          {
+            name: "Solana",
+          },
+          {
+            name: "Ethereum",
+          },
+        ],
+      },
+    },
+    {
       name: "Tag",
       type: {
         kind: "enum",
@@ -1327,14 +1764,91 @@ const IDL: Xnft = {
       },
     },
   ],
+  events: [
+    {
+      name: "InstallationCreated",
+      fields: [
+        {
+          name: "installer",
+          type: "publicKey",
+          index: false,
+        },
+        {
+          name: "xnft",
+          type: "publicKey",
+          index: false,
+        },
+      ],
+    },
+    {
+      name: "ReviewCreated",
+      fields: [
+        {
+          name: "author",
+          type: "publicKey",
+          index: false,
+        },
+        {
+          name: "rating",
+          type: "u8",
+          index: false,
+        },
+        {
+          name: "xnft",
+          type: "publicKey",
+          index: false,
+        },
+      ],
+    },
+    {
+      name: "XnftUpdated",
+      fields: [
+        {
+          name: "metadataUri",
+          type: "string",
+          index: false,
+        },
+        {
+          name: "xnft",
+          type: "publicKey",
+          index: false,
+        },
+      ],
+    },
+  ],
   errors: [
     {
       code: 6000,
+      name: "CannotReviewOwned",
+      msg: "You cannot create a review for an xNFT that you currently own or published",
+    },
+    {
+      code: 6001,
+      name: "InstallAuthorityMismatch",
+      msg: "The asserted authority did not match that of the Install account",
+    },
+    {
+      code: 6002,
+      name: "InstallExceedsSupply",
+      msg: "The max supply has been reached for the xNFT.",
+    },
+    {
+      code: 6003,
       name: "NameTooLong",
       msg: "The name provided for creating the xNFT exceeded the byte limit",
     },
     {
-      code: 6001,
+      code: 6004,
+      name: "RatingOutOfBounds",
+      msg: "The rating for a review must be between 0 and 5",
+    },
+    {
+      code: 6005,
+      name: "ReviewInstallMismatch",
+      msg: "The installation provided for the review does not match the xNFT",
+    },
+    {
+      code: 6006,
       name: "SuspendedInstallation",
       msg: "Attempting to install a currently suspended xNFT",
     },
