@@ -6,7 +6,7 @@ import { metadata } from "@project-serum/token";
 import { externalResourceUri } from "@coral-xyz/common-public";
 
 export const XNFT_PROGRAM_ID = new PublicKey(
-  "BdbULx4sJSeLJzvR6h6QxL4fUPJAJw86qmwwXt6jBfXd"
+  "3n1C6PEsiRgvgzYbqscDHw28sBNpHFs3tUz7FSuXeYZL"
 );
 
 export async function fetchXnfts(
