@@ -49,11 +49,11 @@ export class LedgerKeyringBase {
     return this.derivationPaths.map((dp) => dp.publicKey);
   }
 
-  exportSecretKey(address: string): string | null {
+  exportSecretKey(_address: string): string | null {
     throw new Error("ledger keyring cannot export secret keys");
   }
 
-  importSecretKey(secretKey: string): string {
+  importSecretKey(_secretKey: string): string {
     throw new Error("ledger keyring cannot import secret keys");
   }
 

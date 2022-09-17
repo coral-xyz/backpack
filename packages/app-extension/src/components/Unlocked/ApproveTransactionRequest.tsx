@@ -24,7 +24,6 @@ import {
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
 } from "@coral-xyz/common";
-import { Plugin } from "@coral-xyz/react-xnft-renderer";
 import { Typography } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import * as anchor from "@project-serum/anchor";

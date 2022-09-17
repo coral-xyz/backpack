@@ -13,10 +13,11 @@
   "license": "ISC",
   "dependencies": {
     "@coral-xyz/common": "*",
-    "@coral-xyz/ledger-core": "*",
+    "@ledgerhq/hw-app-eth": "^6.29.6",
+    "@ledgerhq/hw-app-solana": "^6.27.2",
     "@ledgerhq/hw-transport": "^6.24.1",
     "@ledgerhq/hw-transport-webhid": "^6.24.1",
-    "bs58": "^5.0.0"
+    "ethers": "^5.7.0"
   },
   "devDependencies": {
     "gh-pages": "^4.0.0",
