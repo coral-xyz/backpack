@@ -1,5 +1,6 @@
 use argon2::{self, Config};
 use rand::Rng;
+use reqwest::{Client, RequestBuilder};
 use serde::*;
 use worker::*;
 
@@ -31,7 +32,14 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
             let config = Config::default();
             let password_hash = argon2::hash_encoded(password.as_bytes(), &salt, &config).unwrap();
 
-            match signup(&data.username, &password_hash, &data.invite_code).await {
+            let client = Client::new()
+                .post(ctx.var("GRAPHQL_URL")?.to_string())
+                .header(
+                    "x-hasura-admin-secret",
+                    ctx.var("HASURA_SECRET")?.to_string(),
+                );
+
+            match signup(&data.username, &password_hash, &data.invite_code, client).await {
                 Some(_) => Response::ok("user created"),
                 None => Response::error("Error creating user", 400),
             }
@@ -48,7 +56,14 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
                 Err(_) => return Response::error("Bad request", 400),
             };
 
-            match get_user_by_username(&data.username).await {
+            let client = Client::new()
+                .post(ctx.var("GRAPHQL_URL")?.to_string())
+                .header(
+                    "x-hasura-admin-secret",
+                    ctx.var("HASURA_SECRET")?.to_string(),
+                );
+
+            match get_user_by_username(&data.username, client).await {
                 Some(value) => {
                     let password =
                         format!("{}:{}", data.password, ctx.var("PASSPHRASE")?.to_string());
@@ -60,11 +75,11 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
                         Ok(false) => Response::error("Invalid password", 400),
                         Err(_) => Response::error("Error verifying password", 400),
                     }
-                },
-                None => Response::error("User not found", 404)
+                }
+                None => Response::error("User not found", 404),
             }
         })
-        .post_async("/check-invite-code", |mut req, _ctx| async move {
+        .post_async("/check-invite-code", |mut req, ctx| async move {
             #[derive(Deserialize)]
             struct InviteCodePayload {
                 code: String,
@@ -74,7 +89,15 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
                 Ok(res) => res,
                 Err(_) => return Response::error("Bad request", 400),
             };
-            match check_if_invite_code_is_available(&data.code).await {
+
+            let client = Client::new()
+                .post(ctx.var("GRAPHQL_URL")?.to_string())
+                .header(
+                    "x-hasura-admin-secret",
+                    ctx.var("HASURA_SECRET")?.to_string(),
+                );
+
+            match check_if_invite_code_is_available(&data.code, client).await {
                 Some(value) => match value.data.invitations.first() {
                     Some(invitation) => match invitation.claimed_at {
                         serde_json::Value::Null => Response::ok("ok"),
@@ -106,8 +129,8 @@ async fn signup(
     username: &str,
     password_hash: &str,
     invite_code: &str,
+    client: RequestBuilder,
 ) -> Option<SignupGraphqlResponse> {
-    let client = reqwest::Client::new();
     let body = serde_json::json!({
         "query": "mutation ($password_hash: String!, $username: String!, $invitation_id: uuid!) {
             insert_auth_users_one(object: {
@@ -123,13 +146,7 @@ async fn signup(
         }
     });
 
-    let response = match client
-        .post("http://localhost:8111/v1/graphql")
-        .header("x-hasura-admin-secret", "myadminsecretkey")
-        .json(&body)
-        .send()
-        .await
-    {
+    let response = match client.json(&body).send().await {
         Ok(res) => res,
         Err(_) => return None,
     };
@@ -153,8 +170,7 @@ pub struct UsernameData {
 pub struct AuthUser {
     pub password_hash: String,
 }
-async fn get_user_by_username(username: &str) -> Option<UsernameResponse> {
-    let client = reqwest::Client::new();
+async fn get_user_by_username(username: &str, client: RequestBuilder) -> Option<UsernameResponse> {
     let body = serde_json::json!({
         "query": "query ($username: String!) {
             auth_users(limit: 1, where: {username: {_eq: $username}}) {
@@ -166,13 +182,7 @@ async fn get_user_by_username(username: &str) -> Option<UsernameResponse> {
         },
     });
 
-    let response = match client
-        .post("http://localhost:8111/v1/graphql")
-        .header("x-hasura-admin-secret", "myadminsecretkey")
-        .json(&body)
-        .send()
-        .await
-    {
+    let response = match client.json(&body).send().await {
         Ok(res) => res,
         Err(_) => return None,
     };
@@ -195,8 +205,10 @@ pub struct InviteCodeData {
 pub struct Invitation {
     pub claimed_at: serde_json::Value,
 }
-async fn check_if_invite_code_is_available(code: &str) -> Option<InviteCodeGraphqlResponse> {
-    let client = reqwest::Client::new();
+async fn check_if_invite_code_is_available(
+    code: &str,
+    client: RequestBuilder,
+) -> Option<InviteCodeGraphqlResponse> {
     let body = serde_json::json!({
         "query": "query ($id: uuid!) {
             invitations(where: {id: {_eq: $id}}, limit: 1) {
@@ -207,13 +219,7 @@ async fn check_if_invite_code_is_available(code: &str) -> Option<InviteCodeGraph
             "id": code,
         },
     });
-    let response = match client
-        .post("http://localhost:8111/v1/graphql")
-        .header("x-hasura-admin-secret", "myadminsecretkey")
-        .json(&body)
-        .send()
-        .await
-    {
+    let response = match client.json(&body).send().await {
         Ok(res) => res,
         Err(_) => return None,
     };

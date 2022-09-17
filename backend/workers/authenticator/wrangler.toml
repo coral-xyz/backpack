@@ -1,4 +1,4 @@
-name = "hashor"
+name = "authenticator"
 workers_dev = true
 
 main = "build/worker/shim.mjs"
@@ -6,6 +6,8 @@ compatibility_date = "2022-09-15"
 
 [vars]
 PASSPHRASE = "secret"
+GRAPHQL_URL = "http://localhost:8111/v1/graphql"
+HASURA_SECRET = "myadminsecretkey"
 
 [build]
 command = "cargo install -q worker-build && worker-build --release"
