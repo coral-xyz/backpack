@@ -1,7 +1,8 @@
+import { Suspense } from "react";
 import { Typography } from "@mui/material";
 import { formatUSD } from "@coral-xyz/common";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
-import { useSolanaBalance } from "@coral-xyz/recoil";
+import { useTotalBalances } from "@coral-xyz/recoil";
 
 const useStyles = styles((theme) => ({
   button: {
@@ -48,10 +49,7 @@ const useStyles = styles((theme) => ({
 }));
 
 export function BalanceSummaryWidget() {
-  const theme = useCustomTheme();
   const classes = useStyles();
-  const { totalBalance, totalChange, percentChange } = useSolanaBalance();
-
   return (
     <div style={{ display: "flex" }}>
       <div
@@ -63,53 +61,66 @@ export function BalanceSummaryWidget() {
           borderRadius: "12px",
         }}
       >
+        <Suspense fallback={<></>}>
+          <BalanceSummaryText />
+        </Suspense>
+      </div>
+    </div>
+  );
+}
+
+export function BalanceSummaryText() {
+  const theme = useCustomTheme();
+  const classes = useStyles();
+  const { totalBalance, totalChange, percentChange } = useTotalBalances();
+  return (
+    <>
+      <Typography
+        className={classes.totalBalance}
+        style={{
+          color: theme.custom.colors.fontColor,
+        }}
+      >
+        {formatUSD(totalBalance)}
+      </Typography>
+      <div
+        style={{
+          display: "flex",
+          marginTop: "6px",
+        }}
+      >
         <Typography
-          className={classes.totalBalance}
           style={{
             color: theme.custom.colors.fontColor,
+            paddingLeft: "0px",
+            paddingRight: "0px",
+            paddingTop: "2px",
+            paddingBottom: "2px",
+            marginRight: "10px",
+            lineHeight: "24px",
           }}
         >
-          {formatUSD(totalBalance)}
+          {totalChange > 0 ? "+" : ""}
+          {formatUSD(totalChange)}
         </Typography>
-        <div
-          style={{
-            display: "flex",
-            marginTop: "6px",
-          }}
-        >
+        {Number.isFinite(percentChange) && (
           <Typography
             style={{
               color: theme.custom.colors.fontColor,
-              paddingLeft: "0px",
-              paddingRight: "0px",
+              paddingLeft: "8px",
+              paddingRight: "8px",
               paddingTop: "2px",
               paddingBottom: "2px",
-              marginRight: "10px",
+              background: "rgba(255, 255, 255, 0.2)",
+              borderRadius: "28px",
               lineHeight: "24px",
             }}
           >
             {totalChange > 0 ? "+" : ""}
-            {formatUSD(totalChange)}
+            {`${percentChange.toFixed(2)}%`}
           </Typography>
-          {Number.isFinite(percentChange) && (
-            <Typography
-              style={{
-                color: theme.custom.colors.fontColor,
-                paddingLeft: "8px",
-                paddingRight: "8px",
-                paddingTop: "2px",
-                paddingBottom: "2px",
-                background: "rgba(255, 255, 255, 0.2)",
-                borderRadius: "28px",
-                lineHeight: "24px",
-              }}
-            >
-              {totalChange > 0 ? "+" : ""}
-              {`${percentChange.toFixed(2)}%`}
-            </Typography>
-          )}
-        </div>
+        )}
       </div>
-    </div>
+    </>
   );
 }

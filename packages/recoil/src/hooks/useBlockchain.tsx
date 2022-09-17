@@ -1,4 +1,4 @@
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
 import * as atoms from "../atoms";
 
@@ -41,6 +41,10 @@ export function useBlockchainTokens(blockchain: Blockchain) {
 
 export function useBlockchainTokensSorted(blockchain: Blockchain) {
   return useRecoilValue(atoms.blockchainBalancesSorted(blockchain));
+}
+
+export function useBlockchainTokensSortedLoadable(blockchain: Blockchain) {
+  return useRecoilValueLoadable(atoms.blockchainBalancesSorted(blockchain));
 }
 
 export function useBlockchainTokenAccount(

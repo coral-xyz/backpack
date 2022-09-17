@@ -29,9 +29,7 @@ export function Balances() {
 
   return (
     <div>
-      <Suspense fallback={<></>}>
-        <BalanceSummaryWidget />
-      </Suspense>
+      <BalanceSummaryWidget />
       <div
         style={{
           marginTop: "20px",

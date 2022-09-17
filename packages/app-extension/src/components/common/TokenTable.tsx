@@ -124,7 +124,7 @@ export function SearchableTokenTable({
           },
         }}
       />
-      <TokenTable
+      <TokenTableLoader
         blockchain={blockchain}
         onClickRow={onClickRow}
         searchFilter={searchFilter}
@@ -156,9 +156,8 @@ export function TokenTables({
   return (
     <>
       {filteredBlockchains.map((blockchain) => (
-        <Suspense fallback={<></>}>
-          <TokenTable
-            key={blockchain}
+        <Suspense key={blockchain} fallback={<></>}>
+          <TokenTableLoader
             blockchain={blockchain}
             onClickRow={onClickRow}
             searchFilter={searchFilter}
@@ -170,14 +169,39 @@ export function TokenTables({
   );
 }
 
+export function TokenTableLoader(props: {
+  blockchain: Blockchain;
+  onClickRow: (blockchain: Blockchain, token: Token) => void;
+  searchFilter?: string;
+  customFilter?: (token: Token) => boolean;
+}) {
+  const [tokenAccounts, setTokenAccounts] = useState<
+    ReturnType<typeof useBlockchainTokensSorted>
+  >([]);
+
+  const tokenAccountsSorted = useBlockchainTokensSortedLoadable(
+    props.blockchain
+  );
+
+  useEffect(() => {
+    if (tokenAccountsSorted.state === "hasValue") {
+      setTokenAccounts(tokenAccountsSorted.contents);
+    }
+  }, [tokenAccountsSorted]);
+
+  return <TokenTable {...props} tokenAccounts={tokenAccounts} />;
+}
+
 export function TokenTable({
   blockchain,
   onClickRow,
+  tokenAccounts,
   searchFilter = "",
   customFilter = () => true,
 }: {
   blockchain: Blockchain;
   onClickRow: (blockchain: Blockchain, token: Token) => void;
+  tokenAccounts: ReturnType<typeof useBlockchainTokensSorted>;
   searchFilter?: string;
   customFilter?: (token: Token) => boolean;
 }) {
@@ -185,11 +209,11 @@ export function TokenTable({
   const connectionUrl = useSolanaConnectionUrl();
   const title = toTitleCase(blockchain);
   const blockchainLogo = useBlockchainLogo(blockchain);
-  const tokenAccountsSorted = useBlockchainTokensSortedLoadable(blockchain);
   const [search, setSearch] = useState(searchFilter);
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const activeWallets = useActiveWallets();
   const wallet = activeWallets.filter((w) => w.blockchain === blockchain)[0];
+  const tokenAccountsSorted = tokenAccounts;
 
   const searchLower = search.toLowerCase();
   // TODO: support more than 100 tokens.
