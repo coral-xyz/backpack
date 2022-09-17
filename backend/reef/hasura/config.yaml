@@ -1,0 +1,4 @@
+version: 2
+endpoint: http://localhost:8111
+metadata_directory: metadata
+admin_secret: myadminsecretkey
