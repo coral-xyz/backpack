@@ -2,7 +2,6 @@ import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 import type { Notification, EventEmitter } from "@coral-xyz/common";
 import {
-  ethereumBalances,
   getLogger,
   Blockchain,
   BACKEND_EVENT,
@@ -13,7 +12,6 @@ import {
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
 } from "@coral-xyz/common";
-import type { CachedValue } from "../types";
 
 const logger = getLogger("ethereum-connection-backend");
 
@@ -26,7 +24,6 @@ export function start(events: EventEmitter): EthereumConnectionBackend {
 }
 
 export class EthereumConnectionBackend {
-  private cache = new Map<string, CachedValue<any>>();
   private url?: string;
   private pollIntervals: Array<any>;
   private events: EventEmitter;
@@ -98,11 +95,9 @@ export class EthereumConnectionBackend {
     };
 
     const handleConnectionUrlUpdated = (notif: Notification) => {
-      const { activeWallet, url } = notif.data;
+      const { url } = notif.data;
       this.provider = new ethers.providers.JsonRpcProvider(url);
       this.url = url;
-      this.stopPolling();
-      this.startPolling(activeWallet);
     };
   }
 
@@ -113,22 +108,11 @@ export class EthereumConnectionBackend {
   private async startPolling(activeWallet: string) {
     this.pollIntervals.push(
       setInterval(async () => {
-        const data = await ethereumBalances(this.provider!, activeWallet);
-        const key = JSON.stringify({
-          url: this.url,
-          method: "ethereumTokens",
-          args: [activeWallet],
-        });
-        this.cache.set(key, {
-          ts: Date.now(),
-          value: data,
-        });
         this.events.emit(BACKEND_EVENT, {
           name: NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
           data: {
-            connectionUrl: this.url,
             activeWallet,
-            balances: Object.fromEntries(data),
+            value: Date.now(),
           },
         });
       }, ETHEREUM_TOKENS_REFRESH_INTERVAL)

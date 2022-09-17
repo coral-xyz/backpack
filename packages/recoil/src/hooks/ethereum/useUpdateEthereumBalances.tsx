@@ -2,23 +2,6 @@ import { useRecoilCallback } from "recoil";
 import * as atoms from "../../atoms";
 
 export const useUpdateEthereumBalances = () =>
-  useRecoilCallback(
-    ({ set }: any) =>
-      async ({
-        connectionUrl,
-        publicKey,
-        balances,
-      }: {
-        connectionUrl: string;
-        publicKey: string;
-        balances: any;
-      }) => {
-        set(
-          atoms.ethereumTokenBalances({
-            connectionUrl,
-            publicKey,
-          }),
-          new Map(Object.entries(balances))
-        );
-      }
-  );
+  useRecoilCallback(({ set }: any) => async ({ value }: { value: any }) => {
+    set(atoms.ethereumBalancePoll, value);
+  });

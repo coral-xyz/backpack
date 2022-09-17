@@ -2,7 +2,6 @@ import { selector, selectorFamily } from "recoil";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { Blockchain, SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
 import { splTokenRegistry } from "./token-registry";
-import { bootstrap } from "../bootstrap";
 import { SOL_LOGO_URI } from "./token-registry";
 import { blockchainBalancesSorted } from "../balance";
 
@@ -10,9 +9,10 @@ export const JUPITER_BASE_URL = "https://quote-api.jup.ag/v1/";
 
 export const jupiterRouteMap = selector({
   key: "jupiterRouteMap",
-  get: async ({ get }) => {
-    const b = get(bootstrap);
-    return b.jupiterRouteMap;
+  get: async () => {
+    return fetchJupiterRouteMap().catch((e) =>
+      console.log("failed to load Jupiter route map", e)
+    );
   },
 });
 

@@ -1,24 +1,154 @@
-import { atomFamily, selectorFamily } from "recoil";
+import { atom, atomFamily, selectorFamily } from "recoil";
 import { ethers, BigNumber } from "ethers";
 import { TokenInfo } from "@solana/spl-token-registry";
-import { bootstrap } from "../bootstrap";
+import { UniswapTokenList, ETH_NATIVE_MINT } from "@coral-xyz/common";
+import type {
+  ContractCallResults,
+  ContractCallContext,
+} from "ethereum-multicall";
+import { Multicall } from "ethereum-multicall";
 import { TokenData } from "../../types";
 import { priceData } from "../prices";
-import { ethereumTokenMetadata } from "./token-metadata";
-import { ethereumConnectionUrl } from "./preferences";
 import { ethereumPublicKey } from "../wallet";
+import { ethersContext } from "./provider";
+import { ethereumTokenMetadata } from "./token-metadata";
+
+// Atom family to trigger Ethereum balance updates
+export const ethereumBalancePoll = atom({
+  key: "ethereumBalancePoll",
+  default: 0,
+});
+
+// Map of ETH native balance and all ERC20 balances
+// We use a dummy address for the ETH balance (zero address) so it can be
+// treated like an ERC20 in state.
+export const ethereumBalances = atomFamily<Map<string, BigNumber>, string>({
+  key: "ethereumBalances",
+  default: selectorFamily({
+    key: "ethereumBalancesDefault",
+    get:
+      (publicKey: string) =>
+      ({ get }: any) => {
+        const balanceMap = get(erc20Balances(publicKey));
+        balanceMap.set(ETH_NATIVE_MINT, get(ethBalance(publicKey)));
+        return balanceMap;
+      },
+  }),
+});
+
+// Native ETH balance
+export const ethBalance = atomFamily<BigNumber, string>({
+  key: "ethereumBalance",
+  default: selectorFamily({
+    key: "ethereumBalanceDefault",
+    get:
+      (publicKey: string) =>
+      ({ get }: any) => {
+        const provider = get(ethersContext).provider;
+        return provider.getBalance(publicKey);
+      },
+  }),
+});
+
+// ERC20 Token Balances
+export const erc20Balances = atomFamily<Map<string, BigNumber>, string>({
+  key: "ethereumTokenBalances",
+  default: selectorFamily({
+    key: "ethereumTokenBalancesDefault",
+    get:
+      (publicKey: string) =>
+      async ({ get }: any) => {
+        get(ethereumBalancePoll);
+
+        //
+        // Use a multicall contract to load Ethereum balances.
+        // There might be other more performant options if this needs improving:
+        //
+        // - GraphQL API on Ethereum node
+        // - Alchemy extended API methods
+        // - Other APIs (e.g. Etherscan)
+        // - Custom infrastructure
+        //
+
+        const contractAddresses = UniswapTokenList.tokens.map(
+          (token) => token.address
+        );
+        const provider = get(ethersContext).provider;
+        const multicall = new Multicall({
+          ethersProvider: provider,
+          tryAggregate: true,
+        });
+
+        // Only balanceOf ERC20 ABI
+        const abi = [
+          {
+            constant: true,
+            inputs: [
+              {
+                name: "_owner",
+                type: "address",
+              },
+            ],
+            name: "balanceOf",
+            outputs: [
+              {
+                name: "balance",
+                type: "uint256",
+              },
+            ],
+            payable: false,
+            type: "function",
+          },
+        ];
+
+        const contractCallContext = contractAddresses
+          .filter((c) => c !== ETH_NATIVE_MINT)
+          .map((contractAddress) => {
+            return {
+              reference: contractAddress,
+              contractAddress: contractAddress,
+              abi: abi,
+              calls: [
+                {
+                  reference: "balanceOf",
+                  methodName: "balanceOf",
+                  methodParameters: [publicKey],
+                },
+              ],
+            } as ContractCallContext;
+          });
+
+        const contractCall: ContractCallResults = await multicall.call(
+          contractCallContext
+        );
+
+        return new Map(
+          Object.entries(contractCall.results)
+            .filter(([_, { callsReturnContext }]) => {
+              return (
+                callsReturnContext[0].returnValues[0] &&
+                !BigNumber.from(callsReturnContext[0].returnValues[0]).isZero()
+              );
+            })
+            .map(([contractAddress, { callsReturnContext }]) => {
+              return [
+                contractAddress,
+                callsReturnContext[0].returnValues[0] as BigNumber,
+              ];
+            })
+        );
+      },
+  }),
+});
 
 export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
   key: "ethereumTokenBalance",
   get:
     (contractAddress: string) =>
     ({ get }) => {
-      const ethTokenMetadata = get(ethereumTokenMetadata);
+      const ethTokenMetadata = get(ethereumTokenMetadata)();
       const ethTokenBalances: Map<String, BigNumber> = get(
-        ethereumTokenBalances({
-          connectionUrl: get(ethereumConnectionUrl)!,
-          publicKey: get(ethereumPublicKey)!,
-        })
+        ethereumBalances(get(ethereumPublicKey)!)
       );
 
       const tokenMetadata =
@@ -55,26 +185,4 @@ export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
         recentUsdBalanceChange,
       } as TokenData;
     },
-});
-
-export const ethereumTokenBalances = atomFamily<
-  Map<string, BigNumber>,
-  { connectionUrl: string; publicKey: string }
->({
-  key: "ethereumTokenBalances",
-  default: selectorFamily({
-    key: "ethereumTokenBalancesDefault",
-    get:
-      ({
-        connectionUrl,
-        publicKey,
-      }: {
-        connectionUrl: string;
-        publicKey: string;
-      }) =>
-      async ({ get }) => {
-        const data = get(bootstrap);
-        return data.ethTokenBalances;
-      },
-  }),
 });

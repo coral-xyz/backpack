@@ -181,27 +181,11 @@ export class SolanaConnectionBackend {
   private async startPolling(activeWallet: PublicKey) {
     this.pollIntervals.push(
       setInterval(async () => {
-        const data = await customSplTokenAccounts(
-          this.connection!,
-          activeWallet
-        );
-        const key = JSON.stringify({
-          url: this.url,
-          method: "customSplTokenAccounts",
-          args: [activeWallet.toString()],
-        });
-        this.cache.set(key, {
-          ts: Date.now(),
-          value: data,
-        });
         this.events.emit(BACKEND_EVENT, {
           name: NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
           data: {
-            connectionUrl: this.url,
             publicKey: activeWallet.toString(),
-            customSplTokenAccounts: {
-              ...data,
-            },
+            value: Date.now(),
           },
         });
       }, LOAD_SPL_TOKENS_REFRESH_INTERVAL)

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { FixedSizeList as WindowedList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button as MuiButton } from "@mui/material";
@@ -21,6 +21,7 @@ import {
   useActiveWallets,
   useBlockchainLogo,
   useBlockchainTokensSorted,
+  useBlockchainTokensSortedLoadable,
   useSolanaConnectionUrl,
 } from "@coral-xyz/recoil";
 import { WithCopyTooltip } from "./WithCopyTooltip";
@@ -101,7 +102,6 @@ export function SearchableTokenTables({
 export function SearchableTokenTable({
   blockchain,
   onClickRow,
-  tokenAccounts,
   customFilter = () => true,
 }: {
   blockchain: Blockchain;
@@ -127,7 +127,6 @@ export function SearchableTokenTable({
       <TokenTable
         blockchain={blockchain}
         onClickRow={onClickRow}
-        tokenAccounts={tokenAccounts}
         searchFilter={searchFilter}
         customFilter={customFilter}
       />
@@ -157,13 +156,15 @@ export function TokenTables({
   return (
     <>
       {filteredBlockchains.map((blockchain) => (
-        <TokenTable
-          key={blockchain}
-          blockchain={blockchain}
-          onClickRow={onClickRow}
-          searchFilter={searchFilter}
-          customFilter={customFilter}
-        />
+        <Suspense fallback={<></>}>
+          <TokenTable
+            key={blockchain}
+            blockchain={blockchain}
+            onClickRow={onClickRow}
+            searchFilter={searchFilter}
+            customFilter={customFilter}
+          />
+        </Suspense>
       ))}
     </>
   );
@@ -172,13 +173,11 @@ export function TokenTables({
 export function TokenTable({
   blockchain,
   onClickRow,
-  tokenAccounts,
   searchFilter = "",
   customFilter = () => true,
 }: {
   blockchain: Blockchain;
   onClickRow: (blockchain: Blockchain, token: Token) => void;
-  tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   searchFilter?: string;
   customFilter?: (token: Token) => boolean;
 }) {
@@ -186,9 +185,7 @@ export function TokenTable({
   const connectionUrl = useSolanaConnectionUrl();
   const title = toTitleCase(blockchain);
   const blockchainLogo = useBlockchainLogo(blockchain);
-  const tokenAccountsSorted = tokenAccounts
-    ? tokenAccounts
-    : useBlockchainTokensSorted(blockchain);
+  const tokenAccountsSorted = useBlockchainTokensSortedLoadable(blockchain);
   const [search, setSearch] = useState(searchFilter);
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const activeWallets = useActiveWallets();

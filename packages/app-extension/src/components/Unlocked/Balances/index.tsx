@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import {
   toTitleCase,
   Blockchain,
@@ -28,7 +29,9 @@ export function Balances() {
 
   return (
     <div>
-      <BalanceSummaryWidget />
+      <Suspense fallback={<></>}>
+        <BalanceSummaryWidget />
+      </Suspense>
       <div
         style={{
           marginTop: "20px",

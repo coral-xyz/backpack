@@ -1,10 +1,8 @@
 import { selectorFamily } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
 import { solanaTokenBalance, solanaTokenAccountKeys } from "./solana/token";
-import { solanaConnectionUrl } from "./solana";
 import { ethereumTokenBalance } from "./ethereum/token";
 import { ethereumTokenMetadata } from "./ethereum/token-metadata";
-import { activeWallet } from "./wallet";
 import { TokenData } from "../types";
 
 /**
@@ -66,14 +64,9 @@ export const blockchainTokenAddresses = selectorFamily({
     ({ get }) => {
       switch (blockchain) {
         case Blockchain.SOLANA:
-          return get(
-            solanaTokenAccountKeys({
-              connectionUrl: get(solanaConnectionUrl)!,
-              publicKey: get(activeWallet),
-            })
-          );
+          return get(solanaTokenAccountKeys);
         case Blockchain.ETHEREUM:
-          const ethTokenMetadata = get(ethereumTokenMetadata);
+          const ethTokenMetadata = get(ethereumTokenMetadata)();
           return ethTokenMetadata
             ? [...ethTokenMetadata.values()].map((t) => t.address)
             : [];

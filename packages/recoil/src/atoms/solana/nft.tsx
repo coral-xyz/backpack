@@ -5,8 +5,8 @@ import {
   NftCollection,
   SolanaNft,
 } from "@coral-xyz/common";
-import { bootstrap } from "../bootstrap";
 import { activeSolanaWallet } from "../wallet";
+import { customSplTokenAccounts } from "./token";
 
 export const solanaNftCollections = selector<NftCollection[]>({
   key: "solanaNftCollections",
@@ -92,8 +92,8 @@ export const solanaNftMetadata = atomFamily<Map<string, any>, string>({
     get:
       (walletPubkey: string) =>
       ({ get }: any) => {
-        const b = get(bootstrap);
-        return new Map(b.splNftMetadata);
+        const { splNftMetadata } = get(customSplTokenAccounts);
+        return new Map(splNftMetadata);
       },
   }),
 });

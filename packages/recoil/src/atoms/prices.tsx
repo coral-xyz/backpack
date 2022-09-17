@@ -3,7 +3,6 @@ import { ethers } from "ethers";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { ETH_NATIVE_MINT } from "@coral-xyz/common";
 import { SolanaTokenAccountWithKey, TokenDisplay } from "../types";
-import { bootstrap } from "./bootstrap";
 
 const baseCoingeckoParams = {
   vs_currencies: "usd",
@@ -20,8 +19,7 @@ export const priceData = atomFamily<TokenDisplay | null, string>({
     get:
       (address: string) =>
       ({ get }: any) => {
-        const data = get(bootstrap);
-        return data.coingeckoData.get(address);
+        return null;
       },
   }),
 });
