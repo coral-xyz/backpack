@@ -52,6 +52,7 @@ export class KeyringStore {
   public async init(
     mnemonic: string,
     derivationPath: DerivationPath,
+    username: string,
     password: string,
     accountIndices: Array<number>
   ) {
@@ -78,6 +79,7 @@ export class KeyringStore {
 
     // Persist the initial wallet ui metadata.
     await store.setWalletData({
+      username,
       autoLockSecs: store.DEFAULT_LOCK_INTERVAL_SECS,
       approvedOrigins: [],
       darkMode: true,

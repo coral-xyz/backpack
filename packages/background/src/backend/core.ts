@@ -333,12 +333,14 @@ export class Backend {
   async keyringStoreCreate(
     mnemonic: string,
     derivationPath: DerivationPath,
+    username: string,
     password: string,
     accountIndices: Array<number>
   ): Promise<string> {
     await this.keyringStore.init(
       mnemonic,
       derivationPath,
+      username,
       password,
       accountIndices
     );
@@ -363,6 +365,8 @@ export class Backend {
 
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
+
+    // TODO: signin()
 
     const blockchainActiveWallets = await this.blockchainActiveWallets();
 
@@ -601,6 +605,11 @@ export class Backend {
   keyringResetMnemonic(password: string): string {
     this.keyringStore.resetMnemonic(password);
     return SUCCESS_RESPONSE;
+  }
+
+  async usernameRead(): Promise<string> {
+    const { username } = await store.getWalletData();
+    return username;
   }
 
   async keyringAutolockRead(): Promise<number> {

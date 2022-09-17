@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useBackgroundClient, useUsername } from "@coral-xyz/recoil";
 import { TextField, PrimaryButton } from "../common";
-import { Backpack } from "../common/Icon";
 import { LockedMenu } from "./LockedMenu";
+import { BackpackHeader } from "../common/BackpackHeader";
 
 export const NAV_BAR_HEIGHT = 56;
 
@@ -13,12 +13,15 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
 
+  const username = useUsername();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState<boolean>(false);
 
   const _onUnlock = async (e: any) => {
     e.preventDefault();
+
     try {
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
@@ -58,6 +61,13 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         </Box>
         <Box sx={{ marginBottom: "84px" }}>
           <form onSubmit={_onUnlock} noValidate>
+            <Box
+              sx={{ margin: "0 12px 12px 12px" }}
+              fontStyle={{ color: "white" }}
+            >
+              gm @{username}
+            </Box>
+
             <Box sx={{ margin: "0 12px 12px 12px" }}>
               <TextField
                 autoFocus={true}
@@ -96,79 +106,6 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
           </Box>
         </Box>
       </Box>
-    </Box>
-  );
-}
-
-export function BackpackHeader({
-  alphaStyle,
-}: {
-  alphaStyle?: React.CSSProperties;
-}) {
-  const theme = useCustomTheme();
-  return (
-    <Box
-      sx={{
-        marginTop: "40px",
-        marginLeft: "auto",
-        marginRight: "auto",
-        display: "block",
-        position: "relative",
-      }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row-reverse",
-          marginBottom: "4px",
-          marginRight: "58px",
-          ...alphaStyle,
-        }}
-      >
-        <AlphaLabel />
-      </Box>
-      <Backpack fill={theme.custom.colors.fontColor} />
-      <Typography
-        sx={{
-          textAlign: "center",
-          lineHeight: "24px",
-          fontSize: "16px",
-          fontWeight: "500",
-          color: theme.custom.colors.secondary,
-          marginTop: "8px",
-        }}
-      >
-        A home for your xNFTs
-      </Typography>
-    </Box>
-  );
-}
-
-function AlphaLabel() {
-  const theme = useCustomTheme();
-  return (
-    <Box
-      sx={{
-        borderRadius: "10px",
-        border: `solid 1pt ${theme.custom.colors.alpha}`,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        height: "20px",
-        width: "53px",
-      }}
-    >
-      <Typography
-        sx={{
-          color: theme.custom.colors.alpha,
-          fontSize: "12px",
-          lineHeight: "16px",
-          textAlign: "center",
-          fontWeight: 500,
-        }}
-      >
-        Alpha
-      </Typography>
     </Box>
   );
 }

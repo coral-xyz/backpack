@@ -1,9 +1,10 @@
 import { useEffect, useState, Suspense } from "react";
 import * as bs58 from "bs58";
 import { ethers } from "ethers";
-import { Button, Box, Typography, IconButton } from "@mui/material";
-import { ExpandMore, ExpandLess } from "@mui/icons-material";
+import { Box, Typography, IconButton } from "@mui/material";
 import {
+  ExpandMore,
+  ExpandLess,
   Add,
   Lock,
   Help,
@@ -19,13 +20,12 @@ import {
   useActiveWallet,
   useActiveWallets,
   useBlockchainLogo,
+  useUsername,
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
-  toTitleCase,
   Blockchain,
   BACKPACK_FEATURE_POP_MODE,
-  BACKPACK_FEATURE_MULTICHAIN,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
@@ -679,6 +679,7 @@ function SettingsList({ close }: { close: () => void }) {
   const theme = useCustomTheme();
   const nav = useNavStack();
   const background = useBackgroundClient();
+  const username = useUsername();
 
   const lockWallet = () => {
     background
@@ -691,7 +692,7 @@ function SettingsList({ close }: { close: () => void }) {
 
   const settingsMenu = [
     {
-      label: "Your Account",
+      label: `Your Account (${username})`,
       onClick: () => nav.push("your-account"),
       icon: (props: any) => <AccountCircleOutlined {...props} />,
       detailIcon: <PushDetail />,

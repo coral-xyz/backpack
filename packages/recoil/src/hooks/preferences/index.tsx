@@ -26,6 +26,10 @@ export function useAutolockSecs(): number {
   return useRecoilValue(atoms.autoLockSecs)!;
 }
 
+export function useUsername() {
+  return useRecoilValue(atoms.username);
+}
+
 export function useDarkMode(): boolean {
   return useRecoilValue(atoms.isDarkMode)!;
 }

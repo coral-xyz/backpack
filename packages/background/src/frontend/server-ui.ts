@@ -9,8 +9,8 @@ import type {
   EventEmitter,
   Blockchain,
 } from "@coral-xyz/common";
-import type { Commitment } from "@solana/web3.js";
 import {
+  UI_RPC_METHOD_USERNAME_READ,
   getLogger,
   withContextPort,
   ChannelAppUi,
@@ -76,6 +76,7 @@ import {
   CHANNEL_POPUP_RPC,
   CHANNEL_POPUP_NOTIFICATIONS,
 } from "@coral-xyz/common";
+import type { Commitment } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import type { Backend } from "../backend/core";
 import type { Config, Handle } from "../types";
@@ -121,7 +122,8 @@ async function handle<T = any>(
         params[0],
         params[1],
         params[2],
-        params[3]
+        params[3],
+        params[4]
       );
     case UI_RPC_METHOD_KEYRING_STORE_UNLOCK:
       return await handleKeyringStoreUnlock(ctx, params[0]);
@@ -152,6 +154,8 @@ async function handle<T = any>(
       return handleKeyringExportMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_RESET_MNEMONIC:
       return handleKeyringResetMnemonic(ctx, params[0]);
+    case UI_RPC_METHOD_USERNAME_READ:
+      return await handleUsernameRead(ctx);
     case UI_RPC_METHOD_KEYRING_AUTOLOCK_READ:
       return await handleKeyringAutolockRead(ctx);
     case UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE:
@@ -294,12 +298,14 @@ async function handleKeyringStoreCreate(
   ctx: Context<Backend>,
   mnemonic: string,
   derivationPath: DerivationPath,
+  username: string,
   password: string,
   accountIndices = [0]
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.keyringStoreCreate(
     mnemonic,
     derivationPath,
+    username,
     password,
     accountIndices
   );
@@ -475,6 +481,13 @@ function handleKeyringResetMnemonic(
   password: string
 ): RpcResponse<string> {
   const resp = ctx.backend.keyringResetMnemonic(password);
+  return [resp];
+}
+
+async function handleUsernameRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<number>> {
+  const resp = await ctx.backend.usernameRead();
   return [resp];
 }
 

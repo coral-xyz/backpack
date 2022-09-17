@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
-import { Box, Typography } from "@mui/material";
+import { Box, InputAdornment, Typography } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import {
   Header,
@@ -9,6 +9,8 @@ import {
   TextField,
   CheckboxForm,
 } from "../../common";
+import { auth } from "@coral-xyz/background";
+import { AlternateEmailSharp } from "@mui/icons-material";
 
 const useStyles = makeStyles(() => ({
   passwordFieldRoot: {
@@ -23,14 +25,17 @@ enum PasswordError {
   NO_MATCH,
 }
 
-export function CreatePassword({
-  onNext,
-}: {
-  onNext: (password: string) => void;
-}) {
+type Props = {
+  inviteCode: string;
+  onNext: (username: string, password: string) => void;
+};
+
+export function CreatePassword({ inviteCode, onNext }: Props) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const [checked, setChecked] = useState(false);
+  const [username, setUsername] = useState("");
+  const [usernameError, setUsernameError] = useState("");
   const [password, setPassword] = useState("");
   const [passwordDup, setPasswordDup] = useState("");
   const [error, setError] = useState<PasswordError | null>(null);
@@ -40,14 +45,21 @@ export function CreatePassword({
   }, [password, passwordDup]);
 
   const next = async () => {
-    if (password.length < 8) {
-      setError(PasswordError.TOO_SHORT);
-      return;
-    } else if (password !== passwordDup) {
-      setError(PasswordError.NO_MATCH);
-      return;
+    try {
+      if (password.length < 8) {
+        setError(PasswordError.TOO_SHORT);
+        return;
+      } else if (password !== passwordDup) {
+        setError(PasswordError.NO_MATCH);
+        return;
+      }
+
+      await auth.signup(username, password, inviteCode);
+
+      onNext(username, password);
+    } catch (err) {
+      console.error(err);
     }
-    onNext(password);
   };
 
   const isNextDisabled = !checked;
@@ -72,12 +84,45 @@ export function CreatePassword({
             marginRight: "24px",
           }}
         >
-          <Header text="Create a password" />
+          <Header text="Claim your username" />
           <SubtextParagraph style={{ marginTop: "8px", marginBottom: "40px" }}>
-            It should be at least 8 characters.
-            <br />
-            You’ll need this to unlock Backpack.
+            Others can see and find you by this username, so choose wisely if
+            you'd like to remain anonymous. You will not be able to change this
+            later.
           </SubtextParagraph>
+        </Box>
+        <Box
+          sx={{
+            marginLeft: "16px",
+            marginRight: "16px",
+            marginBottom: "32px",
+          }}
+        >
+          <TextField
+            inputProps={{
+              name: "username",
+              autoComplete: false,
+              spellCheck: false,
+            }}
+            placeholder="Username"
+            type="text"
+            value={username}
+            setValue={setUsername}
+            rootClass={classes.passwordFieldRoot}
+            isError={usernameError}
+            startAdornment={
+              <InputAdornment position="start">
+                <AlternateEmailSharp
+                  style={{ color: theme.custom.colors.secondary }}
+                />
+              </InputAdornment>
+            }
+          />
+          {usernameError && (
+            <Typography sx={{ color: theme.custom.colors.negative }}>
+              {usernameError}
+            </Typography>
+          )}
         </Box>
         <Box
           sx={{

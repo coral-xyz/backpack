@@ -9,6 +9,7 @@ import * as ethereumConnectionBackend from "./backend/ethereum-connection";
 import type { Background, Config } from "./types";
 
 export * from "./backend/keyring";
+export * as auth from "./auth";
 
 //
 // Entry: Starts the background service.

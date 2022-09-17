@@ -4,6 +4,7 @@ import {
   UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
+  UI_RPC_METHOD_USERNAME_READ,
 } from "@coral-xyz/common";
 import { solanaConnectionUrl } from "../solana";
 import { ethereumConnectionUrl } from "../ethereum";
@@ -31,6 +32,20 @@ export const autoLockSecs = atom<number | null>({
       const background = get(backgroundClient);
       return await background.request({
         method: UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
+        params: [],
+      });
+    },
+  }),
+});
+
+export const username = atom<string | null>({
+  key: "username",
+  default: selector({
+    key: "usernameDefault",
+    get: async ({ get }) => {
+      const background = get(backgroundClient);
+      return await background.request({
+        method: UI_RPC_METHOD_USERNAME_READ,
         params: [],
       });
     },

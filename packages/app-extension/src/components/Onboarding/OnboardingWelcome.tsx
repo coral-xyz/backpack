@@ -5,14 +5,7 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  Box,
-  Drawer,
-  Grid,
-  IconButton,
-  ListItemText,
-  Toolbar,
-} from "@mui/material";
+import { Box, Grid, IconButton, ListItemText, Toolbar } from "@mui/material";
 import {
   AddCircle,
   ArrowCircleDown,
@@ -30,7 +23,7 @@ import {
 import { DiscordIcon } from "../common/Icon";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { ActionCard } from "../common/Layout/ActionCard";
-import { BackpackHeader } from "../Locked";
+import { BackpackHeader } from "../common/BackpackHeader";
 import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import { List, ListItem } from "../common/List";
 import { WithContaineredDrawer } from "../common/Layout/Drawer";

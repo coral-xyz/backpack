@@ -16,14 +16,17 @@ import { ImportAccounts } from "../common/Account/ImportAccounts";
 import type { SelectedAccount } from "../common/Account/ImportAccounts";
 import { OnboardingWelcome } from "./OnboardingWelcome";
 import { WithNav, NavBackButton } from "../common/Layout/Nav";
+import { LoginAsExistingUser } from "../common/Account/LoginAsExistingUser";
+import { InviteCode } from "./InviteCode";
 
 export type OnboardingFlows = "create-wallet" | "import-wallet" | null;
 
 export function Onboarding() {
+  const [isExistingUser, setIsExistingUser] = useState(false);
   const [mnemonic, setMnemonic] = useState("");
-  const [derivationPath, setDerivationPath] = useState<DerivationPath>();
+  const [inviteCode, setInviteCode] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [accounts, setAccounts] = useState<SelectedAccount[]>([]);
   const [step, setStep] = useState(0);
   const [onboardingFlow, setOnboardingFlow] = useState<OnboardingFlows>(null);
   const theme = useCustomTheme();
@@ -33,12 +36,13 @@ export function Onboarding() {
     mnemonic: string,
     // TODO
     derivationPath: DerivationPath | undefined,
+    username: string,
     password: string,
     accountIndices: number[]
   ) => {
     await background.request({
       method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-      params: [mnemonic, derivationPath, password, accountIndices],
+      params: [mnemonic, derivationPath, username, password, accountIndices],
     });
   };
 
@@ -57,16 +61,12 @@ export function Onboarding() {
   // and sets a password.
   //
   const createWalletFlow = [
-    <CreatePassword
-      onNext={(password: string) => {
-        setPassword(password);
-        nextStep();
-      }}
-    />,
     <MnemonicInput
       buttonLabel="Next"
       onNext={(mnemonic: string) => {
-        createStore(mnemonic, DerivationPath.Bip44Change, password, [0]);
+        createStore(mnemonic, DerivationPath.Bip44Change, username, password, [
+          0,
+        ]);
         nextStep();
       }}
       readOnly={true}
@@ -91,15 +91,17 @@ export function Onboarding() {
       blockchain={Blockchain.SOLANA}
       mnemonic={mnemonic}
       onNext={(accounts: SelectedAccount[], derivationPath: DerivationPath) => {
-        setAccounts(accounts);
-        setDerivationPath(derivationPath);
-        nextStep();
-      }}
-    />,
-    <CreatePassword
-      onNext={(password: string) => {
+        // setAccounts(accounts);
+        // setDerivationPath(derivationPath);
         const accountIndices = accounts.map((account) => account.index);
-        createStore(mnemonic, derivationPath, password, accountIndices);
+        createStore(
+          mnemonic,
+          derivationPath,
+          username,
+          password,
+          accountIndices
+        );
+
         nextStep();
       }}
     />,
@@ -108,12 +110,46 @@ export function Onboarding() {
 
   let renderComponent;
   if (onboardingFlow === null) {
-    renderComponent = <OnboardingWelcome onSelect={setOnboardingFlow} />;
+    if (inviteCode || username) {
+      if (username) {
+        renderComponent = <OnboardingWelcome onSelect={setOnboardingFlow} />;
+      } else {
+        renderComponent = (
+          <CreatePassword
+            inviteCode={inviteCode}
+            onNext={(username: string, password: string) => {
+              setUsername(username);
+              setPassword(password);
+            }}
+          />
+        );
+      }
+    } else {
+      if (isExistingUser) {
+        renderComponent = (
+          <LoginAsExistingUser
+            onNext={(username: string, password: string) => {
+              setUsername(username);
+              setPassword(password);
+            }}
+            showInviteCodeFlow={() => setIsExistingUser(false)}
+          />
+        );
+      } else {
+        renderComponent = (
+          <InviteCode
+            onNext={setInviteCode}
+            showExistingUserFlow={() => setIsExistingUser(true)}
+          />
+        );
+      }
+    }
   } else {
     const flow = {
       "create-wallet": createWalletFlow,
       "import-wallet": importWalletFlow,
     }[onboardingFlow];
+
     renderComponent = (
       <WithNav
         navButtonLeft={
