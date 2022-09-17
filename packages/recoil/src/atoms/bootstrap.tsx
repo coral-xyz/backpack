@@ -8,10 +8,6 @@ import {
 } from "@coral-xyz/common";
 import { SolanaTokenAccountWithKey } from "../types";
 import { fetchPriceData } from "./prices";
-import {
-  recentEthereumTransactions,
-  recentSolanaTransactions,
-} from "./recent-transactions";
 import { backgroundClient } from "./client";
 import { ethereumPublicKey, solanaPublicKey } from "./wallet";
 import { anchorContext } from "./solana/wallet";
@@ -94,12 +90,6 @@ export const ethereumBootstrap = selector<{
 
     get(ethereumNftCollections);
 
-    get(
-      recentEthereumTransactions({
-        address: publicKey,
-      })
-    );
-
     return {
       ethActivePublicKey: publicKey,
       ethTokenBalances,
@@ -146,8 +136,6 @@ export const solanaBootstrap = selector<{
     // Fetch xnfts immediately but don't block.
     //
     const fetchXnftsPromise = fetchXnfts(provider, new PublicKey(publicKey));
-
-    get(recentSolanaTransactions({ address: publicKey }));
 
     //
     // Perform data fetch.
