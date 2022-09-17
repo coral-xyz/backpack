@@ -169,6 +169,7 @@ export const RemoveWallet: React.FC<{
                   textAlign: "center",
                   marginTop: "16px",
                   marginBottom: "32px",
+                  color: theme.custom.colors.fontColor,
                 }}
               >
                 Wallet removed

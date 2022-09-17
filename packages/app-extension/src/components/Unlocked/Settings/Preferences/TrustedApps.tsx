@@ -33,6 +33,7 @@ export function PreferencesTrustedApps() {
             button={false}
             key={key}
             id={key}
+            isFirst={i === 0}
             isLast={i === length - 1}
             style={{
               height: "66px",

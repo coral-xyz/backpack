@@ -68,6 +68,8 @@ export const PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED =
 
 export const PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION =
   "plugin-request-solana-sign-tx";
+export const PLUGIN_REQUEST_SOLANA_SIGN_ALL_TRANSACTIONS =
+  "plugin-request-solana-sign-all-txs";
 export const PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION =
   "plugin-request-solana-sign-and-send-tx";
 export const PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE =

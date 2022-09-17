@@ -14,6 +14,7 @@ import type { Event } from "@coral-xyz/common";
 import {
   getLogger,
   BackgroundSolanaConnection,
+  DEFAULT_SOLANA_CLUSTER,
   CHANNEL_SOLANA_RPC_REQUEST,
   CHANNEL_SOLANA_RPC_RESPONSE,
   CHANNEL_SOLANA_NOTIFICATION,
@@ -71,8 +72,7 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
   defaultConnection(): Connection {
     return new Connection(
       // check rollup.config.ts for this env var
-      process.env.DEFAULT_SOLANA_CONNECTION_URL ||
-        "https://solana-api.projectserum.com"
+      process.env.DEFAULT_SOLANA_CONNECTION_URL || DEFAULT_SOLANA_CLUSTER
     );
   }
 

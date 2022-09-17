@@ -112,9 +112,6 @@ export function RecentActivityButton() {
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
             options={(_args) => ({ title: "Recent Activity" })}
-            style={{
-              borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-            }}
             navButtonRight={
               <CloseButton onClick={() => setOpenDrawer(false)} />
             }

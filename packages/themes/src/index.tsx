@@ -115,7 +115,8 @@ export const darkTheme: any = {
       secondaryButton: BACKGROUND_COLOR_2,
       buttonFontColor: BUTTON_FONT_COLOR,
       border1: BACKGROUND_COLOR_2,
-      border: BACKGROUND_COLOR_1,
+      border: BACKGROUND_COLOR_1, // Don't use this.
+      borderColor: BORDER_COLOR,
 
       dangerButton: DANGER_COLOR,
       alpha: FONT_COLOR_2,
@@ -147,6 +148,7 @@ export const lightTheme: any = {
       buttonFontColor: LIGHT_BUTTON_FONT_COLOR,
       border: LIGHT_BORDER_COLOR,
       border1: LIGHT_BORDER_COLOR_1,
+      borderColor: LIGHT_BORDER_COLOR_1,
 
       dangerButton: DANGER_COLOR,
       alpha: LIGHT_FONT_COLOR,

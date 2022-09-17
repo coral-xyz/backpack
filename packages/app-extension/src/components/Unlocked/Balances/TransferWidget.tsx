@@ -26,7 +26,7 @@ export function TransferWidget({
     <div
       style={{
         display: "flex",
-        width: "178px",
+        width: blockchain !== Blockchain.ETHEREUM ? "178px" : "120px",
         marginLeft: "auto",
         marginRight: "auto",
       }}
@@ -34,8 +34,12 @@ export function TransferWidget({
       <ReceiveButton blockchain={blockchain} />
       <div style={{ width: "16px" }} />
       <SendButton blockchain={blockchain} address={address} />
-      <div style={{ width: "16px" }} />
-      <SwapButton blockchain={blockchain} address={address} />
+      {blockchain !== Blockchain.ETHEREUM && (
+        <>
+          <div style={{ width: "16px" }} />
+          <SwapButton blockchain={blockchain} address={address} />
+        </>
+      )}
     </div>
   );
 }

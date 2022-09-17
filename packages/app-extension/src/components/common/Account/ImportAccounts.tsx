@@ -18,6 +18,7 @@ import {
   Blockchain,
   DerivationPath,
   EthereumConnectionUrl,
+  DEFAULT_SOLANA_CLUSTER,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
 } from "@coral-xyz/common";
@@ -150,8 +151,7 @@ export function ImportAccounts({
     if (blockchain === Blockchain.SOLANA) {
       // TODO use Backpack configured value
       const solanaMainnetRpc =
-        process.env.DEFAULT_SOLANA_CONNECTION_URL ||
-        "https://solana-api.projectserum.com";
+        process.env.DEFAULT_SOLANA_CONNECTION_URL || DEFAULT_SOLANA_CLUSTER;
       const solanaConnection = new SolanaConnection(
         solanaMainnetRpc,
         "confirmed"
