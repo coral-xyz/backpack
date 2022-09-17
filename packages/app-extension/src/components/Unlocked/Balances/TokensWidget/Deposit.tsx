@@ -202,7 +202,7 @@ function BlockchainDepositCard({
               style={{
                 position: "absolute",
                 top: 10,
-                right: 10,
+                left: 10,
               }}
             >
               <CloseButton

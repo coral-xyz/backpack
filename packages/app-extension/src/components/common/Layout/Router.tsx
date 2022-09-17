@@ -25,6 +25,7 @@ import { Swap } from "../../Unlocked/Swap";
 import { NftsDetail } from "../../Unlocked/Nfts/Detail";
 import { NftsCollection } from "../../Unlocked/Nfts/Collection";
 import { SettingsButton } from "../../Unlocked/Settings";
+import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { WithNav, NavBackButton } from "./Nav";
 import { WithMotion } from "./NavStack";
 import { WithDrawer } from "../../common/Layout/Drawer";
@@ -197,7 +198,8 @@ function useNavBar() {
   } as React.CSSProperties;
 
   if (isRoot) {
-    navButtonRight = <SettingsButton />;
+    navButtonLeft = <SettingsButton />;
+    navButtonRight = <RecentActivityButton />;
   } else if (pathname === "/balances/token") {
     navButtonRight = null;
   } else if (pathname === "/nfts/detail") {

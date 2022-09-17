@@ -72,7 +72,6 @@ import { PreferencesSolanaExplorer } from "./Preferences/Solana/Explorer";
 import { ChangePassword } from "./YourAccount/ChangePassword";
 import { ResetWarning } from "../../Locked/Reset/ResetWarning";
 import { Reset } from "../../Locked/Reset";
-import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { AddConnectWalletMenu, ConfirmCreateWallet } from "./AddConnectWallet";
 import { YourAccount } from "./YourAccount";
 import { EditWallets } from "./YourAccount/EditWallets";
@@ -108,8 +107,6 @@ const AVATAR_URL = "/coral.png";
 export function SettingsButton() {
   return (
     <div style={{ display: "flex" }}>
-      <RecentActivityButton />
-      <div style={{ width: "16px" }} />
       <AvatarButton />
     </div>
   );
@@ -144,7 +141,7 @@ function AvatarButton() {
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
             options={(args) => ({ title: "" })}
-            navButtonRight={
+            navButtonLeft={
               <CloseButton onClick={() => setSettingsOpen(false)} />
             }
           >
