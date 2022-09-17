@@ -1,0 +1,31 @@
+[package]
+name = "hashor"
+version = "0.0.1"
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["console_error_panic_hook"]
+
+[dependencies]
+cfg-if = "1.0.0"
+getrandom = { version = "0.2", features = ["js"] }
+rand = "0.8.5"
+rust-argon2 = "1.0"
+serde = { version = "1.0.144", features = ["derive"] }
+serde_json = "1.0.67"
+worker = "0.0.11"
+# gql_client = "1.0.6"
+reqwest = { version = "0.11.11", features = ["json"] }
+
+# The `console_error_panic_hook` crate provides better debugging of panics by
+# logging them with `console.error`. This is great for development, but requires
+# all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
+# code size when deploying.
+console_error_panic_hook = { version = "0.1.1", optional = true }
+
+[profile.release]
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"

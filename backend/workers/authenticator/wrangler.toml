@@ -1,0 +1,11 @@
+name = "hashor"
+workers_dev = true
+
+main = "build/worker/shim.mjs"
+compatibility_date = "2022-09-15"
+
+[vars]
+PASSPHRASE = "secret"
+
+[build]
+command = "cargo install -q worker-build && worker-build --release"
