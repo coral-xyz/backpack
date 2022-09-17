@@ -35,11 +35,12 @@ function NavEphemeralWrapper({
     renderComponent,
     style,
   } = useEphemeralNav();
-  const _navButtonLeft = navButtonLeft ? (
-    navButtonLeft
-  ) : isRoot ? null : (
-    <NavBackButton onClick={() => pop()} />
-  );
+  const _navButtonLeft =
+    navButtonLeft && isRoot ? (
+      navButtonLeft
+    ) : isRoot ? null : (
+      <NavBackButton onClick={() => pop()} />
+    );
   const _navbarStyle = {
     fontSize: "18px",
     borderBottom: `solid 1pt ${theme.custom.colors.border}`,

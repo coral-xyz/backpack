@@ -56,11 +56,12 @@ function NavStackInner({
     style,
     contentStyle,
   } = useNavStack();
-  const _navButtonLeft = navButtonLeft ? (
-    navButtonLeft
-  ) : isRoot ? null : (
-    <NavBackButton onClick={() => pop()} />
-  );
+  const _navButtonLeft =
+    navButtonLeft && isRoot ? (
+      navButtonLeft
+    ) : isRoot ? null : (
+      <NavBackButton onClick={() => pop()} />
+    );
   const activeScreen = navScreens.find(
     (c: any) => c.props.name === activeRoute.name
   );
