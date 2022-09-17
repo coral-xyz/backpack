@@ -90,7 +90,7 @@ export const WalletDetail: React.FC<{
           <SettingsList menuItems={menuItems} />
         </div>
       </WithCopyTooltip>
-      <SettingsList menuItems={secrets} />
+      {type !== "ledger" && <SettingsList menuItems={secrets} />}
       {(type !== "derived" || keyring.hdPublicKeys.length > 1) && (
         <SettingsList menuItems={removeWallet} />
       )}
