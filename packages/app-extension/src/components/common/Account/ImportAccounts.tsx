@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ethers, BigNumber } from "ethers";
 import {
   Box,
   List,
@@ -10,7 +11,6 @@ import Ethereum from "@ledgerhq/hw-app-eth";
 import Solana from "@ledgerhq/hw-app-solana";
 import Transport from "@ledgerhq/hw-transport";
 import { Connection as SolanaConnection, PublicKey } from "@solana/web3.js";
-import { ethers, BigNumber } from "ethers";
 import * as anchor from "@project-serum/anchor";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import {
@@ -32,6 +32,8 @@ import {
   TextField,
   walletAddressDisplay,
 } from "../../common";
+
+const { base58: bs58 } = ethers.utils;
 
 type Account = {
   publicKey: string;
@@ -227,13 +229,13 @@ export function ImportAccounts({
     // Add remaining accounts
     for (let k = 0; k < LOAD_PUBKEY_AMOUNT; k += 1) {
       const completePath = `${derivationPathValue}/${k}`;
-      publicKeys.push(
-        (await ledger.getAddress(completePath)).address.toString()
-      );
+      publicKeys.push((await ledger.getAddress(completePath)).address);
     }
 
     setLedgerLocked(false);
-    return publicKeys;
+    return publicKeys.map((p) =>
+      blockchain === Blockchain.SOLANA ? bs58.encode(p) : p.toString()
+    );
   };
 
   //
