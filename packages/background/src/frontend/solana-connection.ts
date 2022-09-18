@@ -7,9 +7,11 @@ import type {
   GetProgramAccountsConfig,
   MessageArgs,
   BlockheightBasedTransactionConfirmationStrategy,
+  TokenAccountsFilter,
 } from "@solana/web3.js";
 import { PublicKey, Message } from "@solana/web3.js";
 import type {
+  SerializedTokenAccountsFilter,
   RpcRequest,
   RpcResponse,
   Context,
@@ -19,6 +21,7 @@ import {
   getLogger,
   withContext,
   withContextPort,
+  deserializeTokenAccountsFilter,
   ChannelAppUi,
   ChannelContentScript,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
@@ -40,6 +43,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_BALANCE,
   SOLANA_CONNECTION_RPC_GET_SLOT,
   SOLANA_CONNECTION_RPC_GET_BLOCK_TIME,
+  SOLANA_CONNECTION_RPC_GET_PARSED_TOKEN_ACCOUNTS_BY_OWNER,
 } from "@coral-xyz/common";
 import type { SolanaConnectionBackend } from "../backend/solana-connection";
 import type { Config, Handle } from "../types";
@@ -142,6 +146,13 @@ async function handleImpl<T = any>(
       return await handleGetSlot(ctx, params[0]);
     case SOLANA_CONNECTION_RPC_GET_BLOCK_TIME:
       return await handleGetBlockTime(ctx, params[0]);
+    case SOLANA_CONNECTION_RPC_GET_PARSED_TOKEN_ACCOUNTS_BY_OWNER:
+      return await handleGetParsedTokenAccountsByOwner(
+        ctx,
+        params[0],
+        params[1],
+        params[2]
+      );
     default:
       throw new Error("invalid rpc method");
   }
@@ -345,5 +356,19 @@ async function handleGetBlockTime(
   slot: number
 ) {
   const resp = await ctx.backend.getBlockTime(slot);
+  return [resp];
+}
+
+async function handleGetParsedTokenAccountsByOwner(
+  ctx: Context<SolanaConnectionBackend>,
+  ownerAddress: string,
+  filter: SerializedTokenAccountsFilter,
+  commitment?: Commitment
+) {
+  const resp = await ctx.backend.getParsedTokenAccountsByOwner(
+    new PublicKey(ownerAddress),
+    deserializeTokenAccountsFilter(filter),
+    commitment
+  );
   return [resp];
 }
