@@ -30,10 +30,18 @@ export const derivationPathPrefix = (
   return paths[blockchain][derivationPath];
 };
 
+/**
+ * Get the complete derivation path for an account. Note that account 0 is reindex to be the root,
+ *  and account 1 becomes the 0th account.
+ */
 export const accountDerivationPath = (
   blockchain: Blockchain,
   derivationPath: DerivationPath,
   account: number
 ) => {
-  return `${derivationPathPrefix(blockchain, derivationPath)}/${account}`;
+  if (account === 0) {
+    return derivationPathPrefix(blockchain, derivationPath);
+  } else {
+    return `${derivationPathPrefix(blockchain, derivationPath)}/${account - 1}`;
+  }
 };
