@@ -343,7 +343,6 @@ export class BackgroundSolanaConnection extends Connection {
         commitment,
       ],
     });
-    console.log("ARMANI RESP HERE", resp);
     resp.value = resp.value.map(({ pubkey, account }) => {
       return {
         pubkey: new PublicKey(pubkey),

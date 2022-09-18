@@ -365,17 +365,10 @@ async function handleGetParsedTokenAccountsByOwner(
   filter: SerializedTokenAccountsFilter,
   commitment?: Commitment
 ) {
-  try {
-    console.log("ARMANI BEFORE");
-    const resp = await ctx.backend.getParsedTokenAccountsByOwner(
-      new PublicKey(ownerAddress),
-      deserializeTokenAccountsFilter(filter),
-      commitment
-    );
-    console.log("ARMANI RESP", resp);
-    return [resp];
-  } catch (err) {
-    console.log("ARMANI ERROR", err);
-    throw err;
-  }
+  const resp = await ctx.backend.getParsedTokenAccountsByOwner(
+    new PublicKey(ownerAddress),
+    deserializeTokenAccountsFilter(filter),
+    commitment
+  );
+  return [resp];
 }
