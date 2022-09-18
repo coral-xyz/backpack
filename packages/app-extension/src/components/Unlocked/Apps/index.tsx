@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { getSvgPath } from "figma-squircle";
 import { Grid, Button, Typography } from "@mui/material";
-import { styles } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   useBackgroundClient,
   useAppIcons,
@@ -48,7 +48,29 @@ const useStyles = styles((theme) => ({
 }));
 
 export function Apps() {
-  return <PluginGrid />;
+  const theme = useCustomTheme();
+  return (
+    <div
+      style={{
+        paddingLeft: "12px",
+        paddingRight: "12px",
+        paddingBottom: "12px",
+      }}
+    >
+      <div
+        style={{
+          paddingTop: "18px",
+          paddingBottom: "18px",
+          paddingLeft: "10px",
+          paddingRight: "10px",
+          background: theme.custom.colors.nav,
+          borderRadius: "10px",
+        }}
+      >
+        <PluginGrid />
+      </div>
+    </div>
+  );
 }
 
 function PluginGrid() {
@@ -109,14 +131,7 @@ function PluginGrid() {
 
   return (
     <>
-      <Grid
-        container
-        style={{
-          paddingLeft: "20px",
-          paddingRight: "20px",
-          marginBottom: "24px",
-        }}
-      >
+      <Grid container style={{}}>
         {plugins.map((p: any, idx: number) => {
           return (
             <Grid

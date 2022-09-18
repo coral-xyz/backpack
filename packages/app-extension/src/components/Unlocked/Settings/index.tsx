@@ -81,6 +81,7 @@ import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
 import { GridIcon, CheckIcon } from "../../common/Icon";
 import { XnftSettings } from "./Xnfts";
 import { XnftDetail } from "./Xnfts/Detail";
+import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -107,6 +108,8 @@ const AVATAR_URL = "/coral.png";
 export function SettingsButton() {
   return (
     <div style={{ display: "flex" }}>
+      <RecentActivityButton />
+      <div style={{ width: "16px" }} />
       <AvatarButton />
     </div>
   );
