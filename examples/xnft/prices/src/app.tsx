@@ -9,10 +9,7 @@ export function App() {
 
   useEffect(() => {
     (async () => {
-      const me = new PublicKey("DcpYXJsWBgkV6kck4a7cWBg6B4epPeFRCMZJjxudGKh4");
-      const mint = new PublicKey("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
-      console.log("ARMANI DONE", me.toString());
-      const bh = await conn.getParsedTokenAccountsByOwner(me, { mint });
+      const bh = await conn.getLatestBlockhash();
       console.log("ARMANI WTF", bh);
     })();
   }, []);
