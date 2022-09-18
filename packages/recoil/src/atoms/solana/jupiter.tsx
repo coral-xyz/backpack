@@ -10,9 +10,22 @@ export const JUPITER_BASE_URL = "https://quote-api.jup.ag/v1/";
 export const jupiterRouteMap = selector({
   key: "jupiterRouteMap",
   get: async () => {
-    return fetchJupiterRouteMap().catch((e) =>
-      console.log("failed to load Jupiter route map", e)
-    );
+    try {
+      const response = await (
+        await fetch(`${JUPITER_BASE_URL}indexed-route-map`)
+      ).json();
+      const getMint = (index: number) => response["mintKeys"][index];
+      // Replace indices with mint addresses
+      return Object.keys(response["indexedRouteMap"]).reduce((acc, key) => {
+        acc[getMint(parseInt(key))] = response["indexedRouteMap"][key].map(
+          (i: number) => getMint(i)
+        );
+        return acc;
+      }, {});
+    } catch (e) {
+      console.log("failed to load Jupiter route map", e);
+      return null;
+    }
   },
 });
 
@@ -81,16 +94,4 @@ export const jupiterOutputMints = selectorFamily({
     },
 });
 
-export async function fetchJupiterRouteMap() {
-  const response = await (
-    await fetch(`${JUPITER_BASE_URL}indexed-route-map`)
-  ).json();
-  const getMint = (index: number) => response["mintKeys"][index];
-  // Replace indices with mint addresses
-  return Object.keys(response["indexedRouteMap"]).reduce((acc, key) => {
-    acc[getMint(parseInt(key))] = response["indexedRouteMap"][key].map(
-      (i: number) => getMint(i)
-    );
-    return acc;
-  }, {});
-}
+export async function fetchJupiterRouteMap() {}

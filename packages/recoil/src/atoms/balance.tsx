@@ -49,7 +49,7 @@ export const blockchainTokenData = selectorFamily<
         case Blockchain.ETHEREUM:
           return get(ethereumTokenBalance(address));
         default:
-          throw new Error("invariant violation");
+          throw new Error(`unsupported blockchain: ${blockchain}`);
       }
     },
 });
@@ -71,11 +71,14 @@ export const blockchainTokenAddresses = selectorFamily({
             ? [...ethTokenMetadata.values()].map((t) => t.address)
             : [];
         default:
-          throw new Error("invariant violation");
+          throw new Error(`unsupported blockchain: ${blockchain}`);
       }
     },
 });
 
+/**
+ * Total asset balance in USD, change in USD, and percent change for a given blockchain.
+ */
 export const blockchainTotalBalance = selectorFamily({
   key: "blockchainTotalBalance",
   get:

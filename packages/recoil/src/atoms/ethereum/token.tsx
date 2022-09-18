@@ -1,4 +1,4 @@
-import { atom, atomFamily, selector, selectorFamily } from "recoil";
+import { atom, selector, selectorFamily } from "recoil";
 import { ethers, BigNumber } from "ethers";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { UniswapTokenList, ETH_NATIVE_MINT } from "@coral-xyz/common";
@@ -22,32 +22,32 @@ export const ethereumBalancePoll = atom({
 // Map of ETH native balance and all ERC20 balances
 // We use a dummy address for the ETH balance (zero address) so it can be
 // treated like an ERC20 in state.
-export const ethereumBalances = atomFamily<Map<string, BigNumber>, string>({
+export const ethereumBalances = atom<Map<string, BigNumber>>({
   key: "ethereumBalances",
-  default: selectorFamily({
+  default: selector({
     key: "ethereumBalancesDefault",
-    get:
-      (publicKey: string) =>
-      ({ get }: any) => {
-        const balanceMap = get(erc20Balances);
-        // Add ETH balance at dummy address
-        balanceMap.set(ETH_NATIVE_MINT, get(ethBalance(publicKey)));
-        return balanceMap;
-      },
+    get: ({ get }: any) => {
+      const ethPublicKey = get(ethereumPublicKey);
+      if (!ethPublicKey) return new Map();
+      const balanceMap = get(erc20Balances);
+      // Add ETH balance at dummy address
+      balanceMap.set(ETH_NATIVE_MINT, get(ethBalance));
+      return balanceMap;
+    },
   }),
 });
 
 // Native ETH balance
-export const ethBalance = atomFamily<BigNumber, string>({
+export const ethBalance = atom<BigNumber>({
   key: "ethereumBalance",
-  default: selectorFamily({
+  default: selector({
     key: "ethereumBalanceDefault",
-    get:
-      (publicKey: string) =>
-      ({ get }: any) => {
-        const provider = get(ethersContext).provider;
-        return provider.getBalance(publicKey);
-      },
+    get: ({ get }: any) => {
+      const ethPublicKey = get(ethereumPublicKey);
+      if (!ethPublicKey) return BigNumber.from(0);
+      const provider = get(ethersContext).provider;
+      return provider.getBalance(ethPublicKey);
+    },
   }),
 });
 
@@ -56,6 +56,11 @@ export const erc20Balances = selector({
   key: "ethereumTokenBalances",
   get: async ({ get }: any) => {
     const publicKey = get(ethereumPublicKey);
+    if (!publicKey) {
+      return new Map();
+    }
+
+    // Trigger for balance updates
     get(ethereumBalancePoll);
 
     //
@@ -144,9 +149,7 @@ export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
     (contractAddress: string) =>
     ({ get }) => {
       const ethTokenMetadata = get(ethereumTokenMetadata)();
-      const ethTokenBalances: Map<String, BigNumber> = get(
-        ethereumBalances(get(ethereumPublicKey)!)
-      );
+      const ethTokenBalances: Map<String, BigNumber> = get(ethereumBalances);
 
       const tokenMetadata =
         ethTokenMetadata!.get(contractAddress) ?? ({} as TokenInfo);
