@@ -34,6 +34,7 @@ export * from "./cluster";
 export * from "./provider";
 export * from "./programs";
 export * from "./background-connection";
+export * from "./types";
 
 export type SolanaContext = {
   walletPublicKey: PublicKey;

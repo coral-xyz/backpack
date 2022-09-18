@@ -7,7 +7,7 @@ import React, {
   type PropsWithChildren,
   type SetStateAction,
 } from "react";
-import { Drawer, Button, IconButton } from "@mui/material";
+import { Typography, Drawer, Button, IconButton } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { EXTENSION_HEIGHT } from "@coral-xyz/common";
@@ -60,8 +60,7 @@ const useStyles = styles((theme) => ({
   },
   rightButtonLabel: {
     display: "flex",
-    flexDirection: "row-reverse",
-    justifyContent: "end",
+    justifyContent: "start",
   },
 }));
 
@@ -159,10 +158,10 @@ function WithDrawerContent({ children, setOpenDrawer }: any) {
   const classes = useStyles();
   const nav = useEphemeralNav();
   useEffect(() => {
-    let previous = nav.navButtonRight;
-    nav.setNavButtonRight(<CloseButton onClick={() => setOpenDrawer(false)} />);
+    let previous = nav.navButtonLeft;
+    nav.setNavButtonLeft(<CloseButton onClick={() => setOpenDrawer(false)} />);
     return () => {
-      nav.setNavButtonRight(previous);
+      nav.setNavButtonLeft(previous);
     };
   }, []);
   return (
@@ -190,7 +189,6 @@ export function CloseButton({ onClick, buttonStyle }: any) {
         style={{
           padding: 0,
           position: "absolute",
-          right: 0,
           ...buttonStyle,
         }}
         onClick={onClick}

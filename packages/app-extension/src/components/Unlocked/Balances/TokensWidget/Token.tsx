@@ -164,9 +164,7 @@ export function WithHeaderButton({
           <NavStackEphemeral
             initialRoute={initialRoute}
             options={(args) => routeOptions(routes, args)}
-            navButtonRight={
-              <CloseButton onClick={() => setOpenDrawer(false)} />
-            }
+            navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             {routes.map((r: any) => (
               <NavStackScreen

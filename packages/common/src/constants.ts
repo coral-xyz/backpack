@@ -358,6 +358,8 @@ export const SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNT_BALANCE =
 export const SOLANA_CONNECTION_RPC_GET_BALANCE = "solana-get-balance";
 export const SOLANA_CONNECTION_RPC_GET_SLOT = "solana-get-slot";
 export const SOLANA_CONNECTION_RPC_GET_BLOCK_TIME = "solana-get-block-time";
+export const SOLANA_CONNECTION_RPC_GET_PARSED_TOKEN_ACCOUNTS_BY_OWNER =
+  "solana-get-parsed-token-accounts-by-owner";
 
 //
 // Ledger API.
@@ -370,8 +372,18 @@ export const LEDGER_IFRAME_URL =
 export const LEDGER_INJECTED_CHANNEL_REQUEST = "ledger-injected-request";
 export const LEDGER_INJECTED_CHANNEL_RESPONSE = "ledger-injected-response";
 export const LEDGER_METHOD_UNLOCK = "ledger-method-unlock";
-export const LEDGER_METHOD_SIGN_TRANSACTION = "ledger-method-sign-transaction";
-export const LEDGER_METHOD_SIGN_MESSAGE = "ledger-method-sign-message";
+export const LEDGER_METHOD_SOLANA_SIGN_TRANSACTION =
+  "ledger-method-solana-sign-transaction";
+export const LEDGER_METHOD_SOLANA_SIGN_MESSAGE =
+  "ledger-method-solana-sign-message";
+export const LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION =
+  "ledger-method-ethereum-sign-transaction";
+export const LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE =
+  "ledger-method-ethereum-sign-message";
+export const LEDGER_METHOD_ETHEREUM_SIGN_EIP712_MESSAGE =
+  "ledger-method-ethereum-sign-eip712-message";
+export const LEDGER_METHOD_ETHEREUM_SIGN_EIP712_HASHED_MESSAGE =
+  "ledger-method-ethereum-sign-eip712-hashed-message";
 
 export const PLUGIN_RPC_METHOD_WINDOW_OPEN = "rpc-method-window-open";
 

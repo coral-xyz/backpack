@@ -186,6 +186,8 @@ export class ProviderEthereumInjection extends EventEmitter {
 
     const { method, params } = args;
 
+    logger.debug("page injected provider request", method, params);
+
     if (typeof method !== "string" || method.length === 0) {
       throw ethErrors.rpc.invalidRequest({
         message: messages.errors.invalidRequestMethod(),
@@ -227,12 +229,16 @@ export class ProviderEthereumInjection extends EventEmitter {
         this.provider!.getTransaction(hash),
       eth_getTransactionReceipt: (hash: string) =>
         this.provider!.getTransactionReceipt(hash),
-      eth_sign: (_address: string, message: string) =>
-        this._handleEthSignMessage(message),
-      eth_signTypedData: (_address: string, message: any) =>
-        this._handleEthSignMessage(message),
-      personal_sign: (message: string, _address: string) =>
-        this._handleEthSignMessage(message),
+      eth_sign: (_address: string, _message: string) => {
+        // This is a significant security risk because it can be used to
+        // sign transactions.
+        // TODO maybe enable this with a large warning in the UI?
+        throw new Error(
+          "Backpack does not support eth_sign due to security concerns"
+        );
+      },
+      personal_sign: (messageHex: string, _address: string) =>
+        this._handleEthSignMessage(messageHex),
       eth_signTransaction: (transaction: any) =>
         this._handleEthSignTransaction(transaction),
       eth_sendTransaction: (transaction: any) =>
@@ -300,9 +306,9 @@ export class ProviderEthereumInjection extends EventEmitter {
       connectionUrl,
       chainId
     );
-    this._handleConnect(`${chainId}`);
+    this._handleConnect(chainId.toString(16));
+    this._handleChainChanged(chainId.toString(16));
     this._handleAccountsChanged([this.publicKey]);
-    this._handleChainChanged(`${chainId}`);
   }
 
   /**
@@ -335,9 +341,9 @@ export class ProviderEthereumInjection extends EventEmitter {
       this._connectionRequestManager,
       connectionUrl
     );
-    const newChainId = `${(await this.provider!.getNetwork()).chainId}`;
-    if (this.isConnected() && this.chainId !== newChainId) {
-      this._handleChainChanged(newChainId);
+    const newChainId = (await this.provider!.getNetwork()).chainId;
+    if (this.isConnected() && this.chainId !== newChainId.toString(16)) {
+      this._handleChainChanged(newChainId.toString(16));
     }
   }
 
@@ -370,9 +376,7 @@ export class ProviderEthereumInjection extends EventEmitter {
   protected async _handleChainChanged(chainId: string) {
     this.chainId = chainId;
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#chainchanged
-    this.emit("chainChanged", {
-      chainId,
-    } as ProviderConnectInfo);
+    this.emit("chainChanged", chainId);
   }
 
   /**
@@ -397,11 +401,15 @@ export class ProviderEthereumInjection extends EventEmitter {
   /**
    * Handle eth_sign, eth_signTypedData, personal_sign RPC requests.
    */
-  protected async _handleEthSignMessage(message: string) {
+  protected async _handleEthSignMessage(messageHex: string) {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
-    return await cmn.signMessage(this.publicKey, this._requestManager, message);
+    return await cmn.signMessage(
+      this.publicKey,
+      this._requestManager,
+      ethers.utils.toUtf8String(messageHex)
+    );
   }
 
   /**

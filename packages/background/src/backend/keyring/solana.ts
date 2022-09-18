@@ -3,8 +3,8 @@ import { Keypair, PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import * as bs58 from "bs58";
 import {
-  LEDGER_METHOD_SIGN_MESSAGE,
-  LEDGER_METHOD_SIGN_TRANSACTION,
+  LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
+  LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
   DerivationPath,
 } from "@coral-xyz/common";
 import { deriveSolanaKeypairs, deriveSolanaKeypair } from "./crypto";
@@ -248,7 +248,7 @@ export class SolanaLedgerKeyring
       throw new Error("ledger address not found");
     }
     return await this.request({
-      method: LEDGER_METHOD_SIGN_TRANSACTION,
+      method: LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
       params: [bs58.encode(tx), path.path, path.account],
     });
   }
@@ -259,7 +259,7 @@ export class SolanaLedgerKeyring
       throw new Error("ledger address not found");
     }
     return await this.request({
-      method: LEDGER_METHOD_SIGN_MESSAGE,
+      method: LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
       params: [bs58.encode(msg), path.path, path.account],
     });
   }
