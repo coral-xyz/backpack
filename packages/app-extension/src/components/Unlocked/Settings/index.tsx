@@ -142,7 +142,7 @@ function AvatarButton() {
           style={{ height: "100%", background: theme.custom.colors.background }}
         >
           <NavStackEphemeral
-            initialRoute={{ name: "root" }}
+            initialRoute={{ name: "root", title: "Profile" }}
             options={(args) => ({ title: "" })}
             navButtonLeft={
               <CloseButton onClick={() => setSettingsOpen(false)} />
@@ -268,7 +268,7 @@ function SettingsMenu() {
   const { setTitle, setStyle, setContentStyle } = useNavStack();
 
   useEffect(() => {
-    setTitle("");
+    setTitle("Profile");
     setStyle({
       backgroundColor: theme.custom.colors.background,
     });
