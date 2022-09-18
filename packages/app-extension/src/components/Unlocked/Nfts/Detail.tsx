@@ -167,9 +167,7 @@ function SendButton({ nft }: { nft: any }) {
             options={() => ({
               title: `${nft.name} / Send`,
             })}
-            navButtonRight={
-              <CloseButton onClick={() => setOpenDrawer(false)} />
-            }
+            navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen
               name={"send"}
