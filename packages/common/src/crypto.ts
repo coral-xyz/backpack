@@ -19,7 +19,7 @@ export const derivationPathPrefix = (
     },
     [Blockchain.SOLANA]: {
       [DerivationPath.Bip44]: "44'/501'",
-      [DerivationPath.Bip44Change]: "44'/501'",
+      [DerivationPath.Bip44Change]: "44'/501'/0'",
     },
   };
 
