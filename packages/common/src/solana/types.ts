@@ -1,4 +1,5 @@
 import type { TokenAccountsFilter } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 
 export function serializeTokenAccountsFilter(
   filter: TokenAccountsFilter
