@@ -1,21 +1,25 @@
 import type { TokenAccountsFilter } from "@solana/web3.js";
 
 export function serializeTokenAccountsFilter(
-  f: TokenAccountsFilter
+  filter: TokenAccountsFilter
 ): SerializedTokenAccountsFilter {
   // @ts-ignore
   return filter.mint
-    ? { mint: filter.mint.toString() }
-    : { programId: filter.programId.toString() };
+    ? // @ts-ignore
+      { mint: filter.mint.toString() }
+    : // @ts-ignore
+      { programId: filter.programId.toString() };
 }
 
 export function deserializeTokenAccountsFilter(
-  f: SerializedTokenAccountsFilter
+  filter: SerializedTokenAccountsFilter
 ): TokenAccountsFilter {
   // @ts-ignore
   return filter.mint
-    ? { mint: new PublicKey(filter.mint) }
-    : { programId: new PublicKey(filter.programId) };
+    ? // @ts-ignore
+      { mint: new PublicKey(filter.mint) }
+    : // @ts-ignore
+      { programId: new PublicKey(filter.programId) };
 }
 
 export type SerializedTokenAccountsFilter =
