@@ -346,7 +346,10 @@ export class BackgroundSolanaConnection extends Connection {
     resp.value = resp.value.map(({ pubkey, account }) => {
       return {
         pubkey: new PublicKey(pubkey),
-        account,
+        account: {
+          ...account,
+          owner: new PublicKey(account.owner),
+        },
       };
     });
     return resp;
