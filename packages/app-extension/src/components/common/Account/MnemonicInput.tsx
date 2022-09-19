@@ -159,7 +159,7 @@ export function MnemonicInput({
         justifyContent: "space-between",
       }}
     >
-      <Box sx={{ margin: `24px` }}>
+      <Box sx={{ margin: `24px 16px` }}>
         <Box>
           <Header text="Secret recovery phrase" />
           <SubtextParagraph>
