@@ -2,7 +2,10 @@ import { Suspense } from "react";
 import { Typography } from "@mui/material";
 import { formatUSD } from "@coral-xyz/common";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
-import { useTotalBalances } from "@coral-xyz/recoil";
+import {
+  totalBalance as totalBalanceSelector,
+  useLoader,
+} from "@coral-xyz/recoil";
 
 const useStyles = styles((theme) => ({
   button: {
@@ -72,7 +75,14 @@ export function BalanceSummaryWidget() {
 export function BalanceSummaryText() {
   const theme = useCustomTheme();
   const classes = useStyles();
-  const { totalBalance, totalChange, percentChange } = useTotalBalances();
+  const [{ totalBalance, totalChange, percentChange }] = useLoader(
+    totalBalanceSelector,
+    {
+      totalBalance: 0,
+      totalChange: 0,
+      percentChange: 0,
+    }
+  );
   return (
     <>
       <Typography

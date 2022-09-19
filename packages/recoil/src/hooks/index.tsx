@@ -12,3 +12,4 @@ export * from "./useNftMetadata";
 export * from "./usePriceData";
 export * from "./useTransactionData";
 export * from "./useTotalBalances";
+export * from "./useLoader";
