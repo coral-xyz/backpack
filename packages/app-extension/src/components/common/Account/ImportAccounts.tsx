@@ -14,6 +14,7 @@ import { Connection as SolanaConnection, PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import {
+  accountDerivationPath,
   derivationPathPrefix,
   Blockchain,
   DerivationPath,
@@ -222,14 +223,14 @@ export function ImportAccounts({
       [Blockchain.ETHEREUM]: new Ethereum(transport),
     }[blockchain];
 
-    const derivationPathValue = derivationPathOptions.find(
-      (d) => d.path == derivationPath
-    )!.label;
-
     // Add remaining accounts
-    for (let k = 0; k < LOAD_PUBKEY_AMOUNT; k += 1) {
-      const completePath = `${derivationPathValue}/${k}`;
-      publicKeys.push((await ledger.getAddress(completePath)).address);
+    for (let account = 0; account < LOAD_PUBKEY_AMOUNT; account += 1) {
+      const path = accountDerivationPath(
+        Blockchain.SOLANA,
+        derivationPath,
+        account
+      );
+      publicKeys.push((await ledger.getAddress(path)).address);
     }
 
     setLedgerLocked(false);
