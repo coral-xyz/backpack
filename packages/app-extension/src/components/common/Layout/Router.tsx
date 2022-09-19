@@ -15,6 +15,7 @@ import {
   useFreshPlugin,
   PluginManager,
 } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { Balances } from "../../Unlocked/Balances";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
