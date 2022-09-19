@@ -210,10 +210,10 @@ function useNavBar() {
         }}
       >
         {pathname.startsWith("/balances")
-          ? "Balances"
+          ? "💸 Balances"
           : pathname.startsWith("/apps")
-          ? "Applications"
-          : "Collectibles"}
+          ? "👾 Applications"
+          : "🎨 Collectibles"}
       </Typography>
     );
   } else if (pathname === "/balances/token") {
