@@ -8,12 +8,12 @@ import {
 } from "@mui/material";
 import type { Button } from "@mui/material";
 import { Close, ExpandMore, SwapVert } from "@mui/icons-material";
+import { Button as XnftButton } from "@coral-xyz/react-xnft-renderer";
 import {
   useSplTokenRegistry,
   useJupiterInputMints,
   useJupiterOutputMints,
   useSwapContext,
-  SwapProvider,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
@@ -24,6 +24,7 @@ import {
   TAB_BALANCES,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
 } from "@coral-xyz/common";
+import { useNavStack } from "../common/Layout/NavStack";
 import {
   TextField,
   TextFieldLabel,
@@ -33,7 +34,6 @@ import {
 } from "../common";
 import { TokenInputField } from "../common/TokenInput";
 import { CheckIcon, CrossIcon } from "../common/Icon";
-import { WithHeaderButton } from "./Balances/TokensWidget/Token";
 import { BottomCard } from "./Balances/TokensWidget/Send";
 import { useDrawerContext } from "../common/Layout/Drawer";
 import type { Token } from "../common/TokenTable";
@@ -201,36 +201,11 @@ enum SwapState {
   ERROR,
 }
 
-export function Swap({
-  blockchain,
-  tokenAddress,
-}: {
-  blockchain: Blockchain;
-  tokenAddress: string;
-}) {
+export function Swap({ blockchain }: { blockchain: Blockchain }) {
   if (blockchain && blockchain !== Blockchain.SOLANA) {
     throw new Error("only Solana swaps are supported currently");
   }
-  return (
-    <SwapInner
-      blockchain={blockchain ?? Blockchain.SOLANA}
-      tokenAddress={tokenAddress}
-    />
-  );
-}
-
-function SwapInner({
-  blockchain,
-  tokenAddress,
-}: {
-  blockchain: Blockchain;
-  tokenAddress?: string;
-}) {
-  return (
-    <SwapProvider blockchain={blockchain} tokenAddress={tokenAddress}>
-      <_Swap blockchain={blockchain} />
-    </SwapProvider>
-  );
+  return <_Swap blockchain={blockchain ?? Blockchain.SOLANA} />;
 }
 
 function _Swap({ blockchain }: { blockchain: Blockchain }) {
@@ -344,6 +319,8 @@ function InputTextField() {
     availableForSwap,
     exceedsBalance,
   } = useSwapContext();
+
+  console.log("FROM MINT INFO", fromMintInfo);
 
   return (
     <>
@@ -793,52 +770,40 @@ function OutputTokenSelectorButton() {
 
 function TokenSelectorButton({ selectedMint, tokenAccounts, setMint }: any) {
   const classes = useStyles();
-
+  const nav = useNavStack();
   const tokenRegistry = useSplTokenRegistry();
   const tokenInfo = tokenRegistry.get(selectedMint); // TODO handle null case
   const symbol = tokenInfo ? tokenInfo.symbol : "-";
   const logoUri = tokenInfo ? tokenInfo.logoURI : "-";
 
   return (
-    <>
-      <InputAdornment position="end">
-        <WithHeaderButton
-          labelComponent={
-            <>
-              <img
-                className={classes.tokenLogo}
-                src={logoUri}
-                onError={(event) =>
-                  (event.currentTarget.style.display = "none")
-                }
-              />
-              <Typography className={classes.tokenSelectorButtonLabel}>
-                {symbol}
-              </Typography>
-              <ExpandMore className={classes.expandMore} />
-            </>
-          }
-          routes={[
-            {
-              title: "Select token",
-              name: "select-token",
-              component: (props: any) => <SelectToken {...props} />,
-              props: {
-                setMint,
-                tokenAccounts,
-              },
-            },
-          ]}
-          style={{
-            backgroundColor: "transparent",
-          }}
+    <InputAdornment position="end">
+      <XnftButton
+        onClick={() =>
+          nav.push("select-token", {
+            setMint: (...args: any) => setMint(...args),
+            tokenAccounts,
+          })
+        }
+        style={{
+          backgroundColor: "transparent",
+        }}
+      >
+        <img
+          className={classes.tokenLogo}
+          src={logoUri}
+          onError={(event) => (event.currentTarget.style.display = "none")}
         />
-      </InputAdornment>
-    </>
+        <Typography className={classes.tokenSelectorButtonLabel}>
+          {symbol}
+        </Typography>
+        <ExpandMore className={classes.expandMore} />
+      </XnftButton>
+    </InputAdornment>
   );
 }
 
-function SelectToken({
+export function SelectToken({
   setMint,
   tokenAccounts,
   customFilter,
@@ -847,11 +812,11 @@ function SelectToken({
   tokenAccounts: Token[];
   customFilter: (token: Token) => boolean;
 }) {
-  const { close } = useDrawerContext();
-
+  console.log("ARMANI SELECT TOKEN", setMint, tokenAccounts, customFilter);
+  const nav = useNavStack();
   const onClickRow = (_blockchain: Blockchain, token: Token) => {
     setMint(token.mint!);
-    close();
+    nav.pop();
   };
 
   return (
