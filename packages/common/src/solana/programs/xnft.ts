@@ -6,7 +6,7 @@ import { metadata } from "@project-serum/token";
 import { externalResourceUri } from "@coral-xyz/common-public";
 
 export const XNFT_PROGRAM_ID = new PublicKey(
-  "3n1C6PEsiRgvgzYbqscDHw28sBNpHFs3tUz7FSuXeYZL"
+  "BaHSGaf883GA3u8qSC5wNigcXyaScJLSBJZbALWvPcjs"
 );
 
 export async function fetchXnfts(
@@ -296,47 +296,9 @@ type Xnft = {
           type: "string";
         },
         {
-          name: "symbol";
-          type: "string";
-        },
-        {
-          name: "tag";
+          name: "params";
           type: {
-            defined: "Tag";
-          };
-        },
-        {
-          name: "kind";
-          type: {
-            defined: "Kind";
-          };
-        },
-        {
-          name: "uri";
-          type: "string";
-        },
-        {
-          name: "sellerFeeBasisPoints";
-          type: "u16";
-        },
-        {
-          name: "installPrice";
-          type: "u64";
-        },
-        {
-          name: "installVault";
-          type: "publicKey";
-        },
-        {
-          name: "supply";
-          type: {
-            option: "u64";
-          };
-        },
-        {
-          name: "l1";
-          type: {
-            defined: "L1";
+            defined: "CreateXnftParams";
           };
         }
       ];
@@ -515,63 +477,12 @@ type Xnft = {
       args: [];
     },
     {
-      name: "createInstallWithAuthority";
+      name: "deleteInstall";
       docs: [
         "Variant of `create_xnft_installation` where the install authority is",
-        "required to sign."
+        "required to sign.",
+        "Closes the install account."
       ];
-      accounts: [
-        {
-          name: "xnft";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "install";
-          isMut: true;
-          isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: "const";
-                type: "string";
-                value: "install";
-              },
-              {
-                kind: "account";
-                type: "publicKey";
-                path: "authority";
-              },
-              {
-                kind: "account";
-                type: "publicKey";
-                account: "Xnft";
-                path: "xnft";
-              }
-            ];
-          };
-        },
-        {
-          name: "authority";
-          isMut: true;
-          isSigner: true;
-        },
-        {
-          name: "installAuthority";
-          isMut: false;
-          isSigner: true;
-        },
-        {
-          name: "systemProgram";
-          isMut: false;
-          isSigner: false;
-        }
-      ];
-      args: [];
-    },
-    {
-      name: "deleteInstall";
-      docs: ["Closes the install account."];
       accounts: [
         {
           name: "install";
@@ -656,88 +567,132 @@ type Xnft = {
         fields: [
           {
             name: "publisher";
+            docs: ["The pubkey of the original xNFT creator (32)."];
             type: "publicKey";
           },
           {
             name: "installVault";
+            docs: [
+              "The pubkey of the account to receive install payments (32)."
+            ];
             type: "publicKey";
           },
           {
             name: "masterEdition";
+            docs: ["The pubkey of the ML master edition account (32)."];
             type: "publicKey";
           },
           {
             name: "masterMetadata";
+            docs: ["The pubkey of the MPL master metadata account (32)."];
             type: "publicKey";
           },
           {
             name: "masterMint";
+            docs: ["The pubkey of the master token mint (32)."];
             type: "publicKey";
           },
           {
             name: "installAuthority";
+            docs: [
+              "The optional pubkey of the xNFT installation authority (33)."
+            ];
             type: {
               option: "publicKey";
             };
           },
           {
             name: "bump";
+            docs: ["The bump nonce for the xNFT's PDA (1)."];
             type: "u8";
           },
           {
             name: "kind";
+            docs: ["The `Kind` enum variant describing the type of xNFT (1)."];
             type: {
               defined: "Kind";
             };
           },
           {
             name: "tag";
+            docs: [
+              "The `Tag` enum variant to assign the category of xNFT (1)."
+            ];
             type: {
               defined: "Tag";
             };
           },
           {
             name: "name";
+            docs: ["The display name of the xNFT account (MAX_NAME_LEN)."];
             type: "string";
           },
           {
             name: "totalInstalls";
+            docs: [
+              "Total amount of install accounts that have been created for this xNFT (8)."
+            ];
             type: "u64";
           },
           {
             name: "installPrice";
+            docs: ["The price-per-install of this xNFT (8)."];
             type: "u64";
           },
           {
             name: "createdTs";
+            docs: ["The unix timestamp of when the account was created (8)."];
             type: "i64";
           },
           {
             name: "updatedTs";
+            docs: [
+              "The unix timestamp of the last time the account was updated (8)."
+            ];
             type: "i64";
           },
           {
             name: "suspended";
+            docs: [
+              "Flag to determine whether new installations of the xNFT should be halted (1)."
+            ];
             type: "bool";
           },
           {
             name: "totalRating";
+            docs: ["The total cumulative rating value of all reviews (8)."];
             type: "u64";
           },
           {
             name: "numRatings";
+            docs: [
+              "The number of ratings created used to calculate the average (4)."
+            ];
             type: "u32";
           },
           {
             name: "l1";
+            docs: [
+              "The `L1` enum variant to designate the associated blockchain (1)."
+            ];
             type: {
               defined: "L1";
             };
           },
           {
-            name: "reserved1";
+            name: "supply";
+            docs: [
+              "The optional finite supply of installations available for this xNFT (9)."
+            ];
             type: {
-              array: ["u8", 19];
+              option: "u64";
+            };
+          },
+          {
+            name: "reserved";
+            docs: ["Unused reserved byte space for additive future changes."];
+            type: {
+              array: ["u8", 64];
             };
           }
         ];
@@ -750,22 +705,27 @@ type Xnft = {
         fields: [
           {
             name: "authority";
+            docs: ["The authority who created the installation (32)."];
             type: "publicKey";
           },
           {
             name: "xnft";
+            docs: ["The pubkey of the xNFT that was installed (32)."];
             type: "publicKey";
           },
           {
             name: "masterMetadata";
+            docs: ["The pubkey of the MPL master metadata account (32)."];
             type: "publicKey";
           },
           {
             name: "edition";
+            docs: ["The sequential installation number of the xNFT (8)."];
             type: "u64";
           },
           {
             name: "reserved";
+            docs: ["Unused reserved byte space for additive future changes."];
             type: {
               array: ["u8", 64];
             };
@@ -780,24 +740,31 @@ type Xnft = {
         fields: [
           {
             name: "author";
+            docs: ["The pubkey of the account that created the review (32)."];
             type: "publicKey";
           },
           {
             name: "xnft";
+            docs: ["The pubkey of the associated xNFT (32)."];
             type: "publicKey";
           },
           {
             name: "rating";
+            docs: ["The numerical rating for the review, 0-5 (1)."];
             type: "u8";
           },
           {
             name: "uri";
+            docs: [
+              "The URI of the off-chain JSON data that holds the comment (4 + len)."
+            ];
             type: "string";
           },
           {
             name: "reserved";
+            docs: ["Unused reserved byte space for future additive changes."];
             type: {
-              array: ["u8", 32];
+              array: ["u8", 64];
             };
           }
         ];
@@ -805,6 +772,88 @@ type Xnft = {
     }
   ];
   types: [
+    {
+      name: "CreatorsParam";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "address";
+            type: "publicKey";
+          },
+          {
+            name: "share";
+            type: "u8";
+          }
+        ];
+      };
+    },
+    {
+      name: "CreateXnftParams";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "symbol";
+            type: "string";
+          },
+          {
+            name: "tag";
+            type: {
+              defined: "Tag";
+            };
+          },
+          {
+            name: "kind";
+            type: {
+              defined: "Kind";
+            };
+          },
+          {
+            name: "l1";
+            type: {
+              defined: "L1";
+            };
+          },
+          {
+            name: "uri";
+            type: "string";
+          },
+          {
+            name: "sellerFeeBasisPoints";
+            type: "u16";
+          },
+          {
+            name: "installPrice";
+            type: "u64";
+          },
+          {
+            name: "installVault";
+            type: "publicKey";
+          },
+          {
+            name: "supply";
+            type: {
+              option: "u64";
+            };
+          },
+          {
+            name: "collection";
+            type: {
+              option: "publicKey";
+            };
+          },
+          {
+            name: "creators";
+            type: {
+              vec: {
+                defined: "CreatorsParam";
+              };
+            };
+          }
+        ];
+      };
+    },
     {
       name: "UpdateParams";
       type: {
@@ -852,6 +901,9 @@ type Xnft = {
         variants: [
           {
             name: "App";
+          },
+          {
+            name: "Collection";
           }
         ];
       };
@@ -951,31 +1003,36 @@ type Xnft = {
     },
     {
       code: 6001;
+      name: "CollectionWithoutKind";
+      msg: "A collection pubkey was provided without the collection Kind variant";
+    },
+    {
+      code: 6002;
       name: "InstallAuthorityMismatch";
       msg: "The asserted authority did not match that of the Install account";
     },
     {
-      code: 6002;
+      code: 6003;
       name: "InstallExceedsSupply";
       msg: "The max supply has been reached for the xNFT.";
     },
     {
-      code: 6003;
+      code: 6004;
       name: "NameTooLong";
       msg: "The name provided for creating the xNFT exceeded the byte limit";
     },
     {
-      code: 6004;
+      code: 6005;
       name: "RatingOutOfBounds";
       msg: "The rating for a review must be between 0 and 5";
     },
     {
-      code: 6005;
+      code: 6006;
       name: "ReviewInstallMismatch";
       msg: "The installation provided for the review does not match the xNFT";
     },
     {
-      code: 6006;
+      code: 6007;
       name: "SuspendedInstallation";
       msg: "Attempting to install a currently suspended xNFT";
     }
@@ -1169,47 +1226,9 @@ const IDL: Xnft = {
           type: "string",
         },
         {
-          name: "symbol",
-          type: "string",
-        },
-        {
-          name: "tag",
+          name: "params",
           type: {
-            defined: "Tag",
-          },
-        },
-        {
-          name: "kind",
-          type: {
-            defined: "Kind",
-          },
-        },
-        {
-          name: "uri",
-          type: "string",
-        },
-        {
-          name: "sellerFeeBasisPoints",
-          type: "u16",
-        },
-        {
-          name: "installPrice",
-          type: "u64",
-        },
-        {
-          name: "installVault",
-          type: "publicKey",
-        },
-        {
-          name: "supply",
-          type: {
-            option: "u64",
-          },
-        },
-        {
-          name: "l1",
-          type: {
-            defined: "L1",
+            defined: "CreateXnftParams",
           },
         },
       ],
@@ -1388,63 +1407,12 @@ const IDL: Xnft = {
       args: [],
     },
     {
-      name: "createInstallWithAuthority",
+      name: "deleteInstall",
       docs: [
         "Variant of `create_xnft_installation` where the install authority is",
         "required to sign.",
+        "Closes the install account.",
       ],
-      accounts: [
-        {
-          name: "xnft",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "install",
-          isMut: true,
-          isSigner: false,
-          pda: {
-            seeds: [
-              {
-                kind: "const",
-                type: "string",
-                value: "install",
-              },
-              {
-                kind: "account",
-                type: "publicKey",
-                path: "authority",
-              },
-              {
-                kind: "account",
-                type: "publicKey",
-                account: "Xnft",
-                path: "xnft",
-              },
-            ],
-          },
-        },
-        {
-          name: "authority",
-          isMut: true,
-          isSigner: true,
-        },
-        {
-          name: "installAuthority",
-          isMut: false,
-          isSigner: true,
-        },
-        {
-          name: "systemProgram",
-          isMut: false,
-          isSigner: false,
-        },
-      ],
-      args: [],
-    },
-    {
-      name: "deleteInstall",
-      docs: ["Closes the install account."],
       accounts: [
         {
           name: "install",
@@ -1529,88 +1497,132 @@ const IDL: Xnft = {
         fields: [
           {
             name: "publisher",
+            docs: ["The pubkey of the original xNFT creator (32)."],
             type: "publicKey",
           },
           {
             name: "installVault",
+            docs: [
+              "The pubkey of the account to receive install payments (32).",
+            ],
             type: "publicKey",
           },
           {
             name: "masterEdition",
+            docs: ["The pubkey of the ML master edition account (32)."],
             type: "publicKey",
           },
           {
             name: "masterMetadata",
+            docs: ["The pubkey of the MPL master metadata account (32)."],
             type: "publicKey",
           },
           {
             name: "masterMint",
+            docs: ["The pubkey of the master token mint (32)."],
             type: "publicKey",
           },
           {
             name: "installAuthority",
+            docs: [
+              "The optional pubkey of the xNFT installation authority (33).",
+            ],
             type: {
               option: "publicKey",
             },
           },
           {
             name: "bump",
+            docs: ["The bump nonce for the xNFT's PDA (1)."],
             type: "u8",
           },
           {
             name: "kind",
+            docs: ["The `Kind` enum variant describing the type of xNFT (1)."],
             type: {
               defined: "Kind",
             },
           },
           {
             name: "tag",
+            docs: [
+              "The `Tag` enum variant to assign the category of xNFT (1).",
+            ],
             type: {
               defined: "Tag",
             },
           },
           {
             name: "name",
+            docs: ["The display name of the xNFT account (MAX_NAME_LEN)."],
             type: "string",
           },
           {
             name: "totalInstalls",
+            docs: [
+              "Total amount of install accounts that have been created for this xNFT (8).",
+            ],
             type: "u64",
           },
           {
             name: "installPrice",
+            docs: ["The price-per-install of this xNFT (8)."],
             type: "u64",
           },
           {
             name: "createdTs",
+            docs: ["The unix timestamp of when the account was created (8)."],
             type: "i64",
           },
           {
             name: "updatedTs",
+            docs: [
+              "The unix timestamp of the last time the account was updated (8).",
+            ],
             type: "i64",
           },
           {
             name: "suspended",
+            docs: [
+              "Flag to determine whether new installations of the xNFT should be halted (1).",
+            ],
             type: "bool",
           },
           {
             name: "totalRating",
+            docs: ["The total cumulative rating value of all reviews (8)."],
             type: "u64",
           },
           {
             name: "numRatings",
+            docs: [
+              "The number of ratings created used to calculate the average (4).",
+            ],
             type: "u32",
           },
           {
             name: "l1",
+            docs: [
+              "The `L1` enum variant to designate the associated blockchain (1).",
+            ],
             type: {
               defined: "L1",
             },
           },
           {
-            name: "reserved1",
+            name: "supply",
+            docs: [
+              "The optional finite supply of installations available for this xNFT (9).",
+            ],
             type: {
-              array: ["u8", 19],
+              option: "u64",
+            },
+          },
+          {
+            name: "reserved",
+            docs: ["Unused reserved byte space for additive future changes."],
+            type: {
+              array: ["u8", 64],
             },
           },
         ],
@@ -1623,22 +1635,27 @@ const IDL: Xnft = {
         fields: [
           {
             name: "authority",
+            docs: ["The authority who created the installation (32)."],
             type: "publicKey",
           },
           {
             name: "xnft",
+            docs: ["The pubkey of the xNFT that was installed (32)."],
             type: "publicKey",
           },
           {
             name: "masterMetadata",
+            docs: ["The pubkey of the MPL master metadata account (32)."],
             type: "publicKey",
           },
           {
             name: "edition",
+            docs: ["The sequential installation number of the xNFT (8)."],
             type: "u64",
           },
           {
             name: "reserved",
+            docs: ["Unused reserved byte space for additive future changes."],
             type: {
               array: ["u8", 64],
             },
@@ -1653,24 +1670,31 @@ const IDL: Xnft = {
         fields: [
           {
             name: "author",
+            docs: ["The pubkey of the account that created the review (32)."],
             type: "publicKey",
           },
           {
             name: "xnft",
+            docs: ["The pubkey of the associated xNFT (32)."],
             type: "publicKey",
           },
           {
             name: "rating",
+            docs: ["The numerical rating for the review, 0-5 (1)."],
             type: "u8",
           },
           {
             name: "uri",
+            docs: [
+              "The URI of the off-chain JSON data that holds the comment (4 + len).",
+            ],
             type: "string",
           },
           {
             name: "reserved",
+            docs: ["Unused reserved byte space for future additive changes."],
             type: {
-              array: ["u8", 32],
+              array: ["u8", 64],
             },
           },
         ],
@@ -1678,6 +1702,88 @@ const IDL: Xnft = {
     },
   ],
   types: [
+    {
+      name: "CreatorsParam",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "address",
+            type: "publicKey",
+          },
+          {
+            name: "share",
+            type: "u8",
+          },
+        ],
+      },
+    },
+    {
+      name: "CreateXnftParams",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "symbol",
+            type: "string",
+          },
+          {
+            name: "tag",
+            type: {
+              defined: "Tag",
+            },
+          },
+          {
+            name: "kind",
+            type: {
+              defined: "Kind",
+            },
+          },
+          {
+            name: "l1",
+            type: {
+              defined: "L1",
+            },
+          },
+          {
+            name: "uri",
+            type: "string",
+          },
+          {
+            name: "sellerFeeBasisPoints",
+            type: "u16",
+          },
+          {
+            name: "installPrice",
+            type: "u64",
+          },
+          {
+            name: "installVault",
+            type: "publicKey",
+          },
+          {
+            name: "supply",
+            type: {
+              option: "u64",
+            },
+          },
+          {
+            name: "collection",
+            type: {
+              option: "publicKey",
+            },
+          },
+          {
+            name: "creators",
+            type: {
+              vec: {
+                defined: "CreatorsParam",
+              },
+            },
+          },
+        ],
+      },
+    },
     {
       name: "UpdateParams",
       type: {
@@ -1725,6 +1831,9 @@ const IDL: Xnft = {
         variants: [
           {
             name: "App",
+          },
+          {
+            name: "Collection",
           },
         ],
       },
@@ -1824,31 +1933,36 @@ const IDL: Xnft = {
     },
     {
       code: 6001,
+      name: "CollectionWithoutKind",
+      msg: "A collection pubkey was provided without the collection Kind variant",
+    },
+    {
+      code: 6002,
       name: "InstallAuthorityMismatch",
       msg: "The asserted authority did not match that of the Install account",
     },
     {
-      code: 6002,
+      code: 6003,
       name: "InstallExceedsSupply",
       msg: "The max supply has been reached for the xNFT.",
     },
     {
-      code: 6003,
+      code: 6004,
       name: "NameTooLong",
       msg: "The name provided for creating the xNFT exceeded the byte limit",
     },
     {
-      code: 6004,
+      code: 6005,
       name: "RatingOutOfBounds",
       msg: "The rating for a review must be between 0 and 5",
     },
     {
-      code: 6005,
+      code: 6006,
       name: "ReviewInstallMismatch",
       msg: "The installation provided for the review does not match the xNFT",
     },
     {
-      code: 6006,
+      code: 6007,
       name: "SuspendedInstallation",
       msg: "Attempting to install a currently suspended xNFT",
     },
