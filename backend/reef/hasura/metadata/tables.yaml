@@ -1,9 +1,0 @@
-- table:
-    name: invitations
-    schema: auth
-- table:
-    name: users
-    schema: auth
-- table:
-    name: invitations
-    schema: public

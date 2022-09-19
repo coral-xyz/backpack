@@ -5,24 +5,24 @@ services:
     image: postgres:14-alpine
     restart: unless-stopped
     ports:
-      - 4444:5432
+      - 4445:5432
     volumes:
       - data:/var/lib/postgresql/data
     command: "postgres -c listen_addresses='*'"
     healthcheck:
-      test: pg_isready --username=pg --dbname=db --quiet
+      test: pg_isready --username=user --dbname=reef_dev --quiet
       interval: 15s
       timeout: 5s
       retries: 5
     environment:
-      POSTGRES_DB: db
+      POSTGRES_DB: reef_dev
       POSTGRES_PASSWORD: pass
-      POSTGRES_USER: pg
+      POSTGRES_USER: user
 
   hasura:
-    image: hasura/graphql-engine:latest.cli-migrations-v2
+    image: hasura/graphql-engine:latest.cli-migrations-v3
     ports:
-      - 8111:8080
+      - 8112:8080
     depends_on:
       - postgres
     volumes:
@@ -31,21 +31,13 @@ services:
     restart: always
     environment:
       HASURA_GRAPHQL_CORS_DOMAIN: "*"
-      HASURA_GRAPHQL_DATABASE_URL: postgres://pg:pass@postgres/db
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://user:pass@postgres/reef_dev
+      PG_DATABASE_URL: postgres://user:pass@postgres/reef_dev
       HASURA_GRAPHQL_DEV_MODE: "true"
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
-      # ## postgres database to store Hasura metadata
-      # HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://pg:pg@timescaledb:5432/pg
-      # ## this env var can be used to add the above postgres database to Hasura as a data source. this can be removed/updated based on your needs
-      # PG_DATABASE_URL: postgres://pg:pg@timescaledb:5432/pg
-      # ## enable the console served by server
-      # HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
-      # ## enable debugging mode. It is recommended to disable this in production
-      # HASURA_GRAPHQL_DEV_MODE: "true"
-      # HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
-      # ## uncomment next line to set an admin secret
       HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anon
+
 volumes:
   data:

@@ -1,7 +1,7 @@
 -- Could not auto-generate a down migration.
 -- Please write an appropriate down migration for the SQL below:
--- DROP FUNCTION IF EXISTS check_if_nvitation_exists CASCADE;
--- CREATE FUNCTION check_if_nvitation_exists()
+-- DROP FUNCTION IF EXISTS check_if_invitation_exists CASCADE;
+-- CREATE FUNCTION check_if_invitation_exists()
 --    RETURNS TRIGGER
 --    LANGUAGE PLPGSQL
 -- AS $$
@@ -14,4 +14,4 @@
 -- CREATE TRIGGER on_create_user
 --    BEFORE INSERT ON auth.users
 --    FOR EACH ROW
---    EXECUTE PROCEDURE check_if_nvitation_exists();
+--    EXECUTE PROCEDURE check_if_invitation_exists();
