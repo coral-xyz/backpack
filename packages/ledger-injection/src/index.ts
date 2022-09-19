@@ -1,7 +1,7 @@
 import Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
 import Solana from "@ledgerhq/hw-app-solana";
-import Ethereum, { ledgerService } from "@ledgerhq/hw-app-eth";
+import Ethereum from "@ledgerhq/hw-app-eth";
 import { ethers } from "ethers";
 import { UnsignedTransaction } from "@ethersproject/transactions";
 import {

@@ -7,6 +7,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import { Typography } from "@mui/material";
 import {
   useDecodedSearchParams,
   useNavigation,
@@ -187,6 +188,7 @@ function WithMotionWrapper({ children }: { children: any }) {
 function useNavBar() {
   let { isRoot } = useNavigation();
   const pathname = useLocation().pathname;
+  const theme = useCustomTheme();
 
   let navButtonLeft = null as any;
   let navButtonRight = null as any;
@@ -196,8 +198,22 @@ function useNavBar() {
   } as React.CSSProperties;
 
   if (isRoot) {
-    navButtonLeft = <SettingsButton />;
-    navButtonRight = <RecentActivityButton />;
+    navButtonRight = <SettingsButton />;
+    navButtonLeft = (
+      <Typography
+        style={{
+          fontSize: "22px",
+          color: theme.custom.colors.fontColor,
+          fontWeight: 600,
+        }}
+      >
+        {pathname.startsWith("/balances")
+          ? "Balances"
+          : pathname.startsWith("/apps")
+          ? "Applications"
+          : "Collectibles"}
+      </Typography>
+    );
   } else if (pathname === "/balances/token") {
     navButtonRight = null;
   } else if (pathname === "/nfts/detail") {

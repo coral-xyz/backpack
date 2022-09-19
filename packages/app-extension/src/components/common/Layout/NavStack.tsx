@@ -17,7 +17,7 @@ export function NavStackEphemeral({
   navButtonRight,
   navButtonLeft,
 }: {
-  initialRoute: { name: string; props?: any };
+  initialRoute: { name: string; title?: string; props?: any };
   children: any;
   options: NavStackOptions;
   style?: React.CSSProperties;
