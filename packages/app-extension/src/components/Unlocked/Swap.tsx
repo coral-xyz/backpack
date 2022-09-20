@@ -812,7 +812,6 @@ export function SelectToken({
   tokenAccounts: Token[];
   customFilter: (token: Token) => boolean;
 }) {
-  console.log("ARMANI SELECT TOKEN", setMint, tokenAccounts, customFilter);
   const nav = useNavStack();
   const onClickRow = (_blockchain: Blockchain, token: Token) => {
     setMint(token.mint!);

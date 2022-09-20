@@ -52,13 +52,6 @@ const useStyles = styles((theme: CustomTheme) => ({
       backgroundColor: theme.custom.colors.primaryButton,
     },
   },
-  buttonLabel: {
-    color: theme.custom.colors.buttonFontColor,
-    fontWeight: 500,
-    fontSize: "16px",
-    lineHeight: "24px",
-    textTransform: "none",
-  },
   header: {
     color: theme.custom.colors.fontColor,
     fontSize: "24px",
@@ -208,6 +201,7 @@ export function PrimaryButton({
   buttonLabelStyle?: React.CSSProperties;
   label?: string;
 } & React.ComponentProps<typeof Button>) {
+  const theme = useCustomTheme();
   const classes = useStyles();
   return (
     <Button
@@ -216,7 +210,15 @@ export function PrimaryButton({
       className={classes.button}
       variant="contained"
       {...buttonProps}
-      style={buttonProps.style}
+      style={{
+        backgroundColor: theme.custom.colors.primaryButton,
+        color: theme.custom.colors.primaryButtonTextColor,
+        fontWeight: 500,
+        fontSize: "16px",
+        lineHeight: "24px",
+        textTransform: "none",
+        ...buttonProps.style,
+      }}
     >
       <Typography style={buttonLabelStyle} className={classes.buttonLabel}>
         {label}
@@ -236,7 +238,7 @@ export function SecondaryButton({
   const theme = useCustomTheme();
   const buttonStyle = {
     backgroundColor: theme.custom.colors.secondaryButton,
-    color: "inherit",
+    color: theme.custom.colors.secondaryButtonTextColor,
     ...buttonProps.style,
   };
   return (

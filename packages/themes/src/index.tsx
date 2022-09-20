@@ -22,15 +22,14 @@ const SCROLLBAR_THUMB_COLOR = "rgb(153 164 180)";
 
 const LIGHT_BACKGROUND_BACKDROP_COLOR =
   "linear-gradient(180deg, #FFFFFF 0%, #F0F0F2 100%);";
-const LIGHT_BACKGROUND_COLOR_0 = "#F0F0F2"; //"#ECEFF3";
+const LIGHT_BACKGROUND_COLOR_0 = "#F0F0F2";
 const LIGHT_BACKGROUND_COLOR_1 = "#ffffff";
-const LIGHT_BACKGROUND_COLOR_2 = LIGHT_BACKGROUND_COLOR_0;
-//const LIGHT_FONT_COLOR = "#43546D";
-const LIGHT_FONT_COLOR = "#212938"; //"#030A19";
+const LIGHT_BACKGROUND_COLOR_2 = LIGHT_BACKGROUND_COLOR_1;
+const LIGHT_FONT_COLOR = "#212938";
 const LIGHT_FONT_COLOR_1 = "#67758B";
-const LIGHT_FONT_COLOR_2 = "#D4D4D8";
+const LIGHT_FONT_COLOR_2 = LIGHT_FONT_COLOR;
 const LIGHT_FONT_COLOR_3 = LIGHT_FONT_COLOR_1;
-const LIGHT_BRAND_COLOR = LIGHT_FONT_COLOR; //"#030A19"; //BRAND_COLOR;
+const LIGHT_BRAND_COLOR = LIGHT_FONT_COLOR;
 const LIGHT_BUTTON_FONT_COLOR = FONT_COLOR;
 const LIGHT_BORDER_COLOR = "#F0F0F2;";
 const LIGHT_BORDER_COLOR_1 = "#DBDADB";
@@ -117,11 +116,14 @@ export const darkTheme: any = {
       subtext: FONT_COLOR_3,
       secondary: FONT_COLOR_1,
       primaryButton: BRAND_COLOR,
+      primaryButtonTextColor: BACKGROUND_COLOR_1,
       secondaryButton: BACKGROUND_COLOR_2,
+      secondaryButtonTextColor: FONT_COLOR,
       buttonFontColor: BUTTON_FONT_COLOR,
       border1: BACKGROUND_COLOR_2,
       border: BACKGROUND_COLOR_1, // Don't use this.
       borderColor: BORDER_COLOR,
+      textFieldTextColor: FONT_COLOR_2,
 
       dangerButton: DANGER_COLOR,
       alpha: FONT_COLOR_2,
@@ -152,7 +154,9 @@ export const lightTheme: any = {
       subtext: LIGHT_FONT_COLOR_3,
       secondary: LIGHT_FONT_COLOR_1,
       primaryButton: LIGHT_BRAND_COLOR,
+      primaryButtonTextColor: LIGHT_BACKGROUND_COLOR_1,
       secondaryButton: LIGHT_BACKGROUND_COLOR_2,
+      secondaryButtonTextColor: LIGHT_FONT_COLOR,
       buttonFontColor: LIGHT_BUTTON_FONT_COLOR,
       border: LIGHT_BACKGROUND_COLOR_1,
       border1: LIGHT_BORDER_COLOR_1,
