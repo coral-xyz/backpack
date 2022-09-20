@@ -320,8 +320,6 @@ function InputTextField() {
     exceedsBalance,
   } = useSwapContext();
 
-  console.log("FROM MINT INFO", fromMintInfo);
-
   return (
     <>
       <TextFieldLabel
@@ -764,11 +762,17 @@ function OutputTokenSelectorButton() {
       selectedMint={toMint}
       tokenAccounts={tokenAccounts}
       setMint={setToMint}
+      displayWalletHeader={false}
     />
   );
 }
 
-function TokenSelectorButton({ selectedMint, tokenAccounts, setMint }: any) {
+function TokenSelectorButton({
+  selectedMint,
+  tokenAccounts,
+  setMint,
+  displayWalletHeader,
+}: any) {
   const classes = useStyles();
   const nav = useNavStack();
   const tokenRegistry = useSplTokenRegistry();
@@ -783,6 +787,7 @@ function TokenSelectorButton({ selectedMint, tokenAccounts, setMint }: any) {
           nav.push("select-token", {
             setMint: (...args: any) => setMint(...args),
             tokenAccounts,
+            displayWalletHeader,
           })
         }
         style={{
@@ -807,12 +812,13 @@ export function SelectToken({
   setMint,
   tokenAccounts,
   customFilter,
+  displayWalletHeader,
 }: {
   setMint: (mint: string) => void;
   tokenAccounts: Token[];
   customFilter: (token: Token) => boolean;
+  displayWalletHeader: boolean;
 }) {
-  console.log("ARMANI SELECT TOKEN", setMint, tokenAccounts, customFilter);
   const nav = useNavStack();
   const onClickRow = (_blockchain: Blockchain, token: Token) => {
     setMint(token.mint!);
@@ -825,6 +831,7 @@ export function SelectToken({
       onClickRow={onClickRow}
       tokenAccounts={tokenAccounts}
       customFilter={customFilter}
+      displayWalletHeader={displayWalletHeader}
     />
   );
 }
