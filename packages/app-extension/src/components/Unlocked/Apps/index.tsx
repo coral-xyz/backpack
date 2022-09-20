@@ -64,6 +64,7 @@ export function Apps() {
           paddingLeft: "10px",
           paddingRight: "10px",
           background: theme.custom.colors.nav,
+          boxShadow: theme.custom.colors.boxShadow,
           borderRadius: "10px",
         }}
       >

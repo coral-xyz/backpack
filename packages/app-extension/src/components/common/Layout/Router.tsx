@@ -204,16 +204,16 @@ function useNavBar() {
     navButtonLeft = (
       <Typography
         style={{
-          fontSize: "22px",
+          fontSize: "18px",
           color: theme.custom.colors.fontColor,
           fontWeight: 600,
         }}
       >
         {pathname.startsWith("/balances")
-          ? "💸 Balances"
+          ? "Balances"
           : pathname.startsWith("/apps")
-          ? "👾 Applications"
-          : "🎨 Collectibles"}
+          ? "Applications"
+          : "Collectibles"}
       </Typography>
     );
   } else if (pathname === "/balances/token") {

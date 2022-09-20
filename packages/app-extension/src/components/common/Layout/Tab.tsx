@@ -32,6 +32,7 @@ const useStyles = styles((theme) => ({
     minHeight: `${TAB_HEIGHT}px`,
     backgroundColor: theme.custom.colors.nav,
     borderTop: `solid 1pt ${theme.custom.colors.border}`,
+    boxShadow: theme.custom.colors.tabBarBoxShadow,
   },
   tabIndicator: {
     color: "none",

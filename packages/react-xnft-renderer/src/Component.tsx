@@ -33,7 +33,7 @@ const useStyles = styles((theme) => ({
     marginLeft: "12px",
     marginRight: "12px",
     borderRadius: "12px",
-    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
+    boxShadow: theme.custom.colors.boxShadow,
   },
   cardHeaderAvatar: {
     display: "flex",

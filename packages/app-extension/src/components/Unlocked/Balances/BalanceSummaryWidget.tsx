@@ -17,8 +17,8 @@ const useStyles = styles((theme) => ({
     paddingLeft: "24px",
     paddingRight: "24px",
     paddingTop: "20px",
-    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
-    background: "url(assets/coral-balances.png)",
+    //    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
+    //    background: "url(assets/coral-balances.png)",
     backgroundRepeat: "round",
     height: "110px",
     width: "100%",
@@ -57,7 +57,7 @@ export function BalanceSummaryWidget() {
       <div
         className={classes.balancesHeaderContainer}
         style={{
-          textAlign: "left",
+          textAlign: "center",
           marginLeft: "12px",
           marginRight: "12px",
           borderRadius: "12px",
@@ -77,9 +77,13 @@ export function BalanceSummaryWidget() {
             marginTop: "6px",
           }}
         >
+          <div style={{ flex: 1 }} />
           <Typography
             style={{
-              color: theme.custom.colors.fontColor,
+              color:
+                totalChange < 0
+                  ? theme.custom.colors.negative
+                  : theme.custom.colors.positive,
               paddingLeft: "0px",
               paddingRight: "0px",
               paddingTop: "2px",
@@ -94,13 +98,16 @@ export function BalanceSummaryWidget() {
           {Number.isFinite(percentChange) && (
             <Typography
               style={{
-                color: theme.custom.colors.fontColor,
-                paddingLeft: "8px",
-                paddingRight: "8px",
+                color:
+                  totalChange < 0
+                    ? theme.custom.colors.negative
+                    : theme.custom.colors.positive,
+                //                paddingLeft: "8px",
+                //                paddingRight: "8px",
                 paddingTop: "2px",
                 paddingBottom: "2px",
-                background: "rgba(255, 255, 255, 0.2)",
-                borderRadius: "28px",
+                //                background: "rgba(255, 255, 255, 0.2)",
+                //                borderRadius: "28px",
                 lineHeight: "24px",
               }}
             >
@@ -108,6 +115,7 @@ export function BalanceSummaryWidget() {
               {`${percentChange.toFixed(2)}%`}
             </Typography>
           )}
+          <div style={{ flex: 1 }} />
         </div>
       </div>
     </div>
