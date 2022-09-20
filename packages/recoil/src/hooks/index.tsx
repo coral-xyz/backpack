@@ -10,4 +10,5 @@ export * from "./wallet";
 export * from "./ethereum";
 export * from "./useBlockchain";
 export * from "./useNftMetadata";
+export * from "./useTotalBalance";
 export * from "./useTransactionData";
