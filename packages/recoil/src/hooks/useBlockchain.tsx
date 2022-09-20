@@ -43,10 +43,6 @@ export function useBlockchainTokensSorted(blockchain: Blockchain) {
   return useRecoilValue(atoms.blockchainBalancesSorted(blockchain));
 }
 
-export function useBlockchainTokensSortedLoadable(blockchain: Blockchain) {
-  return useRecoilValueLoadable(atoms.blockchainBalancesSorted(blockchain));
-}
-
 export function useBlockchainTokenAccount(
   blockchain: Blockchain,
   address: string
