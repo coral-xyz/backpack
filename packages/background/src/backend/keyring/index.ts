@@ -445,9 +445,6 @@ export class KeyringStore {
 
   public async activeWallets(): Promise<string[]> {
     return this.withUnlock(async () => {
-      console.log(
-        [...this.blockchains.values()].map((bc) => bc.getActiveWallet())
-      );
       return [...this.blockchains.values()].map((bc) => bc.getActiveWallet()!);
     });
   }
