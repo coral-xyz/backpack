@@ -291,7 +291,7 @@ export function TokenTable({
 }
 
 //
-// Token row renderer if virtualizatio is used for the table.
+// Token row renderer if virtualization is used for the table.
 // Cuts down on rerenders.
 //
 const WindowedTokenRowRenderer = ({
