@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Typography } from "@mui/material";
-import { Blockchain, ETH_NATIVE_MINT } from "@coral-xyz/common";
+import { Blockchain } from "@coral-xyz/common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Button } from "@coral-xyz/react-xnft-renderer";
 import type { SearchParamsFor } from "@coral-xyz/recoil";

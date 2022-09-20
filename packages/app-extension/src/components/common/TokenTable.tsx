@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { FixedSizeList as WindowedList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button as MuiButton } from "@mui/material";
@@ -15,7 +15,6 @@ import {
   useBlockchainLogo,
   useBlockchainTokensSorted,
   useLoader,
-  useSolanaConnectionUrl,
 } from "@coral-xyz/recoil";
 import {
   TextField,
@@ -159,14 +158,13 @@ export function TokenTables({
   return (
     <>
       {filteredBlockchains.map((blockchain) => (
-        <Suspense key={blockchain} fallback={<></>}>
-          <TokenTable
-            blockchain={blockchain}
-            onClickRow={onClickRow}
-            searchFilter={searchFilter}
-            customFilter={customFilter}
-          />
-        </Suspense>
+        <TokenTable
+          key={blockchain}
+          blockchain={blockchain}
+          onClickRow={onClickRow}
+          searchFilter={searchFilter}
+          customFilter={customFilter}
+        />
       ))}
     </>
   );
@@ -191,14 +189,14 @@ export function TokenTable({
   const activeWallets = useActiveWallets();
   const wallet = activeWallets.filter((w) => w.blockchain === blockchain)[0];
 
-  const [balances] = tokenAccounts
+  const [_tokenAccounts] = tokenAccounts
     ? [tokenAccounts, "hasValue"]
     : useLoader(blockchainBalancesSorted(blockchain), [], [wallet]);
 
   const [search, setSearch] = useState(searchFilter.toLowerCase());
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
-  const balancesFiltered = balances
+  const tokenAccountsFiltered = _tokenAccounts
     .filter(
       (t: any) =>
         t.name &&
@@ -217,12 +215,12 @@ export function TokenTable({
     navigator.clipboard.writeText(wallet.publicKey.toString());
   };
 
-  const useVirtualization = balancesFiltered.length > 100;
+  const useVirtualization = tokenAccountsFiltered.length > 100;
   // Note: if this fixed height changes in react-xnft-renderer it'll need to be changed here
   const rowHeight = 68;
   const headHeight = 36;
   // Row height times number of rows plus header height
-  const tableHeight = balancesFiltered.length * rowHeight + headHeight;
+  const tableHeight = tokenAccountsFiltered.length * rowHeight + headHeight;
 
   return (
     <BalancesTable
@@ -258,10 +256,10 @@ export function TokenTable({
                 <WindowedList
                   height={height}
                   width={width}
-                  itemCount={balancesFiltered.length}
+                  itemCount={tokenAccountsFiltered.length}
                   itemSize={rowHeight}
                   itemData={{
-                    tokenList: balancesFiltered,
+                    tokenList: tokenAccountsFiltered,
                     blockchain,
                     onClickRow: (token: Token) => onClickRow(blockchain, token),
                   }}
@@ -274,7 +272,7 @@ export function TokenTable({
           </AutoSizer>
         ) : (
           <>
-            {balancesFiltered.map((token: any) => (
+            {tokenAccountsFiltered.map((token: any) => (
               <TokenRow
                 key={token.address}
                 token={token}
