@@ -124,6 +124,8 @@ export const darkTheme: any = {
       border: BACKGROUND_COLOR_1, // Don't use this.
       borderColor: BORDER_COLOR,
       textFieldTextColor: FONT_COLOR_2,
+      copyTooltipColor: BRAND_COLOR,
+      copyTooltipTextColor: FONT_COLOR_1,
 
       dangerButton: DANGER_COLOR,
       alpha: FONT_COLOR_2,
@@ -161,6 +163,8 @@ export const lightTheme: any = {
       border: LIGHT_BACKGROUND_COLOR_1,
       border1: LIGHT_BORDER_COLOR_1,
       borderColor: LIGHT_BORDER_COLOR_1,
+      copyTooltipColor: LIGHT_BRAND_COLOR,
+      copyTooltipTextColor: LIGHT_BACKGROUND_COLOR_1,
 
       dangerButton: DANGER_COLOR,
       alpha: LIGHT_FONT_COLOR,
