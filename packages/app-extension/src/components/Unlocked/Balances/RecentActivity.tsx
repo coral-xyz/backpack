@@ -241,11 +241,10 @@ export function _RecentActivityList({
       style={{
         marginTop: "16px",
         paddingTop: 0,
-        paddingBottom: 0,
         marginLeft: "16px",
         marginRight: "16px",
         borderRadius: "12px",
-        marginBottom: "16px",
+        paddingBottom: "16px",
         ...style,
       }}
     >

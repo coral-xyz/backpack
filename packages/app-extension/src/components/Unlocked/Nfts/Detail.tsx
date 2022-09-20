@@ -209,7 +209,6 @@ function SendScreen({ nft }: { nft: any }) {
         style={{
           paddingLeft: "16px",
           paddingRight: "16px",
-          paddingBottom: "16px",
           height: "100%",
         }}
       >
@@ -240,6 +239,7 @@ function SendScreen({ nft }: { nft: any }) {
               display: "flex",
               justifyContent: "space-between",
               paddingTop: "18px",
+              paddingBottom: "16px",
             }}
           >
             <SecondaryButton
