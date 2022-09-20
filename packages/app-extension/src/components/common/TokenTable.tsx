@@ -104,11 +104,13 @@ export function SearchableTokenTable({
   onClickRow,
   tokenAccounts,
   customFilter = () => true,
+  displayWalletHeader = true,
 }: {
   blockchain: Blockchain;
   onClickRow: (blockchain: Blockchain, token: Token) => void;
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   customFilter: (token: Token) => boolean;
+  displayWalletHeader?: boolean;
 }) {
   const classes = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
@@ -131,6 +133,7 @@ export function SearchableTokenTable({
         tokenAccounts={tokenAccounts}
         searchFilter={searchFilter}
         customFilter={customFilter}
+        displayWalletHeader={displayWalletHeader}
       />
     </>
   );
@@ -176,12 +179,14 @@ export function TokenTable({
   tokenAccounts,
   searchFilter = "",
   customFilter = () => true,
+  displayWalletHeader = true,
 }: {
   blockchain: Blockchain;
   onClickRow: (blockchain: Blockchain, token: Token) => void;
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   searchFilter?: string;
   customFilter?: (token: Token) => boolean;
+  displayWalletHeader?: boolean;
 }) {
   const classes = useStyles();
   const title = toTitleCase(blockchain);
@@ -193,20 +198,21 @@ export function TokenTable({
     ? [tokenAccounts, "hasValue"]
     : useLoader(blockchainBalancesSorted(blockchain), [], [wallet]);
 
-  const [search, setSearch] = useState(searchFilter.toLowerCase());
+  const [search, setSearch] = useState(searchFilter);
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
+  const searchLower = search.toLowerCase();
   const tokenAccountsFiltered = _tokenAccounts
     .filter(
       (t: any) =>
         t.name &&
-        (t.name.toLowerCase().startsWith(search) ||
-          t.ticker.toLowerCase().startsWith(search))
+        (t.name.toLowerCase().startsWith(searchLower) ||
+          t.ticker.toLowerCase().startsWith(searchLower))
     )
     .filter(customFilter);
 
   useEffect(() => {
-    setSearch(searchFilter.toLowerCase());
+    setSearch(searchFilter);
   }, [searchFilter]);
 
   const onCopy = () => {
@@ -218,9 +224,11 @@ export function TokenTable({
   const useVirtualization = tokenAccountsFiltered.length > 100;
   // Note: if this fixed height changes in react-xnft-renderer it'll need to be changed here
   const rowHeight = 68;
-  const headHeight = 36;
-  // Row height times number of rows plus header height
-  const tableHeight = tokenAccountsFiltered.length * rowHeight + headHeight;
+  const headerHeight = 36;
+  // If using virtualization, restrict the table height to 6 rows with an internal scrollbar
+  const tableHeight = useVirtualization
+    ? headerHeight + Math.min(tokenAccountsFiltered.length, 6) * rowHeight
+    : headerHeight + tokenAccountsFiltered.length * rowHeight;
 
   return (
     <BalancesTable
@@ -231,7 +239,7 @@ export function TokenTable({
           title,
           iconUrl: blockchainLogo,
           disableToggle: false,
-          subtitle: (
+          subtitle: displayWalletHeader && (
             <WithCopyTooltip tooltipOpen={tooltipOpen}>
               <MuiButton
                 disableRipple
@@ -263,7 +271,7 @@ export function TokenTable({
                     blockchain,
                     onClickRow: (token: Token) => onClickRow(blockchain, token),
                   }}
-                  overscanCount={24}
+                  overscanCount={12}
                 >
                   {WindowedTokenRowRenderer}
                 </WindowedList>
@@ -286,10 +294,10 @@ export function TokenTable({
   );
 }
 
-/**
- * Token row renderer if virtualizatio is used for the table.
- * Cuts down on rerenders.
- */
+//
+// Token row renderer if virtualization is used for the table.
+// Cuts down on rerenders.
+//
 const WindowedTokenRowRenderer = ({
   index,
   data,
@@ -310,9 +318,9 @@ const WindowedTokenRowRenderer = ({
   );
 };
 
-/**
- * Displays an individual token row in the table
- */
+//
+// Displays an individual token row in the table
+//
 function TokenRow({
   onClick,
   token,

@@ -1,4 +1,4 @@
-import { selectorFamily, selector } from "recoil";
+import { selector, selectorFamily } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
 import { solanaTokenBalance, solanaTokenAccountKeys } from "./solana/token";
 import { ethereumTokenBalance } from "./ethereum/token";
