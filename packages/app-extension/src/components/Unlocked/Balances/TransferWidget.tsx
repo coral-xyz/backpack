@@ -27,7 +27,7 @@ export function TransferWidget({
     <div
       style={{
         display: "flex",
-        width: blockchain !== Blockchain.ETHEREUM ? "178px" : "120px",
+        width: blockchain !== Blockchain.ETHEREUM ? "191px" : "120px",
         marginLeft: "auto",
         marginRight: "auto",
       }}

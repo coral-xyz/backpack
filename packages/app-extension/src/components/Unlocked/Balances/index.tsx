@@ -31,8 +31,8 @@ export function Balances() {
       <BalanceSummaryWidget />
       <div
         style={{
-          //          marginTop: "20px",
-          marginBottom: "20px",
+          marginTop: "32px",
+          marginBottom: "32px",
         }}
       >
         <TransferWidget />
