@@ -21,7 +21,6 @@ import {
   useActiveWallets,
   useBlockchainLogo,
   useBlockchainTokensSorted,
-  useSolanaConnectionUrl,
 } from "@coral-xyz/recoil";
 import { WithCopyTooltip } from "./WithCopyTooltip";
 
@@ -103,11 +102,13 @@ export function SearchableTokenTable({
   onClickRow,
   tokenAccounts,
   customFilter = () => true,
+  displayWalletHeader = true,
 }: {
   blockchain: Blockchain;
   onClickRow: (blockchain: Blockchain, token: Token) => void;
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   customFilter: (token: Token) => boolean;
+  displayWalletHeader?: boolean;
 }) {
   const classes = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
@@ -130,6 +131,7 @@ export function SearchableTokenTable({
         tokenAccounts={tokenAccounts}
         searchFilter={searchFilter}
         customFilter={customFilter}
+        displayWalletHeader={displayWalletHeader}
       />
     </>
   );
@@ -175,15 +177,16 @@ export function TokenTable({
   tokenAccounts,
   searchFilter = "",
   customFilter = () => true,
+  displayWalletHeader = true,
 }: {
   blockchain: Blockchain;
   onClickRow: (blockchain: Blockchain, token: Token) => void;
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   searchFilter?: string;
   customFilter?: (token: Token) => boolean;
+  displayWalletHeader?: boolean;
 }) {
   const classes = useStyles();
-  const connectionUrl = useSolanaConnectionUrl();
   const title = toTitleCase(blockchain);
   const blockchainLogo = useBlockchainLogo(blockchain);
   const tokenAccountsSorted = tokenAccounts
@@ -195,18 +198,14 @@ export function TokenTable({
   const wallet = activeWallets.filter((w) => w.blockchain === blockchain)[0];
 
   const searchLower = search.toLowerCase();
-  // TODO: support more than 100 tokens.
-  const tokenAccountsFiltered =
-    blockchain === "solana" && connectionUrl === "https://api.devnet.solana.com"
-      ? tokenAccountsSorted.slice(0, 100)
-      : tokenAccountsSorted
-          .filter(
-            (t) =>
-              t.name &&
-              (t.name.toLowerCase().startsWith(searchLower) ||
-                t.ticker.toLowerCase().startsWith(searchLower))
-          )
-          .filter(customFilter);
+  const tokenAccountsFiltered = tokenAccountsSorted
+    .filter(
+      (t) =>
+        t.name &&
+        (t.name.toLowerCase().startsWith(searchLower) ||
+          t.ticker.toLowerCase().startsWith(searchLower))
+    )
+    .filter(customFilter);
 
   useEffect(() => {
     setSearch(searchFilter);
@@ -221,17 +220,22 @@ export function TokenTable({
   const useVirtualization = tokenAccountsFiltered.length > 100;
   // Note: if this fixed height changes in react-xnft-renderer it'll need to be changed here
   const rowHeight = 68;
+  const headerHeight = 36;
+  // If using virtualization, restrict the table height to 6 rows with an internal scrollbar
+  const tableHeight = useVirtualization
+    ? headerHeight + Math.min(tokenAccountsFiltered.length, 6) * rowHeight
+    : headerHeight + tokenAccountsFiltered.length * rowHeight;
 
   return (
     <BalancesTable
-      style={useVirtualization ? { height: "calc(100% - 92px)" } : {}}
+      style={useVirtualization ? { height: `${tableHeight}px` } : {}}
     >
       <BalancesTableHead
         props={{
           title,
           iconUrl: blockchainLogo,
           disableToggle: false,
-          subtitle: (
+          subtitle: displayWalletHeader && (
             <WithCopyTooltip tooltipOpen={tooltipOpen}>
               <MuiButton
                 disableRipple
@@ -263,7 +267,7 @@ export function TokenTable({
                     blockchain,
                     onClickRow: (token: Token) => onClickRow(blockchain, token),
                   }}
-                  overscanCount={24}
+                  overscanCount={12}
                 >
                   {WindowedTokenRowRenderer}
                 </WindowedList>
@@ -286,6 +290,10 @@ export function TokenTable({
   );
 }
 
+//
+// Token row renderer if virtualization is used for the table.
+// Cuts down on rerenders.
+//
 const WindowedTokenRowRenderer = ({
   index,
   data,
@@ -306,6 +314,9 @@ const WindowedTokenRowRenderer = ({
   );
 };
 
+//
+// Displays an individual token row in the table
+//
 function TokenRow({
   onClick,
   token,
