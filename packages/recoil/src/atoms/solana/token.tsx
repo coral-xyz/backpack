@@ -33,7 +33,7 @@ export const customSplTokenAccounts = atom({
         return {
           splTokenAccounts,
           splTokenMetadata: tokenMetadata,
-          splNftMetadata: nftMetadata,
+          splNftMetadata: new Map(nftMetadata),
         };
       } catch (error) {
         console.error("could not fetch solana token data", error);

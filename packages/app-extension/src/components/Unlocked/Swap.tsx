@@ -11,7 +11,6 @@ import { Close, ExpandMore, SwapVert } from "@mui/icons-material";
 import { Button as XnftButton } from "@coral-xyz/react-xnft-renderer";
 import {
   useSplTokenRegistry,
-  useJupiterInputMints,
   useJupiterOutputMints,
   useSwapContext,
 } from "@coral-xyz/recoil";
@@ -21,8 +20,6 @@ import {
   SOL_NATIVE_MINT,
   ETH_NATIVE_MINT,
   WSOL_MINT,
-  TAB_BALANCES,
-  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
 } from "@coral-xyz/common";
 import { useNavStack } from "../common/Layout/NavStack";
 import {
@@ -319,8 +316,6 @@ function InputTextField() {
     availableForSwap,
     exceedsBalance,
   } = useSwapContext();
-
-  console.log("FROM MINT INFO", fromMintInfo);
 
   return (
     <>
@@ -735,16 +730,14 @@ export function CloseButton({
 }
 
 function InputTokenSelectorButton() {
-  const { fromMint, setFromMint } = useSwapContext();
-  const tokenAccounts = useJupiterInputMints();
-  const tokenAccountsFiltered = tokenAccounts.filter((token: Token) => {
+  const { inputTokenAccounts, fromMint, setFromMint } = useSwapContext();
+  const tokenAccountsFiltered = inputTokenAccounts.filter((token: Token) => {
     if (token.mint && token.mint === SOL_NATIVE_MINT) {
       return true;
     }
     if (token.address && token.address === ETH_NATIVE_MINT) {
       return true;
     }
-
     return !token.nativeBalance.isZero();
   });
   return (

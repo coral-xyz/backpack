@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { RecoilValue, useRecoilValueLoadable } from "recoil";
 
+/**
+ * This is a hook to maintain state while recoil is updating.
+ * See https://github.com/facebookexperimental/Recoil/issues/290
+ * It may be possible to replace this with React 18 useTransition.
+ */
 export function useLoader<T>(
   loadable: RecoilValue<T>,
   defaultValue: T,

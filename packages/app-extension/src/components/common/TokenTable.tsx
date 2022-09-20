@@ -186,30 +186,26 @@ export function TokenTable({
   customFilter?: (token: Token) => boolean;
 }) {
   const classes = useStyles();
-  const connectionUrl = useSolanaConnectionUrl();
   const title = toTitleCase(blockchain);
   const blockchainLogo = useBlockchainLogo(blockchain);
   const activeWallets = useActiveWallets();
   const wallet = activeWallets.filter((w) => w.blockchain === blockchain)[0];
-  const [balances, balancesState] = tokenAccounts
+
+  const [balances] = tokenAccounts
     ? [tokenAccounts, "hasValue"]
     : useLoader(blockchainBalancesSorted(blockchain), [], [wallet]);
 
   const [search, setSearch] = useState(searchFilter.toLowerCase());
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
-  const balancesFiltered =
-    blockchain === Blockchain.SOLANA &&
-    connectionUrl === "https://api.devnet.solana.com"
-      ? balances.slice(0, 100)
-      : balances
-          .filter(
-            (t: any) =>
-              t.name &&
-              (t.name.toLowerCase().startsWith(search) ||
-                t.ticker.toLowerCase().startsWith(search))
-          )
-          .filter(customFilter);
+  const balancesFiltered = balances
+    .filter(
+      (t: any) =>
+        t.name &&
+        (t.name.toLowerCase().startsWith(search) ||
+          t.ticker.toLowerCase().startsWith(search))
+    )
+    .filter(customFilter);
 
   useEffect(() => {
     setSearch(searchFilter.toLowerCase());
@@ -221,10 +217,12 @@ export function TokenTable({
     navigator.clipboard.writeText(wallet.publicKey.toString());
   };
 
-  const useVirtualization = true; // balancesFiltered.length > 100;
+  const useVirtualization = balancesFiltered.length > 100;
   // Note: if this fixed height changes in react-xnft-renderer it'll need to be changed here
   const rowHeight = 68;
-  const tableHeight = balancesFiltered.length * rowHeight + 36;
+  const headHeight = 36;
+  // Row height times number of rows plus header height
+  const tableHeight = balancesFiltered.length * rowHeight + headHeight;
 
   return (
     <BalancesTable

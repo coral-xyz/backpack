@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection } from "@solana/web3.js";
 import type {
   Commitment,
   GetSupplyConfig,
@@ -59,20 +59,19 @@ import type {
   SignatureStatus,
   PerfSample,
   BlockheightBasedTransactionConfirmationStrategy,
+  PublicKey,
 } from "@solana/web3.js";
 import type { Notification, EventEmitter } from "@coral-xyz/common";
 import {
   getLogger,
   customSplTokenAccounts,
-  Blockchain,
   confirmTransaction,
   BACKEND_EVENT,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
-  NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
-  NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
+  NOTIFICATION_SOLANA_SPL_TOKENS_SHOULD_UPDATE,
 } from "@coral-xyz/common";
 import type { CachedValue } from "../types";
 
@@ -124,9 +123,6 @@ export class SolanaConnectionBackend {
         case NOTIFICATION_KEYRING_STORE_LOCKED:
           handleKeyringStoreLocked(notif);
           break;
-        case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
-          handleActiveWalletUpdated(notif);
-          break;
         case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
           handleConnectionUrlUpdated(notif);
           break;
@@ -140,37 +136,22 @@ export class SolanaConnectionBackend {
     };
 
     const handleKeyringStoreUnlocked = (notif: Notification) => {
-      const { blockchainActiveWallets, solanaConnectionUrl, solanaCommitment } =
-        notif.data;
-
+      const { solanaConnectionUrl, solanaCommitment } = notif.data;
       this.connection = new Connection(solanaConnectionUrl, solanaCommitment);
       this.url = solanaConnectionUrl;
-
       this.hookRpcRequest();
-
-      const activeWallet = blockchainActiveWallets[Blockchain.SOLANA];
-      if (activeWallet) {
-        this.startPolling(new PublicKey(activeWallet));
-      }
+      this.startPolling();
     };
 
     const handleKeyringStoreLocked = (_notif: Notification) => {
       this.stopPolling();
     };
 
-    const handleActiveWalletUpdated = (notif: Notification) => {
-      const { activeWallet } = notif.data;
-      this.stopPolling();
-      this.startPolling(new PublicKey(activeWallet));
-    };
-
     const handleConnectionUrlUpdated = (notif: Notification) => {
-      const { activeWallet, url } = notif.data;
+      const { url } = notif.data;
       this.connection = new Connection(url, this.connection!.commitment);
       this.url = url;
-      this.stopPolling();
       this.hookRpcRequest();
-      this.startPolling(new PublicKey(activeWallet));
     };
   }
 
@@ -178,13 +159,12 @@ export class SolanaConnectionBackend {
   // Poll for data in the background script so that, even if the popup closes
   // the data is still fresh.
   //
-  private async startPolling(activeWallet: PublicKey) {
+  private async startPolling() {
     this.pollIntervals.push(
       setInterval(async () => {
         this.events.emit(BACKEND_EVENT, {
-          name: NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
+          name: NOTIFICATION_SOLANA_SPL_TOKENS_SHOULD_UPDATE,
           data: {
-            publicKey: activeWallet.toString(),
             value: Date.now(),
           },
         });

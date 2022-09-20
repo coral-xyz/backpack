@@ -3,14 +3,11 @@ import { ethers } from "ethers";
 import type { Notification, EventEmitter } from "@coral-xyz/common";
 import {
   getLogger,
-  Blockchain,
   BACKEND_EVENT,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
-  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-  NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
+  NOTIFICATION_ETHEREUM_TOKENS_SHOULD_UPDATE,
 } from "@coral-xyz/common";
 
 const logger = getLogger("ethereum-connection-backend");
@@ -57,12 +54,6 @@ export class EthereumConnectionBackend {
         case NOTIFICATION_KEYRING_STORE_LOCKED:
           handleKeyringStoreLocked(notif);
           break;
-        case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
-          handleActiveWalletUpdated(notif);
-          break;
-        case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
-          handleConnectionUrlUpdated(notif);
-          break;
         default:
           break;
       }
@@ -73,31 +64,16 @@ export class EthereumConnectionBackend {
     };
 
     const handleKeyringStoreUnlocked = async (notif: Notification) => {
-      const { blockchainActiveWallets, ethereumConnectionUrl } = notif.data;
+      const { ethereumConnectionUrl } = notif.data;
       this.provider = new ethers.providers.JsonRpcProvider(
         ethereumConnectionUrl
       );
       this.url = ethereumConnectionUrl;
-      const activeWallet = blockchainActiveWallets[Blockchain.ETHEREUM];
-      if (activeWallet) {
-        this.startPolling(activeWallet);
-      }
+      this.startPolling();
     };
 
     const handleKeyringStoreLocked = (_notif: Notification) => {
       this.stopPolling();
-    };
-
-    const handleActiveWalletUpdated = (notif: Notification) => {
-      const { activeWallet } = notif.data;
-      this.stopPolling();
-      this.startPolling(activeWallet);
-    };
-
-    const handleConnectionUrlUpdated = (notif: Notification) => {
-      const { url } = notif.data;
-      this.provider = new ethers.providers.JsonRpcProvider(url);
-      this.url = url;
     };
   }
 
@@ -105,13 +81,12 @@ export class EthereumConnectionBackend {
   // Poll for data in the background script so that, even if the popup closes
   // the data is still fresh.
   //
-  private async startPolling(activeWallet: string) {
+  private async startPolling() {
     this.pollIntervals.push(
       setInterval(async () => {
         this.events.emit(BACKEND_EVENT, {
-          name: NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
+          name: NOTIFICATION_ETHEREUM_TOKENS_SHOULD_UPDATE,
           data: {
-            activeWallet,
             value: Date.now(),
           },
         });

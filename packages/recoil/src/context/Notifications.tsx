@@ -20,13 +20,13 @@ import {
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
+  NOTIFICATION_SOLANA_SPL_TOKENS_SHOULD_UPDATE,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-  NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
+  NOTIFICATION_ETHEREUM_TOKENS_SHOULD_UPDATE,
 } from "@coral-xyz/common";
 import {
   KeyringStoreStateEnum,
@@ -119,8 +119,8 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_SOLANA_COMMITMENT_UPDATED:
           handleSolanaCommitmentUpdated(notif);
           break;
-        case NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE:
-          handleSolanaSplTokensDidUpdate(notif);
+        case NOTIFICATION_SOLANA_SPL_TOKENS_SHOULD_UPDATE:
+          handleSolanaSplTokensShouldUpdate(notif);
           break;
         case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
           handleSolanaConnectionUrlUpdated(notif);
@@ -134,8 +134,8 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
           handleEthereumConnectionUrlUpdated(notif);
           break;
-        case NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE:
-          handleEthereumTokensDidUpdate(notif);
+        case NOTIFICATION_ETHEREUM_TOKENS_SHOULD_UPDATE:
+          handleEthereumTokensShouldUpdate(notif);
           break;
         default:
           break;
@@ -314,7 +314,7 @@ export function NotificationsProvider(props: any) {
       });
     };
 
-    const handleSolanaSplTokensDidUpdate = (notif: Notification) => {
+    const handleSolanaSplTokensShouldUpdate = (notif: Notification) => {
       const { value } = notif.data;
       updateSplTokenAccounts({ value });
     };
@@ -327,7 +327,7 @@ export function NotificationsProvider(props: any) {
       setActiveWallets(notif.data.activeWallets);
     };
 
-    const handleEthereumTokensDidUpdate = (notif: Notification) => {
+    const handleEthereumTokensShouldUpdate = (notif: Notification) => {
       const { value } = notif.data;
       updateEthereumBalances({
         value,
