@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { FixedSizeList as WindowedList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { Button as MuiButton } from "@mui/material";
+import { Button as MuiButton, Skeleton } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { styles } from "@coral-xyz/themes";
 import {
@@ -60,6 +60,9 @@ const useStyles = styles((theme) => ({
         visibility: "visible",
       },
     },
+  },
+  skeleton: {
+    background: "rgba(0,0,0,0.15)",
   },
   copyIcon: {
     visibility: "hidden",
@@ -194,7 +197,7 @@ export function TokenTable({
   const activeWallets = useActiveWallets();
   const wallet = activeWallets.filter((w) => w.blockchain === blockchain)[0];
 
-  const [_tokenAccounts] = tokenAccounts
+  const [_tokenAccounts, _, isLoading] = tokenAccounts
     ? [tokenAccounts, "hasValue"]
     : useLoader(blockchainBalancesSorted(blockchain), [], [wallet]);
 
@@ -257,7 +260,9 @@ export function TokenTable({
         }}
       />
       <BalancesTableContent style={useVirtualization ? { height: "100%" } : {}}>
-        {useVirtualization ? (
+        {isLoading ? (
+          <SkeletonRows />
+        ) : useVirtualization ? (
           <AutoSizer>
             {({ height, width }: { height: number; width: number }) => {
               return (
@@ -293,6 +298,43 @@ export function TokenTable({
     </BalancesTable>
   );
 }
+
+const SkeletonRows = () => {
+  const classes = useStyles();
+  return (
+    <BalancesTableRow>
+      <div
+        style={{
+          height: "100%",
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <Skeleton
+          variant="circular"
+          width={40}
+          height={40}
+          className={classes.skeleton}
+        />
+        <div style={{ marginLeft: "5px", width: "50%" }}>
+          <Skeleton
+            width="50%"
+            height={40}
+            className={classes.skeleton}
+            style={{ marginTop: "-6px" }}
+          />
+          <Skeleton
+            width="80%"
+            height={20}
+            className={classes.skeleton}
+            style={{ marginTop: "-6px" }}
+          />
+        </div>
+      </div>
+    </BalancesTableRow>
+  );
+};
 
 //
 // Token row renderer if virtualization is used for the table.

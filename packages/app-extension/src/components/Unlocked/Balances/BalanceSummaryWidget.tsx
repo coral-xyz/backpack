@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Skeleton, Typography } from "@mui/material";
 import { formatUSD } from "@coral-xyz/common";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
 import {
@@ -53,14 +53,12 @@ const useStyles = styles((theme) => ({
 export function BalanceSummaryWidget() {
   const theme = useCustomTheme();
   const classes = useStyles();
-  const [{ totalBalance, totalChange, percentChange }] = useLoader(
-    totalBalanceSelector,
-    {
+  const [{ totalBalance, totalChange, percentChange }, _, isLoading] =
+    useLoader(totalBalanceSelector, {
       totalBalance: 0,
       totalChange: 0,
       percentChange: 0,
-    }
-  );
+    });
 
   return (
     <div style={{ display: "flex" }}>
@@ -79,7 +77,7 @@ export function BalanceSummaryWidget() {
             color: theme.custom.colors.fontColor,
           }}
         >
-          {formatUSD(totalBalance)}
+          {isLoading ? <Skeleton /> : formatUSD(totalBalance)}
         </Typography>
         <div
           style={{
@@ -98,8 +96,14 @@ export function BalanceSummaryWidget() {
               lineHeight: "24px",
             }}
           >
-            {totalChange > 0 ? "+" : ""}
-            {formatUSD(totalChange)}
+            {isLoading ? (
+              <Skeleton width="100px" />
+            ) : (
+              <>
+                {totalChange > 0 ? "+" : ""}
+                {formatUSD(totalChange)}
+              </>
+            )}
           </Typography>
           {Number.isFinite(percentChange) && (
             <Typography
@@ -114,8 +118,14 @@ export function BalanceSummaryWidget() {
                 lineHeight: "24px",
               }}
             >
-              {totalChange > 0 ? "+" : ""}
-              {`${percentChange.toFixed(2)}%`}
+              {isLoading ? (
+                <Skeleton width="100px" />
+              ) : (
+                <>
+                  {totalChange > 0 ? "+" : ""}
+                  {`${percentChange.toFixed(2)}%`}
+                </>
+              )}
             </Typography>
           )}
         </div>

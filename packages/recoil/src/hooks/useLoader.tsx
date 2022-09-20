@@ -10,19 +10,22 @@ export function useLoader<T>(
   loadable: RecoilValue<T>,
   defaultValue: T,
   dependencies: any[] = []
-): [T, "loading" | "hasValue" | "hasError"] {
+): [T, "loading" | "hasValue" | "hasError", boolean] {
   const [value, setValue] = useState<T>(defaultValue);
   const recoilValue = useRecoilValueLoadable(loadable);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     setValue(defaultValue);
+    setIsInitialLoad(true);
   }, dependencies);
 
   useEffect(() => {
     if (recoilValue.state === "hasValue" && recoilValue.contents !== value) {
       setValue(recoilValue.contents);
+      setIsInitialLoad(false);
     }
   }, [recoilValue.contents, recoilValue.state, value]);
 
-  return [value, recoilValue.state];
+  return [value, recoilValue.state, isInitialLoad];
 }
