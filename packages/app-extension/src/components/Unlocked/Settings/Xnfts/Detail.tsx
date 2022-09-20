@@ -85,6 +85,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
             display: "flex",
             position: "relative",
             opacity: isDisabled ? 0.5 : undefined,
+            boxShadow: "none",
           }}
           onClick={() =>
             window.open(
@@ -125,6 +126,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
           label={"Uninstall xNFT"}
           style={{
             backgroundColor: theme.custom.colors.negative,
+            color: theme.custom.colors.negativeButtonTextColor,
           }}
           onClick={() => setOpenConfirm(true)}
         />

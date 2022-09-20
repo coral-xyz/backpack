@@ -43,9 +43,6 @@ export function ChangePassword() {
   useEffect(() => {
     const title = nav.title;
     nav.setTitle("Change password");
-    nav.setStyle({
-      borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-    });
     return () => {
       nav.setTitle(title);
     };

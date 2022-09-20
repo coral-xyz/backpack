@@ -38,9 +38,6 @@ export function XnftSettings() {
   });
 
   useEffect(() => {
-    nav.setStyle({
-      borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-    });
     nav.setContentStyle({
       backgroundColor: theme.custom.colors.background,
     });

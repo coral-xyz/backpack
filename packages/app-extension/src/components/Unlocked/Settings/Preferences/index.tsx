@@ -111,9 +111,6 @@ export function Preferences() {
 
   useEffect(() => {
     nav.setTitle("Preferences");
-    nav.setStyle({
-      borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-    });
   }, []);
 
   return (

@@ -7,7 +7,6 @@ import { SettingsList } from "../../../common/Settings/List";
 export function YourAccount() {
   const { close } = useDrawerContext();
   const nav = useNavStack();
-  const theme = useCustomTheme();
 
   const menuItems = {
     "Change password": {
@@ -26,9 +25,6 @@ export function YourAccount() {
 
   useEffect(() => {
     nav.setTitle("Your Account");
-    nav.setStyle({
-      borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-    });
   }, []);
 
   return <SettingsList menuItems={menuItems} />;
