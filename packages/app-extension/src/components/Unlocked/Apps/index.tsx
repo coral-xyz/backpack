@@ -66,6 +66,7 @@ export function Apps() {
           background: theme.custom.colors.nav,
           boxShadow: theme.custom.colors.boxShadow,
           borderRadius: "10px",
+          marginTop: "2px",
         }}
       >
         <PluginGrid />
