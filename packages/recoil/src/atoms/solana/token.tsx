@@ -19,6 +19,10 @@ export const customSplTokenAccounts = atom({
   default: selector({
     key: "customSplTokenAccountsDefault",
     get: async ({ get }: any) => {
+      // Trigger for balance updates
+      get(solanaBalancePoll);
+
+      //
       //
       // Fetch token data.
       //

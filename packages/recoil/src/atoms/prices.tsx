@@ -5,6 +5,7 @@ import { TokenDisplay } from "../types";
 import { customSplTokenAccounts } from "./solana/token";
 import { splTokenRegistry } from "./solana/token-registry";
 import { erc20Balances } from "./ethereum/token";
+import { equalSelector } from "../equals";
 
 const baseCoingeckoParams = {
   vs_currencies: "usd",
@@ -31,7 +32,7 @@ export const priceData = atomFamily<TokenDisplay | null, string>({
 });
 //
 // Map of SPL mint addresses to Coingecko ID
-export const splMintsToCoingeckoId = selector({
+export const splMintsToCoingeckoId = equalSelector({
   key: "splMintsToCoingeckoId",
   get: ({ get }: any) => {
     const { splTokenAccounts } = get(customSplTokenAccounts);
@@ -49,6 +50,10 @@ export const splMintsToCoingeckoId = selector({
       return acc;
     }, new Map());
   },
+  // Map equality
+  equals: (m1, m2) =>
+    m1.size === m2.size &&
+    Array.from(m1.keys()).every((key) => m1.get(key) === m2.get(key)),
 });
 
 // Map of Ethereum addresses to Coingecko ID
@@ -98,12 +103,18 @@ export const coingeckoIds = selector({
 
 // The list of all Ethereum ERC20 contract addresses prices need to be loaded
 // for.
-export const erc20ContractAddresses = selector({
+export const erc20ContractAddresses = equalSelector({
   key: "erc20ContractAddresses",
   get: ({ get }: any) => {
     const balances = get(erc20Balances);
-    return [...balances.keys()];
+    const addresses = [...balances.keys()].filter(
+      // TODO figure out how ETH_NATIVE_MINT ends up in this array
+      (k: string) => k !== ETH_NATIVE_MINT
+    );
+    addresses.sort();
+    return addresses;
   },
+  equals: (a1, a2) => JSON.stringify(a1) === JSON.stringify(a2),
 });
 
 // Coingecko API query for all Coingecko IDs

@@ -104,22 +104,20 @@ export const erc20Balances = selector({
       },
     ];
 
-    const contractCallContext = contractAddresses
-      .filter((c) => c !== ETH_NATIVE_MINT)
-      .map((contractAddress) => {
-        return {
-          reference: contractAddress,
-          contractAddress: contractAddress,
-          abi: abi,
-          calls: [
-            {
-              reference: "balanceOf",
-              methodName: "balanceOf",
-              methodParameters: [publicKey],
-            },
-          ],
-        } as ContractCallContext;
-      });
+    const contractCallContext = contractAddresses.map((contractAddress) => {
+      return {
+        reference: contractAddress,
+        contractAddress: contractAddress,
+        abi: abi,
+        calls: [
+          {
+            reference: "balanceOf",
+            methodName: "balanceOf",
+            methodParameters: [publicKey],
+          },
+        ],
+      } as ContractCallContext;
+    });
 
     const contractCall: ContractCallResults = await multicall.call(
       contractCallContext
