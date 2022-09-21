@@ -26,7 +26,6 @@ import { Swap } from "../../Unlocked/Swap";
 import { NftsDetail, NftOptionsButton } from "../../Unlocked/Nfts/Detail";
 import { NftsCollection } from "../../Unlocked/Nfts/Collection";
 import { SettingsButton } from "../../Unlocked/Settings";
-import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { WithNav, NavBackButton } from "./Nav";
 import { WithMotion } from "./NavStack";
 import { WithDrawer } from "../../common/Layout/Drawer";
