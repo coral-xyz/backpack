@@ -6,6 +6,8 @@ import {
   SolanaNft,
 } from "@coral-xyz/common";
 import { customSplTokenAccounts } from "./token";
+import { solanaConnectionUrl } from "./preferences";
+import { solanaPublicKey } from "../wallet";
 
 export const solanaNftCollections = selector<NftCollection[]>({
   key: "solanaNftCollections",
@@ -13,7 +15,11 @@ export const solanaNftCollections = selector<NftCollection[]>({
     //
     // Get all the collections.
     //
-    const { splNftMetadata: metadata } = get(customSplTokenAccounts);
+    const connectionUrl = get(solanaConnectionUrl);
+    const publicKey = get(solanaPublicKey);
+    const { splNftMetadata: metadata } = get(
+      customSplTokenAccounts({ connectionUrl, publicKey })
+    );
 
     //
     // Bucket all the nfts by collection name.

@@ -2,13 +2,18 @@ import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 import type { Notification, EventEmitter } from "@coral-xyz/common";
 import {
+  fetchEthereumBalances,
   getLogger,
+  Blockchain,
   BACKEND_EVENT,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
-  NOTIFICATION_ETHEREUM_TOKENS_SHOULD_UPDATE,
+  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
+  NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
 } from "@coral-xyz/common";
+import type { CachedValue } from "../types";
 
 const logger = getLogger("ethereum-connection-backend");
 
@@ -21,6 +26,7 @@ export function start(events: EventEmitter): EthereumConnectionBackend {
 }
 
 export class EthereumConnectionBackend {
+  private cache = new Map<string, CachedValue<any>>();
   private url?: string;
   private pollIntervals: Array<any>;
   private events: EventEmitter;
@@ -54,6 +60,12 @@ export class EthereumConnectionBackend {
         case NOTIFICATION_KEYRING_STORE_LOCKED:
           handleKeyringStoreLocked(notif);
           break;
+        case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
+          handleActiveWalletUpdated(notif);
+          break;
+        case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
+          handleConnectionUrlUpdated(notif);
+          break;
         default:
           break;
       }
@@ -64,16 +76,33 @@ export class EthereumConnectionBackend {
     };
 
     const handleKeyringStoreUnlocked = async (notif: Notification) => {
-      const { ethereumConnectionUrl } = notif.data;
+      const { blockchainActiveWallets, ethereumConnectionUrl } = notif.data;
       this.provider = new ethers.providers.JsonRpcProvider(
         ethereumConnectionUrl
       );
       this.url = ethereumConnectionUrl;
-      this.startPolling();
+      const activeWallet = blockchainActiveWallets[Blockchain.ETHEREUM];
+      if (activeWallet) {
+        this.startPolling(activeWallet);
+      }
     };
 
     const handleKeyringStoreLocked = (_notif: Notification) => {
       this.stopPolling();
+    };
+
+    const handleActiveWalletUpdated = (notif: Notification) => {
+      const { activeWallet } = notif.data;
+      this.stopPolling();
+      this.startPolling(activeWallet);
+    };
+
+    const handleConnectionUrlUpdated = (notif: Notification) => {
+      const { activeWallet, url } = notif.data;
+      this.provider = new ethers.providers.JsonRpcProvider(url);
+      this.url = url;
+      this.stopPolling();
+      this.startPolling(activeWallet);
     };
   }
 
@@ -81,13 +110,23 @@ export class EthereumConnectionBackend {
   // Poll for data in the background script so that, even if the popup closes
   // the data is still fresh.
   //
-  private async startPolling() {
+  private async startPolling(activeWallet: string) {
     this.pollIntervals.push(
       setInterval(async () => {
+        const data = await fetchEthereumBalances(this.provider!, activeWallet);
+        const key = JSON.stringify({
+          url: this.url,
+          method: "ethereumTokens",
+          args: [activeWallet],
+        });
+        this.cache.set(key, {
+          ts: Date.now(),
+          value: data,
+        });
         this.events.emit(BACKEND_EVENT, {
-          name: NOTIFICATION_ETHEREUM_TOKENS_SHOULD_UPDATE,
+          name: NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
           data: {
-            value: Date.now(),
+            balances: Object.fromEntries(data),
           },
         });
       }, ETHEREUM_TOKENS_REFRESH_INTERVAL)

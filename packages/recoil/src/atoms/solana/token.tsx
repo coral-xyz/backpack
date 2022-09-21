@@ -1,4 +1,4 @@
-import { atom, atomFamily, selectorFamily, selector } from "recoil";
+import { atomFamily, selector, selectorFamily } from "recoil";
 import { ethers, BigNumber } from "ethers";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
@@ -7,46 +7,45 @@ import { splTokenRegistry } from "./token-registry";
 import { SolanaTokenAccountWithKey, TokenData } from "../../types";
 import { anchorContext } from "./wallet";
 import { solanaPublicKey } from "../wallet";
+import { solanaConnectionUrl } from "./preferences";
 
-// Atom to trigger solana balance updates
-export const solanaBalancePoll = atom({
-  key: "solanaBalancePoll",
-  default: 0,
-});
-
-export const customSplTokenAccounts = atom({
+export const customSplTokenAccounts = atomFamily({
   key: "customSplTokenAccounts",
-  default: selector({
+  default: selectorFamily({
     key: "customSplTokenAccountsDefault",
-    get: async ({ get }: any) => {
-      // Trigger for balance updates
-      get(solanaBalancePoll);
-
-      //
-      // Fetch token data.
-      //
-      try {
-        const publicKey = get(solanaPublicKey);
+    get:
+      ({
+        connectionUrl,
+        publicKey,
+      }: {
+        connectionUrl: string;
+        publicKey: string;
+      }) =>
+      async ({ get }: any) => {
         const { provider } = get(anchorContext);
-        const { tokenAccountsMap, tokenMetadata, nftMetadata } =
-          await provider.connection.customSplTokenAccounts(publicKey);
-        const splTokenAccounts = new Map<string, SolanaTokenAccountWithKey>(
-          tokenAccountsMap
-        );
-        return {
-          splTokenAccounts,
-          splTokenMetadata: tokenMetadata,
-          splNftMetadata: new Map(nftMetadata),
-        };
-      } catch (error) {
-        console.error("could not fetch solana token data", error);
-        return {
-          splTokenAccounts: new Map(),
-          splTokenMetadata: new Map(),
-          splNftMetadata: new Map(),
-        };
-      }
-    },
+        //
+        // Fetch token data.
+        //
+        try {
+          const { tokenAccountsMap, tokenMetadata, nftMetadata } =
+            await provider.connection.customSplTokenAccounts(publicKey);
+          const splTokenAccounts = new Map<string, SolanaTokenAccountWithKey>(
+            tokenAccountsMap
+          );
+          return {
+            splTokenAccounts,
+            splTokenMetadata: tokenMetadata,
+            splNftMetadata: new Map(nftMetadata),
+          };
+        } catch (error) {
+          console.error("could not fetch solana token data", error);
+          return {
+            splTokenAccounts: new Map(),
+            splTokenMetadata: new Map(),
+            splNftMetadata: new Map(),
+          };
+        }
+      },
   }),
 });
 
@@ -63,7 +62,11 @@ export const solanaTokenAccountsMap = atomFamily<
     get:
       ({ tokenAddress }: { tokenAddress: string }) =>
       ({ get }: any) => {
-        const { splTokenAccounts } = get(customSplTokenAccounts);
+        const connectionUrl = get(solanaConnectionUrl);
+        const publicKey = get(solanaPublicKey);
+        const { splTokenAccounts } = get(
+          customSplTokenAccounts({ connectionUrl, publicKey })
+        );
         return splTokenAccounts.get(tokenAddress);
       },
   }),
@@ -75,7 +78,11 @@ export const solanaTokenAccountsMap = atomFamily<
 export const solanaTokenAccountKeys = selector({
   key: "solanaTokenAccountKeys",
   get: ({ get }: any) => {
-    const { splTokenAccounts } = get(customSplTokenAccounts);
+    const connectionUrl = get(solanaConnectionUrl);
+    const publicKey = get(solanaPublicKey);
+    const { splTokenAccounts } = get(
+      customSplTokenAccounts({ connectionUrl, publicKey })
+    );
     return Array.from(splTokenAccounts.keys()) as string[];
   },
 });

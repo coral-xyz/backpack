@@ -246,8 +246,8 @@ export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
   "notification-solana-explorer-updated";
 export const NOTIFICATION_SOLANA_COMMITMENT_UPDATED =
   "notification-solana-commitment-updated";
-export const NOTIFICATION_SOLANA_SPL_TOKENS_SHOULD_UPDATE =
-  "notification-solana-spl-tokens-should-update";
+export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
+  "notification-solana-spl-tokens-did-update";
 // Ethereum specific
 export const NOTIFICATION_ETHEREUM_CONNECTED =
   "notification-ethereum-connected";
@@ -259,8 +259,8 @@ export const NOTIFICATION_ETHEREUM_EXPLORER_UPDATED =
   "notification-ethereum-explorer-updated";
 export const NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED =
   "notification-keyring-ethereum-active-wallet-updated";
-export const NOTIFICATION_ETHEREUM_TOKENS_SHOULD_UPDATE =
-  "notification-ethereum-tokens-should-update";
+export const NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE =
+  "notification-ethereum-tokens-did-update";
 
 //
 // Ethereum web injected provider API.

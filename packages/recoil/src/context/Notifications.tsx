@@ -5,6 +5,7 @@ import {
   getLogger,
   ChannelAppUi,
   Notification,
+  BackgroundSolanaConnection,
   CHANNEL_POPUP_NOTIFICATIONS,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
@@ -20,18 +21,18 @@ import {
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_SOLANA_SPL_TOKENS_SHOULD_UPDATE,
+  NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-  NOTIFICATION_ETHEREUM_TOKENS_SHOULD_UPDATE,
+  NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
 } from "@coral-xyz/common";
 import {
   KeyringStoreStateEnum,
   useUpdateEthereumBalances,
-  useUpdateSplTokenAccounts,
+  useUpdateAllSplTokenAccounts,
 } from "../";
 import * as atoms from "../atoms";
 import { allPlugins } from "../hooks";
@@ -59,7 +60,7 @@ export function NotificationsProvider(props: any) {
     atoms.ethereumConnectionUrl
   );
   const updateEthereumBalances = useUpdateEthereumBalances();
-  const updateSplTokenAccounts = useUpdateSplTokenAccounts();
+  const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -119,8 +120,8 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_SOLANA_COMMITMENT_UPDATED:
           handleSolanaCommitmentUpdated(notif);
           break;
-        case NOTIFICATION_SOLANA_SPL_TOKENS_SHOULD_UPDATE:
-          handleSolanaSplTokensShouldUpdate(notif);
+        case NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE:
+          handleSolanaSplTokensDidUpdate(notif);
           break;
         case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
           handleSolanaConnectionUrlUpdated(notif);
@@ -134,8 +135,8 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
           handleEthereumConnectionUrlUpdated(notif);
           break;
-        case NOTIFICATION_ETHEREUM_TOKENS_SHOULD_UPDATE:
-          handleEthereumTokensShouldUpdate(notif);
+        case NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE:
+          handleEthereumTokensDidUpdate(notif);
           break;
         default:
           break;
@@ -314,9 +315,23 @@ export function NotificationsProvider(props: any) {
       });
     };
 
-    const handleSolanaSplTokensShouldUpdate = (notif: Notification) => {
-      const { value } = notif.data;
-      updateSplTokenAccounts({ value });
+    const handleSolanaSplTokensDidUpdate = (notif: Notification) => {
+      const publicKey = notif.data.publicKey;
+      const connectionUrl = notif.data.connectionUrl;
+      const result = BackgroundSolanaConnection.customSplTokenAccountsFromJson(
+        notif.data.customSplTokenAccounts
+      );
+      const customSplTokenAccounts = {
+        ...result,
+        tokenAccounts: new Map(
+          result.tokenAccountsMap.map((t: any) => [t[0], t[1]])
+        ),
+      };
+      updateAllSplTokenAccounts({
+        publicKey,
+        connectionUrl,
+        customSplTokenAccounts,
+      });
     };
 
     const handleEthereumActiveWalletUpdated = (notif: Notification) => {
@@ -327,10 +342,12 @@ export function NotificationsProvider(props: any) {
       setActiveWallets(notif.data.activeWallets);
     };
 
-    const handleEthereumTokensShouldUpdate = (notif: Notification) => {
-      const { value } = notif.data;
+    const handleEthereumTokensDidUpdate = (notif: Notification) => {
+      const { connectionUrl, activeWallet, balances } = notif.data;
       updateEthereumBalances({
-        value,
+        connectionUrl,
+        publicKey: activeWallet,
+        balances,
       });
     };
 

@@ -6,6 +6,8 @@ import { customSplTokenAccounts } from "./solana/token";
 import { splTokenRegistry } from "./solana/token-registry";
 import { erc20Balances } from "./ethereum/token";
 import { equalSelector } from "../equals";
+import { solanaConnectionUrl } from "./solana/preferences";
+import { solanaPublicKey } from "./wallet";
 
 const baseCoingeckoParams = {
   vs_currencies: "usd",
@@ -35,7 +37,11 @@ export const priceData = atomFamily<TokenDisplay | null, string>({
 export const splMintsToCoingeckoId = equalSelector({
   key: "splMintsToCoingeckoId",
   get: ({ get }: any) => {
-    const { splTokenAccounts } = get(customSplTokenAccounts);
+    const connectionUrl = get(solanaConnectionUrl);
+    const publicKey = get(solanaPublicKey);
+    const { splTokenAccounts } = get(
+      customSplTokenAccounts({ connectionUrl, publicKey })
+    );
     const tokenRegistry = get(splTokenRegistry);
     return [...splTokenAccounts.values()].reduce((acc, splTokenAccount) => {
       const mint = splTokenAccount.mint.toString();
