@@ -37,18 +37,6 @@ type JupiterRoute = {
   swapMode: string;
 };
 
-type JupiterTransactions = {
-  setupTransaction?: string;
-  swapTransaction: string;
-  cleanupTransaction?: string;
-};
-
-type SwapTransactions = {
-  wrapTransaction?: string;
-  setupTransaction?: string;
-  swapTransaction?: string;
-};
-
 type SwapContext = {
   fromAmount: BigNumber | undefined;
   setFromAmount: (a: BigNumber | undefined) => void;
@@ -66,7 +54,6 @@ type SwapContext = {
   setSlippage: (s: number) => void;
   executeSwap: () => Promise<any>;
   priceImpactPct: number;
-  transactions: any;
   transactionFee: BigNumber | undefined;
   swapFee: BigNumber;
   isLoadingRoutes: boolean;
@@ -117,9 +104,7 @@ export function SwapProvider(props: any) {
   // Jupiter data
   const [routes, setRoutes] = useState<JupiterRoute[]>([]);
 
-  const [transactions, setTransactions] = useState<
-    SwapTransactions | undefined
-  >(undefined);
+  const [transaction, setTransaction] = useState<string | undefined>(undefined);
   const [transactionFee, setTransactionFee] = useState<BigNumber | undefined>(
     undefined
   );
@@ -140,14 +125,10 @@ export function SwapProvider(props: any) {
   const fromMintInfo = tokenRegistry.get(fromMint)!;
   const toMintInfo = tokenRegistry.get(toMint)!;
 
-  // Is a wrap transaction is required to execute swap
-  const needsWrap = fromMint === SOL_NATIVE_MINT;
-  // Is a unwrap transaction is required to execute swap
-  const needsUnwrap = toMint === SOL_NATIVE_MINT;
   // Is just a wrap and not a Jupiter swap
-  const isWrap = needsWrap && toMint === WSOL_MINT;
+  const isWrap = fromMint === SOL_NATIVE_MINT && toMint === WSOL_MINT;
   // Is just an unwrap and not a Jupiter swap
-  const isUnwrap = fromMint === WSOL_MINT && needsUnwrap;
+  const isUnwrap = fromMint === WSOL_MINT && toMint === SOL_NATIVE_MINT;
   // Is a real Jupiter swap instead of just a SOL wrap/unwrap
   const isJupiterSwap = !isWrap && !isUnwrap;
 
@@ -223,9 +204,10 @@ export function SwapProvider(props: any) {
   //
   useEffect(() => {
     (async () => {
-      const transactions = await fetchTransactions();
-      setTransactions(transactions);
-      setTransactionFee(await estimateFees(transactions));
+      const transaction = await fetchTransaction();
+      console.log(transaction);
+      setTransaction(transaction);
+      setTransactionFee(await estimateFee(transaction));
       setIsLoadingTransactions(false);
     })();
   }, [routes]);
@@ -233,33 +215,21 @@ export function SwapProvider(props: any) {
   //
   // Estimate the network fees the transactions will incur.
   //
-  const estimateFees = async (transactions: SwapTransactions) => {
+  const estimateFee = async (transaction: string) => {
     let fee = 0;
     if (!isJupiterSwap) {
       // Simple wrap or unwrap, assume 5000
       fee += 5000;
-    } else if (!routes || routes.length === 0 || transactions === undefined) {
+    } else if (!routes || routes.length === 0 || transaction === undefined) {
       // Haven't got routes yet, assume 5000 for swap
       fee += 5000;
-      if (needsWrap || needsUnwrap) {
-        // An additional 5000 for wrap or unwrap
-        fee += 5000;
-      }
     } else {
-      // Unwrap transactions are not included in the transaction array
-      if (needsUnwrap) {
-        fee += 5000;
-      }
       // Estimate fees for the existing transactions by querying
       try {
-        for (const serializedTransaction of Object.values(transactions!)) {
-          const transaction = Transaction.from(
-            Buffer.from(serializedTransaction, "base64")
-          );
-          // Under the hood this just calls connection.getFeeForMessage with
-          // the message, it's a convenience method
-          fee += await transaction.getEstimatedFee(connection);
-        }
+        const tx = Transaction.from(Buffer.from(transaction, "base64"));
+        // Under the hood this just calls connection.getFeeForMessage with
+        // the message, it's a convenience method
+        fee += await tx.getEstimatedFee(connection);
       } catch (e) {
         // Couldn't load fees, assume 5000, not worth failing over
         fee = 5000;
@@ -280,6 +250,7 @@ export function SwapProvider(props: any) {
       outputMint: toMint === SOL_NATIVE_MINT ? WSOL_MINT : toMint,
       amount: fromAmount.toString(),
       slippage: slippage.toString(),
+      onlyDirectRoutes: "true",
     };
     const queryString = new URLSearchParams(params).toString();
     try {
@@ -302,42 +273,52 @@ export function SwapProvider(props: any) {
   //
   // Load the transactions required to execute the swap.
   //
-  const fetchTransactions = async () => {
+  const fetchTransaction = async () => {
     if (!fromAmount) return {};
-    // Setup a wrap transaction if needed
-    let wrapTransaction: string | undefined = undefined;
-    if (needsWrap) {
-      wrapTransaction = (
+    if (isWrap) {
+      // Just a wrapping of SOL
+      return (
         await generateWrapSolTx(
           solanaCtx,
           walletPublicKey,
-          fromAmount.toNumber()
+          fromAmount!.toNumber()
         )
       ).toString("base64");
+    } else if (isUnwrap) {
+      // Just an unwrapping of SOL
+      return (
+        await generateUnwrapSolTx(
+          solanaCtx,
+          walletPublicKey,
+          fromAmount!.toNumber()
+        )
+      ).toString("base64");
+    } else if (isJupiterSwap && routes && routes.length > 0) {
+      // Jupiter swap. Although Jupiter can return between 1 and 3 transactions
+      // to perform a swap, we should only ever get one as we are using the
+      // onlyDirectRoutes parameter.
+      const response = await fetch(`${JUPITER_BASE_URL}swap`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          route,
+          wrapUnwrapSOL: true,
+          userPublicKey: walletPublicKey,
+        }),
+      });
+      const transactions = await response.json();
+      if (Object.values(transactions).length > 1) {
+        // Possibly also includes setupTransaction and/or cleanupTransaction.
+        // Display swap unavailable because the UI doesn't support executing
+        // multiple sequential transactions (hardware wallets are a problem)
+        setIsJupiterError(true);
+        return undefined;
+      } else {
+        return transactions["swapTransaction"];
+      }
     }
-    // Load Jupiter transactions if any
-    let jupiterTransactions: JupiterTransactions | undefined = undefined;
-    if (isJupiterSwap && routes && routes.length > 0) {
-      jupiterTransactions = await (
-        await fetch(`${JUPITER_BASE_URL}swap`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            route,
-            wrapUnwrapSOL: false,
-            userPublicKey: walletPublicKey,
-          }),
-        })
-      ).json();
-    }
-    // We cannot generate the unwrap transaction here because the unwrap amount
-    // is dependent on the result of the swap
-    return {
-      ...(wrapTransaction && { wrapTransaction }),
-      ...(jupiterTransactions && { ...jupiterTransactions }),
-    };
   };
 
   //
@@ -375,121 +356,17 @@ export function SwapProvider(props: any) {
   //
   const executeSwap = async () => {
     if (!toAmount) return;
+    if (!transaction) return;
 
     // Stop polling for route updates when swap is finalised
     stopRoutePolling();
-
-    const wrapTransaction = transactions?.["wrapTransaction"];
-    if (wrapTransaction) {
-      try {
-        await sendAndConfirmTransaction(wrapTransaction);
-      } catch (e) {
-        console.log("wrap error", e);
-        // Irrecoverable, display error to the user
-        return false;
-      }
+    try {
+      await sendAndConfirmTransaction(transaction);
+    } catch (e) {
+      console.log("swap error", e);
+      return false;
     }
 
-    // Jupiter setup transaction
-    // TODO: can we move the transactions from the wrapping above into this transaction
-    const setupTransaction = transactions?.["setupTransaction"];
-    if (setupTransaction) {
-      try {
-        await sendAndConfirmTransaction(setupTransaction);
-      } catch (e) {
-        console.log("setup swap error", e);
-        return false;
-      }
-    }
-
-    let unwrapTransaction: string | undefined = undefined;
-    // Jupiter swap transaction
-    const swapTransaction = transactions?.["swapTransaction"];
-    if (swapTransaction) {
-      let signature: string;
-      try {
-        signature = await sendAndConfirmTransaction(swapTransaction);
-      } catch (e) {
-        console.log("swap error", e);
-        // Wrap and setup transactions didn't exist or succeeded, so update the
-        // transactions required to execute to only the remaining
-        // transactions so the user can retry (i.e. exclude setup transactions)
-        if (transactions) {
-          const { swapTransaction } = transactions;
-          setTransactions({
-            swapTransaction,
-          });
-        }
-        return false;
-      }
-
-      if (needsUnwrap && !isUnwrap) {
-        // We need to unwrap an amount of wSOL that is determined by the result
-        // of the swap. Look at the parsed transaction to determine the wSOL
-        // delta and unwrap that amount.
-        const transactionData = await connection.getParsedTransaction(
-          signature
-        );
-        if (!transactionData || !transactionData.meta) {
-          console.log("could not retrieve transaction data");
-        } else {
-          // Get the wSOL balance delta from the swap transaction
-          const preBalanceToken = transactionData.meta.preTokenBalances?.find(
-            (a) =>
-              a.mint === WSOL_MINT && a.owner === walletPublicKey.toString()
-          );
-          const postBalanceToken = transactionData.meta.postTokenBalances?.find(
-            (a) =>
-              a.mint === WSOL_MINT && a.owner === walletPublicKey.toString()
-          );
-          if (preBalanceToken && postBalanceToken) {
-            const wrappedSolBalanceDelta =
-              transactionData.meta.postBalances[postBalanceToken.accountIndex] -
-              transactionData.meta.preBalances[preBalanceToken.accountIndex];
-            unwrapTransaction = (
-              await generateUnwrapSolTx(
-                solanaCtx,
-                walletPublicKey,
-                wrappedSolBalanceDelta
-              )
-            ).toString("base64");
-          }
-          // TODO: it might be possible to use similar code to the above to close/burn
-          // dust accounts from the AMM swap path
-          // https://github.com/coral-xyz/backpack/issues/528
-        }
-      }
-    }
-
-    if (needsUnwrap && isUnwrap) {
-      // SOL -> wSOL unwrap for a fixed amount, not dependent on swap output
-      unwrapTransaction = (
-        await generateUnwrapSolTx(
-          solanaCtx,
-          walletPublicKey,
-          toAmount.toNumber()
-        )
-      ).toString("base64");
-    }
-
-    if (unwrapTransaction) {
-      try {
-        await sendAndConfirmTransaction(unwrapTransaction);
-      } catch (e) {
-        console.log("unwrap error", e);
-        if (isUnwrap) {
-          return false;
-        } else {
-          // Only the unwrap failed, return true to display success in the UI
-          // as the only failure is wSOL cleanup, but the currency swap still
-          // occurred
-          // TODO: handle this somehow?
-          return true;
-        }
-      }
-    }
-
-    // Note we are ignoring any Jupiter cleanup transaction, which is just a SOL unwrap
     return true;
   };
 
@@ -525,7 +402,6 @@ export function SwapProvider(props: any) {
         executeSwap,
         priceImpactPct,
         isLoadingRoutes,
-        transactions,
         isLoadingTransactions,
         transactionFee,
         // TODO backpack fees
