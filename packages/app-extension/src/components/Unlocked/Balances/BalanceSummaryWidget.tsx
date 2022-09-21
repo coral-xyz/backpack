@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import { formatUSD } from "@coral-xyz/common";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
-import { useSolanaBalance, useActiveWallet } from "@coral-xyz/recoil";
+import { useTotalBalance, useSolanaBalance, useActiveWallet } from "@coral-xyz/recoil";
 import { GradientText } from "../../common/Layout/Router";
 
 const useStyles = styles((theme) => ({
@@ -49,7 +49,7 @@ const useStyles = styles((theme) => ({
 export function BalanceSummaryWidget() {
   const theme = useCustomTheme();
   const classes = useStyles();
-  const { totalBalance, totalChange, percentChange } = useSolanaBalance();
+  const { totalBalance, totalChange, percentChange } = useTotalBalance();
 
   return (
     <div style={{ display: "flex" }}>

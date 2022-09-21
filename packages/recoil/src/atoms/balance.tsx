@@ -1,4 +1,4 @@
-import { selectorFamily } from "recoil";
+import { selector, selectorFamily } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
 import { solanaTokenBalance, solanaTokenAccountKeys } from "./solana/token";
 import { solanaConnectionUrl } from "./solana";
@@ -83,6 +83,9 @@ export const blockchainTokenAddresses = selectorFamily({
     },
 });
 
+/**
+ * Total asset balance in USD, change in USD, and percent change for a given blockchain.
+ */
 export const blockchainTotalBalance = selectorFamily({
   key: "blockchainTotalBalance",
   get:
@@ -105,4 +108,24 @@ export const blockchainTotalBalance = selectorFamily({
         percentChange: parseFloat(percentChange.toFixed(2)),
       };
     },
+});
+
+/**
+ * Total asset balance in USD, change in USD, and percent change for all blockchains.
+ */
+export const totalBalance = selector({
+  key: "totalBalance",
+  get: ({ get }) => {
+    const solana = get(blockchainTotalBalance(Blockchain.SOLANA));
+    const ethereum = get(blockchainTotalBalance(Blockchain.ETHEREUM));
+    const totalBalance = solana.totalBalance + ethereum.totalBalance;
+    const totalChange = solana.totalChange + ethereum.totalChange;
+    const oldBalance = totalBalance - totalChange;
+    const percentChange = totalChange / oldBalance;
+    return {
+      totalBalance: parseFloat(totalBalance.toFixed(2)),
+      totalChange: parseFloat(totalChange.toFixed(2)),
+      percentChange: parseFloat(percentChange.toFixed(2)),
+    };
+  },
 });
