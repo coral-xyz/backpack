@@ -28,6 +28,22 @@ export function usePlugins(): Array<Plugin> {
   return pluginData.map((p) => getPlugin(p));
 }
 
+export function usePluginUrl(address?: string) {
+  const { provider } = useAnchorContext();
+  const [url, setUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      if (address) {
+        const xnft = await fetchXnft(provider, new PublicKey(address));
+        setUrl(xnftUrl(xnft.metadataBlob.properties.bundle));
+      }
+    })();
+  });
+
+  return url;
+}
+
 export function useFreshPlugin(address?: string): {
   state: "loading" | "done" | "error";
   result: Plugin | undefined;
