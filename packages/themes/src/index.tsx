@@ -31,7 +31,7 @@ const LIGHT_FONT_COLOR_2 = LIGHT_FONT_COLOR;
 const LIGHT_FONT_COLOR_3 = LIGHT_FONT_COLOR_1;
 const LIGHT_BRAND_COLOR = LIGHT_FONT_COLOR;
 const LIGHT_BUTTON_FONT_COLOR = FONT_COLOR;
-const LIGHT_BORDER_COLOR = "#F0F0F2;";
+const LIGHT_BORDER_COLOR = "#F0F0F2";
 const LIGHT_BORDER_COLOR_1 = "#DBDADB";
 const LIGHT_POSITIVE_COLOR = POSITIVE_COLOR;
 const LIGHT_NEGATIVE_COLOR = NEGATIVE_COLOR;
@@ -126,6 +126,7 @@ export const darkTheme: any = {
       textFieldTextColor: FONT_COLOR_2,
       copyTooltipColor: BRAND_COLOR,
       copyTooltipTextColor: BACKGROUND_COLOR_1,
+      tableBorder: BACKGROUND_COLOR_1,
 
       dangerButton: DANGER_COLOR,
       alpha: FONT_COLOR_2,
@@ -137,6 +138,8 @@ export const darkTheme: any = {
       drawerGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
       boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
       tabBarBoxShadow: "0px -2px 6px rgba(0, 0, 0, 0.05)",
+      coralGradient:
+        "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
     },
   },
 };
@@ -149,8 +152,8 @@ export const lightTheme: any = {
       brandColor: LIGHT_BRAND_COLOR,
       backgroundBackdrop: LIGHT_BACKGROUND_BACKDROP_COLOR,
       background: LIGHT_BACKGROUND_COLOR_0,
-      bg2: LIGHT_BACKGROUND_COLOR_2,
       nav: LIGHT_BACKGROUND_COLOR_1,
+      bg2: LIGHT_BACKGROUND_COLOR_2,
       fontColor: LIGHT_FONT_COLOR,
       fontColor2: LIGHT_FONT_COLOR_2,
       fontColor3: LIGHT_FONT_COLOR_3,
@@ -166,6 +169,7 @@ export const lightTheme: any = {
       borderColor: LIGHT_BORDER_COLOR_1,
       copyTooltipColor: LIGHT_BRAND_COLOR,
       copyTooltipTextColor: LIGHT_BACKGROUND_COLOR_1,
+      tableBorder: LIGHT_BORDER_COLOR,
 
       dangerButton: DANGER_COLOR,
       alpha: LIGHT_FONT_COLOR,
@@ -177,6 +181,8 @@ export const lightTheme: any = {
       drawerGradient: `linear-gradient(180deg, ${LIGHT_BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
       boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
       tabBarBoxShadow: "0px -2px 6px rgba(0, 0, 0, 0.05)",
+      coralGradient:
+        "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
     },
   },
 };

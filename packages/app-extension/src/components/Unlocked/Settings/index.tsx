@@ -94,9 +94,10 @@ const useStyles = styles((theme) => ({
     flexDirection: "column",
   },
   menuButton: {
-    padding: 0,
+    padding: "2px",
+    background: theme.custom.colors.coralGradient,
     "&:hover": {
-      background: "transparent",
+      background: theme.custom.colors.coralGradient,
     },
   },
   addConnectRoot: {
@@ -294,17 +295,30 @@ function AvatarHeader() {
   const theme = useCustomTheme();
   return (
     <div>
-      <img
-        src={"coral.png"}
+      <div
         style={{
-          width: "64px",
-          height: "64px",
-          borderRadius: "32px",
+          background: theme.custom.colors.coralGradient,
+          borderRadius: "40px",
+          padding: "3px",
+          width: "70px",
+          height: "70px",
           marginLeft: "auto",
           marginRight: "auto",
           display: "block",
         }}
-      />
+      >
+        <img
+          src={"coral.png"}
+          style={{
+            width: "64px",
+            height: "64px",
+            borderRadius: "32px",
+            marginLeft: "auto",
+            marginRight: "auto",
+            display: "block",
+          }}
+        />
+      </div>
       <Typography
         style={{
           textAlign: "center",

@@ -52,11 +52,7 @@ export function Nfts() {
         Object.entries(collections).map(
           ([blockchain, collections]) =>
             collections.length > 0 && (
-              <div
-                style={{
-                  marginTop: "2px",
-                }}
-              >
+              <div>
                 <NftTable
                   key={blockchain}
                   blockchain={blockchain as Blockchain}
