@@ -24,7 +24,7 @@ const LIGHT_BACKGROUND_BACKDROP_COLOR =
   "linear-gradient(180deg, #FFFFFF 0%, #F0F0F2 100%);";
 const LIGHT_BACKGROUND_COLOR_0 = "#F0F0F2";
 const LIGHT_BACKGROUND_COLOR_1 = "#ffffff";
-const LIGHT_BACKGROUND_COLOR_2 = LIGHT_BACKGROUND_COLOR_1;
+const LIGHT_BACKGROUND_COLOR_2 = LIGHT_BACKGROUND_COLOR_0;
 const LIGHT_FONT_COLOR = "#212938";
 const LIGHT_FONT_COLOR_1 = "#67758B";
 const LIGHT_FONT_COLOR_2 = LIGHT_FONT_COLOR;
@@ -158,7 +158,7 @@ export const lightTheme: any = {
       secondary: LIGHT_FONT_COLOR_1,
       primaryButton: LIGHT_BRAND_COLOR,
       primaryButtonTextColor: LIGHT_BACKGROUND_COLOR_1,
-      secondaryButton: LIGHT_BACKGROUND_COLOR_2,
+      secondaryButton: LIGHT_BACKGROUND_COLOR_1,
       secondaryButtonTextColor: LIGHT_FONT_COLOR,
       buttonFontColor: LIGHT_BUTTON_FONT_COLOR,
       border: LIGHT_BACKGROUND_COLOR_1,

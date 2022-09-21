@@ -19,6 +19,7 @@ import {
   useActiveWallet,
   useActiveWallets,
   useBlockchainLogo,
+  useDarkMode,
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
@@ -264,18 +265,11 @@ function AvatarButton() {
 }
 
 function SettingsMenu() {
-  const theme = useCustomTheme();
-  const { setTitle, setStyle, setContentStyle } = useNavStack();
+  const { setTitle } = useNavStack();
 
   useEffect(() => {
     setTitle("Profile");
-    setStyle({
-      backgroundColor: theme.custom.colors.background,
-    });
-    setContentStyle({
-      backgroundColor: theme.custom.colors.background,
-    });
-  }, [setTitle, setStyle, setContentStyle, theme.custom.colors.background]);
+  }, [setTitle]);
 
   return (
     <Suspense fallback={<div></div>}>

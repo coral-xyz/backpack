@@ -2,6 +2,7 @@ import { Typography } from "@mui/material";
 import { formatUSD } from "@coral-xyz/common";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
 import { useSolanaBalance, useActiveWallet } from "@coral-xyz/recoil";
+import { GradientText } from "../../common/Layout/Router";
 
 const useStyles = styles((theme) => ({
   button: {

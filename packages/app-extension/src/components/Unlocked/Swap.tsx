@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import {
   InputAdornment,
@@ -202,9 +202,15 @@ enum SwapState {
 }
 
 export function Swap({ blockchain }: { blockchain: Blockchain }) {
+  const nav = useNavStack();
+  useEffect(() => {
+    nav.setTitle("Swap");
+  }, [nav]);
+
   if (blockchain && blockchain !== Blockchain.SOLANA) {
     throw new Error("only Solana swaps are supported currently");
   }
+
   return <_Swap blockchain={blockchain ?? Blockchain.SOLANA} />;
 }
 
@@ -817,6 +823,10 @@ export function SelectToken({
     setMint(token.mint!);
     nav.pop();
   };
+
+  useEffect(() => {
+    nav.setTitle("Select token");
+  }, [nav]);
 
   return (
     <SearchableTokenTable
