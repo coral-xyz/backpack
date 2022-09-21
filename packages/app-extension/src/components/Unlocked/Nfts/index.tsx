@@ -9,6 +9,7 @@ import {
 } from "@coral-xyz/common";
 import {
   nftCollections,
+  useActiveWallets,
   useBlockchainLogo,
   useLoader,
   useNavigation,
@@ -29,10 +30,18 @@ const useStyles = styles(() => ({
 }));
 
 export function Nfts() {
-  const [collections, _, isLoading] = useLoader(nftCollections, {
-    [Blockchain.SOLANA]: [] as NftCollection[],
-    [Blockchain.ETHEREUM]: [] as NftCollection[],
-  });
+  const activeWallets = useActiveWallets();
+  const [collections, _, isLoading] = useLoader(
+    nftCollections,
+    {
+      [Blockchain.SOLANA]: [] as NftCollection[],
+      [Blockchain.ETHEREUM]: [] as NftCollection[],
+    },
+    // Note this reloads on any change to the active wallets, which reloads
+    // NFTs for both blockchains.
+    // TODO Make this reload for only the relevant blockchain
+    [activeWallets]
+  );
 
   return (
     <>
@@ -45,17 +54,14 @@ export function Nfts() {
           onClick={() => window.open("https://magiceden.io")}
         />
       ) : (
-        Object.entries(collections).map(
-          ([blockchain, collections]) =>
-            (collections as NftCollection[]).length > 0 && (
-              <NftTable
-                key={blockchain}
-                blockchain={blockchain as Blockchain}
-                collections={collections as NftCollection[]}
-                isLoading={isLoading}
-              />
-            )
-        )
+        Object.entries(collections).map(([blockchain, collections]) => (
+          <NftTable
+            key={blockchain}
+            blockchain={blockchain as Blockchain}
+            collections={collections as NftCollection[]}
+            isLoading={isLoading}
+          />
+        ))
       )}
     </>
   );
@@ -74,6 +80,7 @@ export function NftTable({
   const theme = useCustomTheme();
   const blockchainLogo = useBlockchainLogo(blockchain);
   const title = toTitleCase(blockchain);
+  if (!isLoading && collections.length === 0) return <></>;
   // Note: the absolute positioning below is a total hack due to weird
   //       padding + overlap issues on the table head and its content.
   return (
@@ -100,15 +107,25 @@ export function NftTable({
             }}
           >
             <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
-              {collections.map((collection: NftCollection, index: number) => (
-                <Grid item xs={6} sm={4} md={3} lg={2} key={collection.name}>
-                  {isLoading ? (
-                    <Skeleton height={250} style={{ borderRadius: "10px" }} />
-                  ) : (
-                    <NftCollectionCard key={index} collection={collection} />
+              {isLoading
+                ? [...Array(2)].map((_, i) => (
+                    <Grid item xs={6} sm={4} md={3} lg={2} key={i}>
+                      <Skeleton
+                        height={200}
+                        style={{
+                          borderRadius: "10px",
+                          margin: "-20% 0",
+                        }}
+                      />
+                    </Grid>
+                  ))
+                : collections.map(
+                    (collection: NftCollection, index: number) => (
+                      <Grid item xs={6} sm={4} md={3} lg={2} key={index}>
+                        <NftCollectionCard collection={collection} />
+                      </Grid>
+                    )
                   )}
-                </Grid>
-              ))}
             </Grid>
           </div>
         </BalancesTableContent>
