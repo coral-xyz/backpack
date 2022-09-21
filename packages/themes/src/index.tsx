@@ -126,7 +126,7 @@ export const darkTheme: any = {
       textFieldTextColor: FONT_COLOR_2,
       copyTooltipColor: BRAND_COLOR,
       copyTooltipTextColor: BACKGROUND_COLOR_1,
-      tableBorder: BACKGROUND_COLOR_1,
+      tableBorder: BACKGROUND_COLOR_0,
 
       dangerButton: DANGER_COLOR,
       alpha: FONT_COLOR_2,
