@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, Skeleton } from "@mui/material";
 import { Image as ImageIcon } from "@mui/icons-material";
 import {
   toTitleCase,
@@ -8,39 +8,35 @@ import {
   NAV_COMPONENT_NFT_COLLECTION,
 } from "@coral-xyz/common";
 import {
+  nftCollections,
   useBlockchainLogo,
-  useEthereumNftCollections,
-  useSolanaNftCollections,
+  useLoader,
   useNavigation,
 } from "@coral-xyz/recoil";
 import {
   BalancesTable,
   BalancesTableHead,
   BalancesTableContent,
-  BalancesTableRow,
 } from "@coral-xyz/react-xnft-renderer";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { GridCard } from "./Common";
 import { EmptyState } from "../../common/EmptyState";
 
-const useStyles = styles((theme) => ({
+const useStyles = styles(() => ({
   cardContentContainer: {
     marginTop: "36px",
   },
 }));
 
 export function Nfts() {
-  const solanaCollections = useSolanaNftCollections();
-  const ethereumCollections = useEthereumNftCollections();
-
-  const collections = {
-    [Blockchain.SOLANA]: solanaCollections,
-    [Blockchain.ETHEREUM]: ethereumCollections,
-  };
+  const [collections, _, isLoading] = useLoader(nftCollections, {
+    [Blockchain.SOLANA]: [] as NftCollection[],
+    [Blockchain.ETHEREUM]: [] as NftCollection[],
+  });
 
   return (
     <>
-      {Object.values(collections).flat().length === 0 ? (
+      {Object.values(collections).flat().length === 0 && !isLoading ? (
         <EmptyState
           icon={(props: any) => <ImageIcon {...props} />}
           title={"No NFTs"}
@@ -51,11 +47,12 @@ export function Nfts() {
       ) : (
         Object.entries(collections).map(
           ([blockchain, collections]) =>
-            collections.length > 0 && (
+            (collections as NftCollection[]).length > 0 && (
               <NftTable
                 key={blockchain}
                 blockchain={blockchain as Blockchain}
-                collections={collections}
+                collections={collections as NftCollection[]}
+                isLoading={isLoading}
               />
             )
         )
@@ -67,9 +64,11 @@ export function Nfts() {
 export function NftTable({
   blockchain,
   collections,
+  isLoading,
 }: {
   blockchain: Blockchain;
   collections: NftCollection[];
+  isLoading: boolean;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -103,7 +102,11 @@ export function NftTable({
             <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
               {collections.map((collection: NftCollection, index: number) => (
                 <Grid item xs={6} sm={4} md={3} lg={2} key={collection.name}>
-                  <NftCollectionCard key={index} collection={collection} />
+                  {isLoading ? (
+                    <Skeleton height={250} style={{ borderRadius: "10px" }} />
+                  ) : (
+                    <NftCollectionCard key={index} collection={collection} />
+                  )}
                 </Grid>
               ))}
             </Grid>

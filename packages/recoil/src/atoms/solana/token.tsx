@@ -23,7 +23,6 @@ export const customSplTokenAccounts = atom({
       get(solanaBalancePoll);
 
       //
-      //
       // Fetch token data.
       //
       try {

@@ -165,8 +165,11 @@ export const xnfts = atom({
       const _activeWallets = get(activePublicKeys);
       const _connectionUrls = get(connectionUrls);
       const provider = get(anchorContext).provider;
-      const xnfts = fetchXnfts(provider, new PublicKey(get(solanaPublicKey)!));
-      return (await xnfts).map((xnft) => {
+      const xnfts = await fetchXnfts(
+        provider,
+        new PublicKey(get(solanaPublicKey)!)
+      );
+      return xnfts.map((xnft) => {
         return {
           ...xnft,
           url: xnftUrl(xnft.metadataBlob.properties.bundle),
