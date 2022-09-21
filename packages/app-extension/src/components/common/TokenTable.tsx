@@ -199,7 +199,7 @@ export function TokenTable({
 
   const [_tokenAccounts, _, isLoading] = tokenAccounts
     ? [tokenAccounts, "hasValue"]
-    : useLoader(blockchainBalancesSorted(blockchain), [], [wallet]);
+    : useLoader(blockchainBalancesSorted(blockchain), [], [wallet.publicKey]);
 
   const [search, setSearch] = useState(searchFilter);
   const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -229,14 +229,17 @@ export function TokenTable({
   const rowHeight = 68;
   const headerHeight = 36;
   // If using virtualization, restrict the table height to 6 rows with an internal scrollbar
-  const tableHeight = useVirtualization
-    ? headerHeight + Math.min(tokenAccountsFiltered.length, 6) * rowHeight
-    : headerHeight + tokenAccountsFiltered.length * rowHeight;
+  const tableStyle = useVirtualization
+    ? {
+        height:
+          headerHeight +
+          Math.min(tokenAccountsFiltered.length, 6) * rowHeight +
+          "px",
+      }
+    : {};
 
   return (
-    <BalancesTable
-      style={useVirtualization ? { height: `${tableHeight}px` } : {}}
-    >
+    <BalancesTable style={tableStyle}>
       <BalancesTableHead
         props={{
           title,
