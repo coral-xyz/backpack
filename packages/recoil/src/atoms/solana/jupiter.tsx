@@ -12,7 +12,9 @@ export const jupiterRouteMap = selector({
   get: async () => {
     try {
       const response = await (
-        await fetch(`${JUPITER_BASE_URL}indexed-route-map`)
+        await fetch(
+          `${JUPITER_BASE_URL}indexed-route-map?onlyDirectRoutes=true`
+        )
       ).json();
       const getMint = (index: number) => response["mintKeys"][index];
       // Replace indices with mint addresses
@@ -93,5 +95,3 @@ export const jupiterOutputMints = selectorFamily({
       return swapTokens.filter((t: any) => t.name && t.ticker);
     },
 });
-
-export async function fetchJupiterRouteMap() {}
