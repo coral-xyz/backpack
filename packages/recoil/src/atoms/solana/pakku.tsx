@@ -1,20 +1,31 @@
-import { XNFT_PROGRAM_ID } from "@coral-xyz/common";
+import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
 import { selector } from "recoil";
-import { bootstrap } from "../bootstrap";
+import { solanaBootstrap } from "../bootstrap";
 
 export const pakkus = selector<Array<any>>({
   key: "pakkusDefault",
   get: async ({ get }) => {
-    const b = get(bootstrap);
-    const pakkus = await b.pakkus;
-    const nftMetadatas = b.splNftMetadata;
+    const solanaBoot = get(solanaBootstrap);
+    const pakkus = await solanaBoot.pakkus;
+    const nftMetadatas = solanaBoot.splNftMetadata;
+
+    if (!solanaBoot.solActivePublicKey) {
+      return [];
+    }
 
     const items: Array<any> = [];
     for await (const p of pakkus) {
       const [token] = await PublicKey.findProgramAddress(
-        [Buffer.from("token"), p.account.masterMint.toBytes()],
-        XNFT_PROGRAM_ID
+        [
+          new PublicKey(solanaBoot.solActivePublicKey).toBytes(),
+          TOKEN_PROGRAM_ID.toBytes(),
+          p.account.masterMint.toBytes(),
+        ],
+        ASSOCIATED_TOKEN_PROGRAM_ID
       );
 
       items.push({
