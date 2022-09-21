@@ -6,6 +6,9 @@ import {
 } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 
+export type PakkuAccount = IdlAccounts<Pakku>["pakku"];
+export type TransformAccount = IdlAccounts<Pakku>["transform"];
+
 export const PAKKU_PROGRAM_ID = new PublicKey(
   "Ddgp3LqTon8pZYBVKGiFretGABDbcrsWE3Aou7oNUTPd"
 );
@@ -13,9 +16,9 @@ export const PAKKU_PROGRAM_ID = new PublicKey(
 export async function fetchPakkus(
   provider: Provider,
   mints: Array<PublicKey>
-): Promise<Array<ProgramAccount<IdlAccounts<Pakku>["pakku"]>>> {
+): Promise<Array<ProgramAccount<PakkuAccount>>> {
   const client = pakkuClient(provider);
-  const pakkus: Array<ProgramAccount<IdlAccounts<Pakku>["pakku"]>> = [];
+  const pakkus: Array<ProgramAccount<PakkuAccount>> = [];
 
   for await (const m of mints) {
     const accs = await client.account.pakku.all([
@@ -38,7 +41,7 @@ export async function fetchPakkus(
 export async function fetchPakku(
   provider: Provider,
   pakku: PublicKey
-): Promise<IdlAccounts<Pakku>["pakku"]> {
+): Promise<PakkuAccount> {
   const client = pakkuClient(provider);
   return await client.account.pakku.fetch(pakku);
 }

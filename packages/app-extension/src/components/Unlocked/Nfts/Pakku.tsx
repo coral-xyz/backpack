@@ -1,9 +1,10 @@
 import { externalResourceUri } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
+import type { PakkuState } from "@coral-xyz/recoil";
 import { Grid, Typography } from "@mui/material";
 import { useMemo } from "react";
 
-export function PakkusList({ pakkus }: { pakkus: any[] }) {
+export function PakkusList({ pakkus }: { pakkus: PakkuState[] }) {
   const theme = useCustomTheme();
 
   return (
@@ -23,7 +24,7 @@ export function PakkusList({ pakkus }: { pakkus: any[] }) {
         style={{ paddingTop: "4px" }}
         spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}
       >
-        {pakkus.map((p: any, idx: number) => (
+        {pakkus.map((p: PakkuState, idx: number) => (
           <Grid key={idx} xs={3} sm={3} md={2} lg={2} item>
             <PreviewImage
               id={p.account.id}

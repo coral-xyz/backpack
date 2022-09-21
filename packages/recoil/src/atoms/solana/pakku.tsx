@@ -1,3 +1,5 @@
+import type { PakkuAccount } from "@coral-xyz/common";
+import type { ProgramAccount } from "@project-serum/anchor";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
@@ -6,7 +8,11 @@ import { PublicKey } from "@solana/web3.js";
 import { selector } from "recoil";
 import { solanaBootstrap } from "../bootstrap";
 
-export const pakkus = selector<Array<any>>({
+export interface PakkuState extends ProgramAccount<PakkuAccount> {
+  metadata: any;
+}
+
+export const pakkus = selector<Array<PakkuState>>({
   key: "pakkusDefault",
   get: async ({ get }) => {
     const solanaBoot = get(solanaBootstrap);
