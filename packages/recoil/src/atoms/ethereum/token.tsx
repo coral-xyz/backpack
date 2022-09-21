@@ -27,8 +27,6 @@ export const ethereumBalances = atom<Map<string, BigNumber>>({
   default: selector({
     key: "ethereumBalancesDefault",
     get: ({ get }: any) => {
-      const ethPublicKey = get(ethereumPublicKey);
-      if (!ethPublicKey) return new Map();
       const balanceMap = get(erc20Balances);
       // Add ETH balance at dummy address
       balanceMap.set(ETH_NATIVE_MINT, get(ethBalance));
