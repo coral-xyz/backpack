@@ -3,6 +3,7 @@
 // equality only.
 // See https://github.com/facebookexperimental/Recoil/issues/1416 for discussion.
 //
+
 import {
   atom,
   selector,
@@ -12,9 +13,9 @@ import {
   RecoilValueReadOnly,
 } from "recoil";
 
-interface EqualAtomOptions<T> extends AtomOptions<T> {
+type EqualAtomOptions<T> = AtomOptions<T> & {
   equals: (a: T, b: T) => boolean;
-}
+};
 
 /**
  * Use a writable selector to prevent excess renders.
