@@ -215,13 +215,11 @@ function useNavBar() {
         }}
       >
         {emoji}
-        {/*			<GradientText gradient={GRADIENT}>*/}
         {pathname.startsWith("/balances")
           ? "Balances"
           : pathname.startsWith("/apps")
           ? "Applications"
           : "Collectibles"}
-        {/*			</GradientText>*/}
       </Typography>
     );
   } else if (pathname === "/balances/token") {
@@ -237,39 +235,7 @@ function useNavBar() {
   };
 }
 
-const GRADIENT =
-  "linear-gradient(113.94deg, rgb(255 2 2) -0.07%, rgb(114 117 254) 58.23%, rgb(74 254 151) 98.98%)";
-
-/*
-'linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)'
-*/
-
 function NavBootstrap({ children }: any) {
   useBootstrap();
   return <>{children}</>;
-}
-
-export function GradientText({
-  gradient,
-  children,
-}: {
-  gradient: string;
-  children: React.ReactChildren | React.ReactChild;
-}) {
-  return (
-    <span
-      style={{
-        /* Create the gradient. */
-        backgroundImage: gradient,
-        WebkitBackgroundClip: "text",
-        WebkitTextFillColor: "transparent",
-        /*
-										 -moz-background-clip: text;
-															-moz-text-fill-color: transparent;
-					*/
-      }}
-    >
-      {children}
-    </span>
-  );
 }
