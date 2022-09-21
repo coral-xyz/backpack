@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { BigNumber } from "ethers";
 import { PublicKey } from "@solana/web3.js";
-import { Typography, IconButton, Popover } from "@mui/material";
+import { Typography, IconButton, Popover, Grid } from "@mui/material";
 import { Whatshot, CallMade } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
@@ -13,8 +13,12 @@ import {
   useEthereumConnectionUrl,
   useEthereumExplorer,
   useSolanaCtx,
+<<<<<<< HEAD
   useSolanaConnectionUrl,
   useSolanaExplorer,
+=======
+  usePakkus,
+>>>>>>> 4aea750 (add pakku preview list to nft details)
 } from "@coral-xyz/recoil";
 import {
   explorerNftUrl,
@@ -23,6 +27,7 @@ import {
   Solana,
   confirmTransaction,
   getLogger,
+  externalResourceUri,
 } from "@coral-xyz/common";
 import {
   PrimaryButton,
@@ -64,6 +69,7 @@ const useStyles = styles((theme) => ({
 export function NftsDetail({ nftId }: { nftId: string }) {
   const [nfts] = useLoader(nftMetadata, new Map());
   const nft = nfts.get(nftId);
+  const associatedPakkus = pakkus.filter((p) => p.metadata.publicKey === nftId);
 
   // Hack: needed because this is undefined due to framer-motion animation.
   if (!nftId) {
@@ -88,8 +94,56 @@ export function NftsDetail({ nftId }: { nftId: string }) {
     >
       <Image nft={nft} />
       <Description nft={nft} />
+      {associatedPakkus.length > 0 && <PakkusList pakkus={associatedPakkus} />}
       <SendButton nft={nft} />
       {nft.attributes && <Attributes nft={nft} />}
+    </div>
+  );
+}
+
+function PakkusList({ pakkus }: { pakkus: any[] }) {
+  const theme = useCustomTheme();
+
+  return (
+    <div style={{ marginTop: "16px" }}>
+      <Typography
+        style={{
+          color: theme.custom.colors.secondary,
+          fontWeight: 500,
+          fontSize: "16px",
+          lineHeight: "24px",
+          marginBottom: "4px",
+        }}
+      >
+        Pakkus
+      </Typography>
+      <div style={{ display: "inline-block" }}>
+        {pakkus.map((p: any, idx: number) => (
+          <div
+            key={idx}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <img
+              style={{ width: "50px" }}
+              src={externalResourceUri(p.metadata.tokenMetaUriData.image)}
+            />
+            <Typography
+              style={{
+                color: theme.custom.colors.fontColor,
+                fontWeight: 500,
+                fontSize: "10px",
+                lineHeight: "18px",
+              }}
+            >
+              {Buffer.from(p.account.id).toString()}
+            </Typography>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
