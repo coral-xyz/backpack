@@ -26,10 +26,7 @@ export function PakkusList({ pakkus }: { pakkus: PakkuState[] }) {
       >
         {pakkus.map((p: PakkuState, idx: number) => (
           <Grid key={idx} xs={3} sm={3} md={2} lg={2} item>
-            <PreviewImage
-              id={p.account.id}
-              src={p.metadata.tokenMetaUriData.image}
-            />
+            <PreviewImage id={p.account.id} src={p.metadata.imageUrl} />
           </Grid>
         ))}
       </Grid>

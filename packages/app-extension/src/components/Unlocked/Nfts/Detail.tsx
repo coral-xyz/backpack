@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BigNumber } from "ethers";
 import { PublicKey } from "@solana/web3.js";
 import { Typography, IconButton, Popover } from "@mui/material";
@@ -15,6 +15,7 @@ import {
   useSolanaCtx,
   useSolanaConnectionUrl,
   useSolanaExplorer,
+  pakkus,
 } from "@coral-xyz/recoil";
 import {
   explorerNftUrl,
@@ -48,6 +49,7 @@ import {
 } from "../Balances/TokensWidget/Send";
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
 import { List, ListItem } from "../../common/List";
+import { PakkusList } from "./Pakku";
 
 const logger = getLogger("app-extension/nft-detail");
 
@@ -63,8 +65,12 @@ const useStyles = styles((theme) => ({
 
 export function NftsDetail({ nftId }: { nftId: string }) {
   const [nfts] = useLoader(nftMetadata, new Map());
+  const [ownedPakkus] = useLoader(pakkus, []);
   const nft = nfts.get(nftId);
-  const associatedPakkus = pakkus.filter((p) => p.metadata.publicKey === nftId);
+
+  const associatedPakkus = ownedPakkus.filter(
+    (p: any) => p.metadata.publicKey === nftId
+  );
 
   // Hack: needed because this is undefined due to framer-motion animation.
   if (!nftId) {

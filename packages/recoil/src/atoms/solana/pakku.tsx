@@ -1,4 +1,9 @@
-import type { PakkuAccount } from "@coral-xyz/common";
+import {
+  Blockchain,
+  fetchPakkus,
+  type SolanaNft,
+  type PakkuAccount,
+} from "@coral-xyz/common";
 import type { ProgramAccount } from "@project-serum/anchor";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -6,28 +11,42 @@ import {
 } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
 import { selector } from "recoil";
-import { solanaBootstrap } from "../bootstrap";
+import { nftMetadata } from "../nft";
+import { activeSolanaWallet } from "../wallet";
+import { anchorContext } from "./wallet";
 
 export interface PakkuState extends ProgramAccount<PakkuAccount> {
-  metadata: any;
+  metadata: SolanaNft;
 }
 
-export const pakkus = selector<Array<PakkuState>>({
-  key: "pakkusDefault",
+export const pakkus = selector<PakkuState[]>({
+  key: "pakkus",
   get: async ({ get }) => {
-    const solanaBoot = get(solanaBootstrap);
-    const pakkus = await solanaBoot.pakkus;
-    const nftMetadatas = solanaBoot.splNftMetadata;
+    const provider = get(anchorContext).provider;
+    const solWallet = get(activeSolanaWallet);
 
-    if (!solanaBoot.solActivePublicKey) {
+    if (!solWallet) {
       return [];
     }
+
+    const nftMetadatas = get(nftMetadata);
+    const metadataMints = [...nftMetadatas.values()].reduce<string[]>(
+      (acc, curr: any) => {
+        if (curr.blockchain === Blockchain.SOLANA) {
+          return [...acc, curr.mint];
+        }
+        return acc;
+      },
+      []
+    );
+
+    const pakkus = await fetchPakkus(provider, metadataMints);
 
     const items: Array<any> = [];
     for await (const p of pakkus) {
       const [token] = await PublicKey.findProgramAddress(
         [
-          new PublicKey(solanaBoot.solActivePublicKey).toBytes(),
+          new PublicKey(solWallet.publicKey).toBytes(),
           TOKEN_PROGRAM_ID.toBytes(),
           p.account.masterMint.toBytes(),
         ],
@@ -36,7 +55,7 @@ export const pakkus = selector<Array<PakkuState>>({
 
       items.push({
         ...p,
-        metadata: nftMetadatas.get(token.toString()),
+        metadata: nftMetadatas.get(token.toBase58()),
       });
     }
 

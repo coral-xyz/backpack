@@ -15,7 +15,7 @@ export const PAKKU_PROGRAM_ID = new PublicKey(
 
 export async function fetchPakkus(
   provider: Provider,
-  mints: Array<PublicKey>
+  mints: string[]
 ): Promise<Array<ProgramAccount<PakkuAccount>>> {
   const client = pakkuClient(provider);
   const pakkus: Array<ProgramAccount<PakkuAccount>> = [];
