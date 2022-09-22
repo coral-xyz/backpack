@@ -221,6 +221,7 @@ export class ProviderEthereumInjection extends EventEmitter {
         this.provider!.getStorageAt(address, position),
       eth_getTransactionCount: (address: string) =>
         this.provider!.getTransactionCount(address),
+      eth_blockNumber: () => this.provider!.getBlockNumber(),
       eth_getBlockByNumber: (block: number) => this.provider!.getBlock(block),
       eth_call: (transaction: any) => this.provider!.call(transaction),
       eth_estimateGas: (transaction: any) =>
@@ -391,11 +392,15 @@ export class ProviderEthereumInjection extends EventEmitter {
    */
   protected async _handleEthRequestAccounts() {
     // Send request to the RPC API.
-    const result = await this._requestManager.request({
-      method: ETHEREUM_RPC_METHOD_CONNECT,
-      params: [],
-    });
-    return [result.publicKey];
+    if (this.isConnected() && this.publicKey) {
+      return [this.publicKey];
+    } else {
+      const result = await this._requestManager.request({
+        method: ETHEREUM_RPC_METHOD_CONNECT,
+        params: [],
+      });
+      return [result.publicKey];
+    }
   }
 
   /**
