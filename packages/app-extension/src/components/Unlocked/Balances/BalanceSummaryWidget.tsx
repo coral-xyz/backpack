@@ -57,7 +57,6 @@ export function BalanceSummaryWidget() {
       totalChange: 0,
       percentChange: 0,
     });
-
   return (
     <div style={{ display: "flex" }}>
       <div
@@ -75,7 +74,13 @@ export function BalanceSummaryWidget() {
             color: theme.custom.colors.fontColor,
           }}
         >
-          {isLoading ? <Skeleton /> : formatUSD(totalBalance)}
+          {isLoading ? (
+            <Skeleton
+              sx={{ backgroundColor: theme.custom.colors.balanceSkeleton }}
+            />
+          ) : (
+            formatUSD(totalBalance)
+          )}
         </Typography>
         <div
           style={{
@@ -99,7 +104,10 @@ export function BalanceSummaryWidget() {
             }}
           >
             {isLoading ? (
-              <Skeleton width="100px" />
+              <Skeleton
+                width="100px"
+                sx={{ backgroundColor: theme.custom.colors.balanceSkeleton }}
+              />
             ) : (
               <>
                 {totalChange > 0 ? "+" : ""}
@@ -124,7 +132,10 @@ export function BalanceSummaryWidget() {
               }}
             >
               {isLoading ? (
-                <Skeleton width="100px" />
+                <Skeleton
+                  width="100px"
+                  sx={{ backgroundColor: theme.custom.colors.balanceSkeleton }}
+                />
               ) : (
                 <>
                   {totalChange > 0 ? "+" : ""}

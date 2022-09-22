@@ -208,30 +208,6 @@ export function Loading(props: any) {
   );
 }
 
-/*
-      <CircularProgress
-        size={48}
-        className={classes.loadingIndicator}
-        style={props.iconStyle}
-        thickness={6}
-/>
-
-
-const useStyles = makeStyles(() => ({
-  circle: {
-    stroke: "url(#linearColors)"
-  }
-}));
-
-export default function GradientCircularProgress() {
-  const classes = useStyles({});
-
-  return (
-
-  );
-}
-*/
-
 export function PrimaryButton({
   buttonLabelStyle,
   label,

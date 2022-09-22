@@ -127,6 +127,7 @@ export const darkTheme: any = {
       copyTooltipColor: BRAND_COLOR,
       copyTooltipTextColor: BACKGROUND_COLOR_1,
       tableBorder: BACKGROUND_COLOR_0,
+      balanceSkeleton: BACKGROUND_COLOR_1,
 
       dangerButton: DANGER_COLOR,
       alpha: FONT_COLOR_2,
@@ -170,6 +171,7 @@ export const lightTheme: any = {
       copyTooltipColor: LIGHT_BRAND_COLOR,
       copyTooltipTextColor: LIGHT_BACKGROUND_COLOR_1,
       tableBorder: LIGHT_BORDER_COLOR,
+      balanceSkeleton: "rgba(0,0,0,0.15)",
 
       dangerButton: DANGER_COLOR,
       alpha: LIGHT_FONT_COLOR,

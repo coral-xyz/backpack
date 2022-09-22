@@ -375,7 +375,7 @@ function WalletList({
       .then((_resp) => close())
       .catch(console.error);
   };
-
+  let activeWalletType: "derived" | "hardware";
   const keys = keyring.hdPublicKeys
     .map((k: any) => ({ ...k, type: "derived" }))
     .concat(
@@ -386,7 +386,17 @@ function WalletList({
     )
     .concat(
       keyring.ledgerPublicKeys.map((k: any) => ({ ...k, type: "hardware" }))
-    );
+    )
+    // The drop down should show all wallet keys *except* the active one.
+    .filter(({ publicKey, type }: any) => {
+      const isActive = activeWallets
+        .map((p) => p.publicKey)
+        .includes(publicKey);
+      if (isActive) {
+        activeWalletType = type;
+      }
+      return !isActive;
+    });
 
   const { name, publicKey } = activeWallets.filter(
     (a) => a.blockchain === blockchain
@@ -471,6 +481,16 @@ function WalletList({
                     maxWidth: "75px",
                   }}
                 />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                  marginLeft: "4px",
+                }}
+              >
+                <ImportTypeBadge type={activeWalletType!} />
               </div>
             </div>
             <div
@@ -575,14 +595,6 @@ function WalletList({
                           <ImportTypeBadge type={type} />
                         </div>
                       </div>
-                      {activeWallets
-                        .map((p) => p.publicKey)
-                        .includes(publicKey) && (
-                        <CheckIcon
-                          fill={theme.custom.colors.brandColor}
-                          style={{ width: "24px" }}
-                        />
-                      )}
                     </div>
                   </ListItem>
                 );
