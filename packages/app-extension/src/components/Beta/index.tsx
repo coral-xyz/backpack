@@ -1,12 +1,19 @@
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
-import { PopupButton } from "@typeform/embed-react";
-import { type CSSProperties, useState } from "react";
-import { TextField } from "../common";
+import { createPopup } from "@typeform/embed";
+import { useState, useCallback } from "react";
+import { PrimaryButton, TextField } from "../common";
+
+import "@typeform/embed/build/css/popup.css";
 
 export function BetaInviteLocked() {
   const theme = useCustomTheme();
   const [inviteCode, setInviteCode] = useState("");
+  const typeform = createPopup("PCnBjycW");
+
+  const handleCodeSubmit = useCallback(() => {
+    console.warn(inviteCode);
+  }, [inviteCode]);
 
   return (
     <Box
@@ -18,25 +25,25 @@ export function BetaInviteLocked() {
         height: "100%",
       }}
     >
-      <Box>
-        <TextField
-          autoFocus
-          placeholder="Invite Code"
-          type="text"
-          value={inviteCode}
-          setValue={setInviteCode}
-        />
+      <Box sx={{}}>
+        <form onSubmit={handleCodeSubmit} noValidate>
+          <Box sx={{ margin: "0 12px 12px 12px" }}>
+            <TextField
+              autoFocus
+              placeholder="Invite Code"
+              type="text"
+              value={inviteCode}
+              setValue={setInviteCode}
+            />
+          </Box>
+          <Box sx={{ mx: "12px" }}>
+            <PrimaryButton label="Submit" type="submit" />
+          </Box>
+        </form>
+        <Box sx={{ mx: "12px" }}>
+          <PrimaryButton label="Join the Waitlist!" onClick={typeform.open} />
+        </Box>
       </Box>
-      <PopupButton id="PCnBjycW" style={btnStyles}>
-        Join the Waitlist!
-      </PopupButton>
     </Box>
   );
 }
-
-const btnStyles: CSSProperties = {
-  border: "none",
-  borderRadius: 12,
-  height: 48,
-  width: "100%",
-};
