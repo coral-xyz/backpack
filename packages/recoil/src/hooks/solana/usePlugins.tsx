@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  useRecoilValue,
+  useSetRecoilState,
+  useRecoilValueLoadable,
+} from "recoil";
 import { PublicKey } from "@solana/web3.js";
 // XXX: this full path is currently necessary as it avoids loading the jsx in
 //      react-xnft-renderer/src/Component.tsx in the background service worker
 import { Plugin } from "@coral-xyz/react-xnft-renderer/dist/esm/plugin";
 import { fetchXnft } from "@coral-xyz/common";
 import * as atoms from "../../atoms";
-import { useXnfts } from "./useXnfts";
 import { useAnchorContext } from "./useSolanaConnection";
 import { useConnectionUrls } from "../preferences";
 import { useActivePublicKeys } from "../";
@@ -18,7 +21,11 @@ import {
 import { xnftUrl } from "../../atoms/solana/xnft";
 
 export function useAppIcons() {
-  const xnftData = useXnfts();
+  const xnftLoadable = useRecoilValueLoadable(atoms.xnfts);
+  const xnftData =
+    xnftLoadable.state === "hasValue"
+      ? (xnftLoadable.contents as Array<any>)
+      : [];
   const pluginData = useRecoilValue(atoms.plugins);
   return xnftData.concat(pluginData);
 }
