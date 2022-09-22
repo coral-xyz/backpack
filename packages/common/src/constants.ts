@@ -412,6 +412,7 @@ export const BACKEND_EVENT = "backend-event";
 //
 // Popup query routes.
 //
+export const QUERY_BETA_INVITE = "beta-invite=true"; // MARK: beta
 export const QUERY_LOCKED = "locked=true";
 export const QUERY_APPROVAL = "approval=true";
 export const QUERY_LOCKED_APPROVAL = "locked-approval=true";

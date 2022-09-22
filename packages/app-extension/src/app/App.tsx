@@ -7,6 +7,7 @@ import {
 import { Router } from "./Router";
 import { WithTheme } from "../components/common/WithTheme";
 import "./App.css";
+
 import "@fontsource/inter";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";

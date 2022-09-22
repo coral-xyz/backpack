@@ -663,7 +663,8 @@ export class Backend {
 
   async darkModeRead(): Promise<boolean> {
     const state = await this.keyringStoreState();
-    if (state === "needs-onboarding") {
+    // MARK: beta
+    if (state === "needs-onboarding" || state === "needs-beta-invite-code") {
       return DEFAULT_DARK_MODE;
     }
     const data = await store.getWalletData();

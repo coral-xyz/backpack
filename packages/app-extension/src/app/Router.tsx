@@ -6,6 +6,7 @@ import {
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
   openOnboarding,
+  QUERY_BETA_INVITE, // MARK: beta
   QUERY_LOCKED,
   QUERY_APPROVAL,
   QUERY_LOCKED_APPROVAL,
@@ -20,6 +21,7 @@ import {
   useBootstrapFast,
   useBackgroundResponder,
 } from "@coral-xyz/recoil";
+import { BetaInviteLocked } from "../components/Beta";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
 import { ApproveOrigin } from "../components/Unlocked/Approvals/ApproveOrigin";
@@ -42,12 +44,13 @@ export function Router() {
 
 function _Router() {
   const classes = useStyles();
+  const keyringState = useKeyringStoreState();
 
   //
   // Expanded view: first time onboarding flow.
   //
   const needsOnboarding =
-    useKeyringStoreState() === KeyringStoreStateEnum.NeedsOnboarding;
+    keyringState === KeyringStoreStateEnum.NeedsOnboarding;
 
   if (needsOnboarding) {
     openOnboarding();
@@ -96,6 +99,8 @@ function PopupRouter() {
 
   // Render the app flows described above.
   switch (query) {
+    case QUERY_BETA_INVITE: // MARK: beta
+      return <QueryBetaInvite />;
     case QUERY_LOCKED:
       return <QueryLocked />;
     case QUERY_APPROVAL:
@@ -111,6 +116,12 @@ function PopupRouter() {
     default:
       return <FullApp />;
   }
+}
+
+// MARK: beta
+function QueryBetaInvite() {
+  logger.debug("query beta invite");
+  return <BetaInviteLocked />;
 }
 
 function QueryLockedApproval() {
@@ -134,6 +145,7 @@ function QueryLocked() {
   if (!isLocked) {
     return <></>;
   }
+
   return (
     <LockedBootstrap
       onUnlock={async () => {
@@ -161,6 +173,7 @@ function QueryApproval() {
   if (found) {
     window.close();
   }
+
   return (
     <ApproveOrigin
       origin={origin}
@@ -260,17 +273,23 @@ function FullApp() {
   logger.debug("full app");
 
   const keyringStoreState = useKeyringStoreState();
+  const needsBetaInvite =
+    keyringStoreState === KeyringStoreStateEnum.NeedsBetaInviteCode; // MARK: beta
   const needsOnboarding =
     keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
+
   const isLocked =
-    !needsOnboarding && keyringStoreState === KeyringStoreStateEnum.Locked;
+    !needsBetaInvite &&
+    !needsOnboarding &&
+    keyringStoreState === KeyringStoreStateEnum.Locked; // MARK: beta
 
   return (
     <AnimatePresence initial={false}>
       <WithLockMotion id={isLocked ? "locked" : "unlocked"}>
         <Suspense fallback={<div style={{ display: "none" }}></div>}>
+          {needsBetaInvite && <BetaInviteLocked />} {/* MARK: beta */}
           {isLocked && <LockedBootstrap />}
-          {!isLocked && <Unlocked />}
+          {!isLocked && !needsBetaInvite && <Unlocked />} {/* MARK: beta */}
         </Suspense>
       </WithLockMotion>
     </AnimatePresence>

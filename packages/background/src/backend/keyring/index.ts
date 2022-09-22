@@ -31,6 +31,7 @@ export class KeyringStore {
   private activeBlockchain_?: Blockchain;
   private events: EventEmitter;
   private mnemonic: string;
+  private inviteCode?: string; // MARK: beta
 
   constructor(events: EventEmitter) {
     this.blockchains = new Map();
@@ -39,12 +40,19 @@ export class KeyringStore {
   }
 
   public async state(): Promise<KeyringStoreState> {
+    // MARK: beta
+    if (!this.hasInviteCode()) {
+      return KeyringStoreStateEnum.NeedsBetaInviteCode;
+    }
+
     if (this.isUnlocked()) {
       return KeyringStoreStateEnum.Unlocked;
     }
+
     if (await this.isLocked()) {
       return KeyringStoreStateEnum.Locked;
     }
+
     return KeyringStoreStateEnum.NeedsOnboarding;
   }
 
@@ -371,6 +379,11 @@ export class KeyringStore {
 
   private isUnlocked(): boolean {
     return this.activeBlockchain_ !== undefined && this.lastUsedTs !== 0;
+  }
+
+  // MARK: beta
+  private hasInviteCode(): boolean {
+    return this.inviteCode !== undefined && this.inviteCode.length > 0;
   }
 
   private async persist(forceBecauseCalledFromInit = false) {
