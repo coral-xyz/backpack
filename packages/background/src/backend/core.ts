@@ -307,6 +307,14 @@ export class Backend {
       : EthereumConnectionUrl.DEFAULT;
   }
 
+  async ethereumChainIdRead(): Promise<string> {
+    const data = await store.getWalletData();
+    return data.ethereum && data.ethereum.chainId
+      ? data.ethereum.chainId
+      : // Default to mainnet
+        "0x1";
+  }
+
   async ethereumConnectionUrlUpdate(connectionUrl: string): Promise<string> {
     const data = await store.getWalletData();
     await store.setWalletData({
