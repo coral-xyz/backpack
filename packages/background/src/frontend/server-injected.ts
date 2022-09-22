@@ -234,7 +234,8 @@ async function handleConnect(
     ];
     if (blockchain === Blockchain.ETHEREUM) {
       const connectionUrl = await ctx.backend.ethereumConnectionUrlRead();
-      const data = { publicKey: activeWallet, connectionUrl };
+      const chainId = await ctx.backend.ethereumChainIdRead();
+      const data = { publicKey: activeWallet, connectionUrl, chainId };
       ctx.events.emit(BACKEND_EVENT, {
         name: NOTIFICATION_ETHEREUM_CONNECTED,
         data,
