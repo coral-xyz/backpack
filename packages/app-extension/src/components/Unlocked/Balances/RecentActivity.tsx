@@ -126,14 +126,6 @@ export function RecentActivityButton() {
 }
 
 export function RecentActivity() {
-  return (
-    <Suspense fallback={<RecentActivityLoading />}>
-      <_RecentActivity />
-    </Suspense>
-  );
-}
-
-export function _RecentActivity() {
   const activeEthereumWallet = useActiveEthereumWallet();
   const activeSolanaWallet = useActiveSolanaWallet();
 

@@ -117,8 +117,13 @@ export class BackgroundSolanaConnection extends Connection {
 
   static customSplTokenAccountsFromJson(json: any) {
     json.tokenAccountsMap.map((t: any) => {
-      t[1].amount = new BN(t[1].amount);
-      return t;
+      return [
+        t[0],
+        {
+          ...t[1],
+          amount: new BN(t[1].amount),
+        },
+      ];
     });
     return json;
   }

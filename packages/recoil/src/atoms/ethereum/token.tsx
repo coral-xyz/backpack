@@ -1,24 +1,78 @@
-import { atomFamily, selectorFamily } from "recoil";
+import { atom, atomFamily, selector, selectorFamily } from "recoil";
 import { ethers, BigNumber } from "ethers";
 import { TokenInfo } from "@solana/spl-token-registry";
-import { bootstrap } from "../bootstrap";
+import { fetchEthereumTokenBalances, ETH_NATIVE_MINT } from "@coral-xyz/common";
 import { TokenData } from "../../types";
 import { priceData } from "../prices";
+import { ethereumPublicKey } from "../wallet";
+import { ethersContext } from "./provider";
 import { ethereumTokenMetadata } from "./token-metadata";
 import { ethereumConnectionUrl } from "./preferences";
-import { ethereumPublicKey } from "../wallet";
+
+// Map of ETH native balance and all ERC20 balances
+// We use a dummy address for the ETH balance (zero address) so it can be
+// treated like an ERC20 in state.
+export const ethereumBalances = atomFamily<
+  Map<string, BigNumber>,
+  { connectionUrl: string; publicKey: string }
+>({
+  key: "ethereumBalances",
+  default: selectorFamily({
+    key: "ethereumBalancesDefault",
+    get:
+      ({
+        connectionUrl,
+        publicKey,
+      }: {
+        connectionUrl: string;
+        publicKey: string;
+      }) =>
+      ({ get }: any) => {
+        const balanceMap = get(erc20Balances);
+        // Add ETH balance at dummy address
+        balanceMap.set(ETH_NATIVE_MINT, get(ethBalance));
+        return balanceMap;
+      },
+  }),
+});
+
+// Native ETH balance
+export const ethBalance = atom<BigNumber>({
+  key: "ethereumBalance",
+  default: selector({
+    key: "ethereumBalanceDefault",
+    get: ({ get }: any) => {
+      const publicKey = get(ethereumPublicKey);
+      if (!publicKey) return BigNumber.from(0);
+      const provider = get(ethersContext).provider;
+      return provider.getBalance(publicKey);
+    },
+  }),
+});
+
+// ERC20 Token Balances
+export const erc20Balances = selector({
+  key: "ethereumTokenBalances",
+  get: async ({ get }: any) => {
+    const publicKey = get(ethereumPublicKey);
+    if (!publicKey) {
+      return new Map();
+    }
+    const provider = get(ethersContext).provider;
+    return await fetchEthereumTokenBalances(provider, publicKey);
+  },
+});
 
 export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
   key: "ethereumTokenBalance",
   get:
     (contractAddress: string) =>
     ({ get }) => {
-      const ethTokenMetadata = get(ethereumTokenMetadata);
+      const publicKey = get(ethereumPublicKey);
+      const connectionUrl = get(ethereumConnectionUrl);
+      const ethTokenMetadata = get(ethereumTokenMetadata)();
       const ethTokenBalances: Map<String, BigNumber> = get(
-        ethereumTokenBalances({
-          connectionUrl: get(ethereumConnectionUrl)!,
-          publicKey: get(ethereumPublicKey)!,
-        })
+        ethereumBalances({ connectionUrl, publicKey: publicKey! })
       );
 
       const tokenMetadata =
@@ -55,26 +109,4 @@ export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
         recentUsdBalanceChange,
       } as TokenData;
     },
-});
-
-export const ethereumTokenBalances = atomFamily<
-  Map<string, BigNumber>,
-  { connectionUrl: string; publicKey: string }
->({
-  key: "ethereumTokenBalances",
-  default: selectorFamily({
-    key: "ethereumTokenBalancesDefault",
-    get:
-      ({
-        connectionUrl,
-        publicKey,
-      }: {
-        connectionUrl: string;
-        publicKey: string;
-      }) =>
-      async ({ get }) => {
-        const data = get(bootstrap);
-        return data.ethTokenBalances;
-      },
-  }),
 });

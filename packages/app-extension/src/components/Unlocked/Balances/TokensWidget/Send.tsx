@@ -4,12 +4,15 @@ import { CircularProgress, Typography } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Connection, SystemProgram, PublicKey } from "@solana/web3.js";
 import {
+  blockchainTokenData,
   useAnchorContext,
   useBlockchainTokenAccount,
   useBlockchainExplorer,
   useBlockchainConnectionUrl,
   useEthereumCtx,
+  useLoader,
   useNavigation,
+  TokenData,
 } from "@coral-xyz/recoil";
 import {
   Blockchain,
@@ -105,11 +108,11 @@ export function SendButton({
       routes={[
         {
           name: "send",
-          component: (props: any) => <Send {...props} />,
+          component: (props: any) => <SendLoader {...props} />,
           title: `${token.ticker} / Send`,
           props: {
             blockchain,
-            tokenAddress: address,
+            address,
           },
         },
       ]}
@@ -117,17 +120,28 @@ export function SendButton({
   );
 }
 
-export function Send({
+export function SendLoader({
   blockchain,
-  tokenAddress,
+  address,
 }: {
   blockchain: Blockchain;
-  tokenAddress: string;
+  address: string;
+}) {
+  const [token] = useLoader(blockchainTokenData({ blockchain, address }), null);
+  if (!token) return <></>;
+  return <Send blockchain={blockchain} token={token} />;
+}
+
+export function Send({
+  blockchain,
+  token,
+}: {
+  blockchain: Blockchain;
+  token: TokenData;
 }) {
   const classes = useStyles() as any;
   const { close } = useDrawerContext();
-  const nav = useNavStack();
-  const token = useBlockchainTokenAccount(blockchain, tokenAddress);
+  const { title, setTitle } = useNavStack();
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
 
@@ -136,6 +150,14 @@ export function Send({
   const [amount, setAmount] = useState<BigNumber | undefined>(undefined);
   const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
 
+  useEffect(() => {
+    const prev = title;
+    setTitle(`Send ${token.ticker}`);
+    return () => {
+      setTitle(prev);
+    };
+  }, []);
+
   const {
     isValidAddress,
     isFreshAddress: _,
@@ -143,6 +165,7 @@ export function Send({
   } = useIsValidAddress(blockchain, address, solanaProvider.connection);
 
   useEffect(() => {
+    if (!token) return;
     if (token.mint === SOL_NATIVE_MINT) {
       // When sending SOL, account for the tx fee and rent exempt minimum.
       setFeeOffset(
@@ -162,17 +185,13 @@ export function Send({
           )
       );
     }
-  }, [blockchain, tokenAddress]);
+  }, [blockchain, token]);
 
-  const amountSubFee = BigNumber.from(token.nativeBalance).sub(feeOffset);
+  const amountSubFee = BigNumber.from(token!.nativeBalance).sub(feeOffset);
   const maxAmount = amountSubFee.gt(0) ? amountSubFee : BigNumber.from(0);
   const exceedsBalance = amount && amount.gt(maxAmount);
   const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
   const isAmountError = amount && exceedsBalance;
-
-  useEffect(() => {
-    nav.setTitle(`Send ${token.ticker}`);
-  }, [nav]);
 
   // On click handler.
   const onNext = () => {

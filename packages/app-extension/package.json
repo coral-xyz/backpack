@@ -30,7 +30,7 @@
     "react-router-dom": "^6.3.0",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.7",
-    "recoil": "^0.6.1"
+    "recoil": "^0.7.5"
   },
   "scripts": {
     "start": "NODE_ENV=development webpack serve",

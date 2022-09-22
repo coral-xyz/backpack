@@ -1,6 +1,5 @@
 export * from "./solana";
 export * from "./preferences";
-export * from "./prices";
 export * from "./client";
 export * from "./bootstrap";
 export * from "./keyring";
@@ -9,6 +8,8 @@ export * from "./navigation";
 export * from "./wallet";
 export * from "./ethereum";
 export * from "./useBlockchain";
+export * from "./useLoader";
 export * from "./useNftMetadata";
+export * from "./usePriceData";
 export * from "./useTotalBalance";
 export * from "./useTransactionData";

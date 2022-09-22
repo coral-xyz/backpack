@@ -5,18 +5,18 @@ import type {
 } from "ethereum-multicall";
 import { Multicall } from "ethereum-multicall";
 
-import UniswapTokenList from "./tokens-uniswap";
+import { UniswapTokenList } from "./tokens-uniswap";
 
 // Dummy representation of native ETH.
 export const ETH_NATIVE_MINT = ethers.constants.AddressZero;
 
-export async function ethereumBalances(
+export async function fetchEthereumBalances(
   provider: ethers.providers.Provider,
   publicKey: string
 ) {
   const [ethBalance, tokenBalances] = await Promise.all([
     provider.getBalance(publicKey),
-    ethereumTokenBalances(provider, publicKey),
+    fetchEthereumTokenBalances(provider, publicKey),
   ]);
 
   const balanceMap = tokenBalances;
@@ -24,7 +24,7 @@ export async function ethereumBalances(
   return balanceMap;
 }
 
-export async function ethereumTokenBalances(
+export async function fetchEthereumTokenBalances(
   provider: ethers.providers.Provider,
   publicKey: string
 ) {

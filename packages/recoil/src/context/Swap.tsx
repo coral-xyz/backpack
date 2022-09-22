@@ -13,13 +13,9 @@ import {
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
 } from "@coral-xyz/common";
-import {
-  useJupiterInputMints,
-  useSplTokenRegistry,
-  useSolanaCtx,
-  useBlockchainTokenAccount,
-} from "../hooks";
-import { JUPITER_BASE_URL } from "../atoms/solana/jupiter";
+import { useLoader, useSplTokenRegistry, useSolanaCtx } from "../hooks";
+import { jupiterInputMints, JUPITER_BASE_URL } from "../atoms/solana/jupiter";
+import { blockchainTokenData } from "../atoms/balance";
 
 const { Zero } = ethers.constants;
 const DEFAULT_DEBOUNCE_DELAY = 400;
@@ -61,6 +57,7 @@ type SwapContext = {
   isJupiterError: boolean;
   availableForSwap: BigNumber;
   exceedsBalance: boolean | undefined;
+  inputTokenAccounts: any;
 };
 
 const _SwapContext = React.createContext<SwapContext | null>(null);
@@ -80,18 +77,24 @@ function useDebounce(value: any, wait = DEFAULT_DEBOUNCE_DELAY) {
 
 export function SwapProvider(props: any) {
   const tokenRegistry = useSplTokenRegistry();
-  const tokenAccountsSorted = useJupiterInputMints();
+  const [inputTokenAccounts] = useLoader(jupiterInputMints, []);
   const solanaCtx = useSolanaCtx();
   const { backgroundClient, connection, walletPublicKey } = solanaCtx;
-  const token = props.tokenAddress
-    ? useBlockchainTokenAccount(props.blockchain, props.tokenAddress)
-    : undefined;
+  const [token] = props.tokenAddress
+    ? useLoader(
+        blockchainTokenData({
+          blockchain: props.blockchain,
+          address: props.tokenAddress,
+        }),
+        undefined
+      )
+    : [undefined];
 
   // Swap setttings
   const [[fromMint, toMint], setFromMintToMint] = useState([
-    token ? token.mint : SOL_NATIVE_MINT,
+    token ? token.mint! : SOL_NATIVE_MINT,
     token
-      ? token.mint === USDC_MINT.toString()
+      ? token.mint! === USDC_MINT.toString()
         ? SOL_NATIVE_MINT
         : USDC_MINT
       : USDC_MINT,
@@ -145,7 +148,7 @@ export function SwapProvider(props: any) {
   //
   const pollIdRef: { current: NodeJS.Timeout | null } = useRef(null);
 
-  const swapFromToken = tokenAccountsSorted.find((t) => t.mint === fromMint);
+  const swapFromToken = inputTokenAccounts.find((t) => t.mint === fromMint);
   let availableForSwap = swapFromToken
     ? BigNumber.from(swapFromToken.nativeBalance)
     : Zero;
@@ -205,7 +208,6 @@ export function SwapProvider(props: any) {
   useEffect(() => {
     (async () => {
       const transaction = await fetchTransaction();
-      console.log(transaction);
       setTransaction(transaction);
       setTransactionFee(await estimateFee(transaction));
       setIsLoadingTransactions(false);
@@ -409,6 +411,7 @@ export function SwapProvider(props: any) {
         isJupiterError,
         availableForSwap,
         exceedsBalance,
+        inputTokenAccounts,
       }}
     >
       {props.children}

@@ -6,14 +6,15 @@ import { Whatshot, CallMade } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import {
+  nftMetadata,
   useDecodedSearchParams,
-  useNftMetadata,
   useAnchorContext,
-  useSolanaConnectionUrl,
+  useLoader,
   useEthereumConnectionUrl,
-  useSolanaExplorer,
   useEthereumExplorer,
   useSolanaCtx,
+  useSolanaConnectionUrl,
+  useSolanaExplorer,
 } from "@coral-xyz/recoil";
 import {
   explorerNftUrl,
@@ -35,13 +36,13 @@ import {
 } from "../../common/Layout/NavStack";
 import { SendSolanaConfirmationCard } from "../Balances/TokensWidget/Solana";
 import { SendEthereumConfirmationCard } from "../Balances/TokensWidget/Ethereum";
-import { useIsValidAddress } from "../Balances/TokensWidget/Send";
-import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
-import { List, ListItem } from "../../common/List";
 import {
+  useIsValidAddress,
   Sending,
   Error as ErrorConfirmation,
-} from "../../Unlocked/Balances/TokensWidget/Send";
+} from "../Balances/TokensWidget/Send";
+import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
+import { List, ListItem } from "../../common/List";
 
 const logger = getLogger("app-extension/nft-detail");
 
@@ -56,7 +57,7 @@ const useStyles = styles((theme) => ({
 }));
 
 export function NftsDetail({ nftId }: { nftId: string }) {
-  const nfts = useNftMetadata();
+  const [nfts] = useLoader(nftMetadata, new Map());
   const nft = nfts.get(nftId);
 
   // Hack: needed because this is undefined due to framer-motion animation.
@@ -363,7 +364,7 @@ export function NftOptionsButton() {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
   const searchParams = useDecodedSearchParams();
-  const nfts = useNftMetadata();
+  const [nfts] = useLoader(nftMetadata, new Map());
   // @ts-ignore
   const nft: any = nfts.get(searchParams.props.nftId);
   const isEthereum = nft && nft.contractAddress;

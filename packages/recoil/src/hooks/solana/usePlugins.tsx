@@ -28,6 +28,31 @@ export function usePlugins(): Array<Plugin> {
   return pluginData.map((p) => getPlugin(p));
 }
 
+export function usePluginUrl(address?: string) {
+  const { provider } = useAnchorContext();
+  const [url, setUrl] = useState<string | null>(null);
+  const [cached] = useState<Plugin | undefined>(
+    PLUGIN_CACHE.get(address ?? "")
+  );
+
+  if (cached) return cached.iframeRootUrl;
+
+  useEffect(() => {
+    (async () => {
+      if (address) {
+        try {
+          const xnft = await fetchXnft(provider, new PublicKey(address));
+          setUrl(xnftUrl(xnft.metadataBlob.properties.bundle));
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    })();
+  });
+
+  return url;
+}
+
 export function useFreshPlugin(address?: string): {
   state: "loading" | "done" | "error";
   result: Plugin | undefined;

@@ -35,7 +35,7 @@ export function SendSolanaConfirmationCard({
     logo: string;
     decimals: number;
     tokenId?: string;
-    mint: string;
+    mint?: string;
   };
   destinationAddress: string;
   amount: BigNumber;
@@ -66,7 +66,7 @@ export function SendSolanaConfirmationCard({
       } else {
         txSig = await Solana.transferToken(solanaCtx, {
           destination: new PublicKey(destinationAddress),
-          mint: new PublicKey(token.mint),
+          mint: new PublicKey(token.mint!),
           amount: amount.toNumber(),
           decimals: token.decimals,
         });
@@ -144,10 +144,8 @@ export function ConfirmSendSolana({
   onConfirm,
 }: {
   token: {
-    address?: string;
     logo?: string;
     ticker?: string;
-    mint: string;
     decimals: number;
   };
   destinationAddress: string;
