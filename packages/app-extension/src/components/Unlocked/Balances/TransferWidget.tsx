@@ -14,7 +14,7 @@ import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";
 import { Swap, SelectToken } from "../../Unlocked/Swap";
-// rgb(33, 41, 56);
+
 export function TransferWidget({
   blockchain,
   address,

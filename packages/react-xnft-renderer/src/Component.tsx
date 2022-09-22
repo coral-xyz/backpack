@@ -33,7 +33,6 @@ const useStyles = styles((theme) => ({
     marginLeft: "12px",
     marginRight: "12px",
     borderRadius: "12px",
-    //    boxShadow: theme.custom.colors.boxShadow,
     border: `solid 1pt ${theme.custom.colors.tableBorder}`,
   },
   cardHeaderAvatar: {

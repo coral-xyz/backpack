@@ -40,7 +40,6 @@ const useStyles = styles((theme: CustomTheme) => ({
     display: "block",
     marginLeft: "auto",
     marginRight: "auto",
-    //    color: theme.custom.colors.brandColor,
     color:
       "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
   },

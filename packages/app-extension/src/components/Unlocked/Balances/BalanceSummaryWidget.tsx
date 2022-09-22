@@ -20,8 +20,6 @@ const useStyles = styles((theme) => ({
     paddingLeft: "24px",
     paddingRight: "24px",
     marginTop: "24px",
-    //    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
-    //    background: "url(assets/coral-balances.png)",
     width: "100%",
     borderRadius: "12px",
   },
