@@ -152,8 +152,7 @@ export class ProviderEthereumInjection extends EventEmitter {
   defaultProvider(): ethers.providers.JsonRpcProvider {
     // TODO the connection URL and chain id parameters should come from Backpack
     return new ethers.providers.JsonRpcProvider(
-      `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_ETHEREUM_MAINNET_API_KEY}`,
-      1
+      `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_ETHEREUM_MAINNET_API_KEY}`
     );
   }
 
@@ -299,16 +298,14 @@ export class ProviderEthereumInjection extends EventEmitter {
    * Handle a connect notification from Backpack.
    */
   async _handleNotificationConnected(event) {
-    const { publicKey, connectionUrl } = event.data.detail.data;
+    const { publicKey, connectionUrl, chainId } = event.data.detail.data;
     this.publicKey = publicKey;
-    // TODO not hardcoded
-    const chainId = 1;
     this.provider = new ethers.providers.JsonRpcProvider(
       connectionUrl,
       chainId
     );
-    this._handleConnect(chainId.toString(16));
-    this._handleChainChanged(chainId.toString(16));
+    this._handleConnect(chainId);
+    this._handleChainChanged(chainId);
     this._handleAccountsChanged([this.publicKey]);
   }
 
