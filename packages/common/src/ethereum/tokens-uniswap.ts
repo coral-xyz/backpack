@@ -1,4 +1,4 @@
-export default {
+export const UniswapTokenList = {
   name: "Uniswap Labs Default",
   timestamp: "2022-06-29T15:57:01.868Z",
   version: {

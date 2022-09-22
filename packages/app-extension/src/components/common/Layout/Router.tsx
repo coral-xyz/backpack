@@ -10,27 +10,25 @@ import { AnimatePresence } from "framer-motion";
 import { Typography } from "@mui/material";
 import {
   useDecodedSearchParams,
-  useBootstrap,
   useNavigation,
   useRedirectUrl,
+  useFreshPlugin,
+  PluginManager,
 } from "@coral-xyz/recoil";
-import type { SearchParamsFor } from "@coral-xyz/recoil";
-import { useFreshPlugin, PluginManager } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
+import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { Balances } from "../../Unlocked/Balances";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { Apps } from "../../Unlocked/Apps";
 import { _PluginDisplay } from "../../Unlocked/Apps/Plugin";
 import { Nfts } from "../../Unlocked/Nfts";
 import { Swap } from "../../Unlocked/Swap";
-import { NftsDetail } from "../../Unlocked/Nfts/Detail";
+import { NftsDetail, NftOptionsButton } from "../../Unlocked/Nfts/Detail";
 import { NftsCollection } from "../../Unlocked/Nfts/Collection";
 import { SettingsButton } from "../../Unlocked/Settings";
-import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { WithNav, NavBackButton } from "./Nav";
 import { WithMotion } from "./NavStack";
 import { WithDrawer } from "../../common/Layout/Drawer";
-import { NftOptionsButton } from "../../Unlocked/Nfts/Detail";
 
 export function Router() {
   const location = useLocation();
@@ -236,6 +234,5 @@ function useNavBar() {
 }
 
 function NavBootstrap({ children }: any) {
-  useBootstrap();
   return <>{children}</>;
 }

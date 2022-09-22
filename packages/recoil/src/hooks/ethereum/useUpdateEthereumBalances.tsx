@@ -14,7 +14,7 @@ export const useUpdateEthereumBalances = () =>
         balances: any;
       }) => {
         set(
-          atoms.ethereumTokenBalances({
+          atoms.ethereumBalances({
             connectionUrl,
             publicKey,
           }),

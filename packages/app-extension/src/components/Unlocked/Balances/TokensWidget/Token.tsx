@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Typography } from "@mui/material";
-import { Blockchain, ETH_NATIVE_MINT } from "@coral-xyz/common";
+import { Blockchain } from "@coral-xyz/common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Button } from "@coral-xyz/react-xnft-renderer";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
+  blockchainTokenData,
   useActiveEthereumWallet,
   useBlockchainTokenAccount,
+  useLoader,
 } from "@coral-xyz/recoil";
 import { RecentActivityList } from "../RecentActivity";
 import { WithDrawer, CloseButton } from "../../../common/Layout/Drawer";
@@ -88,11 +90,18 @@ export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
 
 function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
   const classes = useStyles();
-  const token = useBlockchainTokenAccount(blockchain, address);
+
+  const [token] = useLoader(blockchainTokenData({ blockchain, address }), null);
+
+  if (!token) return <></>;
+
   const percentClass =
-    token.recentPercentChange > 0
+    token.recentPercentChange === undefined
+      ? ""
+      : token.recentPercentChange > 0
       ? classes.positivePercent
       : classes.negativePercent;
+
   return (
     <div
       style={{

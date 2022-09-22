@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, Skeleton } from "@mui/material";
 import { Image as ImageIcon } from "@mui/icons-material";
 import {
   toTitleCase,
@@ -8,39 +8,44 @@ import {
   NAV_COMPONENT_NFT_COLLECTION,
 } from "@coral-xyz/common";
 import {
+  nftCollections,
+  useActiveWallets,
   useBlockchainLogo,
-  useEthereumNftCollections,
-  useSolanaNftCollections,
+  useLoader,
   useNavigation,
 } from "@coral-xyz/recoil";
 import {
   BalancesTable,
   BalancesTableHead,
   BalancesTableContent,
-  BalancesTableRow,
 } from "@coral-xyz/react-xnft-renderer";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { GridCard } from "./Common";
 import { EmptyState } from "../../common/EmptyState";
 
-const useStyles = styles((theme) => ({
+const useStyles = styles(() => ({
   cardContentContainer: {
     marginTop: "36px",
   },
 }));
 
 export function Nfts() {
-  const solanaCollections = useSolanaNftCollections();
-  const ethereumCollections = useEthereumNftCollections();
-
-  const collections = {
-    [Blockchain.SOLANA]: solanaCollections,
-    [Blockchain.ETHEREUM]: ethereumCollections,
-  };
+  const activeWallets = useActiveWallets();
+  const [collections, _, isLoading] = useLoader(
+    nftCollections,
+    {
+      [Blockchain.SOLANA]: [] as NftCollection[],
+      [Blockchain.ETHEREUM]: [] as NftCollection[],
+    },
+    // Note this reloads on any change to the active wallets, which reloads
+    // NFTs for both blockchains.
+    // TODO Make this reload for only the relevant blockchain
+    [activeWallets]
+  );
 
   return (
     <>
-      {Object.values(collections).flat().length === 0 ? (
+      {Object.values(collections).flat().length === 0 && !isLoading ? (
         <EmptyState
           icon={(props: any) => <ImageIcon {...props} />}
           title={"No NFTs"}
@@ -49,18 +54,14 @@ export function Nfts() {
           onClick={() => window.open("https://magiceden.io")}
         />
       ) : (
-        Object.entries(collections).map(
-          ([blockchain, collections]) =>
-            collections.length > 0 && (
-              <div>
-                <NftTable
-                  key={blockchain}
-                  blockchain={blockchain as Blockchain}
-                  collections={collections}
-                />
-              </div>
-            )
-        )
+        Object.entries(collections).map(([blockchain, collections]) => (
+          <NftTable
+            key={blockchain}
+            blockchain={blockchain as Blockchain}
+            collections={collections as NftCollection[]}
+            isLoading={isLoading}
+          />
+        ))
       )}
     </>
   );
@@ -69,14 +70,17 @@ export function Nfts() {
 export function NftTable({
   blockchain,
   collections,
+  isLoading,
 }: {
   blockchain: Blockchain;
   collections: NftCollection[];
+  isLoading: boolean;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const blockchainLogo = useBlockchainLogo(blockchain);
   const title = toTitleCase(blockchain);
+  if (!isLoading && collections.length === 0) return <></>;
   // Note: the absolute positioning below is a total hack due to weird
   //       padding + overlap issues on the table head and its content.
   return (
@@ -103,11 +107,25 @@ export function NftTable({
             }}
           >
             <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
-              {collections.map((collection: NftCollection, index: number) => (
-                <Grid item xs={6} sm={4} md={3} lg={2} key={collection.name}>
-                  <NftCollectionCard key={index} collection={collection} />
-                </Grid>
-              ))}
+              {isLoading
+                ? [...Array(2)].map((_, i) => (
+                    <Grid item xs={6} sm={4} md={3} lg={2} key={i}>
+                      <Skeleton
+                        height={200}
+                        style={{
+                          borderRadius: "10px",
+                          margin: "-20% 0",
+                        }}
+                      />
+                    </Grid>
+                  ))
+                : collections.map(
+                    (collection: NftCollection, index: number) => (
+                      <Grid item xs={6} sm={4} md={3} lg={2} key={index}>
+                        <NftCollectionCard collection={collection} />
+                      </Grid>
+                    )
+                  )}
             </Grid>
           </div>
         </BalancesTableContent>

@@ -2,7 +2,6 @@ import { selector, selectorFamily } from "recoil";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { Blockchain, SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
 import { splTokenRegistry } from "./token-registry";
-import { bootstrap } from "../bootstrap";
 import { SOL_LOGO_URI } from "./token-registry";
 import { blockchainBalancesSorted } from "../balance";
 
@@ -10,9 +9,25 @@ export const JUPITER_BASE_URL = "https://quote-api.jup.ag/v1/";
 
 export const jupiterRouteMap = selector({
   key: "jupiterRouteMap",
-  get: async ({ get }) => {
-    const b = get(bootstrap);
-    return b.jupiterRouteMap;
+  get: async () => {
+    try {
+      const response = await (
+        await fetch(
+          `${JUPITER_BASE_URL}indexed-route-map?onlyDirectRoutes=true`
+        )
+      ).json();
+      const getMint = (index: number) => response["mintKeys"][index];
+      // Replace indices with mint addresses
+      return Object.keys(response["indexedRouteMap"]).reduce((acc, key) => {
+        acc[getMint(parseInt(key))] = response["indexedRouteMap"][key].map(
+          (i: number) => getMint(i)
+        );
+        return acc;
+      }, {});
+    } catch (e) {
+      console.log("failed to load Jupiter route map", e);
+      return null;
+    }
   },
 });
 
@@ -80,17 +95,3 @@ export const jupiterOutputMints = selectorFamily({
       return swapTokens.filter((t: any) => t.name && t.ticker);
     },
 });
-
-export async function fetchJupiterRouteMap() {
-  const response = await (
-    await fetch(`${JUPITER_BASE_URL}indexed-route-map?onlyDirectRoutes=true`)
-  ).json();
-  const getMint = (index: number) => response["mintKeys"][index];
-  // Replace indices with mint addresses
-  return Object.keys(response["indexedRouteMap"]).reduce((acc, key) => {
-    acc[getMint(parseInt(key))] = response["indexedRouteMap"][key].map(
-      (i: number) => getMint(i)
-    );
-    return acc;
-  }, {});
-}

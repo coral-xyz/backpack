@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   useActivePublicKeys,
   useBackgroundClient,
-  useFreshPlugin,
+  usePluginUrl,
   useTransactionData,
   useTransactionRequest,
   useSolanaCtx,
@@ -304,7 +304,7 @@ function _SendTransactionRequest({
   const theme = useCustomTheme();
   const [request] = useTransactionRequest();
   const background = useBackgroundClient();
-  const { result: plugin } = useFreshPlugin(request?.xnftAddress);
+  const pluginUrl = usePluginUrl(request?.xnftAddress);
 
   //
   // Executes when the modal clicks "Approve" in the drawer popup
@@ -336,7 +336,7 @@ function _SendTransactionRequest({
             fontSize: "14px",
           }}
         >
-          {plugin?.iframeRootUrl}
+          {pluginUrl}
         </Typography>
       ),
       classes: { root: classes.approveTableRoot },

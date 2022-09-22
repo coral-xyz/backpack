@@ -1,24 +1,98 @@
-import { atomFamily, selectorFamily } from "recoil";
+import { atomFamily, selector, selectorFamily } from "recoil";
 import { ethers, BigNumber } from "ethers";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
-import { bootstrap } from "../bootstrap";
 import { priceData } from "../prices";
 import { splTokenRegistry } from "./token-registry";
 import { SolanaTokenAccountWithKey, TokenData } from "../../types";
+import { anchorContext } from "./wallet";
+import { solanaPublicKey } from "../wallet";
 import { solanaConnectionUrl } from "./preferences";
+
+export const customSplTokenAccounts = atomFamily({
+  key: "customSplTokenAccounts",
+  default: selectorFamily({
+    key: "customSplTokenAccountsDefault",
+    get:
+      ({
+        connectionUrl,
+        publicKey,
+      }: {
+        connectionUrl: string;
+        publicKey: string;
+      }) =>
+      async ({ get }: any) => {
+        const { provider } = get(anchorContext);
+        //
+        // Fetch token data.
+        //
+        try {
+          const { tokenAccountsMap, tokenMetadata, nftMetadata } =
+            await provider.connection.customSplTokenAccounts(publicKey);
+          const splTokenAccounts = new Map<string, SolanaTokenAccountWithKey>(
+            tokenAccountsMap
+          );
+          return {
+            splTokenAccounts,
+            splTokenMetadata: tokenMetadata,
+            splNftMetadata: new Map(nftMetadata),
+          };
+        } catch (error) {
+          console.error("could not fetch solana token data", error);
+          return {
+            splTokenAccounts: new Map(),
+            splTokenMetadata: new Map(),
+            splNftMetadata: new Map(),
+          };
+        }
+      },
+  }),
+});
+
+/**
+ * Store the info from the SPL Token Account owned by the connected wallet.
+ */
+export const solanaTokenAccountsMap = atomFamily<
+  SolanaTokenAccountWithKey | null,
+  { tokenAddress: string }
+>({
+  key: "solanaTokenAccountsMap",
+  default: selectorFamily({
+    key: "solanaTokenAccountsMapDefault",
+    get:
+      ({ tokenAddress }: { tokenAddress: string }) =>
+      ({ get }: any) => {
+        const connectionUrl = get(solanaConnectionUrl);
+        const publicKey = get(solanaPublicKey);
+        const { splTokenAccounts } = get(
+          customSplTokenAccounts({ connectionUrl, publicKey })
+        );
+        return splTokenAccounts.get(tokenAddress);
+      },
+  }),
+});
+
+/**
+ * List of all stored token accounts within tokenAccountsMap.
+ */
+export const solanaTokenAccountKeys = selector({
+  key: "solanaTokenAccountKeys",
+  get: ({ get }: any) => {
+    const connectionUrl = get(solanaConnectionUrl);
+    const publicKey = get(solanaPublicKey);
+    const { splTokenAccounts } = get(
+      customSplTokenAccounts({ connectionUrl, publicKey })
+    );
+    return Array.from(splTokenAccounts.keys()) as string[];
+  },
+});
 
 export const solanaTokenBalance = selectorFamily<TokenData | null, string>({
   key: "solanaTokenBalance",
   get:
-    (address: string) =>
+    (tokenAddress: string) =>
     ({ get }: any) => {
-      const tokenAccount = get(
-        solanaTokenAccountsMap({
-          connectionUrl: get(solanaConnectionUrl)!,
-          tokenAddress: address,
-        })
-      );
+      const tokenAccount = get(solanaTokenAccountsMap({ tokenAddress }));
       if (!tokenAccount) {
         return null;
       }
@@ -62,7 +136,7 @@ export const solanaTokenBalance = selectorFamily<TokenData | null, string>({
         displayBalance,
         ticker,
         logo,
-        address,
+        address: tokenAddress,
         mint: tokenAccount.mint.toString(),
         usdBalance,
         recentPercentChange,
@@ -70,54 +144,4 @@ export const solanaTokenBalance = selectorFamily<TokenData | null, string>({
         priceData: price,
       } as TokenData;
     },
-});
-
-/**
- * List of all stored token accounts within tokenAccountsMap.
- */
-export const solanaTokenAccountKeys = atomFamily<
-  Array<string>,
-  { connectionUrl: string; publicKey: string | null }
->({
-  key: "solanaTokenAccountKeys",
-  default: selectorFamily({
-    key: "solanaTokenAccountKeysDefault",
-    get:
-      ({
-        connectionUrl,
-        publicKey,
-      }: {
-        connectionUrl: string;
-        publicKey: string;
-      }) =>
-      ({ get }: any) => {
-        const data = get(bootstrap);
-        return Array.from(data.splTokenAccounts.keys()) as string[];
-      },
-  }),
-});
-
-/**
- * Store the info from the SPL Token Account owned by the connected wallet.
- */
-export const solanaTokenAccountsMap = atomFamily<
-  SolanaTokenAccountWithKey | null,
-  { connectionUrl: string; tokenAddress: string }
->({
-  key: "solanaTokenAccountsMap",
-  default: selectorFamily({
-    key: "solanaTokenAccountsMapDefault",
-    get:
-      ({
-        connectionUrl,
-        tokenAddress,
-      }: {
-        connectionUrl: string;
-        tokenAddress: string;
-      }) =>
-      ({ get }: any) => {
-        const data = get(bootstrap);
-        return data.splTokenAccounts.get(tokenAddress);
-      },
-  }),
 });
