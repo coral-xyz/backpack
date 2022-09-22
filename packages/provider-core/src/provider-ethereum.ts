@@ -20,7 +20,11 @@ import {
 import * as cmn from "./common/ethereum";
 import { RequestManager } from "./request-manager";
 
+const { hexValue } = ethers.utils;
+
 const logger = getLogger("provider-ethereum-injection");
+
+export type EthersSendCallback = (error: unknown, response: unknown) => void;
 
 // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#request
 interface RequestArguments {
@@ -113,7 +117,12 @@ export class ProviderEthereumInjection extends EventEmitter {
   /**
    * Boolean indicating that the provider is Backpack.
    */
-  public isBackpack: boolean;
+  public isBackpack = true;
+
+  /**
+   * Boolean to impersonate Metamask
+   */
+  public isMetamask: boolean;
 
   /**
    * Ethereum JSON RPC provider.
@@ -136,8 +145,7 @@ export class ProviderEthereumInjection extends EventEmitter {
       ...ProviderEthereumInjection._defaultState,
     };
 
-    this.isBackpack = true;
-    this.chainId = null;
+    this.chainId = "0x1";
     this.publicKey = null;
     this.provider = this.defaultProvider();
 
@@ -170,6 +178,49 @@ export class ProviderEthereumInjection extends EventEmitter {
    */
   isConnected(): boolean {
     return this._state.isConnected;
+  }
+
+  // Deprecated EIP-1193 method
+  async enable(): Promise<unknown> {
+    return this.request({ method: "eth_requestAccounts" });
+  }
+
+  // Deprecated EIP-1193 method
+  send(
+    methodOrRequest: string | RequestArguments,
+    paramsOrCallback: Array<unknown> | EthersSendCallback
+  ): Promise<unknown> | void {
+    if (
+      typeof methodOrRequest === "string" &&
+      typeof paramsOrCallback !== "function"
+    ) {
+      return this.request({
+        method: methodOrRequest,
+        params: paramsOrCallback,
+      });
+    } else if (
+      typeof methodOrRequest === "object" &&
+      typeof paramsOrCallback === "function"
+    ) {
+      return this.sendAsync(methodOrRequest, paramsOrCallback);
+    }
+    return Promise.reject(new Error("Unsupported function parameters"));
+  }
+
+  // Deprecated EIP-1193 method still in use by some DApps
+  sendAsync(
+    request: RequestArguments & { id?: number; jsonrpc?: string },
+    callback: (error: unknown, response: unknown) => void
+  ): Promise<unknown> | void {
+    return this.request(request).then(
+      (response) =>
+        callback(null, {
+          result: response,
+          id: request.id,
+          jsonrpc: request.jsonrpc,
+        }),
+      (error) => callback(error, null)
+    );
   }
 
   /**
@@ -212,7 +263,7 @@ export class ProviderEthereumInjection extends EventEmitter {
         // TODO this should be preloaded and cached, so it doesn't cause a delay
         // after the connect button is pressed
         this.provider!.getNetwork().then((network) =>
-          network.chainId.toString()
+          hexValue(network.chainId)
         ),
       eth_getBalance: (address: string) => this.provider!.getBalance(address),
       eth_getCode: (address: string) => this.provider!.getCode(address),
@@ -340,8 +391,8 @@ export class ProviderEthereumInjection extends EventEmitter {
       connectionUrl
     );
     const newChainId = (await this.provider!.getNetwork()).chainId;
-    if (this.isConnected() && this.chainId !== newChainId.toString(16)) {
-      this._handleChainChanged(newChainId.toString(16));
+    if (this.isConnected() && this.chainId !== hexValue(newChainId)) {
+      this._handleChainChanged(hexValue(newChainId));
     }
   }
 
