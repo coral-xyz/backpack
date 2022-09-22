@@ -23,6 +23,7 @@ type SolanaData = {
 type EthereumData = {
   explorer?: string;
   connectionUrl?: string;
+  chainId?: string;
 };
 
 export async function getWalletData(): Promise<WalletData> {
