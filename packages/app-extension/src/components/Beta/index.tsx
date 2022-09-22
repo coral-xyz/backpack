@@ -1,6 +1,7 @@
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
 import { createPopup } from "@typeform/embed";
+import fetch from "isomorphic-fetch";
 import { useState, useCallback } from "react";
 import { PrimaryButton, TextField } from "../common";
 
@@ -9,10 +10,20 @@ import "@typeform/embed/build/css/popup.css";
 export function BetaInviteLocked() {
   const theme = useCustomTheme();
   const [inviteCode, setInviteCode] = useState("");
+  const [error, setError] = useState(false);
   const typeform = createPopup("PCnBjycW");
 
-  const handleCodeSubmit = useCallback(() => {
-    console.warn(inviteCode);
+  const handleCodeSubmit = useCallback(async () => {
+    try {
+      const resp = await fetch(`https://invites.backpack.app/${inviteCode}`);
+      const respJson = await resp.json();
+      console.log(respJson);
+
+      // TODO: push to onboarding
+    } catch (err) {
+      console.error(err);
+      setError(true);
+    }
   }, [inviteCode]);
 
   return (
@@ -30,8 +41,9 @@ export function BetaInviteLocked() {
           <Box sx={{ margin: "0 12px 12px 12px" }}>
             <TextField
               autoFocus
-              placeholder="Invite Code"
               type="text"
+              placeholder="Invite Code"
+              isError={error}
               value={inviteCode}
               setValue={setInviteCode}
             />

@@ -41,7 +41,7 @@ export class KeyringStore {
 
   public async state(): Promise<KeyringStoreState> {
     // MARK: beta
-    if (!this.hasInviteCode()) {
+    if (!(await this.hasVerifiedInviteCode())) {
       return KeyringStoreStateEnum.NeedsBetaInviteCode;
     }
 
@@ -61,10 +61,12 @@ export class KeyringStore {
     mnemonic: string,
     derivationPath: DerivationPath,
     password: string,
-    accountIndices: Array<number>
+    accountIndices: Array<number>,
+    inviteCode?: string // MARK: beta
   ) {
     this.password = password;
     this.mnemonic = mnemonic;
+    this.inviteCode = inviteCode;
 
     // Init default keyring.
     this.activeBlockchain_ = BLOCKCHAIN_DEFAULT;
@@ -89,6 +91,7 @@ export class KeyringStore {
       autoLockSecs: store.DEFAULT_LOCK_INTERVAL_SECS,
       approvedOrigins: [],
       darkMode: true,
+      inviteCode, // MARK: beta
       solana: {
         explorer: SolanaExplorer.DEFAULT,
         cluster: SolanaCluster.DEFAULT,
@@ -382,8 +385,13 @@ export class KeyringStore {
   }
 
   // MARK: beta
-  private hasInviteCode(): boolean {
-    return this.inviteCode !== undefined && this.inviteCode.length > 0;
+  private async hasVerifiedInviteCode(): Promise<boolean> {
+    try {
+      const data = await store.getWalletData();
+      return data.inviteCode !== undefined && data.inviteCode.length > 0;
+    } catch {
+      return false;
+    }
   }
 
   private async persist(forceBecauseCalledFromInit = false) {

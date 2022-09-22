@@ -10,6 +10,7 @@ export type WalletData = {
   autoLockSecs: number;
   approvedOrigins: Array<string>;
   darkMode: boolean;
+  inviteCode?: string; // MARK: beta
   solana: SolanaData;
   ethereum?: EthereumData;
 };
