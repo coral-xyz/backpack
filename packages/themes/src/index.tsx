@@ -128,6 +128,8 @@ export const darkTheme: any = {
       copyTooltipTextColor: BACKGROUND_COLOR_1,
       tableBorder: BACKGROUND_COLOR_0,
       balanceSkeleton: BACKGROUND_COLOR_1,
+      balanceChangeNegative: "rgb(233, 80, 80, .1)",
+      balanceChangePositive: "rgb(53, 166, 58, .1)",
 
       dangerButton: DANGER_COLOR,
       alpha: FONT_COLOR_2,
@@ -172,6 +174,8 @@ export const lightTheme: any = {
       copyTooltipTextColor: LIGHT_BACKGROUND_COLOR_1,
       tableBorder: LIGHT_BORDER_COLOR,
       balanceSkeleton: "rgba(0,0,0,0.15)",
+      balanceChangeNegative: "rgb(233, 80, 80, .1)",
+      balanceChangePositive: "rgb(53, 166, 58, .1)",
 
       dangerButton: DANGER_COLOR,
       alpha: LIGHT_FONT_COLOR,

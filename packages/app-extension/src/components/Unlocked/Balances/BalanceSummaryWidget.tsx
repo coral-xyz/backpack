@@ -122,11 +122,15 @@ export function BalanceSummaryWidget() {
                   totalChange < 0
                     ? theme.custom.colors.negative
                     : theme.custom.colors.positive,
-                //								paddingLeft: "8px",
-                //                paddingRight: "8px",
+                paddingLeft: "8px",
+                paddingRight: "8px",
                 paddingTop: "2px",
                 paddingBottom: "2px",
-                //                background: "rgba(255, 255, 255, 0.2)",
+                backgroundColor: isLoading
+                  ? undefined
+                  : totalChange < 0
+                  ? theme.custom.colors.balanceChangeNegative
+                  : theme.custom.colors.balanceChangePositive,
                 borderRadius: "28px",
                 lineHeight: "24px",
               }}
