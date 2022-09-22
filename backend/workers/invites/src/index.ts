@@ -4,43 +4,43 @@
  * GET /check/VALID_CODE
  *
  * {
- * 	 "status": 200,
- * 	 "message": "Invite code is valid"
+ *   "status": 200,
+ *   "message": "Invite code is valid"
  * }
  *
  * GET /check/CLAIMED_CODE
  *
  * {
- * 	 "status": 409,
- * 	 "message": "Invite code has already been claimed"
+ *   "status": 409,
+ *   "message": "Invite code has already been claimed"
  * }
  *
  * GET /check/INVALID_CODE
  *
  * {
- * 	 "status": 400,
- * 	 "message": "Invite code is not valid"
+ *   "status": 400,
+ *   "message": "Invite code is not valid"
  * }
  *
  * GET /check/WRONG_CODE
  *
  * {
- * 	 "status": 400,
- * 	 "message": "Invite code is incorrect format"
+ *   "status": 400,
+ *   "message": "Invite code is incorrect format"
  * }
  *
  * GET /check
  *
  * {
- * 	 "status": 400,
- * 	 "message": "No Invite code provided"
+ *   "status": 400,
+ *   "message": "No Invite code provided"
  * }
  *
  * GET /
  *
  * {
- * 	 "status": 200,
- * 	 "message": "ok"
+ *   "status": 200,
+ *   "message": "ok"
  * }
  */
 
