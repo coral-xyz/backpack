@@ -47,6 +47,7 @@ export function OnboardingWelcome({
 }: {
   onSelect: (flow: OnboardingFlows) => void;
 }) {
+  const theme = useCustomTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const containerRef = useRef(null);
 

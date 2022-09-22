@@ -150,6 +150,7 @@ const useStyles = styles((theme) => ({
     borderRadius: "12px",
     fontSize: "16px",
     lineHeight: "24px",
+    border: `solid 1pt ${theme.custom.colors.tableBorder}`,
   },
   textFieldInputColorEmpty: {
     color: theme.custom.colors.secondary,
@@ -731,6 +732,7 @@ export function TextField({
   children,
   style,
 }: any) {
+  const theme = useCustomTheme();
   const classes = useStyles();
   inputProps = Object.assign(
     {
@@ -762,7 +764,7 @@ export function TextField({
         shrink: false,
         style: {
           borderRadius: "12px",
-          border: "none",
+          //          border: `solid 1pt ${theme.custom.colors.tableBorder}`,
         },
       }}
       InputProps={{
