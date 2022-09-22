@@ -15,6 +15,9 @@ export { TextField };
 export { walletAddressDisplay } from "@coral-xyz/common";
 
 const useStyles = styles((theme: CustomTheme) => ({
+  circle: {
+    stroke: "url(#linearColors)",
+  },
   leftLabel: {
     color: theme.custom.colors.fontColor,
     fontSize: "12px",
@@ -37,7 +40,8 @@ const useStyles = styles((theme: CustomTheme) => ({
     display: "block",
     marginLeft: "auto",
     marginRight: "auto",
-    color: theme.custom.colors.brandColor,
+    color:
+      "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
   },
   button: {
     width: "100%",
@@ -51,13 +55,6 @@ const useStyles = styles((theme: CustomTheme) => ({
     "&:hover": {
       backgroundColor: theme.custom.colors.primaryButton,
     },
-  },
-  buttonLabel: {
-    color: theme.custom.colors.buttonFontColor,
-    fontWeight: 500,
-    fontSize: "16px",
-    lineHeight: "24px",
-    textTransform: "none",
   },
   header: {
     color: theme.custom.colors.fontColor,
@@ -190,12 +187,22 @@ export function Loading(props: any) {
   const classes = useStyles();
   return (
     <div className={classes.loadingContainer}>
-      <CircularProgress
-        size={48}
-        className={classes.loadingIndicator}
-        style={props.iconStyle}
-        thickness={6}
-      />
+      <>
+        <svg style={{ position: "fixed" }}>
+          <linearGradient id="linearColors" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="15.93%" stopColor="#3EECB8" />
+            <stop offset="58.23%" stopColor="#A372FE" />
+            <stop offset="98.98%" stopColor="#FE7D4A" />
+          </linearGradient>
+        </svg>
+        <CircularProgress
+          size={48}
+          className={classes.loadingIndicator}
+          style={props.iconStyle}
+          thickness={6}
+          classes={{ circle: classes.circle }}
+        />
+      </>
     </div>
   );
 }
@@ -208,6 +215,7 @@ export function PrimaryButton({
   buttonLabelStyle?: React.CSSProperties;
   label?: string;
 } & React.ComponentProps<typeof Button>) {
+  const theme = useCustomTheme();
   const classes = useStyles();
   return (
     <Button
@@ -216,7 +224,15 @@ export function PrimaryButton({
       className={classes.button}
       variant="contained"
       {...buttonProps}
-      style={buttonProps.style}
+      style={{
+        backgroundColor: theme.custom.colors.primaryButton,
+        color: theme.custom.colors.primaryButtonTextColor,
+        fontWeight: 500,
+        fontSize: "16px",
+        lineHeight: "24px",
+        textTransform: "none",
+        ...buttonProps.style,
+      }}
     >
       <Typography style={buttonLabelStyle} className={classes.buttonLabel}>
         {label}
@@ -236,7 +252,7 @@ export function SecondaryButton({
   const theme = useCustomTheme();
   const buttonStyle = {
     backgroundColor: theme.custom.colors.secondaryButton,
-    color: "inherit",
+    color: theme.custom.colors.secondaryButtonTextColor,
     ...buttonProps.style,
   };
   return (

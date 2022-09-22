@@ -19,11 +19,7 @@ const useStyles = styles((theme) => ({
   balancesHeaderContainer: {
     paddingLeft: "24px",
     paddingRight: "24px",
-    paddingTop: "20px",
-    boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
-    background: "url(assets/coral-balances.png)",
-    backgroundRepeat: "round",
-    height: "110px",
+    marginTop: "24px",
     width: "100%",
     borderRadius: "12px",
   },
@@ -34,8 +30,8 @@ const useStyles = styles((theme) => ({
   },
   totalBalance: {
     fontWeight: 600,
-    fontSize: "36px",
-    lineHeight: "40px",
+    fontSize: "40px",
+    lineHeight: "36px",
     color: "inherit",
   },
   positive: {
@@ -59,13 +55,12 @@ export function BalanceSummaryWidget() {
       totalChange: 0,
       percentChange: 0,
     });
-
   return (
     <div style={{ display: "flex" }}>
       <div
         className={classes.balancesHeaderContainer}
         style={{
-          textAlign: "left",
+          textAlign: "center",
           marginLeft: "12px",
           marginRight: "12px",
           borderRadius: "12px",
@@ -77,27 +72,40 @@ export function BalanceSummaryWidget() {
             color: theme.custom.colors.fontColor,
           }}
         >
-          {isLoading ? <Skeleton /> : formatUSD(totalBalance)}
+          {isLoading ? (
+            <Skeleton
+              sx={{ backgroundColor: theme.custom.colors.balanceSkeleton }}
+            />
+          ) : (
+            formatUSD(totalBalance)
+          )}
         </Typography>
         <div
           style={{
             display: "flex",
-            marginTop: "6px",
+            marginTop: "16px",
           }}
         >
+          <div style={{ flex: 1 }} />
           <Typography
             style={{
-              color: theme.custom.colors.fontColor,
+              color:
+                totalChange < 0
+                  ? theme.custom.colors.negative
+                  : theme.custom.colors.positive,
               paddingLeft: "0px",
               paddingRight: "0px",
               paddingTop: "2px",
               paddingBottom: "2px",
-              marginRight: "10px",
+              marginRight: "12px",
               lineHeight: "24px",
             }}
           >
             {isLoading ? (
-              <Skeleton width="100px" />
+              <Skeleton
+                width="100px"
+                sx={{ backgroundColor: theme.custom.colors.balanceSkeleton }}
+              />
             ) : (
               <>
                 {totalChange > 0 ? "+" : ""}
@@ -108,18 +116,28 @@ export function BalanceSummaryWidget() {
           {Number.isFinite(percentChange) && (
             <Typography
               style={{
-                color: theme.custom.colors.fontColor,
+                color:
+                  totalChange < 0
+                    ? theme.custom.colors.negative
+                    : theme.custom.colors.positive,
                 paddingLeft: "8px",
                 paddingRight: "8px",
                 paddingTop: "2px",
                 paddingBottom: "2px",
-                background: "rgba(255, 255, 255, 0.2)",
+                backgroundColor: isLoading
+                  ? undefined
+                  : totalChange < 0
+                  ? theme.custom.colors.balanceChangeNegative
+                  : theme.custom.colors.balanceChangePositive,
                 borderRadius: "28px",
                 lineHeight: "24px",
               }}
             >
               {isLoading ? (
-                <Skeleton width="100px" />
+                <Skeleton
+                  width="100px"
+                  sx={{ backgroundColor: theme.custom.colors.balanceSkeleton }}
+                />
               ) : (
                 <>
                   {totalChange > 0 ? "+" : ""}
@@ -128,6 +146,7 @@ export function BalanceSummaryWidget() {
               )}
             </Typography>
           )}
+          <div style={{ flex: 1 }} />
         </div>
       </div>
     </div>

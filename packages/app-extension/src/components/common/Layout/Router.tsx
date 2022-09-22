@@ -198,20 +198,26 @@ function useNavBar() {
   } as React.CSSProperties;
 
   if (isRoot) {
+    const emoji = pathname.startsWith("/balances")
+      ? "💰 "
+      : pathname.startsWith("/apps")
+      ? "👾 "
+      : "🎨 ";
     navButtonRight = <SettingsButton />;
     navButtonLeft = (
       <Typography
         style={{
-          fontSize: "22px",
+          fontSize: "18px",
           color: theme.custom.colors.fontColor,
           fontWeight: 600,
         }}
       >
+        {emoji}
         {pathname.startsWith("/balances")
-          ? "💸 Balances"
+          ? "Balances"
           : pathname.startsWith("/apps")
-          ? "👾 Applications"
-          : "🎨 Collectibles"}
+          ? "Applications"
+          : "Collectibles"}
       </Typography>
     );
   } else if (pathname === "/balances/token") {

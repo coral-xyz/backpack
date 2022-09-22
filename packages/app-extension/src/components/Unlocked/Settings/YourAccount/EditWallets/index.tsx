@@ -13,16 +13,12 @@ import { useNavStack } from "../../../../common/Layout/NavStack";
 import { AddConnectWalletButton } from "../..";
 
 export function EditWallets() {
-  const theme = useCustomTheme();
   const nav = useNavStack();
   const blockchainKeyrings = useWalletPublicKeys();
 
   useEffect(() => {
     const title = nav.title;
     nav.setTitle("Edit wallets");
-    nav.setStyle({
-      borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-    });
 
     return () => {
       nav.setTitle(title);

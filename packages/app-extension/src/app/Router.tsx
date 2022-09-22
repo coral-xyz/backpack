@@ -318,7 +318,7 @@ const useStyles = styles((theme) => {
       minWidth: `${EXTENSION_WIDTH}px`,
       minHeight: `${EXTENSION_HEIGHT}px`,
       height: "100%",
-      backgroundColor: theme.custom.colors.background,
+      background: theme.custom.colors.backgroundBackdrop,
       display: "flex",
       flexDirection: "column",
       overflow: "hidden",

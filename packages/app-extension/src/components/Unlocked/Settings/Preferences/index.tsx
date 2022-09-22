@@ -22,12 +22,6 @@ export function Preferences() {
   const background = useBackgroundClient();
   const isDarkMode = useDarkMode();
 
-  useEffect(() => {
-    nav.setContentStyle({
-      backgroundColor: theme.custom.colors.background,
-    });
-  }, [nav.setContentStyle, theme]);
-
   const onDarkModeSwitch = async (isDarkMode: boolean) => {
     await background.request({
       method: UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
@@ -111,9 +105,6 @@ export function Preferences() {
 
   useEffect(() => {
     nav.setTitle("Preferences");
-    nav.setStyle({
-      borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-    });
   }, []);
 
   return (

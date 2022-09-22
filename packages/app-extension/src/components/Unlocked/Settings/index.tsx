@@ -19,6 +19,7 @@ import {
   useActiveWallet,
   useActiveWallets,
   useBlockchainLogo,
+  useDarkMode,
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
@@ -93,9 +94,10 @@ const useStyles = styles((theme) => ({
     flexDirection: "column",
   },
   menuButton: {
-    padding: 0,
+    padding: "2px",
+    background: theme.custom.colors.coralGradient,
     "&:hover": {
-      background: "transparent",
+      background: theme.custom.colors.coralGradient,
     },
   },
   addConnectRoot: {
@@ -264,18 +266,11 @@ function AvatarButton() {
 }
 
 function SettingsMenu() {
-  const theme = useCustomTheme();
-  const { setTitle, setStyle, setContentStyle } = useNavStack();
+  const { setTitle } = useNavStack();
 
   useEffect(() => {
     setTitle("Profile");
-    setStyle({
-      backgroundColor: theme.custom.colors.background,
-    });
-    setContentStyle({
-      backgroundColor: theme.custom.colors.background,
-    });
-  }, [setTitle, setStyle, setContentStyle, theme.custom.colors.background]);
+  }, [setTitle]);
 
   return (
     <Suspense fallback={<div></div>}>
@@ -300,17 +295,30 @@ function AvatarHeader() {
   const theme = useCustomTheme();
   return (
     <div>
-      <img
-        src={"coral.png"}
+      <div
         style={{
-          width: "64px",
-          height: "64px",
-          borderRadius: "32px",
+          background: theme.custom.colors.coralGradient,
+          borderRadius: "40px",
+          padding: "3px",
+          width: "70px",
+          height: "70px",
           marginLeft: "auto",
           marginRight: "auto",
           display: "block",
         }}
-      />
+      >
+        <img
+          src={"coral.png"}
+          style={{
+            width: "64px",
+            height: "64px",
+            borderRadius: "32px",
+            marginLeft: "auto",
+            marginRight: "auto",
+            display: "block",
+          }}
+        />
+      </div>
       <Typography
         style={{
           textAlign: "center",
@@ -367,7 +375,7 @@ function WalletList({
       .then((_resp) => close())
       .catch(console.error);
   };
-
+  let activeWalletType: "derived" | "hardware";
   const keys = keyring.hdPublicKeys
     .map((k: any) => ({ ...k, type: "derived" }))
     .concat(
@@ -378,7 +386,17 @@ function WalletList({
     )
     .concat(
       keyring.ledgerPublicKeys.map((k: any) => ({ ...k, type: "hardware" }))
-    );
+    )
+    // The drop down should show all wallet keys *except* the active one.
+    .filter(({ publicKey, type }: any) => {
+      const isActive = activeWallets
+        .map((p) => p.publicKey)
+        .includes(publicKey);
+      if (isActive) {
+        activeWalletType = type;
+      }
+      return !isActive;
+    });
 
   const { name, publicKey } = activeWallets.filter(
     (a) => a.blockchain === blockchain
@@ -463,6 +481,16 @@ function WalletList({
                     maxWidth: "75px",
                   }}
                 />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                  marginLeft: "4px",
+                }}
+              >
+                <ImportTypeBadge type={activeWalletType!} />
               </div>
             </div>
             <div
@@ -567,14 +595,6 @@ function WalletList({
                           <ImportTypeBadge type={type} />
                         </div>
                       </div>
-                      {activeWallets
-                        .map((p) => p.publicKey)
-                        .includes(publicKey) && (
-                        <CheckIcon
-                          fill={theme.custom.colors.brandColor}
-                          style={{ width: "24px" }}
-                        />
-                      )}
                     </div>
                   </ListItem>
                 );
