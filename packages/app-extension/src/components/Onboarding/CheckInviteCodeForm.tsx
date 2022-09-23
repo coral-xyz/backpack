@@ -9,13 +9,15 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
   const [error, setError] = useState<string>();
   const theme = useCustomTheme();
 
-  useEffect(() => {
-    setError(undefined);
-  }, [value, hasAccount]);
-
+  // reset textfield value when switching between enter invite code or username
   useEffect(() => {
     setValue("");
   }, [hasAccount]);
+
+  // reset error when textfield value or the form changes
+  useEffect(() => {
+    setError(undefined);
+  }, [value, hasAccount]);
 
   const ob = hasAccount
     ? {
@@ -70,6 +72,13 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
         )}
       </Box>
       <PrimaryButton disabled={!value} label={ob.buttonText} type="submit" />
+
+      <Box
+        style={{ marginTop: 16, cursor: "pointer" }}
+        onClick={() => alert("open application form")}
+      >
+        <SubtextParagraph>Apply for an Invite Code</SubtextParagraph>
+      </Box>
 
       <Box
         onClick={() => setHasAccount(!hasAccount)}
