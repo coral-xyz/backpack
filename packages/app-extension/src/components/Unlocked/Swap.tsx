@@ -53,7 +53,7 @@ const useStyles = styles((theme) => ({
     marginRight: "16px",
   },
   bottomHalfWrapper: {
-    borderTop: `solid 1pt ${theme.custom.colors.borderColor}`,
+    borderTop: `${theme.custom.colors.borderFull}`,
     flex: 1,
     paddingBottom: "16px",
     paddingTop: "38px",
@@ -73,7 +73,7 @@ const useStyles = styles((theme) => ({
     marginBottom: 0,
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `solid 1pt ${theme.custom.colors.textBorder}`,
+        border: `${theme.custom.colors.borderFull}`,
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
@@ -88,12 +88,12 @@ const useStyles = styles((theme) => ({
     marginBottom: 0,
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `solid 1pt ${theme.custom.colors.borderColor}`,
+        border: `${theme.custom.colors.borderFull}`,
         // Override disable and hover styles
         borderColor: `${theme.custom.colors.textBorder} !important`,
       },
       "&:hover fieldset": {
-        border: `solid 1pt ${theme.custom.colors.borderColor}`, // Prevent hover from changing border.
+        border: `${theme.custom.colors.borderFull}`, // Prevent hover from changing border.
       },
       "& input": {
         border: "none",
@@ -115,7 +115,7 @@ const useStyles = styles((theme) => ({
     borderRadius: "22px",
   },
   swapTokensButton: {
-    border: `solid 1pt ${theme.custom.colors.borderColor}`,
+    border: `${theme.custom.colors.borderFull}`,
     width: "38px",
     height: "38px",
     marginLeft: "auto",

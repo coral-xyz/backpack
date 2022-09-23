@@ -85,7 +85,7 @@ export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
           onClick={() => cancel()}
           style={{
             marginRight: "8px",
-            border: `solid 1pt ${theme.custom.colors.borderColor}`,
+            border: `${theme.custom.colors.borderFull}`,
           }}
         />
         <PrimaryButton

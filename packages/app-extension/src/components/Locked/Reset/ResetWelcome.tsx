@@ -42,7 +42,7 @@ export function ResetWelcome({ onClose }: { onClose: () => void }) {
           <SecondaryButton
             label="Try More Passwords"
             onClick={onClose}
-            style={{ border: `solid 1pt ${theme.custom.colors.borderColor}` }}
+            style={{ border: `${theme.custom.colors.borderFull}` }}
           />
         </Box>
         <DangerButton label="Reset Secret Recovery Phrase" onClick={onNext} />

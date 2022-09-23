@@ -82,7 +82,7 @@ export function ChangePassword() {
             style={{
               border: currentPasswordError
                 ? `solid 1pt ${theme.custom.colors.negative}`
-                : `solid 1pt ${theme.custom.colors.textBorder}`,
+                : `${theme.custom.colors.borderFull}`,
               borderRadius: "8px",
             }}
           >
@@ -141,7 +141,7 @@ export function ChangePassword() {
             style={{
               border: passwordMismatchError
                 ? `solid 1pt ${theme.custom.colors.negative}`
-                : `solid 1pt ${theme.custom.colors.textBorder}`,
+                : `${theme.custom.colors.borderFull}`,
               borderRadius: "8px",
             }}
           >

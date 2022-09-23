@@ -27,7 +27,7 @@ export function SettingsList({
   return (
     <List
       style={{
-        border: `solid 1pt ${theme.custom.colors.tableBorder}`,
+        border: `${theme.custom.colors.borderFull}`,
         marginTop: "16px",
         ...style,
       }}

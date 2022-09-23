@@ -55,13 +55,7 @@ function DepositMultichain({ ...props }: any) {
           />
         ))}
       </div>
-      <SecondaryButton
-        label="Close"
-        onClick={() => close()}
-        style={{
-          border: `solid 1pt ${theme.custom.colors.tableBorder}`,
-        }}
-      />
+      <SecondaryButton label="Close" onClick={() => close()} />
     </div>
   );
 }
@@ -105,7 +99,7 @@ function BlockchainDepositCard({
           borderRadius: "8px",
           padding: "16px",
           background: theme.custom.colors.nav,
-          border: `solid 1pt ${theme.custom.colors.tableBorder}`,
+          border: `${theme.custom.colors.borderFull}`,
         }}
       >
         <Typography
@@ -329,7 +323,7 @@ const useStyles = styles((theme) => ({
     "& .MuiOutlinedInput-root": {
       paddingRight: 0,
       "& fieldset": {
-        border: `solid 1pt ${theme.custom.colors.borderColor}`,
+        border: `${theme.custom.colors.borderFull}`,
         borderColor: `${theme.custom.colors.borderColor} !important`,
         paddingLeft: 0,
         paddingRight: 0,

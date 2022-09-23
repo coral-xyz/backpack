@@ -160,9 +160,7 @@ function SendButton({ nft }: { nft: any }) {
         label={"Send"}
       />
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        <div
-          style={{ height: "100%", background: theme.custom.colors.background }}
-        >
+        <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "send" }}
             options={() => ({
@@ -182,6 +180,7 @@ function SendButton({ nft }: { nft: any }) {
 }
 
 function SendScreen({ nft }: { nft: any }) {
+  const theme = useCustomTheme();
   const classes = useStyles();
   const { close } = useDrawerContext();
   const { provider: solanaProvider } = useAnchorContext();

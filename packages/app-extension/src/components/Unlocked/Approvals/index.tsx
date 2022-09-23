@@ -93,7 +93,7 @@ export function WithApproval({
             label="Deny"
             onClick={onDeny}
             style={{
-              border: `solid 1pt ${theme.custom.colors.borderColor}`,
+              border: `${theme.custom.colors.borderFull}`,
             }}
           />
         </div>
