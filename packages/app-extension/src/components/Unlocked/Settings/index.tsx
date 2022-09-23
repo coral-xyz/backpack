@@ -509,14 +509,14 @@ function WalletList({
                 }}
               >
                 {showAll ? (
-                  <ExpandMore
+                  <ExpandLess
                     style={{
                       width: "22px",
                       color: theme.custom.colors.icon,
                     }}
                   />
                 ) : (
-                  <ExpandLess
+                  <ExpandMore
                     style={{
                       width: "22px",
                       color: theme.custom.colors.icon,

@@ -485,9 +485,9 @@ export function BalancesTableHead({ props, style }: any) {
             {!disableToggle && (
               <>
                 {showContent ? (
-                  <ExpandMore className={classes.expand} />
-                ) : (
                   <ExpandLess className={classes.expand} />
+                ) : (
+                  <ExpandMore className={classes.expand} />
                 )}
               </>
             )}
