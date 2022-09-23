@@ -63,21 +63,21 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <ActionCard
-                  icon={<WidgetIcon fill={theme.custom.colors.fontColor} />}
+                  icon={<WidgetIcon fill={theme.custom.colors.icon} />}
                   text="Browse the xNFT library"
                   onClick={() => window.open(XNFT_GG_LINK, "_blank")}
                 />
               </Grid>
               <Grid item xs={6}>
                 <ActionCard
-                  icon={<TwitterIcon fill={theme.custom.colors.fontColor} />}
+                  icon={<TwitterIcon fill={theme.custom.colors.icon} />}
                   text="Follow us on Twitter"
                   onClick={() => window.open(TWITTER_LINK, "_blank")}
                 />
               </Grid>
               <Grid item xs={6}>
                 <ActionCard
-                  icon={<DiscordIcon fill={theme.custom.colors.fontColor} />}
+                  icon={<DiscordIcon fill={theme.custom.colors.icon} />}
                   text="Join the Discord community"
                   onClick={() => window.open(DISCORD_INVITE_LINK, "_blank")}
                 />

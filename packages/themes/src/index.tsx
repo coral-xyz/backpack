@@ -136,6 +136,7 @@ export const darkTheme: any = {
       textPlaceholder: FONT_COLOR_1,
       textBorder: BACKGROUND_COLOR_1,
       swapTokensButton: BACKGROUND_COLOR_0,
+      icon: "#787C89",
 
       dangerButton: DANGER_COLOR,
       alpha: "#8F929E",
@@ -189,6 +190,7 @@ export const lightTheme: any = {
       textBorder: LIGHT_BORDER_COLOR,
       textPlaceholder: "#4E5768",
       swapTokensButton: "#f6f6f7",
+      icon: "#8F929E",
 
       dangerButton: DANGER_COLOR,
       alpha: "#8F929E",

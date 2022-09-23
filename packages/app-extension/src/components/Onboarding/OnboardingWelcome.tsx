@@ -82,14 +82,26 @@ export function OnboardingWelcome({
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <ActionCard
-              icon={<AddCircle />}
+              icon={
+                <AddCircle
+                  style={{
+                    color: theme.custom.colors.icon,
+                  }}
+                />
+              }
               text="Create a new wallet"
               onClick={() => onSelect("create-wallet")}
             />
           </Grid>
           <Grid item xs={6}>
             <ActionCard
-              icon={<ArrowCircleDown />}
+              icon={
+                <ArrowCircleDown
+                  style={{
+                    color: theme.custom.colors.icon,
+                  }}
+                />
+              }
               text="Import an existing wallet"
               onClick={() => onSelect("import-wallet")}
             />

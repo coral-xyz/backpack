@@ -512,14 +512,14 @@ function WalletList({
                   <ExpandMore
                     style={{
                       width: "22px",
-                      color: theme.custom.colors.secondary,
+                      color: theme.custom.colors.icon,
                     }}
                   />
                 ) : (
                   <ExpandLess
                     style={{
                       width: "22px",
-                      color: theme.custom.colors.secondary,
+                      color: theme.custom.colors.icon,
                     }}
                   />
                 )}
@@ -805,12 +805,12 @@ function SettingsList({ close }: { close: () => void }) {
               >
                 {s.icon({
                   style: {
-                    color: theme.custom.colors.secondary,
+                    color: theme.custom.colors.icon,
                     marginRight: "8px",
                     height: "24px",
                     width: "24px",
                   },
-                  fill: theme.custom.colors.secondary,
+                  fill: theme.custom.colors.icon,
                 })}
                 <Typography
                   style={{
@@ -855,11 +855,11 @@ function SettingsList({ close }: { close: () => void }) {
               >
                 {s.icon({
                   style: {
-                    color: theme.custom.colors.secondary,
+                    color: theme.custom.colors.icon,
                     height: "24px",
                     width: "24px",
                   },
-                  fill: theme.custom.colors.secondary,
+                  fill: theme.custom.colors.icon,
                 })}
                 <Typography
                   style={{

@@ -143,7 +143,7 @@ export function NavBackButton({ onClick }: { onClick: () => void }) {
         size="large"
         data-testid="back-button"
       >
-        <ArrowBack style={{ color: theme.custom.colors.secondary }} />
+        <ArrowBack style={{ color: theme.custom.colors.icon }} />
       </IconButton>
     </div>
   );

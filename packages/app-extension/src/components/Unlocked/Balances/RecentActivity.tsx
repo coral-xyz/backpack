@@ -85,7 +85,7 @@ const useStyles = styles((theme) => ({
     },
   },
   networkSettingsIcon: {
-    color: theme.custom.colors.secondary,
+    color: theme.custom.colors.icon,
     backgroundColor: "transparent",
     borderRadius: "12px",
   },

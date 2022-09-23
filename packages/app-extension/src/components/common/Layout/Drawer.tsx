@@ -56,7 +56,7 @@ const useStyles = styles((theme) => ({
     width: "100%",
   },
   rightButtonIcon: {
-    color: theme.custom.colors.secondary,
+    color: theme.custom.colors.icon,
   },
   rightButtonLabel: {
     display: "flex",

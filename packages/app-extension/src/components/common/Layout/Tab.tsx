@@ -105,7 +105,7 @@ function TabBar() {
             fill={
               tab === TAB_BALANCES
                 ? theme.custom.colors.brandColor
-                : theme.custom.colors.secondary
+                : theme.custom.colors.icon
             }
           />
         }
@@ -120,7 +120,7 @@ function TabBar() {
             fill={
               tab === TAB_APPS
                 ? theme.custom.colors.brandColor
-                : theme.custom.colors.secondary
+                : theme.custom.colors.icon
             }
           />
         }
@@ -152,7 +152,7 @@ function TabBar() {
             fill={
               tab === TAB_NFTS
                 ? theme.custom.colors.brandColor
-                : theme.custom.colors.secondary
+                : theme.custom.colors.icon
             }
           />
         }
