@@ -241,7 +241,7 @@ export function _RecentActivityList({
           marginLeft: "16px",
           marginRight: "16px",
           borderRadius: "12px",
-          border: `solid 1pt ${theme.custom.colors.tableBorder}`,
+          border: `${theme.custom.colors.borderFull}`,
           ...style,
         }}
       >

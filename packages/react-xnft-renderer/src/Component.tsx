@@ -33,7 +33,7 @@ const useStyles = styles((theme) => ({
     marginLeft: "12px",
     marginRight: "12px",
     borderRadius: "12px",
-    border: `solid 1pt ${theme.custom.colors.tableBorder}`,
+    border: theme.custom.colors.borderFull,
   },
   cardHeaderAvatar: {
     display: "flex",
@@ -150,7 +150,7 @@ const useStyles = styles((theme) => ({
     borderRadius: "12px",
     fontSize: "16px",
     lineHeight: "24px",
-    border: `solid 1pt ${theme.custom.colors.textBorder}`,
+    border: `${theme.custom.colors.borderFull}`,
   },
   textFieldInputColorEmpty: {
     color: theme.custom.colors.textPlaceholder,

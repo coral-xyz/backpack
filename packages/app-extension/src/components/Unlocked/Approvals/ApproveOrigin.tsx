@@ -32,7 +32,7 @@ const useStyles = styles((theme) => ({
     background: theme.custom.colors.nav,
     padding: "8px",
     marginBottom: "1px",
-    border: `solid 1pt ${theme.custom.colors.tableBorder}`,
+    border: `${theme.custom.colors.borderFull}`,
   },
   listItemIconRoot: {
     minWidth: "inherit",

@@ -30,7 +30,7 @@ export function PreferencesTrustedApps() {
     <List
       style={{
         marginTop: "16px",
-        border: `solid 1pt ${theme.custom.colors.tableBorder}`,
+        border: `${theme.custom.colors.borderFull}`,
       }}
     >
       {Object.entries(approvedOrigins).map(

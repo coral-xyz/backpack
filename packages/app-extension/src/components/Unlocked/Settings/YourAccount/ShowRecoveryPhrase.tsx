@@ -28,7 +28,7 @@ const useStyles = styles((theme: any) => ({
   passwordField: {
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `solid 1pt ${theme.custom.colors.textBorder}`,
+        border: `${theme.custom.colors.borderFull}`,
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
@@ -36,7 +36,7 @@ const useStyles = styles((theme: any) => ({
     },
   },
   mnemonicInputRoot: {
-    border: `solid 1pt ${theme.custom.colors.borderColor}`,
+    border: `${theme.custom.colors.borderFull}`,
     color: theme.custom.colors.secondary,
     borderRadius: "8px",
     marginTop: "4px",
@@ -68,7 +68,7 @@ const useStyles = styles((theme: any) => ({
     fontSize: "14px",
   },
   listItemRoot: {
-    border: `solid 1pt ${theme.custom.colors.tableBorder}`,
+    border: `${theme.custom.colors.borderFull}`,
     alignItems: "start",
     borderRadius: "4px",
     background: theme.custom.colors.nav,
@@ -247,7 +247,7 @@ export function ShowRecoveryPhrase({ mnemonic }: { mnemonic: string }) {
           label="Close"
           onClick={() => close()}
           style={{
-            border: `solid 1pt ${theme.custom.colors.borderColor}`,
+            border: `${theme.custom.colors.borderFull}`,
           }}
         />
       </Box>

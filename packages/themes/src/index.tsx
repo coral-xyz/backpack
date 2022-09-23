@@ -21,7 +21,7 @@ const NEGATIVE_COLOR = "#E95050";
 const SCROLLBAR_THUMB_COLOR = "rgb(153 164 180)";
 
 const LIGHT_BACKGROUND_BACKDROP_COLOR =
-  "linear-gradient(180deg, #FFFFFF 0%, #F0F0F2 100%)";
+  "linear-gradient(180deg, #F8F8F9 0%, #F0F0F2 100%), #FFFFFF";
 const LIGHT_BACKGROUND_COLOR_0 = "#F0F0F2";
 const LIGHT_BACKGROUND_COLOR_1 = "#ffffff";
 const LIGHT_BACKGROUND_COLOR_2 = LIGHT_BACKGROUND_COLOR_0;
@@ -32,7 +32,7 @@ const LIGHT_FONT_COLOR_3 = LIGHT_FONT_COLOR_1;
 const LIGHT_BRAND_COLOR = LIGHT_FONT_COLOR;
 const LIGHT_BUTTON_FONT_COLOR = FONT_COLOR;
 const LIGHT_BORDER_COLOR = "#DFE0E6";
-const LIGHT_BORDER_COLOR_1 = "#DBDADB";
+const LIGHT_BORDER_COLOR_1 = "#F0F0F2";
 const LIGHT_POSITIVE_COLOR = POSITIVE_COLOR;
 const LIGHT_NEGATIVE_COLOR = NEGATIVE_COLOR;
 const LIGHT_SCROLLBAR_THUMB_COLOR = SCROLLBAR_THUMB_COLOR;
@@ -123,6 +123,7 @@ export const darkTheme: any = {
       border1: BACKGROUND_COLOR_2,
       border: BACKGROUND_COLOR_1, // Don't use this.
       borderColor: BORDER_COLOR,
+      borderFull: `solid 2px ${BACKGROUND_COLOR_1}`,
       textFieldTextColor: FONT_COLOR_2,
       copyTooltipColor: BRAND_COLOR,
       copyTooltipTextColor: BACKGROUND_COLOR_1,
@@ -174,6 +175,7 @@ export const lightTheme: any = {
       border: LIGHT_BACKGROUND_COLOR_1,
       border1: LIGHT_BORDER_COLOR_1,
       borderColor: LIGHT_BORDER_COLOR_1,
+      borderFull: `solid 2px ${LIGHT_BORDER_COLOR_1}`,
       copyTooltipColor: LIGHT_BRAND_COLOR,
       copyTooltipTextColor: LIGHT_BACKGROUND_COLOR_1,
       tableBorder: LIGHT_BORDER_COLOR,

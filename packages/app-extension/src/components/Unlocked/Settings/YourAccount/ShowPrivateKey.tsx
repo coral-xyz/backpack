@@ -27,7 +27,7 @@ const useStyles = styles((theme: any) => ({
   passwordField: {
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `solid 1pt ${theme.custom.colors.textBorder}`,
+        border: `${theme.custom.colors.borderFull}`,
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
@@ -38,6 +38,9 @@ const useStyles = styles((theme: any) => ({
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
         border: `solid 1pt ${theme.custom.colors.border}`,
+      },
+      "& textarea": {
+        border: "none",
       },
       "&:hover fieldset": {
         border: `solid 1pt ${theme.custom.colors.border}`,
@@ -85,7 +88,7 @@ const useStyles = styles((theme: any) => ({
     padding: "8px",
     height: "56px",
     marginBottom: "1px",
-    border: `solid 1pt ${theme.custom.colors.tableBorder}`,
+    border: `${theme.custom.colors.borderFull}`,
   },
   listItemIconRoot: {
     minWidth: "inherit",
@@ -274,7 +277,7 @@ export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
           label="Close"
           onClick={() => close()}
           style={{
-            border: `solid 1pt ${theme.custom.colors.borderColor}`,
+            border: `${theme.custom.colors.borderFull}`,
           }}
         />
       </Box>

@@ -26,7 +26,7 @@ import { WithCopyTooltip } from "../../common/WithCopyTooltip";
 
 const useStyles = makeStyles((theme: any) => ({
   mnemonicInputRoot: {
-    border: `solid 1pt ${theme.custom.colors.borderColor}`,
+    border: `${theme.custom.colors.borderFull}`,
     background: theme.custom.colors.textBackground,
     color: theme.custom.colors.secondary,
     borderRadius: "8px",
@@ -333,7 +333,7 @@ export function CopyButton({
             fontWeight: 600,
           }}
           style={{
-            border: `solid 1pt ${theme.custom.colors.borderColor}`,
+            border: `${theme.custom.colors.borderFull}`,
           }}
         />
       </Box>
