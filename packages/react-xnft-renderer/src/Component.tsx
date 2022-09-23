@@ -766,7 +766,6 @@ export function TextField({
         shrink: false,
         style: {
           borderRadius: "12px",
-          //          border: `solid 1pt ${theme.custom.colors.tableBorder}`,
         },
       }}
       InputProps={{
