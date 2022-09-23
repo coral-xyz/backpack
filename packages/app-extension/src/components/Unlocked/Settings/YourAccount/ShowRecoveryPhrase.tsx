@@ -243,13 +243,7 @@ export function ShowRecoveryPhrase({ mnemonic }: { mnemonic: string }) {
           marginBottom: "16px",
         }}
       >
-        <SecondaryButton
-          label="Close"
-          onClick={() => close()}
-          style={{
-            border: `${theme.custom.colors.borderFull}`,
-          }}
-        />
+        <SecondaryButton label="Close" onClick={() => close()} />
       </Box>
     </Box>
   );

@@ -35,6 +35,8 @@ const useStyles = styles((theme: any) => ({
     },
   },
   privateKeyField: {
+    borderRadius: "12px",
+    border: theme.custom.colors.borderFull,
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
         border: `solid 1pt ${theme.custom.colors.border}`,
@@ -262,6 +264,10 @@ export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
                   style={{ color: theme.custom.colors.fontColor }}
                 />
               }
+              style={{
+                height: "50px",
+                border: theme.custom.colors.borderFull,
+              }}
             />
           </Box>
         </Box>
@@ -277,7 +283,8 @@ export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
           label="Close"
           onClick={() => close()}
           style={{
-            border: `${theme.custom.colors.borderFull}`,
+            border: theme.custom.colors.borderFull,
+            height: "50px",
           }}
         />
       </Box>

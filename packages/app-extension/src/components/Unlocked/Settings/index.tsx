@@ -425,16 +425,15 @@ function WalletList({
               background: theme.custom.colors.nav,
               borderTopLeftRadius: "8px",
               borderTopRightRadius: "8px",
-              borderBottomLeftRadius: showAll ? "0px" : "8px",
-              borderBottomRightRadius: showAll ? "0px" : "8px",
+              borderBottomLeftRadius:
+                showAll && keys.length > 0 ? "0px" : "8px",
+              borderBottomRightRadius:
+                showAll && keys.length > 0 ? "0px" : "8px",
               height: "48px",
               display: "flex",
               paddingLeft: "12px",
               paddingRight: "12px",
               flex: 1,
-              borderBottom: showAll
-                ? `solid 1pt ${theme.custom.colors.border}`
-                : undefined,
             }}
             onClick={() => setShowAll((s) => !s)}
           >

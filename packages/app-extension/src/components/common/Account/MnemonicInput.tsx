@@ -309,12 +309,13 @@ export function CopyButton({
   text,
   icon,
   disabled = false,
+  style,
 }: {
   text: string;
   icon?: React.ReactElement;
   disabled?: boolean;
+  style?: React.CSSProperties;
 }) {
-  const theme = useCustomTheme();
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const onCopy = () => {
     setTooltipOpen(true);
@@ -332,9 +333,7 @@ export function CopyButton({
           buttonLabelStyle={{
             fontWeight: 600,
           }}
-          style={{
-            border: `${theme.custom.colors.borderFull}`,
-          }}
+          style={style}
         />
       </Box>
     </WithCopyTooltip>
