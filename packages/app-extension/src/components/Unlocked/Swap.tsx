@@ -28,6 +28,7 @@ import {
   PrimaryButton,
   DangerButton,
   SecondaryButton,
+  Loading,
 } from "../common";
 import { TokenInputField } from "../common/TokenInput";
 import { CheckIcon, CrossIcon } from "../common/Icon";
@@ -124,7 +125,7 @@ const useStyles = styles((theme) => ({
     background: theme.custom.colors.nav,
   },
   swapIcon: {
-    color: theme.custom.colors.secondary,
+    color: theme.custom.colors.icon,
   },
   loadingContainer: {
     backgroundColor: theme.custom.colors.nav,
@@ -366,8 +367,8 @@ function OutputTextField() {
         placeholder={"0"}
         startAdornment={
           isLoadingRoutes && (
-            <CircularProgress
-              style={{
+            <Loading
+              iconStyle={{
                 display: "flex",
                 color: theme.custom.colors.secondary,
                 marginRight: "10px",
@@ -530,10 +531,9 @@ function SwapConfirming({
               <CheckIcon />
             </div>
           ) : (
-            <CircularProgress
+            <Loading
               size={48}
-              style={{
-                color: theme.custom.colors.primaryButton,
+              iconStyle={{
                 display: "flex",
                 marginLeft: "auto",
                 marginRight: "auto",
@@ -632,11 +632,12 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   if (isLoadingRoutes || isLoadingTransactions) {
     return (
       <div style={{ textAlign: "center" }}>
-        <CircularProgress
+        <Loading
           size={48}
-          style={{
-            color: theme.custom.colors.primaryButton,
+          iconStyle={{
             margin: "32px 0",
+            marginLeft: "auto",
+            marginRight: "auto",
           }}
           thickness={6}
         />

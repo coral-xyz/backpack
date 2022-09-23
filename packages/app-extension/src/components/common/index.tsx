@@ -196,10 +196,10 @@ export function Loading(props: any) {
           </linearGradient>
         </svg>
         <CircularProgress
-          size={48}
+          size={props.size ?? 48}
           className={classes.loadingIndicator}
           style={props.iconStyle}
-          thickness={6}
+          thickness={props.thickness ?? 6}
           classes={{ circle: classes.circle }}
         />
       </>
