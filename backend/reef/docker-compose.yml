@@ -20,7 +20,7 @@ services:
       POSTGRES_USER: user
 
   hasura:
-    image: hasura/graphql-engine:latest.cli-migrations-v3
+    image: hasura/graphql-engine:v2.11.2.cli-migrations-v3
     ports:
       - 8112:8080
     depends_on:
