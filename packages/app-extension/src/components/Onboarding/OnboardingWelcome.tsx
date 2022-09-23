@@ -1,18 +1,12 @@
 import {
   Dispatch,
+  lazy,
   MutableRefObject,
   SetStateAction,
   useRef,
   useState,
 } from "react";
-import {
-  Box,
-  Drawer,
-  Grid,
-  IconButton,
-  ListItemText,
-  Toolbar,
-} from "@mui/material";
+import { Box, Grid, IconButton, ListItemText, Toolbar } from "@mui/material";
 import {
   AddCircle,
   ArrowCircleDown,
@@ -26,6 +20,7 @@ import {
   DISCORD_INVITE_LINK,
   TWITTER_LINK,
   BACKPACK_LINK,
+  BACKPACK_FEATURE_USERNAMES,
 } from "@coral-xyz/common";
 import { DiscordIcon } from "../common/Icon";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
@@ -35,6 +30,8 @@ import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import { List, ListItem } from "../common/List";
 import { WithContaineredDrawer } from "../common/Layout/Drawer";
 import type { OnboardingFlows } from "./";
+
+const CheckInviteCodeForm = lazy(() => import("./CheckInviteCodeForm"));
 
 const useStyles = styles((theme) => ({
   listItemRoot: {
@@ -50,6 +47,7 @@ export function OnboardingWelcome({
   const theme = useCustomTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const containerRef = useRef(null);
+  const [inviteCode, setInviteCode] = useState("");
 
   return (
     <div
@@ -78,22 +76,26 @@ export function OnboardingWelcome({
         />
       </Box>
 
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
-          <ActionCard
-            icon={<AddCircle />}
-            text="Create a new wallet"
-            onClick={() => onSelect("create-wallet")}
-          />
+      {BACKPACK_FEATURE_USERNAMES && !inviteCode ? (
+        <CheckInviteCodeForm setInviteCode={setInviteCode} />
+      ) : (
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <ActionCard
+              icon={<AddCircle />}
+              text="Create a new wallet"
+              onClick={() => onSelect("create-wallet")}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <ActionCard
+              icon={<ArrowCircleDown />}
+              text="Import an existing wallet"
+              onClick={() => onSelect("import-wallet")}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={6}>
-          <ActionCard
-            icon={<ArrowCircleDown />}
-            text="Import an existing wallet"
-            onClick={() => onSelect("import-wallet")}
-          />
-        </Grid>
-      </Grid>
+      )}
     </div>
   );
 }
