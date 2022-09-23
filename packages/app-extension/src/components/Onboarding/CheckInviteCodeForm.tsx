@@ -5,6 +5,7 @@ import { Box, Typography } from "@mui/material";
 import { createPopup } from "@typeform/embed";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { PrimaryButton, SubtextParagraph, TextField } from "../common";
+import WaitingRoom from "./WaitingRoom";
 
 const WAITLIST_RES_ID_KEY = "waitlist-form-res-id";
 
@@ -13,6 +14,7 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
   const [value, setValue] = useState("");
   const [hasAccount, setHasAccount] = useState(false);
   const [error, setError] = useState<string>();
+  const [showWaitingRoom, setShowWaitingRoom] = useState(false);
   const [waitlistResponseId, setWaitlistResponseId] = useState<string>();
 
   const typeform = createPopup("PCnBjycW", {
@@ -63,7 +65,7 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
     if (!waitlistResponseId) {
       typeform.open();
     } else {
-      alert("GO TO WAITING ROOM");
+      setShowWaitingRoom(true);
     }
   }, [waitlistResponseId]);
 
@@ -80,45 +82,48 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Box style={{ marginBottom: 8 }}>
-        <TextField
-          inputProps={{
-            name: ob.inputName,
-            autoComplete: false,
-            spellCheck: false,
-          }}
-          placeholder={ob.placeholder}
-          type="text"
-          value={value}
-          setValue={ob.setVal}
-          isError={error}
-          auto
-        />
-        {error && (
-          <Typography sx={{ color: theme.custom.colors.negative }}>
-            {error}
-          </Typography>
-        )}
-      </Box>
-      <PrimaryButton disabled={!value} label={ob.buttonText} type="submit" />
+    <>
+      <form onSubmit={handleSubmit}>
+        <Box style={{ marginBottom: 8 }}>
+          <TextField
+            inputProps={{
+              name: ob.inputName,
+              autoComplete: false,
+              spellCheck: false,
+            }}
+            placeholder={ob.placeholder}
+            type="text"
+            value={value}
+            setValue={ob.setVal}
+            isError={error}
+            auto
+          />
+          {error && (
+            <Typography sx={{ color: theme.custom.colors.negative }}>
+              {error}
+            </Typography>
+          )}
+        </Box>
+        <PrimaryButton disabled={!value} label={ob.buttonText} type="submit" />
 
-      <Box
-        style={{ marginTop: 16, cursor: "pointer" }}
-        onClick={handleWaitingClick}
-      >
-        <SubtextParagraph>
-          {waitlistResponseId ? "Waiting Room" : "Apply for an Invite Code"}
-        </SubtextParagraph>
-      </Box>
+        <Box
+          style={{ marginTop: 16, cursor: "pointer" }}
+          onClick={handleWaitingClick}
+        >
+          <SubtextParagraph>
+            {waitlistResponseId ? "Waiting Room" : "Apply for an Invite Code"}
+          </SubtextParagraph>
+        </Box>
 
-      <Box
-        onClick={() => setHasAccount(!hasAccount)}
-        style={{ marginTop: 16, cursor: "pointer" }}
-      >
-        <SubtextParagraph>{ob.linkText}</SubtextParagraph>
-      </Box>
-    </form>
+        <Box
+          onClick={() => setHasAccount(!hasAccount)}
+          style={{ marginTop: 16, cursor: "pointer" }}
+        >
+          <SubtextParagraph>{ob.linkText}</SubtextParagraph>
+        </Box>
+      </form>
+      <WaitingRoom uri="https://backpack.app" visible={showWaitingRoom} />
+    </>
   );
 };
 
