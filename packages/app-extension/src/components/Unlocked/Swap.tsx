@@ -42,7 +42,6 @@ const { Zero } = ethers.constants;
 
 const useStyles = styles((theme) => ({
   container: {
-    backgroundColor: theme.custom.colors.background,
     display: "flex",
     flexDirection: "column",
     height: "100%",
@@ -74,10 +73,13 @@ const useStyles = styles((theme) => ({
     marginBottom: 0,
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `solid 1pt ${theme.custom.colors.borderColor}`,
+        border: `solid 1pt ${theme.custom.colors.textBorder}`,
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
+      },
+      "& input": {
+        border: "none",
       },
     },
   },
@@ -88,7 +90,13 @@ const useStyles = styles((theme) => ({
       "& fieldset": {
         border: `solid 1pt ${theme.custom.colors.borderColor}`,
         // Override disable and hover styles
-        borderColor: `${theme.custom.colors.borderColor} !important`,
+        borderColor: `${theme.custom.colors.textBorder} !important`,
+      },
+      "&:hover fieldset": {
+        border: `solid 1pt ${theme.custom.colors.borderColor}`, // Prevent hover from changing border.
+      },
+      "& input": {
+        border: "none",
       },
     },
     "& .MuiInputBase-input.Mui-disabled": {
@@ -97,7 +105,7 @@ const useStyles = styles((theme) => ({
     },
   },
   swapTokensContainer: {
-    backgroundColor: theme.custom.colors.background,
+    backgroundColor: theme.custom.colors.swapTokensButton,
     width: "44px",
     height: "44px",
     zIndex: 2,

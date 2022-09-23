@@ -26,11 +26,12 @@ import { WithCopyTooltip } from "../../common/WithCopyTooltip";
 
 const useStyles = makeStyles((theme: any) => ({
   mnemonicInputRoot: {
+    border: `solid 1pt ${theme.custom.colors.borderColor}`,
+    background: theme.custom.colors.textBackground,
     color: theme.custom.colors.secondary,
     borderRadius: "8px",
     marginTop: "4px",
     "& .MuiOutlinedInput-root": {
-      backgroundColor: theme.custom.colors.background,
       borderRadius: "8px",
       height: "40px",
       paddingLeft: "8px",
@@ -161,7 +162,12 @@ export function MnemonicInput({
     >
       <Box sx={{ margin: `24px 16px` }}>
         <Box>
-          <Header text="Secret recovery phrase" />
+          <Header
+            text="Secret recovery phrase"
+            style={{
+              fontWeight: 500,
+            }}
+          />
           <SubtextParagraph>
             {readOnly
               ? "This is the only way to recover your account if you lose your device. Write it down and store it in a safe place."
@@ -232,6 +238,9 @@ export function MnemonicInput({
             label={buttonLabel}
             onClick={next}
             disabled={!nextEnabled}
+            buttonLabelStyle={{
+              fontWeight: 600,
+            }}
           />
         </Box>
       </Box>
@@ -248,6 +257,7 @@ export function MnemonicInputFields({
   onChange?: (mnemonicWords: Array<string>) => void;
   rootClass?: any;
 }) {
+  const theme = useCustomTheme();
   const classes = useStyles();
   if (!rootClass) {
     rootClass = classes.mnemonicInputRoot;
@@ -270,6 +280,9 @@ export function MnemonicInputFields({
             fullWidth
             InputLabelProps={{
               shrink: false,
+              style: {
+                backgroundColor: theme.custom.colors.nav,
+              },
             }}
             InputProps={{
               startAdornment: (
@@ -301,6 +314,7 @@ export function CopyButton({
   icon?: React.ReactElement;
   disabled?: boolean;
 }) {
+  const theme = useCustomTheme();
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const onCopy = () => {
     setTooltipOpen(true);
@@ -315,6 +329,12 @@ export function CopyButton({
           label="Copy"
           disabled={disabled}
           endIcon={icon ? icon : null}
+          buttonLabelStyle={{
+            fontWeight: 600,
+          }}
+          style={{
+            border: `solid 1pt ${theme.custom.colors.borderColor}`,
+          }}
         />
       </Box>
     </WithCopyTooltip>

@@ -27,7 +27,7 @@ const useStyles = styles((theme: any) => ({
   passwordField: {
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `solid 2pt ${theme.custom.colors.border}`,
+        border: `solid 1pt ${theme.custom.colors.textBorder}`,
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
@@ -80,11 +80,12 @@ const useStyles = styles((theme: any) => ({
   },
   listItemRoot: {
     alignItems: "start",
-    borderBottom: `1px solid #000`,
     borderRadius: "4px",
     background: theme.custom.colors.nav,
     padding: "8px",
     height: "56px",
+    marginBottom: "1px",
+    border: `solid 1pt ${theme.custom.colors.tableBorder}`,
   },
   listItemIconRoot: {
     minWidth: "inherit",
@@ -171,10 +172,7 @@ export function ShowPrivateKeyWarning({ publicKey }: { publicKey?: string }) {
               </ListItemIcon>
               Never share your private key or enter it into an app or website.
             </ListItem>
-            <ListItem
-              className={classes.listItemRoot}
-              style={{ borderBottom: "none" }}
-            >
+            <ListItem className={classes.listItemRoot}>
               <ListItemIcon className={classes.listItemIconRoot}>
                 <LockOpenIcon
                   htmlColor="#EF4444"
@@ -272,7 +270,13 @@ export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
           marginBottom: "16px",
         }}
       >
-        <SecondaryButton label="Close" onClick={() => close()} />
+        <SecondaryButton
+          label="Close"
+          onClick={() => close()}
+          style={{
+            border: `solid 1pt ${theme.custom.colors.borderColor}`,
+          }}
+        />
       </Box>
     </Box>
   );

@@ -39,7 +39,7 @@ const useStyles = styles((theme) => ({
   },
   drawerPaper: {
     height: "100%",
-    background: theme.custom.colors.background,
+    background: theme.custom.colors.backgroundBackdrop,
   },
   miniDrawerRoot: {
     background: "transparent",
@@ -86,7 +86,6 @@ export function WithDrawer(props: any) {
 }
 
 export function WithEphemeralNavDrawer(props: any) {
-  const theme = useCustomTheme();
   const {
     children,
     openDrawer,
@@ -100,11 +99,9 @@ export function WithEphemeralNavDrawer(props: any) {
       <WithEphemeralNav
         title={title}
         navbarStyle={{
-          background: theme.custom.colors.background,
           ...navbarStyle,
         }}
         navContentStyle={{
-          background: theme.custom.colors.background,
           ...navContentStyle,
         }}
       >
@@ -244,7 +241,6 @@ export function WithContaineredDrawer(
     setOpenDrawer: Dispatch<SetStateAction<boolean>>;
   }>
 ) {
-  const theme = useCustomTheme();
   const {
     children,
     backdropStyles,
@@ -262,7 +258,6 @@ export function WithContaineredDrawer(
       PaperProps={{
         style: {
           position: "absolute",
-          background: theme.custom.colors.nav,
           ...paperStyles,
         },
       }}

@@ -120,11 +120,9 @@ export function Onboarding() {
           step < flow.length - 1 && <NavBackButton onClick={prevStep} />
         }
         navbarStyle={{
-          backgroundColor: theme.custom.colors.nav,
           borderRadius: "12px",
         }}
         navContentStyle={{
-          backgroundColor: theme.custom.colors.nav,
           borderRadius: "12px",
         }}
       >
@@ -154,13 +152,13 @@ export function OptionsContainer({ children }: { children: React.ReactNode }) {
         style={{
           width: `${EXTENSION_WIDTH}px`,
           height: `${EXTENSION_HEIGHT}px`,
-          background: theme.custom.colors.nav,
           display: "flex",
           flexDirection: "column",
           margin: "0 auto",
           borderRadius: "12px",
           overflow: "hidden",
           boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.25)",
+          background: theme.custom.colors.backgroundBackdrop,
         }}
       >
         {children}

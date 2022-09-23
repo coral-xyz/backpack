@@ -1,4 +1,5 @@
 import { Box } from "@mui/material";
+import { useCustomTheme } from "@coral-xyz/themes";
 import {
   Header,
   SubtextParagraph,
@@ -8,6 +9,7 @@ import {
 import { useNavStack } from "../../common/Layout/NavStack";
 
 export function ResetWelcome({ onClose }: { onClose: () => void }) {
+  const theme = useCustomTheme();
   const nav = useNavStack();
   const onNext = () => {
     nav.push("reset-warning");
@@ -37,7 +39,11 @@ export function ResetWelcome({ onClose }: { onClose: () => void }) {
         }}
       >
         <Box sx={{ mb: "16px" }}>
-          <SecondaryButton label="Try More Passwords" onClick={onClose} />
+          <SecondaryButton
+            label="Try More Passwords"
+            onClick={onClose}
+            style={{ border: `solid 1pt ${theme.custom.colors.borderColor}` }}
+          />
         </Box>
         <DangerButton label="Reset Secret Recovery Phrase" onClick={onNext} />
       </Box>

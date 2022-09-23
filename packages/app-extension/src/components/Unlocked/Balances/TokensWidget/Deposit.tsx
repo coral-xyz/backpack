@@ -20,6 +20,7 @@ export function Deposit({ ...props }: any) {
 }
 
 function DepositMultichain({ ...props }: any) {
+  const theme = useCustomTheme();
   const nav = useNavStack();
   const { close } = useDrawerContext();
   const activeWallets = useActiveWallets();
@@ -54,7 +55,13 @@ function DepositMultichain({ ...props }: any) {
           />
         ))}
       </div>
-      <SecondaryButton label="Close" onClick={() => close()} />
+      <SecondaryButton
+        label="Close"
+        onClick={() => close()}
+        style={{
+          border: `solid 1pt ${theme.custom.colors.tableBorder}`,
+        }}
+      />
     </div>
   );
 }
@@ -98,6 +105,7 @@ function BlockchainDepositCard({
           borderRadius: "8px",
           padding: "16px",
           background: theme.custom.colors.nav,
+          border: `solid 1pt ${theme.custom.colors.tableBorder}`,
         }}
       >
         <Typography

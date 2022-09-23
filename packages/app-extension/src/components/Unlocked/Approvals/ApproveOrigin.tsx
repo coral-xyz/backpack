@@ -28,10 +28,11 @@ const useStyles = styles((theme) => ({
   },
   listItemRoot: {
     alignItems: "start",
-    borderBottom: `1px solid #000`,
     borderRadius: "4px",
     background: theme.custom.colors.nav,
     padding: "8px",
+    marginBottom: "1px",
+    border: `solid 1pt ${theme.custom.colors.tableBorder}`,
   },
   listItemIconRoot: {
     minWidth: "inherit",

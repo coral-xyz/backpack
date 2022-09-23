@@ -32,13 +32,6 @@ export const WalletDetail: React.FC<{
       const addr =
         publicKey.slice(0, 4) + "..." + publicKey.slice(publicKey.length - 4);
       nav.setTitle(`${keyname} (${addr})`);
-      nav.setStyle({
-        background: theme.custom.colors.background,
-        borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-      });
-      nav.setContentStyle({
-        background: theme.custom.colors.background,
-      });
     })();
   }, []);
 

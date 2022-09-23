@@ -38,11 +38,8 @@ export function XnftSettings() {
   });
 
   useEffect(() => {
-    nav.setContentStyle({
-      backgroundColor: theme.custom.colors.background,
-    });
     nav.setTitle("xNFTs");
-  }, [nav.setContentStyle, theme]);
+  }, [nav.setTitle]);
 
   return xnfts.length === 0 ? (
     <EmptyState

@@ -22,7 +22,8 @@ export function ActionCard({
     >
       <Card
         sx={{
-          bgcolor: theme.custom.colors.bg2,
+          bgcolor: theme.custom.colors.nav,
+          border: `solid 1pt ${theme.custom.colors.tableBorder}`,
           p: 1,
           borderRadius: "12px",
           color: theme.custom.colors.fontColor,

@@ -40,18 +40,8 @@ export function AddConnectWalletMenu({
 
   useEffect(() => {
     const prevTitle = nav.title;
-    const prevStyle = nav.style;
-    const prevContentStyle = nav.contentStyle;
-    nav.setStyle({
-      backgroundColor: theme.custom.colors.nav,
-    });
-    nav.setContentStyle({
-      backgroundColor: theme.custom.colors.nav,
-    });
     nav.setTitle("");
     return () => {
-      nav.setStyle(prevStyle);
-      nav.setContentStyle(prevContentStyle);
       nav.setTitle(prevTitle);
     };
   }, [nav.setContentStyle]);
@@ -63,7 +53,6 @@ export function AddConnectWalletMenu({
           display: "flex",
           flexDirection: "column",
           height: "100%",
-          backgroundColor: theme.custom.colors.nav,
         }}
       >
         <Box sx={{ margin: "24px" }}>
