@@ -88,9 +88,7 @@ const useStyles = styles((theme) => ({
     marginBottom: 0,
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `${theme.custom.colors.borderFull}`,
-        // Override disable and hover styles
-        borderColor: `${theme.custom.colors.textBorder} !important`,
+        border: `${theme.custom.colors.borderFull} !important`,
       },
       "&:hover fieldset": {
         border: `${theme.custom.colors.borderFull}`, // Prevent hover from changing border.

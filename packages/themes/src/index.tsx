@@ -185,7 +185,7 @@ export const lightTheme: any = {
       textBackground: LIGHT_BACKGROUND_COLOR_1,
       textBorder: LIGHT_BORDER_COLOR,
       textPlaceholder: "#4E5768",
-      swapTokensButton: "#fbfbfb",
+      swapTokensButton: "#f6f6f7",
 
       dangerButton: DANGER_COLOR,
       alpha: "#8F929E",
