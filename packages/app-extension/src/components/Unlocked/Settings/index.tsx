@@ -104,6 +104,20 @@ const useStyles = styles((theme) => ({
     background: "transparent !important",
     height: "48px",
   },
+  privateKeyTextFieldRoot: {
+    "& .MuiOutlinedInput-root": {
+      border: theme.custom.colors.borderFull,
+      "& textarea": {
+        border: "none",
+      },
+      "&:hover fieldset": {
+        border: `solid 2pt ${theme.custom.colors.primaryButton}`,
+      },
+      "&.Mui-focused fieldset": {
+        border: `solid 2pt ${theme.custom.colors.primaryButton} !important`,
+      },
+    },
+  },
 }));
 
 const AVATAR_URL = "/coral.png";
@@ -881,6 +895,7 @@ function SettingsList({ close }: { close: () => void }) {
 }
 
 export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
+  const classes = useStyles();
   const background = useBackgroundClient();
   const nav = useNavStack();
   const theme = useCustomTheme();
@@ -959,6 +974,7 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
               value={secretKey}
               setValue={setSecretKey}
               rows={4}
+              rootClass={classes.privateKeyTextFieldRoot}
             />
           </Box>
           {error && (
