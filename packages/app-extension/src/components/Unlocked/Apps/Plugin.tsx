@@ -5,6 +5,7 @@ import { usePlugins } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { PowerIcon, MoreIcon } from "../../common/Icon";
 import { Simulator } from "./Simulator";
+import { Redirect } from "../../common/Layout/Router";
 
 export function PluginApp({
   xnftAddress,
@@ -34,8 +35,11 @@ export function PluginDisplay({
   if (!xnft) {
     return <></>;
   }
+
+  // Hack.
   if (p === undefined) {
-    throw new Error("unable to find plugin");
+    console.error("plugin not found");
+    return <Redirect />;
   }
 
   return <_PluginDisplay plugin={p!} closePlugin={closePlugin} />;

@@ -48,7 +48,7 @@ export function Router() {
   );
 }
 
-function Redirect() {
+export function Redirect() {
   let url = useRedirectUrl();
   const [searchParams] = useSearchParams();
   const pluginProps = searchParams.get("pluginProps");
