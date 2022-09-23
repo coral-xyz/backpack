@@ -124,6 +124,7 @@ export const darkTheme: any = {
       border: BACKGROUND_COLOR_1, // Don't use this.
       borderColor: BORDER_COLOR,
       borderFull: `solid 2px ${BACKGROUND_COLOR_1}`,
+      borderButton: undefined,
       textFieldTextColor: FONT_COLOR_2,
       copyTooltipColor: BRAND_COLOR,
       copyTooltipTextColor: BACKGROUND_COLOR_1,
@@ -179,6 +180,7 @@ export const lightTheme: any = {
       border1: LIGHT_BORDER_COLOR_1,
       borderColor: LIGHT_BORDER_COLOR_1,
       borderFull: `solid 2px ${LIGHT_BORDER_COLOR_1}`,
+      borderButton: `solid 2px ${LIGHT_BORDER_COLOR_1}`,
       copyTooltipColor: LIGHT_BRAND_COLOR,
       copyTooltipTextColor: LIGHT_BACKGROUND_COLOR_1,
       tableBorder: LIGHT_BORDER_COLOR,

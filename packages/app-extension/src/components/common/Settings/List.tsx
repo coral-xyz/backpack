@@ -28,6 +28,7 @@ export function SettingsList({
     <List
       style={{
         border: `${theme.custom.colors.borderFull}`,
+        borderRadius: "12px",
         marginTop: "16px",
         ...style,
       }}

@@ -80,6 +80,7 @@ function WalletList({
       <List
         style={{
           border: `${theme.custom.colors.borderFull}`,
+          borderRadius: "10px",
         }}
       >
         {flattenedWallets.map(({ name, publicKey, type }, idx) => (

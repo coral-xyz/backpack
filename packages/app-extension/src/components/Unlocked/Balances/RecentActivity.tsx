@@ -240,7 +240,7 @@ export function _RecentActivityList({
           paddingBottom: 0,
           marginLeft: "16px",
           marginRight: "16px",
-          borderRadius: "12px",
+          borderRadius: "14px",
           border: `${theme.custom.colors.borderFull}`,
           ...style,
         }}

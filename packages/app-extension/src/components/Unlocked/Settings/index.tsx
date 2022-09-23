@@ -425,7 +425,7 @@ function WalletList({
       <div
         style={{
           border: `${theme.custom.colors.borderFull}`,
-          borderRadius: "8px",
+          borderRadius: "10px",
         }}
       >
         <div
@@ -675,14 +675,11 @@ export const AddConnectWalletButton = ({
   return (
     <List
       style={{
-        //				borderTop: `${theme.custom.colors.borderFull}`,
         background: "transparent",
         color: theme.custom.colors.secondary,
         marginLeft: 0,
         marginRight: 0,
         height: "48px",
-        //				borderTopLeftRadius: 0,
-        //				borderTopRightRadius: 0,
       }}
     >
       <ListItem
@@ -795,6 +792,7 @@ function SettingsList({ close }: { close: () => void }) {
           marginTop: "24px",
           marginBottom: "16px",
           border: `${theme.custom.colors.borderFull}`,
+          borderRadius: "10px",
         }}
       >
         {settingsMenu.map((s, idx) => {
@@ -845,6 +843,7 @@ function SettingsList({ close }: { close: () => void }) {
           marginTop: "24px",
           marginBottom: "16px",
           border: `${theme.custom.colors.borderFull}`,
+          borderRadius: "10px",
         }}
       >
         {discordList.map((s, idx) => {
