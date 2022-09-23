@@ -26,11 +26,12 @@ import { WithCopyTooltip } from "../../common/WithCopyTooltip";
 
 const useStyles = makeStyles((theme: any) => ({
   mnemonicInputRoot: {
+    border: `solid 1pt ${theme.custom.colors.borderColor}`,
+    background: theme.custom.colors.textBackground,
     color: theme.custom.colors.secondary,
     borderRadius: "8px",
     marginTop: "4px",
     "& .MuiOutlinedInput-root": {
-      backgroundColor: theme.custom.colors.background,
       borderRadius: "8px",
       height: "40px",
       paddingLeft: "8px",

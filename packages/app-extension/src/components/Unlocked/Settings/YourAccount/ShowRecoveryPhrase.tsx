@@ -36,6 +36,7 @@ const useStyles = styles((theme: any) => ({
     },
   },
   mnemonicInputRoot: {
+    border: `solid 1pt ${theme.custom.colors.borderColor}`,
     color: theme.custom.colors.secondary,
     borderRadius: "8px",
     marginTop: "4px",
@@ -211,7 +212,7 @@ export function ShowRecoveryPhrase({ mnemonic }: { mnemonic: string }) {
         justifyContent: "space-between",
       }}
     >
-      <Box sx={{ margin: "32px 24px 0 24px" }}>
+      <Box sx={{ margin: "32px 16px 0 16px" }}>
         <HeaderIcon
           icon={<EyeIcon />}
           style={{ width: "40px", height: "40px", marginBottom: "24px" }}
