@@ -589,7 +589,8 @@ function BurnConfirmation({ onConfirm }: { onConfirm: () => void }) {
         />
         <Typography
           style={{
-            backgroundColor: theme.custom.colors.bg2,
+            backgroundColor: theme.custom.colors.background,
+            border: theme.custom.colors.borderFull,
             padding: "16px",
             color: theme.custom.colors.fontColor,
             fontSize: "20px",

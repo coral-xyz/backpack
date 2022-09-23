@@ -323,8 +323,7 @@ const useStyles = styles((theme) => ({
     "& .MuiOutlinedInput-root": {
       paddingRight: 0,
       "& fieldset": {
-        border: `${theme.custom.colors.borderFull}`,
-        borderColor: `${theme.custom.colors.borderColor} !important`,
+        border: `${theme.custom.colors.borderFull} !important`,
         paddingLeft: 0,
         paddingRight: 0,
       },
