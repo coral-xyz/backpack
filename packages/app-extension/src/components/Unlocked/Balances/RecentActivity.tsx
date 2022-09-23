@@ -217,6 +217,7 @@ export function _RecentActivityList({
   style?: any;
   minimize?: boolean;
 }) {
+  const theme = useCustomTheme();
   // Load transactions if not passed in as a prop
   const transactions = _transactions
     ? _transactions
@@ -227,26 +228,33 @@ export function _RecentActivityList({
   }
 
   return transactions.length > 0 ? (
-    <List
+    <div
       style={{
-        marginTop: "16px",
-        paddingTop: 0,
-        marginLeft: "16px",
-        marginRight: "16px",
-        borderRadius: "12px",
         paddingBottom: "16px",
-        ...style,
       }}
     >
-      {transactions.map((tx: any, idx: number) => (
-        <RecentActivityListItem
-          key={idx}
-          transaction={tx}
-          isFirst={idx === 0}
-          isLast={idx === transactions.length - 1}
-        />
-      ))}
-    </List>
+      <List
+        style={{
+          marginTop: "16px",
+          paddingTop: 0,
+          paddingBottom: 0,
+          marginLeft: "16px",
+          marginRight: "16px",
+          borderRadius: "12px",
+          border: `solid 1pt ${theme.custom.colors.tableBorder}`,
+          ...style,
+        }}
+      >
+        {transactions.map((tx: any, idx: number) => (
+          <RecentActivityListItem
+            key={idx}
+            transaction={tx}
+            isFirst={idx === 0}
+            isLast={idx === transactions.length - 1}
+          />
+        ))}
+      </List>
+    </div>
   ) : (
     <NoRecentActivityLabel minimize={!!minimize} />
   );
