@@ -90,7 +90,9 @@ export function BalanceSummaryWidget() {
           <Typography
             style={{
               color:
-                totalChange < 0
+                totalChange === 0
+                  ? theme.custom.colors.neutral
+                  : totalChange < 0
                   ? theme.custom.colors.negative
                   : theme.custom.colors.positive,
               paddingLeft: "0px",
@@ -116,7 +118,9 @@ export function BalanceSummaryWidget() {
           <Typography
             style={{
               color:
-                totalChange < 0
+                totalChange === 0
+                  ? theme.custom.colors.neutral
+                  : totalChange < 0
                   ? theme.custom.colors.negative
                   : theme.custom.colors.positive,
               paddingLeft: "8px",
@@ -125,6 +129,8 @@ export function BalanceSummaryWidget() {
               paddingBottom: "2px",
               backgroundColor: isLoading
                 ? undefined
+                : totalChange === 0
+                ? theme.custom.colors.balanceChangeNeutral
                 : totalChange < 0
                 ? theme.custom.colors.balanceChangeNegative
                 : theme.custom.colors.balanceChangePositive,
