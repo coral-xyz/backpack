@@ -1,11 +1,6 @@
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import {
-  InputAdornment,
-  Typography,
-  IconButton,
-  CircularProgress,
-} from "@mui/material";
+import { InputAdornment, Typography, IconButton } from "@mui/material";
 import type { Button } from "@mui/material";
 import { Close, ExpandMore, SwapVert } from "@mui/icons-material";
 import { Button as XnftButton } from "@coral-xyz/react-xnft-renderer";
