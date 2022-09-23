@@ -28,7 +28,7 @@ const useStyles = styles((theme: any) => ({
   passwordField: {
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `solid 2pt ${theme.custom.colors.border}`,
+        border: `solid 1pt ${theme.custom.colors.textBorder}`,
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
@@ -67,12 +67,13 @@ const useStyles = styles((theme: any) => ({
     fontSize: "14px",
   },
   listItemRoot: {
+    border: `solid 1pt ${theme.custom.colors.tableBorder}`,
     alignItems: "start",
-    borderBottom: `1px solid #000`,
     borderRadius: "4px",
     background: theme.custom.colors.nav,
     padding: "8px",
     height: "56px",
+    marginBottom: "1px",
   },
   listItemIconRoot: {
     minWidth: "inherit",
@@ -153,10 +154,7 @@ export function ShowRecoveryPhraseWarning() {
               </ListItemIcon>
               Never share your secret phrase or enter it into an app or website.
             </ListItem>
-            <ListItem
-              className={classes.listItemRoot}
-              style={{ borderBottom: "none" }}
-            >
+            <ListItem className={classes.listItemRoot}>
               <ListItemIcon className={classes.listItemIconRoot}>
                 <LockOpenIcon
                   htmlColor="#EF4444"
@@ -244,7 +242,13 @@ export function ShowRecoveryPhrase({ mnemonic }: { mnemonic: string }) {
           marginBottom: "16px",
         }}
       >
-        <SecondaryButton label="Close" onClick={() => close()} />
+        <SecondaryButton
+          label="Close"
+          onClick={() => close()}
+          style={{
+            border: `solid 1pt ${theme.custom.colors.borderColor}`,
+          }}
+        />
       </Box>
     </Box>
   );

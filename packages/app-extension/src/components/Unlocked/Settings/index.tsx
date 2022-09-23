@@ -621,7 +621,7 @@ function WalletList({
   );
 }
 
-function ImportTypeBadge({ type }: { type: string }) {
+export function ImportTypeBadge({ type }: { type: string }) {
   const theme = useCustomTheme();
   return type === "derived" ? (
     <></>
