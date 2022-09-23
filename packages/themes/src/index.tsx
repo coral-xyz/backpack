@@ -25,8 +25,8 @@ const LIGHT_BACKGROUND_BACKDROP_COLOR =
 const LIGHT_BACKGROUND_COLOR_0 = "#F0F0F2";
 const LIGHT_BACKGROUND_COLOR_1 = "#ffffff";
 const LIGHT_BACKGROUND_COLOR_2 = LIGHT_BACKGROUND_COLOR_0;
-const LIGHT_FONT_COLOR = "#030A19"; //"#212938";
-const LIGHT_FONT_COLOR_1 = "#4E5768"; //"#67758B";
+const LIGHT_FONT_COLOR = "#030A19";
+const LIGHT_FONT_COLOR_1 = "#4E5768";
 const LIGHT_FONT_COLOR_2 = LIGHT_FONT_COLOR;
 const LIGHT_FONT_COLOR_3 = LIGHT_FONT_COLOR_1;
 const LIGHT_BRAND_COLOR = LIGHT_FONT_COLOR;
@@ -176,7 +176,7 @@ export const lightTheme: any = {
       borderColor: LIGHT_BORDER_COLOR_1,
       copyTooltipColor: LIGHT_BRAND_COLOR,
       copyTooltipTextColor: LIGHT_BACKGROUND_COLOR_1,
-      tableBorder: LIGHT_BORDER_COLOR, //"#F0F0F2",
+      tableBorder: LIGHT_BORDER_COLOR,
       balanceSkeleton: "rgba(0,0,0,0.15)",
       balanceChangeNegative: "rgb(233, 80, 80, .1)",
       balanceChangePositive: "rgb(53, 166, 58, .1)",
