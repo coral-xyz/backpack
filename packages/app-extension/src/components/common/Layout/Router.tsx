@@ -205,27 +205,32 @@ function useNavBar() {
       : "🎨";
     navButtonRight = <SettingsButton />;
     navButtonLeft = (
-      <Typography
-        style={{
-          fontSize: "18px",
-          color: theme.custom.colors.fontColor,
-          fontWeight: 600,
-        }}
-      >
-        <span
+      <div style={{ display: "flex" }}>
+        <Typography
           style={{
             fontSize: "24px",
             marginRight: "8px",
           }}
         >
           {emoji}
-        </span>
-        {pathname.startsWith("/balances")
-          ? "Balances"
-          : pathname.startsWith("/apps")
-          ? "Applications"
-          : "Collectibles"}
-      </Typography>
+        </Typography>
+        <Typography
+          style={{
+            fontSize: "18px",
+            color: theme.custom.colors.fontColor,
+            fontWeight: 600,
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+          }}
+        >
+          {pathname.startsWith("/balances")
+            ? "Balances"
+            : pathname.startsWith("/apps")
+            ? "Applications"
+            : "Collectibles"}
+        </Typography>
+      </div>
     );
   } else if (pathname === "/balances/token") {
     navButtonRight = null;
