@@ -62,10 +62,6 @@ app.get("/check", (c) => {
   return json(c)("No Invite code provided", 400);
 });
 
-app.get("/check", (c) => {
-  return json(c)("No Invite code provided", 400);
-});
-
 app.get("/check/:inviteCode", (c) => {
   const j = json(c);
   try {
