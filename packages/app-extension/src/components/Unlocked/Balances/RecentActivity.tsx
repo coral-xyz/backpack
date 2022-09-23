@@ -106,9 +106,7 @@ export function RecentActivityButton() {
         <Bolt className={classes.networkSettingsIcon} />
       </IconButton>
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        <div
-          style={{ height: "100%", background: theme.custom.colors.background }}
-        >
+        <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
             options={(_args) => ({ title: "Recent Activity" })}

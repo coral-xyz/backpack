@@ -150,20 +150,23 @@ const useStyles = styles((theme) => ({
     borderRadius: "12px",
     fontSize: "16px",
     lineHeight: "24px",
-    border: `solid 1pt ${theme.custom.colors.tableBorder}`,
+    border: `solid 1pt ${theme.custom.colors.textBorder}`,
   },
   textFieldInputColorEmpty: {
-    color: theme.custom.colors.secondary,
+    color: theme.custom.colors.textPlaceholder,
   },
   textFieldInputColor: {
     color: theme.custom.colors.fontColor2,
   },
   textFieldRoot: {
     "& .MuiOutlinedInput-root": {
-      backgroundColor: theme.custom.colors.background,
+      background: theme.custom.colors.textBackground,
       borderRadius: "12px",
       "& fieldset": {
         border: "none",
+      },
+      "&:hover fieldset": {
+        border: `solid 2pt ${theme.custom.colors.primaryButton}`,
       },
       "&.Mui-focused fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton} !important`,
@@ -732,7 +735,6 @@ export function TextField({
   children,
   style,
 }: any) {
-  const theme = useCustomTheme();
   const classes = useStyles();
   inputProps = Object.assign(
     {

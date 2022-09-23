@@ -92,7 +92,13 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
             mb: "16px",
           }}
         >
-          <PrimaryButton label="Finish" onClick={onClose} />
+          <PrimaryButton
+            label="Finish"
+            onClick={onClose}
+            buttonLabelStyle={{
+              fontWeight: 600,
+            }}
+          />
         </Box>
       </Box>
     </>

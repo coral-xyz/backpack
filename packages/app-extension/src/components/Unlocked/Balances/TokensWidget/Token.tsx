@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { Typography } from "@mui/material";
 import { Blockchain } from "@coral-xyz/common";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles } from "@coral-xyz/themes";
 import { Button } from "@coral-xyz/react-xnft-renderer";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useActiveEthereumWallet,
-  useBlockchainTokenAccount,
   useLoader,
 } from "@coral-xyz/recoil";
 import { RecentActivityList } from "../RecentActivity";
@@ -154,7 +153,6 @@ export function WithHeaderButton({
   routes,
 }: any) {
   const classes = useStyles();
-  const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
   const initialRoute = routes[0];
   return (
@@ -167,9 +165,7 @@ export function WithHeaderButton({
         )}
       </Button>
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        <div
-          style={{ height: "100%", background: theme.custom.colors.background }}
-        >
+        <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={initialRoute}
             options={(args) => routeOptions(routes, args)}

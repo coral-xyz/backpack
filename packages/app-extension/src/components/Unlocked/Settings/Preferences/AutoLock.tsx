@@ -12,6 +12,15 @@ const useStyles = styles((theme) => ({
     marginBottom: "0 !important",
     "& .MuiOutlinedInput-root": {
       background: theme.custom.colors.nav,
+      "& fieldset": {
+        border: `solid 1pt ${theme.custom.colors.textBorder}`,
+      },
+      "&:hover fieldset": {
+        border: `solid 2pt ${theme.custom.colors.primaryButton}`,
+      },
+      "& input": {
+        border: "none",
+      },
     },
   },
 }));
