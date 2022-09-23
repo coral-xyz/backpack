@@ -199,10 +199,10 @@ function useNavBar() {
 
   if (isRoot) {
     const emoji = pathname.startsWith("/balances")
-      ? "💰 "
+      ? "💰"
       : pathname.startsWith("/apps")
-      ? "👾 "
-      : "🎨 ";
+      ? "👾"
+      : "🎨";
     navButtonRight = <SettingsButton />;
     navButtonLeft = (
       <Typography
@@ -212,7 +212,14 @@ function useNavBar() {
           fontWeight: 600,
         }}
       >
-        {emoji}
+        <span
+          style={{
+            fontSize: "24px",
+            marginRight: "8px",
+          }}
+        >
+          {emoji}
+        </span>
         {pathname.startsWith("/balances")
           ? "Balances"
           : pathname.startsWith("/apps")
