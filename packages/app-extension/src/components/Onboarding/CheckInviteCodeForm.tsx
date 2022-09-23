@@ -1,13 +1,35 @@
+import "@typeform/embed/build/css/popup.css";
+
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box, Typography } from "@mui/material";
-import { FormEvent, useEffect, useState } from "react";
+import { createPopup } from "@typeform/embed";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { PrimaryButton, SubtextParagraph, TextField } from "../common";
 
+const WAITLIST_RES_ID_KEY = "waitlist-form-res-id";
+
 const CheckInviteCodeForm = ({ setInviteCode }: any) => {
+  const theme = useCustomTheme();
   const [value, setValue] = useState("");
   const [hasAccount, setHasAccount] = useState(false);
   const [error, setError] = useState<string>();
-  const theme = useCustomTheme();
+  const [waitlistResponseId, setWaitlistResponseId] = useState<string>();
+
+  const typeform = createPopup("PCnBjycW", {
+    autoClose: true,
+    onSubmit({ responseId }) {
+      window.localStorage.setItem(WAITLIST_RES_ID_KEY, responseId);
+      window.location.reload();
+    },
+  });
+
+  // attempt to get previous typeform response ID from localstorage
+  useEffect(() => {
+    const id = window.localStorage.getItem(WAITLIST_RES_ID_KEY);
+    if (id && id !== "") {
+      setWaitlistResponseId(id);
+    }
+  }, []);
 
   // reset textfield value when switching between enter invite code or username
   useEffect(() => {
@@ -36,6 +58,14 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
         url: `https://invites.backpack.workers.dev/check/${value}`,
         setVal: (v: string) => setValue(v.replace(/[^a-zA-Z0-9\\-]/g, "")),
       };
+
+  const handleWaitingClick = useCallback(() => {
+    if (!waitlistResponseId) {
+      typeform.open();
+    } else {
+      alert("GO TO WAITING ROOM");
+    }
+  }, [waitlistResponseId]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -75,9 +105,11 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
 
       <Box
         style={{ marginTop: 16, cursor: "pointer" }}
-        onClick={() => alert("open application form")}
+        onClick={handleWaitingClick}
       >
-        <SubtextParagraph>Apply for an Invite Code</SubtextParagraph>
+        <SubtextParagraph>
+          {waitlistResponseId ? "Waiting Room" : "Apply for an Invite Code"}
+        </SubtextParagraph>
       </Box>
 
       <Box
