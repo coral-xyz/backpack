@@ -47,7 +47,7 @@ export function OnboardingWelcome({
   const theme = useCustomTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const containerRef = useRef(null);
-  const [inviteCode, setInviteCode] = useState("");
+  const [inviteCode, setInviteCode] = useState<any>();
 
   return (
     <div
@@ -90,7 +90,7 @@ export function OnboardingWelcome({
                 />
               }
               text="Create a new wallet"
-              onClick={() => onSelect("create-wallet")}
+              onClick={() => onSelect({ ...inviteCode, flow: "create-wallet" })}
             />
           </Grid>
           <Grid item xs={6}>
@@ -103,7 +103,7 @@ export function OnboardingWelcome({
                 />
               }
               text="Import an existing wallet"
-              onClick={() => onSelect("import-wallet")}
+              onClick={() => onSelect({ ...inviteCode, flow: "import-wallet" })}
             />
           </Grid>
         </Grid>

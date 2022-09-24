@@ -7,6 +7,7 @@ import {
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
+  BACKPACK_FEATURE_USERNAMES,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { CreatePassword } from "../common/Account/CreatePassword";
@@ -16,8 +17,15 @@ import { ImportAccounts } from "../common/Account/ImportAccounts";
 import type { SelectedAccount } from "../common/Account/ImportAccounts";
 import { OnboardingWelcome } from "./OnboardingWelcome";
 import { WithNav, NavBackButton } from "../common/Layout/Nav";
+import { getWaitlistId } from "./WaitingRoom";
 
-export type OnboardingFlows = "create-wallet" | "import-wallet" | null;
+export type OnboardingFlows =
+  | {
+      username: string;
+      inviteCode: string;
+      flow: "create-wallet" | "import-wallet";
+    }
+  | undefined;
 
 export function Onboarding() {
   const [mnemonic, setMnemonic] = useState("");
@@ -25,20 +33,27 @@ export function Onboarding() {
   const [password, setPassword] = useState<string>("");
   const [accounts, setAccounts] = useState<SelectedAccount[]>([]);
   const [step, setStep] = useState(0);
-  const [onboardingFlow, setOnboardingFlow] = useState<OnboardingFlows>(null);
-  const theme = useCustomTheme();
+  const [onboardingVars, setOnboardingVars] = useState<OnboardingFlows>();
+
   const background = useBackgroundClient();
 
   const createStore = async (
     mnemonic: string,
-    // TODO
     derivationPath: DerivationPath | undefined,
     password: string,
     accountIndices: number[]
   ) => {
     await background.request({
       method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-      params: [mnemonic, derivationPath, password, accountIndices],
+      params: [
+        mnemonic,
+        derivationPath,
+        password,
+        accountIndices,
+        onboardingVars?.username,
+        onboardingVars?.inviteCode,
+        getWaitlistId?.(),
+      ],
     });
   };
 
@@ -46,7 +61,7 @@ export function Onboarding() {
   const prevStep = () => {
     if (step === 0) {
       // If we are at the first step, back should revert to welcome screen
-      setOnboardingFlow(null);
+      setOnboardingVars(undefined);
     } else {
       setStep(step - 1);
     }
@@ -107,13 +122,13 @@ export function Onboarding() {
   ];
 
   let renderComponent;
-  if (onboardingFlow === null) {
-    renderComponent = <OnboardingWelcome onSelect={setOnboardingFlow} />;
+  if (!onboardingVars) {
+    renderComponent = <OnboardingWelcome onSelect={setOnboardingVars} />;
   } else {
     const flow = {
       "create-wallet": createWalletFlow,
       "import-wallet": importWalletFlow,
-    }[onboardingFlow];
+    }[onboardingVars.flow];
     renderComponent = (
       <WithNav
         navButtonLeft={
