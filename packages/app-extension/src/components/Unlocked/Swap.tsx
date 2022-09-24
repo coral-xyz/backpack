@@ -108,6 +108,16 @@ const useStyles = styles((theme) => ({
     flexDirection: "column",
     borderRadius: "22px",
   },
+  approveTransactionCloseContainer: {
+    backgroundColor: theme.custom.colors.approveTransactionCloseBackground,
+    width: "44px",
+    height: "44px",
+    zIndex: 2,
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    borderRadius: "22px",
+  },
   swapTokensButton: {
     border: `${theme.custom.colors.borderFull}`,
     width: "38px",
@@ -725,7 +735,7 @@ export function CloseButton({
 }) {
   const classes = useStyles();
   return (
-    <div className={classes.swapTokensContainer} style={style}>
+    <div className={classes.approveTransactionCloseContainer} style={style}>
       <IconButton
         disableRipple
         className={`${classes.swapTokensButton} ${classes.closeConfirmButton}`}

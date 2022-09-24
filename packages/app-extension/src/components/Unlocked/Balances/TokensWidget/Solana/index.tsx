@@ -17,8 +17,9 @@ import { TokenAmountDisplay, Sending, Error } from "../Send";
 
 const logger = getLogger("send-solana-confirmation-card");
 
-const useStyles = styles(() => ({
+const useStyles = styles((theme) => ({
   confirmTableListItem: {
+    backgroundColor: `${theme.custom.colors.approveTransactionTableBackground} !important`,
     "&:hover": {
       opacity: 1,
     },
@@ -237,8 +238,11 @@ const ConfirmSendSolanaTable: React.FC<{
 
   return (
     <SettingsList
+      borderColor={theme.custom.colors.approveTransactionTableBackground}
       menuItems={menuItems}
-      style={{ margin: 0 }}
+      style={{
+        margin: 0,
+      }}
       textStyle={{
         color: theme.custom.colors.secondary,
       }}

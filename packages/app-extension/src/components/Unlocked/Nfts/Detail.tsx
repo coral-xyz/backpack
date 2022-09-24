@@ -589,7 +589,8 @@ function BurnConfirmation({ onConfirm }: { onConfirm: () => void }) {
         />
         <Typography
           style={{
-            backgroundColor: theme.custom.colors.nav,
+            backgroundColor:
+              theme.custom.colors.approveTransactionTableBackground,
             border: theme.custom.colors.borderFull,
             padding: "16px",
             color: theme.custom.colors.fontColor,
@@ -609,7 +610,7 @@ function BurnConfirmation({ onConfirm }: { onConfirm: () => void }) {
             backgroundColor: theme.custom.colors.negative,
           }}
           buttonLabelStyle={{
-            color: theme.custom.colors.negativeButtonColor,
+            color: theme.custom.colors.negativeButtonTextColor,
           }}
         />
       </div>

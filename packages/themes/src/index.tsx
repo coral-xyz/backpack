@@ -139,6 +139,7 @@ export const darkTheme: any = {
       swapTokensButton: BACKGROUND_COLOR_0,
       icon: "#787C89",
       approveTransactionTableBackground: BACKGROUND_COLOR_2,
+      approveTransactionCloseBackground: BACKGROUND_COLOR_0,
 
       dangerButton: DANGER_COLOR,
       alpha: "#8F929E",
@@ -195,6 +196,7 @@ export const lightTheme: any = {
       swapTokensButton: "#f6f6f7",
       icon: "#8F929E",
       approveTransactionTableBackground: LIGHT_BACKGROUND_COLOR_1,
+      approveTransactionCloseBackground: "#C2C4CC",
 
       dangerButton: DANGER_COLOR,
       alpha: "#8F929E",
