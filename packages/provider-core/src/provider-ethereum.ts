@@ -5,7 +5,6 @@ import type { Event } from "@coral-xyz/common";
 import {
   getLogger,
   BackgroundEthereumProvider,
-  ALCHEMY_ETHEREUM_MAINNET_API_KEY,
   CHANNEL_ETHEREUM_RPC_REQUEST,
   CHANNEL_ETHEREUM_RPC_RESPONSE,
   CHANNEL_ETHEREUM_NOTIFICATION,
@@ -20,8 +19,6 @@ import {
 } from "@coral-xyz/common";
 import * as cmn from "./common/ethereum";
 import { RequestManager } from "./request-manager";
-
-const { hexValue } = ethers.utils;
 
 const logger = getLogger("provider-ethereum-injection");
 
@@ -118,12 +115,7 @@ export class ProviderEthereumInjection extends EventEmitter {
   /**
    * Boolean indicating that the provider is Backpack.
    */
-  public isBackpack = true;
-
-  /**
-   * Boolean to impersonate Metamask
-   */
-  public isMetamask: boolean;
+  public isBackpack: boolean;
 
   /**
    * Ethereum JSON RPC provider.
@@ -146,6 +138,7 @@ export class ProviderEthereumInjection extends EventEmitter {
       ...ProviderEthereumInjection._defaultState,
     };
 
+    this.isBackpack = true;
     this.chainId = null;
     this.publicKey = null;
 
