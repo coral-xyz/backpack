@@ -122,7 +122,11 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           <SubtextParagraph>{ob.linkText}</SubtextParagraph>
         </Box>
       </form>
-      <WaitingRoom uri="https://backpack.app" visible={showWaitingRoom} />
+      <WaitingRoom
+        uri="https://beta-waiting-room.vercel.app/"
+        onClose={() => setShowWaitingRoom(false)}
+        visible={showWaitingRoom}
+      />
     </>
   );
 };
