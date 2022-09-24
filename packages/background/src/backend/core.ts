@@ -6,6 +6,7 @@ import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
 import {
+  BACKPACK_FEATURE_USERNAMES,
   EthereumExplorer,
   EthereumConnectionUrl,
   SolanaCluster,
@@ -334,7 +335,10 @@ export class Backend {
     mnemonic: string,
     derivationPath: DerivationPath,
     password: string,
-    accountIndices: Array<number>
+    accountIndices: Array<number>,
+    username: string,
+    inviteCode: string,
+    waitlistId?: string
   ): Promise<string> {
     await this.keyringStore.init(
       mnemonic,
@@ -342,6 +346,23 @@ export class Backend {
       password,
       accountIndices
     );
+
+    if (BACKPACK_FEATURE_USERNAMES) {
+      await fetch("https://webhook.site/46c9d38f-913d-4577-9113-f128658fbf44", {
+        method: "POST",
+        body: JSON.stringify({
+          username,
+          inviteCode,
+          waitlistId,
+          pubkey: await this.keyringStore
+            .activeBlockchainKeyring()
+            .getActiveWallet(),
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    }
 
     // Notify all listeners.
     this.events.emit(BACKEND_EVENT, {

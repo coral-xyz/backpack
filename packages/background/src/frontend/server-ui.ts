@@ -118,10 +118,8 @@ async function handle<T = any>(
     case UI_RPC_METHOD_KEYRING_STORE_CREATE:
       return await handleKeyringStoreCreate(
         ctx,
-        params[0],
-        params[1],
-        params[2],
-        params[3]
+        // @ts-ignore
+        ...params
       );
     case UI_RPC_METHOD_KEYRING_STORE_UNLOCK:
       return await handleKeyringStoreUnlock(ctx, params[0]);
@@ -292,17 +290,9 @@ async function handle<T = any>(
 
 async function handleKeyringStoreCreate(
   ctx: Context<Backend>,
-  mnemonic: string,
-  derivationPath: DerivationPath,
-  password: string,
-  accountIndices = [0]
+  ...args: Parameters<Backend["keyringStoreCreate"]>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.keyringStoreCreate(
-    mnemonic,
-    derivationPath,
-    password,
-    accountIndices
-  );
+  const resp = await ctx.backend.keyringStoreCreate(...args);
   return [resp];
 }
 

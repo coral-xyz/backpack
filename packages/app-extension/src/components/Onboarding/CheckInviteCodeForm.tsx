@@ -5,14 +5,14 @@ import { Box, Typography } from "@mui/material";
 import { createPopup } from "@typeform/embed";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { PrimaryButton, SubtextParagraph, TextField } from "../common";
-import WaitingRoom from "./WaitingRoom";
+import WaitingRoom, { setWaitlistId, getWaitlistId } from "./WaitingRoom";
 
-const WAITLIST_RES_ID_KEY = "waitlist-form-res-id";
+type Page = "inviteCode" | "createUsername" | "recoverAccount";
 
 const CheckInviteCodeForm = ({ setInviteCode }: any) => {
   const theme = useCustomTheme();
-  const [value, setValue] = useState("");
-  const [hasAccount, setHasAccount] = useState(false);
+  const [value, setValue] = useState({} as any);
+  const [page, setPage] = useState<Page>("inviteCode");
   const [error, setError] = useState<string>();
   const [showWaitingRoom, setShowWaitingRoom] = useState(false);
   const [waitlistResponseId, setWaitlistResponseId] = useState<string>();
@@ -20,46 +20,69 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
   const typeform = createPopup("PCnBjycW", {
     autoClose: true,
     onSubmit({ responseId }) {
-      window.localStorage.setItem(WAITLIST_RES_ID_KEY, responseId);
+      setWaitlistId(responseId);
       setWaitlistResponseId(responseId);
     },
   });
 
   // attempt to get previous typeform response ID from localstorage
   useEffect(() => {
-    const id = window.localStorage.getItem(WAITLIST_RES_ID_KEY);
-    if (id && id !== "") {
-      setWaitlistResponseId(id);
-    }
+    const id = getWaitlistId();
+    if (id) setWaitlistResponseId(id);
   }, []);
-
-  // reset textfield value when switching between enter invite code or username
-  useEffect(() => {
-    setValue("");
-  }, [hasAccount]);
 
   // reset error when textfield value or the form changes
   useEffect(() => {
     setError(undefined);
-  }, [value, hasAccount]);
+  }, [value, page]);
 
-  const ob = hasAccount
-    ? {
-        linkText: "I have an Invite Code",
-        inputName: "username",
-        placeholder: "Username",
-        buttonText: "Continue",
-        url: `https://auth.backpack.workers.dev/users/${value}`, // not live yet
-        setVal: (v: string) => setValue(v.replace(/[^a-z0-9_]/g, "")),
-      }
-    : {
-        linkText: "I already have an account",
-        inputName: "inviteCode",
-        placeholder: "Invite Code",
-        buttonText: "Go",
-        url: `https://invites.backpack.workers.dev/check/${value}`,
-        setVal: (v: string) => setValue(v.replace(/[^a-zA-Z0-9\\-]/g, "")),
-      };
+  const ob =
+    page === "inviteCode"
+      ? {
+          linkText: "I already have an account",
+          inputName: "inviteCode",
+          placeholder: "Invite Code",
+          buttonText: "Go",
+          url: `https://invites.backpack.workers.dev/check/${value.inviteCode}`,
+          setVal: (v: string) =>
+            setValue({
+              inviteCode: v.replace(/[^a-zA-Z0-9\\-]/g, ""),
+            }),
+          handleValue: () => {
+            setPage("createUsername");
+          },
+          page: "recoverAccount",
+        }
+      : page === "createUsername"
+      ? {
+          description:
+            "Others can see and find you by this username, so choose wisely if you'd like to remain anonymous. You will not be able to change this later.",
+          linkText: "",
+          inputName: "username",
+          placeholder: "Username",
+          buttonText: "Claim",
+          url: `https://invites.backpack.workers.dev`,
+          setVal: (v: any) =>
+            setValue({
+              inviteCode: value.inviteCode,
+              username: v.replace(/[^a-z0-9_]/g, ""),
+            }),
+          handleValue: () => setInviteCode(value),
+          page: "inviteCode",
+        }
+      : {
+          linkText: "I have an Invite Code",
+          inputName: "username",
+          placeholder: "Username",
+          buttonText: "Continue",
+          url: `https://auth.backpack.workers.dev/users/${value.username}`, // not live yet
+          setVal: (v: string) =>
+            setValue({
+              username: v.replace(/[^a-z0-9_]/g, ""),
+            }),
+          handleValue: () => alert(JSON.stringify(value)),
+          page: "inviteCode",
+        };
 
   const handleWaitingClick = useCallback(() => {
     if (!waitlistResponseId) {
@@ -75,7 +98,7 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
       const res = await fetch(ob.url);
       const json = await res.json();
       if (!res.ok) throw new Error(json.message);
-      setInviteCode(value);
+      ob.handleValue();
     } catch (err: any) {
       setError(err.message);
     }
@@ -84,6 +107,7 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
   return (
     <>
       <form onSubmit={handleSubmit}>
+        {ob.description}
         <Box style={{ marginBottom: 8 }}>
           <TextField
             inputProps={{
@@ -93,7 +117,7 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
             }}
             placeholder={ob.placeholder}
             type="text"
-            value={value}
+            value={value[ob.inputName] ?? ""}
             setValue={ob.setVal}
             isError={error}
             auto
@@ -106,21 +130,27 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
         </Box>
         <PrimaryButton disabled={!value} label={ob.buttonText} type="submit" />
 
-        <Box
-          style={{ marginTop: 16, cursor: "pointer" }}
-          onClick={handleWaitingClick}
-        >
-          <SubtextParagraph>
-            {waitlistResponseId ? "Waiting Room" : "Apply for an Invite Code"}
-          </SubtextParagraph>
-        </Box>
+        {ob.linkText && (
+          <>
+            <Box
+              style={{ marginTop: 16, cursor: "pointer" }}
+              onClick={handleWaitingClick}
+            >
+              <SubtextParagraph>
+                {waitlistResponseId
+                  ? "Waiting Room"
+                  : "Apply for an Invite Code"}
+              </SubtextParagraph>
+            </Box>
 
-        <Box
-          onClick={() => setHasAccount(!hasAccount)}
-          style={{ marginTop: 16, cursor: "pointer" }}
-        >
-          <SubtextParagraph>{ob.linkText}</SubtextParagraph>
-        </Box>
+            <Box
+              onClick={() => setPage(ob.page as Page)}
+              style={{ marginTop: 16, cursor: "pointer" }}
+            >
+              <SubtextParagraph>{ob.linkText}</SubtextParagraph>
+            </Box>
+          </>
+        )}
       </form>
       <WaitingRoom
         uri={`https://beta-waiting-room.vercel.app/?id=${waitlistResponseId}`}
