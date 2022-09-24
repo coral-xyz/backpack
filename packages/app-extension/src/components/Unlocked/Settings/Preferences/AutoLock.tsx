@@ -12,6 +12,15 @@ const useStyles = styles((theme) => ({
     marginBottom: "0 !important",
     "& .MuiOutlinedInput-root": {
       background: theme.custom.colors.nav,
+      "& fieldset": {
+        border: `${theme.custom.colors.borderFull}`,
+      },
+      "&:hover fieldset": {
+        border: `solid 2pt ${theme.custom.colors.primaryButton}`,
+      },
+      "& input": {
+        border: "none",
+      },
     },
   },
 }));
@@ -92,6 +101,7 @@ export function PreferencesAutoLock() {
           onClick={() => onCancel()}
           style={{
             marginRight: "8px",
+            border: `${theme.custom.colors.borderFull}`,
           }}
         />
         <PrimaryButton label="Set" onClick={() => onSet()} style={{}} />

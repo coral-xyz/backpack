@@ -20,6 +20,7 @@ export function Deposit({ ...props }: any) {
 }
 
 function DepositMultichain({ ...props }: any) {
+  const theme = useCustomTheme();
   const nav = useNavStack();
   const { close } = useDrawerContext();
   const activeWallets = useActiveWallets();
@@ -98,6 +99,7 @@ function BlockchainDepositCard({
           borderRadius: "8px",
           padding: "16px",
           background: theme.custom.colors.nav,
+          border: `${theme.custom.colors.borderFull}`,
         }}
       >
         <Typography
@@ -202,7 +204,7 @@ function BlockchainDepositCard({
               style={{
                 position: "absolute",
                 top: 10,
-                right: 10,
+                left: 10,
               }}
             >
               <CloseButton
@@ -321,8 +323,7 @@ const useStyles = styles((theme) => ({
     "& .MuiOutlinedInput-root": {
       paddingRight: 0,
       "& fieldset": {
-        border: `solid 1pt ${theme.custom.colors.border}`,
-        borderColor: `${theme.custom.colors.border} !important`,
+        border: `${theme.custom.colors.borderFull} !important`,
         paddingLeft: 0,
         paddingRight: 0,
       },
@@ -491,7 +492,7 @@ export function QrCode({
         ...style,
       }}
     >
-      <img src={`https://qr.warp.workers.dev/qz=0?${data}`} alt={data} />
+      <img src={`https://qr.backpack.workers.dev/qz=0?${data}`} alt={data} />
     </div>
   );
 }

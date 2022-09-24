@@ -26,11 +26,12 @@ import { WithCopyTooltip } from "../../common/WithCopyTooltip";
 
 const useStyles = makeStyles((theme: any) => ({
   mnemonicInputRoot: {
+    border: `${theme.custom.colors.borderFull}`,
+    background: theme.custom.colors.textBackground,
     color: theme.custom.colors.secondary,
     borderRadius: "8px",
     marginTop: "4px",
     "& .MuiOutlinedInput-root": {
-      backgroundColor: theme.custom.colors.background,
       borderRadius: "8px",
       height: "40px",
       paddingLeft: "8px",
@@ -40,8 +41,6 @@ const useStyles = makeStyles((theme: any) => ({
     },
     "& .MuiInputBase-input": {
       color: theme.custom.colors.fontColor,
-      position: "absolute",
-      left: "32px",
       borderRadius: "8px",
       fontSize: "14px",
       fontWeight: 700,
@@ -50,6 +49,8 @@ const useStyles = makeStyles((theme: any) => ({
     "& .MuiInputAdornment-root": {
       color: theme.custom.colors.secondary,
       fontWeight: 500,
+      minWidth: "12px",
+      fontSize: "14px",
     },
     "&:hover": {
       backgroundColor: theme.custom.colors.primary,
@@ -159,9 +160,14 @@ export function MnemonicInput({
         justifyContent: "space-between",
       }}
     >
-      <Box sx={{ margin: `24px` }}>
+      <Box sx={{ margin: `24px 16px` }}>
         <Box>
-          <Header text="Secret recovery phrase" />
+          <Header
+            text="Secret recovery phrase"
+            style={{
+              fontWeight: 500,
+            }}
+          />
           <SubtextParagraph>
             {readOnly
               ? "This is the only way to recover your account if you lose your device. Write it down and store it in a safe place."
@@ -232,6 +238,9 @@ export function MnemonicInput({
             label={buttonLabel}
             onClick={next}
             disabled={!nextEnabled}
+            buttonLabelStyle={{
+              fontWeight: 600,
+            }}
           />
         </Box>
       </Box>
@@ -248,6 +257,7 @@ export function MnemonicInputFields({
   onChange?: (mnemonicWords: Array<string>) => void;
   rootClass?: any;
 }) {
+  const theme = useCustomTheme();
   const classes = useStyles();
   if (!rootClass) {
     rootClass = classes.mnemonicInputRoot;
@@ -270,6 +280,9 @@ export function MnemonicInputFields({
             fullWidth
             InputLabelProps={{
               shrink: false,
+              style: {
+                backgroundColor: theme.custom.colors.nav,
+              },
             }}
             InputProps={{
               startAdornment: (
@@ -296,10 +309,12 @@ export function CopyButton({
   text,
   icon,
   disabled = false,
+  style,
 }: {
   text: string;
   icon?: React.ReactElement;
   disabled?: boolean;
+  style?: React.CSSProperties;
 }) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const onCopy = () => {
@@ -315,6 +330,10 @@ export function CopyButton({
           label="Copy"
           disabled={disabled}
           endIcon={icon ? icon : null}
+          buttonLabelStyle={{
+            fontWeight: 600,
+          }}
+          style={style}
         />
       </Box>
     </WithCopyTooltip>

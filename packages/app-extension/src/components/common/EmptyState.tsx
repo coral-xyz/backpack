@@ -37,6 +37,7 @@ export const EmptyState: React.FC<{
           borderRadius: "12px",
           background: theme.custom.colors.nav,
           padding: "16px",
+          border: `${theme.custom.colors.borderFull}`,
           ...contentStyle,
         }}
       >

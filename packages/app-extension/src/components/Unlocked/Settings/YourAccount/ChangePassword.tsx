@@ -43,9 +43,6 @@ export function ChangePassword() {
   useEffect(() => {
     const title = nav.title;
     nav.setTitle("Change password");
-    nav.setStyle({
-      borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-    });
     return () => {
       nav.setTitle(title);
     };
@@ -85,8 +82,8 @@ export function ChangePassword() {
             style={{
               border: currentPasswordError
                 ? `solid 1pt ${theme.custom.colors.negative}`
-                : undefined,
-              borderRadius: "8px",
+                : `${theme.custom.colors.borderFull}`,
+              borderRadius: "10px",
             }}
           >
             <ListItem
@@ -144,8 +141,8 @@ export function ChangePassword() {
             style={{
               border: passwordMismatchError
                 ? `solid 1pt ${theme.custom.colors.negative}`
-                : undefined,
-              borderRadius: "8px",
+                : `${theme.custom.colors.borderFull}`,
+              borderRadius: "10px",
             }}
           >
             <ListItem

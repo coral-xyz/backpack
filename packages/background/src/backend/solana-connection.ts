@@ -458,6 +458,25 @@ export class SolanaConnectionBackend {
     return await this.connection!.getBlockTime(slot);
   }
 
+  async getParsedTokenAccountsByOwner(
+    ownerAddress: PublicKey,
+    filter: TokenAccountsFilter,
+    commitment?: Commitment
+  ): Promise<
+    RpcResponseAndContext<
+      Array<{
+        pubkey: PublicKey;
+        account: AccountInfo<ParsedAccountData>;
+      }>
+    >
+  > {
+    return await this.connection!.getParsedTokenAccountsByOwner(
+      ownerAddress,
+      filter,
+      commitment
+    );
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Methods below not used currently.
   ///////////////////////////////////////////////////////////////////////////////
@@ -487,21 +506,6 @@ export class SolanaConnectionBackend {
     tokenMintAddress: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<TokenAmount>> {
-    throw new Error("not implemented");
-  }
-
-  async getParsedTokenAccountsByOwner(
-    ownerAddress: PublicKey,
-    filter: TokenAccountsFilter,
-    commitment?: Commitment
-  ): Promise<
-    RpcResponseAndContext<
-      Array<{
-        pubkey: PublicKey;
-        account: AccountInfo<ParsedAccountData>;
-      }>
-    >
-  > {
     throw new Error("not implemented");
   }
 

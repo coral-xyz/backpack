@@ -82,7 +82,9 @@ import {
   SOLANA_CONNECTION_RPC_GET_BALANCE,
   SOLANA_CONNECTION_RPC_GET_SLOT,
   SOLANA_CONNECTION_RPC_GET_BLOCK_TIME,
+  SOLANA_CONNECTION_RPC_GET_PARSED_TOKEN_ACCOUNTS_BY_OWNER,
 } from "../constants";
+import { serializeTokenAccountsFilter } from "./types";
 import type { BackgroundClient } from "../channel";
 
 export class BackgroundSolanaConnection extends Connection {
@@ -115,8 +117,13 @@ export class BackgroundSolanaConnection extends Connection {
 
   static customSplTokenAccountsFromJson(json: any) {
     json.tokenAccountsMap.map((t: any) => {
-      t[1].amount = new BN(t[1].amount);
-      return t;
+      return [
+        t[0],
+        {
+          ...t[1],
+          amount: new BN(t[1].amount),
+        },
+      ];
     });
     return json;
   }
@@ -321,6 +328,38 @@ export class BackgroundSolanaConnection extends Connection {
     });
   }
 
+  async getParsedTokenAccountsByOwner(
+    ownerAddress: PublicKey,
+    filter: TokenAccountsFilter,
+    commitment?: Commitment
+  ): Promise<
+    RpcResponseAndContext<
+      Array<{
+        pubkey: PublicKey;
+        account: AccountInfo<ParsedAccountData>;
+      }>
+    >
+  > {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_PARSED_TOKEN_ACCOUNTS_BY_OWNER,
+      params: [
+        ownerAddress.toString(),
+        serializeTokenAccountsFilter(filter),
+        commitment,
+      ],
+    });
+    resp.value = resp.value.map(({ pubkey, account }) => {
+      return {
+        pubkey: new PublicKey(pubkey),
+        account: {
+          ...account,
+          owner: new PublicKey(account.owner),
+        },
+      };
+    });
+    return resp;
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Below this not yet implemented.
   ///////////////////////////////////////////////////////////////////////////////
@@ -358,21 +397,6 @@ export class BackgroundSolanaConnection extends Connection {
     tokenMintAddress: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<TokenAmount>> {
-    throw new Error("not implemented");
-  }
-
-  async getParsedTokenAccountsByOwner(
-    ownerAddress: PublicKey,
-    filter: TokenAccountsFilter,
-    commitment?: Commitment
-  ): Promise<
-    RpcResponseAndContext<
-      Array<{
-        pubkey: PublicKey;
-        account: AccountInfo<ParsedAccountData>;
-      }>
-    >
-  > {
     throw new Error("not implemented");
   }
 

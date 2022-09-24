@@ -1,10 +1,8 @@
-import { selectorFamily } from "recoil";
+import { selector, selectorFamily } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
 import { solanaTokenBalance, solanaTokenAccountKeys } from "./solana/token";
-import { solanaConnectionUrl } from "./solana";
 import { ethereumTokenBalance } from "./ethereum/token";
 import { ethereumTokenMetadata } from "./ethereum/token-metadata";
-import { activeWallet } from "./wallet";
 import { TokenData } from "../types";
 
 /**
@@ -51,7 +49,7 @@ export const blockchainTokenData = selectorFamily<
         case Blockchain.ETHEREUM:
           return get(ethereumTokenBalance(address));
         default:
-          throw new Error("invariant violation");
+          throw new Error(`unsupported blockchain: ${blockchain}`);
       }
     },
 });
@@ -66,23 +64,21 @@ export const blockchainTokenAddresses = selectorFamily({
     ({ get }) => {
       switch (blockchain) {
         case Blockchain.SOLANA:
-          return get(
-            solanaTokenAccountKeys({
-              connectionUrl: get(solanaConnectionUrl)!,
-              publicKey: get(activeWallet),
-            })
-          );
+          return get(solanaTokenAccountKeys);
         case Blockchain.ETHEREUM:
-          const ethTokenMetadata = get(ethereumTokenMetadata);
+          const ethTokenMetadata = get(ethereumTokenMetadata)();
           return ethTokenMetadata
             ? [...ethTokenMetadata.values()].map((t) => t.address)
             : [];
         default:
-          throw new Error("invariant violation");
+          throw new Error(`unsupported blockchain: ${blockchain}`);
       }
     },
 });
 
+/**
+ * Total asset balance in USD, change in USD, and percent change for a given blockchain.
+ */
 export const blockchainTotalBalance = selectorFamily({
   key: "blockchainTotalBalance",
   get:
@@ -105,4 +101,24 @@ export const blockchainTotalBalance = selectorFamily({
         percentChange: parseFloat(percentChange.toFixed(2)),
       };
     },
+});
+
+/**
+ * Total asset balance in USD, change in USD, and percent change for all blockchains.
+ */
+export const totalBalance = selector({
+  key: "totalBalance",
+  get: ({ get }) => {
+    const solana = get(blockchainTotalBalance(Blockchain.SOLANA));
+    const ethereum = get(blockchainTotalBalance(Blockchain.ETHEREUM));
+    const totalBalance = solana.totalBalance + ethereum.totalBalance;
+    const totalChange = solana.totalChange + ethereum.totalChange;
+    const oldBalance = totalBalance - totalChange;
+    const percentChange = totalChange / oldBalance;
+    return {
+      totalBalance: parseFloat(totalBalance.toFixed(2)),
+      totalChange: parseFloat(totalChange.toFixed(2)),
+      percentChange: parseFloat(percentChange.toFixed(2)),
+    };
+  },
 });

@@ -7,7 +7,7 @@ import React, {
   type PropsWithChildren,
   type SetStateAction,
 } from "react";
-import { Drawer, Button, IconButton } from "@mui/material";
+import { Typography, Drawer, Button, IconButton } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { EXTENSION_HEIGHT } from "@coral-xyz/common";
@@ -39,7 +39,7 @@ const useStyles = styles((theme) => ({
   },
   drawerPaper: {
     height: "100%",
-    background: theme.custom.colors.background,
+    background: theme.custom.colors.backgroundBackdrop,
   },
   miniDrawerRoot: {
     background: "transparent",
@@ -56,12 +56,11 @@ const useStyles = styles((theme) => ({
     width: "100%",
   },
   rightButtonIcon: {
-    color: theme.custom.colors.secondary,
+    color: theme.custom.colors.icon,
   },
   rightButtonLabel: {
     display: "flex",
-    flexDirection: "row-reverse",
-    justifyContent: "end",
+    justifyContent: "start",
   },
 }));
 
@@ -87,7 +86,6 @@ export function WithDrawer(props: any) {
 }
 
 export function WithEphemeralNavDrawer(props: any) {
-  const theme = useCustomTheme();
   const {
     children,
     openDrawer,
@@ -101,11 +99,9 @@ export function WithEphemeralNavDrawer(props: any) {
       <WithEphemeralNav
         title={title}
         navbarStyle={{
-          background: theme.custom.colors.background,
           ...navbarStyle,
         }}
         navContentStyle={{
-          background: theme.custom.colors.background,
           ...navContentStyle,
         }}
       >
@@ -159,10 +155,10 @@ function WithDrawerContent({ children, setOpenDrawer }: any) {
   const classes = useStyles();
   const nav = useEphemeralNav();
   useEffect(() => {
-    let previous = nav.navButtonRight;
-    nav.setNavButtonRight(<CloseButton onClick={() => setOpenDrawer(false)} />);
+    let previous = nav.navButtonLeft;
+    nav.setNavButtonLeft(<CloseButton onClick={() => setOpenDrawer(false)} />);
     return () => {
-      nav.setNavButtonRight(previous);
+      nav.setNavButtonLeft(previous);
     };
   }, []);
   return (
@@ -190,7 +186,6 @@ export function CloseButton({ onClick, buttonStyle }: any) {
         style={{
           padding: 0,
           position: "absolute",
-          right: 0,
           ...buttonStyle,
         }}
         onClick={onClick}
@@ -246,7 +241,6 @@ export function WithContaineredDrawer(
     setOpenDrawer: Dispatch<SetStateAction<boolean>>;
   }>
 ) {
-  const theme = useCustomTheme();
   const {
     children,
     backdropStyles,
@@ -264,7 +258,6 @@ export function WithContaineredDrawer(
       PaperProps={{
         style: {
           position: "absolute",
-          background: theme.custom.colors.nav,
           ...paperStyles,
         },
       }}

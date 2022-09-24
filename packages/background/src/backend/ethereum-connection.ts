@@ -2,7 +2,7 @@ import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 import type { Notification, EventEmitter } from "@coral-xyz/common";
 import {
-  ethereumBalances,
+  fetchEthereumBalances,
   getLogger,
   Blockchain,
   BACKEND_EVENT,
@@ -113,7 +113,7 @@ export class EthereumConnectionBackend {
   private async startPolling(activeWallet: string) {
     this.pollIntervals.push(
       setInterval(async () => {
-        const data = await ethereumBalances(this.provider!, activeWallet);
+        const data = await fetchEthereumBalances(this.provider!, activeWallet);
         const key = JSON.stringify({
           url: this.url,
           method: "ethereumTokens",
@@ -126,8 +126,6 @@ export class EthereumConnectionBackend {
         this.events.emit(BACKEND_EVENT, {
           name: NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
           data: {
-            connectionUrl: this.url,
-            activeWallet,
             balances: Object.fromEntries(data),
           },
         });

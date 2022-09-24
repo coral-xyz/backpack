@@ -1,12 +1,13 @@
-import { atomFamily, selector, selectorFamily } from "recoil";
+import { selector } from "recoil";
 import {
   externalResourceUri,
   Blockchain,
   NftCollection,
   SolanaNft,
 } from "@coral-xyz/common";
-import { bootstrap } from "../bootstrap";
-import { activeSolanaWallet } from "../wallet";
+import { customSplTokenAccounts } from "./token";
+import { solanaConnectionUrl } from "./preferences";
+import { solanaPublicKey } from "../wallet";
 
 export const solanaNftCollections = selector<NftCollection[]>({
   key: "solanaNftCollections",
@@ -14,9 +15,11 @@ export const solanaNftCollections = selector<NftCollection[]>({
     //
     // Get all the collections.
     //
-    const wallet = get(activeSolanaWallet);
-    if (!wallet) return [];
-    const metadata = get(solanaNftMetadata(wallet.publicKey.toString()));
+    const connectionUrl = get(solanaConnectionUrl);
+    const publicKey = get(solanaPublicKey);
+    const { splNftMetadata: metadata } = get(
+      customSplTokenAccounts({ connectionUrl, publicKey })
+    );
 
     //
     // Bucket all the nfts by collection name.
@@ -77,23 +80,4 @@ export const solanaNftCollections = selector<NftCollection[]>({
         };
       });
   },
-});
-
-/**
- * Token metadata for Solana NFTs.
- *
- * Note that it's important for this to be an atomFamily keyed on wallet pubkey
- * so that when the wallet changes, we automatically refresh the state.
- */
-export const solanaNftMetadata = atomFamily<Map<string, any>, string>({
-  key: "solanaNftMap",
-  default: selectorFamily({
-    key: "solanaNftMapDefault",
-    get:
-      (walletPubkey: string) =>
-      ({ get }: any) => {
-        const b = get(bootstrap);
-        return new Map(b.splNftMetadata);
-      },
-  }),
 });

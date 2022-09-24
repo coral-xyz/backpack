@@ -73,7 +73,7 @@ export function ApproveTransaction({
   title: string;
   tx: string | null;
   wallet: string;
-  onCompletion: (transaction: any) => void;
+  onCompletion: (transaction: any) => Promise<void>;
 }) {
   const classes = useStyles();
   const blockchain = useWalletBlockchain(wallet);
@@ -118,11 +118,11 @@ export function ApproveTransaction({
   ];
 
   const onConfirm = async () => {
-    onCompletion(transaction);
+    await onCompletion(transaction);
   };
 
   const onDeny = async () => {
-    onCompletion(false);
+    await onCompletion(false);
   };
 
   return (

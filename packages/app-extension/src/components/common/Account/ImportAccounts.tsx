@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ethers, BigNumber } from "ethers";
 import {
   Box,
   List,
@@ -6,14 +7,19 @@ import {
   ListItemText,
   MenuItem,
 } from "@mui/material";
+import Ethereum from "@ledgerhq/hw-app-eth";
+import Solana from "@ledgerhq/hw-app-solana";
 import Transport from "@ledgerhq/hw-transport";
-import * as ledgerCore from "@coral-xyz/ledger-core";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection as SolanaConnection, PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
-import { useBackgroundClient, useAnchorContext } from "@coral-xyz/recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import {
+  accountDerivationPath,
+  derivationPathPrefix,
   Blockchain,
   DerivationPath,
+  EthereumConnectionUrl,
+  DEFAULT_SOLANA_CLUSTER,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
 } from "@coral-xyz/common";
@@ -28,14 +34,18 @@ import {
   walletAddressDisplay,
 } from "../../common";
 
+const { base58: bs58 } = ethers.utils;
+
 type Account = {
-  publicKey: anchor.web3.PublicKey;
-  account?: anchor.web3.AccountInfo<Buffer>;
+  publicKey: string;
+  balance: BigNumber;
+  // The account index for the derivation path
+  index: number;
 };
 
 export type SelectedAccount = {
   index: number;
-  publicKey: anchor.web3.PublicKey;
+  publicKey: string;
 };
 
 const LOAD_PUBKEY_AMOUNT = 20;
@@ -64,24 +74,11 @@ export function ImportAccounts({
   const [selectedAccounts, setSelectedAccounts] = useState<SelectedAccount[]>(
     []
   );
+  const [ledgerLocked, setLedgerLocked] = useState(false);
   const [importedPubkeys, setImportedPubkeys] = useState<string[]>([]);
   const [derivationPath, setDerivationPath] = useState<DerivationPath>(
     DerivationPath.Bip44
   );
-
-  // Handle the case where the keyring store is locked, i.e. this is a reset
-  // without an unlock or this is during onboarding.
-  let connection: Connection;
-  try {
-    ({ connection } = useAnchorContext());
-  } catch {
-    // Default to mainnet if the keyring store is locked
-    // TODO share this constant with components/Settings/ConnectionSwitch.tsx
-    const mainnetRpc =
-      process.env.DEFAULT_SOLANA_CONNECTION_URL ||
-      "https://solana-api.projectserum.com";
-    connection = new Connection(mainnetRpc, "confirmed");
-  }
 
   useEffect(() => {
     (async () => {
@@ -122,20 +119,12 @@ export function ImportAccounts({
     }
 
     loaderFn(derivationPath)
-      .then(async (publicKeys: PublicKey[]) => {
-        const accounts = (
-          await anchor.utils.rpc.getMultipleAccounts(connection, publicKeys)
-        ).map((result, index) => {
-          return result === null
-            ? { publicKey: publicKeys[index], account: undefined }
-            : result;
-        });
+      .then(async (publicKeys: string[]) => {
+        const balances = await loadBalances(publicKeys);
         setAccounts(
-          accounts.sort((a, b) => {
-            const aLamports = a.account ? a.account.lamports : 0;
-            const bLamports = b.account ? b.account.lamports : 0;
-            return bLamports - aLamports;
-          })
+          balances.sort((a, b) =>
+            b.balance.lt(a.balance) ? -1 : b.balance.eq(a.balance) ? 0 : 1
+          )
         );
       })
       .catch((error) => {
@@ -159,6 +148,52 @@ export function ImportAccounts({
   }, [derivationPath]);
 
   //
+  // Load balances for accounts that have been loaded
+  //
+  const loadBalances = async (publicKeys: string[]) => {
+    if (blockchain === Blockchain.SOLANA) {
+      // TODO use Backpack configured value
+      const solanaMainnetRpc =
+        process.env.DEFAULT_SOLANA_CONNECTION_URL || DEFAULT_SOLANA_CLUSTER;
+      const solanaConnection = new SolanaConnection(
+        solanaMainnetRpc,
+        "confirmed"
+      );
+      const accounts = (
+        await anchor.utils.rpc.getMultipleAccounts(
+          solanaConnection,
+          publicKeys.map((p) => new PublicKey(p))
+        )
+      ).map((result, index) => {
+        return {
+          publicKey: publicKeys[index],
+          balance: result
+            ? BigNumber.from(result.account.lamports)
+            : BigNumber.from(0),
+          index,
+        };
+      });
+      return accounts;
+    } else if (blockchain === Blockchain.ETHEREUM) {
+      // TODO use Backpack configured value
+      const ethereumMainnetRpc =
+        process.env.DEFAULT_ETHEREUM_CONNECTION_URL ||
+        EthereumConnectionUrl.MAINNET;
+      const ethereumProvider = new ethers.providers.JsonRpcProvider(
+        ethereumMainnetRpc
+      );
+      const balances = await Promise.all(
+        publicKeys.map((p) => ethereumProvider.getBalance(p))
+      );
+      return publicKeys.map((p, index) => {
+        return { publicKey: p, balance: balances[index], index };
+      });
+    } else {
+      throw new Error("invalid blockchain");
+    }
+  };
+
+  //
   // Load accounts for the given mnemonic. This is passed to the ImportAccounts
   // component and called whenever the derivation path is changed with the selector.
   //
@@ -176,26 +211,38 @@ export function ImportAccounts({
   //
   // Load accounts for a ledger.
   //
-  //
   const loadLedgerPublicKeys = async (
     transport: Transport,
     derivationPath: DerivationPath
-  ) => {
+  ): Promise<string[]> => {
     const publicKeys = [];
-    if (blockchain === Blockchain.SOLANA) {
-      for (let k = 0; k < LOAD_PUBKEY_AMOUNT; k += 1) {
-        publicKeys.push(
-          await ledgerCore.getPublicKey(transport, k, derivationPath)
-        );
-      }
+    setLedgerLocked(true);
+
+    const ledger = {
+      [Blockchain.SOLANA]: new Solana(transport),
+      [Blockchain.ETHEREUM]: new Ethereum(transport),
+    }[blockchain];
+
+    // Add remaining accounts
+    for (let account = 0; account < LOAD_PUBKEY_AMOUNT; account += 1) {
+      const path = accountDerivationPath(
+        Blockchain.SOLANA,
+        derivationPath,
+        account
+      );
+      publicKeys.push((await ledger.getAddress(path)).address);
     }
-    return publicKeys;
+
+    setLedgerLocked(false);
+    return publicKeys.map((p) =>
+      blockchain === Blockchain.SOLANA ? bs58.encode(p) : p.toString()
+    );
   };
 
   //
   // Handles checkbox clicks to select accounts to import.
   //
-  const handleSelect = (index: number, publicKey: PublicKey) => () => {
+  const handleSelect = (index: number, publicKey: string) => () => {
     const currentIndex = selectedAccounts.findIndex((a) => a.index === index);
     const newSelectedAccounts = [...selectedAccounts];
     if (currentIndex === -1) {
@@ -214,23 +261,41 @@ export function ImportAccounts({
     [Blockchain.SOLANA]: [
       {
         path: DerivationPath.Bip44,
-        label: "44'/501'/",
+        label: derivationPathPrefix(Blockchain.SOLANA, DerivationPath.Bip44),
       },
       {
         path: DerivationPath.Bip44Change,
-        label: "44'/501'/0'/",
+        label: derivationPathPrefix(
+          Blockchain.SOLANA,
+          DerivationPath.Bip44Change
+        ),
       },
     ],
     [Blockchain.ETHEREUM]: [
       {
         path: DerivationPath.Bip44,
-        label: "44'/60'/",
+        label: derivationPathPrefix(Blockchain.ETHEREUM, DerivationPath.Bip44),
       },
       {
         path: DerivationPath.Bip44Change,
-        label: "44'/60'/0'/",
+        label: derivationPathPrefix(
+          Blockchain.ETHEREUM,
+          DerivationPath.Bip44Change
+        ),
       },
     ],
+  }[blockchain];
+
+  // Symbol for balance displays
+  const symbol = {
+    [Blockchain.SOLANA]: "SOL",
+    [Blockchain.ETHEREUM]: "ETH",
+  }[blockchain];
+
+  // Decimals for balance displays
+  const decimals = {
+    [Blockchain.SOLANA]: 9,
+    [Blockchain.ETHEREUM]: 18,
   }[blockchain];
 
   return (
@@ -261,6 +326,7 @@ export function ImportAccounts({
             value={derivationPath}
             setValue={setDerivationPath}
             select={true}
+            disabled={ledgerLocked}
           >
             {derivationPathOptions.map((o, idx) => (
               <MenuItem value={o.path} key={idx}>
@@ -284,7 +350,7 @@ export function ImportAccounts({
             >
               {accounts
                 .slice(0, DISPLAY_PUBKEY_AMOUNT)
-                .map(({ publicKey, account }, index) => (
+                .map(({ publicKey, balance, index }) => (
                   <ListItemButton
                     key={publicKey.toString()}
                     onClick={handleSelect(index, publicKey)}
@@ -336,8 +402,13 @@ export function ImportAccounts({
                           textAlign: "right",
                         }}
                         primary={`${
-                          account ? account.lamports / 10 ** 9 : 0
-                        } SOL`}
+                          balance
+                            ? (+ethers.utils.formatUnits(
+                                balance,
+                                decimals
+                              )).toFixed(4)
+                            : 0
+                        } ${symbol}`}
                       />
                     </Box>
                   </ListItemButton>

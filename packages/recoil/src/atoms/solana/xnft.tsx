@@ -1,15 +1,15 @@
 import { atom, selector } from "recoil";
-import { PublicKey, Keypair } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import {
+  fetchXnfts,
   Blockchain,
   BACKPACK_CONFIG_XNFT_PROXY,
   SIMULATOR_PORT,
 } from "@coral-xyz/common";
-import { solanaPublicKey, activePublicKeys } from "../wallet";
 import { externalResourceUri } from "@coral-xyz/common-public";
-import { solanaConnectionUrl } from "./preferences";
+import { anchorContext } from "./wallet";
+import { solanaPublicKey, activePublicKeys } from "../wallet";
 import { connectionUrls } from "../preferences";
-import { bootstrap } from "../bootstrap";
 
 //
 // Private dev plugins.
@@ -162,10 +162,14 @@ export const xnfts = atom({
   default: selector({
     key: "xnftsDefault",
     get: async ({ get }) => {
-      const b = get(bootstrap);
       const _activeWallets = get(activePublicKeys);
       const _connectionUrls = get(connectionUrls);
-      return (await b.xnfts).map((xnft) => {
+      const provider = get(anchorContext).provider;
+      const xnfts = await fetchXnfts(
+        provider,
+        new PublicKey(get(solanaPublicKey)!)
+      );
+      return xnfts.map((xnft) => {
         return {
           ...xnft,
           url: xnftUrl(xnft.metadataBlob.properties.bundle),

@@ -85,7 +85,7 @@ const useStyles = styles((theme) => ({
     },
   },
   networkSettingsIcon: {
-    color: theme.custom.colors.secondary,
+    color: theme.custom.colors.icon,
     backgroundColor: "transparent",
     borderRadius: "12px",
   },
@@ -106,18 +106,11 @@ export function RecentActivityButton() {
         <Bolt className={classes.networkSettingsIcon} />
       </IconButton>
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        <div
-          style={{ height: "100%", background: theme.custom.colors.background }}
-        >
+        <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
             options={(_args) => ({ title: "Recent Activity" })}
-            style={{
-              borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-            }}
-            navButtonRight={
-              <CloseButton onClick={() => setOpenDrawer(false)} />
-            }
+            navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen
               name={"root"}
@@ -131,14 +124,6 @@ export function RecentActivityButton() {
 }
 
 export function RecentActivity() {
-  return (
-    <Suspense fallback={<RecentActivityLoading />}>
-      <_RecentActivity />
-    </Suspense>
-  );
-}
-
-export function _RecentActivity() {
   const activeEthereumWallet = useActiveEthereumWallet();
   const activeSolanaWallet = useActiveSolanaWallet();
 
@@ -232,6 +217,7 @@ export function _RecentActivityList({
   style?: any;
   minimize?: boolean;
 }) {
+  const theme = useCustomTheme();
   // Load transactions if not passed in as a prop
   const transactions = _transactions
     ? _transactions
@@ -242,27 +228,33 @@ export function _RecentActivityList({
   }
 
   return transactions.length > 0 ? (
-    <List
+    <div
       style={{
-        marginTop: "16px",
-        paddingTop: 0,
-        paddingBottom: 0,
-        marginLeft: "16px",
-        marginRight: "16px",
-        borderRadius: "12px",
-        marginBottom: "16px",
-        ...style,
+        paddingBottom: "16px",
       }}
     >
-      {transactions.map((tx: any, idx: number) => (
-        <RecentActivityListItem
-          key={idx}
-          transaction={tx}
-          isFirst={idx === 0}
-          isLast={idx === transactions.length - 1}
-        />
-      ))}
-    </List>
+      <List
+        style={{
+          marginTop: "16px",
+          paddingTop: 0,
+          paddingBottom: 0,
+          marginLeft: "16px",
+          marginRight: "16px",
+          borderRadius: "14px",
+          border: `${theme.custom.colors.borderFull}`,
+          ...style,
+        }}
+      >
+        {transactions.map((tx: any, idx: number) => (
+          <RecentActivityListItem
+            key={idx}
+            transaction={tx}
+            isFirst={idx === 0}
+            isLast={idx === transactions.length - 1}
+          />
+        ))}
+      </List>
+    </div>
   ) : (
     <NoRecentActivityLabel minimize={!!minimize} />
   );

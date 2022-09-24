@@ -3,6 +3,7 @@ import _CheckIcon from "@mui/icons-material/Check";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { WithApproval } from ".";
 import { TextField } from "@coral-xyz/react-xnft-renderer";
+import * as anchor from "@project-serum/anchor";
 
 const useStyles = styles((theme) => ({
   title: {
@@ -38,6 +39,15 @@ export function ApproveMessage({
   const classes = useStyles();
   const theme = useCustomTheme();
 
+  let displayMessage;
+  try {
+    displayMessage = anchor.utils.bytes.utf8.decode(
+      anchor.utils.bytes.bs58.decode(message)
+    );
+  } catch (err) {
+    displayMessage = message;
+  }
+
   const onConfirm = async () => {
     await onCompletion(true);
   };
@@ -60,7 +70,7 @@ export function ApproveMessage({
         <Typography className={classes.listDescription}>Message</Typography>
         <TextField
           rootClass={classes.textFieldInput}
-          value={message}
+          value={displayMessage}
           rows={8}
           disabled={true}
           inputProps={{

@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  useRecoilValue,
+  useSetRecoilState,
+  useRecoilValueLoadable,
+} from "recoil";
 import { PublicKey } from "@solana/web3.js";
 // XXX: this full path is currently necessary as it avoids loading the jsx in
 //      react-xnft-renderer/src/Component.tsx in the background service worker
 import { Plugin } from "@coral-xyz/react-xnft-renderer/dist/esm/plugin";
 import { fetchXnft } from "@coral-xyz/common";
 import * as atoms from "../../atoms";
-import { useXnfts } from "./useXnfts";
 import { useAnchorContext } from "./useSolanaConnection";
 import { useConnectionUrls } from "../preferences";
 import { useActivePublicKeys } from "../";
@@ -18,7 +21,11 @@ import {
 import { xnftUrl } from "../../atoms/solana/xnft";
 
 export function useAppIcons() {
-  const xnftData = useXnfts();
+  const xnftLoadable = useRecoilValueLoadable(atoms.xnfts);
+  const xnftData =
+    xnftLoadable.state === "hasValue"
+      ? (xnftLoadable.contents as Array<any>)
+      : [];
   const pluginData = useRecoilValue(atoms.plugins);
   return xnftData.concat(pluginData);
 }
@@ -26,6 +33,31 @@ export function useAppIcons() {
 export function usePlugins(): Array<Plugin> {
   const pluginData = useAppIcons();
   return pluginData.map((p) => getPlugin(p));
+}
+
+export function usePluginUrl(address?: string) {
+  const { provider } = useAnchorContext();
+  const [url, setUrl] = useState<string | null>(null);
+  const [cached] = useState<Plugin | undefined>(
+    PLUGIN_CACHE.get(address ?? "")
+  );
+
+  if (cached) return cached.iframeRootUrl;
+
+  useEffect(() => {
+    (async () => {
+      if (address) {
+        try {
+          const xnft = await fetchXnft(provider, new PublicKey(address));
+          setUrl(xnftUrl(xnft.metadataBlob.properties.bundle));
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    })();
+  });
+
+  return url;
 }
 
 export function useFreshPlugin(address?: string): {

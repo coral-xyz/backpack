@@ -31,7 +31,8 @@ const useStyles = styles((theme) => ({
     height: `${TAB_HEIGHT}px`,
     minHeight: `${TAB_HEIGHT}px`,
     backgroundColor: theme.custom.colors.nav,
-    borderTop: `solid 1pt ${theme.custom.colors.border}`,
+    borderTop: `${theme.custom.colors.borderFull}`,
+    boxShadow: theme.custom.colors.tabBarBoxShadow,
   },
   tabIndicator: {
     color: "none",
@@ -104,7 +105,7 @@ function TabBar() {
             fill={
               tab === TAB_BALANCES
                 ? theme.custom.colors.brandColor
-                : theme.custom.colors.secondary
+                : theme.custom.colors.icon
             }
           />
         }
@@ -119,7 +120,7 @@ function TabBar() {
             fill={
               tab === TAB_APPS
                 ? theme.custom.colors.brandColor
-                : theme.custom.colors.secondary
+                : theme.custom.colors.icon
             }
           />
         }
@@ -151,7 +152,7 @@ function TabBar() {
             fill={
               tab === TAB_NFTS
                 ? theme.custom.colors.brandColor
-                : theme.custom.colors.secondary
+                : theme.custom.colors.icon
             }
           />
         }

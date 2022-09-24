@@ -6,13 +6,13 @@
   "dependencies": {
     "@coral-xyz/background": "*",
     "@coral-xyz/common": "*",
-    "@coral-xyz/ledger-core": "*",
     "@coral-xyz/react-xnft-renderer": "*",
     "@coral-xyz/recoil": "*",
     "@coral-xyz/themes": "*",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@fontsource/inter": "^4.5.11",
+    "@ledgerhq/hw-app-solana": "^6.27.2",
     "@ledgerhq/hw-transport": "^6.24.1",
     "@ledgerhq/hw-transport-webhid": "^6.24.1",
     "@mui/icons-material": "^5.8.0",
@@ -20,6 +20,7 @@
     "@mui/styles": "^5.8.4",
     "@project-serum/anchor": "^0.24.2",
     "@solana/web3.js": "^1.35.1",
+    "@typeform/embed": "^1.38.0",
     "bip39": "^3.0.4",
     "bs58": "^5.0.0",
     "ethers": "^5.7.0",
@@ -30,7 +31,7 @@
     "react-router-dom": "^6.3.0",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.7",
-    "recoil": "^0.6.1"
+    "recoil": "^0.7.5"
   },
   "scripts": {
     "start": "NODE_ENV=development webpack serve",

@@ -3,17 +3,17 @@ import {
   SOL_NATIVE_MINT,
   ETH_NATIVE_MINT,
 } from "@coral-xyz/common";
-import { useEffect } from "react";
 import { Typography } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { SwapProvider } from "@coral-xyz/recoil";
 import { ArrowUpward, ArrowDownward, SwapHoriz } from "@mui/icons-material";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
-import { Send, Send as TokenSend } from "./TokensWidget/Send";
+import { SendLoader, Send } from "./TokensWidget/Send";
 import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";
-import { Swap } from "../../Unlocked/Swap";
+import { Swap, SelectToken } from "../../Unlocked/Swap";
 
 export function TransferWidget({
   blockchain,
@@ -26,7 +26,7 @@ export function TransferWidget({
     <div
       style={{
         display: "flex",
-        width: "178px",
+        width: blockchain !== Blockchain.ETHEREUM ? "191px" : "120px",
         marginLeft: "auto",
         marginRight: "auto",
       }}
@@ -34,8 +34,12 @@ export function TransferWidget({
       <ReceiveButton blockchain={blockchain} />
       <div style={{ width: "16px" }} />
       <SendButton blockchain={blockchain} address={address} />
-      <div style={{ width: "16px" }} />
-      <SwapButton blockchain={blockchain} address={address} />
+      {blockchain !== Blockchain.ETHEREUM && (
+        <>
+          <div style={{ width: "16px" }} />
+          <SwapButton blockchain={blockchain} address={address} />
+        </>
+      )}
     </div>
   );
 }
@@ -49,30 +53,36 @@ function SwapButton({
 }) {
   const theme = useCustomTheme();
   return (
-    <TransferButton
-      label={"Swap"}
-      labelComponent={
-        <SwapHoriz
-          style={{
-            color: theme.custom.colors.fontColor,
-            display: "flex",
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        />
-      }
-      routes={[
-        {
-          name: "swap",
-          component: (props: any) => <Swap {...props} />,
-          title: `Swap`,
-          props: {
-            blockchain,
-            tokenAddress: address,
+    <SwapProvider blockchain={blockchain} tokenAddress={address}>
+      <TransferButton
+        label={"Swap"}
+        labelComponent={
+          <SwapHoriz
+            style={{
+              color: theme.custom.colors.fontColor,
+              display: "flex",
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+          />
+        }
+        routes={[
+          {
+            name: "swap",
+            component: (props: any) => <Swap {...props} />,
+            title: `Swap`,
+            props: {
+              blockchain,
+            },
           },
-        },
-      ]}
-    />
+          {
+            title: `Select Token`,
+            name: "select-token",
+            component: (props: any) => <SelectToken {...props} />,
+          },
+        ]}
+      />
+    </SwapProvider>
   );
 }
 
@@ -102,11 +112,11 @@ function SendButton({
           ? [
               {
                 name: "send",
-                component: (props: any) => <TokenSend {...props} />,
+                component: (props: any) => <SendLoader {...props} />,
                 title: `Send`,
                 props: {
                   blockchain,
-                  tokenAddress: address,
+                  address,
                 },
               },
             ]
@@ -118,7 +128,7 @@ function SendButton({
               },
               {
                 name: "send",
-                component: (props: any) => <_Send {...props} />,
+                component: (props: any) => <Send {...props} />,
                 title: "",
               },
             ]
@@ -226,22 +236,4 @@ function SendToken() {
       }}
     />
   );
-}
-
-function _Send({
-  token,
-  blockchain,
-}: {
-  token: Token;
-  blockchain: Blockchain;
-}) {
-  const { title, setTitle } = useNavStack();
-  useEffect(() => {
-    const prev = title;
-    setTitle(`Send ${token.ticker}`);
-    return () => {
-      setTitle(prev);
-    };
-  }, []);
-  return <Send blockchain={blockchain} tokenAddress={token.address} />;
 }

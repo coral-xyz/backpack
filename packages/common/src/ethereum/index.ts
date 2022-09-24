@@ -8,6 +8,7 @@ export * from "./background-provider";
 export * from "./explorer";
 export * from "./connection-url";
 export * from "./token";
+export * from "./tokens-uniswap";
 
 export type EthereumContext = {
   walletPublicKey: string;

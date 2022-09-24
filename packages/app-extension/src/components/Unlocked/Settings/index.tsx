@@ -19,6 +19,7 @@ import {
   useActiveWallet,
   useActiveWallets,
   useBlockchainLogo,
+  useDarkMode,
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
@@ -72,16 +73,16 @@ import { PreferencesSolanaExplorer } from "./Preferences/Solana/Explorer";
 import { ChangePassword } from "./YourAccount/ChangePassword";
 import { ResetWarning } from "../../Locked/Reset/ResetWarning";
 import { Reset } from "../../Locked/Reset";
-import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { AddConnectWalletMenu, ConfirmCreateWallet } from "./AddConnectWallet";
 import { YourAccount } from "./YourAccount";
 import { EditWallets } from "./YourAccount/EditWallets";
 import { RemoveWallet } from "./YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
-import { GridIcon, CheckIcon } from "../../common/Icon";
+import { DiscordIcon, GridIcon, CheckIcon } from "../../common/Icon";
 import { XnftSettings } from "./Xnfts";
 import { XnftDetail } from "./Xnfts/Detail";
+import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -93,13 +94,29 @@ const useStyles = styles((theme) => ({
     flexDirection: "column",
   },
   menuButton: {
-    padding: 0,
+    padding: "2px",
+    background: theme.custom.colors.coralGradient,
     "&:hover": {
-      background: "transparent",
+      background: theme.custom.colors.coralGradient,
     },
   },
   addConnectRoot: {
     background: "transparent !important",
+    height: "48px",
+  },
+  privateKeyTextFieldRoot: {
+    "& .MuiOutlinedInput-root": {
+      border: theme.custom.colors.borderFull,
+      "& textarea": {
+        border: "none",
+      },
+      "&:hover fieldset": {
+        border: `solid 2pt ${theme.custom.colors.primaryButton}`,
+      },
+      "&.Mui-focused fieldset": {
+        border: `solid 2pt ${theme.custom.colors.primaryButton} !important`,
+      },
+    },
   },
 }));
 
@@ -138,13 +155,11 @@ function AvatarButton() {
         />
       </IconButton>
       <WithDrawer openDrawer={settingsOpen} setOpenDrawer={setSettingsOpen}>
-        <div
-          style={{ height: "100%", background: theme.custom.colors.background }}
-        >
+        <div style={{ height: "100%" }}>
           <NavStackEphemeral
-            initialRoute={{ name: "root" }}
+            initialRoute={{ name: "root", title: "Profile" }}
             options={(args) => ({ title: "" })}
-            navButtonRight={
+            navButtonLeft={
               <CloseButton onClick={() => setSettingsOpen(false)} />
             }
           >
@@ -264,18 +279,11 @@ function AvatarButton() {
 }
 
 function SettingsMenu() {
-  const theme = useCustomTheme();
-  const { setTitle, setStyle, setContentStyle } = useNavStack();
+  const { setTitle } = useNavStack();
 
   useEffect(() => {
-    setTitle("");
-    setStyle({
-      backgroundColor: theme.custom.colors.background,
-    });
-    setContentStyle({
-      backgroundColor: theme.custom.colors.background,
-    });
-  }, [setTitle, setStyle, setContentStyle, theme.custom.colors.background]);
+    setTitle("Profile");
+  }, [setTitle]);
 
   return (
     <Suspense fallback={<div></div>}>
@@ -300,17 +308,30 @@ function AvatarHeader() {
   const theme = useCustomTheme();
   return (
     <div>
-      <img
-        src={"coral.png"}
+      <div
         style={{
-          width: "64px",
-          height: "64px",
-          borderRadius: "32px",
+          background: theme.custom.colors.coralGradient,
+          borderRadius: "40px",
+          padding: "3px",
+          width: "70px",
+          height: "70px",
           marginLeft: "auto",
           marginRight: "auto",
           display: "block",
         }}
-      />
+      >
+        <img
+          src={"coral.png"}
+          style={{
+            width: "64px",
+            height: "64px",
+            borderRadius: "32px",
+            marginLeft: "auto",
+            marginRight: "auto",
+            display: "block",
+          }}
+        />
+      </div>
       <Typography
         style={{
           textAlign: "center",
@@ -367,7 +388,7 @@ function WalletList({
       .then((_resp) => close())
       .catch(console.error);
   };
-
+  let activeWalletType: "derived" | "hardware";
   const keys = keyring.hdPublicKeys
     .map((k: any) => ({ ...k, type: "derived" }))
     .concat(
@@ -378,217 +399,242 @@ function WalletList({
     )
     .concat(
       keyring.ledgerPublicKeys.map((k: any) => ({ ...k, type: "hardware" }))
-    );
+    )
+    // The drop down should show all wallet keys *except* the active one.
+    .filter(({ publicKey, type }: any) => {
+      const isActive = activeWallets
+        .map((p) => p.publicKey)
+        .includes(publicKey);
+      if (isActive) {
+        activeWalletType = type;
+      }
+      return !isActive;
+    });
 
   const { name, publicKey } = activeWallets.filter(
     (a) => a.blockchain === blockchain
   )[0];
   return (
-    <div style={{ marginBottom: "16px" }}>
+    <div
+      style={{
+        marginBottom: "16px",
+        marginLeft: "16px",
+        marginRight: "16px",
+      }}
+    >
       <div
         style={{
-          display: "flex",
+          border: `${theme.custom.colors.borderFull}`,
+          borderRadius: "10px",
         }}
       >
-        <ListItem
-          disableRipple
+        <div
           style={{
-            marginLeft: "16px",
-            marginRight: "16px",
-            background: theme.custom.colors.nav,
-            borderTopLeftRadius: "8px",
-            borderTopRightRadius: "8px",
-            borderBottomLeftRadius: showAll ? "0px" : "8px",
-            borderBottomRightRadius: showAll ? "0px" : "8px",
-            height: "56px",
             display: "flex",
-            paddingLeft: "12px",
-            paddingRight: "12px",
-            flex: 1,
-            borderBottom: showAll
-              ? `solid 1pt ${theme.custom.colors.border}`
-              : undefined,
           }}
-          onClick={() => setShowAll((s) => !s)}
         >
-          <div
+          <ListItem
+            disableRipple
             style={{
+              background: theme.custom.colors.nav,
+              borderTopLeftRadius: "8px",
+              borderTopRightRadius: "8px",
+              borderBottomLeftRadius:
+                showAll && keys.length > 0 ? "0px" : "8px",
+              borderBottomRightRadius:
+                showAll && keys.length > 0 ? "0px" : "8px",
+              height: "48px",
               display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              width: "100%",
+              paddingLeft: "12px",
+              paddingRight: "12px",
+              flex: 1,
             }}
+            onClick={() => setShowAll((s) => !s)}
           >
             <div
               style={{
                 display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                width: "100%",
               }}
             >
               <div
                 style={{
                   display: "flex",
-                  justifyContent: "center",
-                  flexDirection: "column",
                 }}
               >
-                <img
-                  src={blockchainLogo}
+                <div
                   style={{
-                    width: "12px",
-                    borderRadius: "2px",
+                    display: "flex",
+                    justifyContent: "center",
+                    flexDirection: "column",
                   }}
-                />
-              </div>
-              <div
-                style={{
-                  marginLeft: "8px",
-                  display: "flex",
-                  justifyContent: "center",
-                  flexDirection: "column",
-                }}
-              >
-                <WalletAddress
-                  name={name}
-                  publicKey={publicKey}
-                  style={{
-                    fontWeight: 500,
-                    lineHeight: "24px",
-                    fontSize: "16px",
-                  }}
-                  nameStyle={{
-                    color: theme.custom.colors.fontColor,
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    maxWidth: "75px",
-                  }}
-                />
-              </div>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-              }}
-            >
-              {showAll ? (
-                <ExpandMore
-                  style={{
-                    width: "22px",
-                    color: theme.custom.colors.secondary,
-                  }}
-                />
-              ) : (
-                <ExpandLess
-                  style={{
-                    width: "22px",
-                    color: theme.custom.colors.secondary,
-                  }}
-                />
-              )}
-            </div>
-          </div>
-        </ListItem>
-      </div>
-      {showAll && (
-        <div style={{}}>
-          <List
-            style={{
-              borderRadius: 0,
-            }}
-          >
-            {keys.map(
-              (
-                {
-                  name,
-                  publicKey,
-                  type,
-                }: { name: string; publicKey: string; type: string },
-                idx: number
-              ) => {
-                return (
-                  <ListItem
-                    key={publicKey.toString()}
-                    onClick={() => clickWallet(publicKey)}
-                    isFirst={false}
-                    isLast={idx === keys.length - 1}
+                >
+                  <img
+                    src={blockchainLogo}
                     style={{
-                      paddingTop: "16px",
-                      paddingBottom: "16px",
-                      paddingLeft: "12px",
-                      paddingRight: "12px",
+                      width: "12px",
+                      borderRadius: "2px",
                     }}
-                  >
-                    <div
+                  />
+                </div>
+                <div
+                  style={{
+                    marginLeft: "8px",
+                    display: "flex",
+                    justifyContent: "center",
+                    flexDirection: "column",
+                  }}
+                >
+                  <WalletAddress
+                    name={name}
+                    publicKey={publicKey}
+                    style={{
+                      fontWeight: 500,
+                      lineHeight: "24px",
+                      fontSize: "16px",
+                    }}
+                    nameStyle={{
+                      color: theme.custom.colors.fontColor,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      maxWidth: "75px",
+                    }}
+                  />
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    flexDirection: "column",
+                    marginLeft: "4px",
+                  }}
+                >
+                  <ImportTypeBadge type={activeWalletType!} />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                }}
+              >
+                {showAll ? (
+                  <ExpandLess
+                    style={{
+                      width: "22px",
+                      color: theme.custom.colors.icon,
+                    }}
+                  />
+                ) : (
+                  <ExpandMore
+                    style={{
+                      width: "22px",
+                      color: theme.custom.colors.icon,
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+          </ListItem>
+        </div>
+        {showAll && (
+          <div style={{}}>
+            <List
+              style={{
+                borderRadius: 0,
+                marginLeft: 0,
+                marginRight: 0,
+              }}
+            >
+              {keys.map(
+                (
+                  {
+                    name,
+                    publicKey,
+                    type,
+                  }: { name: string; publicKey: string; type: string },
+                  idx: number
+                ) => {
+                  return (
+                    <ListItem
+                      key={publicKey.toString()}
+                      onClick={() => clickWallet(publicKey)}
+                      isFirst={false}
+                      isLast={idx === keys.length - 1}
                       style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        width: "100%",
-                        marginLeft: "20px",
+                        paddingTop: "16px",
+                        paddingBottom: "16px",
+                        paddingLeft: "12px",
+                        paddingRight: "12px",
+                        height: "48px",
                       }}
                     >
                       <div
                         style={{
                           display: "flex",
+                          justifyContent: "space-between",
+                          width: "100%",
+                          marginLeft: "20px",
                         }}
                       >
                         <div
                           style={{
                             display: "flex",
-                            justifyContent: "center",
-                            flexDirection: "column",
-                            marginRight: "4px",
                           }}
                         >
-                          <WalletAddress
-                            name={name}
-                            publicKey={publicKey}
+                          <div
                             style={{
-                              fontWeight: 500,
-                              lineHeight: "24px",
-                              fontSize: "16px",
+                              display: "flex",
+                              justifyContent: "center",
+                              flexDirection: "column",
+                              marginRight: "4px",
                             }}
-                            nameStyle={{
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              maxWidth: "75px",
+                          >
+                            <WalletAddress
+                              name={name}
+                              publicKey={publicKey}
+                              style={{
+                                fontWeight: 500,
+                                lineHeight: "24px",
+                                fontSize: "16px",
+                              }}
+                              nameStyle={{
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                maxWidth: "75px",
+                              }}
+                            />
+                          </div>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              flexDirection: "column",
                             }}
-                          />
-                        </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            flexDirection: "column",
-                          }}
-                        >
-                          <ImportTypeBadge type={type} />
+                          >
+                            <ImportTypeBadge type={type} />
+                          </div>
                         </div>
                       </div>
-                      {activeWallets
-                        .map((p) => p.publicKey)
-                        .includes(publicKey) && (
-                        <CheckIcon
-                          fill={theme.custom.colors.brandColor}
-                          style={{ width: "24px" }}
-                        />
-                      )}
-                    </div>
-                  </ListItem>
-                );
-              }
-            )}
-          </List>
-          <AddConnectWalletButton blockchain={blockchain} />
-        </div>
-      )}
+                    </ListItem>
+                  );
+                }
+              )}
+            </List>
+          </div>
+        )}
+      </div>
+      {showAll && <AddConnectWalletButton blockchain={blockchain} />}
     </div>
   );
 }
 
-function ImportTypeBadge({ type }: { type: string }) {
+export function ImportTypeBadge({ type }: { type: string }) {
   const theme = useCustomTheme();
   return type === "derived" ? (
     <></>
@@ -629,12 +675,15 @@ export const AddConnectWalletButton = ({
   return (
     <List
       style={{
-        background: theme.custom.colors.background,
+        background: "transparent",
         color: theme.custom.colors.secondary,
+        marginLeft: 0,
+        marginRight: 0,
+        height: "48px",
       }}
     >
       <ListItem
-        isFirst={true}
+        isFirst={false}
         isLast={true}
         onClick={() => nav.push("add-connect-wallet", { blockchain })}
         classes={{ root: classes.addConnectRoot }}
@@ -643,8 +692,8 @@ export const AddConnectWalletButton = ({
           style={{
             border: `solid ${theme.custom.colors.nav}`,
             borderRadius: "40px",
-            width: "40px",
-            height: "40px",
+            width: "30px",
+            height: "30px",
             display: "flex",
             justifyContent: "center",
             flexDirection: "column",
@@ -708,12 +757,6 @@ function SettingsList({ close }: { close: () => void }) {
       icon: (props: any) => <GridIcon {...props} />,
       detailIcon: <PushDetail />,
     },
-    {
-      label: "Help & Support",
-      onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
-      icon: (props: any) => <Help {...props} />,
-      detailIcon: <LaunchDetail />,
-    },
   ];
   if (BACKPACK_FEATURE_POP_MODE) {
     settingsMenu.push({
@@ -733,60 +776,125 @@ function SettingsList({ close }: { close: () => void }) {
     detailIcon: <></>,
   });
 
+  const discordList = [
+    {
+      label: "Need help? Hop into Discord",
+      onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
+      icon: (props: any) => <DiscordIcon {...props} />,
+      detailIcon: <LaunchDetail />,
+    },
+  ];
+
   return (
-    <List
-      style={{
-        marginTop: "24px",
-        marginBottom: "16px",
-      }}
-    >
-      {settingsMenu.map((s, idx) => {
-        return (
-          <ListItem
-            key={s.label}
-            isFirst={idx === 0}
-            isLast={idx === settingsMenu.length - 1}
-            onClick={s.onClick}
-            id={s.label}
-            style={{
-              height: "44px",
-              padding: "12px",
-            }}
-            detail={s.detailIcon}
-          >
-            <div
+    <>
+      <List
+        style={{
+          marginTop: "24px",
+          marginBottom: "16px",
+          border: `${theme.custom.colors.borderFull}`,
+          borderRadius: "10px",
+        }}
+      >
+        {settingsMenu.map((s, idx) => {
+          return (
+            <ListItem
+              key={s.label}
+              isFirst={idx === 0}
+              isLast={idx === settingsMenu.length - 1}
+              onClick={s.onClick}
+              id={s.label}
               style={{
-                display: "flex",
-                flex: 1,
+                height: "44px",
+                padding: "12px",
               }}
+              detail={s.detailIcon}
             >
-              {s.icon({
-                style: {
-                  color: theme.custom.colors.secondary,
-                  marginRight: "8px",
-                  height: "24px",
-                  width: "24px",
-                },
-                fill: theme.custom.colors.secondary,
-              })}
-              <Typography
+              <div
                 style={{
-                  fontWeight: 500,
-                  fontSize: "16px",
-                  lineHeight: "24px",
+                  display: "flex",
+                  flex: 1,
                 }}
               >
-                {s.label}
-              </Typography>
-            </div>
-          </ListItem>
-        );
-      })}
-    </List>
+                {s.icon({
+                  style: {
+                    color: theme.custom.colors.icon,
+                    marginRight: "8px",
+                    height: "24px",
+                    width: "24px",
+                  },
+                  fill: theme.custom.colors.icon,
+                })}
+                <Typography
+                  style={{
+                    fontWeight: 500,
+                    fontSize: "16px",
+                    lineHeight: "24px",
+                  }}
+                >
+                  {s.label}
+                </Typography>
+              </div>
+            </ListItem>
+          );
+        })}
+      </List>
+      <List
+        style={{
+          marginTop: "24px",
+          marginBottom: "16px",
+          border: `${theme.custom.colors.borderFull}`,
+          borderRadius: "10px",
+        }}
+      >
+        {discordList.map((s, idx) => {
+          return (
+            <ListItem
+              key={s.label}
+              isFirst={idx === 0}
+              isLast={idx === discordList.length - 1}
+              onClick={s.onClick}
+              id={s.label}
+              style={{
+                height: "44px",
+                padding: "12px",
+              }}
+              detail={s.detailIcon}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flex: 1,
+                }}
+              >
+                {s.icon({
+                  style: {
+                    color: theme.custom.colors.icon,
+                    height: "24px",
+                    width: "24px",
+                  },
+                  fill: theme.custom.colors.icon,
+                })}
+                <Typography
+                  style={{
+                    marginLeft: "8px",
+                    fontWeight: 500,
+                    fontSize: "16px",
+                    lineHeight: "24px",
+                  }}
+                >
+                  {s.label}
+                </Typography>
+              </div>
+            </ListItem>
+          );
+        })}
+      </List>
+    </>
   );
 }
 
 export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
+  const classes = useStyles();
   const background = useBackgroundClient();
   const nav = useNavStack();
   const theme = useCustomTheme();
@@ -865,6 +973,7 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
               value={secretKey}
               setValue={setSecretKey}
               rows={4}
+              rootClass={classes.privateKeyTextFieldRoot}
             />
           </Box>
           {error && (

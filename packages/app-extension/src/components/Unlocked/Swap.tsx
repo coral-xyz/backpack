@@ -1,19 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import {
-  InputAdornment,
-  Typography,
-  IconButton,
-  CircularProgress,
-} from "@mui/material";
+import { InputAdornment, Typography, IconButton } from "@mui/material";
 import type { Button } from "@mui/material";
 import { Close, ExpandMore, SwapVert } from "@mui/icons-material";
+import { Button as XnftButton } from "@coral-xyz/react-xnft-renderer";
 import {
   useSplTokenRegistry,
-  useJupiterInputMints,
   useJupiterOutputMints,
   useSwapContext,
-  SwapProvider,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
@@ -21,19 +15,18 @@ import {
   SOL_NATIVE_MINT,
   ETH_NATIVE_MINT,
   WSOL_MINT,
-  TAB_BALANCES,
-  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
 } from "@coral-xyz/common";
+import { useNavStack } from "../common/Layout/NavStack";
 import {
   TextField,
   TextFieldLabel,
   PrimaryButton,
   DangerButton,
   SecondaryButton,
+  Loading,
 } from "../common";
 import { TokenInputField } from "../common/TokenInput";
 import { CheckIcon, CrossIcon } from "../common/Icon";
-import { WithHeaderButton } from "./Balances/TokensWidget/Token";
 import { BottomCard } from "./Balances/TokensWidget/Send";
 import { useDrawerContext } from "../common/Layout/Drawer";
 import type { Token } from "../common/TokenTable";
@@ -45,7 +38,6 @@ const { Zero } = ethers.constants;
 
 const useStyles = styles((theme) => ({
   container: {
-    backgroundColor: theme.custom.colors.background,
     display: "flex",
     flexDirection: "column",
     height: "100%",
@@ -57,9 +49,9 @@ const useStyles = styles((theme) => ({
     marginRight: "16px",
   },
   bottomHalfWrapper: {
-    borderTop: `solid 1pt ${theme.custom.colors.border}`,
+    borderTop: `${theme.custom.colors.borderFull}`,
     flex: 1,
-    paddingBottom: "12px",
+    paddingBottom: "16px",
     paddingTop: "38px",
     borderTopLeftRadius: "12px",
     borderTopRightRadius: "12px",
@@ -77,10 +69,13 @@ const useStyles = styles((theme) => ({
     marginBottom: 0,
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `solid 1pt ${theme.custom.colors.border}`,
+        border: `${theme.custom.colors.borderFull}`,
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
+      },
+      "& input": {
+        border: "none",
       },
     },
   },
@@ -89,9 +84,13 @@ const useStyles = styles((theme) => ({
     marginBottom: 0,
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `solid 1pt ${theme.custom.colors.border}`,
-        // Override disable and hover styles
-        borderColor: `${theme.custom.colors.border} !important`,
+        border: `${theme.custom.colors.borderFull} !important`,
+      },
+      "&:hover fieldset": {
+        border: `${theme.custom.colors.borderFull}`, // Prevent hover from changing border.
+      },
+      "& input": {
+        border: "none",
       },
     },
     "& .MuiInputBase-input.Mui-disabled": {
@@ -100,7 +99,7 @@ const useStyles = styles((theme) => ({
     },
   },
   swapTokensContainer: {
-    backgroundColor: theme.custom.colors.background,
+    backgroundColor: theme.custom.colors.swapTokensButton,
     width: "44px",
     height: "44px",
     zIndex: 2,
@@ -110,7 +109,7 @@ const useStyles = styles((theme) => ({
     borderRadius: "22px",
   },
   swapTokensButton: {
-    border: `solid 1pt ${theme.custom.colors.border}`,
+    border: `${theme.custom.colors.borderFull}`,
     width: "38px",
     height: "38px",
     marginLeft: "auto",
@@ -121,7 +120,7 @@ const useStyles = styles((theme) => ({
     background: theme.custom.colors.nav,
   },
   swapIcon: {
-    color: theme.custom.colors.secondary,
+    color: theme.custom.colors.icon,
   },
   loadingContainer: {
     backgroundColor: theme.custom.colors.nav,
@@ -201,36 +200,17 @@ enum SwapState {
   ERROR,
 }
 
-export function Swap({
-  blockchain,
-  tokenAddress,
-}: {
-  blockchain: Blockchain;
-  tokenAddress: string;
-}) {
+export function Swap({ blockchain }: { blockchain: Blockchain }) {
+  const nav = useNavStack();
+  useEffect(() => {
+    nav.setTitle("Swap");
+  }, [nav]);
+
   if (blockchain && blockchain !== Blockchain.SOLANA) {
     throw new Error("only Solana swaps are supported currently");
   }
-  return (
-    <SwapInner
-      blockchain={blockchain ?? Blockchain.SOLANA}
-      tokenAddress={tokenAddress}
-    />
-  );
-}
 
-function SwapInner({
-  blockchain,
-  tokenAddress,
-}: {
-  blockchain: Blockchain;
-  tokenAddress?: string;
-}) {
-  return (
-    <SwapProvider blockchain={blockchain} tokenAddress={tokenAddress}>
-      <_Swap blockchain={blockchain} />
-    </SwapProvider>
-  );
+  return <_Swap blockchain={blockchain ?? Blockchain.SOLANA} />;
 }
 
 function _Swap({ blockchain }: { blockchain: Blockchain }) {
@@ -382,8 +362,8 @@ function OutputTextField() {
         placeholder={"0"}
         startAdornment={
           isLoadingRoutes && (
-            <CircularProgress
-              style={{
+            <Loading
+              iconStyle={{
                 display: "flex",
                 color: theme.custom.colors.secondary,
                 marginRight: "10px",
@@ -546,10 +526,9 @@ function SwapConfirming({
               <CheckIcon />
             </div>
           ) : (
-            <CircularProgress
+            <Loading
               size={48}
-              style={{
-                color: theme.custom.colors.primaryButton,
+              iconStyle={{
                 display: "flex",
                 marginLeft: "auto",
                 marginRight: "auto",
@@ -648,11 +627,12 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   if (isLoadingRoutes || isLoadingTransactions) {
     return (
       <div style={{ textAlign: "center" }}>
-        <CircularProgress
+        <Loading
           size={48}
-          style={{
-            color: theme.custom.colors.primaryButton,
+          iconStyle={{
             margin: "32px 0",
+            marginLeft: "auto",
+            marginRight: "auto",
           }}
           thickness={6}
         />
@@ -758,16 +738,14 @@ export function CloseButton({
 }
 
 function InputTokenSelectorButton() {
-  const { fromMint, setFromMint } = useSwapContext();
-  const tokenAccounts = useJupiterInputMints();
-  const tokenAccountsFiltered = tokenAccounts.filter((token: Token) => {
+  const { inputTokenAccounts, fromMint, setFromMint } = useSwapContext();
+  const tokenAccountsFiltered = inputTokenAccounts.filter((token: Token) => {
     if (token.mint && token.mint === SOL_NATIVE_MINT) {
       return true;
     }
     if (token.address && token.address === ETH_NATIVE_MINT) {
       return true;
     }
-
     return !token.nativeBalance.isZero();
   });
   return (
@@ -787,72 +765,72 @@ function OutputTokenSelectorButton() {
       selectedMint={toMint}
       tokenAccounts={tokenAccounts}
       setMint={setToMint}
+      displayWalletHeader={false}
     />
   );
 }
 
-function TokenSelectorButton({ selectedMint, tokenAccounts, setMint }: any) {
+function TokenSelectorButton({
+  selectedMint,
+  tokenAccounts,
+  setMint,
+  displayWalletHeader,
+}: any) {
   const classes = useStyles();
-
+  const nav = useNavStack();
   const tokenRegistry = useSplTokenRegistry();
   const tokenInfo = tokenRegistry.get(selectedMint); // TODO handle null case
   const symbol = tokenInfo ? tokenInfo.symbol : "-";
   const logoUri = tokenInfo ? tokenInfo.logoURI : "-";
 
   return (
-    <>
-      <InputAdornment position="end">
-        <WithHeaderButton
-          labelComponent={
-            <>
-              <img
-                className={classes.tokenLogo}
-                src={logoUri}
-                onError={(event) =>
-                  (event.currentTarget.style.display = "none")
-                }
-              />
-              <Typography className={classes.tokenSelectorButtonLabel}>
-                {symbol}
-              </Typography>
-              <ExpandMore className={classes.expandMore} />
-            </>
-          }
-          routes={[
-            {
-              title: "Select token",
-              name: "select-token",
-              component: (props: any) => <SelectToken {...props} />,
-              props: {
-                setMint,
-                tokenAccounts,
-              },
-            },
-          ]}
-          style={{
-            backgroundColor: "transparent",
-          }}
+    <InputAdornment position="end">
+      <XnftButton
+        onClick={() =>
+          nav.push("select-token", {
+            setMint: (...args: any) => setMint(...args),
+            tokenAccounts,
+            displayWalletHeader,
+          })
+        }
+        style={{
+          backgroundColor: "transparent",
+        }}
+      >
+        <img
+          className={classes.tokenLogo}
+          src={logoUri}
+          onError={(event) => (event.currentTarget.style.display = "none")}
         />
-      </InputAdornment>
-    </>
+        <Typography className={classes.tokenSelectorButtonLabel}>
+          {symbol}
+        </Typography>
+        <ExpandMore className={classes.expandMore} />
+      </XnftButton>
+    </InputAdornment>
   );
 }
 
-function SelectToken({
+export function SelectToken({
   setMint,
   tokenAccounts,
   customFilter,
+  displayWalletHeader,
 }: {
   setMint: (mint: string) => void;
   tokenAccounts: Token[];
   customFilter: (token: Token) => boolean;
+  displayWalletHeader: boolean;
 }) {
-  const { close } = useDrawerContext();
-
+  const nav = useNavStack();
   const onClickRow = (_blockchain: Blockchain, token: Token) => {
     setMint(token.mint!);
-    close();
+    nav.pop();
   };
+
+  useEffect(() => {
+    nav.setTitle("Select token");
+  }, [nav]);
 
   return (
     <SearchableTokenTable
@@ -860,6 +838,7 @@ function SelectToken({
       onClickRow={onClickRow}
       tokenAccounts={tokenAccounts}
       customFilter={customFilter}
+      displayWalletHeader={displayWalletHeader}
     />
   );
 }

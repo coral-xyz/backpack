@@ -135,7 +135,8 @@ export async function signAllTransactions(
 
   // Add the signatures to the transactions.
   txs.forEach((t, idx) => {
-    t.addSignature(publicKey, Buffer.from(decode(signatures[idx])));
+    // @ts-ignore
+    t.addSignature(publicKey, decode(signatures[idx]));
   });
 
   return txs;

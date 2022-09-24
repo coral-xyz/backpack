@@ -321,13 +321,16 @@ export function NotificationsProvider(props: any) {
       const result = BackgroundSolanaConnection.customSplTokenAccountsFromJson(
         notif.data.customSplTokenAccounts
       );
+      const customSplTokenAccounts = {
+        ...result,
+        tokenAccounts: new Map(
+          result.tokenAccountsMap.map((t: any) => [t[0], t[1]])
+        ),
+      };
       updateAllSplTokenAccounts({
         publicKey,
         connectionUrl,
-        customSplTokenAccounts: {
-          ...result,
-          tokenAccounts: result.tokenAccountsMap.map((t: any) => t[1]),
-        },
+        customSplTokenAccounts,
       });
     };
 

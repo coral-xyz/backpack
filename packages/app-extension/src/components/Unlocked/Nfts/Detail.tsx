@@ -6,14 +6,15 @@ import { Whatshot, CallMade } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import {
+  nftMetadata,
   useDecodedSearchParams,
-  useNftMetadata,
   useAnchorContext,
-  useSolanaConnectionUrl,
+  useLoader,
   useEthereumConnectionUrl,
-  useSolanaExplorer,
   useEthereumExplorer,
   useSolanaCtx,
+  useSolanaConnectionUrl,
+  useSolanaExplorer,
 } from "@coral-xyz/recoil";
 import {
   explorerNftUrl,
@@ -35,13 +36,13 @@ import {
 } from "../../common/Layout/NavStack";
 import { SendSolanaConfirmationCard } from "../Balances/TokensWidget/Solana";
 import { SendEthereumConfirmationCard } from "../Balances/TokensWidget/Ethereum";
-import { useIsValidAddress } from "../Balances/TokensWidget/Send";
-import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
-import { List, ListItem } from "../../common/List";
 import {
+  useIsValidAddress,
   Sending,
   Error as ErrorConfirmation,
-} from "../../Unlocked/Balances/TokensWidget/Send";
+} from "../Balances/TokensWidget/Send";
+import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
+import { List, ListItem } from "../../common/List";
 
 const logger = getLogger("app-extension/nft-detail");
 
@@ -56,7 +57,7 @@ const useStyles = styles((theme) => ({
 }));
 
 export function NftsDetail({ nftId }: { nftId: string }) {
-  const nfts = useNftMetadata();
+  const [nfts] = useLoader(nftMetadata, new Map());
   const nft = nfts.get(nftId);
 
   // Hack: needed because this is undefined due to framer-motion animation.
@@ -159,17 +160,13 @@ function SendButton({ nft }: { nft: any }) {
         label={"Send"}
       />
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        <div
-          style={{ height: "100%", background: theme.custom.colors.background }}
-        >
+        <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "send" }}
             options={() => ({
               title: `${nft.name} / Send`,
             })}
-            navButtonRight={
-              <CloseButton onClick={() => setOpenDrawer(false)} />
-            }
+            navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen
               name={"send"}
@@ -183,6 +180,7 @@ function SendButton({ nft }: { nft: any }) {
 }
 
 function SendScreen({ nft }: { nft: any }) {
+  const theme = useCustomTheme();
   const classes = useStyles();
   const { close } = useDrawerContext();
   const { provider: solanaProvider } = useAnchorContext();
@@ -211,7 +209,6 @@ function SendScreen({ nft }: { nft: any }) {
         style={{
           paddingLeft: "16px",
           paddingRight: "16px",
-          paddingBottom: "24px",
           height: "100%",
         }}
       >
@@ -242,7 +239,7 @@ function SendScreen({ nft }: { nft: any }) {
               display: "flex",
               justifyContent: "space-between",
               paddingTop: "18px",
-              paddingBottom: "12px",
+              paddingBottom: "16px",
             }}
           >
             <SecondaryButton
@@ -366,7 +363,7 @@ export function NftOptionsButton() {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
   const searchParams = useDecodedSearchParams();
-  const nfts = useNftMetadata();
+  const [nfts] = useLoader(nftMetadata, new Map());
   // @ts-ignore
   const nft: any = nfts.get(searchParams.props.nftId);
   const isEthereum = nft && nft.contractAddress;
@@ -592,7 +589,8 @@ function BurnConfirmation({ onConfirm }: { onConfirm: () => void }) {
         />
         <Typography
           style={{
-            backgroundColor: theme.custom.colors.bg2,
+            backgroundColor: theme.custom.colors.nav,
+            border: theme.custom.colors.borderFull,
             padding: "16px",
             color: theme.custom.colors.fontColor,
             fontSize: "20px",
@@ -609,6 +607,9 @@ function BurnConfirmation({ onConfirm }: { onConfirm: () => void }) {
           onClick={() => onConfirm()}
           style={{
             backgroundColor: theme.custom.colors.negative,
+          }}
+          buttonLabelStyle={{
+            color: theme.custom.colors.negativeButtonColor,
           }}
         />
       </div>

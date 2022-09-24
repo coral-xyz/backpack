@@ -11,18 +11,15 @@ import { useEffect } from "react";
 import { List, ListItem, walletAddressDisplay } from "../../../../common";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { AddConnectWalletButton } from "../..";
+import { ImportTypeBadge } from "../../";
 
 export function EditWallets() {
-  const theme = useCustomTheme();
   const nav = useNavStack();
   const blockchainKeyrings = useWalletPublicKeys();
 
   useEffect(() => {
     const title = nav.title;
     nav.setTitle("Edit wallets");
-    nav.setStyle({
-      borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-    });
 
     return () => {
       nav.setTitle(title);
@@ -80,7 +77,12 @@ function WalletList({
         </Typography>
       )}
 
-      <List>
+      <List
+        style={{
+          border: `${theme.custom.colors.borderFull}`,
+          borderRadius: "10px",
+        }}
+      >
         {flattenedWallets.map(({ name, publicKey, type }, idx) => (
           <WalletListItem
             blockchain={blockchain}
@@ -93,7 +95,14 @@ function WalletList({
           />
         ))}
       </List>
-      <AddConnectWalletButton blockchain={blockchain} />
+      <div
+        style={{
+          marginLeft: "16px",
+          marginRight: "16px",
+        }}
+      >
+        <AddConnectWalletButton blockchain={blockchain} />
+      </div>
     </div>
   );
 }
@@ -134,24 +143,13 @@ export const WalletListItem: React.FC<{
                 type,
               })
       }
-      style={{ display: "flex", width: "100%" }}
+      style={{ height: "48px", display: "flex", width: "100%" }}
     >
-      <img
-        src={"coral.png"}
-        style={{
-          width: "40px",
-          height: "40px",
-          borderRadius: "32px",
-          marginLeft: "auto",
-          marginRight: "auto",
-          display: "block",
-        }}
-      />
       <Typography
         style={{
-          flexGrow: 1,
           marginLeft: "8px",
           color: theme.custom.colors.fontColor,
+          marginRight: "8px",
         }}
       >
         {name}
@@ -162,8 +160,19 @@ export const WalletListItem: React.FC<{
           paddingRight: "11px",
         }}
       >
-        {walletAddressDisplay(publicKey)}
+        ({walletAddressDisplay(publicKey)})
       </Typography>
+      {type && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+          }}
+        >
+          <ImportTypeBadge type={type} />
+        </div>
+      )}
     </ListItem>
   );
 };

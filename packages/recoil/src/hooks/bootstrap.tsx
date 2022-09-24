@@ -4,11 +4,6 @@ import { useNavigation, useTab } from "./navigation";
 import { useSolanaCommitment } from "./solana";
 import { useKeyringStoreState } from "./keyring";
 
-// Bootstrap data for the initial load.
-export function useBootstrap() {
-  return useRecoilValue(atoms.bootstrap);
-}
-
 export function useBootstrapFast() {
   useRecoilValue(atoms.bootstrapFast);
 

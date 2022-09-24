@@ -4,7 +4,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { TextField, PrimaryButton } from "../common";
-import { Backpack } from "../common/Icon";
+import { RedBackpack, Backpack } from "../common/Icon";
 import { LockedMenu } from "./LockedMenu";
 
 export const NAV_BAR_HEIGHT = 56;
@@ -36,7 +36,6 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   return (
     <Box
       sx={{
-        backgroundColor: theme.custom.colors.nav,
         display: "flex",
         flexDirection: "column",
         height: "100%",
@@ -44,7 +43,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
     >
       <Box
         sx={{
-          backgroundColor: theme.custom.colors.nav,
+          backgroundColor: theme.custom.colors.backdropColor,
           textAlign: "center",
           display: "flex",
           flexDirection: "column",
@@ -116,8 +115,10 @@ export function BackpackHeader({
         position: "relative",
       }}
     >
+      <RedBackpack />
       <Box
         sx={{
+          marginTop: "16px",
           display: "flex",
           flexDirection: "row-reverse",
           marginBottom: "4px",

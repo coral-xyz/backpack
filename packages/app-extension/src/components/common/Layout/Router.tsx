@@ -7,28 +7,28 @@ import {
   Navigate,
 } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import { Typography } from "@mui/material";
 import {
   useDecodedSearchParams,
-  useBootstrap,
   useNavigation,
   useRedirectUrl,
+  useFreshPlugin,
+  PluginManager,
 } from "@coral-xyz/recoil";
-import type { SearchParamsFor } from "@coral-xyz/recoil";
-import { useFreshPlugin, PluginManager } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
+import type { SearchParamsFor } from "@coral-xyz/recoil";
 import { Balances } from "../../Unlocked/Balances";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { Apps } from "../../Unlocked/Apps";
 import { _PluginDisplay } from "../../Unlocked/Apps/Plugin";
 import { Nfts } from "../../Unlocked/Nfts";
 import { Swap } from "../../Unlocked/Swap";
-import { NftsDetail } from "../../Unlocked/Nfts/Detail";
+import { NftsDetail, NftOptionsButton } from "../../Unlocked/Nfts/Detail";
 import { NftsCollection } from "../../Unlocked/Nfts/Collection";
 import { SettingsButton } from "../../Unlocked/Settings";
 import { WithNav, NavBackButton } from "./Nav";
 import { WithMotion } from "./NavStack";
 import { WithDrawer } from "../../common/Layout/Drawer";
-import { NftOptionsButton } from "../../Unlocked/Nfts/Detail";
 
 export function Router() {
   const location = useLocation();
@@ -48,7 +48,7 @@ export function Router() {
   );
 }
 
-function Redirect() {
+export function Redirect() {
   let url = useRedirectUrl();
   const [searchParams] = useSearchParams();
   const pluginProps = searchParams.get("pluginProps");
@@ -188,6 +188,7 @@ function WithMotionWrapper({ children }: { children: any }) {
 function useNavBar() {
   let { isRoot } = useNavigation();
   const pathname = useLocation().pathname;
+  const theme = useCustomTheme();
 
   let navButtonLeft = null as any;
   let navButtonRight = null as any;
@@ -197,7 +198,40 @@ function useNavBar() {
   } as React.CSSProperties;
 
   if (isRoot) {
+    const emoji = pathname.startsWith("/balances")
+      ? "💰"
+      : pathname.startsWith("/apps")
+      ? "👾"
+      : "🎨";
     navButtonRight = <SettingsButton />;
+    navButtonLeft = (
+      <div style={{ display: "flex" }}>
+        <Typography
+          style={{
+            fontSize: "24px",
+            marginRight: "8px",
+          }}
+        >
+          {emoji}
+        </Typography>
+        <Typography
+          style={{
+            fontSize: "18px",
+            color: theme.custom.colors.fontColor,
+            fontWeight: 600,
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+          }}
+        >
+          {pathname.startsWith("/balances")
+            ? "Balances"
+            : pathname.startsWith("/apps")
+            ? "Applications"
+            : "Collectibles"}
+        </Typography>
+      </div>
+    );
   } else if (pathname === "/balances/token") {
     navButtonRight = null;
   } else if (pathname === "/nfts/detail") {
@@ -212,6 +246,5 @@ function useNavBar() {
 }
 
 function NavBootstrap({ children }: any) {
-  useBootstrap();
   return <>{children}</>;
 }

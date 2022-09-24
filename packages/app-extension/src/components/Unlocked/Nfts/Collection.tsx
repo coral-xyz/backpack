@@ -1,10 +1,10 @@
 import { Grid } from "@mui/material";
-import { NftCollection, NAV_COMPONENT_NFT_DETAIL } from "@coral-xyz/common";
 import {
-  useNavigation,
-  useSolanaNftCollections,
-  useEthereumNftCollections,
-} from "@coral-xyz/recoil";
+  Blockchain,
+  NftCollection,
+  NAV_COMPONENT_NFT_DETAIL,
+} from "@coral-xyz/common";
+import { nftCollections, useLoader, useNavigation } from "@coral-xyz/recoil";
 import { GridCard } from "./Common";
 
 export function NftsCollection({ id }: { id: string }) {
@@ -21,10 +21,14 @@ export function NftsCollection({ id }: { id: string }) {
 }
 
 function _Grid({ id }: { id: string }) {
-  const solanaCollections = useSolanaNftCollections();
-  const ethereumCollections = useEthereumNftCollections();
-  const collections = [...solanaCollections, ...ethereumCollections];
-  const collection = collections?.find((c: NftCollection) => c.id === id);
+  const [collections, _] = useLoader(nftCollections, {
+    [Blockchain.SOLANA]: [] as NftCollection[],
+    [Blockchain.ETHEREUM]: [] as NftCollection[],
+  });
+
+  const collection = Object.values(collections)
+    .flat()
+    .find((c: NftCollection) => c.id === id);
 
   // Hack: id can be undefined due to framer-motion animation, and
   // collection can be undefined when looking at a collection not in current

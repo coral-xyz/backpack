@@ -109,8 +109,7 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
         this._handlePublicKeyUpdated(event);
         break;
       default:
-        console.error(event);
-        throw new Error("invalid notification");
+        break;
     }
   }
 

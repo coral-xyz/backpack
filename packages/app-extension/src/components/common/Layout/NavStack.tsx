@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { AnimatePresence } from "framer-motion";
-import { WithNav, NavBackButton } from "./Nav";
 import { WithMotion } from "@coral-xyz/react-xnft-renderer";
+import { WithNav, NavBackButton } from "./Nav";
 
 export { WithMotion } from "@coral-xyz/react-xnft-renderer";
 
@@ -15,12 +15,14 @@ export function NavStackEphemeral({
   options,
   style,
   navButtonRight,
+  navButtonLeft,
 }: {
-  initialRoute: { name: string; props?: any };
+  initialRoute: { name: string; title?: string; props?: any };
   children: any;
   options: NavStackOptions;
   style?: React.CSSProperties;
   navButtonRight?: React.ReactNode;
+  navButtonLeft?: React.ReactNode;
 }) {
   const isArray = children && children.length !== undefined;
   const navScreens =
@@ -30,6 +32,7 @@ export function NavStackEphemeral({
       initialRoute={initialRoute}
       style={style}
       navButtonRight={navButtonRight}
+      navButtonLeft={navButtonLeft}
     >
       <NavStackInner navScreens={navScreens} options={options} />
     </NavStackProvider>
@@ -43,10 +46,22 @@ function NavStackInner({
   navScreens: any;
   options: NavStackOptions;
 }) {
-  let { isRoot, activeRoute, pop, navButtonRight, title, style, contentStyle } =
-    useNavStack();
-
-  const navButtonLeft = isRoot ? null : <NavBackButton onClick={() => pop()} />;
+  let {
+    isRoot,
+    activeRoute,
+    pop,
+    navButtonRight,
+    navButtonLeft,
+    title,
+    style,
+    contentStyle,
+  } = useNavStack();
+  const _navButtonLeft =
+    navButtonLeft && isRoot ? (
+      navButtonLeft
+    ) : isRoot ? null : (
+      <NavBackButton onClick={() => pop()} />
+    );
   const activeScreen = navScreens.find(
     (c: any) => c.props.name === activeRoute.name
   );
@@ -62,7 +77,7 @@ function NavStackInner({
       <WithMotion id={activeRoute.name} navAction={activeRoute.navAction}>
         <WithNav
           title={title}
-          navButtonLeft={navButtonLeft}
+          navButtonLeft={_navButtonLeft}
           navButtonRight={navButtonRight}
           navbarStyle={style}
           navContentStyle={contentStyle}
@@ -77,6 +92,7 @@ function NavStackInner({
 function NavStackProvider({
   initialRoute,
   navButtonRight,
+  navButtonLeft,
   style,
   children,
 }: any) {
@@ -84,6 +100,8 @@ function NavStackProvider({
   const [titleOverride, setTitleOverride] = useState(initialRoute.title);
   const [navButtonRightOverride, setNavButtonRightOverride] =
     useState<any>(navButtonRight);
+  const [navButtonLeftOverride, setNavButtonLeftOverride] =
+    useState<any>(navButtonLeft);
   const [_style, setStyle] = useState(style);
   const [contentStyle, setContentStyle] = useState({});
 
@@ -112,6 +130,8 @@ function NavStackProvider({
         setTitle: setTitleOverride,
         navButtonRight: navButtonRightOverride,
         setNavButtonRight: setNavButtonRightOverride,
+        navButtonLeft: navButtonLeftOverride,
+        setNavButtonLeft: setNavButtonLeftOverride,
         style: _style,
         setStyle,
         contentStyle,
@@ -145,6 +165,8 @@ type NavStackContext = {
   setTitle: any;
   navButtonRight: any;
   setNavButtonRight: any;
+  navButtonLeft: any;
+  setNavButtonLeft: any;
   style: any;
   setStyle: any;
   contentStyle: any;
