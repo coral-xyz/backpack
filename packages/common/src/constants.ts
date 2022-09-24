@@ -197,6 +197,8 @@ export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ =
   "ui-rpc-method-ethereum-connection-url-read";
 export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE =
   "ui-rpc-method-ethereum-connection-url-update";
+export const UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE =
+  "ui-rpc-method-ethereum-chain-id-update";
 export const UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION =
   "ui-rpc-method-ethereum-sign-tx";
 export const UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION =

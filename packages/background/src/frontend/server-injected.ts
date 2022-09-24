@@ -45,6 +45,7 @@ import {
   NOTIFICATION_ETHEREUM_CONNECTED,
   NOTIFICATION_ETHEREUM_DISCONNECTED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
+  NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_CONNECTED,
   NOTIFICATION_SOLANA_DISCONNECTED,
@@ -91,6 +92,9 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
         ethereumNotificationsInjected.sendMessageActiveTab(notification);
         break;
       case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
+        ethereumNotificationsInjected.sendMessageActiveTab(notification);
+        break;
+      case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
         ethereumNotificationsInjected.sendMessageActiveTab(notification);
         break;
       case NOTIFICATION_SOLANA_CONNECTED:

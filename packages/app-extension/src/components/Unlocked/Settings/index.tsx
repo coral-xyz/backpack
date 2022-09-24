@@ -1,9 +1,10 @@
 import { useEffect, useState, Suspense } from "react";
 import * as bs58 from "bs58";
 import { ethers } from "ethers";
-import { Button, Box, Typography, IconButton } from "@mui/material";
-import { ExpandMore, ExpandLess } from "@mui/icons-material";
+import { Box, Typography, IconButton } from "@mui/material";
 import {
+  ExpandMore,
+  ExpandLess,
   Add,
   Lock,
   Help,
@@ -19,14 +20,11 @@ import {
   useActiveWallet,
   useActiveWallets,
   useBlockchainLogo,
-  useDarkMode,
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
-  toTitleCase,
   Blockchain,
   BACKPACK_FEATURE_POP_MODE,
-  BACKPACK_FEATURE_MULTICHAIN,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
@@ -70,6 +68,7 @@ import { PreferencesTrustedApps } from "./Preferences/TrustedApps";
 import { PreferencesSolanaConnection } from "./Preferences/Solana/ConnectionSwitch";
 import { PreferencesSolanaCommitment } from "./Preferences/Solana/Commitment";
 import { PreferencesSolanaExplorer } from "./Preferences/Solana/Explorer";
+import { PreferencesEthereumConnection } from "./Preferences/Ethereum/Connection";
 import { ChangePassword } from "./YourAccount/ChangePassword";
 import { ResetWarning } from "../../Locked/Reset/ResetWarning";
 import { Reset } from "../../Locked/Reset";
@@ -79,7 +78,7 @@ import { EditWallets } from "./YourAccount/EditWallets";
 import { RemoveWallet } from "./YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
-import { GridIcon, CheckIcon } from "../../common/Icon";
+import { GridIcon } from "../../common/Icon";
 import { XnftSettings } from "./Xnfts";
 import { XnftDetail } from "./Xnfts/Detail";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
@@ -202,6 +201,12 @@ function AvatarButton() {
               name={"preferences-solana-explorer"}
               component={(props: any) => (
                 <PreferencesSolanaExplorer {...props} />
+              )}
+            />
+            <NavStackScreen
+              name={"preferences-ethereum-rpc-connection"}
+              component={(props: any) => (
+                <PreferencesEthereumConnection {...props} />
               )}
             />
             <NavStackScreen
