@@ -44,8 +44,12 @@ import type { BackgroundClient } from "../channel";
 export class BackgroundEthereumProvider extends JsonRpcProvider {
   private _backgroundClient: BackgroundClient;
 
-  constructor(backgroundClient: BackgroundClient, connectionUrl: string) {
-    super(connectionUrl);
+  constructor(
+    backgroundClient: BackgroundClient,
+    connectionUrl: string,
+    chainId = "0x1"
+  ) {
+    super(connectionUrl, parseInt(chainId));
     this._backgroundClient = backgroundClient;
   }
 

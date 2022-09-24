@@ -31,6 +31,7 @@ import {
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
+  NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
   Blockchain,
 } from "@coral-xyz/common";
@@ -321,6 +322,32 @@ export class Backend {
       name: NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
       data: {
         connectionUrl,
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
+  async ethereumChainIdRead(): Promise<string> {
+    const data = await store.getWalletData();
+    return data.ethereum && data.ethereum.chainId
+      ? data.ethereum.chainId
+      : // Default to mainnet
+        "0x1";
+  }
+
+  async ethereumChainIdUpdate(chainId: string): Promise<string> {
+    const data = await store.getWalletData();
+    await store.setWalletData({
+      ...data,
+      ethereum: {
+        ...(data.ethereum || {}),
+        chainId,
+      },
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
+      data: {
+        chainId,
       },
     });
     return SUCCESS_RESPONSE;

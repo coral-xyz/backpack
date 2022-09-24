@@ -11,6 +11,7 @@ import {
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
+  NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
 } from "@coral-xyz/common";
 import type { CachedValue } from "../types";
@@ -66,6 +67,9 @@ export class EthereumConnectionBackend {
         case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
           handleConnectionUrlUpdated(notif);
           break;
+        case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
+          handleChainIdUpdated(notif);
+          break;
         default:
           break;
       }
@@ -98,11 +102,17 @@ export class EthereumConnectionBackend {
     };
 
     const handleConnectionUrlUpdated = (notif: Notification) => {
-      const { activeWallet, url } = notif.data;
-      this.provider = new ethers.providers.JsonRpcProvider(url);
-      this.url = url;
-      this.stopPolling();
-      this.startPolling(activeWallet);
+      const { connectionUrl } = notif.data;
+      this.provider = new ethers.providers.JsonRpcProvider(connectionUrl);
+      this.url = connectionUrl;
+    };
+
+    const handleChainIdUpdated = (notif: Notification) => {
+      const { chainId } = notif.data;
+      this.provider = new ethers.providers.JsonRpcProvider(
+        this.url,
+        parseInt(chainId)
+      );
     };
   }
 

@@ -12,6 +12,7 @@ import {
 import {
   blockchainBalancesSorted,
   useActiveWallets,
+  useBlockchainConnectionUrl,
   useBlockchainLogo,
   useBlockchainTokensSorted,
   useLoader,
@@ -191,12 +192,17 @@ export function TokenTable({
   const classes = useStyles();
   const title = toTitleCase(blockchain);
   const blockchainLogo = useBlockchainLogo(blockchain);
+  const connectionUrl = useBlockchainConnectionUrl(blockchain);
   const activeWallets = useActiveWallets();
   const wallet = activeWallets.filter((w) => w.blockchain === blockchain)[0];
 
   const [_tokenAccounts, _, isLoading] = tokenAccounts
     ? [tokenAccounts, "hasValue"]
-    : useLoader(blockchainBalancesSorted(blockchain), [], [wallet.publicKey]);
+    : useLoader(
+        blockchainBalancesSorted(blockchain),
+        [],
+        [wallet.publicKey, connectionUrl]
+      );
 
   const [search, setSearch] = useState(searchFilter);
   const [tooltipOpen, setTooltipOpen] = useState(false);

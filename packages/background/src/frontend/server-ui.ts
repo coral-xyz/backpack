@@ -69,6 +69,8 @@ import {
   UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE,
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ,
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
+  UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ,
+  UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
   UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
@@ -273,6 +275,10 @@ async function handle<T = any>(
       return await handleEthereumConnectionUrlRead(ctx);
     case UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE:
       return await handleEthereumConnectionUrlUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ:
+      return await handleEthereumChainIdRead(ctx);
+    case UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE:
+      return await handleEthereumChainIdUpdate(ctx, params[0]);
     case UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION:
       return await handleEthereumSignTransaction(ctx, params[0], params[1]);
     case UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION:
@@ -681,8 +687,23 @@ async function handleEthereumConnectionUrlUpdate(
   ctx: Context<Backend>,
   url: string
 ): Promise<RpcResponse<boolean>> {
-  const didChange = await ctx.backend.ethereumConnectionUrlUpdate(url);
-  return [didChange];
+  const resp = await ctx.backend.ethereumConnectionUrlUpdate(url);
+  return [resp];
+}
+
+async function handleEthereumChainIdRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.ethereumChainIdRead();
+  return [resp];
+}
+
+async function handleEthereumChainIdUpdate(
+  ctx: Context<Backend>,
+  chainId: string
+): Promise<RpcResponse<boolean>> {
+  const resp = await ctx.backend.ethereumChainIdUpdate(chainId);
+  return [resp];
 }
 
 async function handleEthereumSignTransaction(

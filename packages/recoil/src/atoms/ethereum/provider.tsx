@@ -2,18 +2,22 @@ import { selector } from "recoil";
 import { BackgroundEthereumProvider } from "@coral-xyz/common";
 import { providerBackgroundClient } from "../client";
 import { ethereumConnectionUrl } from "./preferences";
+import { ethereumChainId } from "./preferences";
 
 export const ethersContext = selector({
   key: "ethersContext",
   get: ({ get }) => {
-    const _connectionUrl = get(ethereumConnectionUrl);
+    const connectionUrl = get(ethereumConnectionUrl);
+    const chainId = get(ethereumChainId);
     const _providerBackgroundClient = get(providerBackgroundClient);
     const provider = new BackgroundEthereumProvider(
       _providerBackgroundClient,
-      _connectionUrl
+      connectionUrl,
+      chainId
     );
     return {
-      connectionUrl: _connectionUrl,
+      chainId,
+      connectionUrl,
       provider,
     };
   },

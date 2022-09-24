@@ -5,7 +5,6 @@ import type { Event } from "@coral-xyz/common";
 import {
   getLogger,
   BackgroundEthereumProvider,
-  ALCHEMY_ETHEREUM_MAINNET_API_KEY,
   CHANNEL_ETHEREUM_RPC_REQUEST,
   CHANNEL_ETHEREUM_RPC_RESPONSE,
   CHANNEL_ETHEREUM_NOTIFICATION,
@@ -15,12 +14,15 @@ import {
   NOTIFICATION_ETHEREUM_CONNECTED,
   NOTIFICATION_ETHEREUM_DISCONNECTED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
+  NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
 } from "@coral-xyz/common";
 import * as cmn from "./common/ethereum";
 import { RequestManager } from "./request-manager";
 
 const logger = getLogger("provider-ethereum-injection");
+
+export type EthersSendCallback = (error: unknown, response: unknown) => void;
 
 // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#request
 interface RequestArguments {
@@ -139,7 +141,6 @@ export class ProviderEthereumInjection extends EventEmitter {
     this.isBackpack = true;
     this.chainId = null;
     this.publicKey = null;
-    this.provider = this.defaultProvider();
 
     this._handleConnect = this._handleConnect.bind(this);
     this._handleChainChanged = this._handleChainChanged.bind(this);
@@ -147,14 +148,6 @@ export class ProviderEthereumInjection extends EventEmitter {
     this._handleEthSignMessage = this._handleEthSignMessage.bind(this);
     this._handleEthSignTransaction = this._handleEthSignTransaction.bind(this);
     this._handleEthSendTransaction = this._handleEthSendTransaction.bind(this);
-  }
-
-  defaultProvider(): ethers.providers.JsonRpcProvider {
-    // TODO the connection URL and chain id parameters should come from Backpack
-    return new ethers.providers.JsonRpcProvider(
-      `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_ETHEREUM_MAINNET_API_KEY}`,
-      1
-    );
   }
 
   // Setup channels with the content script.
@@ -171,6 +164,49 @@ export class ProviderEthereumInjection extends EventEmitter {
    */
   isConnected(): boolean {
     return this._state.isConnected;
+  }
+
+  // Deprecated EIP-1193 method
+  async enable(): Promise<unknown> {
+    return this.request({ method: "eth_requestAccounts" });
+  }
+
+  // Deprecated EIP-1193 method
+  send(
+    methodOrRequest: string | RequestArguments,
+    paramsOrCallback: Array<unknown> | EthersSendCallback
+  ): Promise<unknown> | void {
+    if (
+      typeof methodOrRequest === "string" &&
+      typeof paramsOrCallback !== "function"
+    ) {
+      return this.request({
+        method: methodOrRequest,
+        params: paramsOrCallback,
+      });
+    } else if (
+      typeof methodOrRequest === "object" &&
+      typeof paramsOrCallback === "function"
+    ) {
+      return this.sendAsync(methodOrRequest, paramsOrCallback);
+    }
+    return Promise.reject(new Error("Unsupported function parameters"));
+  }
+
+  // Deprecated EIP-1193 method still in use by some DApps
+  sendAsync(
+    request: RequestArguments & { id?: number; jsonrpc?: string },
+    callback: (error: unknown, response: unknown) => void
+  ): Promise<unknown> | void {
+    return this.request(request).then(
+      (response) =>
+        callback(null, {
+          result: response,
+          id: request.id,
+          jsonrpc: request.jsonrpc,
+        }),
+      (error) => callback(error, null)
+    );
   }
 
   /**
@@ -209,12 +245,7 @@ export class ProviderEthereumInjection extends EventEmitter {
     const functionMap = {
       eth_accounts: this._handleEthRequestAccounts,
       eth_requestAccounts: this._handleEthRequestAccounts,
-      eth_chainId: () =>
-        // TODO this should be preloaded and cached, so it doesn't cause a delay
-        // after the connect button is pressed
-        this.provider!.getNetwork().then((network) =>
-          network.chainId.toString()
-        ),
+      eth_chainId: () => this.chainId,
       eth_getBalance: (address: string) => this.provider!.getBalance(address),
       eth_getCode: (address: string) => this.provider!.getCode(address),
       eth_getStorageAt: (address: string, position: string) =>
@@ -287,6 +318,9 @@ export class ProviderEthereumInjection extends EventEmitter {
       case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
         this._handleNotificationConnectionUrlUpdated(event);
         break;
+      case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
+        this._handleNotificationChainIdUpdated(event);
+        break;
       case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
         this._handleNotificationActiveWalletUpdated(event);
         break;
@@ -299,16 +333,14 @@ export class ProviderEthereumInjection extends EventEmitter {
    * Handle a connect notification from Backpack.
    */
   async _handleNotificationConnected(event) {
-    const { publicKey, connectionUrl } = event.data.detail.data;
+    const { publicKey, connectionUrl, chainId } = event.data.detail.data;
     this.publicKey = publicKey;
-    // TODO not hardcoded
-    const chainId = 1;
     this.provider = new ethers.providers.JsonRpcProvider(
       connectionUrl,
-      chainId
+      parseInt(chainId)
     );
-    this._handleConnect(chainId.toString(16));
-    this._handleChainChanged(chainId.toString(16));
+    this._handleConnect(chainId);
+    this._handleChainChanged(chainId);
     this._handleAccountsChanged([this.publicKey]);
   }
 
@@ -342,10 +374,11 @@ export class ProviderEthereumInjection extends EventEmitter {
       this._connectionRequestManager,
       connectionUrl
     );
-    const newChainId = (await this.provider!.getNetwork()).chainId;
-    if (this.isConnected() && this.chainId !== newChainId.toString(16)) {
-      this._handleChainChanged(newChainId.toString(16));
-    }
+  }
+
+  async _handleNotificationChainIdUpdated(event: any) {
+    const { chainId } = event.data.detail.data;
+    this._handleChainChanged(chainId);
   }
 
   /**
