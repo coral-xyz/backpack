@@ -21,6 +21,7 @@ import {
   SOL_NATIVE_MINT,
   ETH_NATIVE_MINT,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
+  BACKPACK_FEATURE_MULTICHAIN,
 } from "@coral-xyz/common";
 import { WithHeaderButton } from "./Token";
 import { SendEthereumConfirmationCard } from "./Ethereum";
@@ -144,8 +145,9 @@ export function Send({
   const { close } = useDrawerContext();
   const { title, setTitle } = useNavStack();
   const { provider: solanaProvider } = useAnchorContext();
-  const ethereumCtx = useEthereumCtx();
-
+  const ethereumCtx = BACKPACK_FEATURE_MULTICHAIN
+    ? useEthereumCtx()
+    : undefined;
   const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState<BigNumber | undefined>(undefined);
@@ -178,10 +180,10 @@ export function Send({
       // 21,000 GWEI for a standard ETH transfer
       setFeeOffset(
         BigNumber.from("21000")
-          .mul(ethereumCtx.feeData.maxFeePerGas!)
+          .mul(ethereumCtx?.feeData.maxFeePerGas!)
           .add(
             BigNumber.from("21000").mul(
-              ethereumCtx.feeData.maxPriorityFeePerGas!
+              ethereumCtx?.feeData.maxPriorityFeePerGas!
             )
           )
       );
