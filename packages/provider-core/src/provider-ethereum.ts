@@ -15,6 +15,7 @@ import {
   NOTIFICATION_ETHEREUM_CONNECTED,
   NOTIFICATION_ETHEREUM_DISCONNECTED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
+  NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
 } from "@coral-xyz/common";
 import * as cmn from "./common/ethereum";
@@ -145,9 +146,8 @@ export class ProviderEthereumInjection extends EventEmitter {
       ...ProviderEthereumInjection._defaultState,
     };
 
-    this.chainId = "0x1";
+    this.chainId = null;
     this.publicKey = null;
-    this.provider = this.defaultProvider();
 
     this._handleConnect = this._handleConnect.bind(this);
     this._handleChainChanged = this._handleChainChanged.bind(this);
@@ -155,13 +155,6 @@ export class ProviderEthereumInjection extends EventEmitter {
     this._handleEthSignMessage = this._handleEthSignMessage.bind(this);
     this._handleEthSignTransaction = this._handleEthSignTransaction.bind(this);
     this._handleEthSendTransaction = this._handleEthSendTransaction.bind(this);
-  }
-
-  defaultProvider(): ethers.providers.JsonRpcProvider {
-    // TODO the connection URL and chain id parameters should come from Backpack
-    return new ethers.providers.JsonRpcProvider(
-      `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_ETHEREUM_MAINNET_API_KEY}`
-    );
   }
 
   // Setup channels with the content script.
@@ -259,12 +252,7 @@ export class ProviderEthereumInjection extends EventEmitter {
     const functionMap = {
       eth_accounts: this._handleEthRequestAccounts,
       eth_requestAccounts: this._handleEthRequestAccounts,
-      eth_chainId: () =>
-        // TODO this should be preloaded and cached, so it doesn't cause a delay
-        // after the connect button is pressed
-        this.provider!.getNetwork().then((network) =>
-          hexValue(network.chainId)
-        ),
+      eth_chainId: () => this.chainId,
       eth_getBalance: (address: string) => this.provider!.getBalance(address),
       eth_getCode: (address: string) => this.provider!.getCode(address),
       eth_getStorageAt: (address: string, position: string) =>
@@ -337,6 +325,9 @@ export class ProviderEthereumInjection extends EventEmitter {
       case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
         this._handleNotificationConnectionUrlUpdated(event);
         break;
+      case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
+        this._handleNotificationChainIdUpdated(event);
+        break;
       case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
         this._handleNotificationActiveWalletUpdated(event);
         break;
@@ -353,7 +344,7 @@ export class ProviderEthereumInjection extends EventEmitter {
     this.publicKey = publicKey;
     this.provider = new ethers.providers.JsonRpcProvider(
       connectionUrl,
-      chainId
+      parseInt(chainId)
     );
     this._handleConnect(chainId);
     this._handleChainChanged(chainId);
@@ -390,10 +381,11 @@ export class ProviderEthereumInjection extends EventEmitter {
       this._connectionRequestManager,
       connectionUrl
     );
-    const newChainId = (await this.provider!.getNetwork()).chainId;
-    if (this.isConnected() && this.chainId !== hexValue(newChainId)) {
-      this._handleChainChanged(hexValue(newChainId));
-    }
+  }
+
+  async _handleNotificationChainIdUpdated(event: any) {
+    const { chainId } = event.data.detail.data;
+    this._handleChainChanged(chainId);
   }
 
   /**

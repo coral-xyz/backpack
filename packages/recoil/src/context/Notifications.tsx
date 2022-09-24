@@ -27,6 +27,7 @@ import {
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
+  NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
 } from "@coral-xyz/common";
 import {
@@ -53,14 +54,17 @@ export function NotificationsProvider(props: any) {
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
   const setAutoLockSecs = useSetRecoilState(atoms.autoLockSecs);
   const setIsDarkMode = useSetRecoilState(atoms.isDarkMode);
+  // Solana
   const setSolanaConnectionUrl = useSetRecoilState(atoms.solanaConnectionUrl);
   const setSolanaExplorer = useSetRecoilState(atoms.solanaExplorer);
   const setSolanaCommitment = useSetRecoilState(atoms.solanaCommitment);
+  const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
+  // Ethereum
   const setEthereumConnectionUrl = useSetRecoilState(
     atoms.ethereumConnectionUrl
   );
+  const setEthereumChainId = useSetRecoilState(atoms.ethereumChainId);
   const updateEthereumBalances = useUpdateEthereumBalances();
-  const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -134,6 +138,9 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
           handleEthereumConnectionUrlUpdated(notif);
+          break;
+        case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
+          handleEthereumChainIdUpdated(notif);
           break;
         case NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE:
           handleEthereumTokensDidUpdate(notif);
@@ -352,10 +359,14 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleEthereumConnectionUrlUpdated = (notif: Notification) => {
-      setEthereumConnectionUrl(notif.data.url);
+      setEthereumConnectionUrl(notif.data.connectionUrl);
       allPlugins().forEach((p) => {
-        p.pushEthereumConnectionChangedNotification(notif.data.url);
+        p.pushEthereumConnectionChangedNotification(notif.data.connectionUrl);
       });
+    };
+
+    const handleEthereumChainIdUpdated = (notif: Notification) => {
+      setEthereumChainId(notif.data.chainId);
     };
 
     //

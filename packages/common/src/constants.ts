@@ -190,13 +190,15 @@ export const UI_RPC_METHOD_SOLANA_SIGN_MESSAGE =
   "ui-rpc-method-solana-sign-message";
 // Ethereum
 export const UI_RPC_METHOD_ETHEREUM_EXPLORER_READ =
-  "ui-rpc-method-ethereum-exporer-read";
+  "ui-rpc-method-ethereum-explorer-read";
 export const UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE =
-  "ui-rpc-method-ethereum-exporer-update";
+  "ui-rpc-method-ethereum-explorer-update";
 export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ =
   "ui-rpc-method-ethereum-connection-url-read";
 export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE =
   "ui-rpc-method-ethereum-connection-url-update";
+export const UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ =
+  "ui-rpc-method-ethereum-chain-id-read";
 export const UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE =
   "ui-rpc-method-ethereum-chain-id-update";
 export const UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION =
@@ -257,6 +259,8 @@ export const NOTIFICATION_ETHEREUM_DISCONNECTED =
   "notification-ethereum-disconnected";
 export const NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED =
   "notification-ethereum-connection-url-updated";
+export const NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED =
+  "notification-ethereum-chain-id-updated";
 export const NOTIFICATION_ETHEREUM_EXPLORER_UPDATED =
   "notification-ethereum-explorer-updated";
 export const NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED =

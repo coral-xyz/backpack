@@ -7,7 +7,6 @@ import type {
   GetProgramAccountsConfig,
   MessageArgs,
   BlockheightBasedTransactionConfirmationStrategy,
-  TokenAccountsFilter,
 } from "@solana/web3.js";
 import { PublicKey, Message } from "@solana/web3.js";
 import type {

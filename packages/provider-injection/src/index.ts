@@ -33,9 +33,8 @@ function initProvider() {
     CHANNEL_PLUGIN_RPC_RESPONSE,
     true
   );
-  const solanaXnftInjection = new ProviderSolanaXnftInjection(requestManager);
-  window.xnft = solanaXnftInjection;
-  window.xnft.solana = solanaXnftInjection;
+  window.xnft = new ProviderSolanaXnftInjection(requestManager);
+  window.xnft.solana = new ProviderSolanaXnftInjection(requestManager);
   window.xnft.ethereum = new ProviderEthereumXnftInjection(requestManager);
 
   try {
