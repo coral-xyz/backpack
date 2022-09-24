@@ -56,7 +56,7 @@ const baseTheme = createStyles({
   },
 });
 
-const componentOverrides = {
+const darkComponentOverrides = {
   MuiButton: {
     styleOverrides: {
       root: {
@@ -102,7 +102,7 @@ const componentOverrides = {
 
 export const darkTheme: any = {
   ...baseTheme,
-  components: componentOverrides,
+  components: darkComponentOverrides,
   custom: {
     colors: {
       brandColor: BRAND_COLOR,
@@ -158,9 +158,53 @@ export const darkTheme: any = {
   },
 };
 
+const lightComponentOverrides = {
+  MuiButton: {
+    styleOverrides: {
+      root: {
+        "&:hover": {
+          opacity: HOVER_OPACITY,
+        },
+      },
+    },
+  },
+  MuiListItem: {
+    styleOverrides: {
+      root: {
+        "&:hover": {
+          opacity: HOVER_OPACITY,
+        },
+      },
+    },
+  },
+  MuiIconButton: {
+    styleOverrides: {
+      root: {
+        "&:hover": {
+          opacity: HOVER_OPACITY,
+        },
+      },
+    },
+  },
+  MuiPaper: {
+    styleOverrides: {
+      root: {
+        backgroundImage: "none",
+      },
+    },
+  },
+  MuiSelect: {
+    styleOverrides: {
+      icon: {
+        color: FONT_COLOR_1,
+      },
+    },
+  },
+};
+
 export const lightTheme: any = {
   ...baseTheme,
-  components: componentOverrides,
+  components: lightComponentOverrides,
   custom: {
     colors: {
       brandColor: LIGHT_BRAND_COLOR,

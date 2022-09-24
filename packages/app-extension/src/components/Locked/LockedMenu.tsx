@@ -28,7 +28,7 @@ const useStyles = styles((theme) => ({
   listItemRoot: {
     height: "44px",
     display: "flex",
-    backgroundColor: `${theme.custom.colors.bg2} !important`,
+    backgroundColor: `${theme.custom.colors.nav} !important`,
   },
 }));
 
@@ -52,18 +52,14 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
         onClick={() => setMenuOpen(true)}
         sx={{ padding: 0 }}
       >
-        <MenuIcon sx={{ color: theme.custom.colors.secondary }} />
+        <MenuIcon sx={{ color: theme.custom.colors.icon }} />
       </IconButton>
       <WithDrawer openDrawer={menuOpen} setOpenDrawer={setMenuOpen}>
-        <div style={{ height: "100%", background: theme.custom.colors.nav }}>
+        <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
             options={(args) => ({ title: "" })}
             navButtonLeft={<CloseButton onClick={() => setMenuOpen(false)} />}
-            style={{
-              backgroundColor: theme.custom.colors.nav,
-              borderBottom: "none",
-            }}
           >
             <NavStackScreen
               name={"root"}
@@ -91,9 +87,7 @@ export function LockedMenuList() {
 
   const options = [
     {
-      icon: (
-        <AccountCircleIcon style={{ color: theme.custom.colors.secondary }} />
-      ),
+      icon: <AccountCircleIcon style={{ color: theme.custom.colors.icon }} />,
       text: "Reset Secret Recovery Phrase",
       onClick: () => nav.push("reset"),
       suffix: (
@@ -101,29 +95,24 @@ export function LockedMenuList() {
           style={{
             flexShrink: 1,
             alignSelf: "center",
-            color: theme.custom.colors.secondary,
+            color: theme.custom.colors.icon,
           }}
         />
       ),
     },
     {
-      icon: <SupportIcon style={{ color: theme.custom.colors.secondary }} />,
-      text: "Help & Support",
-      onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
-    },
-    {
-      icon: <LockIcon style={{ color: theme.custom.colors.secondary }} />,
+      icon: <LockIcon style={{ color: theme.custom.colors.icon }} />,
       text: "Backpack.app",
       onClick: () => window.open(BACKPACK_LINK, "_blank"),
     },
     {
-      icon: <TwitterIcon style={{ color: theme.custom.colors.secondary }} />,
+      icon: <TwitterIcon style={{ color: theme.custom.colors.icon }} />,
       text: "Twitter",
       onClick: () => window.open(TWITTER_LINK, "_blank"),
     },
     {
-      icon: <DiscordIcon fill={theme.custom.colors.secondary} />,
-      text: "Discord",
+      icon: <DiscordIcon fill={theme.custom.colors.icon} />,
+      text: "Need help? Hop into Discord",
       onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
     },
   ];
@@ -134,6 +123,7 @@ export function LockedMenuList() {
         style={{
           marginLeft: "16px",
           marginRight: "16px",
+          border: theme.custom.colors.borderFull,
         }}
       >
         {options.map((o, idx) => (
@@ -142,7 +132,7 @@ export function LockedMenuList() {
             key={o.text}
             isFirst={idx === 0}
             isLast={idx === options.length - 1}
-            borderColor={theme.custom.colors.border1}
+            borderColor={theme.custom.colors.nav}
             classes={{ root: classes.listItemRoot }}
           >
             <div
@@ -168,7 +158,7 @@ export function LockedMenuList() {
                 style={{
                   flexShrink: 1,
                   alignSelf: "center",
-                  color: theme.custom.colors.secondary,
+                  color: theme.custom.colors.icon,
                 }}
               />
             )}
