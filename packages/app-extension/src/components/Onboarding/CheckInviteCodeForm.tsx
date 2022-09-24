@@ -123,7 +123,7 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
         </Box>
       </form>
       <WaitingRoom
-        uri="https://beta-waiting-room.vercel.app/"
+        uri={`https://beta-waiting-room.vercel.app/?id=${waitlistResponseId}`}
         onClose={() => setShowWaitingRoom(false)}
         visible={showWaitingRoom}
       />
