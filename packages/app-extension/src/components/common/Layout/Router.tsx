@@ -48,7 +48,7 @@ export function Router() {
   );
 }
 
-function Redirect() {
+export function Redirect() {
   let url = useRedirectUrl();
   const [searchParams] = useSearchParams();
   const pluginProps = searchParams.get("pluginProps");
@@ -199,26 +199,38 @@ function useNavBar() {
 
   if (isRoot) {
     const emoji = pathname.startsWith("/balances")
-      ? "💰 "
+      ? "💰"
       : pathname.startsWith("/apps")
-      ? "👾 "
-      : "🎨 ";
+      ? "👾"
+      : "🎨";
     navButtonRight = <SettingsButton />;
     navButtonLeft = (
-      <Typography
-        style={{
-          fontSize: "18px",
-          color: theme.custom.colors.fontColor,
-          fontWeight: 600,
-        }}
-      >
-        {emoji}
-        {pathname.startsWith("/balances")
-          ? "Balances"
-          : pathname.startsWith("/apps")
-          ? "Applications"
-          : "Collectibles"}
-      </Typography>
+      <div style={{ display: "flex" }}>
+        <Typography
+          style={{
+            fontSize: "24px",
+            marginRight: "8px",
+          }}
+        >
+          {emoji}
+        </Typography>
+        <Typography
+          style={{
+            fontSize: "18px",
+            color: theme.custom.colors.fontColor,
+            fontWeight: 600,
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+          }}
+        >
+          {pathname.startsWith("/balances")
+            ? "Balances"
+            : pathname.startsWith("/apps")
+            ? "Applications"
+            : "Collectibles"}
+        </Typography>
+      </div>
     );
   } else if (pathname === "/balances/token") {
     navButtonRight = null;

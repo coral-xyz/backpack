@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ethers, BigNumber } from "ethers";
-import { CircularProgress, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Connection, SystemProgram, PublicKey } from "@solana/web3.js";
 import {
@@ -31,6 +31,7 @@ import {
   PrimaryButton,
   SecondaryButton,
   DangerButton,
+  Loading,
 } from "../../../common";
 import { TokenInputField } from "../../../common/TokenInput";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
@@ -436,9 +437,9 @@ export function Sending({
             <CheckIcon />
           </div>
         ) : (
-          <CircularProgress
+          <Loading
             size={48}
-            style={{
+            iconStyle={{
               color: theme.custom.colors.primaryButton,
               display: "flex",
               marginLeft: "auto",

@@ -28,7 +28,7 @@ const useStyles = styles((theme: any) => ({
   passwordField: {
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `solid 2pt ${theme.custom.colors.border}`,
+        border: `${theme.custom.colors.borderFull}`,
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
@@ -36,6 +36,7 @@ const useStyles = styles((theme: any) => ({
     },
   },
   mnemonicInputRoot: {
+    border: `${theme.custom.colors.borderFull}`,
     color: theme.custom.colors.secondary,
     borderRadius: "8px",
     marginTop: "4px",
@@ -67,12 +68,13 @@ const useStyles = styles((theme: any) => ({
     fontSize: "14px",
   },
   listItemRoot: {
+    border: `${theme.custom.colors.borderFull}`,
     alignItems: "start",
-    borderBottom: `1px solid #000`,
     borderRadius: "4px",
     background: theme.custom.colors.nav,
     padding: "8px",
     height: "56px",
+    marginBottom: "1px",
   },
   listItemIconRoot: {
     minWidth: "inherit",
@@ -153,10 +155,7 @@ export function ShowRecoveryPhraseWarning() {
               </ListItemIcon>
               Never share your secret phrase or enter it into an app or website.
             </ListItem>
-            <ListItem
-              className={classes.listItemRoot}
-              style={{ borderBottom: "none" }}
-            >
+            <ListItem className={classes.listItemRoot}>
               <ListItemIcon className={classes.listItemIconRoot}>
                 <LockOpenIcon
                   htmlColor="#EF4444"
@@ -213,7 +212,7 @@ export function ShowRecoveryPhrase({ mnemonic }: { mnemonic: string }) {
         justifyContent: "space-between",
       }}
     >
-      <Box sx={{ margin: "32px 24px 0 24px" }}>
+      <Box sx={{ margin: "32px 16px 0 16px" }}>
         <HeaderIcon
           icon={<EyeIcon />}
           style={{ width: "40px", height: "40px", marginBottom: "24px" }}

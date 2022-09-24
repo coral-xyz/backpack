@@ -39,4 +39,4 @@ export async function setWalletData(data: WalletData) {
 }
 
 export const DEFAULT_LOCK_INTERVAL_SECS = 15 * 60;
-export const DEFAULT_DARK_MODE = true;
+export const DEFAULT_DARK_MODE = false;

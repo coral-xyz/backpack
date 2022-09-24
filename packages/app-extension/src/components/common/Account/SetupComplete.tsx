@@ -12,11 +12,11 @@ import {
   ExtensionIcon,
   WidgetIcon,
   TwitterIcon,
-  CashIcon,
   DiscordIcon,
 } from "../../common/Icon";
 
 export function SetupComplete({ onClose }: { onClose: () => void }) {
+  const theme = useCustomTheme();
   return (
     <>
       <div
@@ -61,32 +61,23 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
             }}
           >
             <Grid container spacing={2}>
-              {/*
               <Grid item xs={6}>
                 <ActionCard
-                  icon={<CashIcon />}
-                  text="Fund your Backpack"
-                  onClick={() => {}}
-                />
-              </Grid>
-								*/}
-              <Grid item xs={6}>
-                <ActionCard
-                  icon={<WidgetIcon />}
+                  icon={<WidgetIcon fill={theme.custom.colors.icon} />}
                   text="Browse the xNFT library"
                   onClick={() => window.open(XNFT_GG_LINK, "_blank")}
                 />
               </Grid>
               <Grid item xs={6}>
                 <ActionCard
-                  icon={<TwitterIcon />}
+                  icon={<TwitterIcon fill={theme.custom.colors.icon} />}
                   text="Follow us on Twitter"
                   onClick={() => window.open(TWITTER_LINK, "_blank")}
                 />
               </Grid>
               <Grid item xs={6}>
                 <ActionCard
-                  icon={<DiscordIcon />}
+                  icon={<DiscordIcon fill={theme.custom.colors.icon} />}
                   text="Join the Discord community"
                   onClick={() => window.open(DISCORD_INVITE_LINK, "_blank")}
                 />
@@ -101,7 +92,13 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
             mb: "16px",
           }}
         >
-          <PrimaryButton label="Finish" onClick={onClose} />
+          <PrimaryButton
+            label="Finish"
+            onClick={onClose}
+            buttonLabelStyle={{
+              fontWeight: 600,
+            }}
+          />
         </Box>
       </Box>
     </>
@@ -119,7 +116,7 @@ function PinNotification() {
         paddingRight: "24px",
         paddingTop: "16px",
         paddingBottom: "16px",
-        color: theme.custom.colors.fontColor,
+        color: theme.custom.colors.nav,
         borderRadius: "12px",
         boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.25)",
       }}
@@ -156,7 +153,7 @@ function PinNotification() {
             flexDirection: "column",
           }}
         >
-          <ExtensionIcon />
+          <ExtensionIcon fill={theme.custom.colors.nav} />
         </div>
         <div
           style={{
@@ -183,7 +180,7 @@ function PinNotification() {
             flexDirection: "column",
           }}
         >
-          <PinIcon />
+          <PinIcon fill={theme.custom.colors.nav} />
         </div>
       </div>
     </div>

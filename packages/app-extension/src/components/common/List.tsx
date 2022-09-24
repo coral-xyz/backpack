@@ -103,7 +103,7 @@ export function PushDetail() {
     >
       <ChevronRight
         style={{
-          color: theme.custom.colors.secondary,
+          color: theme.custom.colors.icon,
         }}
       />
     </div>
@@ -123,7 +123,7 @@ export function LaunchDetail({ style }: { style?: React.CSSProperties }) {
     >
       <CallMade
         style={{
-          color: theme.custom.colors.secondary,
+          color: theme.custom.colors.icon,
         }}
       />
     </div>

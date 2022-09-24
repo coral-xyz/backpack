@@ -27,7 +27,7 @@ const useStyles = styles((theme: any) => ({
   passwordField: {
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `solid 2pt ${theme.custom.colors.border}`,
+        border: `${theme.custom.colors.borderFull}`,
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
@@ -35,9 +35,14 @@ const useStyles = styles((theme: any) => ({
     },
   },
   privateKeyField: {
+    borderRadius: "12px",
+    border: theme.custom.colors.borderFull,
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
         border: `solid 1pt ${theme.custom.colors.border}`,
+      },
+      "& textarea": {
+        border: "none",
       },
       "&:hover fieldset": {
         border: `solid 1pt ${theme.custom.colors.border}`,
@@ -80,11 +85,12 @@ const useStyles = styles((theme: any) => ({
   },
   listItemRoot: {
     alignItems: "start",
-    borderBottom: `1px solid #000`,
     borderRadius: "4px",
     background: theme.custom.colors.nav,
     padding: "8px",
     height: "56px",
+    marginBottom: "1px",
+    border: `${theme.custom.colors.borderFull}`,
   },
   listItemIconRoot: {
     minWidth: "inherit",
@@ -171,10 +177,7 @@ export function ShowPrivateKeyWarning({ publicKey }: { publicKey?: string }) {
               </ListItemIcon>
               Never share your private key or enter it into an app or website.
             </ListItem>
-            <ListItem
-              className={classes.listItemRoot}
-              style={{ borderBottom: "none" }}
-            >
+            <ListItem className={classes.listItemRoot}>
               <ListItemIcon className={classes.listItemIconRoot}>
                 <LockOpenIcon
                   htmlColor="#EF4444"
@@ -261,6 +264,10 @@ export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
                   style={{ color: theme.custom.colors.fontColor }}
                 />
               }
+              style={{
+                height: "50px",
+                border: theme.custom.colors.borderFull,
+              }}
             />
           </Box>
         </Box>
@@ -272,7 +279,14 @@ export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
           marginBottom: "16px",
         }}
       >
-        <SecondaryButton label="Close" onClick={() => close()} />
+        <SecondaryButton
+          label="Close"
+          onClick={() => close()}
+          style={{
+            border: theme.custom.colors.borderFull,
+            height: "50px",
+          }}
+        />
       </Box>
     </Box>
   );

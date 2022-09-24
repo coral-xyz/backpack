@@ -196,10 +196,10 @@ export function Loading(props: any) {
           </linearGradient>
         </svg>
         <CircularProgress
-          size={48}
+          size={props.size ?? 48}
           className={classes.loadingIndicator}
           style={props.iconStyle}
-          thickness={6}
+          thickness={props.thickness ?? 6}
           classes={{ circle: classes.circle }}
         />
       </>
@@ -234,7 +234,13 @@ export function PrimaryButton({
         ...buttonProps.style,
       }}
     >
-      <Typography style={buttonLabelStyle} className={classes.buttonLabel}>
+      <Typography
+        style={{
+          fontWeight: 600,
+          ...buttonLabelStyle,
+        }}
+        className={classes.buttonLabel}
+      >
         {label}
       </Typography>
     </Button>
@@ -277,6 +283,7 @@ export function DangerButton({
   const buttonStyle = Object.assign(
     {
       backgroundColor: theme.custom.colors.dangerButton,
+      color: "#fff",
     },
     buttonProps.style
   );

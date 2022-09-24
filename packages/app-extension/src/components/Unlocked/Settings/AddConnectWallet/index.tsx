@@ -40,18 +40,8 @@ export function AddConnectWalletMenu({
 
   useEffect(() => {
     const prevTitle = nav.title;
-    const prevStyle = nav.style;
-    const prevContentStyle = nav.contentStyle;
-    nav.setStyle({
-      backgroundColor: theme.custom.colors.nav,
-    });
-    nav.setContentStyle({
-      backgroundColor: theme.custom.colors.nav,
-    });
     nav.setTitle("");
     return () => {
-      nav.setStyle(prevStyle);
-      nav.setContentStyle(prevContentStyle);
       nav.setTitle(prevTitle);
     };
   }, [nav.setContentStyle]);
@@ -63,7 +53,6 @@ export function AddConnectWalletMenu({
           display: "flex",
           flexDirection: "column",
           height: "100%",
-          backgroundColor: theme.custom.colors.nav,
         }}
       >
         <Box sx={{ margin: "24px" }}>
@@ -74,7 +63,13 @@ export function AddConnectWalletMenu({
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <ActionCard
-                icon={<AddCircle />}
+                icon={
+                  <AddCircle
+                    style={{
+                      color: theme.custom.colors.icon,
+                    }}
+                  />
+                }
                 text="Create a new wallet"
                 onClick={async () => {
                   const newPubkey = await background.request({
@@ -93,7 +88,13 @@ export function AddConnectWalletMenu({
             </Grid>
             <Grid item xs={6}>
               <ActionCard
-                icon={<ArrowCircleDown />}
+                icon={
+                  <ArrowCircleDown
+                    style={{
+                      color: theme.custom.colors.icon,
+                    }}
+                  />
+                }
                 text="Import an existing wallet"
                 onClick={() => nav.push("import-secret-key", { blockchain })}
               />
@@ -102,7 +103,7 @@ export function AddConnectWalletMenu({
               <ActionCard
                 icon={
                   <HardwareWalletIcon
-                    fill={theme.custom.colors.fontColor}
+                    fill={theme.custom.colors.icon}
                     style={{
                       width: "24px",
                       height: "24px",

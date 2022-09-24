@@ -90,7 +90,9 @@ export function BalanceSummaryWidget() {
           <Typography
             style={{
               color:
-                totalChange < 0
+                totalChange === 0
+                  ? theme.custom.colors.neutral
+                  : totalChange < 0
                   ? theme.custom.colors.negative
                   : theme.custom.colors.positive,
               paddingLeft: "0px",
@@ -113,39 +115,43 @@ export function BalanceSummaryWidget() {
               </>
             )}
           </Typography>
-          {Number.isFinite(percentChange) && (
-            <Typography
-              style={{
-                color:
-                  totalChange < 0
-                    ? theme.custom.colors.negative
-                    : theme.custom.colors.positive,
-                paddingLeft: "8px",
-                paddingRight: "8px",
-                paddingTop: "2px",
-                paddingBottom: "2px",
-                backgroundColor: isLoading
-                  ? undefined
+          <Typography
+            style={{
+              color:
+                totalChange === 0
+                  ? theme.custom.colors.neutral
                   : totalChange < 0
-                  ? theme.custom.colors.balanceChangeNegative
-                  : theme.custom.colors.balanceChangePositive,
-                borderRadius: "28px",
-                lineHeight: "24px",
-              }}
-            >
-              {isLoading ? (
-                <Skeleton
-                  width="100px"
-                  sx={{ backgroundColor: theme.custom.colors.balanceSkeleton }}
-                />
-              ) : (
-                <>
-                  {totalChange > 0 ? "+" : ""}
-                  {`${percentChange.toFixed(2)}%`}
-                </>
-              )}
-            </Typography>
-          )}
+                  ? theme.custom.colors.negative
+                  : theme.custom.colors.positive,
+              paddingLeft: "8px",
+              paddingRight: "8px",
+              paddingTop: "2px",
+              paddingBottom: "2px",
+              backgroundColor: isLoading
+                ? undefined
+                : totalChange === 0
+                ? theme.custom.colors.balanceChangeNeutral
+                : totalChange < 0
+                ? theme.custom.colors.balanceChangeNegative
+                : theme.custom.colors.balanceChangePositive,
+              borderRadius: "28px",
+              lineHeight: "24px",
+            }}
+          >
+            {isLoading ? (
+              <Skeleton
+                width="100px"
+                sx={{ backgroundColor: theme.custom.colors.balanceSkeleton }}
+              />
+            ) : (
+              <>
+                {totalChange > 0 ? "+" : ""}
+                {Number.isFinite(percentChange)
+                  ? `${percentChange.toFixed(2)}%`
+                  : "0.00%"}
+              </>
+            )}
+          </Typography>
           <div style={{ flex: 1 }} />
         </div>
       </div>

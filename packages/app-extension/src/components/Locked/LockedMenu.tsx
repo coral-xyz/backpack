@@ -59,7 +59,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
             options={(args) => ({ title: "" })}
-            navButtonRight={<CloseButton onClick={() => setMenuOpen(false)} />}
+            navButtonLeft={<CloseButton onClick={() => setMenuOpen(false)} />}
             style={{
               backgroundColor: theme.custom.colors.nav,
               borderBottom: "none",

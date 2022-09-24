@@ -82,8 +82,8 @@ export function ChangePassword() {
             style={{
               border: currentPasswordError
                 ? `solid 1pt ${theme.custom.colors.negative}`
-                : undefined,
-              borderRadius: "8px",
+                : `${theme.custom.colors.borderFull}`,
+              borderRadius: "10px",
             }}
           >
             <ListItem
@@ -141,8 +141,8 @@ export function ChangePassword() {
             style={{
               border: passwordMismatchError
                 ? `solid 1pt ${theme.custom.colors.negative}`
-                : undefined,
-              borderRadius: "8px",
+                : `${theme.custom.colors.borderFull}`,
+              borderRadius: "10px",
             }}
           >
             <ListItem

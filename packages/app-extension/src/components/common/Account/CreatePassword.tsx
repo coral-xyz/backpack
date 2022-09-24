@@ -146,7 +146,14 @@ export function CreatePassword({
             }
           />
         </Box>
-        <PrimaryButton disabled={isNextDisabled} label="Next" onClick={next} />
+        <PrimaryButton
+          disabled={isNextDisabled}
+          label="Next"
+          onClick={next}
+          buttonLabelStyle={{
+            fontWeight: 600,
+          }}
+        />
       </Box>
     </Box>
   );

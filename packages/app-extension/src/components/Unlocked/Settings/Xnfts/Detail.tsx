@@ -18,7 +18,12 @@ import {
 import { SwitchToggle } from "../Preferences";
 import { SettingsList } from "../../../common/Settings/List";
 import { useNavStack } from "../../../common/Layout/NavStack";
-import { PrimaryButton, SecondaryButton, LaunchDetail } from "../../../common";
+import {
+  PrimaryButton,
+  SecondaryButton,
+  LaunchDetail,
+  Loading,
+} from "../../../common";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
 import { CheckIcon } from "../../../common/Icon";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
@@ -297,9 +302,9 @@ function Sending({
             <CheckIcon />
           </div>
         ) : (
-          <CircularProgress
+          <Loading
             size={48}
-            style={{
+            iconStyle={{
               color: theme.custom.colors.primaryButton,
               display: "flex",
               marginLeft: "auto",

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Box } from "@mui/material";
 import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { UI_RPC_METHOD_KEYRING_RESET } from "@coral-xyz/common";
 import {
   Header,
@@ -14,6 +15,7 @@ import { useNavStack } from "../../common/Layout/NavStack";
 import { useDrawerContext } from "../../common/Layout/Drawer";
 
 export function ResetWarning() {
+  const theme = useCustomTheme();
   const background = useBackgroundClient();
   const nav = useNavStack();
   const { close } = useDrawerContext();
@@ -25,7 +27,6 @@ export function ResetWarning() {
   };
   useEffect(() => {
     nav.setTitle("");
-    nav.setStyle({ borderBottom: "none" });
   }, []);
   return (
     <Box
@@ -55,7 +56,13 @@ export function ResetWarning() {
         }}
       >
         <Box sx={{ width: "167.5px" }}>
-          <SecondaryButton label="Cancel" onClick={close} />
+          <SecondaryButton
+            label="Cancel"
+            onClick={close}
+            style={{
+              border: `${theme.custom.colors.borderFull}`,
+            }}
+          />
         </Box>
         <Box sx={{ width: "167.5px" }}>
           <DangerButton label="Reset" onClick={() => onNext()} />

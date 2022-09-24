@@ -9,6 +9,7 @@ import { List, ListItem, PrimaryButton } from "../../../common";
 import { EmptyState } from "../../../common/EmptyState";
 
 export function PreferencesTrustedApps() {
+  const theme = useCustomTheme();
   const nav = useNavStack();
   const approvedOrigins = useApprovedOrigins();
 
@@ -26,7 +27,12 @@ export function PreferencesTrustedApps() {
       }}
     />
   ) : (
-    <List style={{ marginTop: "16px" }}>
+    <List
+      style={{
+        marginTop: "16px",
+        border: `${theme.custom.colors.borderFull}`,
+      }}
+    >
       {Object.entries(approvedOrigins).map(
         ([key, origin]: any, i, { length }) => (
           <ListItem

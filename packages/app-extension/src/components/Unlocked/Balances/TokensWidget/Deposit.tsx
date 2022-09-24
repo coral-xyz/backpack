@@ -20,6 +20,7 @@ export function Deposit({ ...props }: any) {
 }
 
 function DepositMultichain({ ...props }: any) {
+  const theme = useCustomTheme();
   const nav = useNavStack();
   const { close } = useDrawerContext();
   const activeWallets = useActiveWallets();
@@ -98,6 +99,7 @@ function BlockchainDepositCard({
           borderRadius: "8px",
           padding: "16px",
           background: theme.custom.colors.nav,
+          border: `${theme.custom.colors.borderFull}`,
         }}
       >
         <Typography
@@ -321,8 +323,7 @@ const useStyles = styles((theme) => ({
     "& .MuiOutlinedInput-root": {
       paddingRight: 0,
       "& fieldset": {
-        border: `solid 1pt ${theme.custom.colors.borderColor}`,
-        borderColor: `${theme.custom.colors.borderColor} !important`,
+        border: `${theme.custom.colors.borderFull} !important`,
         paddingLeft: 0,
         paddingRight: 0,
       },

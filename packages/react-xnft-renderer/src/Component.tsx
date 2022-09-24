@@ -33,7 +33,7 @@ const useStyles = styles((theme) => ({
     marginLeft: "12px",
     marginRight: "12px",
     borderRadius: "12px",
-    border: `solid 1pt ${theme.custom.colors.tableBorder}`,
+    border: theme.custom.colors.borderFull,
   },
   cardHeaderAvatar: {
     display: "flex",
@@ -150,19 +150,23 @@ const useStyles = styles((theme) => ({
     borderRadius: "12px",
     fontSize: "16px",
     lineHeight: "24px",
+    border: `${theme.custom.colors.borderFull}`,
   },
   textFieldInputColorEmpty: {
-    color: theme.custom.colors.secondary,
+    color: theme.custom.colors.textPlaceholder,
   },
   textFieldInputColor: {
     color: theme.custom.colors.fontColor2,
   },
   textFieldRoot: {
     "& .MuiOutlinedInput-root": {
-      backgroundColor: theme.custom.colors.background,
+      background: theme.custom.colors.textBackground,
       borderRadius: "12px",
       "& fieldset": {
         border: "none",
+      },
+      "&:hover fieldset": {
+        border: `solid 2pt ${theme.custom.colors.primaryButton}`,
       },
       "&.Mui-focused fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton} !important`,
@@ -481,9 +485,9 @@ export function BalancesTableHead({ props, style }: any) {
             {!disableToggle && (
               <>
                 {showContent ? (
-                  <ExpandMore className={classes.expand} />
-                ) : (
                   <ExpandLess className={classes.expand} />
+                ) : (
+                  <ExpandMore className={classes.expand} />
                 )}
               </>
             )}
@@ -762,7 +766,6 @@ export function TextField({
         shrink: false,
         style: {
           borderRadius: "12px",
-          border: "none",
         },
       }}
       InputProps={{

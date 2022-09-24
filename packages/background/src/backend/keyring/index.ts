@@ -15,7 +15,7 @@ import {
 import * as crypto from "./crypto";
 import { SolanaHdKeyringFactory } from "./solana";
 import * as store from "../store";
-import { DefaultKeyname } from "../store";
+import { DefaultKeyname, DEFAULT_DARK_MODE } from "../store";
 import { BlockchainKeyring } from "./blockchain";
 
 const BLOCKCHAIN_DEFAULT = Blockchain.SOLANA;
@@ -80,7 +80,7 @@ export class KeyringStore {
     await store.setWalletData({
       autoLockSecs: store.DEFAULT_LOCK_INTERVAL_SECS,
       approvedOrigins: [],
-      darkMode: true,
+      darkMode: DEFAULT_DARK_MODE,
       solana: {
         explorer: SolanaExplorer.DEFAULT,
         cluster: SolanaCluster.DEFAULT,

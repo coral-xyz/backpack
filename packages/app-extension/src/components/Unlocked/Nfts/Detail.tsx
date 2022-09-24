@@ -160,9 +160,7 @@ function SendButton({ nft }: { nft: any }) {
         label={"Send"}
       />
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        <div
-          style={{ height: "100%", background: theme.custom.colors.background }}
-        >
+        <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "send" }}
             options={() => ({
@@ -182,6 +180,7 @@ function SendButton({ nft }: { nft: any }) {
 }
 
 function SendScreen({ nft }: { nft: any }) {
+  const theme = useCustomTheme();
   const classes = useStyles();
   const { close } = useDrawerContext();
   const { provider: solanaProvider } = useAnchorContext();
@@ -590,7 +589,8 @@ function BurnConfirmation({ onConfirm }: { onConfirm: () => void }) {
         />
         <Typography
           style={{
-            backgroundColor: theme.custom.colors.bg2,
+            backgroundColor: theme.custom.colors.background,
+            border: theme.custom.colors.borderFull,
             padding: "16px",
             color: theme.custom.colors.fontColor,
             fontSize: "20px",

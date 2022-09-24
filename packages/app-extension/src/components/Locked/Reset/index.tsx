@@ -8,7 +8,6 @@ export function Reset() {
   const nav = useNavStack();
   useEffect(() => {
     nav.setTitle("");
-    nav.setStyle({ borderBottom: "none" });
   }, []);
   return <ResetWelcome onClose={close} />;
 }

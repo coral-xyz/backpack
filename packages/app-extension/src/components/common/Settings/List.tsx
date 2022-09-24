@@ -1,4 +1,5 @@
 import { Typography } from "@mui/material";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { List, ListItem, PushDetail } from "../../common";
 
 export function SettingsList({
@@ -22,8 +23,16 @@ export function SettingsList({
     };
   };
 }) {
+  const theme = useCustomTheme();
   return (
-    <List style={{ marginTop: "16px", ...style }}>
+    <List
+      style={{
+        border: `${theme.custom.colors.borderFull}`,
+        borderRadius: "12px",
+        marginTop: "16px",
+        ...style,
+      }}
+    >
       {Object.entries(menuItems).map(([key, val]: any, i, { length }) => (
         <ListItem
           key={key}

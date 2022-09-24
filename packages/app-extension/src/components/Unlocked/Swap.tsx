@@ -1,11 +1,6 @@
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import {
-  InputAdornment,
-  Typography,
-  IconButton,
-  CircularProgress,
-} from "@mui/material";
+import { InputAdornment, Typography, IconButton } from "@mui/material";
 import type { Button } from "@mui/material";
 import { Close, ExpandMore, SwapVert } from "@mui/icons-material";
 import { Button as XnftButton } from "@coral-xyz/react-xnft-renderer";
@@ -28,6 +23,7 @@ import {
   PrimaryButton,
   DangerButton,
   SecondaryButton,
+  Loading,
 } from "../common";
 import { TokenInputField } from "../common/TokenInput";
 import { CheckIcon, CrossIcon } from "../common/Icon";
@@ -42,7 +38,6 @@ const { Zero } = ethers.constants;
 
 const useStyles = styles((theme) => ({
   container: {
-    backgroundColor: theme.custom.colors.background,
     display: "flex",
     flexDirection: "column",
     height: "100%",
@@ -54,7 +49,7 @@ const useStyles = styles((theme) => ({
     marginRight: "16px",
   },
   bottomHalfWrapper: {
-    borderTop: `solid 1pt ${theme.custom.colors.borderColor}`,
+    borderTop: `${theme.custom.colors.borderFull}`,
     flex: 1,
     paddingBottom: "16px",
     paddingTop: "38px",
@@ -74,10 +69,13 @@ const useStyles = styles((theme) => ({
     marginBottom: 0,
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `solid 1pt ${theme.custom.colors.borderColor}`,
+        border: `${theme.custom.colors.borderFull}`,
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
+      },
+      "& input": {
+        border: "none",
       },
     },
   },
@@ -86,9 +84,13 @@ const useStyles = styles((theme) => ({
     marginBottom: 0,
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `solid 1pt ${theme.custom.colors.borderColor}`,
-        // Override disable and hover styles
-        borderColor: `${theme.custom.colors.borderColor} !important`,
+        border: `${theme.custom.colors.borderFull} !important`,
+      },
+      "&:hover fieldset": {
+        border: `${theme.custom.colors.borderFull}`, // Prevent hover from changing border.
+      },
+      "& input": {
+        border: "none",
       },
     },
     "& .MuiInputBase-input.Mui-disabled": {
@@ -97,7 +99,7 @@ const useStyles = styles((theme) => ({
     },
   },
   swapTokensContainer: {
-    backgroundColor: theme.custom.colors.background,
+    backgroundColor: theme.custom.colors.swapTokensButton,
     width: "44px",
     height: "44px",
     zIndex: 2,
@@ -107,7 +109,7 @@ const useStyles = styles((theme) => ({
     borderRadius: "22px",
   },
   swapTokensButton: {
-    border: `solid 1pt ${theme.custom.colors.borderColor}`,
+    border: `${theme.custom.colors.borderFull}`,
     width: "38px",
     height: "38px",
     marginLeft: "auto",
@@ -118,7 +120,7 @@ const useStyles = styles((theme) => ({
     background: theme.custom.colors.nav,
   },
   swapIcon: {
-    color: theme.custom.colors.secondary,
+    color: theme.custom.colors.icon,
   },
   loadingContainer: {
     backgroundColor: theme.custom.colors.nav,
@@ -360,8 +362,8 @@ function OutputTextField() {
         placeholder={"0"}
         startAdornment={
           isLoadingRoutes && (
-            <CircularProgress
-              style={{
+            <Loading
+              iconStyle={{
                 display: "flex",
                 color: theme.custom.colors.secondary,
                 marginRight: "10px",
@@ -524,10 +526,9 @@ function SwapConfirming({
               <CheckIcon />
             </div>
           ) : (
-            <CircularProgress
+            <Loading
               size={48}
-              style={{
-                color: theme.custom.colors.primaryButton,
+              iconStyle={{
                 display: "flex",
                 marginLeft: "auto",
                 marginRight: "auto",
@@ -626,11 +627,12 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   if (isLoadingRoutes || isLoadingTransactions) {
     return (
       <div style={{ textAlign: "center" }}>
-        <CircularProgress
+        <Loading
           size={48}
-          style={{
-            color: theme.custom.colors.primaryButton,
+          iconStyle={{
             margin: "32px 0",
+            marginLeft: "auto",
+            marginRight: "auto",
           }}
           thickness={6}
         />
