@@ -1,4 +1,4 @@
-CREATE TABLE "auth"."users" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "username" citext NOT NULL, "created_at" timestamptz NOT NULL DEFAULT now(), "updated_at" timestamptz NOT NULL DEFAULT now(), "last_active_at" timestamptz NOT NULL DEFAULT now(), "invitation_id" uuid NOT NULL, PRIMARY KEY ("id") , FOREIGN KEY ("invitation_id") REFERENCES "auth"."invitations"("id") ON UPDATE cascade ON DELETE cascade, UNIQUE ("username"), UNIQUE ("invitation_id"), CONSTRAINT "username_format" CHECK (username ~ '^[a-z_]{4,15}$'));
+CREATE TABLE "auth"."users" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "username" citext NOT NULL, "created_at" timestamptz NOT NULL DEFAULT now(), "updated_at" timestamptz NOT NULL DEFAULT now(), "last_active_at" timestamptz NOT NULL DEFAULT now(), "invitation_id" uuid NOT NULL, PRIMARY KEY ("id") , FOREIGN KEY ("invitation_id") REFERENCES "auth"."invitations"("id") ON UPDATE cascade ON DELETE cascade, UNIQUE ("username"), UNIQUE ("invitation_id"), CONSTRAINT "username_format" CHECK (username ~ '^[a-z0-9_]{4,15}$'));
 CREATE OR REPLACE FUNCTION "auth"."set_current_timestamp_updated_at"()
 RETURNS TRIGGER AS $$
 DECLARE
