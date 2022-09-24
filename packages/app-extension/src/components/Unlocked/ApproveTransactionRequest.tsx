@@ -56,7 +56,7 @@ const useStyles = styles((theme) => ({
     color: theme.custom.colors.fontColor,
   },
   approveTableRoot: {
-    backgroundColor: `${theme.custom.colors.bg2} !important`,
+    backgroundColor: `${theme.custom.colors.approveTransactionTableBackground} !important`,
     "&:hover": {
       opacity: 1,
       cursor: "default",
@@ -409,24 +409,31 @@ function _SendTransactionRequest({
             }}
           >
             <SettingsList
-              borderColor={theme.custom.colors.border1}
+              borderColor={
+                theme.custom.colors.approveTransactionTableBackground
+              }
               menuItems={menuItems}
               style={{
                 marginLeft: 0,
                 marginRight: 0,
                 fontSize: "14px",
+                background:
+                  theme.custom.colors.approveTransactionTableBackground,
+                border: theme.custom.colors.borderFull,
               }}
               textStyle={{
                 fontSize: "14px",
-                color: theme.custom.colors.fontColor3,
+                color: theme.custom.colors.fontColor,
               }}
             />
             <div
               style={{
-                backgroundColor: theme.custom.colors.bg2,
+                backgroundColor:
+                  theme.custom.colors.approveTransactionTableBackground,
                 borderRadius: "8px",
                 padding: "12px",
                 marginTop: "12px",
+                border: theme.custom.colors.borderFull,
               }}
             >
               <Typography
@@ -498,11 +505,12 @@ function SignMessageRequest({
         <div
           style={{
             marginTop: "18px",
-            backgroundColor: theme.custom.colors.bg2,
+            backgroundColor: theme.custom.colors.nav,
             padding: "8px",
             borderRadius: "8px",
             wordBreak: "break-all",
             color: theme.custom.colors.fontColor,
+            border: theme.custom.colors.borderFull,
           }}
         >
           {displayMessage}
