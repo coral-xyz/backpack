@@ -9,8 +9,6 @@ export const ethersContext = selector({
   get: ({ get }) => {
     const connectionUrl = get(ethereumConnectionUrl);
     const chainId = get(ethereumChainId);
-    console.log("connection url", connectionUrl);
-    console.log("chain id", chainId);
     const _providerBackgroundClient = get(providerBackgroundClient);
     const provider = new BackgroundEthereumProvider(
       _providerBackgroundClient,
