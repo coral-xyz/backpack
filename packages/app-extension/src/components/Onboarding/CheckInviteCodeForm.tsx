@@ -39,6 +39,7 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
   const ob =
     page === "inviteCode"
       ? {
+          disabled: true,
           linkText: "I already have an account",
           inputName: "inviteCode",
           placeholder: "Invite Code",
@@ -149,8 +150,17 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
             </Box>
 
             <Box
-              onClick={() => setPage(ob.page as Page)}
-              style={{ marginTop: 16, cursor: "pointer" }}
+              onClick={ob.disabled ? undefined : () => setPage(ob.page as Page)}
+              style={{
+                marginTop: 16,
+                cursor: ob.disabled ? "default" : "pointer",
+                opacity: ob.disabled ? 0.3 : 1,
+              }}
+              title={
+                ob.disabled
+                  ? "Coming soon, ask in discord if you need assistance"
+                  : undefined
+              }
             >
               <SubtextParagraph>{ob.linkText}</SubtextParagraph>
             </Box>
