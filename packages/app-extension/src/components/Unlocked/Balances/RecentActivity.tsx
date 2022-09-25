@@ -332,7 +332,7 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
             justifyContent: "center",
           }}
         >
-          <CallMade style={{ color: theme.custom.colors.secondary }} />
+          <CallMade style={{ color: theme.custom.colors.icon }} />
         </div>
       </div>
     </ListItem>
