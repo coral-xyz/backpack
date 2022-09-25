@@ -114,6 +114,7 @@ const useStyles = styles((theme) => ({
       border: theme.custom.colors.borderFull,
       "& textarea": {
         border: "none",
+        borderRadius: 0,
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
@@ -916,19 +917,9 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   const [openDrawer, setOpenDrawer] = useState(false);
 
   useEffect(() => {
-    const prevStyle = nav.style;
-    const prevContentStyle = nav.contentStyle;
     const prevTitle = nav.title;
-    nav.setStyle({
-      backgroundColor: theme.custom.colors.nav,
-    });
-    nav.setContentStyle({
-      backgroundColor: theme.custom.colors.nav,
-    });
     nav.setTitle("");
     return () => {
-      nav.setStyle(prevStyle);
-      nav.setContentStyle(prevContentStyle);
       nav.setTitle(prevTitle);
     };
   }, [theme]);

@@ -104,7 +104,8 @@ const useStyles = styles((theme: CustomTheme) => ({
     display: "flex",
     marginTop: "8px",
     "&:hover": {
-      backgroundColor: "transparent",
+      backgroundColor: "transparent !important",
+      background: "transparent !important",
       opacity: 0.8,
     },
   },
