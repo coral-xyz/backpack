@@ -2,6 +2,6 @@ name = "invites"
 main = "src/index.ts"
 compatibility_date = "2022-09-22"
 
-[vars]
+[env.development.vars]
 HASURA_URL = "http://localhost:8112/v1/graphql"
 HASURA_SECRET = "myadminsecretkey"
