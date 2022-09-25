@@ -62,8 +62,9 @@ app.get("/check", (c) => {
   return json(c)("No Invite code provided", 400);
 });
 
-app.get("/check/:inviteCode", (c) => {
+app.get("/check/:inviteCode", async (c) => {
   const j = json(c);
+
   try {
     const code = c.req.param("inviteCode");
     if (!code) {
@@ -74,10 +75,27 @@ app.get("/check/:inviteCode", (c) => {
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i
       )
     ) {
-      if (code === EXAMPLE_CODES.valid) {
-        return j("Invite code is valid");
-      } else if (code === EXAMPLE_CODES.claimed) {
-        return j("Invite code has already been claimed", 409);
+      const res = await fetch("http://localhost:8112/v1/graphql", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-hasura-admin-secret": "myadminsecretkey",
+        },
+        body: JSON.stringify({
+          query: `query($id: uuid) { invitations(limit: 1, where: {id: {_eq: $id}}) { id claimed_at } }`,
+          variables: {
+            id: code,
+          },
+        }),
+      });
+      const json = await res.json<any>();
+      const invitation = json?.data.invitations?.[0];
+      if (invitation) {
+        if (!invitation.claimed_at) {
+          return j("Invite code is valid");
+        } else {
+          return j("Invite code has already been claimed", 409);
+        }
       }
       return j("Invite code is not valid", 400);
     } else {
