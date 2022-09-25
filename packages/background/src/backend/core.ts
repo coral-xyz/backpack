@@ -41,6 +41,7 @@ import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
+import { encode } from "bs58";
 
 const { base58: bs58 } = ethers.utils;
 
@@ -375,18 +376,26 @@ export class Backend {
     );
 
     if (BACKPACK_FEATURE_USERNAMES) {
+      const bc = await this.keyringStore.activeBlockchainKeyring();
+
+      const publicKey = bc.getActiveWallet();
+
+      const body = JSON.stringify({
+        username,
+        inviteCode,
+        publicKey,
+        waitlistId,
+      });
+
+      const buffer = Buffer.from(body, "utf8");
+      const signature = await bc.signMessage(encode(buffer), publicKey!);
+
       const res = await fetch("http://127.0.0.1:8787/users", {
         method: "POST",
-        body: JSON.stringify({
-          username,
-          inviteCode,
-          waitlistId,
-          publicKey: await this.keyringStore
-            .activeBlockchainKeyring()
-            .getActiveWallet(),
-        }),
+        body,
         headers: {
           "Content-Type": "application/json",
+          "x-backpack-signature": signature,
         },
       });
       if (!res.ok) throw new Error(await res.json());
