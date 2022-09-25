@@ -75,11 +75,11 @@ app.get("/check/:inviteCode", async (c) => {
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i
       )
     ) {
-      const res = await fetch("http://localhost:8112/v1/graphql", {
+      const res = await fetch(c.env.HASURA_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-hasura-admin-secret": "myadminsecretkey",
+          "x-hasura-admin-secret": c.env.HASURA_SECRET,
         },
         body: JSON.stringify({
           query: `query($id: uuid) { invitations(limit: 1, where: {id: {_eq: $id}}) { id claimed_at } }`,
