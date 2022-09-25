@@ -48,12 +48,6 @@ import { Hono } from "hono";
 
 const app = new Hono();
 
-// TODO replace these with database connection
-const EXAMPLE_CODES = {
-  valid: "03054e82-6d6a-4910-bacf-98381761094d",
-  claimed: "1136b1e6-b648-43b7-affa-882dd076b4b5",
-};
-
 app.get("/", (c) => {
   return json(c)("ok");
 });
