@@ -5,9 +5,11 @@
  *    { username:string; publicKey:PublicKeyString; inviteCode: uuid; waitlistId?: string; }
  */
 
-import { Hono } from "hono";
-import { z, ZodError } from "zod";
 import { PublicKey } from "@solana/web3.js";
+import { decode } from "bs58";
+import { Hono } from "hono";
+import { sign } from "tweetnacl";
+import { z, ZodError } from "zod";
 import { Chain } from "./zeus";
 
 const CreateUser = z.object({
@@ -30,7 +32,7 @@ const CreateUser = z.object({
     } catch (err) {}
     return false;
   }, "must be a valid Solana public key"),
-  waitlistId: z.nullable(z.string()),
+  waitlistId: z.optional(z.nullable(z.string())),
 });
 
 // ----- routing -----
@@ -41,6 +43,7 @@ app.use("*", async (c, next) => {
   try {
     await next();
   } catch (err) {
+    console.error(err);
     return c.json(err, err instanceof ZodError ? 400 : 500);
   }
 });
@@ -75,7 +78,18 @@ app.get("/users/:username", async (c) => {
 });
 
 app.post("/users", async (c) => {
-  const variables = CreateUser.parse(await c.req.json());
+  const body = await c.req.json();
+  const variables = CreateUser.parse(body);
+
+  if (
+    !sign.detached.verify(
+      Buffer.from(JSON.stringify(body), "utf8"),
+      decode(c.req.header("x-backpack-signature")),
+      decode(variables.publicKey)
+    )
+  ) {
+    throw new Error("Invalid signature");
+  }
 
   const chain = Chain(c.env.HASURA_URL, {
     headers: { "x-hasura-admin-secret": c.env.HASURA_SECRET },
