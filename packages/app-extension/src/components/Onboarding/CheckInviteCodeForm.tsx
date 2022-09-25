@@ -45,6 +45,20 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           placeholder: "Invite Code",
           buttonText: "Go",
           url: `https://invites.xnfts.dev/check/${value.inviteCode}`,
+          validate: () => {
+            const v = value.inviteCode;
+            if (
+              !v.match(
+                /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/
+              )
+            ) {
+              setError("Invite Code is not valid");
+              return false;
+            } else {
+              setError(undefined);
+              return true;
+            }
+          },
           setVal: (v: string) =>
             setValue({
               inviteCode: v.replace(/[^a-zA-Z0-9\\-]/g, ""),
@@ -63,6 +77,19 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           placeholder: "Username",
           buttonText: "Claim",
           url: `https://auth.xnfts.dev/users/${value.username}`,
+          validate: () => {
+            const v = value.username;
+            if (v.length < 3) {
+              setError("must be at least 3 characters");
+              return false;
+            } else if (v.length > 15) {
+              setError("must be less than 15 characters long");
+              return false;
+            } else {
+              setError(undefined);
+              return true;
+            }
+          },
           setVal: (v: any) =>
             setValue({
               inviteCode: value.inviteCode,
@@ -83,6 +110,7 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
             }),
           handleValue: () => alert(JSON.stringify(value)),
           page: "inviteCode",
+          validate: () => true,
         };
 
   const handleWaitingClick = useCallback(() => {
@@ -95,6 +123,9 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    if (!ob.validate()) return;
+
     try {
       const res = await fetch(ob.url, {
         headers: {
