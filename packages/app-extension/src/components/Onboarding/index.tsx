@@ -80,8 +80,8 @@ export function Onboarding() {
     />,
     <MnemonicInput
       buttonLabel="Next"
-      onNext={(mnemonic: string) => {
-        createStore(mnemonic, DerivationPath.Bip44Change, password, [0]);
+      onNext={async (mnemonic: string) => {
+        await createStore(mnemonic, DerivationPath.Bip44Change, password, [0]);
         nextStep();
       }}
       readOnly={true}
@@ -112,9 +112,9 @@ export function Onboarding() {
       }}
     />,
     <CreatePassword
-      onNext={(password: string) => {
+      onNext={async (password: string) => {
         const accountIndices = accounts.map((account) => account.index);
-        createStore(mnemonic, derivationPath, password, accountIndices);
+        await createStore(mnemonic, derivationPath, password, accountIndices);
         nextStep();
       }}
     />,

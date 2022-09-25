@@ -61,7 +61,7 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           inputName: "username",
           placeholder: "Username",
           buttonText: "Claim",
-          url: `https://invites.backpack.workers.dev`,
+          url: `http://localhost:8787/users/${value.username}`, // not live yet
           setVal: (v: any) =>
             setValue({
               inviteCode: value.inviteCode,
@@ -75,7 +75,7 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           inputName: "username",
           placeholder: "Username",
           buttonText: "Continue",
-          url: `https://auth.backpack.workers.dev/users/${value.username}`, // not live yet
+          url: `http://localhost:8787/users/${value.username}`, // not live yet
           setVal: (v: string) =>
             setValue({
               username: v.replace(/[^a-z0-9_]/g, ""),

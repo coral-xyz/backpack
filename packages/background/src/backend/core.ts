@@ -375,13 +375,13 @@ export class Backend {
     );
 
     if (BACKPACK_FEATURE_USERNAMES) {
-      await fetch("https://webhook.site/46c9d38f-913d-4577-9113-f128658fbf44", {
+      const res = await fetch("http://127.0.0.1:8787/users", {
         method: "POST",
         body: JSON.stringify({
           username,
           inviteCode,
           waitlistId,
-          pubkey: await this.keyringStore
+          publicKey: await this.keyringStore
             .activeBlockchainKeyring()
             .getActiveWallet(),
         }),
@@ -389,6 +389,7 @@ export class Backend {
           "Content-Type": "application/json",
         },
       });
+      if (!res.ok) throw new Error(await res.json());
     }
 
     // Notify all listeners.
