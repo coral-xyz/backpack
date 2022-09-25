@@ -100,6 +100,37 @@ app.get("/check/:inviteCode", async (c) => {
   }
 });
 
+app.get("/stats", async (c) => {
+  try {
+    const res = await fetch(c.env.HASURA_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-hasura-admin-secret": c.env.HASURA_SECRET,
+      },
+      body: JSON.stringify({
+        query: `
+          query {
+            invitations_aggregate {
+              aggregate {
+                count
+              }
+            }
+          }
+        `,
+      }),
+    });
+
+    const resJson = await res.json<any>();
+    return c.json(
+      { status: 200, data: resJson?.data.invitations_aggregate },
+      200
+    );
+  } catch (err: any) {
+    return json(c)(err.message, 500);
+  }
+});
+
 export default app;
 
 const json =
