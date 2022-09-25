@@ -44,7 +44,7 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           inputName: "inviteCode",
           placeholder: "Invite Code",
           buttonText: "Go",
-          url: `http://127.0.0.1:8555/check/${value.inviteCode}`,
+          url: `https://invites.xnfts.dev/check/${value.inviteCode}`,
           setVal: (v: string) =>
             setValue({
               inviteCode: v.replace(/[^a-zA-Z0-9\\-]/g, ""),
@@ -62,7 +62,7 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           inputName: "username",
           placeholder: "Username",
           buttonText: "Claim",
-          url: `http://localhost:8787/users/${value.username}`, // not live yet
+          url: `https://auth.xnfts.dev/users/${value.username}`,
           setVal: (v: any) =>
             setValue({
               inviteCode: value.inviteCode,
@@ -76,7 +76,7 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           inputName: "username",
           placeholder: "Username",
           buttonText: "Continue",
-          url: `http://localhost:8787/users/${value.username}`, // not live yet
+          url: `https://auth.xnfts.dev/users/${value.username}`,
           setVal: (v: string) =>
             setValue({
               username: v.replace(/[^a-z0-9_]/g, ""),
