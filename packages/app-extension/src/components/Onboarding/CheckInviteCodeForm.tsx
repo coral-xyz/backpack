@@ -95,7 +95,11 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch(ob.url);
+      const res = await fetch(ob.url, {
+        headers: {
+          "x-backpack-invite-code": value.inviteCode,
+        },
+      });
       const json = await res.json();
       if (!res.ok) throw new Error(json.message);
       ob.handleValue();
@@ -112,8 +116,9 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           <TextField
             inputProps={{
               name: ob.inputName,
-              autoComplete: false,
-              spellCheck: false,
+              autoComplete: "off",
+              spellCheck: "false",
+              style: { fontSize: "0.94em" },
             }}
             placeholder={ob.placeholder}
             type="text"

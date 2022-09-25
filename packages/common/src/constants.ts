@@ -132,6 +132,7 @@ export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS =
   "ui-rpc-method-wallets-active";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS_UPDATE =
   "ui-rpc-method-wallets-active-update";
+export const UI_RPC_METHOD_USERNAME_READ = "ui-rpc-method-username-read";
 export const UI_RPC_METHOD_KEYNAME_READ = "ui-rpc-method-keyname-read";
 export const UI_RPC_METHOD_KEYNAME_UPDATE = "ui-rpc-method-keyname-update";
 export const UI_RPC_METHOD_PASSWORD_UPDATE = "ui-rpc-method-password-update";
