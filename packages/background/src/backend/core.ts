@@ -372,7 +372,8 @@ export class Backend {
       mnemonic,
       derivationPath,
       password,
-      accountIndices
+      accountIndices,
+      username
     );
 
     if (BACKPACK_FEATURE_USERNAMES) {
@@ -617,6 +618,11 @@ export class Backend {
     });
 
     return SUCCESS_RESPONSE;
+  }
+
+  async usernameRead(): Promise<string> {
+    const { username = "" } = await store.getWalletData();
+    return username;
   }
 
   async passwordUpdate(

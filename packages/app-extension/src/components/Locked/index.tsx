@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useBackgroundClient, useUsername } from "@coral-xyz/recoil";
 import { TextField, PrimaryButton } from "../common";
 import { RedBackpack, Backpack } from "../common/Icon";
 import { LockedMenu } from "./LockedMenu";
@@ -12,6 +12,7 @@ export const NAV_BAR_HEIGHT = 56;
 export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
+  const username = useUsername();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
@@ -56,6 +57,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
           <BackpackHeader />
         </Box>
         <Box sx={{ marginBottom: "84px" }}>
+          gm @{username}
           <form onSubmit={_onUnlock} noValidate>
             <Box sx={{ margin: "0 12px 12px 12px" }}>
               <TextField

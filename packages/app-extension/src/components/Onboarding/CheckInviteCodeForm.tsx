@@ -112,8 +112,9 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           <TextField
             inputProps={{
               name: ob.inputName,
-              autoComplete: false,
-              spellCheck: false,
+              autoComplete: "off",
+              spellCheck: "false",
+              style: { fontSize: "0.94em" },
             }}
             placeholder={ob.placeholder}
             type="text"

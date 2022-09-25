@@ -19,6 +19,7 @@ import {
   useActiveWallet,
   useActiveWallets,
   useBlockchainLogo,
+  useUsername,
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
@@ -732,6 +733,7 @@ function SettingsList({ close }: { close: () => void }) {
   const theme = useCustomTheme();
   const nav = useNavStack();
   const background = useBackgroundClient();
+  const username = useUsername();
 
   const lockWallet = () => {
     background
@@ -744,7 +746,7 @@ function SettingsList({ close }: { close: () => void }) {
 
   const settingsMenu = [
     {
-      label: "Your Account",
+      label: `Your Account (${username})`,
       onClick: () => nav.push("your-account"),
       icon: (props: any) => <AccountCircleOutlined {...props} />,
       detailIcon: <PushDetail />,
