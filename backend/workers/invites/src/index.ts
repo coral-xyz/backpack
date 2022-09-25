@@ -109,21 +109,14 @@ app.get("/stats", async (c) => {
         "x-hasura-admin-secret": c.env.HASURA_SECRET,
       },
       body: JSON.stringify({
-        query: `
-          query {
-            invitations_aggregate {
-              aggregate {
-                count
-              }
-            }
-          }
-        `,
+        query: `query { invitations_aggregate { aggregate { count } } }`,
+        variables: {},
       }),
     });
 
     const resJson = await res.json<any>();
     return c.json(
-      { status: 200, data: resJson?.data.invitations_aggregate },
+      { status: 200, data: resJson?.data.invitations_aggregate.aggregate },
       200
     );
   } catch (err: any) {
