@@ -12,6 +12,8 @@ import { sign } from "tweetnacl";
 import { z, ZodError } from "zod";
 import { Chain } from "./zeus";
 
+const RESERVED = ["admin", "support"];
+
 const CreateUser = z.object({
   username: z
     .string()
@@ -52,6 +54,10 @@ app.get("/users/:username", async (c) => {
   const { username } = CreateUser.pick({ username: true }).parse({
     username: c.req.param("username"),
   });
+
+  if (RESERVED.includes(username)) {
+    return c.json({ message: "username not available" }, 409);
+  }
 
   const chain = Chain(c.env.HASURA_URL, {
     headers: { "x-hasura-admin-secret": c.env.HASURA_SECRET },
