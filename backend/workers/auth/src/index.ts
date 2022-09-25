@@ -30,7 +30,7 @@ const CreateUser = z.object({
     } catch (err) {}
     return false;
   }, "must be a valid Solana public key"),
-  waitlistId: z.optional(z.string()),
+  waitlistId: z.nullable(z.string()),
 });
 
 // ----- routing -----
@@ -42,6 +42,35 @@ app.use("*", async (c, next) => {
     await next();
   } catch (err) {
     return c.json(err, err instanceof ZodError ? 400 : 500);
+  }
+});
+
+app.get("/users/:username", async (c) => {
+  const { username } = CreateUser.pick({ username: true }).parse({
+    username: c.req.param("username"),
+  });
+
+  const chain = Chain(c.env.HASURA_URL, {
+    headers: { "x-hasura-admin-secret": c.env.HASURA_SECRET },
+  });
+
+  const res = await chain("query")({
+    auth_users_aggregate: [
+      {
+        where: { username: { _eq: username } },
+      },
+      {
+        aggregate: {
+          count: [{ columns: "id" as any }, true],
+        },
+      },
+    ],
+  });
+
+  if (res.auth_users_aggregate?.aggregate?.count === 0) {
+    return c.json({ message: "username available" });
+  } else {
+    return c.json({ message: "username not available" }, 409);
   }
 });
 
@@ -58,6 +87,8 @@ app.post("/users", async (c) => {
         object: {
           username: variables.username,
           invitation_id: variables.inviteCode,
+          pubkey: variables.publicKey,
+          waitlist_id: variables.waitlistId,
         },
       },
       {
