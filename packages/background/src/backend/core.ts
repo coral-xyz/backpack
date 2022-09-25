@@ -377,29 +377,36 @@ export class Backend {
     );
 
     if (BACKPACK_FEATURE_USERNAMES) {
-      const bc = await this.keyringStore.activeBlockchainKeyring();
+      try {
+        const bc = await this.keyringStore.activeBlockchainKeyring();
 
-      const publicKey = bc.getActiveWallet();
+        const publicKey = bc.getActiveWallet();
 
-      const body = JSON.stringify({
-        username,
-        inviteCode,
-        publicKey,
-        waitlistId,
-      });
+        const body = JSON.stringify({
+          username,
+          inviteCode,
+          publicKey,
+          waitlistId,
+        });
 
-      const buffer = Buffer.from(body, "utf8");
-      const signature = await bc.signMessage(encode(buffer), publicKey!);
+        const buffer = Buffer.from(body, "utf8");
+        const signature = await bc.signMessage(encode(buffer), publicKey!);
 
-      const res = await fetch("http://127.0.0.1:8787/users", {
-        method: "POST",
-        body,
-        headers: {
-          "Content-Type": "application/json",
-          "x-backpack-signature": signature,
-        },
-      });
-      if (!res.ok) throw new Error(await res.json());
+        const res = await fetch("https://auth.xnfts.dev/users", {
+          method: "POST",
+          body,
+          headers: {
+            "Content-Type": "application/json",
+            "x-backpack-signature": signature,
+          },
+        });
+        if (!res.ok) {
+          throw new Error(await res.json());
+        }
+      } catch (err) {
+        await this.keyringStore.reset();
+        throw new Error("Error creating account");
+      }
     }
 
     // Notify all listeners.

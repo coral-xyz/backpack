@@ -43,18 +43,27 @@ export function Onboarding() {
     password: string,
     accountIndices: number[]
   ) => {
-    await background.request({
-      method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-      params: [
-        mnemonic,
-        derivationPath,
-        password,
-        accountIndices,
-        onboardingVars?.username,
-        onboardingVars?.inviteCode,
-        getWaitlistId?.(),
-      ],
-    });
+    try {
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
+        params: [
+          mnemonic,
+          derivationPath,
+          password,
+          accountIndices,
+          onboardingVars?.username,
+          onboardingVars?.inviteCode,
+          getWaitlistId?.(),
+        ],
+      });
+    } catch (err) {
+      console.error(err);
+      if (
+        confirm("There was an issue setting up your account. Please try again.")
+      ) {
+        window.location.reload();
+      }
+    }
   };
 
   const nextStep = () => setStep(step + 1);
