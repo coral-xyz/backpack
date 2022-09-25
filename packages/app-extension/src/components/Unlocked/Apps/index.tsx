@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { getSvgPath } from "figma-squircle";
 import { Grid, Button, Typography } from "@mui/material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
 import {
   useBackgroundClient,
   useAppIcons,
@@ -34,6 +34,9 @@ const useStyles = styles((theme) => ({
     clipPath: `path('${squircleIconPath}')`,
     padding: 0,
     backgroundColor: theme.custom.colors.nav,
+    "&:hover": {
+      opacity: HOVER_OPACITY,
+    },
   },
   pluginTitle: {
     fontWeight: 500,

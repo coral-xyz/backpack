@@ -1,10 +1,20 @@
 import { Button, Typography } from "@mui/material";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
+
+const useStyles = styles((theme) => ({
+  button: {
+    "&:hover": {
+      opacity: HOVER_OPACITY,
+    },
+  },
+}));
 
 export function GridCard({ onClick, nft, subtitle }: any) {
+  const classes = useStyles();
   const theme = useCustomTheme();
   return (
     <Button
+      className={classes.button}
       onClick={onClick}
       disableRipple
       style={{

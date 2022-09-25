@@ -12,7 +12,7 @@ import {
   Settings,
 } from "@mui/icons-material";
 import { Keypair } from "@solana/web3.js";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
 import {
   useBackgroundClient,
   useWalletPublicKeys,
@@ -96,12 +96,18 @@ const useStyles = styles((theme) => ({
     padding: "2px",
     background: theme.custom.colors.coralGradient,
     "&:hover": {
-      background: theme.custom.colors.coralGradient,
+      background: `${theme.custom.colors.coralGradient} !important`,
+      backgroundColor: `${theme.custom.colors.coralGradient} !important`,
+      opacity: HOVER_OPACITY,
     },
   },
   addConnectRoot: {
     background: "transparent !important",
     height: "48px",
+    "&:hover": {
+      color: `${theme.custom.colors.fontColor} !important`,
+      background: "transparent !important",
+    },
   },
   privateKeyTextFieldRoot: {
     "& .MuiOutlinedInput-root": {
