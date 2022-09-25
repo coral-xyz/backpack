@@ -18,8 +18,8 @@ const CreateUser = z.object({
   username: z
     .string()
     .regex(
-      /^[a-z0-9_]{4,15}$/,
-      "must be 4-15 characters, lowercase, and can only contain only letters, numbers and underscores"
+      /^[a-z0-9_]{3,15}$/,
+      "must be 3-15 characters, lowercase, and can only contain only letters, numbers and underscores"
     ),
   inviteCode: z
     .string()

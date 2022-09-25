@@ -65,7 +65,7 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           setVal: (v: any) =>
             setValue({
               inviteCode: value.inviteCode,
-              username: v.replace(/[^a-z0-9_]/g, ""),
+              username: v.replace(/[^a-z0-9_]/g, "").substring(0, 15),
             }),
           handleValue: () => setInviteCode(value),
           page: "inviteCode",
