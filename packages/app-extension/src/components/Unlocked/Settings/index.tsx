@@ -746,7 +746,7 @@ function SettingsList({ close }: { close: () => void }) {
 
   const settingsMenu = [
     {
-      label: `Your Account (${username})`,
+      label: username ? `Your Account (${username})` : "Your Account",
       onClick: () => nav.push("your-account"),
       icon: (props: any) => <AccountCircleOutlined {...props} />,
       detailIcon: <PushDetail />,

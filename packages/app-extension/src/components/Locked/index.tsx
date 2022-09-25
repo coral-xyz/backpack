@@ -57,7 +57,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
           <BackpackHeader />
         </Box>
         <Box sx={{ marginBottom: "84px" }}>
-          gm @{username}
+          {username && `gm @${username}`}
           <form onSubmit={_onUnlock} noValidate>
             <Box sx={{ margin: "0 12px 12px 12px" }}>
               <TextField
