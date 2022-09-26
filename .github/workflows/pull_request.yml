@@ -113,7 +113,7 @@ jobs:
       #
       - name: "build beta"
         env:
-          BACKPACK_CONFIG_VERSION: "latest-edge-${{ github.run_number }}"
+          BACKPACK_CONFIG_VERSION: "latest-beta-${{ github.run_number }}"
           BACKPACK_CONFIG_LOG_LEVEL: "info"
           BACKPACK_FEATURE_LIGHT_MODE: "true"
           BACKPACK_FEATURE_POP_MODE: "true"
