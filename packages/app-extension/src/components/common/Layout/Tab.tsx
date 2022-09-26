@@ -2,6 +2,7 @@ import { Tabs, Tab } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useTab, useBackgroundClient } from "@coral-xyz/recoil";
 import {
+  BACKPACK_FEATURE_XNFT,
   TAB_NFTS,
   TAB_APPS,
   TAB_BALANCES,
@@ -116,21 +117,23 @@ function TabBar() {
           />
         }
       />
-      <Tab
-        onClick={() => onTabClick(TAB_APPS)}
-        value={TAB_APPS}
-        disableRipple
-        className={classes.tab}
-        icon={
-          <GridIcon
-            fill={
-              tab === TAB_APPS
-                ? theme.custom.colors.brandColor
-                : theme.custom.colors.icon
-            }
-          />
-        }
-      />
+      {BACKPACK_FEATURE_XNFT && (
+        <Tab
+          onClick={() => onTabClick(TAB_APPS)}
+          value={TAB_APPS}
+          disableRipple
+          className={classes.tab}
+          icon={
+            <GridIcon
+              fill={
+                tab === TAB_APPS
+                  ? theme.custom.colors.brandColor
+                  : theme.custom.colors.icon
+              }
+            />
+          }
+        />
+      )}
       <Tab
         onClick={() => onTabClick(TAB_NFTS)}
         value={TAB_NFTS}

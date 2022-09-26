@@ -1,5 +1,5 @@
-import { ArrowBack } from "@mui/icons-material";
 import type { FunctionComponent } from "react";
+import { NavBackButton, WithNav } from "../common/Layout/Nav";
 
 const WAITLIST_RES_ID_KEY = "waitlist-form-res-id";
 
@@ -20,32 +20,28 @@ const WaitingRoom: FunctionComponent<WaitingRoomProps> = ({
   uri,
   visible,
 }) => {
-  return (
-    <section
-      style={{
+  return visible ? (
+    <WithNav
+      navButtonLeft={<NavBackButton onClick={onClose} />}
+      navbarStyle={{
         borderRadius: "12px",
-        display: visible ? "block" : "none",
-        height: "100%",
-        left: 0,
-        position: "absolute",
-        width: "100%",
+      }}
+      navContentStyle={{
+        borderRadius: "12px",
+        overflow: "hidden",
       }}
     >
       <iframe
-        style={{ border: "none", height: "100%", width: "100%" }}
+        style={{
+          border: "none",
+          height: "100%",
+          width: "100%",
+          overflow: "hidden",
+        }}
         src={uri}
       />
-      <ArrowBack
-        sx={{
-          cursor: "pointer",
-          position: "absolute",
-          left: "12px",
-          top: "32px",
-        }}
-        onClick={onClose}
-      />
-    </section>
-  );
+    </WithNav>
+  ) : null;
 };
 
 export default WaitingRoom;

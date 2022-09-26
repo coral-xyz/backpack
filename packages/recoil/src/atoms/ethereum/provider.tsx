@@ -1,5 +1,4 @@
 import { atom, selector } from "recoil";
-import { BigNumber } from "ethers";
 import type { FeeData } from "@ethersproject/abstract-provider";
 import { BackgroundEthereumProvider } from "@coral-xyz/common";
 import { providerBackgroundClient } from "../client";
@@ -31,15 +30,9 @@ export const ethereumFeeData = atom<FeeData>({
   key: "ethereumFeeData",
   default: selector({
     key: "ethereumFeeDataDefault",
-    get: async ({ get }) => {
+    get: ({ get }) => {
       const { provider } = get(ethersContext);
-      const feeData = await provider.getFeeData();
-      // BigNumberify everything
-      return {
-        gasPrice: BigNumber.from(feeData.gasPrice),
-        maxFeePerGas: BigNumber.from(feeData.maxFeePerGas),
-        maxPriorityFeePerGas: BigNumber.from(feeData.maxPriorityFeePerGas),
-      } as FeeData;
+      return provider.getFeeData();
     },
   }),
 });

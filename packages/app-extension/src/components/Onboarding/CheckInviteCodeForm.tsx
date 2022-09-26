@@ -1,35 +1,20 @@
-import "@typeform/embed/build/css/popup.css";
-
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box, Typography } from "@mui/material";
-import { createPopup } from "@typeform/embed";
-import { FormEvent, useCallback, useEffect, useState } from "react";
-import { PrimaryButton, SubtextParagraph, TextField } from "../common";
-import WaitingRoom, { setWaitlistId, getWaitlistId } from "./WaitingRoom";
+import { FormEvent, useEffect, useState } from "react";
+import { Header, PrimaryButton, SubtextParagraph, TextField } from "../common";
+import { BackpackHeader } from "../Locked";
 
-type Page = "inviteCode" | "createUsername" | "recoverAccount";
+type Page = "inviteCode" | "createUsername";
 
-const CheckInviteCodeForm = ({ setInviteCode }: any) => {
+const CheckInviteCodeForm = ({
+  setInviteCode,
+  handleClickWaitingRoom,
+  waitingRoomButtonText,
+}: any) => {
   const theme = useCustomTheme();
   const [value, setValue] = useState({} as any);
   const [page, setPage] = useState<Page>("inviteCode");
   const [error, setError] = useState<string>();
-  const [showWaitingRoom, setShowWaitingRoom] = useState(false);
-  const [waitlistResponseId, setWaitlistResponseId] = useState<string>();
-
-  const typeform = createPopup("PCnBjycW", {
-    autoClose: true,
-    onSubmit({ responseId }) {
-      setWaitlistId(responseId);
-      setWaitlistResponseId(responseId);
-    },
-  });
-
-  // attempt to get previous typeform response ID from localstorage
-  useEffect(() => {
-    const id = getWaitlistId();
-    if (id) setWaitlistResponseId(id);
-  }, []);
 
   // reset error when textfield value or the form changes
   useEffect(() => {
@@ -68,14 +53,31 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           },
           page: "recoverAccount",
         }
-      : page === "createUsername"
-      ? {
-          description:
-            "Others can see and find you by this username, so choose wisely if you'd like to remain anonymous. You will not be able to change this later.",
+      : {
+          description: (
+            <Box style={{ textAlign: "left", padding: "5px" }}>
+              <Header text="Claim your username" />
+              <SubtextParagraph style={{ marginTop: "16px", marginBottom: 0 }}>
+                You’ll need this to unlock Backpack. Others can see and find you
+                by this username.
+                <br />
+                <br />
+                It will also be associated with your primary wallet address, so
+                choose wisely if you’d like to remain anonymous.
+                <br />
+                <br />
+                It should be 3-15 characters and it can contain letters, numbers
+                and underscores.
+                <br />
+                <br />
+                You will not be able to change it yet.
+              </SubtextParagraph>
+            </Box>
+          ),
           linkText: "",
           inputName: "username",
           placeholder: "Username",
-          buttonText: "Claim",
+          buttonText: "Continue",
           url: `https://auth.xnfts.dev/users/${value.username}`,
           validate: () => {
             const v = value.username;
@@ -93,33 +95,14 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           setVal: (v: any) =>
             setValue({
               inviteCode: value.inviteCode,
-              username: v.replace(/[^a-z0-9_]/g, "").substring(0, 15),
+              username: v
+                .toLowerCase()
+                .replace(/[^a-z0-9_]/g, "")
+                .substring(0, 15),
             }),
           handleValue: () => setInviteCode(value),
           page: "inviteCode",
-        }
-      : {
-          linkText: "I have an Invite Code",
-          inputName: "username",
-          placeholder: "Username",
-          buttonText: "Continue",
-          url: `https://auth.xnfts.dev/users/${value.username}`,
-          setVal: (v: string) =>
-            setValue({
-              username: v.replace(/[^a-z0-9_]/g, ""),
-            }),
-          handleValue: () => alert(JSON.stringify(value)),
-          page: "inviteCode",
-          validate: () => true,
         };
-
-  const handleWaitingClick = useCallback(() => {
-    if (!waitlistResponseId) {
-      typeform.open();
-    } else {
-      setShowWaitingRoom(true);
-    }
-  }, [waitlistResponseId]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -142,15 +125,26 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
 
   return (
     <>
+      {page === "inviteCode" && (
+        <Box>
+          <BackpackHeader
+            alphaStyle={{
+              marginRight: "42px",
+            }}
+          />
+        </Box>
+      )}
+
+      {ob.description && ob.description}
+
       <form onSubmit={handleSubmit}>
-        {ob.description}
         <Box style={{ marginBottom: 8 }}>
           <TextField
             inputProps={{
               name: ob.inputName,
               autoComplete: "off",
               spellCheck: "false",
-              style: { fontSize: "0.94em" },
+              style: { fontSize: "0.91em" },
             }}
             placeholder={ob.placeholder}
             type="text"
@@ -171,13 +165,9 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           <>
             <Box
               style={{ marginTop: 16, cursor: "pointer" }}
-              onClick={handleWaitingClick}
+              onClick={handleClickWaitingRoom}
             >
-              <SubtextParagraph>
-                {waitlistResponseId
-                  ? "Waiting Room"
-                  : "Apply for an Invite Code"}
-              </SubtextParagraph>
+              <SubtextParagraph>{waitingRoomButtonText}</SubtextParagraph>
             </Box>
 
             <Box
@@ -198,11 +188,6 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           </>
         )}
       </form>
-      <WaitingRoom
-        uri={`https://beta-waiting-room.vercel.app/?id=${waitlistResponseId}`}
-        onClose={() => setShowWaitingRoom(false)}
-        visible={showWaitingRoom}
-      />
     </>
   );
 };
