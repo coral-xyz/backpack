@@ -74,6 +74,7 @@ import {
   UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
+  UI_RPC_METHOD_USERNAME_READ,
   BACKEND_EVENT,
   CHANNEL_POPUP_RPC,
   CHANNEL_POPUP_NOTIFICATIONS,
@@ -216,6 +217,11 @@ async function handle<T = any>(
       return await handleKeynameRead(ctx, params[0]);
     case UI_RPC_METHOD_KEYNAME_UPDATE:
       return await handleKeynameUpdate(ctx, params[0], params[1]);
+    //
+    // Username.
+    //
+    case UI_RPC_METHOD_USERNAME_READ:
+      return await handleUsernameRead(ctx);
     //
     // Password.
     //
@@ -415,6 +421,13 @@ async function handleKeyringKeyDelete(
   pubkey: string
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.keyringKeyDelete(blockchain, pubkey);
+  return [resp];
+}
+
+async function handleUsernameRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<number>> {
+  const resp = await ctx.backend.usernameRead();
   return [resp];
 }
 

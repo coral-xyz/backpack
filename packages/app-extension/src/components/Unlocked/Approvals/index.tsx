@@ -89,13 +89,7 @@ export function WithApproval({
         }}
       >
         <div style={{ width: "167.5px" }}>
-          <SecondaryButton
-            label="Deny"
-            onClick={onDeny}
-            style={{
-              border: `${theme.custom.colors.borderFull}`,
-            }}
-          />
+          <SecondaryButton label="Deny" onClick={onDeny} />
         </div>
         <div style={{ width: "167.5px" }}>
           <PrimaryButton label={onConfirmLabel} onClick={onConfirm} />

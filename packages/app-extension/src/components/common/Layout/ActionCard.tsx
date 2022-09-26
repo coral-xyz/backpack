@@ -18,19 +18,20 @@ export function ActionCard({
       style={{
         padding: 0,
         textTransform: "none",
+        border: `${theme.custom.colors.borderFull}`,
+        borderRadius: "12px",
+        background: theme.custom.colors.nav,
       }}
     >
       <Card
         sx={{
-          bgcolor: theme.custom.colors.nav,
-          border: `${theme.custom.colors.borderFull}`,
           p: 1,
-          borderRadius: "12px",
           color: theme.custom.colors.fontColor,
           cursor: "pointer",
           height: "112px",
           padding: "16px",
           boxShadow: "none",
+          backgroundColor: "transparent",
         }}
       >
         <CardContent style={{ padding: 0 }}>

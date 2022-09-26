@@ -41,6 +41,7 @@ import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
+import { encode } from "bs58";
 
 const { base58: bs58 } = ethers.utils;
 
@@ -371,24 +372,41 @@ export class Backend {
       mnemonic,
       derivationPath,
       password,
-      accountIndices
+      accountIndices,
+      username
     );
 
     if (BACKPACK_FEATURE_USERNAMES) {
-      await fetch("https://webhook.site/46c9d38f-913d-4577-9113-f128658fbf44", {
-        method: "POST",
-        body: JSON.stringify({
+      try {
+        const bc = await this.keyringStore.activeBlockchainKeyring();
+
+        const publicKey = bc.getActiveWallet();
+
+        const body = JSON.stringify({
           username,
           inviteCode,
+          publicKey,
           waitlistId,
-          pubkey: await this.keyringStore
-            .activeBlockchainKeyring()
-            .getActiveWallet(),
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+        });
+
+        const buffer = Buffer.from(body, "utf8");
+        const signature = await bc.signMessage(encode(buffer), publicKey!);
+
+        const res = await fetch("https://auth.xnfts.dev/users", {
+          method: "POST",
+          body,
+          headers: {
+            "Content-Type": "application/json",
+            "x-backpack-signature": signature,
+          },
+        });
+        if (!res.ok) {
+          throw new Error(await res.json());
+        }
+      } catch (err) {
+        await this.keyringStore.reset();
+        throw new Error("Error creating account");
+      }
     }
 
     // Notify all listeners.
@@ -609,6 +627,11 @@ export class Backend {
     });
 
     return SUCCESS_RESPONSE;
+  }
+
+  async usernameRead(): Promise<string> {
+    const { username = "" } = await store.getWalletData();
+    return username;
   }
 
   async passwordUpdate(

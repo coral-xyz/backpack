@@ -12,13 +12,14 @@ import {
   Settings,
 } from "@mui/icons-material";
 import { Keypair } from "@solana/web3.js";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
 import {
   useBackgroundClient,
   useWalletPublicKeys,
   useActiveWallet,
   useActiveWallets,
   useBlockchainLogo,
+  useUsername,
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
@@ -95,18 +96,25 @@ const useStyles = styles((theme) => ({
     padding: "2px",
     background: theme.custom.colors.coralGradient,
     "&:hover": {
-      background: theme.custom.colors.coralGradient,
+      background: `${theme.custom.colors.coralGradient} !important`,
+      backgroundColor: `${theme.custom.colors.coralGradient} !important`,
+      opacity: HOVER_OPACITY,
     },
   },
   addConnectRoot: {
     background: "transparent !important",
     height: "48px",
+    "&:hover": {
+      color: `${theme.custom.colors.fontColor} !important`,
+      background: "transparent !important",
+    },
   },
   privateKeyTextFieldRoot: {
     "& .MuiOutlinedInput-root": {
       border: theme.custom.colors.borderFull,
       "& textarea": {
         border: "none",
+        borderRadius: 0,
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
@@ -732,6 +740,7 @@ function SettingsList({ close }: { close: () => void }) {
   const theme = useCustomTheme();
   const nav = useNavStack();
   const background = useBackgroundClient();
+  const username = useUsername();
 
   const lockWallet = () => {
     background
@@ -744,7 +753,7 @@ function SettingsList({ close }: { close: () => void }) {
 
   const settingsMenu = [
     {
-      label: "Your Account",
+      label: username ? `Your Account (${username})` : "Your Account",
       onClick: () => nav.push("your-account"),
       icon: (props: any) => <AccountCircleOutlined {...props} />,
       detailIcon: <PushDetail />,
@@ -908,19 +917,9 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   const [openDrawer, setOpenDrawer] = useState(false);
 
   useEffect(() => {
-    const prevStyle = nav.style;
-    const prevContentStyle = nav.contentStyle;
     const prevTitle = nav.title;
-    nav.setStyle({
-      backgroundColor: theme.custom.colors.nav,
-    });
-    nav.setContentStyle({
-      backgroundColor: theme.custom.colors.nav,
-    });
     nav.setTitle("");
     return () => {
-      nav.setStyle(prevStyle);
-      nav.setContentStyle(prevContentStyle);
       nav.setTitle(prevTitle);
     };
   }, [theme]);

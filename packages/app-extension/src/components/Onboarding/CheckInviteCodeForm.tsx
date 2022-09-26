@@ -39,11 +39,26 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
   const ob =
     page === "inviteCode"
       ? {
+          disabled: true,
           linkText: "I already have an account",
           inputName: "inviteCode",
           placeholder: "Invite Code",
           buttonText: "Go",
-          url: `https://invites.backpack.workers.dev/check/${value.inviteCode}`,
+          url: `https://invites.xnfts.dev/check/${value.inviteCode}`,
+          validate: () => {
+            const v = value.inviteCode;
+            if (
+              !v.match(
+                /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/
+              )
+            ) {
+              setError("Invite Code is not valid");
+              return false;
+            } else {
+              setError(undefined);
+              return true;
+            }
+          },
           setVal: (v: string) =>
             setValue({
               inviteCode: v.replace(/[^a-zA-Z0-9\\-]/g, ""),
@@ -61,11 +76,24 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           inputName: "username",
           placeholder: "Username",
           buttonText: "Claim",
-          url: `https://invites.backpack.workers.dev`,
+          url: `https://auth.xnfts.dev/users/${value.username}`,
+          validate: () => {
+            const v = value.username;
+            if (v.length < 3) {
+              setError("must be at least 3 characters");
+              return false;
+            } else if (v.length > 15) {
+              setError("must be less than 15 characters long");
+              return false;
+            } else {
+              setError(undefined);
+              return true;
+            }
+          },
           setVal: (v: any) =>
             setValue({
               inviteCode: value.inviteCode,
-              username: v.replace(/[^a-z0-9_]/g, ""),
+              username: v.replace(/[^a-z0-9_]/g, "").substring(0, 15),
             }),
           handleValue: () => setInviteCode(value),
           page: "inviteCode",
@@ -75,13 +103,14 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           inputName: "username",
           placeholder: "Username",
           buttonText: "Continue",
-          url: `https://auth.backpack.workers.dev/users/${value.username}`, // not live yet
+          url: `https://auth.xnfts.dev/users/${value.username}`,
           setVal: (v: string) =>
             setValue({
               username: v.replace(/[^a-z0-9_]/g, ""),
             }),
           handleValue: () => alert(JSON.stringify(value)),
           page: "inviteCode",
+          validate: () => true,
         };
 
   const handleWaitingClick = useCallback(() => {
@@ -94,8 +123,15 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    if (!ob.validate()) return;
+
     try {
-      const res = await fetch(ob.url);
+      const res = await fetch(ob.url, {
+        headers: {
+          "x-backpack-invite-code": value.inviteCode,
+        },
+      });
       const json = await res.json();
       if (!res.ok) throw new Error(json.message);
       ob.handleValue();
@@ -112,8 +148,9 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           <TextField
             inputProps={{
               name: ob.inputName,
-              autoComplete: false,
-              spellCheck: false,
+              autoComplete: "off",
+              spellCheck: "false",
+              style: { fontSize: "0.94em" },
             }}
             placeholder={ob.placeholder}
             type="text"
@@ -144,8 +181,17 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
             </Box>
 
             <Box
-              onClick={() => setPage(ob.page as Page)}
-              style={{ marginTop: 16, cursor: "pointer" }}
+              onClick={ob.disabled ? undefined : () => setPage(ob.page as Page)}
+              style={{
+                marginTop: 16,
+                cursor: ob.disabled ? "default" : "pointer",
+                opacity: ob.disabled ? 0.3 : 1,
+              }}
+              title={
+                ob.disabled
+                  ? "Coming soon, ask in discord if you need assistance"
+                  : undefined
+              }
             >
               <SubtextParagraph>{ob.linkText}</SubtextParagraph>
             </Box>
