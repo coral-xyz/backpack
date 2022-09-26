@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { ethers, BigNumber } from "ethers";
 import { TextField, Typography, Chip } from "@mui/material";
-import { Blockchain } from "@coral-xyz/common";
 import { useEthereumFeeData } from "@coral-xyz/recoil";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { SettingsList } from "./Settings/List";
-import { WithDrawer } from "./Layout/Drawer";
+import { WithMiniDrawer } from "./Layout/Drawer";
 import { CloseButton } from "../Unlocked/Swap";
 import { PrimaryButton, SecondaryButton } from "./";
 
@@ -27,11 +26,8 @@ const useStyles = styles((theme: any) => ({
     background: theme.custom.colors.background,
     color: theme.custom.colors.secondary,
     borderRadius: "8px",
-    marginTop: "4px",
     "& .MuiOutlinedInput-root": {
       borderRadius: "8px",
-      height: "40px",
-      paddingLeft: "8px",
       "& fieldset": {
         border: "none",
       },
@@ -82,7 +78,11 @@ export function TransactionData({
     },
     "Network Fee": {
       onClick: () => {},
-      detail: <Typography>{networkFee}</Typography>,
+      detail: (
+        <Typography>
+          {networkFee} {network === "Ethereum" ? "ETH" : "SOL"}
+        </Typography>
+      ),
       button: false,
     },
     ...(network === "Ethereum"
@@ -335,7 +335,15 @@ export function EthereumSettingsDrawer({
     },
   };
   return (
-    <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+    <WithMiniDrawer
+      openDrawer={openDrawer}
+      setOpenDrawer={setOpenDrawer}
+      paperProps={{
+        style: {
+          height: "100%",
+        },
+      }}
+    >
       <div
         onClick={() => setOpenDrawer(false)}
         style={{
@@ -444,6 +452,6 @@ export function EthereumSettingsDrawer({
           </div>
         </div>
       </div>
-    </WithDrawer>
+    </WithMiniDrawer>
   );
 }
