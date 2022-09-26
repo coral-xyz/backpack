@@ -1,4 +1,3 @@
-import "@typeform/embed/build/css/popup.css";
 import {
   Dispatch,
   lazy,
