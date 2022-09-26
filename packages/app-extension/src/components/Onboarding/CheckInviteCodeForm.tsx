@@ -1,36 +1,20 @@
-import "@typeform/embed/build/css/popup.css";
-
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box, Typography } from "@mui/material";
-import { createPopup } from "@typeform/embed";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Header, PrimaryButton, SubtextParagraph, TextField } from "../common";
-import WaitingRoom, { setWaitlistId, getWaitlistId } from "./WaitingRoom";
 import { BackpackHeader } from "../Locked";
 
 type Page = "inviteCode" | "createUsername";
 
-const CheckInviteCodeForm = ({ setInviteCode }: any) => {
+const CheckInviteCodeForm = ({
+  setInviteCode,
+  handleClickWaitingRoom,
+  waitingRoomButtonText,
+}: any) => {
   const theme = useCustomTheme();
   const [value, setValue] = useState({} as any);
   const [page, setPage] = useState<Page>("inviteCode");
   const [error, setError] = useState<string>();
-  const [showWaitingRoom, setShowWaitingRoom] = useState(false);
-  const [waitlistResponseId, setWaitlistResponseId] = useState<string>();
-
-  const typeform = createPopup("PCnBjycW", {
-    autoClose: true,
-    onSubmit({ responseId }) {
-      setWaitlistId(responseId);
-      setWaitlistResponseId(responseId);
-    },
-  });
-
-  // attempt to get previous typeform response ID from localstorage
-  useEffect(() => {
-    const id = getWaitlistId();
-    if (id) setWaitlistResponseId(id);
-  }, []);
 
   // reset error when textfield value or the form changes
   useEffect(() => {
@@ -71,7 +55,7 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
         }
       : {
           description: (
-            <Box style={{ textAlign: "left", margin: 8 }}>
+            <Box style={{ textAlign: "left", padding: "5px" }}>
               <Header text="Claim your username" />
               <SubtextParagraph style={{ marginTop: "16px", marginBottom: 0 }}>
                 You’ll need this to unlock Backpack. Others can see and find you
@@ -119,14 +103,6 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           handleValue: () => setInviteCode(value),
           page: "inviteCode",
         };
-
-  const handleWaitingClick = useCallback(() => {
-    if (!waitlistResponseId) {
-      typeform.open();
-    } else {
-      setShowWaitingRoom(true);
-    }
-  }, [waitlistResponseId]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -189,13 +165,9 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           <>
             <Box
               style={{ marginTop: 16, cursor: "pointer" }}
-              onClick={handleWaitingClick}
+              onClick={handleClickWaitingRoom}
             >
-              <SubtextParagraph>
-                {waitlistResponseId
-                  ? "Waiting Room"
-                  : "Apply for an Invite Code"}
-              </SubtextParagraph>
+              <SubtextParagraph>{waitingRoomButtonText}</SubtextParagraph>
             </Box>
 
             <Box
@@ -216,11 +188,6 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           </>
         )}
       </form>
-      <WaitingRoom
-        uri={`https://beta-waiting-room.vercel.app/?id=${waitlistResponseId}`}
-        onClose={() => setShowWaitingRoom(false)}
-        visible={showWaitingRoom}
-      />
     </>
   );
 };

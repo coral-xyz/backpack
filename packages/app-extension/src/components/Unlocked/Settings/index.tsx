@@ -140,7 +140,6 @@ export function SettingsButton() {
 
 function AvatarButton() {
   const classes = useStyles();
-  const theme = useCustomTheme();
   const [settingsOpen, setSettingsOpen] = useState(false);
   return (
     <div className={classes.menuButtonContainer}>
