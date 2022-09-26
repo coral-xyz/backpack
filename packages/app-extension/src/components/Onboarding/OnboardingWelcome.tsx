@@ -80,7 +80,7 @@ export function OnboardingWelcome({
         <CheckInviteCodeForm setInviteCode={setInviteCode} />
       ) : (
         <Box>
-          <Typography style={{ marginBottom: "2em" }}>
+          <Typography style={{ margin: 8, marginBottom: 32 }}>
             Your username isn't secured just yet, please create a new wallet, or
             import an existing one so that it can be claimed.
           </Typography>

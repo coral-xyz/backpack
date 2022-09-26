@@ -71,7 +71,7 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
         }
       : {
           description: (
-            <Box style={{ textAlign: "left", padding: "5px" }}>
+            <Box style={{ textAlign: "left", margin: 8 }}>
               <Header text="Claim your username" />
               <SubtextParagraph style={{ marginTop: "16px", marginBottom: 0 }}>
                 You’ll need this to unlock Backpack. Others can see and find you
