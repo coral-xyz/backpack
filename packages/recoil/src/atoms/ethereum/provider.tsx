@@ -1,4 +1,5 @@
 import { selector } from "recoil";
+import { BigNumber } from "ethers";
 import { BackgroundEthereumProvider } from "@coral-xyz/common";
 import { providerBackgroundClient } from "../client";
 import { ethereumConnectionUrl } from "./preferences";
@@ -29,6 +30,12 @@ export const ethereumFeeData = selector({
   key: "ethereumFeeData",
   get: async ({ get }) => {
     const { provider } = get(ethersContext);
-    return await provider.getFeeData();
+    const feeData = await provider.getFeeData();
+    // BigNumberify everything
+    return {
+      gasPrice: BigNumber.from(feeData.gasPrice),
+      maxFeePerGas: BigNumber.from(feeData.maxFeePerGas),
+      maxPriorityFeePerGas: BigNumber.from(feeData.maxPriorityFeePerGas),
+    };
   },
 });
