@@ -25,6 +25,7 @@ import {
   openPopupWindow,
   Blockchain,
   BACKPACK_FEATURE_POP_MODE,
+  BACKPACK_FEATURE_XNFT,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
@@ -763,13 +764,15 @@ function SettingsList({ close }: { close: () => void }) {
       icon: (props: any) => <Settings {...props} />,
       detailIcon: <PushDetail />,
     },
-    {
+  ];
+  if (BACKPACK_FEATURE_XNFT) {
+    settingsMenu.push({
       label: "xNFTs",
       onClick: () => nav.push("xnfts"),
       icon: (props: any) => <GridIcon {...props} />,
       detailIcon: <PushDetail />,
-    },
-  ];
+    });
+  }
   if (BACKPACK_FEATURE_POP_MODE) {
     settingsMenu.push({
       label: "Pop Window",
