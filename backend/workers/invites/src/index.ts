@@ -109,14 +109,31 @@ app.get("/stats", async (c) => {
         "x-hasura-admin-secret": c.env.HASURA_SECRET,
       },
       body: JSON.stringify({
-        query: `query { invitations_aggregate { aggregate { count } } }`,
-        variables: {},
+        query: `
+          query($now: timestamptz) {
+            invitations(limit: 1, where: {claimed_at: {_lt: $now}}, order_by: {claimed_at: desc}) {
+              claimed_at
+            }
+          }
+        `.trim(),
+        variables: {
+          now: new Date().toISOString(),
+        },
       }),
     });
 
     const resJson = await res.json<any>();
+
+    const latestClaimTimestamp =
+      resJson?.data.invitations.length > 0
+        ? resJson?.data.invitations[0].claimed_at
+        : null;
+
     return c.json(
-      { status: 200, data: resJson?.data.invitations_aggregate.aggregate },
+      {
+        status: 200,
+        data: { latestClaimTimestamp },
+      },
       200
     );
   } catch (err: any) {
