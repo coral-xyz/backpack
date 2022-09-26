@@ -20,8 +20,8 @@ import { getWaitlistId } from "./WaitingRoom";
 
 export type OnboardingFlows =
   | {
-      username: string;
-      inviteCode: string;
+      username?: string;
+      inviteCode?: string;
       flow: "create-wallet" | "import-wallet";
     }
   | undefined;
