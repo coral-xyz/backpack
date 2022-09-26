@@ -6,14 +6,20 @@ import {
   useRef,
   useState,
 } from "react";
-import { Box, Grid, IconButton, ListItemText, Toolbar } from "@mui/material";
+import {
+  Box,
+  Grid,
+  IconButton,
+  ListItemText,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import {
   AddCircle,
   ArrowCircleDown,
   CallMade,
   Lock,
   Menu,
-  Support,
   Twitter,
 } from "@mui/icons-material";
 import {
@@ -69,44 +75,49 @@ export function OnboardingWelcome({
           menuOpen={menuOpen}
           setMenuOpen={setMenuOpen}
         />
-        <BackpackHeader
-          alphaStyle={{
-            marginRight: "42px",
-          }}
-        />
       </Box>
 
       {BACKPACK_FEATURE_USERNAMES && !inviteCode ? (
         <CheckInviteCodeForm setInviteCode={setInviteCode} />
       ) : (
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <ActionCard
-              icon={
-                <AddCircle
-                  style={{
-                    color: theme.custom.colors.icon,
-                  }}
-                />
-              }
-              text="Create a new wallet"
-              onClick={() => onSelect({ ...inviteCode, flow: "create-wallet" })}
-            />
+        <Box>
+          <Typography style={{ marginBottom: "2em" }}>
+            Your username isn't secured just yet, please create a new wallet, or
+            import an existing one so that it can be claimed.
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <ActionCard
+                icon={
+                  <AddCircle
+                    style={{
+                      color: theme.custom.colors.icon,
+                    }}
+                  />
+                }
+                text="Create a new wallet"
+                onClick={() =>
+                  onSelect({ ...inviteCode, flow: "create-wallet" })
+                }
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <ActionCard
+                icon={
+                  <ArrowCircleDown
+                    style={{
+                      color: theme.custom.colors.icon,
+                    }}
+                  />
+                }
+                text="Import an existing wallet"
+                onClick={() =>
+                  onSelect({ ...inviteCode, flow: "import-wallet" })
+                }
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <ActionCard
-              icon={
-                <ArrowCircleDown
-                  style={{
-                    color: theme.custom.colors.icon,
-                  }}
-                />
-              }
-              text="Import an existing wallet"
-              onClick={() => onSelect({ ...inviteCode, flow: "import-wallet" })}
-            />
-          </Grid>
-        </Grid>
+        </Box>
       )}
     </div>
   );

@@ -7,7 +7,6 @@ import {
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
-  BACKPACK_FEATURE_USERNAMES,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { CreatePassword } from "../common/Account/CreatePassword";
