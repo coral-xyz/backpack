@@ -1,7 +1,8 @@
 import { externalResourceUri } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type { PakkuState } from "@coral-xyz/recoil";
-import { Grid, Typography } from "@mui/material";
+import { AddCircleOutline } from "@mui/icons-material";
+import { Grid, IconButton, Typography } from "@mui/material";
 import { useMemo } from "react";
 
 export function PakkusList({ pakkus }: { pakkus: PakkuState[] }) {
@@ -29,6 +30,31 @@ export function PakkusList({ pakkus }: { pakkus: PakkuState[] }) {
             <PreviewImage id={p.account.id} src={p.metadata.imageUrl} />
           </Grid>
         ))}
+        <Grid key={"create-new"} xs={3} sm={3} md={2} lg={2} item>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "50px",
+              width: "50px",
+            }}
+          >
+            <IconButton
+              disableRipple
+              onClick={() => alert("create pakku")}
+              size="large"
+            >
+              <AddCircleOutline
+                style={{
+                  color: theme.custom.colors.icon,
+                  height: "30px",
+                  width: "30px",
+                }}
+              />
+            </IconButton>
+          </div>
+        </Grid>
       </Grid>
     </div>
   );
