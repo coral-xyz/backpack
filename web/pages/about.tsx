@@ -33,15 +33,6 @@ export default function About() {
               href="https://github.com/coral-xyz/anchor"
             >
               Anchor Framework
-            </a>
-            ,{' '}
-            <a
-              className="text-teal-500"
-              target="_blank"
-              rel="noreferrer"
-              href="https://www.apr.dev/"
-            >
-              Anchor Program Registry
             </a>{' '}
             and{' '}
             <a
@@ -54,7 +45,7 @@ export default function About() {
             </a>
           </p>
           <p>
-            We’re building products, protocols and primitives for Web4. If that interests you,{' '}
+            We’re building products, protocols and primitives for Web3. If that interests you,{' '}
             <a className="text-teal-500" href="mailto:admin+jobs@200ms.io">
               email us.
             </a>
@@ -65,9 +56,9 @@ export default function About() {
               className="text-teal-500"
               target="_blank"
               rel="noreferrer"
-              href="https://twitter.com/0xCoral"
+              href="https://twitter.com/xNFT_Backpack"
             >
-              Follow Coral on Twitter.
+              Follow Backpack on Twitter.
             </a>
           </p>
         </div>
