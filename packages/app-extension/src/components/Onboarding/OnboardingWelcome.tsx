@@ -83,37 +83,81 @@ export function OnboardingWelcome({
     }
   }, [waitlistResponseId]);
 
-  if (BACKPACK_FEATURE_USERNAMES) {
-    if (showWaitingRoom) {
-      return (
-        <WaitingRoom
-          uri={`https://beta-waiting-room.vercel.app/?id=${waitlistResponseId}&v=1`}
-          onClose={() => setShowWaitingRoom(false)}
-          visible
-        />
-      );
-    } else if (!data) {
-      return (
-        <div
-          style={{
-            display: "flex",
-            textAlign: "center",
-            justifyContent: "space-between",
-            flexDirection: "column",
-            height: "100%",
-            padding: "0 16px 16px 16px",
-            position: "relative",
-            overflow: "hidden",
-          }}
-          ref={containerRef}
-        >
-          <Box>
-            <OnboardingMenu
-              containerRef={containerRef}
-              menuOpen={menuOpen}
-              setMenuOpen={setMenuOpen}
+  if (BACKPACK_FEATURE_USERNAMES && showWaitingRoom) {
+    return (
+      <WaitingRoom
+        uri={`https://beta-waiting-room.vercel.app/?id=${waitlistResponseId}&v=1`}
+        onClose={() => setShowWaitingRoom(false)}
+        visible
+      />
+    );
+  } else {
+    return (
+      <div
+        style={{
+          display: "flex",
+          textAlign: "center",
+          justifyContent: "space-between",
+          flexDirection: "column",
+          height: "100%",
+          padding: "0 16px 16px 16px",
+          position: "relative",
+          overflow: "hidden",
+        }}
+        ref={containerRef}
+      >
+        <Box>
+          <OnboardingMenu
+            containerRef={containerRef}
+            menuOpen={menuOpen}
+            setMenuOpen={setMenuOpen}
+          />
+        </Box>
+        {!BACKPACK_FEATURE_USERNAMES || data ? (
+          <>
+            <BackpackHeader
+              alphaStyle={{
+                marginRight: "42px",
+              }}
             />
-          </Box>
+            <Box style={{ marginTop: "auto" }}>
+              {BACKPACK_FEATURE_USERNAMES && (
+                <Typography style={{ margin: 8, marginBottom: 32 }}>
+                  Your username isn't secured just yet, please create a new
+                  wallet, or import an existing one so that it can be claimed.
+                </Typography>
+              )}
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <ActionCard
+                    icon={
+                      <AddCircle
+                        style={{
+                          color: theme.custom.colors.icon,
+                        }}
+                      />
+                    }
+                    text="Create a new wallet"
+                    onClick={() => onSelect({ ...data, flow: "create-wallet" })}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <ActionCard
+                    icon={
+                      <ArrowCircleDown
+                        style={{
+                          color: theme.custom.colors.icon,
+                        }}
+                      />
+                    }
+                    text="Import an existing wallet"
+                    onClick={() => onSelect({ ...data, flow: "import-wallet" })}
+                  />
+                </Grid>
+              </Grid>
+            </Box>
+          </>
+        ) : (
           <CheckInviteCodeForm
             waitingRoomButtonText={
               waitlistResponseId ? "Waiting Room" : "Apply for an Invite Code"
@@ -123,74 +167,10 @@ export function OnboardingWelcome({
               setData(usernameAndCode);
             }}
           />
-        </div>
-      );
-    }
-  }
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        textAlign: "center",
-        justifyContent: "space-between",
-        flexDirection: "column",
-        height: "100%",
-        padding: "0 16px 16px 16px",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      <Box>
-        <OnboardingMenu
-          containerRef={containerRef}
-          menuOpen={menuOpen}
-          setMenuOpen={setMenuOpen}
-        />
-        <BackpackHeader
-          alphaStyle={{
-            marginRight: "42px",
-          }}
-        />
-      </Box>
-      <Box style={{ marginTop: "auto" }}>
-        {BACKPACK_FEATURE_USERNAMES && (
-          <Typography style={{ margin: 8, marginBottom: 32 }}>
-            Your username isn't secured just yet, please create a new wallet, or
-            import an existing one so that it can be claimed.
-          </Typography>
         )}
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <ActionCard
-              icon={
-                <AddCircle
-                  style={{
-                    color: theme.custom.colors.icon,
-                  }}
-                />
-              }
-              text="Create a new wallet"
-              onClick={() => onSelect({ ...data, flow: "create-wallet" })}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <ActionCard
-              icon={
-                <ArrowCircleDown
-                  style={{
-                    color: theme.custom.colors.icon,
-                  }}
-                />
-              }
-              text="Import an existing wallet"
-              onClick={() => onSelect({ ...data, flow: "import-wallet" })}
-            />
-          </Grid>
-        </Grid>
-      </Box>
-    </div>
-  );
+      </div>
+    );
+  }
 }
 
 function OnboardingMenu({
