@@ -34,7 +34,6 @@ const useStyles = styles((theme) => ({
   },
   drawerRoot: {
     top: `${NAV_BAR_HEIGHT}px !important`,
-    zIndex: "2 !important" as any,
     flex: 1,
   },
   drawerPaper: {
@@ -43,7 +42,6 @@ const useStyles = styles((theme) => ({
   },
   miniDrawerRoot: {
     background: "transparent",
-    zIndex: "1301 !important" as any,
     flex: 1,
   },
   miniDrawerPaper: {
