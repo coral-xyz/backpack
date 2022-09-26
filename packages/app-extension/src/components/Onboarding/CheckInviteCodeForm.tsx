@@ -150,11 +150,13 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
   return (
     <>
       {page === "inviteCode" && (
-        <BackpackHeader
-          alphaStyle={{
-            marginRight: "42px",
-          }}
-        />
+        <Box>
+          <BackpackHeader
+            alphaStyle={{
+              marginRight: "42px",
+            }}
+          />
+        </Box>
       )}
 
       {ob.description && ob.description}
