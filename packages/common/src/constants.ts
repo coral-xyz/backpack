@@ -267,6 +267,8 @@ export const NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED =
   "notification-keyring-ethereum-active-wallet-updated";
 export const NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE =
   "notification-ethereum-tokens-did-update";
+export const NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE =
+  "notification-ethereum-fee-data-did-update";
 
 //
 // Ethereum web injected provider API.
