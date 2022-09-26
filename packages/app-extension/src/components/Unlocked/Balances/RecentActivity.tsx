@@ -93,7 +93,6 @@ const useStyles = styles((theme) => ({
 
 export function RecentActivityButton() {
   const classes = useStyles();
-  const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
   return (
     <div className={classes.networkSettingsButtonContainer}>
