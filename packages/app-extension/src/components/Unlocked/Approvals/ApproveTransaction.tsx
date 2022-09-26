@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { ethers, BigNumber } from "ethers";
 import { Typography } from "@mui/material";
 import _CheckIcon from "@mui/icons-material/Check";
@@ -6,11 +5,8 @@ import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
 import { Blockchain } from "@coral-xyz/common";
 import { styles } from "@coral-xyz/themes";
 import { Loading } from "../../common";
-import {
-  TransactionData,
-  EthereumSettingsDrawer,
-} from "../../common/TransactionData";
-import { WithApproval } from ".";
+import { WithApproval } from "../../Unlocked/Approvals";
+import { TransactionData } from "../../common/TransactionData";
 
 const { Zero } = ethers.constants;
 
@@ -82,27 +78,14 @@ export function ApproveTransaction({
 }) {
   const classes = useStyles();
   const blockchain = useWalletBlockchain(wallet);
-  const {
-    loading,
-    simulationError,
-    balanceChanges,
-    network,
-    networkFee,
-    networkFeeUsd,
-    // Possibly modified transaction object if user overrides settings
-    // (i.e. Ethereum gas or nonce)
-    transaction,
-    transactionOverrides,
-    setTransactionOverrides,
-  } = useTransactionData(blockchain as Blockchain, tx);
-
-  const [ethSettingsDrawerOpen, setEthSettingsDrawerOpen] = useState(false);
+  const transactionData = useTransactionData(blockchain as Blockchain, tx);
+  const { loading, balanceChanges, transaction } = transactionData;
 
   if (loading) {
     return <Loading />;
   }
 
-  const balanceChangeRows = balanceChanges
+  const menuItems = balanceChanges
     ? Object.fromEntries(
         Object.entries(balanceChanges).map(
           ([symbol, { nativeChange, decimals }]) => {
@@ -132,25 +115,6 @@ export function ApproveTransaction({
       )
     : {};
 
-  const menuItems = {
-    ...balanceChangeRows,
-    Network: {
-      onClick: () => {},
-      detail: <Typography>{network}</Typography>,
-      button: false,
-    },
-    "Network Fee": {
-      onClick: () => {},
-      detail: <Typography>{networkFee}</Typography>,
-      button: false,
-    },
-    Speed: {
-      onClick: () => setEthSettingsDrawerOpen(true),
-      detail: <Typography>Normal</Typography>,
-      button: false,
-    },
-  };
-
   const onConfirm = async () => {
     await onCompletion(transaction);
   };
@@ -172,21 +136,10 @@ export function ApproveTransaction({
       {loading ? (
         <Loading />
       ) : (
-        <>
-          <TransactionData
-            menuItems={menuItems}
-            simulationError={simulationError}
-          />
-          {blockchain === Blockchain.ETHEREUM && (
-            <EthereumSettingsDrawer
-              transactionOverrides={transactionOverrides}
-              setTransactionOverrides={setTransactionOverrides}
-              networkFeeUsd={networkFeeUsd}
-              openDrawer={ethSettingsDrawerOpen}
-              setOpenDrawer={setEthSettingsDrawerOpen}
-            />
-          )}
-        </>
+        <TransactionData
+          transactionData={transactionData}
+          menuItems={menuItems}
+        />
       )}
     </WithApproval>
   );

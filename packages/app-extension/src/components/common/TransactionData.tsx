@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { ethers, BigNumber } from "ethers";
 import { TextField, Typography, Chip } from "@mui/material";
+import { Blockchain } from "@coral-xyz/common";
 import { useEthereumFeeData } from "@coral-xyz/recoil";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { SettingsList } from "./Settings/List";
@@ -55,18 +56,50 @@ const useStyles = styles((theme: any) => ({
 }));
 
 export function TransactionData({
+  transactionData,
   menuItems,
-  simulationError = false,
 }: {
+  transactionData: any;
   menuItems: any;
-  simulationError: boolean;
 }) {
   const theme = useCustomTheme();
+  const {
+    network,
+    networkFee,
+    networkFeeUsd,
+    transactionOverrides,
+    setTransactionOverrides,
+    simulationError,
+  } = transactionData;
+  const [ethSettingsDrawerOpen, setEthSettingsDrawerOpen] = useState(false);
+
+  // The default transaction data that appears on all transactions
+  const defaultMenuItems = {
+    Network: {
+      onClick: () => {},
+      detail: <Typography>{network}</Typography>,
+      button: false,
+    },
+    "Network Fee": {
+      onClick: () => {},
+      detail: <Typography>{networkFee}</Typography>,
+      button: false,
+    },
+    ...(network === "Ethereum"
+      ? {
+          Speed: {
+            onClick: () => setEthSettingsDrawerOpen(true),
+            detail: <Typography>Normal</Typography>,
+            button: false,
+          },
+        }
+      : {}),
+  };
 
   return (
     <>
       <SettingsList
-        menuItems={menuItems}
+        menuItems={{ ...menuItems, ...defaultMenuItems }}
         style={{ margin: 0 }}
         textStyle={{
           color: theme.custom.colors.secondary,
@@ -82,6 +115,15 @@ export function TransactionData({
         >
           This transaction is unlikely to succeed.
         </Typography>
+      )}
+      {network === "Ethereum" && (
+        <EthereumSettingsDrawer
+          transactionOverrides={transactionOverrides}
+          setTransactionOverrides={setTransactionOverrides}
+          networkFeeUsd={networkFeeUsd}
+          openDrawer={ethSettingsDrawerOpen}
+          setOpenDrawer={setEthSettingsDrawerOpen}
+        />
       )}
     </>
   );
@@ -196,7 +238,9 @@ export function EthereumSettingsDrawer({
           onChange={(e) => {
             setTransactionOverrides({
               ...transactionOverrides,
-              maxFeePerGas: BigNumber.from(e.target.value).mul(1e9),
+              maxFeePerGas: BigNumber.from(
+                parseFloat(e.target.value) * 10 ** 9
+              ),
             });
           }}
         ></TextField>
@@ -228,7 +272,9 @@ export function EthereumSettingsDrawer({
           onChange={(e) => {
             setTransactionOverrides({
               ...transactionOverrides,
-              maxPriorityFeePerGas: BigNumber.from(e.target.value).mul(1e9),
+              maxPriorityFeePerGas: BigNumber.from(
+                parseFloat(e.target.value) * 10 ** 9
+              ),
             });
           }}
         ></TextField>

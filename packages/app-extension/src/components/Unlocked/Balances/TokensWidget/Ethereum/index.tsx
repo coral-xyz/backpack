@@ -166,17 +166,12 @@ export function ConfirmSendEthereum({
   onConfirm: (transactionToSend: UnsignedTransaction) => void;
 }) {
   const theme = useCustomTheme();
-  const {
-    from,
-    loading,
-    transaction: transactionToSend,
-    simulationError,
-    network,
-    networkFee,
-  } = useTransactionData(
+  const transactionData = useTransactionData(
     Blockchain.ETHEREUM,
     bs58.encode(ethers.utils.serializeTransaction(transaction))
   );
+
+  const { from, loading, transaction: transactionToSend } = transactionData;
 
   const menuItems = {
     From: {
@@ -189,21 +184,6 @@ export function ConfirmSendEthereum({
       detail: (
         <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
       ),
-      button: false,
-    },
-    Network: {
-      onClick: () => {},
-      detail: <Typography>{network}</Typography>,
-      button: false,
-    },
-    "Network fee": {
-      onClick: () => {},
-      detail: <Typography>{!loading && networkFee}</Typography>,
-      button: false,
-    },
-    Speed: {
-      onClick: () => {},
-      detail: <Typography>Normal</Typography>,
       button: false,
     },
   };
@@ -239,8 +219,8 @@ export function ConfirmSendEthereum({
           token={token}
         />
         <TransactionData
+          transactionData={transactionData}
           menuItems={menuItems}
-          simulationError={simulationError}
         />
       </div>
       <PrimaryButton

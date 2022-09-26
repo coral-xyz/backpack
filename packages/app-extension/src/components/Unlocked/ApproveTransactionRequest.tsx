@@ -35,7 +35,7 @@ import {
 } from "../common";
 import { Scrollbar } from "../common/Layout/Scrollbar";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
-import { SettingsList } from "../common/Settings/List";
+import { TransactionData } from "../common/TransactionData";
 
 const useStyles = styles((theme) => ({
   confirmRow: {
@@ -211,7 +211,6 @@ function SignAllTransactionsRequest({
   publicKey,
   transactions,
   uiRpcMethod,
-  blockchain,
   onResolve,
   onReject,
 }: {
@@ -223,19 +222,7 @@ function SignAllTransactionsRequest({
   onReject: () => void;
 }) {
   const { walletPublicKey } = useSolanaCtx();
-  return (
-    <_SendTransactionRequest
-      publicKey={publicKey}
-      uiRpcMethod={uiRpcMethod}
-      onResolve={onResolve}
-      onReject={onReject}
-      loading={false}
-      transactionToSend={transactions}
-      from={walletPublicKey.toString()}
-      network={"Solana"}
-      networkFee={"-"}
-    />
-  );
+  return <></>;
 }
 
 //
@@ -256,55 +243,13 @@ function SendTransactionRequest({
   onResolve: (signature: string) => void;
   onReject: () => void;
 }) {
-  const {
-    loading,
-    transaction: transactionToSend,
-    from,
-    network,
-    networkFee,
-  } = useTransactionData(blockchain, transaction);
-
-  return (
-    <_SendTransactionRequest
-      publicKey={publicKey}
-      uiRpcMethod={uiRpcMethod}
-      onResolve={onResolve}
-      onReject={onReject}
-      loading={loading}
-      transactionToSend={transactionToSend}
-      from={from}
-      network={network}
-      networkFee={networkFee}
-    />
-  );
-}
-
-function _SendTransactionRequest({
-  publicKey,
-  uiRpcMethod,
-  onResolve,
-  onReject,
-  loading,
-  transactionToSend,
-  from,
-  network,
-  networkFee,
-}: {
-  publicKey: string;
-  transactionToSend: string | Array<string>;
-  uiRpcMethod: string;
-  onResolve: (signature: string) => void;
-  onReject: () => void;
-  loading: boolean;
-  from: string;
-  network: string;
-  networkFee: string;
-}) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const [request] = useTransactionRequest();
   const background = useBackgroundClient();
   const pluginUrl = usePluginUrl(request?.xnftAddress);
+  const transactionData = useTransactionData(blockchain, transaction);
+  const { loading, transaction: transactionToSend, from } = transactionData;
 
   //
   // Executes when the modal clicks "Approve" in the drawer popup
@@ -337,32 +282,6 @@ function _SendTransactionRequest({
           }}
         >
           {pluginUrl}
-        </Typography>
-      ),
-      classes: { root: classes.approveTableRoot },
-    },
-    Network: {
-      onClick: () => {},
-      detail: (
-        <Typography
-          style={{
-            fontSize: "14px",
-          }}
-        >
-          {network}
-        </Typography>
-      ),
-      classes: { root: classes.approveTableRoot },
-    },
-    "Network Fee": {
-      onClick: () => {},
-      detail: (
-        <Typography
-          style={{
-            fontSize: "14px",
-          }}
-        >
-          {networkFee}
         </Typography>
       ),
       classes: { root: classes.approveTableRoot },
@@ -408,43 +327,10 @@ function _SendTransactionRequest({
               marginTop: "18px",
             }}
           >
-            <SettingsList
-              borderColor={
-                theme.custom.colors.approveTransactionTableBackground
-              }
+            <TransactionData
               menuItems={menuItems}
-              style={{
-                marginLeft: 0,
-                marginRight: 0,
-                fontSize: "14px",
-                background:
-                  theme.custom.colors.approveTransactionTableBackground,
-                border: theme.custom.colors.borderFull,
-              }}
-              textStyle={{
-                fontSize: "14px",
-                color: theme.custom.colors.fontColor,
-              }}
+              transactionData={transactionData}
             />
-            <div
-              style={{
-                backgroundColor:
-                  theme.custom.colors.approveTransactionTableBackground,
-                borderRadius: "8px",
-                padding: "12px",
-                marginTop: "12px",
-                border: theme.custom.colors.borderFull,
-              }}
-            >
-              <Typography
-                className={classes.confirmRowLabelRight}
-                style={{
-                  wordBreak: "break-all",
-                }}
-              >
-                {transactionToSend}
-              </Typography>
-            </div>
           </div>
         </Scrollbar>
       )}
