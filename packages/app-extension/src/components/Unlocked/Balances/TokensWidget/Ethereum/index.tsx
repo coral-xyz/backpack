@@ -6,12 +6,8 @@ import { getLogger, Blockchain, Ethereum } from "@coral-xyz/common";
 import { useEthereumCtx, useTransactionData } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { TokenAmountDisplay, Sending, Error } from "../Send";
-import {
-  walletAddressDisplay,
-  Loading,
-  PrimaryButton,
-} from "../../../../common";
-import { SettingsList } from "../../../../common/Settings/List";
+import { walletAddressDisplay, PrimaryButton } from "../../../../common";
+import { TransactionData } from "../../../../common/TransactionData";
 
 const logger = getLogger("send-ethereum-confirmation-card");
 const { base58: bs58 } = ethers.utils;
@@ -34,7 +30,7 @@ export function SendEthereumConfirmationCard({
 }) {
   const ethereumCtx = useEthereumCtx();
   const [txSignature, setTxSignature] = useState<string | null>(null);
-  const [error, setError] = useState(
+  const [error] = useState(
     "Error 422. Transaction time out. Runtime error. Reticulating splines."
   );
   const [transaction, setTransaction] = useState<UnsignedTransaction | null>(
@@ -205,6 +201,11 @@ export function ConfirmSendEthereum({
       detail: <Typography>{!loading && networkFee}</Typography>,
       button: false,
     },
+    Speed: {
+      onClick: () => {},
+      detail: <Typography>Normal</Typography>,
+      button: false,
+    },
   };
 
   return (
@@ -237,25 +238,10 @@ export function ConfirmSendEthereum({
           amount={amount}
           token={token}
         />
-        <SettingsList
+        <TransactionData
           menuItems={menuItems}
-          style={{ margin: 0 }}
-          textStyle={{
-            color: theme.custom.colors.secondary,
-          }}
+          simulationError={simulationError}
         />
-
-        {simulationError && (
-          <Typography
-            style={{
-              color: theme.custom.colors.negative,
-              marginTop: "8px",
-              textAlign: "center",
-            }}
-          >
-            This transaction is unlikely to succeed.
-          </Typography>
-        )}
       </div>
       <PrimaryButton
         disabled={loading}

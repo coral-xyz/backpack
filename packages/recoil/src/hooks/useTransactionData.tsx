@@ -9,6 +9,7 @@ import {
   useBackgroundClient,
   useBlockchainTokensSorted,
   useEthereumCtx,
+  useEthereumFeeData,
   useEthereumPrice,
   useSolanaCtx,
   useSplTokenRegistry,
@@ -53,8 +54,8 @@ export function useTransactionData(
 //
 export function useEthereumTxData(serializedTx: any): TransactionData {
   const ethereumCtx = useEthereumCtx();
+  const feeData = useEthereumFeeData();
   const ethPrice = useEthereumPrice();
-
   const [loading, setLoading] = useState(true);
   const [simulationError, setSimulationError] = useState(false);
   const [estimatedGas, setEstimatedGas] = useState(BigNumber.from(0));
@@ -67,8 +68,8 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
       type: 2,
       nonce: 0,
       gasLimit: estimatedGas,
-      maxFeePerGas: ethereumCtx.feeData.maxFeePerGas,
-      maxPriorityFeePerGas: ethereumCtx.feeData.maxPriorityFeePerGas,
+      maxFeePerGas: feeData.maxFeePerGas,
+      maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
     });
 
   //
@@ -78,44 +79,9 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
   useEffect(() => {
     (async () => {
       const parsed = ethers.utils.parseTransaction(bs58.decode(serializedTx));
-      // Remove defaults that get added by ethers.utils.serializeTransaction so
-      // we can populate them using a void signer and the Ethereum provider
-      const transaction = Object.fromEntries(
-        Object.entries({
-          ...parsed,
-          chainId: parsed.chainId !== 0 ? parsed.chainId : null,
-          nonce: parsed.nonce !== 0 ? parsed.nonce : null,
-          maxPriorityFeePerGas:
-            parsed.maxPriorityFeePerGas && !parsed.maxPriorityFeePerGas.isZero()
-              ? parsed.maxPriorityFeePerGas
-              : null,
-          maxFeePerGas:
-            parsed.maxFeePerGas && !parsed.maxFeePerGas.isZero()
-              ? parsed.maxFeePerGas
-              : null,
-          gasPrice: parsed.gasPrice ? parsed.gasPrice : null,
-          gasLimit: parsed.gasLimit ? parsed.gasLimit : null,
-        }).filter(([_, v]) => v != null)
-      );
-      const voidSigner = new ethers.VoidSigner(
-        ethereumCtx.walletPublicKey,
-        ethereumCtx.provider
-      );
-      const populatedTx = await voidSigner.populateTransaction(
-        transaction as TransactionRequest
-      );
-      setTransaction(populatedTx);
-      setTransactionOverrides({
-        ...transactionOverrides,
-        type: 2,
-        nonce: BigNumber.from(populatedTx.nonce).toNumber(),
-        maxFeePerGas: populatedTx.maxFeePerGas
-          ? BigNumber.from(populatedTx.maxFeePerGas)
-          : null,
-        maxPriorityFeePerGas: populatedTx.maxPriorityFeePerGas
-          ? BigNumber.from(populatedTx.maxPriorityFeePerGas)
-          : null,
-      });
+      // EIP 1559 compatability
+      delete parsed.gasPrice;
+      setTransaction(parsed as TransactionRequest);
     })();
   }, [serializedTx]);
 
@@ -144,8 +110,14 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
           setSimulationError(true);
         }
         setEstimatedGas(estimatedGas);
+        const voidSigner = new ethers.VoidSigner(
+          ethereumCtx.walletPublicKey,
+          ethereumCtx.provider
+        );
+        const nonce = await voidSigner.getTransactionCount("pending");
         setTransactionOverrides({
           ...transactionOverrides,
+          nonce,
           gasLimit: estimatedGas,
         });
         setLoading(false);
@@ -155,7 +127,6 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
 
   //
   // Updated the estimated transaction fee on changes to the gas estimate.
-  // TODO: update on user configured gas settings
   //
   useEffect(() => {
     (async () => {

@@ -1,10 +1,15 @@
+import { useState } from "react";
 import { ethers, BigNumber } from "ethers";
-import { List, ListItem, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import _CheckIcon from "@mui/icons-material/Check";
 import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
 import { Blockchain } from "@coral-xyz/common";
 import { styles } from "@coral-xyz/themes";
 import { Loading } from "../../common";
+import {
+  TransactionData,
+  EthereumSettingsDrawer,
+} from "../../common/TransactionData";
 import { WithApproval } from ".";
 
 const { Zero } = ethers.constants;
@@ -83,39 +88,68 @@ export function ApproveTransaction({
     balanceChanges,
     network,
     networkFee,
+    networkFeeUsd,
     // Possibly modified transaction object if user overrides settings
     // (i.e. Ethereum gas or nonce)
     transaction,
+    transactionOverrides,
+    setTransactionOverrides,
   } = useTransactionData(blockchain as Blockchain, tx);
+
+  const [ethSettingsDrawerOpen, setEthSettingsDrawerOpen] = useState(false);
 
   if (loading) {
     return <Loading />;
   }
 
   const balanceChangeRows = balanceChanges
-    ? Object.entries(balanceChanges).map(
-        ([symbol, { nativeChange, decimals }]) => {
-          const className = nativeChange.gte(Zero)
-            ? classes.positive
-            : classes.negative;
-          return [
-            symbol,
-            <span className={className}>
-              {ethers.utils.commify(
-                ethers.utils.formatUnits(nativeChange, BigNumber.from(decimals))
-              )}{" "}
-              {symbol}
-            </span>,
-          ];
-        }
+    ? Object.fromEntries(
+        Object.entries(balanceChanges).map(
+          ([symbol, { nativeChange, decimals }]) => {
+            const className = nativeChange.gte(Zero)
+              ? classes.positive
+              : classes.negative;
+            return [
+              symbol,
+              {
+                onClick: () => {},
+                detail: (
+                  <Typography className={className}>
+                    {ethers.utils.commify(
+                      ethers.utils.formatUnits(
+                        nativeChange,
+                        BigNumber.from(decimals)
+                      )
+                    )}{" "}
+                    {symbol}
+                  </Typography>
+                ),
+                button: false,
+              },
+            ];
+          }
+        )
       )
-    : [];
+    : {};
 
-  const menuItems = [
+  const menuItems = {
     ...balanceChangeRows,
-    ["Network", network],
-    ["Network Fee", networkFee],
-  ];
+    Network: {
+      onClick: () => {},
+      detail: <Typography>{network}</Typography>,
+      button: false,
+    },
+    "Network Fee": {
+      onClick: () => {},
+      detail: <Typography>{networkFee}</Typography>,
+      button: false,
+    },
+    Speed: {
+      onClick: () => setEthSettingsDrawerOpen(true),
+      detail: <Typography>Normal</Typography>,
+      button: false,
+    },
+  };
 
   const onConfirm = async () => {
     await onCompletion(transaction);
@@ -138,10 +172,21 @@ export function ApproveTransaction({
       {loading ? (
         <Loading />
       ) : (
-        <TransactionData
-          menuItems={menuItems}
-          simulationError={simulationError}
-        />
+        <>
+          <TransactionData
+            menuItems={menuItems}
+            simulationError={simulationError}
+          />
+          {blockchain === Blockchain.ETHEREUM && (
+            <EthereumSettingsDrawer
+              transactionOverrides={transactionOverrides}
+              setTransactionOverrides={setTransactionOverrides}
+              networkFeeUsd={networkFeeUsd}
+              openDrawer={ethSettingsDrawerOpen}
+              setOpenDrawer={setEthSettingsDrawerOpen}
+            />
+          )}
+        </>
       )}
     </WithApproval>
   );
@@ -182,41 +227,5 @@ export function ApproveAllTransactions({
     >
       <div className={classes.warning}>Confirming multiple transactions</div>
     </WithApproval>
-  );
-}
-
-function TransactionData({
-  menuItems,
-  simulationError = false,
-}: {
-  menuItems: (string | JSX.Element)[][];
-  simulationError: boolean;
-}) {
-  const classes = useStyles();
-
-  return (
-    <>
-      <Typography className={classes.listDescription}>
-        Transaction details
-      </Typography>
-      <List className={classes.listRoot}>
-        {menuItems.map((row, index: number) => {
-          return (
-            <ListItem
-              key={index}
-              className={classes.listItemRoot}
-              secondaryAction={row[1]}
-            >
-              {row[0]}
-            </ListItem>
-          );
-        })}
-      </List>
-      {simulationError && (
-        <div className={classes.warning}>
-          This transaction is unlikely to succeed.
-        </div>
-      )}
-    </>
   );
 }
