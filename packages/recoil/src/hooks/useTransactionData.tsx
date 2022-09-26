@@ -54,7 +54,6 @@ export function useTransactionData(
 //
 export function useEthereumTxData(serializedTx: any): TransactionData {
   const ethereumCtx = useEthereumCtx();
-  const feeData = useEthereumFeeData();
   const ethPrice = useEthereumPrice();
   const [loading, setLoading] = useState(true);
   const [simulationError, setSimulationError] = useState(false);
@@ -68,8 +67,8 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
       type: 2,
       nonce: 0,
       gasLimit: estimatedGas,
-      maxFeePerGas: feeData.maxFeePerGas,
-      maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
+      maxFeePerGas: ethereumCtx.feeData.maxFeePerGas,
+      maxPriorityFeePerGas: ethereumCtx.feeData.maxPriorityFeePerGas,
     });
 
   //

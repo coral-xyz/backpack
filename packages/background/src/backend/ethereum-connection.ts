@@ -13,12 +13,14 @@ import {
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
+  NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
 } from "@coral-xyz/common";
 import type { CachedValue } from "../types";
 
 const logger = getLogger("ethereum-connection-backend");
 
 export const ETHEREUM_TOKENS_REFRESH_INTERVAL = 10 * 1000;
+export const ETHEREUM_FEE_DATA_REFRESH_INTERVAL = 20 * 1000;
 
 export function start(events: EventEmitter): EthereumConnectionBackend {
   const b = new EthereumConnectionBackend(events);
@@ -29,6 +31,7 @@ export function start(events: EventEmitter): EthereumConnectionBackend {
 export class EthereumConnectionBackend {
   private cache = new Map<string, CachedValue<any>>();
   private url?: string;
+  private chainId?: string;
   private pollIntervals: Array<any>;
   private events: EventEmitter;
   public provider?: ethers.providers.JsonRpcProvider;
@@ -80,11 +83,16 @@ export class EthereumConnectionBackend {
     };
 
     const handleKeyringStoreUnlocked = async (notif: Notification) => {
-      const { blockchainActiveWallets, ethereumConnectionUrl } = notif.data;
+      const {
+        blockchainActiveWallets,
+        ethereumConnectionUrl,
+        ethereumChainId,
+      } = notif.data;
       this.provider = new ethers.providers.JsonRpcProvider(
         ethereumConnectionUrl
       );
       this.url = ethereumConnectionUrl;
+      this.chainId = ethereumChainId;
       const activeWallet = blockchainActiveWallets[Blockchain.ETHEREUM];
       if (activeWallet) {
         this.startPolling(activeWallet);
@@ -113,6 +121,7 @@ export class EthereumConnectionBackend {
         this.url,
         parseInt(chainId)
       );
+      this.chainId = chainId;
     };
   }
 
@@ -123,7 +132,10 @@ export class EthereumConnectionBackend {
   private async startPolling(activeWallet: string) {
     this.pollIntervals.push(
       setInterval(async () => {
-        const data = await fetchEthereumBalances(this.provider!, activeWallet);
+        if (!this.provider) {
+          return;
+        }
+        const data = await fetchEthereumBalances(this.provider, activeWallet);
         const key = JSON.stringify({
           url: this.url,
           method: "ethereumTokens",
@@ -140,6 +152,30 @@ export class EthereumConnectionBackend {
           },
         });
       }, ETHEREUM_TOKENS_REFRESH_INTERVAL)
+    );
+
+    this.pollIntervals.push(
+      setInterval(async () => {
+        if (!this.provider) {
+          return;
+        }
+        const feeData = await this.provider.getFeeData();
+        const key = JSON.stringify({
+          url: this.url,
+          chainId: this.chainId,
+          method: "ethereumFeeData",
+        });
+        this.cache.set(key, {
+          ts: Date.now(),
+          value: feeData,
+        });
+        this.events.emit(BACKEND_EVENT, {
+          name: NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
+          data: {
+            feeData,
+          },
+        });
+      }, ETHEREUM_FEE_DATA_REFRESH_INTERVAL)
     );
   }
 

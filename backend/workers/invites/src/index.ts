@@ -100,6 +100,47 @@ app.get("/check/:inviteCode", async (c) => {
   }
 });
 
+app.get("/stats", async (c) => {
+  try {
+    const res = await fetch(c.env.HASURA_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-hasura-admin-secret": c.env.HASURA_SECRET,
+      },
+      body: JSON.stringify({
+        query: `
+          query($now: timestamptz) {
+            invitations(limit: 1, where: {claimed_at: {_lt: $now}}, order_by: {claimed_at: desc}) {
+              claimed_at
+            }
+          }
+        `.trim(),
+        variables: {
+          now: new Date().toISOString(),
+        },
+      }),
+    });
+
+    const resJson = await res.json<any>();
+
+    const latestClaimTimestamp =
+      resJson?.data.invitations.length > 0
+        ? resJson?.data.invitations[0].claimed_at
+        : null;
+
+    return c.json(
+      {
+        status: 200,
+        data: { latestClaimTimestamp },
+      },
+      200
+    );
+  } catch (err: any) {
+    return json(c)(err.message, 500);
+  }
+});
+
 export default app;
 
 const json =

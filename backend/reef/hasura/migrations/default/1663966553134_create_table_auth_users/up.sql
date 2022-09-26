@@ -12,7 +12,7 @@ CREATE TABLE "auth"."users" (
   UNIQUE ("username"),
   UNIQUE ("pubkey"),
   UNIQUE ("invitation_id"),
-  CONSTRAINT "username_format" CHECK (username ~ '^[a-z0-9_]{4,15}$'),
+  CONSTRAINT "username_format" CHECK (username ~ '^[a-z0-9_]{3,15}$'),
   CONSTRAINT "pubkey_format" CHECK (
     pubkey ~ '^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{32,44}$'
   )

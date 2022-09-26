@@ -4,7 +4,7 @@ const useStyles = styles((theme) => ({
   hoverButton: {
     "&:hover": {
       "& path": {
-        opacity: HOVER_OPACITY,
+        //				opacity: .8,
       },
     },
   },

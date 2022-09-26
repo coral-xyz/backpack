@@ -138,7 +138,7 @@ function OnboardingMenu({
         onClick={() => setMenuOpen(true)}
         sx={{ padding: 0 }}
       >
-        <Menu sx={{ color: theme.custom.colors.secondary }} />
+        <Menu sx={{ color: theme.custom.colors.icon }} />
       </IconButton>
       <WithContaineredDrawer
         containerRef={containerRef}
@@ -146,6 +146,7 @@ function OnboardingMenu({
         setOpenDrawer={setMenuOpen}
         paperStyles={{
           borderRadius: "12px",
+          background: theme.custom.colors.backgroundBackdrop,
         }}
         backdropStyles={{ borderRadius: "12px" }}
       >
@@ -161,11 +162,6 @@ function OnboardingMenuList() {
 
   const options = [
     {
-      icon: <Support style={{ color: theme.custom.colors.secondary }} />,
-      text: "Help & Support",
-      onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
-    },
-    {
       icon: <Lock style={{ color: theme.custom.colors.secondary }} />,
       text: "Backpack.app",
       onClick: () => window.open(BACKPACK_LINK, "_blank"),
@@ -177,7 +173,7 @@ function OnboardingMenuList() {
     },
     {
       icon: <DiscordIcon fill={theme.custom.colors.secondary} />,
-      text: "Discord",
+      text: "Need help? Hop into Discord",
       onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
     },
   ];
@@ -186,11 +182,12 @@ function OnboardingMenuList() {
     <Box sx={{ color: theme.custom.colors.fontColor }}>
       <List
         style={{
-          backgroundColor: theme.custom.colors.bg2,
           marginLeft: "16px",
           marginRight: "16px",
           marginTop: "40px",
           marginBottom: "40px",
+          background: theme.custom.colors.nav,
+          border: theme.custom.colors.borderFull,
         }}
       >
         {options.map((o, idx) => (
@@ -202,7 +199,7 @@ function OnboardingMenuList() {
               display: "flex",
             }}
             isLast={idx === options.length - 1}
-            borderColor={theme.custom.colors.border1}
+            borderColor={theme.custom.colors.nav}
             classes={{
               root: classes.listItemRoot,
             }}

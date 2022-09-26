@@ -21,6 +21,7 @@ import { useNavStack } from "../../../common/Layout/NavStack";
 import {
   PrimaryButton,
   SecondaryButton,
+  NegativeButton,
   LaunchDetail,
   Loading,
 } from "../../../common";
@@ -126,13 +127,9 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
         >
           Uninstalling will remove this xNFT from your account.
         </Typography>
-        <PrimaryButton
+        <NegativeButton
           disabled={isDisabled}
           label={"Uninstall xNFT"}
-          style={{
-            backgroundColor: theme.custom.colors.negative,
-            color: theme.custom.colors.negativeButtonTextColor,
-          }}
           onClick={() => setOpenConfirm(true)}
         />
       </div>
@@ -247,13 +244,7 @@ const ConfirmUninstall = ({
           Are you sure you want to uninstall {xnft.title}?
         </Typography>
       </div>
-      <PrimaryButton
-        label={"Confirm"}
-        style={{
-          backgroundColor: theme.custom.colors.negative,
-        }}
-        onClick={() => onConfirm()}
-      />
+      <NegativeButton label={"Confirm"} onClick={() => onConfirm()} />
     </div>
   );
 };
