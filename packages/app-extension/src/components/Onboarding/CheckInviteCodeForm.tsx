@@ -8,7 +8,7 @@ import { Header, PrimaryButton, SubtextParagraph, TextField } from "../common";
 import WaitingRoom, { setWaitlistId, getWaitlistId } from "./WaitingRoom";
 import { BackpackHeader } from "../Locked";
 
-type Page = "inviteCode" | "createUsername" | "recoverAccount";
+type Page = "inviteCode" | "createUsername";
 
 const CheckInviteCodeForm = ({ setInviteCode }: any) => {
   const theme = useCustomTheme();
@@ -69,8 +69,7 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
           },
           page: "recoverAccount",
         }
-      : page === "createUsername"
-      ? {
+      : {
           description: (
             <Box style={{ textAlign: "left", padding: "5px" }}>
               <Header text="Claim your username" />
@@ -119,20 +118,6 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
             }),
           handleValue: () => setInviteCode(value),
           page: "inviteCode",
-        }
-      : {
-          linkText: "I have an Invite Code",
-          inputName: "username",
-          placeholder: "Username",
-          buttonText: "Continue",
-          url: `https://auth.xnfts.dev/users/${value.username}`,
-          setVal: (v: string) =>
-            setValue({
-              username: v.replace(/[^a-z0-9_]/g, ""),
-            }),
-          handleValue: () => alert(JSON.stringify(value)),
-          page: "inviteCode",
-          validate: () => true,
         };
 
   const handleWaitingClick = useCallback(() => {
@@ -172,12 +157,9 @@ const CheckInviteCodeForm = ({ setInviteCode }: any) => {
         />
       )}
 
+      {ob.description && ob.description}
+
       <form onSubmit={handleSubmit}>
-        {ob.description && (
-          <Typography style={{ marginBottom: "2em" }}>
-            {ob.description}
-          </Typography>
-        )}
         <Box style={{ marginBottom: 8 }}>
           <TextField
             inputProps={{
