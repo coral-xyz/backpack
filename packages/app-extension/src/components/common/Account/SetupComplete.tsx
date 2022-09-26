@@ -4,6 +4,7 @@ import {
   XNFT_GG_LINK,
   TWITTER_LINK,
   DISCORD_INVITE_LINK,
+  BACKPACK_FEATURE_XNFT,
 } from "@coral-xyz/common";
 import { Header, SubtextParagraph, PrimaryButton } from "../../common";
 import { ActionCard } from "../../common/Layout/ActionCard";
@@ -61,13 +62,15 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
             }}
           >
             <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <ActionCard
-                  icon={<WidgetIcon fill={theme.custom.colors.icon} />}
-                  text="Browse the xNFT library"
-                  onClick={() => window.open(XNFT_GG_LINK, "_blank")}
-                />
-              </Grid>
+              {BACKPACK_FEATURE_XNFT && (
+                <Grid item xs={6}>
+                  <ActionCard
+                    icon={<WidgetIcon fill={theme.custom.colors.icon} />}
+                    text="Browse the xNFT library"
+                    onClick={() => window.open(XNFT_GG_LINK, "_blank")}
+                  />
+                </Grid>
+              )}
               <Grid item xs={6}>
                 <ActionCard
                   icon={<TwitterIcon fill={theme.custom.colors.icon} />}
