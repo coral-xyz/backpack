@@ -118,6 +118,7 @@ jobs:
           BACKPACK_FEATURE_LIGHT_MODE: "true"
           BACKPACK_FEATURE_POP_MODE: "true"
           BACKPACK_FEATURE_MULTICHAIN: "true"
+          BACKPACK_FEATURE_USERNAMES: "true"
           BACKPACK_FEATURE_XNFT: "false"
           # CI!=true so that build warnings aren't treated like errors (for now)
           CI: ""

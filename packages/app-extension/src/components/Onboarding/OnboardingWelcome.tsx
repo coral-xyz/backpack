@@ -3,17 +3,25 @@ import {
   lazy,
   MutableRefObject,
   SetStateAction,
+  useCallback,
+  useEffect,
   useRef,
   useState,
 } from "react";
-import { Box, Grid, IconButton, ListItemText, Toolbar } from "@mui/material";
+import {
+  Box,
+  Grid,
+  IconButton,
+  ListItemText,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import {
   AddCircle,
   ArrowCircleDown,
   CallMade,
   Lock,
   Menu,
-  Support,
   Twitter,
 } from "@mui/icons-material";
 import {
@@ -24,12 +32,14 @@ import {
 } from "@coral-xyz/common";
 import { DiscordIcon } from "../common/Icon";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
-import { ActionCard } from "../common/Layout/ActionCard";
-import { BackpackHeader } from "../Locked";
 import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import { List, ListItem } from "../common/List";
 import { WithContaineredDrawer } from "../common/Layout/Drawer";
 import type { OnboardingFlows } from "./";
+import WaitingRoom, { getWaitlistId, setWaitlistId } from "./WaitingRoom";
+import { createPopup } from "@typeform/embed";
+import { ActionCard } from "../common/Layout/ActionCard";
+import { BackpackHeader } from "../Locked";
 
 const CheckInviteCodeForm = lazy(() => import("./CheckInviteCodeForm"));
 
@@ -44,10 +54,79 @@ export function OnboardingWelcome({
 }: {
   onSelect: (flow: OnboardingFlows) => void;
 }) {
-  const theme = useCustomTheme();
-  const [menuOpen, setMenuOpen] = useState(false);
   const containerRef = useRef(null);
-  const [inviteCode, setInviteCode] = useState<any>();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [showWaitingRoom, setShowWaitingRoom] = useState(false);
+  const [waitlistResponseId, setWaitlistResponseId] = useState<string>();
+  const theme = useCustomTheme();
+  const [data, setData] = useState<{ username: string; inviteCode: string }>();
+
+  // attempt to get previous typeform response ID from localstorage
+  useEffect(() => {
+    const id = getWaitlistId();
+    if (id) setWaitlistResponseId(id);
+  }, []);
+
+  const typeform = createPopup("PCnBjycW", {
+    autoClose: true,
+    onSubmit({ responseId }) {
+      setWaitlistId(responseId);
+      setWaitlistResponseId(responseId);
+    },
+  });
+
+  const handleWaitingClick = useCallback(() => {
+    if (!waitlistResponseId) {
+      typeform.open();
+    } else {
+      setShowWaitingRoom(true);
+    }
+  }, [waitlistResponseId]);
+
+  if (BACKPACK_FEATURE_USERNAMES) {
+    if (showWaitingRoom) {
+      return (
+        <WaitingRoom
+          uri={`https://beta-waiting-room.vercel.app/?id=${waitlistResponseId}&v=1`}
+          onClose={() => setShowWaitingRoom(false)}
+          visible
+        />
+      );
+    } else if (!data) {
+      return (
+        <div
+          style={{
+            display: "flex",
+            textAlign: "center",
+            justifyContent: "space-between",
+            flexDirection: "column",
+            height: "100%",
+            padding: "0 16px 16px 16px",
+            position: "relative",
+            overflow: "hidden",
+          }}
+          ref={containerRef}
+        >
+          <Box>
+            <OnboardingMenu
+              containerRef={containerRef}
+              menuOpen={menuOpen}
+              setMenuOpen={setMenuOpen}
+            />
+          </Box>
+          <CheckInviteCodeForm
+            waitingRoomButtonText={
+              waitlistResponseId ? "Waiting Room" : "Apply for an Invite Code"
+            }
+            handleClickWaitingRoom={handleWaitingClick}
+            setInviteCode={(usernameAndCode: any) => {
+              setData(usernameAndCode);
+            }}
+          />
+        </div>
+      );
+    }
+  }
 
   return (
     <div
@@ -61,7 +140,6 @@ export function OnboardingWelcome({
         position: "relative",
         overflow: "hidden",
       }}
-      ref={containerRef}
     >
       <Box>
         <OnboardingMenu
@@ -75,10 +153,13 @@ export function OnboardingWelcome({
           }}
         />
       </Box>
-
-      {BACKPACK_FEATURE_USERNAMES && !inviteCode ? (
-        <CheckInviteCodeForm setInviteCode={setInviteCode} />
-      ) : (
+      <Box style={{ marginTop: "auto" }}>
+        {BACKPACK_FEATURE_USERNAMES && (
+          <Typography style={{ margin: 8, marginBottom: 32 }}>
+            Your username isn't secured just yet, please create a new wallet, or
+            import an existing one so that it can be claimed.
+          </Typography>
+        )}
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <ActionCard
@@ -90,7 +171,7 @@ export function OnboardingWelcome({
                 />
               }
               text="Create a new wallet"
-              onClick={() => onSelect({ ...inviteCode, flow: "create-wallet" })}
+              onClick={() => onSelect({ ...data, flow: "create-wallet" })}
             />
           </Grid>
           <Grid item xs={6}>
@@ -103,11 +184,11 @@ export function OnboardingWelcome({
                 />
               }
               text="Import an existing wallet"
-              onClick={() => onSelect({ ...inviteCode, flow: "import-wallet" })}
+              onClick={() => onSelect({ ...data, flow: "import-wallet" })}
             />
           </Grid>
         </Grid>
-      )}
+      </Box>
     </div>
   );
 }
