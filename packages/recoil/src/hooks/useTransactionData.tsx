@@ -43,7 +43,6 @@ export function useTransactionData(
 //
 export function useEthereumTxData(serializedTx: any): TransactionData {
   const ethereumCtx = useEthereumCtx();
-
   const [loading, setLoading] = useState(true);
   const [simulationError, setSimulationError] = useState(false);
   const [estimatedGas, setEstimatedGas] = useState(BigNumber.from(0));

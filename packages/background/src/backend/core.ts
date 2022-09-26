@@ -433,6 +433,7 @@ export class Backend {
     const blockchainActiveWallets = await this.blockchainActiveWallets();
 
     const ethereumConnectionUrl = await this.ethereumConnectionUrlRead();
+    const ethereumChainId = await this.ethereumChainIdRead();
     const solanaConnectionUrl = await this.solanaConnectionUrlRead();
     const solanaCommitment = await this.solanaCommitmentRead();
 
@@ -441,6 +442,7 @@ export class Backend {
       data: {
         blockchainActiveWallets,
         ethereumConnectionUrl,
+        ethereumChainId,
         solanaConnectionUrl,
         solanaCommitment,
       },
