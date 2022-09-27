@@ -1,3 +1,10 @@
 table:
   name: invitations
   schema: public
+select_permissions:
+  - role: invites_worker
+    permission:
+      columns:
+        - claimed_at
+        - id
+      filter: {}
