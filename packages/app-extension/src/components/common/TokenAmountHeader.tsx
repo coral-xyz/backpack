@@ -63,7 +63,12 @@ export const TokenAmountHeader: React.FC<{
           display: "flex",
         }}
       >
-        {maybeTruncatedAmount} {token.ticker}
+        {maybeTruncatedAmount}
+        <span
+          style={{ marginLeft: "8px", color: theme.custom.colors.secondary }}
+        >
+          {token.ticker}
+        </span>
       </Typography>
       {/* Dummy padding to center flex content */}
       <div style={{ flex: 1 }} />
