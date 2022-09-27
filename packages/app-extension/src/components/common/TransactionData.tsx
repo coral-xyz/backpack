@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { ethers, BigNumber } from "ethers";
-import { TextField, Typography, Button } from "@mui/material";
+import { ethers } from "ethers";
+import { Button, Skeleton, TextField, Typography } from "@mui/material";
+import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import { useEthereumFeeData } from "@coral-xyz/recoil";
 import { useCustomTheme, styles, HOVER_OPACITY } from "@coral-xyz/themes";
 import { SettingsList } from "./Settings/List";
@@ -32,6 +33,16 @@ const useStyles = styles((theme: any) => ({
       opacity: HOVER_OPACITY,
       background: `${theme.custom.colors.secondaryButton} !important`,
       backgroundColor: `${theme.custom.colors.secondaryButton} !important,`,
+    },
+  },
+  backgroundChip: {
+    borderColor: theme.custom.colors.background,
+    backgroundColor: theme.custom.colors.background,
+    color: theme.custom.colors.secondaryButtonTextColor,
+    "&:hover": {
+      opacity: HOVER_OPACITY,
+      background: `${theme.custom.colors.background} !important`,
+      backgroundColor: `${theme.custom.colors.background} !important,`,
     },
   },
   typographyRoot: {
@@ -67,6 +78,8 @@ const useStyles = styles((theme: any) => ({
   },
 }));
 
+type TransactionMode = "normal" | "fast" | "degen" | "custom";
+
 export function TransactionData({
   transactionData,
   menuItems,
@@ -75,7 +88,9 @@ export function TransactionData({
   menuItems: any;
 }) {
   const theme = useCustomTheme();
+  const classes = useStyles();
   const {
+    loading,
     network,
     networkFee,
     networkFeeUsd,
@@ -84,6 +99,7 @@ export function TransactionData({
     simulationError,
   } = transactionData;
   const [ethSettingsDrawerOpen, setEthSettingsDrawerOpen] = useState(false);
+  const [mode, setMode] = useState<TransactionMode>("normal");
 
   // The default transaction data that appears on all transactions
   const defaultMenuItems = {
@@ -94,7 +110,9 @@ export function TransactionData({
     },
     "Network Fee": {
       onClick: () => {},
-      detail: (
+      detail: loading ? (
+        <Skeleton width={150} />
+      ) : (
         <Typography>
           {networkFee} {network === "Ethereum" ? "ETH" : "SOL"}
         </Typography>
@@ -105,7 +123,16 @@ export function TransactionData({
       ? {
           Speed: {
             onClick: () => setEthSettingsDrawerOpen(true),
-            detail: <Typography>Normal</Typography>,
+            detail: (
+              <Button
+                disableRipple
+                disableElevation
+                className={`${classes.chip} ${classes.backgroundChip}`}
+                disabled={loading}
+              >
+                {mode} <ArrowDropDown />
+              </Button>
+            ),
             button: false,
           },
         }
@@ -132,8 +159,10 @@ export function TransactionData({
           This transaction is unlikely to succeed.
         </Typography>
       )}
-      {network === "Ethereum" && (
+      {network === "Ethereum" && !loading && (
         <EthereumSettingsDrawer
+          mode={mode}
+          setMode={setMode}
           transactionOverrides={transactionOverrides}
           setTransactionOverrides={setTransactionOverrides}
           networkFeeUsd={networkFeeUsd}
@@ -145,9 +174,9 @@ export function TransactionData({
   );
 }
 
-type TransactionMode = "normal" | "fast" | "degen" | "custom";
-
 export function EthereumSettingsDrawer({
+  mode,
+  setMode,
   transactionOverrides,
   setTransactionOverrides,
   networkFeeUsd,
@@ -156,19 +185,20 @@ export function EthereumSettingsDrawer({
 }: any) {
   const theme = useCustomTheme();
   const classes = useStyles();
-  const [mode, setMode] = useState<TransactionMode>("normal");
   const feeData = useEthereumFeeData();
-  // Separate state for nonce so it is editable independently of gas settings
-  // and mode button
+  const [maxFeePerGas, setMaxFeePerGas] = useState(
+    ethers.utils.formatUnits(transactionOverrides.maxFeePerGas, 9)
+  );
+  const [maxPriorityFeePerGas, setMaxPriorityFeePerGas] = useState(
+    ethers.utils.formatUnits(transactionOverrides.maxPriorityFeePerGas, 9)
+  );
+  const [gasLimit, setGasLimit] = useState(transactionOverrides.gasLimit);
   const [nonce, setNonce] = useState(transactionOverrides.nonce);
-  const [editing, setEditing] = useState(false);
+  const [editingGas, setEditingGas] = useState(false);
+  const [editingNonce, setEditingNonce] = useState(false);
   // Dont update transaction overrides on first render as they are already set
   // from the compient props
   const isInitialMount = useRef(true);
-
-  useEffect(() => {
-    setEditing(mode === "custom");
-  }, [mode]);
 
   useEffect(() => {
     if (isInitialMount.current) {
@@ -209,14 +239,55 @@ export function EthereumSettingsDrawer({
     }
   }, [mode]);
 
+  useEffect(() => {
+    setEditingGas(mode === "custom");
+  }, [mode]);
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleEsc);
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, [editingGas, editingNonce]);
+
+  // Escape handler that closes edit modes if they are active, otherwise closes
+  // the entire drawer.
+  const handleEsc = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      if (editingGas) {
+        setEditingGas(false);
+      } else if (editingNonce) {
+        setEditingNonce(false);
+      } else {
+        setOpenDrawer(false);
+      }
+    }
+  };
+
+  const handleSave = () => {
+    setTransactionOverrides({
+      ...transactionOverrides,
+      maxFeePerGas: ethers.utils.parseUnits(maxFeePerGas, 9),
+      maxPriorityFeePerGas: ethers.utils.parseUnits(maxPriorityFeePerGas, 9),
+      gasLimit,
+      nonce,
+    });
+    setEditingNonce(false);
+    setEditingGas(false);
+  };
+
   const menuItemBase = {
     onClick: () => {},
     button: false,
   };
 
+  const nonceEditOnClick = !editingGas;
+  const gasEditOnClick = mode === "custom" && !editingNonce && !editingGas;
+
   const menuItems = {
     "Max base fee": {
-      detail: editing ? (
+      detail: editingGas ? (
         <TextField
           className={classes.inputRoot}
           variant="outlined"
@@ -228,26 +299,25 @@ export function EthereumSettingsDrawer({
               backgroundColor: theme.custom.colors.nav,
             },
           }}
-          value={ethers.utils.formatUnits(transactionOverrides.maxFeePerGas, 9)}
-          onChange={(e) => {
-            setTransactionOverrides({
-              ...transactionOverrides,
-              maxFeePerGas: BigNumber.from(
-                parseFloat(e.target.value) * 10 ** 9
-              ),
-            });
-          }}
+          value={maxFeePerGas}
+          onChange={(e) => setMaxFeePerGas(e.target.value)}
         ></TextField>
       ) : (
         <ValueWithUnit
           value={ethers.utils.formatUnits(transactionOverrides.maxFeePerGas, 9)}
-          unit="GWEI"
+          unit="Gwei"
+          containerProps={{
+            style: { cursor: gasEditOnClick ? "pointer" : "inherit" },
+            onClick: () => {
+              if (gasEditOnClick) setEditingGas(true);
+            },
+          }}
         />
       ),
       ...menuItemBase,
     },
     "Priority fee": {
-      detail: editing ? (
+      detail: editingGas ? (
         <TextField
           className={classes.inputRoot}
           variant="outlined"
@@ -259,18 +329,8 @@ export function EthereumSettingsDrawer({
               backgroundColor: theme.custom.colors.nav,
             },
           }}
-          value={ethers.utils.formatUnits(
-            transactionOverrides.maxPriorityFeePerGas,
-            9
-          )}
-          onChange={(e) => {
-            setTransactionOverrides({
-              ...transactionOverrides,
-              maxPriorityFeePerGas: BigNumber.from(
-                parseFloat(e.target.value) * 10 ** 9
-              ),
-            });
-          }}
+          value={maxPriorityFeePerGas}
+          onChange={(e) => setMaxPriorityFeePerGas(e.target.value)}
         ></TextField>
       ) : (
         <ValueWithUnit
@@ -278,13 +338,19 @@ export function EthereumSettingsDrawer({
             transactionOverrides.maxPriorityFeePerGas,
             9
           )}
-          unit="GWEI"
+          unit="Gwei"
+          containerProps={{
+            style: { cursor: gasEditOnClick ? "pointer" : "inherit" },
+            onClick: () => {
+              if (gasEditOnClick) setEditingGas(true);
+            },
+          }}
         />
       ),
       ...menuItemBase,
     },
     "Gas limit": {
-      detail: editing ? (
+      detail: editingGas ? (
         <TextField
           className={classes.inputRoot}
           variant="outlined"
@@ -296,24 +362,47 @@ export function EthereumSettingsDrawer({
               backgroundColor: theme.custom.colors.nav,
             },
           }}
-          value={transactionOverrides.gasLimit.toString()}
-          onChange={(e) => {
-            setTransactionOverrides({
-              ...transactionOverrides,
-              gasLimit: BigNumber.from(e.target.value),
-            });
-          }}
+          value={gasLimit}
+          onChange={(e) => setGasLimit(e.target.value)}
         ></TextField>
       ) : (
-        <Typography className={classes.typographyRoot}>
+        <Typography
+          className={classes.typographyRoot}
+          style={{ cursor: gasEditOnClick ? "pointer" : "inherit" }}
+          onClick={() => {
+            if (gasEditOnClick) setEditingGas(true);
+          }}
+        >
           {transactionOverrides.gasLimit.toString()}
         </Typography>
       ),
       ...menuItemBase,
     },
     Nonce: {
-      detail: (
-        <Typography className={classes.typographyRoot}>
+      detail: editingNonce ? (
+        <TextField
+          className={classes.inputRoot}
+          variant="outlined"
+          margin="dense"
+          size="small"
+          InputLabelProps={{
+            shrink: false,
+            style: {
+              backgroundColor: theme.custom.colors.nav,
+            },
+          }}
+          value={nonce}
+          type="number"
+          onChange={(e) => setNonce(e.target.value)}
+        ></TextField>
+      ) : (
+        <Typography
+          className={classes.typographyRoot}
+          style={{ cursor: nonceEditOnClick ? "pointer" : "inherit" }}
+          onClick={() => {
+            if (nonceEditOnClick) setEditingNonce(true);
+          }}
+        >
           {transactionOverrides.nonce}
         </Typography>
       ),
@@ -336,6 +425,9 @@ export function EthereumSettingsDrawer({
         style: {
           height: "100%",
         },
+      }}
+      modalProps={{
+        disableEscapeKeyDown: true,
       }}
     >
       <div
@@ -405,6 +497,7 @@ export function EthereumSettingsDrawer({
                     mode={m as TransactionMode}
                     currentMode={mode}
                     setMode={setMode}
+                    disabled={editingNonce}
                   />
                 ))}
               </div>
@@ -414,11 +507,11 @@ export function EthereumSettingsDrawer({
               />
             </div>
             <div style={{ margin: "0 16px" }}>
-              {mode === "custom" && editing && (
+              {((mode === "custom" && editingGas) || editingNonce) && (
                 <PrimaryButton
                   style={{ marginBottom: "12px" }}
                   label="Save"
-                  onClick={() => setEditing(false)}
+                  onClick={handleSave}
                 />
               )}
               <SecondaryButton
@@ -439,10 +532,12 @@ function ModeChip({
   mode,
   currentMode,
   setMode,
+  disabled,
 }: {
   mode: TransactionMode;
   currentMode: TransactionMode;
   setMode: (mode: TransactionMode) => void;
+  disabled?: boolean;
 }) {
   const classes = useStyles();
   return (
@@ -451,9 +546,12 @@ function ModeChip({
       disableElevation
       onClick={() => setMode(mode)}
       className={`${classes.chip} ${
-        mode === currentMode ? classes.primaryChip : classes.secondaryChip
+        mode === currentMode && !disabled
+          ? classes.primaryChip
+          : classes.secondaryChip
       }`}
       size="small"
+      disabled={disabled}
     >
       {mode}
     </Button>
@@ -463,17 +561,21 @@ function ModeChip({
 export function ValueWithUnit({
   value,
   unit,
+  containerProps,
 }: {
   value: string;
   unit: string;
+  containerProps?: any;
 }) {
   const classes = useStyles();
   return (
     <div
+      {...containerProps}
       style={{
         display: "flex",
         justifyContent: "space-between",
         width: "50%",
+        ...(containerProps.style && {}),
       }}
     >
       <Typography className={classes.typographyRoot}>{value}</Typography>
