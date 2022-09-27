@@ -17,6 +17,13 @@ export const TokenAmountHeader: React.FC<{
 }> = ({ style, token, amount, displayLogo = true }) => {
   const theme = useCustomTheme();
 
+  const formattedAmount = ethers.utils.formatUnits(amount, token.decimals);
+  const maxChars = displayLogo ? 10 : 12;
+  const maybeTruncatedAmount =
+    formattedAmount.length > maxChars
+      ? formattedAmount.slice(0, maxChars) + "..."
+      : formattedAmount;
+
   return (
     <div
       style={{
@@ -56,18 +63,7 @@ export const TokenAmountHeader: React.FC<{
           display: "flex",
         }}
       >
-        <span
-          style={{
-            display: "inline-block",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            maxWidth: `${displayLogo ? "208px" : "240px"}`,
-          }}
-        >
-          {ethers.utils.formatUnits(amount, token.decimals)}
-        </span>
-        <span style={{ whiteSpace: "pre" }}> {token.ticker}</span>
+        {maybeTruncatedAmount} {token.ticker}
       </Typography>
       {/* Dummy padding to center flex content */}
       <div style={{ flex: 1 }} />
