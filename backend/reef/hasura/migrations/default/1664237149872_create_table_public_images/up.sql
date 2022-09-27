@@ -1,0 +1,1 @@
+CREATE TABLE "public"."images" ("id" serial NOT NULL, "created_at" timestamptz NOT NULL DEFAULT now(), "uri" text NOT NULL, "prompt" text NOT NULL, "invite_code" uuid NOT NULL DEFAULT gen_random_uuid(), "completed" boolean NOT NULL DEFAULT false, PRIMARY KEY ("id") , UNIQUE ("id"), UNIQUE ("uri"), UNIQUE ("prompt"), UNIQUE ("invite_code"));
