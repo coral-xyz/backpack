@@ -276,6 +276,6 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
     simulationError,
     balanceChanges,
     network: "Solana",
-    networkFee: `${ethers.utils.formatUnits(estimatedTxFee, 9)} SOL`,
+    networkFee: ethers.utils.formatUnits(estimatedTxFee, 9),
   };
 }
