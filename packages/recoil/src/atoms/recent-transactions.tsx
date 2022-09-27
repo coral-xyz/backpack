@@ -9,6 +9,10 @@ import { anchorContext } from "./solana/wallet";
 import { ethersContext } from "./ethereum/provider";
 import { fetchRecentSolanaTransactions } from "./solana/recent-transactions";
 
+/**
+ * Retrieve recent Ethereum transactions using alchemy_getAssetTransfers.
+ * https://docs.alchemy.com/reference/alchemy-getassettransfers
+ */
 export const recentEthereumTransactions = atomFamily<
   Array<RecentTransaction>,
   {
@@ -78,13 +82,22 @@ export const recentEthereumTransactions = atomFamily<
             },
           ]
         );
-        const [from, to] = await Promise.all([
+        const results = await Promise.allSettled([
           fromTransferPromise,
           toTransferPromise,
         ]);
-        const merged = [...from.transfers, ...to.transfers].sort(
-          (a: string, b: string) => Number(b) - Number(a)
-        );
+
+        const isFulfilled = <T,>(
+          input: PromiseSettledResult<T>
+        ): input is PromiseFulfilledResult<T> => input.status === "fulfilled";
+
+        const merged = results
+          // Don't crash on promise rejections
+          .filter(isFulfilled)
+          .map((r) => r.value.transfers)
+          .flat()
+          .sort((a: any, b: any) => Number(b.blockNum) - Number(a.blockNum));
+
         return merged.map((t) => ({
           blockchain: Blockchain.ETHEREUM,
           date: new Date(t.metadata.blockTimestamp),
@@ -96,6 +109,9 @@ export const recentEthereumTransactions = atomFamily<
   }),
 });
 
+/**
+ * Retrieve recent Solana transactions.
+ */
 export const recentSolanaTransactions = atomFamily<
   Array<RecentTransaction>,
   {
