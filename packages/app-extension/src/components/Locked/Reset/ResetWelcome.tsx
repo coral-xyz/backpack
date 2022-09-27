@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { KeyringStoreStateEnum, useKeyringStoreState } from "@coral-xyz/recoil";
 import {
   Header,
   SubtextParagraph,
@@ -9,10 +10,16 @@ import {
 import { useNavStack } from "../../common/Layout/NavStack";
 
 export function ResetWelcome({ onClose }: { onClose: () => void }) {
+  const keyringStoreState = useKeyringStoreState();
+  const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
+
   const theme = useCustomTheme();
   const nav = useNavStack();
   const onNext = () => {
     nav.push("reset-warning");
+  };
+  const onPop = () => {
+    nav.pop();
   };
   return (
     <Box
@@ -41,7 +48,7 @@ export function ResetWelcome({ onClose }: { onClose: () => void }) {
         <Box sx={{ mb: "16px" }}>
           <SecondaryButton
             label="Try More Passwords"
-            onClick={onClose}
+            onClick={isLocked ? onClose : onPop}
             style={{
               border: theme.custom.colors.borderButton,
             }}
