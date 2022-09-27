@@ -13,7 +13,8 @@ import {
 } from "@coral-xyz/common";
 import { walletAddressDisplay, PrimaryButton } from "../../../../common";
 import { SettingsList } from "../../../../common/Settings/List";
-import { TokenAmountDisplay, Sending, Error } from "../Send";
+import { Sending, Error } from "../Send";
+import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
 
 const logger = getLogger("send-solana-confirmation-card");
 
@@ -177,7 +178,7 @@ export function ConfirmSendSolana({
         >
           Review Send
         </Typography>
-        <TokenAmountDisplay
+        <TokenAmountHeader
           style={{
             marginTop: "40px",
             marginBottom: "40px",

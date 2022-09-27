@@ -39,6 +39,7 @@ import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { MaxLabel } from "../../../common/MaxLabel";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
+import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 import { CheckIcon, CrossIcon } from "../../../common/Icon";
 
 const useStyles = styles((theme) => ({
@@ -312,81 +313,6 @@ export function Send({
   );
 }
 
-//
-// Displays token amount header with logo.
-//
-// TODO: similar compoennt in swap code, make one and move to common.
-//
-export const TokenAmountDisplay: React.FC<{
-  style?: React.CSSProperties;
-  token: {
-    logo?: string;
-    ticker?: string;
-    decimals: number;
-  };
-  amount: BigNumber;
-  displayLogo?: boolean;
-}> = ({ style, token, amount, displayLogo = true }) => {
-  const theme = useCustomTheme();
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        width: "100%",
-        ...style,
-      }}
-    >
-      {/* Dummy padding to center flex content */}
-      <div style={{ flex: 1 }} />
-      {displayLogo && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            flexDirection: "column",
-            marginRight: "8px",
-          }}
-        >
-          <img
-            src={token.logo}
-            style={{
-              width: "32px",
-              height: "32px",
-              borderRadius: "16px",
-            }}
-          />
-        </div>
-      )}
-      <Typography
-        style={{
-          color: theme.custom.colors.fontColor,
-          fontWeight: 500,
-          fontSize: "30px",
-          lineHeight: "36px",
-          textAlign: "center",
-          display: "flex",
-        }}
-      >
-        <span
-          style={{
-            display: "inline-block",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            maxWidth: `${displayLogo ? "208px" : "240px"}`,
-          }}
-        >
-          {ethers.utils.formatUnits(amount, token.decimals)}
-        </span>
-        <span style={{ whiteSpace: "pre" }}> {token.ticker}</span>
-      </Typography>
-      {/* Dummy padding to center flex content */}
-      <div style={{ flex: 1 }} />
-    </div>
-  );
-};
-
 export function Sending({
   blockchain,
   amount,
@@ -426,7 +352,7 @@ export function Sending({
       >
         {titleOverride ? titleOverride : isComplete ? "Sent" : "Sending..."}
       </Typography>
-      <TokenAmountDisplay
+      <TokenAmountHeader
         style={{
           marginTop: "16px",
           marginBottom: "0px",

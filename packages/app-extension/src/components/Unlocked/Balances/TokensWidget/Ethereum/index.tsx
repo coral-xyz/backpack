@@ -5,13 +5,10 @@ import { Typography } from "@mui/material";
 import { getLogger, Blockchain, Ethereum } from "@coral-xyz/common";
 import { useEthereumCtx, useTransactionData } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { TokenAmountDisplay, Sending, Error } from "../Send";
-import {
-  walletAddressDisplay,
-  Loading,
-  PrimaryButton,
-} from "../../../../common";
+import { Sending, Error } from "../Send";
+import { walletAddressDisplay, PrimaryButton } from "../../../../common";
 import { SettingsList } from "../../../../common/Settings/List";
+import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
 
 const logger = getLogger("send-ethereum-confirmation-card");
 const { base58: bs58 } = ethers.utils;
@@ -34,7 +31,7 @@ export function SendEthereumConfirmationCard({
 }) {
   const ethereumCtx = useEthereumCtx();
   const [txSignature, setTxSignature] = useState<string | null>(null);
-  const [error, setError] = useState(
+  const [error] = useState(
     "Error 422. Transaction time out. Runtime error. Reticulating splines."
   );
   const [transaction, setTransaction] = useState<UnsignedTransaction | null>(
@@ -229,7 +226,7 @@ export function ConfirmSendEthereum({
         >
           Review Send
         </Typography>
-        <TokenAmountDisplay
+        <TokenAmountHeader
           style={{
             marginTop: "40px",
             marginBottom: "40px",

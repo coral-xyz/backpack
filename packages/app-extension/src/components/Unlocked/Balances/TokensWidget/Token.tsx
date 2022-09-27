@@ -16,7 +16,7 @@ import {
   NavStackScreen,
 } from "../../../common/Layout/NavStack";
 import { TransferWidget } from "../TransferWidget";
-import { TokenAmountDisplay } from "./Send";
+import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 
 const useStyles = styles((theme) => ({
   tokenHeaderButtonContainer: {
@@ -32,13 +32,6 @@ const useStyles = styles((theme) => ({
   },
   negativePercent: {
     color: theme.custom.colors.negative,
-  },
-  displayBalanceLabel: {
-    color: theme.custom.colors.fontColor,
-    fontSize: "30px",
-    fontWeight: 600,
-    textAlign: "center",
-    lineHeight: "36px",
   },
   usdBalanceLabel: {
     color: theme.custom.colors.secondary,
@@ -110,7 +103,7 @@ function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
       }}
     >
       <div>
-        <TokenAmountDisplay
+        <TokenAmountHeader
           token={token}
           amount={token.nativeBalance}
           displayLogo={false}
