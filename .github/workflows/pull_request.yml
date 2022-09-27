@@ -7,6 +7,10 @@ on:
   push:
     branches:
       - master
+# cancel running flows in same branch, PR or tag https://stackoverflow.com/a/72408109
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   add-labels-based-on-whats-changed:
