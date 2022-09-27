@@ -1,3 +1,18 @@
 table:
   name: invitations
   schema: auth
+insert_permissions:
+  - role: mod
+    permission:
+      check: {}
+      columns:
+        - data
+        - id
+select_permissions:
+  - role: mod
+    permission:
+      columns:
+        - data
+        - created_at
+        - id
+      filter: {}

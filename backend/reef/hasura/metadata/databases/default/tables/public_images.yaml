@@ -5,3 +5,21 @@ object_relationships:
   - name: invitation
     using:
       foreign_key_constraint_on: invite_code
+insert_permissions:
+  - role: mod
+    permission:
+      check: {}
+      columns:
+        - prompt
+        - uri
+select_permissions:
+  - role: mod
+    permission:
+      columns:
+        - completed
+        - id
+        - prompt
+        - uri
+        - created_at
+        - invite_code
+      filter: {}
