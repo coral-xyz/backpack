@@ -9,7 +9,6 @@ import {
   useBackgroundClient,
   useBlockchainTokensSorted,
   useEthereumCtx,
-  useEthereumFeeData,
   useEthereumPrice,
   useSolanaCtx,
   useSplTokenRegistry,
@@ -34,7 +33,7 @@ type TransactionData = {
 
 type TransactionOverrides = {
   type: number;
-  nonce: number;
+  nonce: number | null;
   gasLimit: BigNumber | null;
   maxFeePerGas: BigNumber | null;
   maxPriorityFeePerGas: BigNumber | null;
@@ -65,7 +64,7 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
   const [transactionOverrides, setTransactionOverrides] =
     useState<TransactionOverrides>({
       type: 2,
-      nonce: 0,
+      nonce: null,
       gasLimit: estimatedGas,
       maxFeePerGas: ethereumCtx.feeData.maxFeePerGas,
       maxPriorityFeePerGas: ethereumCtx.feeData.maxPriorityFeePerGas,
@@ -80,7 +79,17 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
       const parsed = ethers.utils.parseTransaction(bs58.decode(serializedTx));
       // EIP 1559 compatability
       delete parsed.gasPrice;
-      setTransaction(parsed as TransactionRequest);
+      // Use a void signer to populate transaction with data we need, e.g. from
+      // field and nonce
+      const voidSigner = new ethers.VoidSigner(
+        ethereumCtx.walletPublicKey,
+        ethereumCtx.provider
+      );
+      // Make sure to populate missing fields and resolve ENS
+      const populatedTx = await voidSigner.populateTransaction(
+        transaction as TransactionRequest
+      );
+      setTransaction(populatedTx);
     })();
   }, [serializedTx]);
 
@@ -109,14 +118,12 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
           setSimulationError(true);
         }
         setEstimatedGas(estimatedGas);
-        const voidSigner = new ethers.VoidSigner(
-          ethereumCtx.walletPublicKey,
-          ethereumCtx.provider
-        );
-        const nonce = await voidSigner.getTransactionCount("pending");
+        // populateTransaction should have added a nonce, add it to overrides
         setTransactionOverrides({
           ...transactionOverrides,
-          nonce,
+          nonce: transaction.nonce
+            ? BigNumber.from(transaction.nonce).toNumber()
+            : null,
           gasLimit: estimatedGas,
         });
         setLoading(false);

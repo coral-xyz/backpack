@@ -58,8 +58,8 @@ export function SendEthereumConfirmationCard({
       } else if (token.tokenId) {
         // Token has a tokenId, must be an ERC721 token
         transaction = await Ethereum.transferErc721Transaction(ethereumCtx, {
-          from: ethereumCtx.walletPublicKey,
           to: destinationAddress,
+          from: ethereumCtx.walletPublicKey,
           contractAddress: token.address!,
           tokenId: token.tokenId,
         });
