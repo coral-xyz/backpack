@@ -1,3 +1,7 @@
 table:
   name: images
   schema: public
+object_relationships:
+  - name: invitation
+    using:
+      foreign_key_constraint_on: invite_code
