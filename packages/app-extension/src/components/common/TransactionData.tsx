@@ -1,21 +1,37 @@
 import { useState, useEffect, useRef } from "react";
 import { ethers, BigNumber } from "ethers";
-import { TextField, Typography, Chip } from "@mui/material";
+import { TextField, Typography, Button } from "@mui/material";
 import { useEthereumFeeData } from "@coral-xyz/recoil";
-import { useCustomTheme, styles } from "@coral-xyz/themes";
+import { useCustomTheme, styles, HOVER_OPACITY } from "@coral-xyz/themes";
 import { SettingsList } from "./Settings/List";
 import { WithMiniDrawer } from "./Layout/Drawer";
 import { CloseButton } from "../Unlocked/Swap";
 import { PrimaryButton, SecondaryButton } from "./";
 
 const useStyles = styles((theme: any) => ({
+  chip: {
+    padding: "4px 16px",
+    textTransform: "capitalize",
+    borderRadius: "16px",
+  },
   primaryChip: {
-    borderColor: theme.custom.colors.nav,
-    backgroundColor: theme.custom.colors.nav,
-    color: theme.custom.colors.brandColor,
-    "& .MuiChip-filled": {
-      backgroundColor: theme.custom.colors.brandColor,
-      color: theme.custom.colors.fontColor,
+    borderColor: theme.custom.colors.primaryButton,
+    backgroundColor: theme.custom.colors.primaryButton,
+    color: theme.custom.colors.primaryButtonTextColor,
+    "&:hover": {
+      opacity: HOVER_OPACITY,
+      background: `${theme.custom.colors.primaryButton} !important`,
+      backgroundColor: `${theme.custom.colors.primaryButton} !important,`,
+    },
+  },
+  secondaryChip: {
+    borderColor: theme.custom.colors.secondaryButton,
+    backgroundColor: theme.custom.colors.secondaryButton,
+    color: theme.custom.colors.secondaryButtonTextColor,
+    "&:hover": {
+      opacity: HOVER_OPACITY,
+      background: `${theme.custom.colors.secondaryButton} !important`,
+      backgroundColor: `${theme.custom.colors.secondaryButton} !important,`,
     },
   },
   typographyRoot: {
@@ -129,27 +145,7 @@ export function TransactionData({
   );
 }
 
-export function ValueWithUnit({
-  value,
-  unit,
-}: {
-  value: string;
-  unit: string;
-}) {
-  const classes = useStyles();
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        width: "50%",
-      }}
-    >
-      <Typography className={classes.typographyRoot}>{value}</Typography>
-      <Typography className={classes.typographyRoot}>{unit}</Typography>
-    </div>
-  );
-}
+type TransactionMode = "normal" | "fast" | "degen" | "custom";
 
 export function EthereumSettingsDrawer({
   transactionOverrides,
@@ -160,9 +156,7 @@ export function EthereumSettingsDrawer({
 }: any) {
   const theme = useCustomTheme();
   const classes = useStyles();
-  const [mode, setMode] = useState<"normal" | "fast" | "degen" | "custom">(
-    "normal"
-  );
+  const [mode, setMode] = useState<TransactionMode>("normal");
   const feeData = useEthereumFeeData();
   // Separate state for nonce so it is editable independently of gas settings
   // and mode button
@@ -403,33 +397,16 @@ export function EthereumSettingsDrawer({
                 style={{
                   display: "flex",
                   justifyContent: "space-around",
-                  marginTop: "24px",
+                  margin: "24px 16px 0 16px",
                 }}
               >
-                <Chip
-                  onClick={() => setMode("normal")}
-                  className={classes.primaryChip}
-                  variant={mode === "normal" ? "filled" : "outlined"}
-                  label="Normal"
-                />
-                <Chip
-                  onClick={() => setMode("fast")}
-                  className={classes.primaryChip}
-                  variant={mode === "fast" ? "filled" : "outlined"}
-                  label="Fast"
-                />
-                <Chip
-                  onClick={() => setMode("degen")}
-                  className={classes.primaryChip}
-                  variant={mode === "degen" ? "filled" : "outlined"}
-                  label="Degen"
-                />
-                <Chip
-                  onClick={() => setMode("custom")}
-                  className={classes.primaryChip}
-                  variant={mode === "custom" ? "filled" : "outlined"}
-                  label="Custom"
-                />
+                {["normal", "fast", "degen", "custom"].map((m) => (
+                  <ModeChip
+                    mode={m as TransactionMode}
+                    currentMode={mode}
+                    setMode={setMode}
+                  />
+                ))}
               </div>
               <SettingsList
                 menuItems={menuItems}
@@ -453,5 +430,54 @@ export function EthereumSettingsDrawer({
         </div>
       </div>
     </WithMiniDrawer>
+  );
+}
+
+// Note we don't use the MUI Button component because it currently doesn't
+// have any way to disable the ripple.
+function ModeChip({
+  mode,
+  currentMode,
+  setMode,
+}: {
+  mode: TransactionMode;
+  currentMode: TransactionMode;
+  setMode: (mode: TransactionMode) => void;
+}) {
+  const classes = useStyles();
+  return (
+    <Button
+      disableRipple
+      disableElevation
+      onClick={() => setMode(mode)}
+      className={`${classes.chip} ${
+        mode === currentMode ? classes.primaryChip : classes.secondaryChip
+      }`}
+      size="small"
+    >
+      {mode}
+    </Button>
+  );
+}
+
+export function ValueWithUnit({
+  value,
+  unit,
+}: {
+  value: string;
+  unit: string;
+}) {
+  const classes = useStyles();
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        width: "50%",
+      }}
+    >
+      <Typography className={classes.typographyRoot}>{value}</Typography>
+      <Typography className={classes.typographyRoot}>{unit}</Typography>
+    </div>
   );
 }
