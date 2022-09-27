@@ -292,18 +292,6 @@ jobs:
           asset_content_type: application/zip
 
       ##########################################################################
-      # Send artifacts to out channels.
-      ##########################################################################
-
-      - name: "post stable artifacts to Discord"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: sinshutu/upload-to-discord@master
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        with:
-          args: packages/app-extension/build-${{ github.run_number }}.zip
-
-      ##########################################################################
       # NPM Publish.
       ##########################################################################
 
