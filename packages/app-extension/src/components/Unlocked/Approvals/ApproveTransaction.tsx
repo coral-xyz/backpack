@@ -32,7 +32,7 @@ const useStyles = styles((theme) => ({
   },
   listItemRoot: {
     alignItems: "start",
-    borderBottom: `1px solid #000`,
+    border: `${theme.custom.colors.borderFull}`,
     borderRadius: "4px",
     background: theme.custom.colors.nav,
     padding: "8px",

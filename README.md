@@ -1,5 +1,6 @@
 <div align="center">
-  <img src="/assets/coral.png" height="170px" />
+
+  <img src="/assets/backpack.png" />
 
   <h1>Backpack</h1>
 
@@ -41,7 +42,7 @@ git submodule update
 
 #### Enable self-signed local SSL certs
 
-Go to chrome://flags/#allow-insecure-localhost and enable the toggle, then restart chrome
+Go to chrome://flags/#allow-insecure-localhost and enable the toggle, then restart chrome. Note: Please don't enable this if you don't know what you're doing. It will leave you vulnerable to exploits if left on. It is recommended to undo this step when you are done developing.
 
 #### Environment variables
 

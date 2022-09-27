@@ -6,7 +6,12 @@ import {
   CircularProgress,
   Checkbox as _Checkbox,
 } from "@mui/material";
-import { styles, useCustomTheme, CustomTheme } from "@coral-xyz/themes";
+import {
+  styles,
+  useCustomTheme,
+  CustomTheme,
+  HOVER_OPACITY,
+} from "@coral-xyz/themes";
 import { TextField } from "@coral-xyz/react-xnft-renderer";
 import { walletAddressDisplay } from "@coral-xyz/common";
 
@@ -56,6 +61,21 @@ const useStyles = styles((theme: CustomTheme) => ({
       backgroundColor: theme.custom.colors.primaryButton,
     },
   },
+  primaryButton: {
+    "&:hover": {
+      opacity: HOVER_OPACITY,
+      background: `${theme.custom.colors.primaryButton} !important`,
+      backgroundColor: `${theme.custom.colors.primaryButton} !important,`,
+    },
+  },
+  secondaryButton: {},
+  negativeButton: {
+    "&:hover": {
+      opacity: HOVER_OPACITY,
+      background: `${theme.custom.colors.negative} !important`,
+      backgroundColor: `${theme.custom.colors.negative} !important,`,
+    },
+  },
   header: {
     color: theme.custom.colors.fontColor,
     fontSize: "24px",
@@ -84,7 +104,8 @@ const useStyles = styles((theme: CustomTheme) => ({
     display: "flex",
     marginTop: "8px",
     "&:hover": {
-      backgroundColor: "transparent",
+      backgroundColor: "transparent !important",
+      background: "transparent !important",
       opacity: 0.8,
     },
   },
@@ -210,10 +231,12 @@ export function Loading(props: any) {
 export function PrimaryButton({
   buttonLabelStyle,
   label,
+  className,
   ...buttonProps
 }: {
   buttonLabelStyle?: React.CSSProperties;
   label?: string;
+  isSecondary?: boolean;
 } & React.ComponentProps<typeof Button>) {
   const theme = useCustomTheme();
   const classes = useStyles();
@@ -221,7 +244,7 @@ export function PrimaryButton({
     <Button
       disableRipple
       disableElevation
-      className={classes.button}
+      className={`${classes.button} ${className ?? classes.primaryButton}`}
       variant="contained"
       {...buttonProps}
       style={{
@@ -247,6 +270,25 @@ export function PrimaryButton({
   );
 }
 
+export function NegativeButton({ label, onClick, ...buttonProps }: any) {
+  const classes = useStyles();
+  const theme = useCustomTheme();
+  return (
+    <PrimaryButton
+      className={classes.negativeButton}
+      label={label}
+      onClick={onClick}
+      style={{
+        backgroundColor: theme.custom.colors.negative,
+      }}
+      buttonLabelStyle={{
+        color: theme.custom.colors.negativeButtonTextColor,
+      }}
+      {...buttonProps}
+    />
+  );
+}
+
 export function SecondaryButton({
   buttonLabelStyle,
   label,
@@ -255,6 +297,7 @@ export function SecondaryButton({
   buttonLabelStyle?: React.CSSProperties;
   label?: string;
 } & React.ComponentProps<typeof Button>) {
+  const classes = useStyles();
   const theme = useCustomTheme();
   const buttonStyle = {
     backgroundColor: theme.custom.colors.secondaryButton,
@@ -263,8 +306,10 @@ export function SecondaryButton({
   };
   return (
     <PrimaryButton
+      className={classes.secondaryButton}
       buttonLabelStyle={buttonLabelStyle}
       label={label}
+      isSecondary={true}
       {...buttonProps}
       style={buttonStyle}
     />

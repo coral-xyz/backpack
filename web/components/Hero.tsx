@@ -30,9 +30,7 @@ function Hero() {
                 className="mt-4 text-4xl font-extrabold tracking-tight
                   text-zinc-50 sm:mt-5 sm:text-6xl lg:mt-6 xl:text-6xl"
               >
-                <span className="block font-extrabold text-zinc-50">
-                  A home for your xNFT apps.
-                </span>
+                <span className="block font-extrabold text-zinc-50">A home for your xNFTs.</span>
               </h1>
               <p
                 className="mt-3 text-base text-gray-300 sm:mt-5 sm:text-xl

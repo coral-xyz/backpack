@@ -22,21 +22,36 @@ function main() {
 }
 
 function initProvider() {
-  window.backpack = new ProviderSolanaInjection();
-  window.ethereum = new ProviderEthereumInjection();
-
-  //
-  // XNFT Providers
-  //
-  const requestManager = new RequestManager(
-    CHANNEL_PLUGIN_RPC_REQUEST,
-    CHANNEL_PLUGIN_RPC_RESPONSE,
-    true
-  );
-  window.xnft = new ProviderSolanaXnftInjection(requestManager);
-  window.xnft.solana = new ProviderSolanaXnftInjection(requestManager);
-  window.xnft.ethereum = new ProviderEthereumXnftInjection(requestManager);
-
+  Object.defineProperties(window, {
+    backpack: {
+      value: new ProviderSolanaInjection(),
+    },
+    ethereum: {
+      value: new ProviderEthereumInjection(),
+    },
+    xnft: {
+      value: (() => {
+        //
+        // XNFT Providers
+        //
+        const requestManager = new RequestManager(
+          CHANNEL_PLUGIN_RPC_REQUEST,
+          CHANNEL_PLUGIN_RPC_RESPONSE,
+          true
+        );
+        const xnft = new ProviderSolanaXnftInjection(requestManager);
+        Object.defineProperties(xnft, {
+          solana: {
+            value: new ProviderSolanaXnftInjection(requestManager),
+          },
+          ethereum: {
+            value: new ProviderEthereumXnftInjection(requestManager),
+          },
+        });
+        return xnft;
+      })(),
+    },
+  });
   try {
     register();
   } catch (e) {

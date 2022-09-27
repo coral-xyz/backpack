@@ -12,6 +12,9 @@ const useStyles = styles((theme) => ({
     height: "56px",
     display: "flex",
     backgroundColor: `${theme.custom.colors.nav} !important`,
+    "&:hover": {
+      backgroundColor: "red",
+    },
   },
   dividerRoot: {
     borderColor: "transparent !important",

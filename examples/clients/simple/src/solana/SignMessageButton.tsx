@@ -1,6 +1,7 @@
 import React, { FC, useCallback } from "react";
 import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import * as anchor from "@project-serum/anchor";
 
 export const SignMessageButton: FC = () => {
   const { connection } = useConnection();
@@ -8,7 +9,7 @@ export const SignMessageButton: FC = () => {
   const onClick = useCallback(async () => {
     if (!wallet.publicKey) throw new WalletNotConnectedError();
 
-    const msg = new Uint8Array([1, 2, 3, 4, 5]);
+    const msg = anchor.utils.bytes.utf8.encode("hello world");
     console.log("requesting sig over", msg);
     const signature = await wallet.signMessage!(msg);
     console.log("signature", signature);

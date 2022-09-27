@@ -25,7 +25,7 @@ import { EmptyState } from "../../common/EmptyState";
 
 const useStyles = styles(() => ({
   cardContentContainer: {
-    marginTop: "36px",
+    //    marginTop: "36px",
   },
 }));
 
@@ -85,48 +85,42 @@ export function NftTable({
   //       padding + overlap issues on the table head and its content.
   return (
     <BalancesTable style={{ position: "relative" }}>
-      <BalancesTableHead
-        props={{ title, iconUrl: blockchainLogo }}
-        style={{
-          position: "absolute",
-          zIndex: 1,
-          left: 0,
-          right: 0,
-          top: 0,
-        }}
-      />
+      <BalancesTableHead props={{ title, iconUrl: blockchainLogo }} />
       <div className={classes.cardContentContainer}>
         <BalancesTableContent>
-          <div
-            style={{
-              backgroundColor: theme.custom.colors.nav,
-              paddingLeft: "12px",
-              paddingRight: "12px",
-              paddingBottom: "12px",
-              flexWrap: "wrap",
-            }}
-          >
-            <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
-              {isLoading
-                ? [...Array(2)].map((_, i) => (
-                    <Grid item xs={6} sm={4} md={3} lg={2} key={i}>
-                      <Skeleton
-                        height={200}
-                        style={{
-                          borderRadius: "10px",
-                          margin: "-20% 0",
-                        }}
-                      />
-                    </Grid>
-                  ))
-                : collections.map(
-                    (collection: NftCollection, index: number) => (
-                      <Grid item xs={6} sm={4} md={3} lg={2} key={index}>
-                        <NftCollectionCard collection={collection} />
+          <div>
+            <div
+              style={{
+                backgroundColor: theme.custom.colors.nav,
+                overflow: "hidden",
+                paddingLeft: "12px",
+                paddingRight: "12px",
+                paddingBottom: "12px",
+                flexWrap: "wrap",
+              }}
+            >
+              <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
+                {isLoading
+                  ? [...Array(2)].map((_, i) => (
+                      <Grid item xs={6} sm={4} md={3} lg={2} key={i}>
+                        <Skeleton
+                          height={200}
+                          style={{
+                            borderRadius: "10px",
+                            margin: "-20% 0",
+                          }}
+                        />
                       </Grid>
-                    )
-                  )}
-            </Grid>
+                    ))
+                  : collections.map(
+                      (collection: NftCollection, index: number) => (
+                        <Grid item xs={6} sm={4} md={3} lg={2} key={index}>
+                          <NftCollectionCard collection={collection} />
+                        </Grid>
+                      )
+                    )}
+              </Grid>
+            </div>
           </div>
         </BalancesTableContent>
       </div>

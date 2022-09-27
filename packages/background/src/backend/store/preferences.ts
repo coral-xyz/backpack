@@ -7,6 +7,7 @@ const STORE_KEY_WALLET_DATA = "wallet-data";
  * Persistent model for user preferences.
  */
 export type WalletData = {
+  username?: string;
   autoLockSecs: number;
   approvedOrigins: Array<string>;
   darkMode: boolean;

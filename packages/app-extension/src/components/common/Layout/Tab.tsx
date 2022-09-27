@@ -2,14 +2,14 @@ import { Tabs, Tab } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useTab, useBackgroundClient } from "@coral-xyz/recoil";
 import {
+  BACKPACK_FEATURE_XNFT,
   TAB_NFTS,
   TAB_APPS,
   TAB_BALANCES,
-  TAB_SWAP,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
-import { BalancesIcon, GridIcon, ImageIcon, SwapIcon } from "../../common/Icon";
+import { BalancesIcon, GridIcon, ImageIcon } from "../../common/Icon";
 
 const TAB_HEIGHT = 64;
 
@@ -26,6 +26,13 @@ const useStyles = styles((theme) => ({
   tab: {
     color: theme.custom.colors.tabIconBackground,
     height: `${TAB_HEIGHT}px`,
+    "&:hover": {
+      "& svg": {
+        "& path": {
+          fill: `${theme.custom.colors.brandColor} !important`,
+        },
+      },
+    },
   },
   tabRoot: {
     height: `${TAB_HEIGHT}px`,
@@ -43,10 +50,8 @@ const useStyles = styles((theme) => ({
   tabUnselected: {},
   tabButton: {
     padding: 0,
-    "&:hover": {
-      color: "red",
-    },
   },
+  activeTab: {},
 }));
 
 export function WithTabs(props: any) {
@@ -99,7 +104,9 @@ function TabBar() {
         onClick={() => onTabClick(TAB_BALANCES)}
         value={TAB_BALANCES}
         disableRipple
-        className={classes.tab}
+        className={`${classes.tab} ${
+          tab === TAB_BALANCES ? classes.activeTab : ""
+        }`}
         icon={
           <BalancesIcon
             fill={
@@ -110,43 +117,30 @@ function TabBar() {
           />
         }
       />
-      <Tab
-        onClick={() => onTabClick(TAB_APPS)}
-        value={TAB_APPS}
-        disableRipple
-        className={classes.tab}
-        icon={
-          <GridIcon
-            fill={
-              tab === TAB_APPS
-                ? theme.custom.colors.brandColor
-                : theme.custom.colors.icon
-            }
-          />
-        }
-      />
-      {/*
-      <Tab
-        onClick={() => onTabClick(TAB_SWAP)}
-        value={TAB_SWAP}
-        disableRipple
-        className={classes.tab}
-        icon={
-          <SwapIcon
-            fill={
-              tab === TAB_SWAP
-                ? theme.custom.colors.brandColor
-                : theme.custom.colors.secondary
-            }
-          />
-        }
-      />
-			*/}
+      {BACKPACK_FEATURE_XNFT && (
+        <Tab
+          onClick={() => onTabClick(TAB_APPS)}
+          value={TAB_APPS}
+          disableRipple
+          className={classes.tab}
+          icon={
+            <GridIcon
+              fill={
+                tab === TAB_APPS
+                  ? theme.custom.colors.brandColor
+                  : theme.custom.colors.icon
+              }
+            />
+          }
+        />
+      )}
       <Tab
         onClick={() => onTabClick(TAB_NFTS)}
         value={TAB_NFTS}
         disableRipple
-        className={classes.tab}
+        className={`${classes.tab} ${
+          tab === TAB_NFTS ? classes.activeTab : ""
+        }`}
         icon={
           <ImageIcon
             fill={

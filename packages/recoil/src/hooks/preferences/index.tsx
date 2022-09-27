@@ -33,3 +33,7 @@ export function useDarkMode(): boolean {
 export function useConnectionUrls() {
   return useRecoilValue(atoms.connectionUrls);
 }
+
+export function useUsername() {
+  return useRecoilValue(atoms.username);
+}

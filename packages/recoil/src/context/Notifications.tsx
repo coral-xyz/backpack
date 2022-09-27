@@ -29,6 +29,7 @@ import {
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
+  NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
 } from "@coral-xyz/common";
 import {
   KeyringStoreStateEnum,
@@ -64,6 +65,7 @@ export function NotificationsProvider(props: any) {
     atoms.ethereumConnectionUrl
   );
   const setEthereumChainId = useSetRecoilState(atoms.ethereumChainId);
+  const setEthereumFeeData = useSetRecoilState(atoms.ethereumFeeData);
   const updateEthereumBalances = useUpdateEthereumBalances();
   const navigate = useNavigate();
 
@@ -144,6 +146,9 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE:
           handleEthereumTokensDidUpdate(notif);
+          break;
+        case NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE:
+          handleEthereumFeeDataDidUpdate(notif);
           break;
         default:
           break;
@@ -356,6 +361,10 @@ export function NotificationsProvider(props: any) {
         publicKey: activeWallet,
         balances,
       });
+    };
+
+    const handleEthereumFeeDataDidUpdate = (notif: Notification) => {
+      setEthereumFeeData(notif.data.feeData);
     };
 
     const handleEthereumConnectionUrlUpdated = (notif: Notification) => {

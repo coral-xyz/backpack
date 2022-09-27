@@ -7,7 +7,6 @@ import {
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
-  BACKPACK_FEATURE_USERNAMES,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { CreatePassword } from "../common/Account/CreatePassword";
@@ -21,8 +20,8 @@ import { getWaitlistId } from "./WaitingRoom";
 
 export type OnboardingFlows =
   | {
-      username: string;
-      inviteCode: string;
+      username?: string;
+      inviteCode?: string;
       flow: "create-wallet" | "import-wallet";
     }
   | undefined;
@@ -43,18 +42,27 @@ export function Onboarding() {
     password: string,
     accountIndices: number[]
   ) => {
-    await background.request({
-      method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-      params: [
-        mnemonic,
-        derivationPath,
-        password,
-        accountIndices,
-        onboardingVars?.username,
-        onboardingVars?.inviteCode,
-        getWaitlistId?.(),
-      ],
-    });
+    try {
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
+        params: [
+          mnemonic,
+          derivationPath,
+          password,
+          accountIndices,
+          onboardingVars?.username,
+          onboardingVars?.inviteCode,
+          getWaitlistId?.(),
+        ],
+      });
+    } catch (err) {
+      console.error(err);
+      if (
+        confirm("There was an issue setting up your account. Please try again.")
+      ) {
+        window.location.reload();
+      }
+    }
   };
 
   const nextStep = () => setStep(step + 1);
@@ -80,8 +88,8 @@ export function Onboarding() {
     />,
     <MnemonicInput
       buttonLabel="Next"
-      onNext={(mnemonic: string) => {
-        createStore(mnemonic, DerivationPath.Bip44Change, password, [0]);
+      onNext={async (mnemonic: string) => {
+        await createStore(mnemonic, DerivationPath.Bip44Change, password, [0]);
         nextStep();
       }}
       readOnly={true}
@@ -112,9 +120,9 @@ export function Onboarding() {
       }}
     />,
     <CreatePassword
-      onNext={(password: string) => {
+      onNext={async (password: string) => {
         const accountIndices = accounts.map((account) => account.index);
-        createStore(mnemonic, derivationPath, password, accountIndices);
+        await createStore(mnemonic, derivationPath, password, accountIndices);
         nextStep();
       }}
     />,

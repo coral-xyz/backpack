@@ -132,6 +132,7 @@ export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS =
   "ui-rpc-method-wallets-active";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS_UPDATE =
   "ui-rpc-method-wallets-active-update";
+export const UI_RPC_METHOD_USERNAME_READ = "ui-rpc-method-username-read";
 export const UI_RPC_METHOD_KEYNAME_READ = "ui-rpc-method-keyname-read";
 export const UI_RPC_METHOD_KEYNAME_UPDATE = "ui-rpc-method-keyname-update";
 export const UI_RPC_METHOD_PASSWORD_UPDATE = "ui-rpc-method-password-update";
@@ -267,6 +268,8 @@ export const NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED =
   "notification-keyring-ethereum-active-wallet-updated";
 export const NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE =
   "notification-ethereum-tokens-did-update";
+export const NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE =
+  "notification-ethereum-fee-data-did-update";
 
 //
 // Ethereum web injected provider API.
