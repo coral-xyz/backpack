@@ -150,7 +150,6 @@ const useStyles = styles((theme) => ({
     borderRadius: "12px",
     fontSize: "16px",
     lineHeight: "24px",
-    border: `${theme.custom.colors.borderFull}`,
   },
   textFieldInputColorEmpty: {
     color: theme.custom.colors.textPlaceholder,
@@ -163,7 +162,7 @@ const useStyles = styles((theme) => ({
       background: theme.custom.colors.textBackground,
       borderRadius: "12px",
       "& fieldset": {
-        border: "none",
+        border: `${theme.custom.colors.borderFull}`,
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
