@@ -48,6 +48,7 @@ export default function Posts() {
               <div className="mt-4 text-sm text-zinc-300">{article.subtitle}</div>
               <a
                 target="_blank"
+                rel="noreferrer"
                 href={article.href}
                 className="item-center mt-4 w-40 rounded-xl bg-zinc-100 py-3 px-2 text-center 
                   font-medium transition delay-100 ease-in-out hover:scale-110"
