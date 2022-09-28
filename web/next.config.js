@@ -16,15 +16,6 @@ const moduleExports = withPlausibleProxy()({
   },
   typescript: {
     ignoreBuildErrors: true
-  },
-  async redirects() {
-    return [
-      {
-        source: '/waitlist',
-        destination: 'https://backpack-waitlist.typeform.com/to/PCnBjycW',
-        permanent: true
-      }
-    ];
   }
 });
 
