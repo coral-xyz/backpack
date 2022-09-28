@@ -18,6 +18,10 @@ const mainMenu = [
   {
     title: 'About',
     path: '/about'
+  },
+  {
+    title: 'Download',
+    path: 'https://chrome.google.com/webstore/detail/backpack/aflkmfhebedbjioipglgcbcmnbpgliof'
   }
 ];
 
