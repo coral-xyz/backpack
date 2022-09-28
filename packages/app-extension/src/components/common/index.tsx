@@ -236,7 +236,6 @@ export function PrimaryButton({
 }: {
   buttonLabelStyle?: React.CSSProperties;
   label?: string;
-  isSecondary?: boolean;
 } & React.ComponentProps<typeof Button>) {
   const theme = useCustomTheme();
   const classes = useStyles();
@@ -309,7 +308,6 @@ export function SecondaryButton({
       className={classes.secondaryButton}
       buttonLabelStyle={buttonLabelStyle}
       label={label}
-      isSecondary={true}
       {...buttonProps}
       style={buttonStyle}
     />
