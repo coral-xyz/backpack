@@ -8,3 +8,9 @@ select_permissions:
         - claimed_at
         - id
       filter: {}
+  - role: mod
+    permission:
+      columns:
+        - claimed_at
+        - id
+      filter: {}
