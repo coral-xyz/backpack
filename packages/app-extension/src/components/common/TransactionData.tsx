@@ -85,9 +85,11 @@ type TransactionMode = "normal" | "fast" | "degen" | "custom";
 export function TransactionData({
   transactionData,
   menuItems,
+  menuItemClasses,
 }: {
   transactionData: any;
   menuItems: any;
+  menuItemClasses?: any;
 }) {
   const theme = useCustomTheme();
   const classes = useStyles();
@@ -109,6 +111,7 @@ export function TransactionData({
       onClick: () => {},
       detail: <Typography>{network}</Typography>,
       button: false,
+      classes: menuItemClasses,
     },
     "Network Fee": {
       onClick: () => {},
@@ -120,6 +123,7 @@ export function TransactionData({
         </Typography>
       ),
       button: false,
+      classes: menuItemClasses,
     },
     ...(network === "Ethereum"
       ? {
@@ -136,6 +140,7 @@ export function TransactionData({
               </Button>
             ),
             button: false,
+            classes: menuItemClasses,
           },
         }
       : {}),

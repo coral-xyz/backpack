@@ -5,7 +5,6 @@ import {
   usePluginUrl,
   useTransactionData,
   useTransactionRequest,
-  useSolanaCtx,
 } from "@coral-xyz/recoil";
 import {
   Blockchain,
@@ -380,6 +379,7 @@ function SendTransactionRequest({
           >
             <TransactionData
               menuItems={menuItems}
+              menuItemClasses={{ root: classes.approveTableRoot }}
               transactionData={transactionData}
             />
           </div>
