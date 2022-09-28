@@ -62,6 +62,12 @@ const useStyles = styles((theme) => ({
       cursor: "default",
     },
   },
+  warning: {
+    color: theme.custom.colors.negative,
+    fontSize: "14px",
+    textAlign: "center",
+    marginTop: "8px",
+  },
 }));
 
 const pluginUiRpcMap = {
@@ -221,8 +227,53 @@ function SignAllTransactionsRequest({
   onResolve: (signature: string) => void;
   onReject: () => void;
 }) {
-  const { walletPublicKey } = useSolanaCtx();
-  return <></>;
+  const loading = false;
+  const classes = useStyles();
+  const theme = useCustomTheme();
+  const background = useBackgroundClient();
+
+  const onConfirm = async () => {
+    const signature = await background.request({
+      method: uiRpcMethod,
+      params: [transactions, publicKey],
+    });
+    onResolve(signature);
+  };
+
+  return (
+    <Request
+      onConfirm={onConfirm}
+      onReject={onReject}
+      buttonsDisabled={loading}
+    >
+      {loading ? (
+        <Loading />
+      ) : (
+        <Scrollbar>
+          <Typography
+            style={{
+              color: theme.custom.colors.fontColor,
+              fontWeight: 500,
+              fontSize: "18px",
+              lineHeight: "24px",
+              textAlign: "center",
+            }}
+          >
+            Approve Transaction
+          </Typography>
+          <div
+            style={{
+              marginTop: "18px",
+            }}
+          >
+            <div className={classes.warning}>
+              Approving multiple transactions
+            </div>
+          </div>
+        </Scrollbar>
+      )}
+    </Request>
+  );
 }
 
 //
@@ -286,7 +337,7 @@ function SendTransactionRequest({
       ),
       classes: { root: classes.approveTableRoot },
     },
-    "Sending From": {
+    From: {
       onClick: () => {},
       detail: (
         <Typography
