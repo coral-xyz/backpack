@@ -1,3 +1,4 @@
+import { ArrowRightIcon } from '@heroicons/react/outline';
 import Image from 'next/image';
 
 const articles = [
@@ -36,17 +37,22 @@ export default function Posts() {
   return (
     <div className="flex flex-col gap-3">
       <h2 className="text-xl font-bold tracking-wide text-zinc-50">News</h2>
-      <div className="grid grid-cols-2 gap-10">
+      <div className="grid w-full grid-cols-1 gap-10 md:grid-cols-2">
         {articles.map((article, index) => (
           <div
             key={index}
-            className="grid max-w-xl grid-cols-2 items-center justify-around gap-6 
-              rounded-xl bg-zinc-800 py-10 px-10 md:gap-2 lg:flex-row"
+            className="grid grid-cols-1 items-center justify-around gap-6 rounded-xl bg-zinc-800 
+              py-8 px-8 md:grid-cols-2 md:gap-2"
           >
             <div className="flex flex-col">
               <div className="text-xl tracking-wide text-zinc-50">{article.title}</div>
               <div className="mt-4 text-sm text-zinc-300">{article.subtitle}</div>
-              <a
+              <a target="_blank" rel="noreferrer" href={article.href}>
+                <span className="mt-4 flex cursor-pointer items-center gap-2 font-medium text-zinc-50">
+                  Read <ArrowRightIcon strokeWidth={3} height={14} />
+                </span>
+              </a>
+              {/* <a
                 target="_blank"
                 rel="noreferrer"
                 href={article.href}
@@ -54,7 +60,7 @@ export default function Posts() {
                   font-medium transition delay-100 ease-in-out hover:scale-110"
               >
                 Read Article
-              </a>
+              </a> */}
             </div>
             <Image
               alt="article-img"
