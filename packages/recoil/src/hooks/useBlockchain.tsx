@@ -49,3 +49,14 @@ export function useBlockchainTokenAccount(
 ): any {
   return useRecoilValue(atoms.blockchainTokenData({ blockchain, address }));
 }
+
+export function useBlockchainActiveWallet(blockchain: Blockchain) {
+  switch (blockchain) {
+    case Blockchain.ETHEREUM:
+      return useRecoilValue(atoms.activeEthereumWallet)!;
+    case Blockchain.SOLANA:
+      return useRecoilValue(atoms.activeSolanaWallet)!;
+    default:
+      throw new Error(`invalid blockchain ${blockchain}`);
+  }
+}
