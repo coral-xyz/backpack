@@ -96,7 +96,7 @@ export const recentEthereumTransactions = atomFamily<
           .filter(isFulfilled)
           .map((r) => r.value.transfers)
           .flat()
-          .sort((a: string, b: string) => Number(b) - Number(a));
+          .sort((a: any, b: any) => Number(b.blockNum) - Number(a.blockNum));
 
         return merged.map((t) => ({
           blockchain: Blockchain.ETHEREUM,

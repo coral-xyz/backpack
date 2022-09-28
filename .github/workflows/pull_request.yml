@@ -28,6 +28,8 @@ jobs:
               - 'packages/react-xnft-renderer/**'
               - 'packages/xnft/**'
               - 'packages/xnft-cli/**'
+            backend:
+              - 'backend/**'
 
       - if: steps.changes.outputs.mobile == 'true'
         uses: andymckay/labeler@1.0.4
@@ -43,6 +45,11 @@ jobs:
         uses: andymckay/labeler@1.0.4
         with:
           add-labels: "xnft"
+
+      - if: steps.changes.outputs.backend == 'true'
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: "backend"
 
   tests:
     runs-on: ubuntu-latest
@@ -290,18 +297,6 @@ jobs:
           asset_path: ./build-beta-${{ github.run_number }}.zip
           asset_name: build-beta-${{ github.run_number }}.zip
           asset_content_type: application/zip
-
-      ##########################################################################
-      # Send artifacts to out channels.
-      ##########################################################################
-
-      - name: "post stable artifacts to Discord"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: sinshutu/upload-to-discord@master
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        with:
-          args: packages/app-extension/build-${{ github.run_number }}.zip
 
       ##########################################################################
       # NPM Publish.
