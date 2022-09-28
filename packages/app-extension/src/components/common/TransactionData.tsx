@@ -45,8 +45,10 @@ const useStyles = styles((theme: any) => ({
       backgroundColor: `${theme.custom.colors.background} !important,`,
     },
   },
-  typographyRoot: {
-    fontSize: "14px",
+  listRoot: {
+    "& .MuiTypography-root": {
+      fontSize: "14px",
+    },
   },
   inputRoot: {
     border: `${theme.custom.colors.borderFull}`,
@@ -142,8 +144,11 @@ export function TransactionData({
   return (
     <>
       <SettingsList
+        className={classes.listRoot}
         menuItems={{ ...menuItems, ...defaultMenuItems }}
-        style={{ margin: 0 }}
+        style={{
+          margin: 0,
+        }}
         textStyle={{
           color: theme.custom.colors.secondary,
         }}
@@ -367,7 +372,6 @@ export function EthereumSettingsDrawer({
         ></TextField>
       ) : (
         <Typography
-          className={classes.typographyRoot}
           style={{ cursor: gasEditOnClick ? "pointer" : "inherit" }}
           onClick={() => {
             if (gasEditOnClick) setEditingGas(true);
@@ -397,7 +401,6 @@ export function EthereumSettingsDrawer({
         ></TextField>
       ) : (
         <Typography
-          className={classes.typographyRoot}
           style={{ cursor: nonceEditOnClick ? "pointer" : "inherit" }}
           onClick={() => {
             if (nonceEditOnClick) setEditingNonce(true);
@@ -409,11 +412,7 @@ export function EthereumSettingsDrawer({
       ...menuItemBase,
     },
     "Max transaction fee": {
-      detail: (
-        <Typography className={classes.typographyRoot}>
-          ${networkFeeUsd}
-        </Typography>
-      ),
+      detail: <Typography>${networkFeeUsd}</Typography>,
       ...menuItemBase,
     },
   };
@@ -427,6 +426,9 @@ export function EthereumSettingsDrawer({
         },
       }}
       modalProps={{
+        style: {
+          background: "#18181b80",
+        },
         disableEscapeKeyDown: true,
       }}
     >
@@ -501,10 +503,18 @@ export function EthereumSettingsDrawer({
                   />
                 ))}
               </div>
-              <SettingsList
-                menuItems={menuItems}
-                textStyle={{ fontSize: "14px" }}
-              />
+              <div style={{ margin: "24px 16px" }}>
+                <SettingsList
+                  className={classes.listRoot}
+                  menuItems={menuItems}
+                  style={{
+                    margin: 0,
+                  }}
+                  textStyle={{
+                    color: theme.custom.colors.secondary,
+                  }}
+                />
+              </div>
             </div>
             <div style={{ margin: "0 16px" }}>
               {((mode === "custom" && editingGas) || editingNonce) && (
@@ -567,7 +577,7 @@ export function ValueWithUnit({
   unit: string;
   containerProps?: any;
 }) {
-  const classes = useStyles();
+  const theme = useCustomTheme();
   return (
     <div
       {...containerProps}
@@ -575,11 +585,13 @@ export function ValueWithUnit({
         display: "flex",
         justifyContent: "space-between",
         width: "50%",
-        ...(containerProps.style && {}),
+        ...(containerProps.style ? containerProps.style : {}),
       }}
     >
-      <Typography className={classes.typographyRoot}>{value}</Typography>
-      <Typography className={classes.typographyRoot}>{unit}</Typography>
+      <Typography>{value}</Typography>
+      <Typography style={{ color: theme.custom.colors.secondary }}>
+        {unit}
+      </Typography>
     </div>
   );
 }

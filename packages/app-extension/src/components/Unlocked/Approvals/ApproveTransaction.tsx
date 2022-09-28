@@ -136,10 +136,15 @@ export function ApproveTransaction({
       {loading ? (
         <Loading />
       ) : (
-        <TransactionData
-          transactionData={transactionData}
-          menuItems={menuItems}
-        />
+        <div style={{ marginTop: "24px" }}>
+          <Typography className={classes.listDescription}>
+            Transaction details
+          </Typography>
+          <TransactionData
+            transactionData={transactionData}
+            menuItems={menuItems}
+          />
+        </div>
       )}
     </WithApproval>
   );

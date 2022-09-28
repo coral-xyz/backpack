@@ -7,6 +7,7 @@ export function SettingsList({
   menuItems,
   textStyle,
   borderColor,
+  className,
 }: {
   style?: React.CSSProperties;
   textStyle?: React.CSSProperties;
@@ -22,10 +23,12 @@ export function SettingsList({
       label?: string;
     };
   };
+  className?: string;
 }) {
   const theme = useCustomTheme();
   return (
     <List
+      className={className}
       style={{
         border: `${theme.custom.colors.borderFull}`,
         borderRadius: "12px",
