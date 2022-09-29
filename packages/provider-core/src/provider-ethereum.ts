@@ -141,6 +141,7 @@ export class ProviderEthereumInjection extends EventEmitter {
     this.#state = {
       ...ProviderEthereumInjection._defaultState,
     };
+    Object.freeze(this.#state);
 
     this.#isBackpack = true;
     this.#chainId = null;
@@ -402,7 +403,7 @@ export class ProviderEthereumInjection extends EventEmitter {
    */
   protected async _handleConnect(chainId: string) {
     if (!this.#state.isConnected) {
-      this.#state.isConnected = true;
+      this.#state = { ...this.#state, isConnected: true };
     }
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#connect
     this.emit("connect", { chainId } as ProviderConnectInfo);
@@ -496,21 +497,5 @@ export class ProviderEthereumInjection extends EventEmitter {
 
   public get isBackpack() {
     return this.#isBackpack;
-  }
-
-  public set publicKey(publicKey) {
-    this.#publicKey = publicKey;
-  }
-
-  public set provider(provider) {
-    this.#provider = provider;
-  }
-
-  public set chainId(chainId) {
-    this.#chainId = chainId;
-  }
-
-  public set isBackpack(isBackpack) {
-    this.#isBackpack = isBackpack;
   }
 }

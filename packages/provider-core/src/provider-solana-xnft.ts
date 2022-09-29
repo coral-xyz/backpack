@@ -265,12 +265,4 @@ export class ProviderSolanaXnftInjection
   public get connection() {
     return this.#connection;
   }
-
-  public set publicKey(publicKey) {
-    this.#publicKey = publicKey;
-  }
-
-  public set connection(connection) {
-    this.#connection = connection;
-  }
 }
