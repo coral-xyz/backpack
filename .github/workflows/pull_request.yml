@@ -108,6 +108,7 @@ jobs:
           BACKPACK_FEATURE_LIGHT_MODE: "true"
           BACKPACK_FEATURE_POP_MODE: "true"
           BACKPACK_FEATURE_MULTICHAIN: "true"
+          BACKPACK_FEATURE_XNFT: "true"
           # CI!=true so that build warnings aren't treated like errors (for now)
           CI: ""
         run: yarn build
@@ -133,19 +134,6 @@ jobs:
       - name: "rename beta build"
         working-directory: packages/app-extension
         run: mv build build-beta
-
-      #
-      # Build the extension, stable release.
-      #
-      - name: "build stable"
-        env:
-          BACKPACK_CONFIG_VERSION: "latest-${{ github.run_number }}"
-          BACKPACK_CONFIG_LOG_LEVEL: "info"
-          BACKPACK_FEATURE_LIGHT_MODE: "true"
-          BACKPACK_FEATURE_POP_MODE: "true"
-          # CI!=true so that build warnings aren't treated like errors (for now)
-          CI: ""
-        run: yarn build
 
       ##########################################################################
       # GitHub Pages.
@@ -181,20 +169,6 @@ jobs:
       ##########################################################################
       # Upload build artifacts.
       ##########################################################################
-
-      #
-      # Upload stable artifact.
-      #
-      - name: "zip stable build artifacts"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        working-directory: packages/app-extension
-        run: zip -r build-${{ github.run_number }}.zip build/
-      - name: "upload build artifacts"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v2
-        with:
-          name: backpack-build
-          path: packages/app-extension/build-${{ github.run_number }}.zip
 
       #
       # Upload edge artifact.
@@ -239,11 +213,6 @@ jobs:
       - uses: actions/download-artifact@v2
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
-          name: backpack-build
-          path: ./
-      - uses: actions/download-artifact@v2
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        with:
           name: backpack-build-edge
           path: ./
       - uses: actions/download-artifact@v2
@@ -270,15 +239,6 @@ jobs:
       #
       # Attach files to the release.
       #
-      - uses: actions/upload-release-asset@v1.0.1
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build-${{ github.run_number }}.zip
-          asset_name: build-${{ github.run_number }}.zip
-          asset_content_type: application/zip
       - uses: actions/upload-release-asset@v1.0.1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
