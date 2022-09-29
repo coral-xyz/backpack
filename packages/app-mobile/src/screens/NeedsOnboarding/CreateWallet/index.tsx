@@ -170,7 +170,7 @@ const ShowSecretRecoveryPhrase: React.FC<{
   const onSubmit = async () => {
     await background.request({
       method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-      params: [recoveryPhrase, DerivationPath.Bip44Change, password, [0]],
+      params: [recoveryPhrase, DerivationPath.Bip44, password, [0]],
     });
     navigate("/");
   };
