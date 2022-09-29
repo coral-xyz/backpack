@@ -38,6 +38,7 @@ const WaitingRoom: FunctionComponent<WaitingRoomProps> = ({
           width: "100%",
           overflow: "hidden",
         }}
+        allow="clipboard-read; clipboard-write"
         src={uri}
       />
     </WithNav>
