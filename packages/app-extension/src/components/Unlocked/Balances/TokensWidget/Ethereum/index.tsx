@@ -5,8 +5,9 @@ import { Typography } from "@mui/material";
 import { getLogger, Blockchain, Ethereum } from "@coral-xyz/common";
 import { useEthereumCtx, useTransactionData } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { TokenAmountDisplay, Sending, Error } from "../Send";
+import { Sending, Error } from "../Send";
 import { walletAddressDisplay, PrimaryButton } from "../../../../common";
+import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
 import { TransactionData } from "../../../../common/TransactionData";
 
 const logger = getLogger("send-ethereum-confirmation-card");
@@ -210,7 +211,7 @@ export function ConfirmSendEthereum({
         >
           Review Send
         </Typography>
-        <TokenAmountDisplay
+        <TokenAmountHeader
           style={{
             marginTop: "40px",
             marginBottom: "40px",
