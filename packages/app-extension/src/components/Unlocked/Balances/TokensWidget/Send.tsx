@@ -165,7 +165,6 @@ export function Send({
     isValidAddress,
     isFreshAddress: _,
     isErrorAddress,
-    normalizedAddress: destinationAddress,
   } = useIsValidAddress(blockchain, address, solanaProvider.connection);
 
   useEffect(() => {
@@ -220,11 +219,6 @@ export function Send({
       />
     );
   }
-
-  const SendConfirmComponent = {
-    [Blockchain.SOLANA]: SendSolanaConfirmationCard,
-    [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
-  }[blockchain];
 
   return (
     <form
@@ -290,15 +284,28 @@ export function Send({
           openDrawer={openDrawer}
           setOpenDrawer={setOpenDrawer}
         >
-          <SendConfirmComponent
-            token={token}
-            destinationAddress={destinationAddress}
-            amount={amount!}
-            close={() => {
-              setOpenDrawer(false);
-              close();
-            }}
-          />
+          {blockchain === Blockchain.SOLANA && (
+            <SendSolanaConfirmationCard
+              token={token}
+              destinationAddress={address}
+              amount={amount!}
+              close={() => {
+                setOpenDrawer(false);
+                close();
+              }}
+            />
+          )}
+          {blockchain === Blockchain.ETHEREUM && (
+            <SendEthereumConfirmationCard
+              token={token}
+              destinationAddress={address}
+              amount={amount!}
+              close={() => {
+                setOpenDrawer(false);
+                close();
+              }}
+            />
+          )}
         </ApproveTransactionDrawer>
       </div>
     </form>
@@ -637,7 +644,6 @@ export function useIsValidAddress(
   const [addressError, setAddressError] = useState<boolean>(false);
   const [isFreshAccount, setIsFreshAccount] = useState<boolean>(false); // Not used for now.
   const [accountValidated, setAccountValidated] = useState<boolean>(false);
-  const [normalizedAddress, setNormalizedAddress] = useState<string>(address);
 
   // This effect validates the account address given.
   useEffect(() => {
@@ -685,16 +691,14 @@ export function useIsValidAddress(
         setAccountValidated(true);
       } else if (blockchain === Blockchain.ETHEREUM) {
         // Ethereum address validation
-        let checksumAddress;
         try {
-          checksumAddress = ethers.utils.getAddress(address);
+          ethers.utils.getAddress(address);
         } catch (e) {
           setAddressError(true);
           return;
         }
         setAddressError(false);
         setAccountValidated(true);
-        setNormalizedAddress(checksumAddress);
       }
     })();
   }, [address]);
@@ -703,6 +707,5 @@ export function useIsValidAddress(
     isValidAddress: accountValidated,
     isFreshAddress: isFreshAccount,
     isErrorAddress: addressError,
-    normalizedAddress: normalizedAddress,
   };
 }
