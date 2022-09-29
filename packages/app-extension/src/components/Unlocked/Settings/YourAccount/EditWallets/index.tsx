@@ -167,6 +167,7 @@ export const WalletListItem: React.FC<{
             display: "flex",
             justifyContent: "center",
             flexDirection: "column",
+            marginLeft: "4px",
           }}
         >
           <ImportTypeBadge type={type} />
