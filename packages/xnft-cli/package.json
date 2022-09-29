@@ -6,7 +6,7 @@
   },
   "scripts": {
     "prebuild": "cd ../../examples/xnft/iframe && npm run build",
-    "build": "cp ../../examples/xnft/iframe/dist/index.js iframe.js"
+    "build": "node -e \"fs.copyFile('../../examples/xnft/iframe/dist/index.js', 'iframe.js', (err) => {if (err) throw err;});\""
   },
   "dependencies": {
     "@parcel/config-default": "^2.7.0",
