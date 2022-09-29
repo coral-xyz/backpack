@@ -127,7 +127,6 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
   };
 }
 
-// TODO: add a guard for approved origins (DUH!).
 async function handle<T = any>(
   ctx: Context<Backend>,
   req: RpcRequest
@@ -135,6 +134,22 @@ async function handle<T = any>(
   logger.debug(`handle rpc ${req.method}`, req);
 
   const { method, params } = req;
+
+  //
+  // Connection requests can come from any origin. All other requests *must*
+  // come from an approved origin.
+  //
+  if (
+    method !== ETHEREUM_RPC_METHOD_CONNECT &&
+    method !== SOLANA_RPC_METHOD_CONNECT
+  ) {
+    const origin = ctx.sender.origin;
+    const isApproved = await ctx.backend.isApprovedOrigin(origin);
+    if (!isApproved) {
+      return [undefined, `${origin} is not an approved origin`];
+    }
+  }
+
   switch (method) {
     case ETHEREUM_RPC_METHOD_CONNECT:
       return await handleConnect(ctx, Blockchain.ETHEREUM);
@@ -198,7 +213,8 @@ async function handleConnect(
         return openApprovalPopupWindow(
           ctx.sender.origin,
           ctx.sender.tab.title,
-          requestId
+          requestId,
+          blockchain
         );
       });
       didApprove = !resp.windowClosed && resp.result;
@@ -209,7 +225,8 @@ async function handleConnect(
         return openLockedPopupWindow(
           ctx.sender.origin,
           ctx.sender.tab.title,
-          requestId
+          requestId,
+          blockchain
         );
       });
       didApprove = !resp.windowClosed && resp.result;
@@ -218,7 +235,8 @@ async function handleConnect(
         return openLockedApprovalPopupWindow(
           ctx.sender.origin,
           ctx.sender.tab.title,
-          requestId
+          requestId,
+          blockchain
         );
       });
       didApprove = !resp.windowClosed && resp.result;

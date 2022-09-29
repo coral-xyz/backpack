@@ -113,30 +113,33 @@ export async function openXnft(
 export async function openLockedApprovalPopupWindow(
   origin: string,
   title: string,
-  requestId: number
+  requestId: number,
+  blockchain: Blockchain
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
-  const url = `${POPUP_HTML}?${QUERY_LOCKED_APPROVAL}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}`;
+  const url = `${POPUP_HTML}?${QUERY_LOCKED_APPROVAL}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&blockchain=${blockchain}`;
   return openPopupWindow(url);
 }
 
 export async function openLockedPopupWindow(
   origin: string,
   title: string,
-  requestId: number
+  requestId: number,
+  blockchain: Blockchain
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
-  const url = `${POPUP_HTML}?${QUERY_LOCKED}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}`;
+  const url = `${POPUP_HTML}?${QUERY_LOCKED}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&blockchain=${blockchain}`;
   return openPopupWindow(url);
 }
 
 export async function openApprovalPopupWindow(
   origin: string,
   title: string,
-  requestId: number
+  requestId: number,
+  blockchain: Blockchain
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
-  const url = `${POPUP_HTML}?${QUERY_APPROVAL}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}`;
+  const url = `${POPUP_HTML}?${QUERY_APPROVAL}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&blockchain=${blockchain}`;
   return openPopupWindow(url);
 }
 

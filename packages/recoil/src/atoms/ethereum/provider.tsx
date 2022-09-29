@@ -1,4 +1,5 @@
-import { selector } from "recoil";
+import { atom, selector } from "recoil";
+import type { FeeData } from "@ethersproject/abstract-provider";
 import { BackgroundEthereumProvider } from "@coral-xyz/common";
 import { providerBackgroundClient } from "../client";
 import { ethereumConnectionUrl } from "./preferences";
@@ -25,10 +26,13 @@ export const ethersContext = selector({
   dangerouslyAllowMutability: true,
 });
 
-export const ethereumFeeData = selector({
+export const ethereumFeeData = atom<FeeData>({
   key: "ethereumFeeData",
-  get: async ({ get }) => {
-    const { provider } = get(ethersContext);
-    return await provider.getFeeData();
-  },
+  default: selector({
+    key: "ethereumFeeDataDefault",
+    get: ({ get }) => {
+      const { provider } = get(ethersContext);
+      return provider.getFeeData();
+    },
+  }),
 });

@@ -7,9 +7,9 @@ import React, {
   type PropsWithChildren,
   type SetStateAction,
 } from "react";
-import { Typography, Drawer, Button, IconButton } from "@mui/material";
+import { Drawer, Button, IconButton } from "@mui/material";
 import { Close } from "@mui/icons-material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles } from "@coral-xyz/themes";
 import { EXTENSION_HEIGHT } from "@coral-xyz/common";
 import { useEphemeralNav } from "@coral-xyz/recoil";
 import { WithEphemeralNav } from "./NavEphemeral";
@@ -122,6 +122,7 @@ export function WithMiniDrawer(props: any) {
     paperAnchorBottom,
     backdropProps,
     modalProps,
+    paperProps,
     onClose,
   } = props;
   return (
@@ -143,6 +144,9 @@ export function WithMiniDrawer(props: any) {
         }}
         ModalProps={{
           ...modalProps,
+        }}
+        PaperProps={{
+          ...paperProps,
         }}
       >
         {children}

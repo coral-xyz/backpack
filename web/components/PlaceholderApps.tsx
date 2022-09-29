@@ -20,7 +20,7 @@ function PlaceholderApps() {
   return (
     <div className="flex flex-col gap-3">
       <h2 className="flex text-xl font-extrabold tracking-wide text-zinc-50">
-        xNFT Apps{' '}
+        xNFTs{' '}
         <span className="align-center ml-3 flex w-max rounded-full bg-teal-900 px-3 py-1 text-sm text-teal-400">
           soon
         </span>

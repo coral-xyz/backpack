@@ -41,11 +41,11 @@ const useStyles = styles((theme) => ({
     flexDirection: "column",
   },
   cardHeaderRoot: {
-    backgroundColor: theme.custom.colors.nav,
     padding: "6px",
     paddingLeft: "16px",
     paddingRight: "16px",
     height: "36px",
+    width: "100%",
   },
   hover: {
     "&:hover": {
@@ -150,7 +150,6 @@ const useStyles = styles((theme) => ({
     borderRadius: "12px",
     fontSize: "16px",
     lineHeight: "24px",
-    border: `${theme.custom.colors.borderFull}`,
   },
   textFieldInputColorEmpty: {
     color: theme.custom.colors.textPlaceholder,
@@ -163,7 +162,7 @@ const useStyles = styles((theme) => ({
       background: theme.custom.colors.textBackground,
       borderRadius: "12px",
       "& fieldset": {
-        border: "none",
+        border: `${theme.custom.colors.borderFull}`,
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
@@ -448,7 +447,14 @@ export function BalancesTableHead({ props, style }: any) {
   const classes = useStyles();
   const { showContent, setShowContent } = useBalancesContext();
   return (
-    <div style={style}>
+    <Button
+      style={{
+        width: "100%",
+        borderRadius: 0,
+        padding: 0,
+        ...style,
+      }}
+    >
       <CardHeader
         onClick={() => !disableToggle && setShowContent(!showContent)}
         avatar={
@@ -502,7 +508,7 @@ export function BalancesTableHead({ props, style }: any) {
           avatar: classes.cardHeaderAvatar,
         }}
       />
-    </div>
+    </Button>
   );
 }
 
@@ -840,7 +846,6 @@ export function __Button({
       style={{
         borderRadius: "12px",
         width: "100px",
-        height: "40px",
         textTransform: "none",
         backgroundColor: theme.custom.colors.nav,
         ...style,

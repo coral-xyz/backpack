@@ -12,16 +12,20 @@ const useStyles = styles((theme) => ({
     height: "56px",
     display: "flex",
     backgroundColor: `${theme.custom.colors.nav} !important`,
+    "&:hover": {
+      backgroundColor: "red",
+    },
   },
   dividerRoot: {
     borderColor: "transparent !important",
   },
 }));
 
-export function List({ style, children }: any) {
+export function List({ className, style, children }: any) {
   const theme = useCustomTheme();
   return (
     <MuiList
+      className={className}
       style={{
         color: theme.custom.colors.fontColor,
         padding: 0,

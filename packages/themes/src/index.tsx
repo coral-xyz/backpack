@@ -36,6 +36,7 @@ const LIGHT_BORDER_COLOR_1 = "#F0F0F2";
 const LIGHT_POSITIVE_COLOR = POSITIVE_COLOR;
 const LIGHT_NEGATIVE_COLOR = NEGATIVE_COLOR;
 const LIGHT_SCROLLBAR_THUMB_COLOR = SCROLLBAR_THUMB_COLOR;
+const LIGHT_ICON_HOVER_COLOR = "#787C89";
 
 const DANGER_COLOR = "#DC2626";
 
@@ -140,6 +141,7 @@ export const darkTheme: any = {
       icon: "#787C89",
       approveTransactionTableBackground: BACKGROUND_COLOR_2,
       approveTransactionCloseBackground: BACKGROUND_COLOR_0,
+      hoverIconBackground: `rgb(39, 39, 42, ${HOVER_OPACITY})`,
 
       dangerButton: DANGER_COLOR,
       alpha: "#8F929E",
@@ -163,7 +165,7 @@ const lightComponentOverrides = {
     styleOverrides: {
       root: {
         "&:hover": {
-          opacity: HOVER_OPACITY,
+          background: "#F8F8F9 !important",
         },
       },
     },
@@ -172,7 +174,7 @@ const lightComponentOverrides = {
     styleOverrides: {
       root: {
         "&:hover": {
-          opacity: HOVER_OPACITY,
+          background: "#F8F8F9 !important",
         },
       },
     },
@@ -181,7 +183,9 @@ const lightComponentOverrides = {
     styleOverrides: {
       root: {
         "&:hover": {
-          opacity: HOVER_OPACITY,
+          "& svg": {
+            color: `${LIGHT_ICON_HOVER_COLOR} !important`,
+          },
         },
       },
     },
@@ -241,6 +245,7 @@ export const lightTheme: any = {
       icon: "#8F929E",
       approveTransactionTableBackground: LIGHT_BACKGROUND_COLOR_1,
       approveTransactionCloseBackground: "#C2C4CC",
+      hoverIconBackground: LIGHT_ICON_HOVER_COLOR,
 
       dangerButton: DANGER_COLOR,
       alpha: "#8F929E",

@@ -25,6 +25,9 @@ const useStyles = styles((theme) => ({
     "& .MuiOutlinedInput-root": {
       padding: 0,
       fontSize: "12px",
+      "& textarea": {
+        WebkitTextFillColor: theme.custom.colors.fontColor,
+      },
     },
   },
 }));
@@ -77,6 +80,7 @@ export function ApproveMessage({
             style: {
               background: theme.custom.colors.nav,
               padding: "8px",
+              color: theme.custom.colors.fontColor,
             },
           }}
         />

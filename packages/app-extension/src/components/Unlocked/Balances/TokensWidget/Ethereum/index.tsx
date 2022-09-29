@@ -7,8 +7,8 @@ import { useEthereumCtx, useTransactionData } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Sending, Error } from "../Send";
 import { walletAddressDisplay, PrimaryButton } from "../../../../common";
-import { SettingsList } from "../../../../common/Settings/List";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
+import { TransactionData } from "../../../../common/TransactionData";
 
 const logger = getLogger("send-ethereum-confirmation-card");
 const { base58: bs58 } = ethers.utils;
@@ -59,8 +59,8 @@ export function SendEthereumConfirmationCard({
       } else if (token.tokenId) {
         // Token has a tokenId, must be an ERC721 token
         transaction = await Ethereum.transferErc721Transaction(ethereumCtx, {
-          from: ethereumCtx.walletPublicKey,
           to: destinationAddress,
+          from: ethereumCtx.walletPublicKey,
           contractAddress: token.address!,
           tokenId: token.tokenId,
         });
@@ -167,17 +167,12 @@ export function ConfirmSendEthereum({
   onConfirm: (transactionToSend: UnsignedTransaction) => void;
 }) {
   const theme = useCustomTheme();
-  const {
-    from,
-    loading,
-    transaction: transactionToSend,
-    simulationError,
-    network,
-    networkFee,
-  } = useTransactionData(
+  const transactionData = useTransactionData(
     Blockchain.ETHEREUM,
     bs58.encode(ethers.utils.serializeTransaction(transaction))
   );
+
+  const { from, loading, transaction: transactionToSend } = transactionData;
 
   const menuItems = {
     From: {
@@ -190,16 +185,6 @@ export function ConfirmSendEthereum({
       detail: (
         <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
       ),
-      button: false,
-    },
-    Network: {
-      onClick: () => {},
-      detail: <Typography>{network}</Typography>,
-      button: false,
-    },
-    "Network fee": {
-      onClick: () => {},
-      detail: <Typography>{!loading && networkFee}</Typography>,
       button: false,
     },
   };
@@ -234,25 +219,10 @@ export function ConfirmSendEthereum({
           amount={amount}
           token={token}
         />
-        <SettingsList
+        <TransactionData
+          transactionData={transactionData}
           menuItems={menuItems}
-          style={{ margin: 0 }}
-          textStyle={{
-            color: theme.custom.colors.secondary,
-          }}
         />
-
-        {simulationError && (
-          <Typography
-            style={{
-              color: theme.custom.colors.negative,
-              marginTop: "8px",
-              textAlign: "center",
-            }}
-          >
-            This transaction is unlikely to succeed.
-          </Typography>
-        )}
       </div>
       <PrimaryButton
         disabled={loading}

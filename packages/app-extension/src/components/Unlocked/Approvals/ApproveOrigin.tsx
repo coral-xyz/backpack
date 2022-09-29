@@ -1,7 +1,7 @@
-import { Link, List, ListItem, ListItemIcon, Typography } from "@mui/material";
+import { List, ListItem, ListItemIcon, Typography } from "@mui/material";
 import _CheckIcon from "@mui/icons-material/Check";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { useApproveOrigin, useActiveWallet } from "@coral-xyz/recoil";
+import { useApproveOrigin, useBlockchainActiveWallet } from "@coral-xyz/recoil";
 import { WithApproval, displayOriginTitle } from ".";
 import { walletAddressDisplay } from "../../../components/common";
 
@@ -52,10 +52,15 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function ApproveOrigin({ origin, title, onCompletion }: any) {
+export function ApproveOrigin({
+  origin,
+  title,
+  blockchain,
+  onCompletion,
+}: any) {
   const classes = useStyles();
   const approveOrigin = useApproveOrigin();
-  const activeWallet = useActiveWallet();
+  const activeWallet = useBlockchainActiveWallet(blockchain);
 
   const onConfirm = async () => {
     await approveOrigin(origin);

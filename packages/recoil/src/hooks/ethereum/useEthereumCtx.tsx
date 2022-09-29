@@ -1,5 +1,6 @@
 import { useRecoilValue } from "recoil";
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
+import type { FeeData } from "@ethersproject/abstract-provider";
 import type { EthereumContext } from "@coral-xyz/common";
 import * as atoms from "../../atoms";
 import { useActiveEthereumWallet } from "../wallet";
@@ -12,7 +13,12 @@ export function useEthersContext(): any {
 }
 
 export function useEthereumFeeData(): any {
-  return useRecoilValue(atoms.ethereumFeeData);
+  const feeData = useRecoilValue(atoms.ethereumFeeData);
+  return {
+    gasPrice: BigNumber.from(feeData.gasPrice),
+    maxFeePerGas: BigNumber.from(feeData.maxFeePerGas),
+    maxPriorityFeePerGas: BigNumber.from(feeData.maxPriorityFeePerGas),
+  } as FeeData;
 }
 
 export function useEthereumCtx(): EthereumContext {

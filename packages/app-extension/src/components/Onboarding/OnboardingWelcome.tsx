@@ -3,17 +3,26 @@ import {
   lazy,
   MutableRefObject,
   SetStateAction,
+  useCallback,
+  useEffect,
   useRef,
   useState,
 } from "react";
-import { Box, Grid, IconButton, ListItemText, Toolbar } from "@mui/material";
+import {
+  Box,
+  Grid,
+  IconButton,
+  ListItemText,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import {
   AddCircle,
   ArrowCircleDown,
+  ArrowForward,
   CallMade,
   Lock,
   Menu,
-  Support,
   Twitter,
 } from "@mui/icons-material";
 import {
@@ -22,14 +31,16 @@ import {
   BACKPACK_LINK,
   BACKPACK_FEATURE_USERNAMES,
 } from "@coral-xyz/common";
-import { DiscordIcon } from "../common/Icon";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
-import { ActionCard } from "../common/Layout/ActionCard";
-import { BackpackHeader } from "../Locked";
+import { createPopup } from "@typeform/embed";
+import { DiscordIcon } from "../common/Icon";
 import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import { List, ListItem } from "../common/List";
 import { WithContaineredDrawer } from "../common/Layout/Drawer";
 import type { OnboardingFlows } from "./";
+import WaitingRoom, { getWaitlistId, setWaitlistId } from "./WaitingRoom";
+import { ActionCard } from "../common/Layout/ActionCard";
+import { BackpackHeader } from "../Locked";
 
 const CheckInviteCodeForm = lazy(() => import("./CheckInviteCodeForm"));
 
@@ -44,72 +55,143 @@ export function OnboardingWelcome({
 }: {
   onSelect: (flow: OnboardingFlows) => void;
 }) {
-  const theme = useCustomTheme();
-  const [menuOpen, setMenuOpen] = useState(false);
   const containerRef = useRef(null);
-  const [inviteCode, setInviteCode] = useState<any>();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [showWaitingRoom, setShowWaitingRoom] = useState(false);
+  const [waitlistResponseId, setWaitlistResponseId] = useState<string>();
+  const theme = useCustomTheme();
+  const [data, setData] = useState<{ username: string; inviteCode: string }>();
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        textAlign: "center",
-        justifyContent: "space-between",
-        flexDirection: "column",
-        height: "100%",
-        padding: "0 16px 16px 16px",
-        position: "relative",
-        overflow: "hidden",
-      }}
-      ref={containerRef}
-    >
-      <Box>
-        <OnboardingMenu
-          containerRef={containerRef}
-          menuOpen={menuOpen}
-          setMenuOpen={setMenuOpen}
-        />
-        <BackpackHeader
-          alphaStyle={{
-            marginRight: "42px",
-          }}
-        />
-      </Box>
+  // attempt to get previous typeform response ID from localstorage
+  useEffect(() => {
+    const id = getWaitlistId();
+    if (id) setWaitlistResponseId(id);
+  }, []);
 
-      {BACKPACK_FEATURE_USERNAMES && !inviteCode ? (
-        <CheckInviteCodeForm setInviteCode={setInviteCode} />
-      ) : (
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <ActionCard
-              icon={
-                <AddCircle
-                  style={{
-                    color: theme.custom.colors.icon,
-                  }}
-                />
-              }
-              text="Create a new wallet"
-              onClick={() => onSelect({ ...inviteCode, flow: "create-wallet" })}
+  const typeform = createPopup("PCnBjycW", {
+    autoClose: true,
+    onSubmit({ responseId }) {
+      setWaitlistId(responseId);
+      setWaitlistResponseId(responseId);
+    },
+  });
+
+  const handleWaitingClick = useCallback(() => {
+    if (!waitlistResponseId) {
+      typeform.open();
+    } else {
+      setShowWaitingRoom(true);
+    }
+  }, [waitlistResponseId]);
+
+  if (BACKPACK_FEATURE_USERNAMES && showWaitingRoom) {
+    return (
+      <WaitingRoom
+        uri={`https://beta-waiting-room.vercel.app/?id=${waitlistResponseId}&v=1`}
+        onClose={() => setShowWaitingRoom(false)}
+        visible
+      />
+    );
+  } else {
+    return (
+      <div
+        style={{
+          display: "flex",
+          textAlign: "center",
+          justifyContent: "space-between",
+          flexDirection: "column",
+          height: "100%",
+          padding: "0 16px 16px 16px",
+          position: "relative",
+          overflow: "hidden",
+        }}
+        ref={containerRef}
+      >
+        <Box>
+          <OnboardingMenu
+            containerRef={containerRef}
+            menuOpen={menuOpen}
+            setMenuOpen={setMenuOpen}
+          />
+        </Box>
+        {!BACKPACK_FEATURE_USERNAMES || data ? (
+          <>
+            <BackpackHeader
+              alphaStyle={{
+                marginRight: "42px",
+              }}
             />
-          </Grid>
-          <Grid item xs={6}>
-            <ActionCard
-              icon={
-                <ArrowCircleDown
+            <Box style={{ marginTop: "auto" }}>
+              {BACKPACK_FEATURE_USERNAMES && (
+                <Typography style={{ margin: 8, marginBottom: 32 }}>
+                  Your username isn't secured just yet, please create a new
+                  wallet, or import an existing one so that it can be claimed.
+                </Typography>
+              )}
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <ActionCard
+                    icon={
+                      <AddCircle
+                        style={{
+                          color: theme.custom.colors.icon,
+                        }}
+                      />
+                    }
+                    text="Create a new wallet"
+                    onClick={() => onSelect({ ...data, flow: "create-wallet" })}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <ActionCard
+                    icon={
+                      <ArrowCircleDown
+                        style={{
+                          color: theme.custom.colors.icon,
+                        }}
+                      />
+                    }
+                    text="Import an existing wallet"
+                    onClick={() => onSelect({ ...data, flow: "import-wallet" })}
+                  />
+                </Grid>
+              </Grid>
+            </Box>
+          </>
+        ) : (
+          <CheckInviteCodeForm
+            waitingRoomButtonText={
+              waitlistResponseId ? (
+                <span
                   style={{
-                    color: theme.custom.colors.icon,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontWeight: 600,
                   }}
-                />
-              }
-              text="Import an existing wallet"
-              onClick={() => onSelect({ ...inviteCode, flow: "import-wallet" })}
-            />
-          </Grid>
-        </Grid>
-      )}
-    </div>
-  );
+                >
+                  <img
+                    src="/blue_ball.png"
+                    height="20px"
+                    width="20px"
+                    style={{ marginRight: "4px" }}
+                  />
+                  Waiting Room
+                  <ArrowForward sx={{ marginLeft: "4px", fontSize: "18px" }} />
+                </span>
+              ) : (
+                "Apply for an Invite Code"
+              )
+            }
+            handleClickWaitingRoom={handleWaitingClick}
+            setInviteCode={(usernameAndCode: any) => {
+              setData(usernameAndCode);
+            }}
+          />
+        )}
+      </div>
+    );
+  }
 }
 
 function OnboardingMenu({
@@ -138,7 +220,7 @@ function OnboardingMenu({
         onClick={() => setMenuOpen(true)}
         sx={{ padding: 0 }}
       >
-        <Menu sx={{ color: theme.custom.colors.secondary }} />
+        <Menu sx={{ color: theme.custom.colors.icon }} />
       </IconButton>
       <WithContaineredDrawer
         containerRef={containerRef}
@@ -146,6 +228,7 @@ function OnboardingMenu({
         setOpenDrawer={setMenuOpen}
         paperStyles={{
           borderRadius: "12px",
+          background: theme.custom.colors.backgroundBackdrop,
         }}
         backdropStyles={{ borderRadius: "12px" }}
       >
@@ -161,11 +244,6 @@ function OnboardingMenuList() {
 
   const options = [
     {
-      icon: <Support style={{ color: theme.custom.colors.secondary }} />,
-      text: "Help & Support",
-      onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
-    },
-    {
       icon: <Lock style={{ color: theme.custom.colors.secondary }} />,
       text: "Backpack.app",
       onClick: () => window.open(BACKPACK_LINK, "_blank"),
@@ -177,7 +255,7 @@ function OnboardingMenuList() {
     },
     {
       icon: <DiscordIcon fill={theme.custom.colors.secondary} />,
-      text: "Discord",
+      text: "Need help? Hop into Discord",
       onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
     },
   ];
@@ -186,11 +264,12 @@ function OnboardingMenuList() {
     <Box sx={{ color: theme.custom.colors.fontColor }}>
       <List
         style={{
-          backgroundColor: theme.custom.colors.bg2,
           marginLeft: "16px",
           marginRight: "16px",
           marginTop: "40px",
           marginBottom: "40px",
+          background: theme.custom.colors.nav,
+          border: theme.custom.colors.borderFull,
         }}
       >
         {options.map((o, idx) => (
@@ -202,7 +281,7 @@ function OnboardingMenuList() {
               display: "flex",
             }}
             isLast={idx === options.length - 1}
-            borderColor={theme.custom.colors.border1}
+            borderColor={theme.custom.colors.nav}
             classes={{
               root: classes.listItemRoot,
             }}

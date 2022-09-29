@@ -28,6 +28,8 @@ jobs:
               - 'packages/react-xnft-renderer/**'
               - 'packages/xnft/**'
               - 'packages/xnft-cli/**'
+            backend:
+              - 'backend/**'
 
       - if: steps.changes.outputs.mobile == 'true'
         uses: andymckay/labeler@1.0.4
@@ -43,6 +45,11 @@ jobs:
         uses: andymckay/labeler@1.0.4
         with:
           add-labels: "xnft"
+
+      - if: steps.changes.outputs.backend == 'true'
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: "backend"
 
   tests:
     runs-on: ubuntu-latest
@@ -101,6 +108,7 @@ jobs:
           BACKPACK_FEATURE_LIGHT_MODE: "true"
           BACKPACK_FEATURE_POP_MODE: "true"
           BACKPACK_FEATURE_MULTICHAIN: "true"
+          BACKPACK_FEATURE_XNFT: "true"
           # CI!=true so that build warnings aren't treated like errors (for now)
           CI: ""
         run: yarn build
@@ -109,17 +117,23 @@ jobs:
         run: mv build build-edge
 
       #
-      # Build the extension, stable release.
+      # Build the extension, beta release.
       #
-      - name: "build stable"
+      - name: "build beta"
         env:
-          BACKPACK_CONFIG_VERSION: "latest-${{ github.run_number }}"
+          BACKPACK_CONFIG_VERSION: "latest-beta-${{ github.run_number }}"
           BACKPACK_CONFIG_LOG_LEVEL: "info"
           BACKPACK_FEATURE_LIGHT_MODE: "true"
           BACKPACK_FEATURE_POP_MODE: "true"
+          BACKPACK_FEATURE_MULTICHAIN: "true"
+          BACKPACK_FEATURE_USERNAMES: "true"
+          BACKPACK_FEATURE_XNFT: "false"
           # CI!=true so that build warnings aren't treated like errors (for now)
           CI: ""
         run: yarn build
+      - name: "rename beta build"
+        working-directory: packages/app-extension
+        run: mv build build-beta
 
       ##########################################################################
       # GitHub Pages.
@@ -157,20 +171,6 @@ jobs:
       ##########################################################################
 
       #
-      # Upload stable artifact.
-      #
-      - name: "zip stable build artifacts"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        working-directory: packages/app-extension
-        run: zip -r build-${{ github.run_number }}.zip build/
-      - name: "upload build artifacts"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v2
-        with:
-          name: backpack-build
-          path: packages/app-extension/build-${{ github.run_number }}.zip
-
-      #
       # Upload edge artifact.
       #
       - name: "zip edge build artifacts"
@@ -183,6 +183,20 @@ jobs:
         with:
           name: backpack-build-edge
           path: packages/app-extension/build-edge-${{ github.run_number }}.zip
+
+      #
+      # Upload beta artifact.
+      #
+      - name: "zip beta build artifacts"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        working-directory: packages/app-extension
+        run: zip -r build-beta-${{ github.run_number }}.zip build-beta/
+      - name: "upload build artifacts"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v2
+        with:
+          name: backpack-build-beta
+          path: packages/app-extension/build-beta-${{ github.run_number }}.zip
 
       ##########################################################################
       # Release.
@@ -199,12 +213,12 @@ jobs:
       - uses: actions/download-artifact@v2
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
-          name: backpack-build
+          name: backpack-build-edge
           path: ./
       - uses: actions/download-artifact@v2
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
-          name: backpack-build-edge
+          name: backpack-build-beta
           path: ./
 
       #
@@ -231,8 +245,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build-${{ github.run_number }}.zip
-          asset_name: build-${{ github.run_number }}.zip
+          asset_path: ./build-edge-${{ github.run_number }}.zip
+          asset_name: build-edge-${{ github.run_number }}.zip
           asset_content_type: application/zip
       - uses: actions/upload-release-asset@v1.0.1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -240,21 +254,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build-edge-${{ github.run_number }}.zip
-          asset_name: build-edge-${{ github.run_number }}.zip
+          asset_path: ./build-beta-${{ github.run_number }}.zip
+          asset_name: build-beta-${{ github.run_number }}.zip
           asset_content_type: application/zip
-
-      ##########################################################################
-      # Send artifacts to out channels.
-      ##########################################################################
-
-      - name: "post stable artifacts to Discord"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: sinshutu/upload-to-discord@master
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        with:
-          args: packages/app-extension/build-${{ github.run_number }}.zip
 
       ##########################################################################
       # NPM Publish.

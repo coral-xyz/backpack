@@ -93,7 +93,6 @@ const useStyles = styles((theme) => ({
 
 export function RecentActivityButton() {
   const classes = useStyles();
-  const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
   return (
     <div className={classes.networkSettingsButtonContainer}>
@@ -332,7 +331,7 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
             justifyContent: "center",
           }}
         >
-          <CallMade style={{ color: theme.custom.colors.secondary }} />
+          <CallMade style={{ color: theme.custom.colors.icon }} />
         </div>
       </div>
     </ListItem>

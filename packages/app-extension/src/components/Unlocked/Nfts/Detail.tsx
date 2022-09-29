@@ -24,7 +24,12 @@ import {
   confirmTransaction,
   getLogger,
 } from "@coral-xyz/common";
-import { PrimaryButton, SecondaryButton, TextField } from "../../common";
+import {
+  PrimaryButton,
+  SecondaryButton,
+  NegativeButton,
+  TextField,
+} from "../../common";
 import {
   useDrawerContext,
   WithDrawer,
@@ -603,16 +608,7 @@ function BurnConfirmation({ onConfirm }: { onConfirm: () => void }) {
         </Typography>
       </div>
       <div>
-        <PrimaryButton
-          label="Confirm"
-          onClick={() => onConfirm()}
-          style={{
-            backgroundColor: theme.custom.colors.negative,
-          }}
-          buttonLabelStyle={{
-            color: theme.custom.colors.negativeButtonTextColor,
-          }}
-        />
+        <NegativeButton label="Confirm" onClick={() => onConfirm()} />
       </div>
     </div>
   );

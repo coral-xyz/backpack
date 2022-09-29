@@ -1,6 +1,6 @@
 import _CheckIcon from "@mui/icons-material/Check";
 import _CloseIcon from "@mui/icons-material/Close";
-import { useCustomTheme, styles } from "@coral-xyz/themes";
+import { styles } from "@coral-xyz/themes";
 import { useWalletName } from "@coral-xyz/recoil";
 import {
   walletAddressDisplay,
@@ -10,8 +10,7 @@ import {
 
 const useStyles = styles((theme) => ({
   contentContainer: {
-    marginLeft: "32px",
-    marginRight: "32px",
+    margin: "0 16px",
   },
   connectablesContainer: {
     display: "flex",
@@ -60,7 +59,6 @@ export function WithApproval({
   children: React.ReactNode;
 }) {
   const classes = useStyles();
-  const theme = useCustomTheme();
   return (
     <div
       style={{
@@ -89,13 +87,7 @@ export function WithApproval({
         }}
       >
         <div style={{ width: "167.5px" }}>
-          <SecondaryButton
-            label="Deny"
-            onClick={onDeny}
-            style={{
-              border: `${theme.custom.colors.borderFull}`,
-            }}
-          />
+          <SecondaryButton label="Deny" onClick={onDeny} />
         </div>
         <div style={{ width: "167.5px" }}>
           <PrimaryButton label={onConfirmLabel} onClick={onConfirm} />
