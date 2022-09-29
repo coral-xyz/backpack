@@ -1,8 +1,10 @@
 import { Box } from "@mui/material";
+import { DISCORD_INVITE_LINK } from "@coral-xyz/common";
 import {
   Header,
   HeaderIcon,
   PrimaryButton,
+  SecondaryButton,
   SubtextParagraph,
 } from "../../../../common";
 import { SadFaceIcon } from "../../../../common/Icon";
@@ -24,19 +26,20 @@ export function ConnectHardwareFailure({ onRetry }: { onRetry: () => void }) {
           Check that your wallet is connected and unlocked, and your browser
           permissions are approved.
         </SubtextParagraph>
-        <SubtextParagraph style={{ marginTop: "24px" }}>
-          Help & support
-        </SubtextParagraph>
       </Box>
       <Box
         sx={{
           marginLeft: "16px",
           marginRight: "16px",
           marginBottom: "16px",
-          display: "flex",
-          justifyContent: "space-between",
         }}
       >
+        <Box sx={{ marginBottom: "12px" }}>
+          <SecondaryButton
+            label="Help & Support"
+            onClick={() => window.open(DISCORD_INVITE_LINK, "_blank")}
+          />
+        </Box>
         <PrimaryButton label="Retry" onClick={onRetry} />
       </Box>
     </Box>
