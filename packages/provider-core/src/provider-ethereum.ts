@@ -497,4 +497,20 @@ export class ProviderEthereumInjection extends EventEmitter {
   public get isBackpack() {
     return this.#isBackpack;
   }
+
+  public set publicKey(publicKey) {
+    this.#publicKey = publicKey;
+  }
+
+  public set provider(provider) {
+    this.#provider = provider;
+  }
+
+  public set chainId(chainId) {
+    this.#chainId = chainId;
+  }
+
+  public set isBackpack(isBackpack) {
+    this.#isBackpack = isBackpack;
+  }
 }

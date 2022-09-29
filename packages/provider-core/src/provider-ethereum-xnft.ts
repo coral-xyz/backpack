@@ -153,4 +153,16 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
   public get provider() {
     return this.#provider;
   }
+
+  public set publicKey(publicKey) {
+    this.#publicKey = publicKey;
+  }
+
+  public set connectionUrl(connectionUrl) {
+    this.#connectionUrl = connectionUrl;
+  }
+
+  public set provider(provider) {
+    this.#provider = provider;
+  }
 }

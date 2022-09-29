@@ -287,11 +287,25 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
   public get isConnected() {
     return this.#isConnected;
   }
+
   public get publicKey() {
     return this.#publicKey;
   }
+
   public get connection() {
     return this.#connection;
+  }
+
+  public set isConnected(isConnected) {
+    this.#isConnected = isConnected;
+  }
+
+  public set publicKey(publicKey) {
+    this.#publicKey = publicKey;
+  }
+
+  public set connection(connection) {
+    this.#connection = connection;
   }
 }
 
