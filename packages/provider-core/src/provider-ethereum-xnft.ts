@@ -22,17 +22,21 @@ const logger = getLogger("provider-xnft-injection");
 // Injected provider for UI plugins.
 //
 export class ProviderEthereumXnftInjection extends EventEmitter {
-  private _requestManager: RequestManager;
-  private _connectionRequestManager: RequestManager;
+  #requestManager: RequestManager;
+  #connectionRequestManager: RequestManager;
 
-  public publicKey?: string;
-  public connectionUrl?: string;
-  public provider?: ethers.providers.JsonRpcProvider;
+  #publicKey?: string;
+  #connectionUrl?: string;
+  #provider?: ethers.providers.JsonRpcProvider;
 
   constructor(requestManager: RequestManager) {
     super();
-    this._requestManager = requestManager;
-    this._connectionRequestManager = new RequestManager(
+    if (new.target === ProviderEthereumXnftInjection) {
+      Object.freeze(this);
+    }
+
+    this.#requestManager = requestManager;
+    this.#connectionRequestManager = new RequestManager(
       CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST,
       CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE
     );
@@ -40,10 +44,10 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
   }
 
   private _connect(publicKey: string, connectionUrl: string) {
-    this.publicKey = publicKey;
-    this.connectionUrl = connectionUrl;
-    this.provider = new BackgroundEthereumProvider(
-      this._connectionRequestManager,
+    this.#publicKey = publicKey;
+    this.#connectionUrl = connectionUrl;
+    this.#provider = new BackgroundEthereumProvider(
+      this.#connectionRequestManager,
       connectionUrl
     );
   }
@@ -54,7 +58,7 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
     }
     return await cmn.sendAndConfirmTransaction(
       this.publicKey,
-      this._requestManager,
+      this.#requestManager,
       transaction
     );
   }
@@ -65,7 +69,7 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
     }
     return await cmn.sendTransaction(
       this.publicKey,
-      this._requestManager,
+      this.#requestManager,
       transaction
     );
   }
@@ -76,7 +80,7 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
     }
     return await cmn.signTransaction(
       this.publicKey,
-      this._requestManager,
+      this.#requestManager,
       transaction
     );
   }
@@ -85,7 +89,7 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
-    return await cmn.signMessage(this.publicKey, this._requestManager, message);
+    return await cmn.signMessage(this.publicKey, this.#requestManager, message);
   }
 
   private _setupChannels() {
@@ -124,9 +128,9 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
 
   private _handleConnectionUrlUpdated(event: Event) {
     const { connectionUrl } = event.data.detail.data;
-    this.connectionUrl = connectionUrl;
-    this.provider = new BackgroundEthereumProvider(
-      this._connectionRequestManager,
+    this.#connectionUrl = connectionUrl;
+    this.#provider = new BackgroundEthereumProvider(
+      this.#connectionRequestManager,
       connectionUrl
     );
     this.emit("connectionUpdate", event.data.detail);
@@ -134,7 +138,19 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
 
   private _handlePublicKeyUpdated(event: Event) {
     const { publicKey } = event.data.detail.data;
-    this.publicKey = publicKey;
+    this.#publicKey = publicKey;
     this.emit("publicKeyUpdate", event.data.detail);
+  }
+
+  public get publicKey() {
+    return this.#publicKey;
+  }
+
+  public get connectionUrl() {
+    return this.#connectionUrl;
+  }
+
+  public get provider() {
+    return this.#provider;
   }
 }

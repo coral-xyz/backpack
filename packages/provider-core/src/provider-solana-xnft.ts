@@ -42,16 +42,19 @@ export class ProviderSolanaXnftInjection
   extends EventEmitter
   implements Provider
 {
-  private _requestManager: RequestManager;
-  private _connectionRequestManager: RequestManager;
+  #requestManager: RequestManager;
+  #connectionRequestManager: RequestManager;
 
-  public publicKey?: PublicKey;
-  public connection: Connection;
+  #publicKey?: PublicKey;
+  #connection: Connection;
 
   constructor(requestManager: RequestManager) {
     super();
-    this._requestManager = requestManager;
-    this._connectionRequestManager = new RequestManager(
+    if (new.target === ProviderSolanaXnftInjection) {
+      Object.freeze(this);
+    }
+    this.#requestManager = requestManager;
+    this.#connectionRequestManager = new RequestManager(
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
       CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
     );
@@ -59,9 +62,9 @@ export class ProviderSolanaXnftInjection
   }
 
   private _connect(publicKey: string, connectionUrl: string) {
-    this.publicKey = new PublicKey(publicKey);
-    this.connection = new BackgroundSolanaConnection(
-      this._connectionRequestManager,
+    this.#publicKey = new PublicKey(publicKey);
+    this.#connection = new BackgroundSolanaConnection(
+      this.#connectionRequestManager,
       connectionUrl
     );
   }
@@ -71,12 +74,12 @@ export class ProviderSolanaXnftInjection
     signers?: Signer[],
     options?: ConfirmOptions
   ): Promise<TransactionSignature> {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.sendAndConfirm(
-      this.publicKey,
-      this._requestManager,
+      this.#publicKey,
+      this.#requestManager,
       this.connection,
       tx,
       signers,
@@ -89,12 +92,12 @@ export class ProviderSolanaXnftInjection
     signers?: Signer[],
     options?: SendOptions
   ): Promise<TransactionSignature> {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.send(
-      this.publicKey,
-      this._requestManager,
+      this.#publicKey,
+      this.#requestManager,
       this.connection,
       tx,
       signers,
@@ -103,12 +106,12 @@ export class ProviderSolanaXnftInjection
   }
 
   public async signTransaction(tx: Transaction): Promise<Transaction> {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.signTransaction(
-      this.publicKey,
-      this._requestManager,
+      this.#publicKey,
+      this.#requestManager,
       this.connection,
       tx
     );
@@ -117,22 +120,22 @@ export class ProviderSolanaXnftInjection
   async signAllTransactions(
     txs: Array<Transaction>
   ): Promise<Array<Transaction>> {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.signAllTransactions(
-      this.publicKey,
-      this._requestManager,
+      this.#publicKey,
+      this.#requestManager,
       this.connection,
       txs
     );
   }
 
   async signMessage(msg: Uint8Array): Promise<Uint8Array> {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
-    return await cmn.signMessage(this.publicKey, this._requestManager, msg);
+    return await cmn.signMessage(this.#publicKey, this.#requestManager, msg);
   }
 
   // @ts-ignore
@@ -141,12 +144,12 @@ export class ProviderSolanaXnftInjection
     signers?: Signer[],
     commitment?: Commitment
   ): Promise<SimulatedTransactionResponse> {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.simulate(
-      this.publicKey,
-      this._requestManager,
+      this.#publicKey,
+      this.#requestManager,
       this.connection,
       tx,
       signers,
@@ -155,21 +158,21 @@ export class ProviderSolanaXnftInjection
   }
 
   public async getStorage<T = any>(key: string): Promise<T> {
-    return await this._requestManager.request({
+    return await this.#requestManager.request({
       method: PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
       params: [key],
     });
   }
 
   public async setStorage<T = any>(key: string, val: T): Promise<void> {
-    await this._requestManager.request({
+    await this.#requestManager.request({
       method: PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
       params: [key, val],
     });
   }
 
   public async openWindow(url: string) {
-    await this._requestManager.request({
+    await this.#requestManager.request({
       method: PLUGIN_RPC_METHOD_WINDOW_OPEN,
       params: [url],
     });
@@ -242,8 +245,8 @@ export class ProviderSolanaXnftInjection
 
   private _handleConnectionUrlUpdated(event: Event) {
     const connectionUrl = event.data.detail.data.url;
-    this.connection = new BackgroundSolanaConnection(
-      this._connectionRequestManager,
+    this.#connection = new BackgroundSolanaConnection(
+      this.#connectionRequestManager,
       connectionUrl
     );
     this.emit("connectionUpdate", event.data.detail);
@@ -251,7 +254,15 @@ export class ProviderSolanaXnftInjection
 
   private _handlePublicKeyUpdated(event: Event) {
     const publicKey = event.data.detail.data.publicKey;
-    this.publicKey = publicKey;
+    this.#publicKey = publicKey;
     this.emit("publicKeyUpdate", event.data.detail);
+  }
+
+  public get publicKey() {
+    return this.#publicKey;
+  }
+
+  public get connection() {
+    return this.#connection;
   }
 }
