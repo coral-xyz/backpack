@@ -64,6 +64,32 @@ export function App() {
     console.log("solana sign transaction", result);
   };
 
+  const solanaSignAllTransactions = async () => {
+    const transactions = [
+      new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: window.xnft.solana.publicKey,
+          toPubkey: new PublicKey(
+            "H4YJ7ESVkiiP9tGeQJy9jKVSHk98tSAUD3LqTowH9tEY"
+          ),
+          lamports: 1,
+        })
+      ),
+      new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: window.xnft.solana.publicKey,
+          toPubkey: new PublicKey(
+            "H4YJ7ESVkiiP9tGeQJy9jKVSHk98tSAUD3LqTowH9tEY"
+          ),
+          lamports: 1,
+        })
+      ),
+    ];
+
+    const result = await window.xnft.solana.signAllTransactions(transactions);
+    console.log("solana sign all transactions", result);
+  };
+
   return (
     <View style={{ marginTop: "64px" }}>
       <View style={{ margin: "24px" }}>
@@ -79,6 +105,11 @@ export function App() {
       <View style={{ margin: "24px" }}>
         <Button style={{ width: "100%" }} onClick={solanaSignMessage}>
           Sign Solana Message
+        </Button>
+      </View>
+      <View style={{ margin: "24px" }}>
+        <Button style={{ width: "100%" }} onClick={solanaSignAllTransactions}>
+          Sign Multiple Solana Transactions
         </Button>
       </View>
       <View style={{ margin: "24px" }}>

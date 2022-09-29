@@ -213,7 +213,8 @@ async function handleConnect(
         return openApprovalPopupWindow(
           ctx.sender.origin,
           ctx.sender.tab.title,
-          requestId
+          requestId,
+          blockchain
         );
       });
       didApprove = !resp.windowClosed && resp.result;
@@ -224,7 +225,8 @@ async function handleConnect(
         return openLockedPopupWindow(
           ctx.sender.origin,
           ctx.sender.tab.title,
-          requestId
+          requestId,
+          blockchain
         );
       });
       didApprove = !resp.windowClosed && resp.result;
@@ -233,7 +235,8 @@ async function handleConnect(
         return openLockedApprovalPopupWindow(
           ctx.sender.origin,
           ctx.sender.tab.title,
-          requestId
+          requestId,
+          blockchain
         );
       });
       didApprove = !resp.windowClosed && resp.result;

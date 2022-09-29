@@ -82,7 +82,7 @@ export class RequestManager {
     return await prom;
   }
 
-  // This must be called before `window.dipsatchEvent`.
+  // This must be called before `window.dispatchEvent`.
   private _addResponseResolver(requestId: number) {
     let resolve, reject;
     const prom = new Promise((_resolve, _reject) => {

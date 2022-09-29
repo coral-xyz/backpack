@@ -27,7 +27,14 @@ function initProvider() {
       value: new ProviderSolanaInjection(),
     },
     ethereum: {
-      value: new ProviderEthereumInjection(),
+      value: window.ethereum
+        ? (() => {
+            console.warn(
+              "Backpack couldn't override window.ethereum, disable other Ethereum wallets to use Backpack"
+            );
+            return window.ethereum;
+          })()
+        : new ProviderEthereumInjection(),
     },
     xnft: {
       value: (() => {

@@ -9,6 +9,7 @@ import {
   useBackgroundClient,
   useBlockchainTokensSorted,
   useEthereumCtx,
+  useEthereumPrice,
   useSolanaCtx,
   useSplTokenRegistry,
 } from "./";
@@ -18,7 +19,7 @@ const { base58: bs58 } = ethers.utils;
 type TransactionData = {
   loading: boolean;
   transaction: string;
-  transactionOverrides?: Object;
+  transactionOverrides?: TransactionOverrides;
   setTransactionOverrides?: (overrides: object) => void;
   from: string;
   simulationError: boolean;
@@ -27,6 +28,15 @@ type TransactionData = {
   } | null;
   network: string;
   networkFee: string;
+  networkFeeUsd?: string;
+};
+
+type TransactionOverrides = {
+  type: number;
+  nonce: number | null;
+  gasLimit: BigNumber | null;
+  maxFeePerGas: BigNumber | null;
+  maxPriorityFeePerGas: BigNumber | null;
 };
 
 export function useTransactionData(
@@ -43,6 +53,7 @@ export function useTransactionData(
 //
 export function useEthereumTxData(serializedTx: any): TransactionData {
   const ethereumCtx = useEthereumCtx();
+  const ethPrice = useEthereumPrice();
   const [loading, setLoading] = useState(true);
   const [simulationError, setSimulationError] = useState(false);
   const [estimatedGas, setEstimatedGas] = useState(BigNumber.from(0));
@@ -50,12 +61,14 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
   const [transaction, setTransaction] = useState<TransactionRequest | null>(
     null
   );
-  const [transactionOverrides, setTransactionOverrides] = useState({
-    type: 2,
-    gasLimit: estimatedGas,
-    maxFeePerGas: ethereumCtx.feeData.maxFeePerGas,
-    maxPriorityFeePerGas: ethereumCtx.feeData.maxPriorityFeePerGas,
-  });
+  const [transactionOverrides, setTransactionOverrides] =
+    useState<TransactionOverrides>({
+      type: 2,
+      nonce: null,
+      gasLimit: estimatedGas,
+      maxFeePerGas: ethereumCtx.feeData.maxFeePerGas,
+      maxPriorityFeePerGas: ethereumCtx.feeData.maxPriorityFeePerGas,
+    });
 
   //
   // Parse the serialized transaction and remove defaults ethers adds, then
@@ -64,29 +77,15 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
   useEffect(() => {
     (async () => {
       const parsed = ethers.utils.parseTransaction(bs58.decode(serializedTx));
-      // Remove defaults that get added by ethers.utils.serializeTransaction so
-      // we can populate them using a void signer and the Ethereum provider
-      const transaction = Object.fromEntries(
-        Object.entries({
-          ...parsed,
-          chainId: parsed.chainId !== 0 ? parsed.chainId : null,
-          nonce: parsed.nonce !== 0 ? parsed.nonce : null,
-          maxPriorityFeePerGas:
-            parsed.maxPriorityFeePerGas && !parsed.maxPriorityFeePerGas.isZero()
-              ? parsed.maxPriorityFeePerGas
-              : null,
-          maxFeePerGas:
-            parsed.maxFeePerGas && !parsed.maxFeePerGas.isZero()
-              ? parsed.maxFeePerGas
-              : null,
-          gasPrice: parsed.gasPrice ? parsed.gasPrice : null,
-          gasLimit: parsed.gasLimit ? parsed.gasLimit : null,
-        }).filter(([_, v]) => v != null)
-      );
+      // EIP 1559 compatability
+      delete parsed.gasPrice;
+      // Use a void signer to populate transaction with data we need, e.g. from
+      // field and nonce
       const voidSigner = new ethers.VoidSigner(
         ethereumCtx.walletPublicKey,
         ethereumCtx.provider
       );
+      // Make sure to populate missing fields and resolve ENS
       const populatedTx = await voidSigner.populateTransaction(
         transaction as TransactionRequest
       );
@@ -119,8 +118,12 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
           setSimulationError(true);
         }
         setEstimatedGas(estimatedGas);
+        // populateTransaction should have added a nonce, add it to overrides
         setTransactionOverrides({
           ...transactionOverrides,
+          nonce: transaction.nonce
+            ? BigNumber.from(transaction.nonce).toNumber()
+            : null,
           gasLimit: estimatedGas,
         });
         setLoading(false);
@@ -130,7 +133,6 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
 
   //
   // Updated the estimated transaction fee on changes to the gas estimate.
-  // TODO: update on user configured gas settings
   //
   useEffect(() => {
     (async () => {
@@ -148,6 +150,11 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
     transactionOverrides.maxPriorityFeePerGas,
   ]);
 
+  const networkFeeUsd = (
+    (estimatedTxFee.toNumber() * ethPrice.usd) /
+    1e18
+  ).toFixed(2);
+
   return {
     loading,
     transaction: bs58.encode(
@@ -162,7 +169,8 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
     balanceChanges: null,
     simulationError,
     network: "Ethereum",
-    networkFee: `${ethers.utils.formatUnits(estimatedTxFee, 18)} ETH`,
+    networkFee: ethers.utils.formatUnits(estimatedTxFee, 18),
+    networkFeeUsd: networkFeeUsd,
   };
 }
 
@@ -268,6 +276,6 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
     simulationError,
     balanceChanges,
     network: "Solana",
-    networkFee: `${ethers.utils.formatUnits(estimatedTxFee, 9)} SOL`,
+    networkFee: ethers.utils.formatUnits(estimatedTxFee, 9),
   };
 }

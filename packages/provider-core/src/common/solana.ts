@@ -112,6 +112,9 @@ export async function signAllTransactions(
   let _blockhash: string | undefined;
   for (let k = 0; k < txs.length; k += 1) {
     const tx = txs[k];
+    if (!tx.feePayer) {
+      tx.feePayer = publicKey;
+    }
     if (!tx.recentBlockhash) {
       if (!_blockhash) {
         const { blockhash } = await connection!.getLatestBlockhash();

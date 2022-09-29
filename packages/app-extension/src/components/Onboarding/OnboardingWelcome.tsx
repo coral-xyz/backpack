@@ -19,6 +19,7 @@ import {
 import {
   AddCircle,
   ArrowCircleDown,
+  ArrowForward,
   CallMade,
   Lock,
   Menu,
@@ -30,14 +31,14 @@ import {
   BACKPACK_LINK,
   BACKPACK_FEATURE_USERNAMES,
 } from "@coral-xyz/common";
-import { DiscordIcon } from "../common/Icon";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
+import { createPopup } from "@typeform/embed";
+import { DiscordIcon } from "../common/Icon";
 import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import { List, ListItem } from "../common/List";
 import { WithContaineredDrawer } from "../common/Layout/Drawer";
 import type { OnboardingFlows } from "./";
 import WaitingRoom, { getWaitlistId, setWaitlistId } from "./WaitingRoom";
-import { createPopup } from "@typeform/embed";
 import { ActionCard } from "../common/Layout/ActionCard";
 import { BackpackHeader } from "../Locked";
 
@@ -160,7 +161,27 @@ export function OnboardingWelcome({
         ) : (
           <CheckInviteCodeForm
             waitingRoomButtonText={
-              waitlistResponseId ? "Waiting Room" : "Apply for an Invite Code"
+              waitlistResponseId ? (
+                <span
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontWeight: 600,
+                  }}
+                >
+                  <img
+                    src="/blue_ball.png"
+                    height="20px"
+                    width="20px"
+                    style={{ marginRight: "4px" }}
+                  />
+                  Waiting Room
+                  <ArrowForward sx={{ marginLeft: "4px", fontSize: "18px" }} />
+                </span>
+              ) : (
+                "Apply for an Invite Code"
+              )
             }
             handleClickWaitingRoom={handleWaitingClick}
             setInviteCode={(usernameAndCode: any) => {

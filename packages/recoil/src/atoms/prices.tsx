@@ -173,3 +173,21 @@ const pricesForErc20Addresses = selector({
     );
   },
 });
+
+// Retrieve only the Etheruem price. Useful for transaction approval screens
+// where the exchange rate is needed to show transaction fee.
+export const ethereumPrice = selector({
+  key: "ethereumPrice",
+  get: async () => {
+    const params = {
+      ...baseCoingeckoParams,
+      ids: "ethereum",
+    };
+    const queryString = new URLSearchParams(params).toString();
+    const resp = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?${queryString}`
+    );
+    const json = await resp.json();
+    return json["ethereum"];
+  },
+});
