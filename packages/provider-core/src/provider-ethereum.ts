@@ -246,6 +246,7 @@ export class ProviderEthereumInjection extends EventEmitter {
       eth_accounts: this._handleEthRequestAccounts,
       eth_requestAccounts: this._handleEthRequestAccounts,
       eth_chainId: () => this.chainId,
+      net_version: () => (this.chainId ? `${parseInt(this.chainId)}` : "1"),
       eth_getBalance: (address: string) => this.provider!.getBalance(address),
       eth_getCode: (address: string) => this.provider!.getCode(address),
       eth_getStorageAt: (address: string, position: string) =>
