@@ -73,14 +73,14 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
               )}
               <Grid item xs={6}>
                 <ActionCard
-                  icon={<TwitterIcon fill={theme.custom.colors.icon} />}
+                  icon={<TwitterIcon fill="#1D9BF0" />}
                   text="Follow us on Twitter"
                   onClick={() => window.open(TWITTER_LINK, "_blank")}
                 />
               </Grid>
               <Grid item xs={6}>
                 <ActionCard
-                  icon={<DiscordIcon fill={theme.custom.colors.icon} />}
+                  icon={<DiscordIcon fill="#5865F2" />}
                   text="Join the Discord community"
                   onClick={() => window.open(DISCORD_INVITE_LINK, "_blank")}
                 />
