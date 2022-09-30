@@ -8,7 +8,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { MoreHoriz } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 import { useEffect } from "react";
-import { List, ListItem, walletAddressDisplay } from "../../../../common";
+import { List, ListItem, WalletAddress } from "../../../../common";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { AddConnectWalletButton } from "../..";
 import { ImportTypeBadge } from "../../";
@@ -145,29 +145,29 @@ export const WalletListItem: React.FC<{
       }
       style={{ height: "48px", display: "flex", width: "100%" }}
     >
-      <Typography
+      <WalletAddress
+        name={name}
+        publicKey={publicKey}
         style={{
-          marginLeft: "8px",
+          fontWeight: 500,
+          lineHeight: "24px",
+          fontSize: "16px",
+        }}
+        nameStyle={{
           color: theme.custom.colors.fontColor,
-          marginRight: "8px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          maxWidth: "75px",
         }}
-      >
-        {name}
-      </Typography>
-      <Typography
-        style={{
-          color: theme.custom.colors.secondary,
-          paddingRight: "11px",
-        }}
-      >
-        ({walletAddressDisplay(publicKey)})
-      </Typography>
+      />
       {type && (
         <div
           style={{
             display: "flex",
             justifyContent: "center",
             flexDirection: "column",
+            marginLeft: "4px",
           }}
         >
           <ImportTypeBadge type={type} />
