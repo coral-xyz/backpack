@@ -160,31 +160,36 @@ export function Onboarding() {
 export function OptionsContainer({ children }: { children: React.ReactNode }) {
   const theme = useCustomTheme();
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
-        width: "100vw",
-        height: "100vh",
-        backgroundImage: `url('coral-bg.png')`,
-        backgroundSize: "cover",
-      }}
-    >
+    <div style={{ backgroundColor: "white" }}>
       <div
         style={{
-          width: `${EXTENSION_WIDTH}px`,
-          height: `${EXTENSION_HEIGHT}px`,
           display: "flex",
+          justifyContent: "center",
           flexDirection: "column",
-          margin: "0 auto",
-          borderRadius: "12px",
-          overflow: "hidden",
-          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.25)",
-          background: theme.custom.colors.backgroundBackdrop,
+          width: "100vw",
+          height: "100vh",
+          background: `
+            radial-gradient(farthest-side at 0 0, #6360FF, rgba(255,255,255,0) 100%), 
+            radial-gradient(farthest-side at 100% 0, #C061F7, rgba(255,255,255,0) 100%), 
+            radial-gradient(farthest-side at 0 100%, #28DBD1 25%, rgba(255,255,255,0) 100%),
+            radial-gradient(farthest-side at 100% 100%, #FE6F5C 25%, rgba(255,255,255,0) 100%)`,
         }}
       >
-        {children}
+        <div
+          style={{
+            width: `${EXTENSION_WIDTH}px`,
+            height: `${EXTENSION_HEIGHT}px`,
+            display: "flex",
+            flexDirection: "column",
+            margin: "0 auto",
+            borderRadius: "12px",
+            overflow: "hidden",
+            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.25)",
+            background: theme.custom.colors.backgroundBackdrop,
+          }}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );

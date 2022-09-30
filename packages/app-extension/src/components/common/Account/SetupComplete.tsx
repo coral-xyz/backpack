@@ -35,7 +35,7 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
           flexDirection: "column",
           height: "100%",
           justifyContent: "space-between",
-          color: "theme.custom.colors.nav",
+          color: theme.custom.colors.nav,
         }}
       >
         <Box>
@@ -65,7 +65,7 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
               {BACKPACK_FEATURE_XNFT && (
                 <Grid item xs={6}>
                   <ActionCard
-                    icon={<WidgetIcon fill={theme.custom.colors.icon} />}
+                    icon={<WidgetIcon fill="#E33E3F" />}
                     text="Browse the xNFT library"
                     onClick={() => window.open(XNFT_GG_LINK, "_blank")}
                   />
