@@ -119,9 +119,11 @@ export function ApproveTransactionRequest() {
     setRequest(undefined);
   };
 
-  const onReject = () => {
+  const onReject = (
+    e: Error = new Error("user rejected signature request")
+  ) => {
     setRequest(undefined);
-    request!.reject(new Error("user rejected signature request"));
+    request!.reject(e);
   };
 
   const isMessageSign = [
@@ -232,11 +234,13 @@ function SignAllTransactionsRequest({
   const background = useBackgroundClient();
 
   const onConfirm = async () => {
-    const signature = await background.request({
-      method: uiRpcMethod,
-      params: [transactions, publicKey],
-    });
-    onResolve(signature);
+    background
+      .request({
+        method: uiRpcMethod,
+        params: [transactions, publicKey],
+      })
+      .then(onResolve)
+      .catch(onReject);
   };
 
   return (
@@ -313,8 +317,8 @@ function SendTransactionRequest({
         method: uiRpcMethod,
         params: [transactionToSend, publicKey],
       })
-      .then((signature) => onResolve(signature))
-      .catch((_) => onReject());
+      .then(onResolve)
+      .catch(onReject);
   };
 
   //
@@ -425,8 +429,8 @@ function SignMessageRequest({
         method: uiRpcMethod,
         params: [message, publicKey],
       })
-      .then((signature) => onResolve(signature))
-      .catch((_) => onReject());
+      .then(onResolve)
+      .catch(onReject);
   };
 
   return (
