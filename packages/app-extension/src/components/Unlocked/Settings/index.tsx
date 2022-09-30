@@ -20,6 +20,7 @@ import {
   useActiveWallets,
   useBlockchainLogo,
   useUsername,
+  WalletPublicKeys,
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
@@ -917,6 +918,7 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   const [secretKey, setSecretKey] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
+  const blockchainKeyrings = useWalletPublicKeys();
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -927,7 +929,11 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   }, [theme]);
 
   const onClick = async () => {
-    const secretKeyHex = validateSecretKey(blockchain, secretKey);
+    const secretKeyHex = validateSecretKey(
+      blockchain,
+      secretKey,
+      blockchainKeyrings
+    );
     if (!secretKeyHex) {
       setError("Invalid private key");
       return;
@@ -1027,8 +1033,12 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
 // Validate a secret key and return a normalised hex representation
 function validateSecretKey(
   blockchain: Blockchain,
-  secretKey: string
+  secretKey: string,
+  keyring: WalletPublicKeys
 ): string | boolean {
+  (window as any).asd = keyring;
+  // this is where I need to get a list of current keys
+
   if (blockchain === Blockchain.SOLANA) {
     let keypair;
     try {
@@ -1043,6 +1053,17 @@ function validateSecretKey(
         return false;
       }
     }
+
+    const newPublicKey = Keypair.fromSecretKey(
+      new Uint8Array(bs58.decode(secretKey))
+    );
+
+    keyring.solana.importedPublicKeys.forEach((key) => {
+      if (key.publicKey === newPublicKey.publicKey.toString()) {
+        throw new Error("Key already exists");
+      }
+    });
+
     return Buffer.from(keypair.secretKey).toString("hex");
   } else if (blockchain === Blockchain.ETHEREUM) {
     try {
