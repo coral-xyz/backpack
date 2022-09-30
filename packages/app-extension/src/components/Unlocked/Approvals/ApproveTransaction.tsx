@@ -1,11 +1,12 @@
 import { ethers, BigNumber } from "ethers";
-import { List, ListItem, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import _CheckIcon from "@mui/icons-material/Check";
 import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
 import { Blockchain } from "@coral-xyz/common";
 import { styles } from "@coral-xyz/themes";
 import { Loading } from "../../common";
-import { WithApproval } from ".";
+import { WithApproval } from "../../Unlocked/Approvals";
+import { TransactionData } from "../../common/TransactionData";
 
 const { Zero } = ethers.constants;
 
@@ -77,45 +78,42 @@ export function ApproveTransaction({
 }) {
   const classes = useStyles();
   const blockchain = useWalletBlockchain(wallet);
-  const {
-    loading,
-    simulationError,
-    balanceChanges,
-    network,
-    networkFee,
-    // Possibly modified transaction object if user overrides settings
-    // (i.e. Ethereum gas or nonce)
-    transaction,
-  } = useTransactionData(blockchain as Blockchain, tx);
+  const transactionData = useTransactionData(blockchain as Blockchain, tx);
+  const { loading, balanceChanges, transaction } = transactionData;
 
   if (loading) {
     return <Loading />;
   }
 
-  const balanceChangeRows = balanceChanges
-    ? Object.entries(balanceChanges).map(
-        ([symbol, { nativeChange, decimals }]) => {
-          const className = nativeChange.gte(Zero)
-            ? classes.positive
-            : classes.negative;
-          return [
-            symbol,
-            <span className={className}>
-              {ethers.utils.commify(
-                ethers.utils.formatUnits(nativeChange, BigNumber.from(decimals))
-              )}{" "}
-              {symbol}
-            </span>,
-          ];
-        }
+  const menuItems = balanceChanges
+    ? Object.fromEntries(
+        Object.entries(balanceChanges).map(
+          ([symbol, { nativeChange, decimals }]) => {
+            const className = nativeChange.gte(Zero)
+              ? classes.positive
+              : classes.negative;
+            return [
+              symbol,
+              {
+                onClick: () => {},
+                detail: (
+                  <Typography className={className}>
+                    {ethers.utils.commify(
+                      ethers.utils.formatUnits(
+                        nativeChange,
+                        BigNumber.from(decimals)
+                      )
+                    )}{" "}
+                    {symbol}
+                  </Typography>
+                ),
+                button: false,
+              },
+            ];
+          }
+        )
       )
-    : [];
-
-  const menuItems = [
-    ...balanceChangeRows,
-    ["Network", network],
-    ["Network Fee", networkFee],
-  ];
+    : {};
 
   const onConfirm = async () => {
     await onCompletion(transaction);
@@ -138,10 +136,15 @@ export function ApproveTransaction({
       {loading ? (
         <Loading />
       ) : (
-        <TransactionData
-          menuItems={menuItems}
-          simulationError={simulationError}
-        />
+        <div style={{ marginTop: "24px" }}>
+          <Typography className={classes.listDescription}>
+            Transaction details
+          </Typography>
+          <TransactionData
+            transactionData={transactionData}
+            menuItems={menuItems}
+          />
+        </div>
       )}
     </WithApproval>
   );
@@ -182,41 +185,5 @@ export function ApproveAllTransactions({
     >
       <div className={classes.warning}>Confirming multiple transactions</div>
     </WithApproval>
-  );
-}
-
-function TransactionData({
-  menuItems,
-  simulationError = false,
-}: {
-  menuItems: (string | JSX.Element)[][];
-  simulationError: boolean;
-}) {
-  const classes = useStyles();
-
-  return (
-    <>
-      <Typography className={classes.listDescription}>
-        Transaction details
-      </Typography>
-      <List className={classes.listRoot}>
-        {menuItems.map((row, index: number) => {
-          return (
-            <ListItem
-              key={index}
-              className={classes.listItemRoot}
-              secondaryAction={row[1]}
-            >
-              {row[0]}
-            </ListItem>
-          );
-        })}
-      </List>
-      {simulationError && (
-        <div className={classes.warning}>
-          This transaction is unlikely to succeed.
-        </div>
-      )}
-    </>
   );
 }

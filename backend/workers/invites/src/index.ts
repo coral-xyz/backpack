@@ -73,7 +73,7 @@ app.get("/check/:inviteCode", async (c) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-hasura-admin-secret": c.env.HASURA_SECRET,
+          Authorization: `Bearer ${c.env.JWT}`,
         },
         body: JSON.stringify({
           query: `query($id: uuid) { invitations(limit: 1, where: {id: {_eq: $id}}) { id claimed_at } }`,
@@ -106,7 +106,7 @@ app.get("/stats", async (c) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-hasura-admin-secret": c.env.HASURA_SECRET,
+        Authorization: `Bearer ${c.env.JWT}`,
       },
       body: JSON.stringify({
         query: `

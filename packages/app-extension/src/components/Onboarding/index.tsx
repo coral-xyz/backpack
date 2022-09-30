@@ -89,7 +89,7 @@ export function Onboarding() {
     <MnemonicInput
       buttonLabel="Next"
       onNext={async (mnemonic: string) => {
-        await createStore(mnemonic, DerivationPath.Bip44Change, password, [0]);
+        await createStore(mnemonic, DerivationPath.Bip44, password, [0]);
         nextStep();
       }}
       readOnly={true}

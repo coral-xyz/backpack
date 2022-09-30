@@ -33,6 +33,7 @@ import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
 import { MaxLabel } from "../common/MaxLabel";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
+import { TokenAmountHeader } from "../common/TokenAmountHeader";
 
 const { Zero } = ethers.constants;
 
@@ -495,11 +496,6 @@ function SwapConfirming({
   onViewBalances: () => void;
 }) {
   const classes = useStyles();
-  const theme = useCustomTheme();
-
-  const _onViewBalances = () => {
-    onViewBalances();
-  };
 
   return (
     <div
@@ -557,7 +553,7 @@ function SwapConfirming({
           }}
         >
           <SecondaryButton
-            onClick={() => _onViewBalances()}
+            onClick={() => onViewBalances()}
             label={"View Balances"}
           />
         </div>
@@ -591,30 +587,17 @@ function SwapError({ onRetry, onCancel }: any) {
   );
 }
 
-//
-// Token logo, swap receive amount, and swap currency
-//
 function SwapReceiveAmount() {
-  const classes = useStyles();
-  const theme = useCustomTheme();
   const { toAmount, toMintInfo } = useSwapContext();
-
-  const logoUri = toMintInfo ? toMintInfo.logoURI : "-";
   return (
-    <div
-      className={classes.confirmationAmount}
-      style={{ display: "flex", justifyContent: "center" }}
-    >
-      <img
-        className={classes.tokenLogoLarge}
-        src={logoUri}
-        onError={(event) => (event.currentTarget.style.display = "none")}
-      />
-      {toAmount ? ethers.utils.formatUnits(toAmount, toMintInfo.decimals) : 0}
-      <span style={{ color: theme.custom.colors.secondary, marginLeft: "8px" }}>
-        {toMintInfo?.symbol}
-      </span>
-    </div>
+    <TokenAmountHeader
+      token={{
+        logo: toMintInfo.logoURI,
+        ticker: toMintInfo.symbol,
+        decimals: toMintInfo.decimals,
+      }}
+      amount={toAmount!}
+    />
   );
 }
 

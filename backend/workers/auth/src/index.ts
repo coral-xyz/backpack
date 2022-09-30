@@ -60,7 +60,9 @@ app.get("/users/:username", async (c) => {
   }
 
   const chain = Chain(c.env.HASURA_URL, {
-    headers: { "x-hasura-admin-secret": c.env.HASURA_SECRET },
+    headers: {
+      Authorization: `Bearer ${c.env.JWT}`,
+    },
   });
 
   const res = await chain("query")({
@@ -98,7 +100,9 @@ app.post("/users", async (c) => {
   }
 
   const chain = Chain(c.env.HASURA_URL, {
-    headers: { "x-hasura-admin-secret": c.env.HASURA_SECRET },
+    headers: {
+      Authorization: `Bearer ${c.env.JWT}`,
+    },
   });
 
   const res = await chain("mutation")({

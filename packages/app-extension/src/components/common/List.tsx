@@ -21,10 +21,11 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function List({ style, children }: any) {
+export function List({ className, style, children }: any) {
   const theme = useCustomTheme();
   return (
     <MuiList
+      className={className}
       style={{
         color: theme.custom.colors.fontColor,
         padding: 0,
