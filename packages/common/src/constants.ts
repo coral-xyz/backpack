@@ -120,14 +120,6 @@ export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
 export const UI_RPC_METHOD_PREVIEW_PUBKEYS =
   "ui-rpc-method-keyring-preview-pubkeys";
 export const UI_RPC_METHOD_KEYRING_RESET = "ui-rpc-method-keyring-reset";
-export const UI_RPC_METHOD_ACTIVE_BLOCKCHAIN =
-  "ui-rpc-method-blockchain-active";
-export const UI_RPC_METHOD_ACTIVE_BLOCKCHAIN_UPDATE =
-  "ui-rpc-method-blockchain-active-update";
-export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET =
-  "ui-rpc-method-wallet-active";
-export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE =
-  "ui-rpc-method-wallet-active-update";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS =
   "ui-rpc-method-wallets-active";
 export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS_UPDATE =

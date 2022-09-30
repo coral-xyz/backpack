@@ -30,9 +30,6 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_RESET,
-  UI_RPC_METHOD_ACTIVE_BLOCKCHAIN_UPDATE,
-  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
-  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS,
   UI_RPC_METHOD_KEYNAME_READ,
   UI_RPC_METHOD_KEYNAME_UPDATE,
@@ -348,31 +345,6 @@ function handleKeyringStoreKeepAlive(
   ctx: Context<Backend>
 ): RpcResponse<string> {
   const resp = ctx.backend.keyringStoreKeepAlive();
-  return [resp];
-}
-
-async function handleActiveBlockchainUpdate(
-  ctx: Context<Backend>,
-  blockchain: Blockchain
-) {
-  const resp = ctx.backend.activeBlockchainUpdate(blockchain);
-  return [resp];
-}
-
-// TODO deprecate single active wallet eventually
-async function handleWalletDataActiveWallet(
-  ctx: Context<Backend>
-): Promise<RpcResponse<string>> {
-  const pubkey = await ctx.backend.activeWallet();
-  return [pubkey];
-}
-
-// TODO deprecate single active wallet eventually
-async function handleWalletDataActiveWalletUpdate(
-  ctx: Context<Backend>,
-  newWallet: string
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.activeWalletUpdate(newWallet);
   return [resp];
 }
 

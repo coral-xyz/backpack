@@ -179,12 +179,10 @@ export class Backend {
       },
     });
 
-    const activeWallet = await this.activeWallet();
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
       data: {
         url: cluster,
-        activeWallet,
       },
     });
 
@@ -487,70 +485,6 @@ export class Backend {
       }
     }
     return namedPublicKeys;
-  }
-
-  // Return currently active blockchain.
-  activeBlockchain(): string {
-    return this.keyringStore.activeBlockchain();
-  }
-
-  // Set the currently active blockchain.
-  activeBlockchainUpdate(newActiveBlockchain: Blockchain) {
-    const oldActiveBlockchain = this.activeBlockchain();
-    this.keyringStore.activeBlockchainUpdate(newActiveBlockchain);
-    if (oldActiveBlockchain !== newActiveBlockchain) {
-      this.events.emit(BACKEND_EVENT, {
-        name: NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED,
-        data: {
-          oldActiveBlockchain,
-          newActiveBlockchain,
-        },
-      });
-    }
-  }
-
-  // TODO deprecate single active wallet eventually
-  async activeWallet(): Promise<string> {
-    return await this.keyringStore.activeWallet();
-  }
-
-  // TODO deprecate single active wallet eventually
-  async activeWalletUpdate(newWallet: string): Promise<string> {
-    // Updating the active wallet can change the active blockchain, so save old
-    // blockchain to emit event if it changes
-    const oldActiveBlockchain = this.activeBlockchain();
-    await this.keyringStore.activeWalletUpdate(newWallet);
-    const newActiveBlockchain = this.activeBlockchain();
-
-    if (oldActiveBlockchain !== newActiveBlockchain) {
-      this.events.emit(BACKEND_EVENT, {
-        name: NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED,
-        data: {
-          oldActiveBlockchain,
-          newActiveBlockchain,
-        },
-      });
-    }
-
-    if (this.activeBlockchain() === Blockchain.SOLANA) {
-      this.events.emit(BACKEND_EVENT, {
-        name: NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
-        data: {
-          activeWallet: newWallet,
-          activeWallets: await this.activeWallets(),
-        },
-      });
-    } else if (this.activeBlockchain() === Blockchain.ETHEREUM) {
-      this.events.emit(BACKEND_EVENT, {
-        name: NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
-        data: {
-          activeWallet: newWallet,
-          activeWallets: await this.activeWallets(),
-        },
-      });
-    }
-
-    return SUCCESS_RESPONSE;
   }
 
   async activeWallets(): Promise<Array<string>> {
