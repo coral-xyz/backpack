@@ -307,12 +307,14 @@ function SendTransactionRequest({
   // into this component because it can be modified by the user to set
   // transaction specific settings (i.e. Etheruem gas).
   //
-  const onConfirm = async () => {
-    const signature = await background.request({
-      method: uiRpcMethod,
-      params: [transactionToSend, publicKey],
-    });
-    onResolve(signature);
+  const onConfirm = () => {
+    background
+      .request({
+        method: uiRpcMethod,
+        params: [transactionToSend, publicKey],
+      })
+      .then((signature) => onResolve(signature))
+      .catch((_) => onReject());
   };
 
   //
@@ -417,12 +419,14 @@ function SignMessageRequest({
   //
   // Executes when the modal clicks "Approve" in the drawer popup
   //
-  const onConfirm = async () => {
-    const signature = await background.request({
-      method: uiRpcMethod,
-      params: [message, publicKey],
-    });
-    onResolve(signature);
+  const onConfirm = () => {
+    background
+      .request({
+        method: uiRpcMethod,
+        params: [message, publicKey],
+      })
+      .then((signature) => onResolve(signature))
+      .catch((_) => onReject());
   };
 
   return (
