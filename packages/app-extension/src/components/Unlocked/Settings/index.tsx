@@ -1036,11 +1036,8 @@ function validateSecretKey(
   secretKey: string,
   keyring: WalletPublicKeys
 ): string | boolean {
-  (window as any).asd = keyring;
-  // this is where I need to get a list of current keys
-
   if (blockchain === Blockchain.SOLANA) {
-    let keypair;
+    let keypair: Keypair | null = null;
     try {
       // Attempt to create a keypair from JSON secret key
       keypair = Keypair.fromSecretKey(new Uint8Array(JSON.parse(secretKey)));
@@ -1053,16 +1050,13 @@ function validateSecretKey(
         return false;
       }
     }
+    const keyExists = keyring.solana.importedPublicKeys
+      .map((k) => k.publicKey)
+      .includes(keypair.publicKey.toString());
 
-    const newPublicKey = Keypair.fromSecretKey(
-      new Uint8Array(bs58.decode(secretKey))
-    );
-
-    keyring.solana.importedPublicKeys.forEach((key) => {
-      if (key.publicKey === newPublicKey.publicKey.toString()) {
-        throw new Error("Key already exists");
-      }
-    });
+    if (keyExists) {
+      throw new Error("Key already exists");
+    }
 
     return Buffer.from(keypair.secretKey).toString("hex");
   } else if (blockchain === Blockchain.ETHEREUM) {
