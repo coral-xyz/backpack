@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Check } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import {
+  getLogger,
   SolanaCluster,
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
 } from "@coral-xyz/common";
@@ -9,6 +10,8 @@ import { useBackgroundClient, useSolanaConnectionUrl } from "@coral-xyz/recoil";
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
 import { SettingsList } from "../../../../common/Settings/List";
 import { useNavStack } from "../../../../common/Layout/NavStack";
+
+const logger = getLogger("preferences");
 
 export function PreferencesSolanaConnection() {
   const { close } = useDrawerContext();
@@ -39,8 +42,8 @@ export function PreferencesSolanaConnection() {
         try {
           const url = new URL(userProvidedUrl.trim()).toString();
           changeNetwork(url);
-        } catch (e) {
-          console.error(e);
+        } catch (e: any) {
+          logger.error(e.toString());
         }
       },
       detail:
