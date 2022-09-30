@@ -105,6 +105,7 @@ export function CreatePassword({
               <InputAdornment position="end">
                 <IconButton
                   disableRipple
+                  sx={{ color: theme.custom.colors.icon }}
                   onClick={() => setShowPassword(!showPassword)}
                   onMouseDown={() => setShowPassword(!showPassword)}
                 >
