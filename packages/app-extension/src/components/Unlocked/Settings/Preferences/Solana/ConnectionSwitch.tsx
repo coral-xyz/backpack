@@ -34,11 +34,15 @@ export function PreferencesSolanaConnection() {
       detail: currentUrl === SolanaCluster.LOCALNET ? <Checkmark /> : <></>,
     },
     Custom: {
-      onClick: () =>
-        changeNetwork(
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          new URL(prompt("Enter your custom endpoint")!.trim()).toString()
-        ),
+      onClick: () => {
+        const userProvidedUrl = prompt("Enter your custom endpoint") ?? "";
+        try {
+          const url = new URL(userProvidedUrl.trim()).toString();
+          changeNetwork(url);
+        } catch (e) {
+          console.error(e);
+        }
+      },
       detail:
         currentUrl !== SolanaCluster.MAINNET &&
         currentUrl !== SolanaCluster.DEVNET &&
