@@ -918,7 +918,7 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   const [secretKey, setSecretKey] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
-  const blockchainKeyrings = useWalletPublicKeys();
+  const existingPublicKeys = useWalletPublicKeys();
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -932,7 +932,7 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
     const secretKeyHex = validateSecretKey(
       blockchain,
       secretKey,
-      blockchainKeyrings
+      existingPublicKeys
     );
     if (!secretKeyHex) {
       setError("Invalid private key");
@@ -1034,7 +1034,7 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
 function validateSecretKey(
   blockchain: Blockchain,
   secretKey: string,
-  keyring: WalletPublicKeys
+  existingPublicKeys: WalletPublicKeys
 ): string | boolean {
   if (blockchain === Blockchain.SOLANA) {
     let keypair: Keypair | null = null;
@@ -1050,18 +1050,27 @@ function validateSecretKey(
         return false;
       }
     }
-    const keyExists = keyring.solana.importedPublicKeys
-      .map((k) => k.publicKey)
-      .includes(keypair.publicKey.toString());
 
-    if (keyExists) {
-      throw new Error("Key already exists");
+    // Check to see if the key has already been added to keyring
+    for (const keyArray of Object.values(existingPublicKeys.solana)) {
+      if (
+        keyArray.map((k) => k.publicKey).includes(keypair.publicKey.toString())
+      ) {
+        throw new Error("Key already exists");
+      }
     }
 
     return Buffer.from(keypair.secretKey).toString("hex");
   } else if (blockchain === Blockchain.ETHEREUM) {
     try {
       const wallet = new ethers.Wallet(secretKey);
+
+      // Check to see if the key has already been added to keyring
+      for (const keyArray of Object.values(keyring.ethereum)) {
+        if (keyArray.map((k) => k.publicKey).includes(wallet.publicKey)) {
+          throw new Error("Key already exists");
+        }
+      }
       return wallet.privateKey;
     } catch (_) {
       return false;
