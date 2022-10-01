@@ -1,7 +1,6 @@
-import { BACKPACK_FEATURE_USERNAMES } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ActionCard } from "../../common/Layout/ActionCard";
 import { BackpackHeader } from "../../Locked";
@@ -21,14 +20,6 @@ export const CreateOrImportWallet = () => {
         />
       </Box>
       <Box style={{ padding: "0 16px 16px" }}>
-        {BACKPACK_FEATURE_USERNAMES && (
-          <Typography
-            style={{ margin: 8, marginBottom: 32, textAlign: "center" }}
-          >
-            Your username isn't secured just yet, please create a new wallet, or
-            import an existing one so that it can be claimed.
-          </Typography>
-        )}
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <ActionCard
