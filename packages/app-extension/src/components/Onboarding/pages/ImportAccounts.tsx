@@ -18,7 +18,12 @@ export const ImportAccounts = () => {
           accounts: SelectedAccount[],
           derivationPath: DerivationPath
         ) => {
-          navigate(`${pathname}/${JSON.stringify(accounts)}/${derivationPath}`);
+          navigate(
+            `${pathname}/${JSON.stringify({
+              accounts: accounts.map((a) => a.index),
+              derivationPath,
+            })}`
+          );
         }}
       />
     </div>

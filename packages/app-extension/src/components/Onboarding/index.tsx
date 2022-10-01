@@ -87,12 +87,12 @@ export const Onboarding = () => {
           <Route path={p("import")} element={<ImportRecoveryPhrase />} />
           <Route path={p("import/:mnemonic")} element={<ImportAccounts />} />
           <Route
-            path={p("import/:mnemonic/:accountIndices/:derivationPath")}
+            path={p("import/:mnemonic/:accountsAndDerivationPath")}
             element={<SetPassword />}
           />
           <Route
             path={p(
-              "import/:mnemonic/:accountIndices/:derivationPath/:password/finish"
+              "import/:mnemonic/:accountsAndDerivationPath/:password/finish"
             )}
             element={<Finish />}
           />

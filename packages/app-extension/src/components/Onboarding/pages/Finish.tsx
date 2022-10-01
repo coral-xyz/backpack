@@ -3,7 +3,7 @@ import {
   DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
 } from "@coral-xyz/common";
-import { useBackgroundClient, useUsername } from "@coral-xyz/recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Loading } from "../../common";
@@ -14,8 +14,7 @@ export const Finish = () => {
   const [isValid, setIsValid] = useState(false);
   const background = useBackgroundClient();
   const params = useParams<{
-    accountIndices: string;
-    derivationPath: string;
+    accountsAndDerivationPath: string;
     inviteCode: string;
     mnemonic: string;
     password: string;
@@ -23,15 +22,24 @@ export const Finish = () => {
   }>();
 
   useEffect(() => {
+    const { accounts, derivationPath } = (() => {
+      try {
+        return JSON.parse(params.accountsAndDerivationPath!);
+      } catch (err) {
+        // defaults when creating a wallet
+        return { accounts: [0], derivationPath: DerivationPath.Bip44 };
+      }
+    })();
+
     async function createStore() {
       try {
         await background.request({
           method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
           params: [
             params.mnemonic,
-            params.derivationPath ?? DerivationPath.Bip44,
+            derivationPath,
             params.password,
-            params.accountIndices ? JSON.parse(params.accountIndices) : [0],
+            accounts,
             params.username,
             params.inviteCode,
             getWaitlistId?.(),
