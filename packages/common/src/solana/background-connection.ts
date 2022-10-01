@@ -367,7 +367,7 @@ export class BackgroundSolanaConnection extends Connection {
   ): Promise<RpcResponseAndContext<Array<TokenAccountBalancePair>>> {
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS,
-      params: [mintAddress, commitment],
+      params: [mintAddress.toString(), commitment],
     });
   }
 
