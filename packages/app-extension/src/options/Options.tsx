@@ -67,9 +67,7 @@ function Router() {
     case QUERY_ONBOARDING:
       return <Onboarding />;
     default:
-      return null;
-    // default:
-    //   throw new Error("invalid query param");
+      throw new Error("invalid query param");
   }
 }
 
