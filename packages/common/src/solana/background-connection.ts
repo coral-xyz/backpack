@@ -83,6 +83,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_SLOT,
   SOLANA_CONNECTION_RPC_GET_BLOCK_TIME,
   SOLANA_CONNECTION_RPC_GET_PARSED_TOKEN_ACCOUNTS_BY_OWNER,
+  SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS,
 } from "../constants";
 import { serializeTokenAccountsFilter } from "./types";
 import type { BackgroundClient } from "../channel";
@@ -360,6 +361,16 @@ export class BackgroundSolanaConnection extends Connection {
     return resp;
   }
 
+  async getTokenLargestAccounts(
+    mintAddress: PublicKey,
+    commitment?: Commitment
+  ): Promise<RpcResponseAndContext<Array<TokenAccountBalancePair>>> {
+    return await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS,
+      params: [mintAddress, commitment],
+    });
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Below this not yet implemented.
   ///////////////////////////////////////////////////////////////////////////////
@@ -403,13 +414,6 @@ export class BackgroundSolanaConnection extends Connection {
   async getLargestAccounts(
     config?: GetLargestAccountsConfig
   ): Promise<RpcResponseAndContext<Array<AccountBalancePair>>> {
-    throw new Error("not implemented");
-  }
-
-  async getTokenLargestAccounts(
-    mintAddress: PublicKey,
-    commitment?: Commitment
-  ): Promise<RpcResponseAndContext<Array<TokenAccountBalancePair>>> {
     throw new Error("not implemented");
   }
 
