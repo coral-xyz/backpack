@@ -38,8 +38,10 @@ body {
   left: 0px;
   right: 0px;
   bottom: 0px;
-  overflow: scroll;
+  overflow: hidden;
   margin-right: -15px;
+  display: flex;
+  flex-direction: column;
 }
 
 .stack-push-enter {
