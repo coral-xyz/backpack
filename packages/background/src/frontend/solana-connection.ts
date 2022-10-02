@@ -43,6 +43,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_SLOT,
   SOLANA_CONNECTION_RPC_GET_BLOCK_TIME,
   SOLANA_CONNECTION_RPC_GET_PARSED_TOKEN_ACCOUNTS_BY_OWNER,
+  SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS,
 } from "@coral-xyz/common";
 import type { SolanaConnectionBackend } from "../backend/solana-connection";
 import type { Config, Handle } from "../types";
@@ -152,6 +153,8 @@ async function handleImpl<T = any>(
         params[1],
         params[2]
       );
+    case SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS:
+      return await handleGetTokenLargestAccounts(ctx, params[0], params[1]);
     default:
       throw new Error("invalid rpc method");
   }
@@ -367,6 +370,18 @@ async function handleGetParsedTokenAccountsByOwner(
   const resp = await ctx.backend.getParsedTokenAccountsByOwner(
     new PublicKey(ownerAddress),
     deserializeTokenAccountsFilter(filter),
+    commitment
+  );
+  return [resp];
+}
+
+async function handleGetTokenLargestAccounts(
+  ctx: Context<SolanaConnectionBackend>,
+  mintAddress: string,
+  commitment?: Commitment
+) {
+  const resp = await ctx.backend.getTokenLargestAccounts(
+    new PublicKey(mintAddress),
     commitment
   );
   return [resp];
