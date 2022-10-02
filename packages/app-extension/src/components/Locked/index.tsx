@@ -56,8 +56,23 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
           <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
           <BackpackHeader />
         </Box>
-        <Box sx={{ marginBottom: "84px" }}>
-          {username && `gm @${username}`}
+
+        <Box style={{ marginBottom: 84 }}>
+          {username && (
+            <Box
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+                display: "flex",
+              }}
+            >
+              <Typography style={{ color: theme.custom.colors.fontColor }}>
+                gm @{username}
+              </Typography>
+            </Box>
+          )}
+
           <form onSubmit={_onUnlock} noValidate>
             <Box sx={{ margin: "0 12px 12px 12px" }}>
               <TextField
@@ -78,7 +93,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
               position: "absolute",
               width: "100%",
               display: error ? "block" : "none",
-              mt: "24px",
+              marginTop: "24px",
             }}
           >
             <Typography
