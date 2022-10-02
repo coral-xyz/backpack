@@ -25,7 +25,7 @@ const useStyles = styles((theme: CustomTheme) => ({
   },
   leftLabel: {
     color: theme.custom.colors.fontColor,
-    fontSize: "12px",
+    fontSize: "16px",
     lineHeight: "16px",
     fontWeight: 500,
   },
