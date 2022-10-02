@@ -55,9 +55,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and run tests
     # https://turborepo.org/docs/ci/github-actions
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+    # env:
+    #   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+    #   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
     steps:
       ##########################################################################
       # Setup environment.
