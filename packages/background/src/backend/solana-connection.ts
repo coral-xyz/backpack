@@ -487,6 +487,15 @@ export class SolanaConnectionBackend {
     );
   }
 
+  async getParsedAccountInfo(
+    publicKey: PublicKey,
+    commitment?: Commitment
+  ): Promise<
+    RpcResponseAndContext<AccountInfo<Buffer | ParsedAccountData> | null>
+  > {
+    return await this.connection!.getParsedAccountInfo(publicKey, commitment);
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Methods below not used currently.
   ///////////////////////////////////////////////////////////////////////////////
@@ -529,15 +538,6 @@ export class SolanaConnectionBackend {
     publicKey: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<AccountInfo<Buffer> | null>> {
-    throw new Error("not implemented");
-  }
-
-  async getParsedAccountInfo(
-    publicKey: PublicKey,
-    commitment?: Commitment
-  ): Promise<
-    RpcResponseAndContext<AccountInfo<Buffer | ParsedAccountData> | null>
-  > {
     throw new Error("not implemented");
   }
 

@@ -371,6 +371,8 @@ export const SOLANA_CONNECTION_RPC_GET_PARSED_TOKEN_ACCOUNTS_BY_OWNER =
   "solana-get-parsed-token-accounts-by-owner";
 export const SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS =
   "solana-get-token-largest-accounts";
+export const SOLANA_CONNECTION_RPC_GET_PARSED_ACCOUNT_INFO =
+  "solana-get-parsed-account-info";
 
 //
 // Ledger API.
