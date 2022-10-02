@@ -114,7 +114,7 @@ export const totalBalance = selector({
     const totalBalance = solana.totalBalance + ethereum.totalBalance;
     const totalChange = solana.totalChange + ethereum.totalChange;
     const oldBalance = totalBalance - totalChange;
-    const percentChange = totalChange / oldBalance;
+    const percentChange = (totalChange / oldBalance) * 100;
     return {
       totalBalance: parseFloat(totalBalance.toFixed(2)),
       totalChange: parseFloat(totalChange.toFixed(2)),
