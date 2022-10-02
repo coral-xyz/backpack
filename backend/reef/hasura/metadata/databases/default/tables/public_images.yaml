@@ -20,6 +20,7 @@ select_permissions:
         - id
         - prompt
         - uri
+        - winner
         - created_at
         - invite_code
       filter: {}
