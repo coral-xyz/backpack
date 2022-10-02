@@ -31,7 +31,7 @@ import { BottomCard } from "./Balances/TokensWidget/Send";
 import { useDrawerContext } from "../common/Layout/Drawer";
 import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
-import { MaxLabel } from "../common/MaxLabel";
+import { MaxSwapLabel } from "../common/MaxSwapLabel";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { TokenAmountHeader } from "../common/TokenAmountHeader";
 
@@ -51,6 +51,7 @@ const useStyles = styles((theme) => ({
   },
   bottomHalfWrapper: {
     borderTop: `${theme.custom.colors.borderFull}`,
+    backgroundColor: theme.custom.colors.bg3,
     flex: 1,
     paddingBottom: "16px",
     paddingTop: "38px",
@@ -121,8 +122,8 @@ const useStyles = styles((theme) => ({
   },
   swapTokensButton: {
     border: `${theme.custom.colors.borderFull}`,
-    width: "38px",
-    height: "38px",
+    width: "44px",
+    height: "44px",
     marginLeft: "auto",
     marginRight: "auto",
   },
@@ -339,9 +340,9 @@ function InputTextField() {
   return (
     <>
       <TextFieldLabel
-        leftLabel={"You Pay"}
+        leftLabel={"Sending"}
         rightLabelComponent={
-          <MaxLabel
+          <MaxSwapLabel
             amount={availableForSwap}
             onSetAmount={setFromAmount}
             decimals={fromMintInfo.decimals}
@@ -368,7 +369,7 @@ function OutputTextField() {
   const { toAmount, toMintInfo, isLoadingRoutes } = useSwapContext();
   return (
     <>
-      <TextFieldLabel leftLabel={"You Receive"} />
+      <TextFieldLabel leftLabel={"Receiving"} />
       <TextField
         placeholder={"0"}
         startAdornment={

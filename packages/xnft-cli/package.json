@@ -6,7 +6,7 @@
   },
   "scripts": {
     "prebuild": "cd ../../examples/xnft/iframe && npm run build",
-    "build": "cp ../../examples/xnft/iframe/dist/index.js iframe.js"
+    "build": "shx cp ../../examples/xnft/iframe/dist/index.js iframe.js"
   },
   "dependencies": {
     "@parcel/config-default": "^2.7.0",
@@ -14,6 +14,9 @@
     "@parcel/reporter-cli": "^2.7.0",
     "commander": "^9.3.0",
     "express": "^4.18.1"
+  },
+  "devDependencies": {
+    "shx": "^0.3.4"
   },
   "files": [
     "index.js",

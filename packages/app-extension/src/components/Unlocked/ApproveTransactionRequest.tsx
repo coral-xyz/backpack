@@ -119,9 +119,11 @@ export function ApproveTransactionRequest() {
     setRequest(undefined);
   };
 
-  const onReject = () => {
+  const onReject = (
+    e: Error = new Error("user rejected signature request")
+  ) => {
     setRequest(undefined);
-    request!.reject(new Error("user rejected signature request"));
+    request!.reject(e);
   };
 
   const isMessageSign = [
@@ -232,11 +234,13 @@ function SignAllTransactionsRequest({
   const background = useBackgroundClient();
 
   const onConfirm = async () => {
-    const signature = await background.request({
-      method: uiRpcMethod,
-      params: [transactions, publicKey],
-    });
-    onResolve(signature);
+    background
+      .request({
+        method: uiRpcMethod,
+        params: [transactions, publicKey],
+      })
+      .then(onResolve)
+      .catch(onReject);
   };
 
   return (
@@ -307,12 +311,14 @@ function SendTransactionRequest({
   // into this component because it can be modified by the user to set
   // transaction specific settings (i.e. Etheruem gas).
   //
-  const onConfirm = async () => {
-    const signature = await background.request({
-      method: uiRpcMethod,
-      params: [transactionToSend, publicKey],
-    });
-    onResolve(signature);
+  const onConfirm = () => {
+    background
+      .request({
+        method: uiRpcMethod,
+        params: [transactionToSend, publicKey],
+      })
+      .then(onResolve)
+      .catch(onReject);
   };
 
   //
@@ -417,12 +423,14 @@ function SignMessageRequest({
   //
   // Executes when the modal clicks "Approve" in the drawer popup
   //
-  const onConfirm = async () => {
-    const signature = await background.request({
-      method: uiRpcMethod,
-      params: [message, publicKey],
-    });
-    onResolve(signature);
+  const onConfirm = () => {
+    background
+      .request({
+        method: uiRpcMethod,
+        params: [message, publicKey],
+      })
+      .then(onResolve)
+      .catch(onReject);
   };
 
   return (

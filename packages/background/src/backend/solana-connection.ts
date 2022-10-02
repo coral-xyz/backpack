@@ -477,6 +477,16 @@ export class SolanaConnectionBackend {
     );
   }
 
+  async getTokenLargestAccounts(
+    mintAddress: PublicKey,
+    commitment?: Commitment
+  ): Promise<RpcResponseAndContext<Array<TokenAccountBalancePair>>> {
+    return await this.connection!.getTokenLargestAccounts(
+      mintAddress,
+      commitment
+    );
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Methods below not used currently.
   ///////////////////////////////////////////////////////////////////////////////
@@ -512,13 +522,6 @@ export class SolanaConnectionBackend {
   async getLargestAccounts(
     config?: GetLargestAccountsConfig
   ): Promise<RpcResponseAndContext<Array<AccountBalancePair>>> {
-    throw new Error("not implemented");
-  }
-
-  async getTokenLargestAccounts(
-    mintAddress: PublicKey,
-    commitment?: Commitment
-  ): Promise<RpcResponseAndContext<Array<TokenAccountBalancePair>>> {
     throw new Error("not implemented");
   }
 

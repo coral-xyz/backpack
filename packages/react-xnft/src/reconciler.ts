@@ -1142,6 +1142,8 @@ type TextFieldNodeSerialized = DefNodeSerialized<
 type TextFieldProps = {
   onChange?: ((event: Event) => void) | boolean;
   value?: any;
+  multiline?: boolean;
+  numberOfLines?: number;
   placeholder?: string;
   style: Style;
   children: undefined;
