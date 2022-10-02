@@ -18,6 +18,9 @@
   "devDependencies": {
     "shx": "^0.3.4"
   },
+  "peerDependencies": {
+    "@coral-xyz/react-xnft-renderer": "*"
+  },
   "files": [
     "index.js",
     "iframe.js"
