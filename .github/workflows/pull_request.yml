@@ -95,6 +95,12 @@ jobs:
       #
       # Build the extension, edge release.
       #
+      - name: "pre-build-public"
+        working-directory: packages/common-public
+        run: yarn build
+      - name: "pre-build"
+        working-directory: packages/common
+        run: yarn build
       - name: "build edge"
         env:
           BACKPACK_CONFIG_VERSION: "latest-edge-${{ github.run_number }}"
@@ -113,6 +119,12 @@ jobs:
       #
       # Build the extension, beta release.
       #
+      - name: "pre-build-public"
+        working-directory: packages/common-public
+        run: yarn build
+      - name: "pre-build"
+        working-directory: packages/common
+        run: yarn build
       - name: "build beta"
         env:
           BACKPACK_CONFIG_VERSION: "latest-beta-${{ github.run_number }}"
