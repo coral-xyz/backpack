@@ -144,6 +144,7 @@ export class ProviderEthereumInjection extends EventEmitter {
 
     this._handleConnect = this._handleConnect.bind(this);
     this._handleChainChanged = this._handleChainChanged.bind(this);
+    this._handleEthAccounts = this._handleEthAccounts.bind(this);
     this._handleEthRequestAccounts = this._handleEthRequestAccounts.bind(this);
     this._handleEthSignMessage = this._handleEthSignMessage.bind(this);
     this._handleEthSignTransaction = this._handleEthSignTransaction.bind(this);
@@ -222,8 +223,6 @@ export class ProviderEthereumInjection extends EventEmitter {
 
     const { method, params } = args;
 
-    logger.debug("page injected provider request", method, params);
-
     if (typeof method !== "string" || method.length === 0) {
       throw ethErrors.rpc.invalidRequest({
         message: messages.errors.invalidRequestMethod(),
@@ -243,7 +242,7 @@ export class ProviderEthereumInjection extends EventEmitter {
     }
 
     const functionMap = {
-      eth_accounts: this._handleEthRequestAccounts,
+      eth_accounts: this._handleEthAccounts,
       eth_requestAccounts: this._handleEthRequestAccounts,
       eth_chainId: () => this.chainId,
       net_version: () => (this.chainId ? `${parseInt(this.chainId)}` : "1"),
@@ -422,7 +421,17 @@ export class ProviderEthereumInjection extends EventEmitter {
   }
 
   /**
-   * Handle eth_accounts and eth_requestAccounts requests
+   * Handle eth_accounts requests
+   */
+  protected async _handleEthAccounts() {
+    if (this.isConnected() && this.publicKey) {
+      return [this.publicKey];
+    }
+    return [];
+  }
+
+  /**
+   * Handle eth_requestAccounts requests
    */
   protected async _handleEthRequestAccounts() {
     // Send request to the RPC API.
@@ -433,7 +442,7 @@ export class ProviderEthereumInjection extends EventEmitter {
         method: ETHEREUM_RPC_METHOD_CONNECT,
         params: [],
       });
-      return [result.publicKey];
+      return result.publicKey ? [result.publicKey] : [];
     }
   }
 
