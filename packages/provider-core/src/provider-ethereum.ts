@@ -122,6 +122,11 @@ export class ProviderEthereumInjection extends EventEmitter {
    */
   #provider?: ethers.providers.JsonRpcProvider;
 
+  #setState = (updatedState) => {
+    this.#state = updatedState;
+    Object.freeze(this.#state);
+  };
+
   constructor() {
     super();
     if (new.target === ProviderEthereumInjection) {
@@ -138,10 +143,9 @@ export class ProviderEthereumInjection extends EventEmitter {
     );
     this._initChannels();
 
-    this.#state = {
+    this.#setState({
       ...ProviderEthereumInjection._defaultState,
-    };
-    Object.freeze(this.#state);
+    });
 
     this.#isBackpack = true;
     this.#chainId = null;
@@ -358,9 +362,9 @@ export class ProviderEthereumInjection extends EventEmitter {
       this.#chainId = null;
       this.#publicKey = null;
       // Reset private state
-      this.#state = {
+      this.#setState({
         ...ProviderEthereumInjection._defaultState,
-      };
+      });
     }
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#disconnect
     this.emit("disconnect", {
@@ -403,7 +407,7 @@ export class ProviderEthereumInjection extends EventEmitter {
    */
   protected async _handleConnect(chainId: string) {
     if (!this.#state.isConnected) {
-      this.#state = { ...this.#state, isConnected: true };
+      this.#setState({ ...this.#state, isConnected: true });
     }
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#connect
     this.emit("connect", { chainId } as ProviderConnectInfo);
