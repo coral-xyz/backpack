@@ -49,11 +49,13 @@ export const Onboarding = () => {
       <WithNav
         navButtonLeft={goBack ? <NavBackButton onClick={goBack} /> : undefined}
         navButtonRight={
-          <OnboardingMenu
-            containerRef={containerRef}
-            menuOpen={menuOpen}
-            setMenuOpen={setMenuOpen}
-          />
+          pathname === "/" ? (
+            <OnboardingMenu
+              containerRef={containerRef}
+              menuOpen={menuOpen}
+              setMenuOpen={setMenuOpen}
+            />
+          ) : undefined
         }
         navbarStyle={{
           borderRadius: "12px",
