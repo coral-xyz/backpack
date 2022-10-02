@@ -365,10 +365,17 @@ export class BackgroundSolanaConnection extends Connection {
     mintAddress: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<Array<TokenAccountBalancePair>>> {
-    return await this._backgroundClient.request({
+    const resp = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS,
       params: [mintAddress.toString(), commitment],
     });
+    resp.value = resp.value.map((val) => {
+      return {
+        ...val,
+        address: new PublicKey(val.address),
+      };
+    });
+    return resp;
   }
 
   ///////////////////////////////////////////////////////////////////////////////
