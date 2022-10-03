@@ -1,3 +1,5 @@
+import { useUsername } from "@coral-xyz/recoil";
+
 const WAITLIST_RES_ID_KEY = "waitlist-form-res-id";
 
 export const setWaitlistId = (responseId: string) =>
@@ -6,7 +8,7 @@ export const setWaitlistId = (responseId: string) =>
 export const getWaitlistId = () =>
   window.localStorage.getItem(WAITLIST_RES_ID_KEY) ?? undefined;
 
-const WaitingRoom = () => (
+const WaitingRoom = ({ onboarded }: { onboarded?: boolean }) => (
   <iframe
     style={{
       border: "none",
@@ -15,7 +17,9 @@ const WaitingRoom = () => (
       overflow: "hidden",
     }}
     allow="clipboard-read; clipboard-write"
-    src={`https://beta-waiting-room.vercel.app/?id=${getWaitlistId()}&v=2`}
+    src={`https://beta-waiting-room.vercel.app/?id=${
+      onboarded ? useUsername() : getWaitlistId()
+    }&onboarded=${onboarded ?? false}&v=2`}
   />
 );
 

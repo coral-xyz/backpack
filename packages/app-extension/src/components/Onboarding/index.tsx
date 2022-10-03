@@ -31,7 +31,7 @@ import {
 } from "./pages/RecoveryPhrase";
 import { SetPassword } from "./pages/SetPassword";
 import { UsernameForm } from "./pages/UsernameForm";
-import WaitingRoom from "./pages/WaitingRoom";
+import WaitingRoom from "../common/WaitingRoom";
 
 export const Onboarding = () => {
   const { pathname } = useLocation();

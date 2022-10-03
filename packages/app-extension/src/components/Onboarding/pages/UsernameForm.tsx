@@ -9,7 +9,7 @@ import {
   SubtextParagraph,
   TextField,
 } from "../../common";
-import { getWaitlistId } from "./WaitingRoom";
+import { getWaitlistId } from "../../common/WaitingRoom";
 
 const MIN_LENGTH = 3;
 const MAX_LENGTH = 15;
