@@ -174,7 +174,7 @@ function TabProvider({ initialTab, options, children }) {
   );
 }
 
-function useTabContext(): TabContext {
+export function useTabContext(): TabContext {
   const ctx = useContext(_TabContext);
   if (ctx === null) {
     throw new Error("Context not available");

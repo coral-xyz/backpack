@@ -17,6 +17,7 @@ import {
   TextField as MuiTextField,
   CircularProgress,
 } from "@mui/material";
+import { TextareaAutosize as MuiTextArea } from "@mui/base";
 import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import { usePluginContext } from "./Context";
 import { ViewRenderer } from "./ViewRenderer";
@@ -150,7 +151,23 @@ const useStyles = styles((theme) => ({
     borderRadius: "12px",
     fontSize: "16px",
     lineHeight: "24px",
-    border: `${theme.custom.colors.borderFull}`,
+  },
+  textAreaInput: {
+    fontWeight: 500,
+    borderRadius: "12px",
+    fontSize: "16px",
+    lineHeight: "24px",
+    padding: "16.5px 14px",
+    font: "inherit",
+    background: theme.custom.colors.textBackground,
+    border: `2pt solid ${theme.custom.colors.textBackground}`,
+    "&:hover": {
+      border: `2pt solid ${theme.custom.colors.primaryButton}`,
+    },
+    "&:focus": {
+      border: `2pt solid ${theme.custom.colors.primaryButton}`,
+      outline: "none",
+    },
   },
   textFieldInputColorEmpty: {
     color: theme.custom.colors.textPlaceholder,
@@ -163,7 +180,7 @@ const useStyles = styles((theme) => ({
       background: theme.custom.colors.textBackground,
       borderRadius: "12px",
       "& fieldset": {
-        border: "none",
+        border: `${theme.custom.colors.borderFull}`,
       },
       "&:hover fieldset": {
         border: `solid 2pt ${theme.custom.colors.primaryButton}`,
@@ -714,6 +731,19 @@ function _TextField({ id, props, children, style }: any) {
     : (value: any) => {
         plugin.pushOnChangeNotification(id, value);
       };
+  if (props.multiline) {
+    return (
+      <TextArea
+        placeholder={props.placeholder}
+        value={props.value}
+        maxRows={props.numberOfLines}
+        minRows={props.numberOfLines}
+        setValue={onChange}
+        children={children}
+        style={style}
+      />
+    );
+  }
   return (
     <TextField
       placeholder={props.placeholder}
@@ -721,6 +751,38 @@ function _TextField({ id, props, children, style }: any) {
       setValue={onChange}
       children={children}
       style={style}
+    />
+  );
+}
+
+export function TextArea({
+  maxRows,
+  minRows,
+  value,
+  setValue,
+  placeholder,
+  style,
+  className = "",
+}: any) {
+  const classes = useStyles();
+  className =
+    className +
+    `${classes.textAreaInput} ${
+      value ? classes.textFieldInputColor : classes.textFieldInputColorEmpty
+    }
+    `;
+  return (
+    <MuiTextArea
+      maxRows={maxRows}
+      minRows={minRows}
+      onChange={(e) => setValue(e.target.value)}
+      placeholder={placeholder}
+      style={{
+        width: "100%",
+        ...style,
+      }}
+      value={value}
+      className={className}
     />
   );
 }

@@ -31,8 +31,9 @@ import { BottomCard } from "./Balances/TokensWidget/Send";
 import { useDrawerContext } from "../common/Layout/Drawer";
 import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
-import { MaxLabel } from "../common/MaxLabel";
+import { MaxSwapLabel } from "../common/MaxSwapLabel";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
+import { TokenAmountHeader } from "../common/TokenAmountHeader";
 
 const { Zero } = ethers.constants;
 
@@ -50,6 +51,7 @@ const useStyles = styles((theme) => ({
   },
   bottomHalfWrapper: {
     borderTop: `${theme.custom.colors.borderFull}`,
+    backgroundColor: theme.custom.colors.bg3,
     flex: 1,
     paddingBottom: "16px",
     paddingTop: "38px",
@@ -120,8 +122,8 @@ const useStyles = styles((theme) => ({
   },
   swapTokensButton: {
     border: `${theme.custom.colors.borderFull}`,
-    width: "38px",
-    height: "38px",
+    width: "44px",
+    height: "44px",
     marginLeft: "auto",
     marginRight: "auto",
   },
@@ -338,9 +340,9 @@ function InputTextField() {
   return (
     <>
       <TextFieldLabel
-        leftLabel={"You Pay"}
+        leftLabel={"Sending"}
         rightLabelComponent={
-          <MaxLabel
+          <MaxSwapLabel
             amount={availableForSwap}
             onSetAmount={setFromAmount}
             decimals={fromMintInfo.decimals}
@@ -367,7 +369,7 @@ function OutputTextField() {
   const { toAmount, toMintInfo, isLoadingRoutes } = useSwapContext();
   return (
     <>
-      <TextFieldLabel leftLabel={"You Receive"} />
+      <TextFieldLabel leftLabel={"Receiving"} />
       <TextField
         placeholder={"0"}
         startAdornment={
@@ -495,11 +497,6 @@ function SwapConfirming({
   onViewBalances: () => void;
 }) {
   const classes = useStyles();
-  const theme = useCustomTheme();
-
-  const _onViewBalances = () => {
-    onViewBalances();
-  };
 
   return (
     <div
@@ -557,7 +554,7 @@ function SwapConfirming({
           }}
         >
           <SecondaryButton
-            onClick={() => _onViewBalances()}
+            onClick={() => onViewBalances()}
             label={"View Balances"}
           />
         </div>
@@ -591,30 +588,17 @@ function SwapError({ onRetry, onCancel }: any) {
   );
 }
 
-//
-// Token logo, swap receive amount, and swap currency
-//
 function SwapReceiveAmount() {
-  const classes = useStyles();
-  const theme = useCustomTheme();
   const { toAmount, toMintInfo } = useSwapContext();
-
-  const logoUri = toMintInfo ? toMintInfo.logoURI : "-";
   return (
-    <div
-      className={classes.confirmationAmount}
-      style={{ display: "flex", justifyContent: "center" }}
-    >
-      <img
-        className={classes.tokenLogoLarge}
-        src={logoUri}
-        onError={(event) => (event.currentTarget.style.display = "none")}
-      />
-      {toAmount ? ethers.utils.formatUnits(toAmount, toMintInfo.decimals) : 0}
-      <span style={{ color: theme.custom.colors.secondary, marginLeft: "8px" }}>
-        {toMintInfo?.symbol}
-      </span>
-    </div>
+    <TokenAmountHeader
+      token={{
+        logo: toMintInfo.logoURI,
+        ticker: toMintInfo.symbol,
+        decimals: toMintInfo.decimals,
+      }}
+      amount={toAmount!}
+    />
   );
 }
 

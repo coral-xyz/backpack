@@ -187,6 +187,9 @@ async function handle<T = any>(
   }
 }
 
+// Locks for limiting requests to one per origin
+const locks = new Set();
+
 // Automatically connect in the event we're unlocked and the origin
 // has been previously approved. Otherwise, open a new window to prompt
 // the user to unlock and approve.
@@ -199,6 +202,12 @@ async function handleConnect(
   blockchain: Blockchain
 ): Promise<RpcResponse<string>> {
   const origin = ctx.sender.origin;
+
+  if (locks.has(origin)) {
+    throw new Error(`already handling a request from ${origin}`);
+  }
+  locks.add(origin);
+
   const keyringStoreState = await ctx.backend.keyringStoreState();
   let didApprove = false;
   let resp: any;
@@ -213,7 +222,8 @@ async function handleConnect(
         return openApprovalPopupWindow(
           ctx.sender.origin,
           ctx.sender.tab.title,
-          requestId
+          requestId,
+          blockchain
         );
       });
       didApprove = !resp.windowClosed && resp.result;
@@ -224,7 +234,8 @@ async function handleConnect(
         return openLockedPopupWindow(
           ctx.sender.origin,
           ctx.sender.tab.title,
-          requestId
+          requestId,
+          blockchain
         );
       });
       didApprove = !resp.windowClosed && resp.result;
@@ -233,14 +244,18 @@ async function handleConnect(
         return openLockedApprovalPopupWindow(
           ctx.sender.origin,
           ctx.sender.tab.title,
-          requestId
+          requestId,
+          blockchain
         );
       });
       didApprove = !resp.windowClosed && resp.result;
     }
   } else {
+    locks.delete(origin);
     throw new Error("invariant violation keyring not created");
   }
+
+  locks.delete(origin);
 
   if (resp && !resp.windowClosed) {
     BrowserRuntimeExtension.closeWindow(resp.window.id);

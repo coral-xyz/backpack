@@ -90,10 +90,7 @@ const options = {
         test: /\.css$/,
         use: [
           {
-            loader:
-              process.env.NODE_ENV === "production"
-                ? MiniCssExtractPlugin.loader
-                : "style-loader",
+            loader: "style-loader",
           },
           {
             loader: "css-loader",

@@ -6,7 +6,7 @@ import {
 } from "@coral-xyz/common";
 import {
   NotificationsProvider,
-  useActiveWallet,
+  useActiveSolanaWallet,
   useBackgroundClient,
   useBackgroundKeepAlive,
   useBlockchainTokensSorted,
@@ -46,7 +46,7 @@ const HomeScreen = () => {
 const UnlockedScreen = () => {
   const background = useBackgroundClient();
   const navigate = useNavigate();
-  const wallet = useActiveWallet();
+  const wallet = useActiveSolanaWallet();
   const { totalBalance, totalChange, percentChange } = useTotal();
   const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
   const connectionUrl = useSolanaConnectionUrl();

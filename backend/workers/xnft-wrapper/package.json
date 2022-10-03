@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "esbuild": "^0.14.47",
-    "miniflare": "^2.5.1",
+    "miniflare": "^2.9.0",
     "wrangler": "^2.0.15"
   }
 }

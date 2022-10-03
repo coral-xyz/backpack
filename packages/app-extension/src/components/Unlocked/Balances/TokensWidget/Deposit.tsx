@@ -5,12 +5,14 @@ import QrCodeIcon from "@mui/icons-material/QrCode";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { useActiveWallets, useBlockchainLogo } from "@coral-xyz/recoil";
 import { Blockchain } from "@coral-xyz/common";
-import { walletAddressDisplay, SecondaryButton } from "../../../common";
-import { useDrawerContext } from "../../../common/Layout/Drawer";
+import {
+  walletAddressDisplay,
+  SecondaryButton,
+  TextField,
+} from "../../../common";
+import { useDrawerContext, CloseButton } from "../../../common/Layout/Drawer";
 import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 import { useNavStack } from "../../../common/Layout/NavStack";
-import { CloseButton } from "../../../common/Layout/Drawer";
-import { TextField } from "../../../common";
 
 export function Deposit({ ...props }: any) {
   if (props.blockchain) {
@@ -19,8 +21,7 @@ export function Deposit({ ...props }: any) {
   return <DepositMultichain {...props} />;
 }
 
-function DepositMultichain({ ...props }: any) {
-  const theme = useCustomTheme();
+function DepositMultichain() {
   const nav = useNavStack();
   const { close } = useDrawerContext();
   const activeWallets = useActiveWallets();

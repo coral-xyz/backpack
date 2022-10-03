@@ -34,9 +34,9 @@
     "recoil": "^0.7.5"
   },
   "scripts": {
-    "start": "NODE_ENV=development webpack serve",
-    "build": "NODE_ENV=production webpack",
-    "build:release": "NODE_ENV=production webpack",
+    "start": "cross-env NODE_ENV=development webpack serve",
+    "build": "cross-env NODE_ENV=production webpack",
+    "build:release": "cross-env NODE_ENV=production webpack",
     "e2e": "jest --maxWorkers 1 --detectOpenHandles --forceExit --verbose",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
   },
@@ -67,6 +67,7 @@
     "@typescript-eslint/parser": "^5.25.0",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
+    "cross-env": "^7.0.3",
     "crypto-browserify": "^3.12.0",
     "css-loader": "^6.7.1",
     "esbuild": "^0.14.42",

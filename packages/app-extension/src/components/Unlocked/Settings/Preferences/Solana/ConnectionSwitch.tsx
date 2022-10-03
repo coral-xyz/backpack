@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Check } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import {
+  getLogger,
   SolanaCluster,
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
 } from "@coral-xyz/common";
@@ -9,6 +10,8 @@ import { useBackgroundClient, useSolanaConnectionUrl } from "@coral-xyz/recoil";
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
 import { SettingsList } from "../../../../common/Settings/List";
 import { useNavStack } from "../../../../common/Layout/NavStack";
+
+const logger = getLogger("preferences");
 
 export function PreferencesSolanaConnection() {
   const { close } = useDrawerContext();
@@ -34,11 +37,15 @@ export function PreferencesSolanaConnection() {
       detail: currentUrl === SolanaCluster.LOCALNET ? <Checkmark /> : <></>,
     },
     Custom: {
-      onClick: () =>
-        changeNetwork(
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          new URL(prompt("Enter your custom endpoint")!.trim()).toString()
-        ),
+      onClick: () => {
+        const userProvidedUrl = prompt("Enter your custom endpoint") ?? "";
+        try {
+          const url = new URL(userProvidedUrl.trim()).toString();
+          changeNetwork(url);
+        } catch (e: any) {
+          logger.error(e.toString());
+        }
+      },
       detail:
         currentUrl !== SolanaCluster.MAINNET &&
         currentUrl !== SolanaCluster.DEVNET &&

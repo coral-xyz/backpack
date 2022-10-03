@@ -28,7 +28,7 @@ export function PreferencesEthereumConnection() {
   }, [nav]);
 
   const menuItems = {
-    "Mainnet (Beta)": {
+    Mainnet: {
       onClick: () => changeNetwork(EthereumConnectionUrl.MAINNET, "0x1"),
       detail:
         currentUrl === EthereumConnectionUrl.MAINNET ? <Checkmark /> : <></>,

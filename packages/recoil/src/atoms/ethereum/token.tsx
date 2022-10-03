@@ -88,9 +88,10 @@ export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
       const usdBalance =
         price && price.usd ? price.usd * parseFloat(displayBalance) : 0;
       const oldUsdBalance =
-        usdBalance === 0 ? 0 : usdBalance / (1 + price.usd_24h_change);
-      const recentUsdBalanceChange =
-        (usdBalance - oldUsdBalance) / oldUsdBalance;
+        usdBalance === 0
+          ? 0
+          : usdBalance - usdBalance * (price.usd_24h_change / 100);
+      const recentUsdBalanceChange = usdBalance - oldUsdBalance;
       const recentPercentChange =
         price && price.usd_24h_change
           ? parseFloat(price.usd_24h_change.toFixed(2))

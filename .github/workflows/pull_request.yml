@@ -89,18 +89,18 @@ jobs:
         run: yarn install --frozen-lockfile --prefer-offline
 
       ##########################################################################
-      # Yarn test.
-      ##########################################################################
-
-      - run: yarn test
-
-      ##########################################################################
       # Build extension.
       ##########################################################################
 
       #
       # Build the extension, edge release.
       #
+      - name: "pre-build-public"
+        working-directory: packages/common-public
+        run: yarn build
+      - name: "pre-build"
+        working-directory: packages/common
+        run: yarn build
       - name: "build edge"
         env:
           BACKPACK_CONFIG_VERSION: "latest-edge-${{ github.run_number }}"
@@ -108,6 +108,7 @@ jobs:
           BACKPACK_FEATURE_LIGHT_MODE: "true"
           BACKPACK_FEATURE_POP_MODE: "true"
           BACKPACK_FEATURE_MULTICHAIN: "true"
+          BACKPACK_FEATURE_XNFT: "true"
           # CI!=true so that build warnings aren't treated like errors (for now)
           CI: ""
         run: yarn build
@@ -118,6 +119,12 @@ jobs:
       #
       # Build the extension, beta release.
       #
+      - name: "pre-build-public"
+        working-directory: packages/common-public
+        run: yarn build
+      - name: "pre-build"
+        working-directory: packages/common
+        run: yarn build
       - name: "build beta"
         env:
           BACKPACK_CONFIG_VERSION: "latest-beta-${{ github.run_number }}"
@@ -134,18 +141,11 @@ jobs:
         working-directory: packages/app-extension
         run: mv build build-beta
 
-      #
-      # Build the extension, stable release.
-      #
-      - name: "build stable"
-        env:
-          BACKPACK_CONFIG_VERSION: "latest-${{ github.run_number }}"
-          BACKPACK_CONFIG_LOG_LEVEL: "info"
-          BACKPACK_FEATURE_LIGHT_MODE: "true"
-          BACKPACK_FEATURE_POP_MODE: "true"
-          # CI!=true so that build warnings aren't treated like errors (for now)
-          CI: ""
-        run: yarn build
+      ##########################################################################
+      # Yarn test.
+      ##########################################################################
+
+      - run: yarn test
 
       ##########################################################################
       # GitHub Pages.
@@ -164,6 +164,7 @@ jobs:
         run: echo "short_sha=`echo "${{ env.commit_sha }}" | cut -c1-8`" >> $GITHUB_ENV
 
       - name: Deploy
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
         with:
           publish_dir: packages/background/build
@@ -181,20 +182,6 @@ jobs:
       ##########################################################################
       # Upload build artifacts.
       ##########################################################################
-
-      #
-      # Upload stable artifact.
-      #
-      - name: "zip stable build artifacts"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        working-directory: packages/app-extension
-        run: zip -r build-${{ github.run_number }}.zip build/
-      - name: "upload build artifacts"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v2
-        with:
-          name: backpack-build
-          path: packages/app-extension/build-${{ github.run_number }}.zip
 
       #
       # Upload edge artifact.
@@ -239,11 +226,6 @@ jobs:
       - uses: actions/download-artifact@v2
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
-          name: backpack-build
-          path: ./
-      - uses: actions/download-artifact@v2
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        with:
           name: backpack-build-edge
           path: ./
       - uses: actions/download-artifact@v2
@@ -270,15 +252,6 @@ jobs:
       #
       # Attach files to the release.
       #
-      - uses: actions/upload-release-asset@v1.0.1
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build-${{ github.run_number }}.zip
-          asset_name: build-${{ github.run_number }}.zip
-          asset_content_type: application/zip
       - uses: actions/upload-release-asset@v1.0.1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:

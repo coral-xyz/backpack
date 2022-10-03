@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, InputAdornment, IconButton } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import {
   Header,
@@ -32,29 +33,36 @@ export function CreatePassword({
   const theme = useCustomTheme();
   const [checked, setChecked] = useState(false);
   const [password, setPassword] = useState("");
-  const [passwordDup, setPasswordDup] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState<PasswordError | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     setError(null);
-  }, [password, passwordDup]);
+  }, [password, passwordConfirm]);
 
-  const next = async () => {
-    if (password.length < 8) {
-      setError(PasswordError.TOO_SHORT);
-      return;
-    } else if (password !== passwordDup) {
-      setError(PasswordError.NO_MATCH);
-      return;
-    }
-    onNext(password);
-  };
+  const next = useCallback(
+    async (e: FormEvent) => {
+      e.preventDefault();
+      if (password.length < 8) {
+        setError(PasswordError.TOO_SHORT);
+        return;
+      } else if (password !== passwordConfirm) {
+        setError(PasswordError.NO_MATCH);
+        return;
+      }
+      onNext(password);
+    },
+    [password, passwordConfirm]
+  );
 
   const isNextDisabled = !checked;
 
   return (
-    <Box
-      sx={{
+    <form
+      noValidate
+      onSubmit={next}
+      style={{
         display: "flex",
         flexDirection: "column",
         height: "100%",
@@ -86,20 +94,34 @@ export function CreatePassword({
           }}
         >
           <TextField
+            autoFocus={!passwordConfirm}
             inputProps={{ name: "password" }}
             placeholder="Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             value={password}
             setValue={setPassword}
             rootClass={classes.passwordFieldRoot}
             isError={error === PasswordError.TOO_SHORT}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  disableRipple
+                  sx={{ color: theme.custom.colors.icon }}
+                  onClick={() => setShowPassword(!showPassword)}
+                  onMouseDown={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
           />
           <TextField
             inputProps={{ name: "password-confirmation" }}
             placeholder="Confirm Password"
-            type="password"
-            value={passwordDup}
-            setValue={setPasswordDup}
+            type={showPassword ? "text" : "password"}
+            value={passwordConfirm}
+            setValue={setPasswordConfirm}
             rootClass={classes.passwordFieldRoot}
             isError={error === PasswordError.NO_MATCH}
           />
@@ -149,12 +171,12 @@ export function CreatePassword({
         <PrimaryButton
           disabled={isNextDisabled}
           label="Next"
-          onClick={next}
+          type="submit"
           buttonLabelStyle={{
             fontWeight: 600,
           }}
         />
       </Box>
-    </Box>
+    </form>
   );
 }

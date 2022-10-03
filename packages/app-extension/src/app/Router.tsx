@@ -3,9 +3,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { styles } from "@coral-xyz/themes";
 import {
   getLogger,
+  openOnboarding,
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
-  openOnboarding,
   QUERY_LOCKED,
   QUERY_APPROVAL,
   QUERY_LOCKED_APPROVAL,
@@ -153,6 +153,7 @@ function QueryApproval() {
   const origin = url.searchParams.get("origin");
   const title = url.searchParams.get("title");
   const requestId = parseInt(url.searchParams.get("requestId")!);
+  const blockchain = url.searchParams.get("blockchain");
 
   const approvedOrigins = useApprovedOrigins();
   const found = approvedOrigins.find((ao) => ao === origin);
@@ -165,6 +166,7 @@ function QueryApproval() {
     <ApproveOrigin
       origin={origin}
       title={title}
+      blockchain={blockchain}
       onCompletion={async (didApprove: boolean) => {
         await background.response({
           id: requestId,

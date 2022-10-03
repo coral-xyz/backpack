@@ -16,7 +16,6 @@ import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
 import {
   useBackgroundClient,
   useWalletPublicKeys,
-  useActiveWallet,
   useActiveWallets,
   useBlockchainLogo,
   useUsername,
@@ -316,10 +315,10 @@ function _SettingsContent() {
 }
 
 function AvatarHeader() {
-  const activeWallet = useActiveWallet();
+  const username = useUsername();
   const theme = useCustomTheme();
   return (
-    <div>
+    <div style={{ marginBottom: "40px" }}>
       <div
         style={{
           background: theme.custom.colors.coralGradient,
@@ -344,18 +343,21 @@ function AvatarHeader() {
           }}
         />
       </div>
-      <Typography
-        style={{
-          textAlign: "center",
-          color: theme.custom.colors.fontColor,
-          fontWeight: 500,
-          fontSize: "18px",
-          lineHeight: "28px",
-          marginBottom: "40px",
-        }}
-      >
-        {activeWallet.name}
-      </Typography>
+      {username && (
+        <Typography
+          style={{
+            textAlign: "center",
+            color: theme.custom.colors.fontColor,
+            fontWeight: 500,
+            fontSize: "18px",
+            lineHeight: "28px",
+            marginTop: "8px",
+            marginBottom: "12px",
+          }}
+        >
+          @{username}
+        </Typography>
+      )}
     </div>
   );
 }
@@ -740,7 +742,6 @@ function SettingsList({ close }: { close: () => void }) {
   const theme = useCustomTheme();
   const nav = useNavStack();
   const background = useBackgroundClient();
-  const username = useUsername();
 
   const lockWallet = () => {
     background
@@ -753,7 +754,7 @@ function SettingsList({ close }: { close: () => void }) {
 
   const settingsMenu = [
     {
-      label: username ? `Your Account (${username})` : "Your Account",
+      label: "Your Account",
       onClick: () => nav.push("your-account"),
       icon: (props: any) => <AccountCircleOutlined {...props} />,
       detailIcon: <PushDetail />,
@@ -917,6 +918,7 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   const [secretKey, setSecretKey] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [newPublicKey, setNewPublicKey] = useState("");
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -943,6 +945,7 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
       params: [publicKey],
     });
 
+    setNewPublicKey(publicKey);
     setOpenDrawer(true);
   };
 
@@ -1017,6 +1020,7 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
       >
         <ConfirmCreateWallet
           blockchain={blockchain}
+          publicKey={newPublicKey}
           setOpenDrawer={setOpenDrawer}
         />
       </WithMiniDrawer>

@@ -225,8 +225,6 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
 
     const { method, params } = args;
 
-    logger.debug("page injected provider request", method, params);
-
     if (typeof method !== "string" || method.length === 0) {
       throw ethErrors.rpc.invalidRequest({
         message: messages.errors.invalidRequestMethod(),
@@ -246,9 +244,10 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
     }
 
     const functionMap = {
-      eth_accounts: this.#handleEthRequestAccounts,
+      eth_accounts: this.#handleEthAccounts,
       eth_requestAccounts: this.#handleEthRequestAccounts,
       eth_chainId: () => this.chainId,
+      net_version: () => (this.chainId ? `${parseInt(this.chainId)}` : "1"),
       eth_getBalance: (address: string) => this.provider!.getBalance(address),
       eth_getCode: (address: string) => this.provider!.getCode(address),
       eth_getStorageAt: (address: string, position: string) =>
@@ -424,7 +423,17 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
   }
 
   /**
-   * Handle eth_accounts and eth_requestAccounts requests
+   * Handle eth_accounts requests
+   */
+  async #handleEthAccounts() {
+    if (this.isConnected() && this.publicKey) {
+      return [this.publicKey];
+    }
+    return [];
+  }
+
+  /**
+   * Handle eth_requestAccounts requests
    */
   #handleEthRequestAccounts = async () => {
     // Send request to the RPC API.
@@ -435,7 +444,7 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
         method: ETHEREUM_RPC_METHOD_CONNECT,
         params: [],
       });
-      return [result.publicKey];
+      return result.publicKey ? [result.publicKey] : [];
     }
   };
 
