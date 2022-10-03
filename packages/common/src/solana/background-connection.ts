@@ -85,6 +85,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_PARSED_TOKEN_ACCOUNTS_BY_OWNER,
   SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS,
   SOLANA_CONNECTION_RPC_GET_PARSED_ACCOUNT_INFO,
+  SOLANA_CONNECTION_RPC_GET_PARSED_PROGRAM_ACCOUNTS,
 } from "../constants";
 import { serializeTokenAccountsFilter } from "./types";
 import type { BackgroundClient } from "../channel";
@@ -392,6 +393,31 @@ export class BackgroundSolanaConnection extends Connection {
     return resp;
   }
 
+  async getParsedProgramAccounts(
+    programId: PublicKey,
+    configOrCommitment?: GetParsedProgramAccountsConfig | Commitment
+  ): Promise<
+    Array<{
+      pubkey: PublicKey;
+      account: AccountInfo<Buffer | ParsedAccountData>;
+    }>
+  > {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_PARSED_PROGRAM_ACCOUNTS,
+      params: [programId.toString(), configOrCommitment],
+    });
+    return resp.map((val) => {
+      return {
+        pubkey: new PublicKey(val.pubkey),
+        account: {
+          ...val.account,
+          owner: new PublicKey(val.account.owner),
+          data: Buffer.from(val.account.data.data),
+        },
+      };
+    });
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Below this not yet implemented.
   ///////////////////////////////////////////////////////////////////////////////
@@ -457,18 +483,6 @@ export class BackgroundSolanaConnection extends Connection {
     commitment?: Commitment,
     epoch?: number
   ): Promise<StakeActivationData> {
-    throw new Error("not implemented");
-  }
-
-  async getParsedProgramAccounts(
-    programId: PublicKey,
-    configOrCommitment?: GetParsedProgramAccountsConfig | Commitment
-  ): Promise<
-    Array<{
-      pubkey: PublicKey;
-      account: AccountInfo<Buffer | ParsedAccountData>;
-    }>
-  > {
     throw new Error("not implemented");
   }
 

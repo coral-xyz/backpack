@@ -10,14 +10,6 @@ export function useActiveWalletLoadable(): Loadable<{
   return useRecoilValueLoadable(atoms.activeWalletWithData)! as Loadable<any>;
 }
 
-export function useActiveWallet(): {
-  publicKey: string;
-  name: string;
-  blockchain: Blockchain;
-} {
-  return useRecoilValue(atoms.activeWalletWithData)!;
-}
-
 export function useActiveEthereumWallet(): {
   publicKey: string;
   name: string;

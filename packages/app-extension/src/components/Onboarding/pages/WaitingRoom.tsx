@@ -10,7 +10,7 @@ const WaitingRoom = () => (
   <iframe
     style={{
       border: "none",
-      height: "100%",
+      height: "98%",
       width: "100%",
       overflow: "hidden",
     }}

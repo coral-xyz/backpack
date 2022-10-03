@@ -11,7 +11,14 @@ export const CreateOrImportWallet = () => {
   const navigate = useNavigate();
 
   return (
-    <>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
       <Box style={{ flex: 1, textAlign: "center", padding: "32px 16px 0" }}>
         <BackpackHeader
           alphaStyle={{
@@ -49,6 +56,6 @@ export const CreateOrImportWallet = () => {
           </Grid>
         </Grid>
       </Box>
-    </>
+    </div>
   );
 };
