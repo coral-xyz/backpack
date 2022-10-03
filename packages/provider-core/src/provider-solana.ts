@@ -30,10 +30,14 @@ import {
 } from "@coral-xyz/common";
 import * as cmn from "./common/solana";
 import { RequestManager } from "./request-manager";
+import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 
 const logger = getLogger("provider-solana-injection");
 
-export class ProviderSolanaInjection extends EventEmitter implements Provider {
+export class ProviderSolanaInjection
+  extends PrivateEventEmitter
+  implements Provider
+{
   #options?: ConfirmOptions;
 
   //

@@ -15,13 +15,14 @@ import {
 } from "@coral-xyz/common";
 import * as cmn from "./common/ethereum";
 import { RequestManager } from "./request-manager";
+import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 
 const logger = getLogger("provider-xnft-injection");
 
 //
 // Injected provider for UI plugins.
 //
-export class ProviderEthereumXnftInjection extends EventEmitter {
+export class ProviderEthereumXnftInjection extends PrivateEventEmitter {
   #requestManager: RequestManager;
   #connectionRequestManager: RequestManager;
 

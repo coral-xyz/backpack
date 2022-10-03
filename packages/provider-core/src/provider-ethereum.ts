@@ -19,6 +19,7 @@ import {
 } from "@coral-xyz/common";
 import * as cmn from "./common/ethereum";
 import { RequestManager } from "./request-manager";
+import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 
 const logger = getLogger("provider-ethereum-injection");
 
@@ -78,7 +79,7 @@ export interface BaseProviderState {
   isPermanentlyDisconnected: boolean;
 }
 
-export class ProviderEthereumInjection extends EventEmitter {
+export class ProviderEthereumInjection extends PrivateEventEmitter {
   #state: BaseProviderState;
 
   protected static _defaultState: BaseProviderState = {
@@ -129,6 +130,13 @@ export class ProviderEthereumInjection extends EventEmitter {
 
   constructor() {
     super();
+    this._handleConnect = this._handleConnect.bind(this);
+    this._handleChainChanged = this._handleChainChanged.bind(this);
+    this._handleEthRequestAccounts = this._handleEthRequestAccounts.bind(this);
+    this._handleEthSignMessage = this._handleEthSignMessage.bind(this);
+    this._handleEthSignTransaction = this._handleEthSignTransaction.bind(this);
+    this._handleEthSendTransaction = this._handleEthSendTransaction.bind(this);
+
     if (new.target === ProviderEthereumInjection) {
       Object.freeze(this);
     }
@@ -150,13 +158,6 @@ export class ProviderEthereumInjection extends EventEmitter {
     this.#isBackpack = true;
     this.#chainId = null;
     this.#publicKey = null;
-
-    this._handleConnect = this._handleConnect.bind(this);
-    this._handleChainChanged = this._handleChainChanged.bind(this);
-    this._handleEthRequestAccounts = this._handleEthRequestAccounts.bind(this);
-    this._handleEthSignMessage = this._handleEthSignMessage.bind(this);
-    this._handleEthSignTransaction = this._handleEthSignTransaction.bind(this);
-    this._handleEthSendTransaction = this._handleEthSendTransaction.bind(this);
   }
 
   // Setup channels with the content script.

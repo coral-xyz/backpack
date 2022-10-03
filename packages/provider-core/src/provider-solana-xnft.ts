@@ -32,6 +32,7 @@ import {
 } from "@coral-xyz/common";
 import * as cmn from "./common/solana";
 import { RequestManager } from "./request-manager";
+import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 
 const logger = getLogger("provider-xnft-injection");
 
@@ -39,7 +40,7 @@ const logger = getLogger("provider-xnft-injection");
 // Injected provider for UI plugins.
 //
 export class ProviderSolanaXnftInjection
-  extends EventEmitter
+  extends PrivateEventEmitter
   implements Provider
 {
   #requestManager: RequestManager;
@@ -48,9 +49,9 @@ export class ProviderSolanaXnftInjection
   #publicKey?: PublicKey;
   #connection: Connection;
 
-  constructor(requestManager: RequestManager) {
+  constructor(requestManager: RequestManager, freeze = true) {
     super();
-    if (new.target === ProviderSolanaXnftInjection) {
+    if (new.target === ProviderSolanaXnftInjection && freeze) {
       Object.freeze(this);
     }
     this.#requestManager = requestManager;
@@ -256,6 +257,10 @@ export class ProviderSolanaXnftInjection
     const publicKey = event.data.detail.data.publicKey;
     this.#publicKey = publicKey;
     this.emit("publicKeyUpdate", event.data.detail);
+  }
+
+  public freeze() {
+    return Object.freeze(this);
   }
 
   public get publicKey() {
