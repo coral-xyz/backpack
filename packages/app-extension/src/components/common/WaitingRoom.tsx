@@ -1,6 +1,7 @@
 import { useUsername } from "@coral-xyz/recoil";
 import { useEffect } from "react";
 import { useNavStack } from "./Layout/NavStack";
+import SocialNavbarButtons from "./SocialNavbarButtons";
 
 const WAITLIST_RES_ID_KEY = "waitlist-form-res-id";
 
@@ -20,6 +21,7 @@ const WaitingRoom = ({ onboarded }: { onboarded?: boolean }) => {
   useEffect(() => {
     if (onboarded && nav) {
       nav.setTitle("");
+      nav.setNavButtonRight(<SocialNavbarButtons />);
     }
   }, []);
 
