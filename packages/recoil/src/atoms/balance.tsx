@@ -94,7 +94,7 @@ export const blockchainTotalBalance = selectorFamily({
         .map((t) => t.recentUsdBalanceChange)
         .reduce((a, b) => a + b, 0);
       const oldBalance = totalBalance - totalChange;
-      const percentChange = totalChange / oldBalance;
+      const percentChange = (totalChange / oldBalance) * 100;
       return {
         totalBalance: parseFloat(totalBalance.toFixed(2)),
         totalChange: parseFloat(totalChange.toFixed(2)),
