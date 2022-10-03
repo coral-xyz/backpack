@@ -402,6 +402,7 @@ async function handleGetParsedAccountInfo(
   const resp = await ctx.backend.getParsedAccountInfo(
     new PublicKey(publicKey),
     commitment
+ );
   return [resp];
 }
 
