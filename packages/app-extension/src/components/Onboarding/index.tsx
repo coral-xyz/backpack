@@ -17,7 +17,7 @@ import {
   useState,
 } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { DiscordIcon } from "../common/Icon";
+import { DiscordIcon, TwitterIcon } from "../common/Icon";
 import { WithContaineredDrawer } from "../common/Layout/Drawer";
 import { NavBackButton, NAV_BAR_HEIGHT, WithNav } from "../common/Layout/Nav";
 import { List, ListItem } from "../common/List";
@@ -44,6 +44,11 @@ export const Onboarding = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const containerRef = useRef();
 
+  const handleTwitterClick = () => {
+    window.open("https://twitter.com/xNFT_Backpack", "_blank", "noreferrer");
+    window.open("https://twitter.com/wao_gg", "_blank", "noreferrer");
+  };
+
   return (
     <OptionsContainer innerRef={containerRef}>
       <WithNav
@@ -55,6 +60,25 @@ export const Onboarding = () => {
               menuOpen={menuOpen}
               setMenuOpen={setMenuOpen}
             />
+          ) : pathname === "/waitingRoom" ? (
+            <span style={{ display: "flex", alignItems: "center" }}>
+              <a
+                rel="noreferrer"
+                target="_blank"
+                href="https://discord.gg/RdjmJyvyBs"
+              >
+                <DiscordIcon
+                  style={{ marginRight: "5px", height: "16px" }}
+                  fill="#5865F2"
+                />
+              </a>
+              <span style={{ cursor: "pointer" }} onClick={handleTwitterClick}>
+                <TwitterIcon
+                  style={{ marginLeft: "5px", height: "20px" }}
+                  fill="#1D9BF0"
+                />
+              </span>
+            </span>
           ) : undefined
         }
         navbarStyle={{

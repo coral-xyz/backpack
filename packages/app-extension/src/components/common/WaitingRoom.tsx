@@ -11,10 +11,16 @@ export const getWaitlistId = () =>
   window.localStorage.getItem(WAITLIST_RES_ID_KEY) ?? undefined;
 
 const WaitingRoom = ({ onboarded }: { onboarded?: boolean }) => {
-  const nav = useNavStack();
+  let nav: ReturnType<typeof useNavStack>;
+
+  if (onboarded) {
+    nav = useNavStack();
+  }
 
   useEffect(() => {
-    nav.setTitle("");
+    if (onboarded && nav) {
+      nav.setTitle("");
+    }
   }, []);
 
   return (
