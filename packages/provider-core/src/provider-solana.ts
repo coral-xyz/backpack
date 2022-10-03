@@ -68,7 +68,7 @@ export class ProviderSolanaInjection
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
       CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
     );
-    this._initChannels();
+    this.#initChannels();
 
     this.#isBackpack = true;
     this.#isConnected = false;
@@ -84,26 +84,26 @@ export class ProviderSolanaInjection
   }
 
   // Setup channels with the content script.
-  _initChannels() {
-    window.addEventListener("message", this._handleNotification.bind(this));
+  #initChannels() {
+    window.addEventListener("message", this.#handleNotification.bind(this));
   }
 
-  _handleNotification(event: Event) {
+  #handleNotification(event: Event) {
     if (event.data.type !== CHANNEL_SOLANA_NOTIFICATION) return;
     logger.debug("notification", event);
 
     switch (event.data.detail.name) {
       case NOTIFICATION_SOLANA_CONNECTED:
-        this._handleNotificationConnected(event);
+        this.#handleNotificationConnected(event);
         break;
       case NOTIFICATION_SOLANA_DISCONNECTED:
-        this._handleNotificationDisconnected(event);
+        this.#handleNotificationDisconnected(event);
         break;
       case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
-        this._handleNotificationConnectionUrlUpdated(event);
+        this.#handleNotificationConnectionUrlUpdated(event);
         break;
       case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
-        this._handleNotificationActiveWalletUpdated(event);
+        this.#handleNotificationActiveWalletUpdated(event);
         break;
       default:
         throw new Error(`unexpected notification ${event.data.detail.name}`);
@@ -112,9 +112,9 @@ export class ProviderSolanaInjection
     this.emit(_mapNotificationName(event.data.detail.name));
   }
 
-  _handleNotificationConnected(event: Event) {}
+  #handleNotificationConnected(event: Event) {}
 
-  private _connect(publicKey: string, connectionUrl: string) {
+  #connect(publicKey: string, connectionUrl: string) {
     this.#isConnected = true;
     this.#publicKey = new PublicKey(publicKey);
     this.#connection = new BackgroundSolanaConnection(
@@ -123,19 +123,19 @@ export class ProviderSolanaInjection
     );
   }
 
-  _handleNotificationDisconnected(event: Event) {
+  #handleNotificationDisconnected(event: Event) {
     this.#isConnected = false;
     this.#connection = this.defaultConnection();
   }
 
-  _handleNotificationConnectionUrlUpdated(event: Event) {
+  #handleNotificationConnectionUrlUpdated(event: Event) {
     this.#connection = new BackgroundSolanaConnection(
       this.#connectionRequestManager,
       event.data.detail.data.url
     );
   }
 
-  _handleNotificationActiveWalletUpdated(event: Event) {
+  #handleNotificationActiveWalletUpdated(event: Event) {
     this.#publicKey = new PublicKey(event.data.detail.data.activeWallet);
   }
 
@@ -149,7 +149,7 @@ export class ProviderSolanaInjection
       params: [],
     });
 
-    this._connect(result.publicKey, result.connectionUrl);
+    this.#connect(result.publicKey, result.connectionUrl);
   }
 
   async disconnect() {

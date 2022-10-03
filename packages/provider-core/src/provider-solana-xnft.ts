@@ -59,10 +59,10 @@ export class ProviderSolanaXnftInjection
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
       CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
     );
-    this._setupChannels();
+    this.#setupChannels();
   }
 
-  private _connect(publicKey: string, connectionUrl: string) {
+  #connect(publicKey: string, connectionUrl: string) {
     this.#publicKey = new PublicKey(publicKey);
     this.#connection = new BackgroundSolanaConnection(
       this.#connectionRequestManager,
@@ -179,14 +179,14 @@ export class ProviderSolanaXnftInjection
     });
   }
 
-  private _setupChannels() {
-    window.addEventListener("message", this._handleNotifications.bind(this));
+  #setupChannels() {
+    window.addEventListener("message", this.#handleNotifications.bind(this));
   }
 
   //
   // Notifications from the extension UI -> plugin.
   //
-  private async _handleNotifications(event: Event) {
+  async #handleNotifications(event: Event) {
     if (event.data.type !== CHANNEL_PLUGIN_NOTIFICATION) return;
 
     logger.debug("handle notification", event);
@@ -194,25 +194,25 @@ export class ProviderSolanaXnftInjection
     const { name } = event.data.detail;
     switch (name) {
       case PLUGIN_NOTIFICATION_CONNECT:
-        this._handleConnect(event);
+        this.#handleConnect(event);
         break;
       case PLUGIN_NOTIFICATION_MOUNT:
-        this._handleMount(event);
+        this.#handleMount(event);
         break;
       case PLUGIN_NOTIFICATION_UNMOUNT:
-        this._handleUnmount(event);
+        this.#handleUnmount(event);
         break;
       case PLUGIN_NOTIFICATION_ON_CLICK:
-        this._handleOnClick(event);
+        this.#handleOnClick(event);
         break;
       case PLUGIN_NOTIFICATION_ON_CHANGE:
-        this._handleOnChange(event);
+        this.#handleOnChange(event);
         break;
       case PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
-        this._handleConnectionUrlUpdated(event);
+        this.#handleConnectionUrlUpdated(event);
         break;
       case PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED:
-        this._handlePublicKeyUpdated(event);
+        this.#handlePublicKeyUpdated(event);
         break;
       default:
         console.error(event);
@@ -220,31 +220,31 @@ export class ProviderSolanaXnftInjection
     }
   }
 
-  private _handleConnect(event: Event) {
+  #handleConnect(event: Event) {
     const { publicKeys, connectionUrls } = event.data.detail.data;
     const publicKey = publicKeys[Blockchain.SOLANA];
     const connectionUrl = connectionUrls[Blockchain.SOLANA];
-    this._connect(publicKey, connectionUrl);
+    this.#connect(publicKey, connectionUrl);
     this.emit("connect", event.data.detail);
   }
 
-  private _handleMount(event: Event) {
+  #handleMount(event: Event) {
     this.emit("mount", event.data.detail);
   }
 
-  private _handleUnmount(event: Event) {
+  #handleUnmount(event: Event) {
     this.emit("unmount", event.data.detail);
   }
 
-  private _handleOnClick(event: Event) {
+  #handleOnClick(event: Event) {
     this.emit("click", event.data.detail);
   }
 
-  private _handleOnChange(event: Event) {
+  #handleOnChange(event: Event) {
     this.emit("change", event.data.detail);
   }
 
-  private _handleConnectionUrlUpdated(event: Event) {
+  #handleConnectionUrlUpdated(event: Event) {
     const connectionUrl = event.data.detail.data.url;
     this.#connection = new BackgroundSolanaConnection(
       this.#connectionRequestManager,
@@ -253,7 +253,7 @@ export class ProviderSolanaXnftInjection
     this.emit("connectionUpdate", event.data.detail);
   }
 
-  private _handlePublicKeyUpdated(event: Event) {
+  #handlePublicKeyUpdated(event: Event) {
     const publicKey = event.data.detail.data.publicKey;
     this.#publicKey = publicKey;
     this.emit("publicKeyUpdate", event.data.detail);

@@ -123,19 +123,8 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
    */
   #provider?: ethers.providers.JsonRpcProvider;
 
-  #setState = (updatedState) => {
-    this.#state = updatedState;
-    Object.freeze(this.#state);
-  };
-
   constructor() {
     super();
-    this._handleConnect = this._handleConnect.bind(this);
-    this._handleChainChanged = this._handleChainChanged.bind(this);
-    this._handleEthRequestAccounts = this._handleEthRequestAccounts.bind(this);
-    this._handleEthSignMessage = this._handleEthSignMessage.bind(this);
-    this._handleEthSignTransaction = this._handleEthSignTransaction.bind(this);
-    this._handleEthSendTransaction = this._handleEthSendTransaction.bind(this);
 
     if (new.target === ProviderEthereumInjection) {
       Object.freeze(this);
@@ -149,7 +138,7 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
       CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST,
       CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE
     );
-    this._initChannels();
+    this.#initChannels();
 
     this.#setState({
       ...ProviderEthereumInjection._defaultState,
@@ -161,8 +150,13 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
   }
 
   // Setup channels with the content script.
-  _initChannels() {
+  #initChannels() {
     window.addEventListener("message", this._handleNotification.bind(this));
+  }
+
+  #setState(updatedState) {
+    this.#state = updatedState;
+    Object.freeze(this.#state);
   }
 
   //
@@ -253,8 +247,8 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
     }
 
     const functionMap = {
-      eth_accounts: this._handleEthRequestAccounts,
-      eth_requestAccounts: this._handleEthRequestAccounts,
+      eth_accounts: this.#handleEthRequestAccounts,
+      eth_requestAccounts: this.#handleEthRequestAccounts,
       eth_chainId: () => this.chainId,
       eth_getBalance: (address: string) => this.provider!.getBalance(address),
       eth_getCode: (address: string) => this.provider!.getCode(address),
@@ -280,11 +274,11 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
         );
       },
       personal_sign: (messageHex: string, _address: string) =>
-        this._handleEthSignMessage(messageHex),
+        this.#handleEthSignMessage(messageHex),
       eth_signTransaction: (transaction: any) =>
-        this._handleEthSignTransaction(transaction),
+        this.#handleEthSignTransaction(transaction),
       eth_sendTransaction: (transaction: any) =>
-        this._handleEthSendTransaction(transaction),
+        this.#handleEthSendTransaction(transaction),
     };
 
     const func = functionMap[method];
@@ -349,9 +343,9 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
       connectionUrl,
       parseInt(chainId)
     );
-    this._handleConnect(chainId);
-    this._handleChainChanged(chainId);
-    this._handleAccountsChanged([this.#publicKey]);
+    this.#handleConnect(chainId);
+    this.#handleChainChanged(chainId);
+    this.#handleAccountsChanged([this.#publicKey]);
   }
 
   /**
@@ -388,7 +382,7 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
 
   async _handleNotificationChainIdUpdated(event: any) {
     const { chainId } = event.data.detail.data;
-    this._handleChainChanged(chainId);
+    this.#handleChainChanged(chainId);
   }
 
   /**
@@ -399,41 +393,41 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
     if (this.#publicKey !== activeWallet) {
       this.#publicKey = activeWallet;
       // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#accountschanged
-      this._handleAccountsChanged([this.#publicKey]);
+      this.#handleAccountsChanged([this.#publicKey]);
     }
   }
 
   /**
    * Update local state and emit required event for connect.
    */
-  protected async _handleConnect(chainId: string) {
+  #handleConnect = async (chainId: string) => {
     if (!this.#state.isConnected) {
       this.#setState({ ...this.#state, isConnected: true });
     }
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#connect
     this.emit("connect", { chainId } as ProviderConnectInfo);
-  }
+  };
 
   /**
    * Update local state and emit required event for chain change.
    */
-  protected async _handleChainChanged(chainId: string) {
+  #handleChainChanged = (chainId: string) => {
     this.#chainId = chainId;
     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#chainchanged
     this.emit("chainChanged", chainId);
-  }
+  };
 
   /**
    * Emit the required event for a change of accounts.
    */
-  protected async _handleAccountsChanged(accounts: unknown[]) {
+  async #handleAccountsChanged(accounts: unknown[]) {
     this.emit("accountsChanged", accounts);
   }
 
   /**
    * Handle eth_accounts and eth_requestAccounts requests
    */
-  protected async _handleEthRequestAccounts() {
+  #handleEthRequestAccounts = async () => {
     // Send request to the RPC API.
     if (this.isConnected() && this.#publicKey) {
       return [this.#publicKey];
@@ -444,12 +438,12 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
       });
       return [result.publicKey];
     }
-  }
+  };
 
   /**
    * Handle eth_sign, eth_signTypedData, personal_sign RPC requests.
    */
-  protected async _handleEthSignMessage(messageHex: string) {
+  #handleEthSignMessage = async (messageHex: string) => {
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
@@ -458,12 +452,12 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
       this.#requestManager,
       ethers.utils.toUtf8String(messageHex)
     );
-  }
+  };
 
   /**
    * Handle eth_signTransaction RPC requests.
    */
-  protected async _handleEthSignTransaction(transaction: any) {
+  #handleEthSignTransaction = async (transaction: any) => {
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
@@ -472,12 +466,12 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
       this.#requestManager,
       transaction
     );
-  }
+  };
 
   /**
    * Handle eth_sendTransaction RPC requests.
    */
-  protected async _handleEthSendTransaction(transaction: any) {
+  #handleEthSendTransaction = async (transaction: any) => {
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
@@ -486,7 +480,7 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
       this.#requestManager,
       transaction
     );
-  }
+  };
 
   public get publicKey() {
     return this.#publicKey;
