@@ -487,6 +487,21 @@ export class SolanaConnectionBackend {
     );
   }
 
+  async getParsedProgramAccounts(
+    programId: PublicKey,
+    configOrCommitment?: GetParsedProgramAccountsConfig | Commitment
+  ): Promise<
+    Array<{
+      pubkey: PublicKey;
+      account: AccountInfo<Buffer | ParsedAccountData>;
+    }>
+  > {
+    return await this.connection!.getParsedProgramAccounts(
+      programId,
+      configOrCommitment
+    );
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Methods below not used currently.
   ///////////////////////////////////////////////////////////////////////////////
@@ -553,18 +568,6 @@ export class SolanaConnectionBackend {
     commitment?: Commitment,
     epoch?: number
   ): Promise<StakeActivationData> {
-    throw new Error("not implemented");
-  }
-
-  async getParsedProgramAccounts(
-    programId: PublicKey,
-    configOrCommitment?: GetParsedProgramAccountsConfig | Commitment
-  ): Promise<
-    Array<{
-      pubkey: PublicKey;
-      account: AccountInfo<Buffer | ParsedAccountData>;
-    }>
-  > {
     throw new Error("not implemented");
   }
 
