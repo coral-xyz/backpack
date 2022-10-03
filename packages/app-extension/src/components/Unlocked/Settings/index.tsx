@@ -766,12 +766,6 @@ function SettingsList({ close }: { close: () => void }) {
       detailIcon: <PushDetail />,
     },
     {
-      label: "Waiting Room",
-      onClick: () => nav.push("waiting-room"),
-      icon: (props: any) => <People {...props} />,
-      detailIcon: <PushDetail />,
-    },
-    {
       label: "Preferences",
       onClick: () => nav.push("preferences"),
       icon: (props: any) => <Settings {...props} />,
@@ -805,6 +799,12 @@ function SettingsList({ close }: { close: () => void }) {
   });
 
   const discordList = [
+    {
+      label: "Waiting Room",
+      onClick: () => nav.push("waiting-room"),
+      icon: (props: any) => <People {...props} />,
+      detailIcon: <PushDetail />,
+    },
     {
       label: "Need help? Hop into Discord",
       onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
