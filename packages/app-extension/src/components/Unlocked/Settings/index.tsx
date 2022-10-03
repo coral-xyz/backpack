@@ -10,6 +10,7 @@ import {
   AccountCircleOutlined,
   Tab as WindowIcon,
   Settings,
+  People,
 } from "@mui/icons-material";
 import { Keypair } from "@solana/web3.js";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
@@ -82,6 +83,7 @@ import { DiscordIcon, GridIcon } from "../../common/Icon";
 import { XnftSettings } from "./Xnfts";
 import { XnftDetail } from "./Xnfts/Detail";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
+import WaitingRoom from "../../common/WaitingRoom";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -183,6 +185,10 @@ function AvatarButton() {
             <NavStackScreen
               name={"your-account"}
               component={(props: any) => <YourAccount {...props} />}
+            />
+            <NavStackScreen
+              name={"waiting-room"}
+              component={(props: any) => <WaitingRoom onboarded {...props} />}
             />
             <NavStackScreen
               name={"preferences"}
@@ -793,6 +799,12 @@ function SettingsList({ close }: { close: () => void }) {
   });
 
   const discordList = [
+    {
+      label: "Waiting Room",
+      onClick: () => nav.push("waiting-room"),
+      icon: (props: any) => <People {...props} />,
+      detailIcon: <PushDetail />,
+    },
     {
       label: "Need help? Hop into Discord",
       onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
