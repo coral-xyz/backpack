@@ -1,4 +1,3 @@
-import { EventEmitter } from "eventemitter3";
 import type {
   Connection,
   Transaction,

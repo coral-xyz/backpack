@@ -1,4 +1,3 @@
-import { EventEmitter } from "eventemitter3";
 import { ethErrors } from "eth-rpc-errors";
 import { ethers } from "ethers";
 import type { Event } from "@coral-xyz/common";

@@ -1,4 +1,3 @@
-import { EventEmitter } from "eventemitter3";
 import { Provider } from "@project-serum/anchor";
 import type {
   TransactionSignature,

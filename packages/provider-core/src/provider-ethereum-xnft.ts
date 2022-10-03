@@ -1,4 +1,3 @@
-import { EventEmitter } from "eventemitter3";
 import { ethers } from "ethers";
 import type { Event } from "@coral-xyz/common";
 import { UnsignedTransaction } from "@ethersproject/transactions";
