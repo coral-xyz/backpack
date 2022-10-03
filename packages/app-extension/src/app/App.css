@@ -40,6 +40,8 @@ body {
   bottom: 0px;
   overflow: scroll;
   margin-right: -15px;
+  display: flex;
+  flex-direction: column;
 }
 
 .stack-push-enter {
