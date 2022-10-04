@@ -437,55 +437,10 @@ export class KeyringStore {
     this.lastUsedTs = Date.now() / 1000;
   }
 
-  public async activeWallet(): Promise<string> {
-    return this.withUnlock(async () => {
-      const bc = this.activeBlockchainKeyring();
-      const w = bc.getActiveWallet();
-      return w!;
-    });
-  }
-
   public async activeWallets(): Promise<string[]> {
     return this.withUnlock(async () => {
       return [...this.blockchains.values()].map((bc) => bc.getActiveWallet()!);
     });
-  }
-
-  public async activeWalletUpdate(newWallet: string) {
-    return this.withUnlock(async () => {
-      // If the active wallet changes, update the active blockchain to match the active wallet
-      this.activeBlockchainUpdate(this.blockchainForPublicKey(newWallet));
-      await this.activeBlockchainKeyring().activeWalletUpdate(newWallet);
-      await this.persist();
-    });
-  }
-
-  public activeBlockchainKeyring(): BlockchainKeyring {
-    return this.withUnlock(() => {
-      return this.activeBlockchainUnchecked();
-    });
-  }
-
-  // Never use this.
-  private activeBlockchainUnchecked(): BlockchainKeyring {
-    return this.blockchains.get(this.activeBlockchain_!)!;
-  }
-
-  public activeBlockchain(): Blockchain {
-    return this.activeBlockchain_!;
-  }
-
-  public activeBlockchainUpdate(newActiveBlockchain: Blockchain) {
-    this.activeBlockchain_ = newActiveBlockchain;
-  }
-
-  public blockchainForPublicKey(pubkey: string): Blockchain {
-    for (const [blockchain, keyring] of this.blockchains) {
-      if (keyring.hasPublicKey(pubkey)) {
-        return blockchain as Blockchain;
-      }
-    }
-    throw new Error("invalid public key");
   }
 
   public keyringForBlockchain(blockchain: Blockchain): BlockchainKeyring {
