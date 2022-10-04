@@ -14,6 +14,7 @@ import {
   getLogger,
   withContextPort,
   ChannelAppUi,
+  UI_RPC_METHOD_ENABLED_BLOCKCHAINS_READ,
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
@@ -210,6 +211,8 @@ async function handle<T = any>(
       return await handleApprovedOriginsUpdate(ctx, params[0]);
     case UI_RPC_METHOD_APPROVED_ORIGINS_DELETE:
       return await handleApprovedOriginsDelete(ctx, params[0]);
+    case UI_RPC_METHOD_ENABLED_BLOCKCHAINS_READ:
+      return await handleEnabledBlockchainsRead(ctx);
     //
     // Nicknames for keys.
     //
@@ -772,6 +775,13 @@ async function handleApprovedOriginsDelete(
   origin: string
 ): Promise<RpcResponse> {
   const resp = await ctx.backend.approvedOriginsDelete(origin);
+  return [resp];
+}
+
+async function handleEnabledBlockchainsRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<Array<string>>> {
+  const resp = await ctx.backend.enabledBlockchainsRead();
   return [resp];
 }
 

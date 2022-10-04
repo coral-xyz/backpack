@@ -2,6 +2,10 @@ import { useRecoilValue } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
 import * as atoms from "../atoms";
 
+export function useEnabledBlockchains() {
+  return useRecoilValue(atoms.enabledBlockchains);
+}
+
 export function useBlockchainExplorer(blockchain: Blockchain) {
   switch (blockchain) {
     case Blockchain.ETHEREUM:

@@ -804,6 +804,10 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async enabledBlockchainsRead(): Promise<Array<Blockchain>> {
+    return this.keyringStore.enabledBlockchains().map((b) => b as Blockchain);
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Navigation.
   ///////////////////////////////////////////////////////////////////////////////

@@ -102,6 +102,10 @@ export const UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE =
   "ui-rpc-method-approved-origins-update";
 export const UI_RPC_METHOD_APPROVED_ORIGINS_DELETE =
   "ui-rpc-method-approved-origins-delete";
+export const UI_RPC_METHOD_ENABLED_BLOCKCHAINS_READ =
+  "ui-rpc-method-enabled-blockchains-read";
+export const UI_RPC_METHOD_ENABLED_BLOCKCHAINS_UPDATE =
+  "ui-rpc-method-enabled-blockchains-update";
 export const UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE =
   "ui-rpc-method-keyring-store-keep-alive";
 export const UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD =
