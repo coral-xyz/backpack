@@ -48,9 +48,17 @@ export class ProviderSolanaXnftInjection
   #publicKey?: PublicKey;
   #connection: Connection;
 
-  constructor(requestManager: RequestManager, freeze = true) {
+  constructor(
+    requestManager: RequestManager,
+    additionalProperties: { [key: string]: PrivateEventEmitter } = {}
+  ) {
     super();
-    if (new.target === ProviderSolanaXnftInjection && freeze) {
+    const additionalPropertyConfig = {};
+    Object.keys(additionalProperties).forEach((prop) => {
+      additionalPropertyConfig[prop] = { value: additionalProperties[prop] };
+    });
+    Object.defineProperties(this, additionalPropertyConfig);
+    if (new.target === ProviderSolanaXnftInjection) {
       Object.freeze(this);
     }
     this.#requestManager = requestManager;
