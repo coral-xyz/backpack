@@ -20,6 +20,7 @@ import {
   useActiveWallets,
   useBlockchainLogo,
   useUsername,
+  WalletPublicKeys,
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
@@ -924,6 +925,7 @@ function SettingsList({ close }: { close: () => void }) {
 export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   const classes = useStyles();
   const background = useBackgroundClient();
+  const existingPublicKeys = useWalletPublicKeys();
   const nav = useNavStack();
   const theme = useCustomTheme();
   const [name, setName] = useState("");
@@ -941,9 +943,15 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   }, [theme]);
 
   const onClick = async () => {
-    const secretKeyHex = validateSecretKey(blockchain, secretKey);
-    if (!secretKeyHex) {
-      setError("Invalid private key");
+    let secretKeyHex;
+    try {
+      secretKeyHex = validateSecretKey(
+        blockchain,
+        secretKey,
+        existingPublicKeys
+      );
+    } catch (e) {
+      setError((e as Error).message);
       return;
     }
 
@@ -1043,10 +1051,16 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
 // Validate a secret key and return a normalised hex representation
 function validateSecretKey(
   blockchain: Blockchain,
-  secretKey: string
-): string | boolean {
+  secretKey: string,
+  keyring: WalletPublicKeys
+): string {
+  // Extract public keys from keychain object into array of strings
+  const existingPublicKeys = Object.values(keyring[blockchain])
+    .map((k) => k.map((i) => i.publicKey))
+    .flat();
+
   if (blockchain === Blockchain.SOLANA) {
-    let keypair;
+    let keypair: Keypair | null = null;
     try {
       // Attempt to create a keypair from JSON secret key
       keypair = Keypair.fromSecretKey(new Uint8Array(JSON.parse(secretKey)));
@@ -1056,16 +1070,26 @@ function validateSecretKey(
         keypair = Keypair.fromSecretKey(new Uint8Array(bs58.decode(secretKey)));
       } catch (_) {
         // Failure
-        return false;
+        throw new Error("Invalid private key");
       }
     }
+
+    if (existingPublicKeys.includes(keypair.publicKey.toString())) {
+      throw new Error("Key already exists");
+    }
+
     return Buffer.from(keypair.secretKey).toString("hex");
   } else if (blockchain === Blockchain.ETHEREUM) {
     try {
       const wallet = new ethers.Wallet(secretKey);
+
+      if (existingPublicKeys.includes(wallet.publicKey)) {
+        throw new Error("Key already exists");
+      }
+
       return wallet.privateKey;
     } catch (_) {
-      return false;
+      throw new Error("Invalid private key");
     }
   }
   throw new Error("secret key validation not implemented for blockchain");
