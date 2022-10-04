@@ -21,10 +21,19 @@ const WaitingRoom = ({ onboarded }: { onboarded?: boolean }) => {
   }
 
   useEffect(() => {
+    let previousTitle: string;
     if (onboarded && nav) {
+      previousTitle = nav.title;
       nav.setTitle("");
       nav.setNavButtonRight(<SocialNavbarButtons />);
     }
+
+    return () => {
+      if (onboarded && nav) {
+        nav.setTitle(previousTitle);
+        nav.setNavButtonRight();
+      }
+    };
   }, []);
 
   return (
