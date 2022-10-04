@@ -23,6 +23,16 @@ const moduleExports = withPlausibleProxy()({
   },
   typescript: {
     ignoreBuildErrors: true
+  },
+  redirects() {
+    return [
+      {
+        source: '/download',
+        destination:
+          'https://chrome.google.com/webstore/detail/backpack/aflkmfhebedbjioipglgcbcmnbpgliof',
+        permanent: true
+      }
+    ];
   }
 });
 
