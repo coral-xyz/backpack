@@ -605,6 +605,7 @@ export function useIsValidAddress(
         if (!account) {
           setIsFreshAccount(true);
           setAccountValidated(true);
+          setNormalizedAddress(address);
           return;
         }
 
@@ -617,6 +618,7 @@ export function useIsValidAddress(
         // The account data has been successfully validated.
         setAddressError(false);
         setAccountValidated(true);
+        setNormalizedAddress(address);
       } else if (blockchain === Blockchain.ETHEREUM) {
         // Ethereum address validation
         let checksumAddress;

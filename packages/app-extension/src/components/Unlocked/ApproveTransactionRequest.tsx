@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import {
   useActivePublicKeys,
   useBackgroundClient,
@@ -119,9 +119,11 @@ export function ApproveTransactionRequest() {
     setRequest(undefined);
   };
 
-  const onReject = () => {
+  const onReject = (
+    e: Error = new Error("user rejected signature request")
+  ) => {
     setRequest(undefined);
-    request!.reject(new Error("user rejected signature request"));
+    request!.reject(e);
   };
 
   const isMessageSign = [
@@ -141,33 +143,35 @@ export function ApproveTransactionRequest() {
         setOpenDrawer(b);
       }}
     >
-      {isMessageSign ? (
-        <SignMessageRequest
-          publicKey={publicKey}
-          message={request!.data as string}
-          uiRpcMethod={rpcMethod}
-          onResolve={onResolve}
-          onReject={onReject}
-        />
-      ) : request.kind! === PLUGIN_REQUEST_SOLANA_SIGN_ALL_TRANSACTIONS ? (
-        <SignAllTransactionsRequest
-          publicKey={publicKey}
-          uiRpcMethod={rpcMethod}
-          blockchain={blockchain}
-          transactions={request!.data as string[]}
-          onResolve={onResolve}
-          onReject={onReject}
-        />
-      ) : (
-        <SendTransactionRequest
-          publicKey={publicKey}
-          uiRpcMethod={rpcMethod}
-          blockchain={blockchain}
-          transaction={request!.data as string}
-          onResolve={onResolve}
-          onReject={onReject}
-        />
-      )}
+      <Suspense fallback={<DisabledRequestPrompt />}>
+        {isMessageSign ? (
+          <SignMessageRequest
+            publicKey={publicKey}
+            message={request!.data as string}
+            uiRpcMethod={rpcMethod}
+            onResolve={onResolve}
+            onReject={onReject}
+          />
+        ) : request.kind! === PLUGIN_REQUEST_SOLANA_SIGN_ALL_TRANSACTIONS ? (
+          <SignAllTransactionsRequest
+            publicKey={publicKey}
+            uiRpcMethod={rpcMethod}
+            blockchain={blockchain}
+            transactions={request!.data as string[]}
+            onResolve={onResolve}
+            onReject={onReject}
+          />
+        ) : (
+          <SendTransactionRequest
+            publicKey={publicKey}
+            uiRpcMethod={rpcMethod}
+            blockchain={blockchain}
+            transaction={request!.data as string}
+            onResolve={onResolve}
+            onReject={onReject}
+          />
+        )}
+      </Suspense>
     </ApproveTransactionDrawer>
   );
 }
@@ -232,11 +236,13 @@ function SignAllTransactionsRequest({
   const background = useBackgroundClient();
 
   const onConfirm = async () => {
-    const signature = await background.request({
-      method: uiRpcMethod,
-      params: [transactions, publicKey],
-    });
-    onResolve(signature);
+    background
+      .request({
+        method: uiRpcMethod,
+        params: [transactions, publicKey],
+      })
+      .then(onResolve)
+      .catch(onReject);
   };
 
   return (
@@ -307,12 +313,14 @@ function SendTransactionRequest({
   // into this component because it can be modified by the user to set
   // transaction specific settings (i.e. Etheruem gas).
   //
-  const onConfirm = async () => {
-    const signature = await background.request({
-      method: uiRpcMethod,
-      params: [transactionToSend, publicKey],
-    });
-    onResolve(signature);
+  const onConfirm = () => {
+    background
+      .request({
+        method: uiRpcMethod,
+        params: [transactionToSend, publicKey],
+      })
+      .then(onResolve)
+      .catch(onReject);
   };
 
   //
@@ -417,12 +425,14 @@ function SignMessageRequest({
   //
   // Executes when the modal clicks "Approve" in the drawer popup
   //
-  const onConfirm = async () => {
-    const signature = await background.request({
-      method: uiRpcMethod,
-      params: [message, publicKey],
-    });
-    onResolve(signature);
+  const onConfirm = () => {
+    background
+      .request({
+        method: uiRpcMethod,
+        params: [message, publicKey],
+      })
+      .then(onResolve)
+      .catch(onReject);
   };
 
   return (
@@ -453,6 +463,14 @@ function SignMessageRequest({
           {displayMessage}
         </div>
       </Scrollbar>
+    </Request>
+  );
+}
+
+function DisabledRequestPrompt() {
+  return (
+    <Request onConfirm={() => {}} onReject={() => {}} buttonsDisabled={true}>
+      <Loading />
     </Request>
   );
 }

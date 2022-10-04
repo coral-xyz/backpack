@@ -83,6 +83,9 @@ import {
   SOLANA_CONNECTION_RPC_GET_SLOT,
   SOLANA_CONNECTION_RPC_GET_BLOCK_TIME,
   SOLANA_CONNECTION_RPC_GET_PARSED_TOKEN_ACCOUNTS_BY_OWNER,
+  SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS,
+  SOLANA_CONNECTION_RPC_GET_PARSED_ACCOUNT_INFO,
+  SOLANA_CONNECTION_RPC_GET_PARSED_PROGRAM_ACCOUNTS,
 } from "../constants";
 import { serializeTokenAccountsFilter } from "./types";
 import type { BackgroundClient } from "../channel";
@@ -360,6 +363,61 @@ export class BackgroundSolanaConnection extends Connection {
     return resp;
   }
 
+  async getTokenLargestAccounts(
+    mintAddress: PublicKey,
+    commitment?: Commitment
+  ): Promise<RpcResponseAndContext<Array<TokenAccountBalancePair>>> {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS,
+      params: [mintAddress.toString(), commitment],
+    });
+    resp.value = resp.value.map((val) => {
+      return {
+        ...val,
+        address: new PublicKey(val.address),
+      };
+    });
+    return resp;
+  }
+
+  async getParsedAccountInfo(
+    publicKey: PublicKey,
+    commitment?: Commitment
+  ): Promise<
+    RpcResponseAndContext<AccountInfo<Buffer | ParsedAccountData> | null>
+  > {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_PARSED_ACCOUNT_INFO,
+      params: [publicKey.toString(), commitment],
+    });
+    return resp;
+  }
+
+  async getParsedProgramAccounts(
+    programId: PublicKey,
+    configOrCommitment?: GetParsedProgramAccountsConfig | Commitment
+  ): Promise<
+    Array<{
+      pubkey: PublicKey;
+      account: AccountInfo<Buffer | ParsedAccountData>;
+    }>
+  > {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_PARSED_PROGRAM_ACCOUNTS,
+      params: [programId.toString(), configOrCommitment],
+    });
+    return resp.map((val) => {
+      return {
+        pubkey: new PublicKey(val.pubkey),
+        account: {
+          ...val.account,
+          owner: new PublicKey(val.account.owner),
+          data: Buffer.from(val.account.data.data),
+        },
+      };
+    });
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Below this not yet implemented.
   ///////////////////////////////////////////////////////////////////////////////
@@ -406,26 +464,10 @@ export class BackgroundSolanaConnection extends Connection {
     throw new Error("not implemented");
   }
 
-  async getTokenLargestAccounts(
-    mintAddress: PublicKey,
-    commitment?: Commitment
-  ): Promise<RpcResponseAndContext<Array<TokenAccountBalancePair>>> {
-    throw new Error("not implemented");
-  }
-
   async getAccountInfoAndContext(
     publicKey: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<AccountInfo<Buffer> | null>> {
-    throw new Error("not implemented");
-  }
-
-  async getParsedAccountInfo(
-    publicKey: PublicKey,
-    commitment?: Commitment
-  ): Promise<
-    RpcResponseAndContext<AccountInfo<Buffer | ParsedAccountData> | null>
-  > {
     throw new Error("not implemented");
   }
 
@@ -441,18 +483,6 @@ export class BackgroundSolanaConnection extends Connection {
     commitment?: Commitment,
     epoch?: number
   ): Promise<StakeActivationData> {
-    throw new Error("not implemented");
-  }
-
-  async getParsedProgramAccounts(
-    programId: PublicKey,
-    configOrCommitment?: GetParsedProgramAccountsConfig | Commitment
-  ): Promise<
-    Array<{
-      pubkey: PublicKey;
-      account: AccountInfo<Buffer | ParsedAccountData>;
-    }>
-  > {
     throw new Error("not implemented");
   }
 

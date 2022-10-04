@@ -35,7 +35,7 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
           flexDirection: "column",
           height: "100%",
           justifyContent: "space-between",
-          color: "theme.custom.colors.nav",
+          color: theme.custom.colors.nav,
         }}
       >
         <Box>
@@ -65,7 +65,7 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
               {BACKPACK_FEATURE_XNFT && (
                 <Grid item xs={6}>
                   <ActionCard
-                    icon={<WidgetIcon fill={theme.custom.colors.icon} />}
+                    icon={<WidgetIcon fill="#E33E3F" />}
                     text="Browse the xNFT library"
                     onClick={() => window.open(XNFT_GG_LINK, "_blank")}
                   />
@@ -73,14 +73,14 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
               )}
               <Grid item xs={6}>
                 <ActionCard
-                  icon={<TwitterIcon fill={theme.custom.colors.icon} />}
+                  icon={<TwitterIcon fill="#1D9BF0" />}
                   text="Follow us on Twitter"
                   onClick={() => window.open(TWITTER_LINK, "_blank")}
                 />
               </Grid>
               <Grid item xs={6}>
                 <ActionCard
-                  icon={<DiscordIcon fill={theme.custom.colors.icon} />}
+                  icon={<DiscordIcon fill="#5865F2" />}
                   text="Join the Discord community"
                   onClick={() => window.open(DISCORD_INVITE_LINK, "_blank")}
                 />

@@ -1,12 +1,6 @@
-import { useEffect, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
-import {
-  Box,
-  Button,
-  Typography,
-  InputAdornment,
-  IconButton,
-} from "@mui/material";
+import { Box, Typography, InputAdornment, IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import {
@@ -42,28 +36,33 @@ export function CreatePassword({
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState<PasswordError | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
   useEffect(() => {
     setError(null);
   }, [password, passwordConfirm]);
 
-  const next = async () => {
-    if (password.length < 8) {
-      setError(PasswordError.TOO_SHORT);
-      return;
-    } else if (password !== passwordConfirm) {
-      setError(PasswordError.NO_MATCH);
-      return;
-    }
-    onNext(password);
-  };
+  const next = useCallback(
+    async (e: FormEvent) => {
+      e.preventDefault();
+      if (password.length < 8) {
+        setError(PasswordError.TOO_SHORT);
+        return;
+      } else if (password !== passwordConfirm) {
+        setError(PasswordError.NO_MATCH);
+        return;
+      }
+      onNext(password);
+    },
+    [password, passwordConfirm]
+  );
 
   const isNextDisabled = !checked;
 
   return (
-    <Box
-      sx={{
+    <form
+      noValidate
+      onSubmit={next}
+      style={{
         display: "flex",
         flexDirection: "column",
         height: "100%",
@@ -95,6 +94,7 @@ export function CreatePassword({
           }}
         >
           <TextField
+            autoFocus={!passwordConfirm}
             inputProps={{ name: "password" }}
             placeholder="Password"
             type={showPassword ? "text" : "password"}
@@ -106,8 +106,10 @@ export function CreatePassword({
               <InputAdornment position="end">
                 <IconButton
                   disableRipple
+                  sx={{ color: theme.custom.colors.icon }}
                   onClick={() => setShowPassword(!showPassword)}
                   onMouseDown={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
                 >
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
@@ -117,24 +119,11 @@ export function CreatePassword({
           <TextField
             inputProps={{ name: "password-confirmation" }}
             placeholder="Confirm Password"
-            type={showPasswordConfirm ? "text" : "password"}
+            type={showPassword ? "text" : "password"}
             value={passwordConfirm}
             setValue={setPasswordConfirm}
             rootClass={classes.passwordFieldRoot}
             isError={error === PasswordError.NO_MATCH}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  disableRipple
-                  onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
-                  onMouseDown={() =>
-                    setShowPasswordConfirm(!showPasswordConfirm)
-                  }
-                >
-                  {showPasswordConfirm ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
           />
           {error !== null && (
             <Typography sx={{ color: theme.custom.colors.negative }}>
@@ -182,12 +171,12 @@ export function CreatePassword({
         <PrimaryButton
           disabled={isNextDisabled}
           label="Next"
-          onClick={next}
+          type="submit"
           buttonLabelStyle={{
             fontWeight: 600,
           }}
         />
       </Box>
-    </Box>
+    </form>
   );
 }
