@@ -148,6 +148,12 @@ export class BlockchainKeyring {
     return this.activeWallet;
   }
 
+  public getAuthenticationPublicKey(mnemonic: string): string {
+    return this.hdKeyringFactory
+      .fromMnemonic(mnemonic, "bip44", [0])
+      .getPublicKey(0);
+  }
+
   public async activeWalletUpdate(newWallet: string) {
     this.activeWallet = newWallet;
   }

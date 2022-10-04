@@ -380,7 +380,7 @@ export class Backend {
       try {
         const bc = await this.keyringStore.activeBlockchainKeyring();
 
-        const publicKey = bc.getActiveWallet();
+        const publicKey = bc.getAuthenticationPublicKey(mnemonic);
 
         const body = JSON.stringify({
           username,
