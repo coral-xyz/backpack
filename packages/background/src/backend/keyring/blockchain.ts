@@ -141,6 +141,9 @@ export class BlockchainKeyring {
     return this.activeWallet;
   }
 
+  /**
+   * @returns a 'root' public key string for the mnemonic
+   */
   public getAuthenticationPublicKey(mnemonic: string): string {
     return this.hdKeyringFactory
       .fromMnemonic(mnemonic, "bip44", [0])
