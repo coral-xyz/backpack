@@ -2,7 +2,6 @@ import { atom, selector, selectorFamily } from "recoil";
 import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS,
 } from "@coral-xyz/common";
 import { WalletPublicKeys } from "../types";
@@ -30,34 +29,6 @@ export const walletWithData = selectorFamily({
       }
       return undefined;
     },
-});
-
-/**
- * Pubkey of the currently selected wallet.
- */
-export const activeWallet = atom<string | null>({
-  key: "activeWallet",
-  default: selector({
-    key: "activeWalletDefault",
-    get: async ({ get }) => {
-      const background = get(backgroundClient);
-      return await background.request({
-        method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
-        params: [],
-      });
-    },
-  }),
-});
-
-/**
- * Currently selected wallet with name and blockchain.
- */
-export const activeWalletWithData = selector({
-  key: "activeWalletWithData",
-  get: ({ get }) => {
-    const activePublicKey = get(activeWallet);
-    return activePublicKey ? get(walletWithData(activePublicKey)) : undefined;
-  },
 });
 
 /**
