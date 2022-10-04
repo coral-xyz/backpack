@@ -27,9 +27,6 @@ const logger = getLogger("background/backend/keyring");
 
 // Represents key data for a single blockchain network, e.g., solana or ethereum.
 export class BlockchainKeyring {
-  private hdKeyringFactory: HdKeyringFactory;
-  private keyringFactory: KeyringFactory;
-  private ledgerKeyringFactory: LedgerKeyringFactory;
   private hdKeyring?: HdKeyring;
   private importedKeyring?: Keyring;
   public ledgerKeyring?: LedgerKeyring;
@@ -37,14 +34,10 @@ export class BlockchainKeyring {
   private deletedWallets?: Array<string>;
 
   constructor(
-    hdKeyringFactory: HdKeyringFactory,
-    keyringFactory: KeyringFactory,
-    ledgerKeyringFactory: LedgerKeyringFactory
-  ) {
-    this.hdKeyringFactory = hdKeyringFactory;
-    this.keyringFactory = keyringFactory;
-    this.ledgerKeyringFactory = ledgerKeyringFactory;
-  }
+    private hdKeyringFactory: HdKeyringFactory,
+    private keyringFactory: KeyringFactory,
+    private ledgerKeyringFactory: LedgerKeyringFactory
+  ) {}
 
   public static solana(): BlockchainKeyring {
     return new BlockchainKeyring(
