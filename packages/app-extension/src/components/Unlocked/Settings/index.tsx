@@ -943,13 +943,15 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   }, [theme]);
 
   const onClick = async () => {
-    const secretKeyHex = validateSecretKey(
-      blockchain,
-      secretKey,
-      existingPublicKeys
-    );
-    if (!secretKeyHex) {
-      setError("Invalid private key");
+    let secretKeyHex;
+    try {
+      secretKeyHex = validateSecretKey(
+        blockchain,
+        secretKey,
+        existingPublicKeys
+      );
+    } catch (e) {
+      setError((e as Error).message);
       return;
     }
 
@@ -1051,7 +1053,7 @@ function validateSecretKey(
   blockchain: Blockchain,
   secretKey: string,
   keyring: WalletPublicKeys
-): string | boolean {
+): string {
   // Extract public keys from keychain object into array of strings
   const existingPublicKeys = Object.values(keyring[blockchain])
     .map((k) => k.map((i) => i.publicKey))
@@ -1068,7 +1070,7 @@ function validateSecretKey(
         keypair = Keypair.fromSecretKey(new Uint8Array(bs58.decode(secretKey)));
       } catch (_) {
         // Failure
-        return false;
+        throw new Error("Invalid private key");
       }
     }
 
@@ -1087,7 +1089,7 @@ function validateSecretKey(
 
       return wallet.privateKey;
     } catch (_) {
-      return false;
+      throw new Error("Invalid private key");
     }
   }
   throw new Error("secret key validation not implemented for blockchain");
