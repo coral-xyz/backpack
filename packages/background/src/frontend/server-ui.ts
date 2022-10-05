@@ -25,11 +25,11 @@ import {
   UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
   UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC,
-  UI_RPC_METHOD_KEYRING_RESET_MNEMONIC,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_RESET,
+  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS,
   UI_RPC_METHOD_KEYNAME_READ,
   UI_RPC_METHOD_KEYNAME_UPDATE,
@@ -187,6 +187,12 @@ async function handle<T = any>(
     //
     // Wallet app settings.
     //
+    case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE:
+      return await handleWalletDataActiveWalletUpdate(
+        ctx,
+        params[0],
+        params[1]
+      );
     case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS:
       return await handleWalletDataActiveWallets(ctx);
     case UI_RPC_METHOD_SETTINGS_DARK_MODE_READ:
@@ -337,6 +343,15 @@ function handleKeyringStoreKeepAlive(
   ctx: Context<Backend>
 ): RpcResponse<string> {
   const resp = ctx.backend.keyringStoreKeepAlive();
+  return [resp];
+}
+
+async function handleWalletDataActiveWalletUpdate(
+  ctx: Context<Backend>,
+  newWallet: string,
+  blockchain: Blockchain
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.activeWalletUpdate(newWallet, blockchain);
   return [resp];
 }
 

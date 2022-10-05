@@ -74,7 +74,7 @@ export function AddConnectWalletMenu({
 
                   await background.request({
                     method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-                    params: [newPubkey],
+                    params: [newPubkey, blockchain],
                   });
 
                   setNewPublicKey(newPubkey);

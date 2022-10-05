@@ -488,6 +488,39 @@ export class Backend {
     return await this.keyringStore.activeWallets();
   }
 
+  async activeWalletUpdate(
+    newActivePublicKey: string,
+    blockchain: Blockchain
+  ): Promise<string> {
+    const keyring = this.keyringStore.keyringForBlockchain(blockchain);
+    const oldActivePublicKey = keyring.getActiveWallet();
+    await this.keyringStore.activeWalletUpdate(newActivePublicKey, blockchain);
+
+    if (newActivePublicKey !== oldActivePublicKey) {
+      // Public key has changed, emit an event
+      // TODO: remove the blockchain specific events in favour of a single event
+      if (blockchain === Blockchain.SOLANA) {
+        this.events.emit(BACKEND_EVENT, {
+          name: NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
+          data: {
+            activeWallet: newActivePublicKey,
+            activeWallets: await this.activeWallets(),
+          },
+        });
+      } else if (blockchain === Blockchain.ETHEREUM) {
+        this.events.emit(BACKEND_EVENT, {
+          name: NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
+          data: {
+            activeWallet: newActivePublicKey,
+            activeWallets: await this.activeWallets(),
+          },
+        });
+      }
+    }
+
+    return SUCCESS_RESPONSE;
+  }
+
   // Map of blockchain to the active public key for that blockchain.
   async blockchainActiveWallets() {
     return Object.fromEntries(

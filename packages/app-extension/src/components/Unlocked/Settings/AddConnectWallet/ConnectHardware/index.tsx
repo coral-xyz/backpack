@@ -60,7 +60,7 @@ export function ConnectHardware({
       const active = accounts[0].publicKey.toString();
       await background.request({
         method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-        params: [active],
+        params: [active, blockchain],
       });
     }
   };

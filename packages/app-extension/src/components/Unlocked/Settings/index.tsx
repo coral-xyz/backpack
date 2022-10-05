@@ -404,12 +404,14 @@ function WalletList({
     background
       .request({
         method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-        params: [publicKey],
+        params: [publicKey, blockchain],
       })
       .then((_resp) => close())
       .catch(console.error);
   };
+
   let activeWalletType: "derived" | "hardware";
+
   const keys = keyring.hdPublicKeys
     .map((k: any) => ({ ...k, type: "derived" }))
     .concat(
@@ -435,6 +437,7 @@ function WalletList({
   const { name, publicKey } = activeWallets.filter(
     (a) => a.blockchain === blockchain
   )[0];
+
   return (
     <div
       style={{

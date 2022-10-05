@@ -387,11 +387,28 @@ export class KeyringStore {
     this.lastUsedTs = Date.now() / 1000;
   }
 
+  /**
+   * Return all the active public keys for all enabled blockchains.
+   */
   public async activeWallets(): Promise<string[]> {
     return this.withUnlock(async () => {
       return [...this.blockchains.values()]
         .map((bc) => bc.getActiveWallet())
         .filter((w) => w !== undefined) as string[];
+    });
+  }
+
+  /**
+   * Update the active public key for the given blockchain.
+   */
+  public async activeWalletUpdate(
+    newActivePublicKey: string,
+    blockchain: Blockchain
+  ) {
+    return this.withUnlock(async () => {
+      const keyring = this.keyringForBlockchain(blockchain);
+      await keyring.activeWalletUpdate(newActivePublicKey);
+      await this.persist();
     });
   }
 
