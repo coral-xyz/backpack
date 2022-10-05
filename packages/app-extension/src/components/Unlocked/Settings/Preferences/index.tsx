@@ -39,6 +39,9 @@ export function Preferences() {
     "Trusted Apps": {
       onClick: () => nav.push("preferences-trusted-apps"),
     },
+    Blockchains: {
+      onClick: () => nav.push("preferences-blockchains"),
+    },
   };
 
   if (BACKPACK_FEATURE_LIGHT_MODE) {
