@@ -6,7 +6,7 @@ import {
   openConnectHardware,
   TAB_BALANCES,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
@@ -73,7 +73,7 @@ export function AddConnectWalletMenu({
                   });
 
                   await background.request({
-                    method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+                    method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
                     params: [newPubkey, blockchain],
                   });
 

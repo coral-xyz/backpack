@@ -2,7 +2,7 @@ import { atom, selector, selectorFamily } from "recoil";
 import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS,
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLETS,
 } from "@coral-xyz/common";
 import { WalletPublicKeys } from "../types";
 import { backgroundClient } from "./client";
@@ -41,7 +41,7 @@ export const activeWallets = atom<string[]>({
     get: async ({ get }) => {
       const background = get(backgroundClient);
       return await background.request({
-        method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS,
+        method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLETS,
         params: [],
       });
     },

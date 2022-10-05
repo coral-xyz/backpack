@@ -29,7 +29,7 @@ import {
   BACKPACK_FEATURE_XNFT,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   DISCORD_INVITE_LINK,
 } from "@coral-xyz/common";
 import {
@@ -403,7 +403,7 @@ function WalletList({
   const clickWallet = (publicKey: string) => {
     background
       .request({
-        method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+        method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
         params: [publicKey, blockchain],
       })
       .then((_resp) => close())
@@ -964,7 +964,7 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
     });
 
     await background.request({
-      method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+      method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
       params: [publicKey],
     });
 

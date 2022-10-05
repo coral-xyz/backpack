@@ -90,124 +90,114 @@ export const PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT = "store-put";
 //
 // Trusted app API.
 //
-export const UI_RPC_METHOD_KEYRING_STORE_CREATE =
-  "ui-rpc-method-keyring-store-create";
-export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS =
-  "ui-rpc-method-keyring-read-all-pubkeys";
-export const UI_RPC_METHOD_KEYRING_STORE_STATE =
-  "ui-rpc-method-keyring-store-state";
+export const UI_RPC_METHOD_APPROVED_ORIGINS_DELETE =
+  "ui-rpc-method-approved-origins-delete";
 export const UI_RPC_METHOD_APPROVED_ORIGINS_READ =
   "ui-rpc-method-approved-origins-read";
 export const UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE =
   "ui-rpc-method-approved-origins-update";
-export const UI_RPC_METHOD_APPROVED_ORIGINS_DELETE =
-  "ui-rpc-method-approved-origins-delete";
-export const UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE =
-  "ui-rpc-method-keyring-store-keep-alive";
-export const UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD =
-  "ui-rpc-method-keyring-store-check-password";
-export const UI_RPC_METHOD_KEYRING_STORE_UNLOCK =
-  "ui-rpc-method-keyring-store-unlock";
-export const UI_RPC_METHOD_KEYRING_STORE_LOCK =
-  "ui-rpc-method-keyring-store-lock";
-export const UI_RPC_METHOD_KEYRING_DERIVE_WALLET =
-  "ui-rpc-method-keyring-derive";
-export const UI_RPC_METHOD_KEYRING_KEY_DELETE = "ui-rpc-method-keyring-delete";
-export const UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY =
-  "ui-rpc-method-keyring-import-wallet";
-export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
-  "ui-rpc-method-keyring-mnemonic-create";
-export const UI_RPC_METHOD_PREVIEW_PUBKEYS =
-  "ui-rpc-method-keyring-preview-pubkeys";
-export const UI_RPC_METHOD_KEYRING_RESET = "ui-rpc-method-keyring-reset";
-export const UI_RPC_METHOD_ACTIVE_BLOCKCHAIN =
-  "ui-rpc-method-blockchain-active";
-export const UI_RPC_METHOD_ACTIVE_BLOCKCHAIN_UPDATE =
-  "ui-rpc-method-blockchain-active-update";
-export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET =
-  "ui-rpc-method-wallet-active";
-export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE =
-  "ui-rpc-method-wallet-active-update";
-export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS =
-  "ui-rpc-method-wallets-active";
-export const UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS_UPDATE =
-  "ui-rpc-method-wallets-active-update";
-export const UI_RPC_METHOD_USERNAME_READ = "ui-rpc-method-username-read";
 export const UI_RPC_METHOD_KEYNAME_READ = "ui-rpc-method-keyname-read";
 export const UI_RPC_METHOD_KEYNAME_UPDATE = "ui-rpc-method-keyname-update";
-export const UI_RPC_METHOD_PASSWORD_UPDATE = "ui-rpc-method-password-update";
-export const UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY =
-  "ui-rpc-method-export-secret-key";
-export const UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC =
-  "ui-rpc-method-validate-mnemonic";
-export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC =
-  "ui-rpc-method-export-mnemonic";
-export const UI_RPC_METHOD_KEYRING_RESET_MNEMONIC =
-  "ui-rpc-method-reset-mnemonic";
+export const UI_RPC_METHOD_KEYRING_ACTIVE_WALLETS =
+  "ui-rpc-method-keyring-active-wallets";
+export const UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE =
+  "ui-rpc-method-keyring-active-wallet-update";
 export const UI_RPC_METHOD_KEYRING_AUTOLOCK_READ =
   "ui-rpc-method-autolock-read";
 export const UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE =
   "ui-rpc-method-autolock-update";
-export const UI_RPC_METHOD_NAVIGATION_PUSH = "ui-rpc-method-navigation-push";
-export const UI_RPC_METHOD_NAVIGATION_POP = "ui-rpc-method-navigation-pop";
-export const UI_RPC_METHOD_NAVIGATION_TO_ROOT =
-  "ui-rpc-method-navigation-to-root";
-export const UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE =
-  "ui-rpc-method-navigation-current-url-update";
-export const UI_RPC_METHOD_NAVIGATION_READ = "ui-rpc-method-navigation-read";
-export const UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE =
-  "ui-rpc-method-navigation-active-tab-update";
-export const UI_RPC_METHOD_SETTINGS_DARK_MODE_READ =
-  "ui-rpc-method-settings-dark-mode-read";
-export const UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE =
-  "ui-rpc-method-settings-dark-mode-update";
+export const UI_RPC_METHOD_KEYRING_DERIVE_WALLET =
+  "ui-rpc-method-keyring-derive";
+export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC =
+  "ui-rpc-method-export-mnemonic";
+export const UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY =
+  "ui-rpc-method-export-secret-key";
+export const UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY =
+  "ui-rpc-method-keyring-import-wallet";
+export const UI_RPC_METHOD_KEYRING_KEY_DELETE = "ui-rpc-method-keyring-delete";
+export const UI_RPC_METHOD_KEYRING_RESET = "ui-rpc-method-keyring-reset";
+export const UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD =
+  "ui-rpc-method-keyring-store-check-password";
+export const UI_RPC_METHOD_KEYRING_STORE_CREATE =
+  "ui-rpc-method-keyring-store-create";
+export const UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE =
+  "ui-rpc-method-keyring-store-keep-alive";
+export const UI_RPC_METHOD_KEYRING_STORE_LOCK =
+  "ui-rpc-method-keyring-store-lock";
+export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
+  "ui-rpc-method-keyring-mnemonic-create";
+export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS =
+  "ui-rpc-method-keyring-read-all-pubkeys";
+export const UI_RPC_METHOD_KEYRING_STORE_STATE =
+  "ui-rpc-method-keyring-store-state";
+export const UI_RPC_METHOD_KEYRING_STORE_UNLOCK =
+  "ui-rpc-method-keyring-store-unlock";
+export const UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC =
+  "ui-rpc-method-validate-mnemonic";
 export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
 export const UI_RPC_METHOD_LEDGER_IMPORT = "ui-rpc-method-ledger-import";
+export const UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE =
+  "ui-rpc-method-navigation-active-tab-update";
+export const UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE =
+  "ui-rpc-method-navigation-current-url-update";
+export const UI_RPC_METHOD_NAVIGATION_POP = "ui-rpc-method-navigation-pop";
+export const UI_RPC_METHOD_NAVIGATION_PUSH = "ui-rpc-method-navigation-push";
+export const UI_RPC_METHOD_NAVIGATION_READ = "ui-rpc-method-navigation-read";
+export const UI_RPC_METHOD_NAVIGATION_TO_ROOT =
+  "ui-rpc-method-navigation-to-root";
+export const UI_RPC_METHOD_PASSWORD_UPDATE = "ui-rpc-method-password-update";
 export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET =
   "ui-rpc-method-plugin-storage-get";
 export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT =
   "ui-rpc-method-plugin-storage-put";
+export const UI_RPC_METHOD_PREVIEW_PUBKEYS =
+  "ui-rpc-method-keyring-preview-pubkeys";
+export const UI_RPC_METHOD_SETTINGS_DARK_MODE_READ =
+  "ui-rpc-method-settings-dark-mode-read";
+export const UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE =
+  "ui-rpc-method-settings-dark-mode-update";
+export const UI_RPC_METHOD_USERNAME_READ = "ui-rpc-method-username-read";
 // Solana
-export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ =
-  "ui-rpc-method-solana-connection-url-read";
-export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE =
-  "ui-rpc-method-solana-connection-url-update";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ =
   "ui-rpc-method-solana-commitment-read";
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE =
   "ui-rpc-method-solana-commitment-update";
-export const UI_RPC_METHOD_SOLANA_SIMULATE = "ui-rpc-method-solana-simulate";
+export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ =
+  "ui-rpc-method-solana-connection-url-read";
+export const UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE =
+  "ui-rpc-method-solana-connection-url-update";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_READ =
   "ui-rpc-method-solana-explorer-read";
 export const UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE =
   "ui-rpc-method-solana-explorer-update";
-export const UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION =
-  "ui-rpc-method-solana-sign-tx";
 export const UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS =
   "ui-rpc-method-solana-sign-all-txs";
 export const UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION =
   "ui-rpc-method-solana-sign-and-send-tx";
 export const UI_RPC_METHOD_SOLANA_SIGN_MESSAGE =
   "ui-rpc-method-solana-sign-message";
+export const UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION =
+  "ui-rpc-method-solana-sign-tx";
+export const UI_RPC_METHOD_SOLANA_SIMULATE = "ui-rpc-method-solana-simulate";
 // Ethereum
-export const UI_RPC_METHOD_ETHEREUM_EXPLORER_READ =
-  "ui-rpc-method-ethereum-explorer-read";
-export const UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE =
-  "ui-rpc-method-ethereum-explorer-update";
-export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ =
-  "ui-rpc-method-ethereum-connection-url-read";
-export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE =
-  "ui-rpc-method-ethereum-connection-url-update";
 export const UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ =
   "ui-rpc-method-ethereum-chain-id-read";
 export const UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE =
   "ui-rpc-method-ethereum-chain-id-update";
-export const UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION =
-  "ui-rpc-method-ethereum-sign-tx";
+export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ =
+  "ui-rpc-method-ethereum-connection-url-read";
+export const UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE =
+  "ui-rpc-method-ethereum-connection-url-update";
+export const UI_RPC_METHOD_ETHEREUM_EXPLORER_READ =
+  "ui-rpc-method-ethereum-explorer-read";
+export const UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE =
+  "ui-rpc-method-ethereum-explorer-update";
 export const UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION =
   "ui-rpc-method-ethereum-sign-and-send-tx";
 export const UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE =
   "ui-rpc-method-ethereum-sign-message";
+export const UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION =
+  "ui-rpc-method-ethereum-sign-tx";
 
 //
 // Notifications sent from the background script to observers.
