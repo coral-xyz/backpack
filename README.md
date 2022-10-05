@@ -15,9 +15,13 @@
   </p>
 </div>
 
-# Table of contents:
+### Note
 
-- [Note](#note)
+- Backpack is in active development, so all APIs are subject to change.
+- This code is unaudited. Use at your own risk.
+- I repeat. This is not ready for production.
+
+# Table of contents:
 - [Installing the Latest Release](#installing-the-latest-release)
 - [Developing Locally](#developing-locally)
   - [Pull the code](#pull-the-code)
@@ -29,14 +33,6 @@
   - [Optionally install the built extension](optionally-install-the-built-extension)
 - [License](#license)
 
-
-
-
-## Note
-
-- Backpack is in active development, so all APIs are subject to change.
-- This code is unaudited. Use at your own risk.
-- I repeat. This is not ready for production.
 
 ## Installing the Latest Release
 
