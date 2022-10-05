@@ -43,7 +43,7 @@ and add it to your local chrome profile, using developer mode. See the video bel
 
 https://user-images.githubusercontent.com/101902546/173857300-fc139113-0af5-46fc-baad-236a2ebf63f1.m4p
 
-###  Pull the code
+### Pull the code
 
 ```bash
 git clone git@github.com:coral-xyz/backpack.git
@@ -62,19 +62,19 @@ Go to chrome://flags/#allow-insecure-localhost and enable the toggle, then resta
 
 You can also optionally rename `.env.example` to `.env` and set your own variables.
 
-###  Install dependencies
+### Install dependencies
 
 ```bash
 yarn install
 ```
 
-###  Build all packages for production
+### Build all packages for production
 
 ```bash
 yarn build
 ```
 
-###  Start packages for development
+### Start packages for development
 
 ```bash
 yarn start
