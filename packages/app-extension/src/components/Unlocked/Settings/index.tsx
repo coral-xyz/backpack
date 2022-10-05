@@ -82,6 +82,8 @@ import { DiscordIcon, GridIcon } from "../../common/Icon";
 import { XnftSettings } from "./Xnfts";
 import { XnftDetail } from "./Xnfts/Detail";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
+import { PreferenceSolanaCustomRpcUrl } from "./Preferences/Solana/CustomRpcUrl";
+import { PreferenceEthereumCustomRpcUrl } from "./Preferences/Ethereum/CustomRpcUrl";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -211,6 +213,12 @@ function AvatarButton() {
               )}
             />
             <NavStackScreen
+              name={"preferences-solana-edit-rpc-connection"}
+              component={(props: any) => (
+                <PreferenceSolanaCustomRpcUrl {...props} />
+              )}
+            />
+            <NavStackScreen
               name={"preferences-solana-commitment"}
               component={(props: any) => (
                 <PreferencesSolanaCommitment {...props} />
@@ -226,6 +234,12 @@ function AvatarButton() {
               name={"preferences-ethereum-rpc-connection"}
               component={(props: any) => (
                 <PreferencesEthereumConnection {...props} />
+              )}
+            />
+            <NavStackScreen
+              name={"preferences-ethereum-edit-rpc-connection"}
+              component={(props: any) => (
+                <PreferenceEthereumCustomRpcUrl {...props} />
               )}
             />
             <NavStackScreen
