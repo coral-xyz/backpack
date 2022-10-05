@@ -47,6 +47,7 @@ https://user-images.githubusercontent.com/101902546/173857300-fc139113-0af5-46fc
 
 ```bash
 git clone git@github.com:coral-xyz/backpack.git
+cd backpack
 git submodule init
 git submodule update
 ```
