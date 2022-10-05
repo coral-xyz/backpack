@@ -215,6 +215,22 @@ export class BlockchainKeyring {
     return keyring.signMessage(msgBuffer, walletAddress);
   }
 
+  public async signAuthenticationMessage(
+    keyringType: "hd" | "ledger",
+    msg: string
+  ) {
+    let keyring: Keyring;
+    if (keyringType === "hd") {
+      keyring = this.hdKeyringFactory.fromMnemonic(this.mnemonic(), "bip44", [
+        0,
+      ]);
+    } else {
+      throw new Error("ledger not implemented");
+    }
+    const msgBuffer = Buffer.from(bs58.decode(msg));
+    return keyring.signMessage(msgBuffer, keyring.publicKeys()[0]);
+  }
+
   private getKeyring(pubkey: string): Keyring {
     let found = this.hdKeyring!.publicKeys().find((k) => k === pubkey);
     if (found) {
