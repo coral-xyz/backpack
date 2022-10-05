@@ -1,9 +1,8 @@
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
-import type { EventEmitter } from "@coral-xyz/common";
+import type { EventEmitter, DerivationPath } from "@coral-xyz/common";
 import {
   Blockchain,
-  DerivationPath,
   EthereumExplorer,
   EthereumConnectionUrl,
   SolanaExplorer,
@@ -18,8 +17,6 @@ import * as store from "../store";
 import { DefaultKeyname, DEFAULT_DARK_MODE } from "../store";
 import { BlockchainKeyring } from "./blockchain";
 
-const BLOCKCHAIN_DEFAULT = Blockchain.SOLANA;
-
 /**
  * Keyring API for managing all wallet keys.
  */
@@ -28,7 +25,6 @@ export class KeyringStore {
   private lastUsedTs: number;
   private password?: string;
   private autoLockInterval?: ReturnType<typeof setInterval>;
-  private activeBlockchain_?: Blockchain;
   private events: EventEmitter;
   private mnemonic: string;
 
@@ -59,10 +55,8 @@ export class KeyringStore {
     this.password = password;
     this.mnemonic = mnemonic;
 
-    // Init default keyring.
-    this.activeBlockchain_ = BLOCKCHAIN_DEFAULT;
     // Init Solana
-    await this.initBlockchainKeyring(
+    const keyring = await this.initBlockchainKeyring(
       derivationPath,
       accountIndices,
       Blockchain.SOLANA
@@ -99,6 +93,8 @@ export class KeyringStore {
 
     // Automatically lock the store when idle.
     await this.tryUnlock(password);
+
+    return keyring;
   }
 
   // Initialise a blockchain keyring.
@@ -106,18 +102,14 @@ export class KeyringStore {
     derivationPath: DerivationPath,
     accountIndices: Array<number>,
     blockchain: Blockchain
-  ): Promise<Array<[string, string]>> {
+  ): Promise<BlockchainKeyring> {
     const keyring = {
       [Blockchain.SOLANA]: BlockchainKeyring.solana,
       [Blockchain.ETHEREUM]: BlockchainKeyring.ethereum,
     }[blockchain]();
-    const newAccounts = await keyring.init(
-      this.mnemonic,
-      derivationPath,
-      accountIndices
-    );
+    await keyring.init(this.mnemonic, derivationPath, accountIndices);
     this.blockchains.set(blockchain, keyring);
-    return newAccounts;
+    return keyring;
   }
 
   public async checkPassword(password: string) {
@@ -151,7 +143,6 @@ export class KeyringStore {
   public lock() {
     this.blockchains = new Map();
     this.lastUsedTs = 0;
-    this.activeBlockchain_ = undefined;
   }
 
   // Return the public keys of all blockchain keyrings in the keyring.
@@ -188,21 +179,14 @@ export class KeyringStore {
     );
   }
 
-  // Derive the next key for the given blockchain. If the blockchain keyring is
-  // not initialised it will be.
+  // Derive the next key for the given blockchain.
   public async deriveNextKey(
     blockchain: Blockchain
   ): Promise<[string, string]> {
     return this.withUnlock(async () => {
       let blockchainKeyring = this.blockchains.get(blockchain);
       if (!blockchainKeyring) {
-        const accounts = await this.initBlockchainKeyring(
-          DerivationPath.Bip44Change,
-          [0],
-          blockchain
-        );
-        this.persist();
-        return accounts[0];
+        throw new Error("blockchain keyring not initialised");
       } else {
         // Derive the next key.
         const [pubkey, name] = blockchainKeyring.deriveNextKey();
@@ -220,11 +204,8 @@ export class KeyringStore {
     name: string
   ): Promise<[string, string]> {
     return this.withUnlock(async () => {
-      const blockchainKeyring = this.blockchains.get(blockchain);
-      const [publicKey, _name] = await blockchainKeyring!.importSecretKey(
-        secretKey,
-        name
-      );
+      const keyring = this.keyringForBlockchain(blockchain);
+      const [publicKey, _name] = await keyring.importSecretKey(secretKey, name);
       this.persist();
       return [publicKey, _name];
     });
@@ -237,21 +218,16 @@ export class KeyringStore {
     });
   }
 
-  public exportSecretKey(password: string, pubkey: string): string {
+  public exportSecretKey(password: string, publicKey: string): string {
     return this.withPassword(password, () => {
-      return this.activeBlockchainKeyring().exportSecretKey(pubkey);
+      const keyring = this.keyringForPublicKey(publicKey);
+      return keyring.exportSecretKey(publicKey);
     });
   }
 
   public exportMnemonic(password: string): string {
     return this.withPassword(password, () => {
       return this.mnemonic;
-    });
-  }
-
-  public resetMnemonic(password: string) {
-    return this.withPassword(password, () => {
-      // TODO.
     });
   }
 
@@ -316,51 +292,23 @@ export class KeyringStore {
     const blockchains = Object.fromEntries(
       [...this.blockchains].map(([k, v]) => [k, v.toJson()])
     );
-
     return {
       mnemonic: this.mnemonic,
       blockchains,
       lastUsedTs: this.lastUsedTs,
-      activeBlockchain_: this.activeBlockchain_,
     };
   }
 
   private fromJson(json: any) {
-    const { mnemonic, blockchains, activeBlockchainLabel, activeBlockchain_ } =
-      json;
-
-    if (activeBlockchainLabel) {
-      // Migrate from previous store format
-      // TODO can be removed after a while
-      this.fromLegacyJson(json);
-    } else {
-      this.mnemonic = mnemonic;
-      this.blockchains = new Map(
-        Object.entries(blockchains).map(([blockchain, obj]) => {
-          const blockchainKeyring = BlockchainKeyring[blockchain]();
-          blockchainKeyring.fromJson(obj);
-          return [blockchain, blockchainKeyring];
-        })
-      );
-      this.activeBlockchain_ = activeBlockchain_;
-    }
-  }
-
-  // Load wallet from legacy JSON format (pre multichain)
-  private fromLegacyJson(json: any) {
-    const { activeBlockchainLabel, solana } = json;
-    this.mnemonic = solana.hdKeyring.mnemonic;
-    this.activeBlockchain_ = activeBlockchainLabel;
-    this.blockchains = new Map();
-    const blockchainKeyring = BlockchainKeyring[Blockchain.SOLANA]();
-    blockchainKeyring.fromJson({
-      ...solana,
-      importedKeyring: {
-        // Handle rename of this
-        secretKeys: solana.importedKeyring.keypairs,
-      },
-    });
-    this.blockchains.set(Blockchain.SOLANA, blockchainKeyring);
+    const { mnemonic, blockchains } = json;
+    this.mnemonic = mnemonic;
+    this.blockchains = new Map(
+      Object.entries(blockchains).map(([blockchain, obj]) => {
+        const blockchainKeyring = BlockchainKeyring[blockchain]();
+        blockchainKeyring.fromJson(obj);
+        return [blockchain, blockchainKeyring];
+      })
+    );
   }
 
   private async isLocked(): Promise<boolean> {
@@ -372,12 +320,12 @@ export class KeyringStore {
   }
 
   private isUnlocked(): boolean {
-    return this.activeBlockchain_ !== undefined && this.lastUsedTs !== 0;
+    return this.lastUsedTs !== 0;
   }
 
   private async persist(forceBecauseCalledFromInit = false) {
     if (!forceBecauseCalledFromInit && !this.isUnlocked()) {
-      throw new Error("invariant violation");
+      throw new Error("attempted persist of locked keyring");
     }
     const plaintext = JSON.stringify(this.toJson());
     const ciphertext = await crypto.encrypt(plaintext, this.password!);
@@ -396,7 +344,9 @@ export class KeyringStore {
           this.events.emit(BACKEND_EVENT, {
             name: NOTIFICATION_KEYRING_STORE_LOCKED,
           });
-          clearInterval(this.autoLockInterval!);
+          if (this.autoLockInterval) {
+            clearInterval(this.autoLockInterval);
+          }
         }
       }, _autoLockSecs * 1000);
     });
@@ -439,11 +389,44 @@ export class KeyringStore {
 
   public async activeWallets(): Promise<string[]> {
     return this.withUnlock(async () => {
-      return [...this.blockchains.values()].map((bc) => bc.getActiveWallet()!);
+      return [...this.blockchains.values()]
+        .map((bc) => bc.getActiveWallet())
+        .filter((w) => w !== undefined) as string[];
     });
   }
 
+  /**
+   * Returns the blockchain for a given public key.
+   */
+  public blockchainForPublicKey(publicKey: string): Blockchain {
+    for (const [blockchain, keyring] of this.blockchains) {
+      if (keyring.hasPublicKey(publicKey)) {
+        return blockchain as Blockchain;
+      }
+    }
+    throw new Error("no blockchain for public key");
+  }
+
+  /**
+   * Returns the keyring for a given blockchain.
+   */
   public keyringForBlockchain(blockchain: Blockchain): BlockchainKeyring {
-    return this.blockchains.get(blockchain)!;
+    const keyring = this.blockchains.get(blockchain);
+    if (keyring) {
+      return keyring;
+    }
+    throw new Error("no keyring for blockchain");
+  }
+
+  /**
+   * Returns the keyring for a given public key.
+   */
+  public keyringForPublicKey(publicKey: string): BlockchainKeyring {
+    for (const keyring of this.blockchains.values()) {
+      if (keyring.hasPublicKey(publicKey)) {
+        return keyring;
+      }
+    }
+    throw new Error("no keyring for public key");
   }
 }

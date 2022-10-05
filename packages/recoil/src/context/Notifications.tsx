@@ -15,7 +15,6 @@ import {
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
-  NOTIFICATION_KEYRING_RESET_MNEMONIC,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
@@ -50,7 +49,6 @@ const logger = getLogger("notifications-provider");
 export function NotificationsProvider(props: any) {
   const setWalletPublicKeys = useSetRecoilState(atoms.walletPublicKeys);
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
-  const setActiveWallet = useSetRecoilState(atoms.activeWallet);
   const setActiveWallets = useSetRecoilState(atoms.activeWallets);
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
   const setAutoLockSecs = useSetRecoilState(atoms.autoLockSecs);
@@ -95,9 +93,6 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_KEYRING_KEY_DELETE:
           handleKeyringKeyDelete(notif);
-          break;
-        case NOTIFICATION_KEYRING_RESET_MNEMONIC:
-          handleResetMnemonic(notif);
           break;
         case NOTIFICATION_KEYNAME_UPDATE:
           handleKeynameUpdate(notif);
@@ -281,15 +276,10 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleSolanaActiveWalletUpdated = (notif: Notification) => {
-      setActiveWallet(notif.data.activeWallet);
       allPlugins().forEach((p) => {
         p.pushSolanaPublicKeyChangedNotification(notif.data.activeWallet);
       });
       setActiveWallets(notif.data.activeWallets);
-    };
-
-    const handleResetMnemonic = (notif: Notification) => {
-      // TODO.
     };
 
     const handleReset = (_notif: Notification) => {
@@ -347,7 +337,6 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleEthereumActiveWalletUpdated = (notif: Notification) => {
-      setActiveWallet(notif.data.activeWallet);
       allPlugins().forEach((p) => {
         p.pushEthereumPublicKeyChangedNotification(notif.data.activeWallet);
       });

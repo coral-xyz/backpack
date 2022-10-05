@@ -148,8 +148,6 @@ async function handle<T = any>(
       return await handleValidateMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC:
       return handleKeyringExportMnemonic(ctx, params[0]);
-    case UI_RPC_METHOD_KEYRING_RESET_MNEMONIC:
-      return handleKeyringResetMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_AUTOLOCK_READ:
       return await handleKeyringAutolockRead(ctx);
     case UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE:
@@ -189,12 +187,6 @@ async function handle<T = any>(
     //
     // Wallet app settings.
     //
-    case UI_RPC_METHOD_ACTIVE_BLOCKCHAIN_UPDATE:
-      return await handleActiveBlockchainUpdate(ctx, params[0]);
-    case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET:
-      return await handleWalletDataActiveWallet(ctx);
-    case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE:
-      return await handleWalletDataActiveWalletUpdate(ctx, params[0]);
     case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS:
       return await handleWalletDataActiveWallets(ctx);
     case UI_RPC_METHOD_SETTINGS_DARK_MODE_READ:
@@ -448,14 +440,6 @@ function handleKeyringExportMnemonic(
   password: string
 ): RpcResponse<string> {
   const resp = ctx.backend.keyringExportMnemonic(password);
-  return [resp];
-}
-
-function handleKeyringResetMnemonic(
-  ctx: Context<Backend>,
-  password: string
-): RpcResponse<string> {
-  const resp = ctx.backend.keyringResetMnemonic(password);
   return [resp];
 }
 

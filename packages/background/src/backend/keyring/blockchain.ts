@@ -67,9 +67,13 @@ export class BlockchainKeyring {
     importedPublicKeys: Array<string>;
     ledgerPublicKeys: Array<string>;
   } {
-    const hdPublicKeys = this.hdKeyring!.publicKeys();
-    const importedPublicKeys = this.importedKeyring!.publicKeys();
-    const ledgerPublicKeys = this.ledgerKeyring!.publicKeys();
+    const hdPublicKeys = this.hdKeyring ? this.hdKeyring.publicKeys() : [];
+    const importedPublicKeys = this.importedKeyring
+      ? this.importedKeyring.publicKeys()
+      : [];
+    const ledgerPublicKeys = this.ledgerKeyring
+      ? this.ledgerKeyring.publicKeys()
+      : [];
     return {
       hdPublicKeys,
       importedPublicKeys,
@@ -215,28 +219,25 @@ export class BlockchainKeyring {
     return keyring.signMessage(msgBuffer, walletAddress);
   }
 
-  private getKeyring(pubkey: string): Keyring {
-    let found = this.hdKeyring!.publicKeys().find((k) => k === pubkey);
-    if (found) {
-      return this.hdKeyring!;
-    }
-    found = this.importedKeyring!.publicKeys().find((k) => k === pubkey);
-    if (found) {
-      return this.importedKeyring!;
-    }
-    return this.ledgerKeyring!;
-  }
-
-  public hasPublicKey(pubkey: string): boolean {
+  private getKeyring(publicKey: string): Keyring {
     for (const keyring of [
-      this.hdKeyring!,
-      this.importedKeyring!,
-      this.ledgerKeyring!,
+      this.hdKeyring,
+      this.importedKeyring,
+      this.ledgerKeyring,
     ]) {
-      if (keyring.publicKeys().find((k) => k === pubkey)) {
-        return true;
+      if (keyring && keyring.publicKeys().find((k) => k === publicKey)) {
+        return keyring;
       }
     }
-    return false;
+    throw new Error("no keyring for public key");
+  }
+
+  public hasPublicKey(publicKey: string): boolean {
+    try {
+      this.getKeyring(publicKey);
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
