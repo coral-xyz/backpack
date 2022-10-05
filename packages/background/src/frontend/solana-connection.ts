@@ -7,6 +7,7 @@ import type {
   GetProgramAccountsConfig,
   MessageArgs,
   BlockheightBasedTransactionConfirmationStrategy,
+  GetParsedProgramAccountsConfig,
 } from "@solana/web3.js";
 import { PublicKey, Message } from "@solana/web3.js";
 import type {
@@ -44,6 +45,8 @@ import {
   SOLANA_CONNECTION_RPC_GET_BLOCK_TIME,
   SOLANA_CONNECTION_RPC_GET_PARSED_TOKEN_ACCOUNTS_BY_OWNER,
   SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS,
+  SOLANA_CONNECTION_RPC_GET_PARSED_ACCOUNT_INFO,
+  SOLANA_CONNECTION_RPC_GET_PARSED_PROGRAM_ACCOUNTS,
 } from "@coral-xyz/common";
 import type { SolanaConnectionBackend } from "../backend/solana-connection";
 import type { Config, Handle } from "../types";
@@ -155,6 +158,10 @@ async function handleImpl<T = any>(
       );
     case SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS:
       return await handleGetTokenLargestAccounts(ctx, params[0], params[1]);
+    case SOLANA_CONNECTION_RPC_GET_PARSED_ACCOUNT_INFO:
+      return await handleGetParsedAccountInfo(ctx, params[0], params[1]);
+    case SOLANA_CONNECTION_RPC_GET_PARSED_PROGRAM_ACCOUNTS:
+      return await handleGetParsedProgramAccounts(ctx, params[0], params[1]);
     default:
       throw new Error("invalid rpc method");
   }
@@ -383,6 +390,30 @@ async function handleGetTokenLargestAccounts(
   const resp = await ctx.backend.getTokenLargestAccounts(
     new PublicKey(mintAddress),
     commitment
+  );
+  return [resp];
+}
+
+async function handleGetParsedAccountInfo(
+  ctx: Context<SolanaConnectionBackend>,
+  publicKey: string,
+  commitment?: Commitment
+) {
+  const resp = await ctx.backend.getParsedAccountInfo(
+    new PublicKey(publicKey),
+    commitment
+  );
+  return [resp];
+}
+
+async function handleGetParsedProgramAccounts(
+  ctx: Context<SolanaConnectionBackend>,
+  programId: string,
+  configOrCommitment?: GetParsedProgramAccountsConfig | Commitment
+) {
+  const resp = await ctx.backend.getParsedProgramAccounts(
+    new PublicKey(programId),
+    configOrCommitment
   );
   return [resp];
 }

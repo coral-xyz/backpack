@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { InputAdornment, Typography, IconButton } from "@mui/material";
 import type { Button } from "@mui/material";
-import { Close, ExpandMore, SwapVert } from "@mui/icons-material";
+import { ExpandMore, SwapVert } from "@mui/icons-material";
 import { Button as XnftButton } from "@coral-xyz/react-xnft-renderer";
 import {
   useSplTokenRegistry,
@@ -110,26 +110,12 @@ const useStyles = styles((theme) => ({
     flexDirection: "column",
     borderRadius: "22px",
   },
-  approveTransactionCloseContainer: {
-    backgroundColor: theme.custom.colors.approveTransactionCloseBackground,
-    width: "44px",
-    height: "44px",
-    zIndex: 2,
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-    borderRadius: "22px",
-  },
   swapTokensButton: {
     border: `${theme.custom.colors.borderFull}`,
     width: "44px",
     height: "44px",
     marginLeft: "auto",
     marginRight: "auto",
-  },
-  closeConfirmButton: {
-    border: "none !important",
-    background: theme.custom.colors.nav,
   },
   swapIcon: {
     color: theme.custom.colors.icon,
@@ -705,27 +691,6 @@ function SwapTokensButton({
         onClick={onClick}
       >
         <SwapVert className={classes.swapIcon} />
-      </IconButton>
-    </div>
-  );
-}
-
-export function CloseButton({
-  onClick,
-  style,
-}: {
-  onClick: () => void;
-  style?: React.CSSProperties;
-}) {
-  const classes = useStyles();
-  return (
-    <div className={classes.approveTransactionCloseContainer} style={style}>
-      <IconButton
-        disableRipple
-        className={`${classes.swapTokensButton} ${classes.closeConfirmButton}`}
-        onClick={onClick}
-      >
-        <Close className={classes.swapIcon} />
       </IconButton>
     </div>
   );

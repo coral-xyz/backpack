@@ -31,7 +31,8 @@ import {
 } from "./pages/RecoveryPhrase";
 import { SetPassword } from "./pages/SetPassword";
 import { UsernameForm } from "./pages/UsernameForm";
-import WaitingRoom from "./pages/WaitingRoom";
+import WaitingRoom from "../common/WaitingRoom";
+import SocialNavbarButtons from "../common/SocialNavbarButtons";
 
 export const Onboarding = () => {
   const { pathname } = useLocation();
@@ -55,6 +56,8 @@ export const Onboarding = () => {
               menuOpen={menuOpen}
               setMenuOpen={setMenuOpen}
             />
+          ) : pathname === "/waitingRoom" ? (
+            <SocialNavbarButtons />
           ) : undefined
         }
         navbarStyle={{

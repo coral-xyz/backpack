@@ -605,6 +605,7 @@ export function useIsValidAddress(
         if (!account) {
           setIsFreshAccount(true);
           setAccountValidated(true);
+          setNormalizedAddress(address);
           return;
         }
 

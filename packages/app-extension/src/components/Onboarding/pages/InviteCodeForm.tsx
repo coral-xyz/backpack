@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { PrimaryButton, SubtextParagraph, TextField } from "../../common";
 import { BackpackHeader } from "../../Locked";
-import { getWaitlistId, setWaitlistId } from "./WaitingRoom";
+import { getWaitlistId, setWaitlistId } from "../../common/WaitingRoom";
 
 export const InviteCodeForm = () => {
   const [error, setError] = useState("");

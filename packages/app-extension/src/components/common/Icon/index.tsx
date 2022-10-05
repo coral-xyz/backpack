@@ -69,7 +69,13 @@ export function TwitterIcon({
   );
 }
 
-export function DiscordIcon({ fill = "#FAFAFA" }) {
+export function DiscordIcon({
+  fill = "#FAFAFA",
+  style,
+}: {
+  fill?: string;
+  style?: React.CSSProperties;
+}) {
   return (
     <svg
       width="24"
@@ -77,6 +83,7 @@ export function DiscordIcon({ fill = "#FAFAFA" }) {
       viewBox="0 0 71 55"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      style={style}
     >
       <g clipPath="url(#clip0)">
         <path

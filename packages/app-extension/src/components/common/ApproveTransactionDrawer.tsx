@@ -1,10 +1,32 @@
 import { useCustomTheme, styles } from "@coral-xyz/themes";
+import { IconButton } from "@mui/material";
+import { Close } from "@mui/icons-material";
 import { WithMiniDrawer } from "./Layout/Drawer";
-import { CloseButton } from "../Unlocked/Swap";
 
-const useStyles = styles(() => ({
+const useStyles = styles((theme) => ({
   paperAnchorBottom: {
     boxShadow: "none",
+  },
+  closeConfirmButton: {
+    width: "38px",
+    height: "38px",
+    marginLeft: "auto",
+    marginRight: "auto",
+    border: "none !important",
+    background: theme.custom.colors.nav,
+  },
+  approveTransactionCloseContainer: {
+    backgroundColor: theme.custom.colors.approveTransactionCloseBackground,
+    width: "44px",
+    height: "44px",
+    zIndex: 2,
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    borderRadius: "22px",
+  },
+  closeIcon: {
+    color: theme.custom.colors.icon,
   },
 }));
 
@@ -66,3 +88,24 @@ export const ApproveTransactionDrawer: React.FC<{
     </WithMiniDrawer>
   );
 };
+
+export function CloseButton({
+  onClick,
+  style,
+}: {
+  onClick: () => void;
+  style?: React.CSSProperties;
+}) {
+  const classes = useStyles();
+  return (
+    <div className={classes.approveTransactionCloseContainer} style={style}>
+      <IconButton
+        disableRipple
+        className={`${classes.closeConfirmButton}`}
+        onClick={onClick}
+      >
+        <Close className={classes.closeIcon} />
+      </IconButton>
+    </div>
+  );
+}
