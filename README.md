@@ -15,7 +15,7 @@
   </p>
 </div>
 
-# Table of Content:
+# Table of contents:
 
 - [Note](#note)
 - [Installing the Latest Release](#installing-the-latest-release)
