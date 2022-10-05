@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { InputAdornment, Typography, IconButton } from "@mui/material";
 import type { Button } from "@mui/material";
-import { Close, ExpandMore, SwapVert } from "@mui/icons-material";
+import { ExpandMore, SwapVert } from "@mui/icons-material";
 import { Button as XnftButton } from "@coral-xyz/react-xnft-renderer";
 import {
   useSplTokenRegistry,
@@ -31,7 +31,7 @@ import { BottomCard } from "./Balances/TokensWidget/Send";
 import { useDrawerContext } from "../common/Layout/Drawer";
 import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
-import { MaxLabel } from "../common/MaxLabel";
+import { MaxSwapLabel } from "../common/MaxSwapLabel";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { TokenAmountHeader } from "../common/TokenAmountHeader";
 
@@ -51,6 +51,7 @@ const useStyles = styles((theme) => ({
   },
   bottomHalfWrapper: {
     borderTop: `${theme.custom.colors.borderFull}`,
+    backgroundColor: theme.custom.colors.bg3,
     flex: 1,
     paddingBottom: "16px",
     paddingTop: "38px",
@@ -109,26 +110,12 @@ const useStyles = styles((theme) => ({
     flexDirection: "column",
     borderRadius: "22px",
   },
-  approveTransactionCloseContainer: {
-    backgroundColor: theme.custom.colors.approveTransactionCloseBackground,
-    width: "44px",
-    height: "44px",
-    zIndex: 2,
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-    borderRadius: "22px",
-  },
   swapTokensButton: {
     border: `${theme.custom.colors.borderFull}`,
-    width: "38px",
-    height: "38px",
+    width: "44px",
+    height: "44px",
     marginLeft: "auto",
     marginRight: "auto",
-  },
-  closeConfirmButton: {
-    border: "none !important",
-    background: theme.custom.colors.nav,
   },
   swapIcon: {
     color: theme.custom.colors.icon,
@@ -339,9 +326,9 @@ function InputTextField() {
   return (
     <>
       <TextFieldLabel
-        leftLabel={"You Pay"}
+        leftLabel={"Sending"}
         rightLabelComponent={
-          <MaxLabel
+          <MaxSwapLabel
             amount={availableForSwap}
             onSetAmount={setFromAmount}
             decimals={fromMintInfo.decimals}
@@ -368,7 +355,7 @@ function OutputTextField() {
   const { toAmount, toMintInfo, isLoadingRoutes } = useSwapContext();
   return (
     <>
-      <TextFieldLabel leftLabel={"You Receive"} />
+      <TextFieldLabel leftLabel={"Receiving"} />
       <TextField
         placeholder={"0"}
         startAdornment={
@@ -704,27 +691,6 @@ function SwapTokensButton({
         onClick={onClick}
       >
         <SwapVert className={classes.swapIcon} />
-      </IconButton>
-    </div>
-  );
-}
-
-export function CloseButton({
-  onClick,
-  style,
-}: {
-  onClick: () => void;
-  style?: React.CSSProperties;
-}) {
-  const classes = useStyles();
-  return (
-    <div className={classes.approveTransactionCloseContainer} style={style}>
-      <IconButton
-        disableRipple
-        className={`${classes.swapTokensButton} ${classes.closeConfirmButton}`}
-        onClick={onClick}
-      >
-        <Close className={classes.swapIcon} />
       </IconButton>
     </div>
   );

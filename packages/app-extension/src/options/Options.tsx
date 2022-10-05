@@ -1,5 +1,4 @@
 import { RecoilRoot } from "recoil";
-import { HashRouter } from "react-router-dom";
 import {
   Blockchain,
   QUERY_CONNECT_HARDWARE,
@@ -14,6 +13,7 @@ import { ConnectHardware } from "../components/Unlocked/Settings/AddConnectWalle
 import { Onboarding } from "../components/Onboarding";
 import "../app/App.css";
 import { WithTheme } from "../components/common/WithTheme";
+import { MemoryRouter } from "react-router-dom";
 
 //
 // Options provides the "expanded" extension app flows. Namely,
@@ -23,11 +23,11 @@ import { WithTheme } from "../components/common/WithTheme";
 //
 function Options() {
   return (
-    <HashRouter>
+    <MemoryRouter>
       <RecoilRoot>
         <_Options />
       </RecoilRoot>
-    </HashRouter>
+    </MemoryRouter>
   );
 }
 

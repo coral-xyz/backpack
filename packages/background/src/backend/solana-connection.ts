@@ -477,6 +477,40 @@ export class SolanaConnectionBackend {
     );
   }
 
+  async getTokenLargestAccounts(
+    mintAddress: PublicKey,
+    commitment?: Commitment
+  ): Promise<RpcResponseAndContext<Array<TokenAccountBalancePair>>> {
+    return await this.connection!.getTokenLargestAccounts(
+      mintAddress,
+      commitment
+    );
+  }
+
+  async getParsedAccountInfo(
+    publicKey: PublicKey,
+    commitment?: Commitment
+  ): Promise<
+    RpcResponseAndContext<AccountInfo<Buffer | ParsedAccountData> | null>
+  > {
+    return await this.connection!.getParsedAccountInfo(publicKey, commitment);
+  }
+  
+  async getParsedProgramAccounts(
+    programId: PublicKey,
+    configOrCommitment?: GetParsedProgramAccountsConfig | Commitment
+  ): Promise<
+    Array<{
+      pubkey: PublicKey;
+      account: AccountInfo<Buffer | ParsedAccountData>;
+    }>
+  > {
+    return await this.connection!.getParsedProgramAccounts(
+      programId,
+      configOrCommitment
+    );
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Methods below not used currently.
   ///////////////////////////////////////////////////////////////////////////////
@@ -515,26 +549,10 @@ export class SolanaConnectionBackend {
     throw new Error("not implemented");
   }
 
-  async getTokenLargestAccounts(
-    mintAddress: PublicKey,
-    commitment?: Commitment
-  ): Promise<RpcResponseAndContext<Array<TokenAccountBalancePair>>> {
-    throw new Error("not implemented");
-  }
-
   async getAccountInfoAndContext(
     publicKey: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<AccountInfo<Buffer> | null>> {
-    throw new Error("not implemented");
-  }
-
-  async getParsedAccountInfo(
-    publicKey: PublicKey,
-    commitment?: Commitment
-  ): Promise<
-    RpcResponseAndContext<AccountInfo<Buffer | ParsedAccountData> | null>
-  > {
     throw new Error("not implemented");
   }
 
@@ -550,18 +568,6 @@ export class SolanaConnectionBackend {
     commitment?: Commitment,
     epoch?: number
   ): Promise<StakeActivationData> {
-    throw new Error("not implemented");
-  }
-
-  async getParsedProgramAccounts(
-    programId: PublicKey,
-    configOrCommitment?: GetParsedProgramAccountsConfig | Commitment
-  ): Promise<
-    Array<{
-      pubkey: PublicKey;
-      account: AccountInfo<Buffer | ParsedAccountData>;
-    }>
-  > {
     throw new Error("not implemented");
   }
 

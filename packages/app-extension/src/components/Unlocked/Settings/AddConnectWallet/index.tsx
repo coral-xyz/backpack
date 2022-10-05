@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { Box, Grid, Typography, MenuItem } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
 import {
   Blockchain,
   openConnectHardware,
-  BACKPACK_FEATURE_MULTICHAIN,
   TAB_BALANCES,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
@@ -12,11 +11,7 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
-import {
-  useTab,
-  useActiveWallet,
-  useBackgroundClient,
-} from "@coral-xyz/recoil";
+import { useTab, useWalletName, useBackgroundClient } from "@coral-xyz/recoil";
 import { ActionCard } from "../../../common/Layout/ActionCard";
 import { HardwareWalletIcon, CheckIcon } from "../../../common/Icon";
 import { Header, SubtextParagraph } from "../../../common";
@@ -36,6 +31,7 @@ export function AddConnectWalletMenu({
   const background = useBackgroundClient();
   const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [newPublicKey, setNewPublicKey] = useState("");
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -81,6 +77,7 @@ export function AddConnectWalletMenu({
                     params: [newPubkey],
                   });
 
+                  setNewPublicKey(newPubkey);
                   setOpenDrawer(true);
                 }}
               />
@@ -131,6 +128,7 @@ export function AddConnectWalletMenu({
       >
         <ConfirmCreateWallet
           blockchain={blockchain}
+          publicKey={newPublicKey}
           setOpenDrawer={setOpenDrawer}
         />
       </WithMiniDrawer>
@@ -140,10 +138,11 @@ export function AddConnectWalletMenu({
 
 export const ConfirmCreateWallet: React.FC<{
   blockchain: Blockchain;
+  publicKey: string;
   setOpenDrawer: (b: boolean) => void;
-}> = ({ blockchain, setOpenDrawer }) => {
+}> = ({ blockchain, publicKey, setOpenDrawer }) => {
   const theme = useCustomTheme();
-  const { publicKey, name } = useActiveWallet();
+  const walletName = useWalletName(publicKey);
   const background = useBackgroundClient();
   const tab = useTab();
   const { close } = useDrawerContext();
@@ -183,7 +182,7 @@ export const ConfirmCreateWallet: React.FC<{
       <div>
         <WalletListItem
           blockchain={blockchain}
-          name={name}
+          name={walletName}
           publicKey={publicKey}
           isFirst={true}
           isLast={true}

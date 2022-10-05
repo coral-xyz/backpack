@@ -154,14 +154,16 @@ export function MnemonicInput({
   return (
     <Box
       sx={{
+        flex: 1,
         display: "flex",
         flexDirection: "column",
         height: "100%",
         justifyContent: "space-between",
+        padding: "0 16px 0 16px",
       }}
     >
-      <Box sx={{ margin: `24px 16px` }}>
-        <Box>
+      <Box>
+        <Box style={{ margin: 8 }}>
           <Header
             text="Secret recovery phrase"
             style={{
@@ -178,13 +180,6 @@ export function MnemonicInput({
           mnemonicWords={mnemonicWords}
           onChange={readOnly ? undefined : setMnemonicWords}
         />
-        {readOnly && (
-          <CheckboxForm
-            checked={checked}
-            setChecked={setChecked}
-            label="I saved my secret recovery phrase"
-          />
-        )}
         {readOnly ? null : (
           <Box
             sx={{
@@ -210,39 +205,38 @@ export function MnemonicInput({
           </Box>
         )}
       </Box>
-      <Box>
-        <Box
-          sx={{
-            marginLeft: "16px",
-            marginRight: "16px",
-            marginBottom: "16px",
-          }}
-        >
-          {error && (
-            <Typography className={classes.errorMsg}>{error}</Typography>
-          )}
-          {readOnly && (
-            <Box sx={{ marginBottom: "12px" }}>
-              <CopyButton
-                text={mnemonic}
-                icon={
-                  <ContentCopyIcon
-                    style={{ color: theme.custom.colors.fontColor }}
-                  />
-                }
-                disabled={!copyEnabled}
+      {readOnly && (
+        <>
+          <CopyButton
+            text={mnemonic}
+            icon={
+              <ContentCopyIcon
+                style={{ color: theme.custom.colors.fontColor }}
               />
-            </Box>
-          )}
-          <PrimaryButton
-            label={buttonLabel}
-            onClick={next}
-            disabled={!nextEnabled}
-            buttonLabelStyle={{
-              fontWeight: 600,
-            }}
+            }
+            disabled={!copyEnabled}
           />
-        </Box>
+          <Box sx={{ margin: "12px" }}>
+            <CheckboxForm
+              checked={checked}
+              setChecked={setChecked}
+              label="I saved my secret recovery phrase"
+            />
+          </Box>
+        </>
+      )}
+      <Box>
+        {error && <Typography className={classes.errorMsg}>{error}</Typography>}
+
+        <PrimaryButton
+          label={buttonLabel}
+          onClick={next}
+          disabled={!nextEnabled}
+          buttonLabelStyle={{
+            fontWeight: 600,
+          }}
+          style={{ marginBottom: 16 }}
+        />
       </Box>
     </Box>
   );

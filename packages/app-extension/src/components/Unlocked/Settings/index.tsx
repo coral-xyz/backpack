@@ -10,16 +10,17 @@ import {
   AccountCircleOutlined,
   Tab as WindowIcon,
   Settings,
+  People,
 } from "@mui/icons-material";
 import { Keypair } from "@solana/web3.js";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
 import {
   useBackgroundClient,
   useWalletPublicKeys,
-  useActiveWallet,
   useActiveWallets,
   useBlockchainLogo,
   useUsername,
+  WalletPublicKeys,
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
@@ -83,6 +84,7 @@ import { DiscordIcon, GridIcon } from "../../common/Icon";
 import { XnftSettings } from "./Xnfts";
 import { XnftDetail } from "./Xnfts/Detail";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
+import WaitingRoom from "../../common/WaitingRoom";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -184,6 +186,10 @@ function AvatarButton() {
             <NavStackScreen
               name={"your-account"}
               component={(props: any) => <YourAccount {...props} />}
+            />
+            <NavStackScreen
+              name={"waiting-room"}
+              component={(props: any) => <WaitingRoom onboarded {...props} />}
             />
             <NavStackScreen
               name={"preferences"}
@@ -316,10 +322,10 @@ function _SettingsContent() {
 }
 
 function AvatarHeader() {
-  const activeWallet = useActiveWallet();
+  const username = useUsername();
   const theme = useCustomTheme();
   return (
-    <div>
+    <div style={{ marginBottom: "40px" }}>
       <div
         style={{
           background: theme.custom.colors.coralGradient,
@@ -344,18 +350,21 @@ function AvatarHeader() {
           }}
         />
       </div>
-      <Typography
-        style={{
-          textAlign: "center",
-          color: theme.custom.colors.fontColor,
-          fontWeight: 500,
-          fontSize: "18px",
-          lineHeight: "28px",
-          marginBottom: "40px",
-        }}
-      >
-        {activeWallet.name}
-      </Typography>
+      {username && (
+        <Typography
+          style={{
+            textAlign: "center",
+            color: theme.custom.colors.fontColor,
+            fontWeight: 500,
+            fontSize: "18px",
+            lineHeight: "28px",
+            marginTop: "8px",
+            marginBottom: "12px",
+          }}
+        >
+          @{username}
+        </Typography>
+      )}
     </div>
   );
 }
@@ -740,7 +749,6 @@ function SettingsList({ close }: { close: () => void }) {
   const theme = useCustomTheme();
   const nav = useNavStack();
   const background = useBackgroundClient();
-  const username = useUsername();
 
   const lockWallet = () => {
     background
@@ -753,7 +761,7 @@ function SettingsList({ close }: { close: () => void }) {
 
   const settingsMenu = [
     {
-      label: username ? `Your Account (${username})` : "Your Account",
+      label: "Your Account",
       onClick: () => nav.push("your-account"),
       icon: (props: any) => <AccountCircleOutlined {...props} />,
       detailIcon: <PushDetail />,
@@ -792,6 +800,12 @@ function SettingsList({ close }: { close: () => void }) {
   });
 
   const discordList = [
+    {
+      label: "Waiting Room",
+      onClick: () => nav.push("waiting-room"),
+      icon: (props: any) => <People {...props} />,
+      detailIcon: <PushDetail />,
+    },
     {
       label: "Need help? Hop into Discord",
       onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
@@ -911,12 +925,14 @@ function SettingsList({ close }: { close: () => void }) {
 export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   const classes = useStyles();
   const background = useBackgroundClient();
+  const existingPublicKeys = useWalletPublicKeys();
   const nav = useNavStack();
   const theme = useCustomTheme();
   const [name, setName] = useState("");
   const [secretKey, setSecretKey] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [newPublicKey, setNewPublicKey] = useState("");
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -927,9 +943,15 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   }, [theme]);
 
   const onClick = async () => {
-    const secretKeyHex = validateSecretKey(blockchain, secretKey);
-    if (!secretKeyHex) {
-      setError("Invalid private key");
+    let secretKeyHex;
+    try {
+      secretKeyHex = validateSecretKey(
+        blockchain,
+        secretKey,
+        existingPublicKeys
+      );
+    } catch (e) {
+      setError((e as Error).message);
       return;
     }
 
@@ -943,6 +965,7 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
       params: [publicKey],
     });
 
+    setNewPublicKey(publicKey);
     setOpenDrawer(true);
   };
 
@@ -1017,6 +1040,7 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
       >
         <ConfirmCreateWallet
           blockchain={blockchain}
+          publicKey={newPublicKey}
           setOpenDrawer={setOpenDrawer}
         />
       </WithMiniDrawer>
@@ -1027,10 +1051,16 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
 // Validate a secret key and return a normalised hex representation
 function validateSecretKey(
   blockchain: Blockchain,
-  secretKey: string
-): string | boolean {
+  secretKey: string,
+  keyring: WalletPublicKeys
+): string {
+  // Extract public keys from keychain object into array of strings
+  const existingPublicKeys = Object.values(keyring[blockchain])
+    .map((k) => k.map((i) => i.publicKey))
+    .flat();
+
   if (blockchain === Blockchain.SOLANA) {
-    let keypair;
+    let keypair: Keypair | null = null;
     try {
       // Attempt to create a keypair from JSON secret key
       keypair = Keypair.fromSecretKey(new Uint8Array(JSON.parse(secretKey)));
@@ -1040,16 +1070,26 @@ function validateSecretKey(
         keypair = Keypair.fromSecretKey(new Uint8Array(bs58.decode(secretKey)));
       } catch (_) {
         // Failure
-        return false;
+        throw new Error("Invalid private key");
       }
     }
+
+    if (existingPublicKeys.includes(keypair.publicKey.toString())) {
+      throw new Error("Key already exists");
+    }
+
     return Buffer.from(keypair.secretKey).toString("hex");
   } else if (blockchain === Blockchain.ETHEREUM) {
     try {
       const wallet = new ethers.Wallet(secretKey);
+
+      if (existingPublicKeys.includes(wallet.publicKey)) {
+        throw new Error("Key already exists");
+      }
+
       return wallet.privateKey;
     } catch (_) {
-      return false;
+      throw new Error("Invalid private key");
     }
   }
   throw new Error("secret key validation not implemented for blockchain");
