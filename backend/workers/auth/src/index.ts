@@ -12,8 +12,6 @@ import { sign } from "tweetnacl";
 import { z, ZodError } from "zod";
 import { Chain } from "./zeus";
 
-const RESERVED = ["admin", "support"];
-
 const CreateUser = z.object({
   username: z
     .string()
@@ -55,7 +53,14 @@ app.get("/users/:username", async (c) => {
     username: c.req.param("username"),
   });
 
-  if (RESERVED.includes(username)) {
+  // TODO: move below block into zod `refine` validation function
+  try {
+    const res = await fetch(
+      `https://username-validator.backpack.workers.dev/${username}`
+    );
+    const { ok } = await res.json<{ ok: boolean }>();
+    if (!ok || !res.ok) throw new Error("validation error");
+  } catch (err) {
     return c.json({ message: "username not available" }, 409);
   }
 

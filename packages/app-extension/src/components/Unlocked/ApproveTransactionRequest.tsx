@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import {
   useActivePublicKeys,
   useBackgroundClient,
@@ -143,33 +143,35 @@ export function ApproveTransactionRequest() {
         setOpenDrawer(b);
       }}
     >
-      {isMessageSign ? (
-        <SignMessageRequest
-          publicKey={publicKey}
-          message={request!.data as string}
-          uiRpcMethod={rpcMethod}
-          onResolve={onResolve}
-          onReject={onReject}
-        />
-      ) : request.kind! === PLUGIN_REQUEST_SOLANA_SIGN_ALL_TRANSACTIONS ? (
-        <SignAllTransactionsRequest
-          publicKey={publicKey}
-          uiRpcMethod={rpcMethod}
-          blockchain={blockchain}
-          transactions={request!.data as string[]}
-          onResolve={onResolve}
-          onReject={onReject}
-        />
-      ) : (
-        <SendTransactionRequest
-          publicKey={publicKey}
-          uiRpcMethod={rpcMethod}
-          blockchain={blockchain}
-          transaction={request!.data as string}
-          onResolve={onResolve}
-          onReject={onReject}
-        />
-      )}
+      <Suspense fallback={<DisabledRequestPrompt />}>
+        {isMessageSign ? (
+          <SignMessageRequest
+            publicKey={publicKey}
+            message={request!.data as string}
+            uiRpcMethod={rpcMethod}
+            onResolve={onResolve}
+            onReject={onReject}
+          />
+        ) : request.kind! === PLUGIN_REQUEST_SOLANA_SIGN_ALL_TRANSACTIONS ? (
+          <SignAllTransactionsRequest
+            publicKey={publicKey}
+            uiRpcMethod={rpcMethod}
+            blockchain={blockchain}
+            transactions={request!.data as string[]}
+            onResolve={onResolve}
+            onReject={onReject}
+          />
+        ) : (
+          <SendTransactionRequest
+            publicKey={publicKey}
+            uiRpcMethod={rpcMethod}
+            blockchain={blockchain}
+            transaction={request!.data as string}
+            onResolve={onResolve}
+            onReject={onReject}
+          />
+        )}
+      </Suspense>
     </ApproveTransactionDrawer>
   );
 }
@@ -461,6 +463,14 @@ function SignMessageRequest({
           {displayMessage}
         </div>
       </Scrollbar>
+    </Request>
+  );
+}
+
+function DisabledRequestPrompt() {
+  return (
+    <Request onConfirm={() => {}} onReject={() => {}} buttonsDisabled={true}>
+      <Loading />
     </Request>
   );
 }

@@ -10,6 +10,7 @@ import {
   AccountCircleOutlined,
   Tab as WindowIcon,
   Settings,
+  People,
 } from "@mui/icons-material";
 import { Keypair } from "@solana/web3.js";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
@@ -19,6 +20,7 @@ import {
   useActiveWallets,
   useBlockchainLogo,
   useUsername,
+  WalletPublicKeys,
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
@@ -84,6 +86,7 @@ import { XnftDetail } from "./Xnfts/Detail";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { PreferenceSolanaCustomRpcUrl } from "./Preferences/Solana/CustomRpcUrl";
 import { PreferenceEthereumCustomRpcUrl } from "./Preferences/Ethereum/CustomRpcUrl";
+import WaitingRoom from "../../common/WaitingRoom";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -185,6 +188,10 @@ function AvatarButton() {
             <NavStackScreen
               name={"your-account"}
               component={(props: any) => <YourAccount {...props} />}
+            />
+            <NavStackScreen
+              name={"waiting-room"}
+              component={(props: any) => <WaitingRoom onboarded {...props} />}
             />
             <NavStackScreen
               name={"preferences"}
@@ -808,6 +815,12 @@ function SettingsList({ close }: { close: () => void }) {
 
   const discordList = [
     {
+      label: "Waiting Room",
+      onClick: () => nav.push("waiting-room"),
+      icon: (props: any) => <People {...props} />,
+      detailIcon: <PushDetail />,
+    },
+    {
       label: "Need help? Hop into Discord",
       onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
       icon: (props: any) => <DiscordIcon {...props} />,
@@ -926,6 +939,7 @@ function SettingsList({ close }: { close: () => void }) {
 export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   const classes = useStyles();
   const background = useBackgroundClient();
+  const existingPublicKeys = useWalletPublicKeys();
   const nav = useNavStack();
   const theme = useCustomTheme();
   const [name, setName] = useState("");
@@ -943,9 +957,15 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   }, [theme]);
 
   const onClick = async () => {
-    const secretKeyHex = validateSecretKey(blockchain, secretKey);
-    if (!secretKeyHex) {
-      setError("Invalid private key");
+    let secretKeyHex;
+    try {
+      secretKeyHex = validateSecretKey(
+        blockchain,
+        secretKey,
+        existingPublicKeys
+      );
+    } catch (e) {
+      setError((e as Error).message);
       return;
     }
 
@@ -1045,10 +1065,16 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
 // Validate a secret key and return a normalised hex representation
 function validateSecretKey(
   blockchain: Blockchain,
-  secretKey: string
-): string | boolean {
+  secretKey: string,
+  keyring: WalletPublicKeys
+): string {
+  // Extract public keys from keychain object into array of strings
+  const existingPublicKeys = Object.values(keyring[blockchain])
+    .map((k) => k.map((i) => i.publicKey))
+    .flat();
+
   if (blockchain === Blockchain.SOLANA) {
-    let keypair;
+    let keypair: Keypair | null = null;
     try {
       // Attempt to create a keypair from JSON secret key
       keypair = Keypair.fromSecretKey(new Uint8Array(JSON.parse(secretKey)));
@@ -1058,16 +1084,26 @@ function validateSecretKey(
         keypair = Keypair.fromSecretKey(new Uint8Array(bs58.decode(secretKey)));
       } catch (_) {
         // Failure
-        return false;
+        throw new Error("Invalid private key");
       }
     }
+
+    if (existingPublicKeys.includes(keypair.publicKey.toString())) {
+      throw new Error("Key already exists");
+    }
+
     return Buffer.from(keypair.secretKey).toString("hex");
   } else if (blockchain === Blockchain.ETHEREUM) {
     try {
       const wallet = new ethers.Wallet(secretKey);
+
+      if (existingPublicKeys.includes(wallet.publicKey)) {
+        throw new Error("Key already exists");
+      }
+
       return wallet.privateKey;
     } catch (_) {
-      return false;
+      throw new Error("Invalid private key");
     }
   }
   throw new Error("secret key validation not implemented for blockchain");

@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Loading } from "../../common";
 import { SetupComplete } from "../../common/Account/SetupComplete";
-import { getWaitlistId } from "./WaitingRoom";
+import { getWaitlistId } from "../../common/WaitingRoom";
 
 export const Finish = () => {
   const [isValid, setIsValid] = useState(false);
