@@ -73,7 +73,7 @@ const useStyles = styles((theme: any) => ({
     borderRadius: "4px",
     background: theme.custom.colors.nav,
     padding: "8px",
-    height: "56px",
+    minHeight: "56px",
     marginBottom: "1px",
   },
   listItemIconRoot: {

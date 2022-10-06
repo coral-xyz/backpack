@@ -84,6 +84,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_BLOCK_TIME,
   SOLANA_CONNECTION_RPC_GET_PARSED_TOKEN_ACCOUNTS_BY_OWNER,
   SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS,
+  SOLANA_CONNECTION_RPC_GET_PARSED_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_PARSED_PROGRAM_ACCOUNTS,
 } from "../constants";
 import { serializeTokenAccountsFilter } from "./types";
@@ -379,6 +380,19 @@ export class BackgroundSolanaConnection extends Connection {
     return resp;
   }
 
+  async getParsedAccountInfo(
+    publicKey: PublicKey,
+    commitment?: Commitment
+  ): Promise<
+    RpcResponseAndContext<AccountInfo<Buffer | ParsedAccountData> | null>
+  > {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_PARSED_ACCOUNT_INFO,
+      params: [publicKey.toString(), commitment],
+    });
+    return resp;
+  }
+
   async getParsedProgramAccounts(
     programId: PublicKey,
     configOrCommitment?: GetParsedProgramAccountsConfig | Commitment
@@ -454,15 +468,6 @@ export class BackgroundSolanaConnection extends Connection {
     publicKey: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<AccountInfo<Buffer> | null>> {
-    throw new Error("not implemented");
-  }
-
-  async getParsedAccountInfo(
-    publicKey: PublicKey,
-    commitment?: Commitment
-  ): Promise<
-    RpcResponseAndContext<AccountInfo<Buffer | ParsedAccountData> | null>
-  > {
     throw new Error("not implemented");
   }
 
