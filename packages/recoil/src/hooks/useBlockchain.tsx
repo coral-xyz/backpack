@@ -2,7 +2,6 @@ import { useRecoilValue } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
 import * as atoms from "../atoms";
 import { TokenData } from "../types";
-import { blockchainNativeBalances } from "../atoms";
 
 export function useBlockchainExplorer(blockchain: Blockchain) {
   switch (blockchain) {
