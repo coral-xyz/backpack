@@ -1,6 +1,8 @@
 import { useRecoilValue } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
 import * as atoms from "../atoms";
+import { TokenData } from "../types";
+import { blockchainNativeBalances } from "../atoms";
 
 export function useBlockchainExplorer(blockchain: Blockchain) {
   switch (blockchain) {
@@ -43,10 +45,14 @@ export function useBlockchainTokensSorted(blockchain: Blockchain) {
   return useRecoilValue(atoms.blockchainBalancesSorted(blockchain));
 }
 
+export function useBlockchainNativeTokens(blockchain: Blockchain) {
+  return useRecoilValue(atoms.blockchainNativeBalances(blockchain));
+}
+
 export function useBlockchainTokenAccount(
   blockchain: Blockchain,
   address: string
-): any {
+): TokenData | null {
   return useRecoilValue(atoms.blockchainTokenData({ blockchain, address }));
 }
 
