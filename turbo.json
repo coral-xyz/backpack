@@ -5,6 +5,7 @@
     "build": {
       "dependsOn": [
         "^build",
+        "common",
         "$BACKPACK_CONFIG_VERSION",
         "$BACKPACK_CONFIG_LOG_LEVEL",
         "$BACKPACK_FEATURE_LIGHT_MODE",
@@ -17,6 +18,9 @@
     },
     "start": {
       "dependsOn": ["^build"]
+    },
+    "common": {
+      "outputs": ["build/**", "dist/**"]
     }
   },
   "globalDependencies": [".env"]

@@ -26,4 +26,4 @@ yarn-error.log*
 dist/
 
 # generated pre-build
-src/generated-config.ts
+src/generated-config.ts 

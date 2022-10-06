@@ -6,7 +6,7 @@
   "types": "dist/esm/index.d.ts",
   "scripts": {
     "start": "yarn build",
-    "build": "./scripts/config.sh && yarn lint && tsc && tsc-alias && tsc -p tsconfig.rn.json",
+    "build": "yarn lint && tsc && tsc-alias && tsc -p tsconfig.rn.json",
     "dev": "tsc --watch",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
   },

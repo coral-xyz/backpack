@@ -5,6 +5,7 @@
     "xnft": "./index.js"
   },
   "scripts": {
+    "common": "cd ../common/ && yarn build && cd ../common-public/ && yarn build",
     "prebuild": "cd ../../examples/xnft/iframe && npm run build",
     "build": "shx cp ../../examples/xnft/iframe/dist/index.js iframe.js"
   },
