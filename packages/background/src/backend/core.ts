@@ -366,7 +366,8 @@ export class Backend {
     accountIndices: Array<number>,
     username: string,
     inviteCode: string,
-    waitlistId?: string
+    waitlistId?: string,
+    userIsRecoveringWallet = false
   ): Promise<string> {
     await this.keyringStore.init(
       mnemonic,
@@ -376,7 +377,7 @@ export class Backend {
       username
     );
 
-    if (BACKPACK_FEATURE_USERNAMES) {
+    if (BACKPACK_FEATURE_USERNAMES && !userIsRecoveringWallet) {
       try {
         const bc = await this.keyringStore.activeBlockchainKeyring();
 
