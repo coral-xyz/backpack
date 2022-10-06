@@ -104,7 +104,7 @@ export function PreferenceEthereumCustomRpcUrl() {
                 padding: "10px",
               }}
             >
-              <Typography style={{ width: "80px" }}>Chian ID</Typography>
+              <Typography style={{ width: "80px" }}>Chain ID</Typography>
               <TextField
                 value={chainId}
                 onChange={(e) => setChainId(e.target.value)}
