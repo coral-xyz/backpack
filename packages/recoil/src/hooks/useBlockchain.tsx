@@ -6,6 +6,10 @@ export function useEnabledBlockchains() {
   return useRecoilValue(atoms.enabledBlockchains);
 }
 
+export function useAvailableBlockchains() {
+  return useRecoilValue(atoms.availableBlockchains);
+}
+
 export function useBlockchainExplorer(blockchain: Blockchain) {
   switch (blockchain) {
     case Blockchain.ETHEREUM:

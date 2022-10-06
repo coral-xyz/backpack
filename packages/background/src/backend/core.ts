@@ -764,6 +764,14 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  enabledBlockchainsAdd(blockchain: Blockchain) {
+    return this.keyringStore.enabledBlockchainsAdd(blockchain);
+  }
+
+  enabledBlockchainsRemove(blockchain: Blockchain) {
+    return this.keyringStore.enabledBlockchainsRemove(blockchain);
+  }
+
   async enabledBlockchainsRead(): Promise<Array<Blockchain>> {
     return this.keyringStore.enabledBlockchains().map((b) => b as Blockchain);
   }

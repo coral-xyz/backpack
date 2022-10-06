@@ -1,38 +1,102 @@
 import { useEffect } from "react";
-import { ListItemText } from "@mui/material";
+import {
+  Blockchain,
+  toTitleCase,
+  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD,
+  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE,
+} from "@coral-xyz/common";
+import {
+  useAvailableBlockchains,
+  useBackgroundClient,
+  useEnabledBlockchains,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { useNavStack } from "../../../common/Layout/NavStack";
-import { List, ListItem } from "../../../common";
+import { SettingsList } from "../../../common/Settings/List";
+import { SecondaryButton, DangerButton } from "../../../common";
 
 export function PreferencesBlockchains() {
-  const theme = useCustomTheme();
   const nav = useNavStack();
+  const availableBlockchains = useAvailableBlockchains();
+  const enabledBlockchains = useEnabledBlockchains();
 
   useEffect(() => {
     nav.setTitle("Blockchains");
   }, [nav]);
 
-  const availableBlockchains = ["Solana", "Ethereum"];
+  const menuItems = Object.fromEntries(
+    availableBlockchains.map((blockchain: Blockchain) => {
+      return [
+        toTitleCase(blockchain),
+        {
+          onClick: () => {},
+          detail: enabledBlockchains.includes(blockchain) ? (
+            <DisableButton
+              blockchain={blockchain}
+              disabled={enabledBlockchains.length === 1}
+            />
+          ) : (
+            <EnableButton blockchain={blockchain} />
+          ),
+        },
+      ];
+    })
+  );
+
+  return <SettingsList menuItems={menuItems} />;
+}
+
+function EnableButton({ blockchain }: { blockchain: Blockchain }) {
+  const background = useBackgroundClient();
+
+  const onClick = async () => {
+    await background.request({
+      method: UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD,
+      params: [blockchain],
+    });
+  };
 
   return (
-    <List
+    <SecondaryButton
+      onClick={() => onClick()}
+      label="Enable"
       style={{
-        marginTop: "16px",
-        border: `${theme.custom.colors.borderFull}`,
+        width: "71px",
+        height: "34px",
+        borderRadius: "4px",
       }}
-    >
-      {availableBlockchains.map((blockchain, i) => (
-        <ListItem
-          id={blockchain}
-          button={false}
-          key={i}
-          isFirst={i === 0}
-          isLast={i === availableBlockchains.length - 1}
-          detail={<></>}
-        >
-          <ListItemText style={{ fontWeight: 500 }}>{blockchain}</ListItemText>
-        </ListItem>
-      ))}
-    </List>
+    />
+  );
+}
+
+function DisableButton({
+  blockchain,
+  disabled,
+}: {
+  blockchain: Blockchain;
+  disabled: boolean;
+}) {
+  const background = useBackgroundClient();
+  const theme = useCustomTheme();
+
+  const onClick = async () => {
+    await background.request({
+      method: UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE,
+      params: [blockchain],
+    });
+  };
+
+  return (
+    <DangerButton
+      onClick={() => onClick()}
+      label="Disable"
+      style={{
+        backgroundColor: theme.custom.colors.negative,
+        width: "71px",
+        height: "34px",
+        borderRadius: "4px",
+      }}
+      disabled={disabled}
+    />
   );
 }

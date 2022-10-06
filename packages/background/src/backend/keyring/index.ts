@@ -7,6 +7,8 @@ import {
   EthereumConnectionUrl,
   SolanaExplorer,
   SolanaCluster,
+  NOTIFICATION_BLOCKCHAIN_ENABLED,
+  NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   BACKEND_EVENT,
   BACKPACK_FEATURE_MULTICHAIN,
@@ -22,6 +24,7 @@ import { BlockchainKeyring } from "./blockchain";
  */
 export class KeyringStore {
   private blockchains: Map<string, BlockchainKeyring>;
+  private enabledBlockchains_: Blockchain[];
   private lastUsedTs: number;
   private password?: string;
   private autoLockInterval?: ReturnType<typeof setInterval>;
@@ -154,11 +157,10 @@ export class KeyringStore {
     };
   } {
     return this.withUnlock(() => {
-      const entries = Array.from(this.blockchains).map(
-        ([blockchain, keyring]) => {
-          return [blockchain, keyring.publicKeys()];
-        }
-      );
+      const entries = this.enabledBlockchains().map((blockchain) => {
+        const keyring = this.keyringForBlockchain(blockchain);
+        return [blockchain, keyring.publicKeys()];
+      });
       return Object.fromEntries(entries);
     });
   }
@@ -295,12 +297,13 @@ export class KeyringStore {
     return {
       mnemonic: this.mnemonic,
       blockchains,
+      enabledBlockchains: this.enabledBlockchains(),
       lastUsedTs: this.lastUsedTs,
     };
   }
 
   private fromJson(json: any) {
-    const { mnemonic, blockchains } = json;
+    const { mnemonic, blockchains, enabledBlockchains } = json;
     this.mnemonic = mnemonic;
     this.blockchains = new Map(
       Object.entries(blockchains).map(([blockchain, obj]) => {
@@ -309,6 +312,9 @@ export class KeyringStore {
         return [blockchain, blockchainKeyring];
       })
     );
+    this.enabledBlockchains_ = enabledBlockchains || [
+      ...this.blockchains.keys(),
+    ];
   }
 
   private async isLocked(): Promise<boolean> {
@@ -387,13 +393,66 @@ export class KeyringStore {
     this.lastUsedTs = Date.now() / 1000;
   }
 
+  public enabledBlockchainsAdd(blockchain: Blockchain) {
+    return this.withUnlock(async () => {
+      if (this.enabledBlockchains().includes(blockchain)) {
+        throw new Error("blockchain already enabled");
+      }
+      this.enabledBlockchains_.push(blockchain);
+      let keyring: BlockchainKeyring;
+      try {
+        keyring = this.keyringForBlockchain(blockchain);
+      } catch {
+        keyring = await this.initBlockchainKeyring("bip44", [0], blockchain);
+      }
+      const activeWallet = keyring.getActiveWallet();
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_BLOCKCHAIN_ENABLED,
+        data: {
+          blockchain,
+          enabledBlockchains: this.enabledBlockchains(),
+          activeWallet,
+        },
+      });
+    });
+  }
+
+  public enabledBlockchainsRemove(blockchain: Blockchain) {
+    return this.withUnlock(() => {
+      if (!this.enabledBlockchains().includes(blockchain)) {
+        throw new Error("blockchain not enabled");
+      }
+      if (this.enabledBlockchains().length === 1) {
+        throw new Error("cannot disable last enabled blockchain");
+      }
+      this.enabledBlockchains_ = this.enabledBlockchains_.filter(
+        (b) => b !== blockchain
+      );
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_BLOCKCHAIN_DISABLED,
+        data: { blockchain, enabledBlockchains: this.enabledBlockchains() },
+      });
+    });
+  }
+
+  /**
+   * Return all the enabled blockchains.
+   */
+  public enabledBlockchains(): Blockchain[] {
+    return this.withUnlock(() => {
+      return this.enabledBlockchains_;
+    });
+  }
+
   /**
    * Return all the active public keys for all enabled blockchains.
    */
   public async activeWallets(): Promise<string[]> {
     return this.withUnlock(async () => {
-      return [...this.blockchains.values()]
-        .map((bc) => bc.getActiveWallet())
+      return this.enabledBlockchains()
+        .map((blockchain) =>
+          this.keyringForBlockchain(blockchain).getActiveWallet()
+        )
         .filter((w) => w !== undefined) as string[];
     });
   }

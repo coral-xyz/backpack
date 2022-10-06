@@ -5,13 +5,13 @@ import {
   BACKPACK_FEATURE_LIGHT_MODE,
   BACKPACK_CONFIG_VERSION,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
-  BACKPACK_FEATURE_MULTICHAIN,
 } from "@coral-xyz/common";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import {
-  useDarkMode,
   useBackgroundClient,
   useBlockchainLogo,
+  useDarkMode,
+  useEnabledBlockchains,
 } from "@coral-xyz/recoil";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
@@ -21,6 +21,7 @@ export function Preferences() {
   const nav = useNavStack();
   const background = useBackgroundClient();
   const isDarkMode = useDarkMode();
+  const enabledBlockchains = useEnabledBlockchains();
 
   const onDarkModeSwitch = async (isDarkMode: boolean) => {
     await background.request({
@@ -72,9 +73,7 @@ export function Preferences() {
         );
       },
     },
-  };
-  if (BACKPACK_FEATURE_MULTICHAIN) {
-    blockchainMenuItems["Ethereum"] = {
+    Ethereum: {
       onClick: () => nav.push("preferences-ethereum"),
       icon: () => {
         const blockchainLogo = useBlockchainLogo(Blockchain.ETHEREUM);
@@ -89,8 +88,15 @@ export function Preferences() {
           />
         );
       },
-    };
-  }
+    },
+  };
+
+  // Filter blockchain menu items to only those for enabled blockchains
+  const filteredBlockchainMenuItems = Object.fromEntries(
+    Object.entries(blockchainMenuItems).filter(([key]) =>
+      enabledBlockchains.includes(key.toLowerCase())
+    )
+  );
 
   //
   // Build version.
@@ -113,7 +119,7 @@ export function Preferences() {
   return (
     <div>
       <SettingsList menuItems={menuItems} />
-      <SettingsList menuItems={blockchainMenuItems} />
+      <SettingsList menuItems={filteredBlockchainMenuItems as any} />
       <SettingsList menuItems={buildMenuItems} />
     </div>
   );

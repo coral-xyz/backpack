@@ -38,8 +38,6 @@ const LIGHT_NEGATIVE_COLOR = NEGATIVE_COLOR;
 const LIGHT_SCROLLBAR_THUMB_COLOR = SCROLLBAR_THUMB_COLOR;
 const LIGHT_ICON_HOVER_COLOR = "#787C89";
 
-const DANGER_COLOR = "#DC2626";
-
 const baseTheme = createStyles({
   typography: {
     fontFamily: ["Inter", "sans-serif"].join(","),
@@ -143,8 +141,6 @@ export const darkTheme: any = {
       approveTransactionTableBackground: BACKGROUND_COLOR_2,
       approveTransactionCloseBackground: BACKGROUND_COLOR_0,
       hoverIconBackground: `rgb(39, 39, 42, ${HOVER_OPACITY})`,
-
-      dangerButton: DANGER_COLOR,
       alpha: "#8F929E",
       scrollbarTrack: BACKGROUND_COLOR_0,
       scrollbarThumb: SCROLLBAR_THUMB_COLOR,
@@ -248,8 +244,6 @@ export const lightTheme: any = {
       approveTransactionTableBackground: LIGHT_BACKGROUND_COLOR_1,
       approveTransactionCloseBackground: "#C2C4CC",
       hoverIconBackground: LIGHT_ICON_HOVER_COLOR,
-
-      dangerButton: DANGER_COLOR,
       alpha: "#8F929E",
       scrollbarTrack: LIGHT_BACKGROUND_COLOR_0,
       scrollbarThumb: LIGHT_SCROLLBAR_THUMB_COLOR,
