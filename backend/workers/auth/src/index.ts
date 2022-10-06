@@ -48,6 +48,34 @@ app.use("*", async (c, next) => {
   }
 });
 
+app.get("/users/:username/info", async (c) => {
+  const username = c.req.param("username");
+
+  const chain = Chain(c.env.HASURA_URL, {
+    headers: {
+      Authorization: `Bearer ${c.env.JWT}`,
+    },
+  });
+
+  const res = await chain("query")({
+    auth_users: [
+      {
+        where: { username: { _eq: username } },
+        limit: 1,
+      },
+      {
+        pubkey: true,
+      },
+    ],
+  });
+
+  if (res.auth_users[0]?.pubkey) {
+    return c.json(res.auth_users[0]);
+  } else {
+    return c.json({ message: "user not found" }, 404);
+  }
+});
+
 app.get("/users/:username", async (c) => {
   const { username } = CreateUser.pick({ username: true }).parse({
     username: c.req.param("username"),
