@@ -4,7 +4,11 @@ import { TokenInfo } from "@solana/spl-token-registry";
 import { SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
 import { priceData } from "../prices";
 import { splTokenRegistry } from "./token-registry";
-import { SolanaTokenAccountWithKey, TokenData } from "../../types";
+import {
+  SolanaTokenAccountWithKey,
+  TokenData,
+  TokenNativeData,
+} from "../../types";
 import { anchorContext } from "./wallet";
 import { solanaPublicKey } from "../wallet";
 import { solanaConnectionUrl } from "./preferences";
@@ -87,8 +91,11 @@ export const solanaTokenAccountKeys = selector({
   },
 });
 
-export const solanaTokenBalance = selectorFamily<TokenData | null, string>({
-  key: "solanaTokenBalance",
+export const solanaTokenNativeBalance = selectorFamily<
+  TokenNativeData | null,
+  string
+>({
+  key: "solanaTokenNativeBalance",
   get:
     (tokenAddress: string) =>
     ({ get }: any) => {
@@ -96,30 +103,40 @@ export const solanaTokenBalance = selectorFamily<TokenData | null, string>({
       if (!tokenAccount) {
         return null;
       }
-      //
-      // Token registry metadata.
-      //
       const tokenRegistry = get(splTokenRegistry)!;
       const tokenMetadata =
         tokenRegistry.get(tokenAccount.mint.toString()) ?? ({} as TokenInfo);
       const { symbol: ticker, logoURI: logo, name, decimals } = tokenMetadata;
-
-      //
-      // Price data.
-      //
-
-      // Use native SOL price for wSOL
-      const priceMint =
-        tokenAccount.mint.toString() === WSOL_MINT
-          ? SOL_NATIVE_MINT
-          : tokenAccount.mint.toString();
-      const price = get(priceData(priceMint)) as any;
-      // Convert from BN.js to ethers BigNumber
-      // https://github.com/ethers-io/ethers.js/issues/595
       const nativeBalance = BigNumber.from(tokenAccount.amount.toString());
       const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
+
+      return {
+        name,
+        decimals,
+        nativeBalance,
+        displayBalance,
+        ticker,
+        logo,
+        address: tokenAddress,
+        mint: tokenAccount.mint.toString(),
+      };
+    },
+});
+
+export const solanaTokenBalance = selectorFamily<TokenData | null, string>({
+  key: "solanaTokenBalance",
+  get:
+    (tokenAddress: string) =>
+    ({ get }: any) => {
+      const nativeTokenBalance = get(solanaTokenNativeBalance(tokenAddress));
+      if (!nativeTokenBalance) {
+        return null;
+      }
+
+      const price = get(priceData(nativeTokenBalance.priceMint)) as any;
+
       const usdBalance =
-        price && price.usd ? price.usd * parseFloat(displayBalance) : 0;
+        (price?.usd ?? 0) * parseFloat(nativeTokenBalance.displayBalance);
       const oldUsdBalance =
         usdBalance === 0
           ? 0
@@ -131,18 +148,11 @@ export const solanaTokenBalance = selectorFamily<TokenData | null, string>({
           : undefined;
 
       return {
-        name,
-        decimals,
-        nativeBalance,
-        displayBalance,
-        ticker,
-        logo,
-        address: tokenAddress,
-        mint: tokenAccount.mint.toString(),
+        ...nativeTokenBalance,
         usdBalance,
         recentPercentChange,
         recentUsdBalanceChange,
         priceData: price,
-      } as TokenData;
+      };
     },
 });

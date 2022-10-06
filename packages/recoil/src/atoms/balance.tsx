@@ -1,9 +1,16 @@
 import { selector, selectorFamily } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
-import { solanaTokenBalance, solanaTokenAccountKeys } from "./solana/token";
-import { ethereumTokenBalance } from "./ethereum/token";
+import {
+  solanaTokenBalance,
+  solanaTokenAccountKeys,
+  solanaTokenNativeBalance,
+} from "./solana/token";
+import {
+  ethereumTokenNativeBalance,
+  ethereumTokenBalance,
+} from "./ethereum/token";
 import { ethereumTokenMetadata } from "./ethereum/token-metadata";
-import { TokenData } from "../types";
+import { TokenData, TokenNativeData } from "../types";
 
 /**
  * Return token balances sorted by usd notional balances.
@@ -29,6 +36,54 @@ export const blockchainBalancesSorted = selectorFamily<
         )
         .filter(Boolean);
       return tokenData.sort((a, b) => b.usdBalance - a.usdBalance);
+    },
+});
+
+/**
+ * Return native token balances (without their price information)
+ */
+export const blockchainNativeBalances = selectorFamily<
+  Array<TokenNativeData>,
+  Blockchain
+>({
+  key: "blockchainNativeBalances",
+  get:
+    (blockchain: Blockchain) =>
+    ({ get }) => {
+      const tokenAddresses = get(blockchainTokenAddresses(blockchain));
+      return tokenAddresses
+        .map(
+          (address) =>
+            get(
+              blockchainTokenNativeData({
+                address,
+                blockchain,
+              })
+            )!
+        )
+        .filter(Boolean);
+    },
+});
+
+/**
+ * Returns token balances but not the price information for a given token address and blockchain.
+ */
+export const blockchainTokenNativeData = selectorFamily<
+  TokenNativeData | null,
+  { address: string; blockchain: Blockchain }
+>({
+  key: "blockchainTokenNativeData",
+  get:
+    ({ address, blockchain }: { address: string; blockchain: Blockchain }) =>
+    ({ get }) => {
+      switch (blockchain) {
+        case Blockchain.SOLANA:
+          return get(solanaTokenNativeBalance(address));
+        case Blockchain.ETHEREUM:
+          return get(ethereumTokenNativeBalance(address));
+        default:
+          throw new Error(`unsupported blockchain: ${blockchain}`);
+      }
     },
 });
 

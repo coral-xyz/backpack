@@ -7,6 +7,7 @@ import { AccountLayout, u64, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { Blockchain, UI_RPC_METHOD_SOLANA_SIMULATE } from "@coral-xyz/common";
 import {
   useBackgroundClient,
+  useBlockchainNativeTokens,
   useBlockchainTokensSorted,
   useEthereumCtx,
   useEthereumPrice,
@@ -180,7 +181,7 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
 export function useSolanaTxData(serializedTx: any): TransactionData {
   const background = useBackgroundClient();
   const tokenRegistry = useSplTokenRegistry();
-  const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
+  const tokenAccountsSorted = useBlockchainNativeTokens(Blockchain.SOLANA);
   const { connection, walletPublicKey } = useSolanaCtx();
 
   const [loading, setLoading] = useState(true);

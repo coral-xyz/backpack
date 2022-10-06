@@ -112,7 +112,7 @@ export function SendButton({
         {
           name: "send",
           component: (props: any) => <SendLoader {...props} />,
-          title: `${token.ticker} / Send`,
+          title: `${token?.ticker || ""} / Send`,
           props: {
             blockchain,
             address,
