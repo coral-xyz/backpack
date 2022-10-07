@@ -28,6 +28,7 @@ import type {
   ConfirmedSignatureInfo,
   ParsedConfirmedTransaction,
   Transaction,
+  VersionedTransaction,
   Message,
   Signer,
   SendOptions,
@@ -347,15 +348,24 @@ export class SolanaConnectionBackend {
   }
 
   async simulateTransaction(
-    transactionOrMessage: Transaction | Message,
+    transactionOrMessage: Transaction | VersionedTransaction | Message,
     signers?: Array<Signer>,
     includeAccounts?: boolean | Array<PublicKey>
   ): Promise<RpcResponseAndContext<SimulatedTransactionResponse>> {
-    return await this.connection!.simulateTransaction(
-      transactionOrMessage,
-      signers,
-      includeAccounts
-    );
+    if ("message" in transactionOrMessage) {
+      return await this.connection!.simulateTransaction(transactionOrMessage, {
+        accounts: {
+          encoding: "base64",
+          addresses: [],
+        },
+      });
+    } else {
+      return await this.connection!.simulateTransaction(
+        transactionOrMessage,
+        signers,
+        includeAccounts
+      );
+    }
   }
 
   async getMultipleAccountsInfo(
@@ -495,7 +505,7 @@ export class SolanaConnectionBackend {
   > {
     return await this.connection!.getParsedAccountInfo(publicKey, commitment);
   }
-  
+
   async getParsedProgramAccounts(
     programId: PublicKey,
     configOrCommitment?: GetParsedProgramAccountsConfig | Commitment

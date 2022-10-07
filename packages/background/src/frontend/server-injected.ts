@@ -170,7 +170,8 @@ async function handle<T = any>(
         ctx,
         params[0],
         params[1],
-        params[2]
+        params[2],
+        params[3]
       );
     case SOLANA_RPC_METHOD_SIGN_TX:
       return await handleSolanaSignTx(ctx, params[0], params[1], params[2]);
@@ -312,7 +313,8 @@ async function handleSolanaSignAndSendTx(
   ctx: Context<Backend>,
   tx: string,
   walletAddress: string,
-  options?: SendOptions
+  options?: SendOptions,
+  versioned = false
 ): Promise<RpcResponse<string>> {
   // Get user approval.
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
@@ -340,7 +342,8 @@ async function handleSolanaSignAndSendTx(
       const sig = await ctx.backend.solanaSignAndSendTx(
         tx,
         walletAddress,
-        options
+        options,
+        versioned
       );
       resp = [sig];
     }

@@ -50,27 +50,34 @@ export async function sendAndConfirm(
   return signature;
 }
 
-export async function send(
+export async function send<T extends Transaction | VersionedTransaction>(
   publicKey: PublicKey,
   requestManager: RequestManager,
   connection: Connection,
-  tx: Transaction,
+  tx: T,
   signers?: Signer[],
   options?: SendOptions
 ): Promise<TransactionSignature> {
-  if (signers) {
-    signers.forEach((s: Signer) => {
-      tx.partialSign(s);
-    });
-  }
-  if (!tx.feePayer) {
-    tx.feePayer = publicKey;
-  }
-  if (!tx.recentBlockhash) {
-    const { blockhash } = await connection!.getLatestBlockhash(
-      options?.preflightCommitment
-    );
-    tx.recentBlockhash = blockhash;
+  const versioned = "version" in tx;
+  if (!versioned) {
+    if (signers) {
+      signers.forEach((s: Signer) => {
+        tx.partialSign(s);
+      });
+    }
+    if (!tx.feePayer) {
+      tx.feePayer = publicKey;
+    }
+    if (!tx.recentBlockhash) {
+      const { blockhash } = await connection!.getLatestBlockhash(
+        options?.preflightCommitment
+      );
+      tx.recentBlockhash = blockhash;
+    }
+  } else {
+    if (signers) {
+      tx.sign(signers);
+    }
   }
   const txSerialize = tx.serialize({
     requireAllSignatures: false,
@@ -78,7 +85,7 @@ export async function send(
   const txStr = encode(txSerialize);
   return await requestManager.request({
     method: SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
-    params: [txStr, publicKey.toString(), options],
+    params: [txStr, publicKey.toString(), options, versioned],
   });
 }
 

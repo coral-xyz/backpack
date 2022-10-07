@@ -1,7 +1,7 @@
 import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
 import type { Commitment, SendOptions } from "@solana/web3.js";
-import { PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
@@ -34,6 +34,7 @@ import {
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
   Blockchain,
+  TransactionV2,
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
 import * as store from "./store";
@@ -77,12 +78,17 @@ export class Backend {
   async solanaSignAndSendTx(
     txStr: string,
     walletAddress: string,
-    options?: SendOptions
+    options?: SendOptions,
+    versioned = false
   ): Promise<string> {
     // Sign the transaction.
-    const tx = Transaction.from(bs58.decode(txStr));
-    const signature = await this.solanaSignTransaction(txStr, walletAddress);
+    const signature = await this.solanaSignTransaction(
+      txStr,
+      walletAddress,
+      versioned
+    );
     const pubkey = new PublicKey(walletAddress);
+    const tx = TransactionV2.from(txStr);
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
 
     // Send it to the network.
@@ -113,11 +119,7 @@ export class Backend {
     walletAddress: string,
     versioned = false
   ): Promise<string> {
-    const message = versioned
-      ? Transaction.from(bs58.decode(txStr)).serializeMessage()
-      : VersionedTransaction.deserialize(
-          bs58.decode(txStr)
-        ).message.serialize();
+    const message = TransactionV2.getSerializedMessage(txStr);
     const txMessage = bs58.encode(message);
     const blockchainKeyring = this.keyringStore.keyringForBlockchain(
       Blockchain.SOLANA
@@ -137,7 +139,7 @@ export class Backend {
     _walletAddress: string,
     includeAccounts?: boolean | Array<string>
   ): Promise<any> {
-    const tx = Transaction.from(bs58.decode(txStr));
+    const tx = TransactionV2.from(txStr);
     return await this.solanaConnectionBackend.simulateTransaction(
       tx,
       undefined,
