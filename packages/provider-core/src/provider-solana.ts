@@ -186,8 +186,8 @@ export class ProviderSolanaInjection
     );
   }
 
-  async send(
-    tx: Transaction,
+  async send<T extends Transaction | VersionedTransaction>(
+    tx: T,
     signers?: Signer[],
     options?: SendOptions,
     connection?: Connection,
@@ -207,8 +207,8 @@ export class ProviderSolanaInjection
   }
 
   // @ts-ignore
-  async sendAll(
-    _txWithSigners: { tx: Transaction; signers?: Signer[] }[],
+  async sendAll<T extends Transaction | VersionedTransaction>(
+    _txWithSigners: { tx: T; signers?: Signer[] }[],
     _opts?: ConfirmOptions,
     connection?: Connection,
     publicKey?: PublicKey
@@ -217,8 +217,8 @@ export class ProviderSolanaInjection
   }
 
   // @ts-ignore
-  async simulate(
-    tx: Transaction,
+  async simulate<T extends Transaction | VersionedTransaction>(
+    tx: T,
     signers?: Signer[],
     commitment?: Commitment,
     connection?: Connection,

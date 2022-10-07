@@ -22,11 +22,13 @@ import {
 } from "@coral-xyz/common";
 import { VersionedTransaction } from "@solana/web3.js";
 
-export async function sendAndConfirm(
+export async function sendAndConfirm<
+  T extends Transaction | VersionedTransaction
+>(
   publicKey: PublicKey,
   requestManager: RequestManager,
   connection: Connection,
-  tx: Transaction,
+  tx: T,
   signers?: Signer[],
   options?: ConfirmOptions
 ): Promise<TransactionSignature> {
@@ -165,29 +167,37 @@ export async function signAllTransactions<
   return txs;
 }
 
-export async function simulate(
+export async function simulate<T extends Transaction | VersionedTransaction>(
   publicKey: PublicKey,
   requestManager: RequestManager,
   connection: Connection,
-  tx: Transaction,
+  tx: T,
   signers?: Signer[],
   commitment?: Commitment
 ): Promise<SimulatedTransactionResponse> {
-  if (signers) {
-    signers.forEach((s: Signer) => {
-      tx.partialSign(s);
-    });
+  if (!isVersionedTransaction(tx)) {
+    if (signers) {
+      signers.forEach((s: Signer) => {
+        tx.partialSign(s);
+      });
+    }
+    if (!tx.feePayer) {
+      tx.feePayer = publicKey;
+    }
+    if (!tx.recentBlockhash) {
+      const { blockhash } = await connection!.getLatestBlockhash(commitment);
+      tx.recentBlockhash = blockhash;
+    }
+  } else {
+    if (signers) {
+      tx.sign(signers);
+    }
   }
-  if (!tx.feePayer) {
-    tx.feePayer = publicKey;
-  }
-  if (!tx.recentBlockhash) {
-    const { blockhash } = await connection!.getLatestBlockhash(commitment);
-    tx.recentBlockhash = blockhash;
-  }
+
   const txSerialize = tx.serialize({
     requireAllSignatures: false,
   });
+
   const txStr = encode(txSerialize);
   return await requestManager.request({
     method: SOLANA_RPC_METHOD_SIMULATE,
