@@ -144,6 +144,7 @@ export class Backend {
             },
           } as SimulateTransactionConfig)
         : undefined;
+
     return await this.solanaConnectionBackend.simulateTransaction(
       tx,
       signersOrConf,

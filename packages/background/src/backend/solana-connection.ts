@@ -360,7 +360,7 @@ export class SolanaConnectionBackend {
   ): Promise<RpcResponseAndContext<SimulatedTransactionResponse>> {
     if ("message" in transactionOrMessage) {
       // VersionedTransaction
-      if (Array.isArray(configOrSigners) || includeAccounts !== undefined) {
+      if (Array.isArray(configOrSigners)) {
         throw new Error("Invalid arguments to simulateTransaction");
       }
       return await this.connection!.simulateTransaction(
