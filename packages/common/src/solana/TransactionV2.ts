@@ -11,11 +11,8 @@ export class TransactionV2 {
       return VersionedTransaction.deserialize(bs58.decode(serializedTx));
     }
   }
-  static isVersioned(tx: Transaction | VersionedTransaction) {
-    if ("version" in tx) {
-      return true;
-    }
-    return false;
+  static isVersioned(tx: Transaction | VersionedTransaction): tx is VersionedTransaction {
+    return "version" in tx;
   }
   static getSerializedMessage(txStr: string) {
     const tx = this.from(txStr);
