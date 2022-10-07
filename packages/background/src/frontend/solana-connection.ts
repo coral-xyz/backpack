@@ -6,11 +6,10 @@ import type {
   ConfirmedSignaturesForAddress2Options,
   GetProgramAccountsConfig,
   MessageArgs,
-  MessageV0Args,
   BlockheightBasedTransactionConfirmationStrategy,
   GetParsedProgramAccountsConfig,
 } from "@solana/web3.js";
-import { PublicKey, Message, MessageV0 } from "@solana/web3.js";
+import { PublicKey, Message } from "@solana/web3.js";
 import type {
   SerializedTokenAccountsFilter,
   RpcRequest,
