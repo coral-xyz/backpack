@@ -8,7 +8,6 @@ import { Blockchain, UI_RPC_METHOD_SOLANA_SIMULATE } from "@coral-xyz/common";
 import {
   useBackgroundClient,
   useBlockchainNativeTokens,
-  useBlockchainTokensSorted,
   useEthereumCtx,
   useEthereumPrice,
   useSolanaCtx,
@@ -16,6 +15,7 @@ import {
 } from "./";
 
 const { base58: bs58 } = ethers.utils;
+const DEFAULT_GAS_LIMIT = BigNumber.from("150000");
 
 type TransactionData = {
   loading: boolean;
@@ -87,9 +87,10 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
         ethereumCtx.provider
       );
       // Make sure to populate missing fields and resolve ENS
-      const populatedTx = await voidSigner.populateTransaction(
-        transaction as TransactionRequest
-      );
+      const populatedTx = await voidSigner.populateTransaction({
+        ...transaction,
+        gasLimit: DEFAULT_GAS_LIMIT,
+      });
       setTransaction(populatedTx);
     })();
   }, [serializedTx]);
@@ -115,7 +116,7 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
           // Use a fallback value for estimate gas, but this is not likely to be
           // accurate given the gas estimate call failed. 150k is a good value
           // for all ERC20 methods.
-          estimatedGas = BigNumber.from("150000");
+          estimatedGas = DEFAULT_GAS_LIMIT;
           setSimulationError(true);
         }
         setEstimatedGas(estimatedGas);
