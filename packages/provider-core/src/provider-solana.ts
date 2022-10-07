@@ -257,7 +257,7 @@ export class ProviderSolanaInjection
     txs: Array<Transaction>,
     publicKey?: PublicKey,
     connection?: Connection
-  ): Promise<Array<Transaction>> {
+  ): Promise<Array<Transaction | VersionedTransaction>> {
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }

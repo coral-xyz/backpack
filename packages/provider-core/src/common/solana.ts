@@ -121,11 +121,14 @@ export async function signAllTransactions(
   publicKey: PublicKey,
   requestManager: RequestManager,
   connection: Connection,
-  txs: Array<Transaction>
-): Promise<Array<Transaction>> {
+  txs: Array<Transaction | VersionedTransaction>
+): Promise<Array<Transaction | VersionedTransaction>> {
   let _blockhash: string | undefined;
   for (let k = 0; k < txs.length; k += 1) {
     const tx = txs[k];
+    if ("version" in tx) {
+      continue;
+    }
     if (!tx.feePayer) {
       tx.feePayer = publicKey;
     }
