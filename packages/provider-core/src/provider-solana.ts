@@ -253,11 +253,11 @@ export class ProviderSolanaInjection
     );
   }
 
-  async signAllTransactions(
-    txs: Array<Transaction>,
+  async signAllTransactions<T extends Transaction | VersionedTransaction>(
+    txs: Array<T>,
     publicKey?: PublicKey,
     connection?: Connection
-  ): Promise<Array<Transaction | VersionedTransaction>> {
+  ): Promise<Array<T>> {
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }

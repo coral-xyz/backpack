@@ -13,6 +13,7 @@ import type {
 } from "@solana/web3.js";
 import type { RequestManager } from "../request-manager";
 import {
+  isVersionedTransaction,
   SOLANA_RPC_METHOD_SIGN_ALL_TXS,
   SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
   SOLANA_RPC_METHOD_SIGN_MESSAGE,
@@ -58,7 +59,7 @@ export async function send<T extends Transaction | VersionedTransaction>(
   signers?: Signer[],
   options?: SendOptions
 ): Promise<TransactionSignature> {
-  const versioned = "version" in tx;
+  const versioned = isVersionedTransaction(tx);
   if (!versioned) {
     if (signers) {
       signers.forEach((s: Signer) => {
@@ -97,7 +98,7 @@ export async function signTransaction<
   connection: Connection,
   tx: T
 ): Promise<T> {
-  const versioned = "version" in tx;
+  const versioned = isVersionedTransaction(tx);
   if (!versioned) {
     if (!tx.feePayer) {
       tx.feePayer = publicKey;
@@ -117,16 +118,18 @@ export async function signTransaction<
   return tx;
 }
 
-export async function signAllTransactions(
+export async function signAllTransactions<
+  T extends Transaction | VersionedTransaction
+>(
   publicKey: PublicKey,
   requestManager: RequestManager,
   connection: Connection,
-  txs: Array<Transaction | VersionedTransaction>
-): Promise<Array<Transaction | VersionedTransaction>> {
+  txs: Array<T>
+): Promise<Array<T>> {
   let _blockhash: string | undefined;
   for (let k = 0; k < txs.length; k += 1) {
     const tx = txs[k];
-    if ("version" in tx) {
+    if (isVersionedTransaction(tx)) {
       continue;
     }
     if (!tx.feePayer) {

@@ -204,7 +204,7 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
           // TODO: Add gas estimation
           fee = 5000;
         } else {
-          fee = await (transaction as Transaction).getEstimatedFee(connection);
+          fee = await transaction.getEstimatedFee(connection);
         }
       } catch (e) {
         // ignore
