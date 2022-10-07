@@ -7,6 +7,7 @@ import type {
   ConfirmOptions,
   Commitment,
   SimulatedTransactionResponse,
+  VersionedTransaction,
 } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import type { Provider } from "@project-serum/anchor";
@@ -127,7 +128,7 @@ export class ProviderSolanaXnftInjection
 
   async signAllTransactions(
     txs: Array<Transaction>
-  ): Promise<Array<Transaction>> {
+  ): Promise<Array<Transaction | VersionedTransaction>> {
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
