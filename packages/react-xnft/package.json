@@ -15,7 +15,7 @@
   "dependencies": {
     "@coral-xyz/common-public": "*",
     "@coral-xyz/themes": "*",
-    "@solana/web3.js": "^1.50.1",
+    "@solana/web3.js": "^1.63.1",
     "eventemitter3": "^4.0.7",
     "react": "^17.0.0",
     "react-reconciler": "^0.26.0"

@@ -9,6 +9,7 @@ import type {
   ConfirmOptions,
   TransactionSignature,
   SimulatedTransactionResponse,
+  Version,
 } from "@solana/web3.js";
 import type { RequestManager } from "../request-manager";
 import {
@@ -18,6 +19,7 @@ import {
   SOLANA_RPC_METHOD_SIGN_TX,
   SOLANA_RPC_METHOD_SIMULATE,
 } from "@coral-xyz/common";
+import { VersionedTransaction } from "@solana/web3.js";
 
 export async function sendAndConfirm(
   publicKey: PublicKey,
@@ -80,23 +82,28 @@ export async function send(
   });
 }
 
-export async function signTransaction(
+export async function signTransaction<
+  T extends Transaction | VersionedTransaction
+>(
   publicKey: PublicKey,
   requestManager: RequestManager,
   connection: Connection,
-  tx: Transaction
-): Promise<Transaction> {
-  if (!tx.feePayer) {
-    tx.feePayer = publicKey;
-  }
-  if (!tx.recentBlockhash) {
-    const { blockhash } = await connection!.getLatestBlockhash();
-    tx.recentBlockhash = blockhash;
+  tx: T
+): Promise<T> {
+  const versioned = "version" in tx;
+  if (!versioned) {
+    if (!tx.feePayer) {
+      tx.feePayer = publicKey;
+    }
+    if (!tx.recentBlockhash) {
+      const { blockhash } = await connection!.getLatestBlockhash();
+      tx.recentBlockhash = blockhash;
+    }
   }
   const txStr = encode(tx.serialize({ requireAllSignatures: false }));
   const signature = await requestManager.request({
     method: SOLANA_RPC_METHOD_SIGN_TX,
-    params: [txStr, publicKey.toString()],
+    params: [txStr, publicKey.toString(), versioned],
   });
   // @ts-ignore
   tx.addSignature(publicKey, decode(signature));

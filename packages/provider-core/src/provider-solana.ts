@@ -8,7 +8,7 @@ import type {
   SimulatedTransactionResponse,
   Commitment,
 } from "@solana/web3.js";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey, VersionedTransaction } from "@solana/web3.js";
 import type { Event } from "@coral-xyz/common";
 import {
   getLogger,
@@ -237,11 +237,11 @@ export class ProviderSolanaInjection
     );
   }
 
-  async signTransaction(
-    tx: Transaction,
+  async signTransaction<T extends Transaction | VersionedTransaction>(
+    tx: T,
     publicKey?: PublicKey,
     connection?: Connection
-  ): Promise<Transaction> {
+  ): Promise<T> {
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
