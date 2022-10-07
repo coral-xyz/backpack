@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { ethers, BigNumber } from "ethers";
 import { UnsignedTransaction } from "@ethersproject/transactions";
 import { TransactionRequest } from "@ethersproject/abstract-provider";
-import { PublicKey, Message, VersionedTransaction } from "@solana/web3.js";
+import {
+  PublicKey,
+  Message,
+  VersionedTransaction,
+  Transaction,
+} from "@solana/web3.js";
 import { AccountLayout, u64, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   Blockchain,
@@ -204,8 +209,7 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
             (transaction as VersionedTransaction).message as Message
           );
         } else {
-          //@ts-ignore
-          fee = await transaction.getEstimatedFee(connection);
+          fee = await (transaction as Transaction).getEstimatedFee(connection);
         }
       } catch (e) {
         // ignore
