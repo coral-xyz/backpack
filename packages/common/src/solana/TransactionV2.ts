@@ -18,3 +18,9 @@ export const getSerializedMessage = (txStr: string) => {
     ? Transaction.from(bs58.decode(txStr)).serializeMessage()
     : VersionedTransaction.deserialize(bs58.decode(txStr)).message.serialize();
 };
+
+export const isVersionedTransaction = (
+  tx: Transaction | VersionedTransaction
+): tx is VersionedTransaction => {
+  return "version" in tx;
+};

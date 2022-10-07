@@ -8,6 +8,7 @@ import {
   Blockchain,
   UI_RPC_METHOD_SOLANA_SIMULATE,
   deserializeTransaction,
+  isVersionedTransaction,
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
@@ -199,7 +200,7 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
       const transaction = deserializeTransaction(serializedTx);
       let fee;
       try {
-        if (TransactionV2.isVersioned(transaction)) {
+        if (isVersionedTransaction(transaction)) {
           // TODO: Add gas estimation
           fee = 5000;
         } else {
