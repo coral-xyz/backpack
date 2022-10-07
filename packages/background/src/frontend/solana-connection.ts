@@ -23,7 +23,6 @@ import {
   withContext,
   withContextPort,
   deserializeTokenAccountsFilter,
-  MessageV2,
   ChannelAppUi,
   ChannelContentScript,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
@@ -309,11 +308,13 @@ async function handleGetProgramAccounts(
 
 async function handleGetFeeForMessage(
   ctx: Context<SolanaConnectionBackend>,
-  messageStr: string,
+  message: MessageArgs,
   commitment?: Finality
 ) {
-  const message = MessageV2.from(messageStr);
-  const resp = await ctx.backend.getFeeForMessage(message, commitment);
+  const resp = await ctx.backend.getFeeForMessage(
+    new Message(message),
+    commitment
+  );
   return [resp];
 }
 

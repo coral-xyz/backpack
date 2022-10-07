@@ -429,14 +429,10 @@ export class SolanaConnectionBackend {
   }
 
   async getFeeForMessage(
-    message: Message | MessageV0,
+    message: Message,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<number>> {
-    //TODO: This will break for VersionedMessages
-    return await this.connection!.getFeeForMessage(
-      message as Message,
-      commitment
-    );
+    return await this.connection!.getFeeForMessage(message, commitment);
   }
 
   async getMinimumBalanceForRentExemption(

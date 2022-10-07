@@ -285,12 +285,12 @@ export class BackgroundSolanaConnection extends Connection {
   }
 
   async getFeeForMessage(
-    message: Message | MessageV0,
+    message: Message,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<number>> {
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE,
-      params: [encode(message.serialize()), commitment],
+      params: [message, commitment],
     });
   }
 
