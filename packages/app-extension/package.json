@@ -1,7 +1,7 @@
 {
   "name": "@coral-xyz/app-extension",
-  "version": "0.1.0",
-  "description": "Solana wallet browser extension",
+  "version": "0.2.0",
+  "description": "Next level crypto wallet for Solana and Ethereum",
   "private": true,
   "dependencies": {
     "@coral-xyz/background": "*",

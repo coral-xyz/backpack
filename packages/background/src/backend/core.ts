@@ -363,7 +363,8 @@ export class Backend {
     accountIndices: Array<number>,
     username: string,
     inviteCode: string,
-    waitlistId?: string
+    waitlistId?: string,
+    userIsRecoveringWallet = false
   ): Promise<string> {
     const keyring = await this.keyringStore.init(
       mnemonic,
@@ -373,7 +374,7 @@ export class Backend {
       username
     );
 
-    if (BACKPACK_FEATURE_USERNAMES) {
+    if (BACKPACK_FEATURE_USERNAMES && !userIsRecoveringWallet) {
       try {
         const publicKey = keyring.getActiveWallet();
 

@@ -32,7 +32,7 @@ export type WalletPublicKeys = {
   };
 };
 
-export type TokenData = {
+export interface TokenNativeData {
   name: string;
   decimals: number;
   nativeBalance: BigNumber;
@@ -40,12 +40,15 @@ export type TokenData = {
   ticker: string;
   logo: string;
   address: string;
+  mint?: string;
+}
+
+export interface TokenData extends TokenNativeData {
   usdBalance: number;
   recentPercentChange: number | undefined;
   recentUsdBalanceChange: number;
   priceData: any;
-  mint?: string;
-};
+}
 
 export type TokenDisplay = {
   name: string;

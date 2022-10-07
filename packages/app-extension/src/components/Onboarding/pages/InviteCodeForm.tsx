@@ -3,7 +3,7 @@ import { ArrowForward } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
 import { createPopup } from "@typeform/embed";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { PrimaryButton, SubtextParagraph, TextField } from "../../common";
 import { BackpackHeader } from "../../Locked";
 import { getWaitlistId, setWaitlistId } from "../../common/WaitingRoom";
@@ -106,8 +106,8 @@ export const InviteCodeForm = () => {
 
         <PrimaryButton label="Go" type="submit" />
 
-        <Box style={{ textAlign: "center" }}>
-          <Box style={{ marginTop: 16, cursor: "pointer" }}>
+        <Box style={{ textAlign: "center", cursor: "pointer" }}>
+          <Box style={{ marginTop: 16 }}>
             {waitlistResponseId ? (
               <SubtextParagraph
                 onClick={() => navigate("/waitingRoom")}
@@ -137,12 +137,11 @@ export const InviteCodeForm = () => {
           <Box
             style={{
               marginTop: 16,
-              opacity: 0.3,
-              userSelect: "none",
             }}
-            title="Coming soon, ask in discord if you need assistance"
           >
-            <SubtextParagraph>I already have an account</SubtextParagraph>
+            <SubtextParagraph onClick={() => navigate("/recoverAccount")}>
+              I already have an account
+            </SubtextParagraph>
           </Box>
         </Box>
       </form>

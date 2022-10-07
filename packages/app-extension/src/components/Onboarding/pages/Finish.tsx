@@ -19,6 +19,7 @@ export const Finish = () => {
     mnemonic: string;
     password: string;
     username: string;
+    usernameAndPubkey: string;
   }>();
 
   useEffect(() => {
@@ -32,6 +33,15 @@ export const Finish = () => {
     })();
 
     async function createStore() {
+      const _username = (() => {
+        try {
+          const { username } = JSON.parse(params.usernameAndPubkey!);
+          return username;
+        } catch (err) {
+          return params.username;
+        }
+      })();
+
       try {
         await background.request({
           method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
@@ -40,9 +50,10 @@ export const Finish = () => {
             derivationPath,
             params.password,
             accounts,
-            params.username,
+            _username,
             params.inviteCode,
             getWaitlistId?.(),
+            Boolean(params.usernameAndPubkey),
           ],
         });
         setIsValid(true);

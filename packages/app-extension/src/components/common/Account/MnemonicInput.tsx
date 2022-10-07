@@ -71,10 +71,12 @@ export function MnemonicInput({
   onNext,
   readOnly = false,
   buttonLabel,
+  customError,
 }: {
   onNext: (mnemonic: string) => void;
   readOnly?: boolean;
   buttonLabel: string;
+  customError?: string;
 }) {
   const theme = useCustomTheme();
   const classes = useStyles();
@@ -82,7 +84,7 @@ export function MnemonicInput({
   const [mnemonicWords, setMnemonicWords] = useState<string[]>([
     ...Array(12).fill(""),
   ]);
-  const [error, setError] = useState<null | string>(null);
+  const [error, setError] = useState<string>();
   const [checked, setChecked] = useState(false);
 
   const mnemonic = mnemonicWords.map((f) => f.trim()).join(" ");
@@ -90,6 +92,10 @@ export function MnemonicInput({
   const copyEnabled = mnemonicWords.find((w) => w.length < 3) === undefined;
   // Only allow next if checkbox is checked in read only and all fields are populated
   const nextEnabled = (!readOnly || checked) && copyEnabled;
+
+  useEffect(() => {
+    if (customError) setError(customError);
+  }, [customError]);
 
   //
   // Handle pastes of 12 or 24 word mnemonics.

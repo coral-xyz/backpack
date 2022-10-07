@@ -17,10 +17,10 @@ select_permissions:
     permission:
       columns:
         - completed
+        - created_at
         - id
+        - invite_code
         - prompt
         - uri
         - winner
-        - created_at
-        - invite_code
       filter: {}
