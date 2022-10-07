@@ -9,7 +9,7 @@ import type {
   BlockheightBasedTransactionConfirmationStrategy,
   GetParsedProgramAccountsConfig,
 } from "@solana/web3.js";
-import { PublicKey, Message } from "@solana/web3.js";
+import { PublicKey, Message, GetAccountInfoConfig } from "@solana/web3.js";
 import type {
   SerializedTokenAccountsFilter,
   RpcRequest,
@@ -30,6 +30,7 @@ import {
   SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH,
+  SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH_AND_CONTEXT,
   SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNTS_BY_OWNER,
   SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION,
   SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION,
@@ -47,6 +48,8 @@ import {
   SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS,
   SOLANA_CONNECTION_RPC_GET_PARSED_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_PARSED_PROGRAM_ACCOUNTS,
+  SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO_AND_CONTEXT,
+  SOLANA_CONNECTION_RPC_GET_ADDRESS_LOOKUP_TABLE,
 } from "@coral-xyz/common";
 import type { SolanaConnectionBackend } from "../backend/solana-connection";
 import type { Config, Handle } from "../types";
@@ -104,8 +107,12 @@ async function handleImpl<T = any>(
   switch (method) {
     case SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO:
       return await handleGetAccountInfo(ctx, params[0], params[1]);
+    case SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO_AND_CONTEXT:
+      return await handleGetAccountInfoAndContext(ctx, params[0], params[1]);
     case SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH:
       return await handleGetLatestBlockhash(ctx, params[1]);
+    case SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH_AND_CONTEXT:
+      return await handleGetLatestBlockhashAndContext(ctx, params[1]);
     case SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNTS_BY_OWNER:
       return await handleGetTokenAccountsByOwner(
         ctx,
@@ -163,6 +170,8 @@ async function handleImpl<T = any>(
       return await handleGetParsedAccountInfo(ctx, params[0], params[1]);
     case SOLANA_CONNECTION_RPC_GET_PARSED_PROGRAM_ACCOUNTS:
       return await handleGetParsedProgramAccounts(ctx, params[0], params[1]);
+    case SOLANA_CONNECTION_RPC_GET_ADDRESS_LOOKUP_TABLE:
+      return await handleGetAddressLookupTable(ctx, params[0], params[1]);
     default:
       throw new Error("invalid rpc method");
   }
@@ -180,11 +189,31 @@ async function handleGetAccountInfo(
   return [resp];
 }
 
+async function handleGetAccountInfoAndContext(
+  ctx: Context<SolanaConnectionBackend>,
+  pubkey: string,
+  commitment?: Commitment
+) {
+  const resp = await ctx.backend.getAccountInfoAndContext(
+    new PublicKey(pubkey),
+    commitment
+  );
+  return [resp];
+}
+
 async function handleGetLatestBlockhash(
   ctx: Context<SolanaConnectionBackend>,
   commitment?: Commitment
 ) {
   const resp = await ctx.backend.getLatestBlockhash(commitment);
+  return [resp];
+}
+
+async function handleGetLatestBlockhashAndContext(
+  ctx: Context<SolanaConnectionBackend>,
+  commitment?: Commitment
+) {
+  const resp = await ctx.backend.getLatestBlockhashAndContext(commitment);
   return [resp];
 }
 
@@ -415,6 +444,18 @@ async function handleGetParsedProgramAccounts(
   const resp = await ctx.backend.getParsedProgramAccounts(
     new PublicKey(programId),
     configOrCommitment
+  );
+  return [resp];
+}
+
+async function handleGetAddressLookupTable(
+  ctx: Context<SolanaConnectionBackend>,
+  programId: string,
+  config?: GetAccountInfoConfig
+) {
+  const resp = await ctx.backend.getAddressLookupTable(
+    new PublicKey(programId),
+    config
   );
   return [resp];
 }

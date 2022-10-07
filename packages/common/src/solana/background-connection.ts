@@ -2,7 +2,9 @@ import BN from "bn.js";
 import { Buffer } from "buffer";
 import { encode } from "bs58";
 import {
+  AddressLookupTableAccount,
   Connection,
+  GetAccountInfoConfig,
   MessageV0,
   PublicKey,
   SimulateTransactionConfig,
@@ -73,6 +75,7 @@ import type {
 } from "@solana/web3.js";
 import {
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
+  SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO_AND_CONTEXT,
   SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH,
   SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNTS_BY_OWNER,
   SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION,
@@ -93,6 +96,8 @@ import {
   SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS,
   SOLANA_CONNECTION_RPC_GET_PARSED_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_PARSED_PROGRAM_ACCOUNTS,
+  SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH_AND_CONTEXT,
+  SOLANA_CONNECTION_RPC_GET_ADDRESS_LOOKUP_TABLE,
 } from "../constants";
 import { serializeTokenAccountsFilter } from "./types";
 import type { BackgroundClient } from "../channel";
@@ -161,6 +166,28 @@ export class BackgroundSolanaConnection extends Connection {
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH,
       params: [commitment],
+    });
+  }
+
+  async getLatestBlockhashAndContext(commitment?: Commitment): Promise<
+    RpcResponseAndContext<{
+      blockhash: Blockhash;
+      lastValidBlockHeight: number;
+    }>
+  > {
+    return await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH_AND_CONTEXT,
+      params: [commitment],
+    });
+  }
+
+  async getAccountInfoAndContext(
+    publicKey: PublicKey,
+    commitment?: Commitment
+  ): Promise<RpcResponseAndContext<AccountInfo<Buffer> | null>> {
+    return await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO_AND_CONTEXT,
+      params: [publicKey.toString(), commitment],
     });
   }
 
@@ -387,6 +414,16 @@ export class BackgroundSolanaConnection extends Connection {
     return resp;
   }
 
+  async getAddressLookupTable(
+    accountKey: PublicKey,
+    config?: GetAccountInfoConfig
+  ): Promise<RpcResponseAndContext<AddressLookupTableAccount | null>> {
+    return await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_ADDRESS_LOOKUP_TABLE,
+      params: [accountKey.toString(), config],
+    });
+  }
+
   async getParsedAccountInfo(
     publicKey: PublicKey,
     commitment?: Commitment
@@ -468,13 +505,6 @@ export class BackgroundSolanaConnection extends Connection {
   async getLargestAccounts(
     config?: GetLargestAccountsConfig
   ): Promise<RpcResponseAndContext<Array<AccountBalancePair>>> {
-    throw new Error("not implemented");
-  }
-
-  async getAccountInfoAndContext(
-    publicKey: PublicKey,
-    commitment?: Commitment
-  ): Promise<RpcResponseAndContext<AccountInfo<Buffer> | null>> {
     throw new Error("not implemented");
   }
 
@@ -579,15 +609,6 @@ export class BackgroundSolanaConnection extends Connection {
     blockhash: Blockhash;
     feeCalculator: FeeCalculator;
   }> {
-    throw new Error("not implemented");
-  }
-
-  getLatestBlockhashAndContext(commitment?: Commitment): Promise<
-    RpcResponseAndContext<{
-      blockhash: Blockhash;
-      lastValidBlockHeight: number;
-    }>
-  > {
     throw new Error("not implemented");
   }
 
