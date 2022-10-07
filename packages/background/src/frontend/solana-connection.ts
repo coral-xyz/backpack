@@ -6,10 +6,11 @@ import type {
   ConfirmedSignaturesForAddress2Options,
   GetProgramAccountsConfig,
   MessageArgs,
+  MessageV0Args,
   BlockheightBasedTransactionConfirmationStrategy,
   GetParsedProgramAccountsConfig,
 } from "@solana/web3.js";
-import { PublicKey, Message } from "@solana/web3.js";
+import { PublicKey, Message, MessageV0 } from "@solana/web3.js";
 import type {
   SerializedTokenAccountsFilter,
   RpcRequest,
@@ -22,6 +23,7 @@ import {
   withContext,
   withContextPort,
   deserializeTokenAccountsFilter,
+  MessageV2,
   ChannelAppUi,
   ChannelContentScript,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
@@ -50,6 +52,7 @@ import {
 } from "@coral-xyz/common";
 import type { SolanaConnectionBackend } from "../backend/solana-connection";
 import type { Config, Handle } from "../types";
+import * as bs58 from "bs58";
 
 const logger = getLogger("solana-connection");
 
@@ -306,13 +309,11 @@ async function handleGetProgramAccounts(
 
 async function handleGetFeeForMessage(
   ctx: Context<SolanaConnectionBackend>,
-  message: MessageArgs,
+  messageStr: string,
   commitment?: Finality
 ) {
-  const resp = await ctx.backend.getFeeForMessage(
-    new Message(message),
-    commitment
-  );
+  const message = MessageV2.from(messageStr);
+  const resp = await ctx.backend.getFeeForMessage(message, commitment);
   return [resp];
 }
 
@@ -402,7 +403,7 @@ async function handleGetParsedAccountInfo(
   const resp = await ctx.backend.getParsedAccountInfo(
     new PublicKey(publicKey),
     commitment
- );
+  );
   return [resp];
 }
 

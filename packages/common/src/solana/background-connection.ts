@@ -1,7 +1,9 @@
 import BN from "bn.js";
 import { Buffer } from "buffer";
+import { encode } from "bs58";
 import {
   Connection,
+  MessageV0,
   PublicKey,
   SimulateTransactionConfig,
   VersionedTransaction,
@@ -283,12 +285,12 @@ export class BackgroundSolanaConnection extends Connection {
   }
 
   async getFeeForMessage(
-    message: Message,
+    message: Message | MessageV0,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<number>> {
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE,
-      params: [message, commitment],
+      params: [encode(message.serialize()), commitment],
     });
   }
 

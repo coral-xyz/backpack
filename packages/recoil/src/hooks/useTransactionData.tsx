@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ethers, BigNumber } from "ethers";
 import { UnsignedTransaction } from "@ethersproject/transactions";
 import { TransactionRequest } from "@ethersproject/abstract-provider";
-import { PublicKey, Transaction } from "@solana/web3.js";
+import { PublicKey, Message, VersionedTransaction } from "@solana/web3.js";
 import { AccountLayout, u64, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   Blockchain,
@@ -200,14 +200,14 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
       let fee;
       try {
         if (TransactionV2.isVersioned(transaction)) {
-          // TODO: Add estimation here.
-          fee = 5000;
-          // fee = (await connection.getFeeForMessage(tx.())).value;
+          fee = await connection.getFeeForMessage(
+            (transaction as VersionedTransaction).message as Message
+          );
         } else {
           //@ts-ignore
           fee = await transaction.getEstimatedFee(connection);
         }
-      } catch {
+      } catch (e) {
         // ignore
       }
       setEstimatedTxFee(fee || 5000);

@@ -30,6 +30,7 @@ import type {
   Transaction,
   VersionedTransaction,
   Message,
+  MessageV0,
   Signer,
   SendOptions,
   SimulatedTransactionResponse,
@@ -62,6 +63,7 @@ import type {
   BlockheightBasedTransactionConfirmationStrategy,
 } from "@solana/web3.js";
 import type { Notification, EventEmitter } from "@coral-xyz/common";
+import { decode } from "bs58";
 import {
   getLogger,
   customSplTokenAccounts,
@@ -427,10 +429,14 @@ export class SolanaConnectionBackend {
   }
 
   async getFeeForMessage(
-    message: Message,
+    message: Message | MessageV0,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<number>> {
-    return await this.connection!.getFeeForMessage(message, commitment);
+    //TODO: This will break for VersionedMessages
+    return await this.connection!.getFeeForMessage(
+      message as Message,
+      commitment
+    );
   }
 
   async getMinimumBalanceForRentExemption(
