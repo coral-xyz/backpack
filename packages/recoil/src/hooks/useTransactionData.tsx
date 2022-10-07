@@ -7,7 +7,7 @@ import { AccountLayout, u64, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   Blockchain,
   UI_RPC_METHOD_SOLANA_SIMULATE,
-  TransactionV2,
+  deserializeTransaction,
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
@@ -196,7 +196,7 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
 
   useEffect(() => {
     const estimateTxFee = async () => {
-      const transaction = TransactionV2.from(serializedTx);
+      const transaction = deserializeTransaction(serializedTx);
       let fee;
       try {
         if (TransactionV2.isVersioned(transaction)) {

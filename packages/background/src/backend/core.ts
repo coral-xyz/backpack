@@ -35,7 +35,8 @@ import {
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
   Blockchain,
-  TransactionV2,
+  deserializeTransaction,
+  getSerializedMessage,
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
 import * as store from "./store";
@@ -84,7 +85,7 @@ export class Backend {
     // Sign the transaction.
     const signature = await this.solanaSignTransaction(txStr, walletAddress);
     const pubkey = new PublicKey(walletAddress);
-    const tx = TransactionV2.from(txStr);
+    const tx = deserializeTransaction(txStr);
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
 
     // Send it to the network.
@@ -114,7 +115,7 @@ export class Backend {
     txStr: string,
     walletAddress: string
   ): Promise<string> {
-    const message = TransactionV2.getSerializedMessage(txStr);
+    const message = getSerializedMessage(txStr);
     const txMessage = bs58.encode(message);
     const blockchainKeyring = this.keyringStore.keyringForBlockchain(
       Blockchain.SOLANA
@@ -134,7 +135,7 @@ export class Backend {
     walletAddress: string,
     includeAccounts?: boolean | Array<string>
   ): Promise<any> {
-    const tx = TransactionV2.from(txStr);
+    const tx = deserializeTransaction(txStr);
     const signersOrConf =
       "message" in tx
         ? ({
