@@ -9,10 +9,10 @@
   "license": "MIT",
   "dependencies": {
     "@coral-xyz/common": "*",
-    "react-xnft": "*",
     "@project-serum/anchor": "^0.25.0-beta.1",
-    "@solana/web3.js": "^1.43.2",
-    "react": "^18.1.0"
+    "@solana/web3.js": "^1.63.1",
+    "react": "^18.1.0",
+    "react-xnft": "*"
   },
   "browserslist": [
     "last 2 chrome versions"

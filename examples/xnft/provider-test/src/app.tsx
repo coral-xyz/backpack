@@ -2,7 +2,13 @@ import { useEffect } from "react";
 import ReactXnft, { Button, View } from "react-xnft";
 import { BigNumber } from "ethers";
 import { UnsignedTransaction } from "@ethersproject/transactions";
-import { SystemProgram, Transaction, PublicKey } from "@solana/web3.js";
+import {
+  SystemProgram,
+  Transaction,
+  PublicKey,
+  VersionedTransaction,
+  TransactionMessage,
+} from "@solana/web3.js";
 
 //
 // On connection to the host environment, warm the cache.
@@ -64,6 +70,27 @@ export function App() {
     console.log("solana sign transaction", result);
   };
 
+  const solanaSendV0Transaction = async () => {
+    const message = new TransactionMessage({
+      payerKey: window.xnft.solana.publicKey,
+      instructions: [
+        SystemProgram.transfer({
+          fromPubkey: window.xnft.solana.publicKey,
+          toPubkey: new PublicKey(
+            "H4YJ7ESVkiiP9tGeQJy9jKVSHk98tSAUD3LqTowH9tEY"
+          ),
+          lamports: 1,
+        }),
+      ],
+      recentBlockhash: PublicKey.default.toBase58(),
+    });
+    const versionedTransaction = new VersionedTransaction(
+      message.compileToV0Message()
+    );
+    const result = await window.xnft.solana.send(versionedTransaction);
+    console.log("solana sign transaction", result);
+  };
+
   const solanaSignAllTransactions = async () => {
     const transactions = [
       new Transaction().add(
@@ -115,6 +142,11 @@ export function App() {
       <View style={{ margin: "24px" }}>
         <Button style={{ width: "100%" }} onClick={solanaSendTransaction}>
           Send Solana Transaction
+        </Button>
+      </View>
+      <View style={{ margin: "24px" }}>
+        <Button style={{ width: "100%" }} onClick={solanaSendV0Transaction}>
+          Send Solana V0 Versioned Transaction
         </Button>
       </View>
     </View>

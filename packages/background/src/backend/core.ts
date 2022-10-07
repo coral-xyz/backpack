@@ -1,6 +1,6 @@
 import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
-import type { Commitment, SendOptions } from "@solana/web3.js";
+import { Commitment, SendOptions, VersionedTransaction } from "@solana/web3.js";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
@@ -80,7 +80,7 @@ export class Backend {
     options?: SendOptions
   ): Promise<string> {
     // Sign the transaction.
-    const tx = Transaction.from(bs58.decode(txStr));
+    const tx = VersionedTransaction.deserialize(bs58.decode(txStr));
     const signature = await this.solanaSignTransaction(txStr, walletAddress);
     const pubkey = new PublicKey(walletAddress);
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
@@ -112,8 +112,8 @@ export class Backend {
     txStr: string,
     walletAddress: string
   ): Promise<string> {
-    const tx = Transaction.from(bs58.decode(txStr));
-    const txMessage = bs58.encode(tx.serializeMessage());
+    const tx = VersionedTransaction.deserialize(bs58.decode(txStr));
+    const txMessage = bs58.encode(tx.message.serialize());
     const blockchainKeyring = this.keyringStore.keyringForBlockchain(
       Blockchain.SOLANA
     );
