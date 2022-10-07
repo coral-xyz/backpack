@@ -110,7 +110,7 @@ export async function signTransaction<
   const txStr = encode(tx.serialize({ requireAllSignatures: false }));
   const signature = await requestManager.request({
     method: SOLANA_RPC_METHOD_SIGN_TX,
-    params: [txStr, publicKey.toString(), versioned],
+    params: [txStr, publicKey.toString()],
   });
   // @ts-ignore
   tx.addSignature(publicKey, decode(signature));
