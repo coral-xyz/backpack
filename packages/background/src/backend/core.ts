@@ -2,6 +2,7 @@ import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
 import type { Commitment, SendOptions } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
+import type { SimulateTransactionConfig } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
@@ -130,13 +131,22 @@ export class Backend {
 
   async solanaSimulate(
     txStr: string,
-    _walletAddress: string,
+    walletAddress: string,
     includeAccounts?: boolean | Array<string>
   ): Promise<any> {
     const tx = TransactionV2.from(txStr);
+    const signersOrConf =
+      "message" in tx
+        ? ({
+            accounts: {
+              encoding: "base64",
+              addresses: [new PublicKey(walletAddress).toBase58()],
+            },
+          } as SimulateTransactionConfig)
+        : undefined;
     return await this.solanaConnectionBackend.simulateTransaction(
       tx,
-      undefined,
+      signersOrConf,
       typeof includeAccounts === "boolean"
         ? includeAccounts
         : includeAccounts && includeAccounts.map((a) => new PublicKey(a))

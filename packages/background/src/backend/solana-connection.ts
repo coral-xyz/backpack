@@ -1,4 +1,8 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import {
+  Connection,
+  PublicKey,
+  SimulateTransactionConfig,
+} from "@solana/web3.js";
 import type {
   Commitment,
   GetSupplyConfig,
@@ -351,20 +355,22 @@ export class SolanaConnectionBackend {
 
   async simulateTransaction(
     transactionOrMessage: Transaction | VersionedTransaction | Message,
-    signers?: Array<Signer>,
+    configOrSigners?: Array<Signer> | SimulateTransactionConfig,
     includeAccounts?: boolean | Array<PublicKey>
   ): Promise<RpcResponseAndContext<SimulatedTransactionResponse>> {
     if ("message" in transactionOrMessage) {
-      return await this.connection!.simulateTransaction(transactionOrMessage, {
-        accounts: {
-          encoding: "base64",
-          addresses: [],
-        },
-      });
+      // VersionedTransaction
+      if (Array.isArray(configOrSigners) || includeAccounts !== undefined) {
+        throw new Error("Invalid arguments to simulateTransaction");
+      }
+      return await this.connection!.simulateTransaction(
+        transactionOrMessage,
+        configOrSigners
+      );
     } else {
       return await this.connection!.simulateTransaction(
         transactionOrMessage,
-        signers,
+        configOrSigners as Array<Signer>,
         includeAccounts
       );
     }

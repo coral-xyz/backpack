@@ -83,6 +83,10 @@ export async function send<T extends Transaction | VersionedTransaction>(
     requireAllSignatures: false,
   });
   const txStr = encode(txSerialize);
+  const simulation = await requestManager.request({
+    method: SOLANA_RPC_METHOD_SIMULATE,
+    params: [txStr, publicKey.toString(), options],
+  });
   return await requestManager.request({
     method: SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
     params: [txStr, publicKey.toString(), options],
