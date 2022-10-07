@@ -170,11 +170,10 @@ async function handle<T = any>(
         ctx,
         params[0],
         params[1],
-        params[2],
-        params[3]
+        params[2]
       );
     case SOLANA_RPC_METHOD_SIGN_TX:
-      return await handleSolanaSignTx(ctx, params[0], params[1], params[2]);
+      return await handleSolanaSignTx(ctx, params[0], params[1]);
     case SOLANA_RPC_METHOD_SIGN_ALL_TXS:
       return await handleSolanaSignAllTxs(ctx, params[0], params[1]);
     case SOLANA_RPC_METHOD_SIGN_MESSAGE:
@@ -313,8 +312,7 @@ async function handleSolanaSignAndSendTx(
   ctx: Context<Backend>,
   tx: string,
   walletAddress: string,
-  options?: SendOptions,
-  versioned = false
+  options?: SendOptions
 ): Promise<RpcResponse<string>> {
   // Get user approval.
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
@@ -342,8 +340,7 @@ async function handleSolanaSignAndSendTx(
       const sig = await ctx.backend.solanaSignAndSendTx(
         tx,
         walletAddress,
-        options,
-        versioned
+        options
       );
       resp = [sig];
     }
@@ -363,8 +360,7 @@ async function handleSolanaSignAndSendTx(
 async function handleSolanaSignTx(
   ctx: Context<Backend>,
   tx: string,
-  walletAddress: string,
-  versioned = false
+  walletAddress: string
 ): Promise<RpcResponse<string>> {
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
@@ -388,11 +384,7 @@ async function handleSolanaSignTx(
   try {
     // Only sign if the user clicked approve.
     if (didApprove) {
-      const sig = await ctx.backend.solanaSignTransaction(
-        tx,
-        walletAddress,
-        versioned
-      );
+      const sig = await ctx.backend.solanaSignTransaction(tx, walletAddress);
       resp = [sig];
     }
   } catch (err) {

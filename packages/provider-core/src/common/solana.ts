@@ -85,7 +85,7 @@ export async function send<T extends Transaction | VersionedTransaction>(
   const txStr = encode(txSerialize);
   return await requestManager.request({
     method: SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
-    params: [txStr, publicKey.toString(), options, versioned],
+    params: [txStr, publicKey.toString(), options],
   });
 }
 

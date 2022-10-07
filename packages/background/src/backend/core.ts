@@ -78,15 +78,10 @@ export class Backend {
   async solanaSignAndSendTx(
     txStr: string,
     walletAddress: string,
-    options?: SendOptions,
-    versioned = false
+    options?: SendOptions
   ): Promise<string> {
     // Sign the transaction.
-    const signature = await this.solanaSignTransaction(
-      txStr,
-      walletAddress,
-      versioned
-    );
+    const signature = await this.solanaSignTransaction(txStr, walletAddress);
     const pubkey = new PublicKey(walletAddress);
     const tx = TransactionV2.from(txStr);
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
@@ -116,8 +111,7 @@ export class Backend {
   // Returns the signature.
   async solanaSignTransaction(
     txStr: string,
-    walletAddress: string,
-    versioned = false
+    walletAddress: string
   ): Promise<string> {
     const message = TransactionV2.getSerializedMessage(txStr);
     const txMessage = bs58.encode(message);
