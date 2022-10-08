@@ -197,12 +197,12 @@ export function App() {
       </View>
       <View style={{ margin: "24px" }}>
         <Button style={{ width: "100%" }} onClick={solanaSendLegacyTransaction}>
-          Send Legacy Solana Transaction
+          Send Legacy Solana Transaction (Devnet)
         </Button>
       </View>
       <View style={{ margin: "24px" }}>
         <Button style={{ width: "100%" }} onClick={solanaSendV0Transaction}>
-          Send Legacy V0 Transaction (Devnet)
+          Send V0 Solana Transaction (Devnet)
         </Button>
       </View>
     </View>
