@@ -50,6 +50,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_PARSED_PROGRAM_ACCOUNTS,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO_AND_CONTEXT,
   SOLANA_CONNECTION_RPC_GET_ADDRESS_LOOKUP_TABLE,
+  addressLookupTableAccountParser,
 } from "@coral-xyz/common";
 import type { SolanaConnectionBackend } from "../backend/solana-connection";
 import type { Config, Handle } from "../types";
@@ -457,5 +458,7 @@ async function handleGetAddressLookupTable(
     new PublicKey(programId),
     config
   );
+  // @ts-ignore
+  resp.value = addressLookupTableAccountParser.serialize(resp.value);
   return [resp];
 }

@@ -1,11 +1,9 @@
 import BN from "bn.js";
 import { Buffer } from "buffer";
-import { encode } from "bs58";
 import {
   AddressLookupTableAccount,
   Connection,
   GetAccountInfoConfig,
-  MessageV0,
   PublicKey,
   SimulateTransactionConfig,
   VersionedTransaction,
@@ -101,6 +99,7 @@ import {
 } from "../constants";
 import { serializeTokenAccountsFilter } from "./types";
 import type { BackgroundClient } from "../channel";
+import { addressLookupTableAccountParser } from "./rpc-helpers";
 
 export class BackgroundSolanaConnection extends Connection {
   private _backgroundClient: BackgroundClient;
@@ -418,10 +417,14 @@ export class BackgroundSolanaConnection extends Connection {
     accountKey: PublicKey,
     config?: GetAccountInfoConfig
   ): Promise<RpcResponseAndContext<AddressLookupTableAccount | null>> {
-    return await this._backgroundClient.request({
+    const response = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_ADDRESS_LOOKUP_TABLE,
       params: [accountKey.toString(), config],
     });
+    response.value = addressLookupTableAccountParser.deserialize(
+      response.value
+    );
+    return response;
   }
 
   async getParsedAccountInfo(

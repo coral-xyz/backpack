@@ -104,32 +104,42 @@ export function App() {
       value: { blockhash },
     } = await window.xnft.solana.connection.getLatestBlockhashAndContext();
 
+    const { value: lookupTable } =
+      await window.xnft.solana.connection.getAddressLookupTable(
+        new PublicKey("F3MfgEJe1TApJiA14nN2m4uAH4EBVrqdBnHeGeSXvQ7B")
+      );
+
+    if (!lookupTable) {
+      console.error("error", "Address lookup table wasn't found!");
+      return;
+    }
     const message = new TransactionMessage({
       payerKey: window.xnft.solana.publicKey,
       instructions: [
         {
-          data: Buffer.from("Hello, from your xnft V0 transaction!"),
-          keys: [],
+          data: Buffer.from("Hello from V0!"),
+          keys: lookupTable.state.addresses.map((pubkey, index) => ({
+            pubkey,
+            isWritable: index % 2 == 0,
+            isSigner: false,
+          })),
           programId: new PublicKey(
-            "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"
+            "Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo"
           ),
         },
       ],
       recentBlockhash: blockhash,
     });
-    const { value: lookupTable } =
-      await window.xnft.solana.connection.getAddressLookupTable(
-        new PublicKey("F3MfgEJe1TApJiA14nN2m4uAH4EBVrqdBnHeGeSXvQ7B")
-      );
-    // if (!lookupTable) {
-    //     console.error('error', "Address lookup table wasn't found!");
-    //     return;
-    // }
-    // const lookupTables = [lookupTable];
-    // const transaction = new VersionedTransaction(message.compileToV0Message(lookupTables));
-    //
-    // const result = await window.xnft.solana.send(transaction, [], { minContextSlot });
-    // console.log("signature from V0 transaction ", result);
+
+    const lookupTables = [lookupTable];
+    const transaction = new VersionedTransaction(
+      message.compileToV0Message(lookupTables)
+    );
+
+    const result = await window.xnft.solana.send(transaction, [], {
+      minContextSlot,
+    });
+    console.log("signature from V0 transaction ", result);
   };
 
   const solanaSignAllTransactions = async () => {
