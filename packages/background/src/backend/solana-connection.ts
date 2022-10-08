@@ -1,4 +1,9 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import {
+  Connection,
+  PublicKey,
+  SimulateTransactionConfig,
+  VersionedTransaction,
+} from "@solana/web3.js";
 import type {
   Commitment,
   GetSupplyConfig,
@@ -347,15 +352,22 @@ export class SolanaConnectionBackend {
   }
 
   async simulateTransaction(
-    transactionOrMessage: Transaction | Message,
-    signers?: Array<Signer>,
+    transactionOrMessage: VersionedTransaction | Transaction | Message,
+    configOrSigners?: SimulateTransactionConfig | Array<Signer>,
     includeAccounts?: boolean | Array<PublicKey>
   ): Promise<RpcResponseAndContext<SimulatedTransactionResponse>> {
-    return await this.connection!.simulateTransaction(
-      transactionOrMessage,
-      signers,
-      includeAccounts
-    );
+    if ("message" in transactionOrMessage) {
+      return await this.connection!.simulateTransaction(
+        transactionOrMessage,
+        configOrSigners as SimulateTransactionConfig
+      );
+    } else {
+      return await this.connection!.simulateTransaction(
+        transactionOrMessage,
+        configOrSigners as Array<Signer>,
+        includeAccounts
+      );
+    }
   }
 
   async getMultipleAccountsInfo(
@@ -495,7 +507,7 @@ export class SolanaConnectionBackend {
   > {
     return await this.connection!.getParsedAccountInfo(publicKey, commitment);
   }
-  
+
   async getParsedProgramAccounts(
     programId: PublicKey,
     configOrCommitment?: GetParsedProgramAccountsConfig | Commitment

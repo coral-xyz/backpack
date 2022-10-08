@@ -1,6 +1,11 @@
 import BN from "bn.js";
 import { Buffer } from "buffer";
-import { Connection, PublicKey } from "@solana/web3.js";
+import {
+  Connection,
+  PublicKey,
+  SimulateTransactionConfig,
+  VersionedTransaction,
+} from "@solana/web3.js";
 import type {
   ConnectionConfig,
   Commitment,
@@ -62,7 +67,6 @@ import type {
   SignatureStatus,
   PerfSample,
   BlockheightBasedTransactionConfirmationStrategy,
-  ParsedTransactionWithMeta,
 } from "@solana/web3.js";
 import {
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
@@ -423,8 +427,8 @@ export class BackgroundSolanaConnection extends Connection {
   ///////////////////////////////////////////////////////////////////////////////
 
   async sendTransaction(
-    transaction: Transaction,
-    signers: Array<Signer>,
+    transaction: VersionedTransaction | Transaction,
+    signersOrOptions?: Array<Signer> | SendOptions,
     options?: SendOptions
   ): Promise<TransactionSignature> {
     throw new Error("not implemented");
@@ -707,9 +711,9 @@ export class BackgroundSolanaConnection extends Connection {
     throw new Error("not implemented");
   }
 
-  simulateTransaction(
-    transactionOrMessage: Transaction | Message,
-    signers?: Array<Signer>,
+  async simulateTransaction(
+    transactionOrMessage: VersionedTransaction | Transaction | Message,
+    configOrSigners?: SimulateTransactionConfig | Array<Signer>,
     includeAccounts?: boolean | Array<PublicKey>
   ): Promise<RpcResponseAndContext<SimulatedTransactionResponse>> {
     throw new Error("not implemented");

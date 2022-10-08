@@ -1,5 +1,9 @@
 import * as bs58 from "bs58";
-import type { Transaction, TransactionSignature } from "@solana/web3.js";
+import type {
+  Transaction,
+  TransactionSignature,
+  VersionedTransaction,
+} from "@solana/web3.js";
 import {
   UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
@@ -11,10 +15,9 @@ import type { SolanaContext } from ".";
 // provider with a slightly different API. Eventually it would be nice to
 // combine the two.
 export class SolanaProvider {
-  public static async signTransaction(
-    ctx: SolanaContext,
-    tx: Transaction
-  ): Promise<Transaction> {
+  public static async signTransaction<
+    T extends Transaction | VersionedTransaction
+  >(ctx: SolanaContext, tx: T): Promise<T> {
     const { walletPublicKey, backgroundClient } = ctx;
     const txStr = bs58.encode(tx.serialize({ requireAllSignatures: false }));
     const respSignature = await backgroundClient.request({
@@ -25,10 +28,9 @@ export class SolanaProvider {
     return tx;
   }
 
-  public static async signAllTransactions(
-    ctx: SolanaContext,
-    txs: Transaction[]
-  ): Promise<Transaction[]> {
+  public static async signAllTransactions<
+    T extends Transaction | VersionedTransaction
+  >(ctx: SolanaContext, txs: T[]): Promise<T[]> {
     const { walletPublicKey } = ctx;
     // Serialize messages.
     const txStrs = txs.map((tx) => {

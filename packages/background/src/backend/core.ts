@@ -132,7 +132,7 @@ export class Backend {
     _walletAddress: string,
     includeAccounts?: boolean | Array<string>
   ): Promise<any> {
-    const tx = Transaction.from(bs58.decode(txStr));
+    const tx = VersionedTransaction.deserialize(bs58.decode(txStr));
     return await this.solanaConnectionBackend.simulateTransaction(
       tx,
       undefined,

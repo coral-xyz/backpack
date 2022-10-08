@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { ethers, BigNumber } from "ethers";
 import { UnsignedTransaction } from "@ethersproject/transactions";
 import { TransactionRequest } from "@ethersproject/abstract-provider";
-import { PublicKey, Transaction } from "@solana/web3.js";
+import {
+  PublicKey,
+  SimulatedTransactionResponse,
+  Transaction,
+  VersionedTransaction,
+} from "@solana/web3.js";
 import { AccountLayout, u64, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { Blockchain, UI_RPC_METHOD_SOLANA_SIMULATE } from "@coral-xyz/common";
 import {
@@ -176,6 +181,10 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
   };
 }
 
+type BalanceChanges = {
+  [symbol: string]: { nativeChange: BigNumber; decimals: number };
+};
+
 //
 // Transaction data for Solana.
 //
@@ -188,13 +197,14 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
   const [loading, setLoading] = useState(true);
   const [simulationError, setSimulationError] = useState(false);
   const [estimatedTxFee, setEstimatedTxFee] = useState(0);
-  const [balanceChanges, setBalanceChanges] = useState({});
+  const [balanceChanges, setBalanceChanges] = useState<BalanceChanges>({});
 
   useEffect(() => {
     const estimateTxFee = async () => {
-      const transaction = Transaction.from(bs58.decode(serializedTx));
       let fee;
       try {
+        // web3.js getEstimatedFee only supports the legacy message, so estimate for legacy only
+        const transaction = Transaction.from(bs58.decode(serializedTx));
         fee = await transaction.getEstimatedFee(connection);
       } catch {
         // ignore
@@ -207,19 +217,21 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
   useEffect(() => {
     const estimateBalanceChanges = async () => {
       if (walletPublicKey && serializedTx) {
-        const result = await background.request({
+        const result = (await background.request({
           method: UI_RPC_METHOD_SOLANA_SIMULATE,
           params: [serializedTx, walletPublicKey, true],
-        });
-        if (result.value.err) {
-          console.warn("failed to simulate", result.value.err);
+        })) as SimulatedTransactionResponse;
+        if (result.err) {
+          console.warn("failed to simulate", result.err);
           setSimulationError(true);
         } else {
-          const balanceChanges = result.value.accounts.reduce(
-            (result: any, a: any) => {
-              if (a.owner === TOKEN_PROGRAM_ID.toString()) {
+          console.log(result);
+          const balanceChanges =
+            result?.accounts?.reduce<BalanceChanges>((result, item) => {
+              if (item?.owner === TOKEN_PROGRAM_ID.toString()) {
                 try {
-                  const buf = Buffer.from(a.data[0], a.data[1]);
+                  // @ts-ignore
+                  const buf = Buffer.from(item.data[0], item.data[1]);
                   const account = AccountLayout.decode(buf);
                   // Check account owner is active Solana public key
                   if (
@@ -230,8 +242,10 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
                     return result;
                   }
                   // Find the existing token account
-                  const existingTokenAccount = tokenAccountsSorted.find((t) =>
-                    new PublicKey(t.mint!).equals(new PublicKey(account.mint))
+                  const existingTokenAccount = tokenAccountsSorted.find(
+                    (t) =>
+                      t.mint &&
+                      new PublicKey(t.mint).equals(new PublicKey(account.mint))
                   );
                   // Find the token in the registry to get the symbol for return
                   const token = tokenRegistry.get(
@@ -260,9 +274,7 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
                 }
               }
               return result;
-            },
-            {}
-          );
+            }, {}) ?? {};
           setBalanceChanges(balanceChanges);
         }
         setLoading(false);

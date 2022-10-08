@@ -1,6 +1,7 @@
 import type {
   Connection,
   Transaction,
+  VersionedTransaction,
   Signer,
   SendOptions,
   TransactionSignature,
@@ -78,7 +79,7 @@ export class ProviderSolanaXnftInjection
   }
 
   async sendAndConfirm(
-    tx: Transaction,
+    tx: Transaction | VersionedTransaction,
     signers?: Signer[],
     options?: ConfirmOptions
   ): Promise<TransactionSignature> {
@@ -96,7 +97,7 @@ export class ProviderSolanaXnftInjection
   }
 
   async send(
-    tx: Transaction,
+    tx: Transaction | VersionedTransaction,
     signers?: Signer[],
     options?: SendOptions
   ): Promise<TransactionSignature> {
@@ -113,7 +114,9 @@ export class ProviderSolanaXnftInjection
     );
   }
 
-  public async signTransaction(tx: Transaction): Promise<Transaction> {
+  public async signTransaction<T extends Transaction | VersionedTransaction>(
+    tx: T
+  ): Promise<T> {
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
@@ -125,9 +128,9 @@ export class ProviderSolanaXnftInjection
     );
   }
 
-  async signAllTransactions(
-    txs: Array<Transaction>
-  ): Promise<Array<Transaction>> {
+  async signAllTransactions<T extends Transaction | VersionedTransaction>(
+    txs: Array<T>
+  ): Promise<Array<T>> {
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }

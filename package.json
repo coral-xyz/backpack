@@ -37,7 +37,7 @@
     "*.{ts,tsx,js,jsx,css,md,json}": "prettier --write"
   },
   "resolutions": {
-    "@solana/web3.js": "1.43.2",
+    "@solana/web3.js": "1.63.1",
     "@types/react-dom": "^17.0.0",
     "@types/react": "^17.0.0",
     "parcel": "2.7.0",
