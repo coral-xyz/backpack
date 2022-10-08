@@ -110,7 +110,6 @@ export const activeSolanaWallet = selector({
   key: "ethereumWallet",
   get: ({ get }) => {
     const activeWallets = get(activeWalletsWithData);
-    console.log(activeWallets);
     return activeWallets.find((w: any) => w!.blockchain === Blockchain.SOLANA);
   },
 });
