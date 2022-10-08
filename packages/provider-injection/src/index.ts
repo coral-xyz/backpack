@@ -46,14 +46,9 @@ function initProvider() {
           CHANNEL_PLUGIN_RPC_RESPONSE,
           true
         );
-        const xnft = new ProviderSolanaXnftInjection(requestManager);
-        Object.defineProperties(xnft, {
-          solana: {
-            value: new ProviderSolanaXnftInjection(requestManager),
-          },
-          ethereum: {
-            value: new ProviderEthereumXnftInjection(requestManager),
-          },
+        const xnft = new ProviderSolanaXnftInjection(requestManager, {
+          ethereum: new ProviderEthereumXnftInjection(requestManager),
+          solana: new ProviderSolanaXnftInjection(requestManager),
         });
         return xnft;
       })(),

@@ -1,4 +1,3 @@
-import { EventEmitter } from "eventemitter3";
 import { ethers } from "ethers";
 import type { Event } from "@coral-xyz/common";
 import { UnsignedTransaction } from "@ethersproject/transactions";
@@ -15,84 +14,93 @@ import {
 } from "@coral-xyz/common";
 import * as cmn from "./common/ethereum";
 import { RequestManager } from "./request-manager";
+import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 
 const logger = getLogger("provider-xnft-injection");
 
 //
 // Injected provider for UI plugins.
 //
-export class ProviderEthereumXnftInjection extends EventEmitter {
-  private _requestManager: RequestManager;
-  private _connectionRequestManager: RequestManager;
+export class ProviderEthereumXnftInjection extends PrivateEventEmitter {
+  #requestManager: RequestManager;
+  #connectionRequestManager: RequestManager;
 
-  public publicKey?: string;
-  public connectionUrl?: string;
-  public provider?: ethers.providers.JsonRpcProvider;
+  #publicKey?: string;
+  #connectionUrl?: string;
+  #provider?: ethers.providers.JsonRpcProvider;
 
   constructor(requestManager: RequestManager) {
     super();
-    this._requestManager = requestManager;
-    this._connectionRequestManager = new RequestManager(
+    if (new.target === ProviderEthereumXnftInjection) {
+      Object.freeze(this);
+    }
+
+    this.#requestManager = requestManager;
+    this.#connectionRequestManager = new RequestManager(
       CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST,
       CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE
     );
-    this._setupChannels();
+    this.#setupChannels();
   }
 
-  private _connect(publicKey: string, connectionUrl: string) {
-    this.publicKey = publicKey;
-    this.connectionUrl = connectionUrl;
-    this.provider = new BackgroundEthereumProvider(
-      this._connectionRequestManager,
+  #connect(publicKey: string, connectionUrl: string) {
+    this.#publicKey = publicKey;
+    this.#connectionUrl = connectionUrl;
+    this.#provider = new BackgroundEthereumProvider(
+      this.#connectionRequestManager,
       connectionUrl
     );
   }
 
   async sendAndConfirmTransaction(transaction: UnsignedTransaction) {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.sendAndConfirmTransaction(
-      this.publicKey,
-      this._requestManager,
+      this.#publicKey,
+      this.#requestManager,
       transaction
     );
   }
 
   async sendTransaction(transaction: UnsignedTransaction) {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.sendTransaction(
-      this.publicKey,
-      this._requestManager,
+      this.#publicKey,
+      this.#requestManager,
       transaction
     );
   }
 
   async signTransaction(transaction: UnsignedTransaction) {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.signTransaction(
-      this.publicKey,
-      this._requestManager,
+      this.#publicKey,
+      this.#requestManager,
       transaction
     );
   }
 
   async signMessage(message: string) {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
-    return await cmn.signMessage(this.publicKey, this._requestManager, message);
+    return await cmn.signMessage(
+      this.#publicKey,
+      this.#requestManager,
+      message
+    );
   }
 
-  private _setupChannels() {
-    window.addEventListener("message", this._handleNotifications.bind(this));
+  #setupChannels() {
+    window.addEventListener("message", this.#handleNotifications.bind(this));
   }
 
-  private async _handleNotifications(event: Event) {
+  async #handleNotifications(event: Event) {
     if (event.data.type !== CHANNEL_PLUGIN_NOTIFICATION) return;
 
     logger.debug("handle notification", event);
@@ -100,41 +108,53 @@ export class ProviderEthereumXnftInjection extends EventEmitter {
     const { name } = event.data.detail;
     switch (name) {
       case PLUGIN_NOTIFICATION_CONNECT:
-        this._handleConnect(event);
+        this.#handleConnect(event);
         break;
       case PLUGIN_NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
-        this._handleConnectionUrlUpdated(event);
+        this.#handleConnectionUrlUpdated(event);
         break;
       case PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED:
-        this._handlePublicKeyUpdated(event);
+        this.#handlePublicKeyUpdated(event);
         break;
       default:
         break;
     }
   }
 
-  private _handleConnect(event: Event) {
+  #handleConnect(event: Event) {
     const { publicKeys, connectionUrls } = event.data.detail.data;
-    this._connect(
+    this.#connect(
       publicKeys[Blockchain.ETHEREUM],
       connectionUrls[Blockchain.ETHEREUM]
     );
     // Don't emit a connect even because the Solana xnft provider handles that
   }
 
-  private _handleConnectionUrlUpdated(event: Event) {
+  #handleConnectionUrlUpdated(event: Event) {
     const { connectionUrl } = event.data.detail.data;
-    this.connectionUrl = connectionUrl;
-    this.provider = new BackgroundEthereumProvider(
-      this._connectionRequestManager,
+    this.#connectionUrl = connectionUrl;
+    this.#provider = new BackgroundEthereumProvider(
+      this.#connectionRequestManager,
       connectionUrl
     );
     this.emit("connectionUpdate", event.data.detail);
   }
 
-  private _handlePublicKeyUpdated(event: Event) {
+  #handlePublicKeyUpdated(event: Event) {
     const { publicKey } = event.data.detail.data;
-    this.publicKey = publicKey;
+    this.#publicKey = publicKey;
     this.emit("publicKeyUpdate", event.data.detail);
+  }
+
+  public get publicKey() {
+    return this.#publicKey;
+  }
+
+  public get connectionUrl() {
+    return this.#connectionUrl;
+  }
+
+  public get provider() {
+    return this.#provider;
   }
 }

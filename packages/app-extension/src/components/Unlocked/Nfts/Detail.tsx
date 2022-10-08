@@ -100,12 +100,13 @@ function Image({ nft }: { nft: any }) {
       style={{
         width: "100%",
         minHeight: "343px",
+        display: "flex",
+        alignItems: "center",
       }}
     >
       <img
         style={{
           width: "100%",
-          minHeight: "343px",
           borderRadius: "8px",
         }}
         src={nft.imageUrl}
