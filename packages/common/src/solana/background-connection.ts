@@ -62,7 +62,6 @@ import type {
   SignatureStatus,
   PerfSample,
   BlockheightBasedTransactionConfirmationStrategy,
-  ParsedTransactionWithMeta,
 } from "@solana/web3.js";
 import {
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
@@ -87,7 +86,17 @@ import {
   SOLANA_CONNECTION_RPC_GET_PARSED_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_PARSED_PROGRAM_ACCOUNTS,
 } from "../constants";
-import { serializeTokenAccountsFilter } from "./types";
+import {
+  serializeTokenAccountsFilter,
+  SolanaTokenAccountWithKeyString,
+  SplNftMetadataString,
+  TokenMetadataString,
+} from "./types";
+import type {
+  SolanaTokenAccountWithKey,
+  SplNftMetadata,
+  TokenMetadata,
+} from "./types";
 import type { BackgroundClient } from "../channel";
 
 export class BackgroundSolanaConnection extends Connection {
@@ -107,9 +116,9 @@ export class BackgroundSolanaConnection extends Connection {
   }
 
   async customSplTokenAccounts(publicKey: PublicKey): Promise<{
-    tokenAccountsMap: any;
-    tokenMetadata: any;
-    nftMetadata: any;
+    tokenAccountsMap: [string, SolanaTokenAccountWithKeyString][];
+    tokenMetadata: (TokenMetadataString | null)[];
+    nftMetadata: [string, SplNftMetadataString][];
   }> {
     const resp = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
