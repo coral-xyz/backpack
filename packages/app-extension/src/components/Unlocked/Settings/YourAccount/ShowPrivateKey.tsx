@@ -6,10 +6,7 @@ import WebIcon from "@mui/icons-material/Web";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import {
-  UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
-  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
-} from "@coral-xyz/common";
+import { UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY } from "@coral-xyz/common";
 import { CopyButton } from "../../../common/Account/MnemonicInput";
 import {
   DangerButton,
@@ -100,7 +97,7 @@ const useStyles = styles((theme: any) => ({
   },
 }));
 
-export function ShowPrivateKeyWarning({ publicKey }: { publicKey?: string }) {
+export function ShowPrivateKeyWarning({ publicKey }: { publicKey: string }) {
   const classes = useStyles();
   const background = useBackgroundClient();
   const nav = useNavStack();
@@ -116,17 +113,11 @@ export function ShowPrivateKeyWarning({ publicKey }: { publicKey?: string }) {
   }, []);
 
   const _next = async () => {
-    const activeWallet =
-      publicKey ??
-      (await background.request({
-        method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
-        params: [],
-      }));
     let privateKey;
     try {
       privateKey = await background.request({
         method: UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
-        params: [password, activeWallet],
+        params: [password, publicKey],
       });
     } catch (e) {
       console.error(e);
