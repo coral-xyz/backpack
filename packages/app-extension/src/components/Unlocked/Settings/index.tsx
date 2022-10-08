@@ -965,7 +965,7 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
 
     await background.request({
       method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-      params: [publicKey],
+      params: [publicKey, blockchain],
     });
 
     setNewPublicKey(publicKey);
