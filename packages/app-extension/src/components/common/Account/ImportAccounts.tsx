@@ -225,11 +225,7 @@ export function ImportAccounts({
 
     // Add remaining accounts
     for (let account = 0; account < LOAD_PUBKEY_AMOUNT; account += 1) {
-      const path = accountDerivationPath(
-        Blockchain.SOLANA,
-        derivationPath,
-        account
-      );
+      const path = accountDerivationPath(blockchain, derivationPath, account);
       publicKeys.push((await ledger.getAddress(path)).address);
     }
 
