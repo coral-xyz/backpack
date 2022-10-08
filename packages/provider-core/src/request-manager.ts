@@ -34,12 +34,8 @@ export class RequestManager {
 
   private _handleRpcResponse(event: Event) {
     if (event.data.type !== this._responseChannel) return;
-    console.log("here1");
-    console.log(event);
     const { id, result, error } = event.data.detail;
-    console.log("here2");
     const resolver = this._responseResolvers[id];
-    console.log("here3");
     if (!resolver) {
       logger.error("unexpected event", event);
       throw new Error("unexpected event");
