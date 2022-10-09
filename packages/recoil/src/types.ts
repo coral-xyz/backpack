@@ -1,23 +1,6 @@
-import BN from "bn.js";
 import { BigNumber } from "ethers";
-import { PublicKey } from "@solana/web3.js";
 import { TAB_BALANCES, TAB_SWAP, TAB_NFTS, TAB_APPS } from "@coral-xyz/common";
 import { makeUrl } from "./hooks";
-
-export interface SolanaTokenAccount {
-  amount: BN;
-  closeAuthority: PublicKey | null;
-  delegate: PublicKey;
-  delegatedAmount: number | null;
-  isNative: number | null;
-  mint: PublicKey;
-  authority: PublicKey;
-  state: number;
-}
-
-export interface SolanaTokenAccountWithKey extends SolanaTokenAccount {
-  key: PublicKey;
-}
 
 export type NamedPublicKey = {
   publicKey: string;
