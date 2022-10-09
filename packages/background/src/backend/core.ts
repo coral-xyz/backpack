@@ -1,7 +1,7 @@
 import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
 import type { Commitment, SendOptions } from "@solana/web3.js";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, VersionedTransaction } from "@solana/web3.js";
 import type { SimulateTransactionConfig } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
@@ -35,7 +35,6 @@ import {
   NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
   Blockchain,
   deserializeTransaction,
-  getSerializedMessage,
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
 import * as store from "./store";
@@ -114,7 +113,8 @@ export class Backend {
     txStr: string,
     walletAddress: string
   ): Promise<string> {
-    const message = getSerializedMessage(txStr);
+    const tx = deserializeTransaction(txStr);
+    const message = tx.message.serialize();
     const txMessage = bs58.encode(message);
     const blockchainKeyring = this.keyringStore.keyringForBlockchain(
       Blockchain.SOLANA
