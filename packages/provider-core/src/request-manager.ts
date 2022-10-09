@@ -34,7 +34,6 @@ export class RequestManager {
 
   private _handleRpcResponse(event: Event) {
     if (event.data.type !== this._responseChannel) return;
-
     const { id, result, error } = event.data.detail;
     const resolver = this._responseResolvers[id];
     if (!resolver) {

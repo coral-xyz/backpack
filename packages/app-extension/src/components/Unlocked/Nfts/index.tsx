@@ -34,8 +34,8 @@ export function Nfts() {
   const [collections, _, isLoading] = useLoader(
     nftCollections,
     {
-      [Blockchain.SOLANA]: [] as NftCollection[],
-      [Blockchain.ETHEREUM]: [] as NftCollection[],
+      [Blockchain.SOLANA]: new Array<NftCollection>(),
+      [Blockchain.ETHEREUM]: new Array<NftCollection>(),
     },
     // Note this reloads on any change to the active wallets, which reloads
     // NFTs for both blockchains.

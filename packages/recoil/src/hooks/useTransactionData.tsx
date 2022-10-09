@@ -4,7 +4,12 @@ import { UnsignedTransaction } from "@ethersproject/transactions";
 import { TransactionRequest } from "@ethersproject/abstract-provider";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { AccountLayout, u64, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { Blockchain, UI_RPC_METHOD_SOLANA_SIMULATE } from "@coral-xyz/common";
+import {
+  Blockchain,
+  UI_RPC_METHOD_SOLANA_SIMULATE,
+  deserializeTransaction,
+  isVersionedTransaction,
+} from "@coral-xyz/common";
 import {
   useBackgroundClient,
   useBlockchainNativeTokens,
@@ -192,11 +197,16 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
 
   useEffect(() => {
     const estimateTxFee = async () => {
-      const transaction = Transaction.from(bs58.decode(serializedTx));
+      const transaction = deserializeTransaction(serializedTx);
       let fee;
       try {
-        fee = await transaction.getEstimatedFee(connection);
-      } catch {
+        if (isVersionedTransaction(transaction)) {
+          // TODO: Add gas estimation
+          fee = 5000;
+        } else {
+          fee = await transaction.getEstimatedFee(connection);
+        }
+      } catch (e) {
         // ignore
       }
       setEstimatedTxFee(fee || 5000);

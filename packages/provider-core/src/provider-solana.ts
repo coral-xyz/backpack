@@ -8,7 +8,7 @@ import type {
   SimulatedTransactionResponse,
   Commitment,
 } from "@solana/web3.js";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey, VersionedTransaction } from "@solana/web3.js";
 import type { Event } from "@coral-xyz/common";
 import {
   getLogger,
@@ -186,8 +186,8 @@ export class ProviderSolanaInjection
     );
   }
 
-  async send(
-    tx: Transaction,
+  async send<T extends Transaction | VersionedTransaction>(
+    tx: T,
     signers?: Signer[],
     options?: SendOptions,
     connection?: Connection,
@@ -207,8 +207,8 @@ export class ProviderSolanaInjection
   }
 
   // @ts-ignore
-  async sendAll(
-    _txWithSigners: { tx: Transaction; signers?: Signer[] }[],
+  async sendAll<T extends Transaction | VersionedTransaction>(
+    _txWithSigners: { tx: T; signers?: Signer[] }[],
     _opts?: ConfirmOptions,
     connection?: Connection,
     publicKey?: PublicKey
@@ -217,8 +217,8 @@ export class ProviderSolanaInjection
   }
 
   // @ts-ignore
-  async simulate(
-    tx: Transaction,
+  async simulate<T extends Transaction | VersionedTransaction>(
+    tx: T,
     signers?: Signer[],
     commitment?: Commitment,
     connection?: Connection,
@@ -237,11 +237,11 @@ export class ProviderSolanaInjection
     );
   }
 
-  async signTransaction(
-    tx: Transaction,
+  async signTransaction<T extends Transaction | VersionedTransaction>(
+    tx: T,
     publicKey?: PublicKey,
     connection?: Connection
-  ): Promise<Transaction> {
+  ): Promise<T> {
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
@@ -253,11 +253,11 @@ export class ProviderSolanaInjection
     );
   }
 
-  async signAllTransactions(
-    txs: Array<Transaction>,
+  async signAllTransactions<T extends Transaction | VersionedTransaction>(
+    txs: Array<T>,
     publicKey?: PublicKey,
     connection?: Connection
-  ): Promise<Array<Transaction>> {
+  ): Promise<Array<T>> {
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
