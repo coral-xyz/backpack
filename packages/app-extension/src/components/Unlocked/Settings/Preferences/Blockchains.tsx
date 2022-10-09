@@ -38,6 +38,7 @@ export function PreferencesBlockchains() {
           ) : (
             <EnableButton blockchain={blockchain} />
           ),
+          style: { height: "66px" },
         },
       ];
     })
