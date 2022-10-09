@@ -780,7 +780,12 @@ function SettingsList({ close }: { close: () => void }) {
     settingsMenu.push({
       label: "xNFTs",
       onClick: () => nav.push("xnfts"),
-      icon: (props: any) => <GridIcon {...props} />,
+      icon: (props: any) => (
+        <GridIcon
+          {...props}
+          style={{ ...props.style, width: "22px", height: "22px" }}
+        />
+      ),
       detailIcon: <PushDetail />,
     });
   }
