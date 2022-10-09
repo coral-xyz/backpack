@@ -6,10 +6,6 @@ import type {
 } from "@coral-xyz/common";
 import * as atoms from "../../atoms";
 
-export function useTokenAddresses(): string[] {
-  return useRecoilValue(atoms.solanaTokenAccountKeys)!;
-}
-
 export const useUpdateAllSplTokenAccounts = () =>
   useRecoilCallback(
     ({ set }: any) =>
