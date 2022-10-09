@@ -205,7 +205,6 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
         );
         fee = response.value;
       } catch (e) {
-        console.log(e);
         // ignore
       }
       setEstimatedTxFee(fee || 5000);
