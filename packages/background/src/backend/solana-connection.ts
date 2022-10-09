@@ -463,12 +463,12 @@ export class SolanaConnectionBackend {
     message: VersionedMessage,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<number>> {
-    const b64encoded = Buffer.from(message.serialize()).toString("base64");
+    const encodedMessage = Buffer.from(message.serialize()).toString("base64");
     return await this.connection!.getFeeForMessage(
       {
         serialize: () => ({
           toString: () => {
-            return b64encoded;
+            return encodedMessage;
           },
         }),
       } as Message,
