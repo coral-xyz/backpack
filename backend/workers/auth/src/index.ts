@@ -98,6 +98,25 @@ app.get("/users/:username", async (c) => {
     },
   });
 
+  const inviteCodeCheck = await chain("query")({
+    invitations_aggregate: [
+      {
+        where: {
+          id: { _eq: c.req.header("x-backpack-invite-code") },
+          claimed_at: { _is_null: true },
+        },
+      },
+      {
+        aggregate: {
+          count: [{ columns: ["id"] as any }, true],
+        },
+      },
+    ],
+  });
+  if (inviteCodeCheck.invitations_aggregate?.aggregate?.count !== 1) {
+    return c.json({ message: "error" }, 401);
+  }
+
   const res = await chain("query")({
     auth_users_aggregate: [
       {
