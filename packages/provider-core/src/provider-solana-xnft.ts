@@ -7,6 +7,7 @@ import type {
   ConfirmOptions,
   Commitment,
   SimulatedTransactionResponse,
+  VersionedTransaction,
 } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import type { Provider } from "@project-serum/anchor";
@@ -77,8 +78,8 @@ export class ProviderSolanaXnftInjection
     );
   }
 
-  async sendAndConfirm(
-    tx: Transaction,
+  async sendAndConfirm<T extends Transaction | VersionedTransaction>(
+    tx: T,
     signers?: Signer[],
     options?: ConfirmOptions
   ): Promise<TransactionSignature> {
@@ -95,8 +96,8 @@ export class ProviderSolanaXnftInjection
     );
   }
 
-  async send(
-    tx: Transaction,
+  async send<T extends Transaction | VersionedTransaction>(
+    tx: T,
     signers?: Signer[],
     options?: SendOptions
   ): Promise<TransactionSignature> {
@@ -113,7 +114,9 @@ export class ProviderSolanaXnftInjection
     );
   }
 
-  public async signTransaction(tx: Transaction): Promise<Transaction> {
+  public async signTransaction<T extends Transaction | VersionedTransaction>(
+    tx: T
+  ): Promise<T> {
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
@@ -125,9 +128,9 @@ export class ProviderSolanaXnftInjection
     );
   }
 
-  async signAllTransactions(
-    txs: Array<Transaction>
-  ): Promise<Array<Transaction>> {
+  async signAllTransactions<T extends Transaction | VersionedTransaction>(
+    txs: Array<T>
+  ): Promise<Array<T>> {
     if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
@@ -147,8 +150,8 @@ export class ProviderSolanaXnftInjection
   }
 
   // @ts-ignore
-  public async simulate(
-    tx: Transaction,
+  public async simulate<T extends Transaction | VersionedTransaction>(
+    tx: T,
     signers?: Signer[],
     commitment?: Commitment
   ): Promise<SimulatedTransactionResponse> {

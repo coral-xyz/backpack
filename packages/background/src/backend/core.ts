@@ -1,7 +1,8 @@
 import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
 import type { Commitment, SendOptions } from "@solana/web3.js";
-import { PublicKey, Transaction } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
+import type { SimulateTransactionConfig } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
@@ -33,6 +34,8 @@ import {
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
   Blockchain,
+  deserializeTransaction,
+  getSerializedMessage,
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
 import * as store from "./store";
@@ -79,9 +82,9 @@ export class Backend {
     options?: SendOptions
   ): Promise<string> {
     // Sign the transaction.
-    const tx = Transaction.from(bs58.decode(txStr));
     const signature = await this.solanaSignTransaction(txStr, walletAddress);
     const pubkey = new PublicKey(walletAddress);
+    const tx = deserializeTransaction(txStr);
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
 
     // Send it to the network.
@@ -111,8 +114,8 @@ export class Backend {
     txStr: string,
     walletAddress: string
   ): Promise<string> {
-    const tx = Transaction.from(bs58.decode(txStr));
-    const txMessage = bs58.encode(tx.serializeMessage());
+    const message = getSerializedMessage(txStr);
+    const txMessage = bs58.encode(message);
     const blockchainKeyring = this.keyringStore.keyringForBlockchain(
       Blockchain.SOLANA
     );
@@ -128,13 +131,23 @@ export class Backend {
 
   async solanaSimulate(
     txStr: string,
-    _walletAddress: string,
+    walletAddress: string,
     includeAccounts?: boolean | Array<string>
   ): Promise<any> {
-    const tx = Transaction.from(bs58.decode(txStr));
+    const tx = deserializeTransaction(txStr);
+    const signersOrConf =
+      "message" in tx
+        ? ({
+            accounts: {
+              encoding: "base64",
+              addresses: [new PublicKey(walletAddress).toBase58()],
+            },
+          } as SimulateTransactionConfig)
+        : undefined;
+
     return await this.solanaConnectionBackend.simulateTransaction(
       tx,
-      undefined,
+      signersOrConf,
       typeof includeAccounts === "boolean"
         ? includeAccounts
         : includeAccounts && includeAccounts.map((a) => new PublicKey(a))

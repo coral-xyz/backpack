@@ -1,4 +1,10 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import {
+  AddressLookupTableAccount,
+  Connection,
+  GetAccountInfoConfig,
+  PublicKey,
+  SimulateTransactionConfig,
+} from "@solana/web3.js";
 import type {
   Commitment,
   GetSupplyConfig,
@@ -28,7 +34,9 @@ import type {
   ConfirmedSignatureInfo,
   ParsedConfirmedTransaction,
   Transaction,
+  VersionedTransaction,
   Message,
+  MessageV0,
   Signer,
   SendOptions,
   SimulatedTransactionResponse,
@@ -61,6 +69,7 @@ import type {
   BlockheightBasedTransactionConfirmationStrategy,
 } from "@solana/web3.js";
 import type { Notification, EventEmitter } from "@coral-xyz/common";
+import { decode } from "bs58";
 import {
   getLogger,
   customSplTokenAccounts,
@@ -288,6 +297,16 @@ export class SolanaConnectionBackend {
     return await this.connection!.getAccountInfo(publicKey, commitment);
   }
 
+  async getAccountInfoAndContext(
+    publicKey: PublicKey,
+    commitment?: Commitment
+  ): Promise<RpcResponseAndContext<AccountInfo<Buffer> | null>> {
+    return await this.connection!.getAccountInfoAndContext(
+      publicKey,
+      commitment
+    );
+  }
+
   async getLatestBlockhash(commitment?: Commitment): Promise<{
     blockhash: Blockhash;
     lastValidBlockHeight: number;
@@ -296,6 +315,18 @@ export class SolanaConnectionBackend {
       throw new Error("inner connection not found");
     }
     const resp = await this.connection!.getLatestBlockhash(commitment);
+    return resp;
+  }
+
+  async getLatestBlockhashAndContext(commitment?: Commitment): Promise<
+    RpcResponseAndContext<{
+      blockhash: Blockhash;
+      lastValidBlockHeight: number;
+    }>
+  > {
+    const resp = await this.connection!.getLatestBlockhashAndContext(
+      commitment
+    );
     return resp;
   }
 
@@ -347,15 +378,26 @@ export class SolanaConnectionBackend {
   }
 
   async simulateTransaction(
-    transactionOrMessage: Transaction | Message,
-    signers?: Array<Signer>,
+    transactionOrMessage: Transaction | VersionedTransaction | Message,
+    configOrSigners?: Array<Signer> | SimulateTransactionConfig,
     includeAccounts?: boolean | Array<PublicKey>
   ): Promise<RpcResponseAndContext<SimulatedTransactionResponse>> {
-    return await this.connection!.simulateTransaction(
-      transactionOrMessage,
-      signers,
-      includeAccounts
-    );
+    if ("message" in transactionOrMessage) {
+      // VersionedTransaction
+      if (Array.isArray(configOrSigners)) {
+        throw new Error("Invalid arguments to simulateTransaction");
+      }
+      return await this.connection!.simulateTransaction(
+        transactionOrMessage,
+        configOrSigners
+      );
+    } else {
+      return await this.connection!.simulateTransaction(
+        transactionOrMessage,
+        configOrSigners as Array<Signer>,
+        includeAccounts
+      );
+    }
   }
 
   async getMultipleAccountsInfo(
@@ -495,7 +537,7 @@ export class SolanaConnectionBackend {
   > {
     return await this.connection!.getParsedAccountInfo(publicKey, commitment);
   }
-  
+
   async getParsedProgramAccounts(
     programId: PublicKey,
     configOrCommitment?: GetParsedProgramAccountsConfig | Commitment
@@ -509,6 +551,13 @@ export class SolanaConnectionBackend {
       programId,
       configOrCommitment
     );
+  }
+
+  async getAddressLookupTable(
+    programId: PublicKey,
+    config?: GetAccountInfoConfig
+  ): Promise<RpcResponseAndContext<AddressLookupTableAccount | null>> {
+    return await this.connection!.getAddressLookupTable(programId, config);
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -546,13 +595,6 @@ export class SolanaConnectionBackend {
   async getLargestAccounts(
     config?: GetLargestAccountsConfig
   ): Promise<RpcResponseAndContext<Array<AccountBalancePair>>> {
-    throw new Error("not implemented");
-  }
-
-  async getAccountInfoAndContext(
-    publicKey: PublicKey,
-    commitment?: Commitment
-  ): Promise<RpcResponseAndContext<AccountInfo<Buffer> | null>> {
     throw new Error("not implemented");
   }
 
@@ -657,15 +699,6 @@ export class SolanaConnectionBackend {
     blockhash: Blockhash;
     feeCalculator: FeeCalculator;
   }> {
-    throw new Error("not implemented");
-  }
-
-  getLatestBlockhashAndContext(commitment?: Commitment): Promise<
-    RpcResponseAndContext<{
-      blockhash: Blockhash;
-      lastValidBlockHeight: number;
-    }>
-  > {
     throw new Error("not implemented");
   }
 

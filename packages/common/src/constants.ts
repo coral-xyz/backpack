@@ -328,8 +328,12 @@ export const ETHEREUM_PROVIDER_RPC_WAIT_FOR_TRANSACTION =
 // connection implementation (which the frontends use via message passing).
 //
 export const SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO = "solana-get-account-info";
+export const SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO_AND_CONTEXT =
+  "solana-get-account-info-and-context";
 export const SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH =
   "solana-get-latest-blockhash";
+export const SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH_AND_CONTEXT =
+  "solana-get-latest-blockhash-and-context";
 export const SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNTS_BY_OWNER =
   "solana-get-token-accounts-by-owner";
 export const SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION =
@@ -361,6 +365,8 @@ export const SOLANA_CONNECTION_RPC_GET_PARSED_TOKEN_ACCOUNTS_BY_OWNER =
   "solana-get-parsed-token-accounts-by-owner";
 export const SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS =
   "solana-get-token-largest-accounts";
+export const SOLANA_CONNECTION_RPC_GET_ADDRESS_LOOKUP_TABLE =
+  "solana-get-address-lookup-table";
 export const SOLANA_CONNECTION_RPC_GET_PARSED_ACCOUNT_INFO =
   "solana-get-parsed-account-info";
 export const SOLANA_CONNECTION_RPC_GET_PARSED_PROGRAM_ACCOUNTS =
