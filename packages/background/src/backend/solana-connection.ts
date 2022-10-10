@@ -4,6 +4,7 @@ import {
   GetAccountInfoConfig,
   PublicKey,
   SimulateTransactionConfig,
+  VersionedMessage,
 } from "@solana/web3.js";
 import type {
   Commitment,
@@ -69,7 +70,7 @@ import type {
   BlockheightBasedTransactionConfirmationStrategy,
 } from "@solana/web3.js";
 import type { Notification, EventEmitter } from "@coral-xyz/common";
-import { decode } from "bs58";
+import { encode } from "bs58";
 import {
   getLogger,
   customSplTokenAccounts,
@@ -483,10 +484,20 @@ export class SolanaConnectionBackend {
   }
 
   async getFeeForMessage(
-    message: Message,
+    message: VersionedMessage,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<number>> {
-    return await this.connection!.getFeeForMessage(message, commitment);
+    const encodedMessage = Buffer.from(message.serialize()).toString("base64");
+    return await this.connection!.getFeeForMessage(
+      {
+        serialize: () => ({
+          toString: () => {
+            return encodedMessage;
+          },
+        }),
+      } as Message,
+      commitment
+    );
   }
 
   async getMinimumBalanceForRentExemption(

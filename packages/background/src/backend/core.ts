@@ -5,7 +5,7 @@ import type {
   SendOptions,
   SimulateTransactionConfig,
 } from "@solana/web3.js";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, VersionedTransaction } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
@@ -40,7 +40,6 @@ import {
   SolanaCluster,
   SolanaExplorer,
   deserializeTransaction,
-  getSerializedMessage,
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
 import * as store from "./store";
@@ -120,7 +119,8 @@ export class Backend {
     txStr: string,
     walletAddress: string
   ): Promise<string> {
-    const message = getSerializedMessage(txStr);
+    const tx = deserializeTransaction(txStr);
+    const message = tx.message.serialize();
     const txMessage = bs58.encode(message);
     const blockchainKeyring = this.keyringStore.keyringForBlockchain(
       Blockchain.SOLANA

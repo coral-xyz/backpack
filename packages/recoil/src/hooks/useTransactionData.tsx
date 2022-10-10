@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import { ethers, BigNumber } from "ethers";
 import { UnsignedTransaction } from "@ethersproject/transactions";
 import { TransactionRequest } from "@ethersproject/abstract-provider";
-import { PublicKey, Transaction } from "@solana/web3.js";
+import { Message, PublicKey } from "@solana/web3.js";
 import { AccountLayout, u64, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   Blockchain,
-  UI_RPC_METHOD_SOLANA_SIMULATE,
   deserializeTransaction,
-  isVersionedTransaction,
+  UI_RPC_METHOD_SOLANA_SIMULATE,
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
@@ -200,12 +199,11 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
       const transaction = deserializeTransaction(serializedTx);
       let fee;
       try {
-        if (isVersionedTransaction(transaction)) {
-          // TODO: Add gas estimation
-          fee = 5000;
-        } else {
-          fee = await transaction.getEstimatedFee(connection);
-        }
+        // TODO: Remove type inference after the API for `getFeeForMessage` changes
+        const response = await connection.getFeeForMessage(
+          transaction.message as Message
+        );
+        fee = response.value;
       } catch (e) {
         // ignore
       }
