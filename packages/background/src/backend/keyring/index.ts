@@ -9,7 +9,6 @@ import {
   SolanaCluster,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   BACKEND_EVENT,
-  BACKPACK_FEATURE_MULTICHAIN,
 } from "@coral-xyz/common";
 import * as crypto from "./crypto";
 import { SolanaHdKeyringFactory } from "./solana";
@@ -61,15 +60,6 @@ export class KeyringStore {
       accountIndices,
       Blockchain.SOLANA
     );
-
-    if (BACKPACK_FEATURE_MULTICHAIN) {
-      // Init Ethereum
-      await this.initBlockchainKeyring(
-        derivationPath,
-        accountIndices,
-        Blockchain.ETHEREUM
-      );
-    }
 
     // Persist the initial wallet ui metadata.
     await store.setWalletData({
