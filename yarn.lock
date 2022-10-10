@@ -1539,7 +1539,7 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@coral-xyz/xnft-cli@*", "@coral-xyz/xnft-cli@^0.0.1":
+"@coral-xyz/xnft-cli@*":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@coral-xyz/xnft-cli/-/xnft-cli-0.0.1.tgz#dfda912320d433743ffa75f0c6146e75c8580c7d"
   integrity sha512-l54B9Ja/lm3fLp8MasH6ap7TnGiIwIVbyVTbEBohRRpPnG7i4S5E/8lVseB3G9RsbJMQq4wK7mj2SA6892n6kg==
@@ -1775,13 +1775,6 @@
   dependencies:
     "@ethersproject/logger" "^5.7.0"
 
-"@ethersproject/bytes@^5.6.1":
-  version "5.6.1"
-  resolved "https://registry.yarnpkg.com/@ethersproject/bytes/-/bytes-5.6.1.tgz#24f916e411f82a8a60412344bf4a813b917eefe7"
-  integrity sha512-NwQt7cKn5+ZE4uDn+X5RAXLp46E1chXoaMmrxAyA0rblpxz8t58lVkrHXoRIn0lz1joQElQ8410GqhTqMOwc6g==
-  dependencies:
-    "@ethersproject/logger" "^5.6.0"
-
 "@ethersproject/constants@5.7.0", "@ethersproject/constants@^5.7.0":
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/constants/-/constants-5.7.0.tgz#df80a9705a7e08984161f09014ea012d1c75295e"
@@ -1870,11 +1863,6 @@
   resolved "https://registry.yarnpkg.com/@ethersproject/logger/-/logger-5.7.0.tgz#6ce9ae168e74fecf287be17062b590852c311892"
   integrity sha512-0odtFdXu/XHtjQXJYA3u9G0G8btm0ND5Cu8M7i5vhEcE8/HmF4Lbdqanwyv4uQTr2tx6b7fQRmgLrsnpQlmnig==
 
-"@ethersproject/logger@^5.6.0":
-  version "5.6.0"
-  resolved "https://registry.yarnpkg.com/@ethersproject/logger/-/logger-5.6.0.tgz#d7db1bfcc22fd2e4ab574cba0bb6ad779a9a3e7a"
-  integrity sha512-BiBWllUROH9w+P21RzoxJKzqoqpkyM1pRnEKG69bulE9TSQD8SAIvTQqIMZmmCO8pUNkgLP1wndX1gKghSpBmg==
-
 "@ethersproject/networks@5.7.0", "@ethersproject/networks@^5.7.0":
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/networks/-/networks-5.7.0.tgz#df72a392f1a63a57f87210515695a31a245845ad"
@@ -1946,15 +1934,6 @@
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/logger" "^5.7.0"
-    hash.js "1.1.7"
-
-"@ethersproject/sha2@^5.5.0":
-  version "5.6.1"
-  resolved "https://registry.yarnpkg.com/@ethersproject/sha2/-/sha2-5.6.1.tgz#211f14d3f5da5301c8972a8827770b6fd3e51656"
-  integrity sha512-5K2GyqcW7G4Yo3uenHegbXRPDgARpWUiXc6RiF7b6i/HXUoWlb7uCARh7BAHg7/qT/Q5ydofNwiZcim9qpjB6g==
-  dependencies:
-    "@ethersproject/bytes" "^5.6.1"
-    "@ethersproject/logger" "^5.6.0"
     hash.js "1.1.7"
 
 "@ethersproject/signing-key@5.7.0", "@ethersproject/signing-key@^5.7.0":
@@ -2131,6 +2110,14 @@
     uuid "^3.4.0"
     wrap-ansi "^7.0.0"
 
+"@expo/code-signing-certificates@0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@expo/code-signing-certificates/-/code-signing-certificates-0.0.1.tgz#ac43f89b2a00c937b4e24e0d3a233b887ad3a31e"
+  integrity sha512-m1AVZGsMgpXRLULQ331AZdxh1D64Qbcb6z7A19JmXUrCQu3591zPn1wjR6J63/Dzi00m5TR5w+9GvqnFY5X//Q==
+  dependencies:
+    node-forge "^1.2.1"
+    nullthrows "^1.1.1"
+
 "@expo/code-signing-certificates@^0.0.2":
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@expo/code-signing-certificates/-/code-signing-certificates-0.0.2.tgz#65cd615800e6724b54831c966dd1a90145017246"
@@ -2169,6 +2156,23 @@
   version "6.0.24"
   resolved "https://registry.yarnpkg.com/@expo/config/-/config-6.0.24.tgz#3602da8fdfa817e290a52fb328fc8ed9d6bc61e7"
   integrity sha512-OcACI1md1Yo5TQmUxxueJ/RaTlR2Mgl6KswTFOYCL1XJERF/jjAx95zhWXH+JQGdlM0yB0vqM6vB6GbUFRvLxA==
+  dependencies:
+    "@babel/code-frame" "~7.10.4"
+    "@expo/config-plugins" "4.1.5"
+    "@expo/config-types" "^45.0.0"
+    "@expo/json-file" "8.2.36"
+    getenv "^1.0.0"
+    glob "7.1.6"
+    require-from-string "^2.0.2"
+    resolve-from "^5.0.0"
+    semver "7.3.2"
+    slugify "^1.3.4"
+    sucrase "^3.20.0"
+
+"@expo/config@6.0.26":
+  version "6.0.26"
+  resolved "https://registry.yarnpkg.com/@expo/config/-/config-6.0.26.tgz#2c9255ab618a354c8c8bd97366d60992ed21195f"
+  integrity sha512-nMQaZl69r6CMJFhCj0xcGJN9bIi4Uws0k9K6q6rGFPFNarS0z0aexeyNLv93/J+hsTJVn0GEYtGz5Y/R8boXxw==
   dependencies:
     "@babel/code-frame" "~7.10.4"
     "@expo/config-plugins" "4.1.5"
@@ -2252,6 +2256,20 @@
   integrity sha512-DWtwV67kD8X2uOKIs5QyHlHD+6L6RAgudZZDBmu433ZvL62HAUYfjEi3+i0jeMiUqN85o1vbXg6xqWnBCpS50g==
   dependencies:
     "@expo/config" "6.0.24"
+    "@expo/json-file" "8.2.36"
+    chalk "^4.1.0"
+    debug "^4.3.2"
+    find-yarn-workspace-root "~2.0.0"
+    getenv "^1.0.0"
+    resolve-from "^5.0.0"
+    sucrase "^3.20.0"
+
+"@expo/metro-config@0.3.19":
+  version "0.3.19"
+  resolved "https://registry.yarnpkg.com/@expo/metro-config/-/metro-config-0.3.19.tgz#fb962f3569681b9fe5b074182389ddd76013feb5"
+  integrity sha512-UZlwnD0g/7uAx/AZ5ulC7Y4unfJFJywXy3Ozu40dhQnSciOU/nkzK94XpKbxHuRZJ3crZxvL2EDwQ8jguDjASw==
+  dependencies:
+    "@expo/config" "6.0.26"
     "@expo/json-file" "8.2.36"
     chalk "^4.1.0"
     debug "^4.3.2"
@@ -3645,6 +3663,21 @@
   resolved "https://registry.yarnpkg.com/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-12.2.3.tgz#403e1575a84c31cbd7f3c0ecd51b61bc25b7f808"
   integrity sha512-huSNb98KSG77Kl96CoPgCwom28aamuUsPpRmn/4s9L0RNbbHVSkp9E6HA4yOAykZCEuWcdNsRLbVVuAbt8rtIw==
 
+"@noble/ed25519@^1.7.0":
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/@noble/ed25519/-/ed25519-1.7.1.tgz#6899660f6fbb97798a6fbd227227c4589a454724"
+  integrity sha512-Rk4SkJFaXZiznFyC/t77Q0NKS4FL7TLJJsVG2V2oiEq3kJVeTdxysEe/yRWSpnWMe808XRDJ+VFh5pt/FN5plw==
+
+"@noble/hashes@^1.1.2":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.1.3.tgz#360afc77610e0a61f3417e497dcf36862e4f8111"
+  integrity sha512-CE0FCR57H2acVI5UOzIGSSIYxZ6v/HOhDR0Ro9VLyhnzLwx0o8W1mmgaqlEUx4049qJDlIBRztv5k+MM8vbO3A==
+
+"@noble/secp256k1@^1.6.3":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@noble/secp256k1/-/secp256k1-1.7.0.tgz#d15357f7c227e751d90aa06b05a0e5cf993ba8c1"
+  integrity sha512-kbacwGSsH/CTout0ZnZWxnW1B+jH/7r/WAAKLBtrRJ/+CUH7lgmQzl3GTrQua3SGKWNSDsS6lmjnDpIJ5Dxyaw==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -4864,6 +4897,13 @@
   dependencies:
     "@solana/wallet-adapter-base" "^0.9.9"
 
+"@solana/wallet-adapter-base@^0.9.17":
+  version "0.9.18"
+  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-base/-/wallet-adapter-base-0.9.18.tgz#9365304a76977b4446a1167b240d588f2c5448d5"
+  integrity sha512-5HQFytLmb64j1Nzc6dwddZx+IUePN/PYqVMyf/ok7fN3z8Vw3EIFS8b+RFfBpj4HWbc2kqv5fpnLlaAH7q67pA==
+  dependencies:
+    eventemitter3 "^4.0.0"
+
 "@solana/wallet-adapter-base@^0.9.9":
   version "0.9.9"
   resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-base/-/wallet-adapter-base-0.9.9.tgz#110f99bc9eee18af2625fd6170264e4363e25ffd"
@@ -5131,13 +5171,15 @@
     "@solana/wallet-adapter-tokenpocket" "^0.4.7"
     "@solana/wallet-adapter-torus" "^0.11.14"
 
-"@solana/web3.js@1.43.2", "@solana/web3.js@1.52.0", "@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.35.1", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.37.1", "@solana/web3.js@^1.43.2", "@solana/web3.js@^1.50.1", "@solana/web3.js@^1.62.1", "@solana/web3.js@^1.63.1":
-  version "1.43.2"
-  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.43.2.tgz#9a2b3e5709dc73f45137a9ab4eccbd4bc2f25bbf"
-  integrity sha512-1f4Njy98f5dKa/x8fvMG3EaY4e5UNEXYRqCpAHpY8MkfROnedZOFHk+w6CD3+7UjJzjdQJzD7YdwYEQErEVYWQ==
+"@solana/web3.js@1.52.0", "@solana/web3.js@1.63.1", "@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.37.1", "@solana/web3.js@^1.43.2", "@solana/web3.js@^1.62.1", "@solana/web3.js@^1.63.1":
+  version "1.63.1"
+  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.63.1.tgz#88a19a17f5f4aada73ad70a94044c1067cab2b4d"
+  integrity sha512-wgEdGVK5FTS2zENxbcGSvKpGZ0jDS6BUdGu8Gn6ns0CzgJkK83u4ip3THSnBPEQ5i/jrqukg998BwV1H67+qiQ==
   dependencies:
     "@babel/runtime" "^7.12.5"
-    "@ethersproject/sha2" "^5.5.0"
+    "@noble/ed25519" "^1.7.0"
+    "@noble/hashes" "^1.1.2"
+    "@noble/secp256k1" "^1.6.3"
     "@solana/buffer-layout" "^4.0.0"
     bigint-buffer "^1.1.5"
     bn.js "^5.0.0"
@@ -5146,12 +5188,9 @@
     buffer "6.0.1"
     fast-stable-stringify "^1.0.0"
     jayson "^3.4.4"
-    js-sha3 "^0.8.0"
     node-fetch "2"
-    rpc-websockets "^7.4.2"
-    secp256k1 "^4.0.2"
+    rpc-websockets "^7.5.0"
     superstruct "^0.14.2"
-    tweetnacl "^1.0.0"
 
 "@solflare-wallet/sdk@^1.0.11":
   version "1.0.12"
@@ -6255,59 +6294,107 @@
     eventemitter3 "^4.0.7"
     zustand "^4.0.0"
 
-"@wallet-standard/features@^0.1.0-alpha.1":
-  version "0.1.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/@wallet-standard/features/-/features-0.1.0-alpha.1.tgz#f61a2d9f8584b252f8b9fe96535b4880a97ebcb6"
-  integrity sha512-ZM5QYQjfap7bfQcCQHt1fpxO0QdG56UDFTVg89uCIXu+hxJoqAo+i8URkyhAo1DSRsE3SjiZkiKdpeQnZ3XfwA==
+"@wallet-standard/app@^0.1.0-alpha.4":
+  version "0.1.0-alpha.4"
+  resolved "https://registry.yarnpkg.com/@wallet-standard/app/-/app-0.1.0-alpha.4.tgz#98f543f12d3c7f969c608ff52d8f5736e8be12f4"
+  integrity sha512-KVdqoqmEYlE32A1K6pQHX2/ljxE5iRbYCOzFnhqas1XPjfIIvKuX8TKRDmNpw+k2FHpB2ZNn5Onyw3lOL0ZJpQ==
   dependencies:
-    "@wallet-standard/standard" "^0.1.0-alpha.3"
+    "@wallet-standard/standard" "^0.1.0-alpha.4"
 
-"@wallet-standard/solana-chains@^0.1.0-alpha.0":
+"@wallet-standard/core@^0.1.0-alpha.0":
   version "0.1.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/@wallet-standard/solana-chains/-/solana-chains-0.1.0-alpha.0.tgz#78b3107ee3711dfaa63b0a275400b9fa327604aa"
-  integrity sha512-9LC/ookZg6aY16s2KoN0SMymMlZa71cm1JBaRD8tDL3Oi5YwjW1ay+VCmy8pDnENZbod8LEWA0GcPMKLDqqHyg==
-
-"@wallet-standard/solana-features@^0.1.0-alpha.0":
-  version "0.1.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/@wallet-standard/solana-features/-/solana-features-0.1.0-alpha.0.tgz#3f7322b5d9602b0e6835240a279d98eb69c73ddb"
-  integrity sha512-VrZ+rcmtcsYbjHkGSFRYVeNQZxELJInTRLyCr3tWXYewJM+HZTgWMF10SEG8V2uD5/k9hZ+N03oXVmoB0kxM2A==
+  resolved "https://registry.yarnpkg.com/@wallet-standard/core/-/core-0.1.0-alpha.0.tgz#8cfdea3c707716d02e4382b922bc882c5e40ecc5"
+  integrity sha512-9qVnpYl6RUM3QsL4o4hW1f979+i7Pwl43X0JIiDBvFCEuG6WaEeLaEa4HhML7GAEJ0JVA6kC8D88jxcrna9+pQ==
   dependencies:
-    "@wallet-standard/features" "^0.1.0-alpha.1"
-    "@wallet-standard/standard" "^0.1.0-alpha.3"
+    "@wallet-standard/app" "^0.1.0-alpha.4"
+    "@wallet-standard/features" "^0.1.0-alpha.2"
+    "@wallet-standard/standard" "^0.1.0-alpha.4"
+    "@wallet-standard/util" "^0.1.0-alpha.4"
 
-"@wallet-standard/solana-web3.js@^0.1.0-alpha.2":
+"@wallet-standard/features@^0.1.0-alpha.2":
   version "0.1.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@wallet-standard/solana-web3.js/-/solana-web3.js-0.1.0-alpha.2.tgz#36af622a59e5034fa4f1ad0017f34b86d6bceb64"
-  integrity sha512-d9J+uw8ujp5kAjjVpeaayqL+yzTAw3qFAtjtoi5ZmG1Dh7SAcDK5E1AyAz6kgjjRvDwlSXgdoh93EEZPWFGFGQ==
+  resolved "https://registry.yarnpkg.com/@wallet-standard/features/-/features-0.1.0-alpha.2.tgz#cf9ab4cdbfdad364687c26df675e6ed957895f35"
+  integrity sha512-w3vana3oX/qhNEjKAwJuzvTWLszWAnfonW82yZBafrp3EIPhE0FIKL1cCwr3UTsb81NJmpB46RofCuHpuPQnug==
   dependencies:
-    "@wallet-standard/features" "^0.1.0-alpha.1"
-    "@wallet-standard/solana-chains" "^0.1.0-alpha.0"
-    "@wallet-standard/solana-features" "^0.1.0-alpha.0"
-    "@wallet-standard/standard" "^0.1.0-alpha.3"
+    "@wallet-standard/standard" "^0.1.0-alpha.4"
 
-"@wallet-standard/standard@^0.1.0-alpha.3":
+"@wallet-standard/solana-chains@^0.1.0-alpha.1":
+  version "0.1.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/@wallet-standard/solana-chains/-/solana-chains-0.1.0-alpha.1.tgz#5eccef63c83f02c8ce275d562979dab987ad1010"
+  integrity sha512-GiWuF4U9axDeL0/AaXgMk8hH6MgNaJ9LUz35dAcMOz+3Q6NikOoqw6IvxzeXGX1vbS+bYqDMG0szSHaxhj1AlA==
+
+"@wallet-standard/solana-features@^0.1.0-alpha.1":
+  version "0.1.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/@wallet-standard/solana-features/-/solana-features-0.1.0-alpha.1.tgz#c989f7902411b195867a68438ee6ed906451a8b3"
+  integrity sha512-I+VuWN6loarZfU09jsUQ/11ito2KDplwvL3WXNtiU77mEHQbQc06qrlzajLyKyo72kCC0KjdXBKF5NSVj1GyyQ==
+  dependencies:
+    "@wallet-standard/features" "^0.1.0-alpha.2"
+    "@wallet-standard/standard" "^0.1.0-alpha.4"
+
+"@wallet-standard/solana-wallet-adapter-react@^0.1.0-alpha.4":
+  version "0.1.0-alpha.4"
+  resolved "https://registry.yarnpkg.com/@wallet-standard/solana-wallet-adapter-react/-/solana-wallet-adapter-react-0.1.0-alpha.4.tgz#abdb7d86c4d69217ef6b7baaa9025352a72d14bf"
+  integrity sha512-YgVBYCEMFeMdgjDxn/GD7S37x5HrBMgXSukNTd+KcyueGLHGveZQvM8FV+cIV3Tlms4Fk/vlJOjMPsNexDpdcw==
+  dependencies:
+    "@solana/wallet-adapter-base" "^0.9.17"
+    "@wallet-standard/app" "^0.1.0-alpha.4"
+    "@wallet-standard/solana-wallet-adapter" "^0.1.0-alpha.4"
+    "@wallet-standard/standard" "^0.1.0-alpha.4"
+
+"@wallet-standard/solana-wallet-adapter@^0.1.0-alpha.4":
+  version "0.1.0-alpha.4"
+  resolved "https://registry.yarnpkg.com/@wallet-standard/solana-wallet-adapter/-/solana-wallet-adapter-0.1.0-alpha.4.tgz#247dd97546eca814589c852dabe1943762a00a97"
+  integrity sha512-jTwtMwKv/A1RCJ8hECclovzDzVVhqNwQ+64Z0HSK94i8+rOaL1+nmeeBi5kds3IdVfjHPvbpdQNOPvWjMMJmhQ==
+  dependencies:
+    "@solana/wallet-adapter-base" "^0.9.17"
+    "@wallet-standard/app" "^0.1.0-alpha.4"
+    "@wallet-standard/features" "^0.1.0-alpha.2"
+    "@wallet-standard/solana-chains" "^0.1.0-alpha.1"
+    "@wallet-standard/solana-features" "^0.1.0-alpha.1"
+    "@wallet-standard/solana-web3.js" "^0.1.0-alpha.3"
+    "@wallet-standard/standard" "^0.1.0-alpha.4"
+    "@wallet-standard/util" "^0.1.0-alpha.4"
+
+"@wallet-standard/solana-web3.js@^0.1.0-alpha.3":
   version "0.1.0-alpha.3"
-  resolved "https://registry.yarnpkg.com/@wallet-standard/standard/-/standard-0.1.0-alpha.3.tgz#8658fb9876eb4a5ab745587a835bffe89cd9763c"
-  integrity sha512-XseAI+UuTvGyU9rJBFThD/Deaa7dGoixp6r368zbUX77HZEAGfLE6b+KWsqVlop6Y5W/ewXaCzcwpyw+/R/EpQ==
-
-"@wallet-standard/util@^0.1.0-alpha.3":
-  version "0.1.0-alpha.3"
-  resolved "https://registry.yarnpkg.com/@wallet-standard/util/-/util-0.1.0-alpha.3.tgz#417b7888d55b34198886ab9993abb5c76318f64f"
-  integrity sha512-0YUF875DRifHbKnFDXte/jEBSC5LUD60pTfXGrfKtzgc7+gtcnRyJVsXKVNhTfqx4aj59VC1zC6RAWyLGmS8Hg==
+  resolved "https://registry.yarnpkg.com/@wallet-standard/solana-web3.js/-/solana-web3.js-0.1.0-alpha.3.tgz#1de35609c91445e55aec32b9a4e4d4659dbaf0ed"
+  integrity sha512-OIqTt65KSbbQir4GMqdTYBnVV/sVUClUKMgJ2U3OiIaHHsIyVoow93a/QoGAgRBmz4XwHuQObIoV+U+Cq59D/Q==
   dependencies:
-    "@wallet-standard/standard" "^0.1.0-alpha.3"
+    "@wallet-standard/features" "^0.1.0-alpha.2"
+    "@wallet-standard/solana-chains" "^0.1.0-alpha.1"
+    "@wallet-standard/solana-features" "^0.1.0-alpha.1"
+    "@wallet-standard/standard" "^0.1.0-alpha.4"
 
-"@wallet-standard/wallets-backpack@0.1.0-alpha.6":
-  version "0.1.0-alpha.6"
-  resolved "https://registry.yarnpkg.com/@wallet-standard/wallets-backpack/-/wallets-backpack-0.1.0-alpha.6.tgz#a49e4e0c529105b1f8a06b98de39a3d00a8ff7bf"
-  integrity sha512-Nwb2KrE2lLJZJNXZX91ABKmenweTw+mX8mCTzaDHOSOtN3lShzJ5bvFQVaWiw4G5+0OrfY6PhKQSX0FWB5hGdg==
+"@wallet-standard/solana@^0.1.0-alpha.0":
+  version "0.1.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@wallet-standard/solana/-/solana-0.1.0-alpha.0.tgz#026b9125748f8d725a7d09728b0fd165166c9cbf"
+  integrity sha512-62Aaf9eb0n98O/QxSr6RvIUnFSnNAwXjKNpelYloo74Dh+8o+GqFb7o+hnjuUH67Da/SW4TJxuYwaZd3QUKg5A==
   dependencies:
-    "@wallet-standard/features" "^0.1.0-alpha.1"
-    "@wallet-standard/solana-chains" "^0.1.0-alpha.0"
-    "@wallet-standard/solana-features" "^0.1.0-alpha.0"
-    "@wallet-standard/solana-web3.js" "^0.1.0-alpha.2"
-    "@wallet-standard/standard" "^0.1.0-alpha.3"
-    "@wallet-standard/util" "^0.1.0-alpha.3"
+    "@wallet-standard/solana-chains" "^0.1.0-alpha.1"
+    "@wallet-standard/solana-features" "^0.1.0-alpha.1"
+    "@wallet-standard/solana-wallet-adapter" "^0.1.0-alpha.4"
+    "@wallet-standard/solana-wallet-adapter-react" "^0.1.0-alpha.4"
+    "@wallet-standard/solana-web3.js" "^0.1.0-alpha.3"
+
+"@wallet-standard/standard@^0.1.0-alpha.4":
+  version "0.1.0-alpha.4"
+  resolved "https://registry.yarnpkg.com/@wallet-standard/standard/-/standard-0.1.0-alpha.4.tgz#94e22b6cc30ab32abf48e984bdae8156f4a7fa6a"
+  integrity sha512-PV/QK4POX6BIruxUak8S0Y9U5ggKIJY/5r7/Vx4Gs+I/gnFnMjgriKJRr/yZsfPvNWe2kJd8xpuG9z55w1DnbQ==
+
+"@wallet-standard/util@^0.1.0-alpha.4":
+  version "0.1.0-alpha.4"
+  resolved "https://registry.yarnpkg.com/@wallet-standard/util/-/util-0.1.0-alpha.4.tgz#2390704fd6fff108faa4040a219345011670f1a1"
+  integrity sha512-ea9Pn1ulpsI34a2oqek0NhlsROoFD7EbiD1sifVeKCEk1n5MoJAfWekfU7DGk1A901bfri48InlF2E8I6rc9Qw==
+  dependencies:
+    "@wallet-standard/standard" "^0.1.0-alpha.4"
+
+"@wallet-standard/wallets-backpack@0.1.0-alpha.7":
+  version "0.1.0-alpha.7"
+  resolved "https://registry.yarnpkg.com/@wallet-standard/wallets-backpack/-/wallets-backpack-0.1.0-alpha.7.tgz#b523602af1fbdfea3c8c97f1eaa217b0ca9ec8c6"
+  integrity sha512-/ngZf7ibsadI8Z7FGLwKcVZkmxN+xIjA1YFTCCbo3AE4R8O3bIwlBJHEN/sr8UKo4AbAcOpygUppaJ+OZ/pFcw==
+  dependencies:
+    "@wallet-standard/core" "^0.1.0-alpha.0"
+    "@wallet-standard/solana" "^0.1.0-alpha.0"
 
 "@walletconnect/browser-utils@^1.8.0":
   version "1.8.0"
@@ -11229,6 +11316,47 @@ expo-constants@^13.1.1, expo-constants@~13.1.1:
     "@expo/config" "^6.0.14"
     uuid "^3.3.2"
 
+expo-dev-client@~1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/expo-dev-client/-/expo-dev-client-1.0.1.tgz#88edb3a60b5a758c0cc57b0326bdcb1ad1573e5a"
+  integrity sha512-LMtMvappEyq0AvX3QXeq4CQ/dbdiBwUm6exjBz3dCM7KhMbjJ26TxbYvS0DfxAJDXBlyjCLi8O4HAUb0U811/Q==
+  dependencies:
+    "@expo/config-plugins" "^4.0.14"
+    expo-dev-launcher "1.0.1"
+    expo-dev-menu "1.0.1"
+    expo-dev-menu-interface "0.7.0"
+    expo-manifests "~0.3.0"
+    expo-updates-interface "~0.6.0"
+
+expo-dev-launcher@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/expo-dev-launcher/-/expo-dev-launcher-1.0.1.tgz#cb550399a23d7e4fcc34cc7f5fef20cff979c7c8"
+  integrity sha512-1JFhiqjZE67qVAg0tOqVC53/7dIefWgaJ7OQRdapWEiiqUeFFnWmwvaz8NcjsTJzsk5bepXrgW7QpIZYkUYniQ==
+  dependencies:
+    "@expo/config-plugins" "^4.0.14"
+    expo-dev-menu "1.0.1"
+    resolve-from "^5.0.0"
+    semver "^7.3.5"
+
+expo-dev-menu-interface@0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/expo-dev-menu-interface/-/expo-dev-menu-interface-0.7.0.tgz#e141a671c7a34b921e7255653665d5e8489dab08"
+  integrity sha512-f/9gWLpuvXvQPeVBHH0T7qm4v2/Ynygs7dzebxqSWGDcCabfqRhuX+dv/t7CGu85m6waC9xYYnjLG7l8LC/i3Q==
+
+expo-dev-menu@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/expo-dev-menu/-/expo-dev-menu-1.0.1.tgz#7d64953d5304c794d47bfd5f3861a47c7eef9d03"
+  integrity sha512-npDfYQorhI/EaJb2LRLxI9WqzyIrM3AXhHnaA6qNBtEMb5IwAmg4I7//2FqbCtama+sUkc8mEFqyUa4/DbhJ2Q==
+  dependencies:
+    "@expo/config-plugins" "^4.0.14"
+    expo-dev-menu-interface "0.7.0"
+    semver "^7.3.5"
+
+expo-eas-client@~0.2.0:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/expo-eas-client/-/expo-eas-client-0.2.1.tgz#cf67459589e9fe8e90f377833593fd425f069501"
+  integrity sha512-XlZr57iHxqo3+AT2TtcRipMuQEyXnTUAv7H5+KVvj6EEJEAHmwc9wZZdKzqf0MbVRUTOawZsl/b2iYanf+kQsQ==
+
 expo-error-recovery@~3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/expo-error-recovery/-/expo-error-recovery-3.1.0.tgz#c841772e11ed55180e30ebf809580ab051b70535"
@@ -11249,10 +11377,22 @@ expo-font@~10.1.0:
   dependencies:
     fontfaceobserver "^2.1.0"
 
+expo-json-utils@~0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/expo-json-utils/-/expo-json-utils-0.3.0.tgz#0c4a0195ee2bbde02cbb5f4d384d1cb63bea7493"
+  integrity sha512-ceo0pWFJqRAsNjZWX3rVDhy+NDzmrBNFOdvW+HE4EHqlt+OEUu9INIYKO8fU+g3ifI0VcKqHfvvj5wKsSpvPBw==
+
 expo-keep-awake@~10.1.1:
   version "10.1.1"
   resolved "https://registry.yarnpkg.com/expo-keep-awake/-/expo-keep-awake-10.1.1.tgz#03023c130f7e3824b738e3fdd5353b8a2c0c1980"
   integrity sha512-9zC0sdhQljUeMr2yQ7o4kzEZXVAy82fFOAZE1+TwPL7qR0b0sphe7OJ5T1GX1qLcwuVaJ8YewaPoLSHRk79+Rg==
+
+expo-manifests@~0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/expo-manifests/-/expo-manifests-0.3.0.tgz#724e85a4e726cb1ef775f9846c9ecb8d243a17d7"
+  integrity sha512-HegANp+KpZlMX0T2Zb8X7mAVkCThFDq1wjLIjkrSLHhKLczYI2xa/Z5Nk0Tm7qPdGT8NTInCDoOL/nUMtKdNyQ==
+  dependencies:
+    expo-json-utils "~0.3.0"
 
 expo-modules-autolinking@0.8.1:
   version "0.8.1"
@@ -11293,6 +11433,34 @@ expo-status-bar@~1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/expo-status-bar/-/expo-status-bar-1.3.0.tgz#d71fd0b880ea201905f5dd8abcd18db7476c9f03"
   integrity sha512-UszYUsT8A8jSUebrXht095Iwv5VIdg61LPuyNNoC5gFP0E9G+8LgX68deqR4zhJOlbsgSH2cixxKhrGW+1HPZg==
+
+expo-structured-headers@~2.2.0:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/expo-structured-headers/-/expo-structured-headers-2.2.1.tgz#739f969101de6bead921eee59e5899399ad67715"
+  integrity sha512-nY6GuvoS/U5XdhfBNmvXGRoGzIXywXpSZs2wdiP+FbS79P9UWyEqzgARrBTF+6pQxUVMs6/vdffxRpwhjwYPug==
+
+expo-updates-interface@~0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/expo-updates-interface/-/expo-updates-interface-0.6.0.tgz#cef5250106e59572afdfcf245c534754c8c844ba"
+  integrity sha512-oQcGTsE8mSkSxENPlWjZPGoJpt3RFDNPuO5d8shBDxBb4ZNH/W2ojavSFQMaLbNMoS0bYQQhzbRNEIBd306QMg==
+
+expo-updates@~0.13.4:
+  version "0.13.4"
+  resolved "https://registry.yarnpkg.com/expo-updates/-/expo-updates-0.13.4.tgz#7ffca09721fdf3ba43eb413cab918010881f3b55"
+  integrity sha512-GrA88YT2WN0rY4+uDHm7Yb3Gt7hAtVkaGq3ANIDbtIDVarvnHJ4d7cSp0U+FAyhtJCOPRo0QjF/Gy8rpP/G4yw==
+  dependencies:
+    "@expo/code-signing-certificates" "0.0.1"
+    "@expo/config" "~6.0.23"
+    "@expo/config-plugins" "^4.0.14"
+    "@expo/metro-config" "0.3.19"
+    arg "4.1.0"
+    expo-eas-client "~0.2.0"
+    expo-manifests "~0.3.0"
+    expo-structured-headers "~2.2.0"
+    expo-updates-interface "~0.6.0"
+    fbemitter "^3.0.0"
+    resolve-from "^5.0.0"
+    uuid "^3.4.0"
 
 expo@~45.0.6:
   version "45.0.6"
@@ -18159,10 +18327,10 @@ rollup-pluginutils@^2.8.1:
   dependencies:
     estree-walker "^0.6.1"
 
-rpc-websockets@^7.4.2:
-  version "7.4.18"
-  resolved "https://registry.yarnpkg.com/rpc-websockets/-/rpc-websockets-7.4.18.tgz#274c825c0efadbf6fe75f10289229ae537fe9ffb"
-  integrity sha512-bVu+4qM5CkGVlTqJa6FaAxLbb5uRnyH4te7yjFvoCzbnif7PT4BcvXtNTprHlNvsH+/StB81zUQicxMrUrIomA==
+rpc-websockets@^7.5.0:
+  version "7.5.0"
+  resolved "https://registry.yarnpkg.com/rpc-websockets/-/rpc-websockets-7.5.0.tgz#bbeb87572e66703ff151e50af1658f98098e2748"
+  integrity sha512-9tIRi1uZGy7YmDjErf1Ax3wtqdSSLIlnmL5OtOzgd5eqPKbsPpwDP5whUDO2LQay3Xp0CcHlcNSGzacNRluBaQ==
   dependencies:
     "@babel/runtime" "^7.17.2"
     eventemitter3 "^4.0.7"
@@ -18324,7 +18492,7 @@ secp256k1@^3.8.0:
     nan "^2.14.0"
     safe-buffer "^5.1.2"
 
-secp256k1@^4.0.1, secp256k1@^4.0.2:
+secp256k1@^4.0.1:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/secp256k1/-/secp256k1-4.0.3.tgz#c4559ecd1b8d3c1827ed2d1b94190d69ce267303"
   integrity sha512-NLZVf+ROMxwtEj3Xa562qgv2BK5e2WNmXPiOdVIPLgs6lyTzMvBq0aWTYMI5XCP9jZMVKOcqZLw/Wc4vDkuxhA==
@@ -19367,11 +19535,6 @@ swc-loader@^0.2.3:
   resolved "https://registry.yarnpkg.com/swc-loader/-/swc-loader-0.2.3.tgz#6792f1c2e4c9ae9bf9b933b3e010210e270c186d"
   integrity sha512-D1p6XXURfSPleZZA/Lipb3A8pZ17fP4NObZvFCDjK/OKljroqDpPmsBdTraWhVBqUNpcWBQY1imWdoPScRlQ7A==
 
-swr@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/swr/-/swr-1.3.0.tgz#c6531866a35b4db37b38b72c45a63171faf9f4e8"
-  integrity sha512-dkghQrOl2ORX9HYrMDtPa7LTVHJjCTeZoB1dqTbnnEDlSvN8JEKpYIYurDfvbQFUUS8Cg8PceFVZNkW0KNNYPw==
-
 symbol-tree@^3.2.4:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"
@@ -19940,7 +20103,7 @@ turbo@^1.4.0:
     turbo-windows-64 "1.4.0"
     turbo-windows-arm64 "1.4.0"
 
-tweetnacl@1.0.3, tweetnacl@^1.0.0, tweetnacl@^1.0.3:
+tweetnacl@1.0.3, tweetnacl@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.3.tgz#ac0af71680458d8a6378d0d0d050ab1407d35596"
   integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==

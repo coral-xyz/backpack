@@ -1,5 +1,6 @@
-require("react-native-get-random-values");
-require("react-native-url-polyfill/auto");
+import "expo-dev-client";
+import "react-native-get-random-values";
+import "react-native-url-polyfill/auto";
 
 import {
   BACKGROUND_SERVICE_WORKER_READY,
@@ -10,9 +11,10 @@ import { registerRootComponent } from "expo";
 import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
 import { Suspense, useRef } from "react";
-import { Platform, SafeAreaView, StyleSheet, View } from "react-native";
+import { SafeAreaView, StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
-import { RecoilRoot } from "recoil/native/recoil";
+import { RecoilRoot } from "recoil/native";
+
 import App from "./src/App";
 
 const LOCALHOST_WEBVIEW_URI = "http://localhost:9333";
@@ -21,13 +23,13 @@ const WEBVIEW_URI = (() => {
   if (process.env.NODE_ENV === "production") {
     return Constants.manifest.extra.url || alert("No WEBVIEW_URI");
   } else {
-    if (Platform.OS === "ios") {
-      // iOS can only use serviceworkers from localhost or WKAppBoundDomains
-      // we can't use WKAppBoundDomains in development, so it must use localhost
-      return LOCALHOST_WEBVIEW_URI;
-    } else {
-      return Constants.manifest.extra.url || LOCALHOST_WEBVIEW_URI;
-    }
+    // if (Platform.OS === "ios") {
+    //   // iOS can only use serviceworkers from localhost or WKAppBoundDomains
+    //   // we can't use WKAppBoundDomains in development, so it must use localhost
+    //   return LOCALHOST_WEBVIEW_URI;
+    // } else {
+    return Constants.manifest.extra.url || LOCALHOST_WEBVIEW_URI;
+    // }
   }
 })();
 
@@ -49,6 +51,8 @@ function Background() {
   const setInjectJavaScript = useStore((state) => state.setInjectJavaScript);
   const ref = useRef(null);
 
+  // alert(WEBVIEW_URI);
+
   return (
     <View
       style={{
@@ -65,6 +69,7 @@ function Background() {
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
           if (msg.type === BACKGROUND_SERVICE_WORKER_READY) {
+            // alert("ready");
             setInjectJavaScript(ref.current.injectJavaScript);
           } else {
             WEB_VIEW_EVENTS.emit("message", msg);
