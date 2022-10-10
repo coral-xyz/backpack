@@ -67,7 +67,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/cache@v3
         name: yarn-cache
@@ -263,7 +263,7 @@ jobs:
       # NPM Publish.
       ##########################################################################
 
-      - name:  "update npm package version"
+      - name: "update npm package version"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: ./scripts/npm_release.sh 0.1.0-latest.${{ github.run_number }}
       - name: "publish to npm: common-public"
