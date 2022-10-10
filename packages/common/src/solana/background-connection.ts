@@ -6,6 +6,7 @@ import {
   GetAccountInfoConfig,
   PublicKey,
   SimulateTransactionConfig,
+  VersionedMessage,
   VersionedTransaction,
 } from "@solana/web3.js";
 import type {
@@ -109,6 +110,7 @@ import type {
 } from "./types";
 import type { BackgroundClient } from "../channel";
 import { addressLookupTableAccountParser } from "./rpc-helpers";
+import { encode } from "bs58";
 
 export class BackgroundSolanaConnection extends Connection {
   private _backgroundClient: BackgroundClient;
@@ -320,12 +322,13 @@ export class BackgroundSolanaConnection extends Connection {
   }
 
   async getFeeForMessage(
-    message: Message,
+    message: VersionedMessage,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<number>> {
+    let serializedMessage = encode(message.serialize());
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE,
-      params: [message, commitment],
+      params: [serializedMessage, commitment],
     });
   }
 

@@ -8,6 +8,7 @@ import { anchorContext } from "./wallet";
 import { solanaPublicKey } from "../wallet";
 import { solanaConnectionUrl } from "./preferences";
 import { PublicKey } from "@solana/web3.js";
+import { SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
 import type {
   SolanaTokenAccountWithKeyString,
   SplNftMetadataString,
@@ -114,6 +115,10 @@ export const solanaTokenNativeBalance = selectorFamily<
       const { symbol: ticker, logoURI: logo, name, decimals } = tokenMetadata;
       const nativeBalance = BigNumber.from(tokenAccount.amount.toString());
       const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
+      const priceMint =
+        tokenAccount.mint.toString() === WSOL_MINT
+          ? SOL_NATIVE_MINT
+          : tokenAccount.mint.toString();
 
       return {
         name,
@@ -124,6 +129,7 @@ export const solanaTokenNativeBalance = selectorFamily<
         logo,
         address: tokenAddress,
         mint: tokenAccount.mint.toString(),
+        priceMint,
       };
     },
 });

@@ -11,6 +11,7 @@ import {
   nftCollections,
   useActiveWallets,
   useBlockchainLogo,
+  useEnabledBlockchains,
   useLoader,
   useNavigation,
 } from "@coral-xyz/recoil";
@@ -31,12 +32,12 @@ const useStyles = styles(() => ({
 
 export function Nfts() {
   const activeWallets = useActiveWallets();
+  const enabledBlockchains = useEnabledBlockchains();
   const [collections, _, isLoading] = useLoader(
     nftCollections,
-    {
-      [Blockchain.SOLANA]: new Array<NftCollection>(),
-      [Blockchain.ETHEREUM]: new Array<NftCollection>(),
-    },
+    Object.fromEntries(
+      enabledBlockchains.map((b: Blockchain) => [b, new Array<NftCollection>()])
+    ),
     // Note this reloads on any change to the active wallets, which reloads
     // NFTs for both blockchains.
     // TODO Make this reload for only the relevant blockchain

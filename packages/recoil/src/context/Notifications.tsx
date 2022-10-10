@@ -7,6 +7,8 @@ import {
   Notification,
   BackgroundSolanaConnection,
   CHANNEL_POPUP_NOTIFICATIONS,
+  NOTIFICATION_BLOCKCHAIN_ENABLED,
+  NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
@@ -53,6 +55,7 @@ export function NotificationsProvider(props: any) {
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
   const setAutoLockSecs = useSetRecoilState(atoms.autoLockSecs);
   const setIsDarkMode = useSetRecoilState(atoms.isDarkMode);
+  const setEnabledBlockchains = useSetRecoilState(atoms.enabledBlockchains);
   // Solana
   const setSolanaConnectionUrl = useSetRecoilState(atoms.solanaConnectionUrl);
   const setSolanaExplorer = useSetRecoilState(atoms.solanaExplorer);
@@ -144,6 +147,12 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE:
           handleEthereumFeeDataDidUpdate(notif);
+          break;
+        case NOTIFICATION_BLOCKCHAIN_ENABLED:
+          handleBlockchainEnabled(notif);
+          break;
+        case NOTIFICATION_BLOCKCHAIN_DISABLED:
+          handleBlockchainDisabled(notif);
           break;
         default:
           break;
@@ -365,6 +374,14 @@ export function NotificationsProvider(props: any) {
 
     const handleEthereumChainIdUpdated = (notif: Notification) => {
       setEthereumChainId(notif.data.chainId);
+    };
+
+    const handleBlockchainEnabled = (notif: Notification) => {
+      setEnabledBlockchains(notif.data.enabledBlockchains);
+    };
+
+    const handleBlockchainDisabled = (notif: Notification) => {
+      setEnabledBlockchains(notif.data.enabledBlockchains);
     };
 
     //
