@@ -6,6 +6,8 @@ import {
   getLogger,
   Blockchain,
   BACKEND_EVENT,
+  NOTIFICATION_BLOCKCHAIN_DISABLED,
+  NOTIFICATION_BLOCKCHAIN_ENABLED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
@@ -73,6 +75,12 @@ export class EthereumConnectionBackend {
         case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
           handleChainIdUpdated(notif);
           break;
+        case NOTIFICATION_BLOCKCHAIN_ENABLED:
+          handleBlockchainEnabled(notif);
+          break;
+        case NOTIFICATION_BLOCKCHAIN_DISABLED:
+          handleBlockchainDisabled(notif);
+          break;
         default:
           break;
       }
@@ -122,6 +130,22 @@ export class EthereumConnectionBackend {
         parseInt(chainId)
       );
       this.chainId = chainId;
+    };
+
+    const handleBlockchainEnabled = (notif: Notification) => {
+      const { blockchain, activeWallet } = notif.data;
+      if (blockchain === Blockchain.ETHEREUM) {
+        // Start polling if Ethereum was enabled in wallet settings
+        this.startPolling(activeWallet);
+      }
+    };
+
+    const handleBlockchainDisabled = (notif: Notification) => {
+      const { blockchain } = notif.data;
+      if (blockchain === Blockchain.ETHEREUM) {
+        // Stop polling if Ethereum was disabled in wallet settings
+        this.stopPolling();
+      }
     };
   }
 
