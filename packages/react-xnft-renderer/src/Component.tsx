@@ -466,6 +466,8 @@ export function BalancesTableHead({ props, style }: any) {
   const { showContent, setShowContent } = useBalancesContext();
   return (
     <Button
+      props={{ component: "div" }}
+      onClick={() => !disableToggle && setShowContent(!showContent)}
       style={{
         width: "100%",
         borderRadius: 0,
@@ -474,7 +476,6 @@ export function BalancesTableHead({ props, style }: any) {
       }}
     >
       <CardHeader
-        onClick={() => !disableToggle && setShowContent(!showContent)}
         avatar={
           iconUrl ? (
             <img className={classes.blockchainLogo} src={iconUrl} />
@@ -903,6 +904,7 @@ export function __Button({
   const theme = useCustomTheme();
   return (
     <MuiButton
+      {...props}
       disableElevation
       variant="contained"
       disableRipple
