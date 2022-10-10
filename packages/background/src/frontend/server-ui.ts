@@ -14,6 +14,9 @@ import {
   getLogger,
   withContextPort,
   ChannelAppUi,
+  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD,
+  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE,
+  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ,
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
@@ -201,6 +204,12 @@ async function handle<T = any>(
       return await handleApprovedOriginsUpdate(ctx, params[0]);
     case UI_RPC_METHOD_APPROVED_ORIGINS_DELETE:
       return await handleApprovedOriginsDelete(ctx, params[0]);
+    case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD:
+      return await handleBlockchainsEnabledAdd(ctx, params[0]);
+    case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE:
+      return await handleBlockchainsEnabledRemove(ctx, params[0]);
+    case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ:
+      return await handleBlockchainsEnabledRead(ctx);
     //
     // Nicknames for keys.
     //
@@ -739,6 +748,29 @@ async function handleApprovedOriginsDelete(
   origin: string
 ): Promise<RpcResponse> {
   const resp = await ctx.backend.approvedOriginsDelete(origin);
+  return [resp];
+}
+
+function handleBlockchainsEnabledAdd(
+  ctx: Context<Backend>,
+  blockchain: Blockchain
+) {
+  const resp = ctx.backend.enabledBlockchainsAdd(blockchain);
+  return [resp];
+}
+
+function handleBlockchainsEnabledRemove(
+  ctx: Context<Backend>,
+  blockchain: Blockchain
+) {
+  const resp = ctx.backend.enabledBlockchainsRemove(blockchain);
+  return [resp];
+}
+
+async function handleBlockchainsEnabledRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<Array<string>>> {
+  const resp = await ctx.backend.enabledBlockchainsRead();
   return [resp];
 }
 

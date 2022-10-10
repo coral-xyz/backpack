@@ -9,7 +9,12 @@ import type {
   BlockheightBasedTransactionConfirmationStrategy,
   GetParsedProgramAccountsConfig,
 } from "@solana/web3.js";
-import { PublicKey, Message, GetAccountInfoConfig } from "@solana/web3.js";
+import {
+  PublicKey,
+  Message,
+  GetAccountInfoConfig,
+  VersionedMessage,
+} from "@solana/web3.js";
 import type {
   SerializedTokenAccountsFilter,
   RpcRequest,
@@ -55,6 +60,7 @@ import {
 import type { SolanaConnectionBackend } from "../backend/solana-connection";
 import type { Config, Handle } from "../types";
 import * as bs58 from "bs58";
+import { decode } from "bs58";
 
 const logger = getLogger("solana-connection");
 
@@ -337,13 +343,11 @@ async function handleGetProgramAccounts(
 
 async function handleGetFeeForMessage(
   ctx: Context<SolanaConnectionBackend>,
-  message: MessageArgs,
+  messageStr: string,
   commitment?: Finality
 ) {
-  const resp = await ctx.backend.getFeeForMessage(
-    new Message(message),
-    commitment
-  );
+  const message = VersionedMessage.deserialize(decode(messageStr));
+  const resp = await ctx.backend.getFeeForMessage(message, commitment);
   return [resp];
 }
 
