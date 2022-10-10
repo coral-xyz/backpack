@@ -16,10 +16,8 @@
     "express": "^4.18.1"
   },
   "devDependencies": {
+    "react-xnft": "*",
     "shx": "^0.3.4"
-  },
-  "peerDependencies": {
-    "react-xnft": "*"
   },
   "files": [
     "index.js",
