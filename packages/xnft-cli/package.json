@@ -18,6 +18,9 @@
   "devDependencies": {
     "shx": "^0.3.4"
   },
+  "peerDependencies": {
+    "react-xnft": "*"
+  },
   "files": [
     "index.js",
     "iframe.js"
