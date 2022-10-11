@@ -11,7 +11,6 @@ export const Video = ({ autoplay, controls, src }: VideoProps) => {
   return (
     <Centralize>
       <Custom
-        style={{ alignCenter: "center" }}
         component={"video"}
         autoplay={autoplay}
         controls={controls}
