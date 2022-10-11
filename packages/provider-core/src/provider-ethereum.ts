@@ -425,12 +425,12 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
   /**
    * Handle eth_accounts requests
    */
-  async #handleEthAccounts() {
+  #handleEthAccounts = async () => {
     if (this.isConnected() && this.publicKey) {
       return [this.publicKey];
     }
     return [];
-  }
+  };
 
   /**
    * Handle eth_requestAccounts requests
