@@ -7,6 +7,8 @@ import {
   Notification,
   BackgroundSolanaConnection,
   CHANNEL_POPUP_NOTIFICATIONS,
+  NOTIFICATION_BLOCKCHAIN_ENABLED,
+  NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
@@ -15,7 +17,6 @@ import {
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
-  NOTIFICATION_KEYRING_RESET_MNEMONIC,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
@@ -50,11 +51,11 @@ const logger = getLogger("notifications-provider");
 export function NotificationsProvider(props: any) {
   const setWalletPublicKeys = useSetRecoilState(atoms.walletPublicKeys);
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
-  const setActiveWallet = useSetRecoilState(atoms.activeWallet);
   const setActiveWallets = useSetRecoilState(atoms.activeWallets);
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
   const setAutoLockSecs = useSetRecoilState(atoms.autoLockSecs);
   const setIsDarkMode = useSetRecoilState(atoms.isDarkMode);
+  const setEnabledBlockchains = useSetRecoilState(atoms.enabledBlockchains);
   // Solana
   const setSolanaConnectionUrl = useSetRecoilState(atoms.solanaConnectionUrl);
   const setSolanaExplorer = useSetRecoilState(atoms.solanaExplorer);
@@ -95,9 +96,6 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_KEYRING_KEY_DELETE:
           handleKeyringKeyDelete(notif);
-          break;
-        case NOTIFICATION_KEYRING_RESET_MNEMONIC:
-          handleResetMnemonic(notif);
           break;
         case NOTIFICATION_KEYNAME_UPDATE:
           handleKeynameUpdate(notif);
@@ -149,6 +147,12 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE:
           handleEthereumFeeDataDidUpdate(notif);
+          break;
+        case NOTIFICATION_BLOCKCHAIN_ENABLED:
+          handleBlockchainEnabled(notif);
+          break;
+        case NOTIFICATION_BLOCKCHAIN_DISABLED:
+          handleBlockchainDisabled(notif);
           break;
         default:
           break;
@@ -281,15 +285,10 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleSolanaActiveWalletUpdated = (notif: Notification) => {
-      setActiveWallet(notif.data.activeWallet);
       allPlugins().forEach((p) => {
         p.pushSolanaPublicKeyChangedNotification(notif.data.activeWallet);
       });
       setActiveWallets(notif.data.activeWallets);
-    };
-
-    const handleResetMnemonic = (notif: Notification) => {
-      // TODO.
     };
 
     const handleReset = (_notif: Notification) => {
@@ -347,7 +346,6 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleEthereumActiveWalletUpdated = (notif: Notification) => {
-      setActiveWallet(notif.data.activeWallet);
       allPlugins().forEach((p) => {
         p.pushEthereumPublicKeyChangedNotification(notif.data.activeWallet);
       });
@@ -376,6 +374,14 @@ export function NotificationsProvider(props: any) {
 
     const handleEthereumChainIdUpdated = (notif: Notification) => {
       setEthereumChainId(notif.data.chainId);
+    };
+
+    const handleBlockchainEnabled = (notif: Notification) => {
+      setEnabledBlockchains(notif.data.enabledBlockchains);
+    };
+
+    const handleBlockchainDisabled = (notif: Notification) => {
+      setEnabledBlockchains(notif.data.enabledBlockchains);
     };
 
     //

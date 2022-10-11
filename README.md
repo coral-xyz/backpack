@@ -22,6 +22,7 @@
 - I repeat. This is not ready for production.
 
 # Table of contents:
+
 - [Installing the Latest Release](#installing-the-latest-release)
 - [Developing Locally](#developing-locally)
   - [Pull the code](#pull-the-code)
@@ -32,7 +33,6 @@
   - [Install the development version of the extension](install-the-development-version-of-the-extension)
   - [Optionally install the built extension](optionally-install-the-built-extension)
 - [License](#license)
-
 
 ## Installing the Latest Release
 

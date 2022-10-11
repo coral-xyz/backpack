@@ -1,12 +1,12 @@
+import { Typography } from "@mui/material";
+import { ArrowUpward, ArrowDownward, SwapHoriz } from "@mui/icons-material";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { useEnabledBlockchains, SwapProvider } from "@coral-xyz/recoil";
 import {
   Blockchain,
   SOL_NATIVE_MINT,
   ETH_NATIVE_MINT,
 } from "@coral-xyz/common";
-import { Typography } from "@mui/material";
-import { useCustomTheme } from "@coral-xyz/themes";
-import { SwapProvider } from "@coral-xyz/recoil";
-import { ArrowUpward, ArrowDownward, SwapHoriz } from "@mui/icons-material";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
 import { SendLoader, Send } from "./TokensWidget/Send";
@@ -22,11 +22,17 @@ export function TransferWidget({
   blockchain?: Blockchain;
   address?: string;
 }) {
+  const enabledBlockchains = useEnabledBlockchains();
+
+  const renderSwap =
+    blockchain !== Blockchain.ETHEREUM &&
+    enabledBlockchains.includes(Blockchain.SOLANA);
+
   return (
     <div
       style={{
         display: "flex",
-        width: blockchain !== Blockchain.ETHEREUM ? "191px" : "120px",
+        width: renderSwap ? "191px" : "120px",
         marginLeft: "auto",
         marginRight: "auto",
       }}
@@ -34,7 +40,7 @@ export function TransferWidget({
       <ReceiveButton blockchain={blockchain} />
       <div style={{ width: "16px" }} />
       <SendButton blockchain={blockchain} address={address} />
-      {blockchain !== Blockchain.ETHEREUM && (
+      {renderSwap && (
         <>
           <div style={{ width: "16px" }} />
           <SwapButton blockchain={blockchain} address={address} />
@@ -52,8 +58,9 @@ function SwapButton({
   address?: string;
 }) {
   const theme = useCustomTheme();
+
   return (
-    <SwapProvider blockchain={blockchain} tokenAddress={address}>
+    <SwapProvider blockchain={Blockchain.SOLANA} tokenAddress={address}>
       <TransferButton
         label={"Swap"}
         labelComponent={

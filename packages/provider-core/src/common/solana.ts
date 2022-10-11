@@ -9,21 +9,26 @@ import type {
   ConfirmOptions,
   TransactionSignature,
   SimulatedTransactionResponse,
+  Version,
 } from "@solana/web3.js";
 import type { RequestManager } from "../request-manager";
 import {
+  isVersionedTransaction,
   SOLANA_RPC_METHOD_SIGN_ALL_TXS,
   SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
   SOLANA_RPC_METHOD_SIGN_MESSAGE,
   SOLANA_RPC_METHOD_SIGN_TX,
   SOLANA_RPC_METHOD_SIMULATE,
 } from "@coral-xyz/common";
+import { VersionedTransaction } from "@solana/web3.js";
 
-export async function sendAndConfirm(
+export async function sendAndConfirm<
+  T extends Transaction | VersionedTransaction
+>(
   publicKey: PublicKey,
   requestManager: RequestManager,
   connection: Connection,
-  tx: Transaction,
+  tx: T,
   signers?: Signer[],
   options?: ConfirmOptions
 ): Promise<TransactionSignature> {
@@ -48,27 +53,34 @@ export async function sendAndConfirm(
   return signature;
 }
 
-export async function send(
+export async function send<T extends Transaction | VersionedTransaction>(
   publicKey: PublicKey,
   requestManager: RequestManager,
   connection: Connection,
-  tx: Transaction,
+  tx: T,
   signers?: Signer[],
   options?: SendOptions
 ): Promise<TransactionSignature> {
-  if (signers) {
-    signers.forEach((s: Signer) => {
-      tx.partialSign(s);
-    });
-  }
-  if (!tx.feePayer) {
-    tx.feePayer = publicKey;
-  }
-  if (!tx.recentBlockhash) {
-    const { blockhash } = await connection!.getLatestBlockhash(
-      options?.preflightCommitment
-    );
-    tx.recentBlockhash = blockhash;
+  const versioned = isVersionedTransaction(tx);
+  if (!versioned) {
+    if (signers) {
+      signers.forEach((s: Signer) => {
+        tx.partialSign(s);
+      });
+    }
+    if (!tx.feePayer) {
+      tx.feePayer = publicKey;
+    }
+    if (!tx.recentBlockhash) {
+      const { blockhash } = await connection!.getLatestBlockhash(
+        options?.preflightCommitment
+      );
+      tx.recentBlockhash = blockhash;
+    }
+  } else {
+    if (signers) {
+      tx.sign(signers);
+    }
   }
   const txSerialize = tx.serialize({
     requireAllSignatures: false,
@@ -80,18 +92,23 @@ export async function send(
   });
 }
 
-export async function signTransaction(
+export async function signTransaction<
+  T extends Transaction | VersionedTransaction
+>(
   publicKey: PublicKey,
   requestManager: RequestManager,
   connection: Connection,
-  tx: Transaction
-): Promise<Transaction> {
-  if (!tx.feePayer) {
-    tx.feePayer = publicKey;
-  }
-  if (!tx.recentBlockhash) {
-    const { blockhash } = await connection!.getLatestBlockhash();
-    tx.recentBlockhash = blockhash;
+  tx: T
+): Promise<T> {
+  const versioned = isVersionedTransaction(tx);
+  if (!versioned) {
+    if (!tx.feePayer) {
+      tx.feePayer = publicKey;
+    }
+    if (!tx.recentBlockhash) {
+      const { blockhash } = await connection!.getLatestBlockhash();
+      tx.recentBlockhash = blockhash;
+    }
   }
   const txStr = encode(tx.serialize({ requireAllSignatures: false }));
   const signature = await requestManager.request({
@@ -103,15 +120,20 @@ export async function signTransaction(
   return tx;
 }
 
-export async function signAllTransactions(
+export async function signAllTransactions<
+  T extends Transaction | VersionedTransaction
+>(
   publicKey: PublicKey,
   requestManager: RequestManager,
   connection: Connection,
-  txs: Array<Transaction>
-): Promise<Array<Transaction>> {
+  txs: Array<T>
+): Promise<Array<T>> {
   let _blockhash: string | undefined;
   for (let k = 0; k < txs.length; k += 1) {
     const tx = txs[k];
+    if (isVersionedTransaction(tx)) {
+      continue;
+    }
     if (!tx.feePayer) {
       tx.feePayer = publicKey;
     }
@@ -145,29 +167,37 @@ export async function signAllTransactions(
   return txs;
 }
 
-export async function simulate(
+export async function simulate<T extends Transaction | VersionedTransaction>(
   publicKey: PublicKey,
   requestManager: RequestManager,
   connection: Connection,
-  tx: Transaction,
+  tx: T,
   signers?: Signer[],
   commitment?: Commitment
 ): Promise<SimulatedTransactionResponse> {
-  if (signers) {
-    signers.forEach((s: Signer) => {
-      tx.partialSign(s);
-    });
+  if (!isVersionedTransaction(tx)) {
+    if (signers) {
+      signers.forEach((s: Signer) => {
+        tx.partialSign(s);
+      });
+    }
+    if (!tx.feePayer) {
+      tx.feePayer = publicKey;
+    }
+    if (!tx.recentBlockhash) {
+      const { blockhash } = await connection!.getLatestBlockhash(commitment);
+      tx.recentBlockhash = blockhash;
+    }
+  } else {
+    if (signers) {
+      tx.sign(signers);
+    }
   }
-  if (!tx.feePayer) {
-    tx.feePayer = publicKey;
-  }
-  if (!tx.recentBlockhash) {
-    const { blockhash } = await connection!.getLatestBlockhash(commitment);
-    tx.recentBlockhash = blockhash;
-  }
+
   const txSerialize = tx.serialize({
     requireAllSignatures: false,
   });
+
   const txStr = encode(txSerialize);
   return await requestManager.request({
     method: SOLANA_RPC_METHOD_SIMULATE,

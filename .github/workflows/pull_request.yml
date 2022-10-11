@@ -67,7 +67,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - uses: actions/cache@v3
         name: yarn-cache
@@ -95,12 +95,6 @@ jobs:
       #
       # Build the extension, edge release.
       #
-      - name: "pre-build-public"
-        working-directory: packages/common-public
-        run: yarn build
-      - name: "pre-build"
-        working-directory: packages/common
-        run: yarn build
       - name: "build edge"
         env:
           BACKPACK_CONFIG_VERSION: "latest-edge-${{ github.run_number }}"
@@ -119,12 +113,6 @@ jobs:
       #
       # Build the extension, beta release.
       #
-      - name: "pre-build-public"
-        working-directory: packages/common-public
-        run: yarn build
-      - name: "pre-build"
-        working-directory: packages/common
-        run: yarn build
       - name: "build beta"
         env:
           BACKPACK_CONFIG_VERSION: "latest-beta-${{ github.run_number }}"
@@ -133,7 +121,7 @@ jobs:
           BACKPACK_FEATURE_POP_MODE: "true"
           BACKPACK_FEATURE_MULTICHAIN: "true"
           BACKPACK_FEATURE_USERNAMES: "true"
-          BACKPACK_FEATURE_XNFT: "false"
+          BACKPACK_FEATURE_XNFT: "true"
           # CI!=true so that build warnings aren't treated like errors (for now)
           CI: ""
         run: yarn build
@@ -275,7 +263,7 @@ jobs:
       # NPM Publish.
       ##########################################################################
 
-      - name:  "update npm package version"
+      - name: "update npm package version"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: ./scripts/npm_release.sh 0.1.0-latest.${{ github.run_number }}
       - name: "publish to npm: common-public"
