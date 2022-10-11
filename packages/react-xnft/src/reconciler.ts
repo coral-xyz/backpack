@@ -297,8 +297,7 @@ const RECONCILER = ReactReconciler({
       case NodeKind.BalancesTableFooter:
         return null;
       default:
-        return null;
-      // throw new Error("unexpected node kind");
+        throw new Error("unexpected node kind");
     }
   },
   finalizeInitialChildren: (
@@ -437,7 +436,7 @@ const RECONCILER = ReactReconciler({
       case NodeKind.Loading:
         throw new Error("commitUpdate Loading not yet implemented");
       default:
-      // throw new Error("unexpected node kind");
+        throw new Error("unexpected node kind");
     }
 
     ReconcilerBridgeManager.bridge({
