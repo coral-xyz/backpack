@@ -1,13 +1,13 @@
 import { Box, Grid, Typography } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { Blockchain } from "@coral-xyz/common";
 import { Header, SubtextParagraph } from "../../common";
 import { ActionCard } from "../../common/Layout/ActionCard";
 
-export const BlockchainSelector = () => {
-  const { pathname } = useLocation();
-  const navigate = useNavigate();
-
+export const BlockchainSelector = ({
+  onSelect,
+}: {
+  onSelect: (blockchain: Blockchain) => void;
+}) => {
   return (
     <Box
       sx={{
@@ -38,14 +38,14 @@ export const BlockchainSelector = () => {
             <ActionCard
               icon={<EthereumIcon />}
               text={"Ethereum"}
-              onClick={() => navigate(`${pathname}/ethereum`)}
+              onClick={() => onSelect("ethereum" as Blockchain)}
             />
           </Grid>
           <Grid item xs={6}>
             <ActionCard
               icon={<SolanaIcon />}
               text={"Solana"}
-              onClick={() => navigate(`${pathname}/solana`)}
+              onClick={() => onSelect("solana" as Blockchain)}
             />
           </Grid>
           <Grid item xs={6}>
