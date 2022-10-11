@@ -114,6 +114,10 @@ function TabBar() {
                 ? theme.custom.colors.brandColor
                 : theme.custom.colors.icon
             }
+            style={{
+              width: "20px",
+              height: "20px",
+            }}
           />
         }
       />
@@ -130,6 +134,10 @@ function TabBar() {
                   ? theme.custom.colors.brandColor
                   : theme.custom.colors.icon
               }
+              style={{
+                width: "20px",
+                height: "20px",
+              }}
             />
           }
         />
@@ -148,6 +156,10 @@ function TabBar() {
                 ? theme.custom.colors.brandColor
                 : theme.custom.colors.icon
             }
+            style={{
+              width: "20px",
+              height: "20px",
+            }}
           />
         }
       />
