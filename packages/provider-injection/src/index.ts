@@ -54,11 +54,8 @@ function initProvider() {
       })(),
     },
   });
-  try {
-    register();
-  } catch (e) {
-    logger.error("standard wallet registration failed", e);
-  }
+
+  register();
 }
 
 main();
