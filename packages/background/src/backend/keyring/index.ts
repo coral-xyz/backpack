@@ -58,7 +58,9 @@ export class KeyringStore {
     const keyring = await this.initBlockchainKeyring(
       derivationPath,
       accountIndices,
-      Blockchain.SOLANA
+      Blockchain.SOLANA,
+      // Don't persist, as we persist manually later
+      false
     );
 
     // Persist the initial wallet ui metadata.
@@ -92,7 +94,8 @@ export class KeyringStore {
   public async initBlockchainKeyring(
     derivationPath: DerivationPath,
     accountIndices: Array<number>,
-    blockchain: Blockchain
+    blockchain: Blockchain,
+    persist = true
   ): Promise<BlockchainKeyring> {
     const keyring = {
       [Blockchain.SOLANA]: BlockchainKeyring.solana,
@@ -100,6 +103,9 @@ export class KeyringStore {
     }[blockchain]();
     await keyring.init(this.mnemonic, derivationPath, accountIndices);
     this.blockchains.set(blockchain, keyring);
+    if (persist) {
+      await this.persist();
+    }
     return keyring;
   }
 
