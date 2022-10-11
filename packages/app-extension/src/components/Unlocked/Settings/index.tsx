@@ -29,7 +29,7 @@ import {
   BACKPACK_FEATURE_XNFT,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   DISCORD_INVITE_LINK,
 } from "@coral-xyz/common";
 import {
@@ -67,6 +67,7 @@ import { PreferencesSolana } from "./Preferences/Solana";
 import { PreferencesEthereum } from "./Preferences/Ethereum";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
 import { PreferencesTrustedApps } from "./Preferences/TrustedApps";
+import { PreferencesBlockchains } from "./Preferences/Blockchains";
 import { PreferencesSolanaConnection } from "./Preferences/Solana/ConnectionSwitch";
 import { PreferencesSolanaCommitment } from "./Preferences/Solana/Commitment";
 import { PreferencesSolanaExplorer } from "./Preferences/Solana/Explorer";
@@ -206,6 +207,10 @@ function AvatarButton() {
             <NavStackScreen
               name={"preferences-solana"}
               component={(props: any) => <PreferencesSolana {...props} />}
+            />
+            <NavStackScreen
+              name={"preferences-blockchains"}
+              component={(props: any) => <PreferencesBlockchains {...props} />}
             />
             <NavStackScreen
               name={"preferences-ethereum"}
@@ -403,13 +408,15 @@ function WalletList({
   const clickWallet = (publicKey: string) => {
     background
       .request({
-        method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-        params: [publicKey],
+        method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+        params: [publicKey, blockchain],
       })
       .then((_resp) => close())
       .catch(console.error);
   };
+
   let activeWalletType: "derived" | "hardware";
+
   const keys = keyring.hdPublicKeys
     .map((k: any) => ({ ...k, type: "derived" }))
     .concat(
@@ -435,6 +442,7 @@ function WalletList({
   const { name, publicKey } = activeWallets.filter(
     (a) => a.blockchain === blockchain
   )[0];
+
   return (
     <div
       style={{
@@ -777,7 +785,12 @@ function SettingsList({ close }: { close: () => void }) {
     settingsMenu.push({
       label: "xNFTs",
       onClick: () => nav.push("xnfts"),
-      icon: (props: any) => <GridIcon {...props} />,
+      icon: (props: any) => (
+        <GridIcon
+          {...props}
+          style={{ ...props.style, width: "22px", height: "22px" }}
+        />
+      ),
       detailIcon: <PushDetail />,
     });
   }
@@ -961,8 +974,8 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
     });
 
     await background.request({
-      method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-      params: [publicKey],
+      method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+      params: [publicKey, blockchain],
     });
 
     setNewPublicKey(publicKey);

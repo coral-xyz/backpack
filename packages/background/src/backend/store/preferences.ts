@@ -1,4 +1,5 @@
 import type { Commitment } from "@solana/web3.js";
+import type { Blockchain } from "@coral-xyz/common";
 import { LocalStorageDb } from "./db";
 
 const STORE_KEY_WALLET_DATA = "wallet-data";
@@ -10,6 +11,7 @@ export type WalletData = {
   username?: string;
   autoLockSecs: number;
   approvedOrigins: Array<string>;
+  enabledBlockchains: Array<Blockchain>;
   darkMode: boolean;
   solana: SolanaData;
   ethereum?: EthereumData;

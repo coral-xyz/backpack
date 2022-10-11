@@ -325,7 +325,7 @@ export function DangerButton({
   const theme = useCustomTheme();
   const buttonStyle = Object.assign(
     {
-      backgroundColor: theme.custom.colors.dangerButton,
+      backgroundColor: theme.custom.colors.negative,
       color: "#fff",
     },
     buttonProps.style

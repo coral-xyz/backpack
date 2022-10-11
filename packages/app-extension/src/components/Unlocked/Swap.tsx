@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ethers } from "ethers";
+import { ethers, FixedNumber } from "ethers";
 import { InputAdornment, Typography, IconButton } from "@mui/material";
 import type { Button } from "@mui/material";
 import { ExpandMore, SwapVert } from "@mui/icons-material";
@@ -625,9 +625,11 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   const decimalDifference = fromMintInfo.decimals - toMintInfo.decimals;
   const toAmountWithFees = toAmount.sub(swapFee);
   const rate = fromAmount.gt(Zero)
-    ? (toAmountWithFees.toNumber() / fromAmount.toNumber()) *
-      10 ** decimalDifference
-    : 0;
+    ? FixedNumber.from(toAmountWithFees)
+        .divUnsafe(FixedNumber.from(fromAmount))
+        .mulUnsafe(FixedNumber.from(10 ** decimalDifference))
+        .toString()
+    : "0";
 
   const rows = [];
   if (!compact) {
@@ -640,7 +642,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   }
   rows.push([
     "Rate",
-    `1 ${fromMintInfo.symbol} = ${rate.toFixed(4)} ${toMintInfo.symbol}`,
+    `1 ${fromMintInfo.symbol} = ${rate} ${toMintInfo.symbol}`,
   ]);
   rows.push([
     "Network Fee",

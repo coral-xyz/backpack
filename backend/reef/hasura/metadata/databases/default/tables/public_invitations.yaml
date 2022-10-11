@@ -2,6 +2,13 @@ table:
   name: invitations
   schema: public
 select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - claimed_at
+        - id
+      filter: {}
+      allow_aggregations: true
   - role: invites_worker
     permission:
       columns:

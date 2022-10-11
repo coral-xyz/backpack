@@ -4,7 +4,7 @@ import {
   Blockchain,
   DerivationPath,
   UI_RPC_METHOD_LEDGER_IMPORT,
-  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -59,8 +59,8 @@ export function ConnectHardware({
     if (accounts.length > 0) {
       const active = accounts[0].publicKey.toString();
       await background.request({
-        method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-        params: [active],
+        method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+        params: [active, blockchain],
       });
     }
   };

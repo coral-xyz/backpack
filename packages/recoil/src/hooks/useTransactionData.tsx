@@ -2,12 +2,16 @@ import { useEffect, useState } from "react";
 import { ethers, BigNumber } from "ethers";
 import { UnsignedTransaction } from "@ethersproject/transactions";
 import { TransactionRequest } from "@ethersproject/abstract-provider";
-import { PublicKey, Transaction } from "@solana/web3.js";
+import { Message, PublicKey } from "@solana/web3.js";
 import { AccountLayout, u64, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { Blockchain, UI_RPC_METHOD_SOLANA_SIMULATE } from "@coral-xyz/common";
+import {
+  Blockchain,
+  deserializeTransaction,
+  UI_RPC_METHOD_SOLANA_SIMULATE,
+} from "@coral-xyz/common";
 import {
   useBackgroundClient,
-  useBlockchainTokensSorted,
+  useBlockchainNativeTokens,
   useEthereumCtx,
   useEthereumPrice,
   useSolanaCtx,
@@ -15,6 +19,7 @@ import {
 } from "./";
 
 const { base58: bs58 } = ethers.utils;
+const DEFAULT_GAS_LIMIT = BigNumber.from("150000");
 
 type TransactionData = {
   loading: boolean;
@@ -86,9 +91,10 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
         ethereumCtx.provider
       );
       // Make sure to populate missing fields and resolve ENS
-      const populatedTx = await voidSigner.populateTransaction(
-        transaction as TransactionRequest
-      );
+      const populatedTx = await voidSigner.populateTransaction({
+        ...transaction,
+        gasLimit: DEFAULT_GAS_LIMIT,
+      });
       setTransaction(populatedTx);
     })();
   }, [serializedTx]);
@@ -114,7 +120,7 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
           // Use a fallback value for estimate gas, but this is not likely to be
           // accurate given the gas estimate call failed. 150k is a good value
           // for all ERC20 methods.
-          estimatedGas = BigNumber.from("150000");
+          estimatedGas = DEFAULT_GAS_LIMIT;
           setSimulationError(true);
         }
         setEstimatedGas(estimatedGas);
@@ -180,7 +186,7 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
 export function useSolanaTxData(serializedTx: any): TransactionData {
   const background = useBackgroundClient();
   const tokenRegistry = useSplTokenRegistry();
-  const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
+  const tokenAccountsSorted = useBlockchainNativeTokens(Blockchain.SOLANA);
   const { connection, walletPublicKey } = useSolanaCtx();
 
   const [loading, setLoading] = useState(true);
@@ -190,11 +196,15 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
 
   useEffect(() => {
     const estimateTxFee = async () => {
-      const transaction = Transaction.from(bs58.decode(serializedTx));
+      const transaction = deserializeTransaction(serializedTx);
       let fee;
       try {
-        fee = await transaction.getEstimatedFee(connection);
-      } catch {
+        // TODO: Remove type inference after the API for `getFeeForMessage` changes
+        const response = await connection.getFeeForMessage(
+          transaction.message as Message
+        );
+        fee = response.value;
+      } catch (e) {
         // ignore
       }
       setEstimatedTxFee(fee || 5000);

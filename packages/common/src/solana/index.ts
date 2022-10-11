@@ -35,6 +35,8 @@ export * from "./provider";
 export * from "./programs";
 export * from "./background-connection";
 export * from "./types";
+export * from "./transaction-helpers";
+export * from "./rpc-helpers";
 
 export type SolanaContext = {
   walletPublicKey: PublicKey;

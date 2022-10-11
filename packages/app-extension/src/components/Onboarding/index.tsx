@@ -21,18 +21,20 @@ import { DiscordIcon } from "../common/Icon";
 import { WithContaineredDrawer } from "../common/Layout/Drawer";
 import { NavBackButton, NAV_BAR_HEIGHT, WithNav } from "../common/Layout/Nav";
 import { List, ListItem } from "../common/List";
+import SocialNavbarButtons from "../common/SocialNavbarButtons";
+import WaitingRoom from "../common/WaitingRoom";
 import { CreateOrImportWallet } from "./pages/CreateOrImportWallet";
 import { Finish } from "./pages/Finish";
 import { ImportAccounts } from "./pages/ImportAccounts";
 import { InviteCodeForm } from "./pages/InviteCodeForm";
+import { RecoverAccount } from "./pages/RecoverAccount";
 import {
   GenerateRecoveryPhrase,
   ImportRecoveryPhrase,
+  RecoverAccountWithRecoveryPhrase,
 } from "./pages/RecoveryPhrase";
 import { SetPassword } from "./pages/SetPassword";
 import { UsernameForm } from "./pages/UsernameForm";
-import WaitingRoom from "../common/WaitingRoom";
-import SocialNavbarButtons from "../common/SocialNavbarButtons";
 
 export const Onboarding = () => {
   const { pathname } = useLocation();
@@ -75,6 +77,23 @@ export const Onboarding = () => {
               <Route path="/" element={<InviteCodeForm />} />
               <Route path="/waitingRoom" element={<WaitingRoom />} />
               <Route path="/:inviteCode" element={<UsernameForm />} />
+              <Route path="/recoverAccount" element={<RecoverAccount />} />
+              <Route
+                path="/recoverAccount/:usernameAndPubkey"
+                element={<RecoverAccountWithRecoveryPhrase />}
+              />
+              <Route
+                path="/recoverAccount/:usernameAndPubkey/:mnemonic"
+                element={<ImportAccounts />}
+              />
+              <Route
+                path="/recoverAccount/:usernameAndPubkey/:mnemonic/:accountsAndDerivationPath"
+                element={<SetPassword />}
+              />
+              <Route
+                path="/recoverAccount/:usernameAndPubkey/:mnemonic/:accountsAndDerivationPath/:password/finish"
+                element={<Finish />}
+              />
             </>
           )}
 

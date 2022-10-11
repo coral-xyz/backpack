@@ -15,7 +15,7 @@
   "dependencies": {
     "@coral-xyz/common": "*",
     "@coral-xyz/recoil": "*",
-    "@solana/web3.js": "^1.37.1",
+    "@solana/web3.js": "^1.63.1",
     "bip39": "^3.0.4",
     "bs58": "^5.0.0",
     "ed25519-hd-key": "^1.2.0",

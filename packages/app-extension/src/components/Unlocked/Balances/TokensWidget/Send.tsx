@@ -21,7 +21,6 @@ import {
   SOL_NATIVE_MINT,
   ETH_NATIVE_MINT,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
-  BACKPACK_FEATURE_MULTICHAIN,
 } from "@coral-xyz/common";
 import { WithHeaderButton } from "./Token";
 import { SendEthereumConfirmationCard } from "./Ethereum";
@@ -112,7 +111,7 @@ export function SendButton({
         {
           name: "send",
           component: (props: any) => <SendLoader {...props} />,
-          title: `${token.ticker} / Send`,
+          title: `${token?.ticker || ""} / Send`,
           props: {
             blockchain,
             address,
@@ -146,9 +145,7 @@ export function Send({
   const { close } = useDrawerContext();
   const { title, setTitle } = useNavStack();
   const { provider: solanaProvider } = useAnchorContext();
-  const ethereumCtx = BACKPACK_FEATURE_MULTICHAIN
-    ? useEthereumCtx()
-    : undefined;
+  const ethereumCtx = useEthereumCtx();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState<BigNumber | undefined>(undefined);
