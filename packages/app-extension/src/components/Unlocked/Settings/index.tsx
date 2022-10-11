@@ -166,7 +166,7 @@ function AvatarButton() {
       <WithDrawer openDrawer={settingsOpen} setOpenDrawer={setSettingsOpen}>
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
-            initialRoute={{ name: "root", title: "Profile" }}
+            initialRoute={{ name: "root", title: "My Profile" }}
             options={(args) => ({ title: "" })}
             navButtonLeft={
               <CloseButton onClick={() => setSettingsOpen(false)} />
@@ -305,7 +305,7 @@ function SettingsMenu() {
   const { setTitle } = useNavStack();
 
   useEffect(() => {
-    setTitle("Profile");
+    setTitle("My Profile");
   }, [setTitle]);
 
   return (

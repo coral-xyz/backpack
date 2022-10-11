@@ -225,10 +225,10 @@ function useNavBar() {
           }}
         >
           {pathname.startsWith("/balances")
-            ? "Balances"
+            ? "My Balances"
             : pathname.startsWith("/apps")
-            ? "Applications"
-            : "Collectibles"}
+            ? "My Apps"
+            : "My Collectibles"}
         </Typography>
       </div>
     );

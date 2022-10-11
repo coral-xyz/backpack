@@ -49,9 +49,9 @@ export function Nfts() {
       {Object.values(collections).flat().length === 0 && !isLoading ? (
         <EmptyState
           icon={(props: any) => <ImageIcon {...props} />}
-          title={"No NFTs"}
+          title={"No NFTs (yet)"}
           subtitle={"Get started with your first NFT"}
-          buttonText={"Browse Magic Eden"}
+          buttonText={"Browse NFTs on Magic Eden"}
           onClick={() => window.open("https://magiceden.io")}
         />
       ) : (
