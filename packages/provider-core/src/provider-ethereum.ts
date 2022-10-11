@@ -149,14 +149,14 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
   }
 
   // Setup channels with the content script.
-  #initChannels() {
+  #initChannels = () => {
     window.addEventListener("message", this._handleNotification.bind(this));
-  }
+  };
 
-  #setState(updatedState) {
+  #setState = (updatedState) => {
     this.#state = updatedState;
     Object.freeze(this.#state);
-  }
+  };
 
   //
   // Public methods
@@ -165,14 +165,14 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
   /**
    * Returns whether the provider can process RPC requests.
    */
-  isConnected(): boolean {
+  isConnected = (): boolean => {
     return this.#state.isConnected;
-  }
+  };
 
   // Deprecated EIP-1193 method
-  async enable(): Promise<unknown> {
+  enable = async (): Promise<unknown> => {
     return this.request({ method: "eth_requestAccounts" });
-  }
+  };
 
   // Deprecated EIP-1193 method
   send = (
