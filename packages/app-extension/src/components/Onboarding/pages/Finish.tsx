@@ -48,7 +48,7 @@ export const Finish = () => {
           params: [
             params.mnemonic,
             derivationPath,
-            params.password,
+            decodeURIComponent(params.password!),
             accounts,
             _username,
             params.inviteCode,
