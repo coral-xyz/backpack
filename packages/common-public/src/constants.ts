@@ -26,3 +26,5 @@ export const CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE =
   "anchor-channel-plugin-react-reconciler-bridge";
 
 export const MOBILE_CHANNEL_LOGS = "mobile-logs";
+
+export const IMAGE_PROXY_URL = "https://imgproxy2.fly.dev";

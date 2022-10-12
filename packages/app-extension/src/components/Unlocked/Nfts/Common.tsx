@@ -1,5 +1,6 @@
 import { Button, Typography } from "@mui/material";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
+import { ProxyImage } from "../../common/ProxyImage";
 
 const useStyles = styles((theme) => ({
   button: {
@@ -28,12 +29,12 @@ export function GridCard({ onClick, nft, subtitle }: any) {
         aspectRatio: "1",
       }}
     >
-      <img
+      <ProxyImage
         style={{
           width: "100%",
         }}
         src={nft.imageUrl}
-        onError={(event) => (event.currentTarget.style.display = "none")}
+        onError={(event: any) => (event.currentTarget.style.display = "none")}
       />
       {subtitle && (
         <div
