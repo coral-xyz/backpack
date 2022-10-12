@@ -161,8 +161,12 @@ export async function fetchSplMetadataUri(
           setTimeout(() => {
             reject(new Error("timeout"));
           }, 5000);
-          const resp = await fetch(externalResourceUri(t.account.data.uri));
-          resolve(resp);
+          try {
+            const resp = await fetch(externalResourceUri(t.account.data.uri));
+            resolve(resp);
+          } catch (err) {
+            reject(err);
+          }
         });
         return await resp.json();
       } catch (err) {
