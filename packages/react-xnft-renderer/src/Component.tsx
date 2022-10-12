@@ -865,7 +865,7 @@ function ProxyImage(props: any) {
     <img
       {...props}
       onError={({ currentTarget }) => {
-        currentTarget.onerror = null;
+        currentTarget.onerror = props.onError || null;
         currentTarget.src = props.src;
       }}
       src={proxyImageUrl(props.src)}
