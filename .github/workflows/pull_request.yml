@@ -67,7 +67,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 16
 
       - uses: actions/cache@v3
         name: yarn-cache
@@ -92,9 +92,34 @@ jobs:
       # Build extension.
       ##########################################################################
 
+      - name: "set env.short_sha"
+        run: echo "short_sha=`echo "${{ env.commit_sha }}" | cut -c1-8`" >> $GITHUB_ENV
+
+      - name: set env.webworker_url
+        run: echo "webworker_url=https://coral-xyz.github.io/backpack/background-scripts/${{ env.short_sha }}/service-worker-loader.html" >> $GITHUB_ENV
+
+      ##########################################################################
+      # Build extension.
+      ##########################################################################
+
+      - name: "tag build version"
+        run: pushd ./packages/app-extension && ./scripts/version.sh latest-${{ github.run_number }} && popd
+
+      - name: "build workspace"
+        # CI!=true so that build warnings aren't treated like errors (for now)
+        env:
+          CI: ""
+        run: WEBWORKER_URL=${{ env.webworker_url }} yarn build
+
       #
       # Build the extension, edge release.
       #
+      - name: "pre-build-public"
+        working-directory: packages/common-public
+        run: yarn build
+      - name: "pre-build"
+        working-directory: packages/common
+        run: yarn build
       - name: "build edge"
         env:
           BACKPACK_CONFIG_VERSION: "latest-edge-${{ github.run_number }}"
@@ -113,6 +138,12 @@ jobs:
       #
       # Build the extension, beta release.
       #
+      - name: "pre-build-public"
+        working-directory: packages/common-public
+        run: yarn build
+      - name: "pre-build"
+        working-directory: packages/common
+        run: yarn build
       - name: "build beta"
         env:
           BACKPACK_CONFIG_VERSION: "latest-beta-${{ github.run_number }}"
@@ -128,6 +159,12 @@ jobs:
       - name: "rename beta build"
         working-directory: packages/app-extension
         run: mv build build-beta
+
+      ##########################################################################
+      # Yarn test.
+      ##########################################################################
+
+      - run: yarn test
 
       ##########################################################################
       # Yarn test.
@@ -166,6 +203,34 @@ jobs:
           publish_dir: packages/ledger-injection/dist
           deploy_key: ${{ secrets.LEDGER_INJECTION_DEPLOY_KEY }}
           external_repository: coral-xyz/ledger-injection
+
+      ##########################################################################
+      # Mobile app
+      ##########################################################################
+
+      - name: set env.expo_channel
+        run: echo "expo_channel=pr-${{ github.event.number }}" >> $GITHUB_ENV
+
+      - name: Setup Expo
+        uses: expo/expo-github-action@v7
+        with:
+          expo-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Publish to Expo
+        working-directory: packages/app-mobile
+        run: WEBWORKER_URL=${{ env.webworker_url }} expo publish --release-channel=${{ env.expo_channel }} --non-interactive
+
+      - name: Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: qr-code
+          message: |
+            Deployed to channel **${{ env.expo_channel }}**
+            <img alt="QR Code" src="https://qr.expo.dev/expo-go?owner=coral-xyz&slug=backpack&releaseChannel=${{ env.expo_channel }}" width="200" height="200" />
+            [Manifest](https://exp.host/@coral-xyz/backpack/index.exp?release-channel=${{ env.expo_channel }}&sdkVersion=45.0.0) / [Learn more](https://expo.fyi/manifest-url)
+            [Project page](https://expo.dev/@coral-xyz/backpack?serviceType=classic&distribution=expo-go&release-channel=${{ env.expo_channel }}) / [Learn more](https://expo.fyi/project-page)
+            [Webworker](${{ env.webworker_url }})
 
       ##########################################################################
       # Upload build artifacts.
