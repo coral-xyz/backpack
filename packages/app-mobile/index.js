@@ -10,7 +10,7 @@ import { registerRootComponent } from "expo";
 import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
 import { Suspense, useRef } from "react";
-import { Platform, SafeAreaView, StyleSheet, View } from "react-native";
+import { SafeAreaView, StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
 import { RecoilRoot } from "recoil";
 import App from "./src/App";
@@ -57,7 +57,9 @@ function Background() {
           uri: WEBVIEW_URI,
         }}
         onMessage={(event) => {
+          console.log("webview:event", event);
           const msg = JSON.parse(event.nativeEvent.data);
+          console.log("webview:msg", event);
           if (msg.type === BACKGROUND_SERVICE_WORKER_READY) {
             setInjectJavaScript(ref.current.injectJavaScript);
           } else {
