@@ -11,7 +11,6 @@ import {
 } from "./ethereum/token";
 import { ethereumTokenMetadata } from "./ethereum/token-metadata";
 import { TokenData, TokenNativeData } from "../types";
-import { enabledBlockchains } from "./blockchain";
 
 /**
  * Return token balances sorted by usd notional balances.
@@ -165,27 +164,15 @@ export const blockchainTotalBalance = selectorFamily({
 export const totalBalance = selector({
   key: "totalBalance",
   get: ({ get }) => {
-    const totals = get(enabledBlockchains).reduce(
-      (
-        acc: { totalBalance: number; totalChange: number },
-        blockchain: Blockchain
-      ) => {
-        const total = get(blockchainTotalBalance(blockchain));
-        return {
-          totalBalance: acc.totalBalance + total.totalBalance,
-          totalChange: acc.totalChange + total.totalChange,
-        };
-      },
-      {
-        totalBalance: 0.0,
-        totalChange: 0.0,
-      }
-    );
-    const oldBalance = totals.totalBalance - totals.totalChange;
-    const percentChange = (totals.totalChange / oldBalance) * 100;
+    const solana = get(blockchainTotalBalance(Blockchain.SOLANA));
+    const ethereum = get(blockchainTotalBalance(Blockchain.ETHEREUM));
+    const totalBalance = solana.totalBalance + ethereum.totalBalance;
+    const totalChange = solana.totalChange + ethereum.totalChange;
+    const oldBalance = totalBalance - totalChange;
+    const percentChange = (totalChange / oldBalance) * 100;
     return {
-      totalBalance: parseFloat(totals.totalBalance.toFixed(2)),
-      totalChange: parseFloat(totals.totalChange.toFixed(2)),
+      totalBalance: parseFloat(totalBalance.toFixed(2)),
+      totalChange: parseFloat(totalChange.toFixed(2)),
       percentChange: parseFloat(percentChange.toFixed(2)),
     };
   },

@@ -19,7 +19,7 @@ export default {
     supportsTablet: true,
     bundleIdentifier: "community.coral.backpack",
     infoPlist: {
-      WKAppBoundDomains: ["coral-xyz.github.io"],
+      WKAppBoundDomains: ["coral-xyz.github.io", "ngrok.io"],
     },
   },
   android: {
