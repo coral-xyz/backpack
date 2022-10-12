@@ -6,6 +6,7 @@ import {
 } from "@coral-xyz/common";
 import { WalletPublicKeys } from "../types";
 import { backgroundClient } from "./client";
+import { enabledBlockchains } from "./blockchain";
 
 /**
  * Augment a public key with the name and blockchain and return as an object.
@@ -39,6 +40,8 @@ export const activeWallets = atom<string[]>({
   default: selector({
     key: "activeWalletsDefault",
     get: async ({ get }) => {
+      // Enabled blockchains as a dependency to reload if they change
+      get(enabledBlockchains);
       const background = get(backgroundClient);
       return await background.request({
         method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLETS,
@@ -80,6 +83,8 @@ export const walletPublicKeys = atom<WalletPublicKeys>({
   default: selector({
     key: "walletPublicKeysDefault",
     get: async ({ get }) => {
+      // Enabled blockchains as a dependency to reload if they change
+      get(enabledBlockchains);
       const background = get(backgroundClient);
       return await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,

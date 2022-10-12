@@ -96,6 +96,12 @@ export const UI_RPC_METHOD_APPROVED_ORIGINS_READ =
   "ui-rpc-method-approved-origins-read";
 export const UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE =
   "ui-rpc-method-approved-origins-update";
+export const UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ =
+  "ui-rpc-method-blockchains-enabled-read";
+export const UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD =
+  "ui-rpc-method-blockchains-enabled-add";
+export const UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE =
+  "ui-rpc-method-blockchains-enabled-delete";
 export const UI_RPC_METHOD_KEYNAME_READ = "ui-rpc-method-keyname-read";
 export const UI_RPC_METHOD_KEYNAME_UPDATE = "ui-rpc-method-keyname-update";
 export const UI_RPC_METHOD_KEYRING_ACTIVE_WALLETS =
@@ -202,65 +208,69 @@ export const UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION =
 //
 // Notifications sent from the background script to observers.
 //
-export const NOTIFICATION_KEYRING_STORE_CREATED =
-  "notification-keyring-store-created";
-export const NOTIFICATION_KEYRING_STORE_LOCKED =
-  "notification-keyring-store-locked";
-export const NOTIFICATION_KEYRING_STORE_UNLOCKED =
-  "notification-keyring-store-unlocked";
-export const NOTIFICATION_KEYRING_STORE_RESET =
-  "notification-keyring-store-reset";
+
+export const NOTIFICATION_APPROVED_ORIGINS_UPDATE =
+  "notification-approved-origins-update";
+export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
+  "notification-auto-lock-secs-updated";
+export const NOTIFICATION_BLOCKCHAIN_DISABLED =
+  "notification-blockchain-disabled";
+export const NOTIFICATION_BLOCKCHAIN_ENABLED =
+  "notification-blockchain-enabled";
+export const NOTIFICATION_DARK_MODE_UPDATED = "notification-dark-mode-updated";
 export const NOTIFICATION_KEYNAME_UPDATE = "notification-keyname-update";
-export const NOTIFICATION_KEYRING_KEY_DELETE =
-  "notification-keyring-key-delete";
+export const NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED =
+  "notification-keyring-active-blockchain-updated";
+export const NOTIFICATION_KEYRING_CREATED = "notification-keyring-created";
 export const NOTIFICATION_KEYRING_DERIVED_WALLET =
   "notification-keyring-derived-wallet";
 export const NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY =
   "notification-keyring-imported-secret-key";
+export const NOTIFICATION_KEYRING_KEY_DELETE =
+  "notification-keyring-key-delete";
 export const NOTIFICATION_KEYRING_RESET_MNEMONIC =
   "notification-keyring-reset-mnemonic";
-export const NOTIFICATION_KEYRING_CREATED = "notification-keyring-created";
-export const NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED =
-  "notification-keyring-active-blockchain-updated";
-export const NOTIFICATION_APPROVED_ORIGINS_UPDATE =
-  "notification-approved-origins-update";
+export const NOTIFICATION_KEYRING_STORE_CREATED =
+  "notification-keyring-store-created";
+export const NOTIFICATION_KEYRING_STORE_LOCKED =
+  "notification-keyring-store-locked";
+export const NOTIFICATION_KEYRING_STORE_RESET =
+  "notification-keyring-store-reset";
+export const NOTIFICATION_KEYRING_STORE_UNLOCKED =
+  "notification-keyring-store-unlocked";
 export const NOTIFICATION_NAVIGATION_URL_DID_CHANGE =
   "notification-navigation-url-did-change";
-export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
-  "notification-auto-lock-secs-updated";
-export const NOTIFICATION_DARK_MODE_UPDATED = "notification-dark-mode-updated";
-// Solana specific
-export const NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED =
-  "notification-keyring-solana-active-wallet-updated";
-export const NOTIFICATION_SOLANA_CONNECTED = "notification-solana-connected";
-export const NOTIFICATION_SOLANA_DISCONNECTED =
-  "notification-solana-disconnected";
-export const NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED =
-  "notification-solana-connection-url-updated";
-export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
-  "notification-solana-explorer-updated";
-export const NOTIFICATION_SOLANA_COMMITMENT_UPDATED =
-  "notification-solana-commitment-updated";
-export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
-  "notification-solana-spl-tokens-did-update";
-// Ethereum specific
-export const NOTIFICATION_ETHEREUM_CONNECTED =
-  "notification-ethereum-connected";
-export const NOTIFICATION_ETHEREUM_DISCONNECTED =
-  "notification-ethereum-disconnected";
-export const NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED =
-  "notification-ethereum-connection-url-updated";
-export const NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED =
-  "notification-ethereum-chain-id-updated";
-export const NOTIFICATION_ETHEREUM_EXPLORER_UPDATED =
-  "notification-ethereum-explorer-updated";
+// Ethereum specific notifications
 export const NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED =
   "notification-keyring-ethereum-active-wallet-updated";
-export const NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE =
-  "notification-ethereum-tokens-did-update";
+export const NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED =
+  "notification-ethereum-chain-id-updated";
+export const NOTIFICATION_ETHEREUM_CONNECTED =
+  "notification-ethereum-connected";
+export const NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED =
+  "notification-ethereum-connection-url-updated";
+export const NOTIFICATION_ETHEREUM_DISCONNECTED =
+  "notification-ethereum-disconnected";
+export const NOTIFICATION_ETHEREUM_EXPLORER_UPDATED =
+  "notification-ethereum-explorer-updated";
 export const NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE =
   "notification-ethereum-fee-data-did-update";
-
+export const NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE =
+  "notification-ethereum-tokens-did-update";
+// Solana specific notifications
+export const NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED =
+  "notification-keyring-solana-active-wallet-updated";
+export const NOTIFICATION_SOLANA_COMMITMENT_UPDATED =
+  "notification-solana-commitment-updated";
+export const NOTIFICATION_SOLANA_CONNECTED = "notification-solana-connected";
+export const NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED =
+  "notification-solana-connection-url-updated";
+export const NOTIFICATION_SOLANA_DISCONNECTED =
+  "notification-solana-disconnected";
+export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
+  "notification-solana-explorer-updated";
+export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
+  "notification-solana-spl-tokens-did-update";
 //
 // Ethereum web injected provider API.
 //

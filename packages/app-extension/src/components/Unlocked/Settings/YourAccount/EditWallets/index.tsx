@@ -1,8 +1,4 @@
-import {
-  toTitleCase,
-  Blockchain,
-  BACKPACK_FEATURE_MULTICHAIN,
-} from "@coral-xyz/common";
+import { toTitleCase, Blockchain } from "@coral-xyz/common";
 import { useWalletPublicKeys } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { MoreHoriz } from "@mui/icons-material";
@@ -10,8 +6,7 @@ import { Typography } from "@mui/material";
 import { useEffect } from "react";
 import { List, ListItem, WalletAddress } from "../../../../common";
 import { useNavStack } from "../../../../common/Layout/NavStack";
-import { AddConnectWalletButton } from "../..";
-import { ImportTypeBadge } from "../../";
+import { AddConnectWalletButton, ImportTypeBadge } from "../..";
 
 export function EditWallets() {
   const nav = useNavStack();
@@ -64,18 +59,16 @@ function WalletList({
   // TODO: replace placeholder wallet avatar with stored image when available
   return (
     <div style={{ marginBottom: "16px" }}>
-      {BACKPACK_FEATURE_MULTICHAIN && (
-        <Typography
-          style={{
-            marginLeft: "16px",
-            marginRight: "16px",
-            marginBottom: "12px",
-            color: theme.custom.colors.fontColor,
-          }}
-        >
-          {toTitleCase(blockchain)}
-        </Typography>
-      )}
+      <Typography
+        style={{
+          marginLeft: "16px",
+          marginRight: "16px",
+          marginBottom: "12px",
+          color: theme.custom.colors.fontColor,
+        }}
+      >
+        {toTitleCase(blockchain)}
+      </Typography>
 
       <List
         style={{

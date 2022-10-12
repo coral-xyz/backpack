@@ -1,43 +1,49 @@
 import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
-import type { Commitment, SendOptions } from "@solana/web3.js";
+import type {
+  Commitment,
+  SendOptions,
+  SimulateTransactionConfig,
+} from "@solana/web3.js";
 import { PublicKey, VersionedTransaction } from "@solana/web3.js";
-import type { SimulateTransactionConfig } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
 import {
-  BACKPACK_FEATURE_USERNAMES,
-  EthereumExplorer,
-  EthereumConnectionUrl,
-  SolanaCluster,
-  SolanaExplorer,
   BACKEND_EVENT,
-  NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-  NOTIFICATION_KEYRING_KEY_DELETE,
+  BACKPACK_FEATURE_USERNAMES,
+  Blockchain,
+  EthereumConnectionUrl,
+  EthereumExplorer,
+  NOTIFICATION_APPROVED_ORIGINS_UPDATE,
+  NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
+  NOTIFICATION_BLOCKCHAIN_DISABLED,
+  NOTIFICATION_BLOCKCHAIN_ENABLED,
+  NOTIFICATION_DARK_MODE_UPDATED,
+  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
+  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
+  NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
+  NOTIFICATION_KEYRING_KEY_DELETE,
   NOTIFICATION_KEYRING_STORE_CREATED,
-  NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_RESET,
-  NOTIFICATION_APPROVED_ORIGINS_UPDATE,
-  NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
-  NOTIFICATION_DARK_MODE_UPDATED,
+  NOTIFICATION_KEYRING_STORE_UNLOCKED,
+  NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
-  NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
-  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-  NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
-  NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
-  Blockchain,
+  SolanaCluster,
+  SolanaExplorer,
   deserializeTransaction,
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
 import * as store from "./store";
+import type { BlockchainKeyring } from "./keyring/blockchain";
 import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
@@ -479,7 +485,7 @@ export class Backend {
 
   // Returns all pubkeys available for signing.
   async keyringStoreReadAllPubkeys(): Promise<any> {
-    const publicKeys = this.keyringStore.publicKeys();
+    const publicKeys = await this.keyringStore.publicKeys();
     const namedPublicKeys = {};
     for (const [blockchain, blockchainKeyring] of Object.entries(publicKeys)) {
       namedPublicKeys[blockchain] = {};
@@ -776,6 +782,66 @@ export class Backend {
       },
     });
     return SUCCESS_RESPONSE;
+  }
+
+  async enabledBlockchainsAdd(blockchain: Blockchain) {
+    const data = await store.getWalletData();
+    if (data.enabledBlockchains.includes(blockchain)) {
+      throw new Error("blockchain already enabled");
+    }
+    const enabledBlockchains = [...data.enabledBlockchains, blockchain];
+    await store.setWalletData({
+      ...data,
+      enabledBlockchains,
+    });
+    let keyring: BlockchainKeyring;
+    try {
+      keyring = this.keyringStore.keyringForBlockchain(blockchain);
+    } catch {
+      keyring = await this.keyringStore.initBlockchainKeyring(
+        "bip44",
+        [0],
+        blockchain
+      );
+    }
+    const activeWallet = keyring.getActiveWallet();
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_BLOCKCHAIN_ENABLED,
+      data: {
+        blockchain,
+        enabledBlockchains,
+        activeWallet,
+      },
+    });
+  }
+
+  async enabledBlockchainsRemove(blockchain: Blockchain) {
+    const data = await store.getWalletData();
+    if (!data.enabledBlockchains.includes(blockchain)) {
+      throw new Error("blockchain not enabled");
+    }
+    if (data.enabledBlockchains.length === 1) {
+      throw new Error("cannot disable last enabled blockchain");
+    }
+    const enabledBlockchains = data.enabledBlockchains.filter(
+      (b) => b !== blockchain
+    );
+    await store.setWalletData({
+      ...data,
+      enabledBlockchains,
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_BLOCKCHAIN_DISABLED,
+      data: { blockchain, enabledBlockchains },
+    });
+  }
+
+  /**
+   * Return all the enabled blockchains.
+   */
+  async enabledBlockchainsRead(): Promise<Array<Blockchain>> {
+    const data = await store.getWalletData();
+    return data.enabledBlockchains;
   }
 
   ///////////////////////////////////////////////////////////////////////////////
