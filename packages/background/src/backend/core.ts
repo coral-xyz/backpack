@@ -426,6 +426,7 @@ export class Backend {
           inviteCode,
           publicKey,
           waitlistId,
+          blockchain,
         });
 
         const buffer = Buffer.from(body, "utf8");
