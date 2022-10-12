@@ -28,7 +28,10 @@
         // Receive messages from the service worker..
         //
         navigator.serviceWorker.onmessage = (event) => {
-          postMessage(event.data);
+          console.log('window', window)
+          console.log("event.data", event.data)
+          // postMessage(event.data);
+          window.ReactNativeWebView?.postMessage(JSON.stringify(event.data));
         };
 
         //
