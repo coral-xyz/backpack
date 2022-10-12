@@ -106,7 +106,7 @@ const RECONCILER = ReactReconciler({
   // Create serialized nodes.
   //
   createInstance: (
-    kind: NodeKind,
+    kind: NodeKind | string,
     props: NodeProps,
     r: RootContainer,
     h: Host,
@@ -154,9 +154,13 @@ const RECONCILER = ReactReconciler({
         return createBalancesTableCellInstance(kind, props, r, h, o);
       case NodeKind.BalancesTableFooter:
         return createBalancesTableFooterInstance(kind, props, r, h, o);
+      case NodeKind.Custom:
+        if (!props.component) {
+          throw new Error("Component not found in Custom Node");
+        }
+        return createCustomInstance(kind, props, r, h, o);
       default:
-        logger.error("unexpected node kind", kind);
-        throw new Error("unexpected node kind");
+        throw new Error("New error found");
     }
   },
   createTextInstance: (
@@ -850,6 +854,27 @@ function createIframeInstance(
   };
 }
 
+function createCustomInstance(
+  kind: string,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): CustomNodeSerialized {
+  return {
+    id: h.nextId(),
+    kind: NodeKind.Custom,
+    // @ts-ignore
+    props: {
+      ...props,
+      children: undefined,
+    },
+    style: props.style || {},
+    children: [],
+    component: kind,
+  };
+}
+
 function createNavAnimationInstance(
   _kind: NodeKind,
   props: NodeProps,
@@ -1049,7 +1074,8 @@ export type NodeSerialized =
   | BalancesTableContentNodeSerialized
   | BalancesTableRowNodeSerialized
   | BalancesTableCellNodeSerialized
-  | BalancesTableFooterNodeSerialized;
+  | BalancesTableFooterNodeSerialized
+  | CustomNodeSerialized;
 type NodeProps =
   | TableProps
   | TableRowProps
@@ -1071,7 +1097,8 @@ type NodeProps =
   | BalancesTableContentProps
   | BalancesTableRowProps
   | BalancesTableCellProps
-  | BalancesTableFooterProps;
+  | BalancesTableFooterProps
+  | CustomProps;
 export enum NodeKind {
   //
   // App.
@@ -1100,6 +1127,11 @@ export enum NodeKind {
   BalancesTableRow = "BalancesTableRow",
   BalancesTableCell = "BalancesTableCell",
   BalancesTableFooter = "BalancesTableFooter",
+
+  //
+  // Custom
+  //
+  Custom = "Custom",
 }
 
 //
@@ -1252,6 +1284,11 @@ type IframeProps = {
 };
 
 //
+// Custom.
+//
+type CustomProps = any;
+
+//
 // NavAnimation.
 //
 type NavAnimationNodeSerialized = DefNodeSerialized<
@@ -1352,6 +1389,15 @@ type DefNodeSerialized<K, P> = {
   props: P;
   style: Style;
   children: Array<Element>;
+};
+
+type CustomNodeSerialized = {
+  id: number;
+  kind: NodeKind.Custom;
+  props: CustomProps;
+  style: Style;
+  children: Array<Element>;
+  component: string;
 };
 
 export type UpdateDiff = any;

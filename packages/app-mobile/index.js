@@ -12,7 +12,7 @@ import { StatusBar } from "expo-status-bar";
 import { Suspense, useRef } from "react";
 import { Platform, SafeAreaView, StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
-import { RecoilRoot } from "recoil/native/recoil";
+import { RecoilRoot } from "recoil/native";
 import App from "./src/App";
 
 const LOCALHOST_WEBVIEW_URI = "http://localhost:9333";
