@@ -14,6 +14,7 @@ export class RequestManager {
   private _requestChannel: string;
   private _responseChannel: string;
   private _parent?: boolean;
+  private _url?: string;
 
   constructor(
     requestChannel: string,
@@ -25,6 +26,9 @@ export class RequestManager {
     this._requestId = 0;
     this._responseResolvers = {};
     this._parent = parent;
+    if (parent) {
+      this._url = window.location.href;
+    }
     this._initChannels();
   }
 
@@ -63,7 +67,7 @@ export class RequestManager {
       window.parent.postMessage(
         {
           type: this._requestChannel,
-          href: window.location.href,
+          href: this._url ?? window.location.href,
           detail: {
             id,
             method,
