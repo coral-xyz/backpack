@@ -85,24 +85,25 @@ export const Onboarding = () => {
           />
 
           <Route path="/waitingRoom" element={<WaitingRoom />} />
+
           <Route path="/:inviteCode" element={<UsernameForm />} />
 
           {/* RECOVER WALLET FLOW */}
-          <Route path="recover" element={<RecoverAccount />} />
+          <Route path="/recover" element={<RecoverAccount />} />
           <Route
-            path="recover/:usernameAndPubkey"
+            path="/recover/:blockchain/:usernameAndPubkey"
             element={<RecoverAccountWithRecoveryPhrase />}
           />
           <Route
-            path="recover/:usernameAndPubkey/:mnemonic"
+            path="/recover/:blockchain/:usernameAndPubkey/:mnemonic"
             element={<ImportAccounts />}
           />
           <Route
-            path="recover/:usernameAndPubkey/:mnemonic/:accountsAndDerivationPath"
+            path="/recover/:blockchain/:usernameAndPubkey/:mnemonic/:accountsAndDerivationPath"
             element={<SetPassword />}
           />
           <Route
-            path="recover/:usernameAndPubkey/:mnemonic/:accountsAndDerivationPath/:password/finish"
+            path="/recover/:blockchain/:usernameAndPubkey/:mnemonic/:accountsAndDerivationPath/:password/finish"
             element={<Finish />}
           />
 
