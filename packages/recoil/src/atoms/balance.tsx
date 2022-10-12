@@ -1,5 +1,5 @@
 import { selector, selectorFamily } from "recoil";
-import { Blockchain } from "@coral-xyz/common";
+import { Blockchain, getLogger } from "@coral-xyz/common";
 import {
   solanaTokenBalance,
   solanaTokenAccountKeys,
@@ -11,6 +11,8 @@ import {
 } from "./ethereum/token";
 import { ethereumTokenMetadata } from "./ethereum/token-metadata";
 import { TokenData, TokenNativeData } from "../types";
+
+const logger = getLogger("mobile-app");
 
 /**
  * Return token balances sorted by usd notional balances.
@@ -24,6 +26,7 @@ export const blockchainBalancesSorted = selectorFamily<
     (blockchain: Blockchain) =>
     ({ get }) => {
       const tokenAddresses = get(blockchainTokenAddresses(blockchain));
+      console.log({ tokenAddresses });
       const tokenData = tokenAddresses
         .map(
           (address) =>
@@ -35,6 +38,7 @@ export const blockchainBalancesSorted = selectorFamily<
             )!
         )
         .filter(Boolean);
+      console.log({ tokenData });
       return tokenData.sort((a, b) => b.usdBalance - a.usdBalance);
     },
 });
@@ -164,16 +168,29 @@ export const blockchainTotalBalance = selectorFamily({
 export const totalBalance = selector({
   key: "totalBalance",
   get: ({ get }) => {
-    const solana = get(blockchainTotalBalance(Blockchain.SOLANA));
-    const ethereum = get(blockchainTotalBalance(Blockchain.ETHEREUM));
-    const totalBalance = solana.totalBalance + ethereum.totalBalance;
-    const totalChange = solana.totalChange + ethereum.totalChange;
-    const oldBalance = totalBalance - totalChange;
-    const percentChange = (totalChange / oldBalance) * 100;
+    console.log("mobile-app atoms.balance hellooooo");
+    logger._log("mobile-app totalBalance selector");
+    // const solana = get(blockchainTotalBalance(Blockchain.SOLANA));
+    // logger.debug("mobile-app", 'solana', solana)
+    // console.log("mobile-app solana", solana)
+    // const ethereum = get(blockchainTotalBalance(Blockchain.ETHEREUM));
+    // logger.debug("mobile-app", 'ethereum', ethereum)
+    // const totalBalance = solana.totalBalance + ethereum.totalBalance;
+    // logger.debug("mobile-app", 'totalBalance', totalBalance)
+    // const totalChange = solana.totalChange + ethereum.totalChange;
+    // const oldBalance = totalBalance - totalChange;
+    // const percentChange = (totalChange / oldBalance) * 100;
+    // logger.debug('mobile-app: totalBalance', {solana, ethereum, totalBalance, totalChange, oldBalance, percentChange })
+    //
+    // return {
+    //   totalBalance: parseFloat(totalBalance.toFixed(2)),
+    //   totalChange: parseFloat(totalChange.toFixed(2)),
+    //   percentChange: parseFloat(percentChange.toFixed(2)),
+    // };
     return {
-      totalBalance: parseFloat(totalBalance.toFixed(2)),
-      totalChange: parseFloat(totalChange.toFixed(2)),
-      percentChange: parseFloat(percentChange.toFixed(2)),
+      totalBalance: 10,
+      totalChange: 10,
+      percentChange: 10,
     };
   },
 });

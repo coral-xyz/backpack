@@ -24,10 +24,12 @@ export const priceData = atomFamily<TokenDisplay | null, string>({
     get:
       (address: string) =>
       ({ get }: any) => {
+        console.log("address", address);
         const allPrices = new Map([
           ...get(pricesForIds),
           ...get(pricesForErc20Addresses),
         ]);
+        console.log("allPrices", allPrices);
         return allPrices.get(address) as TokenDisplay;
       },
   }),
