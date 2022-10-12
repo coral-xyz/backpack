@@ -41,7 +41,10 @@ export const RecoverAccount = () => {
         if (!res.ok) throw new Error(json.message);
 
         navigate(
-          `${pathname}/${JSON.stringify({ username, pubkey: json.pubkey })}`
+          `${pathname}/${json.blockchain}/${JSON.stringify({
+            username,
+            pubkey: json.pubkey,
+          })}`
         );
       } catch (err: any) {
         setError(err.message || "Something went wrong");
