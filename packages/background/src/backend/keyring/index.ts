@@ -9,7 +9,6 @@ import {
   SolanaCluster,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   BACKEND_EVENT,
-  BACKPACK_FEATURE_MULTICHAIN,
 } from "@coral-xyz/common";
 import * as crypto from "./crypto";
 import { SolanaHdKeyringFactory } from "./solana";
@@ -59,23 +58,17 @@ export class KeyringStore {
     const keyring = await this.initBlockchainKeyring(
       derivationPath,
       accountIndices,
-      Blockchain.SOLANA
+      Blockchain.SOLANA,
+      // Don't persist, as we persist manually later
+      false
     );
-
-    if (BACKPACK_FEATURE_MULTICHAIN) {
-      // Init Ethereum
-      await this.initBlockchainKeyring(
-        derivationPath,
-        accountIndices,
-        Blockchain.ETHEREUM
-      );
-    }
 
     // Persist the initial wallet ui metadata.
     await store.setWalletData({
       username,
       autoLockSecs: store.DEFAULT_LOCK_INTERVAL_SECS,
       approvedOrigins: [],
+      enabledBlockchains: [Blockchain.SOLANA],
       darkMode: DEFAULT_DARK_MODE,
       solana: {
         explorer: SolanaExplorer.DEFAULT,
@@ -101,7 +94,8 @@ export class KeyringStore {
   public async initBlockchainKeyring(
     derivationPath: DerivationPath,
     accountIndices: Array<number>,
-    blockchain: Blockchain
+    blockchain: Blockchain,
+    persist = true
   ): Promise<BlockchainKeyring> {
     const keyring = {
       [Blockchain.SOLANA]: BlockchainKeyring.solana,
@@ -109,6 +103,9 @@ export class KeyringStore {
     }[blockchain]();
     await keyring.init(this.mnemonic, derivationPath, accountIndices);
     this.blockchains.set(blockchain, keyring);
+    if (persist) {
+      await this.persist();
+    }
     return keyring;
   }
 
@@ -146,19 +143,18 @@ export class KeyringStore {
   }
 
   // Return the public keys of all blockchain keyrings in the keyring.
-  public publicKeys(): {
+  public async publicKeys(): Promise<{
     [key: string]: {
       hdPublicKeys: Array<string>;
       importedPublicKeys: Array<string>;
       ledgerPublicKeys: Array<string>;
     };
-  } {
-    return this.withUnlock(() => {
-      const entries = Array.from(this.blockchains).map(
-        ([blockchain, keyring]) => {
-          return [blockchain, keyring.publicKeys()];
-        }
-      );
+  }> {
+    return await this.withUnlock(async () => {
+      const entries = (await this.enabledBlockchains()).map((blockchain) => {
+        const keyring = this.keyringForBlockchain(blockchain);
+        return [blockchain, keyring.publicKeys()];
+      });
       return Object.fromEntries(entries);
     });
   }
@@ -387,13 +383,32 @@ export class KeyringStore {
     this.lastUsedTs = Date.now() / 1000;
   }
 
+  public async enabledBlockchains(): Promise<Array<Blockchain>> {
+    const data = await store.getWalletData();
+    if (!data.enabledBlockchains) {
+      // Keyring created prior to this feature being added, so data does not
+      // exist, write it using all blockchains in keyring
+      const enabledBlockchains = [...this.blockchains.keys()].map(
+        (b) => b as Blockchain
+      );
+      await store.setWalletData({
+        ...data,
+        enabledBlockchains,
+      });
+      return enabledBlockchains;
+    }
+    return data.enabledBlockchains;
+  }
+
   /**
    * Return all the active public keys for all enabled blockchains.
    */
   public async activeWallets(): Promise<string[]> {
     return this.withUnlock(async () => {
-      return [...this.blockchains.values()]
-        .map((bc) => bc.getActiveWallet())
+      return (await this.enabledBlockchains())
+        .map((blockchain) =>
+          this.keyringForBlockchain(blockchain).getActiveWallet()
+        )
         .filter((w) => w !== undefined) as string[];
     });
   }

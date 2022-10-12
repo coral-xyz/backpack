@@ -1,5 +1,5 @@
 import { selector, selectorFamily } from "recoil";
-import { Blockchain, getLogger } from "@coral-xyz/common";
+import { Blockchain } from "@coral-xyz/common";
 import {
   solanaTokenBalance,
   solanaTokenAccountKeys,
@@ -12,8 +12,6 @@ import {
 import { ethereumTokenMetadata } from "./ethereum/token-metadata";
 import { TokenData, TokenNativeData } from "../types";
 
-const logger = getLogger("mobile-app");
-
 /**
  * Return token balances sorted by usd notional balances.
  */
@@ -25,9 +23,7 @@ export const blockchainBalancesSorted = selectorFamily<
   get:
     (blockchain: Blockchain) =>
     ({ get }) => {
-      console.log("mobile-app", "blockchainBalancesSorted");
       const tokenAddresses = get(blockchainTokenAddresses(blockchain));
-      console.log("mobile-app blockchainBalancesSorted", { tokenAddresses });
       const tokenData = tokenAddresses
         .map(
           (address) =>
@@ -39,7 +35,6 @@ export const blockchainBalancesSorted = selectorFamily<
             )!
         )
         .filter(Boolean);
-      console.log({ tokenData });
       return tokenData.sort((a, b) => b.usdBalance - a.usdBalance);
     },
 });
@@ -103,7 +98,6 @@ export const blockchainTokenData = selectorFamily<
   get:
     ({ address, blockchain }: { address: string; blockchain: Blockchain }) =>
     ({ get }) => {
-      console.log("blockchainTokenData:address", address);
       switch (blockchain) {
         case Blockchain.SOLANA:
           return get(solanaTokenBalance(address));
@@ -170,16 +164,12 @@ export const blockchainTotalBalance = selectorFamily({
 export const totalBalance = selector({
   key: "totalBalance",
   get: ({ get }) => {
-    console.log("mobile-app atoms.balance hellooooo");
-    logger._log("mobile-app totalBalance selector");
-
     const solana = get(blockchainTotalBalance(Blockchain.SOLANA));
     const ethereum = get(blockchainTotalBalance(Blockchain.ETHEREUM));
     const totalBalance = solana.totalBalance + ethereum.totalBalance;
     const totalChange = solana.totalChange + ethereum.totalChange;
     const oldBalance = totalBalance - totalChange;
     const percentChange = (totalChange / oldBalance) * 100;
-
     return {
       totalBalance: parseFloat(totalBalance.toFixed(2)),
       totalChange: parseFloat(totalChange.toFixed(2)),

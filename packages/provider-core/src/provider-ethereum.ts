@@ -149,14 +149,14 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
   }
 
   // Setup channels with the content script.
-  #initChannels() {
+  #initChannels = () => {
     window.addEventListener("message", this._handleNotification.bind(this));
-  }
+  };
 
-  #setState(updatedState) {
+  #setState = (updatedState) => {
     this.#state = updatedState;
     Object.freeze(this.#state);
-  }
+  };
 
   //
   // Public methods
@@ -165,20 +165,20 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
   /**
    * Returns whether the provider can process RPC requests.
    */
-  isConnected(): boolean {
+  isConnected = (): boolean => {
     return this.#state.isConnected;
-  }
+  };
 
   // Deprecated EIP-1193 method
-  async enable(): Promise<unknown> {
+  enable = async (): Promise<unknown> => {
     return this.request({ method: "eth_requestAccounts" });
-  }
+  };
 
   // Deprecated EIP-1193 method
-  send(
+  send = (
     methodOrRequest: string | RequestArguments,
     paramsOrCallback: Array<unknown> | EthersSendCallback
-  ): Promise<unknown> | void {
+  ): Promise<unknown> | void => {
     if (
       typeof methodOrRequest === "string" &&
       typeof paramsOrCallback !== "function"
@@ -194,13 +194,13 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
       return this.sendAsync(methodOrRequest, paramsOrCallback);
     }
     return Promise.reject(new Error("Unsupported function parameters"));
-  }
+  };
 
   // Deprecated EIP-1193 method still in use by some DApps
-  sendAsync(
+  sendAsync = (
     request: RequestArguments & { id?: number; jsonrpc?: string },
     callback: (error: unknown, response: unknown) => void
-  ): Promise<unknown> | void {
+  ): Promise<unknown> | void => {
     return this.request(request).then(
       (response) =>
         callback(null, {
@@ -210,12 +210,12 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
         }),
       (error) => callback(error, null)
     );
-  }
+  };
 
   /**
    *
    */
-  async request(args: RequestArguments): Promise<JsonRpcResponse> {
+  request = async (args: RequestArguments): Promise<JsonRpcResponse> => {
     if (!args || typeof args !== "object" || Array.isArray(args)) {
       throw ethErrors.rpc.invalidRequest({
         message: messages.errors.invalidRequestArgs(),
@@ -297,7 +297,7 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
       }
       return resolve(rpcResult);
     });
-  }
+  };
 
   //
   // Private methods
@@ -306,7 +306,7 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
   /**
    *  Handle notifications from Backpack.
    */
-  _handleNotification(event: Event) {
+  _handleNotification = (event: Event) => {
     if (event.data.type !== CHANNEL_ETHEREUM_NOTIFICATION) return;
     logger.debug("notification", event);
 
@@ -329,12 +329,12 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
       default:
         throw new Error(`unexpected notification ${event.data.detail.name}`);
     }
-  }
+  };
 
   /**
    * Handle a connect notification from Backpack.
    */
-  async _handleNotificationConnected(event) {
+  _handleNotificationConnected = async (event) => {
     const { publicKey, connectionUrl, chainId } = event.data.detail.data;
     this.#publicKey = publicKey;
     this.#provider = new ethers.providers.JsonRpcProvider(
@@ -344,12 +344,12 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
     this.#handleConnect(chainId);
     this.#handleChainChanged(chainId);
     this.#handleAccountsChanged([this.#publicKey]);
-  }
+  };
 
   /**
    * Handle a disconnection notification from Backpack.
    */
-  async _handleNotificationDisconnected() {
+  _handleNotificationDisconnected = async () => {
     if (this.isConnected()) {
       // Reset public state
       this.#chainId = null;
@@ -364,36 +364,36 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
       code: 4900,
       message: "User disconnected",
     } as ProviderRpcError);
-  }
+  };
 
   /**
    * Handle a change of the RPC connection URL in Backpack. This may also be a change
    * of the chainId/network if the change was to a different network RPC.
    */
-  async _handleNotificationConnectionUrlUpdated(event: any) {
+  _handleNotificationConnectionUrlUpdated = async (event: any) => {
     const { connectionUrl } = event.data.detail.data;
     this.#provider = new BackgroundEthereumProvider(
       this.#connectionRequestManager,
       connectionUrl
     );
-  }
+  };
 
-  async _handleNotificationChainIdUpdated(event: any) {
+  _handleNotificationChainIdUpdated = async (event: any) => {
     const { chainId } = event.data.detail.data;
     this.#handleChainChanged(chainId);
-  }
+  };
 
   /**
    * Handle a change of the active wallet in Backpack.
    */
-  async _handleNotificationActiveWalletUpdated(event: any) {
+  _handleNotificationActiveWalletUpdated = async (event: any) => {
     const { activeWallet } = event.data.detail.data;
     if (this.#publicKey !== activeWallet) {
       this.#publicKey = activeWallet;
       // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md#accountschanged
       this.#handleAccountsChanged([this.#publicKey]);
     }
-  }
+  };
 
   /**
    * Update local state and emit required event for connect.
@@ -418,19 +418,19 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
   /**
    * Emit the required event for a change of accounts.
    */
-  async #handleAccountsChanged(accounts: unknown[]) {
+  #handleAccountsChanged = async (accounts: unknown[]) => {
     this.emit("accountsChanged", accounts);
-  }
+  };
 
   /**
    * Handle eth_accounts requests
    */
-  async #handleEthAccounts() {
+  #handleEthAccounts = async () => {
     if (this.isConnected() && this.publicKey) {
       return [this.publicKey];
     }
     return [];
-  }
+  };
 
   /**
    * Handle eth_requestAccounts requests
