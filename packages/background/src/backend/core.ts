@@ -398,6 +398,7 @@ export class Backend {
 
   // Creates a brand new keyring store. Should be run once on initializtion.
   async keyringStoreCreate(
+    blockchain: Blockchain,
     mnemonic: string,
     derivationPath: DerivationPath,
     password: string,
@@ -408,6 +409,7 @@ export class Backend {
     userIsRecoveringWallet = false
   ): Promise<string> {
     const keyring = await this.keyringStore.init(
+      blockchain,
       mnemonic,
       derivationPath,
       password,

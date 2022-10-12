@@ -45,6 +45,7 @@ export class KeyringStore {
 
   // Initializes the keystore for the first time.
   public async init(
+    blockchain: Blockchain,
     mnemonic: string,
     derivationPath: DerivationPath,
     password: string,
@@ -58,7 +59,7 @@ export class KeyringStore {
     const keyring = await this.initBlockchainKeyring(
       derivationPath,
       accountIndices,
-      Blockchain.SOLANA,
+      blockchain,
       // Don't persist, as we persist manually later
       false
     );
@@ -68,7 +69,7 @@ export class KeyringStore {
       username,
       autoLockSecs: store.DEFAULT_LOCK_INTERVAL_SECS,
       approvedOrigins: [],
-      enabledBlockchains: [Blockchain.SOLANA],
+      enabledBlockchains: [blockchain],
       darkMode: DEFAULT_DARK_MODE,
       solana: {
         explorer: SolanaExplorer.DEFAULT,
