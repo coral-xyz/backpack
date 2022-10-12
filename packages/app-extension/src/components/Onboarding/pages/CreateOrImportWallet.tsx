@@ -54,6 +54,7 @@ export const CreateOrImportWallet = () => {
               onClick={() => navigate(`${pathname}/import`.replace("//", "/"))}
             />
           </Grid>
+          {/*
           <Grid item xs={6}>
             <ActionCard
               icon={
@@ -67,6 +68,7 @@ export const CreateOrImportWallet = () => {
               onClick={() => navigate(`${pathname}/connect`.replace("//", "/"))}
             />
           </Grid>
+          */}
         </Grid>
       </Box>
     </div>
