@@ -33,6 +33,7 @@ const CreateUser = z.object({
     return false;
   }, "must be a valid Solana public key"),
   waitlistId: z.optional(z.nullable(z.string())),
+  blockchain: z.enum(["ethereum", "solana"]),
 });
 
 // ----- routing -----
@@ -165,6 +166,7 @@ app.post("/users", async (c) => {
           invitation_id: variables.inviteCode,
           pubkey: variables.publicKey,
           waitlist_id: variables.waitlistId,
+          blockchain: variables.blockchain,
         },
       },
       {
