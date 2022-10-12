@@ -1,10 +1,5 @@
-import React, { useState } from "react";
-import { Scrollbars } from "react-custom-scrollbars";
-import type { Element } from "react-xnft";
-import { motion, AnimatePresence } from "framer-motion";
-import { NodeKind } from "react-xnft";
-import { formatUSD, proxyImageUrl } from "@coral-xyz/common";
-import { useCustomTheme, styles } from "@coral-xyz/themes";
+import { TextareaAutosize as MuiTextArea } from "@mui/base";
+import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import {
   Button as MuiButton,
   Card,
@@ -13,14 +8,17 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  Typography,
   TextField as MuiTextField,
-  CircularProgress,
+  Typography,
 } from "@mui/material";
-import { TextareaAutosize as MuiTextArea } from "@mui/base";
-import { ExpandMore, ExpandLess } from "@mui/icons-material";
-import { usePluginContext } from "./Context";
-import { ViewRenderer } from "./ViewRenderer";
+import React, { useState } from "react";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { formatUSD, proxyImageUrl } from "@coral-xyz/common";
+import { Element } from "react-xnft";
+import { ViewRenderer } from "react-xnft-dom-reconciler/src/ViewRenderer";
+import { Scrollbars } from "react-custom-scrollbars";
+import { motion } from "framer-motion";
+import { MOTION_VARIANTS } from "react-xnft-dom-reconciler/src/Component";
 
 const useStyles = styles((theme) => ({
   blockchainLogo: {
@@ -208,208 +206,164 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function Component({ viewData }) {
-  const { id, props, style, kind } = viewData;
-  switch (kind) {
-    case NodeKind.View:
-      return (
-        <View
-          id={id}
-          props={props}
-          style={style}
-          children={viewData.children}
-        />
-      );
-    case NodeKind.Text:
-      return <Text props={props} style={style} children={viewData.children} />;
-    case NodeKind.TextField:
-      return (
-        <_TextField
-          id={id}
-          props={props}
-          style={style}
-          children={viewData.children}
-        />
-      );
-    case NodeKind.Table:
-      return <Table props={props} style={style} />;
-    case NodeKind.Image:
-      return (
-        <Image
-          id={id}
-          props={props}
-          style={style}
-          children={viewData.children}
-        />
-      );
-    case NodeKind.Button:
-      return (
-        <_Button
-          id={id}
-          props={props}
-          style={style}
-          childrenRenderer={viewData.children}
-        />
-      );
-    case NodeKind.Loading:
-      return <Loading id={id} props={props} style={style} />;
-    case NodeKind.ScrollBar:
-      return (
-        <ScrollBar
-          id={id}
-          props={props}
-          style={style}
-          children={viewData.children}
-        />
-      );
-    case NodeKind.Svg:
-      return <Svg props={props} children={viewData.children} />;
-    case NodeKind.Path:
-      return <Path props={props} />;
-    case NodeKind.Circle:
-      return <Circle props={props} />;
-    case NodeKind.NavAnimation:
-      return <NavAnimation props={props} children={viewData.children} />;
-    case NodeKind.Iframe:
-      return <Iframe props={props} style={style} />;
-    case NodeKind.BalancesTable:
-      return (
-        <BalancesTable
-          props={props}
-          style={style}
-          childrenRenderer={viewData.children}
-        />
-      );
-    case NodeKind.BalancesTableHead:
-      return <BalancesTableHead props={props} style={style} />;
-    case NodeKind.BalancesTableContent:
-      return (
-        <BalancesTableContent
-          props={props}
-          style={style}
-          childrenRenderer={viewData.children}
-        />
-      );
-    case NodeKind.BalancesTableRow:
-      return (
-        <_BalancesTableRow
-          id={id}
-          props={props}
-          style={style}
-          childrenRenderer={viewData.children}
-        />
-      );
-    case NodeKind.BalancesTableCell:
-      return <BalancesTableCell props={props} style={style} />;
-    case NodeKind.BalancesTableFooter:
-      return (
-        <BalancesTableFooter
-          props={props}
-          style={style}
-          children={viewData.children}
-        />
-      );
-    case "raw":
-      return <Raw text={viewData.text} />;
-    default:
-      console.error(viewData);
-      throw new Error("unexpected view data");
-  }
-}
-
-function Svg({ props, children }: any) {
+export function TextArea({
+  maxRows,
+  minRows,
+  value,
+  setValue,
+  placeholder,
+  style,
+  className = "",
+}: any) {
+  const classes = useStyles();
+  className =
+    className +
+    `${classes.textAreaInput} ${
+      value ? classes.textFieldInputColor : classes.textFieldInputColorEmpty
+    }
+    `;
   return (
-    <svg
-      width={props.width}
-      height={props.height}
-      viewBox={props.viewBox}
-      fill={props.fill}
-    >
-      {children &&
-        children.map((c: Element) => <ViewRenderer key={c.id} element={c} />)}
-    </svg>
-  );
-}
-
-function Path({ props }: any) {
-  return (
-    <path
-      d={props.d}
-      fillRule={props.fillRule}
-      clipRule={props.clipRule}
-      fill={props.fill}
-      stroke={props.stroke}
-    />
-  );
-}
-
-function Circle({ props }: any) {
-  return (
-    <circle
-      cx={props.cx}
-      cy={props.cy}
-      r={props.r}
-      fill={props.fill}
-      stroke={props.stroke}
-      stroke-width={props.strokeWidth}
-      pathLength={props.pathLength}
-      stroke-dasharray={props.strokeDasharray}
-      stroke-dashoffset={props.strokeDashoffset}
-    />
-  );
-}
-
-function Iframe({ props, style }: any) {
-  const { plugin } = usePluginContext();
-
-  return isValidSecureUrl(props.src) ? (
-    <iframe
-      sandbox="allow-same-origin allow-scripts"
-      src={props.src}
-      height={props.height}
-      width={props.width}
+    <MuiTextArea
+      maxRows={maxRows}
+      minRows={minRows}
+      onChange={(e) => setValue(e.target.value)}
+      placeholder={placeholder}
       style={{
-        position: "absolute",
-        border: "none",
         width: "100%",
-        height: "100%",
-        maxWidth: "100%",
-        maxHeight: "100%",
-        overflowY: "hidden",
         ...style,
       }}
-      onLoad={({ currentTarget }) => {
-        if (props.xnft) {
-          plugin.setActiveIframe(currentTarget, props.src);
-        }
-      }}
-    ></iframe>
-  ) : null;
+      value={value}
+      className={className}
+    />
+  );
 }
 
-const isValidSecureUrl = (url: string): boolean => {
-  try {
-    const { protocol, hostname } = new URL(url);
-    if (["localhost", "0.0.0.0", "127.0.0.1"].includes(hostname)) {
-      // allow http:// or https:// for localhost urls during development
-      return ["http:", "https:"].includes(protocol);
-    } else {
-      // only allow https:// for external urls
-      return protocol === "https:";
-    }
-  } catch (e) {
-    return false;
-  }
-};
-
-function NavAnimation({ props, children }: any) {
+export function TextField({
+  placeholder,
+  type,
+  value,
+  setValue,
+  rootClass,
+  startAdornment,
+  endAdornment,
+  isError,
+  inputProps,
+  disabled,
+  autoFocus,
+  rows,
+  select,
+  children,
+  style,
+}: any) {
+  const classes = useStyles();
+  inputProps = Object.assign(
+    {
+      className: `${classes.textFieldInput} ${
+        value ? classes.textFieldInputColor : classes.textFieldInputColorEmpty
+      }`,
+    },
+    inputProps
+  );
   return (
-    <AnimatePresence initial={false}>
-      <WithMotion id={props.routeName} navAction={props.navAction}>
-        {children &&
-          children.map((c: Element) => <ViewRenderer key={c.id} element={c} />)}
-      </WithMotion>
-    </AnimatePresence>
+    <MuiTextField
+      autoFocus={autoFocus}
+      multiline={!!rows}
+      rows={rows}
+      disabled={disabled}
+      placeholder={placeholder}
+      variant="outlined"
+      margin="dense"
+      required
+      fullWidth
+      type={type}
+      inputProps={inputProps}
+      classes={{
+        root: `${isError ? classes.textRootError : ""} ${
+          classes.textFieldRoot
+        } ${rootClass ?? ""}`,
+      }}
+      InputLabelProps={{
+        shrink: false,
+        style: {
+          borderRadius: "12px",
+        },
+      }}
+      InputProps={{
+        startAdornment,
+        endAdornment,
+      }}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      select={select}
+      children={children}
+      style={style}
+    />
+  );
+}
+
+export function BalancesTableCell({ props, style }: any) {
+  const { icon, title, subtitle, usdValue, percentChange } = props;
+  const classes = useStyles();
+
+  const positive = percentChange && percentChange > 0 ? true : false;
+  const negative = percentChange && percentChange < 0 ? true : false;
+  const neutral = percentChange && percentChange === 0 ? true : false;
+
+  return (
+    <div className={classes.balancesTableCellContainer}>
+      {!!icon && (
+        <ListItemIcon
+          className={classes.tokenListItemIcon}
+          classes={{ root: classes.tokenListItemIconRoot }}
+        >
+          <ProxyImage
+            src={icon}
+            className={classes.logoIcon}
+            onError={(event) => (event.currentTarget.style.display = "none")}
+          />
+        </ListItemIcon>
+      )}
+      <div className={classes.tokenListItemContent}>
+        <div className={classes.tokenListItemRow}>
+          <Typography className={classes.tokenName}>{title}</Typography>
+          {usdValue && (
+            <Typography className={classes.tokenBalance}>
+              {formatUSD(usdValue)}
+            </Typography>
+          )}
+        </div>
+        <div className={classes.tokenListItemRow}>
+          {subtitle && (
+            <Typography className={classes.tokenAmount}>{subtitle}</Typography>
+          )}
+          {percentChange !== undefined && positive && (
+            <Typography className={classes.tokenBalanceChangePositive}>
+              +{formatUSD(percentChange.toLocaleString())}
+            </Typography>
+          )}
+          {percentChange !== undefined && negative && (
+            <Typography className={classes.tokenBalanceChangeNegative}>
+              {formatUSD(percentChange.toLocaleString())}
+            </Typography>
+          )}
+          {percentChange !== undefined && neutral && (
+            <Typography className={classes.tokenBalanceChangeNeutral}>
+              {formatUSD(percentChange.toLocaleString())}
+            </Typography>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function BalancesTableFooter({ props, style, children }: any) {
+  return (
+    <div style={style}>
+      {children.map((c: Element) => (
+        <ViewRenderer key={c.id} element={c} />
+      ))}
+    </div>
   );
 }
 
@@ -575,29 +529,6 @@ export function BalancesTableRow({
   );
 }
 
-function _BalancesTableRow({
-  id,
-  props,
-  style,
-  children,
-  childrenRenderer,
-}: any) {
-  const { plugin } = usePluginContext();
-  const clickHandler = !props.onClick
-    ? undefined
-    : (_) => plugin.pushClickNotification(id);
-  return (
-    <__BalancesTableRow
-      id={id}
-      props={props}
-      style={style}
-      children={children}
-      childrenRenderer={childrenRenderer}
-      onClick={clickHandler}
-    />
-  );
-}
-
 function __BalancesTableRow({
   id,
   props,
@@ -623,243 +554,6 @@ function __BalancesTableRow({
   );
 }
 
-export function BalancesTableCell({ props, style }: any) {
-  const { icon, title, subtitle, usdValue, percentChange } = props;
-  const classes = useStyles();
-
-  const positive = percentChange && percentChange > 0 ? true : false;
-  const negative = percentChange && percentChange < 0 ? true : false;
-  const neutral = percentChange && percentChange === 0 ? true : false;
-
-  return (
-    <div className={classes.balancesTableCellContainer}>
-      {!!icon && (
-        <ListItemIcon
-          className={classes.tokenListItemIcon}
-          classes={{ root: classes.tokenListItemIconRoot }}
-        >
-          <ProxyImage
-            src={icon}
-            className={classes.logoIcon}
-            onError={(event) => (event.currentTarget.style.display = "none")}
-          />
-        </ListItemIcon>
-      )}
-      <div className={classes.tokenListItemContent}>
-        <div className={classes.tokenListItemRow}>
-          <Typography className={classes.tokenName}>{title}</Typography>
-          {usdValue && (
-            <Typography className={classes.tokenBalance}>
-              {formatUSD(usdValue)}
-            </Typography>
-          )}
-        </div>
-        <div className={classes.tokenListItemRow}>
-          {subtitle && (
-            <Typography className={classes.tokenAmount}>{subtitle}</Typography>
-          )}
-          {percentChange !== undefined && positive && (
-            <Typography className={classes.tokenBalanceChangePositive}>
-              +{formatUSD(percentChange.toLocaleString())}
-            </Typography>
-          )}
-          {percentChange !== undefined && negative && (
-            <Typography className={classes.tokenBalanceChangeNegative}>
-              {formatUSD(percentChange.toLocaleString())}
-            </Typography>
-          )}
-          {percentChange !== undefined && neutral && (
-            <Typography className={classes.tokenBalanceChangeNeutral}>
-              {formatUSD(percentChange.toLocaleString())}
-            </Typography>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function BalancesTableFooter({ props, style, children }: any) {
-  return (
-    <div style={style}>
-      {children.map((c: Element) => (
-        <ViewRenderer key={c.id} element={c} />
-      ))}
-    </div>
-  );
-}
-
-function View({ id, props, style, children }: any) {
-  const { plugin } = usePluginContext();
-  const onClick = !props.onClick
-    ? undefined
-    : (_event) => {
-        plugin.pushClickNotification(id);
-      };
-  return (
-    <div style={style} onClick={onClick}>
-      {children.map((c: Element) => (
-        <ViewRenderer key={c.id} element={c} />
-      ))}
-    </div>
-  );
-}
-
-function Table({ props, style, children }: any) {
-  return <></>;
-}
-
-function Text({ props, children, style }: any) {
-  style = {
-    color: "#fff", // todo: inject theme into top level renderer and set provider?
-    fontWeight: 500,
-    ...style,
-  };
-  return (
-    <Typography style={style}>
-      {children.map((c: Element) => (
-        <ViewRenderer key={c.id} element={c} />
-      ))}
-    </Typography>
-  );
-}
-
-function _TextField({ id, props, children, style }: any) {
-  const { plugin } = usePluginContext();
-  const onChange = !props.onChange
-    ? undefined
-    : (value: any) => {
-        plugin.pushOnChangeNotification(id, value);
-      };
-  if (props.multiline) {
-    return (
-      <TextArea
-        placeholder={props.placeholder}
-        value={props.value}
-        maxRows={props.numberOfLines}
-        minRows={props.numberOfLines}
-        setValue={onChange}
-        children={children}
-        style={style}
-      />
-    );
-  }
-  return (
-    <TextField
-      placeholder={props.placeholder}
-      value={props.value}
-      setValue={onChange}
-      children={children}
-      style={style}
-    />
-  );
-}
-
-export function TextArea({
-  maxRows,
-  minRows,
-  value,
-  setValue,
-  placeholder,
-  style,
-  className = "",
-}: any) {
-  const classes = useStyles();
-  className =
-    className +
-    `${classes.textAreaInput} ${
-      value ? classes.textFieldInputColor : classes.textFieldInputColorEmpty
-    }
-    `;
-  return (
-    <MuiTextArea
-      maxRows={maxRows}
-      minRows={minRows}
-      onChange={(e) => setValue(e.target.value)}
-      placeholder={placeholder}
-      style={{
-        width: "100%",
-        ...style,
-      }}
-      value={value}
-      className={className}
-    />
-  );
-}
-
-export function TextField({
-  placeholder,
-  type,
-  value,
-  setValue,
-  rootClass,
-  startAdornment,
-  endAdornment,
-  isError,
-  inputProps,
-  disabled,
-  autoFocus,
-  rows,
-  select,
-  children,
-  style,
-}: any) {
-  const classes = useStyles();
-  inputProps = Object.assign(
-    {
-      className: `${classes.textFieldInput} ${
-        value ? classes.textFieldInputColor : classes.textFieldInputColorEmpty
-      }`,
-    },
-    inputProps
-  );
-  return (
-    <MuiTextField
-      autoFocus={autoFocus}
-      multiline={!!rows}
-      rows={rows}
-      disabled={disabled}
-      placeholder={placeholder}
-      variant="outlined"
-      margin="dense"
-      required
-      fullWidth
-      type={type}
-      inputProps={inputProps}
-      classes={{
-        root: `${isError ? classes.textRootError : ""} ${
-          classes.textFieldRoot
-        } ${rootClass ?? ""}`,
-      }}
-      InputLabelProps={{
-        shrink: false,
-        style: {
-          borderRadius: "12px",
-        },
-      }}
-      InputProps={{
-        startAdornment,
-        endAdornment,
-      }}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-      select={select}
-      children={children}
-      style={style}
-    />
-  );
-}
-
-function Image({ id, props, style }: any) {
-  const { plugin } = usePluginContext();
-  const onClick = !props.onClick
-    ? undefined
-    : (_event) => {
-        plugin.pushClickNotification(id);
-      };
-  return <ProxyImage src={props.src} style={style} onClick={onClick} />;
-}
-
 function ProxyImage(props: any) {
   return (
     <img
@@ -880,25 +574,6 @@ export function Button({ id, props, style, onClick, children }: any) {
       props={props}
       style={style}
       children={children}
-      onClick={onClick}
-    />
-  );
-}
-
-export function _Button({ id, props, style, childrenRenderer }: any) {
-  const { plugin } = usePluginContext();
-  const onClick = !props.onClick
-    ? undefined
-    : (_event) => {
-        plugin.pushClickNotification(id);
-      };
-
-  return (
-    <__Button
-      id={id}
-      props={props}
-      style={style}
-      childrenRenderer={childrenRenderer}
       onClick={onClick}
     />
   );
@@ -933,25 +608,6 @@ export function __Button({
           <ViewRenderer key={c.id} element={c} />
         ))}
     </MuiButton>
-  );
-}
-
-function Loading({ id, props, style }: any) {
-  const theme = useCustomTheme();
-  style = {
-    color: theme.custom.colors.activeNavButton,
-    ...style,
-  };
-  return <CircularProgress style={style} thickness={6} />;
-}
-
-function ScrollBar({ id, props, style, children }: any) {
-  return (
-    <ScrollBarImpl>
-      {children.map((c: Element) => (
-        <ViewRenderer key={c.id} element={c} />
-      ))}
-    </ScrollBarImpl>
   );
 }
 
@@ -1001,10 +657,6 @@ export function ScrollBarImpl(props: any) {
   );
 }
 
-function Raw({ text }: any) {
-  return <>{text}</>;
-}
-
 export function WithMotion({ children, id, navAction }: any) {
   return (
     <motion.div
@@ -1024,19 +676,3 @@ export function WithMotion({ children, id, navAction }: any) {
     </motion.div>
   );
 }
-
-export const MOTION_VARIANTS = {
-  initial: {
-    opacity: 0,
-  },
-  animate: {
-    translateX: 0,
-    opacity: 1,
-    transition: { delay: 0.09 },
-  },
-  exit: {
-    translateX: window.innerWidth,
-    transition: { delay: 0.09, duration: 0.1 },
-    opacity: 0,
-  },
-};

@@ -1,19 +1,7 @@
 import ReactReconciler, { HostConfig, OpaqueHandle } from "react-reconciler";
 import { EventEmitter } from "eventemitter3";
-import {
-  getLogger,
-  Event,
-  RpcRequest,
-  CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
-  RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
-  RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
-  RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
-  RECONCILER_BRIDGE_METHOD_APPEND_CHILD,
-  RECONCILER_BRIDGE_METHOD_INSERT_IN_CONTAINER_BEFORE,
-  RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
-  RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
-  RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
-} from "@coral-xyz/common-public";
+import { Dom } from "./Dom";
+import { getLogger, Event } from "@coral-xyz/common-public";
 import { NAV_STACK } from "./Context";
 
 const logger = getLogger("react-xnft/reconciler");
@@ -24,17 +12,17 @@ export const ReactXnft = {
   render(reactNode: any) {
     window.onload = () => {
       window.xnft.on("click", (event: Event) => {
-        logger.debug("on click event", event);
-        const { viewId } = event.data;
-        const handler = getClickHandler(viewId);
-        handler();
+        // logger.debug("on click event", event);
+        // const { viewId } = event.data;
+        // const handler = getClickHandler(viewId);
+        // handler();
       });
 
       window.xnft.on("change", (event: Event) => {
-        logger.debug("on change event", event);
-        const { viewId } = event.data;
-        const handler = getOnChangeHandler(viewId);
-        handler(event);
+        // logger.debug("on change event", event);
+        // const { viewId } = event.data;
+        // const handler = getOnChangeHandler(viewId);
+        // handler(event);
       });
 
       window.xnft.on("connect", () => {
@@ -51,8 +39,8 @@ export const ReactXnft = {
 
       window.xnft.on("unmount", () => {
         logger.debug("unmount");
-        CLICK_HANDLERS = new Map();
-        ON_CHANGE_HANDLERS = new Map();
+        // CLICK_HANDLERS = new Map();
+        // ON_CHANGE_HANDLERS = new Map();
       });
 
       window.xnft.on("pop", () => {
@@ -357,7 +345,7 @@ const RECONCILER = ReactReconciler({
           // @ts-ignore
           instance.props.onClick = updatePayload.onClick;
           // @ts-ignore
-          CLICK_HANDLERS.set(instance.id, instance.props.onClick);
+          // CLICK_HANDLERS.set(instance.id, instance.props.onClick);
           delete updatePayload["onClick"];
         }
         break;
@@ -398,7 +386,7 @@ const RECONCILER = ReactReconciler({
           // @ts-ignore
           instance.props.onClick = updatePayload.onClick;
           // @ts-ignore
-          CLICK_HANDLERS.set(instance.id, instance.props.onClick);
+          // CLICK_HANDLERS.set(instance.id, instance.props.onClick);
           delete updatePayload["onClick"];
         }
         break;
@@ -417,7 +405,7 @@ const RECONCILER = ReactReconciler({
           // @ts-ignore
           instance.props.onClick = updatePayload.onClick;
           // @ts-ignore
-          CLICK_HANDLERS.set(instance.id, instance.props.onClick);
+          // CLICK_HANDLERS.set(instance.id, instance.props.onClick);
           delete updatePayload["onClick"];
         }
         break;
@@ -435,10 +423,11 @@ const RECONCILER = ReactReconciler({
         throw new Error("unexpected node kind");
     }
 
-    ReconcilerBridgeManager.bridge({
-      method: RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
-      params: [instance.id, updatePayload],
-    });
+    Dom.getInstance().commitUpdate(instance.id, updatePayload);
+    // ReconcilerBridgeManager.bridge({
+    //   method: RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
+    //   params: [instance.id, updatePayload],
+    // });
   },
   commitTextUpdate: (
     textInstance: TextSerialized,
@@ -448,28 +437,31 @@ const RECONCILER = ReactReconciler({
     logger.debug("commitTextUpdate");
     textInstance.text = nextText;
 
-    ReconcilerBridgeManager.bridge({
-      method: RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
-      params: [textInstance.id, nextText],
-    });
+    Dom.getInstance().commitTextUpdate(textInstance.id, nextText);
+    // ReconcilerBridgeManager.bridge({
+    //   method: RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
+    //   params: [textInstance.id, nextText],
+    // });
   },
   appendChildToContainer: (c: RootContainer, child: Element) => {
     logger.debug("appendChildToContainer", c, child);
     c.children.push(child);
 
-    ReconcilerBridgeManager.bridge({
-      method: RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
-      params: [child],
-    });
+    Dom.getInstance().appendChildToContainer(child);
+    // ReconcilerBridgeManager.bridge({
+    //   method: RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
+    //   params: [child],
+    // });
   },
   appendChild: (parent: NodeSerialized, child: Element) => {
     logger.debug("appendChild", parent, child);
     parent.children.push(child);
 
-    ReconcilerBridgeManager.bridge({
-      method: RECONCILER_BRIDGE_METHOD_APPEND_CHILD,
-      params: [parent.id, child],
-    });
+    Dom.getInstance().appendChild(parent.id, child);
+    // ReconcilerBridgeManager.bridge({
+    //   method: RECONCILER_BRIDGE_METHOD_APPEND_CHILD,
+    //   params: [parent.id, child],
+    // });
   },
   insertInContainerBefore: (
     root: RootContainer,
@@ -490,10 +482,11 @@ const RECONCILER = ReactReconciler({
       .concat([child])
       .concat(root.children.slice(idx));
 
-    ReconcilerBridgeManager.bridge({
-      method: RECONCILER_BRIDGE_METHOD_INSERT_IN_CONTAINER_BEFORE,
-      params: [child, before.id],
-    });
+    Dom.getInstance().insertInContainerBefore(child, before.id);
+    // ReconcilerBridgeManager.bridge({
+    //   method: RECONCILER_BRIDGE_METHOD_INSERT_IN_CONTAINER_BEFORE,
+    //   params: [child, before.id],
+    // });
   },
   insertBefore: (parent: NodeSerialized, child: Element, before: Element) => {
     logger.debug("insertBefore");
@@ -511,34 +504,37 @@ const RECONCILER = ReactReconciler({
       .concat([child])
       .concat(parent.children.slice(idx));
 
-    ReconcilerBridgeManager.bridge({
-      method: RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
-      params: [parent.id, child, before.id],
-    });
+    Dom.getInstance().insertBefore(parent.id, child, before.id);
+    // ReconcilerBridgeManager.bridge({
+    //   method: RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
+    //   params: [parent.id, child, before.id],
+    // });
   },
   removeChild: (parent: NodeSerialized, child: Element) => {
     logger.debug("removeChild", parent, child);
 
     parent.children = parent.children.filter((c) => c !== child);
-    deleteClickHandlers(child);
-    deleteOnChangeHandlers(child);
+    // deleteClickHandlers(child);
+    // deleteOnChangeHandlers(child);
 
-    ReconcilerBridgeManager.bridge({
-      method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
-      params: [parent.id, child.id],
-    });
+    Dom.getInstance().removeChild(parent.id, child.id);
+    // ReconcilerBridgeManager.bridge({
+    //   method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
+    //   params: [parent.id, child.id],
+    // });
   },
   removeChildFromContainer: (root: RootContainer, child: Element) => {
     logger.debug("removeChildFromContainer", root, child);
 
     root.children = root.children.filter((c) => c !== child);
-    deleteClickHandlers(child);
-    deleteOnChangeHandlers(child);
+    // deleteClickHandlers(child);
+    // deleteOnChangeHandlers(child);
 
-    ReconcilerBridgeManager.bridge({
-      method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
-      params: [child.id],
-    });
+    Dom.getInstance().removeChildFromContainer(child.id);
+    // ReconcilerBridgeManager.bridge({
+    //   method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
+    //   params: [],
+    // });
   },
 
   //
@@ -576,18 +572,18 @@ function createViewInstance(
   _o: OpaqueHandle
 ): ViewNodeSerialized {
   const id = h.nextId();
-  let onClick = false;
-  const vProps = props as ViewProps;
-  if (vProps.onClick && typeof vProps.onClick === "function") {
-    CLICK_HANDLERS.set(id, vProps.onClick);
-    onClick = true;
-  }
+  // let onClick = false;
+  // const vProps = props as ViewProps;
+  // if (vProps.onClick && typeof vProps.onClick === "function") {
+  //   CLICK_HANDLERS.set(id, vProps.onClick);
+  // onClick = true;
+  // }
   return {
     id,
     kind: NodeKind.View,
     props: {
       ...props,
-      onClick,
+      // onClick,
       children: undefined,
     },
     style: props.style || {},
@@ -663,7 +659,7 @@ function createTextFieldInstance(
   let onChange = false;
   const tfProps = props as TextFieldProps;
   if (tfProps.onChange && typeof tfProps.onChange === "function") {
-    ON_CHANGE_HANDLERS.set(id, tfProps.onChange);
+    // ON_CHANGE_HANDLERS.set(id, tfProps.onChange);
     onChange = true;
   }
   return {
@@ -687,12 +683,12 @@ function createImageInstance(
   _o: OpaqueHandle
 ): ImageNodeSerialized {
   const id = h.nextId();
-  let onClick = false;
-  const vProps = props as ImageProps;
-  if (vProps.onClick && typeof vProps.onClick === "function") {
-    CLICK_HANDLERS.set(id, vProps.onClick);
-    onClick = true;
-  }
+  // let onClick = false;
+  // const vProps = props as ImageProps;
+  // if (vProps.onClick && typeof vProps.onClick === "function") {
+  //   // CLICK_HANDLERS.set(id, vProps.onClick);
+  //   onClick = true;
+  // }
   const src = (props as ImageProps).src;
   return {
     id,
@@ -700,7 +696,6 @@ function createImageInstance(
     props: {
       ...props,
       src,
-      onClick,
       children: undefined,
     },
     style: props.style || {},
@@ -716,18 +711,17 @@ function createButtonInstance(
   _o: OpaqueHandle
 ): ButtonNodeSerialized {
   const id = h.nextId();
-  let onClick = false;
-  const vProps = props as ButtonProps;
-  if (vProps.onClick && typeof vProps.onClick === "function") {
-    CLICK_HANDLERS.set(id, vProps.onClick);
-    onClick = true;
-  }
+  // let onClick = false;
+  // const vProps = props as ButtonProps;
+  // if (vProps.onClick && typeof vProps.onClick === "function") {
+  //   // CLICK_HANDLERS.set(id, vProps.onClick);
+  //   onClick = true;
+  // }
   return {
     id,
     kind: NodeKind.Button,
     props: {
       ...props,
-      onClick,
       children: undefined,
     },
     style: props.style || {},
@@ -936,18 +930,18 @@ function createBalancesTableRowInstance(
   _o: OpaqueHandle
 ): BalancesTableRowNodeSerialized {
   const id = h.nextId();
-  let onClick = false;
-  const vProps = props as BalancesTableRowProps;
-  if (vProps.onClick && typeof vProps.onClick === "function") {
-    CLICK_HANDLERS.set(id, vProps.onClick);
-    onClick = true;
-  }
+  // let onClick = false;
+  // const vProps = props as BalancesTableRowProps;
+  // if (vProps.onClick && typeof vProps.onClick === "function") {
+  //   // CLICK_HANDLERS.set(id, vProps.onClick);
+  //   onClick = true;
+  // }
   return {
     id,
     kind: NodeKind.BalancesTableRow,
     props: {
       ...props,
-      onClick,
+      // onClick,
       children: undefined,
     },
     style: props.style || {},
@@ -1362,69 +1356,69 @@ type TimeoutHandle = number;
 const noTimeout = -1;
 type NoTimeout = typeof noTimeout;
 
-let CLICK_HANDLERS = new Map<number, () => void>();
-let ON_CHANGE_HANDLERS = new Map<number, (event: Event) => void>();
+// let CLICK_HANDLERS = new Map<number, () => void>();
+// let ON_CHANGE_HANDLERS = new Map<number, (event: Event) => void>();
 
 //
 // Garbage collects all click handlers from the given element being removed
 // from the DOM.
 //
-function deleteClickHandlers(element: Element) {
-  CLICK_HANDLERS.delete(element.id);
-  // @ts-ignore
-  if (element.children) {
-    // @ts-ignore
-    element.children.forEach((c) => deleteClickHandlers(c));
-  }
-}
+// function deleteClickHandlers(element: Element) {
+//   CLICK_HANDLERS.delete(element.id);
+//   // @ts-ignore
+//   if (element.children) {
+//     // @ts-ignore
+//     element.children.forEach((c) => deleteClickHandlers(c));
+//   }
+// }
 
-function deleteOnChangeHandlers(element: Element) {
-  ON_CHANGE_HANDLERS.delete(element.id);
-  // @ts-ignore
-  if (element.children) {
-    // @ts-ignore
-    element.children.forEach((c) => deleteOnChangeHandlers(c));
-  }
-}
+// function deleteOnChangeHandlers(element: Element) {
+//   ON_CHANGE_HANDLERS.delete(element.id);
+//   // @ts-ignore
+//   if (element.children) {
+//     // @ts-ignore
+//     element.children.forEach((c) => deleteOnChangeHandlers(c));
+//   }
+// }
 
-function getClickHandler(viewId: number): () => void {
-  const handler = CLICK_HANDLERS.get(viewId);
-  if (!handler) {
-    throw new Error("click handler not found");
-  }
-  return handler;
-}
+// function getClickHandler(viewId: number): () => void {
+//   const handler = CLICK_HANDLERS.get(viewId);
+//   if (!handler) {
+//     throw new Error("click handler not found");
+//   }
+//   return handler;
+// }
 
-function getOnChangeHandler(viewId: number): (event: any) => void {
-  const handler = ON_CHANGE_HANDLERS.get(viewId);
-  if (!handler) {
-    throw new Error("change handler not found");
-  }
-  return handler;
-}
+// function getOnChangeHandler(viewId: number): (event: any) => void {
+//   const handler = ON_CHANGE_HANDLERS.get(viewId);
+//   if (!handler) {
+//     throw new Error("change handler not found");
+//   }
+//   return handler;
+// }
 
-export class ReconcilerBridgeManager {
-  private static _renderId = 0;
-
-  //
-  // Send a message from the plugin-ui to the host over the reconciler bridge.
-  //
-  public static bridge(req: RpcRequest) {
-    const msg = {
-      type: CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
-      href: window.location.href,
-      detail: {
-        renderId: ReconcilerBridgeManager._nextRenderId(),
-        ...req,
-      },
-    };
-
-    window.parent.postMessage(msg, "*");
-  }
-
-  private static _nextRenderId(): number {
-    const id = ReconcilerBridgeManager._renderId;
-    ReconcilerBridgeManager._renderId += 1;
-    return id;
-  }
-}
+// export class ReconcilerBridgeManager {
+//   private static _renderId = 0;
+//
+//   //
+//   // Send a message from the plugin-ui to the host over the reconciler bridge.
+//   //
+//   public static bridge(req: RpcRequest) {
+//     const msg = {
+//       type: CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
+//       href: window.location.href,
+//       detail: {
+//         renderId: ReconcilerBridgeManager._nextRenderId(),
+//         ...req,
+//       },
+//     };
+//
+//     window.parent.postMessage(msg, "*");
+//   }
+//
+//   private static _nextRenderId(): number {
+//     const id = ReconcilerBridgeManager._renderId;
+//     ReconcilerBridgeManager._renderId += 1;
+//     return id;
+//   }
+// }
