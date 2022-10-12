@@ -7,6 +7,7 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from "../../../components/common";
+import { ProxyImage } from "../../common/ProxyImage";
 
 const useStyles = styles((theme) => ({
   contentContainer: {
@@ -141,7 +142,10 @@ function Connectable({
   return (
     <div className={classes.connectable}>
       <div className={classes.connectableIcon}>
-        <img style={{ maxWidth: "100%", maxHeight: "100%" }} src={icon} />
+        <ProxyImage
+          style={{ maxWidth: "100%", maxHeight: "100%" }}
+          src={icon}
+        />
       </div>
       <div className={classes.connectableTitle}>{title}</div>
       <div className={classes.connectableDescription}>{description}</div>

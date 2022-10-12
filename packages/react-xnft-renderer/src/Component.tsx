@@ -3,7 +3,7 @@ import { Scrollbars } from "react-custom-scrollbars";
 import type { Element } from "react-xnft";
 import { motion, AnimatePresence } from "framer-motion";
 import { NodeKind } from "react-xnft";
-import { formatUSD } from "@coral-xyz/common";
+import { formatUSD, proxyImageUrl } from "@coral-xyz/common";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import {
   Button as MuiButton,
@@ -477,7 +477,7 @@ export function BalancesTableHead({ props, style }: any) {
         onClick={() => !disableToggle && setShowContent(!showContent)}
         avatar={
           iconUrl ? (
-            <img className={classes.blockchainLogo} src={iconUrl} />
+            <ProxyImage className={classes.blockchainLogo} src={iconUrl} />
           ) : undefined
         }
         title={
@@ -638,7 +638,7 @@ export function BalancesTableCell({ props, style }: any) {
           className={classes.tokenListItemIcon}
           classes={{ root: classes.tokenListItemIconRoot }}
         >
-          <img
+          <ProxyImage
             src={icon}
             className={classes.logoIcon}
             onError={(event) => (event.currentTarget.style.display = "none")}
@@ -857,7 +857,20 @@ function Image({ id, props, style }: any) {
     : (_event) => {
         plugin.pushClickNotification(id);
       };
-  return <img src={props.src} style={style} onClick={onClick} />;
+  return <ProxyImage src={props.src} style={style} onClick={onClick} />;
+}
+
+function ProxyImage(props: any) {
+  return (
+    <img
+      {...props}
+      onError={({ currentTarget }) => {
+        currentTarget.onerror = props.onError || null;
+        currentTarget.src = props.src;
+      }}
+      src={proxyImageUrl(props.src)}
+    />
+  );
 }
 
 export function Button({ id, props, style, onClick, children }: any) {

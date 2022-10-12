@@ -8,6 +8,7 @@ import { SettingsList } from "../../../common/Settings/List";
 import { PushDetail } from "../../../common";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { EmptyState } from "../../../common/EmptyState";
+import { ProxyImage } from "../../../common/ProxyImage";
 
 export function XnftSettings() {
   const nav = useNavStack();
@@ -20,7 +21,7 @@ export function XnftSettings() {
       label: xnft.title,
       onClick: () => nav.push("xnfts-detail", { xnft }),
       icon: (props: any) => (
-        <img
+        <ProxyImage
           style={{
             marginRight: "12px",
             borderRadius: "8px",

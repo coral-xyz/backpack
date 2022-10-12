@@ -17,6 +17,7 @@ import {
 import { WithDrawer } from "../../common/Layout/Drawer";
 import { PluginApp } from "./Plugin";
 import { EmptyState } from "../../common/EmptyState";
+import { ProxyImage } from "../../common/ProxyImage";
 
 const ICON_WIDTH = 64;
 
@@ -214,7 +215,7 @@ function AppIcon({
           root: classes.pluginIconRoot,
         }}
       >
-        <img
+        <ProxyImage
           src={iconUrl}
           style={{
             width: ICON_WIDTH,
