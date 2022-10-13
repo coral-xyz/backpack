@@ -67,7 +67,8 @@ export class RequestManager {
       window.parent.postMessage(
         {
           type: this._requestChannel,
-          href: this._url ?? window.location.href,
+          // this._url will always be set here, because this._parent is true.
+          href: this._url!,
           detail: {
             id,
             method,
