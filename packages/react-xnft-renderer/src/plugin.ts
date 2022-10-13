@@ -64,7 +64,7 @@ export class Plugin {
   private _activeWallets: { [blockchain: string]: string };
   private _connectionUrls: { [blockchain: string]: string | null };
   private _rpcServer: PluginServer;
-  private _iframeRoot?: HTMLIFrameElement;
+  public iframeRoot?: HTMLIFrameElement;
   private _iframeActive?: HTMLIFrameElement;
   private _nextRenderId?: number;
   private _pendingBridgeRequests?: Array<any>;
@@ -139,28 +139,32 @@ export class Plugin {
     logger.debug("creating iframe element");
 
     this._nextRenderId = 0;
-    this._iframeRoot = document.createElement("iframe");
-    this._iframeRoot.setAttribute("fetchpriority", "low");
-    this._iframeRoot.src = this.iframeRootUrl;
-    this._iframeRoot.sandbox.add("allow-same-origin");
-    this._iframeRoot.sandbox.add("allow-scripts");
-    this._iframeRoot.onload = () => this.handleRootIframeOnLoad();
-    document.body.appendChild(this._iframeRoot);
+    this.iframeRoot = document.createElement("iframe");
+    this.iframeRoot.setAttribute("fetchpriority", "low");
+    this.iframeRoot.src = this.iframeRootUrl;
+    this.iframeRoot.sandbox.add("allow-same-origin");
+    this.iframeRoot.sandbox.add("allow-scripts");
+    this.iframeRoot.onload = () => this.handleRootIframeOnLoad();
   }
 
   // Onload handler for the top level iframe representing the xNFT.
   private handleRootIframeOnLoad() {
     logger.debug("iframe on load");
     this._pendingBridgeRequests = [];
-    const node = document.createElement("script");
-    node.src = BrowserRuntimeExtension.getUrl("renderer.js");
-    console.log(node.src);
-    this._iframeRoot?.appendChild(node);
+    // const node = document.createElement("script");
+    // node.src = BrowserRuntimeExtension.getUrl("renderer.js");
+    // console.log(node.src);
+    // console.log("before append")
+    // this.iframeRoot?.contentWindow?.document?.head.appendChild(node);
+    // console.log("after append")
+    // const node2 = document.createElement("div");
+    // node2.innerHTML = "hi there";
+    // this.iframeRoot?.contentWindow?.document?.body.appendChild(node2);
 
     //
     // Context switch to this iframe.
     //
-    this.setActiveIframe(this._iframeRoot!, this.iframeRootUrl);
+    this.setActiveIframe(this.iframeRoot!, this.iframeRootUrl);
 
     //
     // Done.
@@ -194,9 +198,9 @@ export class Plugin {
   public destroyIframe() {
     logger.debug("destroying iframe element");
 
-    document.head.removeChild(this._iframeRoot!);
-    this._iframeRoot!.remove();
-    this._iframeRoot = undefined;
+    // document.head.removeChild(this.iframeRoot!);
+    // this.iframeRoot!.remove();
+    this.iframeRoot = undefined;
     // Don't need to remove the active iframe because we've removed the root.
     this._iframeActive = undefined;
     this._rpcServer.setWindow(undefined, "");
@@ -288,7 +292,7 @@ export class Plugin {
         },
       },
     };
-    this._iframeRoot?.contentWindow?.postMessage(event, "*");
+    this.iframeRoot?.contentWindow?.postMessage(event, "*");
   }
 
   public pushOnChangeNotification(viewId: number, value: any) {
@@ -303,10 +307,11 @@ export class Plugin {
         },
       },
     };
-    this._iframeRoot?.contentWindow?.postMessage(event, "*");
+    this.iframeRoot?.contentWindow?.postMessage(event, "*");
   }
 
   public pushMountNotification() {
+    console.log("pushMountNotification");
     const event = {
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: {
@@ -314,7 +319,7 @@ export class Plugin {
         data: {},
       },
     };
-    this._iframeRoot?.contentWindow?.postMessage(event, "*");
+    this.iframeRoot?.contentWindow?.postMessage(event, "*");
   }
 
   public pushUnmountNotification() {
@@ -325,10 +330,11 @@ export class Plugin {
         data: {},
       },
     };
-    this._iframeRoot?.contentWindow?.postMessage(event, "*");
+    this.iframeRoot?.contentWindow?.postMessage(event, "*");
   }
 
   public pushConnectNotification() {
+    console.log("pushConnectNotification");
     const event = {
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: {

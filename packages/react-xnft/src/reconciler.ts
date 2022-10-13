@@ -1,6 +1,6 @@
 import ReactReconciler, { HostConfig, OpaqueHandle } from "react-reconciler";
 import { EventEmitter } from "eventemitter3";
-import { Dom } from "./Dom";
+import { ReactDom } from "./ReactDom";
 import { getLogger, Event } from "@coral-xyz/common-public";
 import { NAV_STACK } from "./Context";
 
@@ -10,6 +10,8 @@ const events = new EventEmitter();
 export const ReactXnft = {
   events,
   render(reactNode: any) {
+    console.log("render called with reactnode");
+    console.log(reactNode);
     window.onload = () => {
       window.xnft.on("click", (event: Event) => {
         // logger.debug("on click event", event);
@@ -427,7 +429,7 @@ const RECONCILER = ReactReconciler({
         throw new Error("unexpected node kind");
     }
 
-    Dom.getInstance().commitUpdate(instance.id, updatePayload);
+    ReactDom.getInstance().commitUpdate(instance.id, updatePayload);
     // ReconcilerBridgeManager.bridge({
     //   method: RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
     //   params: [instance.id, updatePayload],
@@ -441,7 +443,7 @@ const RECONCILER = ReactReconciler({
     logger.debug("commitTextUpdate");
     textInstance.text = nextText;
 
-    Dom.getInstance().commitTextUpdate(textInstance.id, nextText);
+    ReactDom.getInstance().commitTextUpdate(textInstance.id, nextText);
     // ReconcilerBridgeManager.bridge({
     //   method: RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
     //   params: [textInstance.id, nextText],
@@ -451,7 +453,7 @@ const RECONCILER = ReactReconciler({
     logger.debug("appendChildToContainer", c, child);
     c.children.push(child);
 
-    Dom.getInstance().appendChildToContainer(child);
+    ReactDom.getInstance().appendChildToContainer(child);
     // ReconcilerBridgeManager.bridge({
     //   method: RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
     //   params: [child],
@@ -461,7 +463,7 @@ const RECONCILER = ReactReconciler({
     logger.debug("appendChild", parent, child);
     parent.children.push(child);
 
-    Dom.getInstance().appendChild(parent.id, child);
+    ReactDom.getInstance().appendChild(parent.id, child);
     // ReconcilerBridgeManager.bridge({
     //   method: RECONCILER_BRIDGE_METHOD_APPEND_CHILD,
     //   params: [parent.id, child],
@@ -486,7 +488,7 @@ const RECONCILER = ReactReconciler({
       .concat([child])
       .concat(root.children.slice(idx));
 
-    Dom.getInstance().insertInContainerBefore(child, before.id);
+    ReactDom.getInstance().insertInContainerBefore(child, before.id);
     // ReconcilerBridgeManager.bridge({
     //   method: RECONCILER_BRIDGE_METHOD_INSERT_IN_CONTAINER_BEFORE,
     //   params: [child, before.id],
@@ -508,7 +510,7 @@ const RECONCILER = ReactReconciler({
       .concat([child])
       .concat(parent.children.slice(idx));
 
-    Dom.getInstance().insertBefore(parent.id, child, before.id);
+    ReactDom.getInstance().insertBefore(parent.id, child, before.id);
     // ReconcilerBridgeManager.bridge({
     //   method: RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
     //   params: [parent.id, child, before.id],
@@ -521,7 +523,7 @@ const RECONCILER = ReactReconciler({
     // deleteClickHandlers(child);
     // deleteOnChangeHandlers(child);
 
-    Dom.getInstance().removeChild(parent.id, child.id);
+    ReactDom.getInstance().removeChild(parent.id, child.id);
     // ReconcilerBridgeManager.bridge({
     //   method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
     //   params: [parent.id, child.id],
@@ -534,7 +536,7 @@ const RECONCILER = ReactReconciler({
     // deleteClickHandlers(child);
     // deleteOnChangeHandlers(child);
 
-    Dom.getInstance().removeChildFromContainer(child.id);
+    ReactDom.getInstance().removeChildFromContainer(child.id);
     // ReconcilerBridgeManager.bridge({
     //   method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
     //   params: [],

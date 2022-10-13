@@ -199,11 +199,6 @@ const options = {
           to: "injected.js",
           force: true,
         },
-        {
-          from: "../react-xnft-dom-reconciler/dist/index.js",
-          to: "renderer.js",
-          force: true,
-        },
       ],
     }),
   ],

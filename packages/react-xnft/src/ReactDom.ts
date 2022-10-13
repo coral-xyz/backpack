@@ -13,8 +13,8 @@ const logger = getLogger("react-xnft/reconciler");
 // Note that we only handle methods in the "commit" phase of the react
 // reconciler API.
 //
-export class Dom {
-  private static instance: Dom;
+export class ReactDom {
+  private static instance: ReactDom;
   //
   // All Element objects in the dom. The _vdom elements and the _vdomRoot
   // elements are the same objects.
@@ -41,7 +41,7 @@ export class Dom {
 
   static getInstance() {
     if (!this.instance) {
-      this.instance = new Dom();
+      this.instance = new ReactDom();
     }
     return this.instance;
   }
@@ -279,5 +279,5 @@ export class Dom {
 // Exposed in order to be accessable from Renderer.js
 // @ts-ignore
 if (!window.dom) {
-  Object.defineProperties(window, { dom: { value: Dom.getInstance() } });
+  Object.defineProperties(window, { dom: { value: ReactDom.getInstance() } });
 }

