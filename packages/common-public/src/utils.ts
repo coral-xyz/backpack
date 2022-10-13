@@ -1,4 +1,5 @@
 import { v1 } from "uuid";
+import { IMAGE_PROXY_URL } from "./constants";
 
 export function toTitleCase(str: string) {
   return str.slice(0, 1).toUpperCase() + str.toLowerCase().slice(1);
@@ -52,4 +53,11 @@ export function externalResourceUri(uri: string): string {
     return uri.replace("ipfs://", "https://ipfs.io/ipfs/");
   }
   return uri;
+}
+
+export function proxyImageUrl(url: string): string {
+  if (url.startsWith("/")) {
+    return url;
+  }
+  return `${IMAGE_PROXY_URL}/insecure/rs:fill:400:400:0:0/plain/${url}`;
 }
