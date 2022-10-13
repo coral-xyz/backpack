@@ -12,6 +12,7 @@ import {
 } from "@coral-xyz/common";
 import * as crypto from "./crypto";
 import { SolanaHdKeyringFactory } from "./solana";
+import { EthereumHdKeyringFactory } from "./ethereum";
 import * as store from "../store";
 import { DefaultKeyname, DEFAULT_DARK_MODE } from "../store";
 import { BlockchainKeyring } from "./blockchain";
@@ -163,11 +164,15 @@ export class KeyringStore {
   // Preview public keys for a given mnemonic and derivation path without
   // importing the mnemonic.
   public previewPubkeys(
+    blockchain: Blockchain,
     mnemonic: string,
     derivationPath: DerivationPath,
     numberOfAccounts: number
   ): string[] {
-    const factory = new SolanaHdKeyringFactory();
+    const factory = {
+      [Blockchain.SOLANA]: new SolanaHdKeyringFactory(),
+      [Blockchain.ETHEREUM]: new EthereumHdKeyringFactory(),
+    }[blockchain];
     const hdKeyring = factory.fromMnemonic(mnemonic, derivationPath, [
       ...Array(numberOfAccounts).keys(),
     ]);

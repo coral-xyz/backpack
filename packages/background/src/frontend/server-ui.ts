@@ -158,7 +158,13 @@ async function handle<T = any>(
     case UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE:
       return await handleMnemonicCreate(ctx, params[0]);
     case UI_RPC_METHOD_PREVIEW_PUBKEYS:
-      return await handlePreviewPubkeys(ctx, params[0], params[1], params[2]);
+      return await handlePreviewPubkeys(
+        ctx,
+        params[0],
+        params[1],
+        params[2],
+        params[3]
+      );
     case UI_RPC_METHOD_KEYRING_RESET:
       return await handleKeyringReset(ctx);
     //
@@ -792,11 +798,13 @@ async function handleKeyringLedgerImport(
 
 async function handlePreviewPubkeys(
   ctx: Context<Backend>,
+  blockchain: Blockchain,
   mnemonic: string,
   derivationPath: DerivationPath,
   numberOfAccounts: number
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.previewPubkeys(
+    blockchain,
     mnemonic,
     derivationPath,
     numberOfAccounts

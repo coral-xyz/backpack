@@ -702,11 +702,13 @@ export class Backend {
   }
 
   async previewPubkeys(
+    blockchain: Blockchain,
     mnemonic: string,
     derivationPath: DerivationPath,
     numberOfAccounts: number
   ) {
     return this.keyringStore.previewPubkeys(
+      blockchain,
       mnemonic,
       derivationPath,
       numberOfAccounts

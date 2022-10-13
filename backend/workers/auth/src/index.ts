@@ -74,6 +74,7 @@ app.get("/users/:username/info", async (c) => {
         limit: 1,
       },
       {
+        blockchain: true,
         pubkey: true,
       },
     ],
