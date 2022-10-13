@@ -6,6 +6,7 @@
  */
 
 import { PublicKey } from "@solana/web3.js";
+import { ethers } from "ethers";
 import { decode } from "bs58";
 import { Hono } from "hono";
 import { sign } from "tweetnacl";
@@ -142,13 +143,22 @@ app.post("/users", async (c) => {
   const body = await c.req.json();
   const variables = CreateUser.parse(body);
 
-  if (
-    !sign.detached.verify(
+  let isValidSignature = false;
+  if (variables.blockchain === "solana") {
+    isValidSignature = sign.detached.verify(
       Buffer.from(JSON.stringify(body), "utf8"),
       decode(c.req.header("x-backpack-signature")),
       decode(variables.publicKey)
-    )
-  ) {
+    );
+  } else if (variables.blockchain === "ethereum") {
+    isValidSignature =
+      ethers.utils.verifyMessage(
+        Buffer.from(JSON.stringify(body), "utf8"),
+        decode(c.req.header("x-backpack-signature"))
+      ) === variables.publicKey;
+  }
+
+  if (!isValidSignature) {
     throw new Error("Invalid signature");
   }
 
