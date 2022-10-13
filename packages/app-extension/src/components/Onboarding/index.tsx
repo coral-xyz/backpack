@@ -74,7 +74,7 @@ export const Onboarding = () => {
       >
         <Routes>
           <Route
-            path={p("")}
+            path={"/"}
             element={
               BACKPACK_FEATURE_USERNAMES ? (
                 <InviteCodeForm />
@@ -83,6 +83,8 @@ export const Onboarding = () => {
               )
             }
           />
+
+          <Route path={p("")} element={<CreateOrImportWallet />} />
 
           <Route path="/waitingRoom" element={<WaitingRoom />} />
 
