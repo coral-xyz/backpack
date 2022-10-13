@@ -13,19 +13,22 @@ function Navigator({
   style,
   top,
   disableScroll,
-  options,
+  initialTab,
 }: {
   children: any;
   style: React.CSSProperties;
   top?: boolean;
   disableScroll?: boolean;
   options?: TabsOptions;
+  initialTab?: string;
 }) {
   const isArray = children && children.length !== undefined;
   const childrenArray = isArray ? children : [children];
-  const initialTab = !children ? null : childrenArray[0].props.name;
+  const defaultTab = !children
+    ? null
+    : initialTab || childrenArray[0].props.name;
   return (
-    <TabProvider initialTab={initialTab} options={options}>
+    <TabProvider initialTab={defaultTab} options={options}>
       {top ? (
         <View
           style={{
