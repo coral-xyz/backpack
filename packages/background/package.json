@@ -6,8 +6,8 @@
   "react-native": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "start": "parcel src/service-worker-loader.html -p 9333",
-    "build:html": "parcel build src/service-worker-loader.html --dist-dir build --no-source-maps",
+    "start": "parcel src/mobile-service-worker-loader.html -p 9333",
+    "build:html": "parcel build src/mobile-service-worker-loader.html --dist-dir build --no-source-maps",
     "build": "yarn lint && tsc",
     "dev": "tsc --watch",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"

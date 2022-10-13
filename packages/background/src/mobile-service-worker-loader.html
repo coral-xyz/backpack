@@ -15,7 +15,7 @@
         // Kickoff the service worker.
         //
         const registration = await navigator.serviceWorker.register(
-          new URL("./service-worker.ts", import.meta.url),
+          new URL("./mobile-service-worker.ts", import.meta.url),
           {
             type: "module",
           }
