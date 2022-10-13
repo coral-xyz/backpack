@@ -60,6 +60,7 @@ export function NotificationsProvider(props: any) {
   const setSolanaConnectionUrl = useSetRecoilState(atoms.solanaConnectionUrl);
   const setSolanaExplorer = useSetRecoilState(atoms.solanaExplorer);
   const setSolanaCommitment = useSetRecoilState(atoms.solanaCommitment);
+  const setSolanaXnfts = useSetRecoilState(atoms.xnfts);
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   // Ethereum
   const setEthereumConnectionUrl = useSetRecoilState(
@@ -343,6 +344,11 @@ export function NotificationsProvider(props: any) {
         connectionUrl,
         customSplTokenAccounts,
       });
+    };
+
+    const handleSolanaXnftsDidUpdate = (notif: Notification) => {
+      const xnfts = notif.data.xnfts;
+      setSolanaXnfts(xnfts);
     };
 
     const handleEthereumActiveWalletUpdated = (notif: Notification) => {

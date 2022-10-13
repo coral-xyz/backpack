@@ -74,6 +74,7 @@ import { encode } from "bs58";
 import {
   getLogger,
   customSplTokenAccounts,
+  fetchXnfts,
   Blockchain,
   confirmTransaction,
   BACKEND_EVENT,
@@ -85,12 +86,14 @@ import {
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
+  NOTIFICATION_SOLANA_XNFTS_DID_UPDATE,
 } from "@coral-xyz/common";
 import type { CachedValue } from "../types";
 
 const logger = getLogger("solana-connection-backend");
 
 export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
+export const LOAD_XNFTS_REFRESH_INTERVAL = 10 * 1000;
 export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;
 // Time until cached values expire. This is arbitrary.
 const CACHE_EXPIRY = 15000;
@@ -214,6 +217,7 @@ export class SolanaConnectionBackend {
   //
   private async startPolling(activeWallet: PublicKey) {
     this.pollIntervals.push(
+      // Fetch token accounts on an interval.
       setInterval(async () => {
         const data = await customSplTokenAccounts(
           this.connection!,
@@ -239,6 +243,22 @@ export class SolanaConnectionBackend {
           },
         });
       }, LOAD_SPL_TOKENS_REFRESH_INTERVAL)
+
+      // Fetch xNFTs on an interval.
+      /*
+			this.pollIntervals.push(
+				setInterval(async () => {
+
+					this.events.emit(BACKEND_EVENT, {
+						name: NOTIFICATION_SOLANA_XNFTS_DID_UPDATE,
+						data: {
+							xnfts,
+						},
+					});
+
+				}, LOAD_XNFTS_REFRESH_INTERVAL);
+			);
+			*/
     );
 
     this.pollIntervals.push(
