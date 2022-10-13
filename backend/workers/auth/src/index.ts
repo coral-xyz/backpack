@@ -27,10 +27,18 @@ const CreateUser = z.object({
       "invalid format"
     ),
   publicKey: z.string().refine((str) => {
+    // Solana
     try {
       new PublicKey(str);
       return true;
     } catch (err) {}
+
+    // Ethereum
+    try {
+      ethers.utils.getAddress(str);
+      return true;
+    } catch (err) {}
+
     return false;
   }, "must be a valid Solana public key"),
   waitlistId: z.optional(z.nullable(z.string())),
@@ -154,7 +162,7 @@ app.post("/users", async (c) => {
     isValidSignature =
       ethers.utils.verifyMessage(
         Buffer.from(JSON.stringify(body), "utf8"),
-        decode(c.req.header("x-backpack-signature"))
+        c.req.header("x-backpack-signature")
       ) === variables.publicKey;
   }
 
