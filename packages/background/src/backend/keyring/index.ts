@@ -316,7 +316,7 @@ export class KeyringStore {
   }
 
   private isUnlocked(): boolean {
-    return this.lastUsedTs !== 0;
+    return this.blockchains.size > 0 && this.lastUsedTs !== 0;
   }
 
   private async persist(forceBecauseCalledFromInit = false) {
