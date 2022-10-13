@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "parcel src/index.tsx"
+    "build": "parcel build src/index.tsx --dist-dir dist"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +17,7 @@
     "@emotion/styled": "^11.8.1",
     "@mui/base": "^5.0.0-alpha.101",
     "@mui/icons-material": "^5.8.4",
+    "@mui/styles": "^5.8.4",
     "@mui/material": "^5.8.1",
     "@solana/web3.js": "^1.63.1",
     "framer-motion": "^6.5.1",
@@ -25,5 +26,10 @@
     "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^18.2.0",
     "react-xnft": "*"
+  },
+  "targets": {
+    "modern": {
+      "distDir": "dist"
+    }
   }
 }

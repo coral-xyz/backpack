@@ -5,8 +5,8 @@
     "xnft": "./index.js"
   },
   "scripts": {
-    "prebuild": "cd ../../examples/xnft/iframe && npm run build",
-    "build": "shx cp ../../examples/xnft/iframe/dist/index.js iframe.js"
+    "prebuild": "cd ../../examples/xnft/iframe && npm run build && cd ../../../packages/react-xnft-dom-reconciler && npm run build",
+    "build": "shx cp ../../examples/xnft/iframe/dist/index.js iframe.js && shx cp ../react-xnft-dom-reconciler/dist/index.js renderer.js"
   },
   "dependencies": {
     "@parcel/config-default": "^2.7.0",

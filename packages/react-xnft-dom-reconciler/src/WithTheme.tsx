@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ThemeProvider as OldThemeProvider } from "@mui/styles";
 import { darkTheme, lightTheme } from "@coral-xyz/themes";
 import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "@coral-xyz/common";
+import { useDomContext } from "./Context";
 
 export const WithTheme: React.FC = ({ children }) => {
   return (
@@ -14,7 +15,11 @@ export const WithTheme: React.FC = ({ children }) => {
 };
 
 const WithThemeInner: React.FC = ({ children }) => {
-  const isDarkMode = false;
+  const { metadata } = useDomContext();
+  const isDarkMode = metadata.isDarkMode;
+  console.log("inside with theme inner");
+  console.log("isDarkMode is " + isDarkMode);
+
   const [theme, rawTheme] = useMemo(() => {
     const rawTheme = isDarkMode ? darkTheme : lightTheme;
     const theme = createTheme(rawTheme as any, { custom: rawTheme.custom });

@@ -12,21 +12,8 @@ export const ReactXnft = {
   render(reactNode: any) {
     console.log("render called with reactnode");
     console.log(reactNode);
-    window.onload = () => {
-      window.xnft.on("click", (event: Event) => {
-        // logger.debug("on click event", event);
-        // const { viewId } = event.data;
-        // const handler = getClickHandler(viewId);
-        // handler();
-      });
-
-      window.xnft.on("change", (event: Event) => {
-        // logger.debug("on change event", event);
-        // const { viewId } = event.data;
-        // const handler = getOnChangeHandler(viewId);
-        // handler(event);
-      });
-
+    window.addEventListener("load", () => {
+      console.log("inside load hadnler for reconciler");
       window.xnft.on("connect", () => {
         logger.debug("connect");
         NAV_STACK.push(reactNode);
@@ -41,15 +28,13 @@ export const ReactXnft = {
 
       window.xnft.on("unmount", () => {
         logger.debug("unmount");
-        // CLICK_HANDLERS = new Map();
-        // ON_CHANGE_HANDLERS = new Map();
       });
 
       window.xnft.on("pop", () => {
         logger.debug("pop");
         NAV_STACK.pop();
       });
-    };
+    });
   },
   renderWidget(reactNode: any) {},
 };
@@ -1403,70 +1388,3 @@ type ChildSet = never;
 type TimeoutHandle = number;
 const noTimeout = -1;
 type NoTimeout = typeof noTimeout;
-
-// let CLICK_HANDLERS = new Map<number, () => void>();
-// let ON_CHANGE_HANDLERS = new Map<number, (event: Event) => void>();
-
-//
-// Garbage collects all click handlers from the given element being removed
-// from the DOM.
-//
-// function deleteClickHandlers(element: Element) {
-//   CLICK_HANDLERS.delete(element.id);
-//   // @ts-ignore
-//   if (element.children) {
-//     // @ts-ignore
-//     element.children.forEach((c) => deleteClickHandlers(c));
-//   }
-// }
-
-// function deleteOnChangeHandlers(element: Element) {
-//   ON_CHANGE_HANDLERS.delete(element.id);
-//   // @ts-ignore
-//   if (element.children) {
-//     // @ts-ignore
-//     element.children.forEach((c) => deleteOnChangeHandlers(c));
-//   }
-// }
-
-// function getClickHandler(viewId: number): () => void {
-//   const handler = CLICK_HANDLERS.get(viewId);
-//   if (!handler) {
-//     throw new Error("click handler not found");
-//   }
-//   return handler;
-// }
-
-// function getOnChangeHandler(viewId: number): (event: any) => void {
-//   const handler = ON_CHANGE_HANDLERS.get(viewId);
-//   if (!handler) {
-//     throw new Error("change handler not found");
-//   }
-//   return handler;
-// }
-
-// export class ReconcilerBridgeManager {
-//   private static _renderId = 0;
-//
-//   //
-//   // Send a message from the plugin-ui to the host over the reconciler bridge.
-//   //
-//   public static bridge(req: RpcRequest) {
-//     const msg = {
-//       type: CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
-//       href: window.location.href,
-//       detail: {
-//         renderId: ReconcilerBridgeManager._nextRenderId(),
-//         ...req,
-//       },
-//     };
-//
-//     window.parent.postMessage(msg, "*");
-//   }
-//
-//   private static _nextRenderId(): number {
-//     const id = ReconcilerBridgeManager._renderId;
-//     ReconcilerBridgeManager._renderId += 1;
-//     return id;
-//   }
-// }

@@ -308,12 +308,29 @@ export function Component({ viewData }) {
           children={viewData.children}
         />
       );
+    case NodeKind.Custom:
+      return (
+        <Custom
+          children={viewData.children}
+          component={props.component}
+          props={props}
+        />
+      );
     case "raw":
       return <Raw text={viewData.text} />;
     default:
       console.error(viewData);
       throw new Error("unexpected view data");
   }
+}
+
+function Custom({ children, component, props }) {
+  const el = React.createElement(
+    component,
+    props,
+    children.map((c) => <ViewRenderer key={c.id} element={c} />)
+  );
+  return el;
 }
 
 function Svg({ props, children }: any) {

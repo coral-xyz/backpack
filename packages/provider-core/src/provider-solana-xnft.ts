@@ -20,8 +20,6 @@ import {
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
   PLUGIN_NOTIFICATION_CONNECT,
-  PLUGIN_NOTIFICATION_ON_CLICK,
-  PLUGIN_NOTIFICATION_ON_CHANGE,
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_UNMOUNT,
   PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
@@ -29,6 +27,7 @@ import {
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
   PLUGIN_RPC_METHOD_WINDOW_OPEN,
+  PLUGIN_NOTIFICATION_UPDATE_METADATA,
 } from "@coral-xyz/common";
 import * as cmn from "./common/solana";
 import { RequestManager } from "./request-manager";
@@ -209,14 +208,11 @@ export class ProviderSolanaXnftInjection
       case PLUGIN_NOTIFICATION_MOUNT:
         this.#handleMount(event);
         break;
+      case PLUGIN_NOTIFICATION_UPDATE_METADATA:
+        this.#handleUpdateMetadata(event);
+        break;
       case PLUGIN_NOTIFICATION_UNMOUNT:
         this.#handleUnmount(event);
-        break;
-      case PLUGIN_NOTIFICATION_ON_CLICK:
-        this.#handleOnClick(event);
-        break;
-      case PLUGIN_NOTIFICATION_ON_CHANGE:
-        this.#handleOnChange(event);
         break;
       case PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
         this.#handleConnectionUrlUpdated(event);
@@ -242,17 +238,23 @@ export class ProviderSolanaXnftInjection
     this.emit("mount", event.data.detail);
   }
 
+  #handleUpdateMetadata(event: Event) {
+    console.log("send metadata via handleUpdateMetadata");
+    console.log(event.data.detail);
+    this.emit("metadata", event.data.detail);
+  }
+
   #handleUnmount(event: Event) {
     this.emit("unmount", event.data.detail);
   }
 
-  #handleOnClick(event: Event) {
-    this.emit("click", event.data.detail);
-  }
-
-  #handleOnChange(event: Event) {
-    this.emit("change", event.data.detail);
-  }
+  // #handleOnClick(event: Event) {
+  //   this.emit("click", event.data.detail);
+  // }
+  //
+  // #handleOnChange(event: Event) {
+  //   this.emit("change", event.data.detail);
+  // }
 
   #handleConnectionUrlUpdated(event: Event) {
     const connectionUrl = event.data.detail.data.url;

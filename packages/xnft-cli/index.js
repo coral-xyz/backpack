@@ -77,6 +77,9 @@ program
 
     let js;
 
+    rendererJs = fs.readFileSync(join(__dirname, "renderer.js"), {
+      encoding: "utf-8",
+    });
     if (iframe) {
       // If an iframe URL has been provided then serve the iframe xNFT example,
       // but replace the source URL with the provided one
@@ -124,10 +127,11 @@ program
           <head>
             <meta charset="utf-8"/>
           </head>
+          <title>simulator</title>
           <body>
             <div id="container"></div>
             <script>${js}</script>
-            <script src="https://xkqyfpd4epn4kl.data.mediastore.ap-southeast-2.amazonaws.com/index.js"></script>
+            <script>${rendererJs}</script>
           </body>
         </html>
       `);

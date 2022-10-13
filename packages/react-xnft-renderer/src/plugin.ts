@@ -1,5 +1,4 @@
 import { PublicKey } from "@solana/web3.js";
-import { Element } from "react-xnft";
 import {
   getLogger,
   Blockchain,
@@ -10,7 +9,6 @@ import {
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
-  CHANNEL_PLUGIN_REACT_RECONCILER_BRIDGE,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
   ETHEREUM_RPC_METHOD_SIGN_TX as PLUGIN_ETHEREUM_RPC_METHOD_SIGN_TX,
@@ -23,8 +21,6 @@ import {
   SOLANA_RPC_METHOD_SIGN_MESSAGE as PLUGIN_SOLANA_RPC_METHOD_SIGN_MESSAGE,
   PLUGIN_RPC_METHOD_WINDOW_OPEN,
   PLUGIN_NOTIFICATION_CONNECT,
-  PLUGIN_NOTIFICATION_ON_CLICK,
-  PLUGIN_NOTIFICATION_ON_CHANGE,
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_UNMOUNT,
   PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
@@ -38,17 +34,9 @@ import {
   PLUGIN_REQUEST_SOLANA_SIGN_ALL_TRANSACTIONS,
   PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION,
   PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE,
-  RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
-  RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
-  RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
-  RECONCILER_BRIDGE_METHOD_APPEND_CHILD,
-  RECONCILER_BRIDGE_METHOD_INSERT_IN_CONTAINER_BEFORE,
-  RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
-  RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
-  RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
-  BrowserRuntimeExtension,
+  PLUGIN_NOTIFICATION_UPDATE_METADATA,
 } from "@coral-xyz/common";
 
 const logger = getLogger("react-xnft-renderer/plugin");
@@ -140,6 +128,9 @@ export class Plugin {
 
     this._nextRenderId = 0;
     this.iframeRoot = document.createElement("iframe");
+    this.iframeRoot.style.width = "100%";
+    this.iframeRoot.style.height = "100vh";
+
     this.iframeRoot.setAttribute("fetchpriority", "low");
     this.iframeRoot.src = this.iframeRootUrl;
     this.iframeRoot.sandbox.add("allow-same-origin");
@@ -151,16 +142,6 @@ export class Plugin {
   private handleRootIframeOnLoad() {
     logger.debug("iframe on load");
     this._pendingBridgeRequests = [];
-    // const node = document.createElement("script");
-    // node.src = BrowserRuntimeExtension.getUrl("renderer.js");
-    // console.log(node.src);
-    // console.log("before append")
-    // this.iframeRoot?.contentWindow?.document?.head.appendChild(node);
-    // console.log("after append")
-    // const node2 = document.createElement("div");
-    // node2.innerHTML = "hi there";
-    // this.iframeRoot?.contentWindow?.document?.body.appendChild(node2);
-
     //
     // Context switch to this iframe.
     //
@@ -199,7 +180,6 @@ export class Plugin {
     logger.debug("destroying iframe element");
 
     // document.head.removeChild(this.iframeRoot!);
-    // this.iframeRoot!.remove();
     this.iframeRoot = undefined;
     // Don't need to remove the active iframe because we've removed the root.
     this._iframeActive = undefined;
@@ -230,10 +210,11 @@ export class Plugin {
   // Rendering.
   //////////////////////////////////////////////////////////////////////////////
 
-  public mount() {
+  public mount(metadata) {
     this.createIframe();
     this._didFinishSetup!.then(() => {
       this.pushMountNotification();
+      this.pushAppUiMetadata(metadata);
     });
   }
 
@@ -249,67 +230,6 @@ export class Plugin {
     });
   }
 
-  //
-  // Register a callback for when the plugin needs to rerender the root
-  // DOM element.
-  //
-  // public onRenderRoot(fn: (children: Array<Element>) => void) {
-  //   this._didFinishSetup!.then(() => {
-  //     if (!this._dom) {
-  //       throw new Error("on render root dom not found");
-  //     }
-  //     this._dom.onRenderRoot(fn);
-  //   });
-  // }
-  //
-  // //
-  // // Register a callback for when the plugin needs to rerender the given
-  // // DOM element (and all children).
-  // //
-  // public onRender(viewId: number, fn: (data: Element) => void) {
-  //   this._didFinishSetup!.then(() => {
-  //     if (!this._dom) {
-  //       throw new Error("on render dom not found");
-  //     }
-  //     this._dom.onRender(viewId, fn);
-  //   });
-  // }
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Push Notifications to Plugin iFrame.
-  //
-  // TODO: serialize ordering of notification delivery.
-  //////////////////////////////////////////////////////////////////////////////
-
-  public pushClickNotification(viewId: number) {
-    this._lastClickTsMs = Date.now();
-    const event = {
-      type: CHANNEL_PLUGIN_NOTIFICATION,
-      detail: {
-        name: PLUGIN_NOTIFICATION_ON_CLICK,
-        data: {
-          viewId,
-        },
-      },
-    };
-    this.iframeRoot?.contentWindow?.postMessage(event, "*");
-  }
-
-  public pushOnChangeNotification(viewId: number, value: any) {
-    this._lastClickTsMs = Date.now();
-    const event = {
-      type: CHANNEL_PLUGIN_NOTIFICATION,
-      detail: {
-        name: PLUGIN_NOTIFICATION_ON_CHANGE,
-        data: {
-          viewId,
-          value,
-        },
-      },
-    };
-    this.iframeRoot?.contentWindow?.postMessage(event, "*");
-  }
-
   public pushMountNotification() {
     console.log("pushMountNotification");
     const event = {
@@ -317,6 +237,21 @@ export class Plugin {
       detail: {
         name: PLUGIN_NOTIFICATION_MOUNT,
         data: {},
+      },
+    };
+    this.iframeRoot?.contentWindow?.postMessage(event, "*");
+  }
+
+  public pushAppUiMetadata(metadata) {
+    console.log(
+      "pushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadata"
+    );
+    console.log(metadata);
+    const event = {
+      type: CHANNEL_PLUGIN_NOTIFICATION,
+      detail: {
+        name: PLUGIN_NOTIFICATION_UPDATE_METADATA,
+        data: { metadata },
       },
     };
     this.iframeRoot?.contentWindow?.postMessage(event, "*");
