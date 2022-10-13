@@ -842,6 +842,9 @@ class Dom {
         if (updatePayload.fill !== undefined && updatePayload.fill !== null) {
           instance.props.fill = updatePayload.fill;
         }
+        if (updatePayload.style !== undefined && updatePayload.style !== null) {
+          instance.props.style = updatePayload.style;
+        }
         break;
       case NodeKind.Button:
         if (updatePayload.style !== undefined && updatePayload.style !== null) {

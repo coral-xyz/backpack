@@ -41,12 +41,14 @@ export function PreferencesAutoLock() {
     nav.pop();
   };
   const onSet = async () => {
-    const secs = Math.round(minutes * 60);
-    await background.request({
-      method: UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE,
-      params: [secs],
-    });
-    nav.pop();
+    if (minutes > 0) {
+      const secs = Math.round(minutes * 60);
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE,
+        params: [secs],
+      });
+      nav.pop();
+    }
   };
 
   return (
@@ -77,10 +79,10 @@ export function PreferencesAutoLock() {
         </Typography>
         <TextField
           autoFocus
-          type={"number"}
+          inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
           rootClass={classes.textRootClass}
-          value={minutes}
-          setValue={(v: number) => v > 0 && setMinutes(v)}
+          value={minutes.toString()}
+          setValue={(v: string) => setMinutes(+v.replace(/[.,]/g, ""))}
           endAdornment={
             <Typography
               style={{
@@ -104,7 +106,12 @@ export function PreferencesAutoLock() {
             border: `${theme.custom.colors.borderFull}`,
           }}
         />
-        <PrimaryButton label="Set" onClick={() => onSet()} style={{}} />
+        <PrimaryButton
+          disabled={minutes <= 0}
+          label="Set"
+          onClick={() => onSet()}
+          style={{}}
+        />
       </div>
     </div>
   );

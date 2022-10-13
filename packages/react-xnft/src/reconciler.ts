@@ -240,6 +240,11 @@ const RECONCILER = ReactReconciler({
           // @ts-ignore
           payload = { ...payload, fill: newProps.fill };
         }
+        // @ts-ignore
+        if (oldProps.style !== newProps.style) {
+          // @ts-ignore
+          payload = { ...payload, style: newProps.style };
+        }
         return payload;
       case NodeKind.Button:
         // @ts-ignore
@@ -389,6 +394,10 @@ const RECONCILER = ReactReconciler({
         if (updatePayload.fill !== undefined && updatePayload.fill !== null) {
           // @ts-ignore
           instance.props.fill = updatePayload.fill;
+        }
+        if (updatePayload.style !== undefined && updatePayload.style !== null) {
+          // @ts-ignore
+          instance.props.style = updatePayload.style;
         }
         break;
       case NodeKind.Button:
@@ -1253,6 +1262,7 @@ type PathNodeSerialized = DefNodeSerialized<NodeKind.Path, PathProps>;
 type PathProps = {
   d: string;
   fill: string;
+  style: Style;
   fillRule?: string;
   clipRule?: string;
   stroke?: string;
