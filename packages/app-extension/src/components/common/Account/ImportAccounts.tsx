@@ -203,11 +203,10 @@ export function ImportAccounts({
     mnemonic: string,
     derivationPath: DerivationPath
   ) => {
-    const publicKeys = await background.request({
+    return await background.request({
       method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-      params: [mnemonic, derivationPath, LOAD_PUBKEY_AMOUNT],
+      params: [blockchain, mnemonic, derivationPath, LOAD_PUBKEY_AMOUNT],
     });
-    return publicKeys.map((p: string) => new PublicKey(p));
   };
 
   //
