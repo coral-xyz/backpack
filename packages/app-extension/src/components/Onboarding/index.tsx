@@ -114,7 +114,7 @@ export const Onboarding = () => {
             path={p("create")}
             element={
               <BlockchainSelector
-                onSelect={(blockchain) => navigate(p(`create/${blockchain}`))}
+                onSelect={(blockchain) => navigate(`${pathname}/${blockchain}`)}
               />
             }
           />
@@ -136,7 +136,7 @@ export const Onboarding = () => {
             path={p("import")}
             element={
               <BlockchainSelector
-                onSelect={(blockchain) => navigate(p(`create/${blockchain}`))}
+                onSelect={(blockchain) => navigate(`${pathname}/${blockchain}`)}
               />
             }
           />
