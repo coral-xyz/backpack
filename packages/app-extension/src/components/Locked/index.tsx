@@ -138,8 +138,9 @@ export function BackpackHeader({
           marginTop: "16px",
           display: "flex",
           flexDirection: "row-reverse",
-          marginBottom: "4px",
-          marginRight: "58px",
+          justifyContent: "center",
+          marginLeft: "200px",
+          marginBottom: "5px",
           ...alphaStyle,
         }}
       >
