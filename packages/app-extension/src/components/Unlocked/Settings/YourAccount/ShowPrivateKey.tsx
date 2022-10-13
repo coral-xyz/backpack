@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, FormEvent } from "react";
 import { Box, List, ListItem, ListItemIcon } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -112,7 +112,9 @@ export function ShowPrivateKeyWarning({ publicKey }: { publicKey: string }) {
     };
   }, []);
 
-  const _next = async () => {
+  const next = async (e: FormEvent) => {
+    e.preventDefault();
+
     let privateKey;
     try {
       privateKey = await background.request({
@@ -128,8 +130,10 @@ export function ShowPrivateKeyWarning({ publicKey }: { publicKey: string }) {
   };
 
   return (
-    <Box
-      sx={{
+    <form
+      noValidate
+      onSubmit={next}
+      style={{
         display: "flex",
         flexDirection: "column",
         height: "100%",
@@ -202,11 +206,11 @@ export function ShowPrivateKeyWarning({ publicKey }: { publicKey: string }) {
         </Box>
         <DangerButton
           label="Show private key"
-          onClick={_next}
+          type="submit"
           disabled={password.length === 0}
         />
       </Box>
-    </Box>
+    </form>
   );
 }
 
