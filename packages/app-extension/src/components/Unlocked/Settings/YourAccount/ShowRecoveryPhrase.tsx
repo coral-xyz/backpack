@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, FormEvent } from "react";
 import { Box, List, ListItem, ListItemIcon } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ChatIcon from "@mui/icons-material/Chat";
 import WebIcon from "@mui/icons-material/Web";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
-import { styles } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC } from "@coral-xyz/common";
-import { useCustomTheme } from "@coral-xyz/themes";
 import {
   CopyButton,
   MnemonicInputFields,
@@ -99,7 +98,9 @@ export function ShowRecoveryPhraseWarning() {
     };
   }, []);
 
-  const _next = async () => {
+  const next = async (e: FormEvent) => {
+    e.preventDefault();
+
     let mnemonic;
     try {
       mnemonic = await background.request({
@@ -115,8 +116,10 @@ export function ShowRecoveryPhraseWarning() {
   };
 
   return (
-    <Box
-      sx={{
+    <form
+      noValidate
+      onSubmit={next}
+      style={{
         display: "flex",
         flexDirection: "column",
         height: "100%",
@@ -189,11 +192,11 @@ export function ShowRecoveryPhraseWarning() {
         </Box>
         <DangerButton
           label="Show phrase"
-          onClick={_next}
+          type="submit"
           disabled={password.length === 0}
         />
       </Box>
-    </Box>
+    </form>
   );
 }
 
