@@ -39,6 +39,7 @@ export function ChangePassword() {
 
   const [currentPasswordError, setCurrentPasswordError] = useState(false);
   const [passwordMismatchError, setPasswordMismatchError] = useState(false);
+  const missingNewPw = newPw1.trim() === "" || newPw2.trim() === "";
 
   useEffect(() => {
     const title = nav.title;
@@ -212,7 +213,11 @@ export function ChangePassword() {
           </SubtextParagraph>
         </div>
         <div style={{ padding: 16 }}>
-          <PrimaryButton label="Change password" type="submit" />
+          <PrimaryButton
+            label="Change password"
+            type="submit"
+            disabled={missingNewPw}
+          />
         </div>
       </form>
     </div>
