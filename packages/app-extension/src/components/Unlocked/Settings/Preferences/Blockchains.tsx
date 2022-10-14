@@ -22,7 +22,6 @@ export function PreferencesBlockchains({
   const isToggleDisabled = isEnabled && enabledBlockchains.length === 1;
 
   const _onClick = async (isDisabled: boolean) => {
-    console.log("ON CLICK HERE", isToggleDisabled);
     if (isToggleDisabled) {
       setTooltipOpen(true);
       setTimeout(() => setTooltipOpen(false), 2000);
