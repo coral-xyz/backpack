@@ -12,7 +12,6 @@ import {
   useBlockchainTokensSorted,
   useKeyringStoreState,
   useSolanaConnectionUrl,
-  useTotalBalance,
 } from "@coral-xyz/recoil";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -46,25 +45,14 @@ const HomeScreen = () => {
 };
 
 const UnlockedScreen = () => {
-  console.log("mobile-app", "---- UnlockedScreen Init");
   const background = useBackgroundClient();
-  console.log("mobile-app", "background", background);
   const navigate = useNavigate();
-  console.log("mobile-app", "navigate", navigate);
   const wallet = useActiveSolanaWallet();
-  const { totalBalance, totalChange, percentChange } = useTotalBalance();
-  // const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
-  // console.log("tokenAccountsSorted", tokenAccountsSorted);
-  console.log(
-    "mobile-app",
-    "totalBalance",
-    totalBalance,
-    totalChange,
-    percentChange
-  );
+  const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
+  console.log("map tokenAccountsSorted", tokenAccountsSorted);
   const connectionUrl = useSolanaConnectionUrl();
-  console.log("mobile-app", "connectionUrl", connectionUrl);
-  console.log("mobile-app", "publicKey", wallet.publicKey.toString());
+  console.log("map", "connectionUrl", connectionUrl);
+  console.log("map", "publicKey", wallet.publicKey.toString());
 
   // const tokenAccountsFiltered = tokenAccountsSorted.filter(
   //   (t) => t.displayBalance !== "0"
