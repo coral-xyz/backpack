@@ -14,12 +14,8 @@ export const App = () => {
   const [metadata, setMetadata] = useState(DEFAULT_METADATA);
 
   useEffect(() => {
-    console.log("before window.ponload");
     window.addEventListener("load", () => {
-      console.log("added metadata handler");
       window.xnft.on("metadata", (event: Event) => {
-        console.log("received metadata");
-        console.log(event.data);
         setMetadata(event.data.metadata);
       });
     });
