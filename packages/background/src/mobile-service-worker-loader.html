@@ -28,16 +28,17 @@
         // Receive messages from the service worker..
         //
         navigator.serviceWorker.onmessage = (event) => {
-          console.log('window', window)
-          console.log("event.data", event.data)
+          // console.log("event.data", event.data)
           // postMessage(event.data);
-          window.ReactNativeWebView?.postMessage(JSON.stringify(event.data));
+          console.log("ptt reactnativewebview.postMessage:event.data", event.data)
+          postMessage(event.data)
         };
 
         //
         // Send a message to the background service worker.
         //
         window.postMessageToBackgroundViaWebview = (rawData) => {
+          console.log('ptt postMessageToBackgroundViaWebview:rawData', rawData)
           navigator.serviceWorker.controller.postMessage(rawData);
         };
 

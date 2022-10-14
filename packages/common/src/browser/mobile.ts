@@ -200,6 +200,10 @@ export function startMobileIfNeeded() {
   if (!isServiceWorker()) {
     BrowserRuntimeCommon.addEventListenerFromAppUi(
       async (msg, _sender, sendResponse) => {
+        console.log(
+          "ptt BrowserRuntimeCommon.addEventListenerFromAppUi:msg",
+          msg
+        );
         if (msg.channel !== MOBILE_CHANNEL_HOST_RPC_REQUEST) {
           return;
         }
@@ -284,6 +288,7 @@ class FrontendRequestManager extends CommonRequestManager {
   public static request<T = any>(msg: any): Promise<T> {
     return new Promise((resolve, reject) => {
       CommonRequestManager._resolvers[msg.data.id] = { resolve, reject };
+      console.log("ptt msg postMsgFromAppUi", msg);
       postMsgFromAppUi({
         channel: MOBILE_CHANNEL_FE_REQUEST,
         data: {
@@ -298,6 +303,7 @@ class BackendRequestManager extends CommonRequestManager {
   public static request<T = any>(msg: any): Promise<T> {
     return new Promise((resolve, reject) => {
       CommonRequestManager._resolvers[msg.data.id] = { resolve, reject };
+      console.log("ptt msg postMsgFromWorker", msg);
       postMsgFromWorker({
         channel: MOBILE_CHANNEL_BG_REQUEST,
         data: {

@@ -8,13 +8,9 @@ import type {
   MessageArgs,
   BlockheightBasedTransactionConfirmationStrategy,
   GetParsedProgramAccountsConfig,
-} from "@solana/web3.js";
-import {
-  PublicKey,
-  Message,
   GetAccountInfoConfig,
-  VersionedMessage,
 } from "@solana/web3.js";
+import { PublicKey, Message, VersionedMessage } from "@solana/web3.js";
 import type {
   SerializedTokenAccountsFilter,
   RpcRequest,
@@ -326,6 +322,14 @@ async function handleCustomSplTokenAccounts(
   pubkey: string
 ) {
   const resp = await ctx.backend.customSplTokenAccounts(new PublicKey(pubkey));
+  logger.debug(
+    "ptt solana-connection.ts: handleCustomSplTokenAccounts:resp",
+    resp
+  );
+  console.log(
+    "ptt solana-connection.ts: handleCustomSplTokenAccounts:resp",
+    resp
+  );
   return [resp];
 }
 

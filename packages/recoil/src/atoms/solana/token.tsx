@@ -41,11 +41,25 @@ export const customSplTokenAccounts = atomFamily({
         try {
           const { tokenAccountsMap, tokenMetadata, nftMetadata } =
             await connection.customSplTokenAccounts(new PublicKey(publicKey));
+          const pp = tokenAccountsMap[0][1].mint as any;
+          console.log("ptt tokenAccounts pp typeof", typeof pp);
+          console.log("ptt tokenAccounts pp", pp._bn);
+          console.log("ptt tokenAccounts pp.toBase58", pp.toBase58());
+          console.log("ptt tokenAccountsMap, tokenMetadata, nftMetadata", {
+            tokenAccountsMap,
+            tokenMetadata,
+            nftMetadata,
+          });
+          console.log("ptt tokenAccountsMap", tokenAccountsMap);
+          console.log("ptt tokenAccountsMap[0]", tokenAccountsMap[0]);
+          console.log("ptt tokenAccountsMap[1]", tokenAccountsMap[1]);
+          // console.log('ptt tokenAccountsMap[0][1]', tokenAccountsMap[0][1])
+
+          // console.log('ptt tokenAccountsMap[0][1].mint', tokenAccountsMap[0][1].mint)
+          // console.log('ptt tokenAccountsMap[0][1].mint._bn', tokenAccountsMap[0][1].mint._bn)
+          // console.log('ptt tokenAccountsMap[0][1].mint._bn.toString()', tokenAccountsMap[0][1].mint._bn.toString())
+          // console.log('ptt tokenAccountsMap[0][1].mint._bn.toBase58()', tokenAccountsMap[0][1].mint._bn.toBase58())
           const splTokenAccounts = new Map(tokenAccountsMap);
-          console.log(
-            "address customSplTokenAccounts splTokenAccounts",
-            splTokenAccounts
-          );
           return {
             splTokenAccounts,
             splTokenMetadata: tokenMetadata,
@@ -76,20 +90,12 @@ export const solanaTokenAccountsMap = atomFamily<
     get:
       ({ tokenAddress }: { tokenAddress: string }) =>
       ({ get }) => {
-        console.log(
-          "address solanaTokenAccountsMap tokenAddress",
-          tokenAddress
-        );
+        console.log("ptt solanaTokenAccountsMap tokenAddress", tokenAddress);
 
         const connectionUrl = get(solanaConnectionUrl)!;
         const publicKey = get(solanaPublicKey)!;
         const { splTokenAccounts } = get(
           customSplTokenAccounts({ connectionUrl, publicKey })
-        );
-
-        console.log(
-          "address solanaTokenAccountsMap splTokenAccounts",
-          splTokenAccounts
         );
 
         return splTokenAccounts.get(tokenAddress);
@@ -121,15 +127,6 @@ export const solanaTokenNativeBalance = selectorFamily<
     (tokenAddress: string) =>
     ({ get }: any) => {
       const tokenAccount = get(solanaTokenAccountsMap({ tokenAddress }));
-      console.log(
-        "address solanaTokenNativeBalance tokenAccount",
-        tokenAccount
-      );
-      console.log(
-        "address solanaTokenNativeBalance tokenAccount.mint",
-        tokenAccount.mint
-      );
-
       if (!tokenAccount) {
         return null;
       }
@@ -140,21 +137,10 @@ export const solanaTokenNativeBalance = selectorFamily<
       const nativeBalance = BigNumber.from(tokenAccount.amount.toString());
       const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
 
-      console.log(
-        "address solanaTokenNativeBalance SOL_NATIVE_MINT",
-        SOL_NATIVE_MINT
-      );
-
       const priceMint =
         tokenAccount.mint.toString() === WSOL_MINT
           ? SOL_NATIVE_MINT
           : tokenAccount.mint.toString();
-
-      console.log("address solanaTokenNativeBalance priceMint", priceMint);
-      console.log(
-        "address solanaTokenNativeBalance tokenAccount.mint.toString()",
-        tokenAccount.mint.toString()
-      );
 
       return {
         name,
@@ -175,18 +161,12 @@ export const solanaTokenBalance = selectorFamily<TokenData | null, string>({
   get:
     (tokenAddress: string) =>
     ({ get }: any) => {
-      console.log("address solanaTokenBalance", "tokenAddress", tokenAddress);
-
       const nativeTokenBalance = get(solanaTokenNativeBalance(tokenAddress));
-      console.log("address solana nativeTokenBalance", nativeTokenBalance);
-
       if (!nativeTokenBalance) {
         return null;
       }
 
       const price = get(priceData(nativeTokenBalance.priceMint)) as any;
-      console.log("address solanaTokenBalance:price", price);
-
       const usdBalance =
         (price?.usd ?? 0) * parseFloat(nativeTokenBalance.displayBalance);
       const oldUsdBalance =

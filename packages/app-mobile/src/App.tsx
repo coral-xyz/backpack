@@ -53,8 +53,8 @@ const UnlockedScreen = () => {
   console.log("mobile-app", "navigate", navigate);
   const wallet = useActiveSolanaWallet();
   const { totalBalance, totalChange, percentChange } = useTotalBalance();
-  const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
-  console.log("tokenAccountsSorted", tokenAccountsSorted);
+  // const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
+  // console.log("tokenAccountsSorted", tokenAccountsSorted);
   console.log(
     "mobile-app",
     "totalBalance",

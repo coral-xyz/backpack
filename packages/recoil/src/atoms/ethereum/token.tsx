@@ -104,22 +104,13 @@ export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
   get:
     (contractAddress: string) =>
     ({ get }) => {
-      console.log("address ethereumTokenBalance", contractAddress);
-
       const nativeTokenBalance = get(
         ethereumTokenNativeBalance(contractAddress)
       );
 
-      console.log("address nativeTokenBalance", nativeTokenBalance);
-
       if (!nativeTokenBalance) {
         return null;
       }
-
-      console.log(
-        "address ethereumTokenBalance:contractAddress",
-        contractAddress
-      );
 
       const price = get(priceData(contractAddress)) as any;
       const usdBalance =

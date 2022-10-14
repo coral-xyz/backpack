@@ -1,11 +1,4 @@
-import {
-  AddressLookupTableAccount,
-  Connection,
-  GetAccountInfoConfig,
-  PublicKey,
-  SimulateTransactionConfig,
-  VersionedMessage,
-} from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import type {
   Commitment,
   GetSupplyConfig,
@@ -68,6 +61,10 @@ import type {
   SignatureStatus,
   PerfSample,
   BlockheightBasedTransactionConfirmationStrategy,
+  AddressLookupTableAccount,
+  GetAccountInfoConfig,
+  SimulateTransactionConfig,
+  VersionedMessage,
 } from "@solana/web3.js";
 import type { Notification, EventEmitter } from "@coral-xyz/common";
 import { encode } from "bs58";
@@ -224,6 +221,14 @@ export class SolanaConnectionBackend {
           method: "customSplTokenAccounts",
           args: [activeWallet.toString()],
         });
+
+        console.log("ptt startPolling:key", key);
+        console.log("ptt startPolling:activeWallet", activeWallet);
+        console.log(
+          "ptt startPolling:activeWallet.toString",
+          activeWallet.toString()
+        );
+
         this.cache.set(key, {
           ts: Date.now(),
           value: data,
@@ -299,6 +304,14 @@ export class SolanaConnectionBackend {
       method: "customSplTokenAccounts",
       args: [publicKey.toString()],
     });
+
+    console.log("ptt customSplTokenAccounts:key", key);
+    console.log("ptt customSplTokenAccounts:activeWallet", publicKey);
+    console.log(
+      "ptt customSplTokenAccounts:activeWallet.toString",
+      publicKey.toString()
+    );
+
     const value = this.cache.get(key);
     if (value && value.ts + CACHE_EXPIRY > Date.now()) {
       return value.value;
