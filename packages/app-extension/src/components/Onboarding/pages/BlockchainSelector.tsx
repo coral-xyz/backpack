@@ -38,14 +38,14 @@ export const BlockchainSelector = ({
             <ActionCard
               icon={<EthereumIcon />}
               text={"Ethereum"}
-              onClick={() => onSelect("ethereum" as Blockchain)}
+              onClick={() => onSelect(Blockchain.ETHEREUM)}
             />
           </Grid>
           <Grid item xs={6}>
             <ActionCard
               icon={<SolanaIcon />}
               text={"Solana"}
-              onClick={() => onSelect("solana" as Blockchain)}
+              onClick={() => onSelect(Blockchain.SOLANA)}
             />
           </Grid>
           <Grid item xs={6}>
