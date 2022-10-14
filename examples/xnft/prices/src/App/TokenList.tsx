@@ -6,14 +6,16 @@ import {
   TextField,
   useNavigation,
   ScrollBar,
-  useTheme,
 } from "react-xnft";
-import { connect, StateType, useDispatch } from "../state";
+import { connect, StateType } from "../state";
 import { createSelector } from "reselect";
 import CenteredLoader from "./CenteredLoader";
 import { green, red } from "./_helpers/color";
 import formatPrice from "./_helpers/formatPrice";
 import { TokenInfoType } from "./_types/TokenInfoType";
+import ArrowUpIcon from "./ArrowUpIcon";
+import ArrowDownIcon from "./ArrowDownIcon";
+import InlineGraph from "./InlineGraph";
 
 type Props = {};
 
@@ -68,7 +70,7 @@ function TokenList({ tokenList, tokenInfos, favorites }: Props & StateProps) {
         }}
       >
         <TextField
-          placeholder="Filter Assets..."
+          placeholder="Search all assets"
           onChange={(e) => setFilter(e.data.value)}
           value={filter}
         />
@@ -106,7 +108,12 @@ function renderToken(
 ) {
   const changePercent = formatPrice(token.price_change_percentage_24h);
   const currentPrice = formatPrice(token.current_price);
-  const arrow = (token.price_change_percentage_24h ?? 0) + 0 > 0 ? "↗" : "↘";
+  const Arrow =
+    (token.price_change_percentage_24h ?? 0) + 0 > 0 ? (
+      <ArrowUpIcon isFilled={true} color={green} height={10} width={15} />
+    ) : (
+      <ArrowDownIcon isFilled={true} color={red} height={10} width={15} />
+    );
   const color = (token.price_change_percentage_24h ?? 0) + 0 > 0 ? green : red;
 
   return (
@@ -114,16 +121,16 @@ function renderToken(
       style={{
         padding: "8px 16px",
         display: "flex",
+        position: "relative",
       }}
       key={token.id}
       onClick={() => nav.push("details", { token })}
     >
       <View
         style={{
-          padding: "5px",
-          paddingRight: "10px",
           display: "flex",
           alignItems: "center",
+          paddingRight: "12px",
           justifyContent: "center",
         }}
       >
@@ -140,39 +147,75 @@ function renderToken(
           display: "flex",
           flexGrow: 1,
           flexDirection: "column",
+          overflow: "hidden",
         }}
       >
         <Text
           style={{
+            font: "Inter",
             lineHeight: "24px",
+            fontSize: "16px",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
           }}
-        >{`${token.name} ${isFavorited ? "★" : ""}`}</Text>
+        >{`${token.name}${isFavorited ? " ★" : ""}`}</Text>
         <Text
           style={{
-            opacity: 0.5,
+            font: "Inter",
+            lineHeight: "24px",
+            fontSize: "16px",
+            color: "#A1A1AA",
           }}
         >{`${token.symbol.toLocaleUpperCase()}`}</Text>
       </View>
       <View
-        style={
-          {
-            // width: "100px"
-          }
-        }
+        style={{
+          display: "flex",
+          alignItems: "center",
+          paddingRight: "16px",
+        }}
       >
-        <Text
-          style={{
-            textAlign: "right",
-          }}
-        >{`$${currentPrice}`}</Text>
+        <InlineGraph
+          data={token.sparkline_in_7d.price}
+          height={20}
+          width={60}
+          color={color}
+        />
+      </View>
+      <View
+        style={{
+          position: "relative",
+          minWidth: "71px",
+        }}
+      >
         <Text
           style={{
             font: "Inter",
             fontSize: "16px",
             textAlign: "right",
+            fontFeatureSettings: "tnum",
+          }}
+        >{`${currentPrice}`}</Text>
+        <Text
+          style={{
+            font: "Inter",
+            fontSize: "16px",
+            textAlign: "right",
+            paddingRight: "16px",
+            fontFeatureSettings: "tnum",
             color: color,
           }}
-        >{`${arrow} ${changePercent}%`}</Text>
+        >{`${changePercent}%`}</Text>
+        <View
+          style={{
+            position: "absolute",
+            right: "0px",
+            top: "24px",
+          }}
+        >
+          {Arrow}
+        </View>
       </View>
     </View>
   );

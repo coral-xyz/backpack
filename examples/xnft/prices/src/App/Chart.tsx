@@ -10,88 +10,93 @@ type Props = {
   height: number;
   width: number;
   title: string;
-  ticks: string[];
+  xAxis: string[];
+  yAxisCount: number;
 };
 
-function Chart({ data, height, width, title, ticks }: Props) {
+function Chart({ data, height, width, title, xAxis, yAxisCount = 0 }: Props) {
   const color = data[0][1] > data[data.length - 1][1] ? red : green;
   const gradientColor =
     data[0][1] > data[data.length - 1][1]
       ? `linear-gradient(rgb(0,0,0,0), rgba(239, 68, 68, 0.2))`
       : `linear-gradient(rgba(52, 211, 153, 0.2), rgb(0,0,0,0))`;
-  const adjustedHeight = height - 24;
+  const adjustedHeight = height;
   const graph = makeGraph(data, width, adjustedHeight);
+
+  const yAxis: number[] = [graph.max];
+  const movement = graph.max - graph.min;
+  for (let i = yAxisCount; i > 0; i--) {
+    yAxis.push(graph.min + (movement * i) / (yAxisCount + 1));
+  }
+  yAxis.push(graph.min);
 
   return (
     <View
       style={{
-        margin: "8px 16px",
-        padding: "16px 0px",
+        margin: "0px 16px",
+        // paddingTop: "16px",
         position: "relative",
       }}
     >
-      <Text
-        style={{
-          position: "absolute",
-          fontSize: "12px",
-          opacity: "0.35",
-          textAlign: "left",
-          width: "100%",
-          top: "-2px",
-        }}
-      >
-        {title}
-      </Text>
-      <Text
-        style={{
-          position: "absolute",
-          fontSize: "12px",
-          opacity: "0.35",
-          textAlign: "right",
-          width: "100%",
-          top: "-2px",
-        }}
-      >{`${formatPrice(graph.max)} / ${formatPrice(graph.min)} (H/L)`}</Text>
-      <View
-        style={{
-          position: "absolute",
-          borderTop: ".5px solid #52525B",
-          width: "100%",
-          top: "50%",
-          zIndex: 0,
-        }}
-      />
       <View
         style={{
           position: "relative",
           width: `${width}px`,
           height: `${adjustedHeight}px`,
-          borderTop: ".5px solid #52525B",
-          borderBottom: ".5px solid #52525B",
           background: gradientColor,
           zIndex: 1,
         }}
       >
-        {ticks.map((tick, i, a) => {
+        {yAxis.map((tick, i, a) => {
+          const y = (adjustedHeight * i) / (a.length - 1);
           return (
             <>
-              <Text
+              {i < a.length - 1 && (
+                <Text
+                  style={{
+                    position: "absolute",
+                    fontSize: "14px",
+                    color: "#A1A1AA",
+                    textAlign: "right",
+                    top: y,
+                    right: "4px",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {formatPrice(tick)}
+                </Text>
+              )}
+              <View
                 style={{
                   position: "absolute",
-                  fontSize: "12px",
-                  opacity: "0.35",
-                  textAlign:
-                    i === 0 ? "left" : i === a.length - 1 ? "right" : "center",
-                  bottom: "-18px",
-                  width: "40px",
-                  marginLeft:
-                    i === 0 ? 0 : i === a.length - 1 ? "-30px" : "-15px",
-                  left: (i * width) / (a.length - 1),
-                  whiteSpace: "nowrap",
+                  height: "0px",
+                  width: "100%",
+                  top: y,
+                  borderTop: ".5px solid #52525B",
                 }}
-              >
-                {tick}
-              </Text>
+              ></View>
+            </>
+          );
+        })}
+        {xAxis.map((tick, i, a) => {
+          return (
+            <>
+              {i < a.length - 1 && (
+                <Text
+                  style={{
+                    position: "absolute",
+                    fontSize: "14px",
+                    color: "#A1A1AA",
+                    textAlign: "left",
+                    marginLeft: "4px",
+                    bottom: "0px",
+                    left: (i * width) / (a.length - 1),
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {tick}
+                </Text>
+              )}
               <View
                 style={{
                   position: "absolute",
@@ -104,7 +109,14 @@ function Chart({ data, height, width, title, ticks }: Props) {
             </>
           );
         })}
-        <Svg width={width} height={adjustedHeight}>
+        <Svg
+          style={{
+            position: "relative",
+            zIndex: 0,
+          }}
+          width={width}
+          height={adjustedHeight}
+        >
           <Path
             // This key is a hack to force remount
             // because d property update is not implemented

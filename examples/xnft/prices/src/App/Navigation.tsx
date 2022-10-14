@@ -1,4 +1,4 @@
-import React, { Stack, Text } from "react-xnft";
+import React, { Stack, Text, Image, View } from "react-xnft";
 import TokenDetails from "./TokenDetails";
 import TokenList from "./TokenList";
 

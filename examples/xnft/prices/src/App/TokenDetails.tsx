@@ -3,12 +3,11 @@ import { Button, Image, Text, View } from "react-xnft";
 import { TokenInfoType } from "./_types/TokenInfoType";
 import { green, red } from "./_helpers/color";
 import formatPrice from "./_helpers/formatPrice";
-import useSWR from "swr";
 import CenteredLoader from "./CenteredLoader";
 import Chart from "./Chart";
 import { GraphDataPointType } from "./_types/GraphDataPointType";
 import filterChartData, { charts } from "./_helpers/filterChartData";
-import Star from "./Star";
+import StarIcon from "./StarIcon";
 import { StateType, connect, useDispatch } from "../state";
 import { createSelector } from "reselect";
 import { FAVORITE } from "./_actions/FAVORITE";
@@ -16,6 +15,8 @@ import { ChartType } from "./_types/ChartType";
 import useRefreshTokenChart from "./_hooks/useRefreshTokenChart";
 import { SET_TOKEN_CHART } from "./_actions/SET_TOKEN_CHART";
 import { getChartDataTime } from "./_helpers/getChartDataTime";
+import ArrowUpIcon from "./ArrowUpIcon";
+import ArrowDownIcon from "./ArrowDownIcon";
 
 type Props = {
   token: TokenInfoType;
@@ -38,10 +39,16 @@ function TokenDetails(props: Props & StateProps) {
   const changePercent = formatPrice(props.token.price_change_percentage_24h);
   const changeCurrency = formatPrice(props.token.price_change_24h);
 
-  const data = filterChartData(activeChart, chartData);
+  console.log(props.token.price_change_24h);
 
-  const arrow =
-    (props.token.price_change_percentage_24h ?? 0) + 0 > 0 ? "↗" : "↘";
+  const data = filterChartData(activeChart, chartData);
+  const Arrow =
+    (props.token.price_change_percentage_24h ?? 0) + 0 > 0 ? (
+      <ArrowUpIcon isFilled={true} color={green} height={11} width={16} />
+    ) : (
+      <ArrowDownIcon isFilled={true} color={red} height={11} width={16} />
+    );
+
   const color =
     (props.token.price_change_percentage_24h ?? 0) + 0 > 0 ? green : red;
 
@@ -69,13 +76,13 @@ function TokenDetails(props: Props & StateProps) {
           <Image
             style={{
               width: "50px",
-              // padding:"5px"
             }}
             src={props.token.image}
           />
         </View>
         <View
           style={{
+            position: "relative",
             display: "flex",
             flexDirection: "column",
             flexGrow: "1",
@@ -96,12 +103,23 @@ function TokenDetails(props: Props & StateProps) {
               fontFamily: "Inter",
               fontSize: "16px",
               lineHeight: "24px",
+              paddingLeft: "16px",
               color: color,
             }}
           >
-            {`${arrow} ${changePercent}% ($${changeCurrency})`}
+            {`${changePercent}% ($${changeCurrency})`}
           </Text>
+          <View
+            style={{
+              position: "absolute",
+              left: "-4px",
+              top: "38px",
+            }}
+          >
+            {Arrow}
+          </View>
         </View>
+
         <View
           onClick={() =>
             dispatch(
@@ -119,23 +137,24 @@ function TokenDetails(props: Props & StateProps) {
             paddingRight: "0px",
           }}
         >
-          <Star
+          <StarIcon
             key={colorButton + isFavorited}
             color={colorButton}
             isFilled={isFavorited}
             strokeWidth={1}
             size={30}
-          ></Star>
+          />
         </View>
       </View>
       {data ? (
         <>
           <Chart
             data={data.points}
-            height={250}
+            height={274}
             width={343}
             title={`${props.token.symbol.toUpperCase()} ${activeChart}`}
-            ticks={data.labels}
+            xAxis={data.labels}
+            yAxisCount={2}
           />
         </>
       ) : (
@@ -247,11 +266,13 @@ function AssetFact({ label, value }: { label: string; value: string }) {
       style={{
         display: "flex",
         justifyContent: "space-between",
+        fontSize: "14px",
       }}
     >
       <Text
         style={{
-          opacity: "0.5",
+          color: "#A1A1AA",
+          fontSize: "14px",
         }}
       >
         {label}
@@ -259,6 +280,7 @@ function AssetFact({ label, value }: { label: string; value: string }) {
       <Text
         style={{
           textAlign: "right",
+          fontSize: "14px",
         }}
       >
         {value}
