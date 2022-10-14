@@ -75,7 +75,6 @@ const messages = {
 export interface BaseProviderState {
   accounts: null | string[];
   isConnected: boolean;
-  isPermanentlyDisconnected: boolean;
 }
 
 export class ProviderEthereumInjection extends PrivateEventEmitter {
@@ -84,7 +83,6 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
   protected static _defaultState: BaseProviderState = {
     accounts: null,
     isConnected: false,
-    isPermanentlyDisconnected: false,
   };
 
   /**
