@@ -53,12 +53,14 @@ export function SendEthereumConfirmationCard({
       if (token.address === ethers.constants.AddressZero) {
         // Zero address token is native ETH
         transaction = await Ethereum.transferEthTransaction(ethereumCtx, {
+          chainId: ethereumCtx.chainId,
           to: destinationAddress,
           value: amount.toString(),
         });
       } else if (token.tokenId) {
         // Token has a tokenId, must be an ERC721 token
         transaction = await Ethereum.transferErc721Transaction(ethereumCtx, {
+          chainId: ethereumCtx.chainId,
           to: destinationAddress,
           from: ethereumCtx.walletPublicKey,
           contractAddress: token.address!,
@@ -67,6 +69,7 @@ export function SendEthereumConfirmationCard({
       } else {
         // Otherwise assume it is an ERC20 token
         transaction = await Ethereum.transferErc20Transaction(ethereumCtx, {
+          chainId: ethereumCtx.chainId,
           to: destinationAddress,
           contractAddress: token.address!,
           amount: amount.toString(),
