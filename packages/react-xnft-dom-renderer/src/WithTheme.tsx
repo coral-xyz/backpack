@@ -17,8 +17,6 @@ export const WithTheme: React.FC = ({ children }) => {
 const WithThemeInner: React.FC = ({ children }) => {
   const { metadata } = useDomContext();
   const isDarkMode = metadata.isDarkMode;
-  console.log("inside with theme inner");
-  console.log("isDarkMode is " + isDarkMode);
 
   const [theme, rawTheme] = useMemo(() => {
     const rawTheme = isDarkMode ? darkTheme : lightTheme;

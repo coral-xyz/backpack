@@ -21,12 +21,7 @@ export function RootRenderer() {
   // Rerender when needed.
   //
   useEffect(() => {
-    console.log(
-      "added setChildren onRenderROotonRenderROotonRenderROotonRenderROotonRenderROotonRenderROotonRenderROotonRenderROotonRenderROotonRenderROotonRenderROotonRenderROotonRenderROotonRenderROotonRenderROotonRenderROotonRenderROotonRenderROotonRenderROotonRenderROot"
-    );
     dom.onRenderRoot((c: Array<Element>) => {
-      console.log("inside seecond one");
-      console.log(c);
       setChildren([...c]);
     });
   }, [setChildren]);
