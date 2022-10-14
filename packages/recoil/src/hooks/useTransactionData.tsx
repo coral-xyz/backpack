@@ -84,9 +84,6 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
     (async () => {
       const parsed = ethers.utils.parseTransaction(bs58.decode(serializedTx));
 
-      // EIP 1559 compatability
-      delete parsed.gasPrice;
-
       if (parsed.chainId === 0) {
         // chainId not passed in serialized transaction, use provider
         parsed.chainId = parseInt(ethereumCtx.chainId);
@@ -129,7 +126,12 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
 
       // Populate any missing fields in resulting transaction, resolve ENS, etc
       const populatedTx = await voidSigner.populateTransaction({
-        ...parsed,
+        // Pick only the fields we want from the parsed transaction
+        to: parsed.to,
+        from: parsed.from,
+        data: parsed.data,
+        value: parsed.value,
+        // Apply the overrides
         ...newTransactionOverrides,
       });
 
