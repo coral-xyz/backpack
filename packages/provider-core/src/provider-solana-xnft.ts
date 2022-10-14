@@ -248,14 +248,6 @@ export class ProviderSolanaXnftInjection
     this.emit("unmount", event.data.detail);
   }
 
-  // #handleOnClick(event: Event) {
-  //   this.emit("click", event.data.detail);
-  // }
-  //
-  // #handleOnChange(event: Event) {
-  //   this.emit("change", event.data.detail);
-  // }
-
   #handleConnectionUrlUpdated(event: Event) {
     const connectionUrl = event.data.detail.data.url;
     this.#connection = new BackgroundSolanaConnection(
