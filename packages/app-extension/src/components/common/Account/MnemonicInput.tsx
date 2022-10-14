@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme: any) => ({
     "& .MuiInputAdornment-root": {
       color: theme.custom.colors.secondary,
       fontWeight: 500,
-      minWidth: "12px",
+      minWidth: "11px",
       fontSize: "14px",
     },
     "&:hover": {

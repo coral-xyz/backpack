@@ -34,31 +34,6 @@ const useStyles = styles((theme: any) => ({
       },
     },
   },
-  mnemonicInputRoot: {
-    border: `${theme.custom.colors.borderFull}`,
-    color: theme.custom.colors.secondary,
-    borderRadius: "8px",
-    marginTop: "4px",
-    "& .MuiOutlinedInput-root": {
-      backgroundColor: theme.custom.colors.nav,
-      borderRadius: "8px",
-      height: "40px",
-      "& fieldset": {
-        border: "none",
-      },
-    },
-    "& .MuiInputBase-input": {
-      color: theme.custom.colors.fontColor,
-      backgroundColor: theme.custom.colors.nav,
-      borderRadius: "8px",
-      fontSize: "12px",
-      fontWeight: 700,
-    },
-    "& .MuiInputAdornment-root": {
-      color: theme.custom.colors.secondary,
-      fontWeight: 500,
-    },
-  },
   listRoot: {
     color: theme.custom.colors.fontColor,
     padding: "0",
