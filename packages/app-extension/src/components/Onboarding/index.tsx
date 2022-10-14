@@ -16,7 +16,13 @@ import {
   useRef,
   useState,
 } from "react";
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { DiscordIcon } from "../common/Icon";
 import { WithContaineredDrawer } from "../common/Layout/Drawer";
 import { NavBackButton, NAV_BAR_HEIGHT, WithNav } from "../common/Layout/Nav";
@@ -92,6 +98,16 @@ export const Onboarding = () => {
 
           {/* RECOVER WALLET FLOW */}
           <Route path="/recover" element={<RecoverAccount />} />
+
+          <Route
+            path="/recover/:blockchain"
+            element={
+              // assume the user has pressed back button to arrive here,
+              // take them one extra step back to the username input form
+              <Navigate to="/recover" />
+            }
+          />
+
           <Route
             path="/recover/:blockchain/:usernameAndPubkey"
             element={<RecoverAccountWithRecoveryPhrase />}
