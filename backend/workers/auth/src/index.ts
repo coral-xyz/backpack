@@ -13,7 +13,8 @@ import { sign } from "tweetnacl";
 import { z, ZodError } from "zod";
 import { Chain } from "./zeus";
 
-const CreateUser = z.object({
+// shared user object that is extended for each blockchain
+const BaseCreateUser = z.object({
   username: z
     .string()
     .regex(
@@ -26,24 +27,35 @@ const CreateUser = z.object({
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
       "invalid format"
     ),
-  publicKey: z.string().refine((str) => {
-    // Solana
-    try {
-      new PublicKey(str);
-      return true;
-    } catch (err) {}
+  waitlistId: z.optional(z.nullable(z.string())),
+});
 
-    // Ethereum
+const CreateEthereumUser = BaseCreateUser.extend({
+  publicKey: z.string().refine((str) => {
     try {
       ethers.utils.getAddress(str);
       return true;
     } catch (err) {}
+    return false;
+  }, "must be a valid Ethereum public key"),
+  blockchain: z.literal("ethereum"),
+});
 
+const CreateSolanaUser = BaseCreateUser.extend({
+  publicKey: z.string().refine((str) => {
+    try {
+      new PublicKey(str);
+      return true;
+    } catch (err) {}
     return false;
   }, "must be a valid Solana public key"),
-  waitlistId: z.optional(z.nullable(z.string())),
-  blockchain: z.enum(["ethereum", "solana"]),
+  blockchain: z.literal("solana"),
 });
+
+const CreateUser = z.discriminatedUnion("blockchain", [
+  CreateEthereumUser,
+  CreateSolanaUser,
+]);
 
 // ----- routing -----
 
