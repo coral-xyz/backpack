@@ -25,6 +25,7 @@ main () {
 		update_package packages/themes/
 		update_package packages/react-xnft/
 		update_package packages/xnft-cli/
+		update_package packages/react-xnft-dom-renderer
 }
 
 update_package () {
