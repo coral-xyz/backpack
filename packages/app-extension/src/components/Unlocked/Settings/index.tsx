@@ -795,7 +795,7 @@ function SettingsList({ close }: { close: () => void }) {
         >
           <GridIcon
             {...props}
-            style={{ ...props.style, width: "20px", height: "20px" }}
+            style={{ ...props.style, width: "24px", height: "20px" }}
           />
         </div>
       ),
