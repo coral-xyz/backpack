@@ -25,7 +25,9 @@ export const anchorContext = selector({
       commitment: _commitment,
       preflightCommitment: _commitment,
     });
+    console.log("bb: anchorContext:provider", provider);
     const tokenClient = Spl.token(provider);
+    console.log("bb: anchorContext:tokenClient", tokenClient);
     return {
       connection,
       connectionUrl: _connectionUrl,

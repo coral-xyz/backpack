@@ -48,8 +48,13 @@ export function useBlockchainTokens(blockchain: Blockchain) {
   return useRecoilValue(atoms.blockchainTokenAddresses(blockchain));
 }
 
-export function useBlockchainTokensSorted(blockchain: Blockchain) {
-  return useRecoilValue(atoms.blockchainBalancesSorted(blockchain));
+export function useBlockchainTokensSorted(blockchain: Blockchain): any[] {
+  try {
+    return useRecoilValue(atoms.blockchainBalancesSorted(blockchain));
+  } catch (err) {
+    console.error("ERR useblockchaintokenssorted", err);
+    return [];
+  }
 }
 
 export function useBlockchainNativeTokens(blockchain: Blockchain) {

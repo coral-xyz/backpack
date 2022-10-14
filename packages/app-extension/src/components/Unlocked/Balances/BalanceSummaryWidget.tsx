@@ -49,6 +49,7 @@ const useStyles = styles((theme) => ({
 export function BalanceSummaryWidget() {
   const theme = useCustomTheme();
   const classes = useStyles();
+  // TODO might use this instead of useTotalBalance (this works)
   const [{ totalBalance, totalChange, percentChange }, _, isLoading] =
     useLoader(totalBalanceSelector, {
       totalBalance: 0,

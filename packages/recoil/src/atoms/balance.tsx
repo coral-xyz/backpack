@@ -23,7 +23,12 @@ export const blockchainBalancesSorted = selectorFamily<
   get:
     (blockchain: Blockchain) =>
     ({ get }) => {
+      console.log("1 bb: blockchainbalancessorted:blockchain", blockchain);
       const tokenAddresses = get(blockchainTokenAddresses(blockchain));
+      console.log(
+        "balance.tsx: blockchainbalancessorted:tokenAddresses",
+        tokenAddresses
+      );
       const tokenData = tokenAddresses
         .map(
           (address) =>
@@ -98,6 +103,11 @@ export const blockchainTokenData = selectorFamily<
   get:
     ({ address, blockchain }: { address: string; blockchain: Blockchain }) =>
     ({ get }) => {
+      console.log(
+        "balance.tsx blockchainTokenData:address,blockchain",
+        address,
+        blockchain
+      );
       switch (blockchain) {
         case Blockchain.SOLANA:
           return get(solanaTokenBalance(address));
@@ -117,6 +127,7 @@ export const blockchainTokenAddresses = selectorFamily({
   get:
     (blockchain: Blockchain) =>
     ({ get }) => {
+      console.log("2 bb: blockchainTokenAddresses:blockchain", blockchain);
       switch (blockchain) {
         case Blockchain.SOLANA:
           return get(solanaTokenAccountKeys);

@@ -305,10 +305,20 @@ export class SolanaConnectionBackend {
       args: [publicKey.toString()],
     });
 
-    console.log("ptt customSplTokenAccounts:key", key);
-    console.log("ptt customSplTokenAccounts:activeWallet", publicKey);
     console.log(
-      "ptt customSplTokenAccounts:activeWallet.toString",
+      "bb ptt backend/solana-connection customSplTokenAccounts:key",
+      key
+    );
+    console.log(
+      "bb ptt backend/solana-connection customSplTokenAccounts:publicKey instanceof",
+      publicKey instanceof PublicKey
+    );
+    console.log(
+      "bb ptt backend/solana-connection customSplTokenAccounts:publicKey",
+      publicKey
+    );
+    console.log(
+      "bb ptt backend/solana-connection customSplTokenAccounts:activeWallet.toString",
       publicKey.toString()
     );
 

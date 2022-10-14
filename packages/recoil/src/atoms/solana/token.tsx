@@ -15,6 +15,7 @@ import type {
   TokenMetadataString,
 } from "@coral-xyz/common";
 
+// TODO(peterpme): this is the broken function!
 export const customSplTokenAccounts = atomFamily({
   key: "customSplTokenAccounts",
   default: selectorFamily({
@@ -34,6 +35,11 @@ export const customSplTokenAccounts = atomFamily({
         splTokenMetadata: (TokenMetadataString | null)[];
         splNftMetadata: Map<string, SplNftMetadataString>;
       }> => {
+        console.log(
+          "5 bb: customSplTokenAccounts: publicKey, connectionUrl",
+          publicKey,
+          connectionUrl
+        );
         const { connection } = get(anchorContext);
         //
         // Fetch token data.
@@ -42,17 +48,17 @@ export const customSplTokenAccounts = atomFamily({
           const { tokenAccountsMap, tokenMetadata, nftMetadata } =
             await connection.customSplTokenAccounts(new PublicKey(publicKey));
           const pp = tokenAccountsMap[0][1].mint as any;
-          console.log("ptt tokenAccounts pp typeof", typeof pp);
-          console.log("ptt tokenAccounts pp", pp._bn);
-          console.log("ptt tokenAccounts pp.toBase58", pp.toBase58());
-          console.log("ptt tokenAccountsMap, tokenMetadata, nftMetadata", {
-            tokenAccountsMap,
-            tokenMetadata,
-            nftMetadata,
-          });
-          console.log("ptt tokenAccountsMap", tokenAccountsMap);
-          console.log("ptt tokenAccountsMap[0]", tokenAccountsMap[0]);
-          console.log("ptt tokenAccountsMap[1]", tokenAccountsMap[1]);
+          console.log("6 bb: ptt tokenAccounts pp typeof", typeof pp);
+          // console.log("ptt tokenAccounts pp", pp._bn);
+          // console.log("ptt tokenAccounts pp.toBase58", pp.toBase58());
+          // console.log("ptt tokenAccountsMap, tokenMetadata, nftMetadata", {
+          //   tokenAccountsMap,
+          //   tokenMetadata,
+          //   nftMetadata,
+          // });
+          console.log("7 bb: ptt tokenAccountsMap", tokenAccountsMap);
+          console.log("8 bb: ptt tokenAccountsMap[0]", tokenAccountsMap[0]);
+          console.log("9 bb: ptt tokenAccountsMap[1]", tokenAccountsMap[1]);
           // console.log('ptt tokenAccountsMap[0][1]', tokenAccountsMap[0][1])
 
           // console.log('ptt tokenAccountsMap[0][1].mint', tokenAccountsMap[0][1].mint)
@@ -109,11 +115,14 @@ export const solanaTokenAccountsMap = atomFamily<
 export const solanaTokenAccountKeys = selector({
   key: "solanaTokenAccountKeys",
   get: ({ get }) => {
+    console.log("3 bb: solanaTokenAccountKeys");
     const connectionUrl = get(solanaConnectionUrl)!;
     const publicKey = get(solanaPublicKey)!;
+    console.log("4 bb: publicKey", publicKey);
     const { splTokenAccounts } = get(
       customSplTokenAccounts({ connectionUrl, publicKey })
     );
+    console.log("10 bb: splTokenAccounts", splTokenAccounts);
     return Array.from(splTokenAccounts.keys()) as string[];
   },
 });

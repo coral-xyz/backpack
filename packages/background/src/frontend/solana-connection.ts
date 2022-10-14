@@ -323,11 +323,11 @@ async function handleCustomSplTokenAccounts(
 ) {
   const resp = await ctx.backend.customSplTokenAccounts(new PublicKey(pubkey));
   logger.debug(
-    "ptt solana-connection.ts: handleCustomSplTokenAccounts:resp",
+    "bb solana-connection.ts: handleCustomSplTokenAccounts:resp",
     resp
   );
   console.log(
-    "ptt solana-connection.ts: handleCustomSplTokenAccounts:resp",
+    "bb solana-connection.ts: handleCustomSplTokenAccounts:resp",
     resp
   );
   return [resp];

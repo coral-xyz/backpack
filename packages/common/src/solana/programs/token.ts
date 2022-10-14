@@ -48,9 +48,18 @@ export async function customSplTokenAccounts(
   tokenMetadata: (TokenMetadata | null)[];
   nftMetadata: [string, SplNftMetadata][];
 }> {
+  console.log(
+    "bb: common/solana/token.ts:customSplTokenAccounts: connection, publicKey",
+    connection,
+    publicKey
+  );
   // @ts-ignore
   const provider = new AnchorProvider(connection, { publicKey });
   const tokenClient = Spl.token(provider);
+  console.log(
+    "bb: common/solana/token.ts:customSplTokenAccounts: tokenClient",
+    tokenClient
+  );
 
   const [accountInfo, tokenAccounts] = await Promise.all([
     //
@@ -62,6 +71,11 @@ export async function customSplTokenAccounts(
     //
     fetchTokens(publicKey, tokenClient),
   ]);
+  console.log(
+    "bb: common/solana/token.ts:customSplTokenAccounts: accountInfo, tokenAccounts",
+    accountInfo,
+    tokenAccounts
+  );
   const nativeSol: SolanaTokenAccountWithKeySerializable = {
     key: publicKey,
     mint: PublicKey.default,
@@ -73,6 +87,10 @@ export async function customSplTokenAccounts(
     delegatedAmount: new BN(0),
     closeAuthority: null,
   };
+  console.log(
+    "bb: common/solana/token.ts:customSplTokenAccounts: nativeSol",
+    nativeSol
+  );
   const tokenAccountsArray = Array.from(tokenAccounts.values());
 
   //
@@ -82,6 +100,10 @@ export async function customSplTokenAccounts(
     tokenClient.provider,
     tokenAccountsArray
   );
+  console.log(
+    "bb: common/solana/token.ts:customSplTokenAccounts: tokenMetadata",
+    tokenMetadata
+  );
 
   //
   // Fetch the metadata uri and interpert as NFTs.
@@ -89,6 +111,10 @@ export async function customSplTokenAccounts(
   const nftMetadata = await fetchSplMetadataUri(
     tokenAccountsArray,
     tokenMetadata
+  );
+  console.log(
+    "bb: common/solana/token.ts:customSplTokenAccounts: nftMetadata",
+    nftMetadata
   );
 
   const tokenAccountsMap = (
@@ -102,6 +128,11 @@ export async function customSplTokenAccounts(
       ]
     ) as [string, SolanaTokenAccountWithKeySerializable][]
   ).concat([[nativeSol.key.toString(), nativeSol]]);
+
+  console.log(
+    "bb: common/solana/token.ts:customSplTokenAccounts: tokenAccountsMap",
+    tokenAccountsMap
+  );
 
   return {
     tokenAccountsMap,
