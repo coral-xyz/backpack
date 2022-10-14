@@ -294,3 +294,10 @@ jobs:
           token: ${{ secrets.NPM_ACCESS_TOKEN }}
           tag: latest
           package: packages/xnft-cli/package.json
+      - name: "publish to npm: react-xnft-dom-renderer"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_ACCESS_TOKEN }}
+          tag: latest
+          package: packages/react-xnft-dom-renderer/package.json
