@@ -38,10 +38,10 @@ type TransactionData = {
 
 type TransactionOverrides = {
   type: number;
-  nonce: number | null;
-  gasLimit: BigNumber | null;
-  maxFeePerGas: BigNumber | null;
-  maxPriorityFeePerGas: BigNumber | null;
+  nonce: number | undefined;
+  gasLimit: BigNumber;
+  maxFeePerGas: BigNumber | undefined;
+  maxPriorityFeePerGas: BigNumber | undefined;
 };
 
 export function useTransactionData(
@@ -69,10 +69,11 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
   const [transactionOverrides, setTransactionOverrides] =
     useState<TransactionOverrides>({
       type: 2,
-      nonce: null,
+      nonce: undefined,
       gasLimit: estimatedGas,
-      maxFeePerGas: ethereumCtx.feeData.maxFeePerGas,
-      maxPriorityFeePerGas: ethereumCtx.feeData.maxPriorityFeePerGas,
+      maxFeePerGas: ethereumCtx.feeData.maxFeePerGas || undefined,
+      maxPriorityFeePerGas:
+        ethereumCtx.feeData.maxPriorityFeePerGas || undefined,
     });
 
   //
@@ -82,19 +83,56 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
   useEffect(() => {
     (async () => {
       const parsed = ethers.utils.parseTransaction(bs58.decode(serializedTx));
+
       // EIP 1559 compatability
       delete parsed.gasPrice;
+
+      if (parsed.chainId === 0) {
+        // chainId not passed in serialized transaction, use provider
+        parsed.chainId = parseInt(ethereumCtx.chainId);
+      }
+
       // Use a void signer to populate transaction with data we need, e.g. from
       // field and nonce
       const voidSigner = new ethers.VoidSigner(
         ethereumCtx.walletPublicKey,
         ethereumCtx.provider
       );
-      // Make sure to populate missing fields and resolve ENS
+
+      // Set any transaction override values that were passed in the serialized
+      // transaction
+      const overridesToUpdate: Partial<TransactionOverrides> = {};
+      if (parsed.nonce !== 0) {
+        overridesToUpdate.nonce = 0;
+      } else {
+        overridesToUpdate.nonce = await voidSigner.getTransactionCount();
+      }
+      if (!parsed.gasLimit.isZero()) {
+        overridesToUpdate.gasLimit = parsed.gasLimit;
+      }
+      if (parsed.maxFeePerGas && !parsed.maxFeePerGas.isZero()) {
+        overridesToUpdate.maxFeePerGas = parsed.maxFeePerGas;
+      }
+      if (
+        parsed.maxPriorityFeePerGas &&
+        !parsed.maxPriorityFeePerGas.isZero()
+      ) {
+        overridesToUpdate.maxPriorityFeePerGas = parsed.maxPriorityFeePerGas;
+      }
+
+      const newTransactionOverrides = {
+        ...transactionOverrides,
+        ...overridesToUpdate,
+      };
+
+      setTransactionOverrides(newTransactionOverrides);
+
+      // Populate any missing fields in resulting transaction, resolve ENS, etc
       const populatedTx = await voidSigner.populateTransaction({
-        ...transaction,
-        gasLimit: DEFAULT_GAS_LIMIT,
+        ...parsed,
+        ...newTransactionOverrides,
       });
+
       setTransaction(populatedTx);
     })();
   }, [serializedTx]);
@@ -127,9 +165,6 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
         // populateTransaction should have added a nonce, add it to overrides
         setTransactionOverrides({
           ...transactionOverrides,
-          nonce: transaction.nonce
-            ? BigNumber.from(transaction.nonce).toNumber()
-            : null,
           gasLimit: estimatedGas,
         });
         setLoading(false);
@@ -163,12 +198,14 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
 
   return {
     loading,
-    transaction: bs58.encode(
-      ethers.utils.serializeTransaction({
-        ...transaction,
-        ...transactionOverrides,
-      } as UnsignedTransaction)
-    ),
+    transaction: transaction
+      ? bs58.encode(
+          ethers.utils.serializeTransaction({
+            ...transaction,
+            ...transactionOverrides,
+          } as UnsignedTransaction)
+        )
+      : serializedTx,
     transactionOverrides,
     setTransactionOverrides,
     from: ethereumCtx.walletPublicKey,
