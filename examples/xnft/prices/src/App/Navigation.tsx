@@ -30,8 +30,6 @@ function Navigation() {
         font: "Inter",
         fontSize: "20px",
         fontWeight: "700",
-        backdropFilter: "blur(10px)",
-        borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
         height: "56px",
       }}
     >

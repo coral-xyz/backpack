@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button, Image, Text, View } from "react-xnft";
 import { TokenInfoType } from "./_types/TokenInfoType";
 import { green, red } from "./_helpers/color";
@@ -31,31 +31,36 @@ type StateProps = {
 function TokenDetails(props: Props & StateProps) {
   const tokenId = props.token.id;
   const { isFavorited, activeChart, chartData } = props;
+  console.log(isFavorited);
   const dispatch = useDispatch();
 
   useRefreshTokenChart(tokenId, activeChart);
 
-  const currentPrice = formatPrice(props.token.current_price);
-  const changePercent = formatPrice(props.token.price_change_percentage_24h);
-  const changeCurrency = formatPrice(props.token.price_change_24h);
-
-  console.log(props.token.price_change_24h);
-
   const data = filterChartData(activeChart, chartData);
+  const start = data?.points[0];
+  const end = data?.points[data?.points.length - 1];
+
+  const currentPrice = formatPrice(props.token.current_price);
+  let changeCurrencyNum = props.token.price_change_24h ?? 0;
+  let changePercentNum = props.token.price_change_percentage_24h ?? 0;
+
+  if (start && end) {
+    changeCurrencyNum = end[1] - start[1];
+    changePercentNum = (changeCurrencyNum * 100) / start[1];
+  }
+
+  const changeCurrency = formatPrice(changeCurrencyNum);
+  const changePercent = formatPrice(changePercentNum);
+
   const Arrow =
-    (props.token.price_change_percentage_24h ?? 0) + 0 > 0 ? (
+    changeCurrencyNum > 0 ? (
       <ArrowUpIcon isFilled={true} color={green} height={11} width={16} />
     ) : (
       <ArrowDownIcon isFilled={true} color={red} height={11} width={16} />
     );
 
-  const color =
-    (props.token.price_change_percentage_24h ?? 0) + 0 > 0 ? green : red;
-
-  const isUp =
-    (data?.points[0][1] ?? 0) <
-    (data?.points[(data?.points.length ?? 1) - 1][1] ?? 0);
-  const colorButton = isUp ? green : red;
+  const color = changeCurrencyNum > 0 ? green : red;
+  const colorButton = changeCurrencyNum > 0 ? green : red;
 
   return (
     <>
@@ -291,7 +296,7 @@ function AssetFact({ label, value }: { label: string; value: string }) {
 
 const selector = createSelector(
   (state: StateType, props: Props) => state.tokenInfos[props.token.id],
-  (state: StateType, props: Props) => state.favorites[props.token.id],
+  (state: StateType, props: Props) => !!state.favorites[props.token.id],
   (state: StateType, props: Props) => {
     const tokenChart = state.tokenCharts[props.token.id] ?? {};
     return tokenChart.activeChart ?? "1D";

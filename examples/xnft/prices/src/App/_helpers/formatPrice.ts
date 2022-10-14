@@ -1,16 +1,19 @@
-const formatter = Intl.NumberFormat("en", { notation: "compact" });
+const formatterCompact = Intl.NumberFormat("en", {
+  notation: "compact",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+const formatter = Intl.NumberFormat("en", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 
 function formatPrice(price: number | null, compact: boolean = false): string {
   const priceFloat = price ? price + 0 : 0;
 
-  const formattedPrice = Math.abs(Math.round(priceFloat * 100) / 100).toFixed(
-    2
-  );
-
-  if (compact) {
-    return formatter.format(parseFloat(formattedPrice));
-  }
-  return formattedPrice;
+  return compact
+    ? formatterCompact.format(priceFloat)
+    : formatter.format(priceFloat);
 }
 
 export default formatPrice;
