@@ -263,8 +263,6 @@ export function Component({ viewData }) {
       );
     case NodeKind.Svg:
       return <Svg props={props} children={viewData.children} />;
-    case NodeKind.Path:
-      return <Path props={props} />;
     case NodeKind.Circle:
       return <Circle props={props} />;
     case NodeKind.NavAnimation:
@@ -316,6 +314,8 @@ export function Component({ viewData }) {
           props={props}
         />
       );
+    case NodeKind.Path:
+      return <Path props={props} />;
     case "raw":
       return <Raw text={viewData.text} />;
     default:
@@ -355,6 +355,7 @@ function Path({ props }: any) {
       clipRule={props.clipRule}
       fill={props.fill}
       stroke={props.stroke}
+      style={props.style}
     />
   );
 }

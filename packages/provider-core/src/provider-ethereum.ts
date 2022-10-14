@@ -75,7 +75,6 @@ const messages = {
 export interface BaseProviderState {
   accounts: null | string[];
   isConnected: boolean;
-  isPermanentlyDisconnected: boolean;
 }
 
 export class ProviderEthereumInjection extends PrivateEventEmitter {
@@ -84,7 +83,6 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
   protected static _defaultState: BaseProviderState = {
     accounts: null,
     isConnected: false,
-    isPermanentlyDisconnected: false,
   };
 
   /**
@@ -246,7 +244,7 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
     const functionMap = {
       eth_accounts: this.#handleEthAccounts,
       eth_requestAccounts: this.#handleEthRequestAccounts,
-      eth_chainId: () => this.chainId,
+      eth_chainId: () => `${this.chainId}`,
       net_version: () => (this.chainId ? `${parseInt(this.chainId)}` : "1"),
       eth_getBalance: (address: string) => this.provider!.getBalance(address),
       eth_getCode: (address: string) => this.provider!.getCode(address),

@@ -23,13 +23,14 @@ export function useEthereumFeeData(): any {
 
 export function useEthereumCtx(): EthereumContext {
   const wallet = useActiveEthereumWallet();
-  const { provider } = useEthersContext();
+  const { provider, chainId } = useEthersContext();
   const backgroundClient = useBackgroundClient();
   const feeData = useEthereumFeeData();
 
   return {
     walletPublicKey: wallet ? wallet.publicKey : AddressZero,
     provider,
+    chainId,
     feeData,
     backgroundClient,
   };
