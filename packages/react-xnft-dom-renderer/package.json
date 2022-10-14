@@ -6,6 +6,9 @@
   "scripts": {
     "build": "parcel build src/index.tsx --dist-dir dist"
   },
+  "files": [
+    "dist"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
