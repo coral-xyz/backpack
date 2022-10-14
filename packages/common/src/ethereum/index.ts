@@ -29,20 +29,17 @@ export type EthereumTransactionOverrides = {
 };
 
 export type TransferEthRequest = EthereumTransactionOverrides & {
-  chainId: string;
   to: string;
   value: string;
 };
 
 export type TransferErc20Request = EthereumTransactionOverrides & {
-  chainId: string;
   to: string;
   contractAddress: string;
   amount: string;
 };
 
 export type TransferErc721Request = EthereumTransactionOverrides & {
-  chainId: string;
   from: string;
   to: string;
   contractAddress: string;
@@ -66,7 +63,6 @@ export class Ethereum {
     return Object.fromEntries(
       Object.entries({
         to: req.to,
-        chainId: req.chainId ?? null,
         value: BigNumber.from(req.value),
         type: req.type ?? null,
         nonce: req.nonce ?? undefined,
@@ -97,7 +93,6 @@ export class Ethereum {
       BigNumber.from(req.amount),
       {
         type: req.type ?? null,
-        chainId: req.chainId ?? null,
         nonce: req.nonce ?? null,
         gasLimit: req.gasLimit ?? null,
         gasPrice: req.gasPrice ?? null,
@@ -129,7 +124,6 @@ export class Ethereum {
       req.tokenId,
       {
         type: req.type ?? null,
-        chainId: req.chainId ?? null,
         nonce: req.nonce ?? null,
         gasLimit: req.gasLimit ?? null,
         gasPrice: req.gasPrice ?? null,
