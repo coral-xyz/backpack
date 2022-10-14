@@ -13,6 +13,7 @@ export * from "./tokens-uniswap";
 export type EthereumContext = {
   walletPublicKey: string;
   provider: ethers.providers.Provider;
+  chainId: string;
   feeData: FeeData;
   backgroundClient: BackgroundClient;
 };

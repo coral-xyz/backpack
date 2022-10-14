@@ -501,6 +501,7 @@ export function EthereumSettingsDrawer({
               >
                 {["normal", "fast", "degen", "custom"].map((m) => (
                   <ModeChip
+                    key={m}
                     mode={m as TransactionMode}
                     currentMode={mode}
                     setMode={setMode}

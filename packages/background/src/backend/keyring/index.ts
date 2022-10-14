@@ -322,7 +322,7 @@ export class KeyringStore {
   }
 
   private isUnlocked(): boolean {
-    return this.lastUsedTs !== 0;
+    return this.blockchains.size > 0 && this.lastUsedTs !== 0;
   }
 
   private async persist(forceBecauseCalledFromInit = false) {
@@ -442,7 +442,7 @@ export class KeyringStore {
         return blockchain as Blockchain;
       }
     }
-    throw new Error("no blockchain for public key");
+    throw new Error(`no blockchain for ${publicKey}`);
   }
 
   /**
@@ -453,7 +453,7 @@ export class KeyringStore {
     if (keyring) {
       return keyring;
     }
-    throw new Error("no keyring for blockchain");
+    throw new Error(`no keyring for ${blockchain}`);
   }
 
   /**
@@ -465,6 +465,6 @@ export class KeyringStore {
         return keyring;
       }
     }
-    throw new Error("no keyring for public key");
+    throw new Error(`no keyring for ${publicKey}`);
   }
 }
