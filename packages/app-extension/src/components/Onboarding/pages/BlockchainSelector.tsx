@@ -25,7 +25,7 @@ export const BlockchainSelector = ({
             marginTop: "24px",
           }}
         >
-          <Header text="Whch network would you like Backpack to use?" />
+          <Header text="Which network would you like Backpack to use?" />
           <SubtextParagraph>
             You can always add additional networks later through the settings
             menu.
