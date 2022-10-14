@@ -15,10 +15,10 @@ import React, { useState } from "react";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { formatUSD, proxyImageUrl } from "@coral-xyz/common";
 import { Element } from "react-xnft";
-import { ViewRenderer } from "react-xnft-dom-reconciler/src/ViewRenderer";
+import { ViewRenderer } from "react-xnft-dom-renderer/src/ViewRenderer";
 import { Scrollbars } from "react-custom-scrollbars";
 import { motion } from "framer-motion";
-import { MOTION_VARIANTS } from "react-xnft-dom-reconciler/src/Component";
+import { MOTION_VARIANTS } from "react-xnft-dom-renderer/src/Component";
 
 const useStyles = styles((theme) => ({
   blockchainLogo: {
