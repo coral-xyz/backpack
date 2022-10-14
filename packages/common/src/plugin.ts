@@ -1,11 +1,5 @@
 import { PublicKey } from "@solana/web3.js";
 import {
-  getLogger,
-  Blockchain,
-  BackgroundClient,
-  Event,
-  PluginServer,
-  RpcResponse,
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
@@ -37,9 +31,15 @@ import {
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
   PLUGIN_NOTIFICATION_UPDATE_METADATA,
-} from "@coral-xyz/common";
+} from "./constants";
 
-const logger = getLogger("react-xnft-renderer/plugin");
+import { getLogger, Event } from "@coral-xyz/common-public";
+import { BackgroundClient } from "./channel/app-ui";
+import { PluginServer } from "./channel/plugin";
+
+import { Metadata, Blockchain, RpcResponse } from "./types";
+
+const logger = getLogger("common/plugin");
 
 //
 // A plugin is a react bundle served from a given URL, using the Backpack
@@ -57,7 +57,7 @@ export class Plugin {
   private _nextRenderId?: number;
   private _pendingBridgeRequests?: Array<any>;
 
-  private _didFinishSetup?: Promise<void>;
+  public didFinishSetup?: Promise<void>;
   private _didFinishSetupResolver?: () => void;
 
   //
@@ -65,8 +65,8 @@ export class Plugin {
   //
   private _navPushFn?: (args: any) => void;
   private _requestTxApprovalFn?: (request: any) => void;
-  private _backgroundClient: BackgroundClient;
-  private _connectionBackgroundClient: BackgroundClient;
+  private _backgroundClient?: BackgroundClient;
+  private _connectionBackgroundClient?: BackgroundClient;
 
   //
   // The last time a click event was handled for the plugin. This is used as an
@@ -111,7 +111,7 @@ export class Plugin {
     //
     // Effectively take a lock that's held until the setup is complete.
     //
-    this._didFinishSetup = new Promise((resolve) => {
+    this.didFinishSetup = new Promise((resolve) => {
       this._didFinishSetupResolver = resolve;
     });
   }
@@ -187,7 +187,7 @@ export class Plugin {
     this._nextRenderId = undefined;
     this._pendingBridgeRequests = undefined;
     this._didFinishSetupResolver = undefined;
-    this._didFinishSetup = undefined;
+    this.didFinishSetup = undefined;
   }
 
   //
@@ -199,7 +199,7 @@ export class Plugin {
     request,
     backgroundClient,
     connectionBackgroundClient,
-  }) {
+  }: any) {
     this._navPushFn = push;
     this._requestTxApprovalFn = request;
     this._backgroundClient = backgroundClient;
@@ -210,9 +210,9 @@ export class Plugin {
   // Rendering.
   //////////////////////////////////////////////////////////////////////////////
 
-  public mount(metadata) {
+  public mount(metadata: Metadata) {
     this.createIframe();
-    this._didFinishSetup!.then(() => {
+    this.didFinishSetup!.then(() => {
       this.pushMountNotification();
       this.pushAppUiMetadata(metadata);
     });
@@ -225,7 +225,7 @@ export class Plugin {
     //
     // Effectively take a lock that's held until the setup is complete.
     //
-    this._didFinishSetup = new Promise((resolve) => {
+    this.didFinishSetup = new Promise((resolve) => {
       this._didFinishSetupResolver = resolve;
     });
   }
@@ -242,7 +242,7 @@ export class Plugin {
     this.iframeRoot?.contentWindow?.postMessage(event, "*");
   }
 
-  public pushAppUiMetadata(metadata) {
+  public pushAppUiMetadata(metadata: Metadata) {
     console.log(
       "pushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadata"
     );
@@ -421,7 +421,7 @@ export class Plugin {
         pubkey
       );
       return [signature];
-    } catch (err) {
+    } catch (err: any) {
       return [null, err.toString()];
     }
   }
@@ -437,7 +437,7 @@ export class Plugin {
         pubkey
       );
       return [signature];
-    } catch (err) {
+    } catch (err: any) {
       return [null, err.toString()];
     }
   }
@@ -453,7 +453,7 @@ export class Plugin {
         pubkey
       );
       return [signature];
-    } catch (err) {
+    } catch (err: any) {
       return [null, err.toString()];
     }
   }
@@ -469,7 +469,7 @@ export class Plugin {
         pubkey
       );
       return [signature];
-    } catch (err) {
+    } catch (err: any) {
       return [null, err.toString()];
     }
   }
@@ -485,7 +485,7 @@ export class Plugin {
         pubkey
       );
       return [signature];
-    } catch (err) {
+    } catch (err: any) {
       return [null, err.toString()];
     }
   }
@@ -501,7 +501,7 @@ export class Plugin {
         pubkey
       );
       return [signature];
-    } catch (err) {
+    } catch (err: any) {
       return [null, err.toString()];
     }
   }
@@ -517,7 +517,7 @@ export class Plugin {
         pubkey
       );
       return [signature];
-    } catch (err) {
+    } catch (err: any) {
       return [null, err.toString()];
     }
   }
@@ -531,7 +531,7 @@ export class Plugin {
   }
 
   private async _handleGet(key: string): Promise<RpcResponse> {
-    const resp = await this._backgroundClient.request({
+    const resp = await this._backgroundClient?.request({
       method: UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
       params: [this.xnftAddress.toString(), key],
     });
@@ -539,7 +539,7 @@ export class Plugin {
   }
 
   private async _handlePut(key: string, value: any): Promise<RpcResponse> {
-    const resp = await this._backgroundClient.request({
+    const resp = await this._backgroundClient?.request({
       method: UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
       params: [this.xnftAddress.toString(), key, value],
     });
@@ -592,6 +592,6 @@ export class Plugin {
   //
   private async _handleConnectionBridge(event: Event): Promise<RpcResponse> {
     logger.debug(`handle connection bridge`, event);
-    return await this._connectionBackgroundClient.request(event.data.detail);
+    return await this._connectionBackgroundClient?.request(event.data.detail);
   }
 }

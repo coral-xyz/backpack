@@ -1,3 +1,3 @@
 export * from "./Component";
-export * from "./plugin";
+export * from "../../../common/src/plugin";
 export { PluginRenderer } from "./Renderer";

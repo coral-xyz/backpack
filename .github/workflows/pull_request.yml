@@ -25,7 +25,6 @@ jobs:
               - 'packages/app-extension/**'
             xnft:
               - 'packages/react-xnft/**'
-              - 'packages/react-xnft-renderer/**'
               - 'packages/xnft/**'
               - 'packages/xnft-cli/**'
             backend:

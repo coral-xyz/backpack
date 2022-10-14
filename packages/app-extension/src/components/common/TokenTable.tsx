@@ -25,7 +25,7 @@ import {
   BalancesTableContent,
   BalancesTableRow,
   BalancesTableCell,
-} from "@coral-xyz/react-xnft-renderer";
+} from "../../plugin/Component";
 import { WithCopyTooltip } from "./WithCopyTooltip";
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];

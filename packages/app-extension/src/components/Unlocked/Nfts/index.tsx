@@ -19,7 +19,7 @@ import {
   BalancesTable,
   BalancesTableHead,
   BalancesTableContent,
-} from "@coral-xyz/react-xnft-renderer";
+} from "../../../plugin/Component";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { GridCard } from "./Common";
 import { EmptyState } from "../../common/EmptyState";

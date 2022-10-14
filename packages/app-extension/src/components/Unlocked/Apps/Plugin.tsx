@@ -1,6 +1,7 @@
 import { Button, Divider } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
-import { Plugin, PluginRenderer } from "@coral-xyz/react-xnft-renderer";
+import { Plugin } from "@coral-xyz/common";
+import { PluginRenderer } from "../../../plugin/Renderer";
 import { useDarkMode, usePlugins } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { PowerIcon, MoreIcon } from "../../common/Icon";
