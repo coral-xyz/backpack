@@ -150,6 +150,8 @@ app.get("/users/:username", async (c) => {
 
 app.post("/users", async (c) => {
   const body = await c.req.json();
+  body.blockchain ||= "solana"; // default value for legacy clients
+
   const variables = CreateUser.parse(body);
 
   let isValidSignature = false;
