@@ -1,4 +1,3 @@
--- Could not auto-generate a down migration.
--- Please write an appropriate down migration for the SQL below:
--- alter table "auth"."users" add column "blockchain" text
---  not null;
+alter table "auth"."users" drop column "blockchain";
+
+drop type blockchain;
