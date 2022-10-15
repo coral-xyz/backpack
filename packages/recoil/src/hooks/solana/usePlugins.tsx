@@ -5,7 +5,9 @@ import {
   useRecoilValueLoadable,
 } from "recoil";
 import { PublicKey } from "@solana/web3.js";
-import { Plugin } from "@coral-xyz/common";
+// XXX: this full path is currently necessary as it avoids loading the jsx in
+//      react-xnft-renderer/src/Component.tsx in the background service worker
+import { Plugin } from "@coral-xyz/common/dist/esm/plugin";
 import { fetchXnft } from "@coral-xyz/common";
 import * as atoms from "../../atoms";
 import { useAnchorContext } from "./useSolanaConnection";

@@ -10,10 +10,7 @@ const events = new EventEmitter();
 export const ReactXnft = {
   events,
   render(reactNode: any) {
-    console.log("render called with reactnode");
-    console.log(reactNode);
     window.addEventListener("load", () => {
-      console.log("inside load hadnler for reconciler");
       window.xnft.on("connect", () => {
         logger.debug("connect");
         NAV_STACK.push(reactNode);

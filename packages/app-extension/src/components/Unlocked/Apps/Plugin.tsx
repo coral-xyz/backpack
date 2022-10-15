@@ -29,7 +29,7 @@ export function PluginDisplay({
   xnft: string;
   closePlugin: () => void;
 }) {
-  const plugins = usePlugins();
+  const plugins: Array<Plugin> = usePlugins();
   const p = plugins.find((p) => p.xnftAddress.toString() === xnft);
 
   // Hack: This is hit due to the framer-motion animation.

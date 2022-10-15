@@ -14,9 +14,9 @@ import {
 import React, { useState } from "react";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { formatUSD, proxyImageUrl } from "@coral-xyz/common";
-import { Element } from "react-xnft";
+import { Element, NodeKind } from "react-xnft";
 //TODO: We should remove this dependency somehow
-import { ViewRenderer } from "@coral-xyz/react-xnft-dom-renderer";
+import { ViewRenderer } from "./ViewRenderer";
 import { Scrollbars } from "react-custom-scrollbars";
 import { motion } from "framer-motion";
 import { MOTION_VARIANTS } from "../app/Router";
@@ -207,6 +207,61 @@ const useStyles = styles((theme) => ({
   },
 }));
 
+export function Component({ viewData }: any) {
+  const { id, props, style, kind } = viewData;
+  switch (kind) {
+    case NodeKind.Button:
+      return (
+        <_Button
+          id={id}
+          props={props}
+          style={style}
+          childrenRenderer={viewData.children}
+        />
+      );
+    case NodeKind.BalancesTable:
+      return (
+        <BalancesTable
+          props={props}
+          style={style}
+          childrenRenderer={viewData.children}
+        />
+      );
+    case NodeKind.BalancesTableHead:
+      return <BalancesTableHead props={props} style={style} />;
+    case NodeKind.BalancesTableContent:
+      return (
+        <BalancesTableContent
+          props={props}
+          style={style}
+          childrenRenderer={viewData.children}
+        />
+      );
+    case NodeKind.BalancesTableRow:
+      return (
+        <__BalancesTableRow
+          id={id}
+          props={props}
+          style={style}
+          childrenRenderer={viewData.children}
+        />
+      );
+    case NodeKind.BalancesTableCell:
+      return <BalancesTableCell props={props} style={style} />;
+    case NodeKind.BalancesTableFooter:
+      return (
+        <BalancesTableFooter
+          props={props}
+          style={style}
+          children={viewData.children}
+        />
+      );
+    default:
+      console.error(viewData);
+      throw new Error("unexpected view data");
+  }
+}
+
 export function TextArea({
   maxRows,
   minRows,
@@ -320,7 +375,9 @@ export function BalancesTableCell({ props, style }: any) {
           <ProxyImage
             src={icon}
             className={classes.logoIcon}
-            onError={(event) => (event.currentTarget.style.display = "none")}
+            onError={(event: any) =>
+              (event.currentTarget.style.display = "none")
+            }
           />
         </ListItemIcon>
       )}
@@ -568,6 +625,18 @@ function ProxyImage(props: any) {
   );
 }
 
+export function _Button({ id, props, style, childrenRenderer }: any) {
+  return (
+    <__Button
+      id={id}
+      props={props}
+      style={style}
+      childrenRenderer={childrenRenderer}
+      onClick={props.onClick}
+    />
+  );
+}
+
 export function Button({ id, props, style, onClick, children }: any) {
   return (
     <__Button
@@ -618,27 +687,27 @@ export function ScrollBarImpl(props: any) {
     <>
       <Scrollbars
         style={{ width: "100%", height: "100%" }}
-        renderTrackHorizontal={(props) => (
+        renderTrackHorizontal={(props: any) => (
           <div {...props} className="track-horizontal" />
         )}
-        renderTrackVertical={(props) => (
+        renderTrackVertical={(props: any) => (
           <div
             style={{ backgroundColor: theme.custom.colors.scrollbarTrack }}
             {...props}
             className="track-vertical"
           />
         )}
-        renderThumbHorizontal={(props) => (
+        renderThumbHorizontal={(props: any) => (
           <div {...props} className="thumb-horizontal" />
         )}
-        renderThumbVertical={(props) => (
+        renderThumbVertical={(props: any) => (
           <div
             style={{ backgroundColor: theme.custom.colors.scrollbarThumb }}
             {...props}
             className="thumb-vertical"
           />
         )}
-        renderView={(props) => <div {...props} className="view" />}
+        renderView={(props: any) => <div {...props} className="view" />}
         autoHide
         thumbMinSize={30}
       >

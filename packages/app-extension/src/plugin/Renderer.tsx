@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import type { Plugin } from "../../../common/src/plugin";
 import { Loading } from "../components/common";
 
 export function PluginRenderer({
   plugin,
   metadata,
 }: {
-  plugin: Plugin;
+  plugin: any;
   metadata: any;
 }) {
   const ref = useRef<any>();
@@ -16,8 +15,10 @@ export function PluginRenderer({
     if (plugin && ref && ref.current) {
       plugin.mount(metadata);
       plugin.didFinishSetup!.then(() => {
+        plugin.iframeRoot.style.display = "";
         setLoaded(true);
       });
+      plugin.iframeRoot.style.display = "none";
       ref.current.appendChild(plugin.iframeRoot);
       return () => {
         plugin.unmount();
@@ -26,5 +27,14 @@ export function PluginRenderer({
     return () => {};
   }, [plugin, ref]);
 
-  return <div ref={ref}>{!loaded && <Loading />}</div>;
+  return (
+    <div ref={ref}>
+      {!loaded && (
+        <div style={{ height: "100vh" }}>
+          {" "}
+          <Loading />{" "}
+        </div>
+      )}
+    </div>
+  );
 }
