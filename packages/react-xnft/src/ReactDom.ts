@@ -236,8 +236,6 @@ export class ReactDom {
     if (!this._renderRootFn) {
       throw new Error("render root fn not found");
     }
-    console.log("children are");
-    console.log(this._vdomRoot.children);
     this._renderRootFn(this._vdomRoot.children);
   }
 

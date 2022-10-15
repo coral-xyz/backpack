@@ -380,7 +380,6 @@ function Circle({ props }: any) {
 function Iframe({ props, style }: any) {
   const [xnftProp, setXnftProp] = useState(false);
   const ref = useRef<any>();
-  console.log("inside Iframe Component in Components.tsx");
 
   useEffect(() => {
     if (!isValidSecureUrl(props.src)) {
@@ -396,7 +395,6 @@ function Iframe({ props, style }: any) {
       window.xnft.removeIframe(ref.current);
     };
   }, [props.src, ref, xnftProp]);
-  console.log(props);
   return isValidSecureUrl(props.src) ? (
     <iframe
       ref={ref}
@@ -415,10 +413,7 @@ function Iframe({ props, style }: any) {
         ...style,
       }}
       onLoad={({ currentTarget }) => {
-        console.log(" props are ");
-        console.log(props);
         if (props.xnft) {
-          console.log("props.xnft is true");
           // plugin.setActiveIframe(currentTarget, props.src);
           setXnftProp(true);
         }
