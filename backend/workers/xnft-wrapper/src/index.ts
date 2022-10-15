@@ -66,7 +66,10 @@ export default {
           <head>
             <meta charset="utf-8"/>
           </head>
-          <body>${innerHTML}</body>
+          <body>
+            <div id="container"></div>
+            ${innerHTML}
+           </body>
         </html>
       `);
     } catch (err) {
