@@ -5,7 +5,7 @@
     "xnft": "./index.js"
   },
   "scripts": {
-    "prebuild": "cd ../../examples/xnft/iframe && npm run build && cd ../../../packages/react-xnft-dom-renderer && npm run build",
+    "prebuild": "cd ../../examples/xnft/iframe && npm run build && cd ../../../packages/common && npm run build && cd ../react-xnft-dom-renderer && npm run build",
     "build": "shx cp ../../examples/xnft/iframe/dist/index.js iframe.js && shx cp ../react-xnft-dom-renderer/dist/index.js renderer.js"
   },
   "dependencies": {
