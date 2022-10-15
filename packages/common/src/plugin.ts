@@ -130,6 +130,7 @@ export class Plugin {
     this.iframeRoot = document.createElement("iframe");
     this.iframeRoot.style.width = "100%";
     this.iframeRoot.style.height = "100vh";
+    this.iframeRoot.style.border = "none";
 
     this.iframeRoot.setAttribute("fetchpriority", "low");
     this.iframeRoot.src = this.iframeRootUrl;
@@ -231,7 +232,6 @@ export class Plugin {
   }
 
   public pushMountNotification() {
-    console.log("pushMountNotification");
     const event = {
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: {
@@ -243,10 +243,6 @@ export class Plugin {
   }
 
   public pushAppUiMetadata(metadata: Metadata) {
-    console.log(
-      "pushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadatapushAppUiMetadata"
-    );
-    console.log(metadata);
     const event = {
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: {
@@ -269,7 +265,6 @@ export class Plugin {
   }
 
   public pushConnectNotification() {
-    console.log("pushConnectNotification");
     const event = {
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: {
