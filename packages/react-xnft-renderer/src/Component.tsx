@@ -3,7 +3,7 @@ import { Scrollbars } from "react-custom-scrollbars";
 import type { Element } from "react-xnft";
 import { motion, AnimatePresence } from "framer-motion";
 import { NodeKind } from "react-xnft";
-import { formatUSD } from "@coral-xyz/common";
+import { formatUSD, proxyImageUrl } from "@coral-xyz/common";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import {
   Button as MuiButton,
@@ -309,12 +309,29 @@ export function Component({ viewData }) {
           children={viewData.children}
         />
       );
+    case NodeKind.Custom:
+      return (
+        <Custom
+          children={viewData.children}
+          component={props.component}
+          props={props}
+        />
+      );
     case "raw":
       return <Raw text={viewData.text} />;
     default:
       console.error(viewData);
       throw new Error("unexpected view data");
   }
+}
+
+function Custom({ children, component, props }) {
+  const el = React.createElement(
+    component,
+    props,
+    children.map((c) => <ViewRenderer key={c.id} element={c} />)
+  );
+  return el;
 }
 
 function Svg({ props, children }: any) {
@@ -339,6 +356,7 @@ function Path({ props }: any) {
       clipRule={props.clipRule}
       fill={props.fill}
       stroke={props.stroke}
+      style={props.style}
     />
   );
 }
@@ -466,6 +484,8 @@ export function BalancesTableHead({ props, style }: any) {
   const { showContent, setShowContent } = useBalancesContext();
   return (
     <Button
+      props={{ component: "div" }}
+      onClick={() => !disableToggle && setShowContent(!showContent)}
       style={{
         width: "100%",
         borderRadius: 0,
@@ -474,10 +494,9 @@ export function BalancesTableHead({ props, style }: any) {
       }}
     >
       <CardHeader
-        onClick={() => !disableToggle && setShowContent(!showContent)}
         avatar={
           iconUrl ? (
-            <img className={classes.blockchainLogo} src={iconUrl} />
+            <ProxyImage className={classes.blockchainLogo} src={iconUrl} />
           ) : undefined
         }
         title={
@@ -638,7 +657,7 @@ export function BalancesTableCell({ props, style }: any) {
           className={classes.tokenListItemIcon}
           classes={{ root: classes.tokenListItemIconRoot }}
         >
-          <img
+          <ProxyImage
             src={icon}
             className={classes.logoIcon}
             onError={(event) => (event.currentTarget.style.display = "none")}
@@ -857,7 +876,20 @@ function Image({ id, props, style }: any) {
     : (_event) => {
         plugin.pushClickNotification(id);
       };
-  return <img src={props.src} style={style} onClick={onClick} />;
+  return <ProxyImage src={props.src} style={style} onClick={onClick} />;
+}
+
+function ProxyImage(props: any) {
+  return (
+    <img
+      {...props}
+      onError={({ currentTarget }) => {
+        currentTarget.onerror = props.onError || null;
+        currentTarget.src = props.src;
+      }}
+      src={proxyImageUrl(props.src)}
+    />
+  );
 }
 
 export function Button({ id, props, style, onClick, children }: any) {
@@ -903,6 +935,7 @@ export function __Button({
   const theme = useCustomTheme();
   return (
     <MuiButton
+      {...props}
       disableElevation
       variant="contained"
       disableRipple

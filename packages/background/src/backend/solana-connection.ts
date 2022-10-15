@@ -1,11 +1,4 @@
-import {
-  AddressLookupTableAccount,
-  Connection,
-  GetAccountInfoConfig,
-  PublicKey,
-  SimulateTransactionConfig,
-  VersionedMessage,
-} from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import type {
   Commitment,
   GetSupplyConfig,
@@ -68,6 +61,10 @@ import type {
   SignatureStatus,
   PerfSample,
   BlockheightBasedTransactionConfirmationStrategy,
+  AddressLookupTableAccount,
+  GetAccountInfoConfig,
+  SimulateTransactionConfig,
+  VersionedMessage,
 } from "@solana/web3.js";
 import type { Notification, EventEmitter } from "@coral-xyz/common";
 import { encode } from "bs58";
@@ -186,9 +183,13 @@ export class SolanaConnectionBackend {
       const { activeWallet, url } = notif.data;
       this.connection = new Connection(url, this.connection!.commitment);
       this.url = url;
-      this.stopPolling();
-      this.hookRpcRequest();
-      this.startPolling(new PublicKey(activeWallet));
+      // activeWallet can be null if the blockchain is disabled, in that case
+      // we don't want to start polling
+      if (activeWallet) {
+        this.stopPolling();
+        this.hookRpcRequest();
+        this.startPolling(new PublicKey(activeWallet));
+      }
     };
 
     const handleBlockchainEnabled = (notif: Notification) => {

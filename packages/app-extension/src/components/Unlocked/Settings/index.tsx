@@ -67,7 +67,6 @@ import { PreferencesSolana } from "./Preferences/Solana";
 import { PreferencesEthereum } from "./Preferences/Ethereum";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
 import { PreferencesTrustedApps } from "./Preferences/TrustedApps";
-import { PreferencesBlockchains } from "./Preferences/Blockchains";
 import { PreferencesSolanaConnection } from "./Preferences/Solana/ConnectionSwitch";
 import { PreferencesSolanaCommitment } from "./Preferences/Solana/Commitment";
 import { PreferencesSolanaExplorer } from "./Preferences/Solana/Explorer";
@@ -209,10 +208,6 @@ function AvatarButton() {
             <NavStackScreen
               name={"preferences-solana"}
               component={(props: any) => <PreferencesSolana {...props} />}
-            />
-            <NavStackScreen
-              name={"preferences-blockchains"}
-              component={(props: any) => <PreferencesBlockchains {...props} />}
             />
             <NavStackScreen
               name={"preferences-ethereum"}
@@ -800,10 +795,18 @@ function SettingsList({ close }: { close: () => void }) {
       label: "xNFTs",
       onClick: () => nav.push("xnfts"),
       icon: (props: any) => (
-        <GridIcon
-          {...props}
-          style={{ ...props.style, width: "22px", height: "22px" }}
-        />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+          }}
+        >
+          <GridIcon
+            {...props}
+            style={{ ...props.style, width: "24px", height: "20px" }}
+          />
+        </div>
       ),
       detailIcon: <PushDetail />,
     });

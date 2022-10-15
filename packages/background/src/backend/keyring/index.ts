@@ -58,7 +58,9 @@ export class KeyringStore {
     const keyring = await this.initBlockchainKeyring(
       derivationPath,
       accountIndices,
-      Blockchain.SOLANA
+      Blockchain.SOLANA,
+      // Don't persist, as we persist manually later
+      false
     );
 
     // Persist the initial wallet ui metadata.
@@ -92,7 +94,8 @@ export class KeyringStore {
   public async initBlockchainKeyring(
     derivationPath: DerivationPath,
     accountIndices: Array<number>,
-    blockchain: Blockchain
+    blockchain: Blockchain,
+    persist = true
   ): Promise<BlockchainKeyring> {
     const keyring = {
       [Blockchain.SOLANA]: BlockchainKeyring.solana,
@@ -100,6 +103,9 @@ export class KeyringStore {
     }[blockchain]();
     await keyring.init(this.mnemonic, derivationPath, accountIndices);
     this.blockchains.set(blockchain, keyring);
+    if (persist) {
+      await this.persist();
+    }
     return keyring;
   }
 
@@ -310,7 +316,7 @@ export class KeyringStore {
   }
 
   private isUnlocked(): boolean {
-    return this.lastUsedTs !== 0;
+    return this.blockchains.size > 0 && this.lastUsedTs !== 0;
   }
 
   private async persist(forceBecauseCalledFromInit = false) {
@@ -430,7 +436,7 @@ export class KeyringStore {
         return blockchain as Blockchain;
       }
     }
-    throw new Error("no blockchain for public key");
+    throw new Error(`no blockchain for ${publicKey}`);
   }
 
   /**
@@ -441,7 +447,7 @@ export class KeyringStore {
     if (keyring) {
       return keyring;
     }
-    throw new Error("no keyring for blockchain");
+    throw new Error(`no keyring for ${blockchain}`);
   }
 
   /**
@@ -453,6 +459,6 @@ export class KeyringStore {
         return keyring;
       }
     }
-    throw new Error("no keyring for public key");
+    throw new Error(`no keyring for ${publicKey}`);
   }
 }
