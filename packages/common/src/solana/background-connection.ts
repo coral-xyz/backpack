@@ -1,14 +1,6 @@
 import BN from "bn.js";
 import { Buffer } from "buffer";
-import {
-  AddressLookupTableAccount,
-  Connection,
-  GetAccountInfoConfig,
-  PublicKey,
-  SimulateTransactionConfig,
-  VersionedMessage,
-  VersionedTransaction,
-} from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import type {
   ConnectionConfig,
   Commitment,
@@ -70,6 +62,11 @@ import type {
   SignatureStatus,
   PerfSample,
   BlockheightBasedTransactionConfirmationStrategy,
+  AddressLookupTableAccount,
+  GetAccountInfoConfig,
+  SimulateTransactionConfig,
+  VersionedMessage,
+  VersionedTransaction,
 } from "@solana/web3.js";
 import {
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
@@ -97,16 +94,14 @@ import {
   SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH_AND_CONTEXT,
   SOLANA_CONNECTION_RPC_GET_ADDRESS_LOOKUP_TABLE,
 } from "../constants";
-import {
-  serializeTokenAccountsFilter,
-  SolanaTokenAccountWithKeyString,
-  SplNftMetadataString,
-  TokenMetadataString,
-} from "./types";
+import { serializeTokenAccountsFilter } from "./types";
 import type {
   SolanaTokenAccountWithKey,
   SplNftMetadata,
   TokenMetadata,
+  SolanaTokenAccountWithKeyString,
+  SplNftMetadataString,
+  TokenMetadataString,
 } from "./types";
 import type { BackgroundClient } from "../channel";
 import { addressLookupTableAccountParser } from "./rpc-helpers";
@@ -133,14 +128,25 @@ export class BackgroundSolanaConnection extends Connection {
     tokenMetadata: (TokenMetadataString | null)[];
     nftMetadata: [string, SplNftMetadataString][];
   }> {
+    console.log("bb background-connection publicKey", publicKey);
+    console.log(
+      "bb background-connection instanceof PublicKey",
+      publicKey instanceof PublicKey
+    );
     const resp = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
       params: [publicKey.toString()],
     });
+
+    console.log("bb background-connection resp", resp);
     return BackgroundSolanaConnection.customSplTokenAccountsFromJson(resp);
   }
 
   static customSplTokenAccountsFromJson(json: any) {
+    console.log(
+      "bb background-connection customSplTokenAccountsFromJson",
+      json
+    );
     json.tokenAccountsMap.map((t: any) => {
       return [
         t[0],

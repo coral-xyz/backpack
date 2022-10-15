@@ -4,7 +4,7 @@ import * as anchor from "@project-serum/anchor";
 import { AnchorProvider, BN, Spl } from "@project-serum/anchor";
 import type { Provider, Program, SplToken } from "@project-serum/anchor";
 import { metadata } from "@project-serum/token";
-import { externalResourceUri } from "@coral-xyz/common-public";
+import { externalResourceUri, getLogger } from "@coral-xyz/common-public";
 import type {
   SolanaTokenAccount,
   SolanaTokenAccountWithKey,
@@ -12,6 +12,8 @@ import type {
   SplNftMetadata,
   TokenMetadata,
 } from "../types";
+
+const logger = getLogger("");
 
 export const TOKEN_PROGRAM_ID = new PublicKey(
   "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
@@ -48,18 +50,16 @@ export async function customSplTokenAccounts(
   tokenMetadata: (TokenMetadata | null)[];
   nftMetadata: [string, SplNftMetadata][];
 }> {
-  console.log(
-    "bb: common/solana/token.ts:customSplTokenAccounts: connection, publicKey",
+  logger.debug("bb: customSplTokenAccounts", connection, publicKey);
+  logger.debug(
+    "bb: customSplTokenAccounts: connection, publicKey",
     connection,
     publicKey
   );
   // @ts-ignore
   const provider = new AnchorProvider(connection, { publicKey });
   const tokenClient = Spl.token(provider);
-  console.log(
-    "bb: common/solana/token.ts:customSplTokenAccounts: tokenClient",
-    tokenClient
-  );
+  logger.debug("bb: customSplTokenAccounts: tokenClient", tokenClient);
 
   const [accountInfo, tokenAccounts] = await Promise.all([
     //
@@ -71,8 +71,8 @@ export async function customSplTokenAccounts(
     //
     fetchTokens(publicKey, tokenClient),
   ]);
-  console.log(
-    "bb: common/solana/token.ts:customSplTokenAccounts: accountInfo, tokenAccounts",
+  logger.debug(
+    "bb: customSplTokenAccounts: accountInfo, tokenAccounts",
     accountInfo,
     tokenAccounts
   );
@@ -87,10 +87,7 @@ export async function customSplTokenAccounts(
     delegatedAmount: new BN(0),
     closeAuthority: null,
   };
-  console.log(
-    "bb: common/solana/token.ts:customSplTokenAccounts: nativeSol",
-    nativeSol
-  );
+  logger.debug("bb: customSplTokenAccounts: nativeSol", nativeSol);
   const tokenAccountsArray = Array.from(tokenAccounts.values());
 
   //
@@ -100,10 +97,7 @@ export async function customSplTokenAccounts(
     tokenClient.provider,
     tokenAccountsArray
   );
-  console.log(
-    "bb: common/solana/token.ts:customSplTokenAccounts: tokenMetadata",
-    tokenMetadata
-  );
+  logger.debug("bb: customSplTokenAccounts: tokenMetadata", tokenMetadata);
 
   //
   // Fetch the metadata uri and interpert as NFTs.
@@ -112,10 +106,7 @@ export async function customSplTokenAccounts(
     tokenAccountsArray,
     tokenMetadata
   );
-  console.log(
-    "bb: common/solana/token.ts:customSplTokenAccounts: nftMetadata",
-    nftMetadata
-  );
+  logger.debug("bb: customSplTokenAccounts: nftMetadata", nftMetadata);
 
   const tokenAccountsMap = (
     Array.from(removeNfts(tokenAccounts, nftMetadata)).map(
@@ -129,8 +120,8 @@ export async function customSplTokenAccounts(
     ) as [string, SolanaTokenAccountWithKeySerializable][]
   ).concat([[nativeSol.key.toString(), nativeSol]]);
 
-  console.log(
-    "bb: common/solana/token.ts:customSplTokenAccounts: tokenAccountsMap",
+  logger.debug(
+    "bb: customSplTokenAccounts: tokenAccountsMap",
     tokenAccountsMap
   );
 
@@ -201,7 +192,7 @@ export async function fetchSplMetadataUri(
         });
         return await resp.json();
       } catch (err) {
-        console.log(`error fetching: ${t.account.data.uri}`, err);
+        logger.debug(`error fetching: ${t.account.data.uri}`, err);
       }
     })
   );

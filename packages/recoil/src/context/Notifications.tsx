@@ -332,6 +332,10 @@ export function NotificationsProvider(props: any) {
       const result = BackgroundSolanaConnection.customSplTokenAccountsFromJson(
         notif.data.customSplTokenAccounts
       );
+      console.log(
+        "Notifications.tsx bb handleSolanaSplTokensDidUpdate, result",
+        result
+      );
       const customSplTokenAccounts = {
         ...result,
         tokenAccounts: new Map(

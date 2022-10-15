@@ -72,6 +72,7 @@ export const customSplTokenAccounts = atomFamily({
             splNftMetadata: new Map(nftMetadata),
           };
         } catch (error) {
+          console.error("bb: customSplTokenAccounts ERROR", error);
           console.error("could not fetch solana token data", error);
           return {
             splTokenAccounts: new Map(),
