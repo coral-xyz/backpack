@@ -9,6 +9,7 @@ const useStyles = styles((theme) => {
       height: "100vh",
       width: "100%",
       background: theme.custom.colors.backgroundBackdrop,
+      position: "absolute",
     },
   };
 });
