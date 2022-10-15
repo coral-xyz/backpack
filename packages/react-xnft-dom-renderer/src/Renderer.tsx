@@ -29,7 +29,6 @@ export function RootRenderer() {
   return (
     <>
       <div className={classes.appContainer}>
-        <div>hi</div>
         {children.map((e) => (
           <ViewRenderer key={e.id} element={e} />
         ))}
