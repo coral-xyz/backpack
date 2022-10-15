@@ -337,8 +337,6 @@ const RECONCILER = ReactReconciler({
         ) {
           // @ts-ignore
           instance.props.onClick = updatePayload.onClick;
-          // @ts-ignore
-          // CLICK_HANDLERS.set(instance.id, instance.props.onClick);
           delete updatePayload["onClick"];
         }
         break;
@@ -382,8 +380,6 @@ const RECONCILER = ReactReconciler({
         ) {
           // @ts-ignore
           instance.props.onClick = updatePayload.onClick;
-          // @ts-ignore
-          // CLICK_HANDLERS.set(instance.id, instance.props.onClick);
           delete updatePayload["onClick"];
         }
         break;
@@ -401,8 +397,6 @@ const RECONCILER = ReactReconciler({
         ) {
           // @ts-ignore
           instance.props.onClick = updatePayload.onClick;
-          // @ts-ignore
-          // CLICK_HANDLERS.set(instance.id, instance.props.onClick);
           delete updatePayload["onClick"];
         }
         break;
@@ -421,10 +415,6 @@ const RECONCILER = ReactReconciler({
     }
 
     ReactDom.getInstance().commitUpdate(instance.id, updatePayload);
-    // ReconcilerBridgeManager.bridge({
-    //   method: RECONCILER_BRIDGE_METHOD_COMMIT_UPDATE,
-    //   params: [instance.id, updatePayload],
-    // });
   },
   commitTextUpdate: (
     textInstance: TextSerialized,
@@ -435,30 +425,16 @@ const RECONCILER = ReactReconciler({
     textInstance.text = nextText;
 
     ReactDom.getInstance().commitTextUpdate(textInstance.id, nextText);
-    // ReconcilerBridgeManager.bridge({
-    //   method: RECONCILER_BRIDGE_METHOD_COMMIT_TEXT_UPDATE,
-    //   params: [textInstance.id, nextText],
-    // });
   },
   appendChildToContainer: (c: RootContainer, child: Element) => {
     logger.debug("appendChildToContainer", c, child);
-    c.children.push(child);
 
     ReactDom.getInstance().appendChildToContainer(child);
-    // ReconcilerBridgeManager.bridge({
-    //   method: RECONCILER_BRIDGE_METHOD_APPEND_CHILD_TO_CONTAINER,
-    //   params: [child],
-    // });
   },
   appendChild: (parent: NodeSerialized, child: Element) => {
     logger.debug("appendChild", parent, child);
-    parent.children.push(child);
 
     ReactDom.getInstance().appendChild(parent.id, child);
-    // ReconcilerBridgeManager.bridge({
-    //   method: RECONCILER_BRIDGE_METHOD_APPEND_CHILD,
-    //   params: [parent.id, child],
-    // });
   },
   insertInContainerBefore: (
     root: RootContainer,
@@ -466,72 +442,19 @@ const RECONCILER = ReactReconciler({
     before: Element
   ) => {
     logger.debug("insertInContainerBefore");
-
-    const newChildren = root.children.filter((c: Element) => c.id !== child.id);
-
-    const idx = root.children.indexOf(before);
-    if (idx === -1) {
-      throw new Error("child not found");
-    }
-
-    root.children = newChildren
-      .slice(0, idx)
-      .concat([child])
-      .concat(root.children.slice(idx));
-
     ReactDom.getInstance().insertInContainerBefore(child, before.id);
-    // ReconcilerBridgeManager.bridge({
-    //   method: RECONCILER_BRIDGE_METHOD_INSERT_IN_CONTAINER_BEFORE,
-    //   params: [child, before.id],
-    // });
   },
   insertBefore: (parent: NodeSerialized, child: Element, before: Element) => {
     logger.debug("insertBefore");
-    const newChildren = parent.children.filter(
-      (c: Element) => c.id !== child.id
-    );
-
-    const idx = parent.children.indexOf(before);
-    if (idx === -1) {
-      throw new Error("child not found");
-    }
-
-    parent.children = newChildren
-      .slice(0, idx)
-      .concat([child])
-      .concat(parent.children.slice(idx));
-
     ReactDom.getInstance().insertBefore(parent.id, child, before.id);
-    // ReconcilerBridgeManager.bridge({
-    //   method: RECONCILER_BRIDGE_METHOD_INSERT_BEFORE,
-    //   params: [parent.id, child, before.id],
-    // });
   },
   removeChild: (parent: NodeSerialized, child: Element) => {
     logger.debug("removeChild", parent, child);
-
-    parent.children = parent.children.filter((c) => c !== child);
-    // deleteClickHandlers(child);
-    // deleteOnChangeHandlers(child);
-
     ReactDom.getInstance().removeChild(parent.id, child.id);
-    // ReconcilerBridgeManager.bridge({
-    //   method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD,
-    //   params: [parent.id, child.id],
-    // });
   },
   removeChildFromContainer: (root: RootContainer, child: Element) => {
     logger.debug("removeChildFromContainer", root, child);
-
-    root.children = root.children.filter((c) => c !== child);
-    // deleteClickHandlers(child);
-    // deleteOnChangeHandlers(child);
-
     ReactDom.getInstance().removeChildFromContainer(child.id);
-    // ReconcilerBridgeManager.bridge({
-    //   method: RECONCILER_BRIDGE_METHOD_REMOVE_CHILD_FROM_CONTAINER,
-    //   params: [],
-    // });
   },
 
   //
@@ -569,12 +492,6 @@ function createViewInstance(
   _o: OpaqueHandle
 ): ViewNodeSerialized {
   const id = h.nextId();
-  // let onClick = false;
-  // const vProps = props as ViewProps;
-  // if (vProps.onClick && typeof vProps.onClick === "function") {
-  //   CLICK_HANDLERS.set(id, vProps.onClick);
-  // onClick = true;
-  // }
   return {
     id,
     kind: NodeKind.View,
@@ -656,7 +573,6 @@ function createTextFieldInstance(
   let onChange = false;
   const tfProps = props as TextFieldProps;
   if (tfProps.onChange && typeof tfProps.onChange === "function") {
-    // ON_CHANGE_HANDLERS.set(id, tfProps.onChange);
     onChange = true;
   }
   return {
@@ -680,12 +596,6 @@ function createImageInstance(
   _o: OpaqueHandle
 ): ImageNodeSerialized {
   const id = h.nextId();
-  // let onClick = false;
-  // const vProps = props as ImageProps;
-  // if (vProps.onClick && typeof vProps.onClick === "function") {
-  //   // CLICK_HANDLERS.set(id, vProps.onClick);
-  //   onClick = true;
-  // }
   const src = (props as ImageProps).src;
   return {
     id,
@@ -708,12 +618,6 @@ function createButtonInstance(
   _o: OpaqueHandle
 ): ButtonNodeSerialized {
   const id = h.nextId();
-  // let onClick = false;
-  // const vProps = props as ButtonProps;
-  // if (vProps.onClick && typeof vProps.onClick === "function") {
-  //   // CLICK_HANDLERS.set(id, vProps.onClick);
-  //   onClick = true;
-  // }
   return {
     id,
     kind: NodeKind.Button,
@@ -948,12 +852,6 @@ function createBalancesTableRowInstance(
   _o: OpaqueHandle
 ): BalancesTableRowNodeSerialized {
   const id = h.nextId();
-  // let onClick = false;
-  // const vProps = props as BalancesTableRowProps;
-  // if (vProps.onClick && typeof vProps.onClick === "function") {
-  //   // CLICK_HANDLERS.set(id, vProps.onClick);
-  //   onClick = true;
-  // }
   return {
     id,
     kind: NodeKind.BalancesTableRow,
