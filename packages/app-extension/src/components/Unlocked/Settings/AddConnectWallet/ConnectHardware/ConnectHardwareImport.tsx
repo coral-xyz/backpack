@@ -10,7 +10,7 @@ import { SelectedAccount } from "../../../../common/Account/ImportAccounts";
 import { ConnectHardware } from "../ConnectHardware";
 
 //
-// This is a wrapper method around the ConnectHardware flow that providwes
+// This is a wrapper method around the ConnectHardware flow that provides
 // a function to import accounts and derivation paths into the keyring store
 // to the onImport prop.
 //
