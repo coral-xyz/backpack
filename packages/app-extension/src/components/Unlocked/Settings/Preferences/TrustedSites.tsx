@@ -8,20 +8,20 @@ import { useNavStack } from "../../../common/Layout/NavStack";
 import { List, ListItem, PrimaryButton } from "../../../common";
 import { EmptyState } from "../../../common/EmptyState";
 
-export function PreferencesTrustedApps() {
+export function PreferencesTrustedSites() {
   const theme = useCustomTheme();
   const nav = useNavStack();
   const approvedOrigins = useApprovedOrigins();
 
   useEffect(() => {
-    nav.setTitle("Trusted Apps");
+    nav.setTitle("Trusted Sites");
   }, [nav]);
 
   return approvedOrigins.length === 0 ? (
     <EmptyState
       icon={(props: any) => <GppBad {...props} />}
-      title={"No trusted apps"}
-      subtitle={"Trusted apps will be listed here"}
+      title={"No trusted sites"}
+      subtitle={"Trusted sites will be listed here"}
       contentStyle={{
         marginBottom: "64px", // Tab height offset.
       }}

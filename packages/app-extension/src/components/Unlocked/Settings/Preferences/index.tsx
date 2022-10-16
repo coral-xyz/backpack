@@ -37,8 +37,8 @@ export function Preferences() {
     "Auto-lock timer": {
       onClick: () => nav.push("preferences-auto-lock"),
     },
-    "Trusted Apps": {
-      onClick: () => nav.push("preferences-trusted-apps"),
+    "Trusted Sites": {
+      onClick: () => nav.push("preferences-trusted-sites"),
     },
   };
 
