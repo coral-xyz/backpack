@@ -140,3 +140,20 @@ program
   });
 
 program.parse();
+
+program
+  .command("init")
+  .argument('<name>', 'name of the xnft')
+  .action(async (name) => {
+    const download = require('download-git-repo');
+
+    await download('coral-xyz/xnft-quickstart', `${name}/`, function (err) {
+
+    });
+
+    console.debug(`${name} initalized`)
+    console.debug(``)
+    console.debug(`run these commands:`)
+    console.debug(`cd ${name}`)
+    console.debug(`yarn && yarn dev`)
+  })

@@ -13,7 +13,8 @@
     "@parcel/core": "^2.7.0",
     "@parcel/reporter-cli": "^2.7.0",
     "commander": "^9.3.0",
-    "express": "^4.18.1"
+    "express": "^4.18.1",
+    "download-git-repo": "latest"
   },
   "devDependencies": {
     "react-xnft": "*",
