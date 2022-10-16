@@ -2,7 +2,8 @@
   "name": "@coral-xyz/xnft-cli",
   "version": "0.0.2-test.3",
   "bin": {
-    "xnft": "./index.js"
+    "xnft": "./index.js",
+    "download-git-repo": "latest"
   },
   "scripts": {
     "prebuild": "cd ../../examples/xnft/iframe && npm run build",
