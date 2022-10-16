@@ -6,6 +6,7 @@ insert_permissions:
     permission:
       check: {}
       columns:
+        - blockchain
         - invitation_id
         - pubkey
         - username
@@ -19,6 +20,7 @@ select_permissions:
   - role: auth_worker
     permission:
       columns:
+        - blockchain
         - id
         - pubkey
         - username

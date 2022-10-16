@@ -12,6 +12,7 @@ import {
 } from "@coral-xyz/common";
 import * as crypto from "./crypto";
 import { SolanaHdKeyringFactory } from "./solana";
+import { EthereumHdKeyringFactory } from "./ethereum";
 import * as store from "../store";
 import { DefaultKeyname, DEFAULT_DARK_MODE } from "../store";
 import { BlockchainKeyring } from "./blockchain";
@@ -45,6 +46,7 @@ export class KeyringStore {
 
   // Initializes the keystore for the first time.
   public async init(
+    blockchain: Blockchain,
     mnemonic: string,
     derivationPath: DerivationPath,
     password: string,
@@ -58,7 +60,7 @@ export class KeyringStore {
     const keyring = await this.initBlockchainKeyring(
       derivationPath,
       accountIndices,
-      Blockchain.SOLANA,
+      blockchain,
       // Don't persist, as we persist manually later
       false
     );
@@ -68,7 +70,7 @@ export class KeyringStore {
       username,
       autoLockSecs: store.DEFAULT_LOCK_INTERVAL_SECS,
       approvedOrigins: [],
-      enabledBlockchains: [Blockchain.SOLANA],
+      enabledBlockchains: [blockchain],
       darkMode: DEFAULT_DARK_MODE,
       solana: {
         explorer: SolanaExplorer.DEFAULT,
@@ -162,11 +164,15 @@ export class KeyringStore {
   // Preview public keys for a given mnemonic and derivation path without
   // importing the mnemonic.
   public previewPubkeys(
+    blockchain: Blockchain,
     mnemonic: string,
     derivationPath: DerivationPath,
     numberOfAccounts: number
   ): string[] {
-    const factory = new SolanaHdKeyringFactory();
+    const factory = {
+      [Blockchain.SOLANA]: new SolanaHdKeyringFactory(),
+      [Blockchain.ETHEREUM]: new EthereumHdKeyringFactory(),
+    }[blockchain];
     const hdKeyring = factory.fromMnemonic(mnemonic, derivationPath, [
       ...Array(numberOfAccounts).keys(),
     ]);

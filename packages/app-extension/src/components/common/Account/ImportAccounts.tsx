@@ -57,6 +57,7 @@ export function ImportAccounts({
   transport,
   onNext,
   onError,
+  allowMultiple = true,
 }: {
   blockchain: Blockchain;
   mnemonic?: string;
@@ -67,6 +68,7 @@ export function ImportAccounts({
     mnemonic?: string
   ) => void;
   onError?: (error: Error) => void;
+  allowMultiple?: boolean;
 }) {
   const background = useBackgroundClient();
   const theme = useCustomTheme();
@@ -201,11 +203,10 @@ export function ImportAccounts({
     mnemonic: string,
     derivationPath: DerivationPath
   ) => {
-    const publicKeys = await background.request({
+    return await background.request({
       method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-      params: [mnemonic, derivationPath, LOAD_PUBKEY_AMOUNT],
+      params: [blockchain, mnemonic, derivationPath, LOAD_PUBKEY_AMOUNT],
     });
-    return publicKeys.map((p: string) => new PublicKey(p));
   };
 
   //
@@ -240,10 +241,14 @@ export function ImportAccounts({
   //
   const handleSelect = (index: number, publicKey: string) => () => {
     const currentIndex = selectedAccounts.findIndex((a) => a.index === index);
-    const newSelectedAccounts = [...selectedAccounts];
+    let newSelectedAccounts = [...selectedAccounts];
     if (currentIndex === -1) {
       // Adding the account
-      newSelectedAccounts.push({ index, publicKey });
+      if (allowMultiple) {
+        newSelectedAccounts.push({ index, publicKey });
+      } else {
+        newSelectedAccounts = [{ index, publicKey }];
+      }
     } else {
       // Removing the account
       newSelectedAccounts.splice(currentIndex, 1);
@@ -313,7 +318,7 @@ export function ImportAccounts({
         >
           <Header text="Import accounts" />
           <SubtextParagraph>
-            Select which accounts you'd like to import.
+            Select which account{allowMultiple && "s"} you'd like to import.
           </SubtextParagraph>
         </Box>
         <div style={{ margin: "16px" }}>
@@ -423,7 +428,7 @@ export function ImportAccounts({
         }}
       >
         <PrimaryButton
-          label="Import Accounts"
+          label={`Import Account${allowMultiple && "s"}`}
           onClick={() => onNext(selectedAccounts, derivationPath, mnemonic)}
           disabled={selectedAccounts.length === 0}
         />

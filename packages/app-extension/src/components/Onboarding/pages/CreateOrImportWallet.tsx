@@ -1,5 +1,5 @@
 import { useCustomTheme } from "@coral-xyz/themes";
-import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
+import { AddCircle, ArrowCircleDown, Wallet } from "@mui/icons-material";
 import { Box, Grid } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ActionCard } from "../../common/Layout/ActionCard";
@@ -19,7 +19,7 @@ export const CreateOrImportWallet = () => {
         height: "100%",
       }}
     >
-      <Box style={{ flex: 1, textAlign: "center", padding: "32px 16px 0" }}>
+      <Box style={{ flex: 1, textAlign: "center", padding: "0 16px" }}>
         <BackpackHeader
           alphaStyle={{
             marginRight: "42px",
@@ -27,7 +27,7 @@ export const CreateOrImportWallet = () => {
         />
       </Box>
       <Box style={{ padding: "0 16px 16px" }}>
-        <Grid container spacing={2}>
+        <Grid container spacing={1.5}>
           <Grid item xs={6}>
             <ActionCard
               icon={
@@ -54,6 +54,21 @@ export const CreateOrImportWallet = () => {
               onClick={() => navigate(`${pathname}/import`.replace("//", "/"))}
             />
           </Grid>
+          {/*
+          <Grid item xs={6}>
+            <ActionCard
+              icon={
+                <Wallet
+                  style={{
+                    color: theme.custom.colors.icon,
+                  }}
+                />
+              }
+              text="Connect a hardware wallet"
+              onClick={() => navigate(`${pathname}/connect`.replace("//", "/"))}
+            />
+          </Grid>
+          */}
         </Grid>
       </Box>
     </div>
