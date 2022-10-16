@@ -6,6 +6,7 @@ import { List, ListItem, PrimaryButton } from "../../../../common";
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { changeNetwork } from "./common";
+import { Inputs, InputListItem } from "../../../../common/Inputs";
 
 const useStyles = styles((theme) => ({
   textFieldRoot: {
@@ -61,67 +62,26 @@ export function PreferenceEthereumCustomRpcUrl() {
         style={{ display: "flex", height: "100%", flexDirection: "column" }}
       >
         <div style={{ flex: 1, flexGrow: 1 }}>
-          <List
-            style={{
-              border: theme.custom.colors.borderFull,
-              borderRadius: "10px",
-            }}
-          >
-            <ListItem
+          <Inputs error={rpcUrlError}>
+            <InputListItem
+              isLast={true}
               button={false}
-              style={{
-                height: "44px",
-                padding: "10px",
-                borderTopLeftRadius: "8px",
-                borderTopRightRadius: "8px",
-                border: rpcUrlError
-                  ? `solid 1pt ${theme.custom.colors.negative}`
-                  : `${theme.custom.colors.borderFull}`,
+              title={"RPC"}
+              placeholder={"RPC URL"}
+              value={rpcUrl}
+              onChange={(e) => {
+                setRpcUrl(e.target.value);
               }}
-            >
-              <Typography style={{ width: "80px" }}>RPC</Typography>
-              <TextField
-                value={rpcUrl}
-                onChange={(e) => setRpcUrl(e.target.value)}
-                placeholder="RPC URL"
-                type="text"
-                classes={{
-                  root: classes.textFieldRoot,
-                }}
-                inputProps={{
-                  style: {
-                    color: theme.custom.colors.secondary,
-                    padding: 0,
-                  },
-                }}
-              />
-            </ListItem>
-            <ListItem
+            />
+            <InputListItem
+              isLast={true}
               button={false}
-              isLast
-              style={{
-                height: "44px",
-                padding: "10px",
-              }}
-            >
-              <Typography style={{ width: "80px" }}>Chain ID</Typography>
-              <TextField
-                value={chainId}
-                onChange={(e) => setChainId(e.target.value)}
-                placeholder="Chain ID"
-                type="text"
-                classes={{
-                  root: classes.textFieldRoot,
-                }}
-                inputProps={{
-                  style: {
-                    color: theme.custom.colors.secondary,
-                    padding: 0,
-                  },
-                }}
-              />
-            </ListItem>
-          </List>
+              title={"Chain"}
+              placeholder={"Chain ID"}
+              value={chainId}
+              onChange={(e) => setChainId(e.target.value)}
+            />
+          </Inputs>
         </div>
         <div style={{ padding: 16 }}>
           <PrimaryButton

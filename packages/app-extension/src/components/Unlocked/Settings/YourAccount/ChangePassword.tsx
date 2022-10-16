@@ -14,6 +14,7 @@ import {
 } from "../../../common";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
+import { InputListItem, Inputs } from "../../../common/Inputs";
 
 const useStyles = styles((theme) => ({
   textFieldRoot: {
@@ -79,42 +80,18 @@ export function ChangePassword() {
         style={{ display: "flex", height: "100%", flexDirection: "column" }}
       >
         <div style={{ flex: 1, flexGrow: 1 }}>
-          <List
-            style={{
-              border: currentPasswordError
-                ? `solid 1pt ${theme.custom.colors.negative}`
-                : `${theme.custom.colors.borderFull}`,
-              borderRadius: "10px",
-            }}
-          >
-            <ListItem
-              isLast
-              style={{
-                height: "46px",
-                padding: "10px",
-                borderRadius: "8px",
-              }}
+          <Inputs error={currentPasswordError}>
+            <InputListItem
+              isFirst={true}
+              isLast={true}
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              placeholder="Enter password"
+              type="password"
               button={false}
-            >
-              <Typography style={{ width: "80px" }}>Current</Typography>
-              <TextField
-                placeholder="Enter password"
-                type="password"
-                classes={{
-                  root: classes.textFieldRoot,
-                }}
-                className={classes.textField}
-                inputProps={{
-                  style: {
-                    color: theme.custom.colors.secondary,
-                    padding: 0,
-                  },
-                }}
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-              />
-            </ListItem>
-          </List>
+              title={"Current"}
+            />
+          </Inputs>
           <Button
             onClick={() => nav.push("reset", { closeDrawer: () => nav.pop() })}
             disableRipple
@@ -138,66 +115,26 @@ export function ChangePassword() {
               Forgot Password?
             </Typography>
           </Button>
-          <List
-            style={{
-              border: passwordMismatchError
-                ? `solid 1pt ${theme.custom.colors.negative}`
-                : `${theme.custom.colors.borderFull}`,
-              borderRadius: "10px",
-            }}
-          >
-            <ListItem
+          <Inputs error={passwordMismatchError}>
+            <InputListItem
+              isFirst={true}
+              value={newPw1}
+              onChange={(e) => setNewPw1(e.target.value)}
+              placeholder="Enter password"
+              type="password"
               button={false}
-              style={{
-                height: "44px",
-                padding: "10px",
-                borderTopLeftRadius: "8px",
-                borderTopRightRadius: "8px",
-              }}
-            >
-              <Typography style={{ width: "80px" }}>New</Typography>
-              <TextField
-                value={newPw1}
-                onChange={(e) => setNewPw1(e.target.value)}
-                placeholder="Enter password"
-                type="password"
-                classes={{
-                  root: classes.textFieldRoot,
-                }}
-                inputProps={{
-                  style: {
-                    color: theme.custom.colors.secondary,
-                    padding: 0,
-                  },
-                }}
-              />
-            </ListItem>
-            <ListItem
+              title={"New"}
+            />
+            <InputListItem
+              isLast={true}
+              value={newPw2}
+              onChange={(e) => setNewPw2(e.target.value)}
+              placeholder="Re-enter password"
+              type="password"
               button={false}
-              isLast
-              style={{
-                height: "44px",
-                padding: "10px",
-              }}
-            >
-              <Typography style={{ width: "80px" }}>Verify</Typography>
-              <TextField
-                value={newPw2}
-                onChange={(e) => setNewPw2(e.target.value)}
-                placeholder="Re-enter password"
-                type="password"
-                classes={{
-                  root: classes.textFieldRoot,
-                }}
-                inputProps={{
-                  style: {
-                    color: theme.custom.colors.secondary,
-                    padding: 0,
-                  },
-                }}
-              />
-            </ListItem>
-          </List>
+              title={"Verify"}
+            />
+          </Inputs>
           <SubtextParagraph
             style={{
               fontWeight: 500,

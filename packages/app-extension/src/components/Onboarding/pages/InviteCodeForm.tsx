@@ -4,9 +4,10 @@ import { Box, Typography } from "@mui/material";
 import { createPopup } from "@typeform/embed";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { PrimaryButton, SubtextParagraph, TextField } from "../../common";
+import { PrimaryButton, SubtextParagraph } from "../../common";
 import { BackpackHeader } from "../../Locked";
 import { getWaitlistId, setWaitlistId } from "../../common/WaitingRoom";
+import { TextInput } from "../../common/Inputs";
 
 export const InviteCodeForm = () => {
   const [error, setError] = useState("");
@@ -77,7 +78,7 @@ export const InviteCodeForm = () => {
         noValidate
       >
         <Box style={{ marginBottom: 8 }}>
-          <TextField
+          <TextInput
             inputProps={{
               name: "inviteCode",
               autoComplete: "off",
@@ -91,17 +92,12 @@ export const InviteCodeForm = () => {
             placeholder={"Invite Code"}
             type="text"
             value={inviteCode}
-            setValue={(v: string) => {
-              setInviteCode(v.replace(/[^a-zA-Z0-9\\-]/g, ""));
+            setValue={(e) => {
+              setInviteCode(e.target.value.replace(/[^a-zA-Z0-9\\-]/g, ""));
             }}
-            isError={error}
-            auto
+            error={error ? true : false}
+            errorMessage={error}
           />
-          {error && (
-            <Typography sx={{ color: theme.custom.colors.negative }}>
-              {error}
-            </Typography>
-          )}
         </Box>
 
         <PrimaryButton label="Go" type="submit" />

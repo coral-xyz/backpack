@@ -49,6 +49,7 @@ import {
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
 import { List, ListItem } from "../../common/List";
 import { ProxyImage } from "../../common/ProxyImage";
+import { TextInput } from "../../common/Inputs";
 
 const logger = getLogger("app-extension/nft-detail");
 
@@ -229,13 +230,12 @@ function SendScreen({ nft }: { nft: any }) {
         >
           <div>
             <Image nft={nft} />
-            <TextField
+            <TextInput
               autoFocus
-              rootClass={classes.textRoot}
               placeholder={`Recipient's ${toTitleCase(nft.blockchain)} Address`}
               value={destinationAddress}
-              setValue={setDestinationAddress}
-              isError={isErrorAddress}
+              setValue={(e) => setDestinationAddress(e.target.value)}
+              error={isErrorAddress}
               inputProps={{
                 name: "to",
               }}

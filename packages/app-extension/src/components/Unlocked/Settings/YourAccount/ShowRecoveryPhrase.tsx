@@ -22,18 +22,9 @@ import {
 import { EyeIcon, WarningIcon } from "../../../common/Icon";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
+import { TextInput } from "../../../common/Inputs";
 
 const useStyles = styles((theme: any) => ({
-  passwordField: {
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        border: `${theme.custom.colors.borderFull}`,
-      },
-      "&:hover fieldset": {
-        border: `solid 2pt ${theme.custom.colors.primaryButton}`,
-      },
-    },
-  },
   listRoot: {
     color: theme.custom.colors.fontColor,
     padding: "0",
@@ -154,15 +145,13 @@ export function ShowRecoveryPhraseWarning() {
         }}
       >
         <Box sx={{ marginBottom: "8px" }}>
-          <TextField
+          <TextInput
             autoFocus={true}
-            isError={error}
-            inputProps={{ name: "password" }}
-            placeholder="Password"
-            type="password"
             value={password}
-            setValue={setPassword}
-            rootClass={classes.passwordField}
+            setValue={(e) => setPassword(e.target.value)}
+            error={error}
+            type={"password"}
+            placeholder={"Password"}
           />
         </Box>
         <DangerButton

@@ -10,6 +10,7 @@ import {
   TextField,
 } from "../../common";
 import { getWaitlistId } from "../../common/WaitingRoom";
+import { TextInput } from "../../common/Inputs";
 
 export const RecoverAccount = () => {
   const { inviteCode } = useParams();
@@ -73,7 +74,7 @@ export const RecoverAccount = () => {
         </SubtextParagraph>
       </Box>
       <Box style={{ flex: 1 }}>
-        <TextField
+        <TextInput
           inputProps={{
             name: "username",
             autoComplete: "off",
@@ -83,11 +84,13 @@ export const RecoverAccount = () => {
           placeholder="Username"
           type="text"
           value={username}
-          setValue={(v: string) => {
-            setUsername(v.toLowerCase().replace(/[^a-z0-9_]/g, ""));
+          setValue={(e) => {
+            setUsername(
+              e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "")
+            );
           }}
-          isError={error}
-          auto
+          error={error ? true : false}
+          errorMessage={error}
           startAdornment={
             <InputAdornment position="start">
               <AlternateEmail
@@ -101,11 +104,6 @@ export const RecoverAccount = () => {
             </InputAdornment>
           }
         />
-        {error && (
-          <Typography sx={{ color: theme.custom.colors.negative }}>
-            {error}
-          </Typography>
-        )}
       </Box>
       <Box>
         <PrimaryButton

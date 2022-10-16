@@ -10,6 +10,7 @@ import {
   TextField,
   CheckboxForm,
 } from "../../common";
+import { TextInput } from "../Inputs";
 
 const useStyles = makeStyles(() => ({
   passwordFieldRoot: {
@@ -93,15 +94,14 @@ export function CreatePassword({
             marginRight: "16px",
           }}
         >
-          <TextField
+          <TextInput
             autoFocus={!passwordConfirm}
             inputProps={{ name: "password" }}
             placeholder="Password"
             type={showPassword ? "text" : "password"}
             value={password}
-            setValue={setPassword}
-            rootClass={classes.passwordFieldRoot}
-            isError={error === PasswordError.TOO_SHORT}
+            setValue={(e) => setPassword(e.target.value)}
+            error={error === PasswordError.TOO_SHORT}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
@@ -116,14 +116,13 @@ export function CreatePassword({
               </InputAdornment>
             }
           />
-          <TextField
+          <TextInput
             inputProps={{ name: "password-confirmation" }}
             placeholder="Confirm Password"
             type={showPassword ? "text" : "password"}
             value={passwordConfirm}
-            setValue={setPasswordConfirm}
-            rootClass={classes.passwordFieldRoot}
-            isError={error === PasswordError.NO_MATCH}
+            setValue={(e) => setPasswordConfirm(e.target.value)}
+            error={error === PasswordError.NO_MATCH}
           />
           {error !== null && (
             <Typography sx={{ color: theme.custom.colors.negative }}>

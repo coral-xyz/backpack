@@ -5,6 +5,7 @@ import { UI_RPC_METHOD_KEYNAME_UPDATE } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { TextField, PrimaryButton, SecondaryButton } from "../../../../common";
+import { TextInput } from "../../../../common/Inputs";
 
 const useStyles = styles((theme) => ({
   textRootClass: {
@@ -63,11 +64,10 @@ export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
           marginTop: "112px",
         }}
       >
-        <TextField
-          autoFocus
-          rootClass={classes.textRootClass}
+        <TextInput
+          autoFocus={true}
           value={walletName}
-          setValue={(v: string) => setWalletName(v)}
+          setValue={(e) => setWalletName(e.target.value)}
         />
         <Typography
           style={{

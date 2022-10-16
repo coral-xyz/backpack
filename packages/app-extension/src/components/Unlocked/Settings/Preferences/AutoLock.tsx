@@ -5,6 +5,7 @@ import { UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE } from "@coral-xyz/common";
 import { TextField, PrimaryButton, SecondaryButton } from "../../../common";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { useAutolockSecs, useBackgroundClient } from "@coral-xyz/recoil";
+import { TextInput } from "../../../common/Inputs";
 
 const useStyles = styles((theme) => ({
   textRootClass: {
@@ -77,12 +78,19 @@ export function PreferencesAutoLock() {
         >
           Set the duration of the auto-lock timer.
         </Typography>
-        <TextField
-          autoFocus
+        <TextInput
+          placeholder={""}
+          type={"string"}
+          error={false}
+          autoFocus={true}
           inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-          rootClass={classes.textRootClass}
           value={minutes.toString()}
-          setValue={(v: string) => setMinutes(+v.replace(/[.,]/g, ""))}
+          setValue={(e) => {
+            if (isNaN(e.target.value)) {
+              return;
+            }
+            setMinutes(+e.target.value.replace(/[.,]/g, ""));
+          }}
           endAdornment={
             <Typography
               style={{

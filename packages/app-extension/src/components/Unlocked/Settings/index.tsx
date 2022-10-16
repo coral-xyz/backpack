@@ -87,6 +87,7 @@ import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { PreferenceSolanaCustomRpcUrl } from "./Preferences/Solana/CustomRpcUrl";
 import { PreferenceEthereumCustomRpcUrl } from "./Preferences/Ethereum/CustomRpcUrl";
 import WaitingRoom from "../../common/WaitingRoom";
+import { TextInput } from "../../common/Inputs";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -1019,28 +1020,22 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
           </Box>
           <Box sx={{ margin: "0 16px" }}>
             <Box sx={{ marginBottom: "4px" }}>
-              <TextField
+              <TextInput
                 autoFocus={true}
                 placeholder="Name"
                 value={name}
-                setValue={setName}
+                setValue={(e) => setName(e.target.value)}
               />
             </Box>
-            <TextField
+            <TextInput
               placeholder="Enter private key"
               value={secretKey}
-              setValue={setSecretKey}
+              setValue={(e) => setSecretKey(e.target.value)}
               rows={4}
-              rootClass={classes.privateKeyTextFieldRoot}
+              error={error ? true : false}
+              errorMessage={error || ""}
             />
           </Box>
-          {error && (
-            <Typography
-              style={{ color: "red", marginTop: "8px", marginLeft: "24px" }}
-            >
-              {error}
-            </Typography>
-          )}
         </Box>
         <Box
           sx={{

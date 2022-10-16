@@ -125,6 +125,9 @@ export const darkTheme: any = {
       border1: BACKGROUND_COLOR_2,
       border: BACKGROUND_COLOR_1, // Don't use this.
       borderColor: BORDER_COLOR,
+      textInputBorderFull: `solid 2pt rgba(255, 255, 255, 0.1)`,
+      textInputBorderFocussed: `solid 2pt rgba(255, 255, 255, 0.1)`,
+      textInputBorderHovered: `solid 2pt rgba(255, 255, 255, 0.2)`,
       borderFull: `solid 2px ${BACKGROUND_COLOR_1}`,
       borderButton: undefined,
       textFieldTextColor: FONT_COLOR_2,
@@ -143,7 +146,6 @@ export const darkTheme: any = {
       approveTransactionTableBackground: BACKGROUND_COLOR_2,
       approveTransactionCloseBackground: BACKGROUND_COLOR_0,
       hoverIconBackground: `rgb(39, 39, 42, ${HOVER_OPACITY})`,
-
       dangerButton: DANGER_COLOR,
       alpha: "#8F929E",
       scrollbarTrack: BACKGROUND_COLOR_0,
@@ -228,6 +230,9 @@ export const lightTheme: any = {
       secondaryButton: LIGHT_BACKGROUND_COLOR_1,
       secondaryButtonTextColor: LIGHT_FONT_COLOR,
       buttonFontColor: LIGHT_BUTTON_FONT_COLOR,
+      textInputBorderFull: `solid 2px ${LIGHT_BACKGROUND_COLOR_0}`,
+      textInputBorderFocussed: `solid 2px ${LIGHT_BACKGROUND_COLOR_0}`,
+      textInputBorderHovered: `solid 2px ${LIGHT_BORDER_COLOR}`,
       border: LIGHT_BACKGROUND_COLOR_1,
       border1: LIGHT_BORDER_COLOR_1,
       borderColor: LIGHT_BORDER_COLOR_1,

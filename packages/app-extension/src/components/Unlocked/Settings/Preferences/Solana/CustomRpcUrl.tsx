@@ -6,6 +6,7 @@ import { UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE } from "@coral-xyz/common";
 import { List, ListItem, PrimaryButton } from "../../../../common";
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
 import { useNavStack } from "../../../../common/Layout/NavStack";
+import { Inputs, InputListItem } from "../../../../common/Inputs";
 
 const useStyles = styles((theme) => ({
   textFieldRoot: {
@@ -16,6 +17,16 @@ const useStyles = styles((theme) => ({
         color: theme.custom.colors.secondary,
       },
     },
+  },
+  listParent: {
+    border: `2px solid black`,
+    "&:hover": {
+      border: `2px solid red !important`,
+    },
+    "&:focussed": {
+      border: `2px solid yellow !important`,
+    },
+    borderRadius: "10px",
   },
 }));
 
@@ -71,44 +82,18 @@ export function PreferenceSolanaCustomRpcUrl() {
         style={{ display: "flex", height: "100%", flexDirection: "column" }}
       >
         <div style={{ flex: 1, flexGrow: 1 }}>
-          <List
-            style={{
-              border: rpcUrlError
-                ? `solid 1pt ${theme.custom.colors.negative}`
-                : `${theme.custom.colors.borderFull}`,
-              borderRadius: "10px",
-            }}
-          >
-            <ListItem
-              isLast
-              style={{
-                height: "46px",
-                padding: "10px",
-                borderRadius: "8px",
-              }}
+          <Inputs error={rpcUrlError}>
+            <InputListItem
+              isLast={true}
               button={false}
-            >
-              <Typography style={{ width: "80px" }}>RPC</Typography>
-              <TextField
-                placeholder="RPC URL"
-                type="text"
-                classes={{
-                  root: classes.textFieldRoot,
-                }}
-                className={classes.textField}
-                inputProps={{
-                  style: {
-                    color: theme.custom.colors.secondary,
-                    padding: 0,
-                  },
-                }}
-                value={rpcUrl}
-                onChange={(e) => {
-                  setRpcUrl(e.target.value);
-                }}
-              />
-            </ListItem>
-          </List>
+              title={"RPC"}
+              placeholder={"RPC URL"}
+              value={rpcUrl}
+              onChange={(e) => {
+                setRpcUrl(e.target.value);
+              }}
+            />
+          </Inputs>
         </div>
         <div style={{ padding: 16 }}>
           <PrimaryButton
