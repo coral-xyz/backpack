@@ -87,6 +87,7 @@ app.get("/users/:username/info", async (c) => {
       },
       {
         pubkey: true,
+        blockchain: true, // needed for recovery flow
       },
     ],
   });
