@@ -139,7 +139,7 @@ export const InviteCodeForm = () => {
               marginTop: 16,
             }}
           >
-            <SubtextParagraph onClick={() => navigate("/recoverAccount")}>
+            <SubtextParagraph onClick={() => navigate("/recover")}>
               I already have an account
             </SubtextParagraph>
           </Box>

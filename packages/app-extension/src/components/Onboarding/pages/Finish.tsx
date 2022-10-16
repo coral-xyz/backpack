@@ -1,4 +1,5 @@
 import {
+  Blockchain,
   BrowserRuntimeExtension,
   DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
@@ -14,6 +15,7 @@ export const Finish = () => {
   const [isValid, setIsValid] = useState(false);
   const background = useBackgroundClient();
   const params = useParams<{
+    blockchain: Blockchain;
     accountsAndDerivationPath: string;
     inviteCode: string;
     mnemonic: string;
@@ -46,6 +48,7 @@ export const Finish = () => {
         await background.request({
           method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
           params: [
+            params.blockchain,
             params.mnemonic,
             derivationPath,
             decodeURIComponent(params.password!),

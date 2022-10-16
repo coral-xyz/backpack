@@ -54,7 +54,9 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
       >
         <Box>
           <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-          <BackpackHeader />
+          <div style={{ marginTop: "40px" }}>
+            <BackpackHeader />
+          </div>
         </Box>
 
         <Box style={{ marginBottom: 84 }}>
@@ -125,7 +127,7 @@ export function BackpackHeader({
   return (
     <Box
       sx={{
-        marginTop: "40px",
+        marginTop: "16px",
         marginLeft: "auto",
         marginRight: "auto",
         display: "block",

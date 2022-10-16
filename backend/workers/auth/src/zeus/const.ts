@@ -86,6 +86,7 @@ export const AllTypesProps: Record<string, any> = {
     _and: "auth_users_bool_exp",
     _not: "auth_users_bool_exp",
     _or: "auth_users_bool_exp",
+    blockchain: "String_comparison_exp",
     created_at: "timestamptz_comparison_exp",
     id: "uuid_comparison_exp",
     invitation_id: "uuid_comparison_exp",
@@ -110,6 +111,7 @@ export const AllTypesProps: Record<string, any> = {
     where: "auth_users_bool_exp",
   },
   auth_users_order_by: {
+    blockchain: "order_by",
     created_at: "order_by",
     id: "order_by",
     invitation_id: "order_by",
@@ -530,6 +532,7 @@ export const ReturnTypes: Record<string, any> = {
     returning: "auth_invitations",
   },
   auth_users: {
+    blockchain: "String",
     created_at: "timestamptz",
     id: "uuid",
     invitation_id: "uuid",
@@ -549,6 +552,7 @@ export const ReturnTypes: Record<string, any> = {
     min: "auth_users_min_fields",
   },
   auth_users_max_fields: {
+    blockchain: "String",
     created_at: "timestamptz",
     id: "uuid",
     invitation_id: "uuid",
@@ -559,6 +563,7 @@ export const ReturnTypes: Record<string, any> = {
     waitlist_id: "String",
   },
   auth_users_min_fields: {
+    blockchain: "String",
     created_at: "timestamptz",
     id: "uuid",
     invitation_id: "uuid",
