@@ -426,6 +426,8 @@ export class Backend {
           inviteCode,
           publicKey,
           waitlistId,
+          // order is significant, blockchain must be the last key atm
+          // see `app.post("/users")` inside `backend/workers/auth/src/index.ts`
           blockchain,
         });
 

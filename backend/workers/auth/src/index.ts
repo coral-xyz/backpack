@@ -86,7 +86,6 @@ app.get("/users/:username/info", async (c) => {
         limit: 1,
       },
       {
-        blockchain: true,
         pubkey: true,
       },
     ],
@@ -100,7 +99,7 @@ app.get("/users/:username/info", async (c) => {
 });
 
 app.get("/users/:username", async (c) => {
-  const { username } = CreateUser.pick({ username: true }).parse({
+  const { username } = BaseCreateUser.pick({ username: true }).parse({
     username: c.req.param("username"),
   });
 
@@ -162,9 +161,12 @@ app.get("/users/:username", async (c) => {
 
 app.post("/users", async (c) => {
   const body = await c.req.json();
-  body.blockchain ||= "solana"; // default value for legacy clients
 
-  const variables = CreateUser.parse(body);
+  const variables = CreateUser.parse({
+    ...body,
+    // set a default blockchain value for legacy clients (<= 0.2.0)
+    blockchain: body.blockchain || "solana",
+  });
 
   let isValidSignature = false;
   if (variables.blockchain === "solana") {
