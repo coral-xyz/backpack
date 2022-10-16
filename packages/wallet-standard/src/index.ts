@@ -1,1 +1,1 @@
-export * from "./register.js";
+export * from './register.js';
