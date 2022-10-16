@@ -1,4 +1,5 @@
 import {
+  Blockchain,
   BACKPACK_FEATURE_USERNAMES,
   BACKPACK_LINK,
   DISCORD_INVITE_LINK,
@@ -42,6 +43,7 @@ import {
 import { SetPassword } from "./pages/SetPassword";
 import { UsernameForm } from "./pages/UsernameForm";
 import { BlockchainSelector } from "./pages/BlockchainSelector";
+import { ConnectHardware } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware";
 
 export const Onboarding = () => {
   const { pathname } = useLocation();
@@ -52,6 +54,7 @@ export const Onboarding = () => {
       ? () => navigate(previous)
       : undefined;
   const [menuOpen, setMenuOpen] = useState(false);
+  const [openLedgerDrawer, setOpenLedgerDrawer] = useState(false);
   const containerRef = useRef();
 
   return (
@@ -174,7 +177,37 @@ export const Onboarding = () => {
             )}
             element={<Finish />}
           />
+
+          {/* CONNECT HARDWARE WALLET FLOW */}
+          <Route
+            path={p("connect")}
+            element={
+              <BlockchainSelector
+                onSelect={(blockchain) => setOpenLedgerDrawer(true)}
+              />
+            }
+          />
+          <Route
+            path={p("connect/:blockchain/:accountsAndDerivationPath")}
+            element={<ImportAccounts />}
+          />
+          <Route
+            path={p("connect/:blockchain/:accountsAndDerivationPath")}
+            element={<SetPassword />}
+          />
+          <Route
+            path={p(
+              "connect/:blockchain/:accountsAndDerivationPath/:password/finish"
+            )}
+            element={<Finish />}
+          />
         </Routes>
+        <LedgerDrawer
+          blockchain={Blockchain.SOLANA}
+          containerRef={containerRef!}
+          openDrawer={openLedgerDrawer}
+          setOpenDrawer={setOpenLedgerDrawer}
+        />
       </WithNav>
     </OptionsContainer>
   );
@@ -182,6 +215,29 @@ export const Onboarding = () => {
 
 const p = (path: string) =>
   BACKPACK_FEATURE_USERNAMES ? `/:inviteCode/:username/${path}` : `/${path}`;
+
+export function LedgerDrawer({
+  blockchain,
+  containerRef,
+  openDrawer,
+  setOpenDrawer,
+}: {
+  blockchain: Blockchain;
+  containerRef: any;
+  openDrawer: boolean;
+  setOpenDrawer: Dispatch<SetStateAction<boolean>>;
+}) {
+  return (
+    <WithContaineredDrawer
+      containerRef={containerRef}
+      openDrawer={openDrawer}
+      setOpenDrawer={setOpenDrawer}
+      paperStyles={{ height: "calc(100% - 56px)" }}
+    >
+      <ConnectHardware blockchain={blockchain} onComplete={() => {}} />
+    </WithContaineredDrawer>
+  );
+}
 
 export function OptionsContainer({
   innerRef,
