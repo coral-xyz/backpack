@@ -3,7 +3,7 @@ const [IGNORE, WARNING, ERROR] = [0, 1, 2];
 module.exports = {
   root: true,
   parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint", "mui-unused-classes"],
+  plugins: ["@typescript-eslint", "mui-unused-classes", "simple-import-sort"],
   rules: {
     "mui-unused-classes/unused-classes": WARNING,
     "@typescript-eslint/ban-ts-comment": IGNORE,
@@ -23,6 +23,8 @@ module.exports = {
     "no-undef": IGNORE,
     "no-unused-vars": IGNORE,
     "prefer-const": IGNORE,
+    "simple-import-sort/imports": ERROR,
+    "simple-import-sort/exports": ERROR,
   },
   extends: [
     "eslint:recommended",
