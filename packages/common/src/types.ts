@@ -39,6 +39,7 @@ export type NftCollection = {
 
 export type Nft = {
   id: string;
+  blockchain: Blockchain;
   name: string;
   description: string;
   externalUrl: string;
