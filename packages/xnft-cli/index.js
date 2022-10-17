@@ -126,6 +126,7 @@ program
         <html lang="en">
           <head>
             <meta charset="utf-8"/>
+            <link rel="stylesheet" href="https://doof72pbjabye.cloudfront.net/fonts/inter/font.css" ></link>
           </head>
           <title>simulator</title>
           <body>
