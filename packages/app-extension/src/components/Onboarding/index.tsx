@@ -55,6 +55,7 @@ export const Onboarding = () => {
       : undefined;
   const [menuOpen, setMenuOpen] = useState(false);
   const [openLedgerDrawer, setOpenLedgerDrawer] = useState(false);
+  const [blockchain, setBlockchain] = useState<Blockchain | null>(null);
   const containerRef = useRef();
 
   return (
@@ -183,7 +184,10 @@ export const Onboarding = () => {
             path={p("connect")}
             element={
               <BlockchainSelector
-                onSelect={(blockchain) => setOpenLedgerDrawer(true)}
+                onSelect={(blockchain) => {
+                  setBlockchain(blockchain);
+                  setOpenLedgerDrawer(true);
+                }}
               />
             }
           />
@@ -203,7 +207,7 @@ export const Onboarding = () => {
           />
         </Routes>
         <LedgerDrawer
-          blockchain={Blockchain.SOLANA}
+          blockchain={blockchain!}
           containerRef={containerRef!}
           openDrawer={openLedgerDrawer}
           setOpenDrawer={setOpenLedgerDrawer}
@@ -221,12 +225,27 @@ export function LedgerDrawer({
   containerRef,
   openDrawer,
   setOpenDrawer,
+  onComplete,
 }: {
   blockchain: Blockchain;
   containerRef: any;
   openDrawer: boolean;
   setOpenDrawer: Dispatch<SetStateAction<boolean>>;
+  onComplete: (accounts, derivationPath) => void;
 }) {
+  const [accounts, setAccounts] = useState([]);
+  const [derivationPath, setDerivationPath] = useState();
+
+  const onImport = (accounts, derivationPath) => {
+    setAccounts(accounts);
+    setDerivationPath(derivationPath);
+  };
+
+  const _onComplete = () => {
+    onComplete(accounts, derivationPath);
+    setOpenDrawer(false);
+  };
+
   return (
     <WithContaineredDrawer
       containerRef={containerRef}
@@ -234,7 +253,7 @@ export function LedgerDrawer({
       setOpenDrawer={setOpenDrawer}
       paperStyles={{ height: "calc(100% - 56px)" }}
     >
-      <ConnectHardware blockchain={blockchain} onComplete={() => {}} />
+      <ConnectHardware blockchain={blockchain} onComplete={_onComplete} />
     </WithContaineredDrawer>
   );
 }
