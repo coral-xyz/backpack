@@ -358,10 +358,6 @@ export function BalancesTableCell({ props, style }: any) {
   );
 }
 
-export function BalancesTableFooter({ props, style, children }: any) {
-  return <div style={style}>{children}</div>;
-}
-
 export function BalancesTable({ props, style, children }: any) {
   const classes = useStyles();
   return (
