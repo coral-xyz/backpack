@@ -33,8 +33,12 @@ const BaseCreateUser = z.object({
 const CreateEthereumUser = BaseCreateUser.extend({
   publicKey: z.string().refine((str) => {
     try {
-      ethers.utils.getAddress(str);
-      return true;
+      if (
+        str === ethers.utils.getAddress(str) &&
+        str.startsWith("0x") // one extra check in case getAddress API changes
+      ) {
+        return true;
+      }
     } catch (err) {}
     return false;
   }, "must be a valid Ethereum public key"),
