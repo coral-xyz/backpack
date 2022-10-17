@@ -398,6 +398,7 @@ export class Backend {
 
   // Creates a brand new keyring store. Should be run once on initializtion.
   async keyringStoreCreate(
+    blockchain: Blockchain,
     mnemonic: string,
     derivationPath: DerivationPath,
     password: string,
@@ -408,6 +409,7 @@ export class Backend {
     userIsRecoveringWallet = false
   ): Promise<string> {
     const keyring = await this.keyringStore.init(
+      blockchain,
       mnemonic,
       derivationPath,
       password,
@@ -424,6 +426,9 @@ export class Backend {
           inviteCode,
           publicKey,
           waitlistId,
+          // order is significant, blockchain must be the last key atm
+          // see `app.post("/users")` inside `backend/workers/auth/src/index.ts`
+          blockchain,
         });
 
         const buffer = Buffer.from(body, "utf8");
@@ -721,11 +726,13 @@ export class Backend {
   }
 
   async previewPubkeys(
+    blockchain: Blockchain,
     mnemonic: string,
     derivationPath: DerivationPath,
     numberOfAccounts: number
   ) {
     return this.keyringStore.previewPubkeys(
+      blockchain,
       mnemonic,
       derivationPath,
       numberOfAccounts

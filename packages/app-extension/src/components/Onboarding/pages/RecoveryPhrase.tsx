@@ -34,7 +34,7 @@ const LOAD_PUBKEY_AMOUNT = 20;
 export const RecoverAccountWithRecoveryPhrase = () => {
   const background = useBackgroundClient();
   const { pathname } = useLocation();
-  const { usernameAndPubkey } = useParams();
+  const { usernameAndPubkey, blockchain } = useParams();
   const [error, setError] = useState<string>();
   const navigate = useNavigate();
 
@@ -46,7 +46,7 @@ export const RecoverAccountWithRecoveryPhrase = () => {
   ) => {
     const publicKeys = await background.request({
       method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-      params: [mnemonic, derivationPath, LOAD_PUBKEY_AMOUNT],
+      params: [blockchain!, mnemonic, derivationPath, LOAD_PUBKEY_AMOUNT],
     });
     return publicKeys;
   };

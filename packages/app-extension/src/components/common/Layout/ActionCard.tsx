@@ -4,11 +4,15 @@ import { useCustomTheme } from "@coral-xyz/themes";
 export function ActionCard({
   icon,
   text,
+  textAdornment,
   onClick,
+  disabled = false,
 }: {
   icon: any;
   text: string;
+  textAdornment?: React.ReactNode;
   onClick: () => void;
+  disabled?: boolean;
 }) {
   const theme = useCustomTheme();
   return (
@@ -21,17 +25,20 @@ export function ActionCard({
         border: `${theme.custom.colors.borderFull}`,
         borderRadius: "12px",
         background: theme.custom.colors.nav,
+        width: "100%",
+        opacity: disabled ? 0.5 : 1,
       }}
+      disabled={disabled}
     >
       <Card
         sx={{
           p: 1,
           color: theme.custom.colors.fontColor,
           cursor: "pointer",
-          height: "112px",
           padding: "16px",
           boxShadow: "none",
           backgroundColor: "transparent",
+          width: "100%",
         }}
       >
         <CardContent style={{ padding: 0 }}>
@@ -46,6 +53,7 @@ export function ActionCard({
               }}
             >
               {text}
+              {textAdornment}
             </Typography>
           </Box>
         </CardContent>

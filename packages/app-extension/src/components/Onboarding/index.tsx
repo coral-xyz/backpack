@@ -16,7 +16,13 @@ import {
   useRef,
   useState,
 } from "react";
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { DiscordIcon } from "../common/Icon";
 import { WithContaineredDrawer } from "../common/Layout/Drawer";
 import { NavBackButton, NAV_BAR_HEIGHT, WithNav } from "../common/Layout/Nav";
@@ -35,6 +41,7 @@ import {
 } from "./pages/RecoveryPhrase";
 import { SetPassword } from "./pages/SetPassword";
 import { UsernameForm } from "./pages/UsernameForm";
+import { BlockchainSelector } from "./pages/BlockchainSelector";
 
 export const Onboarding = () => {
   const { pathname } = useLocation();
@@ -72,51 +79,98 @@ export const Onboarding = () => {
         }}
       >
         <Routes>
-          {BACKPACK_FEATURE_USERNAMES && (
-            <>
-              <Route path="/" element={<InviteCodeForm />} />
-              <Route path="/waitingRoom" element={<WaitingRoom />} />
-              <Route path="/:inviteCode" element={<UsernameForm />} />
-              <Route path="/recoverAccount" element={<RecoverAccount />} />
-              <Route
-                path="/recoverAccount/:usernameAndPubkey"
-                element={<RecoverAccountWithRecoveryPhrase />}
-              />
-              <Route
-                path="/recoverAccount/:usernameAndPubkey/:mnemonic"
-                element={<ImportAccounts />}
-              />
-              <Route
-                path="/recoverAccount/:usernameAndPubkey/:mnemonic/:accountsAndDerivationPath"
-                element={<SetPassword />}
-              />
-              <Route
-                path="/recoverAccount/:usernameAndPubkey/:mnemonic/:accountsAndDerivationPath/:password/finish"
-                element={<Finish />}
-              />
-            </>
-          )}
+          <Route
+            path={"/"}
+            element={
+              BACKPACK_FEATURE_USERNAMES ? (
+                <InviteCodeForm />
+              ) : (
+                <CreateOrImportWallet />
+              )
+            }
+          />
 
           <Route path={p("")} element={<CreateOrImportWallet />} />
 
-          {/* CREATE NEW WALLET ROUTE */}
-          <Route path={p("create")} element={<GenerateRecoveryPhrase />} />
-          <Route path={p("create/:mnemonic")} element={<SetPassword />} />
+          <Route path="/waitingRoom" element={<WaitingRoom />} />
+
+          <Route path="/:inviteCode" element={<UsernameForm />} />
+
+          {/* RECOVER WALLET FLOW */}
+          <Route path="/recover" element={<RecoverAccount />} />
+
           <Route
-            path={p("create/:mnemonic/:password/finish")}
+            path="/recover/:blockchain"
+            element={
+              // assume the user has pressed back button to arrive here,
+              // take them one extra step back to the username input form
+              <Navigate to="/recover" />
+            }
+          />
+
+          <Route
+            path="/recover/:blockchain/:usernameAndPubkey"
+            element={<RecoverAccountWithRecoveryPhrase />}
+          />
+          <Route
+            path="/recover/:blockchain/:usernameAndPubkey/:mnemonic"
+            element={<ImportAccounts />}
+          />
+          <Route
+            path="/recover/:blockchain/:usernameAndPubkey/:mnemonic/:accountsAndDerivationPath"
+            element={<SetPassword />}
+          />
+          <Route
+            path="/recover/:blockchain/:usernameAndPubkey/:mnemonic/:accountsAndDerivationPath/:password/finish"
             element={<Finish />}
           />
 
-          {/* IMPORT EXISTING WALLET ROUTE */}
-          <Route path={p("import")} element={<ImportRecoveryPhrase />} />
-          <Route path={p("import/:mnemonic")} element={<ImportAccounts />} />
+          {/* CREATE NEW WALLET FLOW */}
           <Route
-            path={p("import/:mnemonic/:accountsAndDerivationPath")}
+            path={p("create")}
+            element={
+              <BlockchainSelector
+                onSelect={(blockchain) => navigate(`${pathname}/${blockchain}`)}
+              />
+            }
+          />
+          <Route
+            path={p("create/:blockchain")}
+            element={<GenerateRecoveryPhrase />}
+          />
+          <Route
+            path={p("create/:blockchain/:mnemonic")}
+            element={<SetPassword />}
+          />
+          <Route
+            path={p("create/:blockchain/:mnemonic/:password/finish")}
+            element={<Finish />}
+          />
+
+          {/* IMPORT EXISTING WALLET FLOW */}
+          <Route
+            path={p("import")}
+            element={
+              <BlockchainSelector
+                onSelect={(blockchain) => navigate(`${pathname}/${blockchain}`)}
+              />
+            }
+          />
+          <Route
+            path={p("import/:blockchain")}
+            element={<ImportRecoveryPhrase />}
+          />
+          <Route
+            path={p("import/:blockchain/:mnemonic")}
+            element={<ImportAccounts />}
+          />
+          <Route
+            path={p("import/:blockchain/:mnemonic/:accountsAndDerivationPath")}
             element={<SetPassword />}
           />
           <Route
             path={p(
-              "import/:mnemonic/:accountsAndDerivationPath/:password/finish"
+              "import/:blockchain/:mnemonic/:accountsAndDerivationPath/:password/finish"
             )}
             element={<Finish />}
           />

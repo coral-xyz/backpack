@@ -10,7 +10,7 @@ import {
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
 } from "@coral-xyz/common";
-import { register } from "@wallet-standard/wallets-backpack";
+import { register } from "@coral-xyz/wallet-standard";
 
 const logger = getLogger("provider-injection");
 

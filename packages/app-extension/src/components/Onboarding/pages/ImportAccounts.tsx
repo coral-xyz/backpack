@@ -7,12 +7,16 @@ import {
 
 export const ImportAccounts = () => {
   const { pathname } = useLocation();
-  const { mnemonic } = useParams();
+  const { blockchain, mnemonic } = useParams<{
+    blockchain: Blockchain;
+    mnemonic: string;
+  }>();
+
   const navigate = useNavigate();
   return (
     <div>
       <ImportAccounts_
-        blockchain={Blockchain.SOLANA}
+        blockchain={blockchain!}
         mnemonic={mnemonic}
         onNext={(
           accounts: SelectedAccount[],

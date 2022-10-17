@@ -1290,6 +1290,7 @@ export type ValueTypes = {
   };
   /** columns and relationships of "auth.users" */
   ["auth_users"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     invitation_id?: boolean | `@${string}`;
@@ -1340,6 +1341,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    blockchain?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     created_at?:
       | ValueTypes["timestamptz_comparison_exp"]
       | undefined
@@ -1385,6 +1391,7 @@ export type ValueTypes = {
   ["auth_users_constraint"]: auth_users_constraint;
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
+    blockchain?: string | undefined | null | Variable<any, string>;
     created_at?:
       | ValueTypes["timestamptz"]
       | undefined
@@ -1412,6 +1419,7 @@ export type ValueTypes = {
   };
   /** aggregate max on columns */
   ["auth_users_max_fields"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     invitation_id?: boolean | `@${string}`;
@@ -1424,6 +1432,7 @@ export type ValueTypes = {
   }>;
   /** aggregate min on columns */
   ["auth_users_min_fields"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     invitation_id?: boolean | `@${string}`;
@@ -1456,6 +1465,11 @@ export type ValueTypes = {
   };
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
+    blockchain?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     created_at?:
       | ValueTypes["order_by"]
       | undefined
@@ -1497,6 +1511,7 @@ export type ValueTypes = {
   ["auth_users_select_column"]: auth_users_select_column;
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
+    blockchain?: string | undefined | null | Variable<any, string>;
     created_at?:
       | ValueTypes["timestamptz"]
       | undefined
@@ -1537,6 +1552,7 @@ export type ValueTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_users_stream_cursor_value_input"]: {
+    blockchain?: string | undefined | null | Variable<any, string>;
     created_at?:
       | ValueTypes["timestamptz"]
       | undefined
@@ -3325,6 +3341,7 @@ export type ResolverInputTypes = {
   };
   /** columns and relationships of "auth.users" */
   ["auth_users"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     invitation_id?: boolean | `@${string}`;
@@ -3362,6 +3379,7 @@ export type ResolverInputTypes = {
     _and?: Array<ResolverInputTypes["auth_users_bool_exp"]> | undefined | null;
     _not?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
     _or?: Array<ResolverInputTypes["auth_users_bool_exp"]> | undefined | null;
+    blockchain?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     created_at?:
       | ResolverInputTypes["timestamptz_comparison_exp"]
       | undefined
@@ -3390,6 +3408,7 @@ export type ResolverInputTypes = {
   ["auth_users_constraint"]: auth_users_constraint;
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
+    blockchain?: string | undefined | null;
     created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     id?: ResolverInputTypes["uuid"] | undefined | null;
     invitation_id?: ResolverInputTypes["uuid"] | undefined | null;
@@ -3401,6 +3420,7 @@ export type ResolverInputTypes = {
   };
   /** aggregate max on columns */
   ["auth_users_max_fields"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     invitation_id?: boolean | `@${string}`;
@@ -3413,6 +3433,7 @@ export type ResolverInputTypes = {
   }>;
   /** aggregate min on columns */
   ["auth_users_min_fields"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     invitation_id?: boolean | `@${string}`;
@@ -3439,6 +3460,7 @@ export type ResolverInputTypes = {
   };
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
+    blockchain?: ResolverInputTypes["order_by"] | undefined | null;
     created_at?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     invitation_id?: ResolverInputTypes["order_by"] | undefined | null;
@@ -3456,6 +3478,7 @@ export type ResolverInputTypes = {
   ["auth_users_select_column"]: auth_users_select_column;
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
+    blockchain?: string | undefined | null;
     created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     id?: ResolverInputTypes["uuid"] | undefined | null;
     invitation_id?: ResolverInputTypes["uuid"] | undefined | null;
@@ -3474,6 +3497,7 @@ export type ResolverInputTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_users_stream_cursor_value_input"]: {
+    blockchain?: string | undefined | null;
     created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     id?: ResolverInputTypes["uuid"] | undefined | null;
     invitation_id?: ResolverInputTypes["uuid"] | undefined | null;
@@ -4746,6 +4770,7 @@ export type ModelTypes = {
   };
   /** columns and relationships of "auth.users" */
   ["auth_users"]: {
+    blockchain: string;
     created_at: ModelTypes["timestamptz"];
     id: ModelTypes["uuid"];
     invitation_id: ModelTypes["uuid"];
@@ -4771,6 +4796,7 @@ export type ModelTypes = {
     _and?: Array<ModelTypes["auth_users_bool_exp"]> | undefined;
     _not?: ModelTypes["auth_users_bool_exp"] | undefined;
     _or?: Array<ModelTypes["auth_users_bool_exp"]> | undefined;
+    blockchain?: ModelTypes["String_comparison_exp"] | undefined;
     created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
     id?: ModelTypes["uuid_comparison_exp"] | undefined;
     invitation_id?: ModelTypes["uuid_comparison_exp"] | undefined;
@@ -4783,6 +4809,7 @@ export type ModelTypes = {
   ["auth_users_constraint"]: auth_users_constraint;
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
+    blockchain?: string | undefined;
     created_at?: ModelTypes["timestamptz"] | undefined;
     id?: ModelTypes["uuid"] | undefined;
     invitation_id?: ModelTypes["uuid"] | undefined;
@@ -4794,6 +4821,7 @@ export type ModelTypes = {
   };
   /** aggregate max on columns */
   ["auth_users_max_fields"]: {
+    blockchain?: string | undefined;
     created_at?: ModelTypes["timestamptz"] | undefined;
     id?: ModelTypes["uuid"] | undefined;
     invitation_id?: ModelTypes["uuid"] | undefined;
@@ -4805,6 +4833,7 @@ export type ModelTypes = {
   };
   /** aggregate min on columns */
   ["auth_users_min_fields"]: {
+    blockchain?: string | undefined;
     created_at?: ModelTypes["timestamptz"] | undefined;
     id?: ModelTypes["uuid"] | undefined;
     invitation_id?: ModelTypes["uuid"] | undefined;
@@ -4829,6 +4858,7 @@ export type ModelTypes = {
   };
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
+    blockchain?: ModelTypes["order_by"] | undefined;
     created_at?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
     invitation_id?: ModelTypes["order_by"] | undefined;
@@ -4845,6 +4875,7 @@ export type ModelTypes = {
   ["auth_users_select_column"]: auth_users_select_column;
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
+    blockchain?: string | undefined;
     created_at?: ModelTypes["timestamptz"] | undefined;
     id?: ModelTypes["uuid"] | undefined;
     invitation_id?: ModelTypes["uuid"] | undefined;
@@ -4863,6 +4894,7 @@ export type ModelTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_users_stream_cursor_value_input"]: {
+    blockchain?: string | undefined;
     created_at?: ModelTypes["timestamptz"] | undefined;
     id?: ModelTypes["uuid"] | undefined;
     invitation_id?: ModelTypes["uuid"] | undefined;
@@ -5511,6 +5543,7 @@ export type GraphQLTypes = {
   /** columns and relationships of "auth.users" */
   ["auth_users"]: {
     __typename: "auth_users";
+    blockchain: string;
     created_at: GraphQLTypes["timestamptz"];
     id: GraphQLTypes["uuid"];
     invitation_id: GraphQLTypes["uuid"];
@@ -5538,6 +5571,7 @@ export type GraphQLTypes = {
     _and?: Array<GraphQLTypes["auth_users_bool_exp"]> | undefined;
     _not?: GraphQLTypes["auth_users_bool_exp"] | undefined;
     _or?: Array<GraphQLTypes["auth_users_bool_exp"]> | undefined;
+    blockchain?: GraphQLTypes["String_comparison_exp"] | undefined;
     created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
     id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
     invitation_id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
@@ -5551,6 +5585,7 @@ export type GraphQLTypes = {
   ["auth_users_constraint"]: auth_users_constraint;
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
+    blockchain?: string | undefined;
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
     invitation_id?: GraphQLTypes["uuid"] | undefined;
@@ -5563,6 +5598,7 @@ export type GraphQLTypes = {
   /** aggregate max on columns */
   ["auth_users_max_fields"]: {
     __typename: "auth_users_max_fields";
+    blockchain?: string | undefined;
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
     invitation_id?: GraphQLTypes["uuid"] | undefined;
@@ -5575,6 +5611,7 @@ export type GraphQLTypes = {
   /** aggregate min on columns */
   ["auth_users_min_fields"]: {
     __typename: "auth_users_min_fields";
+    blockchain?: string | undefined;
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
     invitation_id?: GraphQLTypes["uuid"] | undefined;
@@ -5600,6 +5637,7 @@ export type GraphQLTypes = {
   };
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
+    blockchain?: GraphQLTypes["order_by"] | undefined;
     created_at?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     invitation_id?: GraphQLTypes["order_by"] | undefined;
@@ -5617,6 +5655,7 @@ export type GraphQLTypes = {
   ["auth_users_select_column"]: auth_users_select_column;
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
+    blockchain?: string | undefined;
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
     invitation_id?: GraphQLTypes["uuid"] | undefined;
@@ -5635,6 +5674,7 @@ export type GraphQLTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_users_stream_cursor_value_input"]: {
+    blockchain?: string | undefined;
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
     invitation_id?: GraphQLTypes["uuid"] | undefined;
@@ -6145,6 +6185,7 @@ export const enum auth_users_constraint {
 }
 /** select columns of table "auth.users" */
 export const enum auth_users_select_column {
+  blockchain = "blockchain",
   created_at = "created_at",
   id = "id",
   invitation_id = "invitation_id",
@@ -6156,6 +6197,7 @@ export const enum auth_users_select_column {
 }
 /** update columns of table "auth.users" */
 export const enum auth_users_update_column {
+  blockchain = "blockchain",
   created_at = "created_at",
   id = "id",
   invitation_id = "invitation_id",
