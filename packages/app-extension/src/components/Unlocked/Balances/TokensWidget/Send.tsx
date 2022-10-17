@@ -164,7 +164,12 @@ export function Send({
     isFreshAddress: _,
     isErrorAddress,
     normalizedAddress: destinationAddress,
-  } = useIsValidAddress(blockchain, address, solanaProvider.connection);
+  } = useIsValidAddress(
+    blockchain,
+    address,
+    solanaProvider.connection,
+    ethereumCtx.provider
+  );
 
   useEffect(() => {
     if (!token) return;
@@ -563,7 +568,8 @@ export function BottomCard({
 export function useIsValidAddress(
   blockchain: Blockchain,
   address: string,
-  solanaConnection?: Connection
+  solanaConnection?: Connection,
+  ethereumProvider?: ethers.providers.Provider
 ) {
   const [addressError, setAddressError] = useState<boolean>(false);
   const [isFreshAccount, setIsFreshAccount] = useState<boolean>(false); // Not used for now.
@@ -619,12 +625,25 @@ export function useIsValidAddress(
       } else if (blockchain === Blockchain.ETHEREUM) {
         // Ethereum address validation
         let checksumAddress;
-        try {
-          checksumAddress = ethers.utils.getAddress(address);
-        } catch (e) {
-          setAddressError(true);
-          return;
+
+        if (address.includes(".eth")) {
+          try {
+            checksumAddress = await ethereumProvider?.resolveName(address);
+          } catch (e) {
+            setAddressError(true);
+            return;
+          }
         }
+
+        if (!checksumAddress) {
+          try {
+            checksumAddress = ethers.utils.getAddress(address);
+          } catch (e) {
+            setAddressError(true);
+            return;
+          }
+        }
+
         setAddressError(false);
         setAccountValidated(true);
         setNormalizedAddress(checksumAddress);
