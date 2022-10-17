@@ -14,9 +14,7 @@ import {
 import React, { useState } from "react";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { formatUSD, proxyImageUrl } from "@coral-xyz/common";
-import { Element, NodeKind } from "react-xnft";
 //TODO: We should remove this dependency somehow
-import { ViewRenderer } from "./ViewRenderer";
 import { Scrollbars } from "react-custom-scrollbars";
 import { motion } from "framer-motion";
 import { MOTION_VARIANTS } from "../app/Router";
@@ -207,61 +205,6 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function Component({ viewData }: any) {
-  const { id, props, style, kind } = viewData;
-  switch (kind) {
-    case NodeKind.Button:
-      return (
-        <_Button
-          id={id}
-          props={props}
-          style={style}
-          childrenRenderer={viewData.children}
-        />
-      );
-    case NodeKind.BalancesTable:
-      return (
-        <BalancesTable
-          props={props}
-          style={style}
-          childrenRenderer={viewData.children}
-        />
-      );
-    case NodeKind.BalancesTableHead:
-      return <BalancesTableHead props={props} style={style} />;
-    case NodeKind.BalancesTableContent:
-      return (
-        <BalancesTableContent
-          props={props}
-          style={style}
-          childrenRenderer={viewData.children}
-        />
-      );
-    case NodeKind.BalancesTableRow:
-      return (
-        <__BalancesTableRow
-          id={id}
-          props={props}
-          style={style}
-          childrenRenderer={viewData.children}
-        />
-      );
-    case NodeKind.BalancesTableCell:
-      return <BalancesTableCell props={props} style={style} />;
-    case NodeKind.BalancesTableFooter:
-      return (
-        <BalancesTableFooter
-          props={props}
-          style={style}
-          children={viewData.children}
-        />
-      );
-    default:
-      console.error(viewData);
-      throw new Error("unexpected view data");
-  }
-}
-
 export function TextArea({
   maxRows,
   minRows,
@@ -416,29 +359,15 @@ export function BalancesTableCell({ props, style }: any) {
 }
 
 export function BalancesTableFooter({ props, style, children }: any) {
-  return (
-    <div style={style}>
-      {children.map((c: Element) => (
-        <ViewRenderer key={c.id} element={c} />
-      ))}
-    </div>
-  );
+  return <div style={style}>{children}</div>;
 }
 
-export function BalancesTable({
-  props,
-  style,
-  children,
-  childrenRenderer,
-}: any) {
+export function BalancesTable({ props, style, children }: any) {
   const classes = useStyles();
   return (
     <BalancesTableProvider>
       <Card className={classes.blockchainCard} elevation={0} style={style}>
-        {children ??
-          childrenRenderer.map((c: Element) => (
-            <ViewRenderer key={c.id} element={c} />
-          ))}
+        {children}
       </Card>
     </BalancesTableProvider>
   );
@@ -542,12 +471,7 @@ export function BalancesTableHead({ props, style }: any) {
   );
 }
 
-export function BalancesTableContent({
-  props,
-  style,
-  children,
-  childrenRenderer,
-}: any) {
+export function BalancesTableContent({ props, style, children }: any) {
   const classes = useStyles();
   const { showContent } = useBalancesContext();
   return (
@@ -558,10 +482,7 @@ export function BalancesTableContent({
         }}
         classes={{ root: classes.cardListRoot }}
       >
-        {children ??
-          childrenRenderer.map((c: Element) => (
-            <ViewRenderer key={c.id} element={c} />
-          ))}
+        {children}
       </List>
     </CardContent>
   );
@@ -604,10 +525,7 @@ function __BalancesTableRow({
       onClick={onClick}
       style={style}
     >
-      {children ??
-        childrenRenderer.map((c: Element) => (
-          <ViewRenderer key={c.id} element={c} />
-        ))}
+      {children}
     </ListItem>
   );
 }
@@ -649,14 +567,7 @@ export function Button({ id, props, style, onClick, children }: any) {
   );
 }
 
-export function __Button({
-  id,
-  onClick,
-  props,
-  style,
-  children,
-  childrenRenderer,
-}: any) {
+export function __Button({ id, onClick, props, style, children }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
   return (
@@ -673,10 +584,7 @@ export function __Button({
       }}
       onClick={onClick}
     >
-      {children ??
-        childrenRenderer.map((c: Element) => (
-          <ViewRenderer key={c.id} element={c} />
-        ))}
+      {children}
     </MuiButton>
   );
 }
