@@ -12,13 +12,13 @@
         "types": "./lib/types/index.d.ts"
     },
     "scripts": {
-        "build": "pnpm run clean && pnpm run tsc && pnpm run package",
+        "build": "yarn run clean && yarn run tsc && yarn run package",
         "clean": "shx mkdir -p lib && shx rm -rf lib",
         "tsc": "tsc --build --verbose tsconfig.root.json",
         "package": "shx echo '{ \"type\": \"commonjs\" }' > lib/cjs/package.json",
         "fmt": "prettier --write '{*,**/*}.{ts,tsx,js,jsx,json}'",
         "lint": "prettier --check '{*,**/*}.{ts,tsx,js,jsx,json}' && eslint .",
-        "lint:fix": "pnpm run fmt && eslint --fix ."
+        "lint:fix": "yarn run fmt && eslint --fix ."
     },
     "dependencies": {
         "@solana/web3.js": "^1.63.1",
