@@ -12,7 +12,7 @@ import {
   CustomTheme,
   HOVER_OPACITY,
 } from "@coral-xyz/themes";
-import { TextField } from "@coral-xyz/react-xnft-renderer";
+import { TextField } from "../../plugin/Component";
 import { walletAddressDisplay } from "@coral-xyz/common";
 
 export * from "./List";

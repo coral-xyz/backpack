@@ -77,6 +77,9 @@ program
 
     let js;
 
+    rendererJs = fs.readFileSync(join(__dirname, "renderer.js"), {
+      encoding: "utf-8",
+    });
     if (iframe) {
       // If an iframe URL has been provided then serve the iframe xNFT example,
       // but replace the source URL with the provided one
@@ -118,18 +121,18 @@ program
     }
 
     app.get("/", (req, res) => {
-      const innerHTML = `<script>
-      <!--//<![CDATA[
-      ${js}
-      //]]>-->
-      </script>`;
       res.send(`
         <!DOCTYPE html>
         <html lang="en">
           <head>
             <meta charset="utf-8"/>
           </head>
-          <body>${innerHTML}</body>
+          <title>simulator</title>
+          <body>
+            <div id="container"></div>
+            <script>${js}</script>
+            <script>${rendererJs}</script>
+          </body>
         </html>
       `);
     });
@@ -143,17 +146,15 @@ program.parse();
 
 program
   .command("init")
-  .argument('<name>', 'name of the xnft')
+  .argument("<name>", "name of the xnft")
   .action(async (name) => {
-    const download = require('download-git-repo');
+    const download = require("download-git-repo");
 
-    await download('coral-xyz/xnft-quickstart', `${name}/`, function (err) {
+    await download("coral-xyz/xnft-quickstart", `${name}/`, function (err) {});
 
-    });
-
-    console.debug(`${name} initalized`)
-    console.debug(``)
-    console.debug(`run these commands:`)
-    console.debug(`cd ${name}`)
-    console.debug(`yarn && yarn dev`)
-  })
+    console.debug(`${name} initalized`);
+    console.debug(``);
+    console.debug(`run these commands:`);
+    console.debug(`cd ${name}`);
+    console.debug(`yarn && yarn dev`);
+  });

@@ -3,7 +3,7 @@ import { ethers, FixedNumber } from "ethers";
 import { InputAdornment, Typography, IconButton } from "@mui/material";
 import type { Button } from "@mui/material";
 import { ExpandMore, SwapVert } from "@mui/icons-material";
-import { Button as XnftButton } from "@coral-xyz/react-xnft-renderer";
+import { Button as XnftButton } from "../../plugin/Component";
 import {
   useSplTokenRegistry,
   useJupiterOutputMints,
