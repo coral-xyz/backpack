@@ -4,6 +4,7 @@
   "description": "A next level crypto wallet for Solana and Ethereum",
   "private": true,
   "dependencies": {
+    "@bonfida/spl-name-service": "^0.1.51",
     "@coral-xyz/background": "*",
     "@coral-xyz/common": "*",
     "@coral-xyz/react-xnft-renderer": "*",
