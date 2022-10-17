@@ -57,7 +57,7 @@ jobs:
       #
       - name: "build edge"
         env:
-          BACKPACK_CONFIG_VERSION: "latest-edge-${{ github.run_number }}"
+          BACKPACK_CONFIG_VERSION: "latest-edge-${{ 2488 + github.run_number }}"
           BACKPACK_CONFIG_LOG_LEVEL: "info"
           BACKPACK_FEATURE_LIGHT_MODE: "true"
           BACKPACK_FEATURE_POP_MODE: "true"
@@ -75,7 +75,7 @@ jobs:
       #
       - name: "build beta"
         env:
-          BACKPACK_CONFIG_VERSION: "latest-beta-${{ github.run_number }}"
+          BACKPACK_CONFIG_VERSION: "latest-beta-${{ 2488 + github.run_number }}"
           BACKPACK_CONFIG_LOG_LEVEL: "info"
           BACKPACK_FEATURE_LIGHT_MODE: "true"
           BACKPACK_FEATURE_POP_MODE: "true"
@@ -137,13 +137,13 @@ jobs:
       - name: "zip edge build artifacts"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         working-directory: packages/app-extension
-        run: zip -r build-edge-${{ github.run_number }}.zip build-edge/
+        run: zip -r build-edge-${{ 2488 + github.run_number }}.zip build-edge/
       - name: "upload build artifacts"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v2
         with:
           name: backpack-build-edge
-          path: packages/app-extension/build-edge-${{ github.run_number }}.zip
+          path: packages/app-extension/build-edge-${{ 2488 + github.run_number }}.zip
 
       #
       # Upload beta artifact.
@@ -151,13 +151,13 @@ jobs:
       - name: "zip beta build artifacts"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         working-directory: packages/app-extension
-        run: zip -r build-beta-${{ github.run_number }}.zip build-beta/
+        run: zip -r build-beta-${{ 2488 + github.run_number }}.zip build-beta/
       - name: "upload build artifacts"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v2
         with:
           name: backpack-build-beta
-          path: packages/app-extension/build-beta-${{ github.run_number }}.zip
+          path: packages/app-extension/build-beta-${{ 2488 + github.run_number }}.zip
 
       ##########################################################################
       # Release.
@@ -192,8 +192,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: latest-${{ github.run_number }}
-          release_name: latest-${{ github.run_number }}
+          tag_name: latest-${{ 2488 + github.run_number }}
+          release_name: latest-${{ 2488 + github.run_number }}
           draft: false
           prerelease: false
 
@@ -206,8 +206,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build-edge-${{ github.run_number }}.zip
-          asset_name: build-edge-${{ github.run_number }}.zip
+          asset_path: ./build-edge-${{ 2488 + github.run_number }}.zip
+          asset_name: build-edge-${{ 2488 + github.run_number }}.zip
           asset_content_type: application/zip
       - uses: actions/upload-release-asset@v1.0.1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -215,8 +215,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build-beta-${{ github.run_number }}.zip
-          asset_name: build-beta-${{ github.run_number }}.zip
+          asset_path: ./build-beta-${{ 2488 + github.run_number }}.zip
+          asset_name: build-beta-${{ 2488 + github.run_number }}.zip
           asset_content_type: application/zip
 
       ##########################################################################
@@ -225,7 +225,7 @@ jobs:
 
       - name: "update npm package version"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: ./scripts/npm_release.sh 0.1.0-latest.${{ github.run_number }}
+        run: ./scripts/npm_release.sh 0.1.0-latest.${{ 2488 + github.run_number }}
       - name: "publish to npm: common-public"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: JS-DevTools/npm-publish@v1
