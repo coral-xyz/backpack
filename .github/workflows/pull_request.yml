@@ -50,6 +50,7 @@ jobs:
         uses: andymckay/labeler@1.0.4
         with:
           add-labels: "backend"
+
   yarn-lock-changes:
     name: yarn.lock changes
     runs-on: ubuntu-latest
@@ -58,6 +59,7 @@ jobs:
       - uses: simek/yarn-lock-changes@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+
   tests:
     runs-on: ubuntu-latest
     name: Build and run tests
