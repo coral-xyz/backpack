@@ -65,6 +65,7 @@ export default {
         <html lang="en">
           <head>
             <meta charset="utf-8"/>
+            <link rel="stylesheet" href="https://doof72pbjabye.cloudfront.net/fonts/inter/font.css" ></link>
           </head>
           <body>
             <div id="container"></div>
