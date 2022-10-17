@@ -1,5 +1,5 @@
 table:
-  name: reviews
+  name: pending_curator_reviews
   schema: appstore
 insert_permissions:
   - role: appstore
@@ -8,6 +8,7 @@ insert_permissions:
       columns:
         - id
         - created_at
+        - type
         - authority
         - xnft
         - data
@@ -18,6 +19,7 @@ select_permissions:
         - id
         - data
         - authority
+        - type
         - xnft
         - created_at
       filter: {}
@@ -28,6 +30,7 @@ update_permissions:
         - id
         - data
         - authority
+        - type
         - xnft
         - created_at
       filter: {}

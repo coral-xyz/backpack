@@ -1,4 +1,4 @@
-- "!include appstore_reviews.yaml"
+- "!include appstore_pending_curator_reviews.yaml"
 - "!include auth_invitations.yaml"
 - "!include auth_users.yaml"
 - "!include public_images.yaml"
