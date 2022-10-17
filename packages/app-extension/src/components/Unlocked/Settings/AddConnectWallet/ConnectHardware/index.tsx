@@ -8,11 +8,13 @@ import { ConnectHardwareSuccess } from "./ConnectHardwareSuccess";
 import { ImportAccounts } from "../../../../common/Account/ImportAccounts";
 import type { SelectedAccount } from "../../../../common/Account/ImportAccounts";
 import { WithNav, NavBackButton } from "../../../../common/Layout/Nav";
+import { CloseButton } from "../../../../common/Layout/Drawer";
 
 export function ConnectHardware({
   blockchain,
   onImport,
   onComplete,
+  onClose,
 }: {
   blockchain: Blockchain;
   onImport?: (
@@ -20,6 +22,7 @@ export function ConnectHardware({
     derivationPath: DerivationPath
   ) => Promise<void>;
   onComplete: () => void;
+  onClose?: () => void;
 }) {
   const theme = useCustomTheme();
   const [transport, setTransport] = useState<Transport | null>(null);
@@ -69,6 +72,8 @@ export function ConnectHardware({
       navButtonLeft={
         step > 0 && step < connectHardwareFlow.length - 1 ? (
           <NavBackButton onClick={prevStep} />
+        ) : onClose ? (
+          <CloseButton onClick={onClose} />
         ) : null
       }
       navbarStyle={{

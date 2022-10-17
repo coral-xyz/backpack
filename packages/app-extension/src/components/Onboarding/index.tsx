@@ -1,5 +1,6 @@
 import {
   Blockchain,
+  DerivationPath,
   BACKPACK_FEATURE_USERNAMES,
   BACKPACK_LINK,
   DISCORD_INVITE_LINK,
@@ -44,6 +45,7 @@ import { SetPassword } from "./pages/SetPassword";
 import { UsernameForm } from "./pages/UsernameForm";
 import { BlockchainSelector } from "./pages/BlockchainSelector";
 import { ConnectHardware } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware";
+import { SelectedAccount } from "../common/Account/ImportAccounts";
 
 export const Onboarding = () => {
   const { pathname } = useLocation();
@@ -211,6 +213,10 @@ export const Onboarding = () => {
           containerRef={containerRef!}
           openDrawer={openLedgerDrawer}
           setOpenDrawer={setOpenLedgerDrawer}
+          onComplete={(
+            accounts: Array<SelectedAccount>,
+            derivationPath: DerivationPath
+          ) => {}}
         />
       </WithNav>
     </OptionsContainer>
@@ -231,18 +237,26 @@ export function LedgerDrawer({
   containerRef: any;
   openDrawer: boolean;
   setOpenDrawer: Dispatch<SetStateAction<boolean>>;
-  onComplete: (accounts, derivationPath) => void;
+  onComplete: (
+    accounts: Array<SelectedAccount>,
+    derivationPath: DerivationPath
+  ) => void;
 }) {
-  const [accounts, setAccounts] = useState([]);
-  const [derivationPath, setDerivationPath] = useState();
+  const [accounts, setAccounts] = useState<Array<SelectedAccount>>([]);
+  const [derivationPath, setDerivationPath] = useState<DerivationPath | null>(
+    null
+  );
 
-  const onImport = (accounts, derivationPath) => {
+  const onImport = async (
+    accounts: Array<SelectedAccount>,
+    derivationPath: DerivationPath
+  ) => {
     setAccounts(accounts);
     setDerivationPath(derivationPath);
   };
 
   const _onComplete = () => {
-    onComplete(accounts, derivationPath);
+    onComplete(accounts, derivationPath!);
     setOpenDrawer(false);
   };
 
@@ -251,9 +265,18 @@ export function LedgerDrawer({
       containerRef={containerRef}
       openDrawer={openDrawer}
       setOpenDrawer={setOpenDrawer}
-      paperStyles={{ height: "calc(100% - 56px)" }}
+      paperStyles={{
+        height: "calc(100% - 56px)",
+        borderTopLeftRadius: "12px",
+        borderTopRightRadius: "12px",
+      }}
     >
-      <ConnectHardware blockchain={blockchain} onComplete={_onComplete} />
+      <ConnectHardware
+        blockchain={blockchain}
+        onComplete={_onComplete}
+        onImport={onImport}
+        onClose={() => setOpenDrawer(false)}
+      />
     </WithContaineredDrawer>
   );
 }
