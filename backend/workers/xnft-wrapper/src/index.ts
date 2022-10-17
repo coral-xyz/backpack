@@ -2,7 +2,7 @@ const RPC = "https://api.devnet.solana.com";
 
 //TODO: This should always point to the most recent released renderer code
 const PROD_RENDERER_URL =
-  "https://unpkg.com/@coral-xyz/react-xnft-dom-renderer@0.1.0-latest.2448/dist/index.js";
+  "https://unpkg.com/@coral-xyz/react-xnft-dom-renderer@0.1.0-latest.17/dist/index.js";
 
 export default {
   async fetch(request: Request): Promise<Response> {
