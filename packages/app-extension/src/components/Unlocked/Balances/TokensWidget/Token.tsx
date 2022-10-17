@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Typography } from "@mui/material";
 import { Blockchain } from "@coral-xyz/common";
 import { styles } from "@coral-xyz/themes";
-import { Button } from "@coral-xyz/react-xnft-renderer";
+import { Button } from "../../../../plugin/Component";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,

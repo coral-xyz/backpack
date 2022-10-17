@@ -61,3 +61,7 @@ export type NftAttribute = {
   traitType: string;
   value: string;
 };
+
+export interface Metadata {
+  isDarkMode: boolean;
+}

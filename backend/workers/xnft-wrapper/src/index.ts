@@ -1,10 +1,15 @@
 const RPC = "https://api.devnet.solana.com";
 
+//TODO: This should always point to the most recent released renderer code
+const PROD_RENDERER_URL =
+  "https://unpkg.com/@coral-xyz/react-xnft-dom-renderer@0.1.0-latest.2448/dist/index.js";
+
 export default {
   async fetch(request: Request): Promise<Response> {
     const { searchParams, pathname } = new URL(request.url);
 
     let bundle = searchParams.get("bundle");
+    let v2 = searchParams.get("v2");
 
     if (!bundle) {
       const xnftMint = pathname.match(/^\/(\w{30,50})/)?.[1];
@@ -51,13 +56,20 @@ export default {
         <script>${js}</script>`;
       }
 
+      if (v2) {
+        innerHTML += `<script src="${PROD_RENDERER_URL}"></script>`;
+      }
+
       return html(`
         <!DOCTYPE html>
         <html lang="en">
           <head>
             <meta charset="utf-8"/>
           </head>
-          <body>${innerHTML}</body>
+          <body>
+            <div id="container"></div>
+            ${innerHTML}
+           </body>
         </html>
       `);
     } catch (err) {

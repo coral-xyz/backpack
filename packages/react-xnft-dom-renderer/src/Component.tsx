@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Scrollbars } from "react-custom-scrollbars";
 import type { Element } from "react-xnft";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,6 +20,7 @@ import {
 import { TextareaAutosize as MuiTextArea } from "@mui/base";
 import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import { ViewRenderer } from "./ViewRenderer";
+import { useDomContext } from "./Context";
 
 const useStyles = styles((theme) => ({
   blockchainLogo: {
@@ -377,8 +378,26 @@ function Circle({ props }: any) {
 }
 
 function Iframe({ props, style }: any) {
+  const [xnftProp, setXnftProp] = useState(false);
+  const ref = useRef<any>();
+
+  useEffect(() => {
+    if (!isValidSecureUrl(props.src)) {
+      return () => {};
+    }
+    if (!ref.current || !xnftProp) {
+      return () => {};
+    }
+    // @ts-ignore
+    window.xnft.addIframe(ref.current);
+    return () => {
+      // @ts-ignore
+      window.xnft.removeIframe(ref.current);
+    };
+  }, [props.src, ref, xnftProp]);
   return isValidSecureUrl(props.src) ? (
     <iframe
+      ref={ref}
       sandbox="allow-same-origin allow-scripts"
       src={props.src}
       height={props.height}
@@ -396,7 +415,7 @@ function Iframe({ props, style }: any) {
       onLoad={({ currentTarget }) => {
         if (props.xnft) {
           // plugin.setActiveIframe(currentTarget, props.src);
-          // TODO: send this over postmessage
+          setXnftProp(true);
         }
       }}
     ></iframe>

@@ -1,1 +1,1 @@
-export { ScrollBarImpl as Scrollbar } from "@coral-xyz/react-xnft-renderer";
+export { ScrollBarImpl as Scrollbar } from "../../../plugin/Component";
