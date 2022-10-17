@@ -757,7 +757,7 @@ function _TextField({ id, props, children, style }: any) {
         value={props.value}
         maxRows={props.numberOfLines}
         minRows={props.numberOfLines}
-        setValue={props.onChange}
+        onChange={props.onChange}
         children={children}
         style={style}
       />
@@ -767,7 +767,7 @@ function _TextField({ id, props, children, style }: any) {
     <TextField
       placeholder={props.placeholder}
       value={props.value}
-      setValue={props.onChange}
+      onChange={props.onChange}
       children={children}
       style={style}
     />
@@ -778,7 +778,7 @@ export function TextArea({
   maxRows,
   minRows,
   value,
-  setValue,
+  onChange,
   placeholder,
   style,
   className = "",
@@ -794,7 +794,7 @@ export function TextArea({
     <MuiTextArea
       maxRows={maxRows}
       minRows={minRows}
-      onChange={(e) => setValue(e.target.value)}
+      onChange={onChange}
       placeholder={placeholder}
       style={{
         width: "100%",
@@ -810,7 +810,7 @@ export function TextField({
   placeholder,
   type,
   value,
-  setValue,
+  onChange,
   rootClass,
   startAdornment,
   endAdornment,
@@ -861,7 +861,7 @@ export function TextField({
         endAdornment,
       }}
       value={value}
-      onChange={(e) => setValue(e.target.value)}
+      onChange={onChange}
       select={select}
       children={children}
       style={style}

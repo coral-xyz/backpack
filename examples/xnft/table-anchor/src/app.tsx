@@ -64,7 +64,7 @@ function AnchorDetail({}: any) {
     <View>
       <Text>Program ID</Text>
       <TextField
-        onChange={(e) => setVal(e.data.value)}
+        onChange={(e) => setVal(e.target.value)}
         value={val}
         placeholder={"Enter your program ID..."}
       />

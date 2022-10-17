@@ -71,7 +71,9 @@ function TokenList({ tokenList, tokenInfos, favorites }: Props & StateProps) {
       >
         <TextField
           placeholder="Search all assets"
-          onChange={(e) => setFilter(e.data.value)}
+          onChange={(e) => {
+            setFilter(e.target.value);
+          }}
           value={filter}
         />
       </View>

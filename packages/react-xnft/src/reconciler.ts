@@ -570,17 +570,11 @@ function createTextFieldInstance(
   _o: OpaqueHandle
 ): TextFieldNodeSerialized {
   const id = h.nextId();
-  let onChange = false;
-  const tfProps = props as TextFieldProps;
-  if (tfProps.onChange && typeof tfProps.onChange === "function") {
-    onChange = true;
-  }
   return {
     id,
     kind: NodeKind.TextField,
     props: {
       ...props,
-      onChange,
       children: undefined,
     },
     style: props.style || {},
@@ -857,7 +851,6 @@ function createBalancesTableRowInstance(
     kind: NodeKind.BalancesTableRow,
     props: {
       ...props,
-      // onClick,
       children: undefined,
     },
     style: props.style || {},
@@ -1057,7 +1050,7 @@ type TextFieldNodeSerialized = DefNodeSerialized<
   TextFieldProps
 >;
 type TextFieldProps = {
-  onChange?: ((event: Event) => void) | boolean;
+  onChange?: (event: Event) => void;
   value?: any;
   multiline?: boolean;
   numberOfLines?: number;
