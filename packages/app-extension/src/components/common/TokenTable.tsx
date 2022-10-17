@@ -18,15 +18,15 @@ import {
   useEnabledBlockchains,
   useLoader,
 } from "@coral-xyz/recoil";
-import {
-  TextField,
-  BalancesTable,
-  BalancesTableHead,
-  BalancesTableContent,
-  BalancesTableRow,
-  BalancesTableCell,
-} from "../../plugin/Component";
+import { TextField } from "../../plugin/Component";
 import { WithCopyTooltip } from "./WithCopyTooltip";
+import {
+  BalancesTable,
+  BalancesTableCell,
+  BalancesTableContent,
+  BalancesTableHead,
+  BalancesTableRow,
+} from "../Unlocked/Balances";
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 

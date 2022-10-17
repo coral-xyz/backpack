@@ -15,14 +15,14 @@ import {
   useLoader,
   useNavigation,
 } from "@coral-xyz/recoil";
-import {
-  BalancesTable,
-  BalancesTableHead,
-  BalancesTableContent,
-} from "../../../plugin/Component";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { GridCard } from "./Common";
 import { EmptyState } from "../../common/EmptyState";
+import {
+  BalancesTable,
+  BalancesTableContent,
+  BalancesTableHead,
+} from "../Balances";
 
 const useStyles = styles(() => ({
   cardContentContainer: {
