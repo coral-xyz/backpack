@@ -23,7 +23,25 @@ module.exports = {
     "no-undef": IGNORE,
     "no-unused-vars": IGNORE,
     "prefer-const": IGNORE,
-    "simple-import-sort/imports": ERROR,
+    "simple-import-sort/imports": [
+      "error",
+      {
+        groups: [
+          // Packages `react` related packages come first.
+          ["^react", "^@?\\w"],
+          // Internal packages.
+          ["^(@|components)(/.*|$)"],
+          // Side effect imports.
+          ["^\\u0000"],
+          // Parent imports. Put `..` last.
+          ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
+          // Other relative imports. Put same-folder imports and `.` last.
+          ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
+          // Style imports.
+          ["^.+\\.?(css)$"],
+        ],
+      },
+    ],
     "simple-import-sort/exports": ERROR,
   },
   extends: [
