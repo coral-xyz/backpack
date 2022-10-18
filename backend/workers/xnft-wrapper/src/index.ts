@@ -1,10 +1,54 @@
 const RPC = "https://api.devnet.solana.com";
 
+//TODO: This should always point to the most recent released renderer code
+const PROD_RENDERER_URL =
+  "https://unpkg.com/@coral-xyz/react-xnft-dom-renderer@0.1.0-latest.17/dist/index.js";
+
+const V1_BUNDLES: string[] = [
+  "https://ipfs.io/ipfs/bafybeibhd37z7osxbp2fvxcenid6uufsvrpumawxw4ked7h2br4duz3sme",
+  "https://xnfts.s3.us-west-2.amazonaws.com/DFiTps6Xp6hKGE2AWMYveNQ6mqA9TjFa6WJiWG9smHr6/bundle/index.js",
+  "https://xnfts.s3.us-west-2.amazonaws.com/C6rEseVodzAebN11CHLNLZtYZf9E5XtycbBSDPmYWFb/bundle/index.js",
+  "https://xnfts.s3.us-west-2.amazonaws.com/4AwaNy62XXNhgEbe3Szk9Tb7eEgDcHG3YbpEzdX8DPj5/bundle/index.js",
+  "https://xnfts.s3.us-west-2.amazonaws.com/9Tqzi3gb4jE3D8Ez79HUTjFfS9f9ES31NjXez6yaffd7/bundle/index.js",
+  "https://xnfts.s3.us-west-2.amazonaws.com/9AmGmRkSQYSYAupbdKmr2et8nQkSg5bo8NAG1nmXgY6g/bundle/index.js",
+  "https://xnfts.s3.us-west-2.amazonaws.com/HqKfgFm7m4TujMwZ1wsRiEG8kMf5Se6mgK4Y1syQYq69/bundle/index.js",
+  "https://xnfts.s3.us-west-2.amazonaws.com/7A3av8PDbqpGRfLzSujr9Dprw4SVgFbMCfJ5DXL4azRP/bundle/index.js",
+  "https://xnfts.s3.us-west-2.amazonaws.com/i2HP4KaZ2zXKwLZVyTkDK3itCRugt6Npb5Zn7t28yR5/bundle/index.js",
+  "https://xnfts.s3.us-west-2.amazonaws.com/Hs78vTKzgK53qeRcYr6UFALzKB9SPNRfV79X5FtVgbKq/bundle/index.js",
+  "https://xnfts.s3.us-west-2.amazonaws.com/3i8Av28osHPoWZzWRoU29JBmfSJEcFtJhDzBTLhFG1u6/bundle/index.js",
+  "https://xnfts.s3.us-west-2.amazonaws.com/8tz5Uu7XqiV2YrutBog3VSyNAL4cA3TXdfGnJx2XPPgy/bundle/index.js",
+  "https://xnfts.s3.us-west-2.amazonaws.com/4QaPNGJFsdqT5cbURcLcVGPQD8GgCpNM6Bmf2p88ex2f/bundle/index.js",
+  "https://xnfts.s3.us-west-2.amazonaws.com/HGVjbFZdHuEK1e8MAXte5hG9NquPSig5RobdLvyXvSXG/bundle/index.js",
+  "https://xnfts.s3.us-west-2.amazonaws.com/AeycivvGzQgT3iEn8pTWuPcazoGSUbKaUn1tLFfmyam4/bundle/index.js",
+  "https://xnfts.s3.us-west-2.amazonaws.com/8QSN1sG3nWYcTMsCP8BNgjZHdGtvxLU5cbx81KxRrLZq/bundle/index.js",
+  "https://ipfs.io/ipfs/bafybeiekyqolvv7xwtg5mp65wnpsumzf7kns4fiticgdmgbrh5wdmbm5ve",
+  "https://xnfts.s3.us-west-2.amazonaws.com/De4UnwDoaRnPFpy4NXXZCvh4W7JrX5JNcxc6u9iZfZzp/bundle/index.js",
+  "https://assets.tiexo.com/xnft/_/v33/index.js",
+  "https://ipfs.io/ipfs/bafybeig4hrp7prl5afffpv2wzd4dmmxlrg7f4oj3vnytwpnjzxy7gh22ve",
+  "https://ipfs.io/ipfs/bafybeignivvx6ilmx3hrcekwk53riant44knedielglpa3pirh76ld7tse",
+  "https://xnfts.s3.us-west-2.amazonaws.com/ZtANNvbEeKhfBiFakWbtMcxsYaTRgm6GEtds8PxW2bm/bundle/index.js",
+  "https://xnfts.s3.us-west-2.amazonaws.com/FgrUhnsbTYURx1Pyc5D2HDiPaDHzkbH3bv8aDzEmf16x/bundle/index.js",
+];
+
 export default {
   async fetch(request: Request): Promise<Response> {
     const { searchParams, pathname } = new URL(request.url);
 
-    let bundle = searchParams.get("bundle");
+    // @ts-ignore
+    let bundle: string = searchParams.get("bundle");
+    let v2 = searchParams.get("v2");
+
+    // TODO Remove this logic few days after the new renderer releases
+    if (v2 && V1_BUNDLES.includes(bundle)) {
+      // Upgrade Warning example xnft bundle
+      bundle =
+        "https://xnfts-dev.s3.us-west-2.amazonaws.com/warning-xnft/index-new-wallet-warning.js";
+    }
+
+    if (!v2 && !V1_BUNDLES.includes(bundle)) {
+      bundle =
+        "https://xnfts-dev.s3.us-west-2.amazonaws.com/warning-xnft/index-old-wallet-warning.js";
+    }
 
     if (!bundle) {
       const xnftMint = pathname.match(/^\/(\w{30,50})/)?.[1];
@@ -51,13 +95,21 @@ export default {
         <script>${js}</script>`;
       }
 
+      if (v2) {
+        innerHTML += `<script src="${PROD_RENDERER_URL}"></script>`;
+      }
+
       return html(`
         <!DOCTYPE html>
         <html lang="en">
           <head>
             <meta charset="utf-8"/>
+            <link rel="stylesheet" href="https://doof72pbjabye.cloudfront.net/fonts/inter/font.css"></link>
           </head>
-          <body>${innerHTML}</body>
+          <body>
+            <div id="container"></div>
+            ${innerHTML}
+           </body>
         </html>
       `);
     } catch (err) {

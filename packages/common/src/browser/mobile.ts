@@ -53,15 +53,13 @@ export function startMobileIfNeeded() {
 
   if (isServiceWorker()) {
     self.addEventListener("message", (event) => {
-      console.log("web-view-event:", event.data);
       logger.debug("service-worker-event: ", JSON.stringify(event.data));
-      EVENT_LISTENERS.forEach((handler) => handler(event.data));
+      EVENT_LISTENERS.forEach((handler: any) => handler(event.data));
     });
   } else {
     WEB_VIEW_EVENTS.on("message", (event: { channel: string; data: any }) => {
-      console.log("web-view-event:", event);
       logger._log("web-view-event:", JSON.stringify(event));
-      EVENT_LISTENERS.forEach((handler) => handler(event));
+      EVENT_LISTENERS.forEach((handler: any) => handler(event));
     });
   }
 
@@ -80,7 +78,7 @@ export function startMobileIfNeeded() {
   };
 
   BrowserRuntimeCommon.addEventListenerFromBackground = (cb) => {
-    const handler = (event) => {
+    const handler = (event: any) => {
       if (event && event.data && event.data.wrappedEvent) {
         cb(event.data.wrappedEvent, {}, (result: any) => {
           postMsgFromWorker({
@@ -100,7 +98,7 @@ export function startMobileIfNeeded() {
   };
 
   BrowserRuntimeCommon.addEventListenerFromAppUi = (cb) => {
-    const handler = (event) => {
+    const handler = (event: any) => {
       if (event && event.data && event.data.wrappedEvent) {
         cb(event.data.wrappedEvent, {}, (result: any) => {
           postMsgFromAppUi({
@@ -171,7 +169,7 @@ export function startMobileIfNeeded() {
 
   if (isServiceWorker()) {
     BrowserRuntimeCommon.addEventListenerFromBackground(
-      (msg, _sender, sendResponse) => {
+      (msg: any, _sender: any, sendResponse: any) => {
         if (msg.channel !== MOBILE_CHANNEL_BG_RESPONSE_INNER) {
           return;
         }
@@ -180,7 +178,7 @@ export function startMobileIfNeeded() {
     );
   } else {
     BrowserRuntimeCommon.addEventListenerFromAppUi(
-      (msg, _sender, sendResponse) => {
+      (msg: any, _sender: any, sendResponse: any) => {
         if (msg.channel !== MOBILE_CHANNEL_FE_RESPONSE_INNER) {
           return;
         }
@@ -201,11 +199,7 @@ export function startMobileIfNeeded() {
 
   if (!isServiceWorker()) {
     BrowserRuntimeCommon.addEventListenerFromAppUi(
-      async (msg, _sender, sendResponse) => {
-        console.log(
-          "ptt BrowserRuntimeCommon.addEventListenerFromAppUi:msg",
-          msg
-        );
+      async (msg: any, _sender: any, sendResponse: any) => {
         if (msg.channel !== MOBILE_CHANNEL_HOST_RPC_REQUEST) {
           return;
         }
@@ -290,7 +284,6 @@ class FrontendRequestManager extends CommonRequestManager {
   public static request<T = any>(msg: any): Promise<T> {
     return new Promise((resolve, reject) => {
       CommonRequestManager._resolvers[msg.data.id] = { resolve, reject };
-      console.log("ptt msg postMsgFromAppUi", msg);
       postMsgFromAppUi({
         channel: MOBILE_CHANNEL_FE_REQUEST,
         data: {
@@ -305,7 +298,6 @@ class BackendRequestManager extends CommonRequestManager {
   public static request<T = any>(msg: any): Promise<T> {
     return new Promise((resolve, reject) => {
       CommonRequestManager._resolvers[msg.data.id] = { resolve, reject };
-      console.log("ptt msg postMsgFromWorker", msg);
       postMsgFromWorker({
         channel: MOBILE_CHANNEL_BG_REQUEST,
         data: {

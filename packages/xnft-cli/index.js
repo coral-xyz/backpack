@@ -76,7 +76,21 @@ program
     const port = SIMULATOR_PORT;
 
     let js;
+    let rendererScript;
 
+    try {
+      const rendererFileContent = fs.readFileSync(
+        join(__dirname, "renderer.js"),
+        {
+          encoding: "utf-8",
+        }
+      );
+      rendererScript = `<script>${rendererFileContent}</script>`;
+    } catch (e) {
+      console.log("falling back to latest renderer");
+      // fallback to latest version of renderer
+      rendererScript = `<script src="https://unpkg.com/@coral-xyz/react-xnft-dom-renderer@0.1.0-latest.45/dist/index.js"></script>`;
+    }
     if (iframe) {
       // If an iframe URL has been provided then serve the iframe xNFT example,
       // but replace the source URL with the provided one
@@ -118,18 +132,19 @@ program
     }
 
     app.get("/", (req, res) => {
-      const innerHTML = `<script>
-      <!--//<![CDATA[
-      ${js}
-      //]]>-->
-      </script>`;
       res.send(`
         <!DOCTYPE html>
         <html lang="en">
           <head>
             <meta charset="utf-8"/>
+            <link rel="stylesheet" href="https://doof72pbjabye.cloudfront.net/fonts/inter/font.css"></link>
           </head>
-          <body>${innerHTML}</body>
+          <title>simulator</title>
+          <body>
+            <div id="container"></div>
+            <script>${js}</script>
+            ${rendererScript}
+          </body>
         </html>
       `);
     });
@@ -140,3 +155,18 @@ program
   });
 
 program.parse();
+
+program
+  .command("init")
+  .argument("<name>", "name of the xnft")
+  .action(async (name) => {
+    const download = require("download-git-repo");
+
+    await download("coral-xyz/xnft-quickstart", `${name}/`, function (err) {});
+
+    console.debug(`${name} initalized`);
+    console.debug(``);
+    console.debug(`run these commands:`);
+    console.debug(`cd ${name}`);
+    console.debug(`yarn && yarn dev`);
+  });

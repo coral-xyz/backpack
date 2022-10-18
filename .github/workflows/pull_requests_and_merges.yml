@@ -1,0 +1,316 @@
+# Actions that run when opening or updating pull requests, as well
+# as when merging them into master or pushing code directly to master
+
+name: Pull Requests and Merges
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    name: Build and run tests
+    # https://turborepo.org/docs/ci/github-actions
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+    steps:
+      ##########################################################################
+      # Setup environment.
+      ##########################################################################
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - uses: actions/cache@v3
+        name: yarn-cache
+        id: yarn-cache
+        with:
+          path: |
+            **/node_modules
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            !**/node_modules/.cache
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn
+      ##########################################################################
+      # Yarn install.
+      ##########################################################################
+
+      - name: yarn install
+        run: yarn install --frozen-lockfile --prefer-offline
+
+      ##########################################################################
+      # Build extension.
+      ##########################################################################
+
+      - name: "set env.short_sha"
+        run: echo "short_sha=`echo "${{ env.commit_sha }}" | cut -c1-8`" >> $GITHUB_ENV
+
+      - name: set env.webworker_url
+        run: echo "webworker_url=https://coral-xyz.github.io/backpack/background-scripts/${{ env.short_sha }}/service-worker-loader.html" >> $GITHUB_ENV
+
+      ##########################################################################
+      # Build extension.
+      ##########################################################################
+
+      - name: "tag build version"
+        run: pushd ./packages/app-extension && ./scripts/version.sh latest-${{ github.run_number }} && popd
+
+      - name: "build workspace"
+        # CI!=true so that build warnings aren't treated like errors (for now)
+        env:
+          CI: ""
+        run: WEBWORKER_URL=${{ env.webworker_url }} yarn build
+
+      #
+      # Build the extension, edge release.
+      #
+      - name: "build edge"
+        env:
+          BACKPACK_CONFIG_VERSION: "latest-edge-${{ github.run_number }}"
+          BACKPACK_CONFIG_LOG_LEVEL: "info"
+          BACKPACK_FEATURE_LIGHT_MODE: "true"
+          BACKPACK_FEATURE_POP_MODE: "true"
+          BACKPACK_FEATURE_MULTICHAIN: "true"
+          BACKPACK_FEATURE_XNFT: "true"
+          # CI!=true so that build warnings aren't treated like errors (for now)
+          CI: ""
+        run: yarn build
+      - name: "rename edge build"
+        working-directory: packages/app-extension
+        run: mv build build-edge
+
+      #
+      # Build the extension, beta release.
+      #
+      - name: "build beta"
+        env:
+          BACKPACK_CONFIG_VERSION: "latest-beta-${{ github.run_number }}"
+          BACKPACK_CONFIG_LOG_LEVEL: "info"
+          BACKPACK_FEATURE_LIGHT_MODE: "true"
+          BACKPACK_FEATURE_POP_MODE: "true"
+          BACKPACK_FEATURE_MULTICHAIN: "true"
+          BACKPACK_FEATURE_USERNAMES: "true"
+          BACKPACK_FEATURE_XNFT: "true"
+          # CI!=true so that build warnings aren't treated like errors (for now)
+          CI: ""
+        run: yarn build
+      - name: "rename beta build"
+        working-directory: packages/app-extension
+        run: mv build build-beta
+
+      ##########################################################################
+      # Yarn test.
+      ##########################################################################
+
+      - run: yarn test
+
+      ##########################################################################
+      # Yarn test.
+      ##########################################################################
+
+      - run: yarn test
+
+      ##########################################################################
+      # GitHub Pages.
+      ##########################################################################
+
+      - run: cd packages/background && yarn build:html
+
+      - if: github.event_name == 'pull_request'
+        name: "set env.commit_sha from latest commit in PR"
+        run: echo "commit_sha=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+      - if: github.event_name == 'push'
+        name: "set env.commit_sha from commit or merge commit"
+        run: echo "commit_sha=${{ github.sha }}" >> $GITHUB_ENV
+
+      - name: "set env.short_sha"
+        run: echo "short_sha=`echo "${{ env.commit_sha }}" | cut -c1-8`" >> $GITHUB_ENV
+
+      - name: Deploy
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          publish_dir: packages/background/build
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          destination_dir: "background-scripts/${{ env.short_sha }}"
+
+      - name: "Deploy ledger injection"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          publish_dir: packages/ledger-injection/dist
+          deploy_key: ${{ secrets.LEDGER_INJECTION_DEPLOY_KEY }}
+          external_repository: coral-xyz/ledger-injection
+
+      ##########################################################################
+      # Mobile app
+      ##########################################################################
+
+      - name: set env.expo_channel
+        run: echo "expo_channel=pr-${{ github.event.number }}" >> $GITHUB_ENV
+
+      - name: Setup Expo
+        uses: expo/expo-github-action@v7
+        with:
+          expo-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Publish to Expo
+        working-directory: packages/app-mobile
+        run: WEBWORKER_URL=${{ env.webworker_url }} expo publish --release-channel=${{ env.expo_channel }} --non-interactive
+
+      - name: Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: qr-code
+          message: |
+            Deployed to channel **${{ env.expo_channel }}**
+            <img alt="QR Code" src="https://qr.expo.dev/expo-go?owner=coral-xyz&slug=backpack&releaseChannel=${{ env.expo_channel }}" width="200" height="200" />
+            [Manifest](https://exp.host/@coral-xyz/backpack/index.exp?release-channel=${{ env.expo_channel }}&sdkVersion=45.0.0) / [Learn more](https://expo.fyi/manifest-url)
+            [Project page](https://expo.dev/@coral-xyz/backpack?serviceType=classic&distribution=expo-go&release-channel=${{ env.expo_channel }}) / [Learn more](https://expo.fyi/project-page)
+            [Webworker](${{ env.webworker_url }})
+
+      ##########################################################################
+      # Upload build artifacts.
+      ##########################################################################
+
+      #
+      # Upload edge artifact.
+      #
+      - name: "zip edge build artifacts"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        working-directory: packages/app-extension
+        run: zip -r build-edge-${{ github.run_number }}.zip build-edge/
+      - name: "upload build artifacts"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v2
+        with:
+          name: backpack-build-edge
+          path: packages/app-extension/build-edge-${{ github.run_number }}.zip
+
+      #
+      # Upload beta artifact.
+      #
+      - name: "zip beta build artifacts"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        working-directory: packages/app-extension
+        run: zip -r build-beta-${{ github.run_number }}.zip build-beta/
+      - name: "upload build artifacts"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v2
+        with:
+          name: backpack-build-beta
+          path: packages/app-extension/build-beta-${{ github.run_number }}.zip
+
+      ##########################################################################
+      # Release.
+      ##########################################################################
+
+      #
+      # TODO: the master branch conditionson all these are bit hacky. Probably
+      #       a cleaner way of doing this.
+      #
+
+      #
+      # Download artifacts.
+      #
+      - uses: actions/download-artifact@v2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          name: backpack-build-edge
+          path: ./
+      - uses: actions/download-artifact@v2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          name: backpack-build-beta
+          path: ./
+
+      #
+      # Create release.
+      #
+      - uses: actions/create-release@v1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        name: Create Draft Release
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: latest-${{ github.run_number }}
+          release_name: latest-${{ github.run_number }}
+          draft: false
+          prerelease: false
+
+      #
+      # Attach files to the release.
+      #
+      - uses: actions/upload-release-asset@v1.0.1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build-edge-${{ github.run_number }}.zip
+          asset_name: build-edge-${{ github.run_number }}.zip
+          asset_content_type: application/zip
+      - uses: actions/upload-release-asset@v1.0.1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build-beta-${{ github.run_number }}.zip
+          asset_name: build-beta-${{ github.run_number }}.zip
+          asset_content_type: application/zip
+
+      ##########################################################################
+      # NPM Publish.
+      ##########################################################################
+
+      - name: "update npm package version"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: ./scripts/npm_release.sh 0.2.0-latest.${{ github.run_number }}
+      - name: "publish to npm: common-public"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_ACCESS_TOKEN }}
+          tag: latest
+          package: packages/common-public/package.json
+      - name: "publish to npm: themes"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_ACCESS_TOKEN }}
+          tag: latest
+          package: packages/themes/package.json
+      - name: "publish to npm: react-xnft"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_ACCESS_TOKEN }}
+          tag: latest
+          package: packages/react-xnft/package.json
+      - name: "publish to npm: xnft-cli"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_ACCESS_TOKEN }}
+          tag: latest
+          package: packages/xnft-cli/package.json
+      - name: "publish to npm: react-xnft-dom-renderer"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_ACCESS_TOKEN }}
+          tag: latest
+          package: packages/react-xnft-dom-renderer/package.json

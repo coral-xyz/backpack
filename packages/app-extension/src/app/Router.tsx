@@ -329,7 +329,7 @@ const useStyles = styles((theme) => {
   };
 });
 
-const MOTION_VARIANTS = {
+export const MOTION_VARIANTS = {
   initial: {
     opacity: 0,
   },

@@ -185,9 +185,13 @@ export class SolanaConnectionBackend {
       const { activeWallet, url } = notif.data;
       this.connection = new Connection(url, this.connection!.commitment);
       this.url = url;
-      this.stopPolling();
-      this.hookRpcRequest();
-      this.startPolling(new PublicKey(activeWallet));
+      // activeWallet can be null if the blockchain is disabled, in that case
+      // we don't want to start polling
+      if (activeWallet) {
+        this.stopPolling();
+        this.hookRpcRequest();
+        this.startPolling(new PublicKey(activeWallet));
+      }
     };
 
     const handleBlockchainEnabled = (notif: Notification) => {

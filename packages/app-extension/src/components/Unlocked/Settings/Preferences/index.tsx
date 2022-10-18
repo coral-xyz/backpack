@@ -37,11 +37,8 @@ export function Preferences() {
     "Auto-lock timer": {
       onClick: () => nav.push("preferences-auto-lock"),
     },
-    "Trusted Apps": {
-      onClick: () => nav.push("preferences-trusted-apps"),
-    },
-    Blockchains: {
-      onClick: () => nav.push("preferences-blockchains"),
+    "Trusted Sites": {
+      onClick: () => nav.push("preferences-trusted-sites"),
     },
   };
 
@@ -91,13 +88,6 @@ export function Preferences() {
     },
   };
 
-  // Filter blockchain menu items to only those for enabled blockchains
-  const filteredBlockchainMenuItems = Object.fromEntries(
-    Object.entries(blockchainMenuItems).filter(([key]) =>
-      enabledBlockchains.includes(key.toLowerCase())
-    )
-  );
-
   //
   // Build version.
   //
@@ -119,7 +109,7 @@ export function Preferences() {
   return (
     <div>
       <SettingsList menuItems={menuItems} />
-      <SettingsList menuItems={filteredBlockchainMenuItems as any} />
+      <SettingsList menuItems={blockchainMenuItems as any} />
       <SettingsList menuItems={buildMenuItems} />
     </div>
   );
@@ -139,20 +129,23 @@ function DarkModeSwitch({
 export function SwitchToggle({
   enabled,
   onChange,
+  disableUiState = false,
 }: {
   enabled: boolean;
   onChange: () => void;
+  disableUiState?: boolean;
 }) {
   const classes = useStyles();
   return (
     <Switch
+      disabled={disableUiState}
       checked={enabled}
       disableRipple
       onChange={onChange}
       classes={{
         switchBase: classes.switchBase,
         track: enabled ? classes.trackChecked : classes.track,
-        colorPrimary: classes.colorPrimary,
+        colorPrimary: disableUiState ? classes.disabled : classes.colorPrimary,
       }}
     />
   );
@@ -170,6 +163,12 @@ const useStyles = styles((theme) => ({
   colorPrimary: {
     "&.Mui-checked": {
       color: theme.custom.colors.brandColor,
+    },
+  },
+  disabled: {
+    "&.Mui-checked": {
+      color: `${theme.custom.colors.brandColor} !important`,
+      opacity: 0.5,
     },
   },
   track: {},

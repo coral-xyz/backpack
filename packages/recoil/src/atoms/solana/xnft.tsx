@@ -35,8 +35,8 @@ const NETWORK_MONITOR = pluginURL(
 //
 const PROXY_URL =
   BACKPACK_CONFIG_XNFT_PROXY === "development"
-    ? "https://localhost:9999?inline=1&bundle="
-    : "https://embed.xnfts.dev?inline=1&bundle=";
+    ? "https://localhost:9999?inline=1&v2=true&bundle="
+    : "https://embed.xnfts.dev?inline=1&v2=true&bundle=";
 
 function pluginURL(pluginName: string) {
   return [

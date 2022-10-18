@@ -1,0 +1,37 @@
+{
+  "name": "@coral-xyz/react-xnft-dom-renderer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "parcel build src/index.tsx --dist-dir dist"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@coral-xyz/common": "*",
+    "@coral-xyz/themes": "*",
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1",
+    "@mui/base": "^5.0.0-alpha.101",
+    "@mui/icons-material": "^5.8.4",
+    "@mui/styles": "^5.8.4",
+    "@mui/material": "^5.8.1",
+    "@solana/web3.js": "^1.63.1",
+    "framer-motion": "^6.5.1",
+    "parcel": "^2.7.0",
+    "react": "^17.0.0",
+    "react-custom-scrollbars": "^4.2.1",
+    "react-dom": "^18.2.0",
+    "react-xnft": "*"
+  },
+  "targets": {
+    "modern": {
+      "distDir": "dist"
+    }
+  }
+}

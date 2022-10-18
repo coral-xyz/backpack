@@ -1,12 +1,12 @@
 import { Tooltip } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
 
-export function WithCopyTooltip({ children, tooltipOpen }: any) {
+export function WithCopyTooltip({ children, tooltipOpen, title }: any) {
   const theme = useCustomTheme();
   return (
     <Tooltip
       arrow
-      title={"Copied"}
+      title={title ?? "Copied"}
       open={tooltipOpen}
       disableFocusListener
       disableHoverListener

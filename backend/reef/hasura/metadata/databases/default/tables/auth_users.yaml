@@ -6,6 +6,7 @@ insert_permissions:
     permission:
       check: {}
       columns:
+        - blockchain
         - invitation_id
         - pubkey
         - username
@@ -14,11 +15,15 @@ select_permissions:
   - role: appstore
     permission:
       columns:
+        - blockchain
+        - created_at
+        - pubkey
         - username
       filter: {}
   - role: auth_worker
     permission:
       columns:
+        - blockchain
         - id
         - pubkey
         - username

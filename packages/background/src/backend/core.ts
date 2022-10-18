@@ -189,6 +189,15 @@ export class Backend {
       return false;
     }
 
+    let keyring: BlockchainKeyring | null;
+    try {
+      keyring = this.keyringStore.keyringForBlockchain(Blockchain.SOLANA);
+    } catch {
+      // Blockchain may be disabled
+      keyring = null;
+    }
+    const activeWallet = keyring ? keyring.getActiveWallet() : null;
+
     await setWalletData({
       ...data,
       solana: {
@@ -200,6 +209,7 @@ export class Backend {
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
       data: {
+        activeWallet,
         url: cluster,
       },
     });
@@ -328,6 +338,7 @@ export class Backend {
 
   async ethereumConnectionUrlUpdate(connectionUrl: string): Promise<string> {
     const data = await store.getWalletData();
+
     await store.setWalletData({
       ...data,
       ethereum: {
@@ -335,9 +346,20 @@ export class Backend {
         connectionUrl,
       },
     });
+
+    let keyring: BlockchainKeyring | null;
+    try {
+      keyring = this.keyringStore.keyringForBlockchain(Blockchain.ETHEREUM);
+    } catch {
+      // Blockchain may be disabled
+      keyring = null;
+    }
+    const activeWallet = keyring ? keyring.getActiveWallet() : null;
+
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
       data: {
+        activeWallet,
         connectionUrl,
       },
     });
@@ -376,6 +398,7 @@ export class Backend {
 
   // Creates a brand new keyring store. Should be run once on initializtion.
   async keyringStoreCreate(
+    blockchain: Blockchain,
     mnemonic: string,
     derivationPath: DerivationPath,
     password: string,
@@ -386,6 +409,7 @@ export class Backend {
     userIsRecoveringWallet = false
   ): Promise<string> {
     const keyring = await this.keyringStore.init(
+      blockchain,
       mnemonic,
       derivationPath,
       password,
@@ -402,6 +426,9 @@ export class Backend {
           inviteCode,
           publicKey,
           waitlistId,
+          // order is significant, blockchain must be the last key atm
+          // see `app.post("/users")` inside `backend/workers/auth/src/index.ts`
+          blockchain,
         });
 
         const buffer = Buffer.from(body, "utf8");
@@ -699,11 +726,13 @@ export class Backend {
   }
 
   async previewPubkeys(
+    blockchain: Blockchain,
     mnemonic: string,
     derivationPath: DerivationPath,
     numberOfAccounts: number
   ) {
     return this.keyringStore.previewPubkeys(
+      blockchain,
       mnemonic,
       derivationPath,
       numberOfAccounts

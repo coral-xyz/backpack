@@ -20,6 +20,7 @@ import {
   useActiveWallets,
   useBlockchainLogo,
   useUsername,
+  useAvatarUrl,
   WalletPublicKeys,
 } from "@coral-xyz/recoil";
 import {
@@ -66,8 +67,7 @@ import { Preferences } from "./Preferences";
 import { PreferencesSolana } from "./Preferences/Solana";
 import { PreferencesEthereum } from "./Preferences/Ethereum";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
-import { PreferencesTrustedApps } from "./Preferences/TrustedApps";
-import { PreferencesBlockchains } from "./Preferences/Blockchains";
+import { PreferencesTrustedSites } from "./Preferences/TrustedSites";
 import { PreferencesSolanaConnection } from "./Preferences/Solana/ConnectionSwitch";
 import { PreferencesSolanaCommitment } from "./Preferences/Solana/Commitment";
 import { PreferencesSolanaExplorer } from "./Preferences/Solana/Explorer";
@@ -98,10 +98,10 @@ const useStyles = styles((theme) => ({
   },
   menuButton: {
     padding: "2px",
-    background: theme.custom.colors.coralGradient,
+    background: `${theme.custom.colors.avatarIconBackground} !important`,
     "&:hover": {
-      background: `${theme.custom.colors.coralGradient} !important`,
-      backgroundColor: `${theme.custom.colors.coralGradient} !important`,
+      background: `${theme.custom.colors.avatarIconBackground} !important`,
+      backgroundColor: `${theme.custom.colors.avatarIconBackground} !important`,
       opacity: HOVER_OPACITY,
     },
   },
@@ -130,8 +130,6 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-const AVATAR_URL = "/coral.png";
-
 export function SettingsButton() {
   return (
     <div style={{ display: "flex" }}>
@@ -145,6 +143,8 @@ export function SettingsButton() {
 function AvatarButton() {
   const classes = useStyles();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const avatarUrl = useAvatarUrl(32);
+
   return (
     <div className={classes.menuButtonContainer}>
       <IconButton
@@ -155,7 +155,7 @@ function AvatarButton() {
         id="menu-button"
       >
         <img
-          src={AVATAR_URL}
+          src={avatarUrl}
           style={{
             width: "32px",
             height: "32px",
@@ -201,16 +201,12 @@ function AvatarButton() {
               component={(props: any) => <PreferencesAutoLock {...props} />}
             />
             <NavStackScreen
-              name={"preferences-trusted-apps"}
-              component={(props: any) => <PreferencesTrustedApps {...props} />}
+              name={"preferences-trusted-sites"}
+              component={(props: any) => <PreferencesTrustedSites {...props} />}
             />
             <NavStackScreen
               name={"preferences-solana"}
               component={(props: any) => <PreferencesSolana {...props} />}
-            />
-            <NavStackScreen
-              name={"preferences-blockchains"}
-              component={(props: any) => <PreferencesBlockchains {...props} />}
             />
             <NavStackScreen
               name={"preferences-ethereum"}
@@ -329,11 +325,12 @@ function _SettingsContent() {
 function AvatarHeader() {
   const username = useUsername();
   const theme = useCustomTheme();
+  const avatarUrl = useAvatarUrl(64);
   return (
     <div style={{ marginBottom: "40px" }}>
       <div
         style={{
-          background: theme.custom.colors.coralGradient,
+          background: theme.custom.colors.avatarIconBackground,
           borderRadius: "40px",
           padding: "3px",
           width: "70px",
@@ -344,7 +341,7 @@ function AvatarHeader() {
         }}
       >
         <img
-          src={"coral.png"}
+          src={avatarUrl}
           style={{
             width: "64px",
             height: "64px",
@@ -795,7 +792,7 @@ function SettingsList({ close }: { close: () => void }) {
         >
           <GridIcon
             {...props}
-            style={{ ...props.style, width: "20px", height: "20px" }}
+            style={{ ...props.style, width: "24px", height: "20px" }}
           />
         </div>
       ),

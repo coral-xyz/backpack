@@ -28,7 +28,7 @@ const TextInput = () => {
   const [text, setText] = useRecoilState(textState);
 
   const onChange = (event) => {
-    setText(event.data.value);
+    setText(event.target.value);
   };
 
   return (

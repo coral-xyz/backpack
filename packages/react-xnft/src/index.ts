@@ -14,3 +14,4 @@ export * from "./Dom";
 export * from "./elements";
 export * from "./hooks";
 export * from "./sdk";
+export * from "./ReactDom";

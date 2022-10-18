@@ -12,6 +12,7 @@ import {
 } from "@coral-xyz/common";
 import * as crypto from "./crypto";
 import { SolanaHdKeyringFactory } from "./solana";
+import { EthereumHdKeyringFactory } from "./ethereum";
 import * as store from "../store";
 import { DefaultKeyname, DEFAULT_DARK_MODE } from "../store";
 import { BlockchainKeyring } from "./blockchain";
@@ -45,6 +46,7 @@ export class KeyringStore {
 
   // Initializes the keystore for the first time.
   public async init(
+    blockchain: Blockchain,
     mnemonic: string,
     derivationPath: DerivationPath,
     password: string,
@@ -58,7 +60,7 @@ export class KeyringStore {
     const keyring = await this.initBlockchainKeyring(
       derivationPath,
       accountIndices,
-      Blockchain.SOLANA,
+      blockchain,
       // Don't persist, as we persist manually later
       false
     );
@@ -68,7 +70,7 @@ export class KeyringStore {
       username,
       autoLockSecs: store.DEFAULT_LOCK_INTERVAL_SECS,
       approvedOrigins: [],
-      enabledBlockchains: [Blockchain.SOLANA],
+      enabledBlockchains: [blockchain],
       darkMode: DEFAULT_DARK_MODE,
       solana: {
         explorer: SolanaExplorer.DEFAULT,
@@ -162,11 +164,15 @@ export class KeyringStore {
   // Preview public keys for a given mnemonic and derivation path without
   // importing the mnemonic.
   public previewPubkeys(
+    blockchain: Blockchain,
     mnemonic: string,
     derivationPath: DerivationPath,
     numberOfAccounts: number
   ): string[] {
-    const factory = new SolanaHdKeyringFactory();
+    const factory = {
+      [Blockchain.SOLANA]: new SolanaHdKeyringFactory(),
+      [Blockchain.ETHEREUM]: new EthereumHdKeyringFactory(),
+    }[blockchain];
     const hdKeyring = factory.fromMnemonic(mnemonic, derivationPath, [
       ...Array(numberOfAccounts).keys(),
     ]);
@@ -316,7 +322,7 @@ export class KeyringStore {
   }
 
   private isUnlocked(): boolean {
-    return this.lastUsedTs !== 0;
+    return this.blockchains.size > 0 && this.lastUsedTs !== 0;
   }
 
   private async persist(forceBecauseCalledFromInit = false) {
@@ -436,7 +442,7 @@ export class KeyringStore {
         return blockchain as Blockchain;
       }
     }
-    throw new Error("no blockchain for public key");
+    throw new Error(`no blockchain for ${publicKey}`);
   }
 
   /**
@@ -447,7 +453,7 @@ export class KeyringStore {
     if (keyring) {
       return keyring;
     }
-    throw new Error("no keyring for blockchain");
+    throw new Error(`no keyring for ${blockchain}`);
   }
 
   /**
@@ -459,6 +465,6 @@ export class KeyringStore {
         return keyring;
       }
     }
-    throw new Error("no keyring for public key");
+    throw new Error(`no keyring for ${publicKey}`);
   }
 }
