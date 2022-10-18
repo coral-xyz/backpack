@@ -76,10 +76,20 @@ program
     const port = SIMULATOR_PORT;
 
     let js;
+    let rendererScript;
 
-    rendererJs = fs.readFileSync(join(__dirname, "renderer.js"), {
-      encoding: "utf-8",
-    });
+    try {
+      const rendererFileContent = fs.readFileSync(
+        join(__dirname, "renderer.js"),
+        {
+          encoding: "utf-8",
+        }
+      );
+      rendererScript = `<script>${rendererFileContent}</script>`;
+    } catch (e) {
+      // fallback to latest version of renderer
+      rendererScript = `<script src="https://unpkg.com/@coral-xyz/react-xnft-dom-renderer@0.1.0-latest.45/dist/index.js"></script>`;
+    }
     if (iframe) {
       // If an iframe URL has been provided then serve the iframe xNFT example,
       // but replace the source URL with the provided one
@@ -132,7 +142,7 @@ program
           <body>
             <div id="container"></div>
             <script>${js}</script>
-            <script>${rendererJs}</script>
+            ${rendererScript}
           </body>
         </html>
       `);
