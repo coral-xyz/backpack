@@ -1,5 +1,10 @@
 import { selector } from "recoil";
-import { externalResourceUri, NftCollection, Nft } from "@coral-xyz/common";
+import {
+  Blockchain,
+  externalResourceUri,
+  NftCollection,
+  Nft,
+} from "@coral-xyz/common";
 import { customSplTokenAccounts } from "./token";
 import { solanaConnectionUrl } from "./preferences";
 import { solanaPublicKey } from "../wallet";
@@ -51,6 +56,7 @@ export const solanaNftCollections = selector<NftCollection[]>({
       }
       collections.get(collectionId)!.items.push({
         id: value.publicKey,
+        blockchain: Blockchain.SOLANA,
         publicKey: value.publicKey,
         mint: value.metadata.mint,
         name: value.tokenMetaUriData.name,

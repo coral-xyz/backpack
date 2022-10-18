@@ -1,9 +1,9 @@
 import React, { useState, useContext } from "react";
 import { AnimatePresence } from "framer-motion";
-import { WithMotion } from "@coral-xyz/react-xnft-renderer";
+import { WithMotion } from "../../../plugin/Component";
 import { WithNav, NavBackButton } from "./Nav";
 
-export { WithMotion } from "@coral-xyz/react-xnft-renderer";
+export { WithMotion } from "../../../plugin/Component";
 
 /**
  * Ephemeral nav stack API for animating transitions between components on the

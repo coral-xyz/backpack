@@ -15,6 +15,7 @@ export const App = () => {
 
   useEffect(() => {
     window.addEventListener("load", () => {
+      // @ts-ignore
       window.xnft.on("metadata", (event: Event) => {
         setMetadata(event.data.metadata);
       });

@@ -53,9 +53,9 @@ export const MOBILE_CHANNEL_FE_RESPONSE_INNER = "mobile-fe-response-inner";
 //
 export const PLUGIN_NOTIFICATION_RENDER = "plugin-notification-render";
 export const PLUGIN_NOTIFICATION_CONNECT = "plugin-notification-connect";
-export const PLUGIN_NOTIFICATION_ON_CLICK = "plugin-notification-on-click";
-export const PLUGIN_NOTIFICATION_ON_CHANGE = "plugin-notification-on-change";
 export const PLUGIN_NOTIFICATION_MOUNT = "plugin-notification-mount";
+export const PLUGIN_NOTIFICATION_UPDATE_METADATA =
+  "plugin-notification-update-metadata";
 export const PLUGIN_NOTIFICATION_UNMOUNT = "plugin-notification-unmount";
 export const PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED =
   "plugin-notification-solana-connection-url-updated";

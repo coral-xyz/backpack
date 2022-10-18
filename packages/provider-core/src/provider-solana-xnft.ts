@@ -20,8 +20,6 @@ import {
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
   PLUGIN_NOTIFICATION_CONNECT,
-  PLUGIN_NOTIFICATION_ON_CLICK,
-  PLUGIN_NOTIFICATION_ON_CHANGE,
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_UNMOUNT,
   PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
@@ -29,6 +27,7 @@ import {
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
   PLUGIN_RPC_METHOD_WINDOW_OPEN,
+  PLUGIN_NOTIFICATION_UPDATE_METADATA,
 } from "@coral-xyz/common";
 import * as cmn from "./common/solana";
 import { RequestManager } from "./request-manager";
@@ -49,6 +48,9 @@ export class ProviderSolanaXnftInjection
   #publicKey?: PublicKey;
   #connection: Connection;
 
+  #childIframes: HTMLIFrameElement[];
+  #cachedNotifications: { [notification: string]: Event };
+
   constructor(
     requestManager: RequestManager,
     additionalProperties: { [key: string]: PrivateEventEmitter } = {}
@@ -67,6 +69,8 @@ export class ProviderSolanaXnftInjection
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
       CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
     );
+    this.#childIframes = [];
+    this.#cachedNotifications = {};
     this.#setupChannels();
   }
 
@@ -189,6 +193,30 @@ export class ProviderSolanaXnftInjection
     });
   }
 
+  public async addIframe(iframeEl) {
+    // Send across mount and connect notification to child iframes
+    if (this.#cachedNotifications[PLUGIN_NOTIFICATION_MOUNT]) {
+      iframeEl.contentWindow?.postMessage(
+        this.#cachedNotifications[PLUGIN_NOTIFICATION_MOUNT],
+        "*"
+      );
+    }
+
+    if (this.#cachedNotifications[PLUGIN_NOTIFICATION_CONNECT]) {
+      iframeEl.contentWindow?.postMessage(
+        this.#cachedNotifications[PLUGIN_NOTIFICATION_CONNECT],
+        "*"
+      );
+    }
+
+    this.#childIframes.push(iframeEl);
+  }
+
+  public async removeIframe(iframeEl) {
+    // @ts-ignore
+    this.#childIframes = this.#childIframes.filter((x) => x !== iframeEl);
+  }
+
   #setupChannels() {
     window.addEventListener("message", this.#handleNotifications.bind(this));
   }
@@ -199,9 +227,15 @@ export class ProviderSolanaXnftInjection
   async #handleNotifications(event: Event) {
     if (event.data.type !== CHANNEL_PLUGIN_NOTIFICATION) return;
 
+    // Send RPC message to all child iframes
+    this.#childIframes.forEach((iframe) => {
+      iframe.contentWindow?.postMessage(event, "*");
+    });
+
     logger.debug("handle notification", event);
 
     const { name } = event.data.detail;
+    this.#cachedNotifications[name] = event.data;
     switch (name) {
       case PLUGIN_NOTIFICATION_CONNECT:
         this.#handleConnect(event);
@@ -209,14 +243,11 @@ export class ProviderSolanaXnftInjection
       case PLUGIN_NOTIFICATION_MOUNT:
         this.#handleMount(event);
         break;
+      case PLUGIN_NOTIFICATION_UPDATE_METADATA:
+        this.#handleUpdateMetadata(event);
+        break;
       case PLUGIN_NOTIFICATION_UNMOUNT:
         this.#handleUnmount(event);
-        break;
-      case PLUGIN_NOTIFICATION_ON_CLICK:
-        this.#handleOnClick(event);
-        break;
-      case PLUGIN_NOTIFICATION_ON_CHANGE:
-        this.#handleOnChange(event);
         break;
       case PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
         this.#handleConnectionUrlUpdated(event);
@@ -242,16 +273,12 @@ export class ProviderSolanaXnftInjection
     this.emit("mount", event.data.detail);
   }
 
+  #handleUpdateMetadata(event: Event) {
+    this.emit("metadata", event.data.detail);
+  }
+
   #handleUnmount(event: Event) {
     this.emit("unmount", event.data.detail);
-  }
-
-  #handleOnClick(event: Event) {
-    this.emit("click", event.data.detail);
-  }
-
-  #handleOnChange(event: Event) {
-    this.emit("change", event.data.detail);
   }
 
   #handleConnectionUrlUpdated(event: Event) {
