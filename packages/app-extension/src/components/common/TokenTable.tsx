@@ -18,15 +18,15 @@ import {
   useEnabledBlockchains,
   useLoader,
 } from "@coral-xyz/recoil";
-import {
-  TextField,
-  BalancesTable,
-  BalancesTableHead,
-  BalancesTableContent,
-  BalancesTableRow,
-  BalancesTableCell,
-} from "@coral-xyz/react-xnft-renderer";
+import { TextField } from "../../plugin/Component";
 import { WithCopyTooltip } from "./WithCopyTooltip";
+import {
+  BalancesTable,
+  BalancesTableCell,
+  BalancesTableContent,
+  BalancesTableHead,
+  BalancesTableRow,
+} from "../Unlocked/Balances";
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 

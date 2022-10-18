@@ -248,6 +248,7 @@ export function Send({
               error={isErrorAddress}
               inputProps={{
                 name: "to",
+                spellCheck: "false"
               }}
             />
           </div>

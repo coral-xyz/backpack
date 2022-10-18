@@ -1,0 +1,59 @@
+# Actions that only run when opening or updating pull requests
+
+name: Pull Requests
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - master
+
+jobs:
+  add-labels-based-on-whats-changed:
+    name: Add PR labels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            mobile:
+              - 'packages/app-mobile/**'
+            extension:
+              - 'packages/app-extension/**'
+            xnft:
+              - 'packages/react-xnft/**'
+              - 'packages/xnft/**'
+              - 'packages/xnft-cli/**'
+            backend:
+              - 'backend/**'
+
+      - if: steps.changes.outputs.mobile == 'true'
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: "mobile"
+
+      - if: steps.changes.outputs.extension == 'true'
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: "extension"
+
+      - if: steps.changes.outputs.xnft == 'true'
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: "xnft"
+
+      - if: steps.changes.outputs.backend == 'true'
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: "backend"
+
+  yarn-lock-changes:
+    name: yarn.lock changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: simek/yarn-lock-changes@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

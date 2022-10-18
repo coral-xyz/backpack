@@ -1,0 +1,42 @@
+table:
+  name: pending_curator_reviews
+  schema: appstore
+insert_permissions:
+  - role: appstore
+    permission:
+      check: {}
+      columns:
+        - id
+        - created_at
+        - type
+        - authority
+        - xnft
+        - data
+select_permissions:
+  - role: appstore
+    permission:
+      columns:
+        - id
+        - data
+        - authority
+        - type
+        - xnft
+        - created_at
+      filter: {}
+update_permissions:
+  - role: appstore
+    permission:
+      columns:
+        - id
+        - data
+        - authority
+        - type
+        - xnft
+        - created_at
+      filter: {}
+      check: {}
+delete_permissions:
+  - role: appstore
+    permission:
+      backend_only: false
+      filter: {}

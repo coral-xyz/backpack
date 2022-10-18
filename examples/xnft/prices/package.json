@@ -19,7 +19,7 @@
     "d3-shape": "^3.1.0",
     "debounce": "^1.2.1",
     "react": "^17.0.2",
-    "react-xnft": "latest",
+    "react-xnft": "*",
     "recoil": "^0.7.6",
     "reselect": "^4.1.6",
     "superstruct": "^0.16.5",

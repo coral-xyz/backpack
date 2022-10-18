@@ -11,6 +11,7 @@ export * from "./types";
 export * from "./solana";
 export * from "./ethereum";
 export * from "./explorer";
+export * from "./plugin";
 
 // Generated pre-build step.
 export * from "./generated-config";

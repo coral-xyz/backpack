@@ -9,6 +9,7 @@ const useStyles = styles((theme) => {
       height: "100vh",
       width: "100%",
       background: theme.custom.colors.backgroundBackdrop,
+      position: "absolute",
     },
   };
 });
@@ -29,7 +30,6 @@ export function RootRenderer() {
   return (
     <>
       <div className={classes.appContainer}>
-        <div>hi</div>
         {children.map((e) => (
           <ViewRenderer key={e.id} element={e} />
         ))}

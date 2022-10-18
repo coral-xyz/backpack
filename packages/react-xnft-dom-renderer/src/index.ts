@@ -11,3 +11,4 @@ export {
   ScrollBarImpl,
   WithMotion,
 } from "./Component";
+export * from "./ViewRenderer";

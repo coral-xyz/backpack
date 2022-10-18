@@ -2,7 +2,7 @@ import { Typography } from "@mui/material";
 import _CheckIcon from "@mui/icons-material/Check";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { WithApproval } from ".";
-import { TextField } from "@coral-xyz/react-xnft-renderer";
+import { TextField } from "../../../plugin/Component";
 import * as anchor from "@project-serum/anchor";
 
 const useStyles = styles((theme) => ({
