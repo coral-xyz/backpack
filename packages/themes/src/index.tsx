@@ -143,6 +143,7 @@ export const darkTheme: any = {
       approveTransactionTableBackground: BACKGROUND_COLOR_2,
       approveTransactionCloseBackground: BACKGROUND_COLOR_0,
       hoverIconBackground: `rgb(39, 39, 42, ${HOVER_OPACITY})`,
+      avatarIconBackground: "#DFE0E5",
 
       dangerButton: DANGER_COLOR,
       alpha: "#8F929E",
@@ -248,6 +249,7 @@ export const lightTheme: any = {
       approveTransactionTableBackground: LIGHT_BACKGROUND_COLOR_1,
       approveTransactionCloseBackground: "#C2C4CC",
       hoverIconBackground: LIGHT_ICON_HOVER_COLOR,
+      avatarIconBackground: "#DFE0E5",
 
       dangerButton: DANGER_COLOR,
       alpha: "#8F929E",
