@@ -15,6 +15,9 @@ select_permissions:
   - role: appstore
     permission:
       columns:
+        - blockchain
+        - created_at
+        - pubkey
         - username
       filter: {}
   - role: auth_worker
