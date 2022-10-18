@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "source": "src/index.html",
+  "scripts": {
+    "build": "rimraf dist && parcel build",
+    "start": "rimraf dist && parcel"
+  },
   "dependencies": {
     "@solana/spl-token": "^0.2.0",
     "@solana/wallet-adapter-base": "^0.9.18",
@@ -17,12 +21,9 @@
   "devDependencies": {
     "@types/react": "^17.0.43",
     "@types/react-dom": "^17.0.14",
+    "eslint-config-custom": "*",
     "parcel": "^2.7.0",
     "rimraf": "^3.0.2",
     "typescript": "^4.6.3"
-  },
-  "scripts": {
-    "start": "rimraf dist && parcel",
-    "build": "rimraf dist && parcel build"
   }
 }

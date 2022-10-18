@@ -2,21 +2,22 @@
   "name": "@coral-xyz/themes",
   "version": "0.0.1",
   "module": "dist/esm/index.js",
+  "source": "src/index.tsx",
   "react-native": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
-  "source": "src/index.tsx",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
     "@mui/material": "^5.8.4",
     "@mui/styles": "^5.8.4",
     "react": "^17.0.0"
   },
-  "scripts": {
-    "build": "tsc"
-  },
   "devDependencies": {
+    "eslint-config-custom": "*",
     "typescript": "^4.7.4"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }

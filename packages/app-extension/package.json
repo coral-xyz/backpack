@@ -3,6 +3,18 @@
   "version": "0.4.0",
   "description": "A next level crypto wallet for Solana and Ethereum",
   "private": true,
+  "scripts": {
+    "build": "cross-env NODE_ENV=production webpack",
+    "build:release": "cross-env NODE_ENV=production webpack",
+    "e2e": "jest --maxWorkers 1 --detectOpenHandles --forceExit --verbose",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
+    "start": "cross-env NODE_ENV=development webpack serve"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
   "dependencies": {
     "@bonfida/spl-name-service": "^0.1.51",
     "@coral-xyz/background": "*",
@@ -36,18 +48,6 @@
     "recoil": "^0.7.5",
     "@cardinal/token-manager": "^1.7.9"
   },
-  "scripts": {
-    "start": "cross-env NODE_ENV=development webpack serve",
-    "build": "cross-env NODE_ENV=production webpack",
-    "build:release": "cross-env NODE_ENV=production webpack",
-    "e2e": "jest --maxWorkers 1 --detectOpenHandles --forceExit --verbose",
-    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not op_mini all"
-  ],
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
     "@swc/core": "^1.2.203",
@@ -68,6 +68,7 @@
     "css-loader": "^6.7.1",
     "esbuild": "^0.14.42",
     "esbuild-jest": "^0.5.0",
+    "eslint-config-custom": "*",
     "expect-puppeteer": "^6.1.0",
     "file-loader": "^6.2.0",
     "fork-ts-checker-webpack-plugin": "^7.2.11",

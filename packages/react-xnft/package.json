@@ -2,16 +2,19 @@
   "name": "react-xnft",
   "version": "0.0.4",
   "description": "",
+  "license": "ISC",
+  "author": "",
   "module": "dist/esm/index.js",
+  "source": "src/index.ts",
   "react-native": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
-  "source": "src/index.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@coral-xyz/common-public": "*",
     "@coral-xyz/themes": "*",
@@ -21,9 +24,7 @@
     "react-reconciler": "^0.26.0"
   },
   "devDependencies": {
+    "eslint-config-custom": "*",
     "typescript": "^4.6.3"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }

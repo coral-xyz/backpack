@@ -1,15 +1,15 @@
 {
   "name": "@coral-xyz/background",
   "version": "0.1.0",
-  "source": "src/index.ts",
   "module": "dist/esm/index.js",
+  "source": "src/index.ts",
   "react-native": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "start": "parcel src/service-worker-loader.html -p 9333",
-    "build:html": "parcel build src/service-worker-loader.html --dist-dir build --no-source-maps",
     "build": "tsc",
-    "dev": "tsc --watch"
+    "build:html": "parcel build src/service-worker-loader.html --dist-dir build --no-source-maps",
+    "dev": "tsc --watch",
+    "start": "parcel src/service-worker-loader.html -p 9333"
   },
   "dependencies": {
     "@coral-xyz/common": "*",
@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@types/serviceworker": "^0.0.47",
+    "eslint-config-custom": "*",
     "parcel": "^2.7.0",
     "typescript": "^4.6.3"
   },
