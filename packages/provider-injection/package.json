@@ -1,11 +1,11 @@
 {
   "name": "@coral-xyz/provider-injection",
   "version": "0.1.0",
-  "app": "dist/browser/index.js",
   "source": "src/index.ts",
   "scripts": {
     "build": "node build.js"
   },
+  "browserslist": "> 0.5%, last 2 versions, not dead",
   "dependencies": {
     "@coral-xyz/common": "*",
     "@coral-xyz/provider-core": "*",
@@ -19,9 +19,10 @@
   "devDependencies": {
     "esbuild": "^0.14.42",
     "esbuild-node-builtins": "^0.1.0",
+    "eslint-config-custom": "*",
     "typescript": "^4.6.3"
   },
-  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "app": "dist/browser/index.js",
   "targets": {
     "app": {}
   }

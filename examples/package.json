@@ -4,8 +4,8 @@
   "scripts": {
     "start": "ws --port 8001"
   },
+  "dependencies": {},
   "devDependencies": {
     "local-web-server": "^5.2.0"
-  },
-  "dependencies": {}
+  }
 }

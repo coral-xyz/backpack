@@ -2,11 +2,14 @@
   "name": "@coral-xyz/example-plugin-table-psyfi",
   "version": "1.0.0",
   "description": "Display user's PsyFinance vault balances",
+  "license": "MIT",
   "scripts": {
     "build": "xnft build",
     "start": "xnft watch"
   },
-  "license": "MIT",
+  "browserslist": [
+    "last 2 chrome versions"
+  ],
   "dependencies": {
     "@coral-xyz/common": "*",
     "@project-serum/anchor": "^0.25.0-beta.1",
@@ -14,10 +17,8 @@
     "react": "^18.1.0",
     "react-xnft": "*"
   },
-  "browserslist": [
-    "last 2 chrome versions"
-  ],
   "devDependencies": {
-    "@coral-xyz/xnft-cli": "*"
+    "@coral-xyz/xnft-cli": "*",
+    "eslint-config-custom": "*"
   }
 }

@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "scripts": {
     "build": "xnft build",
-    "start": "xnft watch",
-    "dev": "xnft dev"
-  },
-  "devDependencies": {
-    "@coral-xyz/xnft-cli": "*"
+    "dev": "xnft dev",
+    "start": "xnft watch"
   },
   "dependencies": {
     "react": "^17.0.2",
     "react-xnft": "*"
+  },
+  "devDependencies": {
+    "@coral-xyz/xnft-cli": "*",
+    "eslint-config-custom": "*"
   }
 }
