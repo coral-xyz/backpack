@@ -87,6 +87,7 @@ program
       );
       rendererScript = `<script>${rendererFileContent}</script>`;
     } catch (e) {
+      console.log("falling back to latest renderer");
       // fallback to latest version of renderer
       rendererScript = `<script src="https://unpkg.com/@coral-xyz/react-xnft-dom-renderer@0.1.0-latest.45/dist/index.js"></script>`;
     }
