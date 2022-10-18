@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@coral-xyz/common": "*",
+    "eslint-config-custom": "*",
     "@ledgerhq/hw-app-eth": "^6.29.6",
     "@ledgerhq/hw-app-solana": "^6.27.2",
     "@ledgerhq/hw-transport": "^6.24.1",
@@ -20,6 +21,7 @@
     "ethers": "^5.7.0"
   },
   "devDependencies": {
+    "eslint-config-custom": "*",
     "gh-pages": "^4.0.0",
     "parcel": "^2.7.0",
     "rimraf": "^3.0.2",

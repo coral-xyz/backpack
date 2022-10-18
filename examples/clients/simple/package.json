@@ -15,6 +15,7 @@
     "wagmi": "^0.6.3"
   },
   "devDependencies": {
+    "eslint-config-custom": "*",
     "@types/react": "^17.0.43",
     "@types/react-dom": "^17.0.14",
     "parcel": "^2.7.0",
