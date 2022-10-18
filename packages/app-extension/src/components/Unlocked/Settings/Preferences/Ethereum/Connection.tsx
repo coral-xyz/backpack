@@ -1,12 +1,7 @@
 import { useEffect } from "react";
 import { Check } from "@mui/icons-material";
-import { ethers } from "ethers";
 import { useCustomTheme } from "@coral-xyz/themes";
-import {
-  EthereumConnectionUrl,
-  UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
-  UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
-} from "@coral-xyz/common";
+import { EthereumConnectionUrl } from "@coral-xyz/common";
 import {
   useBackgroundClient,
   useEthereumConnectionUrl,
