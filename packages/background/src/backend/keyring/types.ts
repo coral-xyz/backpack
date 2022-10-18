@@ -55,7 +55,7 @@ export interface LedgerKeyring extends LedgerKeyringBase {
 }
 
 export interface LedgerKeyringFactory {
-  init(): LedgerKeyring;
+  init(accounts: Array<ImportedDerivationPath>): LedgerKeyring;
   fromJson(obj: LedgerKeyringJson): LedgerKeyring;
 }
 

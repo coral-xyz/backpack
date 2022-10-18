@@ -103,7 +103,11 @@ export class KeyringStore {
       [Blockchain.SOLANA]: BlockchainKeyring.solana,
       [Blockchain.ETHEREUM]: BlockchainKeyring.ethereum,
     }[blockchain]();
-    await keyring.init(this.mnemonic, derivationPath, accountIndices);
+    await keyring.initFromMnemonic(
+      this.mnemonic,
+      derivationPath,
+      accountIndices
+    );
     this.blockchains.set(blockchain, keyring);
     if (persist) {
       await this.persist();

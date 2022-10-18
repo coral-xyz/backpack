@@ -17,6 +17,7 @@ import type {
   HdKeyringJson,
   LedgerKeyringJson,
   LedgerKeyring,
+  ImportedDerivationPath,
 } from "./types";
 import { LedgerKeyringBase } from "./ledger";
 
@@ -229,8 +230,8 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
 }
 
 export class SolanaLedgerKeyringFactory {
-  public init(): LedgerKeyring {
-    return new SolanaLedgerKeyring([]);
+  public init(accounts: Array<ImportedDerivationPath>): LedgerKeyring {
+    return new SolanaLedgerKeyring(accounts);
   }
 
   public fromJson(obj: LedgerKeyringJson): LedgerKeyring {

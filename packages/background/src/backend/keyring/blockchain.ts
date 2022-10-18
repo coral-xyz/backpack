@@ -6,10 +6,10 @@ import type {
   HdKeyring,
   KeyringFactory,
   Keyring,
+  ImportedDerivationPath,
   LedgerKeyringFactory,
   LedgerKeyring,
 } from "./types";
-import type { SolanaLedgerKeyring } from "./solana";
 import {
   SolanaKeyringFactory,
   SolanaHdKeyringFactory,
@@ -81,7 +81,7 @@ export class BlockchainKeyring {
     };
   }
 
-  public async init(
+  public async initFromMnemonic(
     mnemonic: string,
     derivationPath: DerivationPath,
     accountIndices: Array<number>
@@ -92,8 +92,10 @@ export class BlockchainKeyring {
       derivationPath,
       accountIndices
     );
+    // Empty ledger keyring to hold one off ledger imports
+    this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
+    // Empty imported keyring to hold imported secret keys
     this.importedKeyring = this.keyringFactory.fromSecretKeys([]);
-    this.ledgerKeyring = this.ledgerKeyringFactory.init();
     this.activeWallet = this.hdKeyring.getPublicKey(accountIndices[0]);
     this.deletedWallets = [];
 
@@ -104,6 +106,26 @@ export class BlockchainKeyring {
       const pubkey = this.hdKeyring.getPublicKey(index);
       await store.setKeyname(pubkey, name);
       newAccounts.push([pubkey, name]);
+    }
+    return newAccounts;
+  }
+
+  public async initFromLedger(
+    accounts: Array<ImportedDerivationPath>
+  ): Promise<Array<[string, string]>> {
+    // Empty ledger keyring to hold one off ledger imports
+    this.ledgerKeyring = this.ledgerKeyringFactory.init(accounts);
+    // Empty imported keyring to hold imported secret keys
+    this.importedKeyring = this.keyringFactory.fromSecretKeys([]);
+    this.activeWallet = accounts[0].publicKey;
+    this.deletedWallets = [];
+
+    // Persist a given name for this wallet.
+    const newAccounts: Array<[string, string]> = [];
+    for (const account of accounts) {
+      const name = DefaultKeyname.defaultLedger(account.account);
+      await store.setKeyname(account.publicKey, name);
+      newAccounts.push([account.publicKey, name]);
     }
     return newAccounts;
   }

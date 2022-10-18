@@ -15,6 +15,7 @@ import type {
   HdKeyringJson,
   LedgerKeyring,
   LedgerKeyringJson,
+  ImportedDerivationPath,
 } from "./types";
 import { deriveEthereumWallets, deriveEthereumWallet } from "./crypto";
 import { LedgerKeyringBase } from "./ledger";
@@ -186,8 +187,8 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
 }
 
 export class EthereumLedgerKeyringFactory {
-  public init(): LedgerKeyring {
-    return new EthereumLedgerKeyring([]);
+  public init(accounts: Array<ImportedDerivationPath>): LedgerKeyring {
+    return new EthereumLedgerKeyring(accounts);
   }
 
   public fromJson(obj: LedgerKeyringJson): LedgerKeyring {
