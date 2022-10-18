@@ -17,7 +17,6 @@
     "eventemitter3": "^4.0.7"
   },
   "devDependencies": {
-    "eslint-config-custom": "*",
     "typescript": "^4.6.3"
   }
 }

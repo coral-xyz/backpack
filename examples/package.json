@@ -5,7 +5,7 @@
     "start": "ws --port 8001"
   },
   "devDependencies": {
-    "eslint-config-custom": "*",
     "local-web-server": "^5.2.0"
-  }
+  },
+  "dependencies": {}
 }
