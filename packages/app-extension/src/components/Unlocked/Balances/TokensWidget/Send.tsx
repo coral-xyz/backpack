@@ -596,6 +596,10 @@ export function useIsValidAddress(
       if (blockchain === Blockchain.SOLANA) {
         let pubkey;
 
+        if (!solanaConnection) {
+          return;
+        }
+
         // SNS Domain
         if (address.includes(".sol")) {
           try {
@@ -605,10 +609,12 @@ export function useIsValidAddress(
               undefined,
               new PublicKey("58PwtjSDuFHuUkYjH9BYnnQKHfwo9reZhC2zMJv9JPkx") // SOL TLD Authority
             );
+
             const owner = await NameRegistryState.retrieve(
-              new Connection(solanaConnection?.rpcEndpoint?.toString()),
+              solanaConnection,
               nameAccountKey
             );
+
             pubkey = owner.registry.owner;
           } catch (e) {
             setAddressError(true);
@@ -627,11 +633,7 @@ export function useIsValidAddress(
           }
         }
 
-        if (!solanaConnection) {
-          return;
-        }
-
-        const account = await solanaConnection.getAccountInfo(pubkey);
+        const account = await solanaConnection?.getAccountInfo(pubkey);
 
         // Null data means the account has no lamports. This is valid.
         if (!account) {
@@ -654,6 +656,10 @@ export function useIsValidAddress(
       } else if (blockchain === Blockchain.ETHEREUM) {
         // Ethereum address validation
         let checksumAddress;
+
+        if (!ethereumProvider) {
+          return;
+        }
 
         if (address.includes(".eth")) {
           try {
