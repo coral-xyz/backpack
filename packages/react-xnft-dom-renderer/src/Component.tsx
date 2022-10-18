@@ -997,7 +997,6 @@ export function ScrollBarImpl(props: any) {
               right: "0px",
               bottom: "0px",
               overflow: "auto",
-              "margin-right": "-15px",
             }}
           />
         )}
