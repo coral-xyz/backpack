@@ -104,7 +104,7 @@ export type CustomSplTokenAccountKey = {
 };
 
 export type CustomSplTokenAccountsSpl = {
-  splTokenAccounts: Map<String, SolanaTokenAccountWithKeyString>;
+  splTokenAccounts: Map<string, SolanaTokenAccountWithKeyString>;
   splTokenMetadata: (TokenMetadataString | null)[];
   splNftMetadata: Map<string, SplNftMetadataString>;
 };
