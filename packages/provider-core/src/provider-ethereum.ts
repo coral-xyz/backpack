@@ -98,7 +98,7 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
   /**
    * The chain ID of the currently connected Ethereum chain.
    */
-  #chainId: string | null;
+  #chainId: string;
 
   /**
    * The user's currently selected Ethereum address.
@@ -142,7 +142,7 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
     });
 
     this.#isBackpack = true;
-    this.#chainId = null;
+    this.#chainId = "0x1";
     this.#publicKey = null;
   }
 
@@ -223,6 +223,8 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
 
     const { method, params } = args;
 
+    logger.debug("page injected provider request", method, args);
+
     if (typeof method !== "string" || method.length === 0) {
       throw ethErrors.rpc.invalidRequest({
         message: messages.errors.invalidRequestMethod(),
@@ -244,8 +246,8 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
     const functionMap = {
       eth_accounts: this.#handleEthAccounts,
       eth_requestAccounts: this.#handleEthRequestAccounts,
-      eth_chainId: () => `${this.chainId}`,
-      net_version: () => (this.chainId ? `${parseInt(this.chainId)}` : "1"),
+      eth_chainId: () => this.chainId,
+      net_version: () => `${parseInt(this.chainId)}`,
       eth_getBalance: (address: string) => this.provider!.getBalance(address),
       eth_getCode: (address: string) => this.provider!.getCode(address),
       eth_getStorageAt: (address: string, position: string) =>
@@ -350,7 +352,6 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
   _handleNotificationDisconnected = async () => {
     if (this.isConnected()) {
       // Reset public state
-      this.#chainId = null;
       this.#publicKey = null;
       // Reset private state
       this.#setState({

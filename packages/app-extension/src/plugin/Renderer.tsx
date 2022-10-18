@@ -28,7 +28,7 @@ export function PluginRenderer({
   }, [plugin, ref]);
 
   return (
-    <div ref={ref}>
+    <div ref={ref} style={{ height: "100vh", overflow: "hidden" }}>
       {!loaded && (
         <div style={{ height: "100vh" }}>
           {" "}
