@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { ethers } from "ethers";
+import { ethers, FixedNumber } from "ethers";
 import { InputAdornment, Typography, IconButton } from "@mui/material";
 import type { Button } from "@mui/material";
-import { Close, ExpandMore, SwapVert } from "@mui/icons-material";
-import { Button as XnftButton } from "@coral-xyz/react-xnft-renderer";
+import { ExpandMore, SwapVert } from "@mui/icons-material";
+import { Button as XnftButton } from "../../plugin/Component";
 import {
   useSplTokenRegistry,
   useJupiterOutputMints,
@@ -110,26 +110,12 @@ const useStyles = styles((theme) => ({
     flexDirection: "column",
     borderRadius: "22px",
   },
-  approveTransactionCloseContainer: {
-    backgroundColor: theme.custom.colors.approveTransactionCloseBackground,
-    width: "44px",
-    height: "44px",
-    zIndex: 2,
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-    borderRadius: "22px",
-  },
   swapTokensButton: {
     border: `${theme.custom.colors.borderFull}`,
     width: "44px",
     height: "44px",
     marginLeft: "auto",
     marginRight: "auto",
-  },
-  closeConfirmButton: {
-    border: "none !important",
-    background: theme.custom.colors.nav,
   },
   swapIcon: {
     color: theme.custom.colors.icon,
@@ -639,9 +625,11 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   const decimalDifference = fromMintInfo.decimals - toMintInfo.decimals;
   const toAmountWithFees = toAmount.sub(swapFee);
   const rate = fromAmount.gt(Zero)
-    ? (toAmountWithFees.toNumber() / fromAmount.toNumber()) *
-      10 ** decimalDifference
-    : 0;
+    ? FixedNumber.from(toAmountWithFees)
+        .divUnsafe(FixedNumber.from(fromAmount))
+        .mulUnsafe(FixedNumber.from(10 ** decimalDifference))
+        .toString()
+    : "0";
 
   const rows = [];
   if (!compact) {
@@ -654,7 +642,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   }
   rows.push([
     "Rate",
-    `1 ${fromMintInfo.symbol} = ${rate.toFixed(4)} ${toMintInfo.symbol}`,
+    `1 ${fromMintInfo.symbol} = ${rate} ${toMintInfo.symbol}`,
   ]);
   rows.push([
     "Network Fee",
@@ -705,27 +693,6 @@ function SwapTokensButton({
         onClick={onClick}
       >
         <SwapVert className={classes.swapIcon} />
-      </IconButton>
-    </div>
-  );
-}
-
-export function CloseButton({
-  onClick,
-  style,
-}: {
-  onClick: () => void;
-  style?: React.CSSProperties;
-}) {
-  const classes = useStyles();
-  return (
-    <div className={classes.approveTransactionCloseContainer} style={style}>
-      <IconButton
-        disableRipple
-        className={`${classes.swapTokensButton} ${classes.closeConfirmButton}`}
-        onClick={onClick}
-      >
-        <Close className={classes.swapIcon} />
       </IconButton>
     </div>
   );

@@ -1,6 +1,8 @@
 /* eslint-disable */
 
 export const AllTypesProps: Record<string, any> = {
+  Boolean_comparison_exp: {},
+  Int_comparison_exp: {},
   String_comparison_exp: {},
   auth_invitations: {
     data: {},
@@ -29,6 +31,10 @@ export const AllTypesProps: Record<string, any> = {
     created_at: "timestamptz",
     data: "jsonb",
     id: "uuid",
+  },
+  auth_invitations_obj_rel_insert_input: {
+    data: "auth_invitations_insert_input",
+    on_conflict: "auth_invitations_on_conflict",
   },
   auth_invitations_on_conflict: {
     constraint: "auth_invitations_constraint",
@@ -80,12 +86,15 @@ export const AllTypesProps: Record<string, any> = {
     _and: "auth_users_bool_exp",
     _not: "auth_users_bool_exp",
     _or: "auth_users_bool_exp",
+    blockchain: "String_comparison_exp",
     created_at: "timestamptz_comparison_exp",
     id: "uuid_comparison_exp",
     invitation_id: "uuid_comparison_exp",
     last_active_at: "timestamptz_comparison_exp",
+    pubkey: "String_comparison_exp",
     updated_at: "timestamptz_comparison_exp",
     username: "citext_comparison_exp",
+    waitlist_id: "String_comparison_exp",
   },
   auth_users_constraint: "enum" as const,
   auth_users_insert_input: {
@@ -102,12 +111,15 @@ export const AllTypesProps: Record<string, any> = {
     where: "auth_users_bool_exp",
   },
   auth_users_order_by: {
+    blockchain: "order_by",
     created_at: "order_by",
     id: "order_by",
     invitation_id: "order_by",
     last_active_at: "order_by",
+    pubkey: "order_by",
     updated_at: "order_by",
     username: "order_by",
+    waitlist_id: "order_by",
   },
   auth_users_pk_columns_input: {
     id: "uuid",
@@ -160,6 +172,91 @@ export const AllTypesProps: Record<string, any> = {
     _similar: "citext",
   },
   cursor_ordering: "enum" as const,
+  images_aggregate_fields: {
+    count: {
+      columns: "images_select_column",
+    },
+  },
+  images_bool_exp: {
+    _and: "images_bool_exp",
+    _not: "images_bool_exp",
+    _or: "images_bool_exp",
+    completed: "Boolean_comparison_exp",
+    created_at: "timestamptz_comparison_exp",
+    id: "Int_comparison_exp",
+    invitation: "auth_invitations_bool_exp",
+    invite_code: "uuid_comparison_exp",
+    prompt: "String_comparison_exp",
+    uri: "String_comparison_exp",
+    winner: "String_comparison_exp",
+  },
+  images_constraint: "enum" as const,
+  images_inc_input: {},
+  images_insert_input: {
+    created_at: "timestamptz",
+    invitation: "auth_invitations_obj_rel_insert_input",
+    invite_code: "uuid",
+  },
+  images_on_conflict: {
+    constraint: "images_constraint",
+    update_columns: "images_update_column",
+    where: "images_bool_exp",
+  },
+  images_order_by: {
+    completed: "order_by",
+    created_at: "order_by",
+    id: "order_by",
+    invitation: "auth_invitations_order_by",
+    invite_code: "order_by",
+    prompt: "order_by",
+    uri: "order_by",
+    winner: "order_by",
+  },
+  images_pk_columns_input: {},
+  images_select_column: "enum" as const,
+  images_set_input: {
+    created_at: "timestamptz",
+    invite_code: "uuid",
+  },
+  images_stream_cursor_input: {
+    initial_value: "images_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  images_stream_cursor_value_input: {
+    created_at: "timestamptz",
+    invite_code: "uuid",
+  },
+  images_update_column: "enum" as const,
+  images_updates: {
+    _inc: "images_inc_input",
+    _set: "images_set_input",
+    where: "images_bool_exp",
+  },
+  invitations_aggregate_fields: {
+    count: {
+      columns: "invitations_select_column",
+    },
+  },
+  invitations_bool_exp: {
+    _and: "invitations_bool_exp",
+    _not: "invitations_bool_exp",
+    _or: "invitations_bool_exp",
+    claimed_at: "timestamptz_comparison_exp",
+    id: "uuid_comparison_exp",
+  },
+  invitations_order_by: {
+    claimed_at: "order_by",
+    id: "order_by",
+  },
+  invitations_select_column: "enum" as const,
+  invitations_stream_cursor_input: {
+    initial_value: "invitations_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  invitations_stream_cursor_value_input: {
+    claimed_at: "timestamptz",
+    id: "uuid",
+  },
   jsonb: `scalar.jsonb` as const,
   jsonb_cast_exp: {
     String: "String_comparison_exp",
@@ -190,6 +287,10 @@ export const AllTypesProps: Record<string, any> = {
     delete_auth_users_by_pk: {
       id: "uuid",
     },
+    delete_images: {
+      where: "images_bool_exp",
+    },
+    delete_images_by_pk: {},
     insert_auth_invitations: {
       objects: "auth_invitations_insert_input",
       on_conflict: "auth_invitations_on_conflict",
@@ -205,6 +306,14 @@ export const AllTypesProps: Record<string, any> = {
     insert_auth_users_one: {
       object: "auth_users_insert_input",
       on_conflict: "auth_users_on_conflict",
+    },
+    insert_images: {
+      objects: "images_insert_input",
+      on_conflict: "images_on_conflict",
+    },
+    insert_images_one: {
+      object: "images_insert_input",
+      on_conflict: "images_on_conflict",
     },
     update_auth_invitations: {
       _append: "auth_invitations_append_input",
@@ -238,6 +347,19 @@ export const AllTypesProps: Record<string, any> = {
     update_auth_users_many: {
       updates: "auth_users_updates",
     },
+    update_images: {
+      _inc: "images_inc_input",
+      _set: "images_set_input",
+      where: "images_bool_exp",
+    },
+    update_images_by_pk: {
+      _inc: "images_inc_input",
+      _set: "images_set_input",
+      pk_columns: "images_pk_columns_input",
+    },
+    update_images_many: {
+      updates: "images_updates",
+    },
   },
   order_by: "enum" as const,
   query_root: {
@@ -266,6 +388,27 @@ export const AllTypesProps: Record<string, any> = {
     },
     auth_users_by_pk: {
       id: "uuid",
+    },
+    images: {
+      distinct_on: "images_select_column",
+      order_by: "images_order_by",
+      where: "images_bool_exp",
+    },
+    images_aggregate: {
+      distinct_on: "images_select_column",
+      order_by: "images_order_by",
+      where: "images_bool_exp",
+    },
+    images_by_pk: {},
+    invitations: {
+      distinct_on: "invitations_select_column",
+      order_by: "invitations_order_by",
+      where: "invitations_bool_exp",
+    },
+    invitations_aggregate: {
+      distinct_on: "invitations_select_column",
+      order_by: "invitations_order_by",
+      where: "invitations_bool_exp",
     },
   },
   subscription_root: {
@@ -302,6 +445,35 @@ export const AllTypesProps: Record<string, any> = {
     auth_users_stream: {
       cursor: "auth_users_stream_cursor_input",
       where: "auth_users_bool_exp",
+    },
+    images: {
+      distinct_on: "images_select_column",
+      order_by: "images_order_by",
+      where: "images_bool_exp",
+    },
+    images_aggregate: {
+      distinct_on: "images_select_column",
+      order_by: "images_order_by",
+      where: "images_bool_exp",
+    },
+    images_by_pk: {},
+    images_stream: {
+      cursor: "images_stream_cursor_input",
+      where: "images_bool_exp",
+    },
+    invitations: {
+      distinct_on: "invitations_select_column",
+      order_by: "invitations_order_by",
+      where: "invitations_bool_exp",
+    },
+    invitations_aggregate: {
+      distinct_on: "invitations_select_column",
+      order_by: "invitations_order_by",
+      where: "invitations_bool_exp",
+    },
+    invitations_stream: {
+      cursor: "invitations_stream_cursor_input",
+      where: "invitations_bool_exp",
     },
   },
   timestamptz: `scalar.timestamptz` as const,
@@ -360,12 +532,15 @@ export const ReturnTypes: Record<string, any> = {
     returning: "auth_invitations",
   },
   auth_users: {
+    blockchain: "String",
     created_at: "timestamptz",
     id: "uuid",
     invitation_id: "uuid",
     last_active_at: "timestamptz",
+    pubkey: "String",
     updated_at: "timestamptz",
     username: "citext",
+    waitlist_id: "String",
   },
   auth_users_aggregate: {
     aggregate: "auth_users_aggregate_fields",
@@ -377,42 +552,147 @@ export const ReturnTypes: Record<string, any> = {
     min: "auth_users_min_fields",
   },
   auth_users_max_fields: {
+    blockchain: "String",
     created_at: "timestamptz",
     id: "uuid",
     invitation_id: "uuid",
     last_active_at: "timestamptz",
+    pubkey: "String",
     updated_at: "timestamptz",
     username: "citext",
+    waitlist_id: "String",
   },
   auth_users_min_fields: {
+    blockchain: "String",
     created_at: "timestamptz",
     id: "uuid",
     invitation_id: "uuid",
     last_active_at: "timestamptz",
+    pubkey: "String",
     updated_at: "timestamptz",
     username: "citext",
+    waitlist_id: "String",
   },
   auth_users_mutation_response: {
     affected_rows: "Int",
     returning: "auth_users",
   },
   citext: `scalar.citext` as const,
+  images: {
+    completed: "Boolean",
+    created_at: "timestamptz",
+    id: "Int",
+    invitation: "auth_invitations",
+    invite_code: "uuid",
+    prompt: "String",
+    uri: "String",
+    winner: "String",
+  },
+  images_aggregate: {
+    aggregate: "images_aggregate_fields",
+    nodes: "images",
+  },
+  images_aggregate_fields: {
+    avg: "images_avg_fields",
+    count: "Int",
+    max: "images_max_fields",
+    min: "images_min_fields",
+    stddev: "images_stddev_fields",
+    stddev_pop: "images_stddev_pop_fields",
+    stddev_samp: "images_stddev_samp_fields",
+    sum: "images_sum_fields",
+    var_pop: "images_var_pop_fields",
+    var_samp: "images_var_samp_fields",
+    variance: "images_variance_fields",
+  },
+  images_avg_fields: {
+    id: "Float",
+  },
+  images_max_fields: {
+    created_at: "timestamptz",
+    id: "Int",
+    invite_code: "uuid",
+    prompt: "String",
+    uri: "String",
+    winner: "String",
+  },
+  images_min_fields: {
+    created_at: "timestamptz",
+    id: "Int",
+    invite_code: "uuid",
+    prompt: "String",
+    uri: "String",
+    winner: "String",
+  },
+  images_mutation_response: {
+    affected_rows: "Int",
+    returning: "images",
+  },
+  images_stddev_fields: {
+    id: "Float",
+  },
+  images_stddev_pop_fields: {
+    id: "Float",
+  },
+  images_stddev_samp_fields: {
+    id: "Float",
+  },
+  images_sum_fields: {
+    id: "Int",
+  },
+  images_var_pop_fields: {
+    id: "Float",
+  },
+  images_var_samp_fields: {
+    id: "Float",
+  },
+  images_variance_fields: {
+    id: "Float",
+  },
+  invitations: {
+    claimed_at: "timestamptz",
+    id: "uuid",
+  },
+  invitations_aggregate: {
+    aggregate: "invitations_aggregate_fields",
+    nodes: "invitations",
+  },
+  invitations_aggregate_fields: {
+    count: "Int",
+    max: "invitations_max_fields",
+    min: "invitations_min_fields",
+  },
+  invitations_max_fields: {
+    claimed_at: "timestamptz",
+    id: "uuid",
+  },
+  invitations_min_fields: {
+    claimed_at: "timestamptz",
+    id: "uuid",
+  },
   jsonb: `scalar.jsonb` as const,
   mutation_root: {
     delete_auth_invitations: "auth_invitations_mutation_response",
     delete_auth_invitations_by_pk: "auth_invitations",
     delete_auth_users: "auth_users_mutation_response",
     delete_auth_users_by_pk: "auth_users",
+    delete_images: "images_mutation_response",
+    delete_images_by_pk: "images",
     insert_auth_invitations: "auth_invitations_mutation_response",
     insert_auth_invitations_one: "auth_invitations",
     insert_auth_users: "auth_users_mutation_response",
     insert_auth_users_one: "auth_users",
+    insert_images: "images_mutation_response",
+    insert_images_one: "images",
     update_auth_invitations: "auth_invitations_mutation_response",
     update_auth_invitations_by_pk: "auth_invitations",
     update_auth_invitations_many: "auth_invitations_mutation_response",
     update_auth_users: "auth_users_mutation_response",
     update_auth_users_by_pk: "auth_users",
     update_auth_users_many: "auth_users_mutation_response",
+    update_images: "images_mutation_response",
+    update_images_by_pk: "images",
+    update_images_many: "images_mutation_response",
   },
   query_root: {
     auth_invitations: "auth_invitations",
@@ -421,6 +701,11 @@ export const ReturnTypes: Record<string, any> = {
     auth_users: "auth_users",
     auth_users_aggregate: "auth_users_aggregate",
     auth_users_by_pk: "auth_users",
+    images: "images",
+    images_aggregate: "images_aggregate",
+    images_by_pk: "images",
+    invitations: "invitations",
+    invitations_aggregate: "invitations_aggregate",
   },
   subscription_root: {
     auth_invitations: "auth_invitations",
@@ -431,6 +716,13 @@ export const ReturnTypes: Record<string, any> = {
     auth_users_aggregate: "auth_users_aggregate",
     auth_users_by_pk: "auth_users",
     auth_users_stream: "auth_users",
+    images: "images",
+    images_aggregate: "images_aggregate",
+    images_by_pk: "images",
+    images_stream: "images",
+    invitations: "invitations",
+    invitations_aggregate: "invitations_aggregate",
+    invitations_stream: "invitations",
   },
   timestamptz: `scalar.timestamptz` as const,
   uuid: `scalar.uuid` as const,

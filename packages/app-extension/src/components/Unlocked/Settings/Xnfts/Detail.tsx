@@ -29,6 +29,7 @@ import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDraw
 import { CheckIcon } from "../../../common/Icon";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { Error } from "../../Balances/TokensWidget/Send";
+import { ProxyImage } from "../../../common/ProxyImage";
 
 const logger = getLogger("xnft-detail");
 
@@ -64,7 +65,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
       }}
     >
       <div>
-        <img
+        <ProxyImage
           src={xnft.iconUrl}
           style={{
             width: "120px",

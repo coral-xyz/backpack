@@ -14,6 +14,9 @@ import {
   getLogger,
   withContextPort,
   ChannelAppUi,
+  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD,
+  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE,
+  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ,
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
@@ -25,15 +28,12 @@ import {
   UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
   UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC,
-  UI_RPC_METHOD_KEYRING_RESET_MNEMONIC,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_RESET,
-  UI_RPC_METHOD_ACTIVE_BLOCKCHAIN_UPDATE,
-  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET,
-  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS,
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLETS,
   UI_RPC_METHOD_KEYNAME_READ,
   UI_RPC_METHOD_KEYNAME_UPDATE,
   UI_RPC_METHOD_PASSWORD_UPDATE,
@@ -151,8 +151,6 @@ async function handle<T = any>(
       return await handleValidateMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC:
       return handleKeyringExportMnemonic(ctx, params[0]);
-    case UI_RPC_METHOD_KEYRING_RESET_MNEMONIC:
-      return handleKeyringResetMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_AUTOLOCK_READ:
       return await handleKeyringAutolockRead(ctx);
     case UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE:
@@ -160,7 +158,13 @@ async function handle<T = any>(
     case UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE:
       return await handleMnemonicCreate(ctx, params[0]);
     case UI_RPC_METHOD_PREVIEW_PUBKEYS:
-      return await handlePreviewPubkeys(ctx, params[0], params[1], params[2]);
+      return await handlePreviewPubkeys(
+        ctx,
+        params[0],
+        params[1],
+        params[2],
+        params[3]
+      );
     case UI_RPC_METHOD_KEYRING_RESET:
       return await handleKeyringReset(ctx);
     //
@@ -192,14 +196,10 @@ async function handle<T = any>(
     //
     // Wallet app settings.
     //
-    case UI_RPC_METHOD_ACTIVE_BLOCKCHAIN_UPDATE:
-      return await handleActiveBlockchainUpdate(ctx, params[0]);
-    case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET:
-      return await handleWalletDataActiveWallet(ctx);
-    case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE:
-      return await handleWalletDataActiveWalletUpdate(ctx, params[0]);
-    case UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLETS:
-      return await handleWalletDataActiveWallets(ctx);
+    case UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE:
+      return await handleKeyringActiveWalletUpdate(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_KEYRING_ACTIVE_WALLETS:
+      return await handleKeyringActiveWallets(ctx);
     case UI_RPC_METHOD_SETTINGS_DARK_MODE_READ:
       return await handleDarkModeRead(ctx);
     case UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE:
@@ -210,6 +210,12 @@ async function handle<T = any>(
       return await handleApprovedOriginsUpdate(ctx, params[0]);
     case UI_RPC_METHOD_APPROVED_ORIGINS_DELETE:
       return await handleApprovedOriginsDelete(ctx, params[0]);
+    case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD:
+      return await handleBlockchainsEnabledAdd(ctx, params[0]);
+    case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE:
+      return await handleBlockchainsEnabledRemove(ctx, params[0]);
+    case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ:
+      return await handleBlockchainsEnabledRead(ctx);
     //
     // Nicknames for keys.
     //
@@ -351,32 +357,16 @@ function handleKeyringStoreKeepAlive(
   return [resp];
 }
 
-async function handleActiveBlockchainUpdate(
+async function handleKeyringActiveWalletUpdate(
   ctx: Context<Backend>,
+  newWallet: string,
   blockchain: Blockchain
-) {
-  const resp = ctx.backend.activeBlockchainUpdate(blockchain);
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.activeWalletUpdate(newWallet, blockchain);
   return [resp];
 }
 
-// TODO deprecate single active wallet eventually
-async function handleWalletDataActiveWallet(
-  ctx: Context<Backend>
-): Promise<RpcResponse<string>> {
-  const pubkey = await ctx.backend.activeWallet();
-  return [pubkey];
-}
-
-// TODO deprecate single active wallet eventually
-async function handleWalletDataActiveWalletUpdate(
-  ctx: Context<Backend>,
-  newWallet: string
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.activeWalletUpdate(newWallet);
-  return [resp];
-}
-
-async function handleWalletDataActiveWallets(
+async function handleKeyringActiveWallets(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.activeWallets();
@@ -476,14 +466,6 @@ function handleKeyringExportMnemonic(
   password: string
 ): RpcResponse<string> {
   const resp = ctx.backend.keyringExportMnemonic(password);
-  return [resp];
-}
-
-function handleKeyringResetMnemonic(
-  ctx: Context<Backend>,
-  password: string
-): RpcResponse<string> {
-  const resp = ctx.backend.keyringResetMnemonic(password);
   return [resp];
 }
 
@@ -775,6 +757,29 @@ async function handleApprovedOriginsDelete(
   return [resp];
 }
 
+function handleBlockchainsEnabledAdd(
+  ctx: Context<Backend>,
+  blockchain: Blockchain
+) {
+  const resp = ctx.backend.enabledBlockchainsAdd(blockchain);
+  return [resp];
+}
+
+function handleBlockchainsEnabledRemove(
+  ctx: Context<Backend>,
+  blockchain: Blockchain
+) {
+  const resp = ctx.backend.enabledBlockchainsRemove(blockchain);
+  return [resp];
+}
+
+async function handleBlockchainsEnabledRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<Array<string>>> {
+  const resp = await ctx.backend.enabledBlockchainsRead();
+  return [resp];
+}
+
 async function handleKeyringLedgerImport(
   ctx: Context<Backend>,
   blockchain: Blockchain,
@@ -793,11 +798,13 @@ async function handleKeyringLedgerImport(
 
 async function handlePreviewPubkeys(
   ctx: Context<Backend>,
+  blockchain: Blockchain,
   mnemonic: string,
   derivationPath: DerivationPath,
   numberOfAccounts: number
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.previewPubkeys(
+    blockchain,
     mnemonic,
     derivationPath,
     numberOfAccounts

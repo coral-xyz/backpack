@@ -6,7 +6,7 @@ import { useEthereumFeeData } from "@coral-xyz/recoil";
 import { useCustomTheme, styles, HOVER_OPACITY } from "@coral-xyz/themes";
 import { SettingsList } from "./Settings/List";
 import { WithMiniDrawer } from "./Layout/Drawer";
-import { CloseButton } from "../Unlocked/Swap";
+import { CloseButton } from "./ApproveTransactionDrawer";
 import { PrimaryButton, SecondaryButton } from "./";
 
 const useStyles = styles((theme: any) => ({
@@ -501,6 +501,7 @@ export function EthereumSettingsDrawer({
               >
                 {["normal", "fast", "degen", "custom"].map((m) => (
                   <ModeChip
+                    key={m}
                     mode={m as TransactionMode}
                     currentMode={mode}
                     setMode={setMode}

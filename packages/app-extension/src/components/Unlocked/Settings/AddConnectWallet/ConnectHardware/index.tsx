@@ -1,29 +1,26 @@
 import { useState } from "react";
 import Transport from "@ledgerhq/hw-transport";
-import {
-  Blockchain,
-  DerivationPath,
-  UI_RPC_METHOD_LEDGER_IMPORT,
-  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-} from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { Blockchain, DerivationPath } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ConnectHardwareWelcome } from "./ConnectHardwareWelcome";
 import { ConnectHardwareSearching } from "./ConnectHardwareSearching";
 import { ConnectHardwareSuccess } from "./ConnectHardwareSuccess";
 import { ImportAccounts } from "../../../../common/Account/ImportAccounts";
 import type { SelectedAccount } from "../../../../common/Account/ImportAccounts";
-import { OptionsContainer } from "../../../../Onboarding";
 import { WithNav, NavBackButton } from "../../../../common/Layout/Nav";
 
 export function ConnectHardware({
   blockchain,
+  onImport,
   onComplete,
 }: {
   blockchain: Blockchain;
+  onImport?: (
+    accounts: SelectedAccount[],
+    derivationPath: DerivationPath
+  ) => Promise<void>;
   onComplete: () => void;
 }) {
-  const background = useBackgroundClient();
   const theme = useCustomTheme();
   const [transport, setTransport] = useState<Transport | null>(null);
   const [transportError, setTransportError] = useState(false);
@@ -32,37 +29,6 @@ export function ConnectHardware({
   const nextStep = () => setStep(step + 1);
   const prevStep = () => {
     if (step > 0) setStep(step - 1);
-  };
-
-  //
-  // Add one or more pubkeys to the Ledger store.
-  //
-  const ledgerImport = async (
-    accounts: SelectedAccount[],
-    derivationPath: DerivationPath
-  ) => {
-    for (const account of accounts) {
-      await background.request({
-        method: UI_RPC_METHOD_LEDGER_IMPORT,
-        params: [
-          blockchain,
-          derivationPath,
-          account.index,
-          account.publicKey.toString(),
-        ],
-      });
-    }
-
-    //
-    // Automatically switch to the first wallet in the import list.
-    //
-    if (accounts.length > 0) {
-      const active = accounts[0].publicKey.toString();
-      await background.request({
-        method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-        params: [active],
-      });
-    }
   };
 
   //
@@ -85,7 +51,9 @@ export function ConnectHardware({
         accounts: SelectedAccount[],
         derivationPath: DerivationPath
       ) => {
-        await ledgerImport(accounts, derivationPath);
+        if (onImport) {
+          await onImport(accounts, derivationPath);
+        }
         nextStep();
       }}
       onError={() => {
@@ -97,23 +65,21 @@ export function ConnectHardware({
   ];
 
   return (
-    <OptionsContainer>
-      <WithNav
-        navButtonLeft={
-          step > 0 && step < connectHardwareFlow.length - 1 ? (
-            <NavBackButton onClick={prevStep} />
-          ) : null
-        }
-        navbarStyle={{
-          backgroundColor: theme.custom.colors.nav,
-        }}
-        navContentStyle={{
-          backgroundColor: theme.custom.colors.nav,
-          height: "100%",
-        }}
-      >
-        {connectHardwareFlow[step]}
-      </WithNav>
-    </OptionsContainer>
+    <WithNav
+      navButtonLeft={
+        step > 0 && step < connectHardwareFlow.length - 1 ? (
+          <NavBackButton onClick={prevStep} />
+        ) : null
+      }
+      navbarStyle={{
+        backgroundColor: theme.custom.colors.nav,
+      }}
+      navContentStyle={{
+        backgroundColor: theme.custom.colors.nav,
+        height: "400px",
+      }}
+    >
+      {connectHardwareFlow[step]}
+    </WithNav>
   );
 }

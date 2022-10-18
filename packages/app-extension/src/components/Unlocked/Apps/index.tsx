@@ -3,14 +3,21 @@ import { useLocation, useSearchParams } from "react-router-dom";
 import { getSvgPath } from "figma-squircle";
 import { Grid, Button, Typography } from "@mui/material";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
+import { Block as BlockIcon } from "@mui/icons-material";
 import {
-  useBackgroundClient,
   useAppIcons,
+  useBackgroundClient,
+  useEnabledBlockchains,
   useNavigation,
 } from "@coral-xyz/recoil";
-import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
+import {
+  Blockchain,
+  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+} from "@coral-xyz/common";
 import { WithDrawer } from "../../common/Layout/Drawer";
 import { PluginApp } from "./Plugin";
+import { EmptyState } from "../../common/EmptyState";
+import { ProxyImage } from "../../common/ProxyImage";
 
 const ICON_WIDTH = 64;
 
@@ -51,7 +58,19 @@ const useStyles = styles((theme) => ({
 }));
 
 export function Apps() {
+  const enabledBlockchains = useEnabledBlockchains();
   const theme = useCustomTheme();
+
+  if (!enabledBlockchains.includes(Blockchain.SOLANA)) {
+    return (
+      <EmptyState
+        icon={(props: any) => <BlockIcon {...props} />}
+        title={"Solana is disabled"}
+        subtitle={"Enable Solana in blockchain settings to use apps"}
+      />
+    );
+  }
+
   return (
     <div
       style={{
@@ -78,7 +97,6 @@ export function Apps() {
 }
 
 function PluginGrid() {
-  const { push } = useNavigation();
   const plugins = useAppIcons();
   const [searchParams] = useSearchParams();
   const location = useLocation();
@@ -197,7 +215,7 @@ function AppIcon({
           root: classes.pluginIconRoot,
         }}
       >
-        <img
+        <ProxyImage
           src={iconUrl}
           style={{
             width: ICON_WIDTH,

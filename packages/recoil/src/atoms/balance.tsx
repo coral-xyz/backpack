@@ -1,9 +1,17 @@
 import { selector, selectorFamily } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
-import { solanaTokenBalance, solanaTokenAccountKeys } from "./solana/token";
-import { ethereumTokenBalance } from "./ethereum/token";
+import {
+  solanaTokenBalance,
+  solanaTokenAccountKeys,
+  solanaTokenNativeBalance,
+} from "./solana/token";
+import {
+  ethereumTokenNativeBalance,
+  ethereumTokenBalance,
+} from "./ethereum/token";
 import { ethereumTokenMetadata } from "./ethereum/token-metadata";
-import { TokenData } from "../types";
+import { TokenData, TokenNativeData } from "../types";
+import { enabledBlockchains } from "./blockchain";
 
 /**
  * Return token balances sorted by usd notional balances.
@@ -29,6 +37,54 @@ export const blockchainBalancesSorted = selectorFamily<
         )
         .filter(Boolean);
       return tokenData.sort((a, b) => b.usdBalance - a.usdBalance);
+    },
+});
+
+/**
+ * Return native token balances (without their price information)
+ */
+export const blockchainNativeBalances = selectorFamily<
+  Array<TokenNativeData>,
+  Blockchain
+>({
+  key: "blockchainNativeBalances",
+  get:
+    (blockchain: Blockchain) =>
+    ({ get }) => {
+      const tokenAddresses = get(blockchainTokenAddresses(blockchain));
+      return tokenAddresses
+        .map(
+          (address) =>
+            get(
+              blockchainTokenNativeData({
+                address,
+                blockchain,
+              })
+            )!
+        )
+        .filter(Boolean);
+    },
+});
+
+/**
+ * Returns token balances but not the price information for a given token address and blockchain.
+ */
+export const blockchainTokenNativeData = selectorFamily<
+  TokenNativeData | null,
+  { address: string; blockchain: Blockchain }
+>({
+  key: "blockchainTokenNativeData",
+  get:
+    ({ address, blockchain }: { address: string; blockchain: Blockchain }) =>
+    ({ get }) => {
+      switch (blockchain) {
+        case Blockchain.SOLANA:
+          return get(solanaTokenNativeBalance(address));
+        case Blockchain.ETHEREUM:
+          return get(ethereumTokenNativeBalance(address));
+        default:
+          throw new Error(`unsupported blockchain: ${blockchain}`);
+      }
     },
 });
 
@@ -94,7 +150,7 @@ export const blockchainTotalBalance = selectorFamily({
         .map((t) => t.recentUsdBalanceChange)
         .reduce((a, b) => a + b, 0);
       const oldBalance = totalBalance - totalChange;
-      const percentChange = totalChange / oldBalance;
+      const percentChange = (totalChange / oldBalance) * 100;
       return {
         totalBalance: parseFloat(totalBalance.toFixed(2)),
         totalChange: parseFloat(totalChange.toFixed(2)),
@@ -109,15 +165,27 @@ export const blockchainTotalBalance = selectorFamily({
 export const totalBalance = selector({
   key: "totalBalance",
   get: ({ get }) => {
-    const solana = get(blockchainTotalBalance(Blockchain.SOLANA));
-    const ethereum = get(blockchainTotalBalance(Blockchain.ETHEREUM));
-    const totalBalance = solana.totalBalance + ethereum.totalBalance;
-    const totalChange = solana.totalChange + ethereum.totalChange;
-    const oldBalance = totalBalance - totalChange;
-    const percentChange = totalChange / oldBalance;
+    const totals = get(enabledBlockchains).reduce(
+      (
+        acc: { totalBalance: number; totalChange: number },
+        blockchain: Blockchain
+      ) => {
+        const total = get(blockchainTotalBalance(blockchain));
+        return {
+          totalBalance: acc.totalBalance + total.totalBalance,
+          totalChange: acc.totalChange + total.totalChange,
+        };
+      },
+      {
+        totalBalance: 0.0,
+        totalChange: 0.0,
+      }
+    );
+    const oldBalance = totals.totalBalance - totals.totalChange;
+    const percentChange = (totals.totalChange / oldBalance) * 100;
     return {
-      totalBalance: parseFloat(totalBalance.toFixed(2)),
-      totalChange: parseFloat(totalChange.toFixed(2)),
+      totalBalance: parseFloat(totals.totalBalance.toFixed(2)),
+      totalChange: parseFloat(totals.totalChange.toFixed(2)),
       percentChange: parseFloat(percentChange.toFixed(2)),
     };
   },

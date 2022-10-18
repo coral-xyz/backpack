@@ -5,13 +5,13 @@ import {
   BACKPACK_FEATURE_LIGHT_MODE,
   BACKPACK_CONFIG_VERSION,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
-  BACKPACK_FEATURE_MULTICHAIN,
 } from "@coral-xyz/common";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import {
-  useDarkMode,
   useBackgroundClient,
   useBlockchainLogo,
+  useDarkMode,
+  useEnabledBlockchains,
 } from "@coral-xyz/recoil";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
@@ -21,6 +21,7 @@ export function Preferences() {
   const nav = useNavStack();
   const background = useBackgroundClient();
   const isDarkMode = useDarkMode();
+  const enabledBlockchains = useEnabledBlockchains();
 
   const onDarkModeSwitch = async (isDarkMode: boolean) => {
     await background.request({
@@ -36,8 +37,8 @@ export function Preferences() {
     "Auto-lock timer": {
       onClick: () => nav.push("preferences-auto-lock"),
     },
-    "Trusted Apps": {
-      onClick: () => nav.push("preferences-trusted-apps"),
+    "Trusted Sites": {
+      onClick: () => nav.push("preferences-trusted-sites"),
     },
   };
 
@@ -69,9 +70,7 @@ export function Preferences() {
         );
       },
     },
-  };
-  if (BACKPACK_FEATURE_MULTICHAIN) {
-    blockchainMenuItems["Ethereum"] = {
+    Ethereum: {
       onClick: () => nav.push("preferences-ethereum"),
       icon: () => {
         const blockchainLogo = useBlockchainLogo(Blockchain.ETHEREUM);
@@ -86,8 +85,8 @@ export function Preferences() {
           />
         );
       },
-    };
-  }
+    },
+  };
 
   //
   // Build version.
@@ -110,7 +109,7 @@ export function Preferences() {
   return (
     <div>
       <SettingsList menuItems={menuItems} />
-      <SettingsList menuItems={blockchainMenuItems} />
+      <SettingsList menuItems={blockchainMenuItems as any} />
       <SettingsList menuItems={buildMenuItems} />
     </div>
   );
@@ -130,20 +129,23 @@ function DarkModeSwitch({
 export function SwitchToggle({
   enabled,
   onChange,
+  disableUiState = false,
 }: {
   enabled: boolean;
   onChange: () => void;
+  disableUiState?: boolean;
 }) {
   const classes = useStyles();
   return (
     <Switch
+      disabled={disableUiState}
       checked={enabled}
       disableRipple
       onChange={onChange}
       classes={{
         switchBase: classes.switchBase,
         track: enabled ? classes.trackChecked : classes.track,
-        colorPrimary: classes.colorPrimary,
+        colorPrimary: disableUiState ? classes.disabled : classes.colorPrimary,
       }}
     />
   );
@@ -161,6 +163,12 @@ const useStyles = styles((theme) => ({
   colorPrimary: {
     "&.Mui-checked": {
       color: theme.custom.colors.brandColor,
+    },
+  },
+  disabled: {
+    "&.Mui-checked": {
+      color: `${theme.custom.colors.brandColor} !important`,
+      opacity: 0.5,
     },
   },
   track: {},

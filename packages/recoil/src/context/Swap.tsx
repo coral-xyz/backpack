@@ -7,6 +7,7 @@ import {
   confirmTransaction,
   generateWrapSolTx,
   generateUnwrapSolTx,
+  Blockchain,
   SOL_NATIVE_MINT,
   USDC_MINT,
   WSOL_MINT,
@@ -75,16 +76,24 @@ function useDebounce(value: any, wait = DEFAULT_DEBOUNCE_DELAY) {
   return debounceValue;
 }
 
-export function SwapProvider(props: any) {
+export function SwapProvider({
+  blockchain,
+  tokenAddress,
+  children,
+}: {
+  blockchain: Blockchain;
+  tokenAddress?: string;
+  children: React.ReactNode;
+}) {
   const tokenRegistry = useSplTokenRegistry();
   const [inputTokenAccounts] = useLoader(jupiterInputMints, []);
   const solanaCtx = useSolanaCtx();
   const { backgroundClient, connection, walletPublicKey } = solanaCtx;
-  const [token] = props.tokenAddress
+  const [token] = tokenAddress
     ? useLoader(
         blockchainTokenData({
-          blockchain: props.blockchain,
-          address: props.tokenAddress,
+          blockchain,
+          address: tokenAddress,
         }),
         undefined
       )
@@ -414,7 +423,7 @@ export function SwapProvider(props: any) {
         inputTokenAccounts,
       }}
     >
-      {props.children}
+      {children}
     </_SwapContext.Provider>
   );
 }

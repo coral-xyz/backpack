@@ -1,10 +1,10 @@
 import { useRecoilValue, useRecoilCallback } from "recoil";
-import { SolanaTokenAccountWithKey } from "../../types";
+import type {
+  SolanaTokenAccountWithKey,
+  SplNftMetadata,
+  TokenMetadata,
+} from "@coral-xyz/common";
 import * as atoms from "../../atoms";
-
-export function useTokenAddresses(): string[] {
-  return useRecoilValue(atoms.solanaTokenAccountKeys)!;
-}
 
 export const useUpdateAllSplTokenAccounts = () =>
   useRecoilCallback(
@@ -18,8 +18,8 @@ export const useUpdateAllSplTokenAccounts = () =>
         publicKey: string;
         customSplTokenAccounts: {
           tokenAccounts: SolanaTokenAccountWithKey[];
-          tokenMetadata: Array<null | any>;
-          nftMetadata: Array<[string, any]>;
+          tokenMetadata: (TokenMetadata | null)[];
+          nftMetadata: [string, SplNftMetadata][];
         };
       }) => {
         // TODO: Do we want to check if the atoms have changed before setting

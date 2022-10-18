@@ -1,4 +1,3 @@
-import { EventEmitter } from "eventemitter3";
 import type {
   Connection,
   Transaction,
@@ -8,6 +7,7 @@ import type {
   ConfirmOptions,
   Commitment,
   SimulatedTransactionResponse,
+  VersionedTransaction,
 } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import type { Provider } from "@project-serum/anchor";
@@ -20,8 +20,6 @@ import {
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
   PLUGIN_NOTIFICATION_CONNECT,
-  PLUGIN_NOTIFICATION_ON_CLICK,
-  PLUGIN_NOTIFICATION_ON_CHANGE,
   PLUGIN_NOTIFICATION_MOUNT,
   PLUGIN_NOTIFICATION_UNMOUNT,
   PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
@@ -29,9 +27,11 @@ import {
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
   PLUGIN_RPC_METHOD_WINDOW_OPEN,
+  PLUGIN_NOTIFICATION_UPDATE_METADATA,
 } from "@coral-xyz/common";
 import * as cmn from "./common/solana";
 import { RequestManager } from "./request-manager";
+import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 
 const logger = getLogger("provider-xnft-injection");
 
@@ -39,44 +39,60 @@ const logger = getLogger("provider-xnft-injection");
 // Injected provider for UI plugins.
 //
 export class ProviderSolanaXnftInjection
-  extends EventEmitter
+  extends PrivateEventEmitter
   implements Provider
 {
-  private _requestManager: RequestManager;
-  private _connectionRequestManager: RequestManager;
+  #requestManager: RequestManager;
+  #connectionRequestManager: RequestManager;
 
-  public publicKey?: PublicKey;
-  public connection: Connection;
+  #publicKey?: PublicKey;
+  #connection: Connection;
 
-  constructor(requestManager: RequestManager) {
+  #childIframes: HTMLIFrameElement[];
+  #cachedNotifications: { [notification: string]: Event };
+
+  constructor(
+    requestManager: RequestManager,
+    additionalProperties: { [key: string]: PrivateEventEmitter } = {}
+  ) {
     super();
-    this._requestManager = requestManager;
-    this._connectionRequestManager = new RequestManager(
+    const additionalPropertyConfig = {};
+    Object.keys(additionalProperties).forEach((prop) => {
+      additionalPropertyConfig[prop] = { value: additionalProperties[prop] };
+    });
+    Object.defineProperties(this, additionalPropertyConfig);
+    if (new.target === ProviderSolanaXnftInjection) {
+      Object.freeze(this);
+    }
+    this.#requestManager = requestManager;
+    this.#connectionRequestManager = new RequestManager(
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
       CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
     );
-    this._setupChannels();
+    this.#childIframes = [];
+    this.#cachedNotifications = {};
+    this.#setupChannels();
   }
 
-  private _connect(publicKey: string, connectionUrl: string) {
-    this.publicKey = new PublicKey(publicKey);
-    this.connection = new BackgroundSolanaConnection(
-      this._connectionRequestManager,
+  #connect(publicKey: string, connectionUrl: string) {
+    this.#publicKey = new PublicKey(publicKey);
+    this.#connection = new BackgroundSolanaConnection(
+      this.#connectionRequestManager,
       connectionUrl
     );
   }
 
-  async sendAndConfirm(
-    tx: Transaction,
+  async sendAndConfirm<T extends Transaction | VersionedTransaction>(
+    tx: T,
     signers?: Signer[],
     options?: ConfirmOptions
   ): Promise<TransactionSignature> {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.sendAndConfirm(
-      this.publicKey,
-      this._requestManager,
+      this.#publicKey,
+      this.#requestManager,
       this.connection,
       tx,
       signers,
@@ -84,17 +100,17 @@ export class ProviderSolanaXnftInjection
     );
   }
 
-  async send(
-    tx: Transaction,
+  async send<T extends Transaction | VersionedTransaction>(
+    tx: T,
     signers?: Signer[],
     options?: SendOptions
   ): Promise<TransactionSignature> {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.send(
-      this.publicKey,
-      this._requestManager,
+      this.#publicKey,
+      this.#requestManager,
       this.connection,
       tx,
       signers,
@@ -102,51 +118,53 @@ export class ProviderSolanaXnftInjection
     );
   }
 
-  public async signTransaction(tx: Transaction): Promise<Transaction> {
-    if (!this.publicKey) {
+  public async signTransaction<T extends Transaction | VersionedTransaction>(
+    tx: T
+  ): Promise<T> {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.signTransaction(
-      this.publicKey,
-      this._requestManager,
+      this.#publicKey,
+      this.#requestManager,
       this.connection,
       tx
     );
   }
 
-  async signAllTransactions(
-    txs: Array<Transaction>
-  ): Promise<Array<Transaction>> {
-    if (!this.publicKey) {
+  async signAllTransactions<T extends Transaction | VersionedTransaction>(
+    txs: Array<T>
+  ): Promise<Array<T>> {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.signAllTransactions(
-      this.publicKey,
-      this._requestManager,
+      this.#publicKey,
+      this.#requestManager,
       this.connection,
       txs
     );
   }
 
   async signMessage(msg: Uint8Array): Promise<Uint8Array> {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
-    return await cmn.signMessage(this.publicKey, this._requestManager, msg);
+    return await cmn.signMessage(this.#publicKey, this.#requestManager, msg);
   }
 
   // @ts-ignore
-  public async simulate(
-    tx: Transaction,
+  public async simulate<T extends Transaction | VersionedTransaction>(
+    tx: T,
     signers?: Signer[],
     commitment?: Commitment
   ): Promise<SimulatedTransactionResponse> {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.simulate(
-      this.publicKey,
-      this._requestManager,
+      this.#publicKey,
+      this.#requestManager,
       this.connection,
       tx,
       signers,
@@ -155,60 +173,87 @@ export class ProviderSolanaXnftInjection
   }
 
   public async getStorage<T = any>(key: string): Promise<T> {
-    return await this._requestManager.request({
+    return await this.#requestManager.request({
       method: PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
       params: [key],
     });
   }
 
   public async setStorage<T = any>(key: string, val: T): Promise<void> {
-    await this._requestManager.request({
+    await this.#requestManager.request({
       method: PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
       params: [key, val],
     });
   }
 
   public async openWindow(url: string) {
-    await this._requestManager.request({
+    await this.#requestManager.request({
       method: PLUGIN_RPC_METHOD_WINDOW_OPEN,
       params: [url],
     });
   }
 
-  private _setupChannels() {
-    window.addEventListener("message", this._handleNotifications.bind(this));
+  public async addIframe(iframeEl) {
+    // Send across mount and connect notification to child iframes
+    if (this.#cachedNotifications[PLUGIN_NOTIFICATION_MOUNT]) {
+      iframeEl.contentWindow?.postMessage(
+        this.#cachedNotifications[PLUGIN_NOTIFICATION_MOUNT],
+        "*"
+      );
+    }
+
+    if (this.#cachedNotifications[PLUGIN_NOTIFICATION_CONNECT]) {
+      iframeEl.contentWindow?.postMessage(
+        this.#cachedNotifications[PLUGIN_NOTIFICATION_CONNECT],
+        "*"
+      );
+    }
+
+    this.#childIframes.push(iframeEl);
+  }
+
+  public async removeIframe(iframeEl) {
+    // @ts-ignore
+    this.#childIframes = this.#childIframes.filter((x) => x !== iframeEl);
+  }
+
+  #setupChannels() {
+    window.addEventListener("message", this.#handleNotifications.bind(this));
   }
 
   //
   // Notifications from the extension UI -> plugin.
   //
-  private async _handleNotifications(event: Event) {
+  async #handleNotifications(event: Event) {
     if (event.data.type !== CHANNEL_PLUGIN_NOTIFICATION) return;
+
+    // Send RPC message to all child iframes
+    this.#childIframes.forEach((iframe) => {
+      iframe.contentWindow?.postMessage(event, "*");
+    });
 
     logger.debug("handle notification", event);
 
     const { name } = event.data.detail;
+    this.#cachedNotifications[name] = event.data;
     switch (name) {
       case PLUGIN_NOTIFICATION_CONNECT:
-        this._handleConnect(event);
+        this.#handleConnect(event);
         break;
       case PLUGIN_NOTIFICATION_MOUNT:
-        this._handleMount(event);
+        this.#handleMount(event);
+        break;
+      case PLUGIN_NOTIFICATION_UPDATE_METADATA:
+        this.#handleUpdateMetadata(event);
         break;
       case PLUGIN_NOTIFICATION_UNMOUNT:
-        this._handleUnmount(event);
-        break;
-      case PLUGIN_NOTIFICATION_ON_CLICK:
-        this._handleOnClick(event);
-        break;
-      case PLUGIN_NOTIFICATION_ON_CHANGE:
-        this._handleOnChange(event);
+        this.#handleUnmount(event);
         break;
       case PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
-        this._handleConnectionUrlUpdated(event);
+        this.#handleConnectionUrlUpdated(event);
         break;
       case PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED:
-        this._handlePublicKeyUpdated(event);
+        this.#handlePublicKeyUpdated(event);
         break;
       default:
         console.error(event);
@@ -216,42 +261,50 @@ export class ProviderSolanaXnftInjection
     }
   }
 
-  private _handleConnect(event: Event) {
+  #handleConnect(event: Event) {
     const { publicKeys, connectionUrls } = event.data.detail.data;
     const publicKey = publicKeys[Blockchain.SOLANA];
     const connectionUrl = connectionUrls[Blockchain.SOLANA];
-    this._connect(publicKey, connectionUrl);
+    this.#connect(publicKey, connectionUrl);
     this.emit("connect", event.data.detail);
   }
 
-  private _handleMount(event: Event) {
+  #handleMount(event: Event) {
     this.emit("mount", event.data.detail);
   }
 
-  private _handleUnmount(event: Event) {
+  #handleUpdateMetadata(event: Event) {
+    this.emit("metadata", event.data.detail);
+  }
+
+  #handleUnmount(event: Event) {
     this.emit("unmount", event.data.detail);
   }
 
-  private _handleOnClick(event: Event) {
-    this.emit("click", event.data.detail);
-  }
-
-  private _handleOnChange(event: Event) {
-    this.emit("change", event.data.detail);
-  }
-
-  private _handleConnectionUrlUpdated(event: Event) {
+  #handleConnectionUrlUpdated(event: Event) {
     const connectionUrl = event.data.detail.data.url;
-    this.connection = new BackgroundSolanaConnection(
-      this._connectionRequestManager,
+    this.#connection = new BackgroundSolanaConnection(
+      this.#connectionRequestManager,
       connectionUrl
     );
     this.emit("connectionUpdate", event.data.detail);
   }
 
-  private _handlePublicKeyUpdated(event: Event) {
+  #handlePublicKeyUpdated(event: Event) {
     const publicKey = event.data.detail.data.publicKey;
-    this.publicKey = publicKey;
+    this.#publicKey = publicKey;
     this.emit("publicKeyUpdate", event.data.detail);
+  }
+
+  public freeze() {
+    return Object.freeze(this);
+  }
+
+  public get publicKey() {
+    return this.#publicKey;
+  }
+
+  public get connection() {
+    return this.#connection;
   }
 }

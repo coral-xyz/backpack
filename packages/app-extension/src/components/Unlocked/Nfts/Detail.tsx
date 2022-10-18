@@ -48,6 +48,7 @@ import {
 } from "../Balances/TokensWidget/Send";
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
 import { List, ListItem } from "../../common/List";
+import { ProxyImage } from "../../common/ProxyImage";
 
 const logger = getLogger("app-extension/nft-detail");
 
@@ -100,16 +101,17 @@ function Image({ nft }: { nft: any }) {
       style={{
         width: "100%",
         minHeight: "343px",
+        display: "flex",
+        alignItems: "center",
       }}
     >
-      <img
+      <ProxyImage
         style={{
           width: "100%",
-          minHeight: "343px",
           borderRadius: "8px",
         }}
         src={nft.imageUrl}
-        onError={(event) => (event.currentTarget.style.display = "none")}
+        onError={(event: any) => (event.currentTarget.style.display = "none")}
       />
     </div>
   );

@@ -10,11 +10,12 @@
   "scripts": {
     "dev": "wrangler dev --local --env development",
     "deploy": "wrangler publish",
-    "zeus": "npx zeus http://localhost:8112/v1/graphql ./src --header=x-hasura-admin-secret:myadminsecretkey"
+    "zeus": "npx graphql-zeus http://localhost:8112/v1/graphql ./src --header=x-hasura-admin-secret:myadminsecretkey"
   },
   "dependencies": {
     "@solana/web3.js": "^1.63.1",
     "bs58": "^5.0.0",
+    "ethers": "^5.7.1",
     "hono": "^2.2.1",
     "tweetnacl": "^1.0.3",
     "zod": "^3.19.1"

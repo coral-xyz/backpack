@@ -7,7 +7,7 @@ import {
 import { PublicKey } from "@solana/web3.js";
 // XXX: this full path is currently necessary as it avoids loading the jsx in
 //      react-xnft-renderer/src/Component.tsx in the background service worker
-import { Plugin } from "@coral-xyz/react-xnft-renderer/dist/esm/plugin";
+import { Plugin } from "@coral-xyz/common/dist/esm/plugin";
 import { fetchXnft } from "@coral-xyz/common";
 import * as atoms from "../../atoms";
 import { useAnchorContext } from "./useSolanaConnection";

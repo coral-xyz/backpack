@@ -52,3 +52,9 @@ export function Balances() {
     </div>
   );
 }
+export { BalancesTableRow } from "./Balances";
+export { BalancesTableContent } from "./Balances";
+export { BalancesTableHead } from "./Balances";
+export { useBalancesContext } from "./Balances";
+export { BalancesTable } from "./Balances";
+export { BalancesTableCell } from "./Balances";

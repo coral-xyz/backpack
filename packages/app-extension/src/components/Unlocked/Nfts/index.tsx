@@ -11,17 +11,18 @@ import {
   nftCollections,
   useActiveWallets,
   useBlockchainLogo,
+  useEnabledBlockchains,
   useLoader,
   useNavigation,
 } from "@coral-xyz/recoil";
-import {
-  BalancesTable,
-  BalancesTableHead,
-  BalancesTableContent,
-} from "@coral-xyz/react-xnft-renderer";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { GridCard } from "./Common";
 import { EmptyState } from "../../common/EmptyState";
+import {
+  BalancesTable,
+  BalancesTableContent,
+  BalancesTableHead,
+} from "../Balances";
 
 const useStyles = styles(() => ({
   cardContentContainer: {
@@ -31,12 +32,12 @@ const useStyles = styles(() => ({
 
 export function Nfts() {
   const activeWallets = useActiveWallets();
+  const enabledBlockchains = useEnabledBlockchains();
   const [collections, _, isLoading] = useLoader(
     nftCollections,
-    {
-      [Blockchain.SOLANA]: [] as NftCollection[],
-      [Blockchain.ETHEREUM]: [] as NftCollection[],
-    },
+    Object.fromEntries(
+      enabledBlockchains.map((b: Blockchain) => [b, new Array<NftCollection>()])
+    ),
     // Note this reloads on any change to the active wallets, which reloads
     // NFTs for both blockchains.
     // TODO Make this reload for only the relevant blockchain

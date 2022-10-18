@@ -1,22 +1,7 @@
-import { useRecoilValue, useRecoilValueLoadable, Loadable } from "recoil";
+import { useRecoilValue } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
 import { WalletPublicKeys } from "../types";
 import * as atoms from "../atoms";
-
-export function useActiveWalletLoadable(): Loadable<{
-  publicKey: string;
-  name: string;
-}> {
-  return useRecoilValueLoadable(atoms.activeWalletWithData)! as Loadable<any>;
-}
-
-export function useActiveWallet(): {
-  publicKey: string;
-  name: string;
-  blockchain: Blockchain;
-} {
-  return useRecoilValue(atoms.activeWalletWithData)!;
-}
 
 export function useActiveEthereumWallet(): {
   publicKey: string;

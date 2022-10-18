@@ -9,7 +9,7 @@ import {
   NotificationsProvider,
 } from "@coral-xyz/recoil";
 import { WithSuspense } from "../app/Router";
-import { ConnectHardware } from "../components/Unlocked/Settings/AddConnectWallet/ConnectHardware";
+import { ConnectHardwareImport } from "../components/Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareImport";
 import { Onboarding } from "../components/Onboarding";
 import "../app/App.css";
 import { WithTheme } from "../components/common/WithTheme";
@@ -59,7 +59,7 @@ function Router() {
       const params = new URLSearchParams(window.location.search);
       const blockchain = params.get("blockchain") || Blockchain.SOLANA;
       return (
-        <ConnectHardware
+        <ConnectHardwareImport
           blockchain={blockchain as Blockchain}
           onComplete={window.close}
         />

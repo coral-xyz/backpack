@@ -15,17 +15,18 @@ import {
   useBlockchainConnectionUrl,
   useBlockchainLogo,
   useBlockchainTokensSorted,
+  useEnabledBlockchains,
   useLoader,
 } from "@coral-xyz/recoil";
-import {
-  TextField,
-  BalancesTable,
-  BalancesTableHead,
-  BalancesTableContent,
-  BalancesTableRow,
-  BalancesTableCell,
-} from "@coral-xyz/react-xnft-renderer";
+import { TextField } from "../../plugin/Component";
 import { WithCopyTooltip } from "./WithCopyTooltip";
+import {
+  BalancesTable,
+  BalancesTableCell,
+  BalancesTableContent,
+  BalancesTableHead,
+  BalancesTableRow,
+} from "../Unlocked/Balances";
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
@@ -151,17 +152,14 @@ export function TokenTables({
   searchFilter?: string;
   customFilter?: (token: Token) => boolean;
 }) {
-  const activeWallets = useActiveWallets();
-  const availableBlockchains = [
-    ...new Set(activeWallets.map((a: any) => a.blockchain)),
-  ];
+  const enabledBlockchains = useEnabledBlockchains();
   const filteredBlockchains =
-    blockchains?.filter((b) => availableBlockchains.includes(b)) ||
-    availableBlockchains;
+    blockchains?.filter((b) => enabledBlockchains.includes(b)) ||
+    enabledBlockchains;
 
   return (
     <>
-      {filteredBlockchains.map((blockchain) => (
+      {filteredBlockchains.map((blockchain: Blockchain) => (
         <TokenTable
           key={blockchain}
           blockchain={blockchain}

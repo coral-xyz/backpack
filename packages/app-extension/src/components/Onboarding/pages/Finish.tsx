@@ -1,4 +1,5 @@
 import {
+  Blockchain,
   BrowserRuntimeExtension,
   DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
@@ -8,17 +9,19 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Loading } from "../../common";
 import { SetupComplete } from "../../common/Account/SetupComplete";
-import { getWaitlistId } from "./WaitingRoom";
+import { getWaitlistId } from "../../common/WaitingRoom";
 
 export const Finish = () => {
   const [isValid, setIsValid] = useState(false);
   const background = useBackgroundClient();
   const params = useParams<{
+    blockchain: Blockchain;
     accountsAndDerivationPath: string;
     inviteCode: string;
     mnemonic: string;
     password: string;
     username: string;
+    usernameAndPubkey: string;
   }>();
 
   useEffect(() => {
@@ -32,17 +35,28 @@ export const Finish = () => {
     })();
 
     async function createStore() {
+      const _username = (() => {
+        try {
+          const { username } = JSON.parse(params.usernameAndPubkey!);
+          return username;
+        } catch (err) {
+          return params.username;
+        }
+      })();
+
       try {
         await background.request({
           method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
           params: [
+            params.blockchain,
             params.mnemonic,
             derivationPath,
-            params.password,
+            decodeURIComponent(params.password!),
             accounts,
-            params.username,
+            _username,
             params.inviteCode,
             getWaitlistId?.(),
+            Boolean(params.usernameAndPubkey),
           ],
         });
         setIsValid(true);

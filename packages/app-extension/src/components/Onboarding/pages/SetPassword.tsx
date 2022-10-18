@@ -6,7 +6,9 @@ export const SetPassword = () => {
   const navigate = useNavigate();
   return (
     <CreatePassword
-      onNext={(password) => navigate(`${pathname}/${password}/finish`)}
+      onNext={(password) =>
+        navigate(`${pathname}/${encodeURIComponent(password)}/finish`)
+      }
     />
   );
 };

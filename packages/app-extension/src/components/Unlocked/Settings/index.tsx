@@ -10,16 +10,17 @@ import {
   AccountCircleOutlined,
   Tab as WindowIcon,
   Settings,
+  People,
 } from "@mui/icons-material";
 import { Keypair } from "@solana/web3.js";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
 import {
   useBackgroundClient,
   useWalletPublicKeys,
-  useActiveWallet,
   useActiveWallets,
   useBlockchainLogo,
   useUsername,
+  WalletPublicKeys,
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
@@ -28,7 +29,7 @@ import {
   BACKPACK_FEATURE_XNFT,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   DISCORD_INVITE_LINK,
 } from "@coral-xyz/common";
 import {
@@ -65,7 +66,7 @@ import { Preferences } from "./Preferences";
 import { PreferencesSolana } from "./Preferences/Solana";
 import { PreferencesEthereum } from "./Preferences/Ethereum";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
-import { PreferencesTrustedApps } from "./Preferences/TrustedApps";
+import { PreferencesTrustedSites } from "./Preferences/TrustedSites";
 import { PreferencesSolanaConnection } from "./Preferences/Solana/ConnectionSwitch";
 import { PreferencesSolanaCommitment } from "./Preferences/Solana/Commitment";
 import { PreferencesSolanaExplorer } from "./Preferences/Solana/Explorer";
@@ -83,6 +84,7 @@ import { DiscordIcon, GridIcon } from "../../common/Icon";
 import { XnftSettings } from "./Xnfts";
 import { XnftDetail } from "./Xnfts/Detail";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
+import WaitingRoom from "../../common/WaitingRoom";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -186,6 +188,10 @@ function AvatarButton() {
               component={(props: any) => <YourAccount {...props} />}
             />
             <NavStackScreen
+              name={"waiting-room"}
+              component={(props: any) => <WaitingRoom onboarded {...props} />}
+            />
+            <NavStackScreen
               name={"preferences"}
               component={(props: any) => <Preferences {...props} />}
             />
@@ -194,8 +200,8 @@ function AvatarButton() {
               component={(props: any) => <PreferencesAutoLock {...props} />}
             />
             <NavStackScreen
-              name={"preferences-trusted-apps"}
-              component={(props: any) => <PreferencesTrustedApps {...props} />}
+              name={"preferences-trusted-sites"}
+              component={(props: any) => <PreferencesTrustedSites {...props} />}
             />
             <NavStackScreen
               name={"preferences-solana"}
@@ -316,10 +322,10 @@ function _SettingsContent() {
 }
 
 function AvatarHeader() {
-  const activeWallet = useActiveWallet();
+  const username = useUsername();
   const theme = useCustomTheme();
   return (
-    <div>
+    <div style={{ marginBottom: "40px" }}>
       <div
         style={{
           background: theme.custom.colors.coralGradient,
@@ -344,18 +350,21 @@ function AvatarHeader() {
           }}
         />
       </div>
-      <Typography
-        style={{
-          textAlign: "center",
-          color: theme.custom.colors.fontColor,
-          fontWeight: 500,
-          fontSize: "18px",
-          lineHeight: "28px",
-          marginBottom: "40px",
-        }}
-      >
-        {activeWallet.name}
-      </Typography>
+      {username && (
+        <Typography
+          style={{
+            textAlign: "center",
+            color: theme.custom.colors.fontColor,
+            fontWeight: 500,
+            fontSize: "18px",
+            lineHeight: "28px",
+            marginTop: "8px",
+            marginBottom: "12px",
+          }}
+        >
+          @{username}
+        </Typography>
+      )}
     </div>
   );
 }
@@ -394,13 +403,15 @@ function WalletList({
   const clickWallet = (publicKey: string) => {
     background
       .request({
-        method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-        params: [publicKey],
+        method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+        params: [publicKey, blockchain],
       })
       .then((_resp) => close())
       .catch(console.error);
   };
+
   let activeWalletType: "derived" | "hardware";
+
   const keys = keyring.hdPublicKeys
     .map((k: any) => ({ ...k, type: "derived" }))
     .concat(
@@ -426,6 +437,7 @@ function WalletList({
   const { name, publicKey } = activeWallets.filter(
     (a) => a.blockchain === blockchain
   )[0];
+
   return (
     <div
       style={{
@@ -740,7 +752,6 @@ function SettingsList({ close }: { close: () => void }) {
   const theme = useCustomTheme();
   const nav = useNavStack();
   const background = useBackgroundClient();
-  const username = useUsername();
 
   const lockWallet = () => {
     background
@@ -753,7 +764,7 @@ function SettingsList({ close }: { close: () => void }) {
 
   const settingsMenu = [
     {
-      label: username ? `Your Account (${username})` : "Your Account",
+      label: "Your Account",
       onClick: () => nav.push("your-account"),
       icon: (props: any) => <AccountCircleOutlined {...props} />,
       detailIcon: <PushDetail />,
@@ -769,7 +780,20 @@ function SettingsList({ close }: { close: () => void }) {
     settingsMenu.push({
       label: "xNFTs",
       onClick: () => nav.push("xnfts"),
-      icon: (props: any) => <GridIcon {...props} />,
+      icon: (props: any) => (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+          }}
+        >
+          <GridIcon
+            {...props}
+            style={{ ...props.style, width: "24px", height: "20px" }}
+          />
+        </div>
+      ),
       detailIcon: <PushDetail />,
     });
   }
@@ -792,6 +816,12 @@ function SettingsList({ close }: { close: () => void }) {
   });
 
   const discordList = [
+    {
+      label: "Waiting Room",
+      onClick: () => nav.push("waiting-room"),
+      icon: (props: any) => <People {...props} />,
+      detailIcon: <PushDetail />,
+    },
     {
       label: "Need help? Hop into Discord",
       onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
@@ -911,12 +941,14 @@ function SettingsList({ close }: { close: () => void }) {
 export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   const classes = useStyles();
   const background = useBackgroundClient();
+  const existingPublicKeys = useWalletPublicKeys();
   const nav = useNavStack();
   const theme = useCustomTheme();
   const [name, setName] = useState("");
   const [secretKey, setSecretKey] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [newPublicKey, setNewPublicKey] = useState("");
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -927,9 +959,15 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   }, [theme]);
 
   const onClick = async () => {
-    const secretKeyHex = validateSecretKey(blockchain, secretKey);
-    if (!secretKeyHex) {
-      setError("Invalid private key");
+    let secretKeyHex;
+    try {
+      secretKeyHex = validateSecretKey(
+        blockchain,
+        secretKey,
+        existingPublicKeys
+      );
+    } catch (e) {
+      setError((e as Error).message);
       return;
     }
 
@@ -939,10 +977,11 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
     });
 
     await background.request({
-      method: UI_RPC_METHOD_WALLET_DATA_ACTIVE_WALLET_UPDATE,
-      params: [publicKey],
+      method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+      params: [publicKey, blockchain],
     });
 
+    setNewPublicKey(publicKey);
     setOpenDrawer(true);
   };
 
@@ -1017,6 +1056,7 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
       >
         <ConfirmCreateWallet
           blockchain={blockchain}
+          publicKey={newPublicKey}
           setOpenDrawer={setOpenDrawer}
         />
       </WithMiniDrawer>
@@ -1027,10 +1067,16 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
 // Validate a secret key and return a normalised hex representation
 function validateSecretKey(
   blockchain: Blockchain,
-  secretKey: string
-): string | boolean {
+  secretKey: string,
+  keyring: WalletPublicKeys
+): string {
+  // Extract public keys from keychain object into array of strings
+  const existingPublicKeys = Object.values(keyring[blockchain])
+    .map((k) => k.map((i) => i.publicKey))
+    .flat();
+
   if (blockchain === Blockchain.SOLANA) {
-    let keypair;
+    let keypair: Keypair | null = null;
     try {
       // Attempt to create a keypair from JSON secret key
       keypair = Keypair.fromSecretKey(new Uint8Array(JSON.parse(secretKey)));
@@ -1040,16 +1086,26 @@ function validateSecretKey(
         keypair = Keypair.fromSecretKey(new Uint8Array(bs58.decode(secretKey)));
       } catch (_) {
         // Failure
-        return false;
+        throw new Error("Invalid private key");
       }
     }
+
+    if (existingPublicKeys.includes(keypair.publicKey.toString())) {
+      throw new Error("Key already exists");
+    }
+
     return Buffer.from(keypair.secretKey).toString("hex");
   } else if (blockchain === Blockchain.ETHEREUM) {
     try {
       const wallet = new ethers.Wallet(secretKey);
+
+      if (existingPublicKeys.includes(wallet.publicKey)) {
+        throw new Error("Key already exists");
+      }
+
       return wallet.privateKey;
     } catch (_) {
-      return false;
+      throw new Error("Invalid private key");
     }
   }
   throw new Error("secret key validation not implemented for blockchain");

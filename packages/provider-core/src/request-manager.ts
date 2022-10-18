@@ -14,6 +14,7 @@ export class RequestManager {
   private _requestChannel: string;
   private _responseChannel: string;
   private _parent?: boolean;
+  private _url?: string;
 
   constructor(
     requestChannel: string,
@@ -25,6 +26,9 @@ export class RequestManager {
     this._requestId = 0;
     this._responseResolvers = {};
     this._parent = parent;
+    if (parent) {
+      this._url = window.location.href;
+    }
     this._initChannels();
   }
 
@@ -34,7 +38,6 @@ export class RequestManager {
 
   private _handleRpcResponse(event: Event) {
     if (event.data.type !== this._responseChannel) return;
-
     const { id, result, error } = event.data.detail;
     const resolver = this._responseResolvers[id];
     if (!resolver) {
@@ -64,7 +67,8 @@ export class RequestManager {
       window.parent.postMessage(
         {
           type: this._requestChannel,
-          href: window.location.href,
+          // this._url will always be set here, because this._parent is true.
+          href: this._url!,
           detail: {
             id,
             method,

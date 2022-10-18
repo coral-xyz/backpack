@@ -2,7 +2,7 @@ import { atom, atomFamily, selector, selectorFamily } from "recoil";
 import { ethers, BigNumber } from "ethers";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { fetchEthereumTokenBalances, ETH_NATIVE_MINT } from "@coral-xyz/common";
-import { TokenData } from "../../types";
+import { TokenData, TokenNativeData } from "../../types";
 import { priceData } from "../prices";
 import { ethereumPublicKey } from "../wallet";
 import { ethersContext } from "./provider";
@@ -63,8 +63,11 @@ export const erc20Balances = selector({
   },
 });
 
-export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
-  key: "ethereumTokenBalance",
+export const ethereumTokenNativeBalance = selectorFamily<
+  TokenNativeData | null,
+  string
+>({
+  key: "ethereumTokenNativeBalance",
   get:
     (contractAddress: string) =>
     ({ get }) => {
@@ -84,18 +87,6 @@ export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
         : BigNumber.from(0);
       const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
 
-      const price = get(priceData(contractAddress)) as any;
-      const usdBalance =
-        price && price.usd ? price.usd * parseFloat(displayBalance) : 0;
-      const oldUsdBalance =
-        usdBalance === 0 ? 0 : usdBalance / (1 + price.usd_24h_change);
-      const recentUsdBalanceChange =
-        (usdBalance - oldUsdBalance) / oldUsdBalance;
-      const recentPercentChange =
-        price && price.usd_24h_change
-          ? parseFloat(price.usd_24h_change.toFixed(2))
-          : undefined;
-
       return {
         name,
         decimals,
@@ -104,9 +95,41 @@ export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
         ticker,
         logo,
         address: contractAddress,
+      };
+    },
+});
+
+export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
+  key: "ethereumTokenBalance",
+  get:
+    (contractAddress: string) =>
+    ({ get }) => {
+      const nativeTokenBalance = get(
+        ethereumTokenNativeBalance(contractAddress)
+      );
+      if (!nativeTokenBalance) {
+        return null;
+      }
+
+      const price = get(priceData(contractAddress)) as any;
+      const usdBalance =
+        (price?.usd ?? 0) * parseFloat(nativeTokenBalance.displayBalance);
+      const oldUsdBalance =
+        usdBalance === 0
+          ? 0
+          : usdBalance - usdBalance * (price.usd_24h_change / 100);
+      const recentUsdBalanceChange = usdBalance - oldUsdBalance;
+      const recentPercentChange =
+        price && price.usd_24h_change
+          ? parseFloat(price.usd_24h_change.toFixed(2))
+          : undefined;
+
+      return {
+        ...nativeTokenBalance,
         usdBalance,
         recentPercentChange,
         recentUsdBalanceChange,
-      } as TokenData;
+        priceData: price,
+      };
     },
 });

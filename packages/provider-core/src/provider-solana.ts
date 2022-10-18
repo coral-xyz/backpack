@@ -1,4 +1,3 @@
-import { EventEmitter } from "eventemitter3";
 import { Provider } from "@project-serum/anchor";
 import type {
   TransactionSignature,
@@ -9,7 +8,7 @@ import type {
   SimulatedTransactionResponse,
   Commitment,
 } from "@solana/web3.js";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey, VersionedTransaction } from "@solana/web3.js";
 import type { Event } from "@coral-xyz/common";
 import {
   getLogger,
@@ -30,43 +29,50 @@ import {
 } from "@coral-xyz/common";
 import * as cmn from "./common/solana";
 import { RequestManager } from "./request-manager";
+import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 
 const logger = getLogger("provider-solana-injection");
 
-export class ProviderSolanaInjection extends EventEmitter implements Provider {
-  private _options?: ConfirmOptions;
+export class ProviderSolanaInjection
+  extends PrivateEventEmitter
+  implements Provider
+{
+  #options?: ConfirmOptions;
 
   //
   // Channel to send extension specific RPC requests to the extension.
   //
-  private _requestManager: RequestManager;
+  #requestManager: RequestManager;
   //
   // Channel to send Solana Connection API requests to the extension.
   //
-  private _connectionRequestManager: RequestManager;
+  #connectionRequestManager: RequestManager;
 
-  public isBackpack: boolean;
-  public isConnected: boolean;
-  public publicKey?: PublicKey;
-  public connection: Connection;
+  #isBackpack: boolean;
+  #isConnected: boolean;
+  #publicKey?: PublicKey;
+  #connection: Connection;
 
   constructor() {
     super();
-    this._options = undefined;
-    this._requestManager = new RequestManager(
+    if (new.target === ProviderSolanaInjection) {
+      Object.freeze(this);
+    }
+    this.#options = undefined;
+    this.#requestManager = new RequestManager(
       CHANNEL_SOLANA_RPC_REQUEST,
       CHANNEL_SOLANA_RPC_RESPONSE
     );
-    this._connectionRequestManager = new RequestManager(
+    this.#connectionRequestManager = new RequestManager(
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
       CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
     );
-    this._initChannels();
+    this.#initChannels();
 
-    this.isBackpack = true;
-    this.isConnected = false;
-    this.publicKey = undefined;
-    this.connection = this.defaultConnection();
+    this.#isBackpack = true;
+    this.#isConnected = false;
+    this.#publicKey = undefined;
+    this.#connection = this.defaultConnection();
   }
 
   defaultConnection(): Connection {
@@ -77,26 +83,26 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
   }
 
   // Setup channels with the content script.
-  _initChannels() {
-    window.addEventListener("message", this._handleNotification.bind(this));
+  #initChannels() {
+    window.addEventListener("message", this.#handleNotification.bind(this));
   }
 
-  _handleNotification(event: Event) {
+  #handleNotification(event: Event) {
     if (event.data.type !== CHANNEL_SOLANA_NOTIFICATION) return;
     logger.debug("notification", event);
 
     switch (event.data.detail.name) {
       case NOTIFICATION_SOLANA_CONNECTED:
-        this._handleNotificationConnected(event);
+        this.#handleNotificationConnected(event);
         break;
       case NOTIFICATION_SOLANA_DISCONNECTED:
-        this._handleNotificationDisconnected(event);
+        this.#handleNotificationDisconnected(event);
         break;
       case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
-        this._handleNotificationConnectionUrlUpdated(event);
+        this.#handleNotificationConnectionUrlUpdated(event);
         break;
       case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
-        this._handleNotificationActiveWalletUpdated(event);
+        this.#handleNotificationActiveWalletUpdated(event);
         break;
       default:
         throw new Error(`unexpected notification ${event.data.detail.name}`);
@@ -105,56 +111,56 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
     this.emit(_mapNotificationName(event.data.detail.name));
   }
 
-  _handleNotificationConnected(event: Event) {}
+  #handleNotificationConnected(event: Event) {}
 
-  private _connect(publicKey: string, connectionUrl: string) {
-    this.isConnected = true;
-    this.publicKey = new PublicKey(publicKey);
-    this.connection = new BackgroundSolanaConnection(
-      this._connectionRequestManager,
+  #connect(publicKey: string, connectionUrl: string) {
+    this.#isConnected = true;
+    this.#publicKey = new PublicKey(publicKey);
+    this.#connection = new BackgroundSolanaConnection(
+      this.#connectionRequestManager,
       connectionUrl
     );
   }
 
-  _handleNotificationDisconnected(event: Event) {
-    this.isConnected = false;
-    this.connection = this.defaultConnection();
+  #handleNotificationDisconnected(event: Event) {
+    this.#isConnected = false;
+    this.#connection = this.defaultConnection();
   }
 
-  _handleNotificationConnectionUrlUpdated(event: Event) {
-    this.connection = new BackgroundSolanaConnection(
-      this._connectionRequestManager,
+  #handleNotificationConnectionUrlUpdated(event: Event) {
+    this.#connection = new BackgroundSolanaConnection(
+      this.#connectionRequestManager,
       event.data.detail.data.url
     );
   }
 
-  _handleNotificationActiveWalletUpdated(event: Event) {
-    this.publicKey = new PublicKey(event.data.detail.data.activeWallet);
+  #handleNotificationActiveWalletUpdated(event: Event) {
+    this.#publicKey = new PublicKey(event.data.detail.data.activeWallet);
   }
 
   async connect() {
-    if (this.isConnected) {
+    if (this.#isConnected) {
       throw new Error("provider already connected");
     }
     // Send request to the RPC API.
-    const result = await this._requestManager.request({
+    const result = await this.#requestManager.request({
       method: SOLANA_RPC_METHOD_CONNECT,
       params: [],
     });
 
-    this._connect(result.publicKey, result.connectionUrl);
+    this.#connect(result.publicKey, result.connectionUrl);
   }
 
   async disconnect() {
-    await this._requestManager.request({
+    await this.#requestManager.request({
       method: SOLANA_RPC_METHOD_DISCONNECT,
       params: [],
     });
-    this.connection = this.defaultConnection();
+    this.#connection = this.defaultConnection();
   }
 
   async openXnft(xnftAddress: PublicKey) {
-    await this._requestManager.request({
+    await this.#requestManager.request({
       method: SOLANA_RPC_METHOD_OPEN_XNFT,
       params: [xnftAddress.toString()],
     });
@@ -167,33 +173,33 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
     connection?: Connection,
     publicKey?: PublicKey
   ): Promise<TransactionSignature> {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.sendAndConfirm(
-      publicKey ?? this.publicKey,
-      this._requestManager,
-      connection ?? this.connection,
+      publicKey ?? this.#publicKey,
+      this.#requestManager,
+      connection ?? this.#connection,
       tx,
       signers,
       options
     );
   }
 
-  async send(
-    tx: Transaction,
+  async send<T extends Transaction | VersionedTransaction>(
+    tx: T,
     signers?: Signer[],
     options?: SendOptions,
     connection?: Connection,
     publicKey?: PublicKey
   ): Promise<TransactionSignature> {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.send(
-      publicKey ?? this.publicKey,
-      this._requestManager,
-      connection ?? this.connection,
+      publicKey ?? this.#publicKey,
+      this.#requestManager,
+      connection ?? this.#connection,
       tx,
       signers,
       options
@@ -201,8 +207,8 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
   }
 
   // @ts-ignore
-  async sendAll(
-    _txWithSigners: { tx: Transaction; signers?: Signer[] }[],
+  async sendAll<T extends Transaction | VersionedTransaction>(
+    _txWithSigners: { tx: T; signers?: Signer[] }[],
     _opts?: ConfirmOptions,
     connection?: Connection,
     publicKey?: PublicKey
@@ -211,54 +217,54 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
   }
 
   // @ts-ignore
-  async simulate(
-    tx: Transaction,
+  async simulate<T extends Transaction | VersionedTransaction>(
+    tx: T,
     signers?: Signer[],
     commitment?: Commitment,
     connection?: Connection,
     publicKey?: PublicKey
   ): Promise<SimulatedTransactionResponse> {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.simulate(
-      publicKey ?? this.publicKey,
-      this._requestManager,
-      connection ?? this.connection,
+      publicKey ?? this.#publicKey,
+      this.#requestManager,
+      connection ?? this.#connection,
       tx,
       signers,
       commitment
     );
   }
 
-  async signTransaction(
-    tx: Transaction,
+  async signTransaction<T extends Transaction | VersionedTransaction>(
+    tx: T,
     publicKey?: PublicKey,
     connection?: Connection
-  ): Promise<Transaction> {
-    if (!this.publicKey) {
+  ): Promise<T> {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.signTransaction(
-      publicKey ?? this.publicKey,
-      this._requestManager,
-      connection ?? this.connection,
+      publicKey ?? this.#publicKey,
+      this.#requestManager,
+      connection ?? this.#connection,
       tx
     );
   }
 
-  async signAllTransactions(
-    txs: Array<Transaction>,
+  async signAllTransactions<T extends Transaction | VersionedTransaction>(
+    txs: Array<T>,
     publicKey?: PublicKey,
     connection?: Connection
-  ): Promise<Array<Transaction>> {
-    if (!this.publicKey) {
+  ): Promise<Array<T>> {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.signAllTransactions(
-      publicKey ?? this.publicKey,
-      this._requestManager,
-      connection ?? this.connection,
+      publicKey ?? this.#publicKey,
+      this.#requestManager,
+      connection ?? this.#connection,
       txs
     );
   }
@@ -267,14 +273,30 @@ export class ProviderSolanaInjection extends EventEmitter implements Provider {
     msg: Uint8Array,
     publicKey?: PublicKey
   ): Promise<Uint8Array> {
-    if (!this.publicKey) {
+    if (!this.#publicKey) {
       throw new Error("wallet not connected");
     }
     return await cmn.signMessage(
-      publicKey ?? this.publicKey,
-      this._requestManager,
+      publicKey ?? this.#publicKey,
+      this.#requestManager,
       msg
     );
+  }
+
+  public get isBackpack() {
+    return this.#isBackpack;
+  }
+
+  public get isConnected() {
+    return this.#isConnected;
+  }
+
+  public get publicKey() {
+    return this.#publicKey;
+  }
+
+  public get connection() {
+    return this.#connection;
   }
 }
 

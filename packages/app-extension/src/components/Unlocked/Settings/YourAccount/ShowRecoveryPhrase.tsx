@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, FormEvent } from "react";
 import { Box, List, ListItem, ListItemIcon } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ChatIcon from "@mui/icons-material/Chat";
 import WebIcon from "@mui/icons-material/Web";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
-import { styles } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC } from "@coral-xyz/common";
-import { useCustomTheme } from "@coral-xyz/themes";
 import {
   CopyButton,
   MnemonicInputFields,
@@ -35,31 +34,6 @@ const useStyles = styles((theme: any) => ({
       },
     },
   },
-  mnemonicInputRoot: {
-    border: `${theme.custom.colors.borderFull}`,
-    color: theme.custom.colors.secondary,
-    borderRadius: "8px",
-    marginTop: "4px",
-    "& .MuiOutlinedInput-root": {
-      backgroundColor: theme.custom.colors.nav,
-      borderRadius: "8px",
-      height: "40px",
-      "& fieldset": {
-        border: "none",
-      },
-    },
-    "& .MuiInputBase-input": {
-      color: theme.custom.colors.fontColor,
-      backgroundColor: theme.custom.colors.nav,
-      borderRadius: "8px",
-      fontSize: "12px",
-      fontWeight: 700,
-    },
-    "& .MuiInputAdornment-root": {
-      color: theme.custom.colors.secondary,
-      fontWeight: 500,
-    },
-  },
   listRoot: {
     color: theme.custom.colors.fontColor,
     padding: "0",
@@ -73,7 +47,7 @@ const useStyles = styles((theme: any) => ({
     borderRadius: "4px",
     background: theme.custom.colors.nav,
     padding: "8px",
-    height: "56px",
+    minHeight: "56px",
     marginBottom: "1px",
   },
   listItemIconRoot: {
@@ -99,7 +73,9 @@ export function ShowRecoveryPhraseWarning() {
     };
   }, []);
 
-  const _next = async () => {
+  const next = async (e: FormEvent) => {
+    e.preventDefault();
+
     let mnemonic;
     try {
       mnemonic = await background.request({
@@ -115,8 +91,10 @@ export function ShowRecoveryPhraseWarning() {
   };
 
   return (
-    <Box
-      sx={{
+    <form
+      noValidate
+      onSubmit={next}
+      style={{
         display: "flex",
         flexDirection: "column",
         height: "100%",
@@ -189,11 +167,11 @@ export function ShowRecoveryPhraseWarning() {
         </Box>
         <DangerButton
           label="Show phrase"
-          onClick={_next}
+          type="submit"
           disabled={password.length === 0}
         />
       </Box>
-    </Box>
+    </form>
   );
 }
 

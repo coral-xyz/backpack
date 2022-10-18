@@ -1,42 +1,49 @@
 import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
-import type { Commitment, SendOptions } from "@solana/web3.js";
-import { PublicKey, Transaction } from "@solana/web3.js";
+import type {
+  Commitment,
+  SendOptions,
+  SimulateTransactionConfig,
+} from "@solana/web3.js";
+import { PublicKey, VersionedTransaction } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
 import {
-  BACKPACK_FEATURE_USERNAMES,
-  EthereumExplorer,
-  EthereumConnectionUrl,
-  SolanaCluster,
-  SolanaExplorer,
   BACKEND_EVENT,
-  NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-  NOTIFICATION_KEYRING_KEY_DELETE,
+  BACKPACK_FEATURE_USERNAMES,
+  Blockchain,
+  EthereumConnectionUrl,
+  EthereumExplorer,
+  NOTIFICATION_APPROVED_ORIGINS_UPDATE,
+  NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
+  NOTIFICATION_BLOCKCHAIN_DISABLED,
+  NOTIFICATION_BLOCKCHAIN_ENABLED,
+  NOTIFICATION_DARK_MODE_UPDATED,
+  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
+  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
+  NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
+  NOTIFICATION_KEYRING_KEY_DELETE,
   NOTIFICATION_KEYRING_STORE_CREATED,
-  NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_RESET,
-  NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED,
-  NOTIFICATION_APPROVED_ORIGINS_UPDATE,
-  NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
-  NOTIFICATION_DARK_MODE_UPDATED,
+  NOTIFICATION_KEYRING_STORE_UNLOCKED,
+  NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
-  NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
-  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-  NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
-  NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
-  Blockchain,
+  SolanaCluster,
+  SolanaExplorer,
+  deserializeTransaction,
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
 import * as store from "./store";
+import type { BlockchainKeyring } from "./keyring/blockchain";
 import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
@@ -80,9 +87,9 @@ export class Backend {
     options?: SendOptions
   ): Promise<string> {
     // Sign the transaction.
-    const tx = Transaction.from(bs58.decode(txStr));
     const signature = await this.solanaSignTransaction(txStr, walletAddress);
     const pubkey = new PublicKey(walletAddress);
+    const tx = deserializeTransaction(txStr);
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
 
     // Send it to the network.
@@ -112,8 +119,9 @@ export class Backend {
     txStr: string,
     walletAddress: string
   ): Promise<string> {
-    const tx = Transaction.from(bs58.decode(txStr));
-    const txMessage = bs58.encode(tx.serializeMessage());
+    const tx = deserializeTransaction(txStr);
+    const message = tx.message.serialize();
+    const txMessage = bs58.encode(message);
     const blockchainKeyring = this.keyringStore.keyringForBlockchain(
       Blockchain.SOLANA
     );
@@ -129,13 +137,23 @@ export class Backend {
 
   async solanaSimulate(
     txStr: string,
-    _walletAddress: string,
+    walletAddress: string,
     includeAccounts?: boolean | Array<string>
   ): Promise<any> {
-    const tx = Transaction.from(bs58.decode(txStr));
+    const tx = deserializeTransaction(txStr);
+    const signersOrConf =
+      "message" in tx
+        ? ({
+            accounts: {
+              encoding: "base64",
+              addresses: [new PublicKey(walletAddress).toBase58()],
+            },
+          } as SimulateTransactionConfig)
+        : undefined;
+
     return await this.solanaConnectionBackend.simulateTransaction(
       tx,
-      undefined,
+      signersOrConf,
       typeof includeAccounts === "boolean"
         ? includeAccounts
         : includeAccounts && includeAccounts.map((a) => new PublicKey(a))
@@ -171,6 +189,15 @@ export class Backend {
       return false;
     }
 
+    let keyring: BlockchainKeyring | null;
+    try {
+      keyring = this.keyringStore.keyringForBlockchain(Blockchain.SOLANA);
+    } catch {
+      // Blockchain may be disabled
+      keyring = null;
+    }
+    const activeWallet = keyring ? keyring.getActiveWallet() : null;
+
     await setWalletData({
       ...data,
       solana: {
@@ -179,12 +206,11 @@ export class Backend {
       },
     });
 
-    const activeWallet = await this.activeWallet();
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
       data: {
-        url: cluster,
         activeWallet,
+        url: cluster,
       },
     });
 
@@ -312,6 +338,7 @@ export class Backend {
 
   async ethereumConnectionUrlUpdate(connectionUrl: string): Promise<string> {
     const data = await store.getWalletData();
+
     await store.setWalletData({
       ...data,
       ethereum: {
@@ -319,9 +346,20 @@ export class Backend {
         connectionUrl,
       },
     });
+
+    let keyring: BlockchainKeyring | null;
+    try {
+      keyring = this.keyringStore.keyringForBlockchain(Blockchain.ETHEREUM);
+    } catch {
+      // Blockchain may be disabled
+      keyring = null;
+    }
+    const activeWallet = keyring ? keyring.getActiveWallet() : null;
+
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
       data: {
+        activeWallet,
         connectionUrl,
       },
     });
@@ -360,15 +398,18 @@ export class Backend {
 
   // Creates a brand new keyring store. Should be run once on initializtion.
   async keyringStoreCreate(
+    blockchain: Blockchain,
     mnemonic: string,
     derivationPath: DerivationPath,
     password: string,
     accountIndices: Array<number>,
     username: string,
     inviteCode: string,
-    waitlistId?: string
+    waitlistId?: string,
+    userIsRecoveringWallet = false
   ): Promise<string> {
-    await this.keyringStore.init(
+    const keyring = await this.keyringStore.init(
+      blockchain,
       mnemonic,
       derivationPath,
       password,
@@ -376,21 +417,22 @@ export class Backend {
       username
     );
 
-    if (BACKPACK_FEATURE_USERNAMES) {
+    if (BACKPACK_FEATURE_USERNAMES && !userIsRecoveringWallet) {
       try {
-        const bc = await this.keyringStore.activeBlockchainKeyring();
-
-        const publicKey = bc.getActiveWallet();
+        const publicKey = keyring.getActiveWallet();
 
         const body = JSON.stringify({
           username,
           inviteCode,
           publicKey,
           waitlistId,
+          // order is significant, blockchain must be the last key atm
+          // see `app.post("/users")` inside `backend/workers/auth/src/index.ts`
+          blockchain,
         });
 
         const buffer = Buffer.from(body, "utf8");
-        const signature = await bc.signMessage(encode(buffer), publicKey!);
+        const signature = await keyring.signMessage(encode(buffer), publicKey!);
 
         const res = await fetch("https://auth.xnfts.dev/users", {
           method: "POST",
@@ -470,7 +512,7 @@ export class Backend {
 
   // Returns all pubkeys available for signing.
   async keyringStoreReadAllPubkeys(): Promise<any> {
-    const publicKeys = this.keyringStore.publicKeys();
+    const publicKeys = await this.keyringStore.publicKeys();
     const namedPublicKeys = {};
     for (const [blockchain, blockchainKeyring] of Object.entries(publicKeys)) {
       namedPublicKeys[blockchain] = {};
@@ -489,72 +531,41 @@ export class Backend {
     return namedPublicKeys;
   }
 
-  // Return currently active blockchain.
-  activeBlockchain(): string {
-    return this.keyringStore.activeBlockchain();
+  async activeWallets(): Promise<Array<string>> {
+    return await this.keyringStore.activeWallets();
   }
 
-  // Set the currently active blockchain.
-  activeBlockchainUpdate(newActiveBlockchain: Blockchain) {
-    const oldActiveBlockchain = this.activeBlockchain();
-    this.keyringStore.activeBlockchainUpdate(newActiveBlockchain);
-    if (oldActiveBlockchain !== newActiveBlockchain) {
-      this.events.emit(BACKEND_EVENT, {
-        name: NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED,
-        data: {
-          oldActiveBlockchain,
-          newActiveBlockchain,
-        },
-      });
-    }
-  }
+  async activeWalletUpdate(
+    newActivePublicKey: string,
+    blockchain: Blockchain
+  ): Promise<string> {
+    const keyring = this.keyringStore.keyringForBlockchain(blockchain);
+    const oldActivePublicKey = keyring.getActiveWallet();
+    await this.keyringStore.activeWalletUpdate(newActivePublicKey, blockchain);
 
-  // TODO deprecate single active wallet eventually
-  async activeWallet(): Promise<string> {
-    return await this.keyringStore.activeWallet();
-  }
-
-  // TODO deprecate single active wallet eventually
-  async activeWalletUpdate(newWallet: string): Promise<string> {
-    // Updating the active wallet can change the active blockchain, so save old
-    // blockchain to emit event if it changes
-    const oldActiveBlockchain = this.activeBlockchain();
-    await this.keyringStore.activeWalletUpdate(newWallet);
-    const newActiveBlockchain = this.activeBlockchain();
-
-    if (oldActiveBlockchain !== newActiveBlockchain) {
-      this.events.emit(BACKEND_EVENT, {
-        name: NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED,
-        data: {
-          oldActiveBlockchain,
-          newActiveBlockchain,
-        },
-      });
-    }
-
-    if (this.activeBlockchain() === Blockchain.SOLANA) {
-      this.events.emit(BACKEND_EVENT, {
-        name: NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
-        data: {
-          activeWallet: newWallet,
-          activeWallets: await this.activeWallets(),
-        },
-      });
-    } else if (this.activeBlockchain() === Blockchain.ETHEREUM) {
-      this.events.emit(BACKEND_EVENT, {
-        name: NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
-        data: {
-          activeWallet: newWallet,
-          activeWallets: await this.activeWallets(),
-        },
-      });
+    if (newActivePublicKey !== oldActivePublicKey) {
+      // Public key has changed, emit an event
+      // TODO: remove the blockchain specific events in favour of a single event
+      if (blockchain === Blockchain.SOLANA) {
+        this.events.emit(BACKEND_EVENT, {
+          name: NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
+          data: {
+            activeWallet: newActivePublicKey,
+            activeWallets: await this.activeWallets(),
+          },
+        });
+      } else if (blockchain === Blockchain.ETHEREUM) {
+        this.events.emit(BACKEND_EVENT, {
+          name: NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
+          data: {
+            activeWallet: newActivePublicKey,
+            activeWallets: await this.activeWallets(),
+          },
+        });
+      }
     }
 
     return SUCCESS_RESPONSE;
-  }
-
-  async activeWallets(): Promise<Array<string>> {
-    return await this.keyringStore.activeWallets();
   }
 
   // Map of blockchain to the active public key for that blockchain.
@@ -601,19 +612,20 @@ export class Backend {
     blockchain: Blockchain,
     publicKey: string
   ): Promise<string> {
-    const active = await this.activeWallet();
+    const keyring = this.keyringStore.keyringForBlockchain(blockchain);
 
     // If we're removing the currently active key then we need to update it
     // first.
-    if (publicKey === active) {
-      // Invariant: must have at least one hd pubkey.
-      const blockchainKeyrings = await this.keyringStoreReadAllPubkeys();
-      // Take the first available hd public key from the remainder for the same
-      // blockchain and set it to the active wallet
-      const filteredHdPublicKeys = blockchainKeyrings[
-        blockchain
-      ].hdPublicKeys.filter((k: any) => k.publicKey !== active);
-      await this.activeWalletUpdate(filteredHdPublicKeys[0].publicKey);
+    if (keyring.getActiveWallet() === publicKey) {
+      // Find remaining public keys
+      const nextPublicKey = Object.values(keyring.publicKeys())
+        .flat()
+        .find((k) => k !== keyring.getActiveWallet());
+      if (!nextPublicKey) {
+        throw new Error("cannot delete last public key");
+      }
+      // Set the first to be it to be the new active wallet
+      keyring.activeWalletUpdate(nextPublicKey);
     }
 
     await this.keyringStore.keyDelete(blockchain, publicKey);
@@ -671,11 +683,6 @@ export class Backend {
     return this.keyringStore.exportMnemonic(password);
   }
 
-  keyringResetMnemonic(password: string): string {
-    this.keyringStore.resetMnemonic(password);
-    return SUCCESS_RESPONSE;
-  }
-
   async keyringAutolockRead(): Promise<number> {
     const data = await store.getWalletData();
     return data.autoLockSecs;
@@ -719,11 +726,13 @@ export class Backend {
   }
 
   async previewPubkeys(
+    blockchain: Blockchain,
     mnemonic: string,
     derivationPath: DerivationPath,
     numberOfAccounts: number
   ) {
     return this.keyringStore.previewPubkeys(
+      blockchain,
       mnemonic,
       derivationPath,
       numberOfAccounts
@@ -802,6 +811,66 @@ export class Backend {
       },
     });
     return SUCCESS_RESPONSE;
+  }
+
+  async enabledBlockchainsAdd(blockchain: Blockchain) {
+    const data = await store.getWalletData();
+    if (data.enabledBlockchains.includes(blockchain)) {
+      throw new Error("blockchain already enabled");
+    }
+    const enabledBlockchains = [...data.enabledBlockchains, blockchain];
+    await store.setWalletData({
+      ...data,
+      enabledBlockchains,
+    });
+    let keyring: BlockchainKeyring;
+    try {
+      keyring = this.keyringStore.keyringForBlockchain(blockchain);
+    } catch {
+      keyring = await this.keyringStore.initBlockchainKeyring(
+        "bip44",
+        [0],
+        blockchain
+      );
+    }
+    const activeWallet = keyring.getActiveWallet();
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_BLOCKCHAIN_ENABLED,
+      data: {
+        blockchain,
+        enabledBlockchains,
+        activeWallet,
+      },
+    });
+  }
+
+  async enabledBlockchainsRemove(blockchain: Blockchain) {
+    const data = await store.getWalletData();
+    if (!data.enabledBlockchains.includes(blockchain)) {
+      throw new Error("blockchain not enabled");
+    }
+    if (data.enabledBlockchains.length === 1) {
+      throw new Error("cannot disable last enabled blockchain");
+    }
+    const enabledBlockchains = data.enabledBlockchains.filter(
+      (b) => b !== blockchain
+    );
+    await store.setWalletData({
+      ...data,
+      enabledBlockchains,
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_BLOCKCHAIN_DISABLED,
+      data: { blockchain, enabledBlockchains },
+    });
+  }
+
+  /**
+   * Return all the enabled blockchains.
+   */
+  async enabledBlockchainsRead(): Promise<Array<Blockchain>> {
+    const data = await store.getWalletData();
+    return data.enabledBlockchains;
   }
 
   ///////////////////////////////////////////////////////////////////////////////

@@ -28,7 +28,9 @@ import type {
   ConfirmedSignatureInfo,
   ParsedConfirmedTransaction,
   Transaction,
+  VersionedTransaction,
   Message,
+  MessageV0,
   Signer,
   SendOptions,
   SimulatedTransactionResponse,
@@ -59,14 +61,21 @@ import type {
   SignatureStatus,
   PerfSample,
   BlockheightBasedTransactionConfirmationStrategy,
+  AddressLookupTableAccount,
+  GetAccountInfoConfig,
+  SimulateTransactionConfig,
+  VersionedMessage,
 } from "@solana/web3.js";
 import type { Notification, EventEmitter } from "@coral-xyz/common";
+import { encode } from "bs58";
 import {
   getLogger,
   customSplTokenAccounts,
   Blockchain,
   confirmTransaction,
   BACKEND_EVENT,
+  NOTIFICATION_BLOCKCHAIN_DISABLED,
+  NOTIFICATION_BLOCKCHAIN_ENABLED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
@@ -130,6 +139,12 @@ export class SolanaConnectionBackend {
         case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
           handleConnectionUrlUpdated(notif);
           break;
+        case NOTIFICATION_BLOCKCHAIN_ENABLED:
+          handleBlockchainEnabled(notif);
+          break;
+        case NOTIFICATION_BLOCKCHAIN_DISABLED:
+          handleBlockchainDisabled(notif);
+          break;
         default:
           break;
       }
@@ -168,9 +183,29 @@ export class SolanaConnectionBackend {
       const { activeWallet, url } = notif.data;
       this.connection = new Connection(url, this.connection!.commitment);
       this.url = url;
-      this.stopPolling();
-      this.hookRpcRequest();
-      this.startPolling(new PublicKey(activeWallet));
+      // activeWallet can be null if the blockchain is disabled, in that case
+      // we don't want to start polling
+      if (activeWallet) {
+        this.stopPolling();
+        this.hookRpcRequest();
+        this.startPolling(new PublicKey(activeWallet));
+      }
+    };
+
+    const handleBlockchainEnabled = (notif: Notification) => {
+      const { blockchain, activeWallet } = notif.data;
+      if (blockchain === Blockchain.SOLANA) {
+        // Start polling if Solana was enabled in wallet settings
+        this.startPolling(new PublicKey(activeWallet));
+      }
+    };
+
+    const handleBlockchainDisabled = (notif: Notification) => {
+      const { blockchain } = notif.data;
+      if (blockchain === Blockchain.SOLANA) {
+        // Stop polling if Solana was disabled in wallet settings
+        this.stopPolling();
+      }
     };
   }
 
@@ -288,6 +323,16 @@ export class SolanaConnectionBackend {
     return await this.connection!.getAccountInfo(publicKey, commitment);
   }
 
+  async getAccountInfoAndContext(
+    publicKey: PublicKey,
+    commitment?: Commitment
+  ): Promise<RpcResponseAndContext<AccountInfo<Buffer> | null>> {
+    return await this.connection!.getAccountInfoAndContext(
+      publicKey,
+      commitment
+    );
+  }
+
   async getLatestBlockhash(commitment?: Commitment): Promise<{
     blockhash: Blockhash;
     lastValidBlockHeight: number;
@@ -296,6 +341,18 @@ export class SolanaConnectionBackend {
       throw new Error("inner connection not found");
     }
     const resp = await this.connection!.getLatestBlockhash(commitment);
+    return resp;
+  }
+
+  async getLatestBlockhashAndContext(commitment?: Commitment): Promise<
+    RpcResponseAndContext<{
+      blockhash: Blockhash;
+      lastValidBlockHeight: number;
+    }>
+  > {
+    const resp = await this.connection!.getLatestBlockhashAndContext(
+      commitment
+    );
     return resp;
   }
 
@@ -347,15 +404,26 @@ export class SolanaConnectionBackend {
   }
 
   async simulateTransaction(
-    transactionOrMessage: Transaction | Message,
-    signers?: Array<Signer>,
+    transactionOrMessage: Transaction | VersionedTransaction | Message,
+    configOrSigners?: Array<Signer> | SimulateTransactionConfig,
     includeAccounts?: boolean | Array<PublicKey>
   ): Promise<RpcResponseAndContext<SimulatedTransactionResponse>> {
-    return await this.connection!.simulateTransaction(
-      transactionOrMessage,
-      signers,
-      includeAccounts
-    );
+    if ("message" in transactionOrMessage) {
+      // VersionedTransaction
+      if (Array.isArray(configOrSigners)) {
+        throw new Error("Invalid arguments to simulateTransaction");
+      }
+      return await this.connection!.simulateTransaction(
+        transactionOrMessage,
+        configOrSigners
+      );
+    } else {
+      return await this.connection!.simulateTransaction(
+        transactionOrMessage,
+        configOrSigners as Array<Signer>,
+        includeAccounts
+      );
+    }
   }
 
   async getMultipleAccountsInfo(
@@ -417,10 +485,20 @@ export class SolanaConnectionBackend {
   }
 
   async getFeeForMessage(
-    message: Message,
+    message: VersionedMessage,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<number>> {
-    return await this.connection!.getFeeForMessage(message, commitment);
+    const encodedMessage = Buffer.from(message.serialize()).toString("base64");
+    return await this.connection!.getFeeForMessage(
+      {
+        serialize: () => ({
+          toString: () => {
+            return encodedMessage;
+          },
+        }),
+      } as Message,
+      commitment
+    );
   }
 
   async getMinimumBalanceForRentExemption(
@@ -487,6 +565,37 @@ export class SolanaConnectionBackend {
     );
   }
 
+  async getParsedAccountInfo(
+    publicKey: PublicKey,
+    commitment?: Commitment
+  ): Promise<
+    RpcResponseAndContext<AccountInfo<Buffer | ParsedAccountData> | null>
+  > {
+    return await this.connection!.getParsedAccountInfo(publicKey, commitment);
+  }
+
+  async getParsedProgramAccounts(
+    programId: PublicKey,
+    configOrCommitment?: GetParsedProgramAccountsConfig | Commitment
+  ): Promise<
+    Array<{
+      pubkey: PublicKey;
+      account: AccountInfo<Buffer | ParsedAccountData>;
+    }>
+  > {
+    return await this.connection!.getParsedProgramAccounts(
+      programId,
+      configOrCommitment
+    );
+  }
+
+  async getAddressLookupTable(
+    programId: PublicKey,
+    config?: GetAccountInfoConfig
+  ): Promise<RpcResponseAndContext<AddressLookupTableAccount | null>> {
+    return await this.connection!.getAddressLookupTable(programId, config);
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Methods below not used currently.
   ///////////////////////////////////////////////////////////////////////////////
@@ -525,22 +634,6 @@ export class SolanaConnectionBackend {
     throw new Error("not implemented");
   }
 
-  async getAccountInfoAndContext(
-    publicKey: PublicKey,
-    commitment?: Commitment
-  ): Promise<RpcResponseAndContext<AccountInfo<Buffer> | null>> {
-    throw new Error("not implemented");
-  }
-
-  async getParsedAccountInfo(
-    publicKey: PublicKey,
-    commitment?: Commitment
-  ): Promise<
-    RpcResponseAndContext<AccountInfo<Buffer | ParsedAccountData> | null>
-  > {
-    throw new Error("not implemented");
-  }
-
   async getMultipleAccountsInfoAndContext(
     publicKeys: PublicKey[],
     commitment?: Commitment
@@ -553,18 +646,6 @@ export class SolanaConnectionBackend {
     commitment?: Commitment,
     epoch?: number
   ): Promise<StakeActivationData> {
-    throw new Error("not implemented");
-  }
-
-  async getParsedProgramAccounts(
-    programId: PublicKey,
-    configOrCommitment?: GetParsedProgramAccountsConfig | Commitment
-  ): Promise<
-    Array<{
-      pubkey: PublicKey;
-      account: AccountInfo<Buffer | ParsedAccountData>;
-    }>
-  > {
     throw new Error("not implemented");
   }
 
@@ -654,15 +735,6 @@ export class SolanaConnectionBackend {
     blockhash: Blockhash;
     feeCalculator: FeeCalculator;
   }> {
-    throw new Error("not implemented");
-  }
-
-  getLatestBlockhashAndContext(commitment?: Commitment): Promise<
-    RpcResponseAndContext<{
-      blockhash: Blockhash;
-      lastValidBlockHeight: number;
-    }>
-  > {
     throw new Error("not implemented");
   }
 

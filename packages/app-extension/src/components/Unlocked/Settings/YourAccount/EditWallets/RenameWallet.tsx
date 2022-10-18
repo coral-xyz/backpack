@@ -34,7 +34,8 @@ export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
     nav.pop();
   };
 
-  const save = async () => {
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault();
     await background.request({
       method: UI_RPC_METHOD_KEYNAME_UPDATE,
       params: [publicKey, walletName],
@@ -47,7 +48,8 @@ export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
   const isPrimaryDisabled = walletName.trim() === "";
 
   return (
-    <div
+    <form
+      onSubmit={save}
       style={{
         paddingLeft: "16px",
         paddingRight: "16px",
@@ -87,13 +89,8 @@ export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
             marginRight: "8px",
           }}
         />
-        <PrimaryButton
-          disabled={isPrimaryDisabled}
-          label="Set"
-          onClick={() => save()}
-          style={{}}
-        />
+        <PrimaryButton label="Set" type="submit" disabled={isPrimaryDisabled} />
       </div>
-    </div>
+    </form>
   );
 };
