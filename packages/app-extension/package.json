@@ -68,7 +68,6 @@
     "css-loader": "^6.7.1",
     "esbuild": "^0.14.42",
     "esbuild-jest": "^0.5.0",
-    "eslint": "latest",
     "expect-puppeteer": "^6.1.0",
     "file-loader": "^6.2.0",
     "fork-ts-checker-webpack-plugin": "^7.2.11",
