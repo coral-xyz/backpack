@@ -11,7 +11,8 @@
     "web"
   ],
   "scripts": {
-    "lint:fix": "prettier {examples/xnft,examples/xnft-program-library/packages,packages}/**/*.{ts,tsx,json} --write",
+    "lint": "turbo run lint --filter=app-extension",
+    "format": "prettier {examples/xnft,examples/xnft-program-library/packages,packages}/**/*.{ts,tsx,json} --write",
     "prepare": "husky install",
     "start": "env-cmd --silent turbo run start --concurrency=100%",
     "start:fresh": "yarn install && yarn clean && yarn install && yarn start",
@@ -21,12 +22,8 @@
     "clean": "npx rimraf {.,backend,examples,packages}/**/{.parcel-cache,.turbo,build,dist,node_modules,yarn-error.log} packages/app-extension/dev"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.31.0",
-    "@typescript-eslint/parser": "^5.31.0",
     "env-cmd": "^10.1.0",
-    "eslint": "^8.20.0",
-    "eslint-plugin-only-warn": "^1.0.3",
-    "eslint-plugin-react": "^7.30.1",
+    "eslint-config-custom": "*",
     "husky": "^8.0.1",
     "lint-staged": "^12.4.1",
     "prettier": "^2.6.2",
@@ -40,6 +37,7 @@
     "@solana/web3.js": "1.63.1",
     "@types/react-dom": "^17.0.0",
     "@types/react": "^17.0.0",
+    "eslint": "^7.32.0",
     "parcel": "2.7.0",
     "prettier": "2.7.1",
     "react-dom": "^17.0.0",

@@ -16,6 +16,9 @@
     },
     "start": {
       "dependsOn": ["^build"]
+    },
+    "lint": {
+      "outputs": []
     }
   },
   "globalDependencies": [".env"]

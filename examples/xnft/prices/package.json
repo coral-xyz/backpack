@@ -11,9 +11,11 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "eslint-config-custom": "*",
     "@coral-xyz/xnft-cli": "latest"
   },
   "dependencies": {
+    "eslint-config-custom": "*",
     "@types/d3": "^7.4.0",
     "d3-scale": "^4.0.2",
     "d3-shape": "^3.1.0",

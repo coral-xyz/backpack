@@ -6,7 +6,11 @@
     "deptool": "./index.js"
   },
   "dependencies": {
+    "eslint-config-custom": "*",
     "esbuild": "^0.14.43",
     "esbuild-node-builtins": "^0.1.0"
+  },
+  "devDependencies": {
+    "eslint-config-custom": "*"
   }
 }

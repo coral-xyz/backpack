@@ -8,12 +8,12 @@
   "scripts": {
     "start": "parcel src/service-worker-loader.html -p 9333",
     "build:html": "parcel build src/service-worker-loader.html --dist-dir build --no-source-maps",
-    "build": "yarn lint && tsc",
-    "dev": "tsc --watch",
-    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
+    "build": "tsc",
+    "dev": "tsc --watch"
   },
   "dependencies": {
     "@coral-xyz/common": "*",
+    "eslint-config-custom": "*",
     "@coral-xyz/recoil": "*",
     "@solana/web3.js": "^1.63.1",
     "bip39": "^3.0.4",
@@ -23,11 +23,8 @@
     "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
+    "eslint-config-custom": "*",
     "@types/serviceworker": "^0.0.47",
-    "@typescript-eslint/eslint-plugin": "^5.25.0",
-    "@typescript-eslint/parser": "^5.25.0",
-    "eslint": "^8.16.0",
-    "eslint-plugin-import": "^2.26.0",
     "parcel": "^2.7.0",
     "typescript": "^4.6.3"
   },
