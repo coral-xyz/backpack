@@ -23,7 +23,6 @@
   },
   "devDependencies": {
     "env-cmd": "^10.1.0",
-    "eslint-config-custom": "*",
     "husky": "^8.0.1",
     "lint-staged": "^12.4.1",
     "prettier": "^2.6.2",

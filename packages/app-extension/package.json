@@ -49,7 +49,6 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "eslint-config-custom": "*",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
     "@swc/core": "^1.2.203",
     "@testing-library/jest-dom": "^5.11.4",

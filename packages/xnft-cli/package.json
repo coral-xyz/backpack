@@ -9,7 +9,6 @@
     "build": "shx cp ../../examples/xnft/iframe/dist/index.js iframe.js && shx cp ../react-xnft-dom-renderer/dist/index.js renderer.js"
   },
   "dependencies": {
-    "eslint-config-custom": "*",
     "@parcel/config-default": "^2.7.0",
     "@parcel/core": "^2.7.0",
     "@parcel/reporter-cli": "^2.7.0",

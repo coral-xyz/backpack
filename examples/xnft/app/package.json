@@ -6,7 +6,6 @@
     "start": "xnft watch"
   },
   "devDependencies": {
-    "eslint-config-custom": "*",
     "@coral-xyz/xnft-cli": "*"
   },
   "dependencies": {
