@@ -1,9 +1,5 @@
-import { useRecoilValue, useRecoilCallback } from "recoil";
-import type {
-  SolanaTokenAccountWithKey,
-  SplNftMetadata,
-  TokenMetadata,
-} from "@coral-xyz/common";
+import { useRecoilCallback } from "recoil";
+import type { CustomSplTokenAccountKey } from "@coral-xyz/common";
 import * as atoms from "../../atoms";
 
 export const useUpdateAllSplTokenAccounts = () =>
@@ -16,11 +12,7 @@ export const useUpdateAllSplTokenAccounts = () =>
       }: {
         connectionUrl: string;
         publicKey: string;
-        customSplTokenAccounts: {
-          tokenAccounts: SolanaTokenAccountWithKey[];
-          tokenMetadata: (TokenMetadata | null)[];
-          nftMetadata: [string, SplNftMetadata][];
-        };
+        customSplTokenAccounts: CustomSplTokenAccountKey;
       }) => {
         // TODO: Do we want to check if the atoms have changed before setting
         //       them? Probably since we don't have a recoil transaction and

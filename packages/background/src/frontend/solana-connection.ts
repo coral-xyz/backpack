@@ -5,18 +5,18 @@ import type {
   Finality,
   ConfirmedSignaturesForAddress2Options,
   GetProgramAccountsConfig,
-  MessageArgs,
   BlockheightBasedTransactionConfirmationStrategy,
   GetParsedProgramAccountsConfig,
   GetAccountInfoConfig,
 } from "@solana/web3.js";
-import { PublicKey, Message, VersionedMessage } from "@solana/web3.js";
+import { PublicKey, VersionedMessage } from "@solana/web3.js";
 import type {
   SerializedTokenAccountsFilter,
   RpcRequest,
   RpcResponse,
   Context,
   EventEmitter,
+  CustomSplTokenAccount,
 } from "@coral-xyz/common";
 import {
   getLogger,
@@ -55,7 +55,6 @@ import {
 } from "@coral-xyz/common";
 import type { SolanaConnectionBackend } from "../backend/solana-connection";
 import type { Config, Handle } from "../types";
-import * as bs58 from "bs58";
 import { decode } from "bs58";
 
 const logger = getLogger("solana-connection");
@@ -320,16 +319,8 @@ async function handleGetParsedTransactions(
 async function handleCustomSplTokenAccounts(
   ctx: Context<SolanaConnectionBackend>,
   pubkey: string
-) {
+): Promise<CustomSplTokenAccount[]> {
   const resp = await ctx.backend.customSplTokenAccounts(new PublicKey(pubkey));
-  logger.debug(
-    "bb solana-connection.ts: handleCustomSplTokenAccounts:resp",
-    resp
-  );
-  console.log(
-    "bb solana-connection.ts: handleCustomSplTokenAccounts:resp",
-    resp
-  );
   return [resp];
 }
 

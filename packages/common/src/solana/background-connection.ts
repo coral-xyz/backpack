@@ -95,14 +95,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_ADDRESS_LOOKUP_TABLE,
 } from "../constants";
 import { serializeTokenAccountsFilter } from "./types";
-import type {
-  SolanaTokenAccountWithKey,
-  SplNftMetadata,
-  TokenMetadata,
-  SolanaTokenAccountWithKeyString,
-  SplNftMetadataString,
-  TokenMetadataString,
-} from "./types";
+import type { CustomSplTokenAccountString } from "./types";
 import type { BackgroundClient } from "../channel";
 import { addressLookupTableAccountParser } from "./rpc-helpers";
 import { encode } from "bs58";
@@ -123,30 +116,22 @@ export class BackgroundSolanaConnection extends Connection {
     this._backgroundClient = backgroundClient;
   }
 
-  async customSplTokenAccounts(publicKey: PublicKey): Promise<{
-    tokenAccountsMap: [string, SolanaTokenAccountWithKeyString][];
-    tokenMetadata: (TokenMetadataString | null)[];
-    nftMetadata: [string, SplNftMetadataString][];
-  }> {
-    console.log("bb background-connection publicKey", publicKey);
-    console.log(
-      "bb background-connection instanceof PublicKey",
-      publicKey instanceof PublicKey
-    );
+  async customSplTokenAccounts(
+    publicKey: PublicKey
+  ): Promise<CustomSplTokenAccountString> {
     const resp = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
       params: [publicKey.toString()],
     });
 
-    console.log("bb background-connection resp", resp);
+    console.log("g3g customSplTokenAccounts:resp", resp);
+
     return BackgroundSolanaConnection.customSplTokenAccountsFromJson(resp);
   }
 
-  static customSplTokenAccountsFromJson(json: any) {
-    console.log(
-      "bb background-connection customSplTokenAccountsFromJson",
-      json
-    );
+  static customSplTokenAccountsFromJson(
+    json: CustomSplTokenAccountString
+  ): CustomSplTokenAccountString {
     json.tokenAccountsMap.map((t: any) => {
       return [
         t[0],
@@ -156,6 +141,7 @@ export class BackgroundSolanaConnection extends Connection {
         },
       ];
     });
+
     return json;
   }
 
@@ -219,6 +205,8 @@ export class BackgroundSolanaConnection extends Connection {
       }>
     >
   > {
+    console.log("bb: getTokenAccountsByOwner: ownerAddress", ownerAddress);
+    console.log("bb: getTokenAccountsByOwner: filter", filter);
     let _filter;
     // @ts-ignore
     if (filter.mint) {

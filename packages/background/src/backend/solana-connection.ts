@@ -30,7 +30,6 @@ import type {
   Transaction,
   VersionedTransaction,
   Message,
-  MessageV0,
   Signer,
   SendOptions,
   SimulatedTransactionResponse,
@@ -66,8 +65,11 @@ import type {
   SimulateTransactionConfig,
   VersionedMessage,
 } from "@solana/web3.js";
-import type { Notification, EventEmitter } from "@coral-xyz/common";
-import { encode } from "bs58";
+import type {
+  Notification,
+  EventEmitter,
+  CustomSplTokenAccount,
+} from "@coral-xyz/common";
 import {
   getLogger,
   customSplTokenAccounts,
@@ -298,39 +300,27 @@ export class SolanaConnectionBackend {
   // Custom endpoints.
   //////////////////////////////////////////////////////////////////////////////
 
-  async customSplTokenAccounts(publicKey: PublicKey): Promise<any> {
+  async customSplTokenAccounts(
+    publicKey: PublicKey
+  ): Promise<CustomSplTokenAccount> {
     const key = JSON.stringify({
       url: this.url,
       method: "customSplTokenAccounts",
       args: [publicKey.toString()],
     });
 
-    console.log(
-      "bb ptt backend/solana-connection customSplTokenAccounts:key",
-      key
-    );
-    console.log(
-      "bb ptt backend/solana-connection customSplTokenAccounts:publicKey instanceof",
-      publicKey instanceof PublicKey
-    );
-    console.log(
-      "bb ptt backend/solana-connection customSplTokenAccounts:publicKey",
-      publicKey
-    );
-    console.log(
-      "bb ptt backend/solana-connection customSplTokenAccounts:activeWallet.toString",
-      publicKey.toString()
-    );
-
     const value = this.cache.get(key);
     if (value && value.ts + CACHE_EXPIRY > Date.now()) {
       return value.value;
     }
+
     const resp = await customSplTokenAccounts(this.connection!, publicKey);
+
     this.cache.set(key, {
       ts: Date.now(),
       value: resp,
     });
+
     return resp;
   }
 

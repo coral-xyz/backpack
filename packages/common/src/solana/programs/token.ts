@@ -11,6 +11,7 @@ import type {
   SolanaTokenAccountWithKeySerializable,
   SplNftMetadata,
   TokenMetadata,
+  CustomSplTokenAccount,
 } from "../types";
 
 const logger = getLogger("");
@@ -45,11 +46,7 @@ export function associatedTokenAddress(
 export async function customSplTokenAccounts(
   connection: Connection,
   publicKey: PublicKey
-): Promise<{
-  tokenAccountsMap: [string, SolanaTokenAccountWithKeySerializable][];
-  tokenMetadata: (TokenMetadata | null)[];
-  nftMetadata: [string, SplNftMetadata][];
-}> {
+): Promise<CustomSplTokenAccount> {
   logger.debug("bb: customSplTokenAccounts", connection, publicKey);
   logger.debug(
     "bb: customSplTokenAccounts: connection, publicKey",
@@ -249,6 +246,7 @@ export async function fetchTokens(
       programId: tokenClient.programId,
     }
   );
+  console.log("bb: fetchTokens:resp.value", resp.value);
   //
   // Decode the data.
   //

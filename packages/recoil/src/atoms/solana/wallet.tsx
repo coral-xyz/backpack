@@ -7,6 +7,7 @@ import { solanaCommitment, solanaConnectionUrl } from "./preferences";
 
 export const anchorContext = selector({
   key: "anchorContext",
+  // TODO(peterpme): any-> connection /connectionUrl, provider, tokenClient
   get: ({ get }: any) => {
     const _connectionUrl = get(solanaConnectionUrl);
     const _connectionBackgroundClient = get(connectionBackgroundClient);
@@ -25,9 +26,7 @@ export const anchorContext = selector({
       commitment: _commitment,
       preflightCommitment: _commitment,
     });
-    console.log("bb: anchorContext:provider", provider);
     const tokenClient = Spl.token(provider);
-    console.log("bb: anchorContext:tokenClient", tokenClient);
     return {
       connection,
       connectionUrl: _connectionUrl,

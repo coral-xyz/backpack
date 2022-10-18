@@ -53,11 +53,13 @@ export function startMobileIfNeeded() {
 
   if (isServiceWorker()) {
     self.addEventListener("message", (event) => {
+      console.log("web-view-event:", event.data);
       logger.debug("service-worker-event: ", JSON.stringify(event.data));
       EVENT_LISTENERS.forEach((handler) => handler(event.data));
     });
   } else {
     WEB_VIEW_EVENTS.on("message", (event: { channel: string; data: any }) => {
+      console.log("web-view-event:", event);
       logger._log("web-view-event:", JSON.stringify(event));
       EVENT_LISTENERS.forEach((handler) => handler(event));
     });

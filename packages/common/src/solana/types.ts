@@ -1,5 +1,5 @@
-import { IdlAccounts, SplToken } from "@project-serum/anchor";
-import { metadata } from "@project-serum/token";
+import type { IdlAccounts, SplToken } from "@project-serum/anchor";
+import type { metadata } from "@project-serum/token";
 import type { TokenAccountsFilter } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 
@@ -57,6 +57,7 @@ export type SplNftMetadataString = ReplaceTypes<
   string
 >;
 
+// TODO(customAccountsToken)
 export function serializeTokenAccountsFilter(
   filter: TokenAccountsFilter
 ): SerializedTokenAccountsFilter {
@@ -68,6 +69,7 @@ export function serializeTokenAccountsFilter(
       { programId: filter.programId.toString() };
 }
 
+// TODO(customAccountsToken)
 export function deserializeTokenAccountsFilter(
   filter: SerializedTokenAccountsFilter
 ): TokenAccountsFilter {
@@ -82,3 +84,27 @@ export function deserializeTokenAccountsFilter(
 export type SerializedTokenAccountsFilter =
   | { mint: string }
   | { programId: string };
+
+export type CustomSplTokenAccountString = {
+  tokenAccountsMap: [string, SolanaTokenAccountWithKeyString][];
+  tokenMetadata: (TokenMetadataString | null)[];
+  nftMetadata: [string, SplNftMetadataString][];
+};
+
+export type CustomSplTokenAccount = {
+  tokenAccountsMap: [string, SolanaTokenAccountWithKeySerializable][];
+  tokenMetadata: (TokenMetadata | null)[];
+  nftMetadata: [string, SplNftMetadata][];
+};
+
+export type CustomSplTokenAccountKey = {
+  tokenAccounts: SolanaTokenAccountWithKey[];
+  tokenMetadata: (TokenMetadata | null)[];
+  nftMetadata: [string, SplNftMetadata][];
+};
+
+export type CustomSplTokenAccountsSpl = {
+  splTokenAccounts: Map<String, SolanaTokenAccountWithKeyString>;
+  splTokenMetadata: (TokenMetadataString | null)[];
+  splNftMetadata: Map<string, SplNftMetadataString>;
+};

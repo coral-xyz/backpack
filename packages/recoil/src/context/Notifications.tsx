@@ -332,19 +332,25 @@ export function NotificationsProvider(props: any) {
       const result = BackgroundSolanaConnection.customSplTokenAccountsFromJson(
         notif.data.customSplTokenAccounts
       );
-      console.log(
-        "Notifications.tsx bb handleSolanaSplTokensDidUpdate, result",
-        result
-      );
+
+      console.log("g3g customSplTokenAccounts:result", result);
+
       const customSplTokenAccounts = {
         ...result,
         tokenAccounts: new Map(
-          result.tokenAccountsMap.map((t: any) => [t[0], t[1]])
+          result.tokenAccountsMap.map((t) => [t[0], t[1]])
         ),
       };
+
+      console.log(
+        "g3g customSplTokenAccounts:customSplTokenAccounts",
+        customSplTokenAccounts
+      );
+
       updateAllSplTokenAccounts({
         publicKey,
         connectionUrl,
+        // @ts-expect-error
         customSplTokenAccounts,
       });
     };
