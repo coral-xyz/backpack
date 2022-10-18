@@ -23,6 +23,7 @@ select_permissions:
         - xnft
         - created_at
       filter: {}
+      allow_aggregations: true
 update_permissions:
   - role: appstore
     permission:
