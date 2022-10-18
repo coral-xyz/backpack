@@ -56,7 +56,7 @@ export function externalResourceUri(uri: string): string {
 }
 
 export function proxyImageUrl(url: string): string {
-  if (url.startsWith("/")) {
+  if (!url || url.startsWith("/")) {
     return url;
   }
   return `${IMAGE_PROXY_URL}/insecure/rs:fit:400:400:0:0/plain/${url}`;
