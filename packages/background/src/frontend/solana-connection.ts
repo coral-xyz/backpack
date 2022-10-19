@@ -325,7 +325,20 @@ async function handleCustomSplTokenAccounts(
   ctx: Context<SolanaConnectionBackend>,
   pubkey: string
 ) {
-  const resp = await ctx.backend.customSplTokenAccounts(new PublicKey(pubkey));
+  const _resp = await ctx.backend.customSplTokenAccounts(new PublicKey(pubkey));
+  const resp = {
+    ..._resp,
+    tokenAccountsMap: _resp.tokenAccountsMap.map((t: any) => {
+      return [
+        t[0],
+        {
+          ...t[1],
+          mint: t[1].mint.toString(),
+        },
+      ];
+    }),
+  };
+  logger.debug("ARMANI FUCK", resp.tokenAccountsMap);
   return [resp];
 }
 

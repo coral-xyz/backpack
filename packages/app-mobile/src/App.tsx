@@ -46,11 +46,14 @@ const HomeScreen = () => {
 const UnlockedScreen = () => {
   const background = useBackgroundClient();
   const navigate = useNavigate();
-  const wallet = useActiveSolanaWallet();
-  const { totalBalance, totalChange, percentChange } = useTotal();
+  //  const wallet = useActiveSolanaWallet();
+
   const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
-  const connectionUrl = useSolanaConnectionUrl();
-  console.log(wallet.publicKey.toString());
+  console.log("***************************");
+  console.log("HERE", tokenAccountsSorted);
+  console.log("HERE", tokenAccountsSorted[0].mint.toString());
+  console.log("***************************");
+  //  const connectionUrl = useSolanaConnectionUrl();
 
   const tokenAccountsFiltered = tokenAccountsSorted.filter(
     (t) => t.displayBalance !== 0
@@ -59,22 +62,10 @@ const UnlockedScreen = () => {
   return (
     <>
       <MainContent>
-        <Text style={tw`text-white text-xs`}>
-          Unlocked: {wallet.publicKey.toString()}
-        </Text>
-        <Text style={tw`text-white text-xs`}>{connectionUrl}</Text>
         <View style={tw`bg-black p-4 rounded-xl`}>
           <Text style={tw`text-white text-xs`}>
-            Total Balance: {formatUSD(totalBalance)}
+            {JSON.stringify(tokenAccountsSorted)}
           </Text>
-          {Number.isFinite(percentChange) && (
-            <>
-              <Text style={tw`text-white text-xs`}>Last 24 hrs</Text>
-              <Text style={tw`text-white text-xs`}>
-                {formatUSD(totalChange)} ({`${percentChange.toFixed(2)}%`})
-              </Text>
-            </>
-          )}
         </View>
 
         <Pressable>
@@ -84,11 +75,6 @@ const UnlockedScreen = () => {
 
         <View style={tw`bg-black p-4 rounded-xl`}>
           <Text style={tw`text-white text-xs`}>Tokens</Text>
-          {tokenAccountsFiltered.map((tokenAccount) => (
-            <Text style={tw`text-white text-xs`} key={tokenAccount.mint}>
-              {JSON.stringify(tokenAccount)}
-            </Text>
-          ))}
         </View>
       </MainContent>
       <ButtonFooter>

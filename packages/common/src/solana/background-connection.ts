@@ -137,20 +137,26 @@ export class BackgroundSolanaConnection extends Connection {
       method: SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
       params: [publicKey.toString()],
     });
-    return BackgroundSolanaConnection.customSplTokenAccountsFromJson(resp);
+    const _resp =
+      BackgroundSolanaConnection.customSplTokenAccountsFromJson(resp);
+    console.log("ARMANI RESP HERE", _resp);
+    return _resp;
   }
 
   static customSplTokenAccountsFromJson(json: any) {
-    json.tokenAccountsMap.map((t: any) => {
-      return [
-        t[0],
-        {
-          ...t[1],
-          amount: new BN(t[1].amount),
-        },
-      ];
-    });
-    return json;
+    return {
+      ...json,
+      tokenAccountsMap: json.tokenAccountsMap.map((t: any) => {
+        return [
+          t[0],
+          {
+            ...t[1],
+            amount: new BN(t[1].amount),
+            mint: new PublicKey(t[1].mint),
+          },
+        ];
+      }),
+    };
   }
 
   async getAccountInfo(
