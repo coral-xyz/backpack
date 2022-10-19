@@ -1501,6 +1501,26 @@
     eip1193-provider "^1.0.1"
     js-sha3 "^0.8.0"
 
+"@bonfida/name-offers@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@bonfida/name-offers/-/name-offers-0.0.1.tgz#8a52700eb3031e01dd9314fab55dec0a7275a5bb"
+  integrity sha512-R0GJ/+R5OXfm4KfiKEjHx88QnQxw+kzDA8O4pHouev1voPJueOzzo5x+YLowMpk3/2maqEwkNPWiWIlSExjdug==
+  dependencies:
+    "@bonfida/spl-name-service" "^0.1.24"
+    "@solana/spl-token" "0.1.8"
+    "@solana/web3.js" "^1.30.2"
+    bn.js "^5.2.0"
+    borsh "^0.6.0"
+    bs58 "4.0.1"
+
+"@bonfida/spl-name-service@^0.1.24", "@bonfida/spl-name-service@^0.1.51":
+  version "0.1.51"
+  resolved "https://registry.yarnpkg.com/@bonfida/spl-name-service/-/spl-name-service-0.1.51.tgz#67ef550f85e78000681d0449b0026feacf78034b"
+  integrity sha512-8GmRpmWsIVTcKjFB6aEF8P5w4c0OKHPo6qal1KDmIsbI312kNs0qucKsPfPgoxvk2D/iGCUJPw/KxF9wL6WGFQ==
+  dependencies:
+    "@bonfida/name-offers" "^0.0.1"
+    "@ethersproject/sha2" "^5.5.0"
+
 "@cloudflare/kv-asset-handler@^0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@cloudflare/kv-asset-handler/-/kv-asset-handler-0.2.0.tgz#c9959bbd7a1c40bd7c674adae98aa8c8d0e5ca68"
@@ -1988,7 +2008,7 @@
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/logger" "^5.7.0"
 
-"@ethersproject/sha2@5.7.0", "@ethersproject/sha2@^5.7.0":
+"@ethersproject/sha2@5.7.0", "@ethersproject/sha2@^5.5.0", "@ethersproject/sha2@^5.7.0":
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/sha2/-/sha2-5.7.0.tgz#9a5f7a7824ef784f7f7680984e593a800480c9fb"
   integrity sha512-gKlH42riwb3KYp0reLsFTokByAKoJdgFCwI+CCiX/k+Jm2mbNs6oOaCjYQSlI1+XBVejwH2KrmCbMAT/GnRDQw==
@@ -5042,7 +5062,7 @@
   dependencies:
     cross-fetch "3.0.6"
 
-"@solana/spl-token@^0.1.6":
+"@solana/spl-token@0.1.8", "@solana/spl-token@^0.1.6":
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/@solana/spl-token/-/spl-token-0.1.8.tgz#f06e746341ef8d04165e21fc7f555492a2a0faa6"
   integrity sha512-LZmYCKcPQDtJgecvWOgT/cnoIQPWjdH+QVyzPcFvyDUiT0DiRjZaam4aqNUyvchLFhzgunv3d9xOoyE34ofdoQ==
@@ -5463,7 +5483,7 @@
     "@wallet-standard/base" "^1.0.0-rc.0"
     "@wallet-standard/features" "^1.0.0-rc.0"
 
-"@solana/web3.js@1.52.0", "@solana/web3.js@1.63.1", "@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.37.1", "@solana/web3.js@^1.43.2", "@solana/web3.js@^1.44.3", "@solana/web3.js@^1.62.1", "@solana/web3.js@^1.63.1":
+"@solana/web3.js@1.52.0", "@solana/web3.js@1.63.1", "@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0", "@solana/web3.js@^1.30.2", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.37.1", "@solana/web3.js@^1.43.2", "@solana/web3.js@^1.44.3", "@solana/web3.js@^1.62.1", "@solana/web3.js@^1.63.1":
   version "1.63.1"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.63.1.tgz#88a19a17f5f4aada73ad70a94044c1067cab2b4d"
   integrity sha512-wgEdGVK5FTS2zENxbcGSvKpGZ0jDS6BUdGu8Gn6ns0CzgJkK83u4ip3THSnBPEQ5i/jrqukg998BwV1H67+qiQ==
@@ -8695,6 +8715,15 @@ boolbase@^1.0.0:
   resolved "https://registry.yarnpkg.com/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
   integrity sha512-JZOSA7Mo9sNGB8+UjSgzdLtokWAky1zbztM3WRLCbZ70/3cTANmQmOdR7y2g+J0e2WXywy1yS468tY+IruqEww==
 
+borsh@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/borsh/-/borsh-0.6.0.tgz#a7c9eeca6a31ca9e0607cb49f329cb659eb791e1"
+  integrity sha512-sl5k89ViqsThXQpYa9XDtz1sBl3l1lI313cFUY1HKr+wvMILnb+58xpkqTNrYbelh99dY7K8usxoCusQmqix9Q==
+  dependencies:
+    bn.js "^5.2.0"
+    bs58 "^4.0.0"
+    text-encoding-utf-8 "^1.0.2"
+
 boring-avatars@^1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/boring-avatars/-/boring-avatars-1.7.0.tgz#70ac7146bbf37d8e69a35544b24f1d75558f868a"
@@ -8890,19 +8919,19 @@ browserslist@^4.21.3:
     node-releases "^2.0.6"
     update-browserslist-db "^1.0.9"
 
+bs58@4.0.1, bs58@^4.0.0, bs58@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/bs58/-/bs58-4.0.1.tgz#be161e76c354f6f788ae4071f63f34e8c4f0a42a"
+  integrity sha512-Ok3Wdf5vOIlBrgCvTq96gBkJw+JUEzdBgyaza5HLtPm7yTHkjRy8+JzNyHF7BHa0bNWOQIp3m5YF0nnFcOIKLw==
+  dependencies:
+    base-x "^3.0.2"
+
 bs58@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/bs58/-/bs58-3.1.0.tgz#d4c26388bf4804cac714141b1945aa47e5eb248e"
   integrity sha512-9C2bRFTGy3meqO65O9jLvVTyawvhLVp4h2ECm5KlRPuV5KPDNJZcJIj3gl+aA0ENXcYrUSLCkPAeqbTcI2uWyQ==
   dependencies:
     base-x "^1.1.0"
-
-bs58@^4.0.0, bs58@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/bs58/-/bs58-4.0.1.tgz#be161e76c354f6f788ae4071f63f34e8c4f0a42a"
-  integrity sha512-Ok3Wdf5vOIlBrgCvTq96gBkJw+JUEzdBgyaza5HLtPm7yTHkjRy8+JzNyHF7BHa0bNWOQIp3m5YF0nnFcOIKLw==
-  dependencies:
-    base-x "^3.0.2"
 
 bs58@^5.0.0:
   version "5.0.0"
@@ -22716,9 +22745,9 @@ wordwrapjs@^4.0.0:
     typical "^5.2.0"
 
 wrangler@^2.0.15, wrangler@^2.1.6, wrangler@^2.1.9:
-  version "2.1.10"
-  resolved "https://registry.yarnpkg.com/wrangler/-/wrangler-2.1.10.tgz#559422e5bb3505d3ae8d2513e0b2df65452a7397"
-  integrity sha512-hiaTNvkKw8axZljxHOjtDXIVo4GOrDclyxr0cF2aypzAwtrGlaYWD+WP0Z66BqRLpUpbF3BdzrPn1k+xGp0u+Q==
+  version "2.1.9"
+  resolved "https://registry.yarnpkg.com/wrangler/-/wrangler-2.1.9.tgz#295c4184c493004fab37c35c1fa364e9f4f8d4a1"
+  integrity sha512-ryrkpUEqgJZIiGgo+VCUYtl0B+shEbyp3FZzT5+GYnyfpLtQutAZlS/s5iOC0qjZ7TcRzWS1PSb9fE9nDSvCKg==
   dependencies:
     "@cloudflare/kv-asset-handler" "^0.2.0"
     "@esbuild-plugins/node-globals-polyfill" "^0.1.1"
