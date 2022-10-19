@@ -55,7 +55,7 @@ function _log(str: any, ...args: any) {
 async function _mobileLog(...args: any[]) {
   // We're in the serviceworker, try sending the message to the HTML page.
   try {
-    const clients = await self.clients.matchAll({
+    const clients = await (self as any).clients.matchAll({
       includeUncontrolled: true,
       type: "window",
     });

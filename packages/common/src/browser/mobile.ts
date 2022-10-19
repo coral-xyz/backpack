@@ -309,11 +309,11 @@ class BackendRequestManager extends CommonRequestManager {
 }
 
 async function postMsgFromWorker(msg: any) {
-  const clients = await self.clients.matchAll({
+  const clients = await (self as any).clients.matchAll({
     includeUncontrolled: true,
     type: "window",
   });
-  clients.forEach((client) => {
+  clients.forEach((client: any) => {
     client.postMessage(msg);
   });
 }

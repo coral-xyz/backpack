@@ -70,12 +70,26 @@ function NftsPage() {
 
 function NftsCollectionPage() {
   const { props } = useDecodedSearchParams();
-  return <NavScreen component={<NftsCollection {...props} />} />;
+  return (
+    <NavScreen
+      component={
+        // @ts-expect-error
+        <NftsCollection {...props} />
+      }
+    />
+  );
 }
 
 function NftsDetailPage() {
   const { props } = useDecodedSearchParams();
-  return <NavScreen component={<NftsDetail {...props} />} />;
+  return (
+    <NavScreen
+      component={
+        // @ts-expect-error
+        <NftsDetail {...props} />
+      }
+    />
+  );
 }
 
 function AppsPage() {

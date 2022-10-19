@@ -237,7 +237,8 @@ export class EthereumConnectionBackend {
   }
 
   async getBlockWithTransactions(block: number) {
-    return await this.provider!.getBlockWithTransactions(block);
+    // as any avoids TS error TS2742
+    return await (this.provider! as any).getBlockWithTransactions(block);
   }
 
   async lookupAddress(name: string) {
