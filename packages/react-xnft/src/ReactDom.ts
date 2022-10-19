@@ -19,10 +19,10 @@ class PendingUpdates {
 
   addRenderUpdate(instanceId: number) {
     if (this._timeouts[instanceId]) {
-      window.clearInterval(this._timeouts[instanceId]);
+      window.clearTimeout(this._timeouts[instanceId]);
     }
 
-    this._timeouts[instanceId] = window.setInterval(() => {
+    this._timeouts[instanceId] = window.setTimeout(() => {
       console.error(`Render fn222 not found for instance ${instanceId}`);
       delete this._timeouts[instanceId];
     }, this._renderUpdatesTimer);
@@ -36,7 +36,7 @@ class PendingUpdates {
   }
   removeRenderUpdate(instanceId: number) {
     if (this._timeouts[instanceId]) {
-      window.clearInterval(this._timeouts[instanceId]);
+      window.clearTimeout(this._timeouts[instanceId]);
       delete this._timeouts[instanceId];
     }
   }
