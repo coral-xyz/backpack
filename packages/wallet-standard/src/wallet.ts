@@ -1,3 +1,4 @@
+import type { ProviderSolanaInjection } from '@coral-xyz/provider-core';
 import { Connection, PublicKey, VersionedTransaction } from '@solana/web3.js';
 import type {
     ConnectFeature,
@@ -27,13 +28,10 @@ import { getChainForEndpoint, getEndpointForChain } from './endpoint.js';
 import { icon } from './icon.js';
 import { isSolanaChain, SOLANA_CHAINS } from './solana.js';
 import { bytesEqual } from './util.js';
-import type { BackpackWindow, WindowBackpack } from './window.js';
-
-declare const window: BackpackWindow;
 
 export type BackpackFeature = {
     'backpack:': {
-        backpack: WindowBackpack;
+        backpack: ProviderSolanaInjection;
     };
 };
 
@@ -43,6 +41,7 @@ export class BackpackWallet implements Wallet {
     readonly #name = 'Backpack' as const;
     readonly #icon = icon;
     #account: BackpackWalletAccount | null = null;
+    #backpack: ProviderSolanaInjection;
 
     get version() {
         return this.#version;
@@ -95,9 +94,7 @@ export class BackpackWallet implements Wallet {
                 signMessage: this.#signMessage,
             },
             'backpack:': {
-                get backpack() {
-                    return window.backpack;
-                },
+                backpack: this.#backpack,
             },
         };
     }
@@ -106,23 +103,25 @@ export class BackpackWallet implements Wallet {
         return this.#account ? [this.#account] : [];
     }
 
-    constructor() {
+    constructor(backpack: ProviderSolanaInjection) {
         if (new.target === BackpackWallet) {
             Object.freeze(this);
         }
 
-        window.backpack.on('connect', this.#connected);
-        window.backpack.on('disconnect', this.#disconnected);
-        window.backpack.on('connectionDidChange', this.#reconnected);
+        this.#backpack = backpack;
+
+        backpack.on('connect', this.#connected);
+        backpack.on('disconnect', this.#disconnected);
+        backpack.on('connectionDidChange', this.#reconnected);
 
         this.#connected();
     }
 
     #connected = () => {
-        const address = window.backpack.publicKey?.toBase58();
+        const address = this.#backpack.publicKey?.toBase58();
         if (address) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const publicKey = window.backpack.publicKey!.toBytes();
+            const publicKey = this.#backpack.publicKey!.toBytes();
 
             const account = this.#account;
             if (!account || account.address !== address || !bytesEqual(account.publicKey, publicKey)) {
@@ -140,7 +139,7 @@ export class BackpackWallet implements Wallet {
     };
 
     #reconnected = () => {
-        if (window.backpack.publicKey) {
+        if (this.#backpack.publicKey) {
             this.#connected();
         } else {
             this.#disconnected();
@@ -148,8 +147,8 @@ export class BackpackWallet implements Wallet {
     };
 
     #connect: ConnectMethod = async ({ silent } = {}) => {
-        if (!silent && !window.backpack.publicKey) {
-            await window.backpack.connect();
+        if (!silent && !this.#backpack.publicKey) {
+            await this.#backpack.connect();
         }
 
         this.#connected();
@@ -158,7 +157,7 @@ export class BackpackWallet implements Wallet {
     };
 
     #disconnect: DisconnectMethod = async () => {
-        await window.backpack.disconnect();
+        await this.#backpack.disconnect();
     };
 
     #on: EventsOnMethod = (event, listener) => {
@@ -188,15 +187,15 @@ export class BackpackWallet implements Wallet {
             const { commitment, preflightCommitment, skipPreflight, maxRetries, minContextSlot } = input.options || {};
 
             const connection =
-                getChainForEndpoint(window.backpack.connection.rpcEndpoint) === input.chain
+                getChainForEndpoint(this.#backpack.connection.rpcEndpoint) === input.chain
                     ? undefined
                     : new Connection(
                           getEndpointForChain(input.chain),
-                          commitment || preflightCommitment || window.backpack.connection.commitment
+                          commitment || preflightCommitment || this.#backpack.connection.commitment
                       );
 
             const signature = commitment
-                ? await window.backpack.sendAndConfirm(
+                ? await this.#backpack.sendAndConfirm(
                       transaction,
                       [],
                       {
@@ -209,7 +208,7 @@ export class BackpackWallet implements Wallet {
                       connection,
                       publicKey
                   )
-                : await window.backpack.send(
+                : await this.#backpack.send(
                       transaction,
                       [],
                       {
@@ -240,7 +239,7 @@ export class BackpackWallet implements Wallet {
             const input = inputs[0]!;
             const transaction = VersionedTransaction.deserialize(input.transaction);
             const publicKey = new PublicKey(input.account.publicKey);
-            const signedTransaction = await window.backpack.signTransaction(transaction, publicKey);
+            const signedTransaction = await this.#backpack.signTransaction(transaction, publicKey);
 
             outputs.push({ signedTransaction: signedTransaction.serialize() });
         } else if (inputs.length > 1) {
@@ -267,7 +266,7 @@ export class BackpackWallet implements Wallet {
                     [<number[]>[], <VersionedTransaction[]>[]]
                 );
 
-                const signedTransactions = await window.backpack.signAllTransactions(
+                const signedTransactions = await this.#backpack.signAllTransactions(
                     transactions,
                     new PublicKey(account.publicKey)
                 );
@@ -292,7 +291,7 @@ export class BackpackWallet implements Wallet {
             const input = inputs[0]!;
             const publicKey = new PublicKey(input.account.publicKey);
             const signedMessage = input.message;
-            const signature = await window.backpack.signMessage(signedMessage, publicKey);
+            const signature = await this.#backpack.signMessage(signedMessage, publicKey);
 
             outputs.push({ signedMessage, signature });
         } else if (inputs.length > 1) {
