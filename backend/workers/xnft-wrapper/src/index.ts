@@ -28,6 +28,7 @@ const V1_BUNDLES: string[] = [
   "ipfs://bafybeignivvx6ilmx3hrcekwk53riant44knedielglpa3pirh76ld7tse",
   "https://xnfts.s3.us-west-2.amazonaws.com/ZtANNvbEeKhfBiFakWbtMcxsYaTRgm6GEtds8PxW2bm/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/FgrUhnsbTYURx1Pyc5D2HDiPaDHzkbH3bv8aDzEmf16x/bundle/index.js",
+  "https://ipfs.io/ipfs/bafybeifwqc6zlfh4in56y2cptfa64rivqlqunu5kfxy43rxlacm7kqbjz4",
 ];
 
 export default {
