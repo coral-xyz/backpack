@@ -74,6 +74,7 @@ import {
   UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
   UI_RPC_METHOD_USERNAME_READ,
   BACKEND_EVENT,
   CHANNEL_POPUP_RPC,
@@ -82,6 +83,7 @@ import {
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import type { Backend } from "../backend/core";
 import type { Config, Handle } from "../types";
+import type { ImportedDerivationPath } from "../backend/keyring/types";
 
 const logger = getLogger("background-server-ui");
 
@@ -301,6 +303,14 @@ async function handle<T = any>(
       );
     case UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE:
       return await handleEthereumSignMessage(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET:
+      return await handleSignMessageForWallet(
+        ctx,
+        params[0],
+        params[1],
+        params[2],
+        params[3]
+      );
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -731,6 +741,28 @@ async function handleEthereumSignMessage(
   walletAddress: string
 ) {
   const resp = await ctx.backend.ethereumSignMessage(msg, walletAddress);
+  return [resp];
+}
+
+async function handleSignMessageForWallet(
+  ctx: Context<Backend>,
+  blockchain: Blockchain,
+  msg: string,
+  publicKey: string,
+  wallet:
+    | {
+        mnemonic: string;
+        derivationPath: DerivationPath;
+        accountIndex: number;
+      }
+    | ImportedDerivationPath
+) {
+  const resp = await ctx.backend.signMessageForWallet(
+    blockchain,
+    msg,
+    publicKey,
+    wallet
+  );
   return [resp];
 }
 

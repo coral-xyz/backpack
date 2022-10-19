@@ -5,13 +5,12 @@ import type {
   SendOptions,
   SimulateTransactionConfig,
 } from "@solana/web3.js";
-import { PublicKey, VersionedTransaction } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
 import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
 import {
   BACKEND_EVENT,
-  BACKPACK_FEATURE_USERNAMES,
   Blockchain,
   EthereumConnectionUrl,
   EthereumExplorer,
@@ -43,12 +42,12 @@ import {
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
 import * as store from "./store";
-import type { BlockchainKeyring } from "./keyring/blockchain";
+import { BlockchainKeyring } from "./keyring/blockchain";
 import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
-import { encode } from "bs58";
+import type { ImportedDerivationPath } from "./keyring/types";
 
 const { base58: bs58 } = ethers.utils;
 
@@ -393,6 +392,44 @@ export class Backend {
   }
 
   ///////////////////////////////////////////////////////////////////////////////
+  // Misc
+  ///////////////////////////////////////////////////////////////////////////////
+
+  // Method for signing messages from a specific wallet for a specific blockchain
+  // without the requirement to initialise a keystore. Used during onboarding.
+  async signMessageForWallet(
+    blockchain: Blockchain,
+    msg: string,
+    publicKey: string,
+    wallet:
+      | {
+          mnemonic: string;
+          derivationPath: DerivationPath;
+          accountIndex: number;
+        }
+      | ImportedDerivationPath
+  ) {
+    const blockchainKeyring = {
+      [Blockchain.SOLANA]: BlockchainKeyring.solana,
+      [Blockchain.ETHEREUM]: BlockchainKeyring.ethereum,
+    }[blockchain]();
+
+    console.log(wallet);
+
+    if ("mnemonic" in wallet) {
+      blockchainKeyring.initFromMnemonic(
+        wallet.mnemonic,
+        wallet.derivationPath,
+        [wallet.accountIndex]
+      );
+    } else {
+      blockchainKeyring.initFromLedger([wallet]);
+    }
+
+    return await blockchainKeyring.signMessage(msg, publicKey);
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
   // Keyring.
   ///////////////////////////////////////////////////////////////////////////////
 
@@ -403,12 +440,9 @@ export class Backend {
     derivationPath: DerivationPath,
     password: string,
     accountIndices: Array<number>,
-    username: string,
-    inviteCode: string,
-    waitlistId?: string,
-    userIsRecoveringWallet = false
+    username: string
   ): Promise<string> {
-    const keyring = await this.keyringStore.init(
+    await this.keyringStore.init(
       blockchain,
       mnemonic,
       derivationPath,
@@ -416,40 +450,6 @@ export class Backend {
       accountIndices,
       username
     );
-
-    if (BACKPACK_FEATURE_USERNAMES && !userIsRecoveringWallet) {
-      try {
-        const publicKey = keyring.getActiveWallet();
-
-        const body = JSON.stringify({
-          username,
-          inviteCode,
-          publicKey,
-          waitlistId,
-          // order is significant, blockchain must be the last key atm
-          // see `app.post("/users")` inside `backend/workers/auth/src/index.ts`
-          blockchain,
-        });
-
-        const buffer = Buffer.from(body, "utf8");
-        const signature = await keyring.signMessage(encode(buffer), publicKey!);
-
-        const res = await fetch("https://auth.xnfts.dev/users", {
-          method: "POST",
-          body,
-          headers: {
-            "Content-Type": "application/json",
-            "x-backpack-signature": signature,
-          },
-        });
-        if (!res.ok) {
-          throw new Error(await res.json());
-        }
-      } catch (err) {
-        await this.keyringStore.reset();
-        throw new Error("Error creating account");
-      }
-    }
 
     // Notify all listeners.
     this.events.emit(BACKEND_EVENT, {

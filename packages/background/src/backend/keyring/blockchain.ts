@@ -93,7 +93,7 @@ export class BlockchainKeyring {
       accountIndices
     );
     // Empty ledger keyring to hold one off ledger imports
-    this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
+    this.ledgerKeyring = this.ledgerKeyringFactory.fromAccounts([]);
     // Empty imported keyring to hold imported secret keys
     this.importedKeyring = this.keyringFactory.fromSecretKeys([]);
     this.activeWallet = this.hdKeyring.getPublicKey(accountIndices[0]);
@@ -114,7 +114,7 @@ export class BlockchainKeyring {
     accounts: Array<ImportedDerivationPath>
   ): Promise<Array<[string, string]>> {
     // Empty ledger keyring to hold one off ledger imports
-    this.ledgerKeyring = this.ledgerKeyringFactory.init(accounts);
+    this.ledgerKeyring = this.ledgerKeyringFactory.fromAccounts(accounts);
     // Empty imported keyring to hold imported secret keys
     this.importedKeyring = this.keyringFactory.fromSecretKeys([]);
     this.activeWallet = accounts[0].publicKey;
@@ -220,9 +220,11 @@ export class BlockchainKeyring {
     this.deletedWallets = deletedWallets;
   }
 
+  //
   // For Solana txMsg is a Message, i.e. not a full transaction.
   // Ref https://docs.solana.com/developing/programming-model/transactions#message-format
   // For Ethereum txMsg is the full transaction, base58 encoded to keep the argument types same.
+  //
   public async signTransaction(
     txMsg: string,
     walletAddress: string
@@ -239,6 +241,25 @@ export class BlockchainKeyring {
     const keyring = this.getKeyring(walletAddress);
     const msgBuffer = Buffer.from(bs58.decode(msg));
     return keyring.signMessage(msgBuffer, walletAddress);
+  }
+
+  //
+  // Method for signing messages without the keyring being initialised.
+  //
+  public async signAuthenticationMessage(
+    keyringType: "hd" | "ledger",
+    msg: string
+  ) {
+    let keyring: Keyring;
+    if (keyringType === "hd") {
+      keyring = this.hdKeyringFactory.fromMnemonic(this.mnemonic(), "bip44", [
+        0,
+      ]);
+    } else {
+      throw new Error("ledger not implemented");
+    }
+    const msgBuffer = Buffer.from(bs58.decode(msg));
+    return keyring.signMessage(msgBuffer, keyring.publicKeys()[0]);
   }
 
   private getKeyring(publicKey: string): Keyring {

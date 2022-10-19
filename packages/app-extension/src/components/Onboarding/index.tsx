@@ -44,7 +44,7 @@ import {
 import { SetPassword } from "./pages/SetPassword";
 import { UsernameForm } from "./pages/UsernameForm";
 import { BlockchainSelector } from "./pages/BlockchainSelector";
-import { ConnectHardware } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware";
+import { OnboardHardware } from "./pages/OnboardHardware";
 import { SelectedAccount } from "../common/Account/ImportAccounts";
 
 export const Onboarding = () => {
@@ -216,7 +216,10 @@ export const Onboarding = () => {
           onComplete={(
             accounts: Array<SelectedAccount>,
             derivationPath: DerivationPath
-          ) => {}}
+          ) => {
+            console.log(accounts);
+            console.log(derivationPath);
+          }}
         />
       </WithNav>
     </OptionsContainer>
@@ -242,21 +245,7 @@ export function LedgerDrawer({
     derivationPath: DerivationPath
   ) => void;
 }) {
-  const [accounts, setAccounts] = useState<Array<SelectedAccount>>([]);
-  const [derivationPath, setDerivationPath] = useState<DerivationPath | null>(
-    null
-  );
-
-  const onImport = async (
-    accounts: Array<SelectedAccount>,
-    derivationPath: DerivationPath
-  ) => {
-    setAccounts(accounts);
-    setDerivationPath(derivationPath);
-  };
-
   const _onComplete = () => {
-    onComplete(accounts, derivationPath!);
     setOpenDrawer(false);
   };
 
@@ -271,10 +260,9 @@ export function LedgerDrawer({
         borderTopRightRadius: "12px",
       }}
     >
-      <ConnectHardware
+      <OnboardHardware
         blockchain={blockchain}
         onComplete={_onComplete}
-        onImport={onImport}
         onClose={() => setOpenDrawer(false)}
       />
     </WithContaineredDrawer>

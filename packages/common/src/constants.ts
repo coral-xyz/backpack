@@ -162,6 +162,8 @@ export const UI_RPC_METHOD_SETTINGS_DARK_MODE_READ =
   "ui-rpc-method-settings-dark-mode-read";
 export const UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE =
   "ui-rpc-method-settings-dark-mode-update";
+export const UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET =
+  "ui-rpc-method-sign-message-for-wallet";
 export const UI_RPC_METHOD_USERNAME_READ = "ui-rpc-method-username-read";
 // Solana
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ =

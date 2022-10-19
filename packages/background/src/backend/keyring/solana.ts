@@ -230,7 +230,7 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
 }
 
 export class SolanaLedgerKeyringFactory {
-  public init(accounts: Array<ImportedDerivationPath>): LedgerKeyring {
+  public fromAccounts(accounts: Array<ImportedDerivationPath>): LedgerKeyring {
     return new SolanaLedgerKeyring(accounts);
   }
 

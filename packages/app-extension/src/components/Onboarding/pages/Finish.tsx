@@ -2,6 +2,7 @@ import {
   Blockchain,
   BrowserRuntimeExtension,
   DerivationPath,
+  BACKPACK_FEATURE_USERNAMES,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
@@ -24,6 +25,10 @@ export const Finish = () => {
     usernameAndPubkey: string;
   }>();
 
+  const userIsRecoveringWallet = Boolean(params.usernameAndPubkey);
+
+  const publicKey = "123";
+
   useEffect(() => {
     const { accounts, derivationPath } = (() => {
       try {
@@ -34,6 +39,43 @@ export const Finish = () => {
       }
     })();
 
+    //
+    // Create the user in the backend
+    //
+    async function createUser() {
+      if (BACKPACK_FEATURE_USERNAMES && !userIsRecoveringWallet) {
+        const body = JSON.stringify({
+          username: params.username,
+          inviteCode: params.inviteCode,
+          publicKey,
+          waitlistId: getWaitlistId?.(),
+
+          // order is significant, blockchain must be the last key atm
+          // see `app.post("/users")` inside `backend/workers/auth/src/index.ts`
+          blockchain: params.blockchain,
+        });
+
+        try {
+          const res = await fetch("https://auth.xnfts.dev/users", {
+            method: "POST",
+            body,
+            headers: {
+              "Content-Type": "application/json",
+              "x-backpack-signature": "123",
+            },
+          });
+          if (!res.ok) {
+            throw new Error(await res.json());
+          }
+        } catch (err) {
+          throw new Error("error creating account");
+        }
+      }
+    }
+
+    //
+    // Create the local store for the wallets
+    //
     async function createStore() {
       const _username = (() => {
         try {
@@ -53,10 +95,6 @@ export const Finish = () => {
             derivationPath,
             decodeURIComponent(params.password!),
             accounts,
-            _username,
-            params.inviteCode,
-            getWaitlistId?.(),
-            Boolean(params.usernameAndPubkey),
           ],
         });
         setIsValid(true);

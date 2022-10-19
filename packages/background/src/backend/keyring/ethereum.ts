@@ -187,7 +187,7 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
 }
 
 export class EthereumLedgerKeyringFactory {
-  public init(accounts: Array<ImportedDerivationPath>): LedgerKeyring {
+  public fromAccounts(accounts: Array<ImportedDerivationPath>): LedgerKeyring {
     return new EthereumLedgerKeyring(accounts);
   }
 
@@ -223,6 +223,7 @@ export class EthereumLedgerKeyring
     if (!path) {
       throw new Error("ledger address not found");
     }
+    console.log(path);
     return await this.request({
       method: LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
       params: [msg, path.path, path.account],
