@@ -17,6 +17,7 @@
     "@ledgerhq/hw-app-solana": "^6.27.2",
     "@ledgerhq/hw-transport": "^6.24.1",
     "@ledgerhq/hw-transport-webhid": "^6.24.1",
+    "buffer": "^6.0.3",
     "ethers": "^5.7.0"
   },
   "devDependencies": {
