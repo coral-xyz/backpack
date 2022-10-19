@@ -53,10 +53,9 @@ export async function customSplTokenAccounts(
     connection,
     publicKey
   );
-  // @ts-ignore
+  // @ts-expect-error expected 3 arguments but got 2
   const provider = new AnchorProvider(connection, { publicKey });
   const tokenClient = Spl.token(provider);
-  logger.debug("bb: customSplTokenAccounts: tokenClient", tokenClient);
 
   const [accountInfo, tokenAccounts] = await Promise.all([
     //
@@ -68,11 +67,7 @@ export async function customSplTokenAccounts(
     //
     fetchTokens(publicKey, tokenClient),
   ]);
-  logger.debug(
-    "bb: customSplTokenAccounts: accountInfo, tokenAccounts",
-    accountInfo,
-    tokenAccounts
-  );
+
   const nativeSol: SolanaTokenAccountWithKeySerializable = {
     key: publicKey,
     mint: PublicKey.default,
@@ -84,7 +79,7 @@ export async function customSplTokenAccounts(
     delegatedAmount: new BN(0),
     closeAuthority: null,
   };
-  logger.debug("bb: customSplTokenAccounts: nativeSol", nativeSol);
+
   const tokenAccountsArray = Array.from(tokenAccounts.values());
 
   //
@@ -94,7 +89,6 @@ export async function customSplTokenAccounts(
     tokenClient.provider,
     tokenAccountsArray
   );
-  logger.debug("bb: customSplTokenAccounts: tokenMetadata", tokenMetadata);
 
   //
   // Fetch the metadata uri and interpert as NFTs.
@@ -103,26 +97,44 @@ export async function customSplTokenAccounts(
     tokenAccountsArray,
     tokenMetadata
   );
-  logger.debug("bb: customSplTokenAccounts: nftMetadata", nftMetadata);
 
-  const tokenAccountsMap = (
-    Array.from(removeNfts(tokenAccounts, nftMetadata)).map(
-      ([key, SolanaTokenAccountWithKey]) => [
-        key,
-        {
-          ...SolanaTokenAccountWithKey,
-          amount: SolanaTokenAccountWithKey.amount.toString(),
-        },
-      ]
-    ) as [string, SolanaTokenAccountWithKeySerializable][]
-  ).concat([[nativeSol.key.toString(), nativeSol]]);
+  const removedNfts = removeNfts(tokenAccounts, nftMetadata);
+  console.log("g3g removedNfts", removedNfts);
 
-  logger.debug(
-    "bb: customSplTokenAccounts: tokenAccountsMap",
-    tokenAccountsMap
-  );
+  // peterpme:A tokenAccounts map
+  const tokenAccountsMap = Array.from(removedNfts)
+    .map(([key, SolanaTokenAccountWithKey]) => [
+      key,
+      {
+        ...SolanaTokenAccountWithKey,
+        // amount: SolanaTokenAccountWithKey.amount.toString(),
+      },
+    ])
+    // @ts-expect-error SolanaTokenAccountWithKeySerializable no overload matches this call
+    .concat([[nativeSol.key.toString(), nativeSol]]);
+
+  // original function we see above just removing all the dumb shit
+  // const tokenAccountsMap = (
+  //   Array.from(removeNfts(tokenAccounts, nftMetadata)).map(
+  //     ([key, SolanaTokenAccountWithKey]) => [
+  //       key,
+  //       {
+  //         ...SolanaTokenAccountWithKey,
+  //         amount: SolanaTokenAccountWithKey.amount.toString(),
+  //       },
+  //     ]
+  //   ) as [string, SolanaTokenAccountWithKeySerializable][]
+  // ).concat([[nativeSol.key.toString(), nativeSol]]);
+
+  logger.debug("rr: tokenAccounts", tokenAccounts);
+  logger.debug("rr: tokenAccountsMap", tokenAccountsMap);
+  console.log("rr: tokenAccounts", tokenAccounts);
+  console.log("rr: tokenAccountsMap", tokenAccountsMap);
 
   return {
+    // @ts-ignore peterpme:A tokenAccountsTest
+    tokenAccountsTest: tokenAccountsMap,
+    // @ts-expect-error different types bc SolanaTokenAccountWithKeySerializable removed
     tokenAccountsMap,
     tokenMetadata,
     nftMetadata: Array.from(nftMetadata),

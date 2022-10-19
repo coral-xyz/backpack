@@ -33,9 +33,8 @@ export const customSplTokenAccounts = atomFamily({
           const { tokenAccountsMap, tokenMetadata, nftMetadata } =
             await connection.customSplTokenAccounts(new PublicKey(publicKey));
           const splTokenAccounts = new Map(tokenAccountsMap);
-          console.log({ tokenAccountsMap, splTokenAccounts });
           return {
-            splTokenAccounts: new Map(),
+            splTokenAccounts,
             splTokenMetadata: tokenMetadata,
             splNftMetadata: new Map(nftMetadata),
           };

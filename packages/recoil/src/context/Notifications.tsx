@@ -335,6 +335,7 @@ export function NotificationsProvider(props: any) {
 
       console.log("g3g customSplTokenAccounts:result", result);
 
+      // petermpe:A tokenAccounts map
       const customSplTokenAccounts = {
         ...result,
         tokenAccounts: new Map(
@@ -343,7 +344,7 @@ export function NotificationsProvider(props: any) {
       };
 
       console.log(
-        "g3g customSplTokenAccounts:customSplTokenAccounts",
+        "gg customSplTokenAccounts:customSplTokenAccounts",
         customSplTokenAccounts
       );
 
