@@ -10,7 +10,8 @@ insert_permissions:
         - created_at
         - data
         - id
-        - transaction
+        - ix_data
+        - ix_keys
         - type
         - xnft
 select_permissions:
@@ -21,7 +22,8 @@ select_permissions:
         - created_at
         - data
         - id
-        - transaction
+        - ix_data
+        - ix_keys
         - type
         - xnft
       filter: {}
@@ -34,7 +36,8 @@ update_permissions:
         - created_at
         - data
         - id
-        - transaction
+        - ix_data
+        - ix_keys
         - type
         - xnft
       filter: {}
