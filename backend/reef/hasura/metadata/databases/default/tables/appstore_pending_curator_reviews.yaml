@@ -6,37 +6,34 @@ insert_permissions:
     permission:
       check: {}
       columns:
-        - authority
-        - created_at
-        - data
         - id
-        - transaction
+        - created_at
         - type
+        - authority
         - xnft
+        - data
 select_permissions:
   - role: appstore
     permission:
       columns:
-        - authority
-        - created_at
-        - data
         - id
-        - transaction
+        - data
+        - authority
         - type
         - xnft
+        - created_at
       filter: {}
       allow_aggregations: true
 update_permissions:
   - role: appstore
     permission:
       columns:
-        - authority
-        - created_at
-        - data
         - id
-        - transaction
+        - data
+        - authority
         - type
         - xnft
+        - created_at
       filter: {}
       check: {}
 delete_permissions:
