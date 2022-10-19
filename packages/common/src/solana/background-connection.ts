@@ -139,7 +139,6 @@ export class BackgroundSolanaConnection extends Connection {
     });
     const _resp =
       BackgroundSolanaConnection.customSplTokenAccountsFromJson(resp);
-    console.log("ARMANI RESP HERE", _resp);
     return _resp;
   }
 
@@ -152,7 +151,6 @@ export class BackgroundSolanaConnection extends Connection {
           {
             ...t[1],
             amount: new BN(t[1].amount),
-            mint: new PublicKey(t[1].mint),
           },
         ];
       }),

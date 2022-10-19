@@ -338,7 +338,6 @@ async function handleCustomSplTokenAccounts(
       ];
     }),
   };
-  logger.debug("ARMANI FUCK", resp.tokenAccountsMap);
   return [resp];
 }
 
