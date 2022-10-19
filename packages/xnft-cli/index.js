@@ -89,7 +89,7 @@ program
     } catch (e) {
       console.log("falling back to latest renderer");
       // fallback to latest version of renderer
-      rendererScript = `<script src="https://unpkg.com/@coral-xyz/react-xnft-dom-renderer@0.1.0-latest.45/dist/index.js"></script>`;
+      rendererScript = `<script src="https://unpkg.com/@coral-xyz/react-xnft-dom-renderer@latest/dist/index.js"></script>`;
     }
     if (iframe) {
       // If an iframe URL has been provided then serve the iframe xNFT example,
