@@ -1,14 +1,17 @@
-import { useCustomTheme } from "@coral-xyz/themes";
 import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
 import { Box, Grid } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { toTitleCase } from "@coral-xyz/common";
 import { ActionCard } from "../../common/Layout/ActionCard";
 
-export const AccountType = ({ action }: { action: "create" | "import" }) => {
-  const { pathname } = useLocation();
+export const WalletType = ({
+  action,
+  onNext,
+}: {
+  action: "create" | "import";
+  onNext: (walletType: string) => void;
+}) => {
   const theme = useCustomTheme();
-  const navigate = useNavigate();
 
   return (
     <div
@@ -31,9 +34,7 @@ export const AccountType = ({ action }: { action: "create" | "import" }) => {
                 />
               }
               text={`${toTitleCase(action)} from recovery phrase`}
-              onClick={() =>
-                navigate(`/${pathname}/mnemonic`.replace("//", "/"))
-              }
+              onClick={() => onNext("mnemonic")}
             />
           </Grid>
           <Grid item xs={6}>
@@ -46,9 +47,7 @@ export const AccountType = ({ action }: { action: "create" | "import" }) => {
                 />
               }
               text={`${toTitleCase(action)} from hardware wallet`}
-              onClick={() =>
-                navigate(`/${pathname}/hardware`.replace("//", "/"))
-              }
+              onClick={() => onNext("ledger")}
             />
           </Grid>
         </Grid>

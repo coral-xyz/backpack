@@ -9,8 +9,8 @@ import { ImportAccounts } from "../../../common/Account/ImportAccounts";
 import type { SelectedAccount } from "../../../common/Account/ImportAccounts";
 import { WithNav, NavBackButton } from "../../../common/Layout/Nav";
 import { CloseButton } from "../../../common/Layout/Drawer";
-import { OptionsContainer } from "../..";
 import { SignOnboardHardware } from "./SignOnboardHardware";
+import { useSteps } from "../../../../hooks/useSteps";
 
 export function OnboardHardware({
   blockchain,
@@ -22,16 +22,11 @@ export function OnboardHardware({
   onClose?: () => void;
 }) {
   const theme = useCustomTheme();
+  const { step, setStep, nextStep, prevStep } = useSteps();
   const [transport, setTransport] = useState<Transport | null>(null);
   const [transportError, setTransportError] = useState(false);
-  const [step, setStep] = useState(0);
   const [accounts, setAccounts] = useState<Array<SelectedAccount>>();
   const [derivationPath, setDerivationPath] = useState<DerivationPath>();
-
-  const nextStep = () => setStep(step + 1);
-  const prevStep = () => {
-    if (step > 0) setStep(step - 1);
-  };
 
   //
   // Flow for onboarding a hardware wallet.

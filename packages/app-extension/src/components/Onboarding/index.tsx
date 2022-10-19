@@ -1,6 +1,11 @@
 import {
-  Blockchain,
-  DerivationPath,
+  useRef,
+  useState,
+  Dispatch,
+  MutableRefObject,
+  SetStateAction,
+} from "react";
+import {
   BACKPACK_FEATURE_USERNAMES,
   BACKPACK_LINK,
   DISCORD_INVITE_LINK,
@@ -11,263 +16,66 @@ import {
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, Lock, Menu, Twitter } from "@mui/icons-material";
 import { Box, IconButton, ListItemText, Toolbar } from "@mui/material";
-import {
-  Dispatch,
-  MutableRefObject,
-  SetStateAction,
-  useRef,
-  useState,
-} from "react";
-import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
 import { DiscordIcon } from "../common/Icon";
 import { WithContaineredDrawer } from "../common/Layout/Drawer";
-import { NavBackButton, NAV_BAR_HEIGHT, WithNav } from "../common/Layout/Nav";
+import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import { List, ListItem } from "../common/List";
-import SocialNavbarButtons from "../common/SocialNavbarButtons";
 import WaitingRoom from "../common/WaitingRoom";
 import { CreateOrImportWallet } from "./pages/CreateOrImportWallet";
-import { Finish } from "./pages/Finish";
-import { ImportAccounts } from "./pages/ImportAccounts";
 import { InviteCodeForm } from "./pages/InviteCodeForm";
-import { RecoverAccount } from "./pages/RecoverAccount";
-import {
-  GenerateRecoveryPhrase,
-  ImportRecoveryPhrase,
-  RecoverAccountWithRecoveryPhrase,
-} from "./pages/RecoveryPhrase";
-import { SetPassword } from "./pages/SetPassword";
-import { UsernameForm } from "./pages/UsernameForm";
-import { BlockchainSelector } from "./pages/BlockchainSelector";
-import { OnboardHardware } from "./pages/OnboardHardware";
-import { SelectedAccount } from "../common/Account/ImportAccounts";
+import { CreateImportAccount } from "./pages/CreateImportAccount";
 
 export const Onboarding = () => {
-  const { pathname } = useLocation();
-  const navigate = useNavigate();
-  const previous = pathname.split("/").slice(0, -1).join("/");
-  const goBack =
-    !pathname.endsWith("finish") && pathname !== "/"
-      ? () => navigate(previous)
-      : undefined;
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [openLedgerDrawer, setOpenLedgerDrawer] = useState(false);
-  const [blockchain, setBlockchain] = useState<Blockchain | null>(null);
   const containerRef = useRef();
+  const [action, setAction] = useState<
+    null | "waiting" | "recover" | "create" | "import"
+  >(null);
 
-  return (
-    <OptionsContainer innerRef={containerRef}>
-      <WithNav
-        navButtonLeft={goBack ? <NavBackButton onClick={goBack} /> : undefined}
-        navButtonRight={
-          pathname === "/" ? (
-            <OnboardingMenu
-              containerRef={containerRef}
-              menuOpen={menuOpen}
-              setMenuOpen={setMenuOpen}
-            />
-          ) : pathname === "/waitingRoom" ? (
-            <SocialNavbarButtons />
-          ) : undefined
-        }
-        navbarStyle={{
-          borderRadius: "12px",
-        }}
-        navContentStyle={{
-          borderRadius: "12px",
-          overflow: "hidden",
-          display: "flex",
-        }}
-      >
-        <Routes>
-          <Route
-            path={"/"}
-            element={
-              BACKPACK_FEATURE_USERNAMES ? (
-                <InviteCodeForm />
-              ) : (
-                <CreateOrImportWallet />
-              )
-            }
-          />
-
-          <Route path={p("")} element={<CreateOrImportWallet />} />
-
-          <Route path="/waitingRoom" element={<WaitingRoom />} />
-
-          <Route path="/:inviteCode" element={<UsernameForm />} />
-
-          {/* RECOVER WALLET FLOW */}
-          <Route path="/recover" element={<RecoverAccount />} />
-
-          <Route
-            path="/recover/:blockchain"
-            element={
-              // assume the user has pressed back button to arrive here,
-              // take them one extra step back to the username input form
-              <Navigate to="/recover" />
-            }
-          />
-
-          <Route
-            path="/recover/:blockchain/:usernameAndPubkey"
-            element={<RecoverAccountWithRecoveryPhrase />}
-          />
-          <Route
-            path="/recover/:blockchain/:usernameAndPubkey/:mnemonic"
-            element={<ImportAccounts />}
-          />
-          <Route
-            path="/recover/:blockchain/:usernameAndPubkey/:mnemonic/:accountsAndDerivationPath"
-            element={<SetPassword />}
-          />
-          <Route
-            path="/recover/:blockchain/:usernameAndPubkey/:mnemonic/:accountsAndDerivationPath/:password/finish"
-            element={<Finish />}
-          />
-
-          {/* CREATE NEW WALLET FLOW */}
-          <Route
-            path={p("create")}
-            element={
-              <BlockchainSelector
-                onSelect={(blockchain) => navigate(`${pathname}/${blockchain}`)}
-              />
-            }
-          />
-          <Route
-            path={p("create/:blockchain")}
-            element={<GenerateRecoveryPhrase />}
-          />
-          <Route
-            path={p("create/:blockchain/:mnemonic")}
-            element={<SetPassword />}
-          />
-          <Route
-            path={p("create/:blockchain/:mnemonic/:password/finish")}
-            element={<Finish />}
-          />
-
-          {/* IMPORT EXISTING WALLET FLOW */}
-          <Route
-            path={p("import")}
-            element={
-              <BlockchainSelector
-                onSelect={(blockchain) => navigate(`${pathname}/${blockchain}`)}
-              />
-            }
-          />
-          <Route
-            path={p("import/:blockchain")}
-            element={<ImportRecoveryPhrase />}
-          />
-          <Route
-            path={p("import/:blockchain/:mnemonic")}
-            element={<ImportAccounts />}
-          />
-          <Route
-            path={p("import/:blockchain/:mnemonic/:accountsAndDerivationPath")}
-            element={<SetPassword />}
-          />
-          <Route
-            path={p(
-              "import/:blockchain/:mnemonic/:accountsAndDerivationPath/:password/finish"
-            )}
-            element={<Finish />}
-          />
-
-          {/* CONNECT HARDWARE WALLET FLOW */}
-          <Route
-            path={p("connect")}
-            element={
-              <BlockchainSelector
-                onSelect={(blockchain) => {
-                  setBlockchain(blockchain);
-                  setOpenLedgerDrawer(true);
-                }}
-              />
-            }
-          />
-          <Route
-            path={p("connect/:blockchain/:accountsAndDerivationPath")}
-            element={<ImportAccounts />}
-          />
-          <Route
-            path={p("connect/:blockchain/:accountsAndDerivationPath")}
-            element={<SetPassword />}
-          />
-          <Route
-            path={p(
-              "connect/:blockchain/:accountsAndDerivationPath/:password/finish"
-            )}
-            element={<Finish />}
-          />
-        </Routes>
-        <LedgerDrawer
-          blockchain={blockchain!}
-          containerRef={containerRef!}
-          openDrawer={openLedgerDrawer}
-          setOpenDrawer={setOpenLedgerDrawer}
-          onComplete={(
-            accounts: Array<SelectedAccount>,
-            derivationPath: DerivationPath
-          ) => {
-            console.log(accounts);
-            console.log(derivationPath);
-          }}
-        />
-      </WithNav>
-    </OptionsContainer>
-  );
-};
-
-const p = (path: string) =>
-  BACKPACK_FEATURE_USERNAMES ? `/:inviteCode/:username/${path}` : `/${path}`;
-
-export function LedgerDrawer({
-  blockchain,
-  containerRef,
-  openDrawer,
-  setOpenDrawer,
-  onComplete,
-}: {
-  blockchain: Blockchain;
-  containerRef: any;
-  openDrawer: boolean;
-  setOpenDrawer: Dispatch<SetStateAction<boolean>>;
-  onComplete: (
-    accounts: Array<SelectedAccount>,
-    derivationPath: DerivationPath
-  ) => void;
-}) {
-  const _onComplete = () => {
-    setOpenDrawer(false);
+  const defaultProps = {
+    containerRef,
+    // Props for the WithNav component
+    navProps: {
+      navbarStyle: {
+        borderRadius: "12px",
+      },
+      navContentStyle: {
+        borderRadius: "12px",
+        overflow: "hidden",
+        display: "flex",
+      },
+    },
   };
 
-  return (
-    <WithContaineredDrawer
-      containerRef={containerRef}
-      openDrawer={openDrawer}
-      setOpenDrawer={setOpenDrawer}
-      paperStyles={{
-        height: "calc(100% - 56px)",
-        borderTopLeftRadius: "12px",
-        borderTopRightRadius: "12px",
-      }}
-    >
-      <OnboardHardware
-        blockchain={blockchain}
-        onComplete={_onComplete}
-        onClose={() => setOpenDrawer(false)}
+  let component;
+  if (action === null) {
+    component = BACKPACK_FEATURE_USERNAMES ? (
+      <InviteCodeForm />
+    ) : (
+      <CreateOrImportWallet
+        onClickCreate={() => setAction("create")}
+        onClickImport={() => setAction("import")}
+        {...defaultProps}
       />
-    </WithContaineredDrawer>
+    );
+  } else if (action === "waiting") {
+    component = <WaitingRoom />;
+  } else if (action === "recover") {
+    component = <></>;
+  } else {
+    // Create or import
+    component = (
+      <CreateImportAccount
+        action={action}
+        onClose={() => setAction(null)}
+        {...defaultProps}
+      />
+    );
+  }
+
+  return (
+    <OptionsContainer innerRef={containerRef}>{component}</OptionsContainer>
   );
-}
+};
 
 export function OptionsContainer({
   innerRef,
@@ -322,7 +130,7 @@ export function OptionsContainer({
   );
 }
 
-function OnboardingMenu({
+export function OnboardingMenu({
   containerRef,
   menuOpen,
   setMenuOpen,
