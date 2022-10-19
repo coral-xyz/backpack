@@ -6548,7 +6548,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-dom@^17.0.0", "@types/react-dom@^17.0.14":
+"@types/react-dom@^17.0.0", "@types/react-dom@^17.0.14", "@types/react-dom@^18.0.6":
   version "17.0.17"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-17.0.17.tgz#2e3743277a793a96a99f1bf87614598289da68a1"
   integrity sha512-VjnqEmqGnasQKV0CWLevqMTXBYG9GbwuE6x3VetERLh0cq2LTptFE73MrQi2S7GkKXCf2GgwItB/melLnxfnsg==
@@ -6590,7 +6590,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^17", "@types/react@^17.0.0", "@types/react@^17.0.43", "@types/react@~17.0.21":
+"@types/react@*", "@types/react@^17", "@types/react@^17.0.0", "@types/react@^17.0.43", "@types/react@^18.0.21", "@types/react@~17.0.21":
   version "17.0.45"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.45.tgz#9b3d5b661fd26365fefef0e766a1c6c30ccf7b3f"
   integrity sha512-YfhQ22Lah2e3CHPsb93tRwIGNiSwkuz1/blk4e6QrWS0jQzCSNbGLtOEYhPg02W0yGTTmpajp7dCTbBAMN3qsg==
@@ -8723,6 +8723,11 @@ borsh@^0.6.0:
     bn.js "^5.2.0"
     bs58 "^4.0.0"
     text-encoding-utf-8 "^1.0.2"
+
+boring-avatars@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/boring-avatars/-/boring-avatars-1.7.0.tgz#70ac7146bbf37d8e69a35544b24f1d75558f868a"
+  integrity sha512-ZNHd8J7C/V0IjQMGQowLJ5rScEFU23WxePigH6rqKcT2Esf0qhYvYxw8s9i3srmlfCnCV00ddBjaoGey1eNOfA==
 
 borsh@^0.7.0:
   version "0.7.0"
@@ -13849,6 +13854,11 @@ hono@^2.2.1:
   resolved "https://registry.yarnpkg.com/hono/-/hono-2.2.1.tgz#eafdc140cbc896977979820b6215f55c8753dfbd"
   integrity sha512-tlawHM4uOMt41jibUF0fRYxUs3vibKzO1Ihuk/MohpUrkRc4fQo1n9+jLRKIC/8d0lLLW/CPWR/iItcf2HUv3A==
 
+hono@^2.2.3:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/hono/-/hono-2.2.3.tgz#aac46685808bac639de693b5feacb1776e254853"
+  integrity sha512-Xtokmfyt7Np6S/FIqFAFRuu+7vU7juJF3ApmRjg5cQLsrVEO19icy2Ux/MJ5eV8sDzFgHUmUegI+O/zD4Cam9w==
+
 hosted-git-info@^2.1.4:
   version "2.8.9"
   resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.8.9.tgz#dffc0bf9a21c02209090f2aa69429e1414daf3f9"
@@ -17339,6 +17349,30 @@ miniflare@2.9.0, miniflare@^2.9.0:
     semiver "^1.1.0"
     source-map-support "^0.5.20"
     undici "5.9.1"
+
+miniflare@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/miniflare/-/miniflare-2.5.1.tgz#2cfa23e5ad6f8d6bf3662f1642c177fcd9ad1329"
+  integrity sha512-PT56C/j7U6n7WDxnIUHu0d8EY/gedPRsta2b+LsrIHGZPSkxAcPzf2DgbbPU7obv0C4hT9H0GL1fWpWtr2SbDQ==
+  dependencies:
+    "@miniflare/cache" "2.5.1"
+    "@miniflare/cli-parser" "2.5.1"
+    "@miniflare/core" "2.5.1"
+    "@miniflare/durable-objects" "2.5.1"
+    "@miniflare/html-rewriter" "2.5.1"
+    "@miniflare/http-server" "2.5.1"
+    "@miniflare/kv" "2.5.1"
+    "@miniflare/runner-vm" "2.5.1"
+    "@miniflare/scheduler" "2.5.1"
+    "@miniflare/shared" "2.5.1"
+    "@miniflare/sites" "2.5.1"
+    "@miniflare/storage-file" "2.5.1"
+    "@miniflare/storage-memory" "2.5.1"
+    "@miniflare/web-sockets" "2.5.1"
+    kleur "^4.1.4"
+    semiver "^1.1.0"
+    source-map-support "^0.5.20"
+    undici "5.5.1"
 
 minimalistic-assert@^1.0.0, minimalistic-assert@^1.0.1:
   version "1.0.1"
@@ -21895,6 +21929,11 @@ typescript@^4.8.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.8.3.tgz#d59344522c4bc464a65a730ac695007fdb66dd88"
   integrity sha512-goMHfm00nWPa8UvR/CPSvykqf6dVV8x/dp0c5mFTMTIu0u0FlGWRioyy7Nn0PGAdHxpJZnuO/ut+PpQ8UiHAig==
 
+typescript@^4.8.4:
+  version "4.8.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.8.4.tgz#c464abca159669597be5f96b8943500b238e60e6"
+  integrity sha512-QCh+85mCy+h0IGff8r5XWzOVSbBO+KfeYrMQh7NJ58QujwcE22u+NUSmUxqF+un70P9GXKxa2HCNiTTMJknyjQ==
+
 typescript@~4.3.5:
   version "4.3.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.5.tgz#4d1c37cc16e893973c45a06886b7113234f119f4"
@@ -22706,6 +22745,29 @@ wordwrapjs@^4.0.0:
     typical "^5.2.0"
 
 wrangler@^2.0.15, wrangler@^2.1.6, wrangler@^2.1.9:
+  version "2.1.9"
+  resolved "https://registry.yarnpkg.com/wrangler/-/wrangler-2.1.9.tgz#295c4184c493004fab37c35c1fa364e9f4f8d4a1"
+  integrity sha512-ryrkpUEqgJZIiGgo+VCUYtl0B+shEbyp3FZzT5+GYnyfpLtQutAZlS/s5iOC0qjZ7TcRzWS1PSb9fE9nDSvCKg==
+  dependencies:
+    "@cloudflare/kv-asset-handler" "^0.2.0"
+    "@esbuild-plugins/node-globals-polyfill" "^0.1.1"
+    "@esbuild-plugins/node-modules-polyfill" "^0.1.4"
+    "@miniflare/core" "2.9.0"
+    "@miniflare/d1" "2.9.0"
+    "@miniflare/durable-objects" "2.9.0"
+    blake3-wasm "^2.1.5"
+    chokidar "^3.5.3"
+    esbuild "0.14.51"
+    miniflare "2.9.0"
+    nanoid "^3.3.3"
+    path-to-regexp "^6.2.0"
+    selfsigned "^2.0.1"
+    source-map "^0.7.4"
+    xxhash-wasm "^1.0.1"
+  optionalDependencies:
+    fsevents "~2.3.2"
+
+wrangler@^2.1.9:
   version "2.1.9"
   resolved "https://registry.yarnpkg.com/wrangler/-/wrangler-2.1.9.tgz#295c4184c493004fab37c35c1fa364e9f4f8d4a1"
   integrity sha512-ryrkpUEqgJZIiGgo+VCUYtl0B+shEbyp3FZzT5+GYnyfpLtQutAZlS/s5iOC0qjZ7TcRzWS1PSb9fE9nDSvCKg==

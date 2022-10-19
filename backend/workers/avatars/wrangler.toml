@@ -1,0 +1,3 @@
+name = "avatars"
+main = "src/index.tsx"
+compatibility_date = "2022-10-02"

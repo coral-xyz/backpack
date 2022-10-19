@@ -225,7 +225,7 @@ jobs:
 
       - name: "update npm package version"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: ./scripts/npm_release.sh 0.1.0-latest.${{ github.run_number }}
+        run: ./scripts/npm_release.sh 0.2.0-latest.${{ github.run_number }}
       - name: "publish to npm: common-public"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: JS-DevTools/npm-publish@v1
