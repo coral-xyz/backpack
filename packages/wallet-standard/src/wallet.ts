@@ -41,7 +41,7 @@ export class BackpackWallet implements Wallet {
     readonly #name = 'Backpack' as const;
     readonly #icon = icon;
     #account: BackpackWalletAccount | null = null;
-    #backpack: ProviderSolanaInjection;
+    readonly #backpack: ProviderSolanaInjection;
 
     get version() {
         return this.#version;
