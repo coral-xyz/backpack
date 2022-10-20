@@ -1,4 +1,5 @@
 import {
+  Blockchain,
   DerivationPath,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
@@ -170,7 +171,13 @@ const ShowSecretRecoveryPhrase: React.FC<{
   const onSubmit = async () => {
     await background.request({
       method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-      params: [recoveryPhrase, DerivationPath.Bip44, password, [0]],
+      params: [
+        Blockchain.SOLANA,
+        recoveryPhrase,
+        DerivationPath.Bip44,
+        password,
+        [0],
+      ],
     });
     navigate("/");
   };
