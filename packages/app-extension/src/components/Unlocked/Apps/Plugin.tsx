@@ -54,7 +54,6 @@ export function _PluginDisplay({
   closePlugin: () => void;
 }) {
   const theme = useCustomTheme();
-  const isDarkMode = useDarkMode();
 
   // TODO: splash loading page.
   return (
@@ -65,11 +64,7 @@ export function _PluginDisplay({
       }}
     >
       <PluginControl closePlugin={closePlugin} />
-      <PluginRenderer
-        key={plugin.iframeRootUrl}
-        plugin={plugin}
-        metadata={{ isDarkMode }}
-      />
+      <PluginRenderer key={plugin.iframeRootUrl} plugin={plugin} />
     </div>
   );
 }

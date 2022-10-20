@@ -2,10 +2,13 @@ import { DomProvider } from "./Context";
 import { WithTheme } from "./WithTheme";
 import { useEffect, useState } from "react";
 import { Event } from "@coral-xyz/common-public";
-import { Element } from "react-xnft";
 import { RootRenderer } from "./Renderer";
-const DEFAULT_METADATA = {
+import { XnftMetadata } from "@coral-xyz/common";
+
+const DEFAULT_METADATA: XnftMetadata = {
   isDarkMode: false,
+  username: "",
+  photo: "",
 };
 
 export const App = () => {
@@ -16,7 +19,7 @@ export const App = () => {
   useEffect(() => {
     window.addEventListener("load", () => {
       // @ts-ignore
-      window.xnft.on("metadata", (event: Event) => {
+      window.xnft.addListener("metadata", (event: Event) => {
         setMetadata(event.data.metadata);
       });
     });
