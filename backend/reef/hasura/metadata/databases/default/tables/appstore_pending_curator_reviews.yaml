@@ -6,6 +6,7 @@ insert_permissions:
     permission:
       check: {}
       columns:
+        - approved
         - authority
         - contact
         - created_at
@@ -13,12 +14,14 @@ insert_permissions:
         - id
         - ix_data
         - ix_keys
+        - processed
         - type
         - xnft
 select_permissions:
   - role: appstore
     permission:
       columns:
+        - approved
         - authority
         - contact
         - created_at
@@ -26,6 +29,7 @@ select_permissions:
         - id
         - ix_data
         - ix_keys
+        - processed
         - type
         - xnft
       filter: {}
@@ -34,6 +38,7 @@ update_permissions:
   - role: appstore
     permission:
       columns:
+        - approved
         - authority
         - contact
         - created_at
@@ -41,6 +46,7 @@ update_permissions:
         - id
         - ix_data
         - ix_keys
+        - processed
         - type
         - xnft
       filter: {}
