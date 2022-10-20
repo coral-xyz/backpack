@@ -15,6 +15,7 @@ insert_permissions:
         - ix_data
         - ix_keys
         - processed
+        - signature
         - type
         - xnft
 select_permissions:
@@ -30,6 +31,7 @@ select_permissions:
         - ix_data
         - ix_keys
         - processed
+        - signature
         - type
         - xnft
       filter: {}
@@ -47,6 +49,7 @@ update_permissions:
         - ix_data
         - ix_keys
         - processed
+        - signature
         - type
         - xnft
       filter: {}
