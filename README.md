@@ -88,6 +88,11 @@ _If you run into issues with builds try running `yarn clean` and then start agai
 
 Go to chrome://extensions, enable developer mode (top right) and drag the `packages/app-extension/dev` dir into the window. This version will have (Dev) in the title and supports live-reloading.
 
+#### Not seeing the dev folder?
+
+- Do you have a stale node process running? Try to kill it all: `killall -9 node` and start over
+- Try running `yarn start` from within `packages/app-extension` while running `yarn start` from root. This should work.
+
 ### Optionally install the built extension
 
 If you want to try the production build of the extension, run `yarn build` and drag the `packages/app-extension/build` dir into chrome://extensions as above. This version won't have hot-reloading and local plugins won't be visible unless you also run `yarn start`
