@@ -127,6 +127,7 @@ export class ProviderEthereumXnftInjection extends PrivateEventEmitter {
       publicKeys[Blockchain.ETHEREUM],
       connectionUrls[Blockchain.ETHEREUM]
     );
+    this.emit("connect", event.data.detail);
   }
 
   #handleConnectionUrlUpdated(event: Event) {

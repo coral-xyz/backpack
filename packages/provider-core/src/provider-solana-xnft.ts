@@ -202,6 +202,7 @@ export class ProviderSolanaXnftInjection
     const publicKey = publicKeys[Blockchain.SOLANA];
     const connectionUrl = connectionUrls[Blockchain.SOLANA];
     this.#connect(publicKey, connectionUrl);
+    this.emit("connect", event.data.detail);
   }
 
   #handleMount(event: Event) {
