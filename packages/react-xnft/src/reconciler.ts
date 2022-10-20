@@ -3,6 +3,7 @@ import { EventEmitter } from "eventemitter3";
 import { ReactDom } from "./ReactDom";
 import { getLogger, Event } from "@coral-xyz/common-public";
 import { NAV_STACK } from "./Context";
+import { CONNECT, ETHEREUM_CONNECT, SOLANA_CONNECT } from "./EVENTS";
 
 const logger = getLogger("react-xnft/reconciler");
 const events = new EventEmitter();
@@ -14,7 +15,15 @@ export const ReactXnft = {
       window.xnft.on("connect", () => {
         logger.debug("connect");
         NAV_STACK.push(reactNode);
-        events.emit("connect");
+        events.emit(CONNECT);
+      });
+
+      window.xnft.solana.on("connect", () => {
+        events.emit(SOLANA_CONNECT);
+      });
+
+      window.xnft.ethereum.on("connect", () => {
+        events.emit(ETHEREUM_CONNECT);
       });
 
       window.xnft.on("mount", () => {
