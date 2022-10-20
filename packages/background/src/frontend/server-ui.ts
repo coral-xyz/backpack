@@ -309,7 +309,9 @@ async function handle<T = any>(
         params[0],
         params[1],
         params[2],
-        params[3]
+        params[3],
+        params[4],
+        params[5]
       );
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
@@ -748,20 +750,18 @@ async function handleSignMessageForWallet(
   ctx: Context<Backend>,
   blockchain: Blockchain,
   msg: string,
+  derivationPath: DerivationPath,
+  accountIndex: number,
   publicKey: string,
-  wallet:
-    | {
-        mnemonic: string;
-        derivationPath: DerivationPath;
-        accountIndex: number;
-      }
-    | ImportedDerivationPath
+  mnemonic?: string
 ) {
   const resp = await ctx.backend.signMessageForWallet(
     blockchain,
     msg,
+    derivationPath,
+    accountIndex,
     publicKey,
-    wallet
+    mnemonic
   );
   return [resp];
 }

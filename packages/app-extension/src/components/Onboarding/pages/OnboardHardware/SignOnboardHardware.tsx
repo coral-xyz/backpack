@@ -31,21 +31,19 @@ export function SignOnboardHardware({
   const [signature, setSignature] = useState<string | null>(null);
   const [retry, setRetry] = useState(0);
 
+  const account = accounts.length > 0 ? accounts[0] : null;
+
   useEffect(() => {
     (async () => {
-      if (accounts && accounts.length > 0 && derivationPath) {
-        const account = accounts[0];
+      if (account) {
         const signature = await background.request({
           method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
           params: [
             blockchain,
             "123",
+            derivationPath,
+            account.index,
             account.publicKey,
-            {
-              path: derivationPath,
-              account: account.index,
-              publicKey: account.publicKey,
-            },
           ],
         });
         console.log(signature);
@@ -82,7 +80,9 @@ export function SignOnboardHardware({
         {/* <PrimaryButton label="Retry" onClick={() => setRetry(retry + 1)} /> */}
         <PrimaryButton
           label="Next"
-          onClick={() => onNext(signature!)}
+          onClick={() => {
+            onNext(signature!);
+          }}
           disabled={!signature}
         />
       </Box>

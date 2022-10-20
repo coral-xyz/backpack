@@ -318,7 +318,7 @@ export function ImportAccounts({
         >
           <Header text="Import accounts" />
           <SubtextParagraph>
-            Select which account{allowMultiple && "s"} you'd like to import.
+            Select which account{allowMultiple ? "s" : ""} you'd like to import.
           </SubtextParagraph>
         </Box>
         <div style={{ margin: "16px" }}>
@@ -428,7 +428,7 @@ export function ImportAccounts({
         }}
       >
         <PrimaryButton
-          label={`Import Account${allowMultiple && "s"}`}
+          label={`Import Account${allowMultiple ? "s" : ""}`}
           onClick={() => onNext(selectedAccounts, derivationPath, mnemonic)}
           disabled={selectedAccounts.length === 0}
         />

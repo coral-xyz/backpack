@@ -66,3 +66,5 @@ export type NftAttribute = {
 export interface Metadata {
   isDarkMode: boolean;
 }
+
+export type KeyringType = "mnemonic" | "ledger";

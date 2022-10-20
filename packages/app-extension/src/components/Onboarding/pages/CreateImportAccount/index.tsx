@@ -1,52 +1,122 @@
 import { useState } from "react";
-import { Blockchain } from "@coral-xyz/common";
+import {
+  Blockchain,
+  DerivationPath,
+  UI_RPC_METHOD_PREVIEW_PUBKEYS,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+} from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { WalletType } from "../WalletType";
 import { BlockchainSelector } from "../BlockchainSelector";
+import { OnboardHardware } from "../OnboardHardware";
 import { MnemonicInput } from "../../../common/Account/MnemonicInput";
 import { CreatePassword } from "../../../common/Account/CreatePassword";
-import { ImportAccounts } from "../../../common/Account/ImportAccounts";
+import {
+  ImportAccounts,
+  SelectedAccount,
+} from "../../../common/Account/ImportAccounts";
 import { WithContaineredDrawer } from "../../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../../common/Layout/Nav";
-import { Finish } from "../Finish";
+import { Finish, BlockchainKeyringInit } from "../Finish";
 import { useSteps } from "../../../../hooks/useSteps";
-import { OnboardHardware } from "../OnboardHardware";
 
 export type WalletType = "mnemonic" | "ledger";
 
 export const CreateImportAccount = ({
   action,
+  inviteCode,
+  username,
   containerRef,
   onClose,
   navProps,
 }: {
   action: "create" | "import";
+  inviteCode: string;
+  username: string;
   containerRef: any;
   onClose: () => void;
   navProps: object;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
+  const background = useBackgroundClient();
   const [walletType, setWalletType] = useState<WalletType | null>(null);
+  const [blockchainKeyrings, setBlockchainKeyrings] = useState<
+    Array<BlockchainKeyringInit>
+  >([]);
   const [blockchain, setBlockchain] = useState<Blockchain | null>(null);
   const [password, setPassword] = useState<string | null>(null);
-  const [mnemonic, setMnemonic] = useState<string | null>(null);
+  const [mnemonic, setMnemonic] = useState<string | undefined>(undefined);
   const [openDrawer, setOpenDrawer] = useState(false);
 
-  const handleBlockchainSelect = (blockchain: Blockchain) => {
-    setBlockchain(blockchain);
-    if (walletType === "ledger") {
-      // If wallet is a ledger, step through the ledger onboarding flow
-      setOpenDrawer(true);
-    } else if (action === "import") {
-      // If we are importing accounts, open the drawer with the import accounts component
-      setOpenDrawer(true);
+  const selectedBlockchains = blockchainKeyrings.map((b) => b.blockchain);
+
+  const handleBlockchainClick = async (blockchain: Blockchain) => {
+    if (selectedBlockchains.includes(blockchain)) {
+      // Blockchain is being deselected
+      setBlockchain(null);
+      setBlockchainKeyrings(
+        blockchainKeyrings.filter((b) => b.blockchain !== blockchain)
+      );
     } else {
-      nextStep();
+      // Blockchain is being selected
+      if (walletType === "ledger" || action === "import") {
+        // If wallet is a ledger, step through the ledger onboarding flow
+        // OR if action is an import then open the drawer with the import accounts
+        // component
+        setBlockchain(blockchain);
+        setOpenDrawer(true);
+      } else if (action === "create") {
+        // We are creating a new wallet, generate the signature using a default
+        // derivation path and account index
+        signForWallet(blockchain, DerivationPath.Default, 0);
+      }
     }
   };
 
-  const handleOnboardHardware = () => {};
+  const signForWallet = async (
+    blockchain: Blockchain,
+    derivationPath: DerivationPath,
+    accountIndex: number,
+    publicKey?: string
+  ) => {
+    if (!publicKey) {
+      // No publicKey given, this is a create action, so preview the public keys
+      // and grab the one at the index
+      const publicKeys = await background.request({
+        method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
+        params: [blockchain, mnemonic, derivationPath, accountIndex + 1],
+      });
+      publicKey = publicKeys[accountIndex];
+    }
+    const signature = await background.request({
+      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+      params: [
+        blockchain,
+        "123123",
+        derivationPath,
+        accountIndex,
+        publicKey!,
+        mnemonic,
+      ],
+    });
+    addBlockchainKeyring({
+      blockchain: blockchain!,
+      derivationPath,
+      accountIndex,
+      publicKey: publicKey!,
+      signature,
+    });
+  };
 
-  const handleImportAccounts = () => {};
+  // Add the initialisation parameters for a blockchain keyring to state
+  const addBlockchainKeyring = (blockchainKeyring: BlockchainKeyringInit) => {
+    setBlockchainKeyrings([...blockchainKeyrings, blockchainKeyring]);
+  };
+
+  const keyringInit = {
+    mnemonic,
+    blockchainKeyrings,
+  };
 
   const steps = [
     <WalletType
@@ -69,15 +139,26 @@ export const CreateImportAccount = ({
           />,
         ]
       : []),
-    <BlockchainSelector onSelect={handleBlockchainSelect} />,
+    <BlockchainSelector
+      selectedBlockchains={selectedBlockchains}
+      onClick={handleBlockchainClick}
+      onNext={nextStep}
+    />,
     <CreatePassword
       onNext={(password) => {
         setPassword(password);
         nextStep();
       }}
     />,
-    // <Finish blockchain={blockchain} password={password} />,
+    <Finish
+      inviteCode={inviteCode}
+      username={username}
+      password={password!}
+      keyringInit={keyringInit!}
+    />,
   ];
+
+  console.log(blockchainKeyrings);
 
   return (
     <WithNav
@@ -101,14 +182,32 @@ export const CreateImportAccount = ({
         {walletType === "ledger" ? (
           <OnboardHardware
             blockchain={blockchain!}
-            onComplete={handleOnboardHardware}
+            action={action}
+            onComplete={(result) => {
+              addBlockchainKeyring(result);
+              setOpenDrawer(false);
+            }}
             onClose={() => setOpenDrawer(false)}
           />
         ) : (
           <ImportAccounts
             blockchain={blockchain!}
             mnemonic={mnemonic!}
-            onNext={handleImportAccounts}
+            allowMultiple={false}
+            onNext={(
+              selectedAccounts: SelectedAccount[],
+              derivationPath: DerivationPath
+            ) => {
+              // Should only be one selected account due to allowMultiple being false
+              const account = selectedAccounts[0];
+              signForWallet(
+                blockchain!,
+                derivationPath,
+                account.index,
+                account.publicKey
+              );
+              setOpenDrawer(false);
+            }}
           />
         )}
       </WithContaineredDrawer>

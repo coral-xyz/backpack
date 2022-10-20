@@ -47,7 +47,6 @@ import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
-import type { ImportedDerivationPath } from "./keyring/types";
 
 const { base58: bs58 } = ethers.utils;
 
@@ -400,30 +399,31 @@ export class Backend {
   async signMessageForWallet(
     blockchain: Blockchain,
     msg: string,
+    derivationPath: DerivationPath,
+    accountIndex: number,
     publicKey: string,
-    wallet:
-      | {
-          mnemonic: string;
-          derivationPath: DerivationPath;
-          accountIndex: number;
-        }
-      | ImportedDerivationPath
+    mnemonic?: string
   ) {
     const blockchainKeyring = {
       [Blockchain.SOLANA]: BlockchainKeyring.solana,
       [Blockchain.ETHEREUM]: BlockchainKeyring.ethereum,
     }[blockchain]();
 
-    console.log(wallet);
-
-    if ("mnemonic" in wallet) {
-      blockchainKeyring.initFromMnemonic(
-        wallet.mnemonic,
-        wallet.derivationPath,
-        [wallet.accountIndex]
-      );
+    if (mnemonic) {
+      blockchainKeyring.initFromMnemonic(mnemonic, derivationPath, [
+        accountIndex,
+      ]);
     } else {
-      blockchainKeyring.initFromLedger([wallet]);
+      if (!publicKey) {
+        throw new Error("missing public key");
+      }
+      blockchainKeyring.initFromLedger([
+        {
+          path: derivationPath,
+          account: accountIndex,
+          publicKey,
+        },
+      ]);
     }
 
     return await blockchainKeyring.signMessage(msg, publicKey);

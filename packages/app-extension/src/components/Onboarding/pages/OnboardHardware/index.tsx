@@ -11,18 +11,21 @@ import { WithNav, NavBackButton } from "../../../common/Layout/Nav";
 import { CloseButton } from "../../../common/Layout/Drawer";
 import { SignOnboardHardware } from "./SignOnboardHardware";
 import { useSteps } from "../../../../hooks/useSteps";
+import { BlockchainKeyringInit } from "../Finish";
 
 export function OnboardHardware({
   blockchain,
+  action,
   onComplete,
   onClose,
 }: {
   blockchain: Blockchain;
-  onComplete: () => void;
+  action: "create" | "import";
+  onComplete: (keyringInit: BlockchainKeyringInit) => void;
   onClose?: () => void;
 }) {
   const theme = useCustomTheme();
-  const { step, setStep, nextStep, prevStep } = useSteps();
+  const { step, nextStep, prevStep } = useSteps();
   const [transport, setTransport] = useState<Transport | null>(null);
   const [transportError, setTransportError] = useState(false);
   const [accounts, setAccounts] = useState<Array<SelectedAccount>>();
@@ -41,28 +44,39 @@ export function OnboardHardware({
       }}
       isConnectFailure={!!transportError}
     />,
-    <ImportAccounts
-      blockchain={blockchain}
-      transport={transport}
-      onNext={async (
-        accounts: SelectedAccount[],
-        derivationPath: DerivationPath
-      ) => {
-        setAccounts(accounts);
-        setDerivationPath(derivationPath);
-        nextStep();
-      }}
-      onError={() => {
-        setTransportError(true);
-        prevStep();
-      }}
-    />,
+    ...(action === "import"
+      ? [
+          <ImportAccounts
+            blockchain={blockchain}
+            transport={transport}
+            allowMultiple={false}
+            onNext={async (
+              accounts: SelectedAccount[],
+              derivationPath: DerivationPath
+            ) => {
+              setAccounts(accounts);
+              setDerivationPath(derivationPath);
+              nextStep();
+            }}
+            onError={() => {
+              setTransportError(true);
+              prevStep();
+            }}
+          />,
+        ]
+      : []),
     <SignOnboardHardware
       blockchain={blockchain}
       accounts={accounts ? accounts : []}
       derivationPath={derivationPath}
       onNext={(signature) => {
-        nextStep();
+        onComplete({
+          blockchain,
+          derivationPath: derivationPath!,
+          accountIndex: accounts![0].index,
+          publicKey: accounts![0].publicKey,
+          signature,
+        });
       }}
     />,
   ];
