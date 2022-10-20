@@ -29,7 +29,7 @@ function initProvider() {
     Object.defineProperty(window, "backpack", { value: solana });
   } catch (e) {
     console.warn(
-      "Backpack couldn't override window.backpack, disable other Solana wallets to use Backpack"
+      "Backpack couldn't override `window.backpack`. Disable other Solana wallets to use Backpack."
     );
   }
 
@@ -37,12 +37,12 @@ function initProvider() {
     Object.defineProperty(window, "ethereum", { value: ethereum });
   } catch (e) {
     console.warn(
-      "Backpack couldn't override window.ethereum, disable other Ethereum wallets to use Backpack"
+      "Backpack couldn't override `window.ethereum`. Disable other Ethereum wallets to use Backpack."
     );
   }
 
   try {
-    Object.defineProperty(window, "backpack", {
+    Object.defineProperty(window, "xnft", {
       value: (() => {
         //
         // XNFT Providers
@@ -61,7 +61,7 @@ function initProvider() {
     });
   } catch (e) {
     console.warn(
-      "Backpack couldn't override window.xnft, disable other xNFT wallets to use Backpack"
+      "Backpack couldn't override `window.xnft`. Disable other xNFT wallets to use Backpack."
     );
   }
 
