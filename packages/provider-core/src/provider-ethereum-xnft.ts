@@ -127,7 +127,6 @@ export class ProviderEthereumXnftInjection extends PrivateEventEmitter {
       publicKeys[Blockchain.ETHEREUM],
       connectionUrls[Blockchain.ETHEREUM]
     );
-    // Don't emit a connect even because the Solana xnft provider handles that
   }
 
   #handleConnectionUrlUpdated(event: Event) {

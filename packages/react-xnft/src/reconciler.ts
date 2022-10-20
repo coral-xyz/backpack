@@ -273,6 +273,8 @@ const RECONCILER = ReactReconciler({
         return null;
       case NodeKind.BalancesTableFooter:
         return null;
+      case NodeKind.Custom:
+        return null;
       default:
         throw new Error("unexpected node kind");
     }

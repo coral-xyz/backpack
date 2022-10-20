@@ -1,6 +1,7 @@
 import {
   ProviderEthereumInjection,
   ProviderEthereumXnftInjection,
+  ProviderRootXnftInjection,
   ProviderSolanaInjection,
   ProviderSolanaXnftInjection,
   RequestManager,
@@ -46,7 +47,7 @@ function initProvider() {
           CHANNEL_PLUGIN_RPC_RESPONSE,
           true
         );
-        const xnft = new ProviderSolanaXnftInjection(requestManager, {
+        const xnft = new ProviderRootXnftInjection(requestManager, {
           ethereum: new ProviderEthereumXnftInjection(requestManager),
           solana: new ProviderSolanaXnftInjection(requestManager),
         });
