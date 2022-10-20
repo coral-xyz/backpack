@@ -29,10 +29,10 @@
     <div id="publicKey"></div>
     <script type="text/javascript">
       addEventListener("load", () => {
-        window.xnft.on("connect", () => {
+        window.xnft.addListener("connect", (e) => {
           document.getElementById(
             "publicKey"
-          ).innerText = `Your public key is ${window.xnft.publicKey.toString()}`;
+          ).innerText = `Your solana public key is ${e.data.publicKeys.solana}`;
         });
       });
     </script>
