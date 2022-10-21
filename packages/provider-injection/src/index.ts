@@ -1,6 +1,7 @@
 import {
   ProviderEthereumInjection,
   ProviderEthereumXnftInjection,
+  ProviderRootXnftInjection,
   ProviderSolanaInjection,
   ProviderSolanaXnftInjection,
   RequestManager,
@@ -22,21 +23,27 @@ function main() {
 }
 
 function initProvider() {
-  Object.defineProperties(window, {
-    backpack: {
-      value: new ProviderSolanaInjection(),
-    },
-    ethereum: {
-      value: window.ethereum
-        ? (() => {
-            console.warn(
-              "Backpack couldn't override window.ethereum, disable other Ethereum wallets to use Backpack"
-            );
-            return window.ethereum;
-          })()
-        : new ProviderEthereumInjection(),
-    },
-    xnft: {
+  const solana = new ProviderSolanaInjection();
+  const ethereum = new ProviderEthereumInjection();
+
+  try {
+    Object.defineProperty(window, "backpack", { value: solana });
+  } catch (e) {
+    console.warn(
+      "Backpack couldn't override `window.backpack`. Disable other Solana wallets to use Backpack."
+    );
+  }
+
+  try {
+    Object.defineProperty(window, "ethereum", { value: ethereum });
+  } catch (e) {
+    console.warn(
+      "Backpack couldn't override `window.ethereum`. Disable other Ethereum wallets to use Backpack."
+    );
+  }
+
+  try {
+    Object.defineProperty(window, "xnft", {
       value: (() => {
         //
         // XNFT Providers
@@ -46,16 +53,20 @@ function initProvider() {
           CHANNEL_PLUGIN_RPC_RESPONSE,
           true
         );
-        const xnft = new ProviderSolanaXnftInjection(requestManager, {
+        const xnft = new ProviderRootXnftInjection(requestManager, {
           ethereum: new ProviderEthereumXnftInjection(requestManager),
           solana: new ProviderSolanaXnftInjection(requestManager),
         });
         return xnft;
       })(),
-    },
-  });
+    });
+  } catch (e) {
+    console.warn(
+      "Backpack couldn't override `window.xnft`. Disable other xNFT wallets to use Backpack."
+    );
+  }
 
-  register();
+  register(solana);
 }
 
 main();

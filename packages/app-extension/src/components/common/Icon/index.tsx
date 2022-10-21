@@ -524,7 +524,7 @@ export function Backpack({ fill }: { fill: string }) {
   );
 }
 
-export function RedBackpack() {
+export function RedBackpack({ style }: { style?: React.CSSProperties }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -532,6 +532,7 @@ export function RedBackpack() {
       height="80"
       viewBox="0 0 55 80"
       fill="none"
+      style={style}
     >
       <path
         fillRule="evenodd"

@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { ReactDom } from "react-xnft";
+import { XnftMetadata } from "@coral-xyz/common";
 
 interface Metadata {
   isDarkMode: boolean;
@@ -7,7 +8,7 @@ interface Metadata {
 
 type DomContext = {
   dom: ReactDom;
-  metadata: Metadata;
+  metadata: XnftMetadata;
 };
 
 export const _DomContext = React.createContext<DomContext | null>(null);

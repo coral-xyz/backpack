@@ -1,4 +1,4 @@
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { ArrowForward } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
 import { createPopup } from "@typeform/embed";
@@ -8,6 +8,14 @@ import { PrimaryButton, SubtextParagraph, TextField } from "../../common";
 import { BackpackHeader } from "../../Locked";
 import { getWaitlistId, setWaitlistId } from "../../common/WaitingRoom";
 
+const useStyles = styles((theme) => ({
+  inviteCodeBox: {
+    "& .MuiFormControl-root": {
+      marginTop: 0,
+    },
+  },
+}));
+
 export const InviteCodeForm = () => {
   const [error, setError] = useState("");
   const [inviteCode, setInviteCode] = useState("");
@@ -16,6 +24,7 @@ export const InviteCodeForm = () => {
   );
   const navigate = useNavigate();
   const theme = useCustomTheme();
+  const classes = useStyles();
 
   useEffect(() => {
     setError("");
@@ -63,20 +72,23 @@ export const InviteCodeForm = () => {
 
   return (
     <>
-      <Box style={{ flex: 1, textAlign: "center", padding: "32px 16px 0" }}>
-        <BackpackHeader
-          alphaStyle={{
-            marginRight: "42px",
-          }}
-        />
+      <Box
+        style={{
+          marginBottom: "52px",
+          flex: 1,
+          textAlign: "center",
+          padding: "32px 16px 0",
+        }}
+      >
+        <BackpackHeader />
       </Box>
 
       <form
         onSubmit={handleSubmit}
-        style={{ padding: "0 16px 16px" }}
+        style={{ padding: "0 16px 16px", marginTop: 0 }}
         noValidate
       >
-        <Box style={{ marginBottom: 8 }}>
+        <Box style={{ marginBottom: 8 }} className={classes.inviteCodeBox}>
           <TextField
             inputProps={{
               name: "inviteCode",
@@ -107,7 +119,7 @@ export const InviteCodeForm = () => {
         <PrimaryButton label="Go" type="submit" />
 
         <Box style={{ textAlign: "center", cursor: "pointer" }}>
-          <Box style={{ marginTop: 16 }}>
+          <Box style={{ marginTop: 24 }}>
             {waitlistResponseId ? (
               <SubtextParagraph
                 onClick={() => navigate("/waitingRoom")}
@@ -136,7 +148,7 @@ export const InviteCodeForm = () => {
 
           <Box
             style={{
-              marginTop: 16,
+              marginTop: 24,
             }}
           >
             <SubtextParagraph onClick={() => navigate("/recover")}>
