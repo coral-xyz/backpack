@@ -14,6 +14,7 @@ import {
   useSolanaConnectionUrl,
   useTotal,
 } from "@coral-xyz/recoil";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Pressable, Text, View } from "react-native";
 import { NativeRouter, Route, Routes, useNavigate } from "react-router-native";
@@ -23,10 +24,94 @@ import { CustomButton } from "./components/CustomButton";
 import { ErrorMessage } from "./components/ErrorMessage";
 import { PasswordInput } from "./components/PasswordInput";
 import { ButtonFooter, MainContent } from "./components/Templates";
+import {
+  req_UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD,
+  req_UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE,
+  req_UI_RPC_METHOD_CONNECTION_URL_UPDATE,
+  req_UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+  req_UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC,
+  req_UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+  req_UI_RPC_METHOD_KEYRING_RESET,
+  req_UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
+  req_UI_RPC_METHOD_KEYRING_STORE_LOCK,
+  req_UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
+  req_UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+  req_UI_RPC_METHOD_PASSWORD_UPDATE,
+  req_UI_RPC_METHOD_PREVIEW_PUBKEYS,
+  req_UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
+} from "./lib/useRequest";
 import { ResetApp } from "./screens/Helpers/ResetApp";
 import { ToggleConnection } from "./screens/Helpers/ToggleConnection";
 import NeedsOnboarding from "./screens/NeedsOnboarding";
 import CreateWallet from "./screens/NeedsOnboarding/CreateWallet";
+
+function RpcTester() {
+  const background = useBackgroundClient();
+  useEffect(() => {
+    async function callStuff() {
+      await req_UI_RPC_METHOD_KEYRING_RESET(background);
+
+      await req_UI_RPC_METHOD_KEYRING_STORE_UNLOCK(background, {
+        password: "backpack",
+      });
+
+      // TODO app-extensions (validateSecretKey)
+      // await req_UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY(background, {
+      //   blockchain: Blockchain.SOLANA,
+      //   secretKeyHex: "",
+      //   name: "peter6969",
+      // });
+
+      await req_UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD(background, {
+        password: "backpack",
+      });
+
+      await req_UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC(background, {
+        password: "backpack",
+      });
+
+      await req_UI_RPC_METHOD_PASSWORD_UPDATE(background, {
+        currentPassword: "backpack",
+        newPassword: "backpack",
+      });
+
+      await req_UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS(background);
+
+      await req_UI_RPC_METHOD_KEYRING_DERIVE_WALLET(background, {
+        blockchain: Blockchain.ETHEREUM,
+      });
+
+      // TODO derivationpath, mnemonic, etc
+      // await req_UI_RPC_METHOD_PREVIEW_PUBKEYS(background, {
+      //   mnemonic: "",
+      //   derivationPath: "",
+      //   blockchain: Blockchain.ETHEREUM,
+      // });
+
+      await req_UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE(background, {
+        isDarkMode: true,
+      });
+
+      await req_UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE(background, {
+        blockchain: Blockchain.ETHEREUM,
+      });
+
+      await req_UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD(background, {
+        blockchain: Blockchain.ETHEREUM,
+      });
+
+      await req_UI_RPC_METHOD_CONNECTION_URL_UPDATE(background, {
+        url: "devnet",
+      });
+
+      await req_UI_RPC_METHOD_KEYRING_STORE_LOCK(background);
+    }
+
+    callStuff();
+  }, []);
+
+  return <View style={{ backgroundColor: "red", flex: 1 }} />;
+}
 
 const HomeScreen = () => {
   const keyringStoreState = useKeyringStoreState();
@@ -116,6 +201,7 @@ const LockedScreen = () => {
   const onSubmit = async ({ password }: FormData) => {
     // TODO: fix issue with uncaught error with incorrect password
     try {
+      await req_UI_RPC_METHOD_KEYRING_STORE_LOCK(background);
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
         params: [password],
@@ -160,6 +246,7 @@ export default function App() {
   return (
     <NativeRouter>
       <NotificationsProvider>
+        <RpcTester />
         <KeyboardAvoidingView style={tw`flex-1`} behavior="padding">
           <Routes>
             <Route path="/" element={<HomeScreen />} />
