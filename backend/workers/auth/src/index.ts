@@ -86,14 +86,19 @@ app.get("/users/:username/info", async (c) => {
         limit: 1,
       },
       {
-        pubkey: true,
-        blockchain: true, // needed for recovery flow
+        publickeys: [{}, { blockchain: true, publickey: true }],
       },
     ],
   });
 
-  if (res.auth_users[0]?.pubkey) {
-    return c.json(res.auth_users[0]);
+  if (res.auth_users[0]?.publickeys) {
+    return c.json({
+      ...res.auth_users[0],
+      // TODO remove
+      // This is to not break legacy recovery flows
+      pubkey: res.auth_users[0].publickeys[0].publickey,
+      blockchain: res.auth_users[0].publickeys[0].blockchain,
+    });
   } else {
     return c.json({ message: "user not found" }, 404);
   }
@@ -200,9 +205,15 @@ app.post("/users", async (c) => {
         object: {
           username: variables.username,
           invitation_id: variables.inviteCode,
-          pubkey: variables.publicKey,
           waitlist_id: variables.waitlistId,
-          blockchain: variables.blockchain,
+          publickeys: {
+            data: [
+              {
+                blockchain: variables.blockchain,
+                publickey: variables.publicKey,
+              },
+            ],
+          },
         },
       },
       {
