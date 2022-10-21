@@ -117,7 +117,7 @@ app.get("/users/:username", async (c) => {
     const { ok } = await res.json<{ ok: boolean }>();
     if (!ok || !res.ok) throw new Error("validation error");
   } catch (err) {
-    return c.json({ message: "username not available" }, 409);
+    return c.json({ message: "Username not available" }, 409);
   }
 
   const chain = Chain(c.env.HASURA_URL, {
