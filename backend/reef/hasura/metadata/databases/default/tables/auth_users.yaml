@@ -1,3 +1,31 @@
 table:
   name: users
   schema: auth
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - blockchain
+        - invitation_id
+        - pubkey
+        - username
+        - waitlist_id
+select_permissions:
+  - role: appstore
+    permission:
+      columns:
+        - blockchain
+        - created_at
+        - pubkey
+        - username
+      filter: {}
+  - role: auth_worker
+    permission:
+      columns:
+        - blockchain
+        - id
+        - pubkey
+        - username
+      filter: {}
+      allow_aggregations: true
