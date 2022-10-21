@@ -1,3 +1,11 @@
 table:
   name: publickeys
   schema: auth
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - blockchain
+        - publickey
+        - user_id
