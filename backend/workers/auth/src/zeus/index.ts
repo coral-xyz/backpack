@@ -1837,6 +1837,26 @@ export type ValueTypes = {
     min?: ValueTypes["auth_publickeys_latest_min_fields"];
     __typename?: boolean | `@${string}`;
   }>;
+  /** order by aggregate values of table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_aggregate_order_by"]: {
+    count?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    max?:
+      | ValueTypes["auth_publickeys_latest_max_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    min?:
+      | ValueTypes["auth_publickeys_latest_min_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** input type for inserting array relation for remote table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_arr_rel_insert_input"]: {
+    data:
+      | Array<ValueTypes["auth_publickeys_latest_insert_input"]>
+      | Variable<any, string>;
+  };
   /** Boolean expression to filter rows from the table "auth.publickeys_latest". All fields are combined with a logical 'AND'. */
   ["auth_publickeys_latest_bool_exp"]: {
     _and?:
@@ -1870,6 +1890,12 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
   };
+  /** input type for inserting data into table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_insert_input"]: {
+    blockchain?: string | undefined | null | Variable<any, string>;
+    publickey?: string | undefined | null | Variable<any, string>;
+    user_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+  };
   /** aggregate max on columns */
   ["auth_publickeys_latest_max_fields"]: AliasType<{
     blockchain?: boolean | `@${string}`;
@@ -1877,6 +1903,20 @@ export type ValueTypes = {
     user_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** order by max() on columns of table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_max_order_by"]: {
+    blockchain?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    publickey?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
   /** aggregate min on columns */
   ["auth_publickeys_latest_min_fields"]: AliasType<{
     blockchain?: boolean | `@${string}`;
@@ -1884,6 +1924,20 @@ export type ValueTypes = {
     user_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** order by min() on columns of table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_min_order_by"]: {
+    blockchain?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    publickey?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
   /** Ordering options when selecting data from "auth.publickeys_latest". */
   ["auth_publickeys_latest_order_by"]: {
     blockchain?:
@@ -2080,6 +2134,74 @@ export type ValueTypes = {
     id?: boolean | `@${string}`;
     invitation_id?: boolean | `@${string}`;
     last_active_at?: boolean | `@${string}`;
+    publickeys?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_publickeys_latest_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_publickeys_latest_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_publickeys_latest_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_publickeys_latest"]
+    ];
+    publickeys_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_publickeys_latest_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_publickeys_latest_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_publickeys_latest_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_publickeys_latest_aggregate"]
+    ];
     updated_at?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     waitlist_id?: boolean | `@${string}`;
@@ -2145,6 +2267,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    publickeys?:
+      | ValueTypes["auth_publickeys_latest_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     updated_at?:
       | ValueTypes["timestamptz_comparison_exp"]
       | undefined
@@ -2178,6 +2305,11 @@ export type ValueTypes = {
       | Variable<any, string>;
     last_active_at?:
       | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    publickeys?:
+      | ValueTypes["auth_publickeys_latest_arr_rel_insert_input"]
       | undefined
       | null
       | Variable<any, string>;
@@ -2246,6 +2378,11 @@ export type ValueTypes = {
       | Variable<any, string>;
     last_active_at?:
       | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    publickeys_aggregate?:
+      | ValueTypes["auth_publickeys_latest_aggregate_order_by"]
       | undefined
       | null
       | Variable<any, string>;
@@ -5300,6 +5437,22 @@ export type ResolverInputTypes = {
     min?: ResolverInputTypes["auth_publickeys_latest_min_fields"];
     __typename?: boolean | `@${string}`;
   }>;
+  /** order by aggregate values of table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_aggregate_order_by"]: {
+    count?: ResolverInputTypes["order_by"] | undefined | null;
+    max?:
+      | ResolverInputTypes["auth_publickeys_latest_max_order_by"]
+      | undefined
+      | null;
+    min?:
+      | ResolverInputTypes["auth_publickeys_latest_min_order_by"]
+      | undefined
+      | null;
+  };
+  /** input type for inserting array relation for remote table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_arr_rel_insert_input"]: {
+    data: Array<ResolverInputTypes["auth_publickeys_latest_insert_input"]>;
+  };
   /** Boolean expression to filter rows from the table "auth.publickeys_latest". All fields are combined with a logical 'AND'. */
   ["auth_publickeys_latest_bool_exp"]: {
     _and?:
@@ -5318,6 +5471,12 @@ export type ResolverInputTypes = {
     publickey?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     user_id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
   };
+  /** input type for inserting data into table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_insert_input"]: {
+    blockchain?: string | undefined | null;
+    publickey?: string | undefined | null;
+    user_id?: ResolverInputTypes["uuid"] | undefined | null;
+  };
   /** aggregate max on columns */
   ["auth_publickeys_latest_max_fields"]: AliasType<{
     blockchain?: boolean | `@${string}`;
@@ -5325,6 +5484,12 @@ export type ResolverInputTypes = {
     user_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** order by max() on columns of table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_max_order_by"]: {
+    blockchain?: ResolverInputTypes["order_by"] | undefined | null;
+    publickey?: ResolverInputTypes["order_by"] | undefined | null;
+    user_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
   /** aggregate min on columns */
   ["auth_publickeys_latest_min_fields"]: AliasType<{
     blockchain?: boolean | `@${string}`;
@@ -5332,6 +5497,12 @@ export type ResolverInputTypes = {
     user_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** order by min() on columns of table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_min_order_by"]: {
+    blockchain?: ResolverInputTypes["order_by"] | undefined | null;
+    publickey?: ResolverInputTypes["order_by"] | undefined | null;
+    user_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
   /** Ordering options when selecting data from "auth.publickeys_latest". */
   ["auth_publickeys_latest_order_by"]: {
     blockchain?: ResolverInputTypes["order_by"] | undefined | null;
@@ -5472,6 +5643,58 @@ export type ResolverInputTypes = {
     id?: boolean | `@${string}`;
     invitation_id?: boolean | `@${string}`;
     last_active_at?: boolean | `@${string}`;
+    publickeys?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_publickeys_latest_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_publickeys_latest_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_publickeys_latest_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_publickeys_latest"]
+    ];
+    publickeys_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_publickeys_latest_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_publickeys_latest_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_publickeys_latest_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_publickeys_latest_aggregate"]
+    ];
     updated_at?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     waitlist_id?: boolean | `@${string}`;
@@ -5517,6 +5740,10 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["timestamptz_comparison_exp"]
       | undefined
       | null;
+    publickeys?:
+      | ResolverInputTypes["auth_publickeys_latest_bool_exp"]
+      | undefined
+      | null;
     updated_at?:
       | ResolverInputTypes["timestamptz_comparison_exp"]
       | undefined
@@ -5535,6 +5762,10 @@ export type ResolverInputTypes = {
     id?: ResolverInputTypes["uuid"] | undefined | null;
     invitation_id?: ResolverInputTypes["uuid"] | undefined | null;
     last_active_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    publickeys?:
+      | ResolverInputTypes["auth_publickeys_latest_arr_rel_insert_input"]
+      | undefined
+      | null;
     updated_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     username?: ResolverInputTypes["citext"] | undefined | null;
     waitlist_id?: string | undefined | null;
@@ -5581,6 +5812,10 @@ export type ResolverInputTypes = {
     id?: ResolverInputTypes["order_by"] | undefined | null;
     invitation_id?: ResolverInputTypes["order_by"] | undefined | null;
     last_active_at?: ResolverInputTypes["order_by"] | undefined | null;
+    publickeys_aggregate?:
+      | ResolverInputTypes["auth_publickeys_latest_aggregate_order_by"]
+      | undefined
+      | null;
     updated_at?: ResolverInputTypes["order_by"] | undefined | null;
     username?: ResolverInputTypes["order_by"] | undefined | null;
     waitlist_id?: ResolverInputTypes["order_by"] | undefined | null;
@@ -7811,6 +8046,16 @@ export type ModelTypes = {
     max?: ModelTypes["auth_publickeys_latest_max_fields"] | undefined;
     min?: ModelTypes["auth_publickeys_latest_min_fields"] | undefined;
   };
+  /** order by aggregate values of table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_aggregate_order_by"]: {
+    count?: ModelTypes["order_by"] | undefined;
+    max?: ModelTypes["auth_publickeys_latest_max_order_by"] | undefined;
+    min?: ModelTypes["auth_publickeys_latest_min_order_by"] | undefined;
+  };
+  /** input type for inserting array relation for remote table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_arr_rel_insert_input"]: {
+    data: Array<ModelTypes["auth_publickeys_latest_insert_input"]>;
+  };
   /** Boolean expression to filter rows from the table "auth.publickeys_latest". All fields are combined with a logical 'AND'. */
   ["auth_publickeys_latest_bool_exp"]: {
     _and?: Array<ModelTypes["auth_publickeys_latest_bool_exp"]> | undefined;
@@ -7820,17 +8065,35 @@ export type ModelTypes = {
     publickey?: ModelTypes["String_comparison_exp"] | undefined;
     user_id?: ModelTypes["uuid_comparison_exp"] | undefined;
   };
+  /** input type for inserting data into table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_insert_input"]: {
+    blockchain?: string | undefined;
+    publickey?: string | undefined;
+    user_id?: ModelTypes["uuid"] | undefined;
+  };
   /** aggregate max on columns */
   ["auth_publickeys_latest_max_fields"]: {
     blockchain?: string | undefined;
     publickey?: string | undefined;
     user_id?: ModelTypes["uuid"] | undefined;
   };
+  /** order by max() on columns of table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_max_order_by"]: {
+    blockchain?: ModelTypes["order_by"] | undefined;
+    publickey?: ModelTypes["order_by"] | undefined;
+    user_id?: ModelTypes["order_by"] | undefined;
+  };
   /** aggregate min on columns */
   ["auth_publickeys_latest_min_fields"]: {
     blockchain?: string | undefined;
     publickey?: string | undefined;
     user_id?: ModelTypes["uuid"] | undefined;
+  };
+  /** order by min() on columns of table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_min_order_by"]: {
+    blockchain?: ModelTypes["order_by"] | undefined;
+    publickey?: ModelTypes["order_by"] | undefined;
+    user_id?: ModelTypes["order_by"] | undefined;
   };
   /** Ordering options when selecting data from "auth.publickeys_latest". */
   ["auth_publickeys_latest_order_by"]: {
@@ -7959,6 +8222,10 @@ export type ModelTypes = {
     id: ModelTypes["uuid"];
     invitation_id: ModelTypes["uuid"];
     last_active_at: ModelTypes["timestamptz"];
+    /** An array relationship */
+    publickeys: Array<ModelTypes["auth_publickeys_latest"]>;
+    /** An aggregate relationship */
+    publickeys_aggregate: ModelTypes["auth_publickeys_latest_aggregate"];
     updated_at: ModelTypes["timestamptz"];
     username: ModelTypes["citext"];
     waitlist_id?: string | undefined;
@@ -7983,6 +8250,7 @@ export type ModelTypes = {
     id?: ModelTypes["uuid_comparison_exp"] | undefined;
     invitation_id?: ModelTypes["uuid_comparison_exp"] | undefined;
     last_active_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
+    publickeys?: ModelTypes["auth_publickeys_latest_bool_exp"] | undefined;
     updated_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
     username?: ModelTypes["citext_comparison_exp"] | undefined;
     waitlist_id?: ModelTypes["String_comparison_exp"] | undefined;
@@ -7994,6 +8262,9 @@ export type ModelTypes = {
     id?: ModelTypes["uuid"] | undefined;
     invitation_id?: ModelTypes["uuid"] | undefined;
     last_active_at?: ModelTypes["timestamptz"] | undefined;
+    publickeys?:
+      | ModelTypes["auth_publickeys_latest_arr_rel_insert_input"]
+      | undefined;
     updated_at?: ModelTypes["timestamptz"] | undefined;
     username?: ModelTypes["citext"] | undefined;
     waitlist_id?: string | undefined;
@@ -8037,6 +8308,9 @@ export type ModelTypes = {
     id?: ModelTypes["order_by"] | undefined;
     invitation_id?: ModelTypes["order_by"] | undefined;
     last_active_at?: ModelTypes["order_by"] | undefined;
+    publickeys_aggregate?:
+      | ModelTypes["auth_publickeys_latest_aggregate_order_by"]
+      | undefined;
     updated_at?: ModelTypes["order_by"] | undefined;
     username?: ModelTypes["order_by"] | undefined;
     waitlist_id?: ModelTypes["order_by"] | undefined;
@@ -9207,6 +9481,16 @@ export type GraphQLTypes = {
     max?: GraphQLTypes["auth_publickeys_latest_max_fields"] | undefined;
     min?: GraphQLTypes["auth_publickeys_latest_min_fields"] | undefined;
   };
+  /** order by aggregate values of table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_aggregate_order_by"]: {
+    count?: GraphQLTypes["order_by"] | undefined;
+    max?: GraphQLTypes["auth_publickeys_latest_max_order_by"] | undefined;
+    min?: GraphQLTypes["auth_publickeys_latest_min_order_by"] | undefined;
+  };
+  /** input type for inserting array relation for remote table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_arr_rel_insert_input"]: {
+    data: Array<GraphQLTypes["auth_publickeys_latest_insert_input"]>;
+  };
   /** Boolean expression to filter rows from the table "auth.publickeys_latest". All fields are combined with a logical 'AND'. */
   ["auth_publickeys_latest_bool_exp"]: {
     _and?: Array<GraphQLTypes["auth_publickeys_latest_bool_exp"]> | undefined;
@@ -9216,6 +9500,12 @@ export type GraphQLTypes = {
     publickey?: GraphQLTypes["String_comparison_exp"] | undefined;
     user_id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
   };
+  /** input type for inserting data into table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_insert_input"]: {
+    blockchain?: string | undefined;
+    publickey?: string | undefined;
+    user_id?: GraphQLTypes["uuid"] | undefined;
+  };
   /** aggregate max on columns */
   ["auth_publickeys_latest_max_fields"]: {
     __typename: "auth_publickeys_latest_max_fields";
@@ -9223,12 +9513,24 @@ export type GraphQLTypes = {
     publickey?: string | undefined;
     user_id?: GraphQLTypes["uuid"] | undefined;
   };
+  /** order by max() on columns of table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_max_order_by"]: {
+    blockchain?: GraphQLTypes["order_by"] | undefined;
+    publickey?: GraphQLTypes["order_by"] | undefined;
+    user_id?: GraphQLTypes["order_by"] | undefined;
+  };
   /** aggregate min on columns */
   ["auth_publickeys_latest_min_fields"]: {
     __typename: "auth_publickeys_latest_min_fields";
     blockchain?: string | undefined;
     publickey?: string | undefined;
     user_id?: GraphQLTypes["uuid"] | undefined;
+  };
+  /** order by min() on columns of table "auth.publickeys_latest" */
+  ["auth_publickeys_latest_min_order_by"]: {
+    blockchain?: GraphQLTypes["order_by"] | undefined;
+    publickey?: GraphQLTypes["order_by"] | undefined;
+    user_id?: GraphQLTypes["order_by"] | undefined;
   };
   /** Ordering options when selecting data from "auth.publickeys_latest". */
   ["auth_publickeys_latest_order_by"]: {
@@ -9371,6 +9673,10 @@ export type GraphQLTypes = {
     id: GraphQLTypes["uuid"];
     invitation_id: GraphQLTypes["uuid"];
     last_active_at: GraphQLTypes["timestamptz"];
+    /** An array relationship */
+    publickeys: Array<GraphQLTypes["auth_publickeys_latest"]>;
+    /** An aggregate relationship */
+    publickeys_aggregate: GraphQLTypes["auth_publickeys_latest_aggregate"];
     updated_at: GraphQLTypes["timestamptz"];
     username: GraphQLTypes["citext"];
     waitlist_id?: string | undefined;
@@ -9397,6 +9703,7 @@ export type GraphQLTypes = {
     id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
     invitation_id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
     last_active_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
+    publickeys?: GraphQLTypes["auth_publickeys_latest_bool_exp"] | undefined;
     updated_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
     username?: GraphQLTypes["citext_comparison_exp"] | undefined;
     waitlist_id?: GraphQLTypes["String_comparison_exp"] | undefined;
@@ -9409,6 +9716,9 @@ export type GraphQLTypes = {
     id?: GraphQLTypes["uuid"] | undefined;
     invitation_id?: GraphQLTypes["uuid"] | undefined;
     last_active_at?: GraphQLTypes["timestamptz"] | undefined;
+    publickeys?:
+      | GraphQLTypes["auth_publickeys_latest_arr_rel_insert_input"]
+      | undefined;
     updated_at?: GraphQLTypes["timestamptz"] | undefined;
     username?: GraphQLTypes["citext"] | undefined;
     waitlist_id?: string | undefined;
@@ -9455,6 +9765,9 @@ export type GraphQLTypes = {
     id?: GraphQLTypes["order_by"] | undefined;
     invitation_id?: GraphQLTypes["order_by"] | undefined;
     last_active_at?: GraphQLTypes["order_by"] | undefined;
+    publickeys_aggregate?:
+      | GraphQLTypes["auth_publickeys_latest_aggregate_order_by"]
+      | undefined;
     updated_at?: GraphQLTypes["order_by"] | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
     waitlist_id?: GraphQLTypes["order_by"] | undefined;
@@ -10278,7 +10591,12 @@ type ZEUS_VARIABLES = {
   ["auth_publickeys_constraint"]: ValueTypes["auth_publickeys_constraint"];
   ["auth_publickeys_inc_input"]: ValueTypes["auth_publickeys_inc_input"];
   ["auth_publickeys_insert_input"]: ValueTypes["auth_publickeys_insert_input"];
+  ["auth_publickeys_latest_aggregate_order_by"]: ValueTypes["auth_publickeys_latest_aggregate_order_by"];
+  ["auth_publickeys_latest_arr_rel_insert_input"]: ValueTypes["auth_publickeys_latest_arr_rel_insert_input"];
   ["auth_publickeys_latest_bool_exp"]: ValueTypes["auth_publickeys_latest_bool_exp"];
+  ["auth_publickeys_latest_insert_input"]: ValueTypes["auth_publickeys_latest_insert_input"];
+  ["auth_publickeys_latest_max_order_by"]: ValueTypes["auth_publickeys_latest_max_order_by"];
+  ["auth_publickeys_latest_min_order_by"]: ValueTypes["auth_publickeys_latest_min_order_by"];
   ["auth_publickeys_latest_order_by"]: ValueTypes["auth_publickeys_latest_order_by"];
   ["auth_publickeys_latest_select_column"]: ValueTypes["auth_publickeys_latest_select_column"];
   ["auth_publickeys_latest_stream_cursor_input"]: ValueTypes["auth_publickeys_latest_stream_cursor_input"];

@@ -196,6 +196,14 @@ export const AllTypesProps: Record<string, any> = {
       columns: "auth_publickeys_latest_select_column",
     },
   },
+  auth_publickeys_latest_aggregate_order_by: {
+    count: "order_by",
+    max: "auth_publickeys_latest_max_order_by",
+    min: "auth_publickeys_latest_min_order_by",
+  },
+  auth_publickeys_latest_arr_rel_insert_input: {
+    data: "auth_publickeys_latest_insert_input",
+  },
   auth_publickeys_latest_bool_exp: {
     _and: "auth_publickeys_latest_bool_exp",
     _not: "auth_publickeys_latest_bool_exp",
@@ -203,6 +211,19 @@ export const AllTypesProps: Record<string, any> = {
     blockchain: "String_comparison_exp",
     publickey: "String_comparison_exp",
     user_id: "uuid_comparison_exp",
+  },
+  auth_publickeys_latest_insert_input: {
+    user_id: "uuid",
+  },
+  auth_publickeys_latest_max_order_by: {
+    blockchain: "order_by",
+    publickey: "order_by",
+    user_id: "order_by",
+  },
+  auth_publickeys_latest_min_order_by: {
+    blockchain: "order_by",
+    publickey: "order_by",
+    user_id: "order_by",
   },
   auth_publickeys_latest_order_by: {
     blockchain: "order_by",
@@ -249,6 +270,18 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_publickeys_set_input",
     where: "auth_publickeys_bool_exp",
   },
+  auth_users: {
+    publickeys: {
+      distinct_on: "auth_publickeys_latest_select_column",
+      order_by: "auth_publickeys_latest_order_by",
+      where: "auth_publickeys_latest_bool_exp",
+    },
+    publickeys_aggregate: {
+      distinct_on: "auth_publickeys_latest_select_column",
+      order_by: "auth_publickeys_latest_order_by",
+      where: "auth_publickeys_latest_bool_exp",
+    },
+  },
   auth_users_aggregate_fields: {
     count: {
       columns: "auth_users_select_column",
@@ -262,6 +295,7 @@ export const AllTypesProps: Record<string, any> = {
     id: "uuid_comparison_exp",
     invitation_id: "uuid_comparison_exp",
     last_active_at: "timestamptz_comparison_exp",
+    publickeys: "auth_publickeys_latest_bool_exp",
     updated_at: "timestamptz_comparison_exp",
     username: "citext_comparison_exp",
     waitlist_id: "String_comparison_exp",
@@ -272,6 +306,7 @@ export const AllTypesProps: Record<string, any> = {
     id: "uuid",
     invitation_id: "uuid",
     last_active_at: "timestamptz",
+    publickeys: "auth_publickeys_latest_arr_rel_insert_input",
     updated_at: "timestamptz",
     username: "citext",
   },
@@ -285,6 +320,7 @@ export const AllTypesProps: Record<string, any> = {
     id: "order_by",
     invitation_id: "order_by",
     last_active_at: "order_by",
+    publickeys_aggregate: "auth_publickeys_latest_aggregate_order_by",
     updated_at: "order_by",
     username: "order_by",
     waitlist_id: "order_by",
@@ -1018,6 +1054,8 @@ export const ReturnTypes: Record<string, any> = {
     id: "uuid",
     invitation_id: "uuid",
     last_active_at: "timestamptz",
+    publickeys: "auth_publickeys_latest",
+    publickeys_aggregate: "auth_publickeys_latest_aggregate",
     updated_at: "timestamptz",
     username: "citext",
     waitlist_id: "String",

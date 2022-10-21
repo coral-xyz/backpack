@@ -1,3 +1,19 @@
 table:
   name: users
   schema: auth
+array_relationships:
+  - name: publickeys
+    using:
+      manual_configuration:
+        column_mapping:
+          id: user_id
+        insertion_order: null
+        remote_table:
+          name: publickeys_latest
+          schema: auth
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - username
+      filter: {}
