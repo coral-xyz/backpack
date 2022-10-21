@@ -4,6 +4,99 @@ export const AllTypesProps: Record<string, any> = {
   Boolean_comparison_exp: {},
   Int_comparison_exp: {},
   String_comparison_exp: {},
+  appstore_pending_curator_reviews: {
+    data: {},
+    ix_keys: {},
+  },
+  appstore_pending_curator_reviews_aggregate_fields: {
+    count: {
+      columns: "appstore_pending_curator_reviews_select_column",
+    },
+  },
+  appstore_pending_curator_reviews_append_input: {
+    data: "jsonb",
+    ix_keys: "jsonb",
+  },
+  appstore_pending_curator_reviews_bool_exp: {
+    _and: "appstore_pending_curator_reviews_bool_exp",
+    _not: "appstore_pending_curator_reviews_bool_exp",
+    _or: "appstore_pending_curator_reviews_bool_exp",
+    approved: "Boolean_comparison_exp",
+    authority: "String_comparison_exp",
+    contact: "String_comparison_exp",
+    created_at: "timestamptz_comparison_exp",
+    data: "jsonb_comparison_exp",
+    id: "Int_comparison_exp",
+    ix_data: "bytea_comparison_exp",
+    ix_keys: "jsonb_comparison_exp",
+    processed: "Boolean_comparison_exp",
+    signature: "String_comparison_exp",
+    type: "String_comparison_exp",
+    xnft: "String_comparison_exp",
+  },
+  appstore_pending_curator_reviews_constraint: "enum" as const,
+  appstore_pending_curator_reviews_delete_at_path_input: {},
+  appstore_pending_curator_reviews_delete_elem_input: {},
+  appstore_pending_curator_reviews_delete_key_input: {},
+  appstore_pending_curator_reviews_inc_input: {},
+  appstore_pending_curator_reviews_insert_input: {
+    created_at: "timestamptz",
+    data: "jsonb",
+    ix_data: "bytea",
+    ix_keys: "jsonb",
+  },
+  appstore_pending_curator_reviews_on_conflict: {
+    constraint: "appstore_pending_curator_reviews_constraint",
+    update_columns: "appstore_pending_curator_reviews_update_column",
+    where: "appstore_pending_curator_reviews_bool_exp",
+  },
+  appstore_pending_curator_reviews_order_by: {
+    approved: "order_by",
+    authority: "order_by",
+    contact: "order_by",
+    created_at: "order_by",
+    data: "order_by",
+    id: "order_by",
+    ix_data: "order_by",
+    ix_keys: "order_by",
+    processed: "order_by",
+    signature: "order_by",
+    type: "order_by",
+    xnft: "order_by",
+  },
+  appstore_pending_curator_reviews_pk_columns_input: {},
+  appstore_pending_curator_reviews_prepend_input: {
+    data: "jsonb",
+    ix_keys: "jsonb",
+  },
+  appstore_pending_curator_reviews_select_column: "enum" as const,
+  appstore_pending_curator_reviews_set_input: {
+    created_at: "timestamptz",
+    data: "jsonb",
+    ix_data: "bytea",
+    ix_keys: "jsonb",
+  },
+  appstore_pending_curator_reviews_stream_cursor_input: {
+    initial_value: "appstore_pending_curator_reviews_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  appstore_pending_curator_reviews_stream_cursor_value_input: {
+    created_at: "timestamptz",
+    data: "jsonb",
+    ix_data: "bytea",
+    ix_keys: "jsonb",
+  },
+  appstore_pending_curator_reviews_update_column: "enum" as const,
+  appstore_pending_curator_reviews_updates: {
+    _append: "appstore_pending_curator_reviews_append_input",
+    _delete_at_path: "appstore_pending_curator_reviews_delete_at_path_input",
+    _delete_elem: "appstore_pending_curator_reviews_delete_elem_input",
+    _delete_key: "appstore_pending_curator_reviews_delete_key_input",
+    _inc: "appstore_pending_curator_reviews_inc_input",
+    _prepend: "appstore_pending_curator_reviews_prepend_input",
+    _set: "appstore_pending_curator_reviews_set_input",
+    where: "appstore_pending_curator_reviews_bool_exp",
+  },
   auth_invitations: {
     data: {},
   },
@@ -77,6 +170,85 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_invitations_set_input",
     where: "auth_invitations_bool_exp",
   },
+  auth_publickeys_aggregate_fields: {
+    count: {
+      columns: "auth_publickeys_select_column",
+    },
+  },
+  auth_publickeys_bool_exp: {
+    _and: "auth_publickeys_bool_exp",
+    _not: "auth_publickeys_bool_exp",
+    _or: "auth_publickeys_bool_exp",
+    blockchain: "String_comparison_exp",
+    created_at: "timestamptz_comparison_exp",
+    id: "Int_comparison_exp",
+    publickey: "String_comparison_exp",
+    user_id: "uuid_comparison_exp",
+  },
+  auth_publickeys_constraint: "enum" as const,
+  auth_publickeys_inc_input: {},
+  auth_publickeys_insert_input: {
+    created_at: "timestamptz",
+    user_id: "uuid",
+  },
+  auth_publickeys_latest_aggregate_fields: {
+    count: {
+      columns: "auth_publickeys_latest_select_column",
+    },
+  },
+  auth_publickeys_latest_bool_exp: {
+    _and: "auth_publickeys_latest_bool_exp",
+    _not: "auth_publickeys_latest_bool_exp",
+    _or: "auth_publickeys_latest_bool_exp",
+    blockchain: "String_comparison_exp",
+    publickey: "String_comparison_exp",
+    user_id: "uuid_comparison_exp",
+  },
+  auth_publickeys_latest_order_by: {
+    blockchain: "order_by",
+    publickey: "order_by",
+    user_id: "order_by",
+  },
+  auth_publickeys_latest_select_column: "enum" as const,
+  auth_publickeys_latest_stream_cursor_input: {
+    initial_value: "auth_publickeys_latest_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  auth_publickeys_latest_stream_cursor_value_input: {
+    user_id: "uuid",
+  },
+  auth_publickeys_on_conflict: {
+    constraint: "auth_publickeys_constraint",
+    update_columns: "auth_publickeys_update_column",
+    where: "auth_publickeys_bool_exp",
+  },
+  auth_publickeys_order_by: {
+    blockchain: "order_by",
+    created_at: "order_by",
+    id: "order_by",
+    publickey: "order_by",
+    user_id: "order_by",
+  },
+  auth_publickeys_pk_columns_input: {},
+  auth_publickeys_select_column: "enum" as const,
+  auth_publickeys_set_input: {
+    created_at: "timestamptz",
+    user_id: "uuid",
+  },
+  auth_publickeys_stream_cursor_input: {
+    initial_value: "auth_publickeys_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  auth_publickeys_stream_cursor_value_input: {
+    created_at: "timestamptz",
+    user_id: "uuid",
+  },
+  auth_publickeys_update_column: "enum" as const,
+  auth_publickeys_updates: {
+    _inc: "auth_publickeys_inc_input",
+    _set: "auth_publickeys_set_input",
+    where: "auth_publickeys_bool_exp",
+  },
   auth_users_aggregate_fields: {
     count: {
       columns: "auth_users_select_column",
@@ -86,12 +258,10 @@ export const AllTypesProps: Record<string, any> = {
     _and: "auth_users_bool_exp",
     _not: "auth_users_bool_exp",
     _or: "auth_users_bool_exp",
-    blockchain: "String_comparison_exp",
     created_at: "timestamptz_comparison_exp",
     id: "uuid_comparison_exp",
     invitation_id: "uuid_comparison_exp",
     last_active_at: "timestamptz_comparison_exp",
-    pubkey: "String_comparison_exp",
     updated_at: "timestamptz_comparison_exp",
     username: "citext_comparison_exp",
     waitlist_id: "String_comparison_exp",
@@ -111,12 +281,10 @@ export const AllTypesProps: Record<string, any> = {
     where: "auth_users_bool_exp",
   },
   auth_users_order_by: {
-    blockchain: "order_by",
     created_at: "order_by",
     id: "order_by",
     invitation_id: "order_by",
     last_active_at: "order_by",
-    pubkey: "order_by",
     updated_at: "order_by",
     username: "order_by",
     waitlist_id: "order_by",
@@ -149,6 +317,17 @@ export const AllTypesProps: Record<string, any> = {
   auth_users_updates: {
     _set: "auth_users_set_input",
     where: "auth_users_bool_exp",
+  },
+  bytea: `scalar.bytea` as const,
+  bytea_comparison_exp: {
+    _eq: "bytea",
+    _gt: "bytea",
+    _gte: "bytea",
+    _in: "bytea",
+    _lt: "bytea",
+    _lte: "bytea",
+    _neq: "bytea",
+    _nin: "bytea",
   },
   citext: `scalar.citext` as const,
   citext_comparison_exp: {
@@ -275,12 +454,20 @@ export const AllTypesProps: Record<string, any> = {
     _nin: "jsonb",
   },
   mutation_root: {
+    delete_appstore_pending_curator_reviews: {
+      where: "appstore_pending_curator_reviews_bool_exp",
+    },
+    delete_appstore_pending_curator_reviews_by_pk: {},
     delete_auth_invitations: {
       where: "auth_invitations_bool_exp",
     },
     delete_auth_invitations_by_pk: {
       id: "uuid",
     },
+    delete_auth_publickeys: {
+      where: "auth_publickeys_bool_exp",
+    },
+    delete_auth_publickeys_by_pk: {},
     delete_auth_users: {
       where: "auth_users_bool_exp",
     },
@@ -291,6 +478,14 @@ export const AllTypesProps: Record<string, any> = {
       where: "images_bool_exp",
     },
     delete_images_by_pk: {},
+    insert_appstore_pending_curator_reviews: {
+      objects: "appstore_pending_curator_reviews_insert_input",
+      on_conflict: "appstore_pending_curator_reviews_on_conflict",
+    },
+    insert_appstore_pending_curator_reviews_one: {
+      object: "appstore_pending_curator_reviews_insert_input",
+      on_conflict: "appstore_pending_curator_reviews_on_conflict",
+    },
     insert_auth_invitations: {
       objects: "auth_invitations_insert_input",
       on_conflict: "auth_invitations_on_conflict",
@@ -298,6 +493,14 @@ export const AllTypesProps: Record<string, any> = {
     insert_auth_invitations_one: {
       object: "auth_invitations_insert_input",
       on_conflict: "auth_invitations_on_conflict",
+    },
+    insert_auth_publickeys: {
+      objects: "auth_publickeys_insert_input",
+      on_conflict: "auth_publickeys_on_conflict",
+    },
+    insert_auth_publickeys_one: {
+      object: "auth_publickeys_insert_input",
+      on_conflict: "auth_publickeys_on_conflict",
     },
     insert_auth_users: {
       objects: "auth_users_insert_input",
@@ -314,6 +517,29 @@ export const AllTypesProps: Record<string, any> = {
     insert_images_one: {
       object: "images_insert_input",
       on_conflict: "images_on_conflict",
+    },
+    update_appstore_pending_curator_reviews: {
+      _append: "appstore_pending_curator_reviews_append_input",
+      _delete_at_path: "appstore_pending_curator_reviews_delete_at_path_input",
+      _delete_elem: "appstore_pending_curator_reviews_delete_elem_input",
+      _delete_key: "appstore_pending_curator_reviews_delete_key_input",
+      _inc: "appstore_pending_curator_reviews_inc_input",
+      _prepend: "appstore_pending_curator_reviews_prepend_input",
+      _set: "appstore_pending_curator_reviews_set_input",
+      where: "appstore_pending_curator_reviews_bool_exp",
+    },
+    update_appstore_pending_curator_reviews_by_pk: {
+      _append: "appstore_pending_curator_reviews_append_input",
+      _delete_at_path: "appstore_pending_curator_reviews_delete_at_path_input",
+      _delete_elem: "appstore_pending_curator_reviews_delete_elem_input",
+      _delete_key: "appstore_pending_curator_reviews_delete_key_input",
+      _inc: "appstore_pending_curator_reviews_inc_input",
+      _prepend: "appstore_pending_curator_reviews_prepend_input",
+      _set: "appstore_pending_curator_reviews_set_input",
+      pk_columns: "appstore_pending_curator_reviews_pk_columns_input",
+    },
+    update_appstore_pending_curator_reviews_many: {
+      updates: "appstore_pending_curator_reviews_updates",
     },
     update_auth_invitations: {
       _append: "auth_invitations_append_input",
@@ -335,6 +561,19 @@ export const AllTypesProps: Record<string, any> = {
     },
     update_auth_invitations_many: {
       updates: "auth_invitations_updates",
+    },
+    update_auth_publickeys: {
+      _inc: "auth_publickeys_inc_input",
+      _set: "auth_publickeys_set_input",
+      where: "auth_publickeys_bool_exp",
+    },
+    update_auth_publickeys_by_pk: {
+      _inc: "auth_publickeys_inc_input",
+      _set: "auth_publickeys_set_input",
+      pk_columns: "auth_publickeys_pk_columns_input",
+    },
+    update_auth_publickeys_many: {
+      updates: "auth_publickeys_updates",
     },
     update_auth_users: {
       _set: "auth_users_set_input",
@@ -363,6 +602,17 @@ export const AllTypesProps: Record<string, any> = {
   },
   order_by: "enum" as const,
   query_root: {
+    appstore_pending_curator_reviews: {
+      distinct_on: "appstore_pending_curator_reviews_select_column",
+      order_by: "appstore_pending_curator_reviews_order_by",
+      where: "appstore_pending_curator_reviews_bool_exp",
+    },
+    appstore_pending_curator_reviews_aggregate: {
+      distinct_on: "appstore_pending_curator_reviews_select_column",
+      order_by: "appstore_pending_curator_reviews_order_by",
+      where: "appstore_pending_curator_reviews_bool_exp",
+    },
+    appstore_pending_curator_reviews_by_pk: {},
     auth_invitations: {
       distinct_on: "auth_invitations_select_column",
       order_by: "auth_invitations_order_by",
@@ -375,6 +625,27 @@ export const AllTypesProps: Record<string, any> = {
     },
     auth_invitations_by_pk: {
       id: "uuid",
+    },
+    auth_publickeys: {
+      distinct_on: "auth_publickeys_select_column",
+      order_by: "auth_publickeys_order_by",
+      where: "auth_publickeys_bool_exp",
+    },
+    auth_publickeys_aggregate: {
+      distinct_on: "auth_publickeys_select_column",
+      order_by: "auth_publickeys_order_by",
+      where: "auth_publickeys_bool_exp",
+    },
+    auth_publickeys_by_pk: {},
+    auth_publickeys_latest: {
+      distinct_on: "auth_publickeys_latest_select_column",
+      order_by: "auth_publickeys_latest_order_by",
+      where: "auth_publickeys_latest_bool_exp",
+    },
+    auth_publickeys_latest_aggregate: {
+      distinct_on: "auth_publickeys_latest_select_column",
+      order_by: "auth_publickeys_latest_order_by",
+      where: "auth_publickeys_latest_bool_exp",
     },
     auth_users: {
       distinct_on: "auth_users_select_column",
@@ -412,6 +683,21 @@ export const AllTypesProps: Record<string, any> = {
     },
   },
   subscription_root: {
+    appstore_pending_curator_reviews: {
+      distinct_on: "appstore_pending_curator_reviews_select_column",
+      order_by: "appstore_pending_curator_reviews_order_by",
+      where: "appstore_pending_curator_reviews_bool_exp",
+    },
+    appstore_pending_curator_reviews_aggregate: {
+      distinct_on: "appstore_pending_curator_reviews_select_column",
+      order_by: "appstore_pending_curator_reviews_order_by",
+      where: "appstore_pending_curator_reviews_bool_exp",
+    },
+    appstore_pending_curator_reviews_by_pk: {},
+    appstore_pending_curator_reviews_stream: {
+      cursor: "appstore_pending_curator_reviews_stream_cursor_input",
+      where: "appstore_pending_curator_reviews_bool_exp",
+    },
     auth_invitations: {
       distinct_on: "auth_invitations_select_column",
       order_by: "auth_invitations_order_by",
@@ -428,6 +714,35 @@ export const AllTypesProps: Record<string, any> = {
     auth_invitations_stream: {
       cursor: "auth_invitations_stream_cursor_input",
       where: "auth_invitations_bool_exp",
+    },
+    auth_publickeys: {
+      distinct_on: "auth_publickeys_select_column",
+      order_by: "auth_publickeys_order_by",
+      where: "auth_publickeys_bool_exp",
+    },
+    auth_publickeys_aggregate: {
+      distinct_on: "auth_publickeys_select_column",
+      order_by: "auth_publickeys_order_by",
+      where: "auth_publickeys_bool_exp",
+    },
+    auth_publickeys_by_pk: {},
+    auth_publickeys_latest: {
+      distinct_on: "auth_publickeys_latest_select_column",
+      order_by: "auth_publickeys_latest_order_by",
+      where: "auth_publickeys_latest_bool_exp",
+    },
+    auth_publickeys_latest_aggregate: {
+      distinct_on: "auth_publickeys_latest_select_column",
+      order_by: "auth_publickeys_latest_order_by",
+      where: "auth_publickeys_latest_bool_exp",
+    },
+    auth_publickeys_latest_stream: {
+      cursor: "auth_publickeys_latest_stream_cursor_input",
+      where: "auth_publickeys_latest_bool_exp",
+    },
+    auth_publickeys_stream: {
+      cursor: "auth_publickeys_stream_cursor_input",
+      where: "auth_publickeys_bool_exp",
     },
     auth_users: {
       distinct_on: "auth_users_select_column",
@@ -505,6 +820,83 @@ export const ReturnTypes: Record<string, any> = {
     ttl: "Int",
     refresh: "Boolean",
   },
+  appstore_pending_curator_reviews: {
+    approved: "Boolean",
+    authority: "String",
+    contact: "String",
+    created_at: "timestamptz",
+    data: "jsonb",
+    id: "Int",
+    ix_data: "bytea",
+    ix_keys: "jsonb",
+    processed: "Boolean",
+    signature: "String",
+    type: "String",
+    xnft: "String",
+  },
+  appstore_pending_curator_reviews_aggregate: {
+    aggregate: "appstore_pending_curator_reviews_aggregate_fields",
+    nodes: "appstore_pending_curator_reviews",
+  },
+  appstore_pending_curator_reviews_aggregate_fields: {
+    avg: "appstore_pending_curator_reviews_avg_fields",
+    count: "Int",
+    max: "appstore_pending_curator_reviews_max_fields",
+    min: "appstore_pending_curator_reviews_min_fields",
+    stddev: "appstore_pending_curator_reviews_stddev_fields",
+    stddev_pop: "appstore_pending_curator_reviews_stddev_pop_fields",
+    stddev_samp: "appstore_pending_curator_reviews_stddev_samp_fields",
+    sum: "appstore_pending_curator_reviews_sum_fields",
+    var_pop: "appstore_pending_curator_reviews_var_pop_fields",
+    var_samp: "appstore_pending_curator_reviews_var_samp_fields",
+    variance: "appstore_pending_curator_reviews_variance_fields",
+  },
+  appstore_pending_curator_reviews_avg_fields: {
+    id: "Float",
+  },
+  appstore_pending_curator_reviews_max_fields: {
+    authority: "String",
+    contact: "String",
+    created_at: "timestamptz",
+    id: "Int",
+    signature: "String",
+    type: "String",
+    xnft: "String",
+  },
+  appstore_pending_curator_reviews_min_fields: {
+    authority: "String",
+    contact: "String",
+    created_at: "timestamptz",
+    id: "Int",
+    signature: "String",
+    type: "String",
+    xnft: "String",
+  },
+  appstore_pending_curator_reviews_mutation_response: {
+    affected_rows: "Int",
+    returning: "appstore_pending_curator_reviews",
+  },
+  appstore_pending_curator_reviews_stddev_fields: {
+    id: "Float",
+  },
+  appstore_pending_curator_reviews_stddev_pop_fields: {
+    id: "Float",
+  },
+  appstore_pending_curator_reviews_stddev_samp_fields: {
+    id: "Float",
+  },
+  appstore_pending_curator_reviews_sum_fields: {
+    id: "Int",
+  },
+  appstore_pending_curator_reviews_var_pop_fields: {
+    id: "Float",
+  },
+  appstore_pending_curator_reviews_var_samp_fields: {
+    id: "Float",
+  },
+  appstore_pending_curator_reviews_variance_fields: {
+    id: "Float",
+  },
   auth_invitations: {
     created_at: "timestamptz",
     data: "jsonb",
@@ -531,13 +923,101 @@ export const ReturnTypes: Record<string, any> = {
     affected_rows: "Int",
     returning: "auth_invitations",
   },
-  auth_users: {
+  auth_publickeys: {
     blockchain: "String",
+    created_at: "timestamptz",
+    id: "Int",
+    publickey: "String",
+    user_id: "uuid",
+  },
+  auth_publickeys_aggregate: {
+    aggregate: "auth_publickeys_aggregate_fields",
+    nodes: "auth_publickeys",
+  },
+  auth_publickeys_aggregate_fields: {
+    avg: "auth_publickeys_avg_fields",
+    count: "Int",
+    max: "auth_publickeys_max_fields",
+    min: "auth_publickeys_min_fields",
+    stddev: "auth_publickeys_stddev_fields",
+    stddev_pop: "auth_publickeys_stddev_pop_fields",
+    stddev_samp: "auth_publickeys_stddev_samp_fields",
+    sum: "auth_publickeys_sum_fields",
+    var_pop: "auth_publickeys_var_pop_fields",
+    var_samp: "auth_publickeys_var_samp_fields",
+    variance: "auth_publickeys_variance_fields",
+  },
+  auth_publickeys_avg_fields: {
+    id: "Float",
+  },
+  auth_publickeys_latest: {
+    blockchain: "String",
+    publickey: "String",
+    user_id: "uuid",
+  },
+  auth_publickeys_latest_aggregate: {
+    aggregate: "auth_publickeys_latest_aggregate_fields",
+    nodes: "auth_publickeys_latest",
+  },
+  auth_publickeys_latest_aggregate_fields: {
+    count: "Int",
+    max: "auth_publickeys_latest_max_fields",
+    min: "auth_publickeys_latest_min_fields",
+  },
+  auth_publickeys_latest_max_fields: {
+    blockchain: "String",
+    publickey: "String",
+    user_id: "uuid",
+  },
+  auth_publickeys_latest_min_fields: {
+    blockchain: "String",
+    publickey: "String",
+    user_id: "uuid",
+  },
+  auth_publickeys_max_fields: {
+    blockchain: "String",
+    created_at: "timestamptz",
+    id: "Int",
+    publickey: "String",
+    user_id: "uuid",
+  },
+  auth_publickeys_min_fields: {
+    blockchain: "String",
+    created_at: "timestamptz",
+    id: "Int",
+    publickey: "String",
+    user_id: "uuid",
+  },
+  auth_publickeys_mutation_response: {
+    affected_rows: "Int",
+    returning: "auth_publickeys",
+  },
+  auth_publickeys_stddev_fields: {
+    id: "Float",
+  },
+  auth_publickeys_stddev_pop_fields: {
+    id: "Float",
+  },
+  auth_publickeys_stddev_samp_fields: {
+    id: "Float",
+  },
+  auth_publickeys_sum_fields: {
+    id: "Int",
+  },
+  auth_publickeys_var_pop_fields: {
+    id: "Float",
+  },
+  auth_publickeys_var_samp_fields: {
+    id: "Float",
+  },
+  auth_publickeys_variance_fields: {
+    id: "Float",
+  },
+  auth_users: {
     created_at: "timestamptz",
     id: "uuid",
     invitation_id: "uuid",
     last_active_at: "timestamptz",
-    pubkey: "String",
     updated_at: "timestamptz",
     username: "citext",
     waitlist_id: "String",
@@ -552,23 +1032,19 @@ export const ReturnTypes: Record<string, any> = {
     min: "auth_users_min_fields",
   },
   auth_users_max_fields: {
-    blockchain: "String",
     created_at: "timestamptz",
     id: "uuid",
     invitation_id: "uuid",
     last_active_at: "timestamptz",
-    pubkey: "String",
     updated_at: "timestamptz",
     username: "citext",
     waitlist_id: "String",
   },
   auth_users_min_fields: {
-    blockchain: "String",
     created_at: "timestamptz",
     id: "uuid",
     invitation_id: "uuid",
     last_active_at: "timestamptz",
-    pubkey: "String",
     updated_at: "timestamptz",
     username: "citext",
     waitlist_id: "String",
@@ -577,6 +1053,7 @@ export const ReturnTypes: Record<string, any> = {
     affected_rows: "Int",
     returning: "auth_users",
   },
+  bytea: `scalar.bytea` as const,
   citext: `scalar.citext` as const,
   images: {
     completed: "Boolean",
@@ -672,21 +1149,42 @@ export const ReturnTypes: Record<string, any> = {
   },
   jsonb: `scalar.jsonb` as const,
   mutation_root: {
+    delete_appstore_pending_curator_reviews:
+      "appstore_pending_curator_reviews_mutation_response",
+    delete_appstore_pending_curator_reviews_by_pk:
+      "appstore_pending_curator_reviews",
     delete_auth_invitations: "auth_invitations_mutation_response",
     delete_auth_invitations_by_pk: "auth_invitations",
+    delete_auth_publickeys: "auth_publickeys_mutation_response",
+    delete_auth_publickeys_by_pk: "auth_publickeys",
     delete_auth_users: "auth_users_mutation_response",
     delete_auth_users_by_pk: "auth_users",
     delete_images: "images_mutation_response",
     delete_images_by_pk: "images",
+    insert_appstore_pending_curator_reviews:
+      "appstore_pending_curator_reviews_mutation_response",
+    insert_appstore_pending_curator_reviews_one:
+      "appstore_pending_curator_reviews",
     insert_auth_invitations: "auth_invitations_mutation_response",
     insert_auth_invitations_one: "auth_invitations",
+    insert_auth_publickeys: "auth_publickeys_mutation_response",
+    insert_auth_publickeys_one: "auth_publickeys",
     insert_auth_users: "auth_users_mutation_response",
     insert_auth_users_one: "auth_users",
     insert_images: "images_mutation_response",
     insert_images_one: "images",
+    update_appstore_pending_curator_reviews:
+      "appstore_pending_curator_reviews_mutation_response",
+    update_appstore_pending_curator_reviews_by_pk:
+      "appstore_pending_curator_reviews",
+    update_appstore_pending_curator_reviews_many:
+      "appstore_pending_curator_reviews_mutation_response",
     update_auth_invitations: "auth_invitations_mutation_response",
     update_auth_invitations_by_pk: "auth_invitations",
     update_auth_invitations_many: "auth_invitations_mutation_response",
+    update_auth_publickeys: "auth_publickeys_mutation_response",
+    update_auth_publickeys_by_pk: "auth_publickeys",
+    update_auth_publickeys_many: "auth_publickeys_mutation_response",
     update_auth_users: "auth_users_mutation_response",
     update_auth_users_by_pk: "auth_users",
     update_auth_users_many: "auth_users_mutation_response",
@@ -695,9 +1193,18 @@ export const ReturnTypes: Record<string, any> = {
     update_images_many: "images_mutation_response",
   },
   query_root: {
+    appstore_pending_curator_reviews: "appstore_pending_curator_reviews",
+    appstore_pending_curator_reviews_aggregate:
+      "appstore_pending_curator_reviews_aggregate",
+    appstore_pending_curator_reviews_by_pk: "appstore_pending_curator_reviews",
     auth_invitations: "auth_invitations",
     auth_invitations_aggregate: "auth_invitations_aggregate",
     auth_invitations_by_pk: "auth_invitations",
+    auth_publickeys: "auth_publickeys",
+    auth_publickeys_aggregate: "auth_publickeys_aggregate",
+    auth_publickeys_by_pk: "auth_publickeys",
+    auth_publickeys_latest: "auth_publickeys_latest",
+    auth_publickeys_latest_aggregate: "auth_publickeys_latest_aggregate",
     auth_users: "auth_users",
     auth_users_aggregate: "auth_users_aggregate",
     auth_users_by_pk: "auth_users",
@@ -708,10 +1215,22 @@ export const ReturnTypes: Record<string, any> = {
     invitations_aggregate: "invitations_aggregate",
   },
   subscription_root: {
+    appstore_pending_curator_reviews: "appstore_pending_curator_reviews",
+    appstore_pending_curator_reviews_aggregate:
+      "appstore_pending_curator_reviews_aggregate",
+    appstore_pending_curator_reviews_by_pk: "appstore_pending_curator_reviews",
+    appstore_pending_curator_reviews_stream: "appstore_pending_curator_reviews",
     auth_invitations: "auth_invitations",
     auth_invitations_aggregate: "auth_invitations_aggregate",
     auth_invitations_by_pk: "auth_invitations",
     auth_invitations_stream: "auth_invitations",
+    auth_publickeys: "auth_publickeys",
+    auth_publickeys_aggregate: "auth_publickeys_aggregate",
+    auth_publickeys_by_pk: "auth_publickeys",
+    auth_publickeys_latest: "auth_publickeys_latest",
+    auth_publickeys_latest_aggregate: "auth_publickeys_latest_aggregate",
+    auth_publickeys_latest_stream: "auth_publickeys_latest",
+    auth_publickeys_stream: "auth_publickeys",
     auth_users: "auth_users",
     auth_users_aggregate: "auth_users_aggregate",
     auth_users_by_pk: "auth_users",
