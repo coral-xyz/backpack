@@ -6,13 +6,13 @@ import {
 } from "@coral-xyz/common";
 import {
   NotificationsProvider,
-  useActiveSolanaWallet,
+  // useActiveSolanaWallet,
   useBackgroundClient,
   useBackgroundKeepAlive,
   useBlockchainTokensSorted,
   useKeyringStoreState,
   useSolanaConnectionUrl,
-  useTotal,
+  // useTotal,
 } from "@coral-xyz/recoil";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -34,8 +34,10 @@ import {
   req_UI_RPC_METHOD_KEYRING_RESET,
   req_UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   req_UI_RPC_METHOD_KEYRING_STORE_LOCK,
+  req_UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   req_UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   req_UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+  req_UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
   req_UI_RPC_METHOD_PASSWORD_UPDATE,
   req_UI_RPC_METHOD_PREVIEW_PUBKEYS,
   req_UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
@@ -47,8 +49,11 @@ import CreateWallet from "./screens/NeedsOnboarding/CreateWallet";
 
 function RpcTester() {
   const background = useBackgroundClient();
+  const connectionUrl = useSolanaConnectionUrl();
+
   useEffect(() => {
     async function callStuff() {
+      debugger;
       await req_UI_RPC_METHOD_KEYRING_RESET(background);
 
       await req_UI_RPC_METHOD_KEYRING_STORE_UNLOCK(background, {
@@ -68,6 +73,18 @@ function RpcTester() {
 
       await req_UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC(background, {
         password: "backpack",
+      });
+
+      await req_UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE(background, {
+        mnemonicWords:
+          "cruel repair valve zone rookie silver dilemma finger holiday size certain fly".split(
+            " "
+          ),
+      });
+
+      await req_UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC(background, {
+        mnemonic:
+          "cruel repair valve zone rookie silver dilemma finger holiday size certain fly",
       });
 
       await req_UI_RPC_METHOD_PASSWORD_UPDATE(background, {
@@ -101,7 +118,7 @@ function RpcTester() {
       });
 
       await req_UI_RPC_METHOD_CONNECTION_URL_UPDATE(background, {
-        url: "devnet",
+        url: connectionUrl,
       });
 
       await req_UI_RPC_METHOD_KEYRING_STORE_LOCK(background);
@@ -134,15 +151,6 @@ const UnlockedScreen = () => {
   //  const wallet = useActiveSolanaWallet();
 
   const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
-  console.log("***************************");
-  console.log("HERE", tokenAccountsSorted);
-  console.log("HERE", tokenAccountsSorted[0].mint.toString());
-  console.log("***************************");
-  //  const connectionUrl = useSolanaConnectionUrl();
-
-  const tokenAccountsFiltered = tokenAccountsSorted.filter(
-    (t) => t.displayBalance !== 0
-  );
 
   return (
     <>

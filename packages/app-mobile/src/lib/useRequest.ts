@@ -12,14 +12,24 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
+  UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+  UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
   UI_RPC_METHOD_LEDGER_IMPORT,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   UI_RPC_METHOD_PASSWORD_UPDATE,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
+
+  // UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
+  // UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
+  // UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
+  // UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
+  // UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
+  // UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
+  // UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
 } from "@coral-xyz/common";
 import {
   backgroundClient as background,
@@ -80,6 +90,55 @@ async function makeRequest(background, request) {
   } finally {
     console.groupEnd();
   }
+}
+
+// TODO these types are any in hooks/useTransactionData
+export async function req_UI_RPC_METHOD_SOLANA_SIMULATE(
+  background,
+  {
+    serializedTx,
+    walletPublicKey,
+  }: {
+    serializedTx: any;
+    walletPublicKey: any;
+  }
+) {
+  // TODO const { connection, walletPublicKey } = useSolanaCtx(); hooks/useTransactionData
+
+  return makeRequest(background, {
+    method: UI_RPC_METHOD_SOLANA_SIMULATE,
+    params: [serializedTx, walletPublicKey, true],
+  });
+
+  // TODO if (result.value.err) hooks/useTransactionData
+}
+
+export async function req_UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC(
+  background,
+  {
+    mnemonic,
+  }: {
+    mnemonic: string;
+  }
+) {
+  return makeRequest(background, {
+    method: UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
+    params: [mnemonic],
+  });
+}
+
+export async function req_UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE(
+  background,
+  {
+    mnemonicWords,
+  }: {
+    mnemonicWords: string[];
+  }
+) {
+  return makeRequest(background, {
+    method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
+    params: [mnemonicWords.length === 12 ? 128 : 256],
+  });
 }
 
 export async function req_UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS(
