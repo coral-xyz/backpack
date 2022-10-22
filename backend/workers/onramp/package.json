@@ -8,11 +8,13 @@
   },
   "private": true,
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --local",
     "deploy": "wrangler publish"
   },
   "dependencies": {
+    "@solana/web3.js": "^1.66.2",
+    "ethers": "^5.7.2",
     "hono": "^2.2.1",
-    "node-fetch": "^3.2.10"
+    "zod": "^3.19.1"
   }
 }
