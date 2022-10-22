@@ -1,5 +1,12 @@
 import { Typography } from "@mui/material";
-import { ArrowUpward, ArrowDownward, SwapHoriz } from "@mui/icons-material";
+import {
+  ArrowUpward,
+  ArrowDownward,
+  SwapHoriz,
+  ArrowRight,
+  ArrowBackIosNewSharp,
+  Money,
+} from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { useEnabledBlockchains, SwapProvider } from "@coral-xyz/recoil";
 import {
@@ -14,7 +21,10 @@ import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";
 import { Swap, SelectToken } from "../../Unlocked/Swap";
+import { Ramp } from "./TokensWidget/Ramp";
+import { StripeRamp } from "./StripeRamp";
 
+const rampEnabled = true;
 export function TransferWidget({
   blockchain,
   address,
@@ -44,6 +54,12 @@ export function TransferWidget({
         <>
           <div style={{ width: "16px" }} />
           <SwapButton blockchain={blockchain} address={address} />
+        </>
+      )}
+      {rampEnabled && (
+        <>
+          <div style={{ width: "16px" }} />
+          <RampButton blockchain={blockchain} address={address} />
         </>
       )}
     </div>
@@ -167,6 +183,47 @@ function ReceiveButton({ blockchain }: { blockchain?: Blockchain }) {
           props: {
             blockchain,
           },
+        },
+      ]}
+    />
+  );
+}
+
+function RampButton({
+  blockchain,
+  address,
+}: {
+  blockchain?: Blockchain;
+  address?: string;
+}) {
+  const theme = useCustomTheme();
+  return (
+    <TransferButton
+      label={"Ramp"}
+      labelComponent={
+        <Money
+          style={{
+            color: theme.custom.colors.fontColor,
+            display: "flex",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        />
+      }
+      routes={[
+        {
+          component: Ramp,
+          title: "Ramp",
+          name: "ramp",
+          props: {
+            blockchain,
+            address,
+          },
+        },
+        {
+          component: StripeRamp,
+          title: "Buy using Link",
+          name: "stripe-onramp",
         },
       ]}
     />
