@@ -21,6 +21,7 @@
         "lint:fix": "yarn run fmt && eslint --fix ."
     },
     "dependencies": {
+        "@coral-xyz/provider-core": "*",
         "@solana/web3.js": "^1.63.1",
         "bs58": "^4.0.1"
     },

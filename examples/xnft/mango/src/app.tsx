@@ -10,14 +10,15 @@ import AnchorUi, {
   BalancesTableFooter,
   BalancesTableRow,
   BalancesTableCell,
+  SOLANA_CONNECT,
 } from "react-xnft";
 import { MangoClient, Config } from "@blockworks-foundation/mango-client";
 
 //
 // On connection to the host environment, warm the cache.
 //
-AnchorUi.events.on("connect", () => {
-  fetchRowData(window.xnft.publicKey);
+AnchorUi.events.on(SOLANA_CONNECT, () => {
+  fetchRowData(window.xnft.solana.publicKey);
 });
 
 export function App() {
@@ -28,10 +29,10 @@ function MangoTable() {
   const [rowData, setRowData] = useState<Array<any> | null>(null);
   useEffect(() => {
     (async () => {
-      const { rowData } = await fetchRowData(window.xnft.publicKey);
+      const { rowData } = await fetchRowData(window.xnft.solana.publicKey);
       setRowData(rowData);
     })();
-  }, [window.xnft.publicKey]);
+  }, [window.xnft.solana.publicKey]);
   return (
     <BalancesTable>
       <BalancesTableHead
@@ -80,7 +81,7 @@ async function fetchRowData(wallet: PublicKey): Promise<any> {
 }
 
 async function fetchRowDataInner(wallet: PublicKey) {
-  const client = new MangoClient(window.xnft.connection, MANGO_PID);
+  const client = new MangoClient(window.xnft.solana.connection, MANGO_PID);
   const config = Config.ids().getGroupWithName("mainnet.1");
   if (!config) {
     throw new Error("config not found");
@@ -91,7 +92,7 @@ async function fetchRowDataInner(wallet: PublicKey) {
     wallet
   );
 
-  const mangoCache = await mangoGroup.loadCache(window.xnft.connection);
+  const mangoCache = await mangoGroup.loadCache(window.xnft.solana.connection);
 
   const rowData = await Promise.all(
     mangoAccounts.map(async (ma) => {

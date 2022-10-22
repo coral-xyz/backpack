@@ -37,7 +37,7 @@ import { getLogger, Event } from "@coral-xyz/common-public";
 import { BackgroundClient } from "./channel/app-ui";
 import { PluginServer } from "./channel/plugin";
 
-import { Metadata, Blockchain, RpcResponse } from "./types";
+import { XnftMetadata, Blockchain, RpcResponse } from "./types";
 
 const logger = getLogger("common/plugin");
 
@@ -211,11 +211,10 @@ export class Plugin {
   // Rendering.
   //////////////////////////////////////////////////////////////////////////////
 
-  public mount(metadata: Metadata) {
+  public mount() {
     this.createIframe();
     this.didFinishSetup!.then(() => {
       this.pushMountNotification();
-      this.pushAppUiMetadata(metadata);
     });
   }
 
@@ -242,7 +241,7 @@ export class Plugin {
     this.iframeRoot?.contentWindow?.postMessage(event, "*");
   }
 
-  public pushAppUiMetadata(metadata: Metadata) {
+  public pushAppUiMetadata(metadata: XnftMetadata) {
     const event = {
       type: CHANNEL_PLUGIN_NOTIFICATION,
       detail: {
@@ -270,11 +269,7 @@ export class Plugin {
       detail: {
         name: PLUGIN_NOTIFICATION_CONNECT,
         data: {
-          // Deprecate in favour of publicKeys
-          publicKey: this._activeWallets[Blockchain.SOLANA],
           publicKeys: this._activeWallets,
-          // Deprecate in favor of connectionUrls
-          connectionUrl: this._connectionUrls[Blockchain.SOLANA],
           connectionUrls: this._connectionUrls,
         },
       },

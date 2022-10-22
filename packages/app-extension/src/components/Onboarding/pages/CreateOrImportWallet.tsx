@@ -20,11 +20,7 @@ export const CreateOrImportWallet = () => {
       }}
     >
       <Box style={{ flex: 1, textAlign: "center", padding: "0 16px" }}>
-        <BackpackHeader
-          alphaStyle={{
-            marginRight: "42px",
-          }}
-        />
+        <BackpackHeader />
       </Box>
       <Box style={{ padding: "0 16px 16px" }}>
         <Grid container spacing={1.5}>
