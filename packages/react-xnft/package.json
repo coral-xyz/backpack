@@ -14,7 +14,6 @@
   "license": "ISC",
   "dependencies": {
     "@coral-xyz/common-public": "*",
-    "@coral-xyz/common": "*",
     "@coral-xyz/themes": "*",
     "@solana/web3.js": "^1.63.1",
     "eventemitter3": "^4.0.7",
