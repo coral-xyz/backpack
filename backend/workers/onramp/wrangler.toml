@@ -1,0 +1,6 @@
+name = "invites"
+main = "src/index.ts"
+compatibility_date = "2022-09-22"
+
+[env.development.vars]
+STRIPE_SECRET = ""
