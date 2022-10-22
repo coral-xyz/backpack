@@ -3,7 +3,7 @@ import { WithTheme } from "./WithTheme";
 import { useEffect, useState } from "react";
 import { Event } from "@coral-xyz/common-public";
 import { RootRenderer } from "./Renderer";
-import { XnftMetadata } from "@coral-xyz/common";
+import { XnftMetadata } from "@coral-xyz/common-public";
 
 const DEFAULT_METADATA: XnftMetadata = {
   isDarkMode: false,
