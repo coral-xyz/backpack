@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Crypto Onramp</title>
+  <meta name="description" content="A demo of hosted onramp" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://js.stripe.com/v3/"></script>
+  <script type="text/javascript" src="https://crypto-js.stripe.com/crypto-onramp-outer.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const stripeOnramp = StripeOnramp("pk_test_51LMFWCJLePnGviG0CZZX0ZxTwa4RUfUHFzuzPJF9BWhY8c7Zj4jPU41Fo7HYVtDOa6oQZPGNn8kuhyNzZKUNTmlM001ni6WCno");
+      const urlSearchParams = new URLSearchParams(window.location.search);
+
+      dothething(urlSearchParams.get("clientSecret"))
+      function dothething(text) {
+        // Get session id from `text` which contains the client secret
+        const words = text.split('_');
+        session_id = `${words[0]}_${words[1]}`;
+        console.log(`session_id: ${session_id}`)
+        // Set session_id in dom before proceeding
+        let ele = document.getElementById('onramp-session-id-holder');
+        let node = document.createTextNode (session_id);
+        ele.appendChild(node);
+        // Initialize onramp with client_secret
+        clientSecret = text;
+        const onrampSession = stripeOnramp.createSession({clientSecret});
+        onrampSession
+                .mount("#onramp-element");
+      }
+
+    });
+  </script>
+</head>
+<body>
+<div id="onramp-element"/>
+<div id="onramp-session-id-holder"/>
+</body>
+</html>
