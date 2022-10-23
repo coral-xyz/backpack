@@ -48,9 +48,9 @@ function pluginURL(pluginName: string) {
 }
 
 export function xnftUrl(url: string) {
-  return "https://embed.xnfts.dev/?inline=1&v2=true&bundle=https://xnfts.s3.us-west-2.amazonaws.com/i2HP4KaZ2zXKwLZVyTkDK3itCRugt6Npb5Zn7t28yR5/bundle/index.js";
+  const uri = externalResourceUri(url);
+  return [PROXY_URL, uri].join("");
 }
-
 //
 // For now we just provide some default apps.
 //
