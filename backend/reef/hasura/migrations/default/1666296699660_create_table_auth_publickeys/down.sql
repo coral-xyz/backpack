@@ -1,1 +1,1 @@
-DROP TABLE "auth"."publickeys";
+DROP TABLE "auth"."publickeys_history";

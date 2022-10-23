@@ -1,10 +1,11 @@
 table:
-  name: publickeys
+  name: publickeys_history
   schema: auth
-select_permissions:
+insert_permissions:
   - role: auth_worker
     permission:
+      check: {}
       columns:
         - blockchain
         - publickey
-      filter: {}
+        - user_id

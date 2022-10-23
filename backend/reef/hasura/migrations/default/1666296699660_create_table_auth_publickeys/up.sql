@@ -1,4 +1,4 @@
-CREATE TABLE "auth"."publickeys" (
+CREATE TABLE "auth"."publickeys_history" (
   "id" serial NOT NULL,
   "user_id" uuid REFERENCES "auth"."users" (id),
   "blockchain" text NOT NULL,

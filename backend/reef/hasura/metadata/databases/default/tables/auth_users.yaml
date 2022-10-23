@@ -9,7 +9,7 @@ array_relationships:
           id: user_id
         insertion_order: null
         remote_table:
-          name: publickeys_latest
+          name: publickeys_history
           schema: auth
 insert_permissions:
   - role: auth_worker
