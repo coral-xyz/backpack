@@ -24,6 +24,7 @@ import { SendLoader, Send } from "./TokensWidget/Send";
 import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";
+import { Dollar } from "../../common/Icon";
 import { Swap, SelectToken } from "../../Unlocked/Swap";
 import { Ramp } from "./TokensWidget/Ramp";
 import { StripeRamp } from "./StripeRamp";
@@ -212,10 +213,9 @@ function RampButton({
     <TransferButton
       label={"Buy"}
       labelComponent={
-        <img
-          src={`/assets/icons/dollar.svg`}
+        <Dollar
+          fill={theme.custom.colors.fontColor}
           style={{
-            color: theme.custom.colors.fontColor,
             display: "flex",
             marginLeft: "auto",
             marginRight: "auto",
