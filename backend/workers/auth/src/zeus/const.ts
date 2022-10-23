@@ -180,106 +180,140 @@ export const AllTypesProps: Record<string, any> = {
     _not: "auth_publickeys_bool_exp",
     _or: "auth_publickeys_bool_exp",
     blockchain: "String_comparison_exp",
+    publickey: "String_comparison_exp",
+    user_id: "uuid_comparison_exp",
+  },
+  auth_publickeys_history_aggregate_fields: {
+    count: {
+      columns: "auth_publickeys_history_select_column",
+    },
+  },
+  auth_publickeys_history_aggregate_order_by: {
+    avg: "auth_publickeys_history_avg_order_by",
+    count: "order_by",
+    max: "auth_publickeys_history_max_order_by",
+    min: "auth_publickeys_history_min_order_by",
+    stddev: "auth_publickeys_history_stddev_order_by",
+    stddev_pop: "auth_publickeys_history_stddev_pop_order_by",
+    stddev_samp: "auth_publickeys_history_stddev_samp_order_by",
+    sum: "auth_publickeys_history_sum_order_by",
+    var_pop: "auth_publickeys_history_var_pop_order_by",
+    var_samp: "auth_publickeys_history_var_samp_order_by",
+    variance: "auth_publickeys_history_variance_order_by",
+  },
+  auth_publickeys_history_arr_rel_insert_input: {
+    data: "auth_publickeys_history_insert_input",
+    on_conflict: "auth_publickeys_history_on_conflict",
+  },
+  auth_publickeys_history_avg_order_by: {
+    id: "order_by",
+  },
+  auth_publickeys_history_bool_exp: {
+    _and: "auth_publickeys_history_bool_exp",
+    _not: "auth_publickeys_history_bool_exp",
+    _or: "auth_publickeys_history_bool_exp",
+    blockchain: "String_comparison_exp",
     created_at: "timestamptz_comparison_exp",
     id: "Int_comparison_exp",
     publickey: "String_comparison_exp",
     user_id: "uuid_comparison_exp",
   },
-  auth_publickeys_constraint: "enum" as const,
-  auth_publickeys_inc_input: {},
-  auth_publickeys_insert_input: {
+  auth_publickeys_history_constraint: "enum" as const,
+  auth_publickeys_history_inc_input: {},
+  auth_publickeys_history_insert_input: {
     created_at: "timestamptz",
     user_id: "uuid",
   },
-  auth_publickeys_latest_aggregate_fields: {
-    count: {
-      columns: "auth_publickeys_latest_select_column",
-    },
-  },
-  auth_publickeys_latest_aggregate_order_by: {
-    count: "order_by",
-    max: "auth_publickeys_latest_max_order_by",
-    min: "auth_publickeys_latest_min_order_by",
-  },
-  auth_publickeys_latest_arr_rel_insert_input: {
-    data: "auth_publickeys_latest_insert_input",
-  },
-  auth_publickeys_latest_bool_exp: {
-    _and: "auth_publickeys_latest_bool_exp",
-    _not: "auth_publickeys_latest_bool_exp",
-    _or: "auth_publickeys_latest_bool_exp",
-    blockchain: "String_comparison_exp",
-    publickey: "String_comparison_exp",
-    user_id: "uuid_comparison_exp",
-  },
-  auth_publickeys_latest_insert_input: {
-    user_id: "uuid",
-  },
-  auth_publickeys_latest_max_order_by: {
-    blockchain: "order_by",
-    publickey: "order_by",
-    user_id: "order_by",
-  },
-  auth_publickeys_latest_min_order_by: {
-    blockchain: "order_by",
-    publickey: "order_by",
-    user_id: "order_by",
-  },
-  auth_publickeys_latest_order_by: {
-    blockchain: "order_by",
-    publickey: "order_by",
-    user_id: "order_by",
-  },
-  auth_publickeys_latest_select_column: "enum" as const,
-  auth_publickeys_latest_stream_cursor_input: {
-    initial_value: "auth_publickeys_latest_stream_cursor_value_input",
-    ordering: "cursor_ordering",
-  },
-  auth_publickeys_latest_stream_cursor_value_input: {
-    user_id: "uuid",
-  },
-  auth_publickeys_on_conflict: {
-    constraint: "auth_publickeys_constraint",
-    update_columns: "auth_publickeys_update_column",
-    where: "auth_publickeys_bool_exp",
-  },
-  auth_publickeys_order_by: {
+  auth_publickeys_history_max_order_by: {
     blockchain: "order_by",
     created_at: "order_by",
     id: "order_by",
     publickey: "order_by",
     user_id: "order_by",
   },
-  auth_publickeys_pk_columns_input: {},
-  auth_publickeys_select_column: "enum" as const,
-  auth_publickeys_set_input: {
+  auth_publickeys_history_min_order_by: {
+    blockchain: "order_by",
+    created_at: "order_by",
+    id: "order_by",
+    publickey: "order_by",
+    user_id: "order_by",
+  },
+  auth_publickeys_history_on_conflict: {
+    constraint: "auth_publickeys_history_constraint",
+    update_columns: "auth_publickeys_history_update_column",
+    where: "auth_publickeys_history_bool_exp",
+  },
+  auth_publickeys_history_order_by: {
+    blockchain: "order_by",
+    created_at: "order_by",
+    id: "order_by",
+    publickey: "order_by",
+    user_id: "order_by",
+  },
+  auth_publickeys_history_pk_columns_input: {},
+  auth_publickeys_history_select_column: "enum" as const,
+  auth_publickeys_history_set_input: {
     created_at: "timestamptz",
     user_id: "uuid",
   },
+  auth_publickeys_history_stddev_order_by: {
+    id: "order_by",
+  },
+  auth_publickeys_history_stddev_pop_order_by: {
+    id: "order_by",
+  },
+  auth_publickeys_history_stddev_samp_order_by: {
+    id: "order_by",
+  },
+  auth_publickeys_history_stream_cursor_input: {
+    initial_value: "auth_publickeys_history_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  auth_publickeys_history_stream_cursor_value_input: {
+    created_at: "timestamptz",
+    user_id: "uuid",
+  },
+  auth_publickeys_history_sum_order_by: {
+    id: "order_by",
+  },
+  auth_publickeys_history_update_column: "enum" as const,
+  auth_publickeys_history_updates: {
+    _inc: "auth_publickeys_history_inc_input",
+    _set: "auth_publickeys_history_set_input",
+    where: "auth_publickeys_history_bool_exp",
+  },
+  auth_publickeys_history_var_pop_order_by: {
+    id: "order_by",
+  },
+  auth_publickeys_history_var_samp_order_by: {
+    id: "order_by",
+  },
+  auth_publickeys_history_variance_order_by: {
+    id: "order_by",
+  },
+  auth_publickeys_order_by: {
+    blockchain: "order_by",
+    publickey: "order_by",
+    user_id: "order_by",
+  },
+  auth_publickeys_select_column: "enum" as const,
   auth_publickeys_stream_cursor_input: {
     initial_value: "auth_publickeys_stream_cursor_value_input",
     ordering: "cursor_ordering",
   },
   auth_publickeys_stream_cursor_value_input: {
-    created_at: "timestamptz",
     user_id: "uuid",
-  },
-  auth_publickeys_update_column: "enum" as const,
-  auth_publickeys_updates: {
-    _inc: "auth_publickeys_inc_input",
-    _set: "auth_publickeys_set_input",
-    where: "auth_publickeys_bool_exp",
   },
   auth_users: {
     publickeys: {
-      distinct_on: "auth_publickeys_latest_select_column",
-      order_by: "auth_publickeys_latest_order_by",
-      where: "auth_publickeys_latest_bool_exp",
+      distinct_on: "auth_publickeys_history_select_column",
+      order_by: "auth_publickeys_history_order_by",
+      where: "auth_publickeys_history_bool_exp",
     },
     publickeys_aggregate: {
-      distinct_on: "auth_publickeys_latest_select_column",
-      order_by: "auth_publickeys_latest_order_by",
-      where: "auth_publickeys_latest_bool_exp",
+      distinct_on: "auth_publickeys_history_select_column",
+      order_by: "auth_publickeys_history_order_by",
+      where: "auth_publickeys_history_bool_exp",
     },
   },
   auth_users_aggregate_fields: {
@@ -295,7 +329,7 @@ export const AllTypesProps: Record<string, any> = {
     id: "uuid_comparison_exp",
     invitation_id: "uuid_comparison_exp",
     last_active_at: "timestamptz_comparison_exp",
-    publickeys: "auth_publickeys_latest_bool_exp",
+    publickeys: "auth_publickeys_history_bool_exp",
     updated_at: "timestamptz_comparison_exp",
     username: "citext_comparison_exp",
     waitlist_id: "String_comparison_exp",
@@ -306,7 +340,7 @@ export const AllTypesProps: Record<string, any> = {
     id: "uuid",
     invitation_id: "uuid",
     last_active_at: "timestamptz",
-    publickeys: "auth_publickeys_latest_arr_rel_insert_input",
+    publickeys: "auth_publickeys_history_arr_rel_insert_input",
     updated_at: "timestamptz",
     username: "citext",
   },
@@ -320,7 +354,7 @@ export const AllTypesProps: Record<string, any> = {
     id: "order_by",
     invitation_id: "order_by",
     last_active_at: "order_by",
-    publickeys_aggregate: "auth_publickeys_latest_aggregate_order_by",
+    publickeys_aggregate: "auth_publickeys_history_aggregate_order_by",
     updated_at: "order_by",
     username: "order_by",
     waitlist_id: "order_by",
@@ -500,10 +534,10 @@ export const AllTypesProps: Record<string, any> = {
     delete_auth_invitations_by_pk: {
       id: "uuid",
     },
-    delete_auth_publickeys: {
-      where: "auth_publickeys_bool_exp",
+    delete_auth_publickeys_history: {
+      where: "auth_publickeys_history_bool_exp",
     },
-    delete_auth_publickeys_by_pk: {},
+    delete_auth_publickeys_history_by_pk: {},
     delete_auth_users: {
       where: "auth_users_bool_exp",
     },
@@ -530,13 +564,13 @@ export const AllTypesProps: Record<string, any> = {
       object: "auth_invitations_insert_input",
       on_conflict: "auth_invitations_on_conflict",
     },
-    insert_auth_publickeys: {
-      objects: "auth_publickeys_insert_input",
-      on_conflict: "auth_publickeys_on_conflict",
+    insert_auth_publickeys_history: {
+      objects: "auth_publickeys_history_insert_input",
+      on_conflict: "auth_publickeys_history_on_conflict",
     },
-    insert_auth_publickeys_one: {
-      object: "auth_publickeys_insert_input",
-      on_conflict: "auth_publickeys_on_conflict",
+    insert_auth_publickeys_history_one: {
+      object: "auth_publickeys_history_insert_input",
+      on_conflict: "auth_publickeys_history_on_conflict",
     },
     insert_auth_users: {
       objects: "auth_users_insert_input",
@@ -598,18 +632,18 @@ export const AllTypesProps: Record<string, any> = {
     update_auth_invitations_many: {
       updates: "auth_invitations_updates",
     },
-    update_auth_publickeys: {
-      _inc: "auth_publickeys_inc_input",
-      _set: "auth_publickeys_set_input",
-      where: "auth_publickeys_bool_exp",
+    update_auth_publickeys_history: {
+      _inc: "auth_publickeys_history_inc_input",
+      _set: "auth_publickeys_history_set_input",
+      where: "auth_publickeys_history_bool_exp",
     },
-    update_auth_publickeys_by_pk: {
-      _inc: "auth_publickeys_inc_input",
-      _set: "auth_publickeys_set_input",
-      pk_columns: "auth_publickeys_pk_columns_input",
+    update_auth_publickeys_history_by_pk: {
+      _inc: "auth_publickeys_history_inc_input",
+      _set: "auth_publickeys_history_set_input",
+      pk_columns: "auth_publickeys_history_pk_columns_input",
     },
-    update_auth_publickeys_many: {
-      updates: "auth_publickeys_updates",
+    update_auth_publickeys_history_many: {
+      updates: "auth_publickeys_history_updates",
     },
     update_auth_users: {
       _set: "auth_users_set_input",
@@ -672,17 +706,17 @@ export const AllTypesProps: Record<string, any> = {
       order_by: "auth_publickeys_order_by",
       where: "auth_publickeys_bool_exp",
     },
-    auth_publickeys_by_pk: {},
-    auth_publickeys_latest: {
-      distinct_on: "auth_publickeys_latest_select_column",
-      order_by: "auth_publickeys_latest_order_by",
-      where: "auth_publickeys_latest_bool_exp",
+    auth_publickeys_history: {
+      distinct_on: "auth_publickeys_history_select_column",
+      order_by: "auth_publickeys_history_order_by",
+      where: "auth_publickeys_history_bool_exp",
     },
-    auth_publickeys_latest_aggregate: {
-      distinct_on: "auth_publickeys_latest_select_column",
-      order_by: "auth_publickeys_latest_order_by",
-      where: "auth_publickeys_latest_bool_exp",
+    auth_publickeys_history_aggregate: {
+      distinct_on: "auth_publickeys_history_select_column",
+      order_by: "auth_publickeys_history_order_by",
+      where: "auth_publickeys_history_bool_exp",
     },
+    auth_publickeys_history_by_pk: {},
     auth_users: {
       distinct_on: "auth_users_select_column",
       order_by: "auth_users_order_by",
@@ -761,20 +795,20 @@ export const AllTypesProps: Record<string, any> = {
       order_by: "auth_publickeys_order_by",
       where: "auth_publickeys_bool_exp",
     },
-    auth_publickeys_by_pk: {},
-    auth_publickeys_latest: {
-      distinct_on: "auth_publickeys_latest_select_column",
-      order_by: "auth_publickeys_latest_order_by",
-      where: "auth_publickeys_latest_bool_exp",
+    auth_publickeys_history: {
+      distinct_on: "auth_publickeys_history_select_column",
+      order_by: "auth_publickeys_history_order_by",
+      where: "auth_publickeys_history_bool_exp",
     },
-    auth_publickeys_latest_aggregate: {
-      distinct_on: "auth_publickeys_latest_select_column",
-      order_by: "auth_publickeys_latest_order_by",
-      where: "auth_publickeys_latest_bool_exp",
+    auth_publickeys_history_aggregate: {
+      distinct_on: "auth_publickeys_history_select_column",
+      order_by: "auth_publickeys_history_order_by",
+      where: "auth_publickeys_history_bool_exp",
     },
-    auth_publickeys_latest_stream: {
-      cursor: "auth_publickeys_latest_stream_cursor_input",
-      where: "auth_publickeys_latest_bool_exp",
+    auth_publickeys_history_by_pk: {},
+    auth_publickeys_history_stream: {
+      cursor: "auth_publickeys_history_stream_cursor_input",
+      where: "auth_publickeys_history_bool_exp",
     },
     auth_publickeys_stream: {
       cursor: "auth_publickeys_stream_cursor_input",
@@ -961,8 +995,6 @@ export const ReturnTypes: Record<string, any> = {
   },
   auth_publickeys: {
     blockchain: "String",
-    created_at: "timestamptz",
-    id: "Int",
     publickey: "String",
     user_id: "uuid",
   },
@@ -971,91 +1003,93 @@ export const ReturnTypes: Record<string, any> = {
     nodes: "auth_publickeys",
   },
   auth_publickeys_aggregate_fields: {
-    avg: "auth_publickeys_avg_fields",
     count: "Int",
     max: "auth_publickeys_max_fields",
     min: "auth_publickeys_min_fields",
-    stddev: "auth_publickeys_stddev_fields",
-    stddev_pop: "auth_publickeys_stddev_pop_fields",
-    stddev_samp: "auth_publickeys_stddev_samp_fields",
-    sum: "auth_publickeys_sum_fields",
-    var_pop: "auth_publickeys_var_pop_fields",
-    var_samp: "auth_publickeys_var_samp_fields",
-    variance: "auth_publickeys_variance_fields",
   },
-  auth_publickeys_avg_fields: {
-    id: "Float",
-  },
-  auth_publickeys_latest: {
-    blockchain: "String",
-    publickey: "String",
-    user_id: "uuid",
-  },
-  auth_publickeys_latest_aggregate: {
-    aggregate: "auth_publickeys_latest_aggregate_fields",
-    nodes: "auth_publickeys_latest",
-  },
-  auth_publickeys_latest_aggregate_fields: {
-    count: "Int",
-    max: "auth_publickeys_latest_max_fields",
-    min: "auth_publickeys_latest_min_fields",
-  },
-  auth_publickeys_latest_max_fields: {
-    blockchain: "String",
-    publickey: "String",
-    user_id: "uuid",
-  },
-  auth_publickeys_latest_min_fields: {
-    blockchain: "String",
-    publickey: "String",
-    user_id: "uuid",
-  },
-  auth_publickeys_max_fields: {
+  auth_publickeys_history: {
     blockchain: "String",
     created_at: "timestamptz",
     id: "Int",
+    publickey: "String",
+    user_id: "uuid",
+  },
+  auth_publickeys_history_aggregate: {
+    aggregate: "auth_publickeys_history_aggregate_fields",
+    nodes: "auth_publickeys_history",
+  },
+  auth_publickeys_history_aggregate_fields: {
+    avg: "auth_publickeys_history_avg_fields",
+    count: "Int",
+    max: "auth_publickeys_history_max_fields",
+    min: "auth_publickeys_history_min_fields",
+    stddev: "auth_publickeys_history_stddev_fields",
+    stddev_pop: "auth_publickeys_history_stddev_pop_fields",
+    stddev_samp: "auth_publickeys_history_stddev_samp_fields",
+    sum: "auth_publickeys_history_sum_fields",
+    var_pop: "auth_publickeys_history_var_pop_fields",
+    var_samp: "auth_publickeys_history_var_samp_fields",
+    variance: "auth_publickeys_history_variance_fields",
+  },
+  auth_publickeys_history_avg_fields: {
+    id: "Float",
+  },
+  auth_publickeys_history_max_fields: {
+    blockchain: "String",
+    created_at: "timestamptz",
+    id: "Int",
+    publickey: "String",
+    user_id: "uuid",
+  },
+  auth_publickeys_history_min_fields: {
+    blockchain: "String",
+    created_at: "timestamptz",
+    id: "Int",
+    publickey: "String",
+    user_id: "uuid",
+  },
+  auth_publickeys_history_mutation_response: {
+    affected_rows: "Int",
+    returning: "auth_publickeys_history",
+  },
+  auth_publickeys_history_stddev_fields: {
+    id: "Float",
+  },
+  auth_publickeys_history_stddev_pop_fields: {
+    id: "Float",
+  },
+  auth_publickeys_history_stddev_samp_fields: {
+    id: "Float",
+  },
+  auth_publickeys_history_sum_fields: {
+    id: "Int",
+  },
+  auth_publickeys_history_var_pop_fields: {
+    id: "Float",
+  },
+  auth_publickeys_history_var_samp_fields: {
+    id: "Float",
+  },
+  auth_publickeys_history_variance_fields: {
+    id: "Float",
+  },
+  auth_publickeys_max_fields: {
+    blockchain: "String",
     publickey: "String",
     user_id: "uuid",
   },
   auth_publickeys_min_fields: {
     blockchain: "String",
-    created_at: "timestamptz",
-    id: "Int",
     publickey: "String",
     user_id: "uuid",
-  },
-  auth_publickeys_mutation_response: {
-    affected_rows: "Int",
-    returning: "auth_publickeys",
-  },
-  auth_publickeys_stddev_fields: {
-    id: "Float",
-  },
-  auth_publickeys_stddev_pop_fields: {
-    id: "Float",
-  },
-  auth_publickeys_stddev_samp_fields: {
-    id: "Float",
-  },
-  auth_publickeys_sum_fields: {
-    id: "Int",
-  },
-  auth_publickeys_var_pop_fields: {
-    id: "Float",
-  },
-  auth_publickeys_var_samp_fields: {
-    id: "Float",
-  },
-  auth_publickeys_variance_fields: {
-    id: "Float",
   },
   auth_users: {
     created_at: "timestamptz",
     id: "uuid",
     invitation_id: "uuid",
     last_active_at: "timestamptz",
-    publickeys: "auth_publickeys_latest",
-    publickeys_aggregate: "auth_publickeys_latest_aggregate",
+    publickeys: "auth_publickeys_history",
+    publickeys_aggregate: "auth_publickeys_history_aggregate",
     updated_at: "timestamptz",
     username: "citext",
     waitlist_id: "String",
@@ -1193,8 +1227,8 @@ export const ReturnTypes: Record<string, any> = {
       "appstore_pending_curator_reviews",
     delete_auth_invitations: "auth_invitations_mutation_response",
     delete_auth_invitations_by_pk: "auth_invitations",
-    delete_auth_publickeys: "auth_publickeys_mutation_response",
-    delete_auth_publickeys_by_pk: "auth_publickeys",
+    delete_auth_publickeys_history: "auth_publickeys_history_mutation_response",
+    delete_auth_publickeys_history_by_pk: "auth_publickeys_history",
     delete_auth_users: "auth_users_mutation_response",
     delete_auth_users_by_pk: "auth_users",
     delete_images: "images_mutation_response",
@@ -1205,8 +1239,8 @@ export const ReturnTypes: Record<string, any> = {
       "appstore_pending_curator_reviews",
     insert_auth_invitations: "auth_invitations_mutation_response",
     insert_auth_invitations_one: "auth_invitations",
-    insert_auth_publickeys: "auth_publickeys_mutation_response",
-    insert_auth_publickeys_one: "auth_publickeys",
+    insert_auth_publickeys_history: "auth_publickeys_history_mutation_response",
+    insert_auth_publickeys_history_one: "auth_publickeys_history",
     insert_auth_users: "auth_users_mutation_response",
     insert_auth_users_one: "auth_users",
     insert_images: "images_mutation_response",
@@ -1220,9 +1254,10 @@ export const ReturnTypes: Record<string, any> = {
     update_auth_invitations: "auth_invitations_mutation_response",
     update_auth_invitations_by_pk: "auth_invitations",
     update_auth_invitations_many: "auth_invitations_mutation_response",
-    update_auth_publickeys: "auth_publickeys_mutation_response",
-    update_auth_publickeys_by_pk: "auth_publickeys",
-    update_auth_publickeys_many: "auth_publickeys_mutation_response",
+    update_auth_publickeys_history: "auth_publickeys_history_mutation_response",
+    update_auth_publickeys_history_by_pk: "auth_publickeys_history",
+    update_auth_publickeys_history_many:
+      "auth_publickeys_history_mutation_response",
     update_auth_users: "auth_users_mutation_response",
     update_auth_users_by_pk: "auth_users",
     update_auth_users_many: "auth_users_mutation_response",
@@ -1240,9 +1275,9 @@ export const ReturnTypes: Record<string, any> = {
     auth_invitations_by_pk: "auth_invitations",
     auth_publickeys: "auth_publickeys",
     auth_publickeys_aggregate: "auth_publickeys_aggregate",
-    auth_publickeys_by_pk: "auth_publickeys",
-    auth_publickeys_latest: "auth_publickeys_latest",
-    auth_publickeys_latest_aggregate: "auth_publickeys_latest_aggregate",
+    auth_publickeys_history: "auth_publickeys_history",
+    auth_publickeys_history_aggregate: "auth_publickeys_history_aggregate",
+    auth_publickeys_history_by_pk: "auth_publickeys_history",
     auth_users: "auth_users",
     auth_users_aggregate: "auth_users_aggregate",
     auth_users_by_pk: "auth_users",
@@ -1264,10 +1299,10 @@ export const ReturnTypes: Record<string, any> = {
     auth_invitations_stream: "auth_invitations",
     auth_publickeys: "auth_publickeys",
     auth_publickeys_aggregate: "auth_publickeys_aggregate",
-    auth_publickeys_by_pk: "auth_publickeys",
-    auth_publickeys_latest: "auth_publickeys_latest",
-    auth_publickeys_latest_aggregate: "auth_publickeys_latest_aggregate",
-    auth_publickeys_latest_stream: "auth_publickeys_latest",
+    auth_publickeys_history: "auth_publickeys_history",
+    auth_publickeys_history_aggregate: "auth_publickeys_history_aggregate",
+    auth_publickeys_history_by_pk: "auth_publickeys_history",
+    auth_publickeys_history_stream: "auth_publickeys_history",
     auth_publickeys_stream: "auth_publickeys",
     auth_users: "auth_users",
     auth_users_aggregate: "auth_users_aggregate",
