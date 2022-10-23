@@ -25,16 +25,18 @@ import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";
 import { Swap, SelectToken } from "../../Unlocked/Swap";
-import { RampCard2 } from "./TokensWidget/Ramp";
+import { Ramp } from "./TokensWidget/Ramp";
 import { StripeRamp } from "./StripeRamp";
+import React from "react";
 
-const rampEnabled = true;
 export function TransferWidget({
   blockchain,
   address,
+  rampEnabled,
 }: {
   blockchain?: Blockchain;
   address?: string;
+  rampEnabled: boolean;
 }) {
   const enabledBlockchains = useEnabledBlockchains();
 
@@ -46,11 +48,22 @@ export function TransferWidget({
     <div
       style={{
         display: "flex",
-        width: renderSwap ? "191px" : "120px",
+        width:
+          rampEnabled && renderSwap
+            ? "262px"
+            : renderSwap || rampEnabled
+            ? "191px"
+            : "120px",
         marginLeft: "auto",
         marginRight: "auto",
       }}
     >
+      {rampEnabled && (
+        <>
+          <RampButton blockchain={blockchain} address={address} />
+          <div style={{ width: "16px" }} />
+        </>
+      )}
       <ReceiveButton blockchain={blockchain} />
       <div style={{ width: "16px" }} />
       <SendButton blockchain={blockchain} address={address} />
@@ -58,12 +71,6 @@ export function TransferWidget({
         <>
           <div style={{ width: "16px" }} />
           <SwapButton blockchain={blockchain} address={address} />
-        </>
-      )}
-      {rampEnabled && (
-        <>
-          <div style={{ width: "16px" }} />
-          <RampButton blockchain={blockchain} address={address} />
         </>
       )}
     </div>
@@ -203,9 +210,10 @@ function RampButton({
   const theme = useCustomTheme();
   return (
     <TransferButton
-      label={"Ramp"}
+      label={"Buy"}
       labelComponent={
-        <Money
+        <img
+          src={`/assets/icons/dollar.svg`}
           style={{
             color: theme.custom.colors.fontColor,
             display: "flex",
@@ -214,22 +222,36 @@ function RampButton({
           }}
         />
       }
-      routes={[
-        {
-          component: Ramp,
-          title: "Ramp",
-          name: "onramp",
-          props: {
-            blockchain,
-            address,
-          },
-        },
-        {
-          component: (props: any) => <StripeRamp {...props} />,
-          title: "Buy using Link",
-          name: "stripe",
-        },
-      ]}
+      routes={
+        blockchain && address
+          ? [
+              {
+                name: "stripe",
+                component: (props: any) => <StripeRamp {...props} />,
+                title: "Buy",
+                props: {
+                  blockchain,
+                  publicKey: address,
+                },
+              },
+            ]
+          : [
+              {
+                component: Ramp,
+                title: "Buy",
+                name: "onramp",
+                props: {
+                  blockchain,
+                  publicKey: address,
+                },
+              },
+              {
+                component: (props: any) => <StripeRamp {...props} />,
+                title: "Buy using Link",
+                name: "stripe",
+              },
+            ]
+      }
     />
   );
 }
@@ -303,52 +325,5 @@ function SendToken() {
         return !token.nativeBalance.isZero();
       }}
     />
-  );
-}
-
-function Ramp({
-  blockchain,
-  name,
-  publicKey,
-}: {
-  blockchain: Blockchain;
-  name: string;
-  publicKey: string;
-}) {
-  const activeWallets = useActiveWallets();
-  const { push } = useNavStack();
-
-  if (blockchain) {
-    return (
-      <RampCard2
-        key={blockchain}
-        blockchain={blockchain}
-        publicKey={publicKey}
-        name={name}
-        onStartRamp={({ publicKey, blockchain }: any) => {
-          push("stripe", { publicKey, blockchain });
-        }}
-      />
-    );
-  }
-
-  return (
-    <div
-      style={{
-        flex: 1,
-      }}
-    >
-      {activeWallets.map(({ blockchain, name, publicKey }) => (
-        <RampCard2
-          key={blockchain}
-          blockchain={blockchain}
-          name={name}
-          publicKey={publicKey}
-          onStartRamp={({ publicKey, blockchain }: any) => {
-            push("stripe", { publicKey, blockchain });
-          }}
-        />
-      ))}
-    </div>
   );
 }

@@ -12,6 +12,7 @@ export const StripeRamp = ({
   publicKey: string;
 }) => {
   const [loading, setLoading] = useState(false);
+  const [clientSecret, setClientSecret] = useState(false);
   const ref = useRef<any>();
   useEffect(() => {
     setLoading(true);
@@ -19,7 +20,7 @@ export const StripeRamp = ({
       .then(async (response) => {
         const json = await response.json();
         setLoading(false);
-        ramp(json.secret);
+        setClientSecret(json.secret);
       })
       .catch((e) => {
         console.error(e);
@@ -27,28 +28,22 @@ export const StripeRamp = ({
       });
   }, [blockchain, publicKey]);
 
-  const ramp = (clientSecret: string) => {
-    // @ts-ignore
-    const stripeOnramp = window.StripeOnramp(
-      "pk_test_51LMFWCJLePnGviG0CZZX0ZxTwa4RUfUHFzuzPJF9BWhY8c7Zj4jPU41Fo7HYVtDOa6oQZPGNn8kuhyNzZKUNTmlM001ni6WCno"
-    );
-    // Get session id from `text` which contains the client secret
-    const words = clientSecret.split("_");
-    const session_id = `${words[0]}_${words[1]}`;
-    console.log(`session_id: ${session_id}`);
-    // Set session_id in dom before proceeding
-    let node = document.createTextNode(session_id);
-    //@ts-ignore
-    ref.current?.appendChild(node);
-    //@ts-ignore
-    const onrampSession = stripeOnramp.createSession({ clientSecret });
-    onrampSession.mount("#onramp-element");
-  };
-
   return (
     <div>
-      {loading && <Loading />}
-      <div ref={ref}></div>
+      {loading && (
+        <div style={{ height: "90vh" }}>
+          {" "}
+          <Loading />{" "}
+        </div>
+      )}
+      <div ref={ref}>
+        {clientSecret && (
+          <iframe
+            style={{ border: "none", width: "100vw", height: "90vh" }}
+            src={`https://doof72pbjabye.cloudfront.net/stripe-onramp.html?clientSecret=${clientSecret}`}
+          />
+        )}
+      </div>
     </div>
   );
 };
