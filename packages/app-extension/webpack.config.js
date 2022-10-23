@@ -199,6 +199,11 @@ const options = {
           to: "injected.js",
           force: true,
         },
+        {
+          from: "src/thirdparty",
+          to: "thirdparty",
+          force: true,
+        },
       ],
     }),
   ],
