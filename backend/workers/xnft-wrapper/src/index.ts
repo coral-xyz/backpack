@@ -6,8 +6,6 @@ const PROD_RENDERER_URL =
 
 const V1_BUNDLES: string[] = [
   "https://ipfs.io/ipfs/bafybeibhd37z7osxbp2fvxcenid6uufsvrpumawxw4ked7h2br4duz3sme",
-  "https://xnfts.s3.us-west-2.amazonaws.com/DFiTps6Xp6hKGE2AWMYveNQ6mqA9TjFa6WJiWG9smHr6/bundle/index.js",
-  "https://xnfts.s3.us-west-2.amazonaws.com/C6rEseVodzAebN11CHLNLZtYZf9E5XtycbBSDPmYWFb/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/4AwaNy62XXNhgEbe3Szk9Tb7eEgDcHG3YbpEzdX8DPj5/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/9Tqzi3gb4jE3D8Ez79HUTjFfS9f9ES31NjXez6yaffd7/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/HqKfgFm7m4TujMwZ1wsRiEG8kMf5Se6mgK4Y1syQYq69/bundle/index.js",
