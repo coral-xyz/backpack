@@ -48,7 +48,6 @@ export const StripeRamp = ({
   return (
     <div>
       {loading && <Loading />}
-      <div id="onramp-element" />
       <div ref={ref}></div>
     </div>
   );

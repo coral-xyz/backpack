@@ -25,7 +25,7 @@ import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";
 import { Swap, SelectToken } from "../../Unlocked/Swap";
-import { RampCard } from "./TokensWidget/Ramp";
+import { RampCard2 } from "./TokensWidget/Ramp";
 import { StripeRamp } from "./StripeRamp";
 
 const rampEnabled = true;
@@ -320,7 +320,7 @@ function Ramp({
 
   if (blockchain) {
     return (
-      <RampCard
+      <RampCard2
         key={blockchain}
         blockchain={blockchain}
         publicKey={publicKey}
@@ -339,7 +339,7 @@ function Ramp({
       }}
     >
       {activeWallets.map(({ blockchain, name, publicKey }) => (
-        <RampCard
+        <RampCard2
           key={blockchain}
           blockchain={blockchain}
           name={name}
