@@ -10,7 +10,6 @@ const V1_BUNDLES: string[] = [
   "https://xnfts.s3.us-west-2.amazonaws.com/9Tqzi3gb4jE3D8Ez79HUTjFfS9f9ES31NjXez6yaffd7/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/HqKfgFm7m4TujMwZ1wsRiEG8kMf5Se6mgK4Y1syQYq69/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/7A3av8PDbqpGRfLzSujr9Dprw4SVgFbMCfJ5DXL4azRP/bundle/index.js",
-  "https://xnfts.s3.us-west-2.amazonaws.com/Hs78vTKzgK53qeRcYr6UFALzKB9SPNRfV79X5FtVgbKq/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/3i8Av28osHPoWZzWRoU29JBmfSJEcFtJhDzBTLhFG1u6/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/4QaPNGJFsdqT5cbURcLcVGPQD8GgCpNM6Bmf2p88ex2f/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/HGVjbFZdHuEK1e8MAXte5hG9NquPSig5RobdLvyXvSXG/bundle/index.js",
