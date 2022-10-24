@@ -23,7 +23,6 @@ import {
   NavStackScreen,
 } from "../common/Layout/NavStack";
 import { DiscordIcon } from "../common/Icon";
-import { StripeRamp } from "../Unlocked/Balances/StripeRamp";
 
 const useStyles = styles((theme) => ({
   listItemRoot: {
