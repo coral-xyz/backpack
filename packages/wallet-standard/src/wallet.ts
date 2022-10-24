@@ -1,5 +1,14 @@
 import type { ProviderSolanaInjection } from '@coral-xyz/provider-core';
+import type {
+    SolanaSignAndSendTransactionFeature,
+    SolanaSignAndSendTransactionMethod,
+    SolanaSignAndSendTransactionOutput,
+    SolanaSignTransactionFeature,
+    SolanaSignTransactionMethod,
+    SolanaSignTransactionOutput,
+} from '@solana/wallet-standard-features';
 import { Connection, PublicKey, VersionedTransaction } from '@solana/web3.js';
+import type { Wallet, WalletAccount } from '@wallet-standard/base';
 import type {
     ConnectFeature,
     ConnectMethod,
@@ -13,15 +22,6 @@ import type {
     SignMessageMethod,
     SignMessageOutput,
 } from '@wallet-standard/features';
-import type {
-    SolanaSignAndSendTransactionFeature,
-    SolanaSignAndSendTransactionMethod,
-    SolanaSignAndSendTransactionOutput,
-    SolanaSignTransactionFeature,
-    SolanaSignTransactionMethod,
-    SolanaSignTransactionOutput,
-} from '@solana/wallet-standard-features';
-import type { Wallet, WalletAccount } from '@wallet-standard/base';
 import bs58 from 'bs58';
 import { BackpackWalletAccount } from './account.js';
 import { getChainForEndpoint, getEndpointForChain } from './endpoint.js';
