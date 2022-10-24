@@ -22,7 +22,6 @@ import {
   UI_RPC_METHOD_PASSWORD_UPDATE,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
-
   // UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
   // UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
   // UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
@@ -62,9 +61,11 @@ async function makeRequest(background, request) {
     console.log(`%csuccess`, `color: green`);
     console.log("typeof res", typeof res);
     console.log(JSON.stringify(res));
+    return res;
   } catch (error) {
     console.log(`%cfailure`, `color: red`);
     console.error(error);
+    return { error: error.message };
   } finally {
     console.groupEnd();
   }
@@ -180,6 +181,7 @@ export async function req_UI_RPC_METHOD_PREVIEW_PUBKEYS(
   });
 }
 
+// used inside settings -> show secret recovery phrase
 export async function req_UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC(
   background,
   { password }: { password: string }
@@ -207,16 +209,16 @@ export async function req_UI_RPC_METHOD_KEYRING_DERIVE_WALLET(
 export async function req_UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE(
   background,
   {
-    newPubkey,
+    publicKey,
     blockchain,
   }: {
-    newPubKey: any;
+    publicKey: any;
     blockchain: Blockchain;
   }
 ) {
   return makeRequest(background, {
     method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-    params: [newPubkey, blockchain],
+    params: [publicKey, blockchain],
   });
 }
 
@@ -267,7 +269,7 @@ export async function req_UI_RPC_METHOD_PASSWORD_UPDATE(
   });
 }
 
-// TODO format of secretKeyHex
+// TODO secretKeyHex = validateSecretKey(blockchain, secretKey, existingPublicKeys)
 // TODO response Promise<PublicKey> maybe?
 export async function req_UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY(
   background,

@@ -123,6 +123,7 @@ export function BackpackHeader({
 }: {
   alphaStyle?: React.CSSProperties;
 }) {
+  console.log("Locked:BackpackHeader");
   const theme = useCustomTheme();
   return (
     <Box
