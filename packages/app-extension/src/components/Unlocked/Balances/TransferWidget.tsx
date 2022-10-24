@@ -17,6 +17,7 @@ import {
   Blockchain,
   SOL_NATIVE_MINT,
   ETH_NATIVE_MINT,
+  BACKPACK_FEATURE_ONRAMP,
 } from "@coral-xyz/common";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
@@ -33,11 +34,9 @@ import React from "react";
 export function TransferWidget({
   blockchain,
   address,
-  rampEnabled,
 }: {
   blockchain?: Blockchain;
   address?: string;
-  rampEnabled: boolean;
 }) {
   const enabledBlockchains = useEnabledBlockchains();
 
@@ -50,16 +49,16 @@ export function TransferWidget({
       style={{
         display: "flex",
         width:
-          rampEnabled && renderSwap
+          BACKPACK_FEATURE_ONRAMP && renderSwap
             ? "262px"
-            : renderSwap || rampEnabled
+            : renderSwap || BACKPACK_FEATURE_ONRAMP
             ? "191px"
             : "120px",
         marginLeft: "auto",
         marginRight: "auto",
       }}
     >
-      {rampEnabled && (
+      {BACKPACK_FEATURE_ONRAMP && (
         <>
           <RampButton blockchain={blockchain} address={address} />
           <div style={{ width: "16px" }} />
