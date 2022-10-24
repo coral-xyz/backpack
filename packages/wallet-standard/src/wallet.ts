@@ -272,8 +272,8 @@ export class BackpackWallet implements Wallet {
                 );
 
                 for (const [i, index] of indexes.entries()) {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     outputs[index] = {
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         signedTransaction: signedTransactions[i]!.serialize(),
                     };
                 }
