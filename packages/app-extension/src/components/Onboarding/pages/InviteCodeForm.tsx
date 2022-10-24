@@ -8,7 +8,7 @@ import { PrimaryButton, SubtextParagraph, TextField } from "../../common";
 import { BackpackHeader } from "../../Locked";
 import { getWaitlistId, setWaitlistId } from "../../common/WaitingRoom";
 
-const useStyles = styles((theme) => ({
+const useStyles = styles(() => ({
   inviteCodeBox: {
     "& .MuiFormControl-root": {
       marginTop: 0,
@@ -49,7 +49,7 @@ export const InviteCodeForm = () => {
             /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/
           )
         ) {
-          throw new Error("Invite Code is not valid");
+          throw new Error("Invite code is not valid");
         }
         const res = await fetch(
           `https://invites.xnfts.dev/check/${inviteCode}`,
@@ -141,7 +141,7 @@ export const InviteCodeForm = () => {
               </SubtextParagraph>
             ) : (
               <SubtextParagraph onClick={typeform.open}>
-                Apply for an Invite Code
+                Apply for an invite code
               </SubtextParagraph>
             )}
           </Box>
