@@ -379,7 +379,7 @@ function Circle({ props }: any) {
 
 function Iframe({ props, style }: any) {
   const [xnftProp, setXnftProp] = useState(false);
-  const [id, _setId] = useState(Math.floor(Math.random() * 1000000) + "");
+  const [id, _setId] = useState(randomString());
   const ref = useRef<any>();
 
   useEffect(() => {
@@ -1060,3 +1060,7 @@ export const MOTION_VARIANTS = {
     opacity: 0,
   },
 };
+
+function randomString() {
+  return Math.floor(Math.random() * 10000000) + "";
+}
