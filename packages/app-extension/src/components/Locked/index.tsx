@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient, useUsername } from "@coral-xyz/recoil";
 import { TextField, PrimaryButton } from "../common";
@@ -134,7 +134,9 @@ export function BackpackHeader({
         position: "relative",
       }}
     >
-      <RedBackpack />
+      <div style={{ display: "flex" }}>
+        <RedBackpack style={{ marginLeft: "auto", marginRight: "auto" }} />
+      </div>
       <Box
         sx={{
           marginTop: "16px",
@@ -142,7 +144,7 @@ export function BackpackHeader({
           flexDirection: "row-reverse",
           justifyContent: "center",
           marginLeft: "200px",
-          marginBottom: "5px",
+          marginBottom: "4px",
           ...alphaStyle,
         }}
       >

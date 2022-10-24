@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
 import { Box, Grid } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import { ActionCard } from "../../common/Layout/ActionCard";
 import { WithNav } from "../../common/Layout/Nav";
 import { BackpackHeader } from "../../Locked";
@@ -20,7 +19,6 @@ export const CreateOrImportWallet = ({
   navProps: object;
 }) => {
   const theme = useCustomTheme();
-  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (

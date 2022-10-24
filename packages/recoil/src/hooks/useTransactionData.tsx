@@ -194,9 +194,8 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
   ]);
 
   const networkFeeUsd = (
-    (estimatedTxFee.toNumber() * ethPrice.usd) /
-    1e18
-  ).toFixed(2);
+    Number(ethers.utils.formatEther(estimatedTxFee)) * ethPrice.usd
+  )?.toFixed(2);
 
   return {
     loading,

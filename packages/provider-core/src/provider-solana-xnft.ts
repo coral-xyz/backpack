@@ -48,19 +48,8 @@ export class ProviderSolanaXnftInjection
   #publicKey?: PublicKey;
   #connection: Connection;
 
-  #childIframes: HTMLIFrameElement[];
-  #cachedNotifications: { [notification: string]: Event };
-
-  constructor(
-    requestManager: RequestManager,
-    additionalProperties: { [key: string]: PrivateEventEmitter } = {}
-  ) {
+  constructor(requestManager: RequestManager) {
     super();
-    const additionalPropertyConfig = {};
-    Object.keys(additionalProperties).forEach((prop) => {
-      additionalPropertyConfig[prop] = { value: additionalProperties[prop] };
-    });
-    Object.defineProperties(this, additionalPropertyConfig);
     if (new.target === ProviderSolanaXnftInjection) {
       Object.freeze(this);
     }
@@ -69,8 +58,6 @@ export class ProviderSolanaXnftInjection
       CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
       CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE
     );
-    this.#childIframes = [];
-    this.#cachedNotifications = {};
     this.#setupChannels();
   }
 
@@ -172,51 +159,6 @@ export class ProviderSolanaXnftInjection
     );
   }
 
-  public async getStorage<T = any>(key: string): Promise<T> {
-    return await this.#requestManager.request({
-      method: PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
-      params: [key],
-    });
-  }
-
-  public async setStorage<T = any>(key: string, val: T): Promise<void> {
-    await this.#requestManager.request({
-      method: PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
-      params: [key, val],
-    });
-  }
-
-  public async openWindow(url: string) {
-    await this.#requestManager.request({
-      method: PLUGIN_RPC_METHOD_WINDOW_OPEN,
-      params: [url],
-    });
-  }
-
-  public async addIframe(iframeEl) {
-    // Send across mount and connect notification to child iframes
-    if (this.#cachedNotifications[PLUGIN_NOTIFICATION_MOUNT]) {
-      iframeEl.contentWindow?.postMessage(
-        this.#cachedNotifications[PLUGIN_NOTIFICATION_MOUNT],
-        "*"
-      );
-    }
-
-    if (this.#cachedNotifications[PLUGIN_NOTIFICATION_CONNECT]) {
-      iframeEl.contentWindow?.postMessage(
-        this.#cachedNotifications[PLUGIN_NOTIFICATION_CONNECT],
-        "*"
-      );
-    }
-
-    this.#childIframes.push(iframeEl);
-  }
-
-  public async removeIframe(iframeEl) {
-    // @ts-ignore
-    this.#childIframes = this.#childIframes.filter((x) => x !== iframeEl);
-  }
-
   #setupChannels() {
     window.addEventListener("message", this.#handleNotifications.bind(this));
   }
@@ -227,15 +169,9 @@ export class ProviderSolanaXnftInjection
   async #handleNotifications(event: Event) {
     if (event.data.type !== CHANNEL_PLUGIN_NOTIFICATION) return;
 
-    // Send RPC message to all child iframes
-    this.#childIframes.forEach((iframe) => {
-      iframe.contentWindow?.postMessage(event, "*");
-    });
-
     logger.debug("handle notification", event);
 
     const { name } = event.data.detail;
-    this.#cachedNotifications[name] = event.data;
     switch (name) {
       case PLUGIN_NOTIFICATION_CONNECT:
         this.#handleConnect(event);

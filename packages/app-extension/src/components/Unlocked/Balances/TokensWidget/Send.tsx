@@ -259,7 +259,7 @@ export function Send({
               isError={isErrorAddress}
               inputProps={{
                 name: "to",
-                spellCheck: "false"
+                spellCheck: "false",
               }}
             />
           </div>
@@ -620,7 +620,7 @@ export function useIsValidAddress(
             setAddressError(true);
             return;
           }
-        } 
+        }
 
         if (!pubkey) {
           // Solana address validation

@@ -166,8 +166,8 @@ export class ProviderSolanaInjection
     });
   }
 
-  async sendAndConfirm(
-    tx: Transaction,
+  async sendAndConfirm<T extends Transaction | VersionedTransaction>(
+    tx: T,
     signers?: Signer[],
     options?: ConfirmOptions,
     connection?: Connection,
