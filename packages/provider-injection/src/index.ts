@@ -4,7 +4,7 @@ import {
   ProviderRootXnftInjection,
   ProviderSolanaInjection,
   ProviderSolanaXnftInjection,
-  RequestManager,
+  ChainedRequestManager,
 } from "@coral-xyz/provider-core";
 import {
   getLogger,
@@ -48,10 +48,9 @@ function initProvider() {
         //
         // XNFT Providers
         //
-        const requestManager = new RequestManager(
+        const requestManager = new ChainedRequestManager(
           CHANNEL_PLUGIN_RPC_REQUEST,
-          CHANNEL_PLUGIN_RPC_RESPONSE,
-          true
+          CHANNEL_PLUGIN_RPC_RESPONSE
         );
         const xnft = new ProviderRootXnftInjection(requestManager, {
           ethereum: new ProviderEthereumXnftInjection(requestManager),

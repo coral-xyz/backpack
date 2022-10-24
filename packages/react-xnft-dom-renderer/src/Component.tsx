@@ -379,6 +379,7 @@ function Circle({ props }: any) {
 
 function Iframe({ props, style }: any) {
   const [xnftProp, setXnftProp] = useState(false);
+  const [id, _setId] = useState(randomString());
   const ref = useRef<any>();
 
   useEffect(() => {
@@ -389,14 +390,15 @@ function Iframe({ props, style }: any) {
       return () => {};
     }
     // @ts-ignore
-    window.xnft.addIframe(ref.current);
+    window.xnft.addIframe(ref.current, props.src, id);
     return () => {
       // @ts-ignore
-      window.xnft.removeIframe(ref.current);
+      window.xnft.removeIframe(id);
     };
   }, [props.src, ref, xnftProp]);
   return isValidSecureUrl(props.src) ? (
     <iframe
+      name={id}
       ref={ref}
       sandbox="allow-same-origin allow-scripts"
       src={props.src}
@@ -1058,3 +1060,7 @@ export const MOTION_VARIANTS = {
     opacity: 0,
   },
 };
+
+function randomString() {
+  return Math.floor(Math.random() * 10000000) + "";
+}
