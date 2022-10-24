@@ -4,41 +4,45 @@ import {
   BlockchainKeyringInit,
   DerivationPath,
   KeyringType,
+  BACKPACK_FEATURE_USERNAMES,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { KeyringTypeSelector } from "../KeyringTypeSelector";
-import { BlockchainSelector } from "../BlockchainSelector";
-import { OnboardHardware } from "../OnboardHardware";
-import { MnemonicInput } from "../../../common/Account/MnemonicInput";
-import { CreatePassword } from "../../../common/Account/CreatePassword";
+import { encode } from "bs58";
+import { KeyringTypeSelector } from "./KeyringTypeSelector";
+import { BlockchainSelector } from "./BlockchainSelector";
+import { OnboardHardware } from "./OnboardHardware";
+import { CreateOrImportWallet } from "./CreateOrImportWallet";
+import { Finish } from "./Finish";
+import { InviteCodeForm } from "./InviteCodeForm";
+import { UsernameForm } from "./UsernameForm";
+import { MnemonicInput } from "../../common/Account/MnemonicInput";
+import { CreatePassword } from "../../common/Account/CreatePassword";
 import {
   ImportAccounts,
   SelectedAccount,
-} from "../../../common/Account/ImportAccounts";
-import { WithContaineredDrawer } from "../../../common/Layout/Drawer";
-import { NavBackButton, WithNav } from "../../../common/Layout/Nav";
-import { Finish } from "../Finish";
-import { useSteps } from "../../../../hooks/useSteps";
+} from "../../common/Account/ImportAccounts";
+import { WithContaineredDrawer } from "../../common/Layout/Drawer";
+import { NavBackButton, WithNav } from "../../common/Layout/Nav";
+import { useSteps } from "../../../hooks/useSteps";
 
-export const CreateImportAccount = ({
-  action,
-  inviteCode,
-  username,
+export const OnboardAccount = ({
+  onWaiting,
+  onRecover,
   containerRef,
-  onClose,
   navProps,
 }: {
-  action: "create" | "import";
-  inviteCode: string;
-  username: string;
+  onWaiting: () => void;
+  onRecover: () => void;
   containerRef: any;
-  onClose: () => void;
-  navProps: object;
+  navProps: any;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
   const background = useBackgroundClient();
+  const [inviteCode, setInviteCode] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
+  const [action, setAction] = useState<"create" | "import">();
   const [keyringType, setKeyringType] = useState<KeyringType | null>(null);
   const [blockchainKeyrings, setBlockchainKeyrings] = useState<
     Array<BlockchainKeyringInit>
@@ -92,7 +96,9 @@ export const CreateImportAccount = ({
       method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
       params: [
         blockchain,
-        "123123",
+        // Sign the invite code, or an empty string if no invite code
+        // TODO setup a nonce based system
+        encode(Buffer.from(inviteCode ? inviteCode : "", "utf-8")),
         derivationPath,
         accountIndex,
         publicKey!,
@@ -119,8 +125,33 @@ export const CreateImportAccount = ({
   };
 
   const steps = [
+    ...(BACKPACK_FEATURE_USERNAMES
+      ? [
+          <InviteCodeForm
+            onClickWaiting={onWaiting}
+            onClickRecover={onRecover}
+            onSubmit={(inviteCode) => {
+              setInviteCode(inviteCode);
+              nextStep();
+            }}
+          />,
+          <UsernameForm
+            inviteCode={inviteCode!}
+            onNext={(username) => {
+              setUsername(username);
+              nextStep();
+            }}
+          />,
+        ]
+      : []),
+    <CreateOrImportWallet
+      onNext={(action) => {
+        setAction(action);
+        nextStep();
+      }}
+    />,
     <KeyringTypeSelector
-      action={action}
+      action={action!}
       onNext={(keyringType: KeyringType) => {
         setKeyringType(keyringType);
         nextStep();
@@ -161,9 +192,11 @@ export const CreateImportAccount = ({
   return (
     <WithNav
       navButtonLeft={
-        <NavBackButton onClick={step === 0 ? onClose : prevStep} />
+        step > 0 ? <NavBackButton onClick={prevStep} /> : undefined
       }
       {...navProps}
+      // Only display the onboarding menu on the first step
+      navButtonRight={step === 0 ? navProps.navButtonRight : undefined}
     >
       {steps[step]}
 
@@ -180,7 +213,7 @@ export const CreateImportAccount = ({
         {keyringType === "ledger" ? (
           <OnboardHardware
             blockchain={blockchain!}
-            action={action}
+            action={action!}
             onComplete={(result) => {
               addBlockchainKeyring(result);
               setOpenDrawer(false);

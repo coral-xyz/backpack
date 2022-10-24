@@ -6,7 +6,6 @@ import {
   SetStateAction,
 } from "react";
 import {
-  BACKPACK_FEATURE_USERNAMES,
   BACKPACK_LINK,
   DISCORD_INVITE_LINK,
   EXTENSION_HEIGHT,
@@ -21,20 +20,27 @@ import { WithContaineredDrawer } from "../common/Layout/Drawer";
 import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import { List, ListItem } from "../common/List";
 import WaitingRoom from "../common/WaitingRoom";
-import { CreateOrImportWallet } from "./pages/CreateOrImportWallet";
-import { InviteCodeForm } from "./pages/InviteCodeForm";
-import { CreateImportAccount } from "./pages/CreateImportAccount";
+import { OnboardAccount } from "./pages/OnboardAccount";
+import { RecoverAccount } from "./pages/RecoverAccount";
 
 export const Onboarding = () => {
   const containerRef = useRef();
-  const [action, setAction] = useState<
-    null | "waiting" | "recover" | "create" | "import"
-  >(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [action, setAction] = useState<"onboard" | "recover" | "waiting">(
+    "onboard"
+  );
 
   const defaultProps = {
     containerRef,
     // Props for the WithNav component
     navProps: {
+      navButtonRight: (
+        <OnboardingMenu
+          containerRef={containerRef}
+          menuOpen={menuOpen}
+          setMenuOpen={setMenuOpen}
+        />
+      ),
       navbarStyle: {
         borderRadius: "12px",
       },
@@ -46,36 +52,23 @@ export const Onboarding = () => {
     },
   };
 
-  let component;
-  if (action === null) {
-    component = BACKPACK_FEATURE_USERNAMES ? (
-      <InviteCodeForm />
-    ) : (
-      <CreateOrImportWallet
-        onClickCreate={() => setAction("create")}
-        onClickImport={() => setAction("import")}
-        {...defaultProps}
-      />
-    );
-  } else if (action === "waiting") {
-    component = <WaitingRoom />;
-  } else if (action === "recover") {
-    component = <></>;
-  } else {
-    // Create or import
-    component = (
-      <CreateImportAccount
-        inviteCode="123"
-        username="steve"
-        action={action}
-        onClose={() => setAction(null)}
-        {...defaultProps}
-      />
-    );
-  }
-
   return (
-    <OptionsContainer innerRef={containerRef}>{component}</OptionsContainer>
+    <OptionsContainer innerRef={containerRef}>
+      {action === "onboard" && (
+        <OnboardAccount
+          onRecover={() => setAction("recover")}
+          onWaiting={() => setAction("waiting")}
+          {...defaultProps}
+        />
+      )}
+      {action === "waiting" && <WaitingRoom />}
+      {action === "recover" && (
+        <RecoverAccount
+          onClose={() => setAction("onboard")}
+          {...defaultProps}
+        />
+      )}
+    </OptionsContainer>
   );
 };
 

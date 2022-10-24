@@ -1,62 +1,45 @@
-import { useState } from "react";
 import { Box } from "@mui/material";
-import { PrimaryButton, LinkButton } from "../../common";
-import { WithNav } from "../../common/Layout/Nav";
+import { PrimaryButton, SubtextParagraph } from "../../common";
 import { BackpackHeader } from "../../Locked";
-import { OnboardingMenu } from "../";
 
 export const CreateOrImportWallet = ({
-  onClickCreate,
-  onClickImport,
-  containerRef,
-  navProps,
+  onNext,
 }: {
-  onClickCreate: () => void;
-  onClickImport: () => void;
-  containerRef: any;
-  navProps: object;
+  onNext: (action: "create" | "import") => void;
 }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
-
   return (
-    <WithNav
-      navButtonRight={
-        <OnboardingMenu
-          containerRef={containerRef}
-          menuOpen={menuOpen}
-          setMenuOpen={setMenuOpen}
-        />
-      }
-      {...navProps}
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        flexDirection: "column",
+        height: "100%",
+      }}
     >
-      <div
+      <Box style={{ flex: 1, textAlign: "center", padding: "0 16px" }}>
+        <BackpackHeader
+          alphaStyle={{
+            marginRight: "42px",
+          }}
+        />
+      </Box>
+      <Box
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          flexDirection: "column",
-          height: "100%",
+          padding: "0 16px 16px",
+          textAlign: "center",
+          cursor: "pointer",
         }}
       >
-        <Box style={{ flex: 1, textAlign: "center", padding: "0 16px" }}>
-          <BackpackHeader
-            alphaStyle={{
-              marginRight: "42px",
-            }}
+        <Box sx={{ mb: "16px" }}>
+          <PrimaryButton
+            label="Create a new wallet"
+            onClick={() => onNext("create")}
           />
         </Box>
-        <Box style={{ padding: "0 16px 16px" }}>
-          <Box sx={{ mb: "16px" }}>
-            <PrimaryButton
-              label="Create a new wallet"
-              onClick={onClickCreate}
-            />
-          </Box>
-          <LinkButton
-            label="Import an existing wallet"
-            onClick={onClickImport}
-          />
-        </Box>
-      </div>
-    </WithNav>
+        <SubtextParagraph onClick={() => onNext("import")}>
+          I already have an account
+        </SubtextParagraph>
+      </Box>
+    </div>
   );
 };

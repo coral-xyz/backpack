@@ -316,7 +316,7 @@ export function ImportAccounts({
             marginTop: "24px",
           }}
         >
-          <Header text="Import accounts" />
+          <Header text={`Import account ${allowMultiple ? "s" : ""}`} />
           <SubtextParagraph>
             Select which account{allowMultiple ? "s" : ""} you'd like to import.
           </SubtextParagraph>

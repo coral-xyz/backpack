@@ -3,7 +3,6 @@ import { ArrowForward } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
 import { createPopup } from "@typeform/embed";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
 import { PrimaryButton, SubtextParagraph, TextField } from "../../common";
 import { BackpackHeader } from "../../Locked";
 import { getWaitlistId, setWaitlistId } from "../../common/WaitingRoom";
@@ -16,13 +15,20 @@ const useStyles = styles(() => ({
   },
 }));
 
-export const InviteCodeForm = () => {
+export const InviteCodeForm = ({
+  onClickRecover,
+  onClickWaiting,
+  onSubmit,
+}: {
+  onClickRecover: () => void;
+  onClickWaiting: () => void;
+  onSubmit: (inviteCode: string) => void;
+}) => {
   const [error, setError] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [waitlistResponseId, setWaitlistResponseId] = useState(
     getWaitlistId() || ""
   );
-  const navigate = useNavigate();
   const theme = useCustomTheme();
   const classes = useStyles();
 
@@ -62,7 +68,7 @@ export const InviteCodeForm = () => {
         );
         const json = await res.json();
         if (!res.ok) throw new Error(json.message);
-        navigate(inviteCode);
+        onSubmit(inviteCode);
       } catch (err: any) {
         setError(err.message);
       }
@@ -122,7 +128,7 @@ export const InviteCodeForm = () => {
           <Box style={{ marginTop: 24 }}>
             {waitlistResponseId ? (
               <SubtextParagraph
-                onClick={() => navigate("/waitingRoom")}
+                onClick={onClickWaiting}
                 style={{
                   textDecoration: "none",
                   display: "flex",
@@ -151,7 +157,7 @@ export const InviteCodeForm = () => {
               marginTop: 24,
             }}
           >
-            <SubtextParagraph onClick={() => navigate("/recover")}>
+            <SubtextParagraph onClick={onClickRecover}>
               I already have an account
             </SubtextParagraph>
           </Box>

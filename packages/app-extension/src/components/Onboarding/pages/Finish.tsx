@@ -1,8 +1,6 @@
 import {
   BrowserRuntimeExtension,
   KeyringInit,
-  BlockchainKeyringInit,
-  BACKPACK_FEATURE_USERNAMES,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
@@ -17,15 +15,13 @@ export const Finish = ({
   password,
   keyringInit,
 }: {
-  inviteCode: string;
-  username: string;
+  inviteCode: string | null;
+  username: string | null;
   password: string;
   keyringInit: KeyringInit;
 }) => {
   const [isValid, setIsValid] = useState(false);
   const background = useBackgroundClient();
-
-  const isRecovery = false;
 
   useEffect(() => {
     (async () => {
@@ -38,12 +34,16 @@ export const Finish = ({
   // Create the user in the backend
   //
   async function createUser() {
-    if (BACKPACK_FEATURE_USERNAMES && !isRecovery) {
+    if (inviteCode) {
       const body = JSON.stringify({
         username,
         inviteCode,
         waitlistId: getWaitlistId?.(),
-        blockchainKeyrings: keyringInit.blockchainKeyrings,
+        blockchainPublicKeys: keyringInit.blockchainKeyrings.map((b) => ({
+          blockchain: b.blockchain,
+          publicKey: b.publicKey,
+          signature: b.signature,
+        })),
       });
 
       try {
@@ -52,7 +52,6 @@ export const Finish = ({
           body,
           headers: {
             "Content-Type": "application/json",
-            "x-backpack-signature": "123",
           },
         });
         if (!res.ok) {

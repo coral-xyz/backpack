@@ -5,7 +5,6 @@ import {
   Header,
   HeaderIcon,
   PrimaryButton,
-  LinkButton,
   SubtextParagraph,
 } from "../../common";
 import { HardwareWalletIcon } from "../../common/Icon";
@@ -46,17 +45,22 @@ export const KeyringTypeSelector = ({
           </>
         )}
       </Box>
-      <Box style={{ padding: "0 16px 16px" }}>
+      <Box
+        style={{
+          padding: "0 16px 16px",
+          textAlign: "center",
+          cursor: "pointer",
+        }}
+      >
         <Box style={{ marginBottom: "16px" }}>
           <PrimaryButton
             label={`${toTitleCase(action)} from recovery phrase`}
             onClick={() => onNext("mnemonic")}
           />
         </Box>
-        <LinkButton
-          label={`I have a hardware wallet`}
-          onClick={() => onNext("ledger")}
-        />
+        <SubtextParagraph onClick={() => onNext("ledger")}>
+          I already have an account
+        </SubtextParagraph>
       </Box>
     </div>
   );
