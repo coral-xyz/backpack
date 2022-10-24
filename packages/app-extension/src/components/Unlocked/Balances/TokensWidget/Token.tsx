@@ -10,7 +10,7 @@ import {
   useLoader,
 } from "@coral-xyz/recoil";
 import { RecentActivityList } from "../RecentActivity";
-import { WithDrawer, CloseButton } from "../../../common/Layout/Drawer";
+import { CloseButton, WithDrawer } from "../../../common/Layout/Drawer";
 import {
   NavStackEphemeral,
   NavStackScreen,
@@ -20,7 +20,6 @@ import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 
 const useStyles = styles((theme) => ({
   tokenHeaderButtonContainer: {
-    width: "208px",
     display: "flex",
     justifyContent: "space-between",
     marginLeft: "auto",
@@ -114,7 +113,14 @@ function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
         </Typography>
       </div>
       <div className={classes.tokenHeaderButtonContainer}>
-        <TransferWidget blockchain={blockchain} address={address} />
+        <TransferWidget
+          rampEnabled={
+            (blockchain === Blockchain.SOLANA && token.ticker === "SOL") ||
+            (blockchain === Blockchain.ETHEREUM && token.ticker === "ETH")
+          }
+          blockchain={blockchain}
+          address={address}
+        />
       </div>
     </div>
   );
