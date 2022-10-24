@@ -13,7 +13,35 @@ import { sign } from "tweetnacl";
 import { z, ZodError } from "zod";
 import { Chain } from "./zeus";
 
-// shared user object that is extended for each blockchain
+const CreateEthereumKeyring = z.object({
+  publicKey: z.string().refine((str) => {
+    try {
+      ethers.utils.getAddress(str);
+      return true;
+    } catch (err) {}
+    return false;
+  }, "must be a valid Ethereum public key"),
+  blockchain: z.literal("ethereum"),
+  signature: z.string(),
+});
+
+const CreateSolanaKeyring = z.object({
+  publicKey: z.string().refine((str) => {
+    try {
+      new PublicKey(str);
+      return true;
+    } catch (err) {}
+    return false;
+  }, "must be a valid Solana public key"),
+  blockchain: z.literal("solana"),
+  signature: z.string(),
+});
+
+const CreateBlockchainPublicKey = z.discriminatedUnion("blockchain", [
+  CreateEthereumKeyring,
+  CreateSolanaKeyring,
+]);
+
 const BaseCreateUser = z.object({
   username: z
     .string()
@@ -28,34 +56,8 @@ const BaseCreateUser = z.object({
       "invalid format"
     ),
   waitlistId: z.optional(z.nullable(z.string())),
+  blockchainPublicKeys: CreateBlockchainPublicKey.array(),
 });
-
-const CreateEthereumUser = BaseCreateUser.extend({
-  publicKey: z.string().refine((str) => {
-    try {
-      ethers.utils.getAddress(str);
-      return true;
-    } catch (err) {}
-    return false;
-  }, "must be a valid Ethereum public key"),
-  blockchain: z.literal("ethereum"),
-});
-
-const CreateSolanaUser = BaseCreateUser.extend({
-  publicKey: z.string().refine((str) => {
-    try {
-      new PublicKey(str);
-      return true;
-    } catch (err) {}
-    return false;
-  }, "must be a valid Solana public key"),
-  blockchain: z.literal("solana"),
-});
-
-const CreateUser = z.discriminatedUnion("blockchain", [
-  CreateEthereumUser,
-  CreateSolanaUser,
-]);
 
 // ----- routing -----
 
@@ -168,29 +170,29 @@ app.get("/users/:username", async (c) => {
 app.post("/users", async (c) => {
   const body = await c.req.json();
 
-  const variables = CreateUser.parse({
-    ...body,
-    // set a default blockchain value for legacy clients (<= 0.2.0)
-    blockchain: body.blockchain || "solana",
-  });
+  const variables = BaseCreateUser.parse(body);
 
-  let isValidSignature = false;
-  if (variables.blockchain === "solana") {
-    isValidSignature = sign.detached.verify(
-      Buffer.from(JSON.stringify(body), "utf8"),
-      decode(c.req.header("x-backpack-signature")),
-      decode(variables.publicKey)
-    );
-  } else if (variables.blockchain === "ethereum") {
-    isValidSignature =
-      ethers.utils.verifyMessage(
-        Buffer.from(JSON.stringify(body), "utf8"),
-        c.req.header("x-backpack-signature")
-      ) === variables.publicKey;
-  }
-
-  if (!isValidSignature) {
-    throw new Error("Invalid signature");
+  for (const blockchainPublicKey of variables.blockchainPublicKeys) {
+    if (blockchainPublicKey.blockchain === "solana") {
+      if (
+        !sign.detached.verify(
+          Buffer.from(variables.inviteCode, "utf8"),
+          decode(blockchainPublicKey.signature),
+          decode(blockchainPublicKey.publicKey)
+        )
+      ) {
+        throw new Error("Invalid Solana signature");
+      }
+    } else if (blockchainPublicKey.blockchain === "ethereum") {
+      if (
+        ethers.utils.verifyMessage(
+          Buffer.from(variables.inviteCode, "utf8"),
+          blockchainPublicKey.signature
+        ) !== blockchainPublicKey.publicKey
+      ) {
+        throw new Error("Invalid Ethereum signature");
+      }
+    }
   }
 
   const chain = Chain(c.env.HASURA_URL, {
@@ -207,12 +209,10 @@ app.post("/users", async (c) => {
           invitation_id: variables.inviteCode,
           waitlist_id: variables.waitlistId,
           publickeys: {
-            data: [
-              {
-                blockchain: variables.blockchain,
-                publickey: variables.publicKey,
-              },
-            ],
+            data: variables.blockchainPublicKeys.map((b: any) => ({
+              blockchain: b.blockchain,
+              publickey: b.publicKey,
+            })),
           },
         },
       },
