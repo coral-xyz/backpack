@@ -65,6 +65,8 @@ export const Onboarding = () => {
     // Create or import
     component = (
       <CreateImportAccount
+        inviteCode="123"
+        username="steve"
         action={action}
         onClose={() => setAction(null)}
         {...defaultProps}

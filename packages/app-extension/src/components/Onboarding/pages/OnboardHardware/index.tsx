@@ -1,6 +1,10 @@
 import { useState } from "react";
 import Transport from "@ledgerhq/hw-transport";
-import { Blockchain, DerivationPath } from "@coral-xyz/common";
+import {
+  Blockchain,
+  BlockchainKeyringInit,
+  DerivationPath,
+} from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ConnectHardwareWelcome } from "../../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
 import { ConnectHardwareSearching } from "../../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
@@ -11,7 +15,6 @@ import { WithNav, NavBackButton } from "../../../common/Layout/Nav";
 import { CloseButton } from "../../../common/Layout/Drawer";
 import { SignOnboardHardware } from "./SignOnboardHardware";
 import { useSteps } from "../../../../hooks/useSteps";
-import { BlockchainKeyringInit } from "../Finish";
 
 export function OnboardHardware({
   blockchain,

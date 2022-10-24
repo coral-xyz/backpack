@@ -1,15 +1,15 @@
 import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
+import { KeyringType, toTitleCase } from "@coral-xyz/common";
 import { Box, Grid } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { toTitleCase } from "@coral-xyz/common";
 import { ActionCard } from "../../common/Layout/ActionCard";
 
-export const WalletType = ({
+export const KeyringTypeSelector = ({
   action,
   onNext,
 }: {
   action: "create" | "import";
-  onNext: (walletType: string) => void;
+  onNext: (keyringType: KeyringType) => void;
 }) => {
   const theme = useCustomTheme();
 

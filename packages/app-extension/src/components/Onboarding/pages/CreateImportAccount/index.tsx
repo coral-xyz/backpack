@@ -1,12 +1,14 @@
 import { useState } from "react";
 import {
   Blockchain,
+  BlockchainKeyringInit,
   DerivationPath,
+  KeyringType,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { WalletType } from "../WalletType";
+import { KeyringTypeSelector } from "../KeyringTypeSelector";
 import { BlockchainSelector } from "../BlockchainSelector";
 import { OnboardHardware } from "../OnboardHardware";
 import { MnemonicInput } from "../../../common/Account/MnemonicInput";
@@ -17,10 +19,8 @@ import {
 } from "../../../common/Account/ImportAccounts";
 import { WithContaineredDrawer } from "../../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../../common/Layout/Nav";
-import { Finish, BlockchainKeyringInit } from "../Finish";
+import { Finish } from "../Finish";
 import { useSteps } from "../../../../hooks/useSteps";
-
-export type WalletType = "mnemonic" | "ledger";
 
 export const CreateImportAccount = ({
   action,
@@ -39,7 +39,7 @@ export const CreateImportAccount = ({
 }) => {
   const { step, nextStep, prevStep } = useSteps();
   const background = useBackgroundClient();
-  const [walletType, setWalletType] = useState<WalletType | null>(null);
+  const [keyringType, setKeyringType] = useState<KeyringType | null>(null);
   const [blockchainKeyrings, setBlockchainKeyrings] = useState<
     Array<BlockchainKeyringInit>
   >([]);
@@ -59,7 +59,7 @@ export const CreateImportAccount = ({
       );
     } else {
       // Blockchain is being selected
-      if (walletType === "ledger" || action === "import") {
+      if (keyringType === "ledger" || action === "import") {
         // If wallet is a ledger, step through the ledger onboarding flow
         // OR if action is an import then open the drawer with the import accounts
         // component
@@ -119,15 +119,15 @@ export const CreateImportAccount = ({
   };
 
   const steps = [
-    <WalletType
+    <KeyringTypeSelector
       action={action}
-      onNext={(walletType) => {
-        setWalletType(walletType as WalletType);
+      onNext={(keyringType: KeyringType) => {
+        setKeyringType(keyringType);
         nextStep();
       }}
     />,
     // Show the seed phrase if we are creating based on a mnemonic
-    ...(walletType === "mnemonic"
+    ...(keyringType === "mnemonic"
       ? [
           <MnemonicInput
             readOnly={action === "create"}
@@ -179,7 +179,7 @@ export const CreateImportAccount = ({
           borderTopRightRadius: "12px",
         }}
       >
-        {walletType === "ledger" ? (
+        {keyringType === "ledger" ? (
           <OnboardHardware
             blockchain={blockchain!}
             action={action}

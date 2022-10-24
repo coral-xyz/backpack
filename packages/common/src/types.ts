@@ -1,3 +1,5 @@
+import type { DerivationPath } from "./crypto";
+
 export type Context<Backend> = {
   sender: any;
   backend: Backend;
@@ -70,3 +72,17 @@ export interface XnftMetadata {
 }
 
 export type KeyringType = "mnemonic" | "ledger";
+
+export type KeyringInit = {
+  // No mnemonic means this is a hardware wallet keyring
+  mnemonic?: string;
+  blockchainKeyrings: Array<BlockchainKeyringInit>;
+};
+
+export type BlockchainKeyringInit = {
+  blockchain: Blockchain;
+  derivationPath: DerivationPath;
+  accountIndex: number;
+  publicKey: string;
+  signature: string;
+};

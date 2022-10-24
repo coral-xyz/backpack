@@ -1,7 +1,7 @@
 import {
-  Blockchain,
   BrowserRuntimeExtension,
-  DerivationPath,
+  KeyringInit,
+  BlockchainKeyringInit,
   BACKPACK_FEATURE_USERNAMES,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
 } from "@coral-xyz/common";
@@ -10,20 +10,6 @@ import { useEffect, useState } from "react";
 import { Loading } from "../../common";
 import { SetupComplete } from "../../common/Account/SetupComplete";
 import { getWaitlistId } from "../../common/WaitingRoom";
-
-export type KeyringInit = {
-  // No mnemonic means this is a hardware wallet keyring
-  mnemonic?: string;
-  blockchainKeyrings: Array<BlockchainKeyringInit>;
-};
-
-export type BlockchainKeyringInit = {
-  blockchain: Blockchain;
-  derivationPath: DerivationPath;
-  accountIndex: number;
-  publicKey: string;
-  signature: string;
-};
 
 export const Finish = ({
   inviteCode,
@@ -89,6 +75,7 @@ export const Finish = ({
       });
       setIsValid(true);
     } catch (err) {
+      console.log("account setup error", err);
       if (
         confirm("There was an issue setting up your account. Please try again.")
       ) {

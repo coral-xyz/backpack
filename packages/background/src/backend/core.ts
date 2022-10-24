@@ -8,7 +8,6 @@ import type {
 import { PublicKey } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
-import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
 import {
   BACKEND_EVENT,
   Blockchain,
@@ -39,6 +38,11 @@ import {
   SolanaCluster,
   SolanaExplorer,
   deserializeTransaction,
+} from "@coral-xyz/common";
+import type {
+  KeyringInit,
+  DerivationPath,
+  EventEmitter,
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
 import * as store from "./store";
@@ -435,21 +439,11 @@ export class Backend {
 
   // Creates a brand new keyring store. Should be run once on initializtion.
   async keyringStoreCreate(
-    blockchain: Blockchain,
-    mnemonic: string,
-    derivationPath: DerivationPath,
+    username: string,
     password: string,
-    accountIndices: Array<number>,
-    username: string
+    keyringInit: KeyringInit
   ): Promise<string> {
-    await this.keyringStore.init(
-      blockchain,
-      mnemonic,
-      derivationPath,
-      password,
-      accountIndices,
-      username
-    );
+    await this.keyringStore.init(username, password, keyringInit);
 
     // Notify all listeners.
     this.events.emit(BACKEND_EVENT, {
@@ -814,26 +808,31 @@ export class Backend {
   }
 
   async enabledBlockchainsAdd(blockchain: Blockchain) {
+    // TODO update to handle hardware wallets here
     const data = await store.getWalletData();
     if (data.enabledBlockchains.includes(blockchain)) {
       throw new Error("blockchain already enabled");
     }
+
     const enabledBlockchains = [...data.enabledBlockchains, blockchain];
     await store.setWalletData({
       ...data,
       enabledBlockchains,
     });
+
     let keyring: BlockchainKeyring;
     try {
       keyring = this.keyringStore.keyringForBlockchain(blockchain);
     } catch {
       keyring = await this.keyringStore.initBlockchainKeyring(
+        blockchain,
         "bip44",
-        [0],
-        blockchain
+        0
       );
     }
+
     const activeWallet = keyring.getActiveWallet();
+
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_BLOCKCHAIN_ENABLED,
       data: {
