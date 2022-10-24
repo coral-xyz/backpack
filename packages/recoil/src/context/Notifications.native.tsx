@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
-import { useNavigate } from "react-router-dom";
 import {
   getLogger,
   ChannelAppUi,
@@ -42,8 +41,8 @@ import { allPlugins } from "../hooks";
 import { WalletPublicKeys } from "../types";
 
 const logger = getLogger("notifications-provider");
-console.log("r432:WEB");
-logger.debug("r432:WEB");
+console.log("r432:NATIVE");
+logger.debug("r432:NATIVE");
 
 //
 // The Notifications provider is used to subscribe and handle notifications
@@ -72,9 +71,6 @@ export function NotificationsProvider(props: any) {
   const setEthereumChainId = useSetRecoilState(atoms.ethereumChainId);
   const setEthereumFeeData = useSetRecoilState(atoms.ethereumFeeData);
   const updateEthereumBalances = useUpdateEthereumBalances();
-  const navigate = useNavigate();
-  console.log("NotificationsProvider:navigate", navigate);
-  logger.debug("NotificationsProvider:navigate", navigate);
 
   useEffect(() => {
     ////////////////////////////////////////////////////////////////////////////
@@ -314,7 +310,8 @@ export function NotificationsProvider(props: any) {
         "NotificationsProvider:handleNavigationUrlDidChange(notif)",
         notif
       );
-      navigate(notif.data.url);
+      console.log("TODO MAYBE ???");
+      // navigate(notif.data.url);
     };
 
     const handleAutoLockSecsUpdated = (notif: Notification) => {

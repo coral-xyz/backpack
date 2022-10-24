@@ -53,7 +53,7 @@ function RpcTester() {
 
   useEffect(() => {
     async function callStuff() {
-      debugger;
+      // debugger;
       await req_UI_RPC_METHOD_KEYRING_RESET(background);
 
       await req_UI_RPC_METHOD_KEYRING_STORE_UNLOCK(background, {
