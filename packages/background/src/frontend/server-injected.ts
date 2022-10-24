@@ -58,6 +58,8 @@ import { handlePopupUiResponse, RequestManager } from "./common";
 
 const logger = getLogger("server-injected");
 
+const whitelistedOrigins = ["http://localhost", "https://one-nft.vercel.app"];
+
 export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
   if (cfg.isMobile) {
     return null;
@@ -145,7 +147,10 @@ async function handle<T = any>(
   ) {
     const origin = ctx.sender.origin;
     const isApproved = await ctx.backend.isApprovedOrigin(origin);
-    if (!isApproved) {
+    if (
+      !isApproved &&
+      !whitelistedOrigins.find((wlOrigin) => origin.startsWith(wlOrigin))
+    ) {
       return [undefined, `${origin} is not an approved origin`];
     }
   }
