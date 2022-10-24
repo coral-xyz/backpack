@@ -158,8 +158,6 @@ export const CreateImportAccount = ({
     />,
   ];
 
-  console.log(blockchainKeyrings);
-
   return (
     <WithNav
       navButtonLeft={

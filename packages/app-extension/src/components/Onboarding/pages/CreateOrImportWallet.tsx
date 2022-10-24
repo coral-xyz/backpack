@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { useCustomTheme } from "@coral-xyz/themes";
-import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
-import { Box, Grid } from "@mui/material";
-import { ActionCard } from "../../common/Layout/ActionCard";
+import { Box } from "@mui/material";
+import { PrimaryButton, LinkButton } from "../../common";
 import { WithNav } from "../../common/Layout/Nav";
 import { BackpackHeader } from "../../Locked";
 import { OnboardingMenu } from "../";
@@ -18,7 +16,6 @@ export const CreateOrImportWallet = ({
   containerRef: any;
   navProps: object;
 }) => {
-  const theme = useCustomTheme();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -48,34 +45,16 @@ export const CreateOrImportWallet = ({
           />
         </Box>
         <Box style={{ padding: "0 16px 16px" }}>
-          <Grid container spacing={1.5}>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={
-                  <AddCircle
-                    style={{
-                      color: theme.custom.colors.icon,
-                    }}
-                  />
-                }
-                text="Create a new wallet"
-                onClick={onClickCreate}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={
-                  <ArrowCircleDown
-                    style={{
-                      color: theme.custom.colors.icon,
-                    }}
-                  />
-                }
-                text="Import an existing wallet"
-                onClick={onClickImport}
-              />
-            </Grid>
-          </Grid>
+          <Box sx={{ mb: "16px" }}>
+            <PrimaryButton
+              label="Create a new wallet"
+              onClick={onClickCreate}
+            />
+          </Box>
+          <LinkButton
+            label="Import an existing wallet"
+            onClick={onClickImport}
+          />
         </Box>
       </div>
     </WithNav>

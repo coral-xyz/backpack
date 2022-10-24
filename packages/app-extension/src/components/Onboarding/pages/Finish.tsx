@@ -29,7 +29,7 @@ export const Finish = ({
 
   useEffect(() => {
     (async () => {
-      // await createUser();
+      await createUser();
       createStore();
     })();
   }, []);

@@ -1,8 +1,14 @@
 import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
 import { KeyringType, toTitleCase } from "@coral-xyz/common";
-import { Box, Grid } from "@mui/material";
-import { useCustomTheme } from "@coral-xyz/themes";
-import { ActionCard } from "../../common/Layout/ActionCard";
+import { Box } from "@mui/material";
+import {
+  Header,
+  HeaderIcon,
+  PrimaryButton,
+  LinkButton,
+  SubtextParagraph,
+} from "../../common";
+import { HardwareWalletIcon } from "../../common/Icon";
 
 export const KeyringTypeSelector = ({
   action,
@@ -11,8 +17,6 @@ export const KeyringTypeSelector = ({
   action: "create" | "import";
   onNext: (keyringType: KeyringType) => void;
 }) => {
-  const theme = useCustomTheme();
-
   return (
     <div
       style={{
@@ -22,35 +26,37 @@ export const KeyringTypeSelector = ({
         height: "100%",
       }}
     >
+      <Box sx={{ margin: "56px 24px 0 24px", textAlign: "center" }}>
+        <HeaderIcon icon={<HardwareWalletIcon />} />
+        {action === "create" && (
+          <>
+            <Header text="Create a new wallet" />
+            <SubtextParagraph>
+              Choose a wallet type. If you're not sure, using a recovery phrase
+              is the most common option.
+            </SubtextParagraph>
+          </>
+        )}
+        {action === "import" && (
+          <>
+            <Header text="Import an existing wallet" />
+            <SubtextParagraph>
+              Choose a method to import your wallet.
+            </SubtextParagraph>
+          </>
+        )}
+      </Box>
       <Box style={{ padding: "0 16px 16px" }}>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <ActionCard
-              icon={
-                <AddCircle
-                  style={{
-                    color: theme.custom.colors.icon,
-                  }}
-                />
-              }
-              text={`${toTitleCase(action)} from recovery phrase`}
-              onClick={() => onNext("mnemonic")}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <ActionCard
-              icon={
-                <ArrowCircleDown
-                  style={{
-                    color: theme.custom.colors.icon,
-                  }}
-                />
-              }
-              text={`${toTitleCase(action)} from hardware wallet`}
-              onClick={() => onNext("ledger")}
-            />
-          </Grid>
-        </Grid>
+        <Box style={{ marginBottom: "16px" }}>
+          <PrimaryButton
+            label={`${toTitleCase(action)} from recovery phrase`}
+            onClick={() => onNext("mnemonic")}
+          />
+        </Box>
+        <LinkButton
+          label={`I have a hardware wallet`}
+          onClick={() => onNext("ledger")}
+        />
       </Box>
     </div>
   );
