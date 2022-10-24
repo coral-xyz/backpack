@@ -35,6 +35,10 @@ export const RecoverAccountWithRecoveryPhrase = () => {
   const background = useBackgroundClient();
   const { pathname } = useLocation();
   const { usernameAndPubkey, blockchain } = useParams();
+
+  console.log("usernameandpubkey", usernameAndPubkey);
+  console.log("blockchain", blockchain);
+
   const [error, setError] = useState<string>();
   const navigate = useNavigate();
 
@@ -48,6 +52,7 @@ export const RecoverAccountWithRecoveryPhrase = () => {
       method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
       params: [blockchain!, mnemonic, derivationPath, LOAD_PUBKEY_AMOUNT],
     });
+    console.log("publicKeys", publicKeys);
     return publicKeys;
   };
 
@@ -56,6 +61,8 @@ export const RecoverAccountWithRecoveryPhrase = () => {
       loadMnemonicPublicKeys(memonic, DerivationPath.Bip44),
       loadMnemonicPublicKeys(memonic, DerivationPath.Bip44Change),
     ]);
+    console.log("handleMnemonic:b44s", b44s);
+    console.log("handleMnemonic:b44sChanges", b44Changes);
     if (b44s.concat(b44Changes).includes(pubkey)) {
       navigate(`${pathname}/${memonic}`);
     } else {

@@ -1,5 +1,6 @@
 import {
   Blockchain,
+  DerivationPath,
   formatUSD,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
@@ -47,6 +48,9 @@ import { ToggleConnection } from "./screens/Helpers/ToggleConnection";
 import NeedsOnboarding from "./screens/NeedsOnboarding";
 import CreateWallet from "./screens/NeedsOnboarding/CreateWallet";
 
+const TEST_MNEMONIC =
+  "cruel repair valve zone rookie silver dilemma finger holiday size certain fly";
+
 function RpcTester() {
   const background = useBackgroundClient();
   const connectionUrl = useSolanaConnectionUrl();
@@ -58,6 +62,12 @@ function RpcTester() {
 
       await req_UI_RPC_METHOD_KEYRING_STORE_UNLOCK(background, {
         password: "backpack",
+      });
+
+      await req_UI_RPC_METHOD_PREVIEW_PUBKEYS(background, {
+        mnemonic: TEST_MNEMONIC,
+        derivationPath: DerivationPath.Bip44,
+        blockchain: Blockchain.ETHEREUM,
       });
 
       // TODO app-extensions (validateSecretKey)
@@ -76,15 +86,11 @@ function RpcTester() {
       });
 
       await req_UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE(background, {
-        mnemonicWords:
-          "cruel repair valve zone rookie silver dilemma finger holiday size certain fly".split(
-            " "
-          ),
+        mnemonicWords: TEST_MNEMONIC.split(" "),
       });
 
       await req_UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC(background, {
-        mnemonic:
-          "cruel repair valve zone rookie silver dilemma finger holiday size certain fly",
+        mnemonic: TEST_MNEMONIC,
       });
 
       await req_UI_RPC_METHOD_PASSWORD_UPDATE(background, {
@@ -97,13 +103,6 @@ function RpcTester() {
       await req_UI_RPC_METHOD_KEYRING_DERIVE_WALLET(background, {
         blockchain: Blockchain.ETHEREUM,
       });
-
-      // TODO derivationpath, mnemonic, etc
-      // await req_UI_RPC_METHOD_PREVIEW_PUBKEYS(background, {
-      //   mnemonic: "",
-      //   derivationPath: "",
-      //   blockchain: Blockchain.ETHEREUM,
-      // });
 
       await req_UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE(background, {
         isDarkMode: true,

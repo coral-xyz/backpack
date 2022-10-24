@@ -39,28 +39,6 @@ import { useEffect, useState } from "react";
 
 import type { SelectedAccount } from "../../../../common/Account/ImportAccounts";
 
-// TODO
-export async function req_UI_RPC_METHOD_KEYRING_STORE_CREATE() {
-  try {
-    await background.request({
-      method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-      params: [
-        params.blockchain,
-        params.mnemonic,
-        derivationPath,
-        decodeURIComponent(params.password!),
-        accounts,
-        _username,
-        params.inviteCode,
-        getWaitlistId?.(),
-        Boolean(params.usernameAndPubkey),
-      ],
-    });
-  } catch (err) {
-    console.log("err", err);
-  }
-}
-
 export const useRequest = (method: string, ...params: any) => {
   const background = useBackgroundClient();
   const [state, setState] = useState();
@@ -90,6 +68,37 @@ async function makeRequest(background, request) {
   } finally {
     console.groupEnd();
   }
+}
+
+// TODO
+export async function req_UI_RPC_METHOD_KEYRING_STORE_CREATE(
+  background,
+  {
+    blockchain,
+    mnemonic,
+    derivationPath,
+    password,
+    accounts,
+    username,
+    inviteCode,
+    usernameAndPubkey,
+    waitlistId,
+  }
+) {
+  return makeRequest(background, {
+    method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
+    params: [
+      blockchain, // params.blockchain
+      mnemonic, // params.mnemonic
+      derivationPath,
+      password, // decodeURIComponent(params.password!)
+      accounts,
+      username, // _username
+      inviteCode, // params.inviteCode
+      waitlistId, // getWaitlistId?.(),
+      usernameAndPubkey, // Boolean(params.usernameAndPubkey)
+    ],
+  });
 }
 
 // TODO these types are any in hooks/useTransactionData
@@ -150,6 +159,7 @@ export async function req_UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS(
   });
 }
 
+// TODO response: Promise<PublicKey[]> (i think)
 export async function req_UI_RPC_METHOD_PREVIEW_PUBKEYS(
   background,
   {
@@ -258,6 +268,7 @@ export async function req_UI_RPC_METHOD_PASSWORD_UPDATE(
 }
 
 // TODO format of secretKeyHex
+// TODO response Promise<PublicKey> maybe?
 export async function req_UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY(
   background,
   {
