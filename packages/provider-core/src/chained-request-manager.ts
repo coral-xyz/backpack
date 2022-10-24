@@ -60,10 +60,9 @@ export class ChainedRequestManager {
         {
           type: this._requestChannel,
           href: this._url,
-          iframeIdentifiers: [
-            ...[event.data.iframeIdentifiers || []],
-            window.frameElement?.id,
-          ],
+          iframeIdentifiers: window.name
+            ? [...(event.data.iframeIdentifiers || []), window.name]
+            : event.data.iframeIdentifiers || [],
           detail: {
             id: event.data.detail.id,
             method: event.data.detail.method,
@@ -79,7 +78,7 @@ export class ChainedRequestManager {
     if (event.data.type !== this._responseChannel) return;
     if (
       event.data.iframeIdentifiers &&
-      event.data.iframeIdentifiers.length > 1
+      event.data.iframeIdentifiers.length >= 1
     ) {
       // need to propagate this event back to a child iframe, it doesn't
       // belong to this iframe
@@ -127,7 +126,7 @@ export class ChainedRequestManager {
         type: this._requestChannel,
         // this._url will always be set here, because this._parent is true.
         href: this._url!,
-        iframeIdentifiers: [window.frameElement?.id],
+        iframeIdentifiers: [window.name],
         detail: {
           id,
           method,

@@ -111,6 +111,7 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
   public async removeIframe(id) {
     // @ts-ignore
     this.#childIframes = this.#childIframes.filter((x) => x.id !== id);
+    this.#requestManager.removeChildIframe(id);
   }
 
   #setupChannels() {

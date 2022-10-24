@@ -32,7 +32,7 @@ export class PluginServer {
         return;
       }
       const id = event.data.detail.id;
-      const iframeIdentifiers = event.data.detail.iframeIdentifiers;
+      const iframeIdentifiers = event.data.iframeIdentifiers;
       const [result, error] = await handlerFn(event);
       if (this.responseChannel) {
         const msg = {

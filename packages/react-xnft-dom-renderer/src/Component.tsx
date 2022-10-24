@@ -398,7 +398,7 @@ function Iframe({ props, style }: any) {
   }, [props.src, ref, xnftProp]);
   return isValidSecureUrl(props.src) ? (
     <iframe
-      id={id}
+      name={id}
       ref={ref}
       sandbox="allow-same-origin allow-scripts"
       src={props.src}
