@@ -100,7 +100,7 @@ export const InviteCodeForm = () => {
               },
               autoFocus: true,
             }}
-            placeholder={"Invite Code"}
+            placeholder={"Invite code"}
             type="text"
             value={inviteCode}
             setValue={(v: string) => {
