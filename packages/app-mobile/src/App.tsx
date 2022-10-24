@@ -11,44 +11,51 @@ import {
   useKeyringStoreState,
   // useTotal,
 } from "@coral-xyz/recoil";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { getHeaderTitle } from "@react-navigation/elements";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 import { useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Pressable, Text, View } from "react-native";
-import { NativeRouter, Route, Routes, useNavigate } from "react-router-native";
+import { Button, Pressable, Text, View } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import tw from "twrnc";
 
 import { CustomButton } from "./components/CustomButton";
 import { ErrorMessage } from "./components/ErrorMessage";
 import { PasswordInput } from "./components/PasswordInput";
 import { ButtonFooter, MainContent } from "./components/Templates";
-import { ResetApp } from "./screens/Helpers/ResetApp";
-import { ToggleConnection } from "./screens/Helpers/ToggleConnection";
-import NeedsOnboarding from "./screens/NeedsOnboarding";
-import CreateWallet from "./screens/NeedsOnboarding/CreateWallet";
 
-const HomeScreen = () => {
-  const keyringStoreState = useKeyringStoreState();
-
-  switch (keyringStoreState) {
-    case "needs-onboarding":
-      return <NeedsOnboarding />;
-    case "locked":
-      return <LockedScreen />;
-    case "unlocked":
-      return <UnlockedScreen />;
-    default:
-      throw new Error("Unknown keyring store state");
+function Screen({ children, style }) {
+  function getRandomColor() {
+    var letters = "0123456789ABCDEF";
+    var color = "#";
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
   }
-};
 
-const UnlockedScreen = () => {
+  return (
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: getRandomColor(), ...style }}
+    >
+      {children}
+    </SafeAreaView>
+  );
+}
+
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+console.log(Tab);
+
+function BalancesScreen({ navigation }) {
   const background = useBackgroundClient();
-  const navigate = useNavigate();
   //  const wallet = useActiveSolanaWallet();
 
   const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
-
   return (
-    <>
+    <Screen>
       <MainContent>
         <View style={tw`bg-black p-4 rounded-xl`}>
           <Text style={tw`text-white text-xs`}>
@@ -69,7 +76,7 @@ const UnlockedScreen = () => {
         <CustomButton
           text="Toggle Connection"
           onPress={() => {
-            navigate("/toggle-connection");
+            // navigate("/toggle-connection");
           }}
         />
         <CustomButton
@@ -79,13 +86,100 @@ const UnlockedScreen = () => {
               method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
               params: [],
             });
-            navigate("/");
+            // navigate("/");
           }}
         />
       </ButtonFooter>
-    </>
+    </Screen>
   );
-};
+}
+
+function AccountSettingsModal() {
+  return (
+    <View style={{ flex: 1, backgroundColor: "green", alignItems: "center" }}>
+      <Text>Account Settings</Text>
+    </View>
+  );
+}
+
+function RecentActivityModal() {
+  return (
+    <View style={{ flex: 1, backgroundColor: "green", alignItems: "center" }}>
+      <Text>Recent Activity</Text>
+    </View>
+  );
+}
+
+function UnlockedScreen() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        header: ({ navigation, route, options }) => {
+          const title = getHeaderTitle(options, route.name);
+          return (
+            <View
+              style={{
+                height: 60,
+                backgroundColor: "yellow",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text>{title}</Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Button
+                  onPress={() => navigation.navigate("RecentActivity")}
+                  title="Activity"
+                />
+                <Button
+                  onPress={() => navigation.navigate("AccountSettings")}
+                  title="Account Settings"
+                />
+              </View>
+            </View>
+          );
+        },
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+
+          if (route.name === "Balances") {
+            iconName = focused ? "baguette" : "baguette";
+          } else if (route.name === "Applications") {
+            iconName = focused ? "apps" : "apps";
+          } else if (route.name === "Collectibles") {
+            iconName = focused ? "image" : "image";
+          }
+
+          // You can return any component that you like here!
+          return (
+            <MaterialCommunityIcons name={iconName} size={size} color={color} />
+          );
+        },
+        tabBarActiveTintColor: "#333",
+        tabBarInactiveTintColor: "gray",
+      })}
+    >
+      <Tab.Screen name="Balances" component={BalancesScreen} />
+      <Tab.Screen name="Applications" component={BalancesScreen} />
+      <Tab.Screen name="Collectibles" component={BalancesScreen} />
+    </Tab.Navigator>
+  );
+}
+
+function UnlockedRootNavigator() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Group>
+        <Stack.Screen name="Tabs" component={UnlockedScreen} />
+      </Stack.Group>
+      <Stack.Group screenOptions={{ presentation: "modal", headerShown: true }}>
+        <Stack.Screen name="AccountSettings" component={AccountSettingsModal} />
+        <Stack.Screen name="RecentActivity" component={RecentActivityModal} />
+      </Stack.Group>
+    </Stack.Navigator>
+  );
+}
 
 interface FormData {
   password: string;
@@ -93,7 +187,6 @@ interface FormData {
 
 const LockedScreen = () => {
   const background = useBackgroundClient();
-  const navigate = useNavigate();
   const {
     control,
     handleSubmit,
@@ -108,7 +201,7 @@ const LockedScreen = () => {
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
         params: [password],
       });
-      navigate("/");
+      // navigate("/");
     } catch (err) {
       console.error(err);
       setError("password", { message: "Invalid password" });
@@ -133,7 +226,7 @@ const LockedScreen = () => {
         <CustomButton
           text="Reset App"
           onPress={() => {
-            navigate("/reset");
+            // navigate("/reset");
           }}
         />
         <CustomButton text="Unlock" onPress={handleSubmit(onSubmit)} />
@@ -142,23 +235,44 @@ const LockedScreen = () => {
   );
 };
 
+function FirstTimeWelcomeScreen() {
+  return (
+    <View style={{ flex: 1, backgroundColor: "green", alignItems: "center" }}>
+      <Text>Welcome to Backpack Create vs. Import Wallet </Text>
+    </View>
+  );
+}
+
+function AppNavigator() {
+  const keyringStoreState = useKeyringStoreState();
+  console.log("AppNavigator:keyringStoreState", keyringStoreState);
+
+  switch (keyringStoreState) {
+    case "needs-onboarding":
+      return <FirstTimeWelcomeScreen />;
+    case "locked":
+      return <LockedScreen />;
+    case "unlocked":
+      return <UnlockedRootNavigator />;
+    default:
+      return <View style={{ backgroundColor: "red", flex: 1 }} />;
+  }
+}
+
+function Providers({ children }) {
+  return (
+    <NotificationsProvider>
+      <SafeAreaProvider>
+        <NavigationContainer>{children}</NavigationContainer>
+      </SafeAreaProvider>
+    </NotificationsProvider>
+  );
+}
+
 export default function App() {
   return (
-    <NativeRouter>
-      <NotificationsProvider>
-        <KeyboardAvoidingView style={tw`flex-1`} behavior="padding">
-          <Routes>
-            <Route path="/" element={<HomeScreen />} />
-            <Route path="/reset" element={<ResetApp />} />
-            <Route path="/create-wallet" element={<CreateWallet />} />
-            <Route path="/toggle-connection" element={<ToggleConnection />} />
-            <Route
-              path="/import-wallet"
-              element={<CreateWallet importExisting />}
-            />
-          </Routes>
-        </KeyboardAvoidingView>
-      </NotificationsProvider>
-    </NativeRouter>
+    <Providers>
+      <AppNavigator />
+    </Providers>
   );
 }
