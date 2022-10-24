@@ -126,7 +126,7 @@ export class ChainedRequestManager {
         type: this._requestChannel,
         // this._url will always be set here, because this._parent is true.
         href: this._url!,
-        iframeIdentifiers: [window.name],
+        iframeIdentifiers: window.name ? [window.name] : [],
         detail: {
           id,
           method,
