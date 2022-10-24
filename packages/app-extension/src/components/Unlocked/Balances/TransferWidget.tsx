@@ -8,11 +8,7 @@ import {
   Money,
 } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
-import {
-  useEnabledBlockchains,
-  SwapProvider,
-  useActiveWallets,
-} from "@coral-xyz/recoil";
+import { useEnabledBlockchains, SwapProvider } from "@coral-xyz/recoil";
 import {
   Blockchain,
   SOL_NATIVE_MINT,
@@ -34,11 +30,14 @@ import React from "react";
 export function TransferWidget({
   blockchain,
   address,
+  rampEnabled,
 }: {
   blockchain?: Blockchain;
   address?: string;
+  rampEnabled: boolean;
 }) {
   const enabledBlockchains = useEnabledBlockchains();
+  const enableOnramp = BACKPACK_FEATURE_ONRAMP && rampEnabled;
 
   const renderSwap =
     blockchain !== Blockchain.ETHEREUM &&
@@ -49,9 +48,9 @@ export function TransferWidget({
       style={{
         display: "flex",
         width:
-          BACKPACK_FEATURE_ONRAMP && renderSwap
+          enableOnramp && renderSwap
             ? "262px"
-            : renderSwap || BACKPACK_FEATURE_ONRAMP
+            : renderSwap || enableOnramp
             ? "191px"
             : "120px",
         marginLeft: "auto",
