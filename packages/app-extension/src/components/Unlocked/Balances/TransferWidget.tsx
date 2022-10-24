@@ -49,15 +49,15 @@ export function TransferWidget({
         display: "flex",
         width:
           enableOnramp && renderSwap
-            ? "262px"
+            ? "256px"
             : renderSwap || enableOnramp
-            ? "191px"
+            ? "188px"
             : "120px",
         marginLeft: "auto",
         marginRight: "auto",
       }}
     >
-      {BACKPACK_FEATURE_ONRAMP && (
+      {enableOnramp && (
         <>
           <RampButton blockchain={blockchain} address={address} />
           <div style={{ width: "16px" }} />
