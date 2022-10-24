@@ -277,46 +277,6 @@ export function PrimaryButton({
   );
 }
 
-export function LinkButton({
-  buttonLabelStyle,
-  label,
-  className,
-  ...buttonProps
-}: {
-  buttonLabelStyle?: React.CSSProperties;
-  label?: string;
-} & React.ComponentProps<typeof Button>) {
-  const theme = useCustomTheme();
-  const classes = useStyles();
-  return (
-    <Button
-      disableRipple
-      disableElevation
-      className={classes.linkButton}
-      variant="text"
-      {...buttonProps}
-      style={{
-        color: theme.custom.colors.secondaryButtonTextColor,
-        fontWeight: 500,
-        fontSize: "16px",
-        lineHeight: "24px",
-        textTransform: "none",
-        ...buttonProps.style,
-      }}
-    >
-      <Typography
-        style={{
-          fontWeight: 600,
-          ...buttonLabelStyle,
-        }}
-        className={classes.buttonLabel}
-      >
-        {label}
-      </Typography>
-    </Button>
-  );
-}
-
 export function NegativeButton({ label, onClick, ...buttonProps }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
