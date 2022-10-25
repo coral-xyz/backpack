@@ -89,6 +89,7 @@ export function PreferencesBlockchains({
         result.publicKey,
       ],
     });
+    setOpenDrawer(false);
   };
 
   const menuItems = {
