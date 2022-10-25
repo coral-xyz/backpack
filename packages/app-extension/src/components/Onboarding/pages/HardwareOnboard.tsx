@@ -6,24 +6,27 @@ import {
   DerivationPath,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { ConnectHardwareWelcome } from "../../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
-import { ConnectHardwareSearching } from "../../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
-import { ConnectHardwareSuccess } from "../../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSuccess";
-import { ImportAccounts } from "../../../common/Account/ImportAccounts";
-import type { SelectedAccount } from "../../../common/Account/ImportAccounts";
-import { WithNav, NavBackButton } from "../../../common/Layout/Nav";
-import { CloseButton } from "../../../common/Layout/Drawer";
-import { SignOnboardHardware } from "./SignOnboardHardware";
-import { useSteps } from "../../../../hooks/useSteps";
+import { HardwareSign } from "./HardwareSign";
+import { HardwareDefaultAccount } from "./HardwareDefaultAccount";
+import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
+import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
+import { ConnectHardwareSuccess } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSuccess";
+import { ImportAccounts } from "../../common/Account/ImportAccounts";
+import type { SelectedAccount } from "../../common/Account/ImportAccounts";
+import { WithNav, NavBackButton } from "../../common/Layout/Nav";
+import { CloseButton } from "../../common/Layout/Drawer";
+import { useSteps } from "../../../hooks/useSteps";
 
-export function OnboardHardware({
+export function HardwareOnboard({
   blockchain,
   action,
+  inviteCode,
   onComplete,
   onClose,
 }: {
   blockchain: Blockchain;
   action: "create" | "import";
+  inviteCode: string | null;
   onComplete: (keyringInit: BlockchainKeyringInit) => void;
   onClose?: () => void;
 }) {
@@ -67,12 +70,29 @@ export function OnboardHardware({
             }}
           />,
         ]
-      : []),
-    <SignOnboardHardware
+      : [
+          // This is a create action, so use a component that just loads
+          // and returns the default account
+          <HardwareDefaultAccount
+            blockchain={blockchain}
+            transport={transport!}
+            onNext={async (
+              accounts: SelectedAccount[],
+              derivationPath: DerivationPath
+            ) => {
+              setAccounts(accounts);
+              setDerivationPath(derivationPath);
+              nextStep();
+            }}
+            onRetry={prevStep}
+          />,
+        ]),
+    <HardwareSign
       blockchain={blockchain}
+      inviteCode={inviteCode ? inviteCode : ""}
       accounts={accounts ? accounts : []}
       derivationPath={derivationPath}
-      onNext={(signature) => {
+      onNext={(signature: string) => {
         onComplete({
           blockchain,
           derivationPath: derivationPath!,

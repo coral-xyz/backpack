@@ -223,7 +223,6 @@ export class EthereumLedgerKeyring
     if (!path) {
       throw new Error("ledger address not found");
     }
-    console.log(path);
     return await this.request({
       method: LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
       params: [msg, path.path, path.account],

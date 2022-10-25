@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { encode } from "bs58";
 import {
   toTitleCase,
   Blockchain,
@@ -12,24 +13,25 @@ import {
   HeaderIcon,
   PrimaryButton,
   SubtextParagraph,
-} from "../../../common";
-import { HardwareWalletIcon } from "../../../common/Icon";
-import { SelectedAccount } from "../../../common/Account/ImportAccounts";
+} from "../../common";
+import { HardwareWalletIcon } from "../../common/Icon";
+import { SelectedAccount } from "../../common/Account/ImportAccounts";
 
-export function SignOnboardHardware({
+export function HardwareSign({
   blockchain,
+  inviteCode,
   accounts,
   derivationPath,
   onNext,
 }: {
   blockchain: Blockchain;
+  inviteCode: string | null;
   accounts: Array<SelectedAccount>;
   derivationPath: DerivationPath | undefined;
   onNext: (signature: string) => void;
 }) {
   const background = useBackgroundClient();
   const [signature, setSignature] = useState<string | null>(null);
-  const [retry, setRetry] = useState(0);
 
   const account = accounts.length > 0 ? accounts[0] : null;
 
@@ -40,17 +42,18 @@ export function SignOnboardHardware({
           method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
           params: [
             blockchain,
-            "123",
+            // Sign the invite code, or an empty string if no invite code
+            // TODO setup a nonce based system
+            encode(Buffer.from(inviteCode ? inviteCode : "", "utf-8")),
             derivationPath,
             account.index,
             account.publicKey,
           ],
         });
-        console.log(signature);
         setSignature(signature);
       }
     })();
-  }, [accounts, derivationPath, retry]);
+  }, [accounts, derivationPath]);
 
   return (
     <Box

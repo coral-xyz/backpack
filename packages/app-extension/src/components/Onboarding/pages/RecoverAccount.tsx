@@ -1,119 +1,189 @@
-import { useCustomTheme } from "@coral-xyz/themes";
-import { AlternateEmail } from "@mui/icons-material";
-import { Box, InputAdornment, Typography } from "@mui/material";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import Transport from "@ledgerhq/hw-transport";
 import {
-  Header,
-  PrimaryButton,
-  SubtextParagraph,
-  TextField,
-} from "../../common";
-import { getWaitlistId } from "../../common/WaitingRoom";
+  Blockchain,
+  BlockchainKeyringInit,
+  DerivationPath,
+  KeyringType,
+} from "@coral-xyz/common";
+import { NavBackButton, WithNav } from "../../common/Layout/Nav";
+import { RecoverAccountUsernameForm } from "./RecoverAccountUsernameForm";
+import { KeyringTypeSelector } from "./KeyringTypeSelector";
+import { BlockchainSelector } from "./BlockchainSelector";
+import { MnemonicInput } from "../../common/Account/MnemonicInput";
+import { MnemonicSearch } from "./MnemonicSearch";
+import { HardwareSearch } from "./HardwareSearch";
+import { Finish } from "./Finish";
+import { CreatePassword } from "../../common/Account/CreatePassword";
+import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
+import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
+import { useSteps } from "../../../hooks/useSteps";
 
-export const RecoverAccount = () => {
-  const { inviteCode } = useParams();
-  const { pathname } = useLocation();
-  const [username, setUsername] = useState("");
-  const [error, setError] = useState("");
-  const theme = useCustomTheme();
-  const navigate = useNavigate();
+export const RecoverAccount = ({
+  onClose,
+  navProps,
+}: {
+  onClose: () => void;
+  navProps: any;
+}) => {
+  const { step, nextStep, prevStep } = useSteps();
+  const [username, setUsername] = useState<string | null>(null);
+  const [password, setPassword] = useState<string | null>(null);
+  const [publicKey, setPublicKey] = useState<string | null>(null);
+  const [keyringType, setKeyringType] = useState<KeyringType | null>(null);
+  const [blockchain, setBlockchain] = useState<Blockchain | null>(null);
+  const [mnemonic, setMnemonic] = useState<string | undefined>(undefined);
+  const [transport, setTransport] = useState<Transport | null>(null);
+  const [transportError, setTransportError] = useState(false);
+  const [onboardedBlockchains, setOnboardedBlockchains] = useState<
+    Array<Blockchain>
+  >([]);
+  const [blockchainKeyrings, setBlockchainKeyrings] = useState<
+    Array<BlockchainKeyringInit>
+  >([]);
 
   useEffect(() => {
-    setError("");
+    (async () => {
+      if (username) {
+        const response = await fetch(
+          `http://127.0.0.1:8787/users/${username}/info`
+        );
+        const json = await response.json();
+        if (response.ok) {
+          if (json.publickeys.length > 0) {
+            setOnboardedBlockchains(
+              json.publickeys.map(
+                (b: { blockchain: Blockchain }) => b.blockchain
+              )
+            );
+            // Default to first available blockchain. For mnemonic keyrings we
+            // can do this and search all available publickeys for the mnemonic
+            // to find a match. For ledger keyrings we need to prompt them to open
+            // a specific app on the ledger so we'll allow them to select which
+            // blockchain they want to use as part of the flow.
+            setBlockchain(json.publickeys[0].blockchain);
+          }
+        }
+      }
+    })();
   }, [username]);
 
-  const handleSubmit = useCallback(
-    async (e: FormEvent) => {
-      e.preventDefault();
+  const keyringInit = {
+    mnemonic,
+    blockchainKeyrings,
+  };
 
-      try {
-        const res = await fetch(
-          `https://auth.xnfts.dev/users/${username}/info`,
-          {
-            headers: {
-              "x-backpack-invite-code": String(inviteCode),
-              "x-backpack-waitlist-id": getWaitlistId() || "",
-            },
-          }
-        );
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.message);
+  const handleBlockchainClick = () => {};
 
-        navigate(
-          `${pathname}/${json.blockchain}/${JSON.stringify({
-            username,
-            pubkey: json.pubkey,
-          })}`
-        );
-      } catch (err: any) {
-        setError(err.message || "Something went wrong");
-      }
-    },
-    [username]
-  );
+  const steps = [
+    <RecoverAccountUsernameForm
+      onNext={(username: string, publickey: string) => {
+        setUsername(username);
+        setPublicKey(publickey);
+        nextStep();
+      }}
+    />,
+    <KeyringTypeSelector
+      action={"recover"}
+      onNext={(keyringType: KeyringType) => {
+        setKeyringType(keyringType);
+        nextStep();
+      }}
+    />,
+    ...(keyringType === "mnemonic"
+      ? [
+          <MnemonicInput
+            buttonLabel={"Next"}
+            onNext={(mnemonic: string) => {
+              setMnemonic(mnemonic);
+              nextStep();
+            }}
+          />,
+          <MnemonicSearch
+            blockchain={blockchain!}
+            mnemonic={mnemonic!}
+            publicKey={publicKey!}
+            onNext={(derivationPath: DerivationPath, accountIndex: number) => {
+              setBlockchainKeyrings([
+                {
+                  blockchain: blockchain!,
+                  derivationPath,
+                  accountIndex,
+                  // No signature required because this isn't being used to setup
+                  // an account
+                  signature: null,
+                  publicKey: publicKey!,
+                },
+              ]);
+              nextStep();
+            }}
+            onRetry={prevStep}
+          />,
+        ]
+      : [
+          ...(onboardedBlockchains.length > 1
+            ? [
+                // If multiple bockchains have been onboarded, then display the selector
+                // because the user will need to open the correct app on their Ledger.
+                <BlockchainSelector
+                  selectedBlockchains={[]}
+                  onClick={handleBlockchainClick}
+                  onNext={nextStep}
+                  isRecovery={true}
+                />,
+              ]
+            : []),
+          <ConnectHardwareWelcome onNext={() => nextStep()} />,
+          <ConnectHardwareSearching
+            blockchain={blockchain!}
+            onNext={(transport) => {
+              setTransport(transport);
+              nextStep();
+            }}
+            isConnectFailure={!!transportError}
+          />,
+          <HardwareSearch
+            blockchain={blockchain!}
+            transport={transport!}
+            publicKey={publicKey!}
+            onNext={(derivationPath: DerivationPath, accountIndex: number) => {
+              setBlockchainKeyrings([
+                {
+                  blockchain: blockchain!,
+                  derivationPath,
+                  accountIndex,
+                  // No signature required because this isn't being used to setup
+                  // an account
+                  signature: null,
+                  publicKey: publicKey!,
+                },
+              ]);
+            }}
+            onRetry={prevStep}
+          />,
+        ]),
+    <CreatePassword
+      onNext={(password) => {
+        setPassword(password);
+        nextStep();
+      }}
+    />,
+    <Finish
+      inviteCode={null}
+      username={username}
+      password={password!}
+      keyringInit={keyringInit!}
+    />,
+  ];
 
   return (
-    <form
-      noValidate
-      onSubmit={handleSubmit}
-      style={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        padding: "0 16px 16px",
-      }}
+    <WithNav
+      navButtonLeft={<NavBackButton onClick={step > 0 ? prevStep : onClose} />}
+      {...navProps}
+      // Only display the onboarding menu on the first step
+      navButtonRight={undefined}
     >
-      <Box style={{ padding: 8, flex: 1 }}>
-        <Header text="Username recovery" />
-        <SubtextParagraph style={{ margin: "16px 0" }}>
-          Enter your username below, you will then be asked for your secret
-          recovery phrase to verify that you own the public key that was
-          initially associated with it.
-        </SubtextParagraph>
-      </Box>
-      <Box style={{ flex: 1 }}>
-        <TextField
-          inputProps={{
-            name: "username",
-            autoComplete: "off",
-            spellCheck: "false",
-            autoFocus: true,
-          }}
-          placeholder="Username"
-          type="text"
-          value={username}
-          setValue={(v: string) => {
-            setUsername(v.toLowerCase().replace(/[^a-z0-9_]/g, ""));
-          }}
-          isError={error}
-          auto
-          startAdornment={
-            <InputAdornment position="start">
-              <AlternateEmail
-                style={{
-                  color: theme.custom.colors.secondary,
-                  fontSize: 18,
-                  marginRight: -2,
-                  userSelect: "none",
-                }}
-              />
-            </InputAdornment>
-          }
-        />
-        {error && (
-          <Typography sx={{ color: theme.custom.colors.negative }}>
-            {error}
-          </Typography>
-        )}
-      </Box>
-      <Box>
-        <PrimaryButton
-          label="Continue"
-          type="submit"
-          style={{ marginTop: 8 }}
-        />
-      </Box>
-    </form>
+      {steps[step]}
+    </WithNav>
   );
 };

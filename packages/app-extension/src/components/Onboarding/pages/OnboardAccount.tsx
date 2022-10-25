@@ -12,7 +12,7 @@ import { useBackgroundClient } from "@coral-xyz/recoil";
 import { encode } from "bs58";
 import { KeyringTypeSelector } from "./KeyringTypeSelector";
 import { BlockchainSelector } from "./BlockchainSelector";
-import { OnboardHardware } from "./OnboardHardware";
+import { HardwareOnboard } from "./HardwareOnboard";
 import { CreateOrImportWallet } from "./CreateOrImportWallet";
 import { Finish } from "./Finish";
 import { InviteCodeForm } from "./InviteCodeForm";
@@ -44,13 +44,13 @@ export const OnboardAccount = ({
   const [username, setUsername] = useState<string | null>(null);
   const [action, setAction] = useState<"create" | "import">();
   const [keyringType, setKeyringType] = useState<KeyringType | null>(null);
+  const [blockchainKeyrings, setBlockchainKeyrings] = useState<
+    Array<BlockchainKeyringInit>
+  >([]);
   const [blockchain, setBlockchain] = useState<Blockchain | null>(null);
   const [password, setPassword] = useState<string | null>(null);
   const [mnemonic, setMnemonic] = useState<string | undefined>(undefined);
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [blockchainKeyrings, setBlockchainKeyrings] = useState<
-    Array<BlockchainKeyringInit>
-  >([]);
 
   const selectedBlockchains = blockchainKeyrings.map((b) => b.blockchain);
 
@@ -211,10 +211,11 @@ export const OnboardAccount = ({
         }}
       >
         {keyringType === "ledger" ? (
-          <OnboardHardware
+          <HardwareOnboard
             blockchain={blockchain!}
+            inviteCode={inviteCode}
             action={action!}
-            onComplete={(result) => {
+            onComplete={(result: BlockchainKeyringInit) => {
               addBlockchainKeyring(result);
               setOpenDrawer(false);
             }}
