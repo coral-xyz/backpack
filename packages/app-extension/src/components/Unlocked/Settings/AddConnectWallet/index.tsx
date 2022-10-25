@@ -3,6 +3,7 @@ import { Box, Grid, Typography } from "@mui/material";
 import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
 import {
   Blockchain,
+  KeyringType,
   openConnectHardware,
   TAB_BALANCES,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
@@ -24,8 +25,10 @@ import { WalletListItem } from "../YourAccount/EditWallets";
 
 export function AddConnectWalletMenu({
   blockchain,
+  keyringType,
 }: {
   blockchain: Blockchain;
+  keyringType: KeyringType;
 }) {
   const nav = useNavStack();
   const background = useBackgroundClient();
@@ -56,32 +59,34 @@ export function AddConnectWalletMenu({
         </Box>
         <Box sx={{ margin: "0 16px" }}>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={
-                  <AddCircle
-                    style={{
-                      color: theme.custom.colors.icon,
-                    }}
-                  />
-                }
-                text="Create a new wallet"
-                onClick={async () => {
-                  const newPubkey = await background.request({
-                    method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-                    params: [blockchain],
-                  });
+            {keyringType === "mnemonic" && (
+              <Grid item xs={6}>
+                <ActionCard
+                  icon={
+                    <AddCircle
+                      style={{
+                        color: theme.custom.colors.icon,
+                      }}
+                    />
+                  }
+                  text="Create a new wallet"
+                  onClick={async () => {
+                    const newPubkey = await background.request({
+                      method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+                      params: [blockchain],
+                    });
 
-                  await background.request({
-                    method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-                    params: [newPubkey, blockchain],
-                  });
+                    await background.request({
+                      method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+                      params: [newPubkey, blockchain],
+                    });
 
-                  setNewPublicKey(newPubkey);
-                  setOpenDrawer(true);
-                }}
-              />
-            </Grid>
+                    setNewPublicKey(newPubkey);
+                    setOpenDrawer(true);
+                  }}
+                />
+              </Grid>
+            )}
             <Grid item xs={6}>
               <ActionCard
                 icon={
@@ -91,7 +96,7 @@ export function AddConnectWalletMenu({
                     }}
                   />
                 }
-                text="Import an existing wallet"
+                text="Import a private key"
                 onClick={() => nav.push("import-secret-key", { blockchain })}
               />
             </Grid>
@@ -106,7 +111,7 @@ export function AddConnectWalletMenu({
                     }}
                   />
                 }
-                text="Connect a hardware wallet"
+                text="Import from hardware wallet"
                 onClick={() => {
                   openConnectHardware(blockchain);
                   window.close();

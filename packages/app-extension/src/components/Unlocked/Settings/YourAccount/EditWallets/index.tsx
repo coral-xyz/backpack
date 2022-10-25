@@ -1,4 +1,4 @@
-import { toTitleCase, Blockchain } from "@coral-xyz/common";
+import { toTitleCase, Blockchain, KeyringType } from "@coral-xyz/common";
 import { useWalletPublicKeys } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { MoreHoriz } from "@mui/icons-material";
@@ -56,6 +56,9 @@ function WalletList({
     })),
   ];
 
+  const keyringType: KeyringType =
+    keyring.hdPublicKeys.length === 0 ? "ledger" : "mnemonic";
+
   // TODO: replace placeholder wallet avatar with stored image when available
   return (
     <div style={{ marginBottom: "16px" }}>
@@ -94,7 +97,10 @@ function WalletList({
           marginRight: "16px",
         }}
       >
-        <AddConnectWalletButton blockchain={blockchain} />
+        <AddConnectWalletButton
+          blockchain={blockchain}
+          keyringType={keyringType}
+        />
       </div>
     </div>
   );
