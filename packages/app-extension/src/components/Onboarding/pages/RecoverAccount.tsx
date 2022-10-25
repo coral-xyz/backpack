@@ -158,6 +158,7 @@ export const RecoverAccount = ({
                   publicKey: publicKey!,
                 },
               ]);
+              nextStep();
             }}
             onRetry={prevStep}
           />,
