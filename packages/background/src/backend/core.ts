@@ -825,7 +825,7 @@ export class Backend {
     accountIndex: number,
     publicKey?: string
   ): Promise<void> {
-    this.keyringStore.blockchainKeyringAdd(
+    await this.keyringStore.blockchainKeyringAdd(
       blockchain,
       derivationPath,
       accountIndex,
