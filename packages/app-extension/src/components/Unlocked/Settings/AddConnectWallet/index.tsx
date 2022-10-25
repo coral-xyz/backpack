@@ -5,6 +5,7 @@ import {
   Blockchain,
   openConnectHardware,
   TAB_BALANCES,
+  TAB_APPS,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
@@ -192,20 +193,23 @@ export const ConfirmCreateWallet: React.FC<{
           blockchain={blockchain}
           name={walletName}
           publicKey={publicKey}
+          showDetailMenu={false}
           isFirst={true}
           isLast={true}
           onClick={() => {
             if (tab === TAB_BALANCES) {
-              background.request({
-                method: UI_RPC_METHOD_NAVIGATION_TO_ROOT,
-                params: [],
-              });
-            } else {
+              // Experience won't go back to TAB_BALANCES so we poke it
               background.request({
                 method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-                params: [TAB_BALANCES],
+                params: [TAB_APPS],
               });
             }
+
+            background.request({
+              method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+              params: [TAB_BALANCES],
+            });
+
             // Close mini drawer.
             setOpenDrawer(false);
             // Close main drawer.

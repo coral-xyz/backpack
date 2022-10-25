@@ -86,6 +86,7 @@ function WalletList({
             type={type}
             isFirst={idx === 0}
             isLast={idx === flattenedWallets.length - 1}
+            showDetailMenu={true}
           />
         ))}
       </List>
@@ -108,8 +109,18 @@ export const WalletListItem: React.FC<{
   type?: string;
   isFirst: boolean;
   isLast: boolean;
+  showDetailMenu: boolean;
   onClick?: () => void;
-}> = ({ blockchain, name, publicKey, type, isFirst, isLast, onClick }) => {
+}> = ({
+  blockchain,
+  name,
+  publicKey,
+  type,
+  isFirst,
+  isLast,
+  showDetailMenu,
+  onClick,
+}) => {
   const theme = useCustomTheme();
   const nav = useNavStack();
   return (
@@ -119,12 +130,14 @@ export const WalletListItem: React.FC<{
       isFirst={isFirst}
       isLast={isLast}
       detail={
-        <MoreHoriz
-          style={{
-            cursor: "pointer",
-            color: theme.custom.colors.secondary,
-          }}
-        />
+        showDetailMenu ? (
+          <MoreHoriz
+            style={{
+              cursor: "pointer",
+              color: theme.custom.colors.secondary,
+            }}
+          />
+        ) : null
       }
       onClick={
         onClick
