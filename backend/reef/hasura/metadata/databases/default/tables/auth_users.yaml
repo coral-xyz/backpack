@@ -29,3 +29,16 @@ select_permissions:
         - username
       filter: {}
       allow_aggregations: true
+  - role: slack
+    permission:
+      columns:
+        - blockchain
+        - username
+        - pubkey
+        - waitlist_id
+        - created_at
+        - last_active_at
+        - updated_at
+        - id
+        - invitation_id
+      filter: {}
