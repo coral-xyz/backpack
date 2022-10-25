@@ -267,7 +267,7 @@ async function handle<T = any>(
         ctx,
         params[0],
         params[1],
-        params[1]
+        params[2]
       );
     case UI_RPC_METHOD_SOLANA_SIGN_MESSAGE:
       return await handleSolanaSignMessage(ctx, params[0], params[1]);
