@@ -6,6 +6,7 @@ import { Box } from "@mui/material";
 import Ethereum from "@ledgerhq/hw-app-eth";
 import Solana from "@ledgerhq/hw-app-solana";
 import Transport from "@ledgerhq/hw-transport";
+import { encode } from "bs58";
 import {
   accountDerivationPath,
   Blockchain,
@@ -41,8 +42,17 @@ export const HardwareDefaultAccount = ({
         accountIndex
       );
       const ledgerAddress = (await ledger.getAddress(path)).address;
+      const publicKey =
+        blockchain === Blockchain.SOLANA
+          ? encode(ledgerAddress as Buffer)
+          : ledgerAddress.toString();
       onNext(
-        [{ index: accountIndex, publicKey: ledgerAddress.toString() }],
+        [
+          {
+            index: accountIndex,
+            publicKey,
+          },
+        ],
         derivationPath
       );
     })();
