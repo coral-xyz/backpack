@@ -59,8 +59,8 @@ import { handlePopupUiResponse, RequestManager } from "./common";
 const logger = getLogger("server-injected");
 
 const whitelistedOrigins = [
-  /^http:\/\/localhost:[0-9]{4}\//,
-  /^https:\/\/one-nft\.vercel\.app\//,
+  /^http:\/\/localhost:[0-9]{4}$/,
+  /^https:\/\/one-nft\.vercel\.app$/,
 ];
 
 export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
