@@ -7,10 +7,12 @@ export const BlockchainSelector = ({
   selectedBlockchains,
   onClick,
   onNext,
+  isRecovery = false,
 }: {
   selectedBlockchains: Array<Blockchain>;
   onClick: (blockchain: Blockchain) => void;
   onNext: () => void;
+  isRecovery?: boolean;
 }) => {
   return (
     <Box
@@ -29,10 +31,23 @@ export const BlockchainSelector = ({
             marginTop: "24px",
           }}
         >
-          <Header text="Which networks would you like Backpack to use?" />
-          <SubtextParagraph>
-            Select one or more. You can change this later in the settings menu.
-          </SubtextParagraph>
+          {isRecovery ? (
+            <>
+              <Header text="Which network would you like to use to recover your username?" />
+              <SubtextParagraph>
+                Select one. You can add more networks after you've recovered
+                your username.
+              </SubtextParagraph>
+            </>
+          ) : (
+            <>
+              <Header text="Which networks would you like Backpack to use?" />
+              <SubtextParagraph>
+                Select one or more. You can change this later in the settings
+                menu.
+              </SubtextParagraph>
+            </>
+          )}
         </Box>
         <Box style={{ padding: "0 16px 16px" }}>
           <Grid container spacing={1.5}>
