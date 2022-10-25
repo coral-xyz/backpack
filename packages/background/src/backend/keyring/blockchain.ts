@@ -193,11 +193,11 @@ export class BlockchainKeyring {
   }
 
   public toJson(): any {
-    if (!this.hdKeyring || !this.importedKeyring || !this.ledgerKeyring) {
+    if (!this.importedKeyring || !this.ledgerKeyring) {
       throw new Error("blockchain keyring is locked");
     }
     return {
-      hdKeyring: this.hdKeyring.toJson(),
+      hdKeyring: this.hdKeyring ? this.hdKeyring.toJson() : undefined,
       importedKeyring: this.importedKeyring.toJson(),
       ledgerKeyring: this.ledgerKeyring.toJson(),
       activeWallet: this.activeWallet,
@@ -213,7 +213,9 @@ export class BlockchainKeyring {
       activeWallet,
       deletedWallets,
     } = json;
-    this.hdKeyring = this.hdKeyringFactory.fromJson(hdKeyring);
+    this.hdKeyring = hdKeyring
+      ? this.hdKeyringFactory.fromJson(hdKeyring)
+      : undefined;
     this.importedKeyring = this.keyringFactory.fromJson(importedKeyring);
     this.ledgerKeyring = this.ledgerKeyringFactory.fromJson(ledgerKeyring);
     this.activeWallet = activeWallet;
@@ -241,25 +243,6 @@ export class BlockchainKeyring {
     const keyring = this.getKeyring(walletAddress);
     const msgBuffer = Buffer.from(bs58.decode(msg));
     return keyring.signMessage(msgBuffer, walletAddress);
-  }
-
-  //
-  // Method for signing messages without the keyring being initialised.
-  //
-  public async signAuthenticationMessage(
-    keyringType: "hd" | "ledger",
-    msg: string
-  ) {
-    let keyring: Keyring;
-    if (keyringType === "hd") {
-      keyring = this.hdKeyringFactory.fromMnemonic(this.mnemonic(), "bip44", [
-        0,
-      ]);
-    } else {
-      throw new Error("ledger not implemented");
-    }
-    const msgBuffer = Buffer.from(bs58.decode(msg));
-    return keyring.signMessage(msgBuffer, keyring.publicKeys()[0]);
   }
 
   private getKeyring(publicKey: string): Keyring {

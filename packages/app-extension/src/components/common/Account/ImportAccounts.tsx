@@ -49,7 +49,7 @@ export type SelectedAccount = {
 };
 
 const LOAD_PUBKEY_AMOUNT = 20;
-const DISPLAY_PUBKEY_AMOUNT = 6;
+const DISPLAY_PUBKEY_AMOUNT = 5;
 
 export function ImportAccounts({
   blockchain,
@@ -316,7 +316,7 @@ export function ImportAccounts({
             marginTop: "24px",
           }}
         >
-          <Header text={`Import account ${allowMultiple ? "s" : ""}`} />
+          <Header text={`Import account${allowMultiple ? "s" : ""}`} />
           <SubtextParagraph>
             Select which account{allowMultiple ? "s" : ""} you'd like to import.
           </SubtextParagraph>
