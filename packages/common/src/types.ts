@@ -65,12 +65,6 @@ export type NftAttribute = {
   value: string;
 };
 
-export interface XnftMetadata {
-  isDarkMode: boolean;
-  username?: string;
-  avatarUrl: string;
-}
-
 export type KeyringType = "mnemonic" | "ledger";
 
 export type KeyringInit = {
