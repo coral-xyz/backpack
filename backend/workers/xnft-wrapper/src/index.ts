@@ -8,7 +8,6 @@ const V1_BUNDLES: string[] = [
   "https://ipfs.io/ipfs/bafybeibhd37z7osxbp2fvxcenid6uufsvrpumawxw4ked7h2br4duz3sme",
   "https://xnfts.s3.us-west-2.amazonaws.com/4AwaNy62XXNhgEbe3Szk9Tb7eEgDcHG3YbpEzdX8DPj5/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/9Tqzi3gb4jE3D8Ez79HUTjFfS9f9ES31NjXez6yaffd7/bundle/index.js",
-  "https://xnfts.s3.us-west-2.amazonaws.com/HqKfgFm7m4TujMwZ1wsRiEG8kMf5Se6mgK4Y1syQYq69/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/3i8Av28osHPoWZzWRoU29JBmfSJEcFtJhDzBTLhFG1u6/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/4QaPNGJFsdqT5cbURcLcVGPQD8GgCpNM6Bmf2p88ex2f/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/HGVjbFZdHuEK1e8MAXte5hG9NquPSig5RobdLvyXvSXG/bundle/index.js",
