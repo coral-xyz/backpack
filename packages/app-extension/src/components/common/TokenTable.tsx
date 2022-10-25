@@ -367,7 +367,7 @@ const WindowedTokenRowRenderer = ({
 //
 // Displays an individual token row in the table
 //
-function TokenRow({
+export function TokenRow({
   onClick,
   token,
   style,

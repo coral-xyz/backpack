@@ -56,6 +56,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO_AND_CONTEXT,
   SOLANA_CONNECTION_RPC_GET_ADDRESS_LOOKUP_TABLE,
   addressLookupTableAccountParser,
+  deserializeTransaction,
 } from "@coral-xyz/common";
 import type { SolanaConnectionBackend } from "../backend/solana-connection";
 import type { Config, Handle } from "../types";
@@ -249,10 +250,12 @@ async function handleGetTokenAccountsByOwner(
 
 async function handleSendRawTransaction(
   ctx: Context<SolanaConnectionBackend>,
-  rawTransaction: Buffer | Uint8Array | Array<number>,
+  rawTxStr: string,
   options?: SendOptions
 ) {
-  const resp = await ctx.backend.sendRawTransaction(rawTransaction, options);
+  const tx = deserializeTransaction(rawTxStr);
+  const serializedTx = tx.serialize();
+  const resp = await ctx.backend.sendRawTransaction(serializedTx, options);
   return [resp];
 }
 

@@ -222,6 +222,26 @@ app.post("/users", async (c) => {
     ],
   });
 
+  if (c.env.SLACK_WEBHOOK_URL) {
+    try {
+      await fetch(c.env.SLACK_WEBHOOK_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: [
+            variables.username,
+            `${variables.blockchain.substring(0, 3)}: ${variables.publicKey}`,
+          ].join("\n"),
+          icon_url: `https://avatars.xnfts.dev/v1/${variables.username}`,
+        }),
+      });
+    } catch (err) {
+      console.error({ slackWebhook: err });
+    }
+  }
+
   return c.json(res);
 });
 
