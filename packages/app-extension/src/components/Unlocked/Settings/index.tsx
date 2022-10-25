@@ -659,12 +659,7 @@ function WalletList({
           </div>
         )}
       </div>
-      {showAll && (
-        <AddConnectWalletButton
-          blockchain={blockchain}
-          keyringType={keyringType}
-        />
-      )}
+      {showAll && <AddConnectWalletButton blockchain={blockchain} />}
     </div>
   );
 }
@@ -701,10 +696,8 @@ export function ImportTypeBadge({ type }: { type: string }) {
 
 export const AddConnectWalletButton = ({
   blockchain,
-  keyringType,
 }: {
   blockchain: Blockchain;
-  keyringType: KeyringType;
 }) => {
   const nav = useNavStack();
   const classes = useStyles();
@@ -722,9 +715,7 @@ export const AddConnectWalletButton = ({
       <ListItem
         isFirst={false}
         isLast={true}
-        onClick={() =>
-          nav.push("add-connect-wallet", { blockchain, keyringType })
-        }
+        onClick={() => nav.push("add-connect-wallet", { blockchain })}
         classes={{ root: classes.addConnectRoot }}
       >
         <div

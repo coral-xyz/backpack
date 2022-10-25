@@ -23,11 +23,13 @@ export function HardwareOnboard({
   inviteCode,
   onComplete,
   onClose,
+  requireSignature = true,
 }: {
   blockchain: Blockchain;
   action: "create" | "import";
-  inviteCode: string | null;
   onComplete: (keyringInit: BlockchainKeyringInit) => void;
+  inviteCode?: string;
+  requireSignature?: boolean;
   onClose?: () => void;
 }) {
   const theme = useCustomTheme();
@@ -41,7 +43,7 @@ export function HardwareOnboard({
   // Flow for onboarding a hardware wallet.
   //
   const steps = [
-    <ConnectHardwareWelcome onNext={() => nextStep()} />,
+    <ConnectHardwareWelcome onNext={nextStep} />,
     <ConnectHardwareSearching
       blockchain={blockchain}
       onNext={(transport) => {
@@ -80,28 +82,43 @@ export function HardwareOnboard({
               accounts: SelectedAccount[],
               derivationPath: DerivationPath
             ) => {
-              setAccounts(accounts);
-              setDerivationPath(derivationPath);
-              nextStep();
+              if (requireSignature) {
+                setAccounts(accounts);
+                setDerivationPath(derivationPath);
+                nextStep();
+              } else {
+                onComplete({
+                  blockchain,
+                  derivationPath: derivationPath!,
+                  accountIndex: accounts![0].index,
+                  publicKey: accounts![0].publicKey,
+                  signature: null,
+                });
+              }
             }}
             onRetry={prevStep}
           />,
         ]),
-    <HardwareSign
-      blockchain={blockchain}
-      inviteCode={inviteCode ? inviteCode : ""}
-      accounts={accounts ? accounts : []}
-      derivationPath={derivationPath}
-      onNext={(signature: string) => {
-        onComplete({
-          blockchain,
-          derivationPath: derivationPath!,
-          accountIndex: accounts![0].index,
-          publicKey: accounts![0].publicKey,
-          signature,
-        });
-      }}
-    />,
+    // Prompting for a signature is optional in the component
+    ...(requireSignature
+      ? [
+          <HardwareSign
+            blockchain={blockchain}
+            inviteCode={inviteCode ? inviteCode : ""}
+            accounts={accounts ? accounts : []}
+            derivationPath={derivationPath}
+            onNext={(signature: string) => {
+              onComplete({
+                blockchain,
+                derivationPath: derivationPath!,
+                accountIndex: accounts![0].index,
+                publicKey: accounts![0].publicKey,
+                signature,
+              });
+            }}
+          />,
+        ]
+      : []),
   ];
 
   return (

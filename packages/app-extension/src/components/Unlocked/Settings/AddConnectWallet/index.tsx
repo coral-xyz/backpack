@@ -3,7 +3,6 @@ import { Box, Grid, Typography } from "@mui/material";
 import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
 import {
   Blockchain,
-  KeyringType,
   openConnectHardware,
   TAB_BALANCES,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
@@ -12,7 +11,12 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useTab, useWalletName, useBackgroundClient } from "@coral-xyz/recoil";
+import {
+  useKeyringType,
+  useTab,
+  useWalletName,
+  useBackgroundClient,
+} from "@coral-xyz/recoil";
 import { ActionCard } from "../../../common/Layout/ActionCard";
 import { HardwareWalletIcon, CheckIcon } from "../../../common/Icon";
 import { Header, SubtextParagraph } from "../../../common";
@@ -25,13 +29,12 @@ import { WalletListItem } from "../YourAccount/EditWallets";
 
 export function AddConnectWalletMenu({
   blockchain,
-  keyringType,
 }: {
   blockchain: Blockchain;
-  keyringType: KeyringType;
 }) {
   const nav = useNavStack();
   const background = useBackgroundClient();
+  const keyringType = useKeyringType();
   const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [newPublicKey, setNewPublicKey] = useState("");

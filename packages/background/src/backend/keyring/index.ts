@@ -59,7 +59,7 @@ export class KeyringStore {
     this.mnemonic = keyringInit.mnemonic;
 
     for (const blockchainKeyring of keyringInit.blockchainKeyrings) {
-      await this.initBlockchainKeyring(
+      await this.blockchainKeyringAdd(
         blockchainKeyring.blockchain,
         blockchainKeyring.derivationPath,
         blockchainKeyring.accountIndex,
@@ -96,14 +96,16 @@ export class KeyringStore {
     await this.tryUnlock(password);
   }
 
-  // Initialise a blockchain keyring.
-  public async initBlockchainKeyring(
+  /**
+   * Initialise a blockchain keyring.
+   */
+  public async blockchainKeyringAdd(
     blockchain: Blockchain,
     derivationPath: DerivationPath,
     accountIndex: number,
     publicKey?: string,
     persist = true
-  ): Promise<BlockchainKeyring> {
+  ): Promise<void> {
     const keyring = {
       [Blockchain.SOLANA]: BlockchainKeyring.solana,
       [Blockchain.ETHEREUM]: BlockchainKeyring.ethereum,
@@ -134,10 +136,19 @@ export class KeyringStore {
     if (persist) {
       await this.persist();
     }
-
-    return keyring;
   }
 
+  /**
+   * Return all the blockchains that have an initialised keyring even if they
+   * are not enabled.
+   */
+  public blockchainKeyrings(): Array<Blockchain> {
+    return [...this.blockchains.keys()].map((b) => b as Blockchain);
+  }
+
+  /**
+   * Check if a password is valid by attempting to decrypt the stored keyring.
+   */
   public async checkPassword(password: string) {
     try {
       await this.decryptKeyringFromStorage(password);
@@ -417,6 +428,9 @@ export class KeyringStore {
     this.lastUsedTs = Date.now() / 1000;
   }
 
+  /**
+   * Return all the enabled blockchains.
+   */
   public async enabledBlockchains(): Promise<Array<Blockchain>> {
     const data = await store.getWalletData();
     if (!data.enabledBlockchains) {
@@ -494,5 +508,9 @@ export class KeyringStore {
       }
     }
     throw new Error(`no keyring for ${publicKey}`);
+  }
+
+  public hasMnemonic(): boolean {
+    return !!this.mnemonic;
   }
 }

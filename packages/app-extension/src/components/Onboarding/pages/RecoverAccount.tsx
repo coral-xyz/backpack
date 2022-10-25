@@ -170,7 +170,7 @@ export const RecoverAccount = ({
       }}
     />,
     <Finish
-      inviteCode={null}
+      inviteCode={undefined}
       username={username}
       password={password!}
       keyringInit={keyringInit!}

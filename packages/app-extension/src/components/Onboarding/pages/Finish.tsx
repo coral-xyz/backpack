@@ -10,15 +10,15 @@ import { SetupComplete } from "../../common/Account/SetupComplete";
 import { getWaitlistId } from "../../common/WaitingRoom";
 
 export const Finish = ({
-  inviteCode,
   username,
   password,
   keyringInit,
+  inviteCode,
 }: {
-  inviteCode: string | null;
   username: string | null;
   password: string;
   keyringInit: KeyringInit;
+  inviteCode?: string;
 }) => {
   const [isValid, setIsValid] = useState(false);
   const background = useBackgroundClient();

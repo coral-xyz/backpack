@@ -43,6 +43,7 @@ import type {
   KeyringInit,
   DerivationPath,
   EventEmitter,
+  KeyringType,
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
 import * as store from "./store";
@@ -719,6 +720,10 @@ export class Backend {
     return this.keyringStore.createMnemonic(strength);
   }
 
+  keyringTypeRead(): KeyringType {
+    return this.keyringStore.hasMnemonic() ? "mnemonic" : "ledger";
+  }
+
   async previewPubkeys(
     blockchain: Blockchain,
     mnemonic: string,
@@ -807,11 +812,54 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  ///////////////////////////////////////////////////////////////////////////////
+  // Blockchains
+  ///////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Add a new blockchain keyring to the keyring store (i.e. initialize it).
+   */
+  async blockchainKeyringsAdd(
+    blockchain: Blockchain,
+    derivationPath: DerivationPath,
+    accountIndex: number,
+    publicKey?: string
+  ): Promise<void> {
+    this.keyringStore.blockchainKeyringAdd(
+      blockchain,
+      derivationPath,
+      accountIndex,
+      publicKey
+    );
+    // Automatically enable the newly added blockchain
+    await this.enabledBlockchainsAdd(blockchain);
+  }
+
+  /**
+   * Return all blockchains that have initialised keyrings, even if they are not
+   * enabled.
+   */
+  async blockchainKeyringsRead(): Promise<Array<Blockchain>> {
+    return this.keyringStore.blockchainKeyrings();
+  }
+
+  /**
+   * Enable a blockchain. The blockchain keyring must be initialized prior to this.
+   */
   async enabledBlockchainsAdd(blockchain: Blockchain) {
-    // TODO update to handle hardware wallets here
     const data = await store.getWalletData();
     if (data.enabledBlockchains.includes(blockchain)) {
       throw new Error("blockchain already enabled");
+    }
+
+    // Validate that the keyring is initialised before we enable it. This could
+    // be done using `this.blockchainKeyringsRead()` but we need the keyring to
+    // create a notification with the active wallet later anyway.
+    let keyring: BlockchainKeyring;
+    try {
+      keyring = this.keyringStore.keyringForBlockchain(blockchain);
+    } catch (error) {
+      throw new Error(`${blockchain} keyring not initialised`);
     }
 
     const enabledBlockchains = [...data.enabledBlockchains, blockchain];
@@ -819,17 +867,6 @@ export class Backend {
       ...data,
       enabledBlockchains,
     });
-
-    let keyring: BlockchainKeyring;
-    try {
-      keyring = this.keyringStore.keyringForBlockchain(blockchain);
-    } catch {
-      keyring = await this.keyringStore.initBlockchainKeyring(
-        blockchain,
-        "bip44",
-        0
-      );
-    }
 
     const activeWallet = keyring.getActiveWallet();
 

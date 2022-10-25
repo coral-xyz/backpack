@@ -44,6 +44,7 @@ function WalletList({
   keyring: any;
 }) {
   const theme = useCustomTheme();
+
   const flattenedWallets = [
     ...keyring.hdPublicKeys.map((k: any) => ({ ...k, type: "derived" })),
     ...keyring.importedPublicKeys.map((k: any) => ({
@@ -55,9 +56,6 @@ function WalletList({
       type: "ledger",
     })),
   ];
-
-  const keyringType: KeyringType =
-    keyring.hdPublicKeys.length === 0 ? "ledger" : "mnemonic";
 
   // TODO: replace placeholder wallet avatar with stored image when available
   return (
@@ -97,10 +95,7 @@ function WalletList({
           marginRight: "16px",
         }}
       >
-        <AddConnectWalletButton
-          blockchain={blockchain}
-          keyringType={keyringType}
-        />
+        <AddConnectWalletButton blockchain={blockchain} />
       </div>
     </div>
   );
