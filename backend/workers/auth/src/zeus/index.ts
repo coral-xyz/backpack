@@ -989,39 +989,13 @@ export const $ = <Type extends GraphQLVariableType, Name extends string>(
 };
 type ZEUS_INTERFACES = never;
 export type ScalarCoders = {
-  bytea?: ScalarResolver;
   citext?: ScalarResolver;
-  jsonb?: ScalarResolver;
   timestamptz?: ScalarResolver;
   uuid?: ScalarResolver;
 };
 type ZEUS_UNIONS = never;
 
 export type ValueTypes = {
-  /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
-  ["Boolean_comparison_exp"]: {
-    _eq?: boolean | undefined | null | Variable<any, string>;
-    _gt?: boolean | undefined | null | Variable<any, string>;
-    _gte?: boolean | undefined | null | Variable<any, string>;
-    _in?: Array<boolean> | undefined | null | Variable<any, string>;
-    _is_null?: boolean | undefined | null | Variable<any, string>;
-    _lt?: boolean | undefined | null | Variable<any, string>;
-    _lte?: boolean | undefined | null | Variable<any, string>;
-    _neq?: boolean | undefined | null | Variable<any, string>;
-    _nin?: Array<boolean> | undefined | null | Variable<any, string>;
-  };
-  /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
-  ["Int_comparison_exp"]: {
-    _eq?: number | undefined | null | Variable<any, string>;
-    _gt?: number | undefined | null | Variable<any, string>;
-    _gte?: number | undefined | null | Variable<any, string>;
-    _in?: Array<number> | undefined | null | Variable<any, string>;
-    _is_null?: boolean | undefined | null | Variable<any, string>;
-    _lt?: number | undefined | null | Variable<any, string>;
-    _lte?: number | undefined | null | Variable<any, string>;
-    _neq?: number | undefined | null | Variable<any, string>;
-    _nin?: Array<number> | undefined | null | Variable<any, string>;
-  };
   /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
   ["String_comparison_exp"]: {
     _eq?: string | undefined | null | Variable<any, string>;
@@ -1054,763 +1028,14 @@ export type ValueTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined | null | Variable<any, string>;
   };
-  /** columns and relationships of "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews"]: AliasType<{
-    approved?: boolean | `@${string}`;
-    authority?: boolean | `@${string}`;
-    contact?: boolean | `@${string}`;
-    created_at?: boolean | `@${string}`;
-    data?: [
-      {
-        /** JSON select path */
-        path?: string | undefined | null | Variable<any, string>;
-      },
-      boolean | `@${string}`
-    ];
-    id?: boolean | `@${string}`;
-    ix_data?: boolean | `@${string}`;
-    ix_keys?: [
-      {
-        /** JSON select path */
-        path?: string | undefined | null | Variable<any, string>;
-      },
-      boolean | `@${string}`
-    ];
-    processed?: boolean | `@${string}`;
-    signature?: boolean | `@${string}`;
-    type?: boolean | `@${string}`;
-    xnft?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregated selection of "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_aggregate"]: AliasType<{
-    aggregate?: ValueTypes["appstore_pending_curator_reviews_aggregate_fields"];
-    nodes?: ValueTypes["appstore_pending_curator_reviews"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate fields of "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_aggregate_fields"]: AliasType<{
-    avg?: ValueTypes["appstore_pending_curator_reviews_avg_fields"];
-    count?: [
-      {
-        columns?:
-          | Array<ValueTypes["appstore_pending_curator_reviews_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string>;
-        distinct?: boolean | undefined | null | Variable<any, string>;
-      },
-      boolean | `@${string}`
-    ];
-    max?: ValueTypes["appstore_pending_curator_reviews_max_fields"];
-    min?: ValueTypes["appstore_pending_curator_reviews_min_fields"];
-    stddev?: ValueTypes["appstore_pending_curator_reviews_stddev_fields"];
-    stddev_pop?: ValueTypes["appstore_pending_curator_reviews_stddev_pop_fields"];
-    stddev_samp?: ValueTypes["appstore_pending_curator_reviews_stddev_samp_fields"];
-    sum?: ValueTypes["appstore_pending_curator_reviews_sum_fields"];
-    var_pop?: ValueTypes["appstore_pending_curator_reviews_var_pop_fields"];
-    var_samp?: ValueTypes["appstore_pending_curator_reviews_var_samp_fields"];
-    variance?: ValueTypes["appstore_pending_curator_reviews_variance_fields"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** append existing jsonb value of filtered columns with new jsonb value */
-  ["appstore_pending_curator_reviews_append_input"]: {
-    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    ix_keys?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-  };
-  /** aggregate avg on columns */
-  ["appstore_pending_curator_reviews_avg_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Boolean expression to filter rows from the table "appstore.pending_curator_reviews". All fields are combined with a logical 'AND'. */
-  ["appstore_pending_curator_reviews_bool_exp"]: {
-    _and?:
-      | Array<ValueTypes["appstore_pending_curator_reviews_bool_exp"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-    _not?:
-      | ValueTypes["appstore_pending_curator_reviews_bool_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    _or?:
-      | Array<ValueTypes["appstore_pending_curator_reviews_bool_exp"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-    approved?:
-      | ValueTypes["Boolean_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    authority?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    contact?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    created_at?:
-      | ValueTypes["timestamptz_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    data?:
-      | ValueTypes["jsonb_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?:
-      | ValueTypes["Int_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    ix_data?:
-      | ValueTypes["bytea_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    ix_keys?:
-      | ValueTypes["jsonb_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    processed?:
-      | ValueTypes["Boolean_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    signature?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    type?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    xnft?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** unique or primary key constraints on table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_constraint"]: appstore_pending_curator_reviews_constraint;
-  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-  ["appstore_pending_curator_reviews_delete_at_path_input"]: {
-    data?: Array<string> | undefined | null | Variable<any, string>;
-    ix_keys?: Array<string> | undefined | null | Variable<any, string>;
-  };
-  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-  ["appstore_pending_curator_reviews_delete_elem_input"]: {
-    data?: number | undefined | null | Variable<any, string>;
-    ix_keys?: number | undefined | null | Variable<any, string>;
-  };
-  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-  ["appstore_pending_curator_reviews_delete_key_input"]: {
-    data?: string | undefined | null | Variable<any, string>;
-    ix_keys?: string | undefined | null | Variable<any, string>;
-  };
-  /** input type for incrementing numeric columns in table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_inc_input"]: {
-    id?: number | undefined | null | Variable<any, string>;
-  };
-  /** input type for inserting data into table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_insert_input"]: {
-    approved?: boolean | undefined | null | Variable<any, string>;
-    authority?: string | undefined | null | Variable<any, string>;
-    contact?: string | undefined | null | Variable<any, string>;
-    created_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    id?: number | undefined | null | Variable<any, string>;
-    ix_data?: ValueTypes["bytea"] | undefined | null | Variable<any, string>;
-    ix_keys?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    processed?: boolean | undefined | null | Variable<any, string>;
-    signature?: string | undefined | null | Variable<any, string>;
-    type?: string | undefined | null | Variable<any, string>;
-    xnft?: string | undefined | null | Variable<any, string>;
-  };
-  /** aggregate max on columns */
-  ["appstore_pending_curator_reviews_max_fields"]: AliasType<{
-    authority?: boolean | `@${string}`;
-    contact?: boolean | `@${string}`;
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    signature?: boolean | `@${string}`;
-    type?: boolean | `@${string}`;
-    xnft?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate min on columns */
-  ["appstore_pending_curator_reviews_min_fields"]: AliasType<{
-    authority?: boolean | `@${string}`;
-    contact?: boolean | `@${string}`;
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    signature?: boolean | `@${string}`;
-    type?: boolean | `@${string}`;
-    xnft?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** response of any mutation on the table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_mutation_response"]: AliasType<{
-    /** number of rows affected by the mutation */
-    affected_rows?: boolean | `@${string}`;
-    /** data from the rows affected by the mutation */
-    returning?: ValueTypes["appstore_pending_curator_reviews"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** on_conflict condition type for table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_on_conflict"]: {
-    constraint:
-      | ValueTypes["appstore_pending_curator_reviews_constraint"]
-      | Variable<any, string>;
-    update_columns:
-      | Array<ValueTypes["appstore_pending_curator_reviews_update_column"]>
-      | Variable<any, string>;
-    where?:
-      | ValueTypes["appstore_pending_curator_reviews_bool_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** Ordering options when selecting data from "appstore.pending_curator_reviews". */
-  ["appstore_pending_curator_reviews_order_by"]: {
-    approved?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    authority?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    contact?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    created_at?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    data?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    ix_data?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    ix_keys?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    processed?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    signature?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    type?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    xnft?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-  };
-  /** primary key columns input for table: appstore_pending_curator_reviews */
-  ["appstore_pending_curator_reviews_pk_columns_input"]: {
-    id: number | Variable<any, string>;
-  };
-  /** prepend existing jsonb value of filtered columns with new jsonb value */
-  ["appstore_pending_curator_reviews_prepend_input"]: {
-    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    ix_keys?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-  };
-  /** select columns of table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_select_column"]: appstore_pending_curator_reviews_select_column;
-  /** input type for updating data in table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_set_input"]: {
-    approved?: boolean | undefined | null | Variable<any, string>;
-    authority?: string | undefined | null | Variable<any, string>;
-    contact?: string | undefined | null | Variable<any, string>;
-    created_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    id?: number | undefined | null | Variable<any, string>;
-    ix_data?: ValueTypes["bytea"] | undefined | null | Variable<any, string>;
-    ix_keys?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    processed?: boolean | undefined | null | Variable<any, string>;
-    signature?: string | undefined | null | Variable<any, string>;
-    type?: string | undefined | null | Variable<any, string>;
-    xnft?: string | undefined | null | Variable<any, string>;
-  };
-  /** aggregate stddev on columns */
-  ["appstore_pending_curator_reviews_stddev_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate stddev_pop on columns */
-  ["appstore_pending_curator_reviews_stddev_pop_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate stddev_samp on columns */
-  ["appstore_pending_curator_reviews_stddev_samp_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Streaming cursor of the table "appstore_pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value:
-      | ValueTypes["appstore_pending_curator_reviews_stream_cursor_value_input"]
-      | Variable<any, string>;
-    /** cursor ordering */
-    ordering?:
-      | ValueTypes["cursor_ordering"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["appstore_pending_curator_reviews_stream_cursor_value_input"]: {
-    approved?: boolean | undefined | null | Variable<any, string>;
-    authority?: string | undefined | null | Variable<any, string>;
-    contact?: string | undefined | null | Variable<any, string>;
-    created_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    id?: number | undefined | null | Variable<any, string>;
-    ix_data?: ValueTypes["bytea"] | undefined | null | Variable<any, string>;
-    ix_keys?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    processed?: boolean | undefined | null | Variable<any, string>;
-    signature?: string | undefined | null | Variable<any, string>;
-    type?: string | undefined | null | Variable<any, string>;
-    xnft?: string | undefined | null | Variable<any, string>;
-  };
-  /** aggregate sum on columns */
-  ["appstore_pending_curator_reviews_sum_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** update columns of table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_update_column"]: appstore_pending_curator_reviews_update_column;
-  ["appstore_pending_curator_reviews_updates"]: {
-    /** append existing jsonb value of filtered columns with new jsonb value */
-    _append?:
-      | ValueTypes["appstore_pending_curator_reviews_append_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-    _delete_at_path?:
-      | ValueTypes["appstore_pending_curator_reviews_delete_at_path_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-    _delete_elem?:
-      | ValueTypes["appstore_pending_curator_reviews_delete_elem_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-    _delete_key?:
-      | ValueTypes["appstore_pending_curator_reviews_delete_key_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    /** increments the numeric columns with given value of the filtered values */
-    _inc?:
-      | ValueTypes["appstore_pending_curator_reviews_inc_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    /** prepend existing jsonb value of filtered columns with new jsonb value */
-    _prepend?:
-      | ValueTypes["appstore_pending_curator_reviews_prepend_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    /** sets the columns of the filtered rows to the given values */
-    _set?:
-      | ValueTypes["appstore_pending_curator_reviews_set_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    where:
-      | ValueTypes["appstore_pending_curator_reviews_bool_exp"]
-      | Variable<any, string>;
-  };
-  /** aggregate var_pop on columns */
-  ["appstore_pending_curator_reviews_var_pop_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate var_samp on columns */
-  ["appstore_pending_curator_reviews_var_samp_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate variance on columns */
-  ["appstore_pending_curator_reviews_variance_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** ids are beta invite codes */
-  ["auth_invitations"]: AliasType<{
-    created_at?: boolean | `@${string}`;
-    data?: [
-      {
-        /** JSON select path */
-        path?: string | undefined | null | Variable<any, string>;
-      },
-      boolean | `@${string}`
-    ];
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregated selection of "auth.invitations" */
-  ["auth_invitations_aggregate"]: AliasType<{
-    aggregate?: ValueTypes["auth_invitations_aggregate_fields"];
-    nodes?: ValueTypes["auth_invitations"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate fields of "auth.invitations" */
-  ["auth_invitations_aggregate_fields"]: AliasType<{
-    count?: [
-      {
-        columns?:
-          | Array<ValueTypes["auth_invitations_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string>;
-        distinct?: boolean | undefined | null | Variable<any, string>;
-      },
-      boolean | `@${string}`
-    ];
-    max?: ValueTypes["auth_invitations_max_fields"];
-    min?: ValueTypes["auth_invitations_min_fields"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** append existing jsonb value of filtered columns with new jsonb value */
-  ["auth_invitations_append_input"]: {
-    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-  };
-  /** Boolean expression to filter rows from the table "auth.invitations". All fields are combined with a logical 'AND'. */
-  ["auth_invitations_bool_exp"]: {
-    _and?:
-      | Array<ValueTypes["auth_invitations_bool_exp"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-    _not?:
-      | ValueTypes["auth_invitations_bool_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    _or?:
-      | Array<ValueTypes["auth_invitations_bool_exp"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-    created_at?:
-      | ValueTypes["timestamptz_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    data?:
-      | ValueTypes["jsonb_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?:
-      | ValueTypes["uuid_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** unique or primary key constraints on table "auth.invitations" */
-  ["auth_invitations_constraint"]: auth_invitations_constraint;
-  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-  ["auth_invitations_delete_at_path_input"]: {
-    data?: Array<string> | undefined | null | Variable<any, string>;
-  };
-  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-  ["auth_invitations_delete_elem_input"]: {
-    data?: number | undefined | null | Variable<any, string>;
-  };
-  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-  ["auth_invitations_delete_key_input"]: {
-    data?: string | undefined | null | Variable<any, string>;
-  };
-  /** input type for inserting data into table "auth.invitations" */
-  ["auth_invitations_insert_input"]: {
-    created_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
-  };
-  /** aggregate max on columns */
-  ["auth_invitations_max_fields"]: AliasType<{
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate min on columns */
-  ["auth_invitations_min_fields"]: AliasType<{
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** response of any mutation on the table "auth.invitations" */
-  ["auth_invitations_mutation_response"]: AliasType<{
-    /** number of rows affected by the mutation */
-    affected_rows?: boolean | `@${string}`;
-    /** data from the rows affected by the mutation */
-    returning?: ValueTypes["auth_invitations"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** input type for inserting object relation for remote table "auth.invitations" */
-  ["auth_invitations_obj_rel_insert_input"]: {
-    data: ValueTypes["auth_invitations_insert_input"] | Variable<any, string>;
-    /** upsert condition */
-    on_conflict?:
-      | ValueTypes["auth_invitations_on_conflict"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** on_conflict condition type for table "auth.invitations" */
-  ["auth_invitations_on_conflict"]: {
-    constraint:
-      | ValueTypes["auth_invitations_constraint"]
-      | Variable<any, string>;
-    update_columns:
-      | Array<ValueTypes["auth_invitations_update_column"]>
-      | Variable<any, string>;
-    where?:
-      | ValueTypes["auth_invitations_bool_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** Ordering options when selecting data from "auth.invitations". */
-  ["auth_invitations_order_by"]: {
-    created_at?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    data?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-  };
-  /** primary key columns input for table: auth_invitations */
-  ["auth_invitations_pk_columns_input"]: {
-    id: ValueTypes["uuid"] | Variable<any, string>;
-  };
-  /** prepend existing jsonb value of filtered columns with new jsonb value */
-  ["auth_invitations_prepend_input"]: {
-    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-  };
-  /** select columns of table "auth.invitations" */
-  ["auth_invitations_select_column"]: auth_invitations_select_column;
-  /** input type for updating data in table "auth.invitations" */
-  ["auth_invitations_set_input"]: {
-    created_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
-  };
-  /** Streaming cursor of the table "auth_invitations" */
-  ["auth_invitations_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value:
-      | ValueTypes["auth_invitations_stream_cursor_value_input"]
-      | Variable<any, string>;
-    /** cursor ordering */
-    ordering?:
-      | ValueTypes["cursor_ordering"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_invitations_stream_cursor_value_input"]: {
-    created_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
-  };
-  /** update columns of table "auth.invitations" */
-  ["auth_invitations_update_column"]: auth_invitations_update_column;
-  ["auth_invitations_updates"]: {
-    /** append existing jsonb value of filtered columns with new jsonb value */
-    _append?:
-      | ValueTypes["auth_invitations_append_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-    _delete_at_path?:
-      | ValueTypes["auth_invitations_delete_at_path_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-    _delete_elem?:
-      | ValueTypes["auth_invitations_delete_elem_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-    _delete_key?:
-      | ValueTypes["auth_invitations_delete_key_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    /** prepend existing jsonb value of filtered columns with new jsonb value */
-    _prepend?:
-      | ValueTypes["auth_invitations_prepend_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    /** sets the columns of the filtered rows to the given values */
-    _set?:
-      | ValueTypes["auth_invitations_set_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    where: ValueTypes["auth_invitations_bool_exp"] | Variable<any, string>;
-  };
-  /** columns and relationships of "auth.publickeys" */
-  ["auth_publickeys"]: AliasType<{
-    blockchain?: boolean | `@${string}`;
-    publickey?: boolean | `@${string}`;
-    user_id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregated selection of "auth.publickeys" */
-  ["auth_publickeys_aggregate"]: AliasType<{
-    aggregate?: ValueTypes["auth_publickeys_aggregate_fields"];
-    nodes?: ValueTypes["auth_publickeys"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate fields of "auth.publickeys" */
-  ["auth_publickeys_aggregate_fields"]: AliasType<{
-    count?: [
-      {
-        columns?:
-          | Array<ValueTypes["auth_publickeys_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string>;
-        distinct?: boolean | undefined | null | Variable<any, string>;
-      },
-      boolean | `@${string}`
-    ];
-    max?: ValueTypes["auth_publickeys_max_fields"];
-    min?: ValueTypes["auth_publickeys_min_fields"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Boolean expression to filter rows from the table "auth.publickeys". All fields are combined with a logical 'AND'. */
-  ["auth_publickeys_bool_exp"]: {
-    _and?:
-      | Array<ValueTypes["auth_publickeys_bool_exp"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-    _not?:
-      | ValueTypes["auth_publickeys_bool_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    _or?:
-      | Array<ValueTypes["auth_publickeys_bool_exp"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-    blockchain?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    publickey?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    user_id?:
-      | ValueTypes["uuid_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
   /** columns and relationships of "auth.publickeys_history" */
   ["auth_publickeys_history"]: AliasType<{
     blockchain?: boolean | `@${string}`;
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
     publickey?: boolean | `@${string}`;
-    user_id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregated selection of "auth.publickeys_history" */
-  ["auth_publickeys_history_aggregate"]: AliasType<{
-    aggregate?: ValueTypes["auth_publickeys_history_aggregate_fields"];
-    nodes?: ValueTypes["auth_publickeys_history"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate fields of "auth.publickeys_history" */
-  ["auth_publickeys_history_aggregate_fields"]: AliasType<{
-    avg?: ValueTypes["auth_publickeys_history_avg_fields"];
-    count?: [
-      {
-        columns?:
-          | Array<ValueTypes["auth_publickeys_history_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string>;
-        distinct?: boolean | undefined | null | Variable<any, string>;
-      },
-      boolean | `@${string}`
-    ];
-    max?: ValueTypes["auth_publickeys_history_max_fields"];
-    min?: ValueTypes["auth_publickeys_history_min_fields"];
-    stddev?: ValueTypes["auth_publickeys_history_stddev_fields"];
-    stddev_pop?: ValueTypes["auth_publickeys_history_stddev_pop_fields"];
-    stddev_samp?: ValueTypes["auth_publickeys_history_stddev_samp_fields"];
-    sum?: ValueTypes["auth_publickeys_history_sum_fields"];
-    var_pop?: ValueTypes["auth_publickeys_history_var_pop_fields"];
-    var_samp?: ValueTypes["auth_publickeys_history_var_samp_fields"];
-    variance?: ValueTypes["auth_publickeys_history_variance_fields"];
     __typename?: boolean | `@${string}`;
   }>;
   /** order by aggregate values of table "auth.publickeys_history" */
   ["auth_publickeys_history_aggregate_order_by"]: {
-    avg?:
-      | ValueTypes["auth_publickeys_history_avg_order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
     count?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     max?:
       | ValueTypes["auth_publickeys_history_max_order_by"]
@@ -1819,41 +1044,6 @@ export type ValueTypes = {
       | Variable<any, string>;
     min?:
       | ValueTypes["auth_publickeys_history_min_order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    stddev?:
-      | ValueTypes["auth_publickeys_history_stddev_order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    stddev_pop?:
-      | ValueTypes["auth_publickeys_history_stddev_pop_order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    stddev_samp?:
-      | ValueTypes["auth_publickeys_history_stddev_samp_order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    sum?:
-      | ValueTypes["auth_publickeys_history_sum_order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    var_pop?:
-      | ValueTypes["auth_publickeys_history_var_pop_order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    var_samp?:
-      | ValueTypes["auth_publickeys_history_var_samp_order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    variance?:
-      | ValueTypes["auth_publickeys_history_variance_order_by"]
       | undefined
       | null
       | Variable<any, string>;
@@ -1869,15 +1059,6 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
-  };
-  /** aggregate avg on columns */
-  ["auth_publickeys_history_avg_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** order by avg() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_avg_order_by"]: {
-    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
   };
   /** Boolean expression to filter rows from the table "auth.publickeys_history". All fields are combined with a logical 'AND'. */
   ["auth_publickeys_history_bool_exp"]: {
@@ -1901,54 +1082,20 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
-    created_at?:
-      | ValueTypes["timestamptz_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?:
-      | ValueTypes["Int_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
     publickey?:
       | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    user_id?:
-      | ValueTypes["uuid_comparison_exp"]
       | undefined
       | null
       | Variable<any, string>;
   };
   /** unique or primary key constraints on table "auth.publickeys_history" */
   ["auth_publickeys_history_constraint"]: auth_publickeys_history_constraint;
-  /** input type for incrementing numeric columns in table "auth.publickeys_history" */
-  ["auth_publickeys_history_inc_input"]: {
-    id?: number | undefined | null | Variable<any, string>;
-  };
   /** input type for inserting data into table "auth.publickeys_history" */
   ["auth_publickeys_history_insert_input"]: {
     blockchain?: string | undefined | null | Variable<any, string>;
-    created_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?: number | undefined | null | Variable<any, string>;
     publickey?: string | undefined | null | Variable<any, string>;
     user_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
   };
-  /** aggregate max on columns */
-  ["auth_publickeys_history_max_fields"]: AliasType<{
-    blockchain?: boolean | `@${string}`;
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    publickey?: boolean | `@${string}`;
-    user_id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
   /** order by max() on columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_max_order_by"]: {
     blockchain?:
@@ -1956,28 +1103,12 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
-    created_at?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     publickey?:
       | ValueTypes["order_by"]
       | undefined
       | null
       | Variable<any, string>;
-    user_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
   };
-  /** aggregate min on columns */
-  ["auth_publickeys_history_min_fields"]: AliasType<{
-    blockchain?: boolean | `@${string}`;
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    publickey?: boolean | `@${string}`;
-    user_id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
   /** order by min() on columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_min_order_by"]: {
     blockchain?:
@@ -1985,18 +1116,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
-    created_at?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     publickey?:
       | ValueTypes["order_by"]
       | undefined
       | null
       | Variable<any, string>;
-    user_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
   };
   /** response of any mutation on the table "auth.publickeys_history" */
   ["auth_publickeys_history_mutation_response"]: AliasType<{
@@ -2027,64 +1151,14 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
-    created_at?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     publickey?:
       | ValueTypes["order_by"]
       | undefined
       | null
       | Variable<any, string>;
-    user_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-  };
-  /** primary key columns input for table: auth_publickeys_history */
-  ["auth_publickeys_history_pk_columns_input"]: {
-    id: number | Variable<any, string>;
   };
   /** select columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_select_column"]: auth_publickeys_history_select_column;
-  /** input type for updating data in table "auth.publickeys_history" */
-  ["auth_publickeys_history_set_input"]: {
-    blockchain?: string | undefined | null | Variable<any, string>;
-    created_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?: number | undefined | null | Variable<any, string>;
-    publickey?: string | undefined | null | Variable<any, string>;
-    user_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
-  };
-  /** aggregate stddev on columns */
-  ["auth_publickeys_history_stddev_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** order by stddev() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_stddev_order_by"]: {
-    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-  };
-  /** aggregate stddev_pop on columns */
-  ["auth_publickeys_history_stddev_pop_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** order by stddev_pop() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_stddev_pop_order_by"]: {
-    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-  };
-  /** aggregate stddev_samp on columns */
-  ["auth_publickeys_history_stddev_samp_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** order by stddev_samp() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_stddev_samp_order_by"]: {
-    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-  };
   /** Streaming cursor of the table "auth_publickeys_history" */
   ["auth_publickeys_history_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -2101,125 +1175,13 @@ export type ValueTypes = {
   /** Initial value of the column from where the streaming should start */
   ["auth_publickeys_history_stream_cursor_value_input"]: {
     blockchain?: string | undefined | null | Variable<any, string>;
-    created_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?: number | undefined | null | Variable<any, string>;
     publickey?: string | undefined | null | Variable<any, string>;
-    user_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
   };
-  /** aggregate sum on columns */
-  ["auth_publickeys_history_sum_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** order by sum() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_sum_order_by"]: {
-    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-  };
-  /** update columns of table "auth.publickeys_history" */
+  /** placeholder for update columns of table "auth.publickeys_history" (current role has no relevant permissions) */
   ["auth_publickeys_history_update_column"]: auth_publickeys_history_update_column;
-  ["auth_publickeys_history_updates"]: {
-    /** increments the numeric columns with given value of the filtered values */
-    _inc?:
-      | ValueTypes["auth_publickeys_history_inc_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    /** sets the columns of the filtered rows to the given values */
-    _set?:
-      | ValueTypes["auth_publickeys_history_set_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    where:
-      | ValueTypes["auth_publickeys_history_bool_exp"]
-      | Variable<any, string>;
-  };
-  /** aggregate var_pop on columns */
-  ["auth_publickeys_history_var_pop_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** order by var_pop() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_var_pop_order_by"]: {
-    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-  };
-  /** aggregate var_samp on columns */
-  ["auth_publickeys_history_var_samp_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** order by var_samp() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_var_samp_order_by"]: {
-    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-  };
-  /** aggregate variance on columns */
-  ["auth_publickeys_history_variance_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** order by variance() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_variance_order_by"]: {
-    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-  };
-  /** aggregate max on columns */
-  ["auth_publickeys_max_fields"]: AliasType<{
-    blockchain?: boolean | `@${string}`;
-    publickey?: boolean | `@${string}`;
-    user_id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate min on columns */
-  ["auth_publickeys_min_fields"]: AliasType<{
-    blockchain?: boolean | `@${string}`;
-    publickey?: boolean | `@${string}`;
-    user_id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Ordering options when selecting data from "auth.publickeys". */
-  ["auth_publickeys_order_by"]: {
-    blockchain?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    publickey?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    user_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-  };
-  /** select columns of table "auth.publickeys" */
-  ["auth_publickeys_select_column"]: auth_publickeys_select_column;
-  /** Streaming cursor of the table "auth_publickeys" */
-  ["auth_publickeys_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value:
-      | ValueTypes["auth_publickeys_stream_cursor_value_input"]
-      | Variable<any, string>;
-    /** cursor ordering */
-    ordering?:
-      | ValueTypes["cursor_ordering"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_publickeys_stream_cursor_value_input"]: {
-    blockchain?: string | undefined | null | Variable<any, string>;
-    publickey?: string | undefined | null | Variable<any, string>;
-    user_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
-  };
   /** columns and relationships of "auth.users" */
   ["auth_users"]: AliasType<{
-    created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
-    invitation_id?: boolean | `@${string}`;
-    last_active_at?: boolean | `@${string}`;
     publickeys?: [
       {
         /** distinct select on columns */
@@ -2254,43 +1216,7 @@ export type ValueTypes = {
       },
       ValueTypes["auth_publickeys_history"]
     ];
-    publickeys_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_publickeys_history_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_publickeys_history_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_publickeys_history_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_publickeys_history_aggregate"]
-    ];
-    updated_at?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
-    waitlist_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** aggregated selection of "auth.users" */
@@ -2333,23 +1259,8 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
-    created_at?:
-      | ValueTypes["timestamptz_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
     id?:
       | ValueTypes["uuid_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    invitation_id?:
-      | ValueTypes["uuid_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    last_active_at?:
-      | ValueTypes["timestamptz_comparison_exp"]
       | undefined
       | null
       | Variable<any, string>;
@@ -2358,18 +1269,8 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
-    updated_at?:
-      | ValueTypes["timestamptz_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
     username?:
       | ValueTypes["citext_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    waitlist_id?:
-      | ValueTypes["String_comparison_exp"]
       | undefined
       | null
       | Variable<any, string>;
@@ -2378,19 +1279,8 @@ export type ValueTypes = {
   ["auth_users_constraint"]: auth_users_constraint;
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
-    created_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
     invitation_id?:
       | ValueTypes["uuid"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    last_active_at?:
-      | ValueTypes["timestamptz"]
       | undefined
       | null
       | Variable<any, string>;
@@ -2399,34 +1289,19 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
-    updated_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
     username?: ValueTypes["citext"] | undefined | null | Variable<any, string>;
     waitlist_id?: string | undefined | null | Variable<any, string>;
   };
   /** aggregate max on columns */
   ["auth_users_max_fields"]: AliasType<{
-    created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
-    invitation_id?: boolean | `@${string}`;
-    last_active_at?: boolean | `@${string}`;
-    updated_at?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
-    waitlist_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** aggregate min on columns */
   ["auth_users_min_fields"]: AliasType<{
-    created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
-    invitation_id?: boolean | `@${string}`;
-    last_active_at?: boolean | `@${string}`;
-    updated_at?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
-    waitlist_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** response of any mutation on the table "auth.users" */
@@ -2451,38 +1326,13 @@ export type ValueTypes = {
   };
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
-    created_at?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    invitation_id?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    last_active_at?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
     publickeys_aggregate?:
       | ValueTypes["auth_publickeys_history_aggregate_order_by"]
       | undefined
       | null
       | Variable<any, string>;
-    updated_at?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
     username?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    waitlist_id?:
       | ValueTypes["order_by"]
       | undefined
       | null
@@ -2496,29 +1346,11 @@ export type ValueTypes = {
   ["auth_users_select_column"]: auth_users_select_column;
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
-    created_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
-    invitation_id?:
-      | ValueTypes["uuid"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    last_active_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
     updated_at?:
       | ValueTypes["timestamptz"]
       | undefined
       | null
       | Variable<any, string>;
-    username?: ValueTypes["citext"] | undefined | null | Variable<any, string>;
-    waitlist_id?: string | undefined | null | Variable<any, string>;
   };
   /** Streaming cursor of the table "auth_users" */
   ["auth_users_stream_cursor_input"]: {
@@ -2535,29 +1367,8 @@ export type ValueTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_users_stream_cursor_value_input"]: {
-    created_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
     id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
-    invitation_id?:
-      | ValueTypes["uuid"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    last_active_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    updated_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
     username?: ValueTypes["citext"] | undefined | null | Variable<any, string>;
-    waitlist_id?: string | undefined | null | Variable<any, string>;
   };
   /** update columns of table "auth.users" */
   ["auth_users_update_column"]: auth_users_update_column;
@@ -2569,23 +1380,6 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     where: ValueTypes["auth_users_bool_exp"] | Variable<any, string>;
-  };
-  ["bytea"]: unknown;
-  /** Boolean expression to compare columns of type "bytea". All fields are combined with logical 'AND'. */
-  ["bytea_comparison_exp"]: {
-    _eq?: ValueTypes["bytea"] | undefined | null | Variable<any, string>;
-    _gt?: ValueTypes["bytea"] | undefined | null | Variable<any, string>;
-    _gte?: ValueTypes["bytea"] | undefined | null | Variable<any, string>;
-    _in?: Array<ValueTypes["bytea"]> | undefined | null | Variable<any, string>;
-    _is_null?: boolean | undefined | null | Variable<any, string>;
-    _lt?: ValueTypes["bytea"] | undefined | null | Variable<any, string>;
-    _lte?: ValueTypes["bytea"] | undefined | null | Variable<any, string>;
-    _neq?: ValueTypes["bytea"] | undefined | null | Variable<any, string>;
-    _nin?:
-      | Array<ValueTypes["bytea"]>
-      | undefined
-      | null
-      | Variable<any, string>;
   };
   ["citext"]: unknown;
   /** Boolean expression to compare columns of type "citext". All fields are combined with logical 'AND'. */
@@ -2630,304 +1424,6 @@ export type ValueTypes = {
   };
   /** ordering argument of a cursor */
   ["cursor_ordering"]: cursor_ordering;
-  /** columns and relationships of "images" */
-  ["images"]: AliasType<{
-    completed?: boolean | `@${string}`;
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    /** An object relationship */
-    invitation?: ValueTypes["auth_invitations"];
-    invite_code?: boolean | `@${string}`;
-    prompt?: boolean | `@${string}`;
-    uri?: boolean | `@${string}`;
-    winner?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregated selection of "images" */
-  ["images_aggregate"]: AliasType<{
-    aggregate?: ValueTypes["images_aggregate_fields"];
-    nodes?: ValueTypes["images"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate fields of "images" */
-  ["images_aggregate_fields"]: AliasType<{
-    avg?: ValueTypes["images_avg_fields"];
-    count?: [
-      {
-        columns?:
-          | Array<ValueTypes["images_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string>;
-        distinct?: boolean | undefined | null | Variable<any, string>;
-      },
-      boolean | `@${string}`
-    ];
-    max?: ValueTypes["images_max_fields"];
-    min?: ValueTypes["images_min_fields"];
-    stddev?: ValueTypes["images_stddev_fields"];
-    stddev_pop?: ValueTypes["images_stddev_pop_fields"];
-    stddev_samp?: ValueTypes["images_stddev_samp_fields"];
-    sum?: ValueTypes["images_sum_fields"];
-    var_pop?: ValueTypes["images_var_pop_fields"];
-    var_samp?: ValueTypes["images_var_samp_fields"];
-    variance?: ValueTypes["images_variance_fields"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate avg on columns */
-  ["images_avg_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Boolean expression to filter rows from the table "images". All fields are combined with a logical 'AND'. */
-  ["images_bool_exp"]: {
-    _and?:
-      | Array<ValueTypes["images_bool_exp"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-    _not?:
-      | ValueTypes["images_bool_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    _or?:
-      | Array<ValueTypes["images_bool_exp"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-    completed?:
-      | ValueTypes["Boolean_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    created_at?:
-      | ValueTypes["timestamptz_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?:
-      | ValueTypes["Int_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    invitation?:
-      | ValueTypes["auth_invitations_bool_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    invite_code?:
-      | ValueTypes["uuid_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    prompt?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    uri?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    winner?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** unique or primary key constraints on table "images" */
-  ["images_constraint"]: images_constraint;
-  /** input type for incrementing numeric columns in table "images" */
-  ["images_inc_input"]: {
-    id?: number | undefined | null | Variable<any, string>;
-  };
-  /** input type for inserting data into table "images" */
-  ["images_insert_input"]: {
-    completed?: boolean | undefined | null | Variable<any, string>;
-    created_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?: number | undefined | null | Variable<any, string>;
-    invitation?:
-      | ValueTypes["auth_invitations_obj_rel_insert_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    invite_code?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
-    prompt?: string | undefined | null | Variable<any, string>;
-    uri?: string | undefined | null | Variable<any, string>;
-    winner?: string | undefined | null | Variable<any, string>;
-  };
-  /** aggregate max on columns */
-  ["images_max_fields"]: AliasType<{
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    invite_code?: boolean | `@${string}`;
-    prompt?: boolean | `@${string}`;
-    uri?: boolean | `@${string}`;
-    winner?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate min on columns */
-  ["images_min_fields"]: AliasType<{
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    invite_code?: boolean | `@${string}`;
-    prompt?: boolean | `@${string}`;
-    uri?: boolean | `@${string}`;
-    winner?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** response of any mutation on the table "images" */
-  ["images_mutation_response"]: AliasType<{
-    /** number of rows affected by the mutation */
-    affected_rows?: boolean | `@${string}`;
-    /** data from the rows affected by the mutation */
-    returning?: ValueTypes["images"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** on_conflict condition type for table "images" */
-  ["images_on_conflict"]: {
-    constraint: ValueTypes["images_constraint"] | Variable<any, string>;
-    update_columns:
-      | Array<ValueTypes["images_update_column"]>
-      | Variable<any, string>;
-    where?:
-      | ValueTypes["images_bool_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** Ordering options when selecting data from "images". */
-  ["images_order_by"]: {
-    completed?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    created_at?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    invitation?:
-      | ValueTypes["auth_invitations_order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    invite_code?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    prompt?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    uri?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    winner?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-  };
-  /** primary key columns input for table: images */
-  ["images_pk_columns_input"]: {
-    id: number | Variable<any, string>;
-  };
-  /** select columns of table "images" */
-  ["images_select_column"]: images_select_column;
-  /** input type for updating data in table "images" */
-  ["images_set_input"]: {
-    completed?: boolean | undefined | null | Variable<any, string>;
-    created_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?: number | undefined | null | Variable<any, string>;
-    invite_code?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
-    prompt?: string | undefined | null | Variable<any, string>;
-    uri?: string | undefined | null | Variable<any, string>;
-    winner?: string | undefined | null | Variable<any, string>;
-  };
-  /** aggregate stddev on columns */
-  ["images_stddev_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate stddev_pop on columns */
-  ["images_stddev_pop_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate stddev_samp on columns */
-  ["images_stddev_samp_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Streaming cursor of the table "images" */
-  ["images_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value:
-      | ValueTypes["images_stream_cursor_value_input"]
-      | Variable<any, string>;
-    /** cursor ordering */
-    ordering?:
-      | ValueTypes["cursor_ordering"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["images_stream_cursor_value_input"]: {
-    completed?: boolean | undefined | null | Variable<any, string>;
-    created_at?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?: number | undefined | null | Variable<any, string>;
-    invite_code?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
-    prompt?: string | undefined | null | Variable<any, string>;
-    uri?: string | undefined | null | Variable<any, string>;
-    winner?: string | undefined | null | Variable<any, string>;
-  };
-  /** aggregate sum on columns */
-  ["images_sum_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** update columns of table "images" */
-  ["images_update_column"]: images_update_column;
-  ["images_updates"]: {
-    /** increments the numeric columns with given value of the filtered values */
-    _inc?:
-      | ValueTypes["images_inc_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    /** sets the columns of the filtered rows to the given values */
-    _set?:
-      | ValueTypes["images_set_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    where: ValueTypes["images_bool_exp"] | Variable<any, string>;
-  };
-  /** aggregate var_pop on columns */
-  ["images_var_pop_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate var_samp on columns */
-  ["images_var_samp_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate variance on columns */
-  ["images_variance_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
   /** columns and relationships of "invitations" */
   ["invitations"]: AliasType<{
     claimed_at?: boolean | `@${string}`;
@@ -3030,166 +1526,8 @@ export type ValueTypes = {
       | Variable<any, string>;
     id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
   };
-  ["jsonb"]: unknown;
-  ["jsonb_cast_exp"]: {
-    String?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** Boolean expression to compare columns of type "jsonb". All fields are combined with logical 'AND'. */
-  ["jsonb_comparison_exp"]: {
-    _cast?:
-      | ValueTypes["jsonb_cast_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    /** is the column contained in the given json value */
-    _contained_in?:
-      | ValueTypes["jsonb"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    /** does the column contain the given json value at the top level */
-    _contains?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    _eq?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    _gt?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    _gte?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    /** does the string exist as a top-level key in the column */
-    _has_key?: string | undefined | null | Variable<any, string>;
-    /** do all of these strings exist as top-level keys in the column */
-    _has_keys_all?: Array<string> | undefined | null | Variable<any, string>;
-    /** do any of these strings exist as top-level keys in the column */
-    _has_keys_any?: Array<string> | undefined | null | Variable<any, string>;
-    _in?: Array<ValueTypes["jsonb"]> | undefined | null | Variable<any, string>;
-    _is_null?: boolean | undefined | null | Variable<any, string>;
-    _lt?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    _lte?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    _neq?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
-    _nin?:
-      | Array<ValueTypes["jsonb"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
   /** mutation root */
   ["mutation_root"]: AliasType<{
-    delete_appstore_pending_curator_reviews?: [
-      {
-        /** filter the rows which have to be deleted */
-        where:
-          | ValueTypes["appstore_pending_curator_reviews_bool_exp"]
-          | Variable<any, string>;
-      },
-      ValueTypes["appstore_pending_curator_reviews_mutation_response"]
-    ];
-    delete_appstore_pending_curator_reviews_by_pk?: [
-      { id: number | Variable<any, string> },
-      ValueTypes["appstore_pending_curator_reviews"]
-    ];
-    delete_auth_invitations?: [
-      {
-        /** filter the rows which have to be deleted */
-        where: ValueTypes["auth_invitations_bool_exp"] | Variable<any, string>;
-      },
-      ValueTypes["auth_invitations_mutation_response"]
-    ];
-    delete_auth_invitations_by_pk?: [
-      { id: ValueTypes["uuid"] | Variable<any, string> },
-      ValueTypes["auth_invitations"]
-    ];
-    delete_auth_publickeys_history?: [
-      {
-        /** filter the rows which have to be deleted */
-        where:
-          | ValueTypes["auth_publickeys_history_bool_exp"]
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_publickeys_history_mutation_response"]
-    ];
-    delete_auth_publickeys_history_by_pk?: [
-      { id: number | Variable<any, string> },
-      ValueTypes["auth_publickeys_history"]
-    ];
-    delete_auth_users?: [
-      {
-        /** filter the rows which have to be deleted */
-        where: ValueTypes["auth_users_bool_exp"] | Variable<any, string>;
-      },
-      ValueTypes["auth_users_mutation_response"]
-    ];
-    delete_auth_users_by_pk?: [
-      { id: ValueTypes["uuid"] | Variable<any, string> },
-      ValueTypes["auth_users"]
-    ];
-    delete_images?: [
-      {
-        /** filter the rows which have to be deleted */
-        where: ValueTypes["images_bool_exp"] | Variable<any, string>;
-      },
-      ValueTypes["images_mutation_response"]
-    ];
-    delete_images_by_pk?: [
-      { id: number | Variable<any, string> },
-      ValueTypes["images"]
-    ];
-    insert_appstore_pending_curator_reviews?: [
-      {
-        /** the rows to be inserted */
-        objects:
-          | Array<ValueTypes["appstore_pending_curator_reviews_insert_input"]>
-          | Variable<any, string> /** upsert condition */;
-        on_conflict?:
-          | ValueTypes["appstore_pending_curator_reviews_on_conflict"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["appstore_pending_curator_reviews_mutation_response"]
-    ];
-    insert_appstore_pending_curator_reviews_one?: [
-      {
-        /** the row to be inserted */
-        object:
-          | ValueTypes["appstore_pending_curator_reviews_insert_input"]
-          | Variable<any, string> /** upsert condition */;
-        on_conflict?:
-          | ValueTypes["appstore_pending_curator_reviews_on_conflict"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["appstore_pending_curator_reviews"]
-    ];
-    insert_auth_invitations?: [
-      {
-        /** the rows to be inserted */
-        objects:
-          | Array<ValueTypes["auth_invitations_insert_input"]>
-          | Variable<any, string> /** upsert condition */;
-        on_conflict?:
-          | ValueTypes["auth_invitations_on_conflict"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_invitations_mutation_response"]
-    ];
-    insert_auth_invitations_one?: [
-      {
-        /** the row to be inserted */
-        object:
-          | ValueTypes["auth_invitations_insert_input"]
-          | Variable<any, string> /** upsert condition */;
-        on_conflict?:
-          | ValueTypes["auth_invitations_on_conflict"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_invitations"]
-    ];
     insert_auth_publickeys_history?: [
       {
         /** the rows to be inserted */
@@ -3246,344 +1584,6 @@ export type ValueTypes = {
       },
       ValueTypes["auth_users"]
     ];
-    insert_images?: [
-      {
-        /** the rows to be inserted */
-        objects:
-          | Array<ValueTypes["images_insert_input"]>
-          | Variable<any, string> /** upsert condition */;
-        on_conflict?:
-          | ValueTypes["images_on_conflict"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["images_mutation_response"]
-    ];
-    insert_images_one?: [
-      {
-        /** the row to be inserted */
-        object:
-          | ValueTypes["images_insert_input"]
-          | Variable<any, string> /** upsert condition */;
-        on_conflict?:
-          | ValueTypes["images_on_conflict"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["images"]
-    ];
-    update_appstore_pending_curator_reviews?: [
-      {
-        /** append existing jsonb value of filtered columns with new jsonb value */
-        _append?:
-          | ValueTypes["appstore_pending_curator_reviews_append_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */;
-        _delete_at_path?:
-          | ValueTypes["appstore_pending_curator_reviews_delete_at_path_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */;
-        _delete_elem?:
-          | ValueTypes["appstore_pending_curator_reviews_delete_elem_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** delete key/value pair or string element. key/value pairs are matched based on their key value */;
-        _delete_key?:
-          | ValueTypes["appstore_pending_curator_reviews_delete_key_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** increments the numeric columns with given value of the filtered values */;
-        _inc?:
-          | ValueTypes["appstore_pending_curator_reviews_inc_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** prepend existing jsonb value of filtered columns with new jsonb value */;
-        _prepend?:
-          | ValueTypes["appstore_pending_curator_reviews_prepend_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ValueTypes["appstore_pending_curator_reviews_set_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** filter the rows which have to be updated */;
-        where:
-          | ValueTypes["appstore_pending_curator_reviews_bool_exp"]
-          | Variable<any, string>;
-      },
-      ValueTypes["appstore_pending_curator_reviews_mutation_response"]
-    ];
-    update_appstore_pending_curator_reviews_by_pk?: [
-      {
-        /** append existing jsonb value of filtered columns with new jsonb value */
-        _append?:
-          | ValueTypes["appstore_pending_curator_reviews_append_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */;
-        _delete_at_path?:
-          | ValueTypes["appstore_pending_curator_reviews_delete_at_path_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */;
-        _delete_elem?:
-          | ValueTypes["appstore_pending_curator_reviews_delete_elem_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** delete key/value pair or string element. key/value pairs are matched based on their key value */;
-        _delete_key?:
-          | ValueTypes["appstore_pending_curator_reviews_delete_key_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** increments the numeric columns with given value of the filtered values */;
-        _inc?:
-          | ValueTypes["appstore_pending_curator_reviews_inc_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** prepend existing jsonb value of filtered columns with new jsonb value */;
-        _prepend?:
-          | ValueTypes["appstore_pending_curator_reviews_prepend_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ValueTypes["appstore_pending_curator_reviews_set_input"]
-          | undefined
-          | null
-          | Variable<any, string>;
-        pk_columns:
-          | ValueTypes["appstore_pending_curator_reviews_pk_columns_input"]
-          | Variable<any, string>;
-      },
-      ValueTypes["appstore_pending_curator_reviews"]
-    ];
-    update_appstore_pending_curator_reviews_many?: [
-      {
-        /** updates to execute, in order */
-        updates:
-          | Array<ValueTypes["appstore_pending_curator_reviews_updates"]>
-          | Variable<any, string>;
-      },
-      ValueTypes["appstore_pending_curator_reviews_mutation_response"]
-    ];
-    update_auth_invitations?: [
-      {
-        /** append existing jsonb value of filtered columns with new jsonb value */
-        _append?:
-          | ValueTypes["auth_invitations_append_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */;
-        _delete_at_path?:
-          | ValueTypes["auth_invitations_delete_at_path_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */;
-        _delete_elem?:
-          | ValueTypes["auth_invitations_delete_elem_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** delete key/value pair or string element. key/value pairs are matched based on their key value */;
-        _delete_key?:
-          | ValueTypes["auth_invitations_delete_key_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** prepend existing jsonb value of filtered columns with new jsonb value */;
-        _prepend?:
-          | ValueTypes["auth_invitations_prepend_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ValueTypes["auth_invitations_set_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** filter the rows which have to be updated */;
-        where: ValueTypes["auth_invitations_bool_exp"] | Variable<any, string>;
-      },
-      ValueTypes["auth_invitations_mutation_response"]
-    ];
-    update_auth_invitations_by_pk?: [
-      {
-        /** append existing jsonb value of filtered columns with new jsonb value */
-        _append?:
-          | ValueTypes["auth_invitations_append_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */;
-        _delete_at_path?:
-          | ValueTypes["auth_invitations_delete_at_path_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */;
-        _delete_elem?:
-          | ValueTypes["auth_invitations_delete_elem_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** delete key/value pair or string element. key/value pairs are matched based on their key value */;
-        _delete_key?:
-          | ValueTypes["auth_invitations_delete_key_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** prepend existing jsonb value of filtered columns with new jsonb value */;
-        _prepend?:
-          | ValueTypes["auth_invitations_prepend_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ValueTypes["auth_invitations_set_input"]
-          | undefined
-          | null
-          | Variable<any, string>;
-        pk_columns:
-          | ValueTypes["auth_invitations_pk_columns_input"]
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_invitations"]
-    ];
-    update_auth_invitations_many?: [
-      {
-        /** updates to execute, in order */
-        updates:
-          | Array<ValueTypes["auth_invitations_updates"]>
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_invitations_mutation_response"]
-    ];
-    update_auth_publickeys_history?: [
-      {
-        /** increments the numeric columns with given value of the filtered values */
-        _inc?:
-          | ValueTypes["auth_publickeys_history_inc_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ValueTypes["auth_publickeys_history_set_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** filter the rows which have to be updated */;
-        where:
-          | ValueTypes["auth_publickeys_history_bool_exp"]
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_publickeys_history_mutation_response"]
-    ];
-    update_auth_publickeys_history_by_pk?: [
-      {
-        /** increments the numeric columns with given value of the filtered values */
-        _inc?:
-          | ValueTypes["auth_publickeys_history_inc_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ValueTypes["auth_publickeys_history_set_input"]
-          | undefined
-          | null
-          | Variable<any, string>;
-        pk_columns:
-          | ValueTypes["auth_publickeys_history_pk_columns_input"]
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_publickeys_history"]
-    ];
-    update_auth_publickeys_history_many?: [
-      {
-        /** updates to execute, in order */
-        updates:
-          | Array<ValueTypes["auth_publickeys_history_updates"]>
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_publickeys_history_mutation_response"]
-    ];
     update_auth_users?: [
       {
         /** sets the columns of the filtered rows to the given values */
@@ -3622,275 +1622,11 @@ export type ValueTypes = {
       },
       ValueTypes["auth_users_mutation_response"]
     ];
-    update_images?: [
-      {
-        /** increments the numeric columns with given value of the filtered values */
-        _inc?:
-          | ValueTypes["images_inc_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ValueTypes["images_set_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** filter the rows which have to be updated */;
-        where: ValueTypes["images_bool_exp"] | Variable<any, string>;
-      },
-      ValueTypes["images_mutation_response"]
-    ];
-    update_images_by_pk?: [
-      {
-        /** increments the numeric columns with given value of the filtered values */
-        _inc?:
-          | ValueTypes["images_inc_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ValueTypes["images_set_input"]
-          | undefined
-          | null
-          | Variable<any, string>;
-        pk_columns:
-          | ValueTypes["images_pk_columns_input"]
-          | Variable<any, string>;
-      },
-      ValueTypes["images"]
-    ];
-    update_images_many?: [
-      {
-        /** updates to execute, in order */
-        updates: Array<ValueTypes["images_updates"]> | Variable<any, string>;
-      },
-      ValueTypes["images_mutation_response"]
-    ];
     __typename?: boolean | `@${string}`;
   }>;
   /** column ordering options */
   ["order_by"]: order_by;
   ["query_root"]: AliasType<{
-    appstore_pending_curator_reviews?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["appstore_pending_curator_reviews_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["appstore_pending_curator_reviews_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["appstore_pending_curator_reviews_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["appstore_pending_curator_reviews"]
-    ];
-    appstore_pending_curator_reviews_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["appstore_pending_curator_reviews_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["appstore_pending_curator_reviews_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["appstore_pending_curator_reviews_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["appstore_pending_curator_reviews_aggregate"]
-    ];
-    appstore_pending_curator_reviews_by_pk?: [
-      { id: number | Variable<any, string> },
-      ValueTypes["appstore_pending_curator_reviews"]
-    ];
-    auth_invitations?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_invitations_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_invitations_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_invitations_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_invitations"]
-    ];
-    auth_invitations_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_invitations_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_invitations_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_invitations_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_invitations_aggregate"]
-    ];
-    auth_invitations_by_pk?: [
-      { id: ValueTypes["uuid"] | Variable<any, string> },
-      ValueTypes["auth_invitations"]
-    ];
-    auth_publickeys?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_publickeys_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_publickeys_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_publickeys_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_publickeys"]
-    ];
-    auth_publickeys_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_publickeys_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_publickeys_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_publickeys_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_publickeys_aggregate"]
-    ];
     auth_publickeys_history?: [
       {
         /** distinct select on columns */
@@ -3923,44 +1659,6 @@ export type ValueTypes = {
           | null
           | Variable<any, string>;
       },
-      ValueTypes["auth_publickeys_history"]
-    ];
-    auth_publickeys_history_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_publickeys_history_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_publickeys_history_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_publickeys_history_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_publickeys_history_aggregate"]
-    ];
-    auth_publickeys_history_by_pk?: [
-      { id: number | Variable<any, string> },
       ValueTypes["auth_publickeys_history"]
     ];
     auth_users?: [
@@ -4035,78 +1733,6 @@ export type ValueTypes = {
       { id: ValueTypes["uuid"] | Variable<any, string> },
       ValueTypes["auth_users"]
     ];
-    images?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["images_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["images_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["images_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["images"]
-    ];
-    images_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["images_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["images_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["images_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["images_aggregate"]
-    ];
-    images_by_pk?: [
-      { id: number | Variable<any, string> },
-      ValueTypes["images"]
-    ];
     invitations?: [
       {
         /** distinct select on columns */
@@ -4178,266 +1804,6 @@ export type ValueTypes = {
     __typename?: boolean | `@${string}`;
   }>;
   ["subscription_root"]: AliasType<{
-    appstore_pending_curator_reviews?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["appstore_pending_curator_reviews_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["appstore_pending_curator_reviews_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["appstore_pending_curator_reviews_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["appstore_pending_curator_reviews"]
-    ];
-    appstore_pending_curator_reviews_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["appstore_pending_curator_reviews_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["appstore_pending_curator_reviews_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["appstore_pending_curator_reviews_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["appstore_pending_curator_reviews_aggregate"]
-    ];
-    appstore_pending_curator_reviews_by_pk?: [
-      { id: number | Variable<any, string> },
-      ValueTypes["appstore_pending_curator_reviews"]
-    ];
-    appstore_pending_curator_reviews_stream?: [
-      {
-        /** maximum number of rows returned in a single batch */
-        batch_size:
-          | number
-          | Variable<
-              any,
-              string
-            > /** cursor to stream the results returned by the query */;
-        cursor:
-          | Array<
-              | ValueTypes["appstore_pending_curator_reviews_stream_cursor_input"]
-              | undefined
-              | null
-            >
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["appstore_pending_curator_reviews_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["appstore_pending_curator_reviews"]
-    ];
-    auth_invitations?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_invitations_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_invitations_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_invitations_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_invitations"]
-    ];
-    auth_invitations_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_invitations_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_invitations_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_invitations_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_invitations_aggregate"]
-    ];
-    auth_invitations_by_pk?: [
-      { id: ValueTypes["uuid"] | Variable<any, string> },
-      ValueTypes["auth_invitations"]
-    ];
-    auth_invitations_stream?: [
-      {
-        /** maximum number of rows returned in a single batch */
-        batch_size:
-          | number
-          | Variable<
-              any,
-              string
-            > /** cursor to stream the results returned by the query */;
-        cursor:
-          | Array<
-              | ValueTypes["auth_invitations_stream_cursor_input"]
-              | undefined
-              | null
-            >
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_invitations_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_invitations"]
-    ];
-    auth_publickeys?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_publickeys_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_publickeys_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_publickeys_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_publickeys"]
-    ];
-    auth_publickeys_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_publickeys_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_publickeys_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_publickeys_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_publickeys_aggregate"]
-    ];
     auth_publickeys_history?: [
       {
         /** distinct select on columns */
@@ -4472,44 +1838,6 @@ export type ValueTypes = {
       },
       ValueTypes["auth_publickeys_history"]
     ];
-    auth_publickeys_history_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_publickeys_history_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_publickeys_history_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_publickeys_history_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_publickeys_history_aggregate"]
-    ];
-    auth_publickeys_history_by_pk?: [
-      { id: number | Variable<any, string> },
-      ValueTypes["auth_publickeys_history"]
-    ];
     auth_publickeys_history_stream?: [
       {
         /** maximum number of rows returned in a single batch */
@@ -4533,30 +1861,6 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_publickeys_history"]
-    ];
-    auth_publickeys_stream?: [
-      {
-        /** maximum number of rows returned in a single batch */
-        batch_size:
-          | number
-          | Variable<
-              any,
-              string
-            > /** cursor to stream the results returned by the query */;
-        cursor:
-          | Array<
-              | ValueTypes["auth_publickeys_stream_cursor_input"]
-              | undefined
-              | null
-            >
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_publickeys_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_publickeys"]
     ];
     auth_users?: [
       {
@@ -4651,98 +1955,6 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_users"]
-    ];
-    images?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["images_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["images_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["images_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["images"]
-    ];
-    images_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["images_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["images_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["images_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["images_aggregate"]
-    ];
-    images_by_pk?: [
-      { id: number | Variable<any, string> },
-      ValueTypes["images"]
-    ];
-    images_stream?: [
-      {
-        /** maximum number of rows returned in a single batch */
-        batch_size:
-          | number
-          | Variable<
-              any,
-              string
-            > /** cursor to stream the results returned by the query */;
-        cursor:
-          | Array<ValueTypes["images_stream_cursor_input"] | undefined | null>
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["images_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["images"]
     ];
     invitations?: [
       {
@@ -4873,30 +2085,6 @@ export type ValueTypes = {
 };
 
 export type ResolverInputTypes = {
-  /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
-  ["Boolean_comparison_exp"]: {
-    _eq?: boolean | undefined | null;
-    _gt?: boolean | undefined | null;
-    _gte?: boolean | undefined | null;
-    _in?: Array<boolean> | undefined | null;
-    _is_null?: boolean | undefined | null;
-    _lt?: boolean | undefined | null;
-    _lte?: boolean | undefined | null;
-    _neq?: boolean | undefined | null;
-    _nin?: Array<boolean> | undefined | null;
-  };
-  /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
-  ["Int_comparison_exp"]: {
-    _eq?: number | undefined | null;
-    _gt?: number | undefined | null;
-    _gte?: number | undefined | null;
-    _in?: Array<number> | undefined | null;
-    _is_null?: boolean | undefined | null;
-    _lt?: number | undefined | null;
-    _lte?: number | undefined | null;
-    _neq?: number | undefined | null;
-    _nin?: Array<number> | undefined | null;
-  };
   /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
   ["String_comparison_exp"]: {
     _eq?: string | undefined | null;
@@ -4929,586 +2117,14 @@ export type ResolverInputTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined | null;
   };
-  /** columns and relationships of "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews"]: AliasType<{
-    approved?: boolean | `@${string}`;
-    authority?: boolean | `@${string}`;
-    contact?: boolean | `@${string}`;
-    created_at?: boolean | `@${string}`;
-    data?: [
-      {
-        /** JSON select path */ path?: string | undefined | null;
-      },
-      boolean | `@${string}`
-    ];
-    id?: boolean | `@${string}`;
-    ix_data?: boolean | `@${string}`;
-    ix_keys?: [
-      {
-        /** JSON select path */ path?: string | undefined | null;
-      },
-      boolean | `@${string}`
-    ];
-    processed?: boolean | `@${string}`;
-    signature?: boolean | `@${string}`;
-    type?: boolean | `@${string}`;
-    xnft?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregated selection of "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_aggregate"]: AliasType<{
-    aggregate?: ResolverInputTypes["appstore_pending_curator_reviews_aggregate_fields"];
-    nodes?: ResolverInputTypes["appstore_pending_curator_reviews"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate fields of "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_aggregate_fields"]: AliasType<{
-    avg?: ResolverInputTypes["appstore_pending_curator_reviews_avg_fields"];
-    count?: [
-      {
-        columns?:
-          | Array<
-              ResolverInputTypes["appstore_pending_curator_reviews_select_column"]
-            >
-          | undefined
-          | null;
-        distinct?: boolean | undefined | null;
-      },
-      boolean | `@${string}`
-    ];
-    max?: ResolverInputTypes["appstore_pending_curator_reviews_max_fields"];
-    min?: ResolverInputTypes["appstore_pending_curator_reviews_min_fields"];
-    stddev?: ResolverInputTypes["appstore_pending_curator_reviews_stddev_fields"];
-    stddev_pop?: ResolverInputTypes["appstore_pending_curator_reviews_stddev_pop_fields"];
-    stddev_samp?: ResolverInputTypes["appstore_pending_curator_reviews_stddev_samp_fields"];
-    sum?: ResolverInputTypes["appstore_pending_curator_reviews_sum_fields"];
-    var_pop?: ResolverInputTypes["appstore_pending_curator_reviews_var_pop_fields"];
-    var_samp?: ResolverInputTypes["appstore_pending_curator_reviews_var_samp_fields"];
-    variance?: ResolverInputTypes["appstore_pending_curator_reviews_variance_fields"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** append existing jsonb value of filtered columns with new jsonb value */
-  ["appstore_pending_curator_reviews_append_input"]: {
-    data?: ResolverInputTypes["jsonb"] | undefined | null;
-    ix_keys?: ResolverInputTypes["jsonb"] | undefined | null;
-  };
-  /** aggregate avg on columns */
-  ["appstore_pending_curator_reviews_avg_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Boolean expression to filter rows from the table "appstore.pending_curator_reviews". All fields are combined with a logical 'AND'. */
-  ["appstore_pending_curator_reviews_bool_exp"]: {
-    _and?:
-      | Array<ResolverInputTypes["appstore_pending_curator_reviews_bool_exp"]>
-      | undefined
-      | null;
-    _not?:
-      | ResolverInputTypes["appstore_pending_curator_reviews_bool_exp"]
-      | undefined
-      | null;
-    _or?:
-      | Array<ResolverInputTypes["appstore_pending_curator_reviews_bool_exp"]>
-      | undefined
-      | null;
-    approved?: ResolverInputTypes["Boolean_comparison_exp"] | undefined | null;
-    authority?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    contact?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    created_at?:
-      | ResolverInputTypes["timestamptz_comparison_exp"]
-      | undefined
-      | null;
-    data?: ResolverInputTypes["jsonb_comparison_exp"] | undefined | null;
-    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
-    ix_data?: ResolverInputTypes["bytea_comparison_exp"] | undefined | null;
-    ix_keys?: ResolverInputTypes["jsonb_comparison_exp"] | undefined | null;
-    processed?: ResolverInputTypes["Boolean_comparison_exp"] | undefined | null;
-    signature?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    type?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    xnft?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-  };
-  /** unique or primary key constraints on table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_constraint"]: appstore_pending_curator_reviews_constraint;
-  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-  ["appstore_pending_curator_reviews_delete_at_path_input"]: {
-    data?: Array<string> | undefined | null;
-    ix_keys?: Array<string> | undefined | null;
-  };
-  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-  ["appstore_pending_curator_reviews_delete_elem_input"]: {
-    data?: number | undefined | null;
-    ix_keys?: number | undefined | null;
-  };
-  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-  ["appstore_pending_curator_reviews_delete_key_input"]: {
-    data?: string | undefined | null;
-    ix_keys?: string | undefined | null;
-  };
-  /** input type for incrementing numeric columns in table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_inc_input"]: {
-    id?: number | undefined | null;
-  };
-  /** input type for inserting data into table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_insert_input"]: {
-    approved?: boolean | undefined | null;
-    authority?: string | undefined | null;
-    contact?: string | undefined | null;
-    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
-    data?: ResolverInputTypes["jsonb"] | undefined | null;
-    id?: number | undefined | null;
-    ix_data?: ResolverInputTypes["bytea"] | undefined | null;
-    ix_keys?: ResolverInputTypes["jsonb"] | undefined | null;
-    processed?: boolean | undefined | null;
-    signature?: string | undefined | null;
-    type?: string | undefined | null;
-    xnft?: string | undefined | null;
-  };
-  /** aggregate max on columns */
-  ["appstore_pending_curator_reviews_max_fields"]: AliasType<{
-    authority?: boolean | `@${string}`;
-    contact?: boolean | `@${string}`;
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    signature?: boolean | `@${string}`;
-    type?: boolean | `@${string}`;
-    xnft?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate min on columns */
-  ["appstore_pending_curator_reviews_min_fields"]: AliasType<{
-    authority?: boolean | `@${string}`;
-    contact?: boolean | `@${string}`;
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    signature?: boolean | `@${string}`;
-    type?: boolean | `@${string}`;
-    xnft?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** response of any mutation on the table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_mutation_response"]: AliasType<{
-    /** number of rows affected by the mutation */
-    affected_rows?: boolean | `@${string}`;
-    /** data from the rows affected by the mutation */
-    returning?: ResolverInputTypes["appstore_pending_curator_reviews"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** on_conflict condition type for table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_on_conflict"]: {
-    constraint: ResolverInputTypes["appstore_pending_curator_reviews_constraint"];
-    update_columns: Array<
-      ResolverInputTypes["appstore_pending_curator_reviews_update_column"]
-    >;
-    where?:
-      | ResolverInputTypes["appstore_pending_curator_reviews_bool_exp"]
-      | undefined
-      | null;
-  };
-  /** Ordering options when selecting data from "appstore.pending_curator_reviews". */
-  ["appstore_pending_curator_reviews_order_by"]: {
-    approved?: ResolverInputTypes["order_by"] | undefined | null;
-    authority?: ResolverInputTypes["order_by"] | undefined | null;
-    contact?: ResolverInputTypes["order_by"] | undefined | null;
-    created_at?: ResolverInputTypes["order_by"] | undefined | null;
-    data?: ResolverInputTypes["order_by"] | undefined | null;
-    id?: ResolverInputTypes["order_by"] | undefined | null;
-    ix_data?: ResolverInputTypes["order_by"] | undefined | null;
-    ix_keys?: ResolverInputTypes["order_by"] | undefined | null;
-    processed?: ResolverInputTypes["order_by"] | undefined | null;
-    signature?: ResolverInputTypes["order_by"] | undefined | null;
-    type?: ResolverInputTypes["order_by"] | undefined | null;
-    xnft?: ResolverInputTypes["order_by"] | undefined | null;
-  };
-  /** primary key columns input for table: appstore_pending_curator_reviews */
-  ["appstore_pending_curator_reviews_pk_columns_input"]: {
-    id: number;
-  };
-  /** prepend existing jsonb value of filtered columns with new jsonb value */
-  ["appstore_pending_curator_reviews_prepend_input"]: {
-    data?: ResolverInputTypes["jsonb"] | undefined | null;
-    ix_keys?: ResolverInputTypes["jsonb"] | undefined | null;
-  };
-  /** select columns of table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_select_column"]: appstore_pending_curator_reviews_select_column;
-  /** input type for updating data in table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_set_input"]: {
-    approved?: boolean | undefined | null;
-    authority?: string | undefined | null;
-    contact?: string | undefined | null;
-    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
-    data?: ResolverInputTypes["jsonb"] | undefined | null;
-    id?: number | undefined | null;
-    ix_data?: ResolverInputTypes["bytea"] | undefined | null;
-    ix_keys?: ResolverInputTypes["jsonb"] | undefined | null;
-    processed?: boolean | undefined | null;
-    signature?: string | undefined | null;
-    type?: string | undefined | null;
-    xnft?: string | undefined | null;
-  };
-  /** aggregate stddev on columns */
-  ["appstore_pending_curator_reviews_stddev_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate stddev_pop on columns */
-  ["appstore_pending_curator_reviews_stddev_pop_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate stddev_samp on columns */
-  ["appstore_pending_curator_reviews_stddev_samp_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Streaming cursor of the table "appstore_pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: ResolverInputTypes["appstore_pending_curator_reviews_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["appstore_pending_curator_reviews_stream_cursor_value_input"]: {
-    approved?: boolean | undefined | null;
-    authority?: string | undefined | null;
-    contact?: string | undefined | null;
-    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
-    data?: ResolverInputTypes["jsonb"] | undefined | null;
-    id?: number | undefined | null;
-    ix_data?: ResolverInputTypes["bytea"] | undefined | null;
-    ix_keys?: ResolverInputTypes["jsonb"] | undefined | null;
-    processed?: boolean | undefined | null;
-    signature?: string | undefined | null;
-    type?: string | undefined | null;
-    xnft?: string | undefined | null;
-  };
-  /** aggregate sum on columns */
-  ["appstore_pending_curator_reviews_sum_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** update columns of table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_update_column"]: appstore_pending_curator_reviews_update_column;
-  ["appstore_pending_curator_reviews_updates"]: {
-    /** append existing jsonb value of filtered columns with new jsonb value */
-    _append?:
-      | ResolverInputTypes["appstore_pending_curator_reviews_append_input"]
-      | undefined
-      | null;
-    /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-    _delete_at_path?:
-      | ResolverInputTypes["appstore_pending_curator_reviews_delete_at_path_input"]
-      | undefined
-      | null;
-    /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-    _delete_elem?:
-      | ResolverInputTypes["appstore_pending_curator_reviews_delete_elem_input"]
-      | undefined
-      | null;
-    /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-    _delete_key?:
-      | ResolverInputTypes["appstore_pending_curator_reviews_delete_key_input"]
-      | undefined
-      | null;
-    /** increments the numeric columns with given value of the filtered values */
-    _inc?:
-      | ResolverInputTypes["appstore_pending_curator_reviews_inc_input"]
-      | undefined
-      | null;
-    /** prepend existing jsonb value of filtered columns with new jsonb value */
-    _prepend?:
-      | ResolverInputTypes["appstore_pending_curator_reviews_prepend_input"]
-      | undefined
-      | null;
-    /** sets the columns of the filtered rows to the given values */
-    _set?:
-      | ResolverInputTypes["appstore_pending_curator_reviews_set_input"]
-      | undefined
-      | null;
-    where: ResolverInputTypes["appstore_pending_curator_reviews_bool_exp"];
-  };
-  /** aggregate var_pop on columns */
-  ["appstore_pending_curator_reviews_var_pop_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate var_samp on columns */
-  ["appstore_pending_curator_reviews_var_samp_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate variance on columns */
-  ["appstore_pending_curator_reviews_variance_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** ids are beta invite codes */
-  ["auth_invitations"]: AliasType<{
-    created_at?: boolean | `@${string}`;
-    data?: [
-      {
-        /** JSON select path */ path?: string | undefined | null;
-      },
-      boolean | `@${string}`
-    ];
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregated selection of "auth.invitations" */
-  ["auth_invitations_aggregate"]: AliasType<{
-    aggregate?: ResolverInputTypes["auth_invitations_aggregate_fields"];
-    nodes?: ResolverInputTypes["auth_invitations"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate fields of "auth.invitations" */
-  ["auth_invitations_aggregate_fields"]: AliasType<{
-    count?: [
-      {
-        columns?:
-          | Array<ResolverInputTypes["auth_invitations_select_column"]>
-          | undefined
-          | null;
-        distinct?: boolean | undefined | null;
-      },
-      boolean | `@${string}`
-    ];
-    max?: ResolverInputTypes["auth_invitations_max_fields"];
-    min?: ResolverInputTypes["auth_invitations_min_fields"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** append existing jsonb value of filtered columns with new jsonb value */
-  ["auth_invitations_append_input"]: {
-    data?: ResolverInputTypes["jsonb"] | undefined | null;
-  };
-  /** Boolean expression to filter rows from the table "auth.invitations". All fields are combined with a logical 'AND'. */
-  ["auth_invitations_bool_exp"]: {
-    _and?:
-      | Array<ResolverInputTypes["auth_invitations_bool_exp"]>
-      | undefined
-      | null;
-    _not?: ResolverInputTypes["auth_invitations_bool_exp"] | undefined | null;
-    _or?:
-      | Array<ResolverInputTypes["auth_invitations_bool_exp"]>
-      | undefined
-      | null;
-    created_at?:
-      | ResolverInputTypes["timestamptz_comparison_exp"]
-      | undefined
-      | null;
-    data?: ResolverInputTypes["jsonb_comparison_exp"] | undefined | null;
-    id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
-  };
-  /** unique or primary key constraints on table "auth.invitations" */
-  ["auth_invitations_constraint"]: auth_invitations_constraint;
-  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-  ["auth_invitations_delete_at_path_input"]: {
-    data?: Array<string> | undefined | null;
-  };
-  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-  ["auth_invitations_delete_elem_input"]: {
-    data?: number | undefined | null;
-  };
-  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-  ["auth_invitations_delete_key_input"]: {
-    data?: string | undefined | null;
-  };
-  /** input type for inserting data into table "auth.invitations" */
-  ["auth_invitations_insert_input"]: {
-    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
-    data?: ResolverInputTypes["jsonb"] | undefined | null;
-    id?: ResolverInputTypes["uuid"] | undefined | null;
-  };
-  /** aggregate max on columns */
-  ["auth_invitations_max_fields"]: AliasType<{
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate min on columns */
-  ["auth_invitations_min_fields"]: AliasType<{
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** response of any mutation on the table "auth.invitations" */
-  ["auth_invitations_mutation_response"]: AliasType<{
-    /** number of rows affected by the mutation */
-    affected_rows?: boolean | `@${string}`;
-    /** data from the rows affected by the mutation */
-    returning?: ResolverInputTypes["auth_invitations"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** input type for inserting object relation for remote table "auth.invitations" */
-  ["auth_invitations_obj_rel_insert_input"]: {
-    data: ResolverInputTypes["auth_invitations_insert_input"];
-    /** upsert condition */
-    on_conflict?:
-      | ResolverInputTypes["auth_invitations_on_conflict"]
-      | undefined
-      | null;
-  };
-  /** on_conflict condition type for table "auth.invitations" */
-  ["auth_invitations_on_conflict"]: {
-    constraint: ResolverInputTypes["auth_invitations_constraint"];
-    update_columns: Array<ResolverInputTypes["auth_invitations_update_column"]>;
-    where?: ResolverInputTypes["auth_invitations_bool_exp"] | undefined | null;
-  };
-  /** Ordering options when selecting data from "auth.invitations". */
-  ["auth_invitations_order_by"]: {
-    created_at?: ResolverInputTypes["order_by"] | undefined | null;
-    data?: ResolverInputTypes["order_by"] | undefined | null;
-    id?: ResolverInputTypes["order_by"] | undefined | null;
-  };
-  /** primary key columns input for table: auth_invitations */
-  ["auth_invitations_pk_columns_input"]: {
-    id: ResolverInputTypes["uuid"];
-  };
-  /** prepend existing jsonb value of filtered columns with new jsonb value */
-  ["auth_invitations_prepend_input"]: {
-    data?: ResolverInputTypes["jsonb"] | undefined | null;
-  };
-  /** select columns of table "auth.invitations" */
-  ["auth_invitations_select_column"]: auth_invitations_select_column;
-  /** input type for updating data in table "auth.invitations" */
-  ["auth_invitations_set_input"]: {
-    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
-    data?: ResolverInputTypes["jsonb"] | undefined | null;
-    id?: ResolverInputTypes["uuid"] | undefined | null;
-  };
-  /** Streaming cursor of the table "auth_invitations" */
-  ["auth_invitations_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: ResolverInputTypes["auth_invitations_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_invitations_stream_cursor_value_input"]: {
-    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
-    data?: ResolverInputTypes["jsonb"] | undefined | null;
-    id?: ResolverInputTypes["uuid"] | undefined | null;
-  };
-  /** update columns of table "auth.invitations" */
-  ["auth_invitations_update_column"]: auth_invitations_update_column;
-  ["auth_invitations_updates"]: {
-    /** append existing jsonb value of filtered columns with new jsonb value */
-    _append?:
-      | ResolverInputTypes["auth_invitations_append_input"]
-      | undefined
-      | null;
-    /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-    _delete_at_path?:
-      | ResolverInputTypes["auth_invitations_delete_at_path_input"]
-      | undefined
-      | null;
-    /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-    _delete_elem?:
-      | ResolverInputTypes["auth_invitations_delete_elem_input"]
-      | undefined
-      | null;
-    /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-    _delete_key?:
-      | ResolverInputTypes["auth_invitations_delete_key_input"]
-      | undefined
-      | null;
-    /** prepend existing jsonb value of filtered columns with new jsonb value */
-    _prepend?:
-      | ResolverInputTypes["auth_invitations_prepend_input"]
-      | undefined
-      | null;
-    /** sets the columns of the filtered rows to the given values */
-    _set?: ResolverInputTypes["auth_invitations_set_input"] | undefined | null;
-    where: ResolverInputTypes["auth_invitations_bool_exp"];
-  };
-  /** columns and relationships of "auth.publickeys" */
-  ["auth_publickeys"]: AliasType<{
-    blockchain?: boolean | `@${string}`;
-    publickey?: boolean | `@${string}`;
-    user_id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregated selection of "auth.publickeys" */
-  ["auth_publickeys_aggregate"]: AliasType<{
-    aggregate?: ResolverInputTypes["auth_publickeys_aggregate_fields"];
-    nodes?: ResolverInputTypes["auth_publickeys"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate fields of "auth.publickeys" */
-  ["auth_publickeys_aggregate_fields"]: AliasType<{
-    count?: [
-      {
-        columns?:
-          | Array<ResolverInputTypes["auth_publickeys_select_column"]>
-          | undefined
-          | null;
-        distinct?: boolean | undefined | null;
-      },
-      boolean | `@${string}`
-    ];
-    max?: ResolverInputTypes["auth_publickeys_max_fields"];
-    min?: ResolverInputTypes["auth_publickeys_min_fields"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Boolean expression to filter rows from the table "auth.publickeys". All fields are combined with a logical 'AND'. */
-  ["auth_publickeys_bool_exp"]: {
-    _and?:
-      | Array<ResolverInputTypes["auth_publickeys_bool_exp"]>
-      | undefined
-      | null;
-    _not?: ResolverInputTypes["auth_publickeys_bool_exp"] | undefined | null;
-    _or?:
-      | Array<ResolverInputTypes["auth_publickeys_bool_exp"]>
-      | undefined
-      | null;
-    blockchain?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    publickey?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    user_id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
-  };
   /** columns and relationships of "auth.publickeys_history" */
   ["auth_publickeys_history"]: AliasType<{
     blockchain?: boolean | `@${string}`;
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
     publickey?: boolean | `@${string}`;
-    user_id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregated selection of "auth.publickeys_history" */
-  ["auth_publickeys_history_aggregate"]: AliasType<{
-    aggregate?: ResolverInputTypes["auth_publickeys_history_aggregate_fields"];
-    nodes?: ResolverInputTypes["auth_publickeys_history"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate fields of "auth.publickeys_history" */
-  ["auth_publickeys_history_aggregate_fields"]: AliasType<{
-    avg?: ResolverInputTypes["auth_publickeys_history_avg_fields"];
-    count?: [
-      {
-        columns?:
-          | Array<ResolverInputTypes["auth_publickeys_history_select_column"]>
-          | undefined
-          | null;
-        distinct?: boolean | undefined | null;
-      },
-      boolean | `@${string}`
-    ];
-    max?: ResolverInputTypes["auth_publickeys_history_max_fields"];
-    min?: ResolverInputTypes["auth_publickeys_history_min_fields"];
-    stddev?: ResolverInputTypes["auth_publickeys_history_stddev_fields"];
-    stddev_pop?: ResolverInputTypes["auth_publickeys_history_stddev_pop_fields"];
-    stddev_samp?: ResolverInputTypes["auth_publickeys_history_stddev_samp_fields"];
-    sum?: ResolverInputTypes["auth_publickeys_history_sum_fields"];
-    var_pop?: ResolverInputTypes["auth_publickeys_history_var_pop_fields"];
-    var_samp?: ResolverInputTypes["auth_publickeys_history_var_samp_fields"];
-    variance?: ResolverInputTypes["auth_publickeys_history_variance_fields"];
     __typename?: boolean | `@${string}`;
   }>;
   /** order by aggregate values of table "auth.publickeys_history" */
   ["auth_publickeys_history_aggregate_order_by"]: {
-    avg?:
-      | ResolverInputTypes["auth_publickeys_history_avg_order_by"]
-      | undefined
-      | null;
     count?: ResolverInputTypes["order_by"] | undefined | null;
     max?:
       | ResolverInputTypes["auth_publickeys_history_max_order_by"]
@@ -5516,34 +2132,6 @@ export type ResolverInputTypes = {
       | null;
     min?:
       | ResolverInputTypes["auth_publickeys_history_min_order_by"]
-      | undefined
-      | null;
-    stddev?:
-      | ResolverInputTypes["auth_publickeys_history_stddev_order_by"]
-      | undefined
-      | null;
-    stddev_pop?:
-      | ResolverInputTypes["auth_publickeys_history_stddev_pop_order_by"]
-      | undefined
-      | null;
-    stddev_samp?:
-      | ResolverInputTypes["auth_publickeys_history_stddev_samp_order_by"]
-      | undefined
-      | null;
-    sum?:
-      | ResolverInputTypes["auth_publickeys_history_sum_order_by"]
-      | undefined
-      | null;
-    var_pop?:
-      | ResolverInputTypes["auth_publickeys_history_var_pop_order_by"]
-      | undefined
-      | null;
-    var_samp?:
-      | ResolverInputTypes["auth_publickeys_history_var_samp_order_by"]
-      | undefined
-      | null;
-    variance?:
-      | ResolverInputTypes["auth_publickeys_history_variance_order_by"]
       | undefined
       | null;
   };
@@ -5555,15 +2143,6 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["auth_publickeys_history_on_conflict"]
       | undefined
       | null;
-  };
-  /** aggregate avg on columns */
-  ["auth_publickeys_history_avg_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** order by avg() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_avg_order_by"]: {
-    id?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** Boolean expression to filter rows from the table "auth.publickeys_history". All fields are combined with a logical 'AND'. */
   ["auth_publickeys_history_bool_exp"]: {
@@ -5580,61 +2159,25 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     blockchain?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    created_at?:
-      | ResolverInputTypes["timestamptz_comparison_exp"]
-      | undefined
-      | null;
-    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
     publickey?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    user_id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
   };
   /** unique or primary key constraints on table "auth.publickeys_history" */
   ["auth_publickeys_history_constraint"]: auth_publickeys_history_constraint;
-  /** input type for incrementing numeric columns in table "auth.publickeys_history" */
-  ["auth_publickeys_history_inc_input"]: {
-    id?: number | undefined | null;
-  };
   /** input type for inserting data into table "auth.publickeys_history" */
   ["auth_publickeys_history_insert_input"]: {
     blockchain?: string | undefined | null;
-    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
-    id?: number | undefined | null;
     publickey?: string | undefined | null;
     user_id?: ResolverInputTypes["uuid"] | undefined | null;
   };
-  /** aggregate max on columns */
-  ["auth_publickeys_history_max_fields"]: AliasType<{
-    blockchain?: boolean | `@${string}`;
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    publickey?: boolean | `@${string}`;
-    user_id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
   /** order by max() on columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_max_order_by"]: {
     blockchain?: ResolverInputTypes["order_by"] | undefined | null;
-    created_at?: ResolverInputTypes["order_by"] | undefined | null;
-    id?: ResolverInputTypes["order_by"] | undefined | null;
     publickey?: ResolverInputTypes["order_by"] | undefined | null;
-    user_id?: ResolverInputTypes["order_by"] | undefined | null;
   };
-  /** aggregate min on columns */
-  ["auth_publickeys_history_min_fields"]: AliasType<{
-    blockchain?: boolean | `@${string}`;
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    publickey?: boolean | `@${string}`;
-    user_id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
   /** order by min() on columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_min_order_by"]: {
     blockchain?: ResolverInputTypes["order_by"] | undefined | null;
-    created_at?: ResolverInputTypes["order_by"] | undefined | null;
-    id?: ResolverInputTypes["order_by"] | undefined | null;
     publickey?: ResolverInputTypes["order_by"] | undefined | null;
-    user_id?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** response of any mutation on the table "auth.publickeys_history" */
   ["auth_publickeys_history_mutation_response"]: AliasType<{
@@ -5658,52 +2201,10 @@ export type ResolverInputTypes = {
   /** Ordering options when selecting data from "auth.publickeys_history". */
   ["auth_publickeys_history_order_by"]: {
     blockchain?: ResolverInputTypes["order_by"] | undefined | null;
-    created_at?: ResolverInputTypes["order_by"] | undefined | null;
-    id?: ResolverInputTypes["order_by"] | undefined | null;
     publickey?: ResolverInputTypes["order_by"] | undefined | null;
-    user_id?: ResolverInputTypes["order_by"] | undefined | null;
-  };
-  /** primary key columns input for table: auth_publickeys_history */
-  ["auth_publickeys_history_pk_columns_input"]: {
-    id: number;
   };
   /** select columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_select_column"]: auth_publickeys_history_select_column;
-  /** input type for updating data in table "auth.publickeys_history" */
-  ["auth_publickeys_history_set_input"]: {
-    blockchain?: string | undefined | null;
-    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
-    id?: number | undefined | null;
-    publickey?: string | undefined | null;
-    user_id?: ResolverInputTypes["uuid"] | undefined | null;
-  };
-  /** aggregate stddev on columns */
-  ["auth_publickeys_history_stddev_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** order by stddev() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_stddev_order_by"]: {
-    id?: ResolverInputTypes["order_by"] | undefined | null;
-  };
-  /** aggregate stddev_pop on columns */
-  ["auth_publickeys_history_stddev_pop_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** order by stddev_pop() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_stddev_pop_order_by"]: {
-    id?: ResolverInputTypes["order_by"] | undefined | null;
-  };
-  /** aggregate stddev_samp on columns */
-  ["auth_publickeys_history_stddev_samp_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** order by stddev_samp() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_stddev_samp_order_by"]: {
-    id?: ResolverInputTypes["order_by"] | undefined | null;
-  };
   /** Streaming cursor of the table "auth_publickeys_history" */
   ["auth_publickeys_history_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -5714,103 +2215,13 @@ export type ResolverInputTypes = {
   /** Initial value of the column from where the streaming should start */
   ["auth_publickeys_history_stream_cursor_value_input"]: {
     blockchain?: string | undefined | null;
-    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
-    id?: number | undefined | null;
     publickey?: string | undefined | null;
-    user_id?: ResolverInputTypes["uuid"] | undefined | null;
   };
-  /** aggregate sum on columns */
-  ["auth_publickeys_history_sum_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** order by sum() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_sum_order_by"]: {
-    id?: ResolverInputTypes["order_by"] | undefined | null;
-  };
-  /** update columns of table "auth.publickeys_history" */
+  /** placeholder for update columns of table "auth.publickeys_history" (current role has no relevant permissions) */
   ["auth_publickeys_history_update_column"]: auth_publickeys_history_update_column;
-  ["auth_publickeys_history_updates"]: {
-    /** increments the numeric columns with given value of the filtered values */
-    _inc?:
-      | ResolverInputTypes["auth_publickeys_history_inc_input"]
-      | undefined
-      | null;
-    /** sets the columns of the filtered rows to the given values */
-    _set?:
-      | ResolverInputTypes["auth_publickeys_history_set_input"]
-      | undefined
-      | null;
-    where: ResolverInputTypes["auth_publickeys_history_bool_exp"];
-  };
-  /** aggregate var_pop on columns */
-  ["auth_publickeys_history_var_pop_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** order by var_pop() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_var_pop_order_by"]: {
-    id?: ResolverInputTypes["order_by"] | undefined | null;
-  };
-  /** aggregate var_samp on columns */
-  ["auth_publickeys_history_var_samp_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** order by var_samp() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_var_samp_order_by"]: {
-    id?: ResolverInputTypes["order_by"] | undefined | null;
-  };
-  /** aggregate variance on columns */
-  ["auth_publickeys_history_variance_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** order by variance() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_variance_order_by"]: {
-    id?: ResolverInputTypes["order_by"] | undefined | null;
-  };
-  /** aggregate max on columns */
-  ["auth_publickeys_max_fields"]: AliasType<{
-    blockchain?: boolean | `@${string}`;
-    publickey?: boolean | `@${string}`;
-    user_id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate min on columns */
-  ["auth_publickeys_min_fields"]: AliasType<{
-    blockchain?: boolean | `@${string}`;
-    publickey?: boolean | `@${string}`;
-    user_id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Ordering options when selecting data from "auth.publickeys". */
-  ["auth_publickeys_order_by"]: {
-    blockchain?: ResolverInputTypes["order_by"] | undefined | null;
-    publickey?: ResolverInputTypes["order_by"] | undefined | null;
-    user_id?: ResolverInputTypes["order_by"] | undefined | null;
-  };
-  /** select columns of table "auth.publickeys" */
-  ["auth_publickeys_select_column"]: auth_publickeys_select_column;
-  /** Streaming cursor of the table "auth_publickeys" */
-  ["auth_publickeys_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: ResolverInputTypes["auth_publickeys_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_publickeys_stream_cursor_value_input"]: {
-    blockchain?: string | undefined | null;
-    publickey?: string | undefined | null;
-    user_id?: ResolverInputTypes["uuid"] | undefined | null;
-  };
   /** columns and relationships of "auth.users" */
   ["auth_users"]: AliasType<{
-    created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
-    invitation_id?: boolean | `@${string}`;
-    last_active_at?: boolean | `@${string}`;
     publickeys?: [
       {
         /** distinct select on columns */
@@ -5837,35 +2248,7 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_publickeys_history"]
     ];
-    publickeys_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_publickeys_history_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_publickeys_history_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_publickeys_history_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_publickeys_history_aggregate"]
-    ];
-    updated_at?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
-    waitlist_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** aggregated selection of "auth.users" */
@@ -5895,69 +2278,35 @@ export type ResolverInputTypes = {
     _and?: Array<ResolverInputTypes["auth_users_bool_exp"]> | undefined | null;
     _not?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
     _or?: Array<ResolverInputTypes["auth_users_bool_exp"]> | undefined | null;
-    created_at?:
-      | ResolverInputTypes["timestamptz_comparison_exp"]
-      | undefined
-      | null;
     id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
-    invitation_id?:
-      | ResolverInputTypes["uuid_comparison_exp"]
-      | undefined
-      | null;
-    last_active_at?:
-      | ResolverInputTypes["timestamptz_comparison_exp"]
-      | undefined
-      | null;
     publickeys?:
       | ResolverInputTypes["auth_publickeys_history_bool_exp"]
       | undefined
       | null;
-    updated_at?:
-      | ResolverInputTypes["timestamptz_comparison_exp"]
-      | undefined
-      | null;
     username?: ResolverInputTypes["citext_comparison_exp"] | undefined | null;
-    waitlist_id?:
-      | ResolverInputTypes["String_comparison_exp"]
-      | undefined
-      | null;
   };
   /** unique or primary key constraints on table "auth.users" */
   ["auth_users_constraint"]: auth_users_constraint;
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
-    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
-    id?: ResolverInputTypes["uuid"] | undefined | null;
     invitation_id?: ResolverInputTypes["uuid"] | undefined | null;
-    last_active_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     publickeys?:
       | ResolverInputTypes["auth_publickeys_history_arr_rel_insert_input"]
       | undefined
       | null;
-    updated_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     username?: ResolverInputTypes["citext"] | undefined | null;
     waitlist_id?: string | undefined | null;
   };
   /** aggregate max on columns */
   ["auth_users_max_fields"]: AliasType<{
-    created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
-    invitation_id?: boolean | `@${string}`;
-    last_active_at?: boolean | `@${string}`;
-    updated_at?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
-    waitlist_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** aggregate min on columns */
   ["auth_users_min_fields"]: AliasType<{
-    created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
-    invitation_id?: boolean | `@${string}`;
-    last_active_at?: boolean | `@${string}`;
-    updated_at?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
-    waitlist_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** response of any mutation on the table "auth.users" */
@@ -5976,17 +2325,12 @@ export type ResolverInputTypes = {
   };
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
-    created_at?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
-    invitation_id?: ResolverInputTypes["order_by"] | undefined | null;
-    last_active_at?: ResolverInputTypes["order_by"] | undefined | null;
     publickeys_aggregate?:
       | ResolverInputTypes["auth_publickeys_history_aggregate_order_by"]
       | undefined
       | null;
-    updated_at?: ResolverInputTypes["order_by"] | undefined | null;
     username?: ResolverInputTypes["order_by"] | undefined | null;
-    waitlist_id?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** primary key columns input for table: auth_users */
   ["auth_users_pk_columns_input"]: {
@@ -5996,13 +2340,7 @@ export type ResolverInputTypes = {
   ["auth_users_select_column"]: auth_users_select_column;
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
-    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
-    id?: ResolverInputTypes["uuid"] | undefined | null;
-    invitation_id?: ResolverInputTypes["uuid"] | undefined | null;
-    last_active_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     updated_at?: ResolverInputTypes["timestamptz"] | undefined | null;
-    username?: ResolverInputTypes["citext"] | undefined | null;
-    waitlist_id?: string | undefined | null;
   };
   /** Streaming cursor of the table "auth_users" */
   ["auth_users_stream_cursor_input"]: {
@@ -6013,13 +2351,8 @@ export type ResolverInputTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_users_stream_cursor_value_input"]: {
-    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     id?: ResolverInputTypes["uuid"] | undefined | null;
-    invitation_id?: ResolverInputTypes["uuid"] | undefined | null;
-    last_active_at?: ResolverInputTypes["timestamptz"] | undefined | null;
-    updated_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     username?: ResolverInputTypes["citext"] | undefined | null;
-    waitlist_id?: string | undefined | null;
   };
   /** update columns of table "auth.users" */
   ["auth_users_update_column"]: auth_users_update_column;
@@ -6027,19 +2360,6 @@ export type ResolverInputTypes = {
     /** sets the columns of the filtered rows to the given values */
     _set?: ResolverInputTypes["auth_users_set_input"] | undefined | null;
     where: ResolverInputTypes["auth_users_bool_exp"];
-  };
-  ["bytea"]: unknown;
-  /** Boolean expression to compare columns of type "bytea". All fields are combined with logical 'AND'. */
-  ["bytea_comparison_exp"]: {
-    _eq?: ResolverInputTypes["bytea"] | undefined | null;
-    _gt?: ResolverInputTypes["bytea"] | undefined | null;
-    _gte?: ResolverInputTypes["bytea"] | undefined | null;
-    _in?: Array<ResolverInputTypes["bytea"]> | undefined | null;
-    _is_null?: boolean | undefined | null;
-    _lt?: ResolverInputTypes["bytea"] | undefined | null;
-    _lte?: ResolverInputTypes["bytea"] | undefined | null;
-    _neq?: ResolverInputTypes["bytea"] | undefined | null;
-    _nin?: Array<ResolverInputTypes["bytea"]> | undefined | null;
   };
   ["citext"]: unknown;
   /** Boolean expression to compare columns of type "citext". All fields are combined with logical 'AND'. */
@@ -6076,219 +2396,6 @@ export type ResolverInputTypes = {
   };
   /** ordering argument of a cursor */
   ["cursor_ordering"]: cursor_ordering;
-  /** columns and relationships of "images" */
-  ["images"]: AliasType<{
-    completed?: boolean | `@${string}`;
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    /** An object relationship */
-    invitation?: ResolverInputTypes["auth_invitations"];
-    invite_code?: boolean | `@${string}`;
-    prompt?: boolean | `@${string}`;
-    uri?: boolean | `@${string}`;
-    winner?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregated selection of "images" */
-  ["images_aggregate"]: AliasType<{
-    aggregate?: ResolverInputTypes["images_aggregate_fields"];
-    nodes?: ResolverInputTypes["images"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate fields of "images" */
-  ["images_aggregate_fields"]: AliasType<{
-    avg?: ResolverInputTypes["images_avg_fields"];
-    count?: [
-      {
-        columns?:
-          | Array<ResolverInputTypes["images_select_column"]>
-          | undefined
-          | null;
-        distinct?: boolean | undefined | null;
-      },
-      boolean | `@${string}`
-    ];
-    max?: ResolverInputTypes["images_max_fields"];
-    min?: ResolverInputTypes["images_min_fields"];
-    stddev?: ResolverInputTypes["images_stddev_fields"];
-    stddev_pop?: ResolverInputTypes["images_stddev_pop_fields"];
-    stddev_samp?: ResolverInputTypes["images_stddev_samp_fields"];
-    sum?: ResolverInputTypes["images_sum_fields"];
-    var_pop?: ResolverInputTypes["images_var_pop_fields"];
-    var_samp?: ResolverInputTypes["images_var_samp_fields"];
-    variance?: ResolverInputTypes["images_variance_fields"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate avg on columns */
-  ["images_avg_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Boolean expression to filter rows from the table "images". All fields are combined with a logical 'AND'. */
-  ["images_bool_exp"]: {
-    _and?: Array<ResolverInputTypes["images_bool_exp"]> | undefined | null;
-    _not?: ResolverInputTypes["images_bool_exp"] | undefined | null;
-    _or?: Array<ResolverInputTypes["images_bool_exp"]> | undefined | null;
-    completed?: ResolverInputTypes["Boolean_comparison_exp"] | undefined | null;
-    created_at?:
-      | ResolverInputTypes["timestamptz_comparison_exp"]
-      | undefined
-      | null;
-    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
-    invitation?:
-      | ResolverInputTypes["auth_invitations_bool_exp"]
-      | undefined
-      | null;
-    invite_code?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
-    prompt?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    uri?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    winner?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-  };
-  /** unique or primary key constraints on table "images" */
-  ["images_constraint"]: images_constraint;
-  /** input type for incrementing numeric columns in table "images" */
-  ["images_inc_input"]: {
-    id?: number | undefined | null;
-  };
-  /** input type for inserting data into table "images" */
-  ["images_insert_input"]: {
-    completed?: boolean | undefined | null;
-    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
-    id?: number | undefined | null;
-    invitation?:
-      | ResolverInputTypes["auth_invitations_obj_rel_insert_input"]
-      | undefined
-      | null;
-    invite_code?: ResolverInputTypes["uuid"] | undefined | null;
-    prompt?: string | undefined | null;
-    uri?: string | undefined | null;
-    winner?: string | undefined | null;
-  };
-  /** aggregate max on columns */
-  ["images_max_fields"]: AliasType<{
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    invite_code?: boolean | `@${string}`;
-    prompt?: boolean | `@${string}`;
-    uri?: boolean | `@${string}`;
-    winner?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate min on columns */
-  ["images_min_fields"]: AliasType<{
-    created_at?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    invite_code?: boolean | `@${string}`;
-    prompt?: boolean | `@${string}`;
-    uri?: boolean | `@${string}`;
-    winner?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** response of any mutation on the table "images" */
-  ["images_mutation_response"]: AliasType<{
-    /** number of rows affected by the mutation */
-    affected_rows?: boolean | `@${string}`;
-    /** data from the rows affected by the mutation */
-    returning?: ResolverInputTypes["images"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** on_conflict condition type for table "images" */
-  ["images_on_conflict"]: {
-    constraint: ResolverInputTypes["images_constraint"];
-    update_columns: Array<ResolverInputTypes["images_update_column"]>;
-    where?: ResolverInputTypes["images_bool_exp"] | undefined | null;
-  };
-  /** Ordering options when selecting data from "images". */
-  ["images_order_by"]: {
-    completed?: ResolverInputTypes["order_by"] | undefined | null;
-    created_at?: ResolverInputTypes["order_by"] | undefined | null;
-    id?: ResolverInputTypes["order_by"] | undefined | null;
-    invitation?:
-      | ResolverInputTypes["auth_invitations_order_by"]
-      | undefined
-      | null;
-    invite_code?: ResolverInputTypes["order_by"] | undefined | null;
-    prompt?: ResolverInputTypes["order_by"] | undefined | null;
-    uri?: ResolverInputTypes["order_by"] | undefined | null;
-    winner?: ResolverInputTypes["order_by"] | undefined | null;
-  };
-  /** primary key columns input for table: images */
-  ["images_pk_columns_input"]: {
-    id: number;
-  };
-  /** select columns of table "images" */
-  ["images_select_column"]: images_select_column;
-  /** input type for updating data in table "images" */
-  ["images_set_input"]: {
-    completed?: boolean | undefined | null;
-    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
-    id?: number | undefined | null;
-    invite_code?: ResolverInputTypes["uuid"] | undefined | null;
-    prompt?: string | undefined | null;
-    uri?: string | undefined | null;
-    winner?: string | undefined | null;
-  };
-  /** aggregate stddev on columns */
-  ["images_stddev_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate stddev_pop on columns */
-  ["images_stddev_pop_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate stddev_samp on columns */
-  ["images_stddev_samp_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Streaming cursor of the table "images" */
-  ["images_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: ResolverInputTypes["images_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["images_stream_cursor_value_input"]: {
-    completed?: boolean | undefined | null;
-    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
-    id?: number | undefined | null;
-    invite_code?: ResolverInputTypes["uuid"] | undefined | null;
-    prompt?: string | undefined | null;
-    uri?: string | undefined | null;
-    winner?: string | undefined | null;
-  };
-  /** aggregate sum on columns */
-  ["images_sum_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** update columns of table "images" */
-  ["images_update_column"]: images_update_column;
-  ["images_updates"]: {
-    /** increments the numeric columns with given value of the filtered values */
-    _inc?: ResolverInputTypes["images_inc_input"] | undefined | null;
-    /** sets the columns of the filtered rows to the given values */
-    _set?: ResolverInputTypes["images_set_input"] | undefined | null;
-    where: ResolverInputTypes["images_bool_exp"];
-  };
-  /** aggregate var_pop on columns */
-  ["images_var_pop_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate var_samp on columns */
-  ["images_var_samp_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** aggregate variance on columns */
-  ["images_variance_fields"]: AliasType<{
-    id?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
   /** columns and relationships of "invitations" */
   ["invitations"]: AliasType<{
     claimed_at?: boolean | `@${string}`;
@@ -6359,135 +2466,8 @@ export type ResolverInputTypes = {
     claimed_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     id?: ResolverInputTypes["uuid"] | undefined | null;
   };
-  ["jsonb"]: unknown;
-  ["jsonb_cast_exp"]: {
-    String?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-  };
-  /** Boolean expression to compare columns of type "jsonb". All fields are combined with logical 'AND'. */
-  ["jsonb_comparison_exp"]: {
-    _cast?: ResolverInputTypes["jsonb_cast_exp"] | undefined | null;
-    /** is the column contained in the given json value */
-    _contained_in?: ResolverInputTypes["jsonb"] | undefined | null;
-    /** does the column contain the given json value at the top level */
-    _contains?: ResolverInputTypes["jsonb"] | undefined | null;
-    _eq?: ResolverInputTypes["jsonb"] | undefined | null;
-    _gt?: ResolverInputTypes["jsonb"] | undefined | null;
-    _gte?: ResolverInputTypes["jsonb"] | undefined | null;
-    /** does the string exist as a top-level key in the column */
-    _has_key?: string | undefined | null;
-    /** do all of these strings exist as top-level keys in the column */
-    _has_keys_all?: Array<string> | undefined | null;
-    /** do any of these strings exist as top-level keys in the column */
-    _has_keys_any?: Array<string> | undefined | null;
-    _in?: Array<ResolverInputTypes["jsonb"]> | undefined | null;
-    _is_null?: boolean | undefined | null;
-    _lt?: ResolverInputTypes["jsonb"] | undefined | null;
-    _lte?: ResolverInputTypes["jsonb"] | undefined | null;
-    _neq?: ResolverInputTypes["jsonb"] | undefined | null;
-    _nin?: Array<ResolverInputTypes["jsonb"]> | undefined | null;
-  };
   /** mutation root */
   ["mutation_root"]: AliasType<{
-    delete_appstore_pending_curator_reviews?: [
-      {
-        /** filter the rows which have to be deleted */
-        where: ResolverInputTypes["appstore_pending_curator_reviews_bool_exp"];
-      },
-      ResolverInputTypes["appstore_pending_curator_reviews_mutation_response"]
-    ];
-    delete_appstore_pending_curator_reviews_by_pk?: [
-      { id: number },
-      ResolverInputTypes["appstore_pending_curator_reviews"]
-    ];
-    delete_auth_invitations?: [
-      {
-        /** filter the rows which have to be deleted */
-        where: ResolverInputTypes["auth_invitations_bool_exp"];
-      },
-      ResolverInputTypes["auth_invitations_mutation_response"]
-    ];
-    delete_auth_invitations_by_pk?: [
-      { id: ResolverInputTypes["uuid"] },
-      ResolverInputTypes["auth_invitations"]
-    ];
-    delete_auth_publickeys_history?: [
-      {
-        /** filter the rows which have to be deleted */
-        where: ResolverInputTypes["auth_publickeys_history_bool_exp"];
-      },
-      ResolverInputTypes["auth_publickeys_history_mutation_response"]
-    ];
-    delete_auth_publickeys_history_by_pk?: [
-      { id: number },
-      ResolverInputTypes["auth_publickeys_history"]
-    ];
-    delete_auth_users?: [
-      {
-        /** filter the rows which have to be deleted */
-        where: ResolverInputTypes["auth_users_bool_exp"];
-      },
-      ResolverInputTypes["auth_users_mutation_response"]
-    ];
-    delete_auth_users_by_pk?: [
-      { id: ResolverInputTypes["uuid"] },
-      ResolverInputTypes["auth_users"]
-    ];
-    delete_images?: [
-      {
-        /** filter the rows which have to be deleted */
-        where: ResolverInputTypes["images_bool_exp"];
-      },
-      ResolverInputTypes["images_mutation_response"]
-    ];
-    delete_images_by_pk?: [{ id: number }, ResolverInputTypes["images"]];
-    insert_appstore_pending_curator_reviews?: [
-      {
-        /** the rows to be inserted */
-        objects: Array<
-          ResolverInputTypes["appstore_pending_curator_reviews_insert_input"]
-        > /** upsert condition */;
-        on_conflict?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_on_conflict"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["appstore_pending_curator_reviews_mutation_response"]
-    ];
-    insert_appstore_pending_curator_reviews_one?: [
-      {
-        /** the row to be inserted */
-        object: ResolverInputTypes["appstore_pending_curator_reviews_insert_input"] /** upsert condition */;
-        on_conflict?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_on_conflict"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["appstore_pending_curator_reviews"]
-    ];
-    insert_auth_invitations?: [
-      {
-        /** the rows to be inserted */
-        objects: Array<
-          ResolverInputTypes["auth_invitations_insert_input"]
-        > /** upsert condition */;
-        on_conflict?:
-          | ResolverInputTypes["auth_invitations_on_conflict"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_invitations_mutation_response"]
-    ];
-    insert_auth_invitations_one?: [
-      {
-        /** the row to be inserted */
-        object: ResolverInputTypes["auth_invitations_insert_input"] /** upsert condition */;
-        on_conflict?:
-          | ResolverInputTypes["auth_invitations_on_conflict"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_invitations"]
-    ];
     insert_auth_publickeys_history?: [
       {
         /** the rows to be inserted */
@@ -6536,215 +2516,6 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_users"]
     ];
-    insert_images?: [
-      {
-        /** the rows to be inserted */
-        objects: Array<
-          ResolverInputTypes["images_insert_input"]
-        > /** upsert condition */;
-        on_conflict?:
-          | ResolverInputTypes["images_on_conflict"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["images_mutation_response"]
-    ];
-    insert_images_one?: [
-      {
-        /** the row to be inserted */
-        object: ResolverInputTypes["images_insert_input"] /** upsert condition */;
-        on_conflict?:
-          | ResolverInputTypes["images_on_conflict"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["images"]
-    ];
-    update_appstore_pending_curator_reviews?: [
-      {
-        /** append existing jsonb value of filtered columns with new jsonb value */
-        _append?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_append_input"]
-          | undefined
-          | null /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */;
-        _delete_at_path?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_delete_at_path_input"]
-          | undefined
-          | null /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */;
-        _delete_elem?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_delete_elem_input"]
-          | undefined
-          | null /** delete key/value pair or string element. key/value pairs are matched based on their key value */;
-        _delete_key?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_delete_key_input"]
-          | undefined
-          | null /** increments the numeric columns with given value of the filtered values */;
-        _inc?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_inc_input"]
-          | undefined
-          | null /** prepend existing jsonb value of filtered columns with new jsonb value */;
-        _prepend?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_prepend_input"]
-          | undefined
-          | null /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_set_input"]
-          | undefined
-          | null /** filter the rows which have to be updated */;
-        where: ResolverInputTypes["appstore_pending_curator_reviews_bool_exp"];
-      },
-      ResolverInputTypes["appstore_pending_curator_reviews_mutation_response"]
-    ];
-    update_appstore_pending_curator_reviews_by_pk?: [
-      {
-        /** append existing jsonb value of filtered columns with new jsonb value */
-        _append?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_append_input"]
-          | undefined
-          | null /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */;
-        _delete_at_path?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_delete_at_path_input"]
-          | undefined
-          | null /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */;
-        _delete_elem?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_delete_elem_input"]
-          | undefined
-          | null /** delete key/value pair or string element. key/value pairs are matched based on their key value */;
-        _delete_key?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_delete_key_input"]
-          | undefined
-          | null /** increments the numeric columns with given value of the filtered values */;
-        _inc?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_inc_input"]
-          | undefined
-          | null /** prepend existing jsonb value of filtered columns with new jsonb value */;
-        _prepend?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_prepend_input"]
-          | undefined
-          | null /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_set_input"]
-          | undefined
-          | null;
-        pk_columns: ResolverInputTypes["appstore_pending_curator_reviews_pk_columns_input"];
-      },
-      ResolverInputTypes["appstore_pending_curator_reviews"]
-    ];
-    update_appstore_pending_curator_reviews_many?: [
-      {
-        /** updates to execute, in order */
-        updates: Array<
-          ResolverInputTypes["appstore_pending_curator_reviews_updates"]
-        >;
-      },
-      ResolverInputTypes["appstore_pending_curator_reviews_mutation_response"]
-    ];
-    update_auth_invitations?: [
-      {
-        /** append existing jsonb value of filtered columns with new jsonb value */
-        _append?:
-          | ResolverInputTypes["auth_invitations_append_input"]
-          | undefined
-          | null /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */;
-        _delete_at_path?:
-          | ResolverInputTypes["auth_invitations_delete_at_path_input"]
-          | undefined
-          | null /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */;
-        _delete_elem?:
-          | ResolverInputTypes["auth_invitations_delete_elem_input"]
-          | undefined
-          | null /** delete key/value pair or string element. key/value pairs are matched based on their key value */;
-        _delete_key?:
-          | ResolverInputTypes["auth_invitations_delete_key_input"]
-          | undefined
-          | null /** prepend existing jsonb value of filtered columns with new jsonb value */;
-        _prepend?:
-          | ResolverInputTypes["auth_invitations_prepend_input"]
-          | undefined
-          | null /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ResolverInputTypes["auth_invitations_set_input"]
-          | undefined
-          | null /** filter the rows which have to be updated */;
-        where: ResolverInputTypes["auth_invitations_bool_exp"];
-      },
-      ResolverInputTypes["auth_invitations_mutation_response"]
-    ];
-    update_auth_invitations_by_pk?: [
-      {
-        /** append existing jsonb value of filtered columns with new jsonb value */
-        _append?:
-          | ResolverInputTypes["auth_invitations_append_input"]
-          | undefined
-          | null /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */;
-        _delete_at_path?:
-          | ResolverInputTypes["auth_invitations_delete_at_path_input"]
-          | undefined
-          | null /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */;
-        _delete_elem?:
-          | ResolverInputTypes["auth_invitations_delete_elem_input"]
-          | undefined
-          | null /** delete key/value pair or string element. key/value pairs are matched based on their key value */;
-        _delete_key?:
-          | ResolverInputTypes["auth_invitations_delete_key_input"]
-          | undefined
-          | null /** prepend existing jsonb value of filtered columns with new jsonb value */;
-        _prepend?:
-          | ResolverInputTypes["auth_invitations_prepend_input"]
-          | undefined
-          | null /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ResolverInputTypes["auth_invitations_set_input"]
-          | undefined
-          | null;
-        pk_columns: ResolverInputTypes["auth_invitations_pk_columns_input"];
-      },
-      ResolverInputTypes["auth_invitations"]
-    ];
-    update_auth_invitations_many?: [
-      {
-        /** updates to execute, in order */
-        updates: Array<ResolverInputTypes["auth_invitations_updates"]>;
-      },
-      ResolverInputTypes["auth_invitations_mutation_response"]
-    ];
-    update_auth_publickeys_history?: [
-      {
-        /** increments the numeric columns with given value of the filtered values */
-        _inc?:
-          | ResolverInputTypes["auth_publickeys_history_inc_input"]
-          | undefined
-          | null /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ResolverInputTypes["auth_publickeys_history_set_input"]
-          | undefined
-          | null /** filter the rows which have to be updated */;
-        where: ResolverInputTypes["auth_publickeys_history_bool_exp"];
-      },
-      ResolverInputTypes["auth_publickeys_history_mutation_response"]
-    ];
-    update_auth_publickeys_history_by_pk?: [
-      {
-        /** increments the numeric columns with given value of the filtered values */
-        _inc?:
-          | ResolverInputTypes["auth_publickeys_history_inc_input"]
-          | undefined
-          | null /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ResolverInputTypes["auth_publickeys_history_set_input"]
-          | undefined
-          | null;
-        pk_columns: ResolverInputTypes["auth_publickeys_history_pk_columns_input"];
-      },
-      ResolverInputTypes["auth_publickeys_history"]
-    ];
-    update_auth_publickeys_history_many?: [
-      {
-        /** updates to execute, in order */
-        updates: Array<ResolverInputTypes["auth_publickeys_history_updates"]>;
-      },
-      ResolverInputTypes["auth_publickeys_history_mutation_response"]
-    ];
     update_auth_users?: [
       {
         /** sets the columns of the filtered rows to the given values */
@@ -6771,217 +2542,11 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_users_mutation_response"]
     ];
-    update_images?: [
-      {
-        /** increments the numeric columns with given value of the filtered values */
-        _inc?:
-          | ResolverInputTypes["images_inc_input"]
-          | undefined
-          | null /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ResolverInputTypes["images_set_input"]
-          | undefined
-          | null /** filter the rows which have to be updated */;
-        where: ResolverInputTypes["images_bool_exp"];
-      },
-      ResolverInputTypes["images_mutation_response"]
-    ];
-    update_images_by_pk?: [
-      {
-        /** increments the numeric columns with given value of the filtered values */
-        _inc?:
-          | ResolverInputTypes["images_inc_input"]
-          | undefined
-          | null /** sets the columns of the filtered rows to the given values */;
-        _set?: ResolverInputTypes["images_set_input"] | undefined | null;
-        pk_columns: ResolverInputTypes["images_pk_columns_input"];
-      },
-      ResolverInputTypes["images"]
-    ];
-    update_images_many?: [
-      {
-        /** updates to execute, in order */
-        updates: Array<ResolverInputTypes["images_updates"]>;
-      },
-      ResolverInputTypes["images_mutation_response"]
-    ];
     __typename?: boolean | `@${string}`;
   }>;
   /** column ordering options */
   ["order_by"]: order_by;
   ["query_root"]: AliasType<{
-    appstore_pending_curator_reviews?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<
-              ResolverInputTypes["appstore_pending_curator_reviews_select_column"]
-            >
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<
-              ResolverInputTypes["appstore_pending_curator_reviews_order_by"]
-            >
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["appstore_pending_curator_reviews"]
-    ];
-    appstore_pending_curator_reviews_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<
-              ResolverInputTypes["appstore_pending_curator_reviews_select_column"]
-            >
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<
-              ResolverInputTypes["appstore_pending_curator_reviews_order_by"]
-            >
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["appstore_pending_curator_reviews_aggregate"]
-    ];
-    appstore_pending_curator_reviews_by_pk?: [
-      { id: number },
-      ResolverInputTypes["appstore_pending_curator_reviews"]
-    ];
-    auth_invitations?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_invitations_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_invitations_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_invitations_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_invitations"]
-    ];
-    auth_invitations_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_invitations_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_invitations_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_invitations_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_invitations_aggregate"]
-    ];
-    auth_invitations_by_pk?: [
-      { id: ResolverInputTypes["uuid"] },
-      ResolverInputTypes["auth_invitations"]
-    ];
-    auth_publickeys?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_publickeys_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_publickeys_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_publickeys_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_publickeys"]
-    ];
-    auth_publickeys_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_publickeys_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_publickeys_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_publickeys_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_publickeys_aggregate"]
-    ];
     auth_publickeys_history?: [
       {
         /** distinct select on columns */
@@ -7006,36 +2571,6 @@ export type ResolverInputTypes = {
           | undefined
           | null;
       },
-      ResolverInputTypes["auth_publickeys_history"]
-    ];
-    auth_publickeys_history_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_publickeys_history_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_publickeys_history_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_publickeys_history_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_publickeys_history_aggregate"]
-    ];
-    auth_publickeys_history_by_pk?: [
-      { id: number },
       ResolverInputTypes["auth_publickeys_history"]
     ];
     auth_users?: [
@@ -7088,53 +2623,6 @@ export type ResolverInputTypes = {
       { id: ResolverInputTypes["uuid"] },
       ResolverInputTypes["auth_users"]
     ];
-    images?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["images_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["images_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?: ResolverInputTypes["images_bool_exp"] | undefined | null;
-      },
-      ResolverInputTypes["images"]
-    ];
-    images_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["images_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["images_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?: ResolverInputTypes["images_bool_exp"] | undefined | null;
-      },
-      ResolverInputTypes["images_aggregate"]
-    ];
-    images_by_pk?: [{ id: number }, ResolverInputTypes["images"]];
     invitations?: [
       {
         /** distinct select on columns */
@@ -7184,210 +2672,6 @@ export type ResolverInputTypes = {
     __typename?: boolean | `@${string}`;
   }>;
   ["subscription_root"]: AliasType<{
-    appstore_pending_curator_reviews?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<
-              ResolverInputTypes["appstore_pending_curator_reviews_select_column"]
-            >
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<
-              ResolverInputTypes["appstore_pending_curator_reviews_order_by"]
-            >
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["appstore_pending_curator_reviews"]
-    ];
-    appstore_pending_curator_reviews_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<
-              ResolverInputTypes["appstore_pending_curator_reviews_select_column"]
-            >
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<
-              ResolverInputTypes["appstore_pending_curator_reviews_order_by"]
-            >
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["appstore_pending_curator_reviews_aggregate"]
-    ];
-    appstore_pending_curator_reviews_by_pk?: [
-      { id: number },
-      ResolverInputTypes["appstore_pending_curator_reviews"]
-    ];
-    appstore_pending_curator_reviews_stream?: [
-      {
-        /** maximum number of rows returned in a single batch */
-        batch_size: number /** cursor to stream the results returned by the query */;
-        cursor: Array<
-          | ResolverInputTypes["appstore_pending_curator_reviews_stream_cursor_input"]
-          | undefined
-          | null
-        > /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["appstore_pending_curator_reviews_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["appstore_pending_curator_reviews"]
-    ];
-    auth_invitations?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_invitations_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_invitations_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_invitations_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_invitations"]
-    ];
-    auth_invitations_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_invitations_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_invitations_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_invitations_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_invitations_aggregate"]
-    ];
-    auth_invitations_by_pk?: [
-      { id: ResolverInputTypes["uuid"] },
-      ResolverInputTypes["auth_invitations"]
-    ];
-    auth_invitations_stream?: [
-      {
-        /** maximum number of rows returned in a single batch */
-        batch_size: number /** cursor to stream the results returned by the query */;
-        cursor: Array<
-          | ResolverInputTypes["auth_invitations_stream_cursor_input"]
-          | undefined
-          | null
-        > /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_invitations_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_invitations"]
-    ];
-    auth_publickeys?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_publickeys_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_publickeys_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_publickeys_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_publickeys"]
-    ];
-    auth_publickeys_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_publickeys_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_publickeys_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_publickeys_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_publickeys_aggregate"]
-    ];
     auth_publickeys_history?: [
       {
         /** distinct select on columns */
@@ -7414,36 +2698,6 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_publickeys_history"]
     ];
-    auth_publickeys_history_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_publickeys_history_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_publickeys_history_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_publickeys_history_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_publickeys_history_aggregate"]
-    ];
-    auth_publickeys_history_by_pk?: [
-      { id: number },
-      ResolverInputTypes["auth_publickeys_history"]
-    ];
     auth_publickeys_history_stream?: [
       {
         /** maximum number of rows returned in a single batch */
@@ -7459,22 +2713,6 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_publickeys_history"]
-    ];
-    auth_publickeys_stream?: [
-      {
-        /** maximum number of rows returned in a single batch */
-        batch_size: number /** cursor to stream the results returned by the query */;
-        cursor: Array<
-          | ResolverInputTypes["auth_publickeys_stream_cursor_input"]
-          | undefined
-          | null
-        > /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_publickeys_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_publickeys"]
     ];
     auth_users?: [
       {
@@ -7538,64 +2776,6 @@ export type ResolverInputTypes = {
         where?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
       },
       ResolverInputTypes["auth_users"]
-    ];
-    images?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["images_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["images_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?: ResolverInputTypes["images_bool_exp"] | undefined | null;
-      },
-      ResolverInputTypes["images"]
-    ];
-    images_aggregate?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["images_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["images_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?: ResolverInputTypes["images_bool_exp"] | undefined | null;
-      },
-      ResolverInputTypes["images_aggregate"]
-    ];
-    images_by_pk?: [{ id: number }, ResolverInputTypes["images"]];
-    images_stream?: [
-      {
-        /** maximum number of rows returned in a single batch */
-        batch_size: number /** cursor to stream the results returned by the query */;
-        cursor: Array<
-          ResolverInputTypes["images_stream_cursor_input"] | undefined | null
-        > /** filter the rows returned */;
-        where?: ResolverInputTypes["images_bool_exp"] | undefined | null;
-      },
-      ResolverInputTypes["images"]
     ];
     invitations?: [
       {
@@ -7687,30 +2867,6 @@ export type ResolverInputTypes = {
 };
 
 export type ModelTypes = {
-  /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
-  ["Boolean_comparison_exp"]: {
-    _eq?: boolean | undefined;
-    _gt?: boolean | undefined;
-    _gte?: boolean | undefined;
-    _in?: Array<boolean> | undefined;
-    _is_null?: boolean | undefined;
-    _lt?: boolean | undefined;
-    _lte?: boolean | undefined;
-    _neq?: boolean | undefined;
-    _nin?: Array<boolean> | undefined;
-  };
-  /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
-  ["Int_comparison_exp"]: {
-    _eq?: number | undefined;
-    _gt?: number | undefined;
-    _gte?: number | undefined;
-    _in?: Array<number> | undefined;
-    _is_null?: boolean | undefined;
-    _lt?: number | undefined;
-    _lte?: number | undefined;
-    _neq?: number | undefined;
-    _nin?: Array<number> | undefined;
-  };
   /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
   ["String_comparison_exp"]: {
     _eq?: string | undefined;
@@ -7743,489 +2899,16 @@ export type ModelTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined;
   };
-  /** columns and relationships of "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews"]: {
-    approved?: boolean | undefined;
-    authority: string;
-    contact: string;
-    created_at: ModelTypes["timestamptz"];
-    data: ModelTypes["jsonb"];
-    id: number;
-    ix_data?: ModelTypes["bytea"] | undefined;
-    ix_keys?: ModelTypes["jsonb"] | undefined;
-    processed?: boolean | undefined;
-    signature?: string | undefined;
-    type: string;
-    xnft: string;
-  };
-  /** aggregated selection of "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_aggregate"]: {
-    aggregate?:
-      | ModelTypes["appstore_pending_curator_reviews_aggregate_fields"]
-      | undefined;
-    nodes: Array<ModelTypes["appstore_pending_curator_reviews"]>;
-  };
-  /** aggregate fields of "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_aggregate_fields"]: {
-    avg?: ModelTypes["appstore_pending_curator_reviews_avg_fields"] | undefined;
-    count: number;
-    max?: ModelTypes["appstore_pending_curator_reviews_max_fields"] | undefined;
-    min?: ModelTypes["appstore_pending_curator_reviews_min_fields"] | undefined;
-    stddev?:
-      | ModelTypes["appstore_pending_curator_reviews_stddev_fields"]
-      | undefined;
-    stddev_pop?:
-      | ModelTypes["appstore_pending_curator_reviews_stddev_pop_fields"]
-      | undefined;
-    stddev_samp?:
-      | ModelTypes["appstore_pending_curator_reviews_stddev_samp_fields"]
-      | undefined;
-    sum?: ModelTypes["appstore_pending_curator_reviews_sum_fields"] | undefined;
-    var_pop?:
-      | ModelTypes["appstore_pending_curator_reviews_var_pop_fields"]
-      | undefined;
-    var_samp?:
-      | ModelTypes["appstore_pending_curator_reviews_var_samp_fields"]
-      | undefined;
-    variance?:
-      | ModelTypes["appstore_pending_curator_reviews_variance_fields"]
-      | undefined;
-  };
-  /** append existing jsonb value of filtered columns with new jsonb value */
-  ["appstore_pending_curator_reviews_append_input"]: {
-    data?: ModelTypes["jsonb"] | undefined;
-    ix_keys?: ModelTypes["jsonb"] | undefined;
-  };
-  /** aggregate avg on columns */
-  ["appstore_pending_curator_reviews_avg_fields"]: {
-    id?: number | undefined;
-  };
-  /** Boolean expression to filter rows from the table "appstore.pending_curator_reviews". All fields are combined with a logical 'AND'. */
-  ["appstore_pending_curator_reviews_bool_exp"]: {
-    _and?:
-      | Array<ModelTypes["appstore_pending_curator_reviews_bool_exp"]>
-      | undefined;
-    _not?: ModelTypes["appstore_pending_curator_reviews_bool_exp"] | undefined;
-    _or?:
-      | Array<ModelTypes["appstore_pending_curator_reviews_bool_exp"]>
-      | undefined;
-    approved?: ModelTypes["Boolean_comparison_exp"] | undefined;
-    authority?: ModelTypes["String_comparison_exp"] | undefined;
-    contact?: ModelTypes["String_comparison_exp"] | undefined;
-    created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
-    data?: ModelTypes["jsonb_comparison_exp"] | undefined;
-    id?: ModelTypes["Int_comparison_exp"] | undefined;
-    ix_data?: ModelTypes["bytea_comparison_exp"] | undefined;
-    ix_keys?: ModelTypes["jsonb_comparison_exp"] | undefined;
-    processed?: ModelTypes["Boolean_comparison_exp"] | undefined;
-    signature?: ModelTypes["String_comparison_exp"] | undefined;
-    type?: ModelTypes["String_comparison_exp"] | undefined;
-    xnft?: ModelTypes["String_comparison_exp"] | undefined;
-  };
-  ["appstore_pending_curator_reviews_constraint"]: appstore_pending_curator_reviews_constraint;
-  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-  ["appstore_pending_curator_reviews_delete_at_path_input"]: {
-    data?: Array<string> | undefined;
-    ix_keys?: Array<string> | undefined;
-  };
-  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-  ["appstore_pending_curator_reviews_delete_elem_input"]: {
-    data?: number | undefined;
-    ix_keys?: number | undefined;
-  };
-  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-  ["appstore_pending_curator_reviews_delete_key_input"]: {
-    data?: string | undefined;
-    ix_keys?: string | undefined;
-  };
-  /** input type for incrementing numeric columns in table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_inc_input"]: {
-    id?: number | undefined;
-  };
-  /** input type for inserting data into table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_insert_input"]: {
-    approved?: boolean | undefined;
-    authority?: string | undefined;
-    contact?: string | undefined;
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    data?: ModelTypes["jsonb"] | undefined;
-    id?: number | undefined;
-    ix_data?: ModelTypes["bytea"] | undefined;
-    ix_keys?: ModelTypes["jsonb"] | undefined;
-    processed?: boolean | undefined;
-    signature?: string | undefined;
-    type?: string | undefined;
-    xnft?: string | undefined;
-  };
-  /** aggregate max on columns */
-  ["appstore_pending_curator_reviews_max_fields"]: {
-    authority?: string | undefined;
-    contact?: string | undefined;
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    signature?: string | undefined;
-    type?: string | undefined;
-    xnft?: string | undefined;
-  };
-  /** aggregate min on columns */
-  ["appstore_pending_curator_reviews_min_fields"]: {
-    authority?: string | undefined;
-    contact?: string | undefined;
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    signature?: string | undefined;
-    type?: string | undefined;
-    xnft?: string | undefined;
-  };
-  /** response of any mutation on the table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_mutation_response"]: {
-    /** number of rows affected by the mutation */
-    affected_rows: number;
-    /** data from the rows affected by the mutation */
-    returning: Array<ModelTypes["appstore_pending_curator_reviews"]>;
-  };
-  /** on_conflict condition type for table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_on_conflict"]: {
-    constraint: ModelTypes["appstore_pending_curator_reviews_constraint"];
-    update_columns: Array<
-      ModelTypes["appstore_pending_curator_reviews_update_column"]
-    >;
-    where?: ModelTypes["appstore_pending_curator_reviews_bool_exp"] | undefined;
-  };
-  /** Ordering options when selecting data from "appstore.pending_curator_reviews". */
-  ["appstore_pending_curator_reviews_order_by"]: {
-    approved?: ModelTypes["order_by"] | undefined;
-    authority?: ModelTypes["order_by"] | undefined;
-    contact?: ModelTypes["order_by"] | undefined;
-    created_at?: ModelTypes["order_by"] | undefined;
-    data?: ModelTypes["order_by"] | undefined;
-    id?: ModelTypes["order_by"] | undefined;
-    ix_data?: ModelTypes["order_by"] | undefined;
-    ix_keys?: ModelTypes["order_by"] | undefined;
-    processed?: ModelTypes["order_by"] | undefined;
-    signature?: ModelTypes["order_by"] | undefined;
-    type?: ModelTypes["order_by"] | undefined;
-    xnft?: ModelTypes["order_by"] | undefined;
-  };
-  /** primary key columns input for table: appstore_pending_curator_reviews */
-  ["appstore_pending_curator_reviews_pk_columns_input"]: {
-    id: number;
-  };
-  /** prepend existing jsonb value of filtered columns with new jsonb value */
-  ["appstore_pending_curator_reviews_prepend_input"]: {
-    data?: ModelTypes["jsonb"] | undefined;
-    ix_keys?: ModelTypes["jsonb"] | undefined;
-  };
-  ["appstore_pending_curator_reviews_select_column"]: appstore_pending_curator_reviews_select_column;
-  /** input type for updating data in table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_set_input"]: {
-    approved?: boolean | undefined;
-    authority?: string | undefined;
-    contact?: string | undefined;
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    data?: ModelTypes["jsonb"] | undefined;
-    id?: number | undefined;
-    ix_data?: ModelTypes["bytea"] | undefined;
-    ix_keys?: ModelTypes["jsonb"] | undefined;
-    processed?: boolean | undefined;
-    signature?: string | undefined;
-    type?: string | undefined;
-    xnft?: string | undefined;
-  };
-  /** aggregate stddev on columns */
-  ["appstore_pending_curator_reviews_stddev_fields"]: {
-    id?: number | undefined;
-  };
-  /** aggregate stddev_pop on columns */
-  ["appstore_pending_curator_reviews_stddev_pop_fields"]: {
-    id?: number | undefined;
-  };
-  /** aggregate stddev_samp on columns */
-  ["appstore_pending_curator_reviews_stddev_samp_fields"]: {
-    id?: number | undefined;
-  };
-  /** Streaming cursor of the table "appstore_pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: ModelTypes["appstore_pending_curator_reviews_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: ModelTypes["cursor_ordering"] | undefined;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["appstore_pending_curator_reviews_stream_cursor_value_input"]: {
-    approved?: boolean | undefined;
-    authority?: string | undefined;
-    contact?: string | undefined;
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    data?: ModelTypes["jsonb"] | undefined;
-    id?: number | undefined;
-    ix_data?: ModelTypes["bytea"] | undefined;
-    ix_keys?: ModelTypes["jsonb"] | undefined;
-    processed?: boolean | undefined;
-    signature?: string | undefined;
-    type?: string | undefined;
-    xnft?: string | undefined;
-  };
-  /** aggregate sum on columns */
-  ["appstore_pending_curator_reviews_sum_fields"]: {
-    id?: number | undefined;
-  };
-  ["appstore_pending_curator_reviews_update_column"]: appstore_pending_curator_reviews_update_column;
-  ["appstore_pending_curator_reviews_updates"]: {
-    /** append existing jsonb value of filtered columns with new jsonb value */
-    _append?:
-      | ModelTypes["appstore_pending_curator_reviews_append_input"]
-      | undefined;
-    /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-    _delete_at_path?:
-      | ModelTypes["appstore_pending_curator_reviews_delete_at_path_input"]
-      | undefined;
-    /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-    _delete_elem?:
-      | ModelTypes["appstore_pending_curator_reviews_delete_elem_input"]
-      | undefined;
-    /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-    _delete_key?:
-      | ModelTypes["appstore_pending_curator_reviews_delete_key_input"]
-      | undefined;
-    /** increments the numeric columns with given value of the filtered values */
-    _inc?: ModelTypes["appstore_pending_curator_reviews_inc_input"] | undefined;
-    /** prepend existing jsonb value of filtered columns with new jsonb value */
-    _prepend?:
-      | ModelTypes["appstore_pending_curator_reviews_prepend_input"]
-      | undefined;
-    /** sets the columns of the filtered rows to the given values */
-    _set?: ModelTypes["appstore_pending_curator_reviews_set_input"] | undefined;
-    where: ModelTypes["appstore_pending_curator_reviews_bool_exp"];
-  };
-  /** aggregate var_pop on columns */
-  ["appstore_pending_curator_reviews_var_pop_fields"]: {
-    id?: number | undefined;
-  };
-  /** aggregate var_samp on columns */
-  ["appstore_pending_curator_reviews_var_samp_fields"]: {
-    id?: number | undefined;
-  };
-  /** aggregate variance on columns */
-  ["appstore_pending_curator_reviews_variance_fields"]: {
-    id?: number | undefined;
-  };
-  /** ids are beta invite codes */
-  ["auth_invitations"]: {
-    created_at: ModelTypes["timestamptz"];
-    data?: ModelTypes["jsonb"] | undefined;
-    id: ModelTypes["uuid"];
-  };
-  /** aggregated selection of "auth.invitations" */
-  ["auth_invitations_aggregate"]: {
-    aggregate?: ModelTypes["auth_invitations_aggregate_fields"] | undefined;
-    nodes: Array<ModelTypes["auth_invitations"]>;
-  };
-  /** aggregate fields of "auth.invitations" */
-  ["auth_invitations_aggregate_fields"]: {
-    count: number;
-    max?: ModelTypes["auth_invitations_max_fields"] | undefined;
-    min?: ModelTypes["auth_invitations_min_fields"] | undefined;
-  };
-  /** append existing jsonb value of filtered columns with new jsonb value */
-  ["auth_invitations_append_input"]: {
-    data?: ModelTypes["jsonb"] | undefined;
-  };
-  /** Boolean expression to filter rows from the table "auth.invitations". All fields are combined with a logical 'AND'. */
-  ["auth_invitations_bool_exp"]: {
-    _and?: Array<ModelTypes["auth_invitations_bool_exp"]> | undefined;
-    _not?: ModelTypes["auth_invitations_bool_exp"] | undefined;
-    _or?: Array<ModelTypes["auth_invitations_bool_exp"]> | undefined;
-    created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
-    data?: ModelTypes["jsonb_comparison_exp"] | undefined;
-    id?: ModelTypes["uuid_comparison_exp"] | undefined;
-  };
-  ["auth_invitations_constraint"]: auth_invitations_constraint;
-  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-  ["auth_invitations_delete_at_path_input"]: {
-    data?: Array<string> | undefined;
-  };
-  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-  ["auth_invitations_delete_elem_input"]: {
-    data?: number | undefined;
-  };
-  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-  ["auth_invitations_delete_key_input"]: {
-    data?: string | undefined;
-  };
-  /** input type for inserting data into table "auth.invitations" */
-  ["auth_invitations_insert_input"]: {
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    data?: ModelTypes["jsonb"] | undefined;
-    id?: ModelTypes["uuid"] | undefined;
-  };
-  /** aggregate max on columns */
-  ["auth_invitations_max_fields"]: {
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: ModelTypes["uuid"] | undefined;
-  };
-  /** aggregate min on columns */
-  ["auth_invitations_min_fields"]: {
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: ModelTypes["uuid"] | undefined;
-  };
-  /** response of any mutation on the table "auth.invitations" */
-  ["auth_invitations_mutation_response"]: {
-    /** number of rows affected by the mutation */
-    affected_rows: number;
-    /** data from the rows affected by the mutation */
-    returning: Array<ModelTypes["auth_invitations"]>;
-  };
-  /** input type for inserting object relation for remote table "auth.invitations" */
-  ["auth_invitations_obj_rel_insert_input"]: {
-    data: ModelTypes["auth_invitations_insert_input"];
-    /** upsert condition */
-    on_conflict?: ModelTypes["auth_invitations_on_conflict"] | undefined;
-  };
-  /** on_conflict condition type for table "auth.invitations" */
-  ["auth_invitations_on_conflict"]: {
-    constraint: ModelTypes["auth_invitations_constraint"];
-    update_columns: Array<ModelTypes["auth_invitations_update_column"]>;
-    where?: ModelTypes["auth_invitations_bool_exp"] | undefined;
-  };
-  /** Ordering options when selecting data from "auth.invitations". */
-  ["auth_invitations_order_by"]: {
-    created_at?: ModelTypes["order_by"] | undefined;
-    data?: ModelTypes["order_by"] | undefined;
-    id?: ModelTypes["order_by"] | undefined;
-  };
-  /** primary key columns input for table: auth_invitations */
-  ["auth_invitations_pk_columns_input"]: {
-    id: ModelTypes["uuid"];
-  };
-  /** prepend existing jsonb value of filtered columns with new jsonb value */
-  ["auth_invitations_prepend_input"]: {
-    data?: ModelTypes["jsonb"] | undefined;
-  };
-  ["auth_invitations_select_column"]: auth_invitations_select_column;
-  /** input type for updating data in table "auth.invitations" */
-  ["auth_invitations_set_input"]: {
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    data?: ModelTypes["jsonb"] | undefined;
-    id?: ModelTypes["uuid"] | undefined;
-  };
-  /** Streaming cursor of the table "auth_invitations" */
-  ["auth_invitations_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: ModelTypes["auth_invitations_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: ModelTypes["cursor_ordering"] | undefined;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_invitations_stream_cursor_value_input"]: {
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    data?: ModelTypes["jsonb"] | undefined;
-    id?: ModelTypes["uuid"] | undefined;
-  };
-  ["auth_invitations_update_column"]: auth_invitations_update_column;
-  ["auth_invitations_updates"]: {
-    /** append existing jsonb value of filtered columns with new jsonb value */
-    _append?: ModelTypes["auth_invitations_append_input"] | undefined;
-    /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-    _delete_at_path?:
-      | ModelTypes["auth_invitations_delete_at_path_input"]
-      | undefined;
-    /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-    _delete_elem?: ModelTypes["auth_invitations_delete_elem_input"] | undefined;
-    /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-    _delete_key?: ModelTypes["auth_invitations_delete_key_input"] | undefined;
-    /** prepend existing jsonb value of filtered columns with new jsonb value */
-    _prepend?: ModelTypes["auth_invitations_prepend_input"] | undefined;
-    /** sets the columns of the filtered rows to the given values */
-    _set?: ModelTypes["auth_invitations_set_input"] | undefined;
-    where: ModelTypes["auth_invitations_bool_exp"];
-  };
-  /** columns and relationships of "auth.publickeys" */
-  ["auth_publickeys"]: {
-    blockchain?: string | undefined;
-    publickey?: string | undefined;
-    user_id?: ModelTypes["uuid"] | undefined;
-  };
-  /** aggregated selection of "auth.publickeys" */
-  ["auth_publickeys_aggregate"]: {
-    aggregate?: ModelTypes["auth_publickeys_aggregate_fields"] | undefined;
-    nodes: Array<ModelTypes["auth_publickeys"]>;
-  };
-  /** aggregate fields of "auth.publickeys" */
-  ["auth_publickeys_aggregate_fields"]: {
-    count: number;
-    max?: ModelTypes["auth_publickeys_max_fields"] | undefined;
-    min?: ModelTypes["auth_publickeys_min_fields"] | undefined;
-  };
-  /** Boolean expression to filter rows from the table "auth.publickeys". All fields are combined with a logical 'AND'. */
-  ["auth_publickeys_bool_exp"]: {
-    _and?: Array<ModelTypes["auth_publickeys_bool_exp"]> | undefined;
-    _not?: ModelTypes["auth_publickeys_bool_exp"] | undefined;
-    _or?: Array<ModelTypes["auth_publickeys_bool_exp"]> | undefined;
-    blockchain?: ModelTypes["String_comparison_exp"] | undefined;
-    publickey?: ModelTypes["String_comparison_exp"] | undefined;
-    user_id?: ModelTypes["uuid_comparison_exp"] | undefined;
-  };
   /** columns and relationships of "auth.publickeys_history" */
   ["auth_publickeys_history"]: {
     blockchain: string;
-    created_at: ModelTypes["timestamptz"];
-    id: number;
     publickey: string;
-    user_id?: ModelTypes["uuid"] | undefined;
-  };
-  /** aggregated selection of "auth.publickeys_history" */
-  ["auth_publickeys_history_aggregate"]: {
-    aggregate?:
-      | ModelTypes["auth_publickeys_history_aggregate_fields"]
-      | undefined;
-    nodes: Array<ModelTypes["auth_publickeys_history"]>;
-  };
-  /** aggregate fields of "auth.publickeys_history" */
-  ["auth_publickeys_history_aggregate_fields"]: {
-    avg?: ModelTypes["auth_publickeys_history_avg_fields"] | undefined;
-    count: number;
-    max?: ModelTypes["auth_publickeys_history_max_fields"] | undefined;
-    min?: ModelTypes["auth_publickeys_history_min_fields"] | undefined;
-    stddev?: ModelTypes["auth_publickeys_history_stddev_fields"] | undefined;
-    stddev_pop?:
-      | ModelTypes["auth_publickeys_history_stddev_pop_fields"]
-      | undefined;
-    stddev_samp?:
-      | ModelTypes["auth_publickeys_history_stddev_samp_fields"]
-      | undefined;
-    sum?: ModelTypes["auth_publickeys_history_sum_fields"] | undefined;
-    var_pop?: ModelTypes["auth_publickeys_history_var_pop_fields"] | undefined;
-    var_samp?:
-      | ModelTypes["auth_publickeys_history_var_samp_fields"]
-      | undefined;
-    variance?:
-      | ModelTypes["auth_publickeys_history_variance_fields"]
-      | undefined;
   };
   /** order by aggregate values of table "auth.publickeys_history" */
   ["auth_publickeys_history_aggregate_order_by"]: {
-    avg?: ModelTypes["auth_publickeys_history_avg_order_by"] | undefined;
     count?: ModelTypes["order_by"] | undefined;
     max?: ModelTypes["auth_publickeys_history_max_order_by"] | undefined;
     min?: ModelTypes["auth_publickeys_history_min_order_by"] | undefined;
-    stddev?: ModelTypes["auth_publickeys_history_stddev_order_by"] | undefined;
-    stddev_pop?:
-      | ModelTypes["auth_publickeys_history_stddev_pop_order_by"]
-      | undefined;
-    stddev_samp?:
-      | ModelTypes["auth_publickeys_history_stddev_samp_order_by"]
-      | undefined;
-    sum?: ModelTypes["auth_publickeys_history_sum_order_by"] | undefined;
-    var_pop?:
-      | ModelTypes["auth_publickeys_history_var_pop_order_by"]
-      | undefined;
-    var_samp?:
-      | ModelTypes["auth_publickeys_history_var_samp_order_by"]
-      | undefined;
-    variance?:
-      | ModelTypes["auth_publickeys_history_variance_order_by"]
-      | undefined;
   };
   /** input type for inserting array relation for remote table "auth.publickeys_history" */
   ["auth_publickeys_history_arr_rel_insert_input"]: {
@@ -8233,69 +2916,30 @@ export type ModelTypes = {
     /** upsert condition */
     on_conflict?: ModelTypes["auth_publickeys_history_on_conflict"] | undefined;
   };
-  /** aggregate avg on columns */
-  ["auth_publickeys_history_avg_fields"]: {
-    id?: number | undefined;
-  };
-  /** order by avg() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_avg_order_by"]: {
-    id?: ModelTypes["order_by"] | undefined;
-  };
   /** Boolean expression to filter rows from the table "auth.publickeys_history". All fields are combined with a logical 'AND'. */
   ["auth_publickeys_history_bool_exp"]: {
     _and?: Array<ModelTypes["auth_publickeys_history_bool_exp"]> | undefined;
     _not?: ModelTypes["auth_publickeys_history_bool_exp"] | undefined;
     _or?: Array<ModelTypes["auth_publickeys_history_bool_exp"]> | undefined;
     blockchain?: ModelTypes["String_comparison_exp"] | undefined;
-    created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
-    id?: ModelTypes["Int_comparison_exp"] | undefined;
     publickey?: ModelTypes["String_comparison_exp"] | undefined;
-    user_id?: ModelTypes["uuid_comparison_exp"] | undefined;
   };
   ["auth_publickeys_history_constraint"]: auth_publickeys_history_constraint;
-  /** input type for incrementing numeric columns in table "auth.publickeys_history" */
-  ["auth_publickeys_history_inc_input"]: {
-    id?: number | undefined;
-  };
   /** input type for inserting data into table "auth.publickeys_history" */
   ["auth_publickeys_history_insert_input"]: {
     blockchain?: string | undefined;
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    publickey?: string | undefined;
-    user_id?: ModelTypes["uuid"] | undefined;
-  };
-  /** aggregate max on columns */
-  ["auth_publickeys_history_max_fields"]: {
-    blockchain?: string | undefined;
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: number | undefined;
     publickey?: string | undefined;
     user_id?: ModelTypes["uuid"] | undefined;
   };
   /** order by max() on columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_max_order_by"]: {
     blockchain?: ModelTypes["order_by"] | undefined;
-    created_at?: ModelTypes["order_by"] | undefined;
-    id?: ModelTypes["order_by"] | undefined;
     publickey?: ModelTypes["order_by"] | undefined;
-    user_id?: ModelTypes["order_by"] | undefined;
-  };
-  /** aggregate min on columns */
-  ["auth_publickeys_history_min_fields"]: {
-    blockchain?: string | undefined;
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    publickey?: string | undefined;
-    user_id?: ModelTypes["uuid"] | undefined;
   };
   /** order by min() on columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_min_order_by"]: {
     blockchain?: ModelTypes["order_by"] | undefined;
-    created_at?: ModelTypes["order_by"] | undefined;
-    id?: ModelTypes["order_by"] | undefined;
     publickey?: ModelTypes["order_by"] | undefined;
-    user_id?: ModelTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "auth.publickeys_history" */
   ["auth_publickeys_history_mutation_response"]: {
@@ -8313,48 +2957,9 @@ export type ModelTypes = {
   /** Ordering options when selecting data from "auth.publickeys_history". */
   ["auth_publickeys_history_order_by"]: {
     blockchain?: ModelTypes["order_by"] | undefined;
-    created_at?: ModelTypes["order_by"] | undefined;
-    id?: ModelTypes["order_by"] | undefined;
     publickey?: ModelTypes["order_by"] | undefined;
-    user_id?: ModelTypes["order_by"] | undefined;
-  };
-  /** primary key columns input for table: auth_publickeys_history */
-  ["auth_publickeys_history_pk_columns_input"]: {
-    id: number;
   };
   ["auth_publickeys_history_select_column"]: auth_publickeys_history_select_column;
-  /** input type for updating data in table "auth.publickeys_history" */
-  ["auth_publickeys_history_set_input"]: {
-    blockchain?: string | undefined;
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    publickey?: string | undefined;
-    user_id?: ModelTypes["uuid"] | undefined;
-  };
-  /** aggregate stddev on columns */
-  ["auth_publickeys_history_stddev_fields"]: {
-    id?: number | undefined;
-  };
-  /** order by stddev() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_stddev_order_by"]: {
-    id?: ModelTypes["order_by"] | undefined;
-  };
-  /** aggregate stddev_pop on columns */
-  ["auth_publickeys_history_stddev_pop_fields"]: {
-    id?: number | undefined;
-  };
-  /** order by stddev_pop() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_stddev_pop_order_by"]: {
-    id?: ModelTypes["order_by"] | undefined;
-  };
-  /** aggregate stddev_samp on columns */
-  ["auth_publickeys_history_stddev_samp_fields"]: {
-    id?: number | undefined;
-  };
-  /** order by stddev_samp() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_stddev_samp_order_by"]: {
-    id?: ModelTypes["order_by"] | undefined;
-  };
   /** Streaming cursor of the table "auth_publickeys_history" */
   ["auth_publickeys_history_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -8365,96 +2970,15 @@ export type ModelTypes = {
   /** Initial value of the column from where the streaming should start */
   ["auth_publickeys_history_stream_cursor_value_input"]: {
     blockchain?: string | undefined;
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: number | undefined;
     publickey?: string | undefined;
-    user_id?: ModelTypes["uuid"] | undefined;
-  };
-  /** aggregate sum on columns */
-  ["auth_publickeys_history_sum_fields"]: {
-    id?: number | undefined;
-  };
-  /** order by sum() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_sum_order_by"]: {
-    id?: ModelTypes["order_by"] | undefined;
   };
   ["auth_publickeys_history_update_column"]: auth_publickeys_history_update_column;
-  ["auth_publickeys_history_updates"]: {
-    /** increments the numeric columns with given value of the filtered values */
-    _inc?: ModelTypes["auth_publickeys_history_inc_input"] | undefined;
-    /** sets the columns of the filtered rows to the given values */
-    _set?: ModelTypes["auth_publickeys_history_set_input"] | undefined;
-    where: ModelTypes["auth_publickeys_history_bool_exp"];
-  };
-  /** aggregate var_pop on columns */
-  ["auth_publickeys_history_var_pop_fields"]: {
-    id?: number | undefined;
-  };
-  /** order by var_pop() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_var_pop_order_by"]: {
-    id?: ModelTypes["order_by"] | undefined;
-  };
-  /** aggregate var_samp on columns */
-  ["auth_publickeys_history_var_samp_fields"]: {
-    id?: number | undefined;
-  };
-  /** order by var_samp() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_var_samp_order_by"]: {
-    id?: ModelTypes["order_by"] | undefined;
-  };
-  /** aggregate variance on columns */
-  ["auth_publickeys_history_variance_fields"]: {
-    id?: number | undefined;
-  };
-  /** order by variance() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_variance_order_by"]: {
-    id?: ModelTypes["order_by"] | undefined;
-  };
-  /** aggregate max on columns */
-  ["auth_publickeys_max_fields"]: {
-    blockchain?: string | undefined;
-    publickey?: string | undefined;
-    user_id?: ModelTypes["uuid"] | undefined;
-  };
-  /** aggregate min on columns */
-  ["auth_publickeys_min_fields"]: {
-    blockchain?: string | undefined;
-    publickey?: string | undefined;
-    user_id?: ModelTypes["uuid"] | undefined;
-  };
-  /** Ordering options when selecting data from "auth.publickeys". */
-  ["auth_publickeys_order_by"]: {
-    blockchain?: ModelTypes["order_by"] | undefined;
-    publickey?: ModelTypes["order_by"] | undefined;
-    user_id?: ModelTypes["order_by"] | undefined;
-  };
-  ["auth_publickeys_select_column"]: auth_publickeys_select_column;
-  /** Streaming cursor of the table "auth_publickeys" */
-  ["auth_publickeys_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: ModelTypes["auth_publickeys_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: ModelTypes["cursor_ordering"] | undefined;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_publickeys_stream_cursor_value_input"]: {
-    blockchain?: string | undefined;
-    publickey?: string | undefined;
-    user_id?: ModelTypes["uuid"] | undefined;
-  };
   /** columns and relationships of "auth.users" */
   ["auth_users"]: {
-    created_at: ModelTypes["timestamptz"];
     id: ModelTypes["uuid"];
-    invitation_id: ModelTypes["uuid"];
-    last_active_at: ModelTypes["timestamptz"];
     /** An array relationship */
     publickeys: Array<ModelTypes["auth_publickeys_history"]>;
-    /** An aggregate relationship */
-    publickeys_aggregate: ModelTypes["auth_publickeys_history_aggregate"];
-    updated_at: ModelTypes["timestamptz"];
     username: ModelTypes["citext"];
-    waitlist_id?: string | undefined;
   };
   /** aggregated selection of "auth.users" */
   ["auth_users_aggregate"]: {
@@ -8472,48 +2996,29 @@ export type ModelTypes = {
     _and?: Array<ModelTypes["auth_users_bool_exp"]> | undefined;
     _not?: ModelTypes["auth_users_bool_exp"] | undefined;
     _or?: Array<ModelTypes["auth_users_bool_exp"]> | undefined;
-    created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
     id?: ModelTypes["uuid_comparison_exp"] | undefined;
-    invitation_id?: ModelTypes["uuid_comparison_exp"] | undefined;
-    last_active_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
     publickeys?: ModelTypes["auth_publickeys_history_bool_exp"] | undefined;
-    updated_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
     username?: ModelTypes["citext_comparison_exp"] | undefined;
-    waitlist_id?: ModelTypes["String_comparison_exp"] | undefined;
   };
   ["auth_users_constraint"]: auth_users_constraint;
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: ModelTypes["uuid"] | undefined;
     invitation_id?: ModelTypes["uuid"] | undefined;
-    last_active_at?: ModelTypes["timestamptz"] | undefined;
     publickeys?:
       | ModelTypes["auth_publickeys_history_arr_rel_insert_input"]
       | undefined;
-    updated_at?: ModelTypes["timestamptz"] | undefined;
     username?: ModelTypes["citext"] | undefined;
     waitlist_id?: string | undefined;
   };
   /** aggregate max on columns */
   ["auth_users_max_fields"]: {
-    created_at?: ModelTypes["timestamptz"] | undefined;
     id?: ModelTypes["uuid"] | undefined;
-    invitation_id?: ModelTypes["uuid"] | undefined;
-    last_active_at?: ModelTypes["timestamptz"] | undefined;
-    updated_at?: ModelTypes["timestamptz"] | undefined;
     username?: ModelTypes["citext"] | undefined;
-    waitlist_id?: string | undefined;
   };
   /** aggregate min on columns */
   ["auth_users_min_fields"]: {
-    created_at?: ModelTypes["timestamptz"] | undefined;
     id?: ModelTypes["uuid"] | undefined;
-    invitation_id?: ModelTypes["uuid"] | undefined;
-    last_active_at?: ModelTypes["timestamptz"] | undefined;
-    updated_at?: ModelTypes["timestamptz"] | undefined;
     username?: ModelTypes["citext"] | undefined;
-    waitlist_id?: string | undefined;
   };
   /** response of any mutation on the table "auth.users" */
   ["auth_users_mutation_response"]: {
@@ -8530,16 +3035,11 @@ export type ModelTypes = {
   };
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
-    created_at?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
-    invitation_id?: ModelTypes["order_by"] | undefined;
-    last_active_at?: ModelTypes["order_by"] | undefined;
     publickeys_aggregate?:
       | ModelTypes["auth_publickeys_history_aggregate_order_by"]
       | undefined;
-    updated_at?: ModelTypes["order_by"] | undefined;
     username?: ModelTypes["order_by"] | undefined;
-    waitlist_id?: ModelTypes["order_by"] | undefined;
   };
   /** primary key columns input for table: auth_users */
   ["auth_users_pk_columns_input"]: {
@@ -8548,13 +3048,7 @@ export type ModelTypes = {
   ["auth_users_select_column"]: auth_users_select_column;
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: ModelTypes["uuid"] | undefined;
-    invitation_id?: ModelTypes["uuid"] | undefined;
-    last_active_at?: ModelTypes["timestamptz"] | undefined;
     updated_at?: ModelTypes["timestamptz"] | undefined;
-    username?: ModelTypes["citext"] | undefined;
-    waitlist_id?: string | undefined;
   };
   /** Streaming cursor of the table "auth_users" */
   ["auth_users_stream_cursor_input"]: {
@@ -8565,32 +3059,14 @@ export type ModelTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_users_stream_cursor_value_input"]: {
-    created_at?: ModelTypes["timestamptz"] | undefined;
     id?: ModelTypes["uuid"] | undefined;
-    invitation_id?: ModelTypes["uuid"] | undefined;
-    last_active_at?: ModelTypes["timestamptz"] | undefined;
-    updated_at?: ModelTypes["timestamptz"] | undefined;
     username?: ModelTypes["citext"] | undefined;
-    waitlist_id?: string | undefined;
   };
   ["auth_users_update_column"]: auth_users_update_column;
   ["auth_users_updates"]: {
     /** sets the columns of the filtered rows to the given values */
     _set?: ModelTypes["auth_users_set_input"] | undefined;
     where: ModelTypes["auth_users_bool_exp"];
-  };
-  ["bytea"]: any;
-  /** Boolean expression to compare columns of type "bytea". All fields are combined with logical 'AND'. */
-  ["bytea_comparison_exp"]: {
-    _eq?: ModelTypes["bytea"] | undefined;
-    _gt?: ModelTypes["bytea"] | undefined;
-    _gte?: ModelTypes["bytea"] | undefined;
-    _in?: Array<ModelTypes["bytea"]> | undefined;
-    _is_null?: boolean | undefined;
-    _lt?: ModelTypes["bytea"] | undefined;
-    _lte?: ModelTypes["bytea"] | undefined;
-    _neq?: ModelTypes["bytea"] | undefined;
-    _nin?: Array<ModelTypes["bytea"]> | undefined;
   };
   ["citext"]: any;
   /** Boolean expression to compare columns of type "citext". All fields are combined with logical 'AND'. */
@@ -8626,183 +3102,6 @@ export type ModelTypes = {
     _similar?: ModelTypes["citext"] | undefined;
   };
   ["cursor_ordering"]: cursor_ordering;
-  /** columns and relationships of "images" */
-  ["images"]: {
-    completed: boolean;
-    created_at: ModelTypes["timestamptz"];
-    id: number;
-    /** An object relationship */
-    invitation: ModelTypes["auth_invitations"];
-    invite_code: ModelTypes["uuid"];
-    prompt: string;
-    uri: string;
-    winner?: string | undefined;
-  };
-  /** aggregated selection of "images" */
-  ["images_aggregate"]: {
-    aggregate?: ModelTypes["images_aggregate_fields"] | undefined;
-    nodes: Array<ModelTypes["images"]>;
-  };
-  /** aggregate fields of "images" */
-  ["images_aggregate_fields"]: {
-    avg?: ModelTypes["images_avg_fields"] | undefined;
-    count: number;
-    max?: ModelTypes["images_max_fields"] | undefined;
-    min?: ModelTypes["images_min_fields"] | undefined;
-    stddev?: ModelTypes["images_stddev_fields"] | undefined;
-    stddev_pop?: ModelTypes["images_stddev_pop_fields"] | undefined;
-    stddev_samp?: ModelTypes["images_stddev_samp_fields"] | undefined;
-    sum?: ModelTypes["images_sum_fields"] | undefined;
-    var_pop?: ModelTypes["images_var_pop_fields"] | undefined;
-    var_samp?: ModelTypes["images_var_samp_fields"] | undefined;
-    variance?: ModelTypes["images_variance_fields"] | undefined;
-  };
-  /** aggregate avg on columns */
-  ["images_avg_fields"]: {
-    id?: number | undefined;
-  };
-  /** Boolean expression to filter rows from the table "images". All fields are combined with a logical 'AND'. */
-  ["images_bool_exp"]: {
-    _and?: Array<ModelTypes["images_bool_exp"]> | undefined;
-    _not?: ModelTypes["images_bool_exp"] | undefined;
-    _or?: Array<ModelTypes["images_bool_exp"]> | undefined;
-    completed?: ModelTypes["Boolean_comparison_exp"] | undefined;
-    created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
-    id?: ModelTypes["Int_comparison_exp"] | undefined;
-    invitation?: ModelTypes["auth_invitations_bool_exp"] | undefined;
-    invite_code?: ModelTypes["uuid_comparison_exp"] | undefined;
-    prompt?: ModelTypes["String_comparison_exp"] | undefined;
-    uri?: ModelTypes["String_comparison_exp"] | undefined;
-    winner?: ModelTypes["String_comparison_exp"] | undefined;
-  };
-  ["images_constraint"]: images_constraint;
-  /** input type for incrementing numeric columns in table "images" */
-  ["images_inc_input"]: {
-    id?: number | undefined;
-  };
-  /** input type for inserting data into table "images" */
-  ["images_insert_input"]: {
-    completed?: boolean | undefined;
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    invitation?:
-      | ModelTypes["auth_invitations_obj_rel_insert_input"]
-      | undefined;
-    invite_code?: ModelTypes["uuid"] | undefined;
-    prompt?: string | undefined;
-    uri?: string | undefined;
-    winner?: string | undefined;
-  };
-  /** aggregate max on columns */
-  ["images_max_fields"]: {
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    invite_code?: ModelTypes["uuid"] | undefined;
-    prompt?: string | undefined;
-    uri?: string | undefined;
-    winner?: string | undefined;
-  };
-  /** aggregate min on columns */
-  ["images_min_fields"]: {
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    invite_code?: ModelTypes["uuid"] | undefined;
-    prompt?: string | undefined;
-    uri?: string | undefined;
-    winner?: string | undefined;
-  };
-  /** response of any mutation on the table "images" */
-  ["images_mutation_response"]: {
-    /** number of rows affected by the mutation */
-    affected_rows: number;
-    /** data from the rows affected by the mutation */
-    returning: Array<ModelTypes["images"]>;
-  };
-  /** on_conflict condition type for table "images" */
-  ["images_on_conflict"]: {
-    constraint: ModelTypes["images_constraint"];
-    update_columns: Array<ModelTypes["images_update_column"]>;
-    where?: ModelTypes["images_bool_exp"] | undefined;
-  };
-  /** Ordering options when selecting data from "images". */
-  ["images_order_by"]: {
-    completed?: ModelTypes["order_by"] | undefined;
-    created_at?: ModelTypes["order_by"] | undefined;
-    id?: ModelTypes["order_by"] | undefined;
-    invitation?: ModelTypes["auth_invitations_order_by"] | undefined;
-    invite_code?: ModelTypes["order_by"] | undefined;
-    prompt?: ModelTypes["order_by"] | undefined;
-    uri?: ModelTypes["order_by"] | undefined;
-    winner?: ModelTypes["order_by"] | undefined;
-  };
-  /** primary key columns input for table: images */
-  ["images_pk_columns_input"]: {
-    id: number;
-  };
-  ["images_select_column"]: images_select_column;
-  /** input type for updating data in table "images" */
-  ["images_set_input"]: {
-    completed?: boolean | undefined;
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    invite_code?: ModelTypes["uuid"] | undefined;
-    prompt?: string | undefined;
-    uri?: string | undefined;
-    winner?: string | undefined;
-  };
-  /** aggregate stddev on columns */
-  ["images_stddev_fields"]: {
-    id?: number | undefined;
-  };
-  /** aggregate stddev_pop on columns */
-  ["images_stddev_pop_fields"]: {
-    id?: number | undefined;
-  };
-  /** aggregate stddev_samp on columns */
-  ["images_stddev_samp_fields"]: {
-    id?: number | undefined;
-  };
-  /** Streaming cursor of the table "images" */
-  ["images_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: ModelTypes["images_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: ModelTypes["cursor_ordering"] | undefined;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["images_stream_cursor_value_input"]: {
-    completed?: boolean | undefined;
-    created_at?: ModelTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    invite_code?: ModelTypes["uuid"] | undefined;
-    prompt?: string | undefined;
-    uri?: string | undefined;
-    winner?: string | undefined;
-  };
-  /** aggregate sum on columns */
-  ["images_sum_fields"]: {
-    id?: number | undefined;
-  };
-  ["images_update_column"]: images_update_column;
-  ["images_updates"]: {
-    /** increments the numeric columns with given value of the filtered values */
-    _inc?: ModelTypes["images_inc_input"] | undefined;
-    /** sets the columns of the filtered rows to the given values */
-    _set?: ModelTypes["images_set_input"] | undefined;
-    where: ModelTypes["images_bool_exp"];
-  };
-  /** aggregate var_pop on columns */
-  ["images_var_pop_fields"]: {
-    id?: number | undefined;
-  };
-  /** aggregate var_samp on columns */
-  ["images_var_samp_fields"]: {
-    id?: number | undefined;
-  };
-  /** aggregate variance on columns */
-  ["images_variance_fields"]: {
-    id?: number | undefined;
-  };
   /** columns and relationships of "invitations" */
   ["invitations"]: {
     claimed_at?: ModelTypes["timestamptz"] | undefined;
@@ -8855,79 +3154,8 @@ export type ModelTypes = {
     claimed_at?: ModelTypes["timestamptz"] | undefined;
     id?: ModelTypes["uuid"] | undefined;
   };
-  ["jsonb"]: any;
-  ["jsonb_cast_exp"]: {
-    String?: ModelTypes["String_comparison_exp"] | undefined;
-  };
-  /** Boolean expression to compare columns of type "jsonb". All fields are combined with logical 'AND'. */
-  ["jsonb_comparison_exp"]: {
-    _cast?: ModelTypes["jsonb_cast_exp"] | undefined;
-    /** is the column contained in the given json value */
-    _contained_in?: ModelTypes["jsonb"] | undefined;
-    /** does the column contain the given json value at the top level */
-    _contains?: ModelTypes["jsonb"] | undefined;
-    _eq?: ModelTypes["jsonb"] | undefined;
-    _gt?: ModelTypes["jsonb"] | undefined;
-    _gte?: ModelTypes["jsonb"] | undefined;
-    /** does the string exist as a top-level key in the column */
-    _has_key?: string | undefined;
-    /** do all of these strings exist as top-level keys in the column */
-    _has_keys_all?: Array<string> | undefined;
-    /** do any of these strings exist as top-level keys in the column */
-    _has_keys_any?: Array<string> | undefined;
-    _in?: Array<ModelTypes["jsonb"]> | undefined;
-    _is_null?: boolean | undefined;
-    _lt?: ModelTypes["jsonb"] | undefined;
-    _lte?: ModelTypes["jsonb"] | undefined;
-    _neq?: ModelTypes["jsonb"] | undefined;
-    _nin?: Array<ModelTypes["jsonb"]> | undefined;
-  };
   /** mutation root */
   ["mutation_root"]: {
-    /** delete data from the table: "appstore.pending_curator_reviews" */
-    delete_appstore_pending_curator_reviews?:
-      | ModelTypes["appstore_pending_curator_reviews_mutation_response"]
-      | undefined;
-    /** delete single row from the table: "appstore.pending_curator_reviews" */
-    delete_appstore_pending_curator_reviews_by_pk?:
-      | ModelTypes["appstore_pending_curator_reviews"]
-      | undefined;
-    /** delete data from the table: "auth.invitations" */
-    delete_auth_invitations?:
-      | ModelTypes["auth_invitations_mutation_response"]
-      | undefined;
-    /** delete single row from the table: "auth.invitations" */
-    delete_auth_invitations_by_pk?: ModelTypes["auth_invitations"] | undefined;
-    /** delete data from the table: "auth.publickeys_history" */
-    delete_auth_publickeys_history?:
-      | ModelTypes["auth_publickeys_history_mutation_response"]
-      | undefined;
-    /** delete single row from the table: "auth.publickeys_history" */
-    delete_auth_publickeys_history_by_pk?:
-      | ModelTypes["auth_publickeys_history"]
-      | undefined;
-    /** delete data from the table: "auth.users" */
-    delete_auth_users?: ModelTypes["auth_users_mutation_response"] | undefined;
-    /** delete single row from the table: "auth.users" */
-    delete_auth_users_by_pk?: ModelTypes["auth_users"] | undefined;
-    /** delete data from the table: "images" */
-    delete_images?: ModelTypes["images_mutation_response"] | undefined;
-    /** delete single row from the table: "images" */
-    delete_images_by_pk?: ModelTypes["images"] | undefined;
-    /** insert data into the table: "appstore.pending_curator_reviews" */
-    insert_appstore_pending_curator_reviews?:
-      | ModelTypes["appstore_pending_curator_reviews_mutation_response"]
-      | undefined;
-    /** insert a single row into the table: "appstore.pending_curator_reviews" */
-    insert_appstore_pending_curator_reviews_one?:
-      | ModelTypes["appstore_pending_curator_reviews"]
-      | undefined;
-    /** insert data into the table: "auth.invitations" */
-    insert_auth_invitations?:
-      | ModelTypes["auth_invitations_mutation_response"]
-      | undefined;
-    /** insert a single row into the table: "auth.invitations" */
-    insert_auth_invitations_one?: ModelTypes["auth_invitations"] | undefined;
     /** insert data into the table: "auth.publickeys_history" */
     insert_auth_publickeys_history?:
       | ModelTypes["auth_publickeys_history_mutation_response"]
@@ -8940,49 +3168,6 @@ export type ModelTypes = {
     insert_auth_users?: ModelTypes["auth_users_mutation_response"] | undefined;
     /** insert a single row into the table: "auth.users" */
     insert_auth_users_one?: ModelTypes["auth_users"] | undefined;
-    /** insert data into the table: "images" */
-    insert_images?: ModelTypes["images_mutation_response"] | undefined;
-    /** insert a single row into the table: "images" */
-    insert_images_one?: ModelTypes["images"] | undefined;
-    /** update data of the table: "appstore.pending_curator_reviews" */
-    update_appstore_pending_curator_reviews?:
-      | ModelTypes["appstore_pending_curator_reviews_mutation_response"]
-      | undefined;
-    /** update single row of the table: "appstore.pending_curator_reviews" */
-    update_appstore_pending_curator_reviews_by_pk?:
-      | ModelTypes["appstore_pending_curator_reviews"]
-      | undefined;
-    /** update multiples rows of table: "appstore.pending_curator_reviews" */
-    update_appstore_pending_curator_reviews_many?:
-      | Array<
-          | ModelTypes["appstore_pending_curator_reviews_mutation_response"]
-          | undefined
-        >
-      | undefined;
-    /** update data of the table: "auth.invitations" */
-    update_auth_invitations?:
-      | ModelTypes["auth_invitations_mutation_response"]
-      | undefined;
-    /** update single row of the table: "auth.invitations" */
-    update_auth_invitations_by_pk?: ModelTypes["auth_invitations"] | undefined;
-    /** update multiples rows of table: "auth.invitations" */
-    update_auth_invitations_many?:
-      | Array<ModelTypes["auth_invitations_mutation_response"] | undefined>
-      | undefined;
-    /** update data of the table: "auth.publickeys_history" */
-    update_auth_publickeys_history?:
-      | ModelTypes["auth_publickeys_history_mutation_response"]
-      | undefined;
-    /** update single row of the table: "auth.publickeys_history" */
-    update_auth_publickeys_history_by_pk?:
-      | ModelTypes["auth_publickeys_history"]
-      | undefined;
-    /** update multiples rows of table: "auth.publickeys_history" */
-    update_auth_publickeys_history_many?:
-      | Array<
-          ModelTypes["auth_publickeys_history_mutation_response"] | undefined
-        >
-      | undefined;
     /** update data of the table: "auth.users" */
     update_auth_users?: ModelTypes["auth_users_mutation_response"] | undefined;
     /** update single row of the table: "auth.users" */
@@ -8991,103 +3176,29 @@ export type ModelTypes = {
     update_auth_users_many?:
       | Array<ModelTypes["auth_users_mutation_response"] | undefined>
       | undefined;
-    /** update data of the table: "images" */
-    update_images?: ModelTypes["images_mutation_response"] | undefined;
-    /** update single row of the table: "images" */
-    update_images_by_pk?: ModelTypes["images"] | undefined;
-    /** update multiples rows of table: "images" */
-    update_images_many?:
-      | Array<ModelTypes["images_mutation_response"] | undefined>
-      | undefined;
   };
   ["order_by"]: order_by;
   ["query_root"]: {
-    /** fetch data from the table: "appstore.pending_curator_reviews" */
-    appstore_pending_curator_reviews: Array<
-      ModelTypes["appstore_pending_curator_reviews"]
-    >;
-    /** fetch aggregated fields from the table: "appstore.pending_curator_reviews" */
-    appstore_pending_curator_reviews_aggregate: ModelTypes["appstore_pending_curator_reviews_aggregate"];
-    /** fetch data from the table: "appstore.pending_curator_reviews" using primary key columns */
-    appstore_pending_curator_reviews_by_pk?:
-      | ModelTypes["appstore_pending_curator_reviews"]
-      | undefined;
-    /** fetch data from the table: "auth.invitations" */
-    auth_invitations: Array<ModelTypes["auth_invitations"]>;
-    /** fetch aggregated fields from the table: "auth.invitations" */
-    auth_invitations_aggregate: ModelTypes["auth_invitations_aggregate"];
-    /** fetch data from the table: "auth.invitations" using primary key columns */
-    auth_invitations_by_pk?: ModelTypes["auth_invitations"] | undefined;
-    /** fetch data from the table: "auth.publickeys" */
-    auth_publickeys: Array<ModelTypes["auth_publickeys"]>;
-    /** fetch aggregated fields from the table: "auth.publickeys" */
-    auth_publickeys_aggregate: ModelTypes["auth_publickeys_aggregate"];
     /** fetch data from the table: "auth.publickeys_history" */
     auth_publickeys_history: Array<ModelTypes["auth_publickeys_history"]>;
-    /** fetch aggregated fields from the table: "auth.publickeys_history" */
-    auth_publickeys_history_aggregate: ModelTypes["auth_publickeys_history_aggregate"];
-    /** fetch data from the table: "auth.publickeys_history" using primary key columns */
-    auth_publickeys_history_by_pk?:
-      | ModelTypes["auth_publickeys_history"]
-      | undefined;
     /** fetch data from the table: "auth.users" */
     auth_users: Array<ModelTypes["auth_users"]>;
     /** fetch aggregated fields from the table: "auth.users" */
     auth_users_aggregate: ModelTypes["auth_users_aggregate"];
     /** fetch data from the table: "auth.users" using primary key columns */
     auth_users_by_pk?: ModelTypes["auth_users"] | undefined;
-    /** fetch data from the table: "images" */
-    images: Array<ModelTypes["images"]>;
-    /** fetch aggregated fields from the table: "images" */
-    images_aggregate: ModelTypes["images_aggregate"];
-    /** fetch data from the table: "images" using primary key columns */
-    images_by_pk?: ModelTypes["images"] | undefined;
     /** fetch data from the table: "invitations" */
     invitations: Array<ModelTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
     invitations_aggregate: ModelTypes["invitations_aggregate"];
   };
   ["subscription_root"]: {
-    /** fetch data from the table: "appstore.pending_curator_reviews" */
-    appstore_pending_curator_reviews: Array<
-      ModelTypes["appstore_pending_curator_reviews"]
-    >;
-    /** fetch aggregated fields from the table: "appstore.pending_curator_reviews" */
-    appstore_pending_curator_reviews_aggregate: ModelTypes["appstore_pending_curator_reviews_aggregate"];
-    /** fetch data from the table: "appstore.pending_curator_reviews" using primary key columns */
-    appstore_pending_curator_reviews_by_pk?:
-      | ModelTypes["appstore_pending_curator_reviews"]
-      | undefined;
-    /** fetch data from the table in a streaming manner : "appstore.pending_curator_reviews" */
-    appstore_pending_curator_reviews_stream: Array<
-      ModelTypes["appstore_pending_curator_reviews"]
-    >;
-    /** fetch data from the table: "auth.invitations" */
-    auth_invitations: Array<ModelTypes["auth_invitations"]>;
-    /** fetch aggregated fields from the table: "auth.invitations" */
-    auth_invitations_aggregate: ModelTypes["auth_invitations_aggregate"];
-    /** fetch data from the table: "auth.invitations" using primary key columns */
-    auth_invitations_by_pk?: ModelTypes["auth_invitations"] | undefined;
-    /** fetch data from the table in a streaming manner : "auth.invitations" */
-    auth_invitations_stream: Array<ModelTypes["auth_invitations"]>;
-    /** fetch data from the table: "auth.publickeys" */
-    auth_publickeys: Array<ModelTypes["auth_publickeys"]>;
-    /** fetch aggregated fields from the table: "auth.publickeys" */
-    auth_publickeys_aggregate: ModelTypes["auth_publickeys_aggregate"];
     /** fetch data from the table: "auth.publickeys_history" */
     auth_publickeys_history: Array<ModelTypes["auth_publickeys_history"]>;
-    /** fetch aggregated fields from the table: "auth.publickeys_history" */
-    auth_publickeys_history_aggregate: ModelTypes["auth_publickeys_history_aggregate"];
-    /** fetch data from the table: "auth.publickeys_history" using primary key columns */
-    auth_publickeys_history_by_pk?:
-      | ModelTypes["auth_publickeys_history"]
-      | undefined;
     /** fetch data from the table in a streaming manner : "auth.publickeys_history" */
     auth_publickeys_history_stream: Array<
       ModelTypes["auth_publickeys_history"]
     >;
-    /** fetch data from the table in a streaming manner : "auth.publickeys" */
-    auth_publickeys_stream: Array<ModelTypes["auth_publickeys"]>;
     /** fetch data from the table: "auth.users" */
     auth_users: Array<ModelTypes["auth_users"]>;
     /** fetch aggregated fields from the table: "auth.users" */
@@ -9096,14 +3207,6 @@ export type ModelTypes = {
     auth_users_by_pk?: ModelTypes["auth_users"] | undefined;
     /** fetch data from the table in a streaming manner : "auth.users" */
     auth_users_stream: Array<ModelTypes["auth_users"]>;
-    /** fetch data from the table: "images" */
-    images: Array<ModelTypes["images"]>;
-    /** fetch aggregated fields from the table: "images" */
-    images_aggregate: ModelTypes["images_aggregate"];
-    /** fetch data from the table: "images" using primary key columns */
-    images_by_pk?: ModelTypes["images"] | undefined;
-    /** fetch data from the table in a streaming manner : "images" */
-    images_stream: Array<ModelTypes["images"]>;
     /** fetch data from the table: "invitations" */
     invitations: Array<ModelTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -9140,30 +3243,6 @@ export type ModelTypes = {
 };
 
 export type GraphQLTypes = {
-  /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
-  ["Boolean_comparison_exp"]: {
-    _eq?: boolean | undefined;
-    _gt?: boolean | undefined;
-    _gte?: boolean | undefined;
-    _in?: Array<boolean> | undefined;
-    _is_null?: boolean | undefined;
-    _lt?: boolean | undefined;
-    _lte?: boolean | undefined;
-    _neq?: boolean | undefined;
-    _nin?: Array<boolean> | undefined;
-  };
-  /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
-  ["Int_comparison_exp"]: {
-    _eq?: number | undefined;
-    _gt?: number | undefined;
-    _gte?: number | undefined;
-    _in?: Array<number> | undefined;
-    _is_null?: boolean | undefined;
-    _lt?: number | undefined;
-    _lte?: number | undefined;
-    _neq?: number | undefined;
-    _nin?: Array<number> | undefined;
-  };
   /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
   ["String_comparison_exp"]: {
     _eq?: string | undefined;
@@ -9196,543 +3275,17 @@ export type GraphQLTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined;
   };
-  /** columns and relationships of "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews"]: {
-    __typename: "appstore_pending_curator_reviews";
-    approved?: boolean | undefined;
-    authority: string;
-    contact: string;
-    created_at: GraphQLTypes["timestamptz"];
-    data: GraphQLTypes["jsonb"];
-    id: number;
-    ix_data?: GraphQLTypes["bytea"] | undefined;
-    ix_keys?: GraphQLTypes["jsonb"] | undefined;
-    processed?: boolean | undefined;
-    signature?: string | undefined;
-    type: string;
-    xnft: string;
-  };
-  /** aggregated selection of "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_aggregate"]: {
-    __typename: "appstore_pending_curator_reviews_aggregate";
-    aggregate?:
-      | GraphQLTypes["appstore_pending_curator_reviews_aggregate_fields"]
-      | undefined;
-    nodes: Array<GraphQLTypes["appstore_pending_curator_reviews"]>;
-  };
-  /** aggregate fields of "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_aggregate_fields"]: {
-    __typename: "appstore_pending_curator_reviews_aggregate_fields";
-    avg?:
-      | GraphQLTypes["appstore_pending_curator_reviews_avg_fields"]
-      | undefined;
-    count: number;
-    max?:
-      | GraphQLTypes["appstore_pending_curator_reviews_max_fields"]
-      | undefined;
-    min?:
-      | GraphQLTypes["appstore_pending_curator_reviews_min_fields"]
-      | undefined;
-    stddev?:
-      | GraphQLTypes["appstore_pending_curator_reviews_stddev_fields"]
-      | undefined;
-    stddev_pop?:
-      | GraphQLTypes["appstore_pending_curator_reviews_stddev_pop_fields"]
-      | undefined;
-    stddev_samp?:
-      | GraphQLTypes["appstore_pending_curator_reviews_stddev_samp_fields"]
-      | undefined;
-    sum?:
-      | GraphQLTypes["appstore_pending_curator_reviews_sum_fields"]
-      | undefined;
-    var_pop?:
-      | GraphQLTypes["appstore_pending_curator_reviews_var_pop_fields"]
-      | undefined;
-    var_samp?:
-      | GraphQLTypes["appstore_pending_curator_reviews_var_samp_fields"]
-      | undefined;
-    variance?:
-      | GraphQLTypes["appstore_pending_curator_reviews_variance_fields"]
-      | undefined;
-  };
-  /** append existing jsonb value of filtered columns with new jsonb value */
-  ["appstore_pending_curator_reviews_append_input"]: {
-    data?: GraphQLTypes["jsonb"] | undefined;
-    ix_keys?: GraphQLTypes["jsonb"] | undefined;
-  };
-  /** aggregate avg on columns */
-  ["appstore_pending_curator_reviews_avg_fields"]: {
-    __typename: "appstore_pending_curator_reviews_avg_fields";
-    id?: number | undefined;
-  };
-  /** Boolean expression to filter rows from the table "appstore.pending_curator_reviews". All fields are combined with a logical 'AND'. */
-  ["appstore_pending_curator_reviews_bool_exp"]: {
-    _and?:
-      | Array<GraphQLTypes["appstore_pending_curator_reviews_bool_exp"]>
-      | undefined;
-    _not?:
-      | GraphQLTypes["appstore_pending_curator_reviews_bool_exp"]
-      | undefined;
-    _or?:
-      | Array<GraphQLTypes["appstore_pending_curator_reviews_bool_exp"]>
-      | undefined;
-    approved?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
-    authority?: GraphQLTypes["String_comparison_exp"] | undefined;
-    contact?: GraphQLTypes["String_comparison_exp"] | undefined;
-    created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
-    data?: GraphQLTypes["jsonb_comparison_exp"] | undefined;
-    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
-    ix_data?: GraphQLTypes["bytea_comparison_exp"] | undefined;
-    ix_keys?: GraphQLTypes["jsonb_comparison_exp"] | undefined;
-    processed?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
-    signature?: GraphQLTypes["String_comparison_exp"] | undefined;
-    type?: GraphQLTypes["String_comparison_exp"] | undefined;
-    xnft?: GraphQLTypes["String_comparison_exp"] | undefined;
-  };
-  /** unique or primary key constraints on table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_constraint"]: appstore_pending_curator_reviews_constraint;
-  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-  ["appstore_pending_curator_reviews_delete_at_path_input"]: {
-    data?: Array<string> | undefined;
-    ix_keys?: Array<string> | undefined;
-  };
-  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-  ["appstore_pending_curator_reviews_delete_elem_input"]: {
-    data?: number | undefined;
-    ix_keys?: number | undefined;
-  };
-  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-  ["appstore_pending_curator_reviews_delete_key_input"]: {
-    data?: string | undefined;
-    ix_keys?: string | undefined;
-  };
-  /** input type for incrementing numeric columns in table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_inc_input"]: {
-    id?: number | undefined;
-  };
-  /** input type for inserting data into table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_insert_input"]: {
-    approved?: boolean | undefined;
-    authority?: string | undefined;
-    contact?: string | undefined;
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    data?: GraphQLTypes["jsonb"] | undefined;
-    id?: number | undefined;
-    ix_data?: GraphQLTypes["bytea"] | undefined;
-    ix_keys?: GraphQLTypes["jsonb"] | undefined;
-    processed?: boolean | undefined;
-    signature?: string | undefined;
-    type?: string | undefined;
-    xnft?: string | undefined;
-  };
-  /** aggregate max on columns */
-  ["appstore_pending_curator_reviews_max_fields"]: {
-    __typename: "appstore_pending_curator_reviews_max_fields";
-    authority?: string | undefined;
-    contact?: string | undefined;
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    signature?: string | undefined;
-    type?: string | undefined;
-    xnft?: string | undefined;
-  };
-  /** aggregate min on columns */
-  ["appstore_pending_curator_reviews_min_fields"]: {
-    __typename: "appstore_pending_curator_reviews_min_fields";
-    authority?: string | undefined;
-    contact?: string | undefined;
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    signature?: string | undefined;
-    type?: string | undefined;
-    xnft?: string | undefined;
-  };
-  /** response of any mutation on the table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_mutation_response"]: {
-    __typename: "appstore_pending_curator_reviews_mutation_response";
-    /** number of rows affected by the mutation */
-    affected_rows: number;
-    /** data from the rows affected by the mutation */
-    returning: Array<GraphQLTypes["appstore_pending_curator_reviews"]>;
-  };
-  /** on_conflict condition type for table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_on_conflict"]: {
-    constraint: GraphQLTypes["appstore_pending_curator_reviews_constraint"];
-    update_columns: Array<
-      GraphQLTypes["appstore_pending_curator_reviews_update_column"]
-    >;
-    where?:
-      | GraphQLTypes["appstore_pending_curator_reviews_bool_exp"]
-      | undefined;
-  };
-  /** Ordering options when selecting data from "appstore.pending_curator_reviews". */
-  ["appstore_pending_curator_reviews_order_by"]: {
-    approved?: GraphQLTypes["order_by"] | undefined;
-    authority?: GraphQLTypes["order_by"] | undefined;
-    contact?: GraphQLTypes["order_by"] | undefined;
-    created_at?: GraphQLTypes["order_by"] | undefined;
-    data?: GraphQLTypes["order_by"] | undefined;
-    id?: GraphQLTypes["order_by"] | undefined;
-    ix_data?: GraphQLTypes["order_by"] | undefined;
-    ix_keys?: GraphQLTypes["order_by"] | undefined;
-    processed?: GraphQLTypes["order_by"] | undefined;
-    signature?: GraphQLTypes["order_by"] | undefined;
-    type?: GraphQLTypes["order_by"] | undefined;
-    xnft?: GraphQLTypes["order_by"] | undefined;
-  };
-  /** primary key columns input for table: appstore_pending_curator_reviews */
-  ["appstore_pending_curator_reviews_pk_columns_input"]: {
-    id: number;
-  };
-  /** prepend existing jsonb value of filtered columns with new jsonb value */
-  ["appstore_pending_curator_reviews_prepend_input"]: {
-    data?: GraphQLTypes["jsonb"] | undefined;
-    ix_keys?: GraphQLTypes["jsonb"] | undefined;
-  };
-  /** select columns of table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_select_column"]: appstore_pending_curator_reviews_select_column;
-  /** input type for updating data in table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_set_input"]: {
-    approved?: boolean | undefined;
-    authority?: string | undefined;
-    contact?: string | undefined;
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    data?: GraphQLTypes["jsonb"] | undefined;
-    id?: number | undefined;
-    ix_data?: GraphQLTypes["bytea"] | undefined;
-    ix_keys?: GraphQLTypes["jsonb"] | undefined;
-    processed?: boolean | undefined;
-    signature?: string | undefined;
-    type?: string | undefined;
-    xnft?: string | undefined;
-  };
-  /** aggregate stddev on columns */
-  ["appstore_pending_curator_reviews_stddev_fields"]: {
-    __typename: "appstore_pending_curator_reviews_stddev_fields";
-    id?: number | undefined;
-  };
-  /** aggregate stddev_pop on columns */
-  ["appstore_pending_curator_reviews_stddev_pop_fields"]: {
-    __typename: "appstore_pending_curator_reviews_stddev_pop_fields";
-    id?: number | undefined;
-  };
-  /** aggregate stddev_samp on columns */
-  ["appstore_pending_curator_reviews_stddev_samp_fields"]: {
-    __typename: "appstore_pending_curator_reviews_stddev_samp_fields";
-    id?: number | undefined;
-  };
-  /** Streaming cursor of the table "appstore_pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: GraphQLTypes["appstore_pending_curator_reviews_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["appstore_pending_curator_reviews_stream_cursor_value_input"]: {
-    approved?: boolean | undefined;
-    authority?: string | undefined;
-    contact?: string | undefined;
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    data?: GraphQLTypes["jsonb"] | undefined;
-    id?: number | undefined;
-    ix_data?: GraphQLTypes["bytea"] | undefined;
-    ix_keys?: GraphQLTypes["jsonb"] | undefined;
-    processed?: boolean | undefined;
-    signature?: string | undefined;
-    type?: string | undefined;
-    xnft?: string | undefined;
-  };
-  /** aggregate sum on columns */
-  ["appstore_pending_curator_reviews_sum_fields"]: {
-    __typename: "appstore_pending_curator_reviews_sum_fields";
-    id?: number | undefined;
-  };
-  /** update columns of table "appstore.pending_curator_reviews" */
-  ["appstore_pending_curator_reviews_update_column"]: appstore_pending_curator_reviews_update_column;
-  ["appstore_pending_curator_reviews_updates"]: {
-    /** append existing jsonb value of filtered columns with new jsonb value */
-    _append?:
-      | GraphQLTypes["appstore_pending_curator_reviews_append_input"]
-      | undefined;
-    /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-    _delete_at_path?:
-      | GraphQLTypes["appstore_pending_curator_reviews_delete_at_path_input"]
-      | undefined;
-    /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-    _delete_elem?:
-      | GraphQLTypes["appstore_pending_curator_reviews_delete_elem_input"]
-      | undefined;
-    /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-    _delete_key?:
-      | GraphQLTypes["appstore_pending_curator_reviews_delete_key_input"]
-      | undefined;
-    /** increments the numeric columns with given value of the filtered values */
-    _inc?:
-      | GraphQLTypes["appstore_pending_curator_reviews_inc_input"]
-      | undefined;
-    /** prepend existing jsonb value of filtered columns with new jsonb value */
-    _prepend?:
-      | GraphQLTypes["appstore_pending_curator_reviews_prepend_input"]
-      | undefined;
-    /** sets the columns of the filtered rows to the given values */
-    _set?:
-      | GraphQLTypes["appstore_pending_curator_reviews_set_input"]
-      | undefined;
-    where: GraphQLTypes["appstore_pending_curator_reviews_bool_exp"];
-  };
-  /** aggregate var_pop on columns */
-  ["appstore_pending_curator_reviews_var_pop_fields"]: {
-    __typename: "appstore_pending_curator_reviews_var_pop_fields";
-    id?: number | undefined;
-  };
-  /** aggregate var_samp on columns */
-  ["appstore_pending_curator_reviews_var_samp_fields"]: {
-    __typename: "appstore_pending_curator_reviews_var_samp_fields";
-    id?: number | undefined;
-  };
-  /** aggregate variance on columns */
-  ["appstore_pending_curator_reviews_variance_fields"]: {
-    __typename: "appstore_pending_curator_reviews_variance_fields";
-    id?: number | undefined;
-  };
-  /** ids are beta invite codes */
-  ["auth_invitations"]: {
-    __typename: "auth_invitations";
-    created_at: GraphQLTypes["timestamptz"];
-    data?: GraphQLTypes["jsonb"] | undefined;
-    id: GraphQLTypes["uuid"];
-  };
-  /** aggregated selection of "auth.invitations" */
-  ["auth_invitations_aggregate"]: {
-    __typename: "auth_invitations_aggregate";
-    aggregate?: GraphQLTypes["auth_invitations_aggregate_fields"] | undefined;
-    nodes: Array<GraphQLTypes["auth_invitations"]>;
-  };
-  /** aggregate fields of "auth.invitations" */
-  ["auth_invitations_aggregate_fields"]: {
-    __typename: "auth_invitations_aggregate_fields";
-    count: number;
-    max?: GraphQLTypes["auth_invitations_max_fields"] | undefined;
-    min?: GraphQLTypes["auth_invitations_min_fields"] | undefined;
-  };
-  /** append existing jsonb value of filtered columns with new jsonb value */
-  ["auth_invitations_append_input"]: {
-    data?: GraphQLTypes["jsonb"] | undefined;
-  };
-  /** Boolean expression to filter rows from the table "auth.invitations". All fields are combined with a logical 'AND'. */
-  ["auth_invitations_bool_exp"]: {
-    _and?: Array<GraphQLTypes["auth_invitations_bool_exp"]> | undefined;
-    _not?: GraphQLTypes["auth_invitations_bool_exp"] | undefined;
-    _or?: Array<GraphQLTypes["auth_invitations_bool_exp"]> | undefined;
-    created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
-    data?: GraphQLTypes["jsonb_comparison_exp"] | undefined;
-    id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
-  };
-  /** unique or primary key constraints on table "auth.invitations" */
-  ["auth_invitations_constraint"]: auth_invitations_constraint;
-  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-  ["auth_invitations_delete_at_path_input"]: {
-    data?: Array<string> | undefined;
-  };
-  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-  ["auth_invitations_delete_elem_input"]: {
-    data?: number | undefined;
-  };
-  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-  ["auth_invitations_delete_key_input"]: {
-    data?: string | undefined;
-  };
-  /** input type for inserting data into table "auth.invitations" */
-  ["auth_invitations_insert_input"]: {
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    data?: GraphQLTypes["jsonb"] | undefined;
-    id?: GraphQLTypes["uuid"] | undefined;
-  };
-  /** aggregate max on columns */
-  ["auth_invitations_max_fields"]: {
-    __typename: "auth_invitations_max_fields";
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: GraphQLTypes["uuid"] | undefined;
-  };
-  /** aggregate min on columns */
-  ["auth_invitations_min_fields"]: {
-    __typename: "auth_invitations_min_fields";
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: GraphQLTypes["uuid"] | undefined;
-  };
-  /** response of any mutation on the table "auth.invitations" */
-  ["auth_invitations_mutation_response"]: {
-    __typename: "auth_invitations_mutation_response";
-    /** number of rows affected by the mutation */
-    affected_rows: number;
-    /** data from the rows affected by the mutation */
-    returning: Array<GraphQLTypes["auth_invitations"]>;
-  };
-  /** input type for inserting object relation for remote table "auth.invitations" */
-  ["auth_invitations_obj_rel_insert_input"]: {
-    data: GraphQLTypes["auth_invitations_insert_input"];
-    /** upsert condition */
-    on_conflict?: GraphQLTypes["auth_invitations_on_conflict"] | undefined;
-  };
-  /** on_conflict condition type for table "auth.invitations" */
-  ["auth_invitations_on_conflict"]: {
-    constraint: GraphQLTypes["auth_invitations_constraint"];
-    update_columns: Array<GraphQLTypes["auth_invitations_update_column"]>;
-    where?: GraphQLTypes["auth_invitations_bool_exp"] | undefined;
-  };
-  /** Ordering options when selecting data from "auth.invitations". */
-  ["auth_invitations_order_by"]: {
-    created_at?: GraphQLTypes["order_by"] | undefined;
-    data?: GraphQLTypes["order_by"] | undefined;
-    id?: GraphQLTypes["order_by"] | undefined;
-  };
-  /** primary key columns input for table: auth_invitations */
-  ["auth_invitations_pk_columns_input"]: {
-    id: GraphQLTypes["uuid"];
-  };
-  /** prepend existing jsonb value of filtered columns with new jsonb value */
-  ["auth_invitations_prepend_input"]: {
-    data?: GraphQLTypes["jsonb"] | undefined;
-  };
-  /** select columns of table "auth.invitations" */
-  ["auth_invitations_select_column"]: auth_invitations_select_column;
-  /** input type for updating data in table "auth.invitations" */
-  ["auth_invitations_set_input"]: {
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    data?: GraphQLTypes["jsonb"] | undefined;
-    id?: GraphQLTypes["uuid"] | undefined;
-  };
-  /** Streaming cursor of the table "auth_invitations" */
-  ["auth_invitations_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: GraphQLTypes["auth_invitations_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_invitations_stream_cursor_value_input"]: {
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    data?: GraphQLTypes["jsonb"] | undefined;
-    id?: GraphQLTypes["uuid"] | undefined;
-  };
-  /** update columns of table "auth.invitations" */
-  ["auth_invitations_update_column"]: auth_invitations_update_column;
-  ["auth_invitations_updates"]: {
-    /** append existing jsonb value of filtered columns with new jsonb value */
-    _append?: GraphQLTypes["auth_invitations_append_input"] | undefined;
-    /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-    _delete_at_path?:
-      | GraphQLTypes["auth_invitations_delete_at_path_input"]
-      | undefined;
-    /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-    _delete_elem?:
-      | GraphQLTypes["auth_invitations_delete_elem_input"]
-      | undefined;
-    /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-    _delete_key?: GraphQLTypes["auth_invitations_delete_key_input"] | undefined;
-    /** prepend existing jsonb value of filtered columns with new jsonb value */
-    _prepend?: GraphQLTypes["auth_invitations_prepend_input"] | undefined;
-    /** sets the columns of the filtered rows to the given values */
-    _set?: GraphQLTypes["auth_invitations_set_input"] | undefined;
-    where: GraphQLTypes["auth_invitations_bool_exp"];
-  };
-  /** columns and relationships of "auth.publickeys" */
-  ["auth_publickeys"]: {
-    __typename: "auth_publickeys";
-    blockchain?: string | undefined;
-    publickey?: string | undefined;
-    user_id?: GraphQLTypes["uuid"] | undefined;
-  };
-  /** aggregated selection of "auth.publickeys" */
-  ["auth_publickeys_aggregate"]: {
-    __typename: "auth_publickeys_aggregate";
-    aggregate?: GraphQLTypes["auth_publickeys_aggregate_fields"] | undefined;
-    nodes: Array<GraphQLTypes["auth_publickeys"]>;
-  };
-  /** aggregate fields of "auth.publickeys" */
-  ["auth_publickeys_aggregate_fields"]: {
-    __typename: "auth_publickeys_aggregate_fields";
-    count: number;
-    max?: GraphQLTypes["auth_publickeys_max_fields"] | undefined;
-    min?: GraphQLTypes["auth_publickeys_min_fields"] | undefined;
-  };
-  /** Boolean expression to filter rows from the table "auth.publickeys". All fields are combined with a logical 'AND'. */
-  ["auth_publickeys_bool_exp"]: {
-    _and?: Array<GraphQLTypes["auth_publickeys_bool_exp"]> | undefined;
-    _not?: GraphQLTypes["auth_publickeys_bool_exp"] | undefined;
-    _or?: Array<GraphQLTypes["auth_publickeys_bool_exp"]> | undefined;
-    blockchain?: GraphQLTypes["String_comparison_exp"] | undefined;
-    publickey?: GraphQLTypes["String_comparison_exp"] | undefined;
-    user_id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
-  };
   /** columns and relationships of "auth.publickeys_history" */
   ["auth_publickeys_history"]: {
     __typename: "auth_publickeys_history";
     blockchain: string;
-    created_at: GraphQLTypes["timestamptz"];
-    id: number;
     publickey: string;
-    user_id?: GraphQLTypes["uuid"] | undefined;
-  };
-  /** aggregated selection of "auth.publickeys_history" */
-  ["auth_publickeys_history_aggregate"]: {
-    __typename: "auth_publickeys_history_aggregate";
-    aggregate?:
-      | GraphQLTypes["auth_publickeys_history_aggregate_fields"]
-      | undefined;
-    nodes: Array<GraphQLTypes["auth_publickeys_history"]>;
-  };
-  /** aggregate fields of "auth.publickeys_history" */
-  ["auth_publickeys_history_aggregate_fields"]: {
-    __typename: "auth_publickeys_history_aggregate_fields";
-    avg?: GraphQLTypes["auth_publickeys_history_avg_fields"] | undefined;
-    count: number;
-    max?: GraphQLTypes["auth_publickeys_history_max_fields"] | undefined;
-    min?: GraphQLTypes["auth_publickeys_history_min_fields"] | undefined;
-    stddev?: GraphQLTypes["auth_publickeys_history_stddev_fields"] | undefined;
-    stddev_pop?:
-      | GraphQLTypes["auth_publickeys_history_stddev_pop_fields"]
-      | undefined;
-    stddev_samp?:
-      | GraphQLTypes["auth_publickeys_history_stddev_samp_fields"]
-      | undefined;
-    sum?: GraphQLTypes["auth_publickeys_history_sum_fields"] | undefined;
-    var_pop?:
-      | GraphQLTypes["auth_publickeys_history_var_pop_fields"]
-      | undefined;
-    var_samp?:
-      | GraphQLTypes["auth_publickeys_history_var_samp_fields"]
-      | undefined;
-    variance?:
-      | GraphQLTypes["auth_publickeys_history_variance_fields"]
-      | undefined;
   };
   /** order by aggregate values of table "auth.publickeys_history" */
   ["auth_publickeys_history_aggregate_order_by"]: {
-    avg?: GraphQLTypes["auth_publickeys_history_avg_order_by"] | undefined;
     count?: GraphQLTypes["order_by"] | undefined;
     max?: GraphQLTypes["auth_publickeys_history_max_order_by"] | undefined;
     min?: GraphQLTypes["auth_publickeys_history_min_order_by"] | undefined;
-    stddev?:
-      | GraphQLTypes["auth_publickeys_history_stddev_order_by"]
-      | undefined;
-    stddev_pop?:
-      | GraphQLTypes["auth_publickeys_history_stddev_pop_order_by"]
-      | undefined;
-    stddev_samp?:
-      | GraphQLTypes["auth_publickeys_history_stddev_samp_order_by"]
-      | undefined;
-    sum?: GraphQLTypes["auth_publickeys_history_sum_order_by"] | undefined;
-    var_pop?:
-      | GraphQLTypes["auth_publickeys_history_var_pop_order_by"]
-      | undefined;
-    var_samp?:
-      | GraphQLTypes["auth_publickeys_history_var_samp_order_by"]
-      | undefined;
-    variance?:
-      | GraphQLTypes["auth_publickeys_history_variance_order_by"]
-      | undefined;
   };
   /** input type for inserting array relation for remote table "auth.publickeys_history" */
   ["auth_publickeys_history_arr_rel_insert_input"]: {
@@ -9742,73 +3295,31 @@ export type GraphQLTypes = {
       | GraphQLTypes["auth_publickeys_history_on_conflict"]
       | undefined;
   };
-  /** aggregate avg on columns */
-  ["auth_publickeys_history_avg_fields"]: {
-    __typename: "auth_publickeys_history_avg_fields";
-    id?: number | undefined;
-  };
-  /** order by avg() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_avg_order_by"]: {
-    id?: GraphQLTypes["order_by"] | undefined;
-  };
   /** Boolean expression to filter rows from the table "auth.publickeys_history". All fields are combined with a logical 'AND'. */
   ["auth_publickeys_history_bool_exp"]: {
     _and?: Array<GraphQLTypes["auth_publickeys_history_bool_exp"]> | undefined;
     _not?: GraphQLTypes["auth_publickeys_history_bool_exp"] | undefined;
     _or?: Array<GraphQLTypes["auth_publickeys_history_bool_exp"]> | undefined;
     blockchain?: GraphQLTypes["String_comparison_exp"] | undefined;
-    created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
-    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
     publickey?: GraphQLTypes["String_comparison_exp"] | undefined;
-    user_id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
   };
   /** unique or primary key constraints on table "auth.publickeys_history" */
   ["auth_publickeys_history_constraint"]: auth_publickeys_history_constraint;
-  /** input type for incrementing numeric columns in table "auth.publickeys_history" */
-  ["auth_publickeys_history_inc_input"]: {
-    id?: number | undefined;
-  };
   /** input type for inserting data into table "auth.publickeys_history" */
   ["auth_publickeys_history_insert_input"]: {
     blockchain?: string | undefined;
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    publickey?: string | undefined;
-    user_id?: GraphQLTypes["uuid"] | undefined;
-  };
-  /** aggregate max on columns */
-  ["auth_publickeys_history_max_fields"]: {
-    __typename: "auth_publickeys_history_max_fields";
-    blockchain?: string | undefined;
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: number | undefined;
     publickey?: string | undefined;
     user_id?: GraphQLTypes["uuid"] | undefined;
   };
   /** order by max() on columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_max_order_by"]: {
     blockchain?: GraphQLTypes["order_by"] | undefined;
-    created_at?: GraphQLTypes["order_by"] | undefined;
-    id?: GraphQLTypes["order_by"] | undefined;
     publickey?: GraphQLTypes["order_by"] | undefined;
-    user_id?: GraphQLTypes["order_by"] | undefined;
-  };
-  /** aggregate min on columns */
-  ["auth_publickeys_history_min_fields"]: {
-    __typename: "auth_publickeys_history_min_fields";
-    blockchain?: string | undefined;
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    publickey?: string | undefined;
-    user_id?: GraphQLTypes["uuid"] | undefined;
   };
   /** order by min() on columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_min_order_by"]: {
     blockchain?: GraphQLTypes["order_by"] | undefined;
-    created_at?: GraphQLTypes["order_by"] | undefined;
-    id?: GraphQLTypes["order_by"] | undefined;
     publickey?: GraphQLTypes["order_by"] | undefined;
-    user_id?: GraphQLTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "auth.publickeys_history" */
   ["auth_publickeys_history_mutation_response"]: {
@@ -9829,52 +3340,10 @@ export type GraphQLTypes = {
   /** Ordering options when selecting data from "auth.publickeys_history". */
   ["auth_publickeys_history_order_by"]: {
     blockchain?: GraphQLTypes["order_by"] | undefined;
-    created_at?: GraphQLTypes["order_by"] | undefined;
-    id?: GraphQLTypes["order_by"] | undefined;
     publickey?: GraphQLTypes["order_by"] | undefined;
-    user_id?: GraphQLTypes["order_by"] | undefined;
-  };
-  /** primary key columns input for table: auth_publickeys_history */
-  ["auth_publickeys_history_pk_columns_input"]: {
-    id: number;
   };
   /** select columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_select_column"]: auth_publickeys_history_select_column;
-  /** input type for updating data in table "auth.publickeys_history" */
-  ["auth_publickeys_history_set_input"]: {
-    blockchain?: string | undefined;
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    publickey?: string | undefined;
-    user_id?: GraphQLTypes["uuid"] | undefined;
-  };
-  /** aggregate stddev on columns */
-  ["auth_publickeys_history_stddev_fields"]: {
-    __typename: "auth_publickeys_history_stddev_fields";
-    id?: number | undefined;
-  };
-  /** order by stddev() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_stddev_order_by"]: {
-    id?: GraphQLTypes["order_by"] | undefined;
-  };
-  /** aggregate stddev_pop on columns */
-  ["auth_publickeys_history_stddev_pop_fields"]: {
-    __typename: "auth_publickeys_history_stddev_pop_fields";
-    id?: number | undefined;
-  };
-  /** order by stddev_pop() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_stddev_pop_order_by"]: {
-    id?: GraphQLTypes["order_by"] | undefined;
-  };
-  /** aggregate stddev_samp on columns */
-  ["auth_publickeys_history_stddev_samp_fields"]: {
-    __typename: "auth_publickeys_history_stddev_samp_fields";
-    id?: number | undefined;
-  };
-  /** order by stddev_samp() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_stddev_samp_order_by"]: {
-    id?: GraphQLTypes["order_by"] | undefined;
-  };
   /** Streaming cursor of the table "auth_publickeys_history" */
   ["auth_publickeys_history_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -9885,105 +3354,17 @@ export type GraphQLTypes = {
   /** Initial value of the column from where the streaming should start */
   ["auth_publickeys_history_stream_cursor_value_input"]: {
     blockchain?: string | undefined;
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: number | undefined;
     publickey?: string | undefined;
-    user_id?: GraphQLTypes["uuid"] | undefined;
   };
-  /** aggregate sum on columns */
-  ["auth_publickeys_history_sum_fields"]: {
-    __typename: "auth_publickeys_history_sum_fields";
-    id?: number | undefined;
-  };
-  /** order by sum() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_sum_order_by"]: {
-    id?: GraphQLTypes["order_by"] | undefined;
-  };
-  /** update columns of table "auth.publickeys_history" */
+  /** placeholder for update columns of table "auth.publickeys_history" (current role has no relevant permissions) */
   ["auth_publickeys_history_update_column"]: auth_publickeys_history_update_column;
-  ["auth_publickeys_history_updates"]: {
-    /** increments the numeric columns with given value of the filtered values */
-    _inc?: GraphQLTypes["auth_publickeys_history_inc_input"] | undefined;
-    /** sets the columns of the filtered rows to the given values */
-    _set?: GraphQLTypes["auth_publickeys_history_set_input"] | undefined;
-    where: GraphQLTypes["auth_publickeys_history_bool_exp"];
-  };
-  /** aggregate var_pop on columns */
-  ["auth_publickeys_history_var_pop_fields"]: {
-    __typename: "auth_publickeys_history_var_pop_fields";
-    id?: number | undefined;
-  };
-  /** order by var_pop() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_var_pop_order_by"]: {
-    id?: GraphQLTypes["order_by"] | undefined;
-  };
-  /** aggregate var_samp on columns */
-  ["auth_publickeys_history_var_samp_fields"]: {
-    __typename: "auth_publickeys_history_var_samp_fields";
-    id?: number | undefined;
-  };
-  /** order by var_samp() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_var_samp_order_by"]: {
-    id?: GraphQLTypes["order_by"] | undefined;
-  };
-  /** aggregate variance on columns */
-  ["auth_publickeys_history_variance_fields"]: {
-    __typename: "auth_publickeys_history_variance_fields";
-    id?: number | undefined;
-  };
-  /** order by variance() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_variance_order_by"]: {
-    id?: GraphQLTypes["order_by"] | undefined;
-  };
-  /** aggregate max on columns */
-  ["auth_publickeys_max_fields"]: {
-    __typename: "auth_publickeys_max_fields";
-    blockchain?: string | undefined;
-    publickey?: string | undefined;
-    user_id?: GraphQLTypes["uuid"] | undefined;
-  };
-  /** aggregate min on columns */
-  ["auth_publickeys_min_fields"]: {
-    __typename: "auth_publickeys_min_fields";
-    blockchain?: string | undefined;
-    publickey?: string | undefined;
-    user_id?: GraphQLTypes["uuid"] | undefined;
-  };
-  /** Ordering options when selecting data from "auth.publickeys". */
-  ["auth_publickeys_order_by"]: {
-    blockchain?: GraphQLTypes["order_by"] | undefined;
-    publickey?: GraphQLTypes["order_by"] | undefined;
-    user_id?: GraphQLTypes["order_by"] | undefined;
-  };
-  /** select columns of table "auth.publickeys" */
-  ["auth_publickeys_select_column"]: auth_publickeys_select_column;
-  /** Streaming cursor of the table "auth_publickeys" */
-  ["auth_publickeys_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: GraphQLTypes["auth_publickeys_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_publickeys_stream_cursor_value_input"]: {
-    blockchain?: string | undefined;
-    publickey?: string | undefined;
-    user_id?: GraphQLTypes["uuid"] | undefined;
-  };
   /** columns and relationships of "auth.users" */
   ["auth_users"]: {
     __typename: "auth_users";
-    created_at: GraphQLTypes["timestamptz"];
     id: GraphQLTypes["uuid"];
-    invitation_id: GraphQLTypes["uuid"];
-    last_active_at: GraphQLTypes["timestamptz"];
     /** An array relationship */
     publickeys: Array<GraphQLTypes["auth_publickeys_history"]>;
-    /** An aggregate relationship */
-    publickeys_aggregate: GraphQLTypes["auth_publickeys_history_aggregate"];
-    updated_at: GraphQLTypes["timestamptz"];
     username: GraphQLTypes["citext"];
-    waitlist_id?: string | undefined;
   };
   /** aggregated selection of "auth.users" */
   ["auth_users_aggregate"]: {
@@ -10003,51 +3384,32 @@ export type GraphQLTypes = {
     _and?: Array<GraphQLTypes["auth_users_bool_exp"]> | undefined;
     _not?: GraphQLTypes["auth_users_bool_exp"] | undefined;
     _or?: Array<GraphQLTypes["auth_users_bool_exp"]> | undefined;
-    created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
     id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
-    invitation_id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
-    last_active_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
     publickeys?: GraphQLTypes["auth_publickeys_history_bool_exp"] | undefined;
-    updated_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
     username?: GraphQLTypes["citext_comparison_exp"] | undefined;
-    waitlist_id?: GraphQLTypes["String_comparison_exp"] | undefined;
   };
   /** unique or primary key constraints on table "auth.users" */
   ["auth_users_constraint"]: auth_users_constraint;
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: GraphQLTypes["uuid"] | undefined;
     invitation_id?: GraphQLTypes["uuid"] | undefined;
-    last_active_at?: GraphQLTypes["timestamptz"] | undefined;
     publickeys?:
       | GraphQLTypes["auth_publickeys_history_arr_rel_insert_input"]
       | undefined;
-    updated_at?: GraphQLTypes["timestamptz"] | undefined;
     username?: GraphQLTypes["citext"] | undefined;
     waitlist_id?: string | undefined;
   };
   /** aggregate max on columns */
   ["auth_users_max_fields"]: {
     __typename: "auth_users_max_fields";
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
-    invitation_id?: GraphQLTypes["uuid"] | undefined;
-    last_active_at?: GraphQLTypes["timestamptz"] | undefined;
-    updated_at?: GraphQLTypes["timestamptz"] | undefined;
     username?: GraphQLTypes["citext"] | undefined;
-    waitlist_id?: string | undefined;
   };
   /** aggregate min on columns */
   ["auth_users_min_fields"]: {
     __typename: "auth_users_min_fields";
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
-    invitation_id?: GraphQLTypes["uuid"] | undefined;
-    last_active_at?: GraphQLTypes["timestamptz"] | undefined;
-    updated_at?: GraphQLTypes["timestamptz"] | undefined;
     username?: GraphQLTypes["citext"] | undefined;
-    waitlist_id?: string | undefined;
   };
   /** response of any mutation on the table "auth.users" */
   ["auth_users_mutation_response"]: {
@@ -10065,16 +3427,11 @@ export type GraphQLTypes = {
   };
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
-    created_at?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
-    invitation_id?: GraphQLTypes["order_by"] | undefined;
-    last_active_at?: GraphQLTypes["order_by"] | undefined;
     publickeys_aggregate?:
       | GraphQLTypes["auth_publickeys_history_aggregate_order_by"]
       | undefined;
-    updated_at?: GraphQLTypes["order_by"] | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
-    waitlist_id?: GraphQLTypes["order_by"] | undefined;
   };
   /** primary key columns input for table: auth_users */
   ["auth_users_pk_columns_input"]: {
@@ -10084,13 +3441,7 @@ export type GraphQLTypes = {
   ["auth_users_select_column"]: auth_users_select_column;
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: GraphQLTypes["uuid"] | undefined;
-    invitation_id?: GraphQLTypes["uuid"] | undefined;
-    last_active_at?: GraphQLTypes["timestamptz"] | undefined;
     updated_at?: GraphQLTypes["timestamptz"] | undefined;
-    username?: GraphQLTypes["citext"] | undefined;
-    waitlist_id?: string | undefined;
   };
   /** Streaming cursor of the table "auth_users" */
   ["auth_users_stream_cursor_input"]: {
@@ -10101,13 +3452,8 @@ export type GraphQLTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_users_stream_cursor_value_input"]: {
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
-    invitation_id?: GraphQLTypes["uuid"] | undefined;
-    last_active_at?: GraphQLTypes["timestamptz"] | undefined;
-    updated_at?: GraphQLTypes["timestamptz"] | undefined;
     username?: GraphQLTypes["citext"] | undefined;
-    waitlist_id?: string | undefined;
   };
   /** update columns of table "auth.users" */
   ["auth_users_update_column"]: auth_users_update_column;
@@ -10115,19 +3461,6 @@ export type GraphQLTypes = {
     /** sets the columns of the filtered rows to the given values */
     _set?: GraphQLTypes["auth_users_set_input"] | undefined;
     where: GraphQLTypes["auth_users_bool_exp"];
-  };
-  ["bytea"]: "scalar" & { name: "bytea" };
-  /** Boolean expression to compare columns of type "bytea". All fields are combined with logical 'AND'. */
-  ["bytea_comparison_exp"]: {
-    _eq?: GraphQLTypes["bytea"] | undefined;
-    _gt?: GraphQLTypes["bytea"] | undefined;
-    _gte?: GraphQLTypes["bytea"] | undefined;
-    _in?: Array<GraphQLTypes["bytea"]> | undefined;
-    _is_null?: boolean | undefined;
-    _lt?: GraphQLTypes["bytea"] | undefined;
-    _lte?: GraphQLTypes["bytea"] | undefined;
-    _neq?: GraphQLTypes["bytea"] | undefined;
-    _nin?: Array<GraphQLTypes["bytea"]> | undefined;
   };
   ["citext"]: "scalar" & { name: "citext" };
   /** Boolean expression to compare columns of type "citext". All fields are combined with logical 'AND'. */
@@ -10164,200 +3497,6 @@ export type GraphQLTypes = {
   };
   /** ordering argument of a cursor */
   ["cursor_ordering"]: cursor_ordering;
-  /** columns and relationships of "images" */
-  ["images"]: {
-    __typename: "images";
-    completed: boolean;
-    created_at: GraphQLTypes["timestamptz"];
-    id: number;
-    /** An object relationship */
-    invitation: GraphQLTypes["auth_invitations"];
-    invite_code: GraphQLTypes["uuid"];
-    prompt: string;
-    uri: string;
-    winner?: string | undefined;
-  };
-  /** aggregated selection of "images" */
-  ["images_aggregate"]: {
-    __typename: "images_aggregate";
-    aggregate?: GraphQLTypes["images_aggregate_fields"] | undefined;
-    nodes: Array<GraphQLTypes["images"]>;
-  };
-  /** aggregate fields of "images" */
-  ["images_aggregate_fields"]: {
-    __typename: "images_aggregate_fields";
-    avg?: GraphQLTypes["images_avg_fields"] | undefined;
-    count: number;
-    max?: GraphQLTypes["images_max_fields"] | undefined;
-    min?: GraphQLTypes["images_min_fields"] | undefined;
-    stddev?: GraphQLTypes["images_stddev_fields"] | undefined;
-    stddev_pop?: GraphQLTypes["images_stddev_pop_fields"] | undefined;
-    stddev_samp?: GraphQLTypes["images_stddev_samp_fields"] | undefined;
-    sum?: GraphQLTypes["images_sum_fields"] | undefined;
-    var_pop?: GraphQLTypes["images_var_pop_fields"] | undefined;
-    var_samp?: GraphQLTypes["images_var_samp_fields"] | undefined;
-    variance?: GraphQLTypes["images_variance_fields"] | undefined;
-  };
-  /** aggregate avg on columns */
-  ["images_avg_fields"]: {
-    __typename: "images_avg_fields";
-    id?: number | undefined;
-  };
-  /** Boolean expression to filter rows from the table "images". All fields are combined with a logical 'AND'. */
-  ["images_bool_exp"]: {
-    _and?: Array<GraphQLTypes["images_bool_exp"]> | undefined;
-    _not?: GraphQLTypes["images_bool_exp"] | undefined;
-    _or?: Array<GraphQLTypes["images_bool_exp"]> | undefined;
-    completed?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
-    created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
-    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
-    invitation?: GraphQLTypes["auth_invitations_bool_exp"] | undefined;
-    invite_code?: GraphQLTypes["uuid_comparison_exp"] | undefined;
-    prompt?: GraphQLTypes["String_comparison_exp"] | undefined;
-    uri?: GraphQLTypes["String_comparison_exp"] | undefined;
-    winner?: GraphQLTypes["String_comparison_exp"] | undefined;
-  };
-  /** unique or primary key constraints on table "images" */
-  ["images_constraint"]: images_constraint;
-  /** input type for incrementing numeric columns in table "images" */
-  ["images_inc_input"]: {
-    id?: number | undefined;
-  };
-  /** input type for inserting data into table "images" */
-  ["images_insert_input"]: {
-    completed?: boolean | undefined;
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    invitation?:
-      | GraphQLTypes["auth_invitations_obj_rel_insert_input"]
-      | undefined;
-    invite_code?: GraphQLTypes["uuid"] | undefined;
-    prompt?: string | undefined;
-    uri?: string | undefined;
-    winner?: string | undefined;
-  };
-  /** aggregate max on columns */
-  ["images_max_fields"]: {
-    __typename: "images_max_fields";
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    invite_code?: GraphQLTypes["uuid"] | undefined;
-    prompt?: string | undefined;
-    uri?: string | undefined;
-    winner?: string | undefined;
-  };
-  /** aggregate min on columns */
-  ["images_min_fields"]: {
-    __typename: "images_min_fields";
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    invite_code?: GraphQLTypes["uuid"] | undefined;
-    prompt?: string | undefined;
-    uri?: string | undefined;
-    winner?: string | undefined;
-  };
-  /** response of any mutation on the table "images" */
-  ["images_mutation_response"]: {
-    __typename: "images_mutation_response";
-    /** number of rows affected by the mutation */
-    affected_rows: number;
-    /** data from the rows affected by the mutation */
-    returning: Array<GraphQLTypes["images"]>;
-  };
-  /** on_conflict condition type for table "images" */
-  ["images_on_conflict"]: {
-    constraint: GraphQLTypes["images_constraint"];
-    update_columns: Array<GraphQLTypes["images_update_column"]>;
-    where?: GraphQLTypes["images_bool_exp"] | undefined;
-  };
-  /** Ordering options when selecting data from "images". */
-  ["images_order_by"]: {
-    completed?: GraphQLTypes["order_by"] | undefined;
-    created_at?: GraphQLTypes["order_by"] | undefined;
-    id?: GraphQLTypes["order_by"] | undefined;
-    invitation?: GraphQLTypes["auth_invitations_order_by"] | undefined;
-    invite_code?: GraphQLTypes["order_by"] | undefined;
-    prompt?: GraphQLTypes["order_by"] | undefined;
-    uri?: GraphQLTypes["order_by"] | undefined;
-    winner?: GraphQLTypes["order_by"] | undefined;
-  };
-  /** primary key columns input for table: images */
-  ["images_pk_columns_input"]: {
-    id: number;
-  };
-  /** select columns of table "images" */
-  ["images_select_column"]: images_select_column;
-  /** input type for updating data in table "images" */
-  ["images_set_input"]: {
-    completed?: boolean | undefined;
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    invite_code?: GraphQLTypes["uuid"] | undefined;
-    prompt?: string | undefined;
-    uri?: string | undefined;
-    winner?: string | undefined;
-  };
-  /** aggregate stddev on columns */
-  ["images_stddev_fields"]: {
-    __typename: "images_stddev_fields";
-    id?: number | undefined;
-  };
-  /** aggregate stddev_pop on columns */
-  ["images_stddev_pop_fields"]: {
-    __typename: "images_stddev_pop_fields";
-    id?: number | undefined;
-  };
-  /** aggregate stddev_samp on columns */
-  ["images_stddev_samp_fields"]: {
-    __typename: "images_stddev_samp_fields";
-    id?: number | undefined;
-  };
-  /** Streaming cursor of the table "images" */
-  ["images_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: GraphQLTypes["images_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["images_stream_cursor_value_input"]: {
-    completed?: boolean | undefined;
-    created_at?: GraphQLTypes["timestamptz"] | undefined;
-    id?: number | undefined;
-    invite_code?: GraphQLTypes["uuid"] | undefined;
-    prompt?: string | undefined;
-    uri?: string | undefined;
-    winner?: string | undefined;
-  };
-  /** aggregate sum on columns */
-  ["images_sum_fields"]: {
-    __typename: "images_sum_fields";
-    id?: number | undefined;
-  };
-  /** update columns of table "images" */
-  ["images_update_column"]: images_update_column;
-  ["images_updates"]: {
-    /** increments the numeric columns with given value of the filtered values */
-    _inc?: GraphQLTypes["images_inc_input"] | undefined;
-    /** sets the columns of the filtered rows to the given values */
-    _set?: GraphQLTypes["images_set_input"] | undefined;
-    where: GraphQLTypes["images_bool_exp"];
-  };
-  /** aggregate var_pop on columns */
-  ["images_var_pop_fields"]: {
-    __typename: "images_var_pop_fields";
-    id?: number | undefined;
-  };
-  /** aggregate var_samp on columns */
-  ["images_var_samp_fields"]: {
-    __typename: "images_var_samp_fields";
-    id?: number | undefined;
-  };
-  /** aggregate variance on columns */
-  ["images_variance_fields"]: {
-    __typename: "images_variance_fields";
-    id?: number | undefined;
-  };
   /** columns and relationships of "invitations" */
   ["invitations"]: {
     __typename: "invitations";
@@ -10416,84 +3555,9 @@ export type GraphQLTypes = {
     claimed_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
   };
-  ["jsonb"]: "scalar" & { name: "jsonb" };
-  ["jsonb_cast_exp"]: {
-    String?: GraphQLTypes["String_comparison_exp"] | undefined;
-  };
-  /** Boolean expression to compare columns of type "jsonb". All fields are combined with logical 'AND'. */
-  ["jsonb_comparison_exp"]: {
-    _cast?: GraphQLTypes["jsonb_cast_exp"] | undefined;
-    /** is the column contained in the given json value */
-    _contained_in?: GraphQLTypes["jsonb"] | undefined;
-    /** does the column contain the given json value at the top level */
-    _contains?: GraphQLTypes["jsonb"] | undefined;
-    _eq?: GraphQLTypes["jsonb"] | undefined;
-    _gt?: GraphQLTypes["jsonb"] | undefined;
-    _gte?: GraphQLTypes["jsonb"] | undefined;
-    /** does the string exist as a top-level key in the column */
-    _has_key?: string | undefined;
-    /** do all of these strings exist as top-level keys in the column */
-    _has_keys_all?: Array<string> | undefined;
-    /** do any of these strings exist as top-level keys in the column */
-    _has_keys_any?: Array<string> | undefined;
-    _in?: Array<GraphQLTypes["jsonb"]> | undefined;
-    _is_null?: boolean | undefined;
-    _lt?: GraphQLTypes["jsonb"] | undefined;
-    _lte?: GraphQLTypes["jsonb"] | undefined;
-    _neq?: GraphQLTypes["jsonb"] | undefined;
-    _nin?: Array<GraphQLTypes["jsonb"]> | undefined;
-  };
   /** mutation root */
   ["mutation_root"]: {
     __typename: "mutation_root";
-    /** delete data from the table: "appstore.pending_curator_reviews" */
-    delete_appstore_pending_curator_reviews?:
-      | GraphQLTypes["appstore_pending_curator_reviews_mutation_response"]
-      | undefined;
-    /** delete single row from the table: "appstore.pending_curator_reviews" */
-    delete_appstore_pending_curator_reviews_by_pk?:
-      | GraphQLTypes["appstore_pending_curator_reviews"]
-      | undefined;
-    /** delete data from the table: "auth.invitations" */
-    delete_auth_invitations?:
-      | GraphQLTypes["auth_invitations_mutation_response"]
-      | undefined;
-    /** delete single row from the table: "auth.invitations" */
-    delete_auth_invitations_by_pk?:
-      | GraphQLTypes["auth_invitations"]
-      | undefined;
-    /** delete data from the table: "auth.publickeys_history" */
-    delete_auth_publickeys_history?:
-      | GraphQLTypes["auth_publickeys_history_mutation_response"]
-      | undefined;
-    /** delete single row from the table: "auth.publickeys_history" */
-    delete_auth_publickeys_history_by_pk?:
-      | GraphQLTypes["auth_publickeys_history"]
-      | undefined;
-    /** delete data from the table: "auth.users" */
-    delete_auth_users?:
-      | GraphQLTypes["auth_users_mutation_response"]
-      | undefined;
-    /** delete single row from the table: "auth.users" */
-    delete_auth_users_by_pk?: GraphQLTypes["auth_users"] | undefined;
-    /** delete data from the table: "images" */
-    delete_images?: GraphQLTypes["images_mutation_response"] | undefined;
-    /** delete single row from the table: "images" */
-    delete_images_by_pk?: GraphQLTypes["images"] | undefined;
-    /** insert data into the table: "appstore.pending_curator_reviews" */
-    insert_appstore_pending_curator_reviews?:
-      | GraphQLTypes["appstore_pending_curator_reviews_mutation_response"]
-      | undefined;
-    /** insert a single row into the table: "appstore.pending_curator_reviews" */
-    insert_appstore_pending_curator_reviews_one?:
-      | GraphQLTypes["appstore_pending_curator_reviews"]
-      | undefined;
-    /** insert data into the table: "auth.invitations" */
-    insert_auth_invitations?:
-      | GraphQLTypes["auth_invitations_mutation_response"]
-      | undefined;
-    /** insert a single row into the table: "auth.invitations" */
-    insert_auth_invitations_one?: GraphQLTypes["auth_invitations"] | undefined;
     /** insert data into the table: "auth.publickeys_history" */
     insert_auth_publickeys_history?:
       | GraphQLTypes["auth_publickeys_history_mutation_response"]
@@ -10508,51 +3572,6 @@ export type GraphQLTypes = {
       | undefined;
     /** insert a single row into the table: "auth.users" */
     insert_auth_users_one?: GraphQLTypes["auth_users"] | undefined;
-    /** insert data into the table: "images" */
-    insert_images?: GraphQLTypes["images_mutation_response"] | undefined;
-    /** insert a single row into the table: "images" */
-    insert_images_one?: GraphQLTypes["images"] | undefined;
-    /** update data of the table: "appstore.pending_curator_reviews" */
-    update_appstore_pending_curator_reviews?:
-      | GraphQLTypes["appstore_pending_curator_reviews_mutation_response"]
-      | undefined;
-    /** update single row of the table: "appstore.pending_curator_reviews" */
-    update_appstore_pending_curator_reviews_by_pk?:
-      | GraphQLTypes["appstore_pending_curator_reviews"]
-      | undefined;
-    /** update multiples rows of table: "appstore.pending_curator_reviews" */
-    update_appstore_pending_curator_reviews_many?:
-      | Array<
-          | GraphQLTypes["appstore_pending_curator_reviews_mutation_response"]
-          | undefined
-        >
-      | undefined;
-    /** update data of the table: "auth.invitations" */
-    update_auth_invitations?:
-      | GraphQLTypes["auth_invitations_mutation_response"]
-      | undefined;
-    /** update single row of the table: "auth.invitations" */
-    update_auth_invitations_by_pk?:
-      | GraphQLTypes["auth_invitations"]
-      | undefined;
-    /** update multiples rows of table: "auth.invitations" */
-    update_auth_invitations_many?:
-      | Array<GraphQLTypes["auth_invitations_mutation_response"] | undefined>
-      | undefined;
-    /** update data of the table: "auth.publickeys_history" */
-    update_auth_publickeys_history?:
-      | GraphQLTypes["auth_publickeys_history_mutation_response"]
-      | undefined;
-    /** update single row of the table: "auth.publickeys_history" */
-    update_auth_publickeys_history_by_pk?:
-      | GraphQLTypes["auth_publickeys_history"]
-      | undefined;
-    /** update multiples rows of table: "auth.publickeys_history" */
-    update_auth_publickeys_history_many?:
-      | Array<
-          GraphQLTypes["auth_publickeys_history_mutation_response"] | undefined
-        >
-      | undefined;
     /** update data of the table: "auth.users" */
     update_auth_users?:
       | GraphQLTypes["auth_users_mutation_response"]
@@ -10563,59 +3582,19 @@ export type GraphQLTypes = {
     update_auth_users_many?:
       | Array<GraphQLTypes["auth_users_mutation_response"] | undefined>
       | undefined;
-    /** update data of the table: "images" */
-    update_images?: GraphQLTypes["images_mutation_response"] | undefined;
-    /** update single row of the table: "images" */
-    update_images_by_pk?: GraphQLTypes["images"] | undefined;
-    /** update multiples rows of table: "images" */
-    update_images_many?:
-      | Array<GraphQLTypes["images_mutation_response"] | undefined>
-      | undefined;
   };
   /** column ordering options */
   ["order_by"]: order_by;
   ["query_root"]: {
     __typename: "query_root";
-    /** fetch data from the table: "appstore.pending_curator_reviews" */
-    appstore_pending_curator_reviews: Array<
-      GraphQLTypes["appstore_pending_curator_reviews"]
-    >;
-    /** fetch aggregated fields from the table: "appstore.pending_curator_reviews" */
-    appstore_pending_curator_reviews_aggregate: GraphQLTypes["appstore_pending_curator_reviews_aggregate"];
-    /** fetch data from the table: "appstore.pending_curator_reviews" using primary key columns */
-    appstore_pending_curator_reviews_by_pk?:
-      | GraphQLTypes["appstore_pending_curator_reviews"]
-      | undefined;
-    /** fetch data from the table: "auth.invitations" */
-    auth_invitations: Array<GraphQLTypes["auth_invitations"]>;
-    /** fetch aggregated fields from the table: "auth.invitations" */
-    auth_invitations_aggregate: GraphQLTypes["auth_invitations_aggregate"];
-    /** fetch data from the table: "auth.invitations" using primary key columns */
-    auth_invitations_by_pk?: GraphQLTypes["auth_invitations"] | undefined;
-    /** fetch data from the table: "auth.publickeys" */
-    auth_publickeys: Array<GraphQLTypes["auth_publickeys"]>;
-    /** fetch aggregated fields from the table: "auth.publickeys" */
-    auth_publickeys_aggregate: GraphQLTypes["auth_publickeys_aggregate"];
     /** fetch data from the table: "auth.publickeys_history" */
     auth_publickeys_history: Array<GraphQLTypes["auth_publickeys_history"]>;
-    /** fetch aggregated fields from the table: "auth.publickeys_history" */
-    auth_publickeys_history_aggregate: GraphQLTypes["auth_publickeys_history_aggregate"];
-    /** fetch data from the table: "auth.publickeys_history" using primary key columns */
-    auth_publickeys_history_by_pk?:
-      | GraphQLTypes["auth_publickeys_history"]
-      | undefined;
     /** fetch data from the table: "auth.users" */
     auth_users: Array<GraphQLTypes["auth_users"]>;
     /** fetch aggregated fields from the table: "auth.users" */
     auth_users_aggregate: GraphQLTypes["auth_users_aggregate"];
     /** fetch data from the table: "auth.users" using primary key columns */
     auth_users_by_pk?: GraphQLTypes["auth_users"] | undefined;
-    /** fetch data from the table: "images" */
-    images: Array<GraphQLTypes["images"]>;
-    /** fetch aggregated fields from the table: "images" */
-    images_aggregate: GraphQLTypes["images_aggregate"];
-    /** fetch data from the table: "images" using primary key columns */
-    images_by_pk?: GraphQLTypes["images"] | undefined;
     /** fetch data from the table: "invitations" */
     invitations: Array<GraphQLTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -10623,46 +3602,12 @@ export type GraphQLTypes = {
   };
   ["subscription_root"]: {
     __typename: "subscription_root";
-    /** fetch data from the table: "appstore.pending_curator_reviews" */
-    appstore_pending_curator_reviews: Array<
-      GraphQLTypes["appstore_pending_curator_reviews"]
-    >;
-    /** fetch aggregated fields from the table: "appstore.pending_curator_reviews" */
-    appstore_pending_curator_reviews_aggregate: GraphQLTypes["appstore_pending_curator_reviews_aggregate"];
-    /** fetch data from the table: "appstore.pending_curator_reviews" using primary key columns */
-    appstore_pending_curator_reviews_by_pk?:
-      | GraphQLTypes["appstore_pending_curator_reviews"]
-      | undefined;
-    /** fetch data from the table in a streaming manner : "appstore.pending_curator_reviews" */
-    appstore_pending_curator_reviews_stream: Array<
-      GraphQLTypes["appstore_pending_curator_reviews"]
-    >;
-    /** fetch data from the table: "auth.invitations" */
-    auth_invitations: Array<GraphQLTypes["auth_invitations"]>;
-    /** fetch aggregated fields from the table: "auth.invitations" */
-    auth_invitations_aggregate: GraphQLTypes["auth_invitations_aggregate"];
-    /** fetch data from the table: "auth.invitations" using primary key columns */
-    auth_invitations_by_pk?: GraphQLTypes["auth_invitations"] | undefined;
-    /** fetch data from the table in a streaming manner : "auth.invitations" */
-    auth_invitations_stream: Array<GraphQLTypes["auth_invitations"]>;
-    /** fetch data from the table: "auth.publickeys" */
-    auth_publickeys: Array<GraphQLTypes["auth_publickeys"]>;
-    /** fetch aggregated fields from the table: "auth.publickeys" */
-    auth_publickeys_aggregate: GraphQLTypes["auth_publickeys_aggregate"];
     /** fetch data from the table: "auth.publickeys_history" */
     auth_publickeys_history: Array<GraphQLTypes["auth_publickeys_history"]>;
-    /** fetch aggregated fields from the table: "auth.publickeys_history" */
-    auth_publickeys_history_aggregate: GraphQLTypes["auth_publickeys_history_aggregate"];
-    /** fetch data from the table: "auth.publickeys_history" using primary key columns */
-    auth_publickeys_history_by_pk?:
-      | GraphQLTypes["auth_publickeys_history"]
-      | undefined;
     /** fetch data from the table in a streaming manner : "auth.publickeys_history" */
     auth_publickeys_history_stream: Array<
       GraphQLTypes["auth_publickeys_history"]
     >;
-    /** fetch data from the table in a streaming manner : "auth.publickeys" */
-    auth_publickeys_stream: Array<GraphQLTypes["auth_publickeys"]>;
     /** fetch data from the table: "auth.users" */
     auth_users: Array<GraphQLTypes["auth_users"]>;
     /** fetch aggregated fields from the table: "auth.users" */
@@ -10671,14 +3616,6 @@ export type GraphQLTypes = {
     auth_users_by_pk?: GraphQLTypes["auth_users"] | undefined;
     /** fetch data from the table in a streaming manner : "auth.users" */
     auth_users_stream: Array<GraphQLTypes["auth_users"]>;
-    /** fetch data from the table: "images" */
-    images: Array<GraphQLTypes["images"]>;
-    /** fetch aggregated fields from the table: "images" */
-    images_aggregate: GraphQLTypes["images_aggregate"];
-    /** fetch data from the table: "images" using primary key columns */
-    images_by_pk?: GraphQLTypes["images"] | undefined;
-    /** fetch data from the table in a streaming manner : "images" */
-    images_stream: Array<GraphQLTypes["images"]>;
     /** fetch data from the table: "invitations" */
     invitations: Array<GraphQLTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -10713,57 +3650,6 @@ export type GraphQLTypes = {
     _nin?: Array<GraphQLTypes["uuid"]> | undefined;
   };
 };
-/** unique or primary key constraints on table "appstore.pending_curator_reviews" */
-export const enum appstore_pending_curator_reviews_constraint {
-  pending_curator_reviews_id_key = "pending_curator_reviews_id_key",
-  pending_curator_reviews_pkey = "pending_curator_reviews_pkey",
-}
-/** select columns of table "appstore.pending_curator_reviews" */
-export const enum appstore_pending_curator_reviews_select_column {
-  approved = "approved",
-  authority = "authority",
-  contact = "contact",
-  created_at = "created_at",
-  data = "data",
-  id = "id",
-  ix_data = "ix_data",
-  ix_keys = "ix_keys",
-  processed = "processed",
-  signature = "signature",
-  type = "type",
-  xnft = "xnft",
-}
-/** update columns of table "appstore.pending_curator_reviews" */
-export const enum appstore_pending_curator_reviews_update_column {
-  approved = "approved",
-  authority = "authority",
-  contact = "contact",
-  created_at = "created_at",
-  data = "data",
-  id = "id",
-  ix_data = "ix_data",
-  ix_keys = "ix_keys",
-  processed = "processed",
-  signature = "signature",
-  type = "type",
-  xnft = "xnft",
-}
-/** unique or primary key constraints on table "auth.invitations" */
-export const enum auth_invitations_constraint {
-  invitations_pkey = "invitations_pkey",
-}
-/** select columns of table "auth.invitations" */
-export const enum auth_invitations_select_column {
-  created_at = "created_at",
-  data = "data",
-  id = "id",
-}
-/** update columns of table "auth.invitations" */
-export const enum auth_invitations_update_column {
-  created_at = "created_at",
-  data = "data",
-  id = "id",
-}
 /** unique or primary key constraints on table "auth.publickeys_history" */
 export const enum auth_publickeys_history_constraint {
   publickeys_history_pkey = "publickeys_history_pkey",
@@ -10771,24 +3657,11 @@ export const enum auth_publickeys_history_constraint {
 /** select columns of table "auth.publickeys_history" */
 export const enum auth_publickeys_history_select_column {
   blockchain = "blockchain",
-  created_at = "created_at",
-  id = "id",
   publickey = "publickey",
-  user_id = "user_id",
 }
-/** update columns of table "auth.publickeys_history" */
+/** placeholder for update columns of table "auth.publickeys_history" (current role has no relevant permissions) */
 export const enum auth_publickeys_history_update_column {
-  blockchain = "blockchain",
-  created_at = "created_at",
-  id = "id",
-  publickey = "publickey",
-  user_id = "user_id",
-}
-/** select columns of table "auth.publickeys" */
-export const enum auth_publickeys_select_column {
-  blockchain = "blockchain",
-  publickey = "publickey",
-  user_id = "user_id",
+  _PLACEHOLDER = "_PLACEHOLDER",
 }
 /** unique or primary key constraints on table "auth.users" */
 export const enum auth_users_constraint {
@@ -10798,55 +3671,17 @@ export const enum auth_users_constraint {
 }
 /** select columns of table "auth.users" */
 export const enum auth_users_select_column {
-  created_at = "created_at",
   id = "id",
-  invitation_id = "invitation_id",
-  last_active_at = "last_active_at",
-  updated_at = "updated_at",
   username = "username",
-  waitlist_id = "waitlist_id",
 }
 /** update columns of table "auth.users" */
 export const enum auth_users_update_column {
-  created_at = "created_at",
-  id = "id",
-  invitation_id = "invitation_id",
-  last_active_at = "last_active_at",
   updated_at = "updated_at",
-  username = "username",
-  waitlist_id = "waitlist_id",
 }
 /** ordering argument of a cursor */
 export const enum cursor_ordering {
   ASC = "ASC",
   DESC = "DESC",
-}
-/** unique or primary key constraints on table "images" */
-export const enum images_constraint {
-  images_invite_code_key = "images_invite_code_key",
-  images_pkey = "images_pkey",
-  images_prompt_key = "images_prompt_key",
-  images_uri_key = "images_uri_key",
-}
-/** select columns of table "images" */
-export const enum images_select_column {
-  completed = "completed",
-  created_at = "created_at",
-  id = "id",
-  invite_code = "invite_code",
-  prompt = "prompt",
-  uri = "uri",
-  winner = "winner",
-}
-/** update columns of table "images" */
-export const enum images_update_column {
-  completed = "completed",
-  created_at = "created_at",
-  id = "id",
-  invite_code = "invite_code",
-  prompt = "prompt",
-  uri = "uri",
-  winner = "winner",
 }
 /** select columns of table "invitations" */
 export const enum invitations_select_column {
@@ -10864,75 +3699,20 @@ export const enum order_by {
 }
 
 type ZEUS_VARIABLES = {
-  ["Boolean_comparison_exp"]: ValueTypes["Boolean_comparison_exp"];
-  ["Int_comparison_exp"]: ValueTypes["Int_comparison_exp"];
   ["String_comparison_exp"]: ValueTypes["String_comparison_exp"];
-  ["appstore_pending_curator_reviews_append_input"]: ValueTypes["appstore_pending_curator_reviews_append_input"];
-  ["appstore_pending_curator_reviews_bool_exp"]: ValueTypes["appstore_pending_curator_reviews_bool_exp"];
-  ["appstore_pending_curator_reviews_constraint"]: ValueTypes["appstore_pending_curator_reviews_constraint"];
-  ["appstore_pending_curator_reviews_delete_at_path_input"]: ValueTypes["appstore_pending_curator_reviews_delete_at_path_input"];
-  ["appstore_pending_curator_reviews_delete_elem_input"]: ValueTypes["appstore_pending_curator_reviews_delete_elem_input"];
-  ["appstore_pending_curator_reviews_delete_key_input"]: ValueTypes["appstore_pending_curator_reviews_delete_key_input"];
-  ["appstore_pending_curator_reviews_inc_input"]: ValueTypes["appstore_pending_curator_reviews_inc_input"];
-  ["appstore_pending_curator_reviews_insert_input"]: ValueTypes["appstore_pending_curator_reviews_insert_input"];
-  ["appstore_pending_curator_reviews_on_conflict"]: ValueTypes["appstore_pending_curator_reviews_on_conflict"];
-  ["appstore_pending_curator_reviews_order_by"]: ValueTypes["appstore_pending_curator_reviews_order_by"];
-  ["appstore_pending_curator_reviews_pk_columns_input"]: ValueTypes["appstore_pending_curator_reviews_pk_columns_input"];
-  ["appstore_pending_curator_reviews_prepend_input"]: ValueTypes["appstore_pending_curator_reviews_prepend_input"];
-  ["appstore_pending_curator_reviews_select_column"]: ValueTypes["appstore_pending_curator_reviews_select_column"];
-  ["appstore_pending_curator_reviews_set_input"]: ValueTypes["appstore_pending_curator_reviews_set_input"];
-  ["appstore_pending_curator_reviews_stream_cursor_input"]: ValueTypes["appstore_pending_curator_reviews_stream_cursor_input"];
-  ["appstore_pending_curator_reviews_stream_cursor_value_input"]: ValueTypes["appstore_pending_curator_reviews_stream_cursor_value_input"];
-  ["appstore_pending_curator_reviews_update_column"]: ValueTypes["appstore_pending_curator_reviews_update_column"];
-  ["appstore_pending_curator_reviews_updates"]: ValueTypes["appstore_pending_curator_reviews_updates"];
-  ["auth_invitations_append_input"]: ValueTypes["auth_invitations_append_input"];
-  ["auth_invitations_bool_exp"]: ValueTypes["auth_invitations_bool_exp"];
-  ["auth_invitations_constraint"]: ValueTypes["auth_invitations_constraint"];
-  ["auth_invitations_delete_at_path_input"]: ValueTypes["auth_invitations_delete_at_path_input"];
-  ["auth_invitations_delete_elem_input"]: ValueTypes["auth_invitations_delete_elem_input"];
-  ["auth_invitations_delete_key_input"]: ValueTypes["auth_invitations_delete_key_input"];
-  ["auth_invitations_insert_input"]: ValueTypes["auth_invitations_insert_input"];
-  ["auth_invitations_obj_rel_insert_input"]: ValueTypes["auth_invitations_obj_rel_insert_input"];
-  ["auth_invitations_on_conflict"]: ValueTypes["auth_invitations_on_conflict"];
-  ["auth_invitations_order_by"]: ValueTypes["auth_invitations_order_by"];
-  ["auth_invitations_pk_columns_input"]: ValueTypes["auth_invitations_pk_columns_input"];
-  ["auth_invitations_prepend_input"]: ValueTypes["auth_invitations_prepend_input"];
-  ["auth_invitations_select_column"]: ValueTypes["auth_invitations_select_column"];
-  ["auth_invitations_set_input"]: ValueTypes["auth_invitations_set_input"];
-  ["auth_invitations_stream_cursor_input"]: ValueTypes["auth_invitations_stream_cursor_input"];
-  ["auth_invitations_stream_cursor_value_input"]: ValueTypes["auth_invitations_stream_cursor_value_input"];
-  ["auth_invitations_update_column"]: ValueTypes["auth_invitations_update_column"];
-  ["auth_invitations_updates"]: ValueTypes["auth_invitations_updates"];
-  ["auth_publickeys_bool_exp"]: ValueTypes["auth_publickeys_bool_exp"];
   ["auth_publickeys_history_aggregate_order_by"]: ValueTypes["auth_publickeys_history_aggregate_order_by"];
   ["auth_publickeys_history_arr_rel_insert_input"]: ValueTypes["auth_publickeys_history_arr_rel_insert_input"];
-  ["auth_publickeys_history_avg_order_by"]: ValueTypes["auth_publickeys_history_avg_order_by"];
   ["auth_publickeys_history_bool_exp"]: ValueTypes["auth_publickeys_history_bool_exp"];
   ["auth_publickeys_history_constraint"]: ValueTypes["auth_publickeys_history_constraint"];
-  ["auth_publickeys_history_inc_input"]: ValueTypes["auth_publickeys_history_inc_input"];
   ["auth_publickeys_history_insert_input"]: ValueTypes["auth_publickeys_history_insert_input"];
   ["auth_publickeys_history_max_order_by"]: ValueTypes["auth_publickeys_history_max_order_by"];
   ["auth_publickeys_history_min_order_by"]: ValueTypes["auth_publickeys_history_min_order_by"];
   ["auth_publickeys_history_on_conflict"]: ValueTypes["auth_publickeys_history_on_conflict"];
   ["auth_publickeys_history_order_by"]: ValueTypes["auth_publickeys_history_order_by"];
-  ["auth_publickeys_history_pk_columns_input"]: ValueTypes["auth_publickeys_history_pk_columns_input"];
   ["auth_publickeys_history_select_column"]: ValueTypes["auth_publickeys_history_select_column"];
-  ["auth_publickeys_history_set_input"]: ValueTypes["auth_publickeys_history_set_input"];
-  ["auth_publickeys_history_stddev_order_by"]: ValueTypes["auth_publickeys_history_stddev_order_by"];
-  ["auth_publickeys_history_stddev_pop_order_by"]: ValueTypes["auth_publickeys_history_stddev_pop_order_by"];
-  ["auth_publickeys_history_stddev_samp_order_by"]: ValueTypes["auth_publickeys_history_stddev_samp_order_by"];
   ["auth_publickeys_history_stream_cursor_input"]: ValueTypes["auth_publickeys_history_stream_cursor_input"];
   ["auth_publickeys_history_stream_cursor_value_input"]: ValueTypes["auth_publickeys_history_stream_cursor_value_input"];
-  ["auth_publickeys_history_sum_order_by"]: ValueTypes["auth_publickeys_history_sum_order_by"];
   ["auth_publickeys_history_update_column"]: ValueTypes["auth_publickeys_history_update_column"];
-  ["auth_publickeys_history_updates"]: ValueTypes["auth_publickeys_history_updates"];
-  ["auth_publickeys_history_var_pop_order_by"]: ValueTypes["auth_publickeys_history_var_pop_order_by"];
-  ["auth_publickeys_history_var_samp_order_by"]: ValueTypes["auth_publickeys_history_var_samp_order_by"];
-  ["auth_publickeys_history_variance_order_by"]: ValueTypes["auth_publickeys_history_variance_order_by"];
-  ["auth_publickeys_order_by"]: ValueTypes["auth_publickeys_order_by"];
-  ["auth_publickeys_select_column"]: ValueTypes["auth_publickeys_select_column"];
-  ["auth_publickeys_stream_cursor_input"]: ValueTypes["auth_publickeys_stream_cursor_input"];
-  ["auth_publickeys_stream_cursor_value_input"]: ValueTypes["auth_publickeys_stream_cursor_value_input"];
   ["auth_users_bool_exp"]: ValueTypes["auth_users_bool_exp"];
   ["auth_users_constraint"]: ValueTypes["auth_users_constraint"];
   ["auth_users_insert_input"]: ValueTypes["auth_users_insert_input"];
@@ -10945,32 +3725,14 @@ type ZEUS_VARIABLES = {
   ["auth_users_stream_cursor_value_input"]: ValueTypes["auth_users_stream_cursor_value_input"];
   ["auth_users_update_column"]: ValueTypes["auth_users_update_column"];
   ["auth_users_updates"]: ValueTypes["auth_users_updates"];
-  ["bytea"]: ValueTypes["bytea"];
-  ["bytea_comparison_exp"]: ValueTypes["bytea_comparison_exp"];
   ["citext"]: ValueTypes["citext"];
   ["citext_comparison_exp"]: ValueTypes["citext_comparison_exp"];
   ["cursor_ordering"]: ValueTypes["cursor_ordering"];
-  ["images_bool_exp"]: ValueTypes["images_bool_exp"];
-  ["images_constraint"]: ValueTypes["images_constraint"];
-  ["images_inc_input"]: ValueTypes["images_inc_input"];
-  ["images_insert_input"]: ValueTypes["images_insert_input"];
-  ["images_on_conflict"]: ValueTypes["images_on_conflict"];
-  ["images_order_by"]: ValueTypes["images_order_by"];
-  ["images_pk_columns_input"]: ValueTypes["images_pk_columns_input"];
-  ["images_select_column"]: ValueTypes["images_select_column"];
-  ["images_set_input"]: ValueTypes["images_set_input"];
-  ["images_stream_cursor_input"]: ValueTypes["images_stream_cursor_input"];
-  ["images_stream_cursor_value_input"]: ValueTypes["images_stream_cursor_value_input"];
-  ["images_update_column"]: ValueTypes["images_update_column"];
-  ["images_updates"]: ValueTypes["images_updates"];
   ["invitations_bool_exp"]: ValueTypes["invitations_bool_exp"];
   ["invitations_order_by"]: ValueTypes["invitations_order_by"];
   ["invitations_select_column"]: ValueTypes["invitations_select_column"];
   ["invitations_stream_cursor_input"]: ValueTypes["invitations_stream_cursor_input"];
   ["invitations_stream_cursor_value_input"]: ValueTypes["invitations_stream_cursor_value_input"];
-  ["jsonb"]: ValueTypes["jsonb"];
-  ["jsonb_cast_exp"]: ValueTypes["jsonb_cast_exp"];
-  ["jsonb_comparison_exp"]: ValueTypes["jsonb_comparison_exp"];
   ["order_by"]: ValueTypes["order_by"];
   ["timestamptz"]: ValueTypes["timestamptz"];
   ["timestamptz_comparison_exp"]: ValueTypes["timestamptz_comparison_exp"];
