@@ -13,7 +13,7 @@ export const KeyringTypeSelector = ({
   action,
   onNext,
 }: {
-  action: "create" | "import";
+  action: "create" | "import" | "recover";
   onNext: (keyringType: KeyringType) => void;
 }) => {
   return (
@@ -44,6 +44,14 @@ export const KeyringTypeSelector = ({
             </SubtextParagraph>
           </>
         )}
+        {action === "recover" && (
+          <>
+            <Header text="Recover a username" />
+            <SubtextParagraph>
+              Choose a method to recover your username.
+            </SubtextParagraph>
+          </>
+        )}
       </Box>
       <Box
         style={{
@@ -54,12 +62,14 @@ export const KeyringTypeSelector = ({
       >
         <Box style={{ marginBottom: "16px" }}>
           <PrimaryButton
-            label={`${toTitleCase(action)} from recovery phrase`}
+            label={`${toTitleCase(action)} with recovery phrase`}
             onClick={() => onNext("mnemonic")}
           />
         </Box>
         <SubtextParagraph onClick={() => onNext("ledger")}>
-          I already have an account
+          {action === "recover"
+            ? "Recover using a hardware wallet"
+            : "I have a hardware wallet"}
         </SubtextParagraph>
       </Box>
     </div>
