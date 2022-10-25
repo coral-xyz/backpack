@@ -44,13 +44,13 @@ export const OnboardAccount = ({
   const [username, setUsername] = useState<string | null>(null);
   const [action, setAction] = useState<"create" | "import">();
   const [keyringType, setKeyringType] = useState<KeyringType | null>(null);
-  const [blockchainKeyrings, setBlockchainKeyrings] = useState<
-    Array<BlockchainKeyringInit>
-  >([]);
   const [blockchain, setBlockchain] = useState<Blockchain | null>(null);
   const [password, setPassword] = useState<string | null>(null);
   const [mnemonic, setMnemonic] = useState<string | undefined>(undefined);
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [blockchainKeyrings, setBlockchainKeyrings] = useState<
+    Array<BlockchainKeyringInit>
+  >([]);
 
   const selectedBlockchains = blockchainKeyrings.map((b) => b.blockchain);
 

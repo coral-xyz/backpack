@@ -84,5 +84,5 @@ export type BlockchainKeyringInit = {
   derivationPath: DerivationPath;
   accountIndex: number;
   publicKey: string;
-  signature: string;
+  signature: string | null;
 };
