@@ -29,17 +29,17 @@ export const StripeRamp = ({
   }, [blockchain, publicKey]);
 
   return (
-    <div>
+    <div style={{ height: "100%" }}>
       {loading && (
         <div style={{ height: "90vh" }}>
           {" "}
           <Loading />{" "}
         </div>
       )}
-      <div ref={ref}>
+      <div ref={ref} style={{ height: "100%" }}>
         {clientSecret && (
           <iframe
-            style={{ border: "none", width: "100vw", height: "90vh" }}
+            style={{ border: "none", width: "100vw", height: "100%" }}
             src={`https://doof72pbjabye.cloudfront.net/stripe-onramp.html?clientSecret=${clientSecret}`}
           />
         )}
