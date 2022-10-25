@@ -49,6 +49,7 @@ import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
 import { encode } from "bs58";
+import { SignaturePubkeyPairV2 } from "@coral-xyz/common-public";
 
 const { base58: bs58 } = ethers.utils;
 
@@ -84,6 +85,7 @@ export class Backend {
   async solanaSignAndSendTx(
     txStr: string,
     walletAddress: string,
+    signatures: SignaturePubkeyPairV2[],
     options?: SendOptions
   ): Promise<string> {
     // Sign the transaction.
@@ -117,9 +119,10 @@ export class Backend {
   // Returns the signature.
   async solanaSignTransaction(
     txStr: string,
-    walletAddress: string
+    walletAddress: string,
+    signatures?: SignaturePubkeyPairV2[]
   ): Promise<string> {
-    const tx = deserializeTransaction(txStr);
+    const tx = deserializeTransaction(txStr, signatures);
     const message = tx.message.serialize();
     const txMessage = bs58.encode(message);
     const blockchainKeyring = this.keyringStore.keyringForBlockchain(

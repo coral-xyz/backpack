@@ -13,6 +13,7 @@ import type {
 } from "@solana/web3.js";
 import type { RequestManager } from "../request-manager";
 import {
+  deserializeTransaction,
   isVersionedTransaction,
   SOLANA_RPC_METHOD_SIGN_ALL_TXS,
   SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
@@ -20,8 +21,10 @@ import {
   SOLANA_RPC_METHOD_SIGN_TX,
   SOLANA_RPC_METHOD_SIMULATE,
 } from "@coral-xyz/common";
-import { VersionedTransaction } from "@solana/web3.js";
+import { SignaturePubkeyPairV2 } from "@coral-xyz/common-public";
+import { SignaturePubkeyPair, VersionedTransaction } from "@solana/web3.js";
 import { ChainedRequestManager } from "../chained-request-manager";
+import { Buffer } from "buffer";
 
 export async function sendAndConfirm<
   T extends Transaction | VersionedTransaction
@@ -63,6 +66,7 @@ export async function send<T extends Transaction | VersionedTransaction>(
   options?: SendOptions
 ): Promise<TransactionSignature> {
   const versioned = isVersionedTransaction(tx);
+
   if (!versioned) {
     if (signers) {
       signers.forEach((s: Signer) => {
@@ -83,13 +87,10 @@ export async function send<T extends Transaction | VersionedTransaction>(
       tx.sign(signers);
     }
   }
-  const txSerialize = tx.serialize({
-    requireAllSignatures: false,
-  });
-  const txStr = encode(txSerialize);
+  const { txStr, signatures } = _getSerializedTransactionParams(tx);
   return await requestManager.request({
     method: SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
-    params: [txStr, publicKey.toString(), options],
+    params: [txStr, publicKey.toString(), signatures, options],
   });
 }
 
@@ -111,10 +112,10 @@ export async function signTransaction<
       tx.recentBlockhash = blockhash;
     }
   }
-  const txStr = encode(tx.serialize({ requireAllSignatures: false }));
+  const { txStr, signatures } = _getSerializedTransactionParams(tx);
   const signature = await requestManager.request({
     method: SOLANA_RPC_METHOD_SIGN_TX,
-    params: [txStr, publicKey.toString()],
+    params: [txStr, publicKey.toString(), signatures],
   });
   // @ts-ignore
   tx.addSignature(publicKey, decode(signature));
@@ -217,4 +218,48 @@ export async function signMessage(
     params: [msgStr, publicKey.toString()],
   });
   return decode(signature);
+}
+
+function _getSerializedTransactionParams(
+  tx: Transaction | VersionedTransaction
+): {
+  signatures: SignaturePubkeyPairV2[];
+  txStr: string;
+} {
+  let v2Transaction: VersionedTransaction;
+  if (!isVersionedTransaction(tx)) {
+    const signatures = tx.signatures;
+    const txSerialize = tx.serialize({
+      requireAllSignatures: false,
+      verifySignatures: false,
+    });
+    const txStr = encode(txSerialize);
+    v2Transaction = deserializeTransaction(txStr);
+    signatures.forEach(({ signature, publicKey }) => {
+      if (signature) {
+        v2Transaction.addSignature(publicKey, decode(encode(signature)));
+      }
+    });
+  } else {
+    v2Transaction = tx;
+  }
+
+  const txSignatures = v2Transaction.signatures;
+  const signatures: SignaturePubkeyPairV2[] = [];
+  txSignatures.forEach((signature, index) => {
+    const signerPubkeys = v2Transaction.message.staticAccountKeys.slice(
+      0,
+      v2Transaction.message.header.numRequiredSignatures
+    );
+    const signerPubkey = signerPubkeys[index];
+    signatures.push({
+      signature,
+      publicKey: signerPubkey.toString(),
+    });
+  });
+  const txStr = encode(v2Transaction.serialize());
+  return {
+    signatures,
+    txStr,
+  };
 }

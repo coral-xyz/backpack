@@ -33,7 +33,12 @@ import {
   PLUGIN_NOTIFICATION_UPDATE_METADATA,
 } from "./constants";
 
-import { getLogger, Event, XnftMetadata } from "@coral-xyz/common-public";
+import {
+  getLogger,
+  Event,
+  XnftMetadata,
+  SignaturePubkeyPairV2,
+} from "@coral-xyz/common-public";
 import { BackgroundClient } from "./channel/app-ui";
 import { PluginServer } from "./channel/plugin";
 
@@ -379,7 +384,11 @@ export class Plugin {
       case PLUGIN_ETHEREUM_RPC_METHOD_SIGN_MESSAGE:
         return await this._handleEthereumSignMessage(params[0], params[1]);
       case PLUGIN_SOLANA_RPC_METHOD_SIGN_TX:
-        return await this._handleSolanaSignTransaction(params[0], params[1]);
+        return await this._handleSolanaSignTransaction(
+          params[0],
+          params[1],
+          params[2]
+        );
       case PLUGIN_SOLANA_RPC_METHOD_SIGN_ALL_TXS:
         return await this._handleSolanaSignAllTransactions(
           params[0],
@@ -388,7 +397,8 @@ export class Plugin {
       case PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX:
         return await this._handleSolanaSignAndSendTransaction(
           params[0],
-          params[1]
+          params[1],
+          params[2]
         );
       case PLUGIN_SOLANA_RPC_METHOD_SIGN_MESSAGE:
         return await this._handleSolanaSignMessage(params[0], params[1]);
@@ -450,13 +460,15 @@ export class Plugin {
 
   private async _handleSolanaSignTransaction(
     transaction: string,
-    pubkey: string
+    pubkey: string,
+    signatures?: SignaturePubkeyPairV2[]
   ): Promise<RpcResponse> {
     try {
       const signature = await this._requestTransactionApproval(
         PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION,
         transaction,
-        pubkey
+        pubkey,
+        signatures
       );
       return [signature];
     } catch (err: any) {
@@ -482,13 +494,15 @@ export class Plugin {
 
   private async _handleSolanaSignAndSendTransaction(
     transaction: string,
-    pubkey: string
+    pubkey: string,
+    signatures: SignaturePubkeyPairV2[]
   ): Promise<RpcResponse> {
     try {
       const signature = await this._requestTransactionApproval(
         PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION,
         transaction,
-        pubkey
+        pubkey,
+        signatures
       );
       return [signature];
     } catch (err: any) {
@@ -558,7 +572,8 @@ export class Plugin {
   private async _requestTransactionApproval(
     kind: string,
     transaction: string | string[],
-    publicKey: string
+    publicKey: string,
+    signatures?: SignaturePubkeyPairV2[]
   ): Promise<string | null> {
     return new Promise<string | null>((resolve, reject) => {
       this._requestTxApprovalFn!({
@@ -567,6 +582,7 @@ export class Plugin {
         xnftAddress: this.xnftAddress,
         pluginUrl: this.iframeRootUrl,
         publicKey,
+        signatures,
         resolve,
         reject,
       });

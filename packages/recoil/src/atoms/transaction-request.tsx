@@ -8,6 +8,7 @@ import {
   PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE,
 } from "@coral-xyz/common";
+import { SignaturePubkeyPairV2 } from "@coral-xyz/common-public";
 
 //
 // Transaction being requested for signing.
@@ -31,5 +32,6 @@ export type TransactionRequest = {
     | typeof PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION
     | typeof PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE;
   resolve: (signature: string) => void;
+  signatures?: SignaturePubkeyPairV2[];
   reject: (error: any) => void;
 };

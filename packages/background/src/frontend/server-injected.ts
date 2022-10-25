@@ -55,6 +55,7 @@ import {
 import type { Backend } from "../backend/core";
 import type { Config, Handle } from "../types";
 import { handlePopupUiResponse, RequestManager } from "./common";
+import { SignaturePubkeyPairV2 } from "@coral-xyz/common-public";
 
 const logger = getLogger("server-injected");
 
@@ -170,7 +171,8 @@ async function handle<T = any>(
         ctx,
         params[0],
         params[1],
-        params[2]
+        params[2],
+        params[3]
       );
     case SOLANA_RPC_METHOD_SIGN_TX:
       return await handleSolanaSignTx(ctx, params[0], params[1]);
@@ -312,6 +314,7 @@ async function handleSolanaSignAndSendTx(
   ctx: Context<Backend>,
   tx: string,
   walletAddress: string,
+  signatures: SignaturePubkeyPairV2[],
   options?: SendOptions
 ): Promise<RpcResponse<string>> {
   // Get user approval.
@@ -340,6 +343,7 @@ async function handleSolanaSignAndSendTx(
       const sig = await ctx.backend.solanaSignAndSendTx(
         tx,
         walletAddress,
+        signatures,
         options
       );
       resp = [sig];

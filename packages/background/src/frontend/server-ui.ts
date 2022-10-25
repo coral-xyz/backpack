@@ -82,6 +82,7 @@ import {
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import type { Backend } from "../backend/core";
 import type { Config, Handle } from "../types";
+import { SignaturePubkeyPairV2 } from "@coral-xyz/common-public";
 
 const logger = getLogger("background-server-ui");
 
@@ -253,13 +254,19 @@ async function handle<T = any>(
     case UI_RPC_METHOD_SOLANA_SIMULATE:
       return await handleSolanaSimulate(ctx, params[0], params[1], params[2]);
     case UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION:
-      return await handleSolanaSignTransaction(ctx, params[0], params[1]);
+      return await handleSolanaSignTransaction(
+        ctx,
+        params[0],
+        params[1],
+        params[2]
+      );
     case UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS:
       return await handleSolanaSignAllTransactions(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION:
       return await handleSolanaSignAndSendTransaction(
         ctx,
         params[0],
+        params[1],
         params[1]
       );
     case UI_RPC_METHOD_SOLANA_SIGN_MESSAGE:
@@ -623,9 +630,14 @@ async function handleSolanaSimulate(
 async function handleSolanaSignTransaction(
   ctx: Context<Backend>,
   txStr: string,
-  walletAddress: string
+  walletAddress: string,
+  signatures?: SignaturePubkeyPairV2[]
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaSignTransaction(txStr, walletAddress);
+  const resp = await ctx.backend.solanaSignTransaction(
+    txStr,
+    walletAddress,
+    signatures
+  );
   return [resp];
 }
 
@@ -650,9 +662,14 @@ async function handleSolanaSignMessage(
 async function handleSolanaSignAndSendTransaction(
   ctx: Context<Backend>,
   tx: string,
-  walletAddress: string
+  walletAddress: string,
+  signatures: SignaturePubkeyPairV2[]
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaSignAndSendTx(tx, walletAddress);
+  const resp = await ctx.backend.solanaSignAndSendTx(
+    tx,
+    walletAddress,
+    signatures
+  );
   return [resp];
 }
 

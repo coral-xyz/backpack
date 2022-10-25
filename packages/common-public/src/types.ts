@@ -11,3 +11,8 @@ export interface XnftMetadata {
   username?: string;
   avatarUrl: string;
 }
+
+export type SignaturePubkeyPairV2 = {
+  signature: Uint8Array;
+  publicKey: string;
+};
