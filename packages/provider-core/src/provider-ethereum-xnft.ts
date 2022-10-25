@@ -15,6 +15,7 @@ import {
 import * as cmn from "./common/ethereum";
 import { RequestManager } from "./request-manager";
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
+import { ChainedRequestManager } from "./chained-request-manager";
 
 const logger = getLogger("provider-xnft-injection");
 
@@ -22,14 +23,14 @@ const logger = getLogger("provider-xnft-injection");
 // Injected provider for UI plugins.
 //
 export class ProviderEthereumXnftInjection extends PrivateEventEmitter {
-  #requestManager: RequestManager;
+  #requestManager: ChainedRequestManager | ChainedRequestManager;
   #connectionRequestManager: RequestManager;
 
   #publicKey?: string;
   #connectionUrl?: string;
   #provider?: ethers.providers.JsonRpcProvider;
 
-  constructor(requestManager: RequestManager) {
+  constructor(requestManager: ChainedRequestManager) {
     super();
     if (new.target === ProviderEthereumXnftInjection) {
       Object.freeze(this);

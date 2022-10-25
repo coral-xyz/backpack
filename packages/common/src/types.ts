@@ -62,9 +62,3 @@ export type NftAttribute = {
   traitType: string;
   value: string;
 };
-
-export interface XnftMetadata {
-  isDarkMode: boolean;
-  username?: string;
-  avatarUrl: string;
-}
