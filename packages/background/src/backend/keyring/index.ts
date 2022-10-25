@@ -4,7 +4,6 @@ import type {
   EventEmitter,
   DerivationPath,
   KeyringInit,
-  BlockchainKeyringInit,
 } from "@coral-xyz/common";
 import {
   Blockchain,
