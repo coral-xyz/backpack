@@ -8,4 +8,11 @@ insert_permissions:
       columns:
         - blockchain
         - publickey
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - blockchain
+        - publickey
         - user_id
+      filter: {}
