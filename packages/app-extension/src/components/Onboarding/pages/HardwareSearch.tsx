@@ -11,10 +11,10 @@ import {
   Blockchain,
   DerivationPath,
 } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
 import { Header, Loading, PrimaryButton, SubtextParagraph } from "../../common";
 
-const DERIVATION_PATHS = [DerivationPath.Bip44, DerivationPath.Bip44Change];
+// Bip44Change is the default so that should be first to make this quick
+const DERIVATION_PATHS = [DerivationPath.Bip44Change, DerivationPath.Bip44];
 const LOAD_PUBKEY_AMOUNT = 20;
 
 export const HardwareSearch = ({
