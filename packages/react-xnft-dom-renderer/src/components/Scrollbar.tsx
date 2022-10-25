@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import ReactScrollbarsCustom from "react-scrollbars-custom";
+import { Scrollbar } from "react-scrollbars-custom";
 
 export function ScrollbarNew({ children, ...props }) {
   const [isScrolling, setIsScrolling] = useState(false);
@@ -39,11 +39,23 @@ export function ScrollbarNew({ children, ...props }) {
   );
 
   return (
-    <ReactScrollbarsCustom
-      {...props}
+    <Scrollbar
       wrapperProps={{
         renderer: ({ elementRef, style, ...restProps }) => (
-          <div {...restProps} ref={elementRef} style={{ ...style, right: 0 }} />
+          <div
+            {...restProps}
+            ref={elementRef}
+            style={{ ...style, height: "100%", right: 0, inset: "none" }}
+          />
+        ),
+      }}
+      contentProps={{
+        renderer: ({ elementRef, style, ...restProps }) => (
+          <div
+            {...restProps}
+            ref={elementRef}
+            style={{ ...style, height: "100%" }}
+          />
         ),
       }}
       trackXProps={trackProps}
@@ -53,6 +65,6 @@ export function ScrollbarNew({ children, ...props }) {
       scrollDetectionThreshold={500} // ms
     >
       {children}
-    </ReactScrollbarsCustom>
+    </Scrollbar>
   );
 }

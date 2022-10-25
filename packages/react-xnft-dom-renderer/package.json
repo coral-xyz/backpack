@@ -26,7 +26,6 @@
     "framer-motion": "^6.5.1",
     "parcel": "^2.7.0",
     "react": "^17.0.0",
-    "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^18.2.0",
     "react-scrollbars-custom": "^4.1.1",
     "react-xnft": "*"
