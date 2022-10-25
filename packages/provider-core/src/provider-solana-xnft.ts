@@ -32,6 +32,7 @@ import {
 import * as cmn from "./common/solana";
 import { RequestManager } from "./request-manager";
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
+import { ChainedRequestManager } from "./chained-request-manager";
 
 const logger = getLogger("provider-xnft-injection");
 
@@ -42,13 +43,13 @@ export class ProviderSolanaXnftInjection
   extends PrivateEventEmitter
   implements Provider
 {
-  #requestManager: RequestManager;
+  #requestManager: ChainedRequestManager;
   #connectionRequestManager: RequestManager;
 
   #publicKey?: PublicKey;
   #connection: Connection;
 
-  constructor(requestManager: RequestManager) {
+  constructor(requestManager: ChainedRequestManager) {
     super();
     if (new.target === ProviderSolanaXnftInjection) {
       Object.freeze(this);

@@ -6,14 +6,10 @@ const PROD_RENDERER_URL =
 
 const V1_BUNDLES: string[] = [
   "https://ipfs.io/ipfs/bafybeibhd37z7osxbp2fvxcenid6uufsvrpumawxw4ked7h2br4duz3sme",
-  "https://xnfts.s3.us-west-2.amazonaws.com/DFiTps6Xp6hKGE2AWMYveNQ6mqA9TjFa6WJiWG9smHr6/bundle/index.js",
-  "https://xnfts.s3.us-west-2.amazonaws.com/C6rEseVodzAebN11CHLNLZtYZf9E5XtycbBSDPmYWFb/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/4AwaNy62XXNhgEbe3Szk9Tb7eEgDcHG3YbpEzdX8DPj5/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/9Tqzi3gb4jE3D8Ez79HUTjFfS9f9ES31NjXez6yaffd7/bundle/index.js",
-  "https://xnfts.s3.us-west-2.amazonaws.com/9AmGmRkSQYSYAupbdKmr2et8nQkSg5bo8NAG1nmXgY6g/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/HqKfgFm7m4TujMwZ1wsRiEG8kMf5Se6mgK4Y1syQYq69/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/7A3av8PDbqpGRfLzSujr9Dprw4SVgFbMCfJ5DXL4azRP/bundle/index.js",
-  "https://xnfts.s3.us-west-2.amazonaws.com/i2HP4KaZ2zXKwLZVyTkDK3itCRugt6Npb5Zn7t28yR5/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/Hs78vTKzgK53qeRcYr6UFALzKB9SPNRfV79X5FtVgbKq/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/3i8Av28osHPoWZzWRoU29JBmfSJEcFtJhDzBTLhFG1u6/bundle/index.js",
   "https://xnfts.s3.us-west-2.amazonaws.com/8tz5Uu7XqiV2YrutBog3VSyNAL4cA3TXdfGnJx2XPPgy/bundle/index.js",

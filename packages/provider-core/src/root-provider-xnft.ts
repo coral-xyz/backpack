@@ -1,4 +1,5 @@
-import type { Event, XnftMetadata } from "@coral-xyz/common";
+import type { Event } from "@coral-xyz/common";
+import type { XnftMetadata } from "@coral-xyz/common-public";
 import {
   getLogger,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
@@ -17,6 +18,7 @@ import {
 } from "@coral-xyz/common";
 import { RequestManager } from "./request-manager";
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
+import { ChainedRequestManager } from "./chained-request-manager";
 
 const logger = getLogger("provider-xnft-injection");
 
@@ -24,17 +26,17 @@ const logger = getLogger("provider-xnft-injection");
 // Injected provider for UI plugins.
 //
 export class ProviderRootXnftInjection extends PrivateEventEmitter {
-  #requestManager: RequestManager;
+  #requestManager: ChainedRequestManager;
   #connectionRequestManager: RequestManager;
   #publicKeys: { [blockchain: string]: string };
   #connectionUrls: { [blockchain: string]: string | null };
 
-  #childIframes: HTMLIFrameElement[];
+  #childIframes: { element: HTMLIFrameElement; id: string; url: string }[];
   #cachedNotifications: { [notification: string]: Event };
   #metadata: XnftMetadata;
 
   constructor(
-    requestManager: RequestManager,
+    requestManager: ChainedRequestManager,
     additionalProperties: { [key: string]: PrivateEventEmitter } = {}
   ) {
     super();
@@ -77,7 +79,7 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
     });
   }
 
-  public async addIframe(iframeEl) {
+  public async addIframe(iframeEl: HTMLIFrameElement, url: string, id: string) {
     // Send across mount and connect notification to child iframes
     if (this.#cachedNotifications[PLUGIN_NOTIFICATION_MOUNT]) {
       iframeEl.contentWindow?.postMessage(
@@ -93,12 +95,23 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
       );
     }
 
-    this.#childIframes.push(iframeEl);
+    this.#requestManager.addChildIframe({
+      element: iframeEl,
+      url,
+      id,
+    });
+
+    this.#childIframes.push({
+      element: iframeEl,
+      url,
+      id,
+    });
   }
 
-  public async removeIframe(iframeEl) {
+  public async removeIframe(id) {
     // @ts-ignore
-    this.#childIframes = this.#childIframes.filter((x) => x !== iframeEl);
+    this.#childIframes = this.#childIframes.filter((x) => x.id !== id);
+    this.#requestManager.removeChildIframe(id);
   }
 
   #setupChannels() {
@@ -112,8 +125,8 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
     if (event.data.type !== CHANNEL_PLUGIN_NOTIFICATION) return;
 
     // Send RPC message to all child iframes
-    this.#childIframes.forEach((iframe) => {
-      iframe.contentWindow?.postMessage(event, "*");
+    this.#childIframes.forEach(({ element }) => {
+      element.contentWindow?.postMessage(event, "*");
     });
 
     logger.debug("handle notification", event);
