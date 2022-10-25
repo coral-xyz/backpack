@@ -26,6 +26,7 @@ import {
 import {
   openPopupWindow,
   Blockchain,
+  KeyringType,
   BACKPACK_FEATURE_POP_MODE,
   BACKPACK_FEATURE_XNFT,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
@@ -440,6 +441,9 @@ function WalletList({
     (a) => a.blockchain === blockchain
   )[0];
 
+  const keyringType: KeyringType =
+    keyring.hdPublicKeys.length === 0 ? "ledger" : "mnemonic";
+
   return (
     <div
       style={{
@@ -655,7 +659,12 @@ function WalletList({
           </div>
         )}
       </div>
-      {showAll && <AddConnectWalletButton blockchain={blockchain} />}
+      {showAll && (
+        <AddConnectWalletButton
+          blockchain={blockchain}
+          keyringType={keyringType}
+        />
+      )}
     </div>
   );
 }
@@ -692,8 +701,10 @@ export function ImportTypeBadge({ type }: { type: string }) {
 
 export const AddConnectWalletButton = ({
   blockchain,
+  keyringType,
 }: {
   blockchain: Blockchain;
+  keyringType: KeyringType;
 }) => {
   const nav = useNavStack();
   const classes = useStyles();
@@ -711,7 +722,9 @@ export const AddConnectWalletButton = ({
       <ListItem
         isFirst={false}
         isLast={true}
-        onClick={() => nav.push("add-connect-wallet", { blockchain })}
+        onClick={() =>
+          nav.push("add-connect-wallet", { blockchain, keyringType })
+        }
         classes={{ root: classes.addConnectRoot }}
       >
         <div
