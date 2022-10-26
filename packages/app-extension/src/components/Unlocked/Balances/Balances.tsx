@@ -178,7 +178,7 @@ export function BalancesTableCell({ props, style }: any) {
         </div>
         <div className={classes.tokenListItemRow}>
           {subtitle && (
-            <Typography className={classes.tokenAmount}>{subtitle}</Typography>
+            <Typography className={classes.tokenAmount}>{subtitle.split(".")[0]}.{subtitle.split(".")[1].slice(0,5)}</Typography>
           )}
           {percentChange !== undefined && positive && (
             <Typography className={classes.tokenBalanceChangePositive}>
