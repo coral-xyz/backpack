@@ -462,7 +462,3 @@ export const BACKPACK_LINK = "https://backpack.app";
 
 export const ALCHEMY_ETHEREUM_MAINNET_API_KEY =
   "DlJr6QuBC2EaE-L60-iqQQGq9hi9-XSZ";
-
-// Memo program for dummy transactions to simulate signMessage on Ledger
-export const MEMO_PROGRAM_ADDRESS =
-  "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";

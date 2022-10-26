@@ -17,10 +17,6 @@ import { sign } from "tweetnacl";
 import { z, ZodError } from "zod";
 import { Chain } from "./zeus";
 
-// Memo program for dummy transactions to simulate signMessage on Ledger
-export const MEMO_PROGRAM_ADDRESS =
-  "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
-
 const CreateEthereumKeyring = z.object({
   publicKey: z.string().refine((str) => {
     try {

@@ -6,7 +6,6 @@ import type {
   SimulateTransactionConfig,
 } from "@solana/web3.js";
 import {
-  Keypair,
   PublicKey,
   Transaction,
   TransactionInstruction,
@@ -18,7 +17,6 @@ import {
   Blockchain,
   EthereumConnectionUrl,
   EthereumExplorer,
-  MEMO_PROGRAM_ADDRESS,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
