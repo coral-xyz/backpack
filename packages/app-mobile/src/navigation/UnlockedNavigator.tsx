@@ -13,14 +13,12 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { Button, Pressable, Text, View } from "react-native";
 import tw from "twrnc";
 
+import { Screen } from "@components";
+
 import { CustomButton } from "../components/CustomButton";
-import Screen from "../components/Screen";
 import { ButtonFooter, MainContent } from "../components/Templates";
-// import { useColorScheme } from "react-native";
 
 export default function UnlockedNavigator() {
-  // const colorScheme = useColorScheme();
-
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Group>

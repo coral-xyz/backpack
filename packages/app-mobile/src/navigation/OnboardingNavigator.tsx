@@ -1,52 +1,11 @@
+import { Header, Screen, StyledText, SubtextParagraph } from "@components";
 import { createStackNavigator } from "@react-navigation/stack";
 import type { StyleProp, TextStyle } from "react-native";
 import { Button, Pressable, StyleSheet, Text, View } from "react-native";
 
-import Screen from "../components/Screen";
-import StyledText from "../components/StyledText";
-import useTheme from "../hooks/useTheme";
+import { useTheme } from "../hooks/useTheme";
 
 const Stack = createStackNavigator();
-
-function Header({ text }: { text: string }) {
-  const theme = useTheme();
-  return (
-    <Text
-      style={{
-        color: theme.colors.fontColor,
-        fontSize: 24,
-        fontWeight: "500",
-        lineHeight: 32,
-      }}
-    >
-      {text}
-    </Text>
-  );
-}
-
-function SubtextParagraph({
-  children,
-  style,
-}: {
-  children: JSX.Element;
-  style?: StyleProp<TextStyle>;
-}) {
-  const theme = useTheme();
-  return (
-    <Text
-      style={[
-        {
-          fontWeight: "500",
-          marginTop: 8,
-          color: theme.colors.subtext,
-        },
-        style,
-      ]}
-    >
-      {children}
-    </Text>
-  );
-}
 
 function OnboardingScreen({ title, subtitle, children }) {
   return (
