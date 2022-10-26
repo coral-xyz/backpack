@@ -1,4 +1,4 @@
-import { toTitleCase, Blockchain, KeyringType } from "@coral-xyz/common";
+import { toTitleCase, Blockchain } from "@coral-xyz/common";
 import { useWalletPublicKeys } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { MoreHoriz } from "@mui/icons-material";
@@ -44,7 +44,6 @@ function WalletList({
   keyring: any;
 }) {
   const theme = useCustomTheme();
-
   const flattenedWallets = [
     ...keyring.hdPublicKeys.map((k: any) => ({ ...k, type: "derived" })),
     ...keyring.importedPublicKeys.map((k: any) => ({
@@ -86,7 +85,6 @@ function WalletList({
             type={type}
             isFirst={idx === 0}
             isLast={idx === flattenedWallets.length - 1}
-            showDetailMenu={true}
           />
         ))}
       </List>
@@ -109,18 +107,8 @@ export const WalletListItem: React.FC<{
   type?: string;
   isFirst: boolean;
   isLast: boolean;
-  showDetailMenu: boolean;
   onClick?: () => void;
-}> = ({
-  blockchain,
-  name,
-  publicKey,
-  type,
-  isFirst,
-  isLast,
-  showDetailMenu,
-  onClick,
-}) => {
+}> = ({ blockchain, name, publicKey, type, isFirst, isLast, onClick }) => {
   const theme = useCustomTheme();
   const nav = useNavStack();
   return (
@@ -130,14 +118,12 @@ export const WalletListItem: React.FC<{
       isFirst={isFirst}
       isLast={isLast}
       detail={
-        showDetailMenu ? (
-          <MoreHoriz
-            style={{
-              cursor: "pointer",
-              color: theme.custom.colors.secondary,
-            }}
-          />
-        ) : null
+        <MoreHoriz
+          style={{
+            cursor: "pointer",
+            color: theme.custom.colors.secondary,
+          }}
+        />
       }
       onClick={
         onClick

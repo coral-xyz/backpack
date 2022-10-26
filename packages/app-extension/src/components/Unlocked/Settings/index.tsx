@@ -26,7 +26,6 @@ import {
 import {
   openPopupWindow,
   Blockchain,
-  KeyringType,
   BACKPACK_FEATURE_POP_MODE,
   BACKPACK_FEATURE_XNFT,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
@@ -440,9 +439,6 @@ function WalletList({
   const { name, publicKey } = activeWallets.filter(
     (a) => a.blockchain === blockchain
   )[0];
-
-  const keyringType: KeyringType =
-    keyring.hdPublicKeys.length === 0 ? "ledger" : "mnemonic";
 
   return (
     <div
