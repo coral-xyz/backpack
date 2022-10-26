@@ -4,14 +4,14 @@ import type {
     DEPRECATED_WalletsWindow,
     Wallet,
     WalletEventsWindow,
-    WindowRegisterWalletEvent as WindowRegisterWalletEventInterface,
+    WindowRegisterWalletEvent,
     WindowRegisterWalletEventCallback,
 } from '@wallet-standard/base';
 
 export function registerWallet(wallet: Wallet): void {
     const callback: WindowRegisterWalletEventCallback = ({ register }) => register(wallet);
     try {
-        (window as WalletEventsWindow).dispatchEvent(new WindowRegisterWalletEvent(callback));
+        (window as WalletEventsWindow).dispatchEvent(new RegisterWalletEvent(callback));
     } catch (error) {
         console.error('wallet-standard:register-wallet event could not be dispatched\n', error);
     }
@@ -24,7 +24,7 @@ export function registerWallet(wallet: Wallet): void {
     }
 }
 
-class WindowRegisterWalletEvent extends Event implements WindowRegisterWalletEventInterface {
+class RegisterWalletEvent extends Event implements WindowRegisterWalletEvent {
     readonly #detail: WindowRegisterWalletEventCallback;
 
     get detail() {
