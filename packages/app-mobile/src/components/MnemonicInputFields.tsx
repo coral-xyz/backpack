@@ -32,8 +32,8 @@ export function MnemonicInputFields({
       data={mnemonicWords}
       numColumns={3}
       renderItem={Item}
-      keyExtractor={(item) => {
-        return item;
+      keyExtractor={(item, index) => {
+        return `${item}.${index}`.toString();
       }}
       initialNumToRender={mnemonicWords.length}
       scrollEnabled={false}

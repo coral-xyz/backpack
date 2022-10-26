@@ -82,7 +82,7 @@ function WelcomeScreen({ navigation }) {
 }
 
 function OnboardingBlockchainSelectScreen({ route, navigation }) {
-  const NETWORKS = [
+  const BLOCKCHAINS = [
     {
       name: "Ethereum",
       enabled: true,
@@ -124,8 +124,9 @@ function OnboardingBlockchainSelectScreen({ route, navigation }) {
       title="Which network would you like Backpack to use?"
       subtitle="You can always add additional networks later through the settings menu."
     >
-      {NETWORKS.map((blockchain) => (
+      {BLOCKCHAINS.map((blockchain) => (
         <Network
+          key={blockchain.name}
           enabled={blockchain.enabled}
           blockchain={blockchain}
           onSelect={(blockchain) => {
