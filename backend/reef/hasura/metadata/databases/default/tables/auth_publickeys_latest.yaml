@@ -1,0 +1,10 @@
+table:
+  name: publickeys_latest
+  schema: auth
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - blockchain
+        - publickey
+      filter: {}
