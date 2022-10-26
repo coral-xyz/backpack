@@ -5,13 +5,21 @@
  *    { username:string; publicKey:PublicKeyString; inviteCode: uuid; waitlistId?: string; }
  */
 
-import { PublicKey } from "@solana/web3.js";
+import {
+  PublicKey,
+  Transaction,
+  TransactionInstruction,
+} from "@solana/web3.js";
 import { ethers } from "ethers";
 import { decode } from "bs58";
 import { Hono } from "hono";
 import { sign } from "tweetnacl";
 import { z, ZodError } from "zod";
 import { Chain } from "./zeus";
+
+// Memo program for dummy transactions to simulate signMessage on Ledger
+export const MEMO_PROGRAM_ADDRESS =
+  "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
 
 const CreateEthereumKeyring = z.object({
   publicKey: z.string().refine((str) => {
@@ -175,7 +183,7 @@ app.post("/users", async (c) => {
   for (const blockchainPublicKey of variables.blockchainPublicKeys) {
     if (blockchainPublicKey.blockchain === "solana") {
       if (
-        !sign.detached.verify(
+        !validateSolanaSignature(
           Buffer.from(variables.inviteCode, "utf8"),
           decode(blockchainPublicKey.signature),
           decode(blockchainPublicKey.publicKey)
@@ -185,10 +193,11 @@ app.post("/users", async (c) => {
       }
     } else if (blockchainPublicKey.blockchain === "ethereum") {
       if (
-        ethers.utils.verifyMessage(
+        !validateEthereumSignature(
           Buffer.from(variables.inviteCode, "utf8"),
-          blockchainPublicKey.signature
-        ) !== blockchainPublicKey.publicKey
+          blockchainPublicKey.signature,
+          blockchainPublicKey.publicKey
+        )
       ) {
         throw new Error("Invalid Ethereum signature");
       }
@@ -232,7 +241,9 @@ app.post("/users", async (c) => {
         body: JSON.stringify({
           text: [
             variables.username,
-            `${variables.blockchain.substring(0, 3)}: ${variables.publicKey}`,
+            variables.blockchainPublicKeys
+              .map((b) => `${b.blockchain.substring(0, 3)}: ${b.publicKey}`)
+              .join(", "),
           ].join("\n"),
           icon_url: `https://avatars.xnfts.dev/v1/${variables.username}`,
         }),
@@ -244,5 +255,44 @@ app.post("/users", async (c) => {
 
   return c.json(res);
 });
+
+const validateEthereumSignature = (
+  msg: Buffer,
+  signature: string,
+  publicKey: string
+) => {
+  return ethers.utils.verifyMessage(msg, signature) === publicKey;
+};
+
+const validateSolanaSignature = (
+  msg: Buffer,
+  signature: Uint8Array,
+  publicKey: Uint8Array
+) => {
+  if (sign.detached.verify(msg, signature, publicKey)) {
+    return true;
+  }
+
+  try {
+    // This might be a Solana transaction because that is used for Ledger which
+    // does not support signMessage
+    const tx = new Transaction();
+    tx.add(
+      new TransactionInstruction({
+        programId: new PublicKey(publicKey),
+        keys: [],
+        data: msg,
+      })
+    );
+    tx.feePayer = new PublicKey(publicKey);
+    // Not actually needed as it's not transmitted to the network
+    tx.recentBlockhash = tx.feePayer.toString();
+    tx.addSignature(new PublicKey(publicKey), Buffer.from(signature));
+    return tx.verifySignatures();
+  } catch (err) {
+    console.error("dummy solana transaction error", err);
+    return false;
+  }
+};
 
 export default app;
