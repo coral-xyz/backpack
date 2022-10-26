@@ -46,7 +46,7 @@ export const RecoverAccount = ({
     (async () => {
       if (username) {
         const response = await fetch(
-          `http://127.0.0.1:8787/users/${username}/info`
+          `https://auth.xnfts.dev/users/${username}/info`
         );
         const json = await response.json();
         if (response.ok) {

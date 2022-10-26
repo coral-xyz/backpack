@@ -29,7 +29,7 @@ export const RecoverAccountUsernameForm = ({
 
       try {
         const res = await fetch(
-          `http://127.0.0.1:8787/users/${username}/info`,
+          `https://auth.xnfts.dev/users/${username}/info`,
           {
             headers: {
               "x-backpack-waitlist-id": getWaitlistId() || "",
