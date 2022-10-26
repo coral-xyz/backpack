@@ -18,6 +18,16 @@ import {
 } from "@coral-xyz/common";
 import { RequestManager } from "./request-manager";
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
+import { ChainedRequestManager } from "./chained-request-manager";
+import {
+  Commitment,
+  SendOptions,
+  Signer,
+  SimulatedTransactionResponse,
+  Transaction,
+  TransactionSignature,
+  VersionedTransaction,
+} from "@solana/web3.js";
 
 const logger = getLogger("provider-xnft-injection");
 
@@ -25,17 +35,17 @@ const logger = getLogger("provider-xnft-injection");
 // Injected provider for UI plugins.
 //
 export class ProviderRootXnftInjection extends PrivateEventEmitter {
-  #requestManager: RequestManager;
+  #requestManager: ChainedRequestManager;
   #connectionRequestManager: RequestManager;
   #publicKeys: { [blockchain: string]: string };
   #connectionUrls: { [blockchain: string]: string | null };
 
-  #childIframes: HTMLIFrameElement[];
+  #childIframes: { element: HTMLIFrameElement; id: string; url: string }[];
   #cachedNotifications: { [notification: string]: Event };
   #metadata: XnftMetadata;
 
   constructor(
-    requestManager: RequestManager,
+    requestManager: ChainedRequestManager,
     additionalProperties: { [key: string]: PrivateEventEmitter } = {}
   ) {
     super();
@@ -78,7 +88,7 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
     });
   }
 
-  public async addIframe(iframeEl) {
+  public async addIframe(iframeEl: HTMLIFrameElement, url: string, id: string) {
     // Send across mount and connect notification to child iframes
     if (this.#cachedNotifications[PLUGIN_NOTIFICATION_MOUNT]) {
       iframeEl.contentWindow?.postMessage(
@@ -94,12 +104,23 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
       );
     }
 
-    this.#childIframes.push(iframeEl);
+    this.#requestManager.addChildIframe({
+      element: iframeEl,
+      url,
+      id,
+    });
+
+    this.#childIframes.push({
+      element: iframeEl,
+      url,
+      id,
+    });
   }
 
-  public async removeIframe(iframeEl) {
+  public async removeIframe(id) {
     // @ts-ignore
-    this.#childIframes = this.#childIframes.filter((x) => x !== iframeEl);
+    this.#childIframes = this.#childIframes.filter((x) => x.id !== id);
+    this.#requestManager.removeChildIframe(id);
   }
 
   #setupChannels() {
@@ -113,8 +134,8 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
     if (event.data.type !== CHANNEL_PLUGIN_NOTIFICATION) return;
 
     // Send RPC message to all child iframes
-    this.#childIframes.forEach((iframe) => {
-      iframe.contentWindow?.postMessage(event, "*");
+    this.#childIframes.forEach(({ element }) => {
+      element.contentWindow?.postMessage(event, "*");
     });
 
     logger.debug("handle notification", event);
@@ -175,6 +196,52 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
 
   #handleUnmount(event: Event) {
     this.emit("unmount", event.data.detail);
+  }
+
+  async send<T extends Transaction | VersionedTransaction>(
+    tx: T,
+    signers?: Signer[],
+    options?: SendOptions
+  ): Promise<TransactionSignature> {
+    // @ts-ignore
+    return window.xnft.solana.send(tx, signers, options);
+  }
+
+  public async signTransaction<T extends Transaction | VersionedTransaction>(
+    tx: T
+  ): Promise<T> {
+    // @ts-ignore
+    return window.xnft.solana.signTransaction(tx);
+  }
+
+  async signAllTransactions<T extends Transaction | VersionedTransaction>(
+    txs: Array<T>
+  ): Promise<Array<T>> {
+    // @ts-ignore
+    return window.xnft.solana.signAllTransactions(txs);
+  }
+
+  async signMessage(msg: Uint8Array): Promise<Uint8Array> {
+    // @ts-ignore
+    return window.xnft.solana.signMessage(msg);
+  }
+  public async simulate<T extends Transaction | VersionedTransaction>(
+    tx: T,
+    signers?: Signer[],
+    commitment?: Commitment
+  ): Promise<SimulatedTransactionResponse> {
+    // @ts-ignore
+    return window.xnft.solana.simulate(tx, signers, commitment);
+  }
+
+  public get publicKey() {
+    // @ts-ignore
+    return window.xnft.solana.publicKey;
+  }
+
+  public get connection() {
+    // @ts-ignore
+    return window.xnft.solana.connection;
   }
 
   public freeze() {

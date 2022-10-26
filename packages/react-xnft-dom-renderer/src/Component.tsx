@@ -21,6 +21,7 @@ import { TextareaAutosize as MuiTextArea } from "@mui/base";
 import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import { ViewRenderer } from "./ViewRenderer";
 import { useDomContext } from "./Context";
+import { ScrollbarNew } from "./components/Scrollbar";
 
 const useStyles = styles((theme) => ({
   blockchainLogo: {
@@ -379,6 +380,7 @@ function Circle({ props }: any) {
 
 function Iframe({ props, style }: any) {
   const [xnftProp, setXnftProp] = useState(false);
+  const [id, _setId] = useState(randomString());
   const ref = useRef<any>();
 
   useEffect(() => {
@@ -389,14 +391,15 @@ function Iframe({ props, style }: any) {
       return () => {};
     }
     // @ts-ignore
-    window.xnft.addIframe(ref.current);
+    window.xnft.addIframe(ref.current, props.src, id);
     return () => {
       // @ts-ignore
-      window.xnft.removeIframe(ref.current);
+      window.xnft.removeIframe(id);
     };
   }, [props.src, ref, xnftProp]);
   return isValidSecureUrl(props.src) ? (
     <iframe
+      name={id}
       ref={ref}
       sandbox="allow-same-origin allow-scripts"
       src={props.src}
@@ -965,56 +968,7 @@ export function ScrollBarImpl(props: any) {
   const theme = useCustomTheme();
   return (
     <>
-      <Scrollbars
-        style={{ width: "100%", height: "100%" }}
-        renderTrackHorizontal={(props) => (
-          <div {...props} className="track-horizontal" />
-        )}
-        renderTrackVertical={(props) => (
-          <div
-            style={{ backgroundColor: theme.custom.colors.scrollbarTrack }}
-            {...props}
-            className="track-vertical"
-          />
-        )}
-        renderThumbHorizontal={(props) => (
-          <div {...props} className="thumb-horizontal" />
-        )}
-        renderThumbVertical={(props) => (
-          <div
-            style={{ backgroundColor: theme.custom.colors.scrollbarThumb }}
-            {...props}
-            className="thumb-vertical"
-          />
-        )}
-        renderView={(props) => (
-          <div
-            {...props}
-            style={{
-              position: "absolute",
-              top: "0px",
-              left: "0px",
-              right: "0px",
-              bottom: "0px",
-              overflow: "auto",
-            }}
-          />
-        )}
-        autoHide
-        thumbMinSize={30}
-      >
-        {props.children}
-      </Scrollbars>
-      <style>
-        {`
-          .track-vertical {
-            background: ${theme.custom.colors.scrollbarTrack};
-          }
-          .track-vertical .thumb-vertical {
-            background-color: ${theme.custom.colors.scrollbarThumb};
-          }
-				`}
-      </style>
+      <ScrollbarNew {...props}>{props.children}</ScrollbarNew>
     </>
   );
 }
@@ -1058,3 +1012,7 @@ export const MOTION_VARIANTS = {
     opacity: 0,
   },
 };
+
+function randomString() {
+  return Math.floor(Math.random() * 10000000) + "";
+}
