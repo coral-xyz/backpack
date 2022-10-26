@@ -73,8 +73,6 @@ export const RecoverAccount = ({
     blockchainKeyrings,
   };
 
-  const handleBlockchainClick = () => {};
-
   const steps = [
     <RecoverAccountUsernameForm
       onNext={(username: string, publickey: string) => {
@@ -121,9 +119,10 @@ export const RecoverAccount = ({
           />,
         ]
       : [
+          /**
           ...(onboardedBlockchains.length > 1
             ? [
-                // If multiple bockchains have been onboarded, then display the selector
+                // If multiple blockchains have been onboarded, then display the selector
                 // because the user will need to open the correct app on their Ledger.
                 <BlockchainSelector
                   selectedBlockchains={[]}
@@ -133,7 +132,8 @@ export const RecoverAccount = ({
                 />,
               ]
             : []),
-          <ConnectHardwareWelcome onNext={() => nextStep()} />,
+        **/
+          <ConnectHardwareWelcome onNext={nextStep} />,
           <ConnectHardwareSearching
             blockchain={blockchain!}
             onNext={(transport) => {
