@@ -732,7 +732,7 @@ export function BalancesTableFooter({ props, style, children }: any) {
 
 function View({ id, props, style, children }: any) {
   return (
-    <div style={style} onClick={props.onClick}>
+    <div style={style} onClick={props.onClick} className={props.twClassName}>
       {children.map((c: Element) => (
         <ViewRenderer key={c.id} element={c} />
       ))}
@@ -752,11 +752,11 @@ function Text({ props, children, style }: any) {
     ...style,
   };
   return (
-    <Typography style={style}>
+    <p style={style} className={props.twClassName}>
       {children.map((c: Element) => (
         <ViewRenderer key={c.id} element={c} />
       ))}
-    </Typography>
+    </p>
   );
 }
 
@@ -881,7 +881,14 @@ export function TextField({
 }
 
 function Image({ id, props, style }: any) {
-  return <ProxyImage src={props.src} style={style} onClick={props.onClick} />;
+  return (
+    <ProxyImage
+      className={props.twClassName}
+      src={props.src}
+      style={style}
+      onClick={props.onClick}
+    />
+  );
 }
 
 function ProxyImage(props: any) {
@@ -932,14 +939,11 @@ export function __Button({
   const classes = useStyles();
   const theme = useCustomTheme();
   return (
-    <MuiButton
-      disableElevation
-      variant="contained"
-      disableRipple
+    <button
+      className={props.twClassName}
       style={{
         borderRadius: "12px",
         width: "100px",
-        textTransform: "none",
         backgroundColor: theme.custom.colors.nav,
         ...style,
       }}
@@ -949,7 +953,7 @@ export function __Button({
         childrenRenderer.map((c: Element) => (
           <ViewRenderer key={c.id} element={c} />
         ))}
-    </MuiButton>
+    </button>
   );
 }
 
