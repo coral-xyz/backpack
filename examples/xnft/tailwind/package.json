@@ -1,5 +1,5 @@
 {
-  "name": "@coral-xyz/metadata-example",
+  "name": "@coral-xyz/tailwind-example",
   "version": "0.1.0",
   "scripts": {
     "build": "xnft build",
