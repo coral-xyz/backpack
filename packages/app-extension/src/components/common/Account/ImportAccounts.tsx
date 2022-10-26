@@ -79,7 +79,7 @@ export function ImportAccounts({
   const [ledgerLocked, setLedgerLocked] = useState(false);
   const [importedPubkeys, setImportedPubkeys] = useState<string[]>([]);
   const [derivationPath, setDerivationPath] = useState<DerivationPath>(
-    DerivationPath.Bip44
+    DerivationPath.Default
   );
 
   useEffect(() => {

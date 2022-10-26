@@ -102,7 +102,7 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
     accountIndices: Array<number> = [0]
   ): HdKeyring {
     if (!derivationPath) {
-      derivationPath = DerivationPath.Bip44Change;
+      derivationPath = DerivationPath.Default;
     }
     if (!validateMnemonic(mnemonic)) {
       throw new Error("Invalid seed words");
@@ -122,7 +122,7 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
     const mnemonic = generateMnemonic(strength);
     const seed = mnemonicToSeedSync(mnemonic);
     const accountIndices = [0];
-    const derivationPath = DerivationPath.Bip44;
+    const derivationPath = DerivationPath.Default;
     const keypairs = deriveSolanaKeypairs(seed, derivationPath, accountIndices);
 
     return new SolanaHdKeyring({

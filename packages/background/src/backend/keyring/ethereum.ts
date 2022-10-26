@@ -104,7 +104,7 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
     accountIndices: Array<number> = [0]
   ): HdKeyring {
     if (!derivationPath) {
-      derivationPath = DerivationPath.Bip44Change;
+      derivationPath = DerivationPath.Default;
     }
     if (!validateMnemonic(mnemonic)) {
       throw new Error("Invalid seed words");

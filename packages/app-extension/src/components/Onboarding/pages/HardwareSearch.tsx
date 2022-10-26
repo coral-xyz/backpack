@@ -12,10 +12,7 @@ import {
   DerivationPath,
 } from "@coral-xyz/common";
 import { Header, Loading, PrimaryButton, SubtextParagraph } from "../../common";
-
-// Bip44Change is the default so that should be first to make this quick
-const DERIVATION_PATHS = [DerivationPath.Bip44Change, DerivationPath.Bip44];
-const LOAD_PUBKEY_AMOUNT = 20;
+import { DERIVATION_PATHS, LOAD_PUBKEY_AMOUNT } from "./MnemonicSearch";
 
 export const HardwareSearch = ({
   blockchain,

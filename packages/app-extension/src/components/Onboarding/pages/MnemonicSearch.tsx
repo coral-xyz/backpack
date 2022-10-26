@@ -11,8 +11,11 @@ import {
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { Header, Loading, PrimaryButton, SubtextParagraph } from "../../common";
 
-const DERIVATION_PATHS = [DerivationPath.Bip44, DerivationPath.Bip44Change];
-const LOAD_PUBKEY_AMOUNT = 20;
+export const DERIVATION_PATHS = [
+  DerivationPath.Bip44,
+  DerivationPath.Bip44Change,
+];
+export const LOAD_PUBKEY_AMOUNT = 20;
 
 export const MnemonicSearch = ({
   blockchain,
