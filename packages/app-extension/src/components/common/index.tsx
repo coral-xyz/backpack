@@ -61,14 +61,6 @@ const useStyles = styles((theme: CustomTheme) => ({
       backgroundColor: theme.custom.colors.primaryButton,
     },
   },
-  linkButton: {
-    width: "100%",
-    height: "48px",
-    borderRadius: "12px",
-    "&:hover": {
-      background: "transparent !important",
-    },
-  },
   primaryButton: {
     "&:hover": {
       opacity: HOVER_OPACITY,
