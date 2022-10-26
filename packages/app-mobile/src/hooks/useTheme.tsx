@@ -1,11 +1,13 @@
+// import { useDarkMode } from "@coral-xyz/recoil";
 import { useColorScheme } from "react-native";
 
 export function useTheme() {
+  // const isDarkMode = useDarkMode();
   const colorScheme = useColorScheme();
   const theme = colorScheme === "dark" ? darkTheme : lightTheme;
 
   return {
-    ...theme.custom,
+    custom: theme.custom,
     colorScheme,
   };
 }

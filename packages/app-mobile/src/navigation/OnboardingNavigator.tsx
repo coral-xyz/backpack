@@ -10,6 +10,7 @@ import { CheckBox } from "@components/CheckBox";
 import { CustomButton } from "@components/CustomButton";
 import { ErrorMessage } from "@components/ErrorMessage";
 import { PasswordInput } from "@components/PasswordInput";
+import type { Blockchain } from "@coral-xyz/common";
 import {
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
@@ -339,7 +340,67 @@ function OnboardingCreatePasswordScreen({ route, navigation }) {
   );
 }
 
-function OnboardingCompleteScreen({ navigation }) {
+function OnboardingCompleteScreen({ route, navigation }) {
+  const [isValid, setIsValid] = useState(false);
+  const background = useBackgroundClient();
+  const { params } = route;
+
+  type Params = {
+    blockchain: Blockchain;
+    accountsAndDerivationPath: string;
+    inviteCode: string;
+    mnemonic: string;
+    password: string;
+    username: string;
+    usernameAndPubkey: string;
+  };
+
+  async function maybeCreateKeyringStore(params: Params): Promise<void> {
+    const { accounts, derivationPath } = (() => {
+      try {
+        return JSON.parse(params.accountsAndDerivationPath!);
+      } catch (err) {
+        // defaults when creating a wallet
+        return { accounts: [0], derivationPath: DerivationPath.Bip44 };
+      }
+    })();
+
+    const _username = (() => {
+      try {
+        const { username } = JSON.parse(params.usernameAndPubkey!);
+        return username;
+      } catch (err) {
+        return params.username;
+      }
+    })();
+
+    try {
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
+        params: [
+          params.blockchain,
+          params.mnemonic,
+          derivationPath,
+          decodeURIComponent(params.password!),
+          accounts,
+          _username,
+          params.inviteCode,
+          undefined, // WaitingRoom.tsx: getWaitlistId(): window.localStorage.getItem(WAITLIST_RES_ID_KEY) ?? undefined,
+          Boolean(params.usernameAndPubkey),
+        ],
+      });
+      setIsValid(true);
+    } catch (err) {
+      console.error("err", err);
+      // maybe ALERT!
+      // if (
+      //   confirm("There was an issue setting up your account. Please try again.")
+      // ) {
+      //   window.location.reload();
+      // }
+    }
+  }
+
   return (
     <OnboardingScreen
       title="You've set up Backpack!"
@@ -353,6 +414,7 @@ function OnboardingCompleteScreen({ navigation }) {
       <PrimaryButton
         label="Finish"
         onPress={() => {
+          // this should update the keyring store to unlocked to take you to the actual experience
           navigation.navigate("Welcome");
         }}
       />
@@ -368,9 +430,9 @@ export default function OnboardingNavigator() {
       <Stack.Group
         screenOptions={{
           headerStyle: {
-            backgroundColor: theme.colors.background,
+            backgroundColor: theme.custom.colors.background,
           },
-          headerTintColor: theme.colors.fontColor,
+          headerTintColor: theme.custom.colors.fontColor,
           headerTitle: "",
           headerShown: true,
           headerBackTitleVisible: false,

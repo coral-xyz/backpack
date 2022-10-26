@@ -23,7 +23,7 @@ export function StyledText({
   style?: StyleProp<TextStyle>;
 }) {
   const theme = useTheme();
-  const color = theme.colors.fontColor;
+  const color = theme.custom.colors.fontColor;
   return (
     <Text style={[{ color }, style]} {...props}>
       {children}
@@ -41,7 +41,10 @@ export function Screen({
   const theme = useTheme();
   return (
     <View
-      style={[{ flex: 1, backgroundColor: theme.colors.background }, style]}
+      style={[
+        { flex: 1, backgroundColor: theme.custom.colors.background },
+        style,
+      ]}
     >
       {children}
     </View>
@@ -64,7 +67,7 @@ export function PrimaryButton({
   return (
     <Pressable
       style={{
-        backgroundColor: theme.colors.primaryButton,
+        backgroundColor: theme.custom.colors.primaryButton,
         height: 48,
         borderRadius: 12,
         justifyContent: "center",
@@ -80,7 +83,7 @@ export function PrimaryButton({
           fontWeight: "500",
           fontSize: 16,
           lineHeight: 24,
-          color: theme.colors.primaryButtonTextColor,
+          color: theme.custom.colors.primaryButtonTextColor,
         }}
       >
         {label}
@@ -94,7 +97,7 @@ export function Header({ text }: { text: string }) {
   return (
     <Text
       style={{
-        color: theme.colors.fontColor,
+        color: theme.custom.colors.fontColor,
         fontSize: 24,
         fontWeight: "500",
         lineHeight: 32,
@@ -119,7 +122,7 @@ export function SubtextParagraph({
         {
           fontWeight: "500",
           marginTop: 8,
-          color: theme.colors.subtext,
+          color: theme.custom.colors.subtext,
         },
         style,
       ]}
