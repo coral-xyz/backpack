@@ -11,7 +11,7 @@ import {
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
 } from "@coral-xyz/common";
-import { register } from "@coral-xyz/wallet-standard";
+import { initialize } from "@coral-xyz/wallet-standard";
 
 const logger = getLogger("provider-injection");
 
@@ -65,7 +65,7 @@ function initProvider() {
     );
   }
 
-  register(solana);
+  initialize(solana);
 }
 
 main();
