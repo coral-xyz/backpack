@@ -96,7 +96,10 @@ export function HardwareOnboard({
                 });
               }
             }}
-            onRetry={prevStep}
+            onError={() => {
+              setTransportError(true);
+              prevStep();
+            }}
           />,
         ]),
     // Prompting for a signature is optional in the component
