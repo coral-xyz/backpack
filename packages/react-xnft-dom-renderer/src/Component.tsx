@@ -207,6 +207,13 @@ const useStyles = styles((theme) => ({
     width: "18px",
     color: theme.custom.colors.secondary,
   },
+  loadingIndicator: {
+    color:
+      "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
+  },
+  circle: {
+    stroke: "url(#linearColors)",
+  },
 }));
 
 export function Component({ viewData }) {
@@ -738,8 +745,9 @@ function Table({ props, style, children }: any) {
 }
 
 function Text({ props, children, style }: any) {
+  const theme = useCustomTheme();
   style = {
-    color: "#fff", // todo: inject theme into top level renderer and set provider?
+    color: theme.custom.colors.text,
     fontWeight: 500,
     ...style,
   };
@@ -946,12 +954,28 @@ export function __Button({
 }
 
 function Loading({ id, props, style }: any) {
-  const theme = useCustomTheme();
+  const classes = useStyles();
   style = {
-    color: theme.custom.colors.activeNavButton,
     ...style,
   };
-  return <CircularProgress style={style} thickness={6} />;
+  return (
+    <>
+      <svg style={{ position: "fixed" }}>
+        <linearGradient id="linearColors" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="15.93%" stopColor="#3EECB8" />
+          <stop offset="58.23%" stopColor="#A372FE" />
+          <stop offset="98.98%" stopColor="#FE7D4A" />
+        </linearGradient>
+      </svg>
+      <CircularProgress
+        className={classes.loadingIndicator}
+        style={style}
+        thickness={6}
+        classes={{ circle: classes.circle }}
+      />
+      ;
+    </>
+  );
 }
 
 function ScrollBar({ id, props, style, children }: any) {
