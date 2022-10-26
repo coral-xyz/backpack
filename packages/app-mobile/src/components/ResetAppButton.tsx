@@ -1,7 +1,9 @@
 import { deleteItemAsync } from "expo-secure-store";
 import { Alert, DevSettings } from "react-native";
 
-export const ResetApp = () => {
+import { CustomButton } from "./CustomButton";
+
+const maybeResetApp = () => {
   Alert.alert(
     "Are your sure?",
     "This will wipe all data that's been stored in the app",
@@ -20,7 +22,6 @@ export const ResetApp = () => {
       },
     ]
   );
-  return null;
 };
 
 const doReset = async (shouldReset: boolean) => {
@@ -42,3 +43,14 @@ const doReset = async (shouldReset: boolean) => {
   }
   DevSettings.reload();
 };
+
+export default function ResetAppButton() {
+  return (
+    <CustomButton
+      text="Reset App"
+      onPress={() => {
+        maybeResetApp();
+      }}
+    />
+  );
+}

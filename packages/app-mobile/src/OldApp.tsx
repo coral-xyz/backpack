@@ -20,7 +20,6 @@ import { CustomButton } from "./components/CustomButton";
 import { ErrorMessage } from "./components/ErrorMessage";
 import { PasswordInput } from "./components/PasswordInput";
 import { ButtonFooter, MainContent } from "./components/Templates";
-import { ResetApp } from "./screens/Helpers/ResetApp";
 import { ToggleConnection } from "./screens/Helpers/ToggleConnection";
 import NeedsOnboarding from "./screens/NeedsOnboarding";
 import CreateWallet from "./screens/NeedsOnboarding/CreateWallet";
