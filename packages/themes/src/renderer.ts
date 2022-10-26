@@ -7,7 +7,6 @@ import {
   TEXT_COLOR,
 } from "./index";
 
-let BACKGROUND_COLOR_1;
 export const lightTheme = {
   custom: {
     colors: {
