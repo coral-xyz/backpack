@@ -20,11 +20,16 @@ insert_permissions:
         - username
         - waitlist_id
 select_permissions:
+  - role: appstore
+    permission:
+      columns:
+        - created_at
+        - username
+      filter: {}
   - role: auth_worker
     permission:
       columns:
         - id
-        - created_at
         - username
       filter: {}
       allow_aggregations: true
