@@ -154,7 +154,6 @@ program
     });
   });
 
-program.parse();
 
 program
   .command("init")
@@ -170,3 +169,5 @@ program
     console.debug(`cd ${name}`);
     console.debug(`yarn && yarn dev`);
   });
+
+program.parse();
