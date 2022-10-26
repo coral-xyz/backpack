@@ -5,7 +5,12 @@ import type {
   SendOptions,
   SimulateTransactionConfig,
 } from "@solana/web3.js";
-import { PublicKey } from "@solana/web3.js";
+import {
+  Keypair,
+  PublicKey,
+  Transaction,
+  TransactionInstruction,
+} from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
 import {
@@ -13,6 +18,7 @@ import {
   Blockchain,
   EthereumConnectionUrl,
   EthereumExplorer,
+  MEMO_PROGRAM_ADDRESS,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
@@ -429,6 +435,27 @@ export class Backend {
           publicKey,
         },
       ]);
+
+      if (blockchain === Blockchain.SOLANA) {
+        // Setup a dummy transaction using the memo program for signing. This is
+        // necessary because the Solana Ledger app does not support signMessage.
+        const tx = new Transaction();
+        tx.add(
+          new TransactionInstruction({
+            programId: new PublicKey(MEMO_PROGRAM_ADDRESS),
+            keys: [],
+            data: Buffer.from(msg, "utf8"),
+          })
+        );
+        tx.feePayer = new PublicKey(publicKey);
+        // Not actually needed as it's not transmitted to the network
+        tx.recentBlockhash = Keypair.generate().publicKey.toString();
+        // Call the signTransaction method on Ledger
+        return await blockchainKeyring.signTransaction(
+          bs58.encode(tx.serialize({ requireAllSignatures: false })),
+          publicKey
+        );
+      }
     }
 
     return await blockchainKeyring.signMessage(msg, publicKey);
