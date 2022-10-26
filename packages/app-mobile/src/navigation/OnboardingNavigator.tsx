@@ -4,10 +4,16 @@ import {
   Screen,
   StyledText,
   SubtextParagraph,
+  MnemonicInputFields,
 } from "@components";
+import {
+  UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
+  UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
+} from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks/useTheme";
 import { createStackNavigator } from "@react-navigation/stack";
-import type { StyleProp, TextStyle } from "react-native";
+import { useEffect, useState } from "react";
 import { Button, Pressable, StyleSheet, Text, View } from "react-native";
 
 const Stack = createStackNavigator();
@@ -44,13 +50,17 @@ function WelcomeScreen({ navigation }) {
         <Button
           title="Create a new wallet"
           onPress={() => {
-            navigation.push("SelectNetwork");
+            navigation.push("SelectBlockchain", {
+              readOnly: true,
+            });
           }}
         />
         <Button
           title="Import an existing wallet"
           onPress={() => {
-            navigation.push("SelectNetwork");
+            navigation.push("SelectBlockchain", {
+              readOnly: false,
+            });
           }}
         />
       </View>
@@ -58,7 +68,7 @@ function WelcomeScreen({ navigation }) {
   );
 }
 
-function OnboardingBlockchainSelectScreen({ navigation }) {
+function OnboardingBlockchainSelectScreen({ route, navigation }) {
   const NETWORKS = [
     {
       name: "Ethereum",
@@ -86,11 +96,11 @@ function OnboardingBlockchainSelectScreen({ navigation }) {
     },
   ];
 
-  function Network({ network, enabled, onSelect }) {
+  function Network({ blockchain, enabled, onSelect }) {
     return (
       <View style={{ padding: 8, height: 50 }}>
-        <Pressable onPress={() => enabled && onSelect(network.name)}>
-          <Text style={{ color: "#FFF" }}>{network.name}</Text>
+        <Pressable onPress={() => enabled && onSelect(blockchain.name)}>
+          <Text style={{ color: "#FFF" }}>{blockchain.name}</Text>
         </Pressable>
       </View>
     );
@@ -101,13 +111,15 @@ function OnboardingBlockchainSelectScreen({ navigation }) {
       title="Which network would you like Backpack to use?"
       subtitle="You can always add additional networks later through the settings menu."
     >
-      {NETWORKS.map((network) => (
+      {NETWORKS.map((blockchain) => (
         <Network
-          enabled={network.enabled}
-          network={network}
-          onSelect={(network) => {
-            console.log(network);
-            navigation.push("SecretPhrase");
+          enabled={blockchain.enabled}
+          blockchain={blockchain}
+          onSelect={(blockchain) => {
+            navigation.push("MnemonicInput", {
+              readOnly: route.params.readOnly,
+              blockchain: blockchain.name,
+            });
           }}
         />
       ))}
@@ -115,20 +127,111 @@ function OnboardingBlockchainSelectScreen({ navigation }) {
   );
 }
 
-function OnboardingSecretPhraseScreen({ navigation }) {
+// Create Wallet: readonly = false; Import Wallet: readOnly = true;
+function OnboardingMnemonicInputScreen({ route, navigation }) {
+  const { readOnly } = route.params;
+
+  const background = useBackgroundClient();
+  const [mnemonicWords, setMnemonicWords] = useState<string[]>([
+    ...Array(12).fill(""),
+  ]);
+
+  const [error, setError] = useState<string>();
+  const [checked, setChecked] = useState(false);
+
+  const mnemonic = mnemonicWords.map((f) => f.trim()).join(" ");
+  // Only enable copy all fields populated
+  const copyEnabled = mnemonicWords.find((w) => w.length < 3) === undefined;
+  // Only allow next if checkbox is checked in read only and all fields are populated
+  const nextEnabled = (!readOnly || checked) && copyEnabled;
+
+  const subtitle = readOnly
+    ? "This is the only way to recover your account if you lose your device. Write it down and store it in a safe place."
+    : "Enter your 12 or 24-word secret recovery mnemonic to add an existing wallet.";
+
+  //
+  // Handle pastes of 12 or 24 word mnemonics.
+  //
+  useEffect(() => {
+    // const onPaste = (e: any) => {
+    //   const words = e.clipboardData.getData("text").split(" ");
+    //   if (words.length !== 12 && words.length !== 24) {
+    //     // Not a valid mnemonic length
+    //     return;
+    //   }
+    //   // Prevent the paste from populating an individual input field with
+    //   // all words
+    //   e.preventDefault();
+    //   setMnemonicWords(words);
+    // };
+    if (!readOnly) {
+      // Enable pasting if not readonly
+      // window.addEventListener("paste", onPaste);
+    } else {
+      // If read only we can generate a random mnemnic
+      generateRandom();
+    }
+    return () => {
+      if (!readOnly) {
+        // window.removeEventListener("paste", onPaste);
+      }
+    };
+  }, []);
+
+  //
+  // Validate the mnemonic and call the onNext handler.
+  //
+  const next = () => {
+    background
+      .request({
+        method: UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
+        params: [mnemonic],
+      })
+      .then((isValid: boolean) => {
+        return isValid
+          ? navigation.push("ImportAccounts")
+          : setError("Invalid secret recovery phrase");
+      });
+  };
+
+  //
+  // Generate a random mnemonic and populate state.
+  //
+  const generateRandom = () => {
+    background
+      .request({
+        method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
+        params: [mnemonicWords.length === 12 ? 128 : 256],
+      })
+      .then((m: string) => {
+        const words = m.split(" ");
+        setMnemonicWords(words);
+      });
+  };
+
   return (
-    <OnboardingScreen
-      title="Secret recovery phrase"
-      subtitle="Enter your 12 or 24-word secret recovery mnemonic to add an existing wallet."
-    >
-      <View style={{ flexDirection: "row" }}>
-        <PrimaryButton
-          label="Import"
+    <OnboardingScreen title="Secret recovery phrase" subtitle={subtitle}>
+      <MnemonicInputFields
+        mnemonicWords={mnemonicWords}
+        onChange={readOnly ? undefined : setMnemonicWords}
+      />
+      {readOnly ? null : (
+        // TODO Text-styled Button (Link)
+        <StyledText>
+          Use a {mnemonicWords.length === 12 ? "24" : "12"}-word recovery
+          mnemonic
+        </StyledText>
+      )}
+      {readOnly ? (
+        // TODO CheckboxForm
+        <Button
+          title="I saved my secret recovery phrase"
           onPress={() => {
-            navigation.push("ImportAccounts");
+            setChecked(!checked);
           }}
         />
-      </View>
+      ) : null}
+      <PrimaryButton disabled={!nextEnabled} label="Import" onPress={next} />
     </OnboardingScreen>
   );
 }
@@ -210,12 +313,12 @@ export default function OnboardingNavigator() {
         }}
       >
         <Stack.Screen
-          name="SelectNetwork"
+          name="SelectBlockchain"
           component={OnboardingBlockchainSelectScreen}
         />
         <Stack.Screen
-          name="SecretPhrase"
-          component={OnboardingSecretPhraseScreen}
+          name="MnemonicInput"
+          component={OnboardingMnemonicInputScreen}
         />
         <Stack.Screen
           name="ImportAccounts"

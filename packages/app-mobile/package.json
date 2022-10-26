@@ -20,6 +20,7 @@
     "@react-navigation/stack": "^6.3.2",
     "expo": "~45.0.6",
     "expo-checkbox": "~2.1.0",
+    "expo-clipboard": "~3.0.1",
     "expo-constants": "^13.1.1",
     "expo-font": "~10.1.0",
     "expo-secure-store": "^11.2.0",

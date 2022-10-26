@@ -1,3 +1,4 @@
+export { MnemonicInputFields } from "./MnemonicInputFields";
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import { Pressable, Text, View } from "react-native";
 
@@ -62,9 +63,9 @@ export function PrimaryButton({
         backgroundColor: theme.colors.primaryButton,
         height: 48,
         borderRadius: 12,
-        flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        width: "100%",
       }}
       disabled={disabled}
       onPress={onPress}

@@ -16,7 +16,10 @@ const RecoveryPhrase = (
   const navigate = useNavigate();
   return (
     <MnemonicInput
-      onNext={(mnemonic) => navigate(`${pathname}/${mnemonic}`)}
+      onNext={(mnemonic) => {
+        console.log("RecoveryPhrase:pathname,mnemonic", pathname, mnemonic);
+        navigate(`${pathname}/${mnemonic}`);
+      }}
       {...props}
     />
   );
