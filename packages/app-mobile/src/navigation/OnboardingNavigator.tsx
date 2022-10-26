@@ -1,11 +1,15 @@
 import {
   Header,
+  MnemonicInputFields,
   PrimaryButton,
   Screen,
   StyledText,
   SubtextParagraph,
-  MnemonicInputFields,
 } from "@components";
+import { CheckBox } from "@components/CheckBox";
+import { CustomButton } from "@components/CustomButton";
+import { ErrorMessage } from "@components/ErrorMessage";
+import { PasswordInput } from "@components/PasswordInput";
 import {
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
@@ -13,17 +17,26 @@ import {
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks/useTheme";
 import { createStackNavigator } from "@react-navigation/stack";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Button, Pressable, StyleSheet, Text, View } from "react-native";
 
 const Stack = createStackNavigator();
 
-function OnboardingScreen({ title, subtitle, children }) {
+function OnboardingScreen({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  children: JSX.Element[] | JSX.Element;
+}) {
   return (
-    <Screen style={{ padding: 24 }}>
+    <Screen style={{ padding: 24, justifyContent: "space-between" }}>
       <View style={{ marginBottom: 12 }}>
         <Header text={title} />
-        <SubtextParagraph>{subtitle}</SubtextParagraph>
+        {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
       </View>
       {children}
     </Screen>
@@ -188,8 +201,11 @@ function OnboardingMnemonicInputScreen({ route, navigation }) {
         params: [mnemonic],
       })
       .then((isValid: boolean) => {
+        const route = readOnly ? "CreatePassword" : "ImportAccounts";
         return isValid
-          ? navigation.push("ImportAccounts")
+          ? navigation.push(route, {
+              readOnly,
+            })
           : setError("Invalid secret recovery phrase");
       });
   };
@@ -236,6 +252,7 @@ function OnboardingMnemonicInputScreen({ route, navigation }) {
   );
 }
 
+// TODO different flow
 function OnboardingImportAccountsScreen({ navigation }) {
   return (
     <Screen style={styles.container}>
@@ -256,43 +273,89 @@ function OnboardingImportAccountsScreen({ navigation }) {
   );
 }
 
-function OnboardingCreatePasswordScreen({ navigation }) {
+// TODO KeyboardAvoidingView
+function OnboardingCreatePasswordScreen({ route, navigation }) {
+  interface CreatePasswordFormData {
+    password: string;
+    passwordConfirmation: string;
+    agreedToTerms: boolean;
+  }
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm<CreatePasswordFormData>();
+
+  const onSubmit = ({ password }: CreatePasswordFormData) => {
+    navigation.push("Complete", { password, readOnly: route.params.readOnly });
+  };
+
   return (
-    <Screen style={styles.container}>
-      <View>
-        <StyledText style={{ fontSize: 24, marginBottom: 12 }}>
-          Secret Recovery Phrase
-        </StyledText>
-      </View>
-      <View style={{ flexDirection: "row" }}>
-        <PrimaryButton
-          label="Next"
-          onPress={() => {
-            navigation.push("Complete");
+    <OnboardingScreen
+      title="Create a password"
+      subtitle="It should be at least 8 characters. You'll need this to unlock Backpack."
+    >
+      <View style={{ flex: 1, justifyContent: "flex-start" }}>
+        <PasswordInput
+          placeholder="Password"
+          name="password"
+          control={control}
+          rules={{
+            required: "You must specify a password",
+            minLength: {
+              value: 8,
+              message: "Password must be at least 8 characters",
+            },
           }}
         />
+        <ErrorMessage for={errors.password} />
+        <PasswordInput
+          placeholder="Confirm Password"
+          name="passwordConfirmation"
+          control={control}
+          rules={{
+            validate: (val: string) => {
+              if (val !== watch("password")) {
+                return "Passwords do not match";
+              }
+            },
+          }}
+        />
+        <ErrorMessage for={errors.passwordConfirmation} />
       </View>
-    </Screen>
+      <View style={{ marginBottom: 24, justifyContent: "center" }}>
+        <CheckBox
+          name="agreedToTerms"
+          control={control}
+          label="I agree to the terms"
+        />
+        <ErrorMessage for={errors.agreedToTerms} />
+      </View>
+      <PrimaryButton label="Next" onPress={handleSubmit(onSubmit)} />
+    </OnboardingScreen>
   );
 }
 
 function OnboardingCompleteScreen({ navigation }) {
   return (
-    <Screen style={styles.container}>
+    <OnboardingScreen
+      title="You've set up Backpack!"
+      subtitle="Now get started exploring what your Backpack can do."
+    >
       <View>
-        <StyledText style={{ fontSize: 24, marginBottom: 12 }}>
-          Finished
-        </StyledText>
+        <Button title="Browse the xNFT library" />
+        <Button title="Follow us on Twitter" />
+        <Button title="Join the Discord Community" />
       </View>
-      <View style={{ flexDirection: "row" }}>
-        <PrimaryButton
-          label="Finish"
-          onPress={() => {
-            navigation.navigate("Welcome");
-          }}
-        />
-      </View>
-    </Screen>
+      <PrimaryButton
+        label="Finish"
+        onPress={() => {
+          navigation.navigate("Welcome");
+        }}
+      />
+    </OnboardingScreen>
   );
 }
 

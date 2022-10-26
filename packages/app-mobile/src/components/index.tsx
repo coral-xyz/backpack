@@ -54,8 +54,12 @@ export function PrimaryButton({
   onPress,
   disabled,
   ...props
-}: any) {
-  // TODO any
+}: {
+  label: string;
+  style?: StyleProp<ViewStyle>;
+  onPress: () => void;
+  disabled: boolean;
+}) {
   const theme = useTheme();
   return (
     <Pressable
