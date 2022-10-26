@@ -1,15 +1,20 @@
-import { Header, Screen, StyledText, SubtextParagraph } from "@components";
+import {
+  Header,
+  PrimaryButton,
+  Screen,
+  StyledText,
+  SubtextParagraph,
+} from "@components";
+import { useTheme } from "@hooks/useTheme";
 import { createStackNavigator } from "@react-navigation/stack";
 import type { StyleProp, TextStyle } from "react-native";
 import { Button, Pressable, StyleSheet, Text, View } from "react-native";
-
-import { useTheme } from "../hooks/useTheme";
 
 const Stack = createStackNavigator();
 
 function OnboardingScreen({ title, subtitle, children }) {
   return (
-    <Screen style={{ padding: 12 }}>
+    <Screen style={{ padding: 24 }}>
       <View style={{ marginBottom: 12 }}>
         <Header text={title} />
         <SubtextParagraph>{subtitle}</SubtextParagraph>
@@ -117,8 +122,8 @@ function OnboardingSecretPhraseScreen({ navigation }) {
       subtitle="Enter your 12 or 24-word secret recovery mnemonic to add an existing wallet."
     >
       <View style={{ flexDirection: "row" }}>
-        <Button
-          title="Import"
+        <PrimaryButton
+          label="Import"
           onPress={() => {
             navigation.push("ImportAccounts");
           }}
@@ -137,8 +142,8 @@ function OnboardingImportAccountsScreen({ navigation }) {
         </StyledText>
       </View>
       <View style={{ flexDirection: "row" }}>
-        <Button
-          title="Import Accounts"
+        <PrimaryButton
+          label="Import Accounts"
           onPress={() => {
             navigation.push("CreatePassword");
           }}
@@ -157,8 +162,8 @@ function OnboardingCreatePasswordScreen({ navigation }) {
         </StyledText>
       </View>
       <View style={{ flexDirection: "row" }}>
-        <Button
-          title="Next"
+        <PrimaryButton
+          label="Next"
           onPress={() => {
             navigation.push("Complete");
           }}
@@ -177,8 +182,8 @@ function OnboardingCompleteScreen({ navigation }) {
         </StyledText>
       </View>
       <View style={{ flexDirection: "row" }}>
-        <Button
-          title="Finish"
+        <PrimaryButton
+          label="Finish"
           onPress={() => {
             navigation.navigate("Welcome");
           }}

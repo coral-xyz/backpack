@@ -48,10 +48,10 @@ export function Screen({
 }
 
 export function PrimaryButton({
-  buttonLabelStyle,
   label,
   style,
   onPress,
+  disabled,
   ...props
 }: any) {
   // TODO any
@@ -60,7 +60,13 @@ export function PrimaryButton({
     <Pressable
       style={{
         backgroundColor: theme.colors.primaryButton,
+        height: 48,
+        borderRadius: 12,
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
       }}
+      disabled={disabled}
       onPress={onPress}
       {...props}
     >
