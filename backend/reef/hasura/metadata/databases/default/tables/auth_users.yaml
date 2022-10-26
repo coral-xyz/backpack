@@ -24,6 +24,7 @@ select_permissions:
     permission:
       columns:
         - id
+        - created_at
         - username
       filter: {}
       allow_aggregations: true

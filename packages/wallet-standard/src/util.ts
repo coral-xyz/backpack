@@ -1,4 +1,4 @@
-// This file is copied with modification from @wallet-standard/util
+// This is copied with modification from @wallet-standard/wallet
 
 export function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {
     return arraysEqual(a, b);

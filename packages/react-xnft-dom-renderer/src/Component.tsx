@@ -21,6 +21,7 @@ import { TextareaAutosize as MuiTextArea } from "@mui/base";
 import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import { ViewRenderer } from "./ViewRenderer";
 import { useDomContext } from "./Context";
+import { ScrollbarNew } from "./components/Scrollbar";
 
 const useStyles = styles((theme) => ({
   blockchainLogo: {
@@ -205,6 +206,13 @@ const useStyles = styles((theme) => ({
   expand: {
     width: "18px",
     color: theme.custom.colors.secondary,
+  },
+  loadingIndicator: {
+    color:
+      "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
+  },
+  circle: {
+    stroke: "url(#linearColors)",
   },
 }));
 
@@ -737,8 +745,9 @@ function Table({ props, style, children }: any) {
 }
 
 function Text({ props, children, style }: any) {
+  const theme = useCustomTheme();
   style = {
-    color: "#fff", // todo: inject theme into top level renderer and set provider?
+    color: theme.custom.colors.text,
     fontWeight: 500,
     ...style,
   };
@@ -945,12 +954,28 @@ export function __Button({
 }
 
 function Loading({ id, props, style }: any) {
-  const theme = useCustomTheme();
+  const classes = useStyles();
   style = {
-    color: theme.custom.colors.activeNavButton,
     ...style,
   };
-  return <CircularProgress style={style} thickness={6} />;
+  return (
+    <>
+      <svg style={{ position: "fixed" }}>
+        <linearGradient id="linearColors" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="15.93%" stopColor="#3EECB8" />
+          <stop offset="58.23%" stopColor="#A372FE" />
+          <stop offset="98.98%" stopColor="#FE7D4A" />
+        </linearGradient>
+      </svg>
+      <CircularProgress
+        className={classes.loadingIndicator}
+        style={style}
+        thickness={6}
+        classes={{ circle: classes.circle }}
+      />
+      ;
+    </>
+  );
 }
 
 function ScrollBar({ id, props, style, children }: any) {
@@ -967,56 +992,7 @@ export function ScrollBarImpl(props: any) {
   const theme = useCustomTheme();
   return (
     <>
-      <Scrollbars
-        style={{ width: "100%", height: "100%" }}
-        renderTrackHorizontal={(props) => (
-          <div {...props} className="track-horizontal" />
-        )}
-        renderTrackVertical={(props) => (
-          <div
-            style={{ backgroundColor: theme.custom.colors.scrollbarTrack }}
-            {...props}
-            className="track-vertical"
-          />
-        )}
-        renderThumbHorizontal={(props) => (
-          <div {...props} className="thumb-horizontal" />
-        )}
-        renderThumbVertical={(props) => (
-          <div
-            style={{ backgroundColor: theme.custom.colors.scrollbarThumb }}
-            {...props}
-            className="thumb-vertical"
-          />
-        )}
-        renderView={(props) => (
-          <div
-            {...props}
-            style={{
-              position: "absolute",
-              top: "0px",
-              left: "0px",
-              right: "0px",
-              bottom: "0px",
-              overflow: "auto",
-            }}
-          />
-        )}
-        autoHide
-        thumbMinSize={30}
-      >
-        {props.children}
-      </Scrollbars>
-      <style>
-        {`
-          .track-vertical {
-            background: ${theme.custom.colors.scrollbarTrack};
-          }
-          .track-vertical .thumb-vertical {
-            background-color: ${theme.custom.colors.scrollbarThumb};
-          }
-				`}
-      </style>
+      <ScrollbarNew {...props}>{props.children}</ScrollbarNew>
     </>
   );
 }

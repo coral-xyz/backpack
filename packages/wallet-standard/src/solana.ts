@@ -1,4 +1,4 @@
-// This file is copied from @solana/wallet-standard-chains
+// This is copied from @solana/wallet-standard-chains
 
 import type { IdentifierString } from '@wallet-standard/base';
 

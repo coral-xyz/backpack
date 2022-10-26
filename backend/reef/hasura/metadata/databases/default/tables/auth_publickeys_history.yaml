@@ -9,6 +9,13 @@ insert_permissions:
         - blockchain
         - publickey
 select_permissions:
+  - role: appstore
+    permission:
+      columns:
+        - blockchain
+        - publickey
+        - user_id
+      filter: {}
   - role: auth_worker
     permission:
       columns:
