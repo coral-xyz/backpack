@@ -17,6 +17,26 @@ import { sign } from "tweetnacl";
 import { z, ZodError } from "zod";
 import { Chain } from "./zeus";
 
+const BaseCreateUser = z.object({
+  username: z
+    .string()
+    .regex(
+      /^[a-z0-9_]{3,15}$/,
+      "must be 3-15 characters, lowercase, and can only contain only letters, numbers and underscores"
+    ),
+  inviteCode: z
+    .string()
+    .regex(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+      "invalid format"
+    ),
+  waitlistId: z.optional(z.nullable(z.string())),
+});
+
+//
+// New user creation, with multiple blockchains and public keys
+//
+
 const CreateEthereumKeyring = z.object({
   publicKey: z.string().refine((str) => {
     try {
@@ -41,27 +61,46 @@ const CreateSolanaKeyring = z.object({
   signature: z.string(),
 });
 
-const CreateBlockchainPublicKey = z.discriminatedUnion("blockchain", [
+const CreateKeyrings = z.discriminatedUnion("blockchain", [
   CreateEthereumKeyring,
   CreateSolanaKeyring,
 ]);
 
-const BaseCreateUser = z.object({
-  username: z
-    .string()
-    .regex(
-      /^[a-z0-9_]{3,15}$/,
-      "must be 3-15 characters, lowercase, and can only contain only letters, numbers and underscores"
-    ),
-  inviteCode: z
-    .string()
-    .regex(
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
-      "invalid format"
-    ),
-  waitlistId: z.optional(z.nullable(z.string())),
-  blockchainPublicKeys: CreateBlockchainPublicKey.array(),
+const CreateUserWithKeyrings = BaseCreateUser.extend({
+  blockchainPublicKeys: CreateKeyrings.array(),
 });
+
+//
+// Legacy user creation, with one publicKey and blockchain per user.
+// TODO
+//
+
+const CreateEthereumUser = BaseCreateUser.extend({
+  publicKey: z.string().refine((str) => {
+    try {
+      ethers.utils.getAddress(str);
+      return true;
+    } catch (err) {}
+    return false;
+  }, "must be a valid Ethereum public key"),
+  blockchain: z.literal("ethereum"),
+});
+
+const CreateSolanaUser = BaseCreateUser.extend({
+  publicKey: z.string().refine((str) => {
+    try {
+      new PublicKey(str);
+      return true;
+    } catch (err) {}
+    return false;
+  }, "must be a valid Solana public key"),
+  blockchain: z.literal("solana"),
+});
+
+const LegacyCreateUser = z.discriminatedUnion("blockchain", [
+  CreateEthereumUser,
+  CreateSolanaUser,
+]);
 
 // ----- routing -----
 
@@ -174,30 +213,75 @@ app.get("/users/:username", async (c) => {
 app.post("/users", async (c) => {
   const body = await c.req.json();
 
-  const variables = BaseCreateUser.parse(body);
+  let username: string,
+    inviteCode: string,
+    waitlistId: string | null | undefined,
+    publicKeys: Array<{ blockchain: "ethereum" | "solana"; publickey: string }>;
 
-  for (const blockchainPublicKey of variables.blockchainPublicKeys) {
-    if (blockchainPublicKey.blockchain === "solana") {
+  // Try legacy onboarding
+  const result = LegacyCreateUser.safeParse(body);
+  if (result.success) {
+    if (result.data.blockchain === "solana") {
       if (
         !validateSolanaSignature(
-          Buffer.from(variables.inviteCode, "utf8"),
-          decode(blockchainPublicKey.signature),
-          decode(blockchainPublicKey.publicKey)
+          // Legacy onboarding signs the whole body
+          Buffer.from(JSON.stringify(body), "utf8"),
+          decode(c.req.header("x-backpack-signature")),
+          decode(result.data.publicKey)
         )
       ) {
         throw new Error("Invalid Solana signature");
       }
-    } else if (blockchainPublicKey.blockchain === "ethereum") {
+    } else {
       if (
         !validateEthereumSignature(
-          Buffer.from(variables.inviteCode, "utf8"),
-          blockchainPublicKey.signature,
-          blockchainPublicKey.publicKey
+          // Legacy onboarding signs the whole body
+          Buffer.from(JSON.stringify(body), "utf8"),
+          c.req.header("x-backpack-signature"),
+          result.data.publicKey
         )
       ) {
         throw new Error("Invalid Ethereum signature");
       }
     }
+    // Legacy onboarding was successfully parsed
+    ({ username, inviteCode, waitlistId } = result.data);
+    // A single blockchain
+    publicKeys = [
+      { blockchain: result.data.blockchain, publickey: result.data.publicKey },
+    ];
+  } else {
+    // New multichain onboarding
+    const data = CreateUserWithKeyrings.parse(body);
+    for (const blockchainPublicKey of data.blockchainPublicKeys) {
+      if (blockchainPublicKey.blockchain === "solana") {
+        if (
+          !validateSolanaSignature(
+            Buffer.from(data.inviteCode, "utf8"),
+            decode(blockchainPublicKey.signature),
+            decode(blockchainPublicKey.publicKey)
+          )
+        ) {
+          throw new Error("Invalid Solana signature");
+        }
+      } else {
+        if (
+          !validateEthereumSignature(
+            Buffer.from(data.inviteCode, "utf8"),
+            blockchainPublicKey.signature,
+            blockchainPublicKey.publicKey
+          )
+        ) {
+          throw new Error("Invalid Ethereum signature");
+        }
+      }
+    }
+
+    ({ username, inviteCode, waitlistId } = data);
+    publicKeys = data.blockchainPublicKeys.map((b) => ({
+      blockchain: b.blockchain,
+      publickey: b.publicKey,
+    }));
   }
 
   const chain = Chain(c.env.HASURA_URL, {
@@ -210,14 +294,11 @@ app.post("/users", async (c) => {
     insert_auth_users_one: [
       {
         object: {
-          username: variables.username,
-          invitation_id: variables.inviteCode,
-          waitlist_id: variables.waitlistId,
+          username: username,
+          invitation_id: inviteCode,
+          waitlist_id: waitlistId,
           publickeys: {
-            data: variables.blockchainPublicKeys.map((b: any) => ({
-              blockchain: b.blockchain,
-              publickey: b.publicKey,
-            })),
+            data: publicKeys!,
           },
         },
       },
@@ -229,19 +310,17 @@ app.post("/users", async (c) => {
 
   if (c.env.SLACK_WEBHOOK_URL) {
     try {
+      const publicKeyStr = publicKeys!
+        .map((b) => `${b.blockchain.substring(0, 3)}: ${b.publicKey}`)
+        .join(", ");
       await fetch(c.env.SLACK_WEBHOOK_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          text: [
-            variables.username,
-            variables.blockchainPublicKeys
-              .map((b) => `${b.blockchain.substring(0, 3)}: ${b.publicKey}`)
-              .join(", "),
-          ].join("\n"),
-          icon_url: `https://avatars.xnfts.dev/v1/${variables.username}`,
+          text: [username, publicKeyStr].join("\n"),
+          icon_url: `https://avatars.xnfts.dev/v1/${username}`,
         }),
       });
     } catch (err) {
