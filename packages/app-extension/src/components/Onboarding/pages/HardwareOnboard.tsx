@@ -62,9 +62,19 @@ export function HardwareOnboard({
               accounts: SelectedAccount[],
               derivationPath: DerivationPath
             ) => {
-              setAccounts(accounts);
-              setDerivationPath(derivationPath);
-              nextStep();
+              if (requireSignature) {
+                setAccounts(accounts);
+                setDerivationPath(derivationPath);
+                nextStep();
+              } else {
+                onComplete({
+                  blockchain,
+                  derivationPath: derivationPath!,
+                  accountIndex: accounts![0].index,
+                  publicKey: accounts![0].publicKey,
+                  signature: null,
+                });
+              }
             }}
             onError={() => {
               setTransportError(true);
