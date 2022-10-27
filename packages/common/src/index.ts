@@ -12,6 +12,7 @@ export * from "./solana";
 export * from "./ethereum";
 export * from "./explorer";
 export * from "./plugin";
+export * from "./feature-gates";
 
 // Generated pre-build step.
 export * from "./generated-config";

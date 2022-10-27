@@ -8,6 +8,7 @@ export * from "./navigation";
 export * from "./db";
 export * from "./keyring";
 export * from "./keyname";
+export * from "./feature-gates";
 
 export function reset() {
   return LocalStorageDb.reset();

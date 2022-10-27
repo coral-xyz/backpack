@@ -8,12 +8,16 @@ import {
   Money,
 } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useEnabledBlockchains, SwapProvider } from "@coral-xyz/recoil";
+import {
+  useEnabledBlockchains,
+  SwapProvider,
+  useFeatureGates,
+} from "@coral-xyz/recoil";
 import {
   Blockchain,
   SOL_NATIVE_MINT,
   ETH_NATIVE_MINT,
-  BACKPACK_FEATURE_ONRAMP,
+  STRIPE_ENABLED,
 } from "@coral-xyz/common";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
@@ -37,8 +41,9 @@ export function TransferWidget({
   rampEnabled: boolean;
 }) {
   const enabledBlockchains = useEnabledBlockchains();
-  const enableOnramp = BACKPACK_FEATURE_ONRAMP && rampEnabled;
-
+  const featureGates = useFeatureGates();
+  const enableOnramp =
+    featureGates && featureGates[STRIPE_ENABLED] && rampEnabled;
   const renderSwap =
     blockchain !== Blockchain.ETHEREUM &&
     enabledBlockchains.includes(Blockchain.SOLANA);

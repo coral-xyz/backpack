@@ -42,6 +42,7 @@ import {
   SolanaCluster,
   SolanaExplorer,
   deserializeTransaction,
+  FEATURE_GATES_MAP,
 } from "@coral-xyz/common";
 import type {
   KeyringInit,
@@ -55,7 +56,12 @@ import { BlockchainKeyring } from "./keyring/blockchain";
 import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
-import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
+import {
+  getWalletData,
+  setWalletData,
+  DEFAULT_DARK_MODE,
+  setFeatureGates,
+} from "./store";
 
 const { base58: bs58 } = ethers.utils;
 
@@ -931,6 +937,14 @@ export class Backend {
   async enabledBlockchainsRead(): Promise<Array<Blockchain>> {
     const data = await store.getWalletData();
     return data.enabledBlockchains;
+  }
+
+  async setFeatureGates(gates: FEATURE_GATES_MAP) {
+    await store.setFeatureGates(gates);
+  }
+
+  async getFeatureGates() {
+    return await store.getFeatureGates();
   }
 
   ///////////////////////////////////////////////////////////////////////////////

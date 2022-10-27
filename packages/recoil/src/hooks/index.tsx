@@ -14,3 +14,4 @@ export * from "./usePriceData";
 export * from "./useTotalBalance";
 export * from "./useTransactionData";
 export * from "./avatar";
+export * from "./useFeatureGates";
