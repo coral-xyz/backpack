@@ -2,7 +2,6 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { AlternateEmail } from "@mui/icons-material";
 import { Box, InputAdornment, Typography } from "@mui/material";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   Header,
   PrimaryButton,
@@ -14,13 +13,16 @@ import { getWaitlistId } from "../../common/WaitingRoom";
 const MIN_LENGTH = 3;
 const MAX_LENGTH = 15;
 
-export const UsernameForm = () => {
-  const { inviteCode } = useParams();
-  const { pathname } = useLocation();
+export const UsernameForm = ({
+  inviteCode,
+  onNext,
+}: {
+  inviteCode: string;
+  onNext: (username: string) => void;
+}) => {
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const theme = useCustomTheme();
-  const navigate = useNavigate();
 
   useEffect(() => {
     setError("");
@@ -49,7 +51,7 @@ export const UsernameForm = () => {
         const json = await res.json();
         if (!res.ok) throw new Error(json.message);
 
-        navigate(`${pathname}/${username}`);
+        onNext(username);
       } catch (err: any) {
         setError(err.message);
       }

@@ -3,12 +3,11 @@ import { ArrowForward } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
 import { createPopup } from "@typeform/embed";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
 import { PrimaryButton, SubtextParagraph, TextField } from "../../common";
 import { BackpackHeader } from "../../Locked";
 import { getWaitlistId, setWaitlistId } from "../../common/WaitingRoom";
 
-const useStyles = styles((theme) => ({
+const useStyles = styles(() => ({
   inviteCodeBox: {
     "& .MuiFormControl-root": {
       marginTop: 0,
@@ -16,13 +15,20 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export const InviteCodeForm = () => {
+export const InviteCodeForm = ({
+  onClickRecover,
+  onClickWaiting,
+  onSubmit,
+}: {
+  onClickRecover: () => void;
+  onClickWaiting: () => void;
+  onSubmit: (inviteCode: string) => void;
+}) => {
   const [error, setError] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [waitlistResponseId, setWaitlistResponseId] = useState(
     getWaitlistId() || ""
   );
-  const navigate = useNavigate();
   const theme = useCustomTheme();
   const classes = useStyles();
 
@@ -49,7 +55,7 @@ export const InviteCodeForm = () => {
             /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/
           )
         ) {
-          throw new Error("Invite Code is not valid");
+          throw new Error("Invite code is not valid");
         }
         const res = await fetch(
           `https://invites.xnfts.dev/check/${inviteCode}`,
@@ -62,7 +68,7 @@ export const InviteCodeForm = () => {
         );
         const json = await res.json();
         if (!res.ok) throw new Error(json.message);
-        navigate(inviteCode);
+        onSubmit(inviteCode);
       } catch (err: any) {
         setError(err.message);
       }
@@ -100,7 +106,7 @@ export const InviteCodeForm = () => {
               },
               autoFocus: true,
             }}
-            placeholder={"Invite Code"}
+            placeholder={"Invite code"}
             type="text"
             value={inviteCode}
             setValue={(v: string) => {
@@ -122,7 +128,7 @@ export const InviteCodeForm = () => {
           <Box style={{ marginTop: 24 }}>
             {waitlistResponseId ? (
               <SubtextParagraph
-                onClick={() => navigate("/waitingRoom")}
+                onClick={onClickWaiting}
                 style={{
                   textDecoration: "none",
                   display: "flex",
@@ -141,7 +147,7 @@ export const InviteCodeForm = () => {
               </SubtextParagraph>
             ) : (
               <SubtextParagraph onClick={typeform.open}>
-                Apply for an Invite Code
+                Apply for an invite code
               </SubtextParagraph>
             )}
           </Box>
@@ -151,7 +157,7 @@ export const InviteCodeForm = () => {
               marginTop: 24,
             }}
           >
-            <SubtextParagraph onClick={() => navigate("/recover")}>
+            <SubtextParagraph onClick={onClickRecover}>
               I already have an account
             </SubtextParagraph>
           </Box>

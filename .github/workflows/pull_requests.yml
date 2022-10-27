@@ -57,3 +57,28 @@ jobs:
       - uses: simek/yarn-lock-changes@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+
+  hasura-change-summary:
+    name: Hasura metadata change summary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Fieldguide/action-hasura-change-summary@v2
+        id: hasura-change
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          project_dir: ./backend/reef/hasura
+      # if there are changes, create or overwrite comment
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ steps.hasura-change.outputs.change_html }}
+        with:
+          header: hasura-change-summary
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          message: ${{ steps.hasura-change.outputs.change_html }}
+      # if there are no changes, delete the comment if it exists
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ !steps.hasura-change.outputs.change_html }}
+        with:
+          header: hasura-change-summary
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          delete: true

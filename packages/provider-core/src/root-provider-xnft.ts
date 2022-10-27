@@ -19,6 +19,15 @@ import {
 import { RequestManager } from "./request-manager";
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 import { ChainedRequestManager } from "./chained-request-manager";
+import {
+  Commitment,
+  SendOptions,
+  Signer,
+  SimulatedTransactionResponse,
+  Transaction,
+  TransactionSignature,
+  VersionedTransaction,
+} from "@solana/web3.js";
 
 const logger = getLogger("provider-xnft-injection");
 
@@ -187,6 +196,52 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
 
   #handleUnmount(event: Event) {
     this.emit("unmount", event.data.detail);
+  }
+
+  async send<T extends Transaction | VersionedTransaction>(
+    tx: T,
+    signers?: Signer[],
+    options?: SendOptions
+  ): Promise<TransactionSignature> {
+    // @ts-ignore
+    return window.xnft.solana.send(tx, signers, options);
+  }
+
+  public async signTransaction<T extends Transaction | VersionedTransaction>(
+    tx: T
+  ): Promise<T> {
+    // @ts-ignore
+    return window.xnft.solana.signTransaction(tx);
+  }
+
+  async signAllTransactions<T extends Transaction | VersionedTransaction>(
+    txs: Array<T>
+  ): Promise<Array<T>> {
+    // @ts-ignore
+    return window.xnft.solana.signAllTransactions(txs);
+  }
+
+  async signMessage(msg: Uint8Array): Promise<Uint8Array> {
+    // @ts-ignore
+    return window.xnft.solana.signMessage(msg);
+  }
+  public async simulate<T extends Transaction | VersionedTransaction>(
+    tx: T,
+    signers?: Signer[],
+    commitment?: Commitment
+  ): Promise<SimulatedTransactionResponse> {
+    // @ts-ignore
+    return window.xnft.solana.simulate(tx, signers, commitment);
+  }
+
+  public get publicKey() {
+    // @ts-ignore
+    return window.xnft.solana.publicKey;
+  }
+
+  public get connection() {
+    // @ts-ignore
+    return window.xnft.solana.connection;
   }
 
   public freeze() {

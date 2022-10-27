@@ -5,13 +5,15 @@ import type {
   SendOptions,
   SimulateTransactionConfig,
 } from "@solana/web3.js";
-import { PublicKey, VersionedTransaction } from "@solana/web3.js";
+import {
+  PublicKey,
+  Transaction,
+  TransactionInstruction,
+} from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
-import type { DerivationPath, EventEmitter } from "@coral-xyz/common";
 import {
   BACKEND_EVENT,
-  BACKPACK_FEATURE_USERNAMES,
   Blockchain,
   EthereumConnectionUrl,
   EthereumExplorer,
@@ -41,14 +43,19 @@ import {
   SolanaExplorer,
   deserializeTransaction,
 } from "@coral-xyz/common";
+import type {
+  KeyringInit,
+  DerivationPath,
+  EventEmitter,
+  KeyringType,
+} from "@coral-xyz/common";
 import type { Nav } from "./store";
 import * as store from "./store";
-import type { BlockchainKeyring } from "./keyring/blockchain";
+import { BlockchainKeyring } from "./keyring/blockchain";
 import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
-import { encode } from "bs58";
 
 const { base58: bs58 } = ethers.utils;
 
@@ -393,63 +400,75 @@ export class Backend {
   }
 
   ///////////////////////////////////////////////////////////////////////////////
+  // Misc
+  ///////////////////////////////////////////////////////////////////////////////
+
+  // Method for signing messages from a specific wallet for a specific blockchain
+  // without the requirement to initialise a keystore. Used during onboarding.
+  async signMessageForWallet(
+    blockchain: Blockchain,
+    msg: string,
+    derivationPath: DerivationPath,
+    accountIndex: number,
+    publicKey: string,
+    mnemonic?: string
+  ) {
+    const blockchainKeyring = {
+      [Blockchain.SOLANA]: BlockchainKeyring.solana,
+      [Blockchain.ETHEREUM]: BlockchainKeyring.ethereum,
+    }[blockchain]();
+
+    if (mnemonic) {
+      blockchainKeyring.initFromMnemonic(mnemonic, derivationPath, [
+        accountIndex,
+      ]);
+    } else {
+      if (!publicKey) {
+        throw new Error("missing public key");
+      }
+      blockchainKeyring.initFromLedger([
+        {
+          path: derivationPath,
+          account: accountIndex,
+          publicKey,
+        },
+      ]);
+      if (blockchain === Blockchain.SOLANA) {
+        // Setup a dummy transaction using the memo program for signing. This is
+        // necessary because the Solana Ledger app does not support signMessage.
+        const tx = new Transaction();
+        tx.add(
+          new TransactionInstruction({
+            programId: new PublicKey(publicKey),
+            keys: [],
+            data: Buffer.from(bs58.decode(msg)),
+          })
+        );
+        tx.feePayer = new PublicKey(publicKey);
+        // Not actually needed as it's not transmitted to the network
+        tx.recentBlockhash = tx.feePayer.toString();
+        // Call the signTransaction method on Ledger
+        return await blockchainKeyring.signTransaction(
+          bs58.encode(tx.serializeMessage()),
+          publicKey
+        );
+      }
+    }
+
+    return await blockchainKeyring.signMessage(msg, publicKey);
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
   // Keyring.
   ///////////////////////////////////////////////////////////////////////////////
 
   // Creates a brand new keyring store. Should be run once on initializtion.
   async keyringStoreCreate(
-    blockchain: Blockchain,
-    mnemonic: string,
-    derivationPath: DerivationPath,
-    password: string,
-    accountIndices: Array<number>,
     username: string,
-    inviteCode: string,
-    waitlistId?: string,
-    userIsRecoveringWallet = false
+    password: string,
+    keyringInit: KeyringInit
   ): Promise<string> {
-    const keyring = await this.keyringStore.init(
-      blockchain,
-      mnemonic,
-      derivationPath,
-      password,
-      accountIndices,
-      username
-    );
-
-    if (BACKPACK_FEATURE_USERNAMES && !userIsRecoveringWallet) {
-      try {
-        const publicKey = keyring.getActiveWallet();
-
-        const body = JSON.stringify({
-          username,
-          inviteCode,
-          publicKey,
-          waitlistId,
-          // order is significant, blockchain must be the last key atm
-          // see `app.post("/users")` inside `backend/workers/auth/src/index.ts`
-          blockchain,
-        });
-
-        const buffer = Buffer.from(body, "utf8");
-        const signature = await keyring.signMessage(encode(buffer), publicKey!);
-
-        const res = await fetch("https://auth.xnfts.dev/users", {
-          method: "POST",
-          body,
-          headers: {
-            "Content-Type": "application/json",
-            "x-backpack-signature": signature,
-          },
-        });
-        if (!res.ok) {
-          throw new Error(await res.json());
-        }
-      } catch (err) {
-        await this.keyringStore.reset();
-        throw new Error("Error creating account");
-      }
-    }
+    await this.keyringStore.init(username, password, keyringInit);
 
     // Notify all listeners.
     this.events.emit(BACKEND_EVENT, {
@@ -725,6 +744,10 @@ export class Backend {
     return this.keyringStore.createMnemonic(strength);
   }
 
+  keyringTypeRead(): KeyringType {
+    return this.keyringStore.hasMnemonic() ? "mnemonic" : "ledger";
+  }
+
   async previewPubkeys(
     blockchain: Blockchain,
     mnemonic: string,
@@ -813,27 +836,64 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  ///////////////////////////////////////////////////////////////////////////////
+  // Blockchains
+  ///////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Add a new blockchain keyring to the keyring store (i.e. initialize it).
+   */
+  async blockchainKeyringsAdd(
+    blockchain: Blockchain,
+    derivationPath: DerivationPath,
+    accountIndex: number,
+    publicKey?: string
+  ): Promise<void> {
+    await this.keyringStore.blockchainKeyringAdd(
+      blockchain,
+      derivationPath,
+      accountIndex,
+      publicKey
+    );
+    // Automatically enable the newly added blockchain
+    await this.enabledBlockchainsAdd(blockchain);
+  }
+
+  /**
+   * Return all blockchains that have initialised keyrings, even if they are not
+   * enabled.
+   */
+  async blockchainKeyringsRead(): Promise<Array<Blockchain>> {
+    return this.keyringStore.blockchainKeyrings();
+  }
+
+  /**
+   * Enable a blockchain. The blockchain keyring must be initialized prior to this.
+   */
   async enabledBlockchainsAdd(blockchain: Blockchain) {
     const data = await store.getWalletData();
     if (data.enabledBlockchains.includes(blockchain)) {
       throw new Error("blockchain already enabled");
     }
+
+    // Validate that the keyring is initialised before we enable it. This could
+    // be done using `this.blockchainKeyringsRead()` but we need the keyring to
+    // create a notification with the active wallet later anyway.
+    let keyring: BlockchainKeyring;
+    try {
+      keyring = this.keyringStore.keyringForBlockchain(blockchain);
+    } catch (error) {
+      throw new Error(`${blockchain} keyring not initialised`);
+    }
+
     const enabledBlockchains = [...data.enabledBlockchains, blockchain];
     await store.setWalletData({
       ...data,
       enabledBlockchains,
     });
-    let keyring: BlockchainKeyring;
-    try {
-      keyring = this.keyringStore.keyringForBlockchain(blockchain);
-    } catch {
-      keyring = await this.keyringStore.initBlockchainKeyring(
-        "bip44",
-        [0],
-        blockchain
-      );
-    }
+
     const activeWallet = keyring.getActiveWallet();
+
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_BLOCKCHAIN_ENABLED,
       data: {

@@ -1,4 +1,4 @@
-// This file is copied with modification from @solana/wallet-standard-util
+// This is copied with modification from @solana/wallet-standard-util
 
 import type { SolanaChain } from './solana.js';
 import { SOLANA_DEVNET_CHAIN, SOLANA_LOCALNET_CHAIN, SOLANA_MAINNET_CHAIN, SOLANA_TESTNET_CHAIN } from './solana.js';
