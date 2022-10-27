@@ -10,40 +10,49 @@ import { CheckBox } from "@components/CheckBox";
 import { CustomButton } from "@components/CustomButton";
 import { ErrorMessage } from "@components/ErrorMessage";
 import { PasswordInput } from "@components/PasswordInput";
-import type { Blockchain } from "@coral-xyz/common";
+import type {
+  Blockchain,
+  BlockchainKeyringInit,
+  KeyringInit,
+} from "@coral-xyz/common";
 import {
   DerivationPath,
+  KeyringType,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
+  UI_RPC_METHOD_PREVIEW_PUBKEYS,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks/useTheme";
 import type { StackScreenProps } from "@react-navigation/stack";
 import { createStackNavigator } from "@react-navigation/stack";
+import { encode } from "bs58";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Pressable, StyleSheet, Text, View } from "react-native";
 
+type OnboardingAction = "import" | "create";
 type OnboardingStackParamList = {
   Welcome: undefined;
-  SelectBlockchain: { readOnly: boolean };
-  MnemonicInput: { readOnly: boolean; blockchain: Blockchain };
+  MnemonicInput: { action: OnboardingAction };
+  SelectBlockchain: { action: OnboardingAction; mnemonic: string };
   ImportAccounts: {
-    readOnly: boolean;
+    action: OnboardingAction;
     blockchain: Blockchain;
     mnemonic: string;
   };
   CreatePassword: {
-    readOnly: boolean;
-    blockchain: Blockchain;
+    action: OnboardingAction;
     mnemonic: string;
+    blockchainKeyrings: BlockchainKeyringInit[];
   };
   Complete: {
-    readOnly: boolean;
-    blockchain: Blockchain;
-    mnemonic: string;
+    action: OnboardingAction;
     password: string;
+    mnemonic: string;
+    blockchainKeyrings: BlockchainKeyringInit[];
   };
 };
 
@@ -84,108 +93,26 @@ function WelcomeScreen({
       <View
         style={{
           padding: 12,
-          flexDirection: "row",
-          justifyContent: "space-between",
         }}
       >
-        <Button
-          title="Create a new wallet"
+        <PrimaryButton
+          label="Create a new wallet"
           onPress={() => {
-            navigation.push("SelectBlockchain", {
-              readOnly: true,
+            navigation.push("MnemonicInput", {
+              action: "create",
             });
           }}
         />
-        <Button
-          title="Import an existing wallet"
+        <PrimaryButton
+          title="I already have an account"
           onPress={() => {
-            navigation.push("SelectBlockchain", {
-              readOnly: false,
+            navigation.push("MnemonicInput", {
+              action: "import",
             });
           }}
         />
       </View>
     </Screen>
-  );
-}
-
-// params.blockchain (string)
-function OnboardingBlockchainSelectScreen({
-  route,
-  navigation,
-}: StackScreenProps<OnboardingStackParamList, "SelectBlockchain">) {
-  const BLOCKCHAINS = [
-    {
-      name: "Ethereum",
-      enabled: true,
-    },
-    {
-      name: "Solana",
-      enabled: true,
-    },
-    {
-      name: "Polygon",
-      enabled: false,
-    },
-    {
-      name: "BSC",
-      enabled: false,
-    },
-    {
-      name: "Avalanche",
-      enabled: false,
-    },
-    {
-      name: "Cosmos",
-      enabled: false,
-    },
-  ];
-
-  function Network({
-    blockchain,
-    enabled,
-    onSelect,
-  }: {
-    blockchain: string;
-    enabled: boolean;
-    onSelect: (blockchain: Blockchain) => void;
-  }) {
-    return (
-      <View style={{ padding: 8, height: 50 }}>
-        <Pressable
-          onPress={() => {
-            if (enabled) {
-              // TODO(peter) make sure this is right
-              const name = blockchain.toLowerCase() as Blockchain;
-              onSelect(name);
-            }
-          }}
-        >
-          <Text style={{ color: "#FFF" }}>{blockchain}</Text>
-        </Pressable>
-      </View>
-    );
-  }
-
-  return (
-    <OnboardingScreen
-      title="Which network would you like Backpack to use?"
-      subtitle="You can always add additional networks later through the settings menu."
-    >
-      {BLOCKCHAINS.map((blockchain) => (
-        <Network
-          key={blockchain.name}
-          enabled={blockchain.enabled}
-          blockchain={blockchain.name}
-          onSelect={(blockchain: Blockchain) => {
-            navigation.push("MnemonicInput", {
-              readOnly: route.params.readOnly,
-              blockchain,
-            });
-          }}
-        />
-      ))}
-    </OnboardingScreen>
   );
 }
 
@@ -195,7 +122,9 @@ function OnboardingMnemonicInputScreen({
   route,
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "MnemonicInput">) {
-  const { readOnly } = route.params;
+  const { action } = route.params;
+  const readOnly = action === "create";
+
   const background = useBackgroundClient();
   const [mnemonicWords, setMnemonicWords] = useState<string[]>([
     ...Array(12).fill(""),
@@ -253,11 +182,9 @@ function OnboardingMnemonicInputScreen({
         params: [mnemonic],
       })
       .then((isValid: boolean) => {
-        const nextScreen = readOnly ? "CreatePassword" : "ImportAccounts";
         return isValid
-          ? navigation.push(nextScreen, {
-              readOnly,
-              blockchain: route.params.blockchain,
+          ? navigation.push("SelectBlockchain", {
+              action,
               mnemonic,
             })
           : setError("Invalid secret recovery phrase");
@@ -306,30 +233,173 @@ function OnboardingMnemonicInputScreen({
   );
 }
 
-// TODO(peter) import flow
-function OnboardingImportAccountsScreen({
+// params.blockchain (string)
+// TODO(peter) multi-select now
+function OnboardingBlockchainSelectScreen({
   route,
   navigation,
-}: StackScreenProps<OnboardingStackParamList, "ImportAccounts">) {
-  return (
-    <Screen style={styles.container}>
-      <View>
-        <StyledText style={{ fontSize: 24, marginBottom: 12 }}>
-          Secret Recovery Phrase
-        </StyledText>
-      </View>
-      <View style={{ flexDirection: "row" }}>
-        <PrimaryButton
-          label="Import Accounts"
+}: StackScreenProps<OnboardingStackParamList, "SelectBlockchain">) {
+  const { mnemonic, action } = route.params;
+  const inviteCode = ""; // TODO(peter)
+  const BLOCKCHAINS = [
+    {
+      name: "Ethereum",
+      enabled: true,
+    },
+    {
+      name: "Solana",
+      enabled: true,
+    },
+    {
+      name: "Polygon",
+      enabled: false,
+    },
+    {
+      name: "BSC",
+      enabled: false,
+    },
+    {
+      name: "Avalanche",
+      enabled: false,
+    },
+    {
+      name: "Cosmos",
+      enabled: false,
+    },
+  ];
+
+  const background = useBackgroundClient();
+  const [blockchain, setBlockchain] = useState<Blockchain | null>(null);
+  const [blockchainKeyrings, setBlockchainKeyrings] = useState<
+    Array<BlockchainKeyringInit>
+  >([]);
+
+  const selectedBlockchains = blockchainKeyrings.map((b) => b.blockchain);
+
+  const handleBlockchainClick = async (blockchain: Blockchain) => {
+    if (selectedBlockchains.includes(blockchain)) {
+      // Blockchain is being deselected
+      setBlockchain(null);
+      setBlockchainKeyrings(
+        blockchainKeyrings.filter((b) => b.blockchain !== blockchain)
+      );
+    } else {
+      // Blockchain is being selected
+      // TODO(peter) keyringType === 'ledger'
+      if (action === "import") {
+        // If wallet is a ledger, step through the ledger onboarding flow
+        // OR if action is an import then open the drawer with the import accounts
+        // component
+        setBlockchain(blockchain);
+      } else if (action === "create") {
+        // We are creating a new wallet, generate the signature using a default
+        // derivation path and account index
+        signForWallet(blockchain, DerivationPath.Default, 0);
+      }
+    }
+  };
+
+  const signForWallet = async (
+    blockchain: Blockchain,
+    derivationPath: DerivationPath,
+    accountIndex: number,
+    publicKey?: string // only used for action = 'import'
+  ) => {
+    if (!publicKey) {
+      // No publicKey given, this is a create action, so preview the public keys
+      // and grab the one at the index
+      const publicKeys = await background.request({
+        method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
+        params: [blockchain, mnemonic, derivationPath, accountIndex + 1],
+      });
+
+      publicKey = publicKeys[accountIndex];
+    }
+
+    // TODO(peter) get Buffer working in Expo/React Native
+
+    // const signature = await background.request({
+    //   method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+    //   params: [
+    //     blockchain,
+    //     // Sign the invite code, or an empty string if no invite code
+    //     // TODO setup a nonce based system
+    //     "",
+    //     encode(Buffer.from(inviteCode ? inviteCode : "", "utf-8")),
+    //     derivationPath,
+    //     accountIndex,
+    //     publicKey!,
+    //     mnemonic,
+    //   ],
+    // });
+    //
+    // addBlockchainKeyring({
+    //   blockchain: blockchain!,
+    //   derivationPath,
+    //   accountIndex,
+    //   publicKey: publicKey!,
+    //   signature,
+    // });
+  };
+
+  // Add the initialisation parameters for a blockchain keyring to state
+  const addBlockchainKeyring = (blockchainKeyring: BlockchainKeyringInit) => {
+    setBlockchainKeyrings([...blockchainKeyrings, blockchainKeyring]);
+  };
+
+  function Network({
+    blockchain,
+    enabled,
+    onSelect,
+  }: {
+    blockchain: string;
+    enabled: boolean;
+    onSelect: (blockchain: Blockchain) => void;
+  }) {
+    return (
+      <View style={{ padding: 8, height: 50 }}>
+        <Pressable
           onPress={() => {
-            navigation.push("CreatePassword", {
-              // TODO (peter) don't spread, make it explicit
-              ...route.params,
-            });
+            if (enabled) {
+              // TODO(peter) make sure this is right
+              const name = blockchain.toLowerCase() as Blockchain;
+              onSelect(name);
+            }
+          }}
+        >
+          <Text style={{ color: "#FFF" }}>{blockchain}</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  return (
+    <OnboardingScreen
+      title="Which network would you like Backpack to use?"
+      subtitle="You can always add additional networks later through the settings menu."
+    >
+      {BLOCKCHAINS.map((blockchain) => (
+        <Network
+          key={blockchain.name}
+          enabled={blockchain.enabled}
+          blockchain={blockchain.name}
+          onSelect={(blockchain: Blockchain) => {
+            handleBlockchainClick(blockchain);
           }}
         />
-      </View>
-    </Screen>
+      ))}
+      <PrimaryButton
+        disabled={selectedBlockchains.length === 0}
+        label="Next"
+        onPress={() => {
+          navigation.push("CreatePassword", {
+            action,
+            mnemonic: route.params.mnemonic,
+            blockchainKeyrings,
+          });
+        }}
+      />
+    </OnboardingScreen>
   );
 }
 
@@ -353,10 +423,10 @@ function OnboardingCreatePasswordScreen({
 
   const onSubmit = ({ password }: CreatePasswordFormData) => {
     navigation.push("Complete", {
+      action: route.params.action,
       password,
-      readOnly: route.params.readOnly,
-      blockchain: route.params.blockchain,
       mnemonic: route.params.mnemonic,
+      blockchainKeyrings: route.params.blockchainKeyrings,
     });
   };
 
@@ -406,65 +476,94 @@ function OnboardingCreatePasswordScreen({
   );
 }
 
+// TODO(peter) import flow
+function OnboardingImportAccountsScreen({
+  route,
+  navigation,
+}: StackScreenProps<OnboardingStackParamList, "ImportAccounts">) {
+  return (
+    <Screen style={styles.container}>
+      <View>
+        <StyledText style={{ fontSize: 24, marginBottom: 12 }}>
+          Secret Recovery Phrase
+        </StyledText>
+      </View>
+      <View style={{ flexDirection: "row" }}>
+        <PrimaryButton
+          label="Import Accounts"
+          onPress={() => {
+            navigation.push("CreatePassword", {
+              // TODO (peter) don't spread, make it explicit
+              ...route.params,
+            });
+          }}
+        />
+      </View>
+    </Screen>
+  );
+}
+
 function OnboardingCompleteScreen({
   route,
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "Complete">) {
   const [isValid, setIsValid] = useState(false);
   const background = useBackgroundClient();
-  const { params } = route;
+  const { password, mnemonic, blockchainKeyrings } = route.params;
 
-  type Params = {
-    blockchain: Blockchain;
-    accountsAndDerivationPath: string;
-    inviteCode: string;
-    mnemonic: string;
-    password: string;
-    username: string;
-    usernameAndPubkey: string;
+  const username = null; // TODO(peter)
+  const inviteCode = undefined;
+  const keyringInit = {
+    mnemonic,
+    blockchainKeyrings,
   };
 
-  async function maybeCreateKeyringStore(params: Params): Promise<void> {
-    const { accounts, derivationPath } = (() => {
-      try {
-        // TODO(peter) just save it as separate items with react-navigation
-        return JSON.parse(params.accountsAndDerivationPath!);
-      } catch (err) {
-        // defaults when creating a wallet
-        return { accounts: [0], derivationPath: DerivationPath.Bip44 };
-      }
-    })();
-
-    const _username = (() => {
-      try {
-        // TODO(peter) figure out how tf to get usernameAndPubkey
-        const { username } = JSON.parse(params.usernameAndPubkey!);
-        return username;
-      } catch (err) {
-        return params.username;
-      }
-    })();
-
-    try {
-      const res = await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-        params: [
-          params.blockchain, // +1
-          params.mnemonic, // +1
-          derivationPath, // +1
-          params.password, // +1
-          accounts, // ??
-          _username, // ??
-          params.inviteCode, // ??
-          undefined, // TODO(peter) WaitingRoom.tsx: getWaitlistId(): window.localStorage.getItem(WAITLIST_RES_ID_KEY) ?? undefined,
-          Boolean(params.usernameAndPubkey), // ??
-        ],
+  //
+  // Create the user in the backend
+  //
+  async function createUser() {
+    if (inviteCode) {
+      const body = JSON.stringify({
+        username: null,
+        inviteCode,
+        undefined, // TODO(peter) waitlistId: getWaitlistId?.(),
+        blockchainPublicKeys: keyringInit.blockchainKeyrings.map((b) => ({
+          blockchain: b.blockchain,
+          publicKey: b.publicKey,
+          signature: b.signature,
+        })),
       });
-      console.log("ntt: maybeCreateKeyringStore success", res);
+
+      try {
+        const res = await fetch("https://auth.xnfts.dev/users", {
+          method: "POST",
+          body,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!res.ok) {
+          throw new Error(await res.json());
+        }
+      } catch (err) {
+        throw new Error("error creating account");
+      }
+    }
+  }
+
+  //
+  // Create the local store for the wallets
+  //
+  async function createStore() {
+    try {
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
+        params: [username, password, keyringInit],
+      });
       setIsValid(true);
     } catch (err) {
-      console.error("ntt: maybeCreateKeyringStore err", err);
-      // TODO(peter) alert maybe, figure out what happens first
+      console.log("account setup error", err);
+      // TODO(peter)
       // if (
       //   confirm("There was an issue setting up your account. Please try again.")
       // ) {
@@ -482,13 +581,13 @@ function OnboardingCompleteScreen({
         <Button title="Browse the xNFT library" />
         <Button title="Follow us on Twitter" />
         <Button title="Join the Discord Community" />
-        <StyledText>{JSON.stringify(isValid, null, 2)}</StyledText>
+        <StyledText>Is Valid: {JSON.stringify(isValid, null, 2)}</StyledText>
       </View>
       <PrimaryButton
         label="Finish" // TODO(peter) perhaps a loading indicator if this takes more than a sec so it doesn't look laggy
         onPress={async () => {
-          // this should update the keyring store to unlocked to take you to the actual experience
-          await maybeCreateKeyringStore(params);
+          await createUser();
+          await createStore();
           navigation.navigate("Welcome");
         }}
       />
