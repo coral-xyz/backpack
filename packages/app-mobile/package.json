@@ -23,6 +23,7 @@
     "expo-checkbox": "~2.1.0",
     "expo-clipboard": "~3.0.1",
     "expo-constants": "^13.1.1",
+    "expo-dev-client": "~1.0.1",
     "expo-font": "~10.1.0",
     "expo-secure-store": "^11.2.0",
     "expo-splash-screen": "~0.15.1",

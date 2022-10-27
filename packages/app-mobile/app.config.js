@@ -34,5 +34,8 @@ export default {
   },
   extra: {
     url: process.env.WEBWORKER_URL,
+    eas: {
+      projectId: process.env.EXPO_PROJECT_ID,
+    },
   },
 };
