@@ -92,7 +92,8 @@ function WelcomeScreen({
       </View>
       <View
         style={{
-          padding: 12,
+          padding: 16,
+          alignItems: "center",
         }}
       >
         <PrimaryButton
@@ -103,14 +104,17 @@ function WelcomeScreen({
             });
           }}
         />
-        <PrimaryButton
-          title="I already have an account"
-          onPress={() => {
-            navigation.push("MnemonicInput", {
-              action: "import",
-            });
-          }}
-        />
+        <View style={{ paddingVertical: 8 }}>
+          <SubtextParagraph
+            onPress={() => {
+              navigation.push("MnemonicInput", {
+                action: "import",
+              });
+            }}
+          >
+            I already have an account
+          </SubtextParagraph>
+        </View>
       </View>
     </Screen>
   );

@@ -111,13 +111,16 @@ export function Header({ text }: { text: string }) {
 export function SubtextParagraph({
   children,
   style,
+  onPress,
 }: {
   children: JSX.Element;
   style?: StyleProp<TextStyle>;
+  onPress?: () => void;
 }) {
   const theme = useTheme();
   return (
     <Text
+      onPress={onPress}
       style={[
         {
           fontWeight: "500",
