@@ -125,20 +125,27 @@ function PluginGrid() {
 
   return (
     <Grid container style={{}}>
-      {plugins.map((p: any, idx: number) => {
-        return (
-          <Grid
-            item
-            key={p.url}
-            xs={3}
-            style={{
-              marginTop: idx >= 4 ? "24px" : 0,
-            }}
-          >
-            <PluginIcon plugin={p} onClick={() => onClickPlugin(p)} />
-          </Grid>
-        );
-      })}
+      {plugins
+        // HACK: hide autoinstalled ONE xnft -> entrypoint in collectibles.
+        .filter(
+          (p) =>
+            p.install.account.xnft.toString() !==
+            "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4"
+        )
+        .map((p: any, idx: number) => {
+          return (
+            <Grid
+              item
+              key={p.url}
+              xs={3}
+              style={{
+                marginTop: idx >= 4 ? "24px" : 0,
+              }}
+            >
+              <PluginIcon plugin={p} onClick={() => onClickPlugin(p)} />
+            </Grid>
+          );
+        })}
     </Grid>
   );
 }
