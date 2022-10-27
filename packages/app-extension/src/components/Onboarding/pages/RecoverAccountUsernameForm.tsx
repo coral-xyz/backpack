@@ -29,7 +29,7 @@ export const RecoverAccountUsernameForm = ({
 
       try {
         const res = await fetch(
-          `https://auth.xnfts.dev/users/${username}/info`,
+          `${process.env.NODE_ENV === "dev" ? process.env.WORKER_URL : "https://auth.xnfts.dev"}/users/${username}/info`,
           {
             headers: {
               "x-backpack-waitlist-id": getWaitlistId() || "",

@@ -42,7 +42,7 @@ export const UsernameForm = ({
             `The username must not be longer than ${MAX_LENGTH} characters.`
           );
         }
-        const res = await fetch(`https://auth.xnfts.dev/users/${username}`, {
+        const res = await fetch(`${process.env.NODE_ENV === "dev" ? process.env.WORKER_URL : "https://auth.xnfts.dev"}/users/${username}`, {
           headers: {
             "x-backpack-invite-code": String(inviteCode),
             "x-backpack-waitlist-id": getWaitlistId() || "",

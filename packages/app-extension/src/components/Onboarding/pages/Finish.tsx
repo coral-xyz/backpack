@@ -47,7 +47,7 @@ export const Finish = ({
       });
 
       try {
-        const res = await fetch("https://auth.xnfts.dev/users", {
+        const res = await fetch(`${process.env.NODE_ENV === "dev" ? process.env.WORKER_URL : "https://auth.xnfts.dev"}/users`, {
           method: "POST",
           body,
           headers: {

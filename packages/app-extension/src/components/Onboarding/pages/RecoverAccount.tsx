@@ -46,7 +46,7 @@ export const RecoverAccount = ({
     (async () => {
       if (username) {
         const response = await fetch(
-          `https://auth.xnfts.dev/users/${username}/info`
+          `${process.env.NODE_ENV === "dev" ? process.env.WORKER_URL : "https://auth.xnfts.dev"}/users/${username}/info`
         );
         const json = await response.json();
         if (response.ok) {
