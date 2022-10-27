@@ -10,15 +10,10 @@ import {
 } from "../../common";
 import { getWaitlistId } from "../../common/WaitingRoom";
 
-const MIN_LENGTH = 3;
-const MAX_LENGTH = 15;
-
-export const UsernameForm = ({
-  inviteCode,
+export const RecoverAccountUsernameForm = ({
   onNext,
 }: {
-  inviteCode: string;
-  onNext: (username: string) => void;
+  onNext: (username: string, publickey: string) => void;
 }) => {
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
@@ -33,27 +28,19 @@ export const UsernameForm = ({
       e.preventDefault();
 
       try {
-        if (username.length < MIN_LENGTH) {
-          throw new Error(
-            `The username must be at least ${MIN_LENGTH} characters.`
-          );
-        } else if (username.length > MAX_LENGTH) {
-          throw new Error(
-            `The username must not be longer than ${MAX_LENGTH} characters.`
-          );
-        }
-        const res = await fetch(`https://auth.xnfts.dev/users/${username}`, {
-          headers: {
-            "x-backpack-invite-code": String(inviteCode),
-            "x-backpack-waitlist-id": getWaitlistId() || "",
-          },
-        });
+        const res = await fetch(
+          `https://auth.xnfts.dev/users/${username}/info`,
+          {
+            headers: {
+              "x-backpack-waitlist-id": getWaitlistId() || "",
+            },
+          }
+        );
         const json = await res.json();
         if (!res.ok) throw new Error(json.message);
-
-        onNext(username);
+        onNext(username, json.pubkey);
       } catch (err: any) {
-        setError(err.message);
+        setError(err.message || "Something went wrong");
       }
     },
     [username]
@@ -71,20 +58,11 @@ export const UsernameForm = ({
       }}
     >
       <Box style={{ padding: 8, flex: 1 }}>
-        <Header text="Claim your username" />
+        <Header text="Username recovery" />
         <SubtextParagraph style={{ margin: "16px 0" }}>
-          Others can see and find you by this username.
-          <br />
-          <br />
-          It will also be associated with your primary wallet address, so choose
-          wisely if you’d like to remain anonymous.
-          <br />
-          <br />
-          It should be {[MIN_LENGTH, MAX_LENGTH].join("-")} characters and it
-          can contain letters, numbers and underscores.
-          <br />
-          <br />
-          You will not be able to change it yet.
+          Enter your username below, you will then be asked for your secret
+          recovery phrase to verify that you own the public key that was
+          initially associated with it.
         </SubtextParagraph>
       </Box>
       <Box style={{ flex: 1 }}>
@@ -99,12 +77,7 @@ export const UsernameForm = ({
           type="text"
           value={username}
           setValue={(v: string) => {
-            setUsername(
-              v
-                .toLowerCase()
-                .replace(/[^a-z0-9_]/g, "")
-                .substring(0, MAX_LENGTH)
-            );
+            setUsername(v.toLowerCase().replace(/[^a-z0-9_]/g, ""));
           }}
           isError={error}
           auto

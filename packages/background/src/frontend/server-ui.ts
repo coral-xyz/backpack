@@ -17,6 +17,8 @@ import {
   UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD,
   UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE,
   UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ,
+  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
@@ -31,6 +33,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
+  UI_RPC_METHOD_KEYRING_TYPE_READ,
   UI_RPC_METHOD_KEYRING_RESET,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLETS,
@@ -74,6 +77,7 @@ import {
   UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
   UI_RPC_METHOD_USERNAME_READ,
   BACKEND_EVENT,
   CHANNEL_POPUP_RPC,
@@ -95,7 +99,7 @@ export function start(_cfg: Config, events: EventEmitter, b: Backend): Handle {
   // Dispatch all notifications to the extension popup UI. This channel
   // will also handle plugins in an additional routing step.
   //
-  events.on(BACKEND_EVENT, (notification) => {
+  events.on(BACKEND_EVENT, (notification: any) => {
     notificationsUi.pushNotification(notification);
   });
 
@@ -157,6 +161,8 @@ async function handle<T = any>(
       return await handleKeyringAutolockUpdate(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE:
       return await handleMnemonicCreate(ctx, params[0]);
+    case UI_RPC_METHOD_KEYRING_TYPE_READ:
+      return await handleKeyringTypeRead(ctx);
     case UI_RPC_METHOD_PREVIEW_PUBKEYS:
       return await handlePreviewPubkeys(
         ctx,
@@ -211,11 +217,22 @@ async function handle<T = any>(
     case UI_RPC_METHOD_APPROVED_ORIGINS_DELETE:
       return await handleApprovedOriginsDelete(ctx, params[0]);
     case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD:
-      return await handleBlockchainsEnabledAdd(ctx, params[0]);
+      return handleBlockchainsEnabledAdd(ctx, params[0]);
     case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE:
-      return await handleBlockchainsEnabledRemove(ctx, params[0]);
+      return handleBlockchainsEnabledRemove(ctx, params[0]);
     case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ:
       return await handleBlockchainsEnabledRead(ctx);
+    case UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD:
+      return await handleBlockchainKeyringsAdd(
+        ctx,
+        params[0],
+        params[1],
+        params[2],
+        params[3]
+      );
+    case UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ:
+      return await handleBlockchainKeyringsRead(ctx);
+    //
     //
     // Nicknames for keys.
     //
@@ -301,6 +318,16 @@ async function handle<T = any>(
       );
     case UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE:
       return await handleEthereumSignMessage(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET:
+      return await handleSignMessageForWallet(
+        ctx,
+        params[0],
+        params[1],
+        params[2],
+        params[3],
+        params[4],
+        params[5]
+      );
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -496,6 +523,11 @@ async function handleMnemonicCreate(
   strength = 256
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.mnemonicCreate(strength);
+  return [resp];
+}
+
+async function handleKeyringTypeRead(ctx: Context<Backend>) {
+  const resp = ctx.backend.keyringTypeRead();
   return [resp];
 }
 
@@ -734,6 +766,26 @@ async function handleEthereumSignMessage(
   return [resp];
 }
 
+async function handleSignMessageForWallet(
+  ctx: Context<Backend>,
+  blockchain: Blockchain,
+  msg: string,
+  derivationPath: DerivationPath,
+  accountIndex: number,
+  publicKey: string,
+  mnemonic?: string
+) {
+  const resp = await ctx.backend.signMessageForWallet(
+    blockchain,
+    msg,
+    derivationPath,
+    accountIndex,
+    publicKey,
+    mnemonic
+  );
+  return [resp];
+}
+
 async function handleApprovedOriginsRead(
   ctx: Context<Backend>
 ): Promise<RpcResponse<Array<string>>> {
@@ -777,6 +829,29 @@ async function handleBlockchainsEnabledRead(
   ctx: Context<Backend>
 ): Promise<RpcResponse<Array<string>>> {
   const resp = await ctx.backend.enabledBlockchainsRead();
+  return [resp];
+}
+
+async function handleBlockchainKeyringsAdd(
+  ctx: Context<Backend>,
+  blockchain: Blockchain,
+  derivationPath: DerivationPath,
+  accountIndex: number,
+  publicKey: string | undefined
+): Promise<RpcResponse<Array<string>>> {
+  const resp = await ctx.backend.blockchainKeyringsAdd(
+    blockchain,
+    derivationPath,
+    accountIndex,
+    publicKey
+  );
+  return [resp];
+}
+
+async function handleBlockchainKeyringsRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<Array<string>>> {
+  const resp = await ctx.backend.blockchainKeyringsRead();
   return [resp];
 }
 

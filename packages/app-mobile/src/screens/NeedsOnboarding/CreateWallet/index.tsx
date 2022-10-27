@@ -174,7 +174,7 @@ const ShowSecretRecoveryPhrase: React.FC<{
       params: [
         Blockchain.SOLANA,
         recoveryPhrase,
-        DerivationPath.Bip44,
+        DerivationPath.Default,
         password,
         [0],
       ],

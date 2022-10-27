@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Options from "./Options";
+import LedgerIframe from "../components/LedgerIframe";
 
 //
 // Render the UI.
@@ -8,6 +9,7 @@ import Options from "./Options";
 ReactDOM.render(
   <React.StrictMode>
     <Options />
+    <LedgerIframe />
   </React.StrictMode>,
   document.getElementById("options")
 );

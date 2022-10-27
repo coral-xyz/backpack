@@ -15,6 +15,7 @@ import type {
   HdKeyringJson,
   LedgerKeyring,
   LedgerKeyringJson,
+  ImportedDerivationPath,
 } from "./types";
 import { deriveEthereumWallets, deriveEthereumWallet } from "./crypto";
 import { LedgerKeyringBase } from "./ledger";
@@ -103,7 +104,7 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
     accountIndices: Array<number> = [0]
   ): HdKeyring {
     if (!derivationPath) {
-      derivationPath = DerivationPath.Bip44Change;
+      derivationPath = DerivationPath.Default;
     }
     if (!validateMnemonic(mnemonic)) {
       throw new Error("Invalid seed words");
@@ -186,8 +187,8 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
 }
 
 export class EthereumLedgerKeyringFactory {
-  public init(): LedgerKeyring {
-    return new EthereumLedgerKeyring([]);
+  public fromAccounts(accounts: Array<ImportedDerivationPath>): LedgerKeyring {
+    return new EthereumLedgerKeyring(accounts);
   }
 
   public fromJson(obj: LedgerKeyringJson): LedgerKeyring {

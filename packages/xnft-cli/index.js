@@ -154,7 +154,6 @@ program
     });
   });
 
-
 program
   .command("init")
   .argument("<name>", "name of the xnft")
