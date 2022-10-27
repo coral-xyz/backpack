@@ -21,13 +21,7 @@ const WEBVIEW_URI = (() => {
   if (process.env.NODE_ENV === "production") {
     return Constants.manifest.extra.url || alert("No WEBVIEW_URI");
   } else {
-    if (Platform.OS === "ios") {
-      // iOS can only use serviceworkers from localhost or WKAppBoundDomains
-      // we can't use WKAppBoundDomains in development, so it must use localhost
-      return LOCALHOST_WEBVIEW_URI;
-    } else {
-      return Constants.manifest.extra.url || LOCALHOST_WEBVIEW_URI;
-    }
+    return Constants.manifest.extra.url || LOCALHOST_WEBVIEW_URI;
   }
 })();
 

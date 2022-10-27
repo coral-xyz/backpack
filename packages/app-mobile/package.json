@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
+    "android": "EXPO_USE_BETA_CLI=1 npx expo start --android",
+    "ios": "EXPO_USE_BETA_CLI=1 npx expo start --ios",
+    "web": "EXPO_USE_BETA_CLI=1 npx expo start --web",
     "eject": "expo eject",
     "test": "jest",
     "lint:fix": "eslint 'src/**/*' --fix"
