@@ -23,29 +23,29 @@ function Metadata() {
   console.log("conn is " + connection);
   return (
     <View>
-      <View twClassName="p-2">
-        <Text twClassName="font-bold text-center">
+      <View tw="p-2">
+        <Text tw="font-bold text-center">
           gm {metadata.username}, you are using{" "}
           {metadata.isDarkMode ? "Dark Mode" : "Light Mode"}
         </Text>
       </View>
       <Image
-        twClassName="w-32 h-32 rounded-full mx-auto"
+        tw="w-32 h-32 rounded-full mx-auto"
         src="https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?cs=srgb&dl=pexels-pixabay-45201.jpg&fm=jpg"
       />
-      <View twClassName="p-2 grid grid-cols-3 gap-1 content-start">
+      <View tw="p-2 grid grid-cols-3 gap-1 content-start">
         <Button>Button 1</Button>
-        <Button twClassName="bg-blue-500 hover:bg-blue-700 text-white font-bold ">
+        <Button tw="bg-blue-500 hover:bg-blue-700 text-white font-bold ">
           Button 2
         </Button>
-        <Button twClassName="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+        <Button tw="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
           Button 3
         </Button>
       </View>
-      <View twClassName="flex justify-center">
-        <Button twClassName="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+      <View tw="flex justify-center">
+        <Button tw="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
           <Svg
-            twClassName="fill-current w-4 h-4 mr-2"
+            tw="fill-current w-4 h-4 mr-2"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
           >
@@ -54,14 +54,14 @@ function Metadata() {
           <View>Download</View>
         </Button>
       </View>
-      <View twClassName="p-4">
+      <View tw="p-4">
         <TextField
           value={inputText}
           placeholder={"placeholder"}
           onChange={(e) => setInputText(e.target.value)}
         />
       </View>
-      <View twClassName="p-4">
+      <View tw="p-4">
         <TextField
           value={inputText}
           placeholder={"placeholder"}

@@ -276,7 +276,7 @@ export function Component({ viewData }) {
 function Custom({ children, component, props }) {
   const el = React.createElement(
     component,
-    { ...props, className: props.twClassName + " " + props.className },
+    { ...props, className: props.tw + " " + props.className },
     children.map((c) => <ViewRenderer key={c.id} element={c} />)
   );
   return el;
@@ -285,7 +285,7 @@ function Custom({ children, component, props }) {
 function Svg({ props, children }: any) {
   return (
     <svg
-      className={props.twClassName}
+      className={props.tw}
       width={props.width}
       height={props.height}
       viewBox={props.viewBox}
@@ -673,7 +673,7 @@ export function BalancesTableFooter({ props, style, children }: any) {
 
 function View({ id, props, style, children }: any) {
   return (
-    <div style={style} onClick={props.onClick} className={props.twClassName}>
+    <div style={style} onClick={props.onClick} className={props.tw}>
       {children.map((c: Element) => (
         <ViewRenderer key={c.id} element={c} />
       ))}
@@ -688,10 +688,7 @@ function Table({ props, style, children }: any) {
 function Text({ props, children, style }: any) {
   const defaultClasses = useDefaultClasses();
   return (
-    <p
-      style={style}
-      className={defaultClasses[NodeKind.Text] + " " + props.twClassName}
-    >
+    <p style={style} className={defaultClasses[NodeKind.Text] + " " + props.tw}>
       {children.map((c: Element) => (
         <ViewRenderer key={c.id} element={c} />
       ))}
@@ -761,7 +758,7 @@ export function TextField({ placeholder, type, value, onChange, style }: any) {
 function Image({ id, props, style }: any) {
   return (
     <ProxyImage
-      className={props.twClassName}
+      className={props.tw}
       src={props.src}
       style={style}
       onClick={props.onClick}
@@ -817,9 +814,7 @@ export function __Button({
   const defaultClasses = useDefaultClasses();
   return (
     <button
-      className={
-        defaultClasses[NodeKind.Button] + " " + (props.twClassName || "")
-      }
+      className={defaultClasses[NodeKind.Button] + " " + (props.tw || "")}
       style={{
         ...style,
       }}
