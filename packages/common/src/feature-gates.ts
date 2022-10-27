@@ -7,7 +7,7 @@ export const DEFAULT_FEATURE_GATES: FEATURE_GATES_MAP = {
 };
 
 /*
- * To avoid any runtime errors because of curropt data in the
+ * To avoid any runtime errors because of corrupt data in the
  * local DB, we clean the gates map here and return it.
  */
 export const buildFullFeatureGatesMap = (featureGates: any) => {

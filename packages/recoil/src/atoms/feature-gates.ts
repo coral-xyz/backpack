@@ -16,9 +16,7 @@ export const featureGates = atom<FEATURE_GATES_MAP>({
         method: UI_RPC_METHOD_GET_FEATURE_GATES,
         params: [],
       });
-      console.log("response is " + response);
       const gates = buildFullFeatureGatesMap(response);
-      console.log("gates is " + gates);
       return gates;
     },
   }),
