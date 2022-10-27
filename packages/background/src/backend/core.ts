@@ -441,7 +441,7 @@ export class Backend {
           new TransactionInstruction({
             programId: new PublicKey(publicKey),
             keys: [],
-            data: Buffer.from(bs58.decode(msg).toString()),
+            data: Buffer.from(bs58.decode(msg)),
           })
         );
         tx.feePayer = new PublicKey(publicKey);
