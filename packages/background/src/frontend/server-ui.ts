@@ -82,6 +82,9 @@ import {
   BACKEND_EVENT,
   CHANNEL_POPUP_RPC,
   CHANNEL_POPUP_NOTIFICATIONS,
+  UI_RPC_METHOD_SET_FEATURE_GATES,
+  FEATURE_GATES_MAP,
+  UI_RPC_METHOD_GET_FEATURE_GATES,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import type { Backend } from "../backend/core";
@@ -222,6 +225,10 @@ async function handle<T = any>(
       return handleBlockchainsEnabledRemove(ctx, params[0]);
     case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ:
       return await handleBlockchainsEnabledRead(ctx);
+    case UI_RPC_METHOD_SET_FEATURE_GATES:
+      return await handleSetFeatureGates(ctx, params[0]);
+    case UI_RPC_METHOD_GET_FEATURE_GATES:
+      return await handleGetFeatureGates(ctx);
     case UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD:
       return await handleBlockchainKeyringsAdd(
         ctx,
@@ -829,6 +836,19 @@ async function handleBlockchainsEnabledRead(
   ctx: Context<Backend>
 ): Promise<RpcResponse<Array<string>>> {
   const resp = await ctx.backend.enabledBlockchainsRead();
+  return [resp];
+}
+
+async function handleSetFeatureGates(
+  ctx: Context<Backend>,
+  gates: FEATURE_GATES_MAP
+) {
+  const resp = await ctx.backend.setFeatureGates(gates);
+  return [resp];
+}
+
+async function handleGetFeatureGates(ctx: Context<Backend>) {
+  const resp = await ctx.backend.getFeatureGates();
   return [resp];
 }
 

@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { styles } from "@coral-xyz/themes";
 import {
@@ -19,6 +19,7 @@ import {
   useApprovedOrigins,
   useBootstrapFast,
   useBackgroundResponder,
+  useBackgroundClient,
 } from "@coral-xyz/recoil";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
@@ -29,6 +30,7 @@ import {
 } from "../components/Unlocked/Approvals/ApproveTransaction";
 import { ApproveMessage } from "../components/Unlocked/Approvals/ApproveMessage";
 import "./App.css";
+import { refreshFeatureGates } from "../gates/FEATURES";
 
 const logger = getLogger("router");
 
@@ -266,6 +268,11 @@ function FullApp() {
     keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
   const isLocked =
     !needsOnboarding && keyringStoreState === KeyringStoreStateEnum.Locked;
+  const background = useBackgroundClient();
+
+  useEffect(() => {
+    refreshFeatureGates(background);
+  }, [background]);
 
   return (
     <AnimatePresence initial={false}>

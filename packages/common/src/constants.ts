@@ -162,6 +162,10 @@ export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET =
   "ui-rpc-method-plugin-storage-get";
 export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT =
   "ui-rpc-method-plugin-storage-put";
+export const UI_RPC_METHOD_SET_FEATURE_GATES =
+  "ui-rpc-method-set-feature-gates";
+export const UI_RPC_METHOD_GET_FEATURE_GATES =
+  "ui-rpc-method-get-feature-gates";
 export const UI_RPC_METHOD_PREVIEW_PUBKEYS =
   "ui-rpc-method-keyring-preview-pubkeys";
 export const UI_RPC_METHOD_SETTINGS_DARK_MODE_READ =
