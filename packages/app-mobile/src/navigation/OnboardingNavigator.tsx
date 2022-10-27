@@ -12,17 +12,42 @@ import { ErrorMessage } from "@components/ErrorMessage";
 import { PasswordInput } from "@components/PasswordInput";
 import type { Blockchain } from "@coral-xyz/common";
 import {
+  DerivationPath,
+  UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks/useTheme";
+import type { StackScreenProps } from "@react-navigation/stack";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Pressable, StyleSheet, Text, View } from "react-native";
 
-const Stack = createStackNavigator();
+type OnboardingStackParamList = {
+  Welcome: undefined;
+  SelectBlockchain: { readOnly: boolean };
+  MnemonicInput: { readOnly: boolean; blockchain: Blockchain };
+  ImportAccounts: {
+    readOnly: boolean;
+    blockchain: Blockchain;
+    mnemonic: string;
+  };
+  CreatePassword: {
+    readOnly: boolean;
+    blockchain: Blockchain;
+    mnemonic: string;
+  };
+  Complete: {
+    readOnly: boolean;
+    blockchain: Blockchain;
+    mnemonic: string;
+    password: string;
+  };
+};
+
+const Stack = createStackNavigator<OnboardingStackParamList>();
 
 function OnboardingScreen({
   title,
@@ -45,7 +70,9 @@ function OnboardingScreen({
 }
 
 // https://github.com/gorhom/react-native-bottom-sheet
-function WelcomeScreen({ navigation }) {
+function WelcomeScreen({
+  navigation,
+}: StackScreenProps<OnboardingStackParamList, "Welcome">) {
   return (
     <Screen style={styles.container}>
       <View style={{ alignItems: "center" }}>
@@ -82,7 +109,11 @@ function WelcomeScreen({ navigation }) {
   );
 }
 
-function OnboardingBlockchainSelectScreen({ route, navigation }) {
+// params.blockchain (string)
+function OnboardingBlockchainSelectScreen({
+  route,
+  navigation,
+}: StackScreenProps<OnboardingStackParamList, "SelectBlockchain">) {
   const BLOCKCHAINS = [
     {
       name: "Ethereum",
@@ -110,11 +141,27 @@ function OnboardingBlockchainSelectScreen({ route, navigation }) {
     },
   ];
 
-  function Network({ blockchain, enabled, onSelect }) {
+  function Network({
+    blockchain,
+    enabled,
+    onSelect,
+  }: {
+    blockchain: string;
+    enabled: boolean;
+    onSelect: (blockchain: Blockchain) => void;
+  }) {
     return (
       <View style={{ padding: 8, height: 50 }}>
-        <Pressable onPress={() => enabled && onSelect(blockchain.name)}>
-          <Text style={{ color: "#FFF" }}>{blockchain.name}</Text>
+        <Pressable
+          onPress={() => {
+            if (enabled) {
+              // TODO(peter) make sure this is right
+              const name = blockchain.toLowerCase() as Blockchain;
+              onSelect(name);
+            }
+          }}
+        >
+          <Text style={{ color: "#FFF" }}>{blockchain}</Text>
         </Pressable>
       </View>
     );
@@ -129,11 +176,11 @@ function OnboardingBlockchainSelectScreen({ route, navigation }) {
         <Network
           key={blockchain.name}
           enabled={blockchain.enabled}
-          blockchain={blockchain}
-          onSelect={(blockchain) => {
+          blockchain={blockchain.name}
+          onSelect={(blockchain: Blockchain) => {
             navigation.push("MnemonicInput", {
               readOnly: route.params.readOnly,
-              blockchain: blockchain.name,
+              blockchain,
             });
           }}
         />
@@ -142,10 +189,13 @@ function OnboardingBlockchainSelectScreen({ route, navigation }) {
   );
 }
 
+// params.mnemonic (string)
 // Create Wallet: readonly = false; Import Wallet: readOnly = true;
-function OnboardingMnemonicInputScreen({ route, navigation }) {
+function OnboardingMnemonicInputScreen({
+  route,
+  navigation,
+}: StackScreenProps<OnboardingStackParamList, "MnemonicInput">) {
   const { readOnly } = route.params;
-
   const background = useBackgroundClient();
   const [mnemonicWords, setMnemonicWords] = useState<string[]>([
     ...Array(12).fill(""),
@@ -203,10 +253,12 @@ function OnboardingMnemonicInputScreen({ route, navigation }) {
         params: [mnemonic],
       })
       .then((isValid: boolean) => {
-        const route = readOnly ? "CreatePassword" : "ImportAccounts";
+        const nextScreen = readOnly ? "CreatePassword" : "ImportAccounts";
         return isValid
-          ? navigation.push(route, {
+          ? navigation.push(nextScreen, {
               readOnly,
+              blockchain: route.params.blockchain,
+              mnemonic,
             })
           : setError("Invalid secret recovery phrase");
       });
@@ -254,8 +306,11 @@ function OnboardingMnemonicInputScreen({ route, navigation }) {
   );
 }
 
-// TODO different flow
-function OnboardingImportAccountsScreen({ navigation }) {
+// TODO(peter) import flow
+function OnboardingImportAccountsScreen({
+  route,
+  navigation,
+}: StackScreenProps<OnboardingStackParamList, "ImportAccounts">) {
   return (
     <Screen style={styles.container}>
       <View>
@@ -267,7 +322,10 @@ function OnboardingImportAccountsScreen({ navigation }) {
         <PrimaryButton
           label="Import Accounts"
           onPress={() => {
-            navigation.push("CreatePassword");
+            navigation.push("CreatePassword", {
+              // TODO (peter) don't spread, make it explicit
+              ...route.params,
+            });
           }}
         />
       </View>
@@ -275,8 +333,11 @@ function OnboardingImportAccountsScreen({ navigation }) {
   );
 }
 
-// TODO KeyboardAvoidingView
-function OnboardingCreatePasswordScreen({ route, navigation }) {
+// TODO(peter) KeyboardAvoidingView
+function OnboardingCreatePasswordScreen({
+  route,
+  navigation,
+}: StackScreenProps<OnboardingStackParamList, "CreatePassword">) {
   interface CreatePasswordFormData {
     password: string;
     passwordConfirmation: string;
@@ -291,7 +352,12 @@ function OnboardingCreatePasswordScreen({ route, navigation }) {
   } = useForm<CreatePasswordFormData>();
 
   const onSubmit = ({ password }: CreatePasswordFormData) => {
-    navigation.push("Complete", { password, readOnly: route.params.readOnly });
+    navigation.push("Complete", {
+      password,
+      readOnly: route.params.readOnly,
+      blockchain: route.params.blockchain,
+      mnemonic: route.params.mnemonic,
+    });
   };
 
   return (
@@ -340,7 +406,10 @@ function OnboardingCreatePasswordScreen({ route, navigation }) {
   );
 }
 
-function OnboardingCompleteScreen({ route, navigation }) {
+function OnboardingCompleteScreen({
+  route,
+  navigation,
+}: StackScreenProps<OnboardingStackParamList, "Complete">) {
   const [isValid, setIsValid] = useState(false);
   const background = useBackgroundClient();
   const { params } = route;
@@ -358,6 +427,7 @@ function OnboardingCompleteScreen({ route, navigation }) {
   async function maybeCreateKeyringStore(params: Params): Promise<void> {
     const { accounts, derivationPath } = (() => {
       try {
+        // TODO(peter) just save it as separate items with react-navigation
         return JSON.parse(params.accountsAndDerivationPath!);
       } catch (err) {
         // defaults when creating a wallet
@@ -367,6 +437,7 @@ function OnboardingCompleteScreen({ route, navigation }) {
 
     const _username = (() => {
       try {
+        // TODO(peter) figure out how tf to get usernameAndPubkey
         const { username } = JSON.parse(params.usernameAndPubkey!);
         return username;
       } catch (err) {
@@ -375,7 +446,7 @@ function OnboardingCompleteScreen({ route, navigation }) {
     })();
 
     try {
-      await background.request({
+      const res = await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
         params: [
           params.blockchain,
@@ -385,14 +456,15 @@ function OnboardingCompleteScreen({ route, navigation }) {
           accounts,
           _username,
           params.inviteCode,
-          undefined, // WaitingRoom.tsx: getWaitlistId(): window.localStorage.getItem(WAITLIST_RES_ID_KEY) ?? undefined,
+          undefined, // TODO(peter) WaitingRoom.tsx: getWaitlistId(): window.localStorage.getItem(WAITLIST_RES_ID_KEY) ?? undefined,
           Boolean(params.usernameAndPubkey),
         ],
       });
+      console.log("ntt: maybeCreateKeyringStore success", res);
       setIsValid(true);
     } catch (err) {
-      console.error("err", err);
-      // maybe ALERT!
+      console.error("ntt: maybeCreateKeyringStore err", err);
+      // TODO(peter) alert maybe, figure out what happens first
       // if (
       //   confirm("There was an issue setting up your account. Please try again.")
       // ) {
@@ -400,6 +472,10 @@ function OnboardingCompleteScreen({ route, navigation }) {
       // }
     }
   }
+
+  useEffect(() => {
+    maybeCreateKeyringStore(params);
+  }, []);
 
   return (
     <OnboardingScreen
@@ -410,6 +486,7 @@ function OnboardingCompleteScreen({ route, navigation }) {
         <Button title="Browse the xNFT library" />
         <Button title="Follow us on Twitter" />
         <Button title="Join the Discord Community" />
+        <StyledText>{JSON.stringify(isValid, null, 2)}</StyledText>
       </View>
       <PrimaryButton
         label="Finish"
