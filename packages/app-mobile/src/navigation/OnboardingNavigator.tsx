@@ -449,15 +449,15 @@ function OnboardingCompleteScreen({
       const res = await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
         params: [
-          params.blockchain,
-          params.mnemonic,
-          derivationPath,
-          decodeURIComponent(params.password!),
-          accounts,
-          _username,
-          params.inviteCode,
+          params.blockchain, // +1
+          params.mnemonic, // +1
+          derivationPath, // +1
+          params.password, // +1
+          accounts, // ??
+          _username, // ??
+          params.inviteCode, // ??
           undefined, // TODO(peter) WaitingRoom.tsx: getWaitlistId(): window.localStorage.getItem(WAITLIST_RES_ID_KEY) ?? undefined,
-          Boolean(params.usernameAndPubkey),
+          Boolean(params.usernameAndPubkey), // ??
         ],
       });
       console.log("ntt: maybeCreateKeyringStore success", res);
@@ -473,10 +473,6 @@ function OnboardingCompleteScreen({
     }
   }
 
-  useEffect(() => {
-    maybeCreateKeyringStore(params);
-  }, []);
-
   return (
     <OnboardingScreen
       title="You've set up Backpack!"
@@ -489,9 +485,10 @@ function OnboardingCompleteScreen({
         <StyledText>{JSON.stringify(isValid, null, 2)}</StyledText>
       </View>
       <PrimaryButton
-        label="Finish"
-        onPress={() => {
+        label="Finish" // TODO(peter) perhaps a loading indicator if this takes more than a sec so it doesn't look laggy
+        onPress={async () => {
           // this should update the keyring store to unlocked to take you to the actual experience
+          await maybeCreateKeyringStore(params);
           navigation.navigate("Welcome");
         }}
       />
