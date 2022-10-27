@@ -154,8 +154,6 @@ program
     });
   });
 
-program.parse();
-
 program
   .command("init")
   .argument("<name>", "name of the xnft")
@@ -170,3 +168,5 @@ program
     console.debug(`cd ${name}`);
     console.debug(`yarn && yarn dev`);
   });
+
+program.parse();

@@ -17,6 +17,7 @@ import type {
   HdKeyringJson,
   LedgerKeyringJson,
   LedgerKeyring,
+  ImportedDerivationPath,
 } from "./types";
 import { LedgerKeyringBase } from "./ledger";
 
@@ -101,7 +102,7 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
     accountIndices: Array<number> = [0]
   ): HdKeyring {
     if (!derivationPath) {
-      derivationPath = DerivationPath.Bip44Change;
+      derivationPath = DerivationPath.Default;
     }
     if (!validateMnemonic(mnemonic)) {
       throw new Error("Invalid seed words");
@@ -121,7 +122,7 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
     const mnemonic = generateMnemonic(strength);
     const seed = mnemonicToSeedSync(mnemonic);
     const accountIndices = [0];
-    const derivationPath = DerivationPath.Bip44;
+    const derivationPath = DerivationPath.Default;
     const keypairs = deriveSolanaKeypairs(seed, derivationPath, accountIndices);
 
     return new SolanaHdKeyring({
@@ -229,8 +230,8 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
 }
 
 export class SolanaLedgerKeyringFactory {
-  public init(): LedgerKeyring {
-    return new SolanaLedgerKeyring([]);
+  public fromAccounts(accounts: Array<ImportedDerivationPath>): LedgerKeyring {
+    return new SolanaLedgerKeyring(accounts);
   }
 
   public fromJson(obj: LedgerKeyringJson): LedgerKeyring {

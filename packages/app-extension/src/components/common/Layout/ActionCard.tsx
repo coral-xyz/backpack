@@ -43,18 +43,16 @@ export function ActionCard({
       >
         <CardContent style={{ padding: 0 }}>
           <Box sx={{ mb: 1, display: "flex" }}>{icon}</Box>
-          <Box>
-            <Typography
-              style={{
-                fontWeight: 500,
-                fontSize: "16px",
-                lineHeight: "24px",
-                textAlign: "left",
-              }}
-            >
-              {text}
-              {textAdornment}
-            </Typography>
+          <Box
+            style={{
+              fontWeight: 500,
+              fontSize: "16px",
+              lineHeight: "24px",
+              textAlign: "left",
+            }}
+          >
+            {text}
+            {textAdornment}
           </Box>
         </CardContent>
       </Card>

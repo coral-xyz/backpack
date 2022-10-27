@@ -5,7 +5,11 @@
  *    { username:string; publicKey:PublicKeyString; inviteCode: uuid; waitlistId?: string; }
  */
 
-import { PublicKey } from "@solana/web3.js";
+import {
+  PublicKey,
+  Transaction,
+  TransactionInstruction,
+} from "@solana/web3.js";
 import { ethers } from "ethers";
 import { decode } from "bs58";
 import { Hono } from "hono";
@@ -13,7 +17,6 @@ import { sign } from "tweetnacl";
 import { z, ZodError } from "zod";
 import { Chain } from "./zeus";
 
-// shared user object that is extended for each blockchain
 const BaseCreateUser = z.object({
   username: z
     .string()
@@ -29,6 +32,48 @@ const BaseCreateUser = z.object({
     ),
   waitlistId: z.optional(z.nullable(z.string())),
 });
+
+//
+// New user creation, with multiple blockchains and public keys
+//
+
+const CreateEthereumKeyring = z.object({
+  publicKey: z.string().refine((str) => {
+    try {
+      ethers.utils.getAddress(str);
+      return true;
+    } catch (err) {}
+    return false;
+  }, "must be a valid Ethereum public key"),
+  blockchain: z.literal("ethereum"),
+  signature: z.string(),
+});
+
+const CreateSolanaKeyring = z.object({
+  publicKey: z.string().refine((str) => {
+    try {
+      new PublicKey(str);
+      return true;
+    } catch (err) {}
+    return false;
+  }, "must be a valid Solana public key"),
+  blockchain: z.literal("solana"),
+  signature: z.string(),
+});
+
+const CreateKeyrings = z.discriminatedUnion("blockchain", [
+  CreateEthereumKeyring,
+  CreateSolanaKeyring,
+]);
+
+const CreateUserWithKeyrings = BaseCreateUser.extend({
+  blockchainPublicKeys: CreateKeyrings.array(),
+});
+
+//
+// Legacy user creation, with one publicKey and blockchain per user.
+// TODO
+//
 
 const CreateEthereumUser = BaseCreateUser.extend({
   publicKey: z.string().refine((str) => {
@@ -52,7 +97,7 @@ const CreateSolanaUser = BaseCreateUser.extend({
   blockchain: z.literal("solana"),
 });
 
-const CreateUser = z.discriminatedUnion("blockchain", [
+const LegacyCreateUser = z.discriminatedUnion("blockchain", [
   CreateEthereumUser,
   CreateSolanaUser,
 ]);
@@ -86,14 +131,19 @@ app.get("/users/:username/info", async (c) => {
         limit: 1,
       },
       {
-        pubkey: true,
-        blockchain: true, // needed for recovery flow
+        publickeys: [{}, { blockchain: true, publickey: true }],
       },
     ],
   });
 
-  if (res.auth_users[0]?.pubkey) {
-    return c.json(res.auth_users[0]);
+  if (res.auth_users[0]?.publickeys) {
+    return c.json({
+      ...res.auth_users[0],
+      // TODO remove
+      // This is to not break legacy recovery flows
+      pubkey: res.auth_users[0].publickeys[0].publickey,
+      blockchain: res.auth_users[0].publickeys[0].blockchain,
+    });
   } else {
     return c.json({ message: "user not found" }, 404);
   }
@@ -112,7 +162,7 @@ app.get("/users/:username", async (c) => {
     const { ok } = await res.json<{ ok: boolean }>();
     if (!ok || !res.ok) throw new Error("validation error");
   } catch (err) {
-    return c.json({ message: "username not available" }, 409);
+    return c.json({ message: "Username not available" }, 409);
   }
 
   const chain = Chain(c.env.HASURA_URL, {
@@ -163,29 +213,75 @@ app.get("/users/:username", async (c) => {
 app.post("/users", async (c) => {
   const body = await c.req.json();
 
-  const variables = CreateUser.parse({
-    ...body,
-    // set a default blockchain value for legacy clients (<= 0.2.0)
-    blockchain: body.blockchain || "solana",
-  });
+  let username: string,
+    inviteCode: string,
+    waitlistId: string | null | undefined,
+    publicKeys: Array<{ blockchain: "ethereum" | "solana"; publickey: string }>;
 
-  let isValidSignature = false;
-  if (variables.blockchain === "solana") {
-    isValidSignature = sign.detached.verify(
-      Buffer.from(JSON.stringify(body), "utf8"),
-      decode(c.req.header("x-backpack-signature")),
-      decode(variables.publicKey)
-    );
-  } else if (variables.blockchain === "ethereum") {
-    isValidSignature =
-      ethers.utils.verifyMessage(
-        Buffer.from(JSON.stringify(body), "utf8"),
-        c.req.header("x-backpack-signature")
-      ) === variables.publicKey;
-  }
+  // Try legacy onboarding
+  const result = LegacyCreateUser.safeParse(body);
+  if (result.success) {
+    if (result.data.blockchain === "solana") {
+      if (
+        !validateSolanaSignature(
+          // Legacy onboarding signs the whole body
+          Buffer.from(JSON.stringify(body), "utf8"),
+          decode(c.req.header("x-backpack-signature")),
+          decode(result.data.publicKey)
+        )
+      ) {
+        throw new Error("Invalid Solana signature");
+      }
+    } else {
+      if (
+        !validateEthereumSignature(
+          // Legacy onboarding signs the whole body
+          Buffer.from(JSON.stringify(body), "utf8"),
+          c.req.header("x-backpack-signature"),
+          result.data.publicKey
+        )
+      ) {
+        throw new Error("Invalid Ethereum signature");
+      }
+    }
+    // Legacy onboarding was successfully parsed
+    ({ username, inviteCode, waitlistId } = result.data);
+    // A single blockchain
+    publicKeys = [
+      { blockchain: result.data.blockchain, publickey: result.data.publicKey },
+    ];
+  } else {
+    // New multichain onboarding
+    const data = CreateUserWithKeyrings.parse(body);
+    for (const blockchainPublicKey of data.blockchainPublicKeys) {
+      if (blockchainPublicKey.blockchain === "solana") {
+        if (
+          !validateSolanaSignature(
+            Buffer.from(data.inviteCode, "utf8"),
+            decode(blockchainPublicKey.signature),
+            decode(blockchainPublicKey.publicKey)
+          )
+        ) {
+          throw new Error("Invalid Solana signature");
+        }
+      } else {
+        if (
+          !validateEthereumSignature(
+            Buffer.from(data.inviteCode, "utf8"),
+            blockchainPublicKey.signature,
+            blockchainPublicKey.publicKey
+          )
+        ) {
+          throw new Error("Invalid Ethereum signature");
+        }
+      }
+    }
 
-  if (!isValidSignature) {
-    throw new Error("Invalid signature");
+    ({ username, inviteCode, waitlistId } = data);
+    publicKeys = data.blockchainPublicKeys.map((b) => ({
+      blockchain: b.blockchain,
+      publickey: b.publicKey,
+    }));
   }
 
   const chain = Chain(c.env.HASURA_URL, {
@@ -198,11 +294,12 @@ app.post("/users", async (c) => {
     insert_auth_users_one: [
       {
         object: {
-          username: variables.username,
-          invitation_id: variables.inviteCode,
-          pubkey: variables.publicKey,
-          waitlist_id: variables.waitlistId,
-          blockchain: variables.blockchain,
+          username: username,
+          invitation_id: inviteCode,
+          waitlist_id: waitlistId,
+          publickeys: {
+            data: publicKeys!,
+          },
         },
       },
       {
@@ -213,17 +310,17 @@ app.post("/users", async (c) => {
 
   if (c.env.SLACK_WEBHOOK_URL) {
     try {
+      const publicKeyStr = publicKeys!
+        .map((b) => `${b.blockchain.substring(0, 3)}: ${b.publicKey}`)
+        .join(", ");
       await fetch(c.env.SLACK_WEBHOOK_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          text: [
-            variables.username,
-            `${variables.blockchain.substring(0, 3)}: ${variables.publicKey}`,
-          ].join("\n"),
-          icon_url: `https://avatars.xnfts.dev/v1/${variables.username}`,
+          text: [username, publicKeyStr].join("\n"),
+          icon_url: `https://avatars.xnfts.dev/v1/${username}`,
         }),
       });
     } catch (err) {
@@ -233,5 +330,44 @@ app.post("/users", async (c) => {
 
   return c.json(res);
 });
+
+const validateEthereumSignature = (
+  msg: Buffer,
+  signature: string,
+  publicKey: string
+) => {
+  return ethers.utils.verifyMessage(msg, signature) === publicKey;
+};
+
+const validateSolanaSignature = (
+  msg: Buffer,
+  signature: Uint8Array,
+  publicKey: Uint8Array
+) => {
+  if (sign.detached.verify(msg, signature, publicKey)) {
+    return true;
+  }
+
+  try {
+    // This might be a Solana transaction because that is used for Ledger which
+    // does not support signMessage
+    const tx = new Transaction();
+    tx.add(
+      new TransactionInstruction({
+        programId: new PublicKey(publicKey),
+        keys: [],
+        data: msg,
+      })
+    );
+    tx.feePayer = new PublicKey(publicKey);
+    // Not actually needed as it's not transmitted to the network
+    tx.recentBlockhash = tx.feePayer.toString();
+    tx.addSignature(new PublicKey(publicKey), Buffer.from(signature));
+    return tx.verifySignatures();
+  } catch (err) {
+    console.error("dummy solana transaction error", err);
+    return false;
+  }
+};
 
 export default app;

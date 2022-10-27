@@ -5,6 +5,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useNavigate,
 } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { Typography } from "@mui/material";
@@ -154,6 +155,7 @@ function PluginDrawer() {
   const pluginProps = searchParams.get("pluginProps");
   const { xnftAddress } = JSON.parse(decodeURIComponent(pluginProps!));
   const xnftPlugin = useFreshPlugin(xnftAddress);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!openDrawer && xnftPlugin.state) {
@@ -166,7 +168,14 @@ function PluginDrawer() {
       {xnftPlugin.result && (
         <_PluginDisplay
           plugin={xnftPlugin.result!}
-          closePlugin={() => setOpenDrawer(false)}
+          closePlugin={() => {
+            setOpenDrawer(false);
+            setTimeout(() => {
+              searchParams.delete("pluginProps");
+              const newUrl = `${location.pathname}?${searchParams.toString()}`;
+              navigate(newUrl);
+            }, 100);
+          }}
         />
       )}
     </WithDrawer>

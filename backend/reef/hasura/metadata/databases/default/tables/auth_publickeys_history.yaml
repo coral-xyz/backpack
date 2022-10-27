@@ -1,0 +1,26 @@
+table:
+  name: publickeys_history
+  schema: auth
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - blockchain
+        - publickey
+        - user_id
+select_permissions:
+  - role: appstore
+    permission:
+      columns:
+        - blockchain
+        - publickey
+        - user_id
+      filter: {}
+  - role: auth_worker
+    permission:
+      columns:
+        - blockchain
+        - publickey
+        - user_id
+      filter: {}

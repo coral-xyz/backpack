@@ -49,7 +49,7 @@ export type SelectedAccount = {
 };
 
 const LOAD_PUBKEY_AMOUNT = 20;
-const DISPLAY_PUBKEY_AMOUNT = 6;
+const DISPLAY_PUBKEY_AMOUNT = 5;
 
 export function ImportAccounts({
   blockchain,
@@ -79,7 +79,7 @@ export function ImportAccounts({
   const [ledgerLocked, setLedgerLocked] = useState(false);
   const [importedPubkeys, setImportedPubkeys] = useState<string[]>([]);
   const [derivationPath, setDerivationPath] = useState<DerivationPath>(
-    DerivationPath.Bip44
+    DerivationPath.Default
   );
 
   useEffect(() => {
@@ -316,9 +316,9 @@ export function ImportAccounts({
             marginTop: "24px",
           }}
         >
-          <Header text="Import accounts" />
+          <Header text={`Import account${allowMultiple ? "s" : ""}`} />
           <SubtextParagraph>
-            Select which account{allowMultiple && "s"} you'd like to import.
+            Select which account{allowMultiple ? "s" : ""} you'd like to import.
           </SubtextParagraph>
         </Box>
         <div style={{ margin: "16px" }}>
@@ -428,7 +428,7 @@ export function ImportAccounts({
         }}
       >
         <PrimaryButton
-          label={`Import Account${allowMultiple && "s"}`}
+          label={`Import Account${allowMultiple ? "s" : ""}`}
           onClick={() => onNext(selectedAccounts, derivationPath, mnemonic)}
           disabled={selectedAccounts.length === 0}
         />

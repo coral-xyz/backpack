@@ -2,6 +2,7 @@ import { useDarkMode, useUsername } from "@coral-xyz/recoil";
 import { useEffect } from "react";
 import { useNavStack } from "./Layout/NavStack";
 import SocialNavbarButtons from "./SocialNavbarButtons";
+import { WithNav } from "../common/Layout/Nav";
 
 const WAITLIST_RES_ID_KEY = "waitlist-form-res-id";
 
@@ -37,20 +38,32 @@ const WaitingRoom = ({ onboarded }: { onboarded?: boolean }) => {
   }, []);
 
   return (
-    <iframe
-      style={{
-        border: "none",
-        height: "98%",
-        width: "100%",
-        overflow: "hidden",
+    <WithNav
+      navButtonRight={<SocialNavbarButtons />}
+      navbarStyle={{
+        borderRadius: "12px",
       }}
-      allow="clipboard-read; clipboard-write"
-      src={`https://beta-waiting-room.vercel.app/?id=${
-        onboarded ? useUsername() : getWaitlistId()
-      }&onboarded=${onboarded ?? false}&theme=${
-        isDarkMode ? "dark" : "light"
-      }&v=2`}
-    />
+      navContentStyle={{
+        borderRadius: "12px",
+        overflow: "hidden",
+        display: "flex",
+      }}
+    >
+      <iframe
+        style={{
+          border: "none",
+          height: "98%",
+          width: "100%",
+          overflow: "hidden",
+        }}
+        allow="clipboard-read; clipboard-write"
+        src={`https://beta-waiting-room.vercel.app/?id=${
+          onboarded ? useUsername() : getWaitlistId()
+        }&onboarded=${onboarded ?? false}&theme=${
+          isDarkMode ? "dark" : "light"
+        }&v=2`}
+      />
+    </WithNav>
   );
 };
 

@@ -12,7 +12,12 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useTab, useWalletName, useBackgroundClient } from "@coral-xyz/recoil";
+import {
+  useKeyringType,
+  useTab,
+  useWalletName,
+  useBackgroundClient,
+} from "@coral-xyz/recoil";
 import { ActionCard } from "../../../common/Layout/ActionCard";
 import { HardwareWalletIcon, CheckIcon } from "../../../common/Icon";
 import { Header, SubtextParagraph } from "../../../common";
@@ -30,6 +35,7 @@ export function AddConnectWalletMenu({
 }) {
   const nav = useNavStack();
   const background = useBackgroundClient();
+  const keyringType = useKeyringType();
   const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [newPublicKey, setNewPublicKey] = useState("");
@@ -57,32 +63,34 @@ export function AddConnectWalletMenu({
         </Box>
         <Box sx={{ margin: "0 16px" }}>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={
-                  <AddCircle
-                    style={{
-                      color: theme.custom.colors.icon,
-                    }}
-                  />
-                }
-                text="Create a new wallet"
-                onClick={async () => {
-                  const newPubkey = await background.request({
-                    method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-                    params: [blockchain],
-                  });
+            {keyringType === "mnemonic" && (
+              <Grid item xs={6}>
+                <ActionCard
+                  icon={
+                    <AddCircle
+                      style={{
+                        color: theme.custom.colors.icon,
+                      }}
+                    />
+                  }
+                  text="Create a new wallet"
+                  onClick={async () => {
+                    const newPubkey = await background.request({
+                      method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+                      params: [blockchain],
+                    });
 
-                  await background.request({
-                    method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-                    params: [newPubkey, blockchain],
-                  });
+                    await background.request({
+                      method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+                      params: [newPubkey, blockchain],
+                    });
 
-                  setNewPublicKey(newPubkey);
-                  setOpenDrawer(true);
-                }}
-              />
-            </Grid>
+                    setNewPublicKey(newPubkey);
+                    setOpenDrawer(true);
+                  }}
+                />
+              </Grid>
+            )}
             <Grid item xs={6}>
               <ActionCard
                 icon={
@@ -92,7 +100,7 @@ export function AddConnectWalletMenu({
                     }}
                   />
                 }
-                text="Import an existing wallet"
+                text="Import a private key"
                 onClick={() => nav.push("import-secret-key", { blockchain })}
               />
             </Grid>
@@ -107,7 +115,7 @@ export function AddConnectWalletMenu({
                     }}
                   />
                 }
-                text="Connect a hardware wallet"
+                text="Import from hardware wallet"
                 onClick={() => {
                   openConnectHardware(blockchain);
                   window.close();

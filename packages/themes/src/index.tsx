@@ -4,6 +4,7 @@ import createStyles from "@mui/styles/createStyles";
 
 export const HOVER_OPACITY = 0.8;
 
+const TEXT_COLOR = "#fff";
 const BACKGROUND_COLOR_0 = "#18181b";
 const BACKGROUND_BACKDROP_COLOR = BACKGROUND_COLOR_0;
 const BACKGROUND_COLOR_1 = "#27272a";
@@ -20,6 +21,7 @@ const POSITIVE_COLOR = "#35A63A";
 const NEGATIVE_COLOR = "#E95050";
 const SCROLLBAR_THUMB_COLOR = "rgb(153 164 180)";
 
+const LIGHT_TEXT_COLOR = FONT_COLOR_1;
 const LIGHT_BACKGROUND_BACKDROP_COLOR =
   "linear-gradient(180deg, #F8F8F9 0%, #F0F0F2 100%), #FFFFFF";
 const LIGHT_BACKGROUND_COLOR_0 = "#F0F0F2";
@@ -144,6 +146,7 @@ export const darkTheme: any = {
       approveTransactionCloseBackground: BACKGROUND_COLOR_0,
       hoverIconBackground: `rgb(39, 39, 42, ${HOVER_OPACITY})`,
       avatarIconBackground: "#DFE0E5",
+      text: TEXT_COLOR,
 
       dangerButton: DANGER_COLOR,
       alpha: "#8F929E",
@@ -250,6 +253,7 @@ export const lightTheme: any = {
       approveTransactionCloseBackground: "#C2C4CC",
       hoverIconBackground: LIGHT_ICON_HOVER_COLOR,
       avatarIconBackground: "#DFE0E5",
+      text: LIGHT_TEXT_COLOR,
 
       dangerButton: DANGER_COLOR,
       alpha: "#8F929E",
