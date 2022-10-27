@@ -19,11 +19,15 @@ const useStyles = styles((theme) => ({
     marginRight: "12px",
     borderRadius: "12px",
     border: theme.custom.colors.borderFull,
-    height: "154px",
+    height: "117px",
     background: "url(https://xnft.wao.gg/one-entry-bg.png)",
-    // background: "url(/assets/one-entry-bg.png)",
-    backgroundPosition: "center",
+    backgroundSize: "347px 234px",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "0px 0px",
     cursor: "pointer",
+    "&:hover": {
+      backgroundPosition: "0px -117px",
+    },
   },
 
   cta: {
@@ -86,10 +90,10 @@ export default function EntryONE() {
   };
 
   return (
-    <Card onClick={openXNFT} className={classes.blockchainCard} elevation={0}>
-      <Typography className={classes.cta}>
-        Claim your ONE whitelist <East className={classes.arrow} />
-      </Typography>
-    </Card>
+    <Card
+      onClick={openXNFT}
+      className={classes.blockchainCard}
+      elevation={0}
+    ></Card>
   );
 }
