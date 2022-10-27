@@ -220,6 +220,7 @@ export const OnboardAccount = ({
               setOpenDrawer(false);
             }}
             onClose={() => setOpenDrawer(false)}
+            requireSignature={!!BACKPACK_FEATURE_USERNAMES}
           />
         ) : (
           <ImportAccounts
