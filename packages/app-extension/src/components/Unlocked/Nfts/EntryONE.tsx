@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useBackgroundClient, useUsername } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
 import { useLocation } from "react-router-dom";
-import { East } from "@mui/icons-material";
 
 const useStyles = styles((theme) => ({
   blockchainCard: {
@@ -28,21 +27,6 @@ const useStyles = styles((theme) => ({
     "&:hover": {
       backgroundPosition: "0px -117px",
     },
-  },
-
-  cta: {
-    fontFamily: theme.fontFamily,
-    color: "#fff",
-    padding: "16px",
-    fontSize: "16px",
-    lineHeight: "24px",
-  },
-
-  arrow: {
-    top: "4px",
-    height: "19px",
-    position: "relative",
-    left: "-1px",
   },
 }));
 
