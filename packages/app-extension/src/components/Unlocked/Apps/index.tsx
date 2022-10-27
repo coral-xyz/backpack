@@ -101,14 +101,6 @@ function PluginGrid() {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const background = useBackgroundClient();
-  const xnftAddress = searchParams.get("plugin");
-  const [openDrawer, setOpenDrawer] = useState(
-    xnftAddress !== undefined && xnftAddress !== null
-  );
-
-  useEffect(() => {
-    setOpenDrawer(xnftAddress !== undefined && xnftAddress !== null);
-  }, [xnftAddress]);
 
   const onClickPlugin = (p: any) => {
     // Update the URL to use the plugin.
@@ -131,50 +123,23 @@ function PluginGrid() {
       .catch(console.error);
   };
 
-  const closePlugin = () => {
-    setOpenDrawer(false);
-
-    // Bit of a hack. Would be better to have a callback on the drawer animation closing.
-    // Also, there's a potential race condition between this request persisting
-    // and the user navigating to another url before that completing. In practice,
-    // it's not a problem because this happens so quickly relative to the next
-    // user action. If there's a bug, investigate this. :)
-    setTimeout(() => {
-      searchParams.delete("plugin");
-      const newUrl = `${location.pathname}?${searchParams.toString()}`;
-      background
-        .request({
-          method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
-          params: [newUrl],
-        })
-        .catch(console.error);
-    }, 100);
-  };
-
   return (
-    <>
-      <Grid container style={{}}>
-        {plugins.map((p: any, idx: number) => {
-          return (
-            <Grid
-              item
-              key={p.url}
-              xs={3}
-              style={{
-                marginTop: idx >= 4 ? "24px" : 0,
-              }}
-            >
-              <PluginIcon plugin={p} onClick={() => onClickPlugin(p)} />
-            </Grid>
-          );
-        })}
-      </Grid>
-      <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        {xnftAddress && (
-          <PluginApp xnftAddress={xnftAddress} closePlugin={closePlugin} />
-        )}
-      </WithDrawer>
-    </>
+    <Grid container style={{}}>
+      {plugins.map((p: any, idx: number) => {
+        return (
+          <Grid
+            item
+            key={p.url}
+            xs={3}
+            style={{
+              marginTop: idx >= 4 ? "24px" : 0,
+            }}
+          >
+            <PluginIcon plugin={p} onClick={() => onClickPlugin(p)} />
+          </Grid>
+        );
+      })}
+    </Grid>
   );
 }
 

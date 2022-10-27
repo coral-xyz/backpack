@@ -39,3 +39,4 @@ test-ledger/
 *-e
 
 .yarnrc
+packages/app-extension/src/assets/one-entry-bg.png

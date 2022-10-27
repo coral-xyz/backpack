@@ -23,6 +23,7 @@ import {
   BalancesTableContent,
   BalancesTableHead,
 } from "../Balances";
+import EntryONE from "./EntryONE";
 
 const useStyles = styles(() => ({
   cardContentContainer: {
@@ -46,6 +47,7 @@ export function Nfts() {
 
   return (
     <>
+      <EntryONE />
       {Object.values(collections).flat().length === 0 && !isLoading ? (
         <EmptyState
           icon={(props: any) => <ImageIcon {...props} />}
