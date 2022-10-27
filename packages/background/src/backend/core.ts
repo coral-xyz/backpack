@@ -56,12 +56,7 @@ import { BlockchainKeyring } from "./keyring/blockchain";
 import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
-import {
-  getWalletData,
-  setWalletData,
-  DEFAULT_DARK_MODE,
-  setFeatureGates,
-} from "./store";
+import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
 
 const { base58: bs58 } = ethers.utils;
 
