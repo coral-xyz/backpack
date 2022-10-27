@@ -5,3 +5,9 @@ export type RpcRequest = {
 };
 
 export type Event = any;
+
+export interface XnftMetadata {
+  isDarkMode: boolean;
+  username?: string;
+  avatarUrl: string;
+}

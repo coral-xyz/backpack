@@ -33,11 +33,11 @@ import {
   PLUGIN_NOTIFICATION_UPDATE_METADATA,
 } from "./constants";
 
-import { getLogger, Event } from "@coral-xyz/common-public";
+import { getLogger, Event, XnftMetadata } from "@coral-xyz/common-public";
 import { BackgroundClient } from "./channel/app-ui";
 import { PluginServer } from "./channel/plugin";
 
-import { XnftMetadata, Blockchain, RpcResponse } from "./types";
+import { Blockchain, RpcResponse } from "./types";
 
 const logger = getLogger("common/plugin");
 

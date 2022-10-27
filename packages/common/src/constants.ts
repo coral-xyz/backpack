@@ -102,6 +102,10 @@ export const UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD =
   "ui-rpc-method-blockchains-enabled-add";
 export const UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE =
   "ui-rpc-method-blockchains-enabled-delete";
+export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD =
+  "ui-rpc-method-blockchain-keyrings-add";
+export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ =
+  "ui-rpc-method-blockchain-keyrings-read";
 export const UI_RPC_METHOD_KEYNAME_READ = "ui-rpc-method-keyname-read";
 export const UI_RPC_METHOD_KEYNAME_UPDATE = "ui-rpc-method-keyname-update";
 export const UI_RPC_METHOD_KEYRING_ACTIVE_WALLETS =
@@ -138,6 +142,8 @@ export const UI_RPC_METHOD_KEYRING_STORE_STATE =
   "ui-rpc-method-keyring-store-state";
 export const UI_RPC_METHOD_KEYRING_STORE_UNLOCK =
   "ui-rpc-method-keyring-store-unlock";
+export const UI_RPC_METHOD_KEYRING_TYPE_READ =
+  "ui-rpc-method-keyring-type-read";
 export const UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC =
   "ui-rpc-method-validate-mnemonic";
 export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
@@ -162,6 +168,8 @@ export const UI_RPC_METHOD_SETTINGS_DARK_MODE_READ =
   "ui-rpc-method-settings-dark-mode-read";
 export const UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE =
   "ui-rpc-method-settings-dark-mode-update";
+export const UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET =
+  "ui-rpc-method-sign-message-for-wallet";
 export const UI_RPC_METHOD_USERNAME_READ = "ui-rpc-method-username-read";
 // Solana
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ =

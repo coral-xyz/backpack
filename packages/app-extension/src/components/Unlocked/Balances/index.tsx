@@ -35,7 +35,7 @@ export function Balances() {
           marginBottom: "32px",
         }}
       >
-        <TransferWidget />
+        <TransferWidget rampEnabled={true} />
       </div>
       <TokenTables
         onClickRow={onClickTokenRow}

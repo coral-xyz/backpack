@@ -51,7 +51,6 @@ export function xnftUrl(url: string) {
   const uri = externalResourceUri(url);
   return [PROXY_URL, uri].join("");
 }
-
 //
 // For now we just provide some default apps.
 //

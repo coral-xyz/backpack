@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { Event } from "@coral-xyz/common-public";
-import { XnftMetadata } from "@coral-xyz/common";
+import { Event, XnftMetadata } from "@coral-xyz/common-public";
 
 /*
  * @Depreciated over usePublicKeys

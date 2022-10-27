@@ -1,6 +1,10 @@
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
-import type { EventEmitter, DerivationPath } from "@coral-xyz/common";
+import type {
+  EventEmitter,
+  DerivationPath,
+  KeyringInit,
+} from "@coral-xyz/common";
 import {
   Blockchain,
   EthereumExplorer,
@@ -26,7 +30,7 @@ export class KeyringStore {
   private password?: string;
   private autoLockInterval?: ReturnType<typeof setInterval>;
   private events: EventEmitter;
-  private mnemonic: string;
+  private mnemonic?: string;
 
   constructor(events: EventEmitter) {
     this.blockchains = new Map();
@@ -46,31 +50,32 @@ export class KeyringStore {
 
   // Initializes the keystore for the first time.
   public async init(
-    blockchain: Blockchain,
-    mnemonic: string,
-    derivationPath: DerivationPath,
+    username: string,
     password: string,
-    accountIndices: Array<number>,
-    username: string
+    keyringInit: KeyringInit
   ) {
     this.password = password;
-    this.mnemonic = mnemonic;
+    this.mnemonic = keyringInit.mnemonic;
 
-    // Init Solana
-    const keyring = await this.initBlockchainKeyring(
-      derivationPath,
-      accountIndices,
-      blockchain,
-      // Don't persist, as we persist manually later
-      false
-    );
+    for (const blockchainKeyring of keyringInit.blockchainKeyrings) {
+      await this.blockchainKeyringAdd(
+        blockchainKeyring.blockchain,
+        blockchainKeyring.derivationPath,
+        blockchainKeyring.accountIndex,
+        blockchainKeyring.publicKey,
+        // Don't persist, as we persist manually later
+        false
+      );
+    }
 
     // Persist the initial wallet ui metadata.
     await store.setWalletData({
       username,
       autoLockSecs: store.DEFAULT_LOCK_INTERVAL_SECS,
       approvedOrigins: [],
-      enabledBlockchains: [blockchain],
+      enabledBlockchains: keyringInit.blockchainKeyrings.map(
+        (k) => k.blockchain
+      ),
       darkMode: DEFAULT_DARK_MODE,
       solana: {
         explorer: SolanaExplorer.DEFAULT,
@@ -88,29 +93,61 @@ export class KeyringStore {
 
     // Automatically lock the store when idle.
     await this.tryUnlock(password);
-
-    return keyring;
   }
 
-  // Initialise a blockchain keyring.
-  public async initBlockchainKeyring(
-    derivationPath: DerivationPath,
-    accountIndices: Array<number>,
+  /**
+   * Initialise a blockchain keyring.
+   */
+  public async blockchainKeyringAdd(
     blockchain: Blockchain,
+    derivationPath: DerivationPath,
+    accountIndex: number,
+    publicKey?: string,
     persist = true
-  ): Promise<BlockchainKeyring> {
+  ): Promise<void> {
     const keyring = {
       [Blockchain.SOLANA]: BlockchainKeyring.solana,
       [Blockchain.ETHEREUM]: BlockchainKeyring.ethereum,
     }[blockchain]();
-    await keyring.init(this.mnemonic, derivationPath, accountIndices);
+
+    if (this.mnemonic) {
+      // Initialising using a mnemonic
+      await keyring.initFromMnemonic(this.mnemonic, derivationPath, [
+        accountIndex,
+      ]);
+    } else {
+      if (!publicKey)
+        throw new Error(
+          "initialising keyring with hardware wallet requires publickey"
+        );
+      // Initialising using a hardware wallet
+      await keyring.initFromLedger([
+        {
+          path: derivationPath,
+          account: accountIndex,
+          publicKey,
+        },
+      ]);
+    }
+
     this.blockchains.set(blockchain, keyring);
+
     if (persist) {
       await this.persist();
     }
-    return keyring;
   }
 
+  /**
+   * Return all the blockchains that have an initialised keyring even if they
+   * are not enabled.
+   */
+  public blockchainKeyrings(): Array<Blockchain> {
+    return [...this.blockchains.keys()].map((b) => b as Blockchain);
+  }
+
+  /**
+   * Check if a password is valid by attempting to decrypt the stored keyring.
+   */
   public async checkPassword(password: string) {
     try {
       await this.decryptKeyringFromStorage(password);
@@ -229,6 +266,7 @@ export class KeyringStore {
 
   public exportMnemonic(password: string): string {
     return this.withPassword(password, () => {
+      if (!this.mnemonic) throw new Error("keyring uses a hardware wallet");
       return this.mnemonic;
     });
   }
@@ -389,6 +427,9 @@ export class KeyringStore {
     this.lastUsedTs = Date.now() / 1000;
   }
 
+  /**
+   * Return all the enabled blockchains.
+   */
   public async enabledBlockchains(): Promise<Array<Blockchain>> {
     const data = await store.getWalletData();
     if (!data.enabledBlockchains) {
@@ -466,5 +507,9 @@ export class KeyringStore {
       }
     }
     throw new Error(`no keyring for ${publicKey}`);
+  }
+
+  public hasMnemonic(): boolean {
+    return !!this.mnemonic;
   }
 }

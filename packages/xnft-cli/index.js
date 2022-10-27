@@ -138,6 +138,7 @@ program
           <head>
             <meta charset="utf-8"/>
             <link rel="stylesheet" href="https://doof72pbjabye.cloudfront.net/fonts/inter/font.css"></link>
+            <script src="https://cdn.tailwindcss.com"></script>
           </head>
           <title>simulator</title>
           <body>
@@ -154,8 +155,6 @@ program
     });
   });
 
-program.parse();
-
 program
   .command("init")
   .argument("<name>", "name of the xnft")
@@ -170,3 +169,5 @@ program
     console.debug(`cd ${name}`);
     console.debug(`yarn && yarn dev`);
   });
+
+program.parse();

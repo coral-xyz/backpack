@@ -1,5 +1,7 @@
 - "!include appstore_pending_curator_reviews.yaml"
 - "!include auth_invitations.yaml"
+- "!include auth_publickeys.yaml"
+- "!include auth_publickeys_history.yaml"
 - "!include auth_users.yaml"
 - "!include public_images.yaml"
 - "!include public_invitations.yaml"

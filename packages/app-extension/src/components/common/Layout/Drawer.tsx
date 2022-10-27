@@ -64,9 +64,17 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function WithDrawer(props: any) {
+export function WithDrawer(
+  props: PropsWithChildren<{
+    backdropStyles?: CSSProperties;
+    openDrawer: boolean;
+    paperStyles?: CSSProperties;
+    setOpenDrawer: Dispatch<SetStateAction<boolean>>;
+  }>
+) {
   const classes = useStyles();
-  const { children, openDrawer, setOpenDrawer } = props;
+  const { backdropStyles, children, openDrawer, paperStyles, setOpenDrawer } =
+    props;
   return (
     <DrawerProvider setOpenDrawer={setOpenDrawer}>
       <Drawer
@@ -76,6 +84,16 @@ export function WithDrawer(props: any) {
         classes={{
           root: classes.drawerRoot,
           paper: classes.drawerPaper,
+        }}
+        PaperProps={{
+          style: {
+            ...paperStyles,
+          },
+        }}
+        BackdropProps={{
+          style: {
+            ...backdropStyles,
+          },
         }}
         id="drawer"
       >
