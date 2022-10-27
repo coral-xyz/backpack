@@ -311,7 +311,7 @@ app.post("/users", async (c) => {
   if (c.env.SLACK_WEBHOOK_URL) {
     try {
       const publicKeyStr = publicKeys!
-        .map((b) => `${b.blockchain.substring(0, 3)}: ${b.publicKey}`)
+        .map((b) => `${b.blockchain.substring(0, 3)}: ${b.publickey}`)
         .join(", ");
       await fetch(c.env.SLACK_WEBHOOK_URL, {
         method: "POST",
