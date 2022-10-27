@@ -1,27 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Scrollbars } from "react-custom-scrollbars";
 import type { Element } from "react-xnft";
-import { motion, AnimatePresence } from "framer-motion";
 import { NodeKind } from "react-xnft";
+import { AnimatePresence, motion } from "framer-motion";
 import { formatUSD, proxyImageUrl } from "@coral-xyz/common";
-import { useCustomTheme, styles } from "@coral-xyz/themes";
+import { styles } from "@coral-xyz/themes";
 import {
-  Button as MuiButton,
   Card,
   CardContent,
   CardHeader,
+  CircularProgress,
   List,
   ListItem,
   ListItemIcon,
   Typography,
-  TextField as MuiTextField,
-  CircularProgress,
 } from "@mui/material";
-import { TextareaAutosize as MuiTextArea } from "@mui/base";
-import { ExpandMore, ExpandLess } from "@mui/icons-material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { ViewRenderer } from "./ViewRenderer";
-import { useDomContext } from "./Context";
 import { ScrollbarNew } from "./components/Scrollbar";
+import { useDefaultClasses } from "./theme/defaults";
 
 const useStyles = styles((theme) => ({
   blockchainLogo: {
@@ -146,62 +142,6 @@ const useStyles = styles((theme) => ({
   },
   tokenListItemIconRoot: {
     minWidth: "44px",
-  },
-  textFieldInput: {
-    fontWeight: 500,
-    borderRadius: "12px",
-    fontSize: "16px",
-    lineHeight: "24px",
-  },
-  textAreaInput: {
-    fontWeight: 500,
-    borderRadius: "12px",
-    fontSize: "16px",
-    lineHeight: "24px",
-    padding: "16.5px 14px",
-    font: "inherit",
-    background: theme.custom.colors.textBackground,
-    border: `2pt solid ${theme.custom.colors.textBackground}`,
-    "&:hover": {
-      border: `2pt solid ${theme.custom.colors.primaryButton}`,
-    },
-    "&:focus": {
-      border: `2pt solid ${theme.custom.colors.primaryButton}`,
-      outline: "none",
-    },
-  },
-  textFieldInputColorEmpty: {
-    color: theme.custom.colors.textPlaceholder,
-  },
-  textFieldInputColor: {
-    color: theme.custom.colors.fontColor2,
-  },
-  textFieldRoot: {
-    "& .MuiOutlinedInput-root": {
-      background: theme.custom.colors.textBackground,
-      borderRadius: "12px",
-      "& fieldset": {
-        border: `${theme.custom.colors.borderFull}`,
-      },
-      "&:hover fieldset": {
-        border: `solid 2pt ${theme.custom.colors.primaryButton}`,
-      },
-      "&.Mui-focused fieldset": {
-        border: `solid 2pt ${theme.custom.colors.primaryButton} !important`,
-        borderColor: `${theme.custom.colors.primaryButton} !important`,
-      },
-    },
-  },
-  textRootError: {
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        border: `solid 2pt ${theme.custom.colors.negative} !important`,
-      },
-      "&.Mui-focused fieldset": {
-        border: `solid 2pt ${theme.custom.colors.negative} !important`,
-        borderColor: `${theme.custom.colors.negative} !important`,
-      },
-    },
   },
   expand: {
     width: "18px",
@@ -336,7 +276,7 @@ export function Component({ viewData }) {
 function Custom({ children, component, props }) {
   const el = React.createElement(
     component,
-    props,
+    { ...props, className: props.tw + " " + props.className },
     children.map((c) => <ViewRenderer key={c.id} element={c} />)
   );
   return el;
@@ -345,6 +285,7 @@ function Custom({ children, component, props }) {
 function Svg({ props, children }: any) {
   return (
     <svg
+      className={props.tw}
       width={props.width}
       height={props.height}
       viewBox={props.viewBox}
@@ -732,7 +673,7 @@ export function BalancesTableFooter({ props, style, children }: any) {
 
 function View({ id, props, style, children }: any) {
   return (
-    <div style={style} onClick={props.onClick}>
+    <div style={style} onClick={props.onClick} className={props.tw}>
       {children.map((c: Element) => (
         <ViewRenderer key={c.id} element={c} />
       ))}
@@ -745,18 +686,13 @@ function Table({ props, style, children }: any) {
 }
 
 function Text({ props, children, style }: any) {
-  const theme = useCustomTheme();
-  style = {
-    color: theme.custom.colors.text,
-    fontWeight: 500,
-    ...style,
-  };
+  const defaultClasses = useDefaultClasses();
   return (
-    <Typography style={style}>
+    <p style={style} className={defaultClasses[NodeKind.Text] + " " + props.tw}>
       {children.map((c: Element) => (
         <ViewRenderer key={c.id} element={c} />
       ))}
-    </Typography>
+    </p>
   );
 }
 
@@ -769,7 +705,6 @@ function _TextField({ id, props, children, style }: any) {
         maxRows={props.numberOfLines}
         minRows={props.numberOfLines}
         onChange={props.onChange}
-        children={children}
         style={style}
       />
     );
@@ -792,96 +727,43 @@ export function TextArea({
   onChange,
   placeholder,
   style,
-  className = "",
 }: any) {
-  const classes = useStyles();
-  className =
-    className +
-    `${classes.textAreaInput} ${
-      value ? classes.textFieldInputColor : classes.textFieldInputColorEmpty
-    }
-    `;
+  const defaultClasses = useDefaultClasses();
   return (
-    <MuiTextArea
-      maxRows={maxRows}
-      minRows={minRows}
+    <textarea
+      rows={minRows}
+      style={style}
+      className={defaultClasses[NodeKind.TextField]}
+      value={value}
       onChange={onChange}
       placeholder={placeholder}
-      style={{
-        width: "100%",
-        ...style,
-      }}
-      value={value}
-      className={className}
     />
   );
 }
 
-export function TextField({
-  placeholder,
-  type,
-  value,
-  onChange,
-  rootClass,
-  startAdornment,
-  endAdornment,
-  isError,
-  inputProps,
-  disabled,
-  autoFocus,
-  rows,
-  select,
-  children,
-  style,
-}: any) {
-  const classes = useStyles();
-  inputProps = Object.assign(
-    {
-      className: `${classes.textFieldInput} ${
-        value ? classes.textFieldInputColor : classes.textFieldInputColorEmpty
-      }`,
-    },
-    inputProps
-  );
+export function TextField({ placeholder, type, value, onChange, style }: any) {
+  const defaultClasses = useDefaultClasses();
   return (
-    <MuiTextField
-      autoFocus={autoFocus}
-      multiline={!!rows}
-      rows={rows}
-      disabled={disabled}
-      placeholder={placeholder}
-      variant="outlined"
-      margin="dense"
-      required
-      fullWidth
+    <input
       type={type}
-      inputProps={inputProps}
-      classes={{
-        root: `${isError ? classes.textRootError : ""} ${
-          classes.textFieldRoot
-        } ${rootClass ?? ""}`,
-      }}
-      InputLabelProps={{
-        shrink: false,
-        style: {
-          borderRadius: "12px",
-        },
-      }}
-      InputProps={{
-        startAdornment,
-        endAdornment,
-      }}
+      style={style}
+      className={defaultClasses[NodeKind.TextField]}
       value={value}
       onChange={onChange}
-      select={select}
-      children={children}
-      style={style}
+      placeholder={placeholder}
     />
   );
 }
 
 function Image({ id, props, style }: any) {
-  return <ProxyImage src={props.src} style={style} onClick={props.onClick} />;
+  return (
+    <ProxyImage
+      className={props.tw}
+      src={props.src}
+      style={style}
+      onClick={props.onClick}
+    />
+  );
 }
 
 function ProxyImage(props: any) {
@@ -929,18 +811,11 @@ export function __Button({
   children,
   childrenRenderer,
 }: any) {
-  const classes = useStyles();
-  const theme = useCustomTheme();
+  const defaultClasses = useDefaultClasses();
   return (
-    <MuiButton
-      disableElevation
-      variant="contained"
-      disableRipple
+    <button
+      className={defaultClasses[NodeKind.Button] + " " + (props.tw || "")}
       style={{
-        borderRadius: "12px",
-        width: "100px",
-        textTransform: "none",
-        backgroundColor: theme.custom.colors.nav,
         ...style,
       }}
       onClick={onClick}
@@ -949,7 +824,7 @@ export function __Button({
         childrenRenderer.map((c: Element) => (
           <ViewRenderer key={c.id} element={c} />
         ))}
-    </MuiButton>
+    </button>
   );
 }
 
@@ -989,7 +864,6 @@ function ScrollBar({ id, props, style, children }: any) {
 }
 
 export function ScrollBarImpl(props: any) {
-  const theme = useCustomTheme();
   return (
     <>
       <ScrollbarNew {...props}>{props.children}</ScrollbarNew>
