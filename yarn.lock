@@ -3242,6 +3242,16 @@
     axios "^0.26.1"
     bignumber.js "^9.0.2"
 
+"@ledgerhq/hw-app-solana@6.27.1":
+  version "6.27.1"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-solana/-/hw-app-solana-6.27.1.tgz#9df40918f4175b597bf7f144732615da076f6375"
+  integrity sha512-mibdrbqW8cnu+cWBpdsfbVM0GOn5sundzlVyQ9Aydddkr45NtnjHsz7Yf+/S3idLxXRE64Kat1Jkb0XYnXPHwA==
+  dependencies:
+    "@ledgerhq/errors" "^6.10.0"
+    "@ledgerhq/hw-transport" "^6.27.1"
+    "@ledgerhq/logs" "^6.10.0"
+    bip32-path "^0.4.2"
+
 "@ledgerhq/hw-app-solana@^6.27.2":
   version "6.27.4"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-solana/-/hw-app-solana-6.27.4.tgz#0aea616cd6ac19d36e2d7459642b1c46d7f4d0d6"
