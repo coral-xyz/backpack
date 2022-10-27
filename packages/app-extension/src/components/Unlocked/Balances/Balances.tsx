@@ -151,6 +151,13 @@ export function BalancesTableCell({ props, style }: any) {
   const negative = percentChange && percentChange < 0 ? true : false;
   const neutral = percentChange && percentChange === 0 ? true : false;
 
+  let trim;
+  try {
+    trim = `${subtitle.split(".")[0]}.${subtitle.split(".")[1].slice(0,5)}`;
+  } catch (e) {
+    console.error("can't trim the balance")
+  }
+
   return (
     <div className={classes.balancesTableCellContainer}>
       {!!icon && (
@@ -178,7 +185,7 @@ export function BalancesTableCell({ props, style }: any) {
         </div>
         <div className={classes.tokenListItemRow}>
           {subtitle && (
-            <Typography className={classes.tokenAmount}>{subtitle.split(".")[0]}.{subtitle.split(".")[1].slice(0,5)}</Typography>
+            <Typography className={classes.tokenAmount}>{!!trim ? trim : subtitle}</Typography>
           )}
           {percentChange !== undefined && positive && (
             <Typography className={classes.tokenBalanceChangePositive}>
