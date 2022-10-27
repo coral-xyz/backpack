@@ -27,6 +27,21 @@ export async function fetchXnfts(
     },
   ]);
 
+  /// HACK to get ONE nft installed for everyone
+  xnftInstalls.push({
+    publicKey: new PublicKey("4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4"),
+    // @ts-ignore
+    account: {
+      authority: new PublicKey("4m39tDyZcK9dgqYaBaX7PiTp1kjAKrMhNYmxDcVu3hNp"),
+      xnft: new PublicKey("4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4"),
+      masterMetadata: new PublicKey(
+        "C8ueTF7B2ozbGvAqtqwanEiGspgEeENFMywgLxXd6egB"
+      ),
+      edition: new anchor.BN("00"),
+      reserved: Array(64).fill(0),
+    },
+  });
+
   //
   // Get the metadata accounts for all xnfts.
   //
