@@ -23,7 +23,7 @@ import {
   BalancesTableContent,
   BalancesTableHead,
 } from "../Balances";
-import EntryONE from "./EntryONE";
+import EntryONE, { EntryONESkeleton } from "./EntryONE";
 import { useIsONELive } from "../../../hooks/useIsONELive";
 
 const useStyles = styles(() => ({
@@ -33,7 +33,7 @@ const useStyles = styles(() => ({
 }));
 
 export function Nfts() {
-  const isONELive = useIsONELive();
+  const [isONELive, isONELoading] = useIsONELive();
   const activeWallets = useActiveWallets();
   const enabledBlockchains = useEnabledBlockchains();
   const [collections, _, isLoading] = useLoader(
@@ -71,13 +71,14 @@ export function Nfts() {
                 justifyContent: "center",
               }}
             >
-              <EntryONE />
+              {isONELoading ? <EntryONESkeleton /> : <EntryONE />}
             </div>
           )}
         </>
       ) : (
         <>
           {isONELive && <EntryONE />}
+          {isONELoading && <EntryONESkeleton />}
           {Object.entries(collections).map(([blockchain, collections]) => (
             <NftTable
               key={blockchain}

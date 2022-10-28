@@ -163,12 +163,12 @@ export async function fetchSplMetadataUri(
           }, 5000);
           try {
             const resp = await fetch(externalResourceUri(t.account.data.uri));
-            resolve(resp);
+            resolve(await resp.json());
           } catch (err) {
             reject(err);
           }
         });
-        return await resp.json();
+        return resp;
       } catch (err) {
         console.log(`error fetching: ${t.account.data.uri}`, err);
       }

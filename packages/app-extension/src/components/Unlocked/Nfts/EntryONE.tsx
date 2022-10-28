@@ -1,8 +1,7 @@
+import { Skeleton } from "@mui/material";
 import Card from "@mui/material/Card";
 import { styles } from "@coral-xyz/themes";
-import { Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useBackgroundClient, useUsername } from "@coral-xyz/recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
 import { useLocation } from "react-router-dom";
 
@@ -64,5 +63,17 @@ export default function EntryONE() {
       className={classes.blockchainCard}
       elevation={0}
     ></Card>
+  );
+}
+
+export function EntryONESkeleton() {
+  return (
+    <Skeleton
+      height={117}
+      style={{
+        borderRadius: "12px",
+        width: "347px",
+      }}
+    />
   );
 }
