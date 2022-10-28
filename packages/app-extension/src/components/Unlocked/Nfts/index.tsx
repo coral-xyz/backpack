@@ -49,35 +49,18 @@ export function Nfts() {
 
   return (
     <>
+      {isONELive && <EntryONE />}
       {Object.values(collections).flat().length === 0 && !isLoading ? (
-        <>
-          {!isONELive ? (
-            <EmptyState
-              icon={(props: any) => <ImageIcon {...props} />}
-              title={"No NFTs"}
-              subtitle={"Get started with your first NFT"}
-              buttonText={"Browse Magic Eden"}
-              onClick={() => window.open("https://magiceden.io")}
-            />
-          ) : (
-            <div
-              style={{
-                borderRadius: "12px",
-                paddingLeft: "16px",
-                paddingRight: "16px",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-              }}
-            >
-              <EntryONE />
-            </div>
-          )}
-        </>
+        <EmptyState
+          icon={(props: any) => <ImageIcon {...props} />}
+          title={"No NFTs"}
+          subtitle={"Get started with your first NFT"}
+          buttonText={"Browse Magic Eden"}
+          onClick={() => window.open("https://magiceden.io")}
+          verticallyCentered={!isONELive}
+        />
       ) : (
         <>
-          {isONELive && <EntryONE />}
           {Object.entries(collections).map(([blockchain, collections]) => (
             <NftTable
               key={blockchain}
