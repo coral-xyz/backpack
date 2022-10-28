@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import type {
+import {
   TransactionInstruction,
   Commitment,
   Connection,
@@ -27,6 +27,7 @@ import * as assertOwner from "./programs/assert-owner";
 import { xnftClient } from "./programs/xnft";
 import { SolanaProvider } from "./provider";
 import type { BackgroundClient } from "../";
+import {withSend} from "@cardinal/token-manager";
 
 export * from "./wallet-adapter";
 export * from "./explorer";
@@ -172,6 +173,89 @@ export class Solana {
     tx.recentBlockhash = (
       await tokenClient.provider.connection.getLatestBlockhash(commitment)
     ).blockhash;
+    const signedTx = await SolanaProvider.signTransaction(ctx, tx);
+    const rawTx = signedTx.serialize();
+
+    return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
+      skipPreflight: false,
+      preflightCommitment: commitment,
+    });
+  }
+
+  public static async transferCardinalToken(
+    ctx: SolanaContext,
+    req: TransferTokenRequest
+  ): Promise<string> {
+    const { walletPublicKey, registry, tokenClient, commitment } = ctx;
+    const { mint, destination, amount } = req;
+
+    const decimals = (() => {
+      if (req.decimals !== undefined) {
+        return req.decimals;
+      }
+      const tokenInfo = registry.get(mint.toString());
+      if (!tokenInfo) {
+        throw new Error("no token info found");
+      }
+      const decimals = tokenInfo.decimals;
+      return decimals;
+    })();
+
+    const nativeAmount = new BN(amount);
+
+    const destinationAta = associatedTokenAddress(mint, destination);
+    const sourceAta = associatedTokenAddress(mint, walletPublicKey);
+
+    const [destinationAccount, destinationAtaAccount] =
+      await anchor.utils.rpc.getMultipleAccounts(
+        tokenClient.provider.connection,
+        [destination, destinationAta],
+        commitment
+      );
+
+    //
+    // Require the account to either be a system program account or a brand new
+    // account.
+    //
+    if (
+      destinationAccount &&
+      !destinationAccount.account.owner.equals(SystemProgram.programId)
+    ) {
+      throw new Error("invalid account");
+    }
+
+    // Instructions to execute prior to the transfer.
+    const transaction: Transaction = new Transaction();
+    if (!destinationAtaAccount) {
+      transaction.add(
+        assertOwner.assertOwnerInstruction({
+          account: destination,
+          owner: SystemProgram.programId,
+        })
+      );
+      transaction.add(
+        createAssociatedTokenAccountInstruction(
+          walletPublicKey,
+          destinationAta,
+          destination,
+          mint
+        )
+      );
+    }
+
+    const tx = await withSend(
+      transaction,
+      tokenClient.provider.connection,
+      (tokenClient.provider as any), // TODO: what's the alternative for anchor.wallet
+      mint,
+      sourceAta,
+      destination
+    );
+    tx.feePayer = walletPublicKey;
+    tx.recentBlockhash = (
+      await tokenClient.provider.connection.getLatestBlockhash(commitment)
+    ).blockhash;
+    
     const signedTx = await SolanaProvider.signTransaction(ctx, tx);
     const rawTx = signedTx.serialize();
 
