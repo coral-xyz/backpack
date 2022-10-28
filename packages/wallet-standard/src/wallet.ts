@@ -3,6 +3,9 @@ import type {
     SolanaSignAndSendTransactionFeature,
     SolanaSignAndSendTransactionMethod,
     SolanaSignAndSendTransactionOutput,
+    SolanaSignMessageFeature,
+    SolanaSignMessageMethod,
+    SolanaSignMessageOutput,
     SolanaSignTransactionFeature,
     SolanaSignTransactionMethod,
     SolanaSignTransactionOutput,
@@ -18,9 +21,6 @@ import type {
     EventsListeners,
     EventsNames,
     EventsOnMethod,
-    SignMessageFeature,
-    SignMessageMethod,
-    SignMessageOutput,
 } from '@wallet-standard/features';
 import bs58 from 'bs58';
 import { BackpackWalletAccount } from './account.js';
@@ -64,7 +64,7 @@ export class BackpackWallet implements Wallet {
         EventsFeature &
         SolanaSignAndSendTransactionFeature &
         SolanaSignTransactionFeature &
-        SignMessageFeature &
+        SolanaSignMessageFeature &
         BackpackFeature {
         return {
             'standard:connect': {
@@ -89,7 +89,7 @@ export class BackpackWallet implements Wallet {
                 supportedTransactionVersions: ['legacy', 0],
                 signTransaction: this.#signTransaction,
             },
-            'standard:signMessage': {
+            'solana:signMessage': {
                 version: '1.0.0',
                 signMessage: this.#signMessage,
             },
@@ -283,8 +283,8 @@ export class BackpackWallet implements Wallet {
         return outputs;
     };
 
-    #signMessage: SignMessageMethod = async (...inputs) => {
-        const outputs: SignMessageOutput[] = [];
+    #signMessage: SolanaSignMessageMethod = async (...inputs) => {
+        const outputs: SolanaSignMessageOutput[] = [];
 
         if (inputs.length === 1) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
