@@ -1,7 +1,20 @@
-import { atomFamily, selector, selectorFamily } from "recoil";
-import { BACKPACK_FEATURE_READ_API, Blockchain } from "@coral-xyz/common";
+import { atomFamily, selectorFamily } from "recoil";
 import type { SplNftMetadataString, Nft } from "@coral-xyz/common";
 import _ from "lodash";
+
+type ContentMetadata = {
+  name?: string;
+  description?: string;
+};
+
+type ContentSymbol = {
+  symbol?: string;
+};
+
+type ContentMetadataField = { $$schema: string } & (
+  | ContentMetadata
+  | ContentSymbol
+);
 
 // TODO(jon): Find a better shape for this
 type MetaplexAsset = {
@@ -9,7 +22,7 @@ type MetaplexAsset = {
   id: string;
   mint: string;
   content: {
-    metadata: ({ name?: string; description?: string } | { symbol?: string })[];
+    metadata: ContentMetadataField[];
     links?: {
       external_url?: string;
     };
@@ -17,8 +30,33 @@ type MetaplexAsset = {
       uri: string;
     }[];
   };
+  authorities: {
+    address: string;
+    scopes: "full"[];
+  }[];
+  royalty: {
+    percent: number;
+  };
+  creators: {
+    address: string;
+    share: number;
+    verified: boolean;
+  }[];
 };
 
+const constructMetadataObj = (
+  metadata: ContentMetadataField[]
+): ContentMetadata & ContentSymbol => {
+  const metadataObj: ContentMetadata & ContentSymbol = {};
+  // TODO(jon): This needs to change when the API returns more metadata fields
+  for (const field of metadata) {
+    metadataObj[field.$$schema] = field[field.$$schema];
+  }
+  return metadataObj;
+};
+
+// This adapter is intended to map the Read API representation of both compressed and uncompressed NFTs
+// into the NFT model that Backpack accepts.
 const readApiAdapter = async (json: {
   result: { items: MetaplexAsset[] };
 }): Promise<
@@ -31,37 +69,55 @@ const readApiAdapter = async (json: {
 > => {
   const backpackNftMap = new Map<string, SplNftMetadataString>();
   for await (const item of json.result.items) {
-    // This sucks
-    const metadata = item.content.metadata.find((_m) => "name" in _m)!;
-    const data = item.content.metadata.find((_m) => "symbol" in _m)!;
+    const metadata = constructMetadataObj(item.content.metadata);
 
-    let backpackModel: SplNftMetadataString & {
+    const updateAuthority =
+      item.authorities.find((authority) => authority.scopes.includes("full"))
+        ?.address ?? "";
+
+    const image = Array.isArray(item.content.files)
+      ? item.content.files[0]?.uri
+      : "";
+    const external_url = item.content.links?.external_url ?? "";
+
+    let backpackNft: SplNftMetadataString & {
       external_url: string;
       image: string;
+      metadata: Omit<
+        SplNftMetadataString["metadata"],
+        // This is currently being omitted because they're not displayed in a meaningful way
+        "key" | "primarySaleHappened" | "isMutable" | "editionNonce"
+      >;
     } = {
       publicKey: item.id,
+      // TODO(jon): Add the metadata address
+      metadataAddress: "",
+      external_url,
+      image,
+      // @ts-ignore
       metadata: {
         mint: item.id,
-        // @ts-ignore
+        updateAuthority,
         data: {
-          // @ts-ignore
-          symbol: data.symbol,
+          name: metadata.name ?? "",
+          // We technically don't need `uri` because this information comes through the Read API
+          uri: "",
+          sellerFeeBasisPoints: item.royalty.percent * 100,
+          creators: item.creators,
+          symbol: metadata.symbol ?? "",
         },
       },
       tokenMetaUriData: {
-        // @ts-ignore
-        name: metadata.name ?? "",
-        // @ts-ignore
-        description: metadata.description ?? "",
-        image:
-          // @ts-ignore
-          item.content.files?.length > 0 ? item.content.files[0].uri : "",
-        external_url: item.content.links?.external_url ?? "",
+        name: metadata.name,
+        description: metadata.description,
+        image,
+        external_url,
+        // TODO(jon): Surface these attributes after https://github.com/metaplex-foundation/digital-asset-rpc-infrastructure/issues/23
         attributes: [],
       },
     };
 
-    backpackNftMap.set(backpackModel.publicKey, backpackModel);
+    backpackNftMap.set(backpackNft.publicKey, backpackNft);
   }
   return backpackNftMap;
 };
@@ -71,15 +127,18 @@ export const solanaNftsFromApi = atomFamily({
   default: selectorFamily({
     key: "solanaNftsDefault",
     get:
-      ({ publicKey }: { publicKey: string }) =>
+      ({
+        connectionUrl,
+        publicKey,
+      }: {
+        connectionUrl: string;
+        publicKey: string;
+      }) =>
       async ({
         get,
       }): Promise<{
         splNftMetadata: Map<string, SplNftMetadataString>;
       }> => {
-        // Will need to switch between URLs soon
-        // const { connection } = get(anchorContext);
-
         //
         // Fetch token data.
         //
@@ -90,6 +149,7 @@ export const solanaNftsFromApi = atomFamily({
             body: JSON.stringify({
               jsonrpc: "2.0",
               method: "get_assets_by_owner",
+              // TODO(jon): This should uniquely identify this operation
               id: "rpd-op-123",
               // TODO(jon): Figure out if `created` is the best way to sort this.
               // TODO(jon): Need to properly handle pagination. Probably will just surface the whole list for now.
@@ -97,9 +157,8 @@ export const solanaNftsFromApi = atomFamily({
             }),
           };
 
-          const json = await (
-            await fetch(BACKPACK_FEATURE_READ_API, options)
-          ).json();
+          // The Metaplex Read API is surfaced on the same connection URL as the typical Solana RPC
+          const json = await (await fetch(connectionUrl, options)).json();
 
           const nftsMap = await readApiAdapter(json);
 
