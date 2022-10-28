@@ -1,5 +1,5 @@
 import { Grid, Skeleton } from "@mui/material";
-import { Image as ImageIcon } from "@mui/icons-material";
+import { Block, Image as ImageIcon } from "@mui/icons-material";
 import {
   toTitleCase,
   Blockchain,
@@ -23,6 +23,8 @@ import {
   BalancesTableContent,
   BalancesTableHead,
 } from "../Balances";
+import EntryONE from "./EntryONE";
+import { useIsONELive } from "../../../hooks/useIsONELive";
 
 const useStyles = styles(() => ({
   cardContentContainer: {
@@ -31,6 +33,7 @@ const useStyles = styles(() => ({
 }));
 
 export function Nfts() {
+  const isONELive = useIsONELive();
   const activeWallets = useActiveWallets();
   const enabledBlockchains = useEnabledBlockchains();
   const [collections, _, isLoading] = useLoader(
@@ -47,22 +50,43 @@ export function Nfts() {
   return (
     <>
       {Object.values(collections).flat().length === 0 && !isLoading ? (
-        <EmptyState
-          icon={(props: any) => <ImageIcon {...props} />}
-          title={"No NFTs"}
-          subtitle={"Get started with your first NFT"}
-          buttonText={"Browse Magic Eden"}
-          onClick={() => window.open("https://magiceden.io")}
-        />
+        <>
+          {!isONELive ? (
+            <EmptyState
+              icon={(props: any) => <ImageIcon {...props} />}
+              title={"No NFTs"}
+              subtitle={"Get started with your first NFT"}
+              buttonText={"Browse Magic Eden"}
+              onClick={() => window.open("https://magiceden.io")}
+            />
+          ) : (
+            <div
+              style={{
+                borderRadius: "12px",
+                paddingLeft: "16px",
+                paddingRight: "16px",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <EntryONE />
+            </div>
+          )}
+        </>
       ) : (
-        Object.entries(collections).map(([blockchain, collections]) => (
-          <NftTable
-            key={blockchain}
-            blockchain={blockchain as Blockchain}
-            collections={collections as NftCollection[]}
-            isLoading={isLoading}
-          />
-        ))
+        <>
+          {isONELive && <EntryONE />}
+          {Object.entries(collections).map(([blockchain, collections]) => (
+            <NftTable
+              key={blockchain}
+              blockchain={blockchain as Blockchain}
+              collections={collections as NftCollection[]}
+              isLoading={isLoading}
+            />
+          ))}
+        </>
       )}
     </>
   );
