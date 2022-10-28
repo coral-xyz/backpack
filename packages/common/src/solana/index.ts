@@ -27,7 +27,7 @@ import * as assertOwner from "./programs/assert-owner";
 import { xnftClient } from "./programs/xnft";
 import { SolanaProvider } from "./provider";
 import type { BackgroundClient } from "../";
-import {withSend} from "@cardinal/token-manager";
+import { withSend } from "@cardinal/token-manager";
 
 export * from "./wallet-adapter";
 export * from "./explorer";
@@ -186,22 +186,8 @@ export class Solana {
     ctx: SolanaContext,
     req: TransferTokenRequest
   ): Promise<string> {
-    const { walletPublicKey, registry, tokenClient, commitment } = ctx;
-    const { mint, destination, amount } = req;
-
-    const decimals = (() => {
-      if (req.decimals !== undefined) {
-        return req.decimals;
-      }
-      const tokenInfo = registry.get(mint.toString());
-      if (!tokenInfo) {
-        throw new Error("no token info found");
-      }
-      const decimals = tokenInfo.decimals;
-      return decimals;
-    })();
-
-    const nativeAmount = new BN(amount);
+    const { walletPublicKey, tokenClient, commitment } = ctx;
+    const { mint, destination } = req;
 
     const destinationAta = associatedTokenAddress(mint, destination);
     const sourceAta = associatedTokenAddress(mint, walletPublicKey);
@@ -246,17 +232,20 @@ export class Solana {
     const tx = await withSend(
       transaction,
       tokenClient.provider.connection,
-      (tokenClient.provider as any), // TODO: what's the alternative for anchor.wallet
+      // @ts-ignore
+      {
+        publicKey: walletPublicKey,
+      },
       mint,
       sourceAta,
       destination
     );
-    
+
     tx.feePayer = walletPublicKey;
     tx.recentBlockhash = (
       await tokenClient.provider.connection.getLatestBlockhash(commitment)
     ).blockhash;
-    
+
     const signedTx = await SolanaProvider.signTransaction(ctx, tx);
     const rawTx = signedTx.serialize();
 
