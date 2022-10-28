@@ -251,6 +251,7 @@ export class Solana {
       sourceAta,
       destination
     );
+    
     tx.feePayer = walletPublicKey;
     tx.recentBlockhash = (
       await tokenClient.provider.connection.getLatestBlockhash(commitment)
