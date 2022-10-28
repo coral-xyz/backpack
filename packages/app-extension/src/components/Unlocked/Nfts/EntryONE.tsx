@@ -22,6 +22,9 @@ const useStyles = styles((theme) => ({
     height: "117px",
     cursor: "pinter",
     overflow: "hidden",
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
   image: {
     height: "117px",
