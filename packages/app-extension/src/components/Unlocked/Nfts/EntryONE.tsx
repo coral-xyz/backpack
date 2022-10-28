@@ -1,10 +1,11 @@
 import Card from "@mui/material/Card";
 import { styles } from "@coral-xyz/themes";
-import { Typography } from "@mui/material";
+import { Skeleton, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useBackgroundClient, useUsername } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
 import { useLocation } from "react-router-dom";
+import { useIsONELive } from "../../../hooks/useIsONELive";
 
 const useStyles = styles((theme) => ({
   blockchainCard: {
@@ -28,12 +29,34 @@ const useStyles = styles((theme) => ({
       backgroundPosition: "0px -117px",
     },
   },
+  skeletonCard: {
+    marginBottom: "12px",
+    marginLeft: "12px",
+    marginRight: "12px",
+    borderRadius: "12px",
+    height: "117px",
+    padding: "0px",
+  },
+  skeleton: {
+    height: "100%",
+    width: "100%",
+    transform: "none",
+  },
 }));
 
 export default function EntryONE() {
+  const isONELive = useIsONELive();
   const classes = useStyles();
   const background = useBackgroundClient();
   const location = useLocation();
+
+  if (isONELive === "loading") {
+    return (
+      <Card className={classes.skeletonCard} elevation={0}>
+        <Skeleton className={classes.skeleton}></Skeleton>
+      </Card>
+    );
+  }
 
   const openXNFT = () => {
     // Update the URL to use the plugin.
