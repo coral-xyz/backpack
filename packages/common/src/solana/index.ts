@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import {
+import type {
   TransactionInstruction,
   Commitment,
   Connection,
