@@ -5,3 +5,6 @@ node_compat = true
 
 [env.development.vars]
 STRIPE_SECRET = ""
+SIGNING_SECRET = "whsec_7E88vw5Hq5VzIo7OVPCRSia7OD8Hnozz"
+HASURA_URL = "http://localhost:8112/v1/graphql"
+JWT=""
