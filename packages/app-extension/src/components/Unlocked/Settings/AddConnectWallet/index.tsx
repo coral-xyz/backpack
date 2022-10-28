@@ -19,7 +19,7 @@ import {
   useBackgroundClient,
 } from "@coral-xyz/recoil";
 import { ActionCard } from "../../../common/Layout/ActionCard";
-import { HardwareWalletIcon, CheckIcon } from "../../../common/Icon";
+import { HardwareWalletIcon, CheckIcon, ImportPrivateKeyIcon } from "../../../common/Icon";
 import { Header, SubtextParagraph } from "../../../common";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import {
@@ -94,9 +94,11 @@ export function AddConnectWalletMenu({
             <Grid item xs={6}>
               <ActionCard
                 icon={
-                  <ArrowCircleDown
+                  <ImportPrivateKeyIcon
+                    fill={theme.custom.colors.icon}
                     style={{
-                      color: theme.custom.colors.icon,
+                      width: "24px",
+                      height: "24px"
                     }}
                   />
                 }

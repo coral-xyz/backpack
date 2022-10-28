@@ -191,6 +191,48 @@ export function HardwareWalletIcon({ fill = "#A1A1AA", ...props }) {
   );
 }
 
+export function ImportPrivateKeyIcon({ fill = "#A1A1AA", ...props }) {
+  return (
+    <svg
+      width="56"
+      height="56"
+      viewBox="0 0 56 56"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path 
+        d="M12.5 6V17" 
+        stroke={fill} 
+        stroke-width="2" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+      />
+      <path 
+        d="M16.5 13L12.5 17L8.5 13" 
+        stroke={fill} 
+        stroke-width="2" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+      />
+      <path 
+        d="M2.5 16V20C2.5 20.5304 2.71071 21.0391 3.08579 21.4142C3.46086 21.7893 3.96957 22 4.5 22H8.5" 
+        stroke={fill} 
+        stroke-width="2" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+      />
+      <path 
+        d="M16.5 22H20.5C21.0304 22 21.5391 21.7893 21.9142 21.4142C22.2893 21.0391 22.5 20.5304 22.5 20V16" 
+        stroke={fill} 
+        stroke-width="2" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function SolanaIcon() {
   return (
     <svg
