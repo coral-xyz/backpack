@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { BigNumber } from "ethers";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, Connection } from "@solana/web3.js";
 import { Typography } from "@mui/material";
 import { useSolanaCtx } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -15,6 +15,7 @@ import { walletAddressDisplay, PrimaryButton } from "../../../../common";
 import { SettingsList } from "../../../../common/Settings/List";
 import { Sending, Error } from "../Send";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
+import { programs, tryGetAccount, withSend, findAta } from '@cardinal/token-manager'
 
 const logger = getLogger("send-solana-confirmation-card");
 
@@ -64,6 +65,13 @@ export function SendSolanaConfirmationCard({
           source: solanaCtx.walletPublicKey,
           destination: new PublicKey(destinationAddress),
           amount: amount.toNumber(),
+        });
+      } else if (await isCardinalWrappedToken(solanaCtx.connection, (token.mint?.toString() as string))) {
+        txSig = await Solana.transferCardinalToken(solanaCtx, {
+          destination: new PublicKey(destinationAddress),
+          mint: new PublicKey(token.mint!),
+          amount: amount.toNumber(),
+          decimals: token.decimals,
         });
       } else {
         txSig = await Solana.transferToken(solanaCtx, {
@@ -249,4 +257,28 @@ const ConfirmSendSolanaTable: React.FC<{
       }}
     />
   );
+};
+
+export const isCardinalWrappedToken = async (
+  connection: Connection,
+  tokenAddress: string
+) => {
+  const [tokenManagerId] = await programs.tokenManager.pda.findTokenManagerAddress(
+    new PublicKey(tokenAddress)
+  );
+  const tokenManagerData = await tryGetAccount(() =>
+    programs.tokenManager.accounts.getTokenManager(connection, tokenManagerId)
+  );
+  if (tokenManagerData?.parsed && tokenManagerData?.parsed.transferAuthority) {
+    try {
+      programs.transferAuthority.accounts.getTransferAuthority(
+        connection,
+        tokenManagerData?.parsed.transferAuthority
+      );
+      return true;
+    } catch (error) {
+      console.log("Invalid transfer authority");
+    }
+  }
+  return false;
 };
