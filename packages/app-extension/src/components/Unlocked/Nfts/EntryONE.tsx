@@ -30,25 +30,10 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-const isLiveCheck = fetch("https://xnft.wao.gg/api/isLive")
-  .then((r) => r.json())
-  .catch(() => ({ isLive: false }));
-
 export default function EntryONE() {
-  const [isLive, setIsLive] = useState(false);
   const classes = useStyles();
   const background = useBackgroundClient();
   const location = useLocation();
-
-  useEffect(() => {
-    isLiveCheck.then((response) => {
-      setIsLive(response.isLive);
-    });
-  }, []);
-
-  if (!isLive) {
-    return null;
-  }
 
   const openXNFT = () => {
     // Update the URL to use the plugin.
