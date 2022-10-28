@@ -12,19 +12,24 @@ const useStyles = styles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "flex-end",
-    backgroundColor: "inherit",
+    justifyContent: "center",
     marginBottom: "12px",
     marginLeft: "12px",
     marginRight: "12px",
     borderRadius: "12px",
     border: theme.custom.colors.borderFull,
+    backgroundColor: "#000",
     height: "117px",
+    cursor: "pinter",
+    overflow: "hidden",
+  },
+  image: {
+    height: "117px",
+    width: "547px",
     background: "url(https://xnft.wao.gg/one-entry-bg.png)",
-    backgroundSize: "347px 234px",
+    backgroundSize: "547px 234px",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "0px 0px",
-    cursor: "pointer",
     "&:hover": {
       backgroundPosition: "0px -117px",
     },
@@ -82,10 +87,8 @@ export default function EntryONE() {
   };
 
   return (
-    <Card
-      onClick={openXNFT}
-      className={classes.blockchainCard}
-      elevation={0}
-    ></Card>
+    <Card onClick={openXNFT} className={classes.blockchainCard} elevation={0}>
+      <div className={classes.image}></div>
+    </Card>
   );
 }
