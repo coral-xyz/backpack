@@ -50,21 +50,30 @@ const useStyles = styles((theme) => ({
     width: "100%",
     transform: "none",
   },
+  hidden: {
+    visibility: "hidden",
+  },
+  none: {
+    display: "none",
+  },
 }));
 
 export default function EntryONE() {
+  const [imageLoaded, setImageLoaded] = useState(false);
   const isONELive = useIsONELive();
   const classes = useStyles();
   const background = useBackgroundClient();
   const location = useLocation();
 
-  if (isONELive === "loading") {
-    return (
-      <Card className={classes.skeletonCard} elevation={0}>
-        <Skeleton className={classes.skeleton}></Skeleton>
-      </Card>
-    );
-  }
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => {
+      setImageLoaded(true);
+    };
+    img.src = "https://xnft.wao.gg/one-entry-bg.png";
+  }, []);
+
+  const isLoading = false || !imageLoaded || isONELive === "loading";
 
   const openXNFT = () => {
     // Update the URL to use the plugin.
@@ -90,8 +99,17 @@ export default function EntryONE() {
   };
 
   return (
-    <Card onClick={openXNFT} className={classes.blockchainCard} elevation={0}>
-      <div className={classes.image}></div>
+    <Card
+      onClick={isLoading ? () => {} : openXNFT}
+      className={isLoading ? classes.skeletonCard : classes.blockchainCard}
+      elevation={0}
+    >
+      <Skeleton
+        className={`${classes.skeleton} ${!isLoading ? classes.none : ""}`}
+      ></Skeleton>
+      <div
+        className={`${classes.image} ${isLoading ? classes.hidden : ""}`}
+      ></div>
     </Card>
   );
 }
