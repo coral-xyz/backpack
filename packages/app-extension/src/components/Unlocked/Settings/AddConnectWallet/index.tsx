@@ -97,8 +97,9 @@ export function AddConnectWalletMenu({
                   <ImportPrivateKeyIcon
                     fill={theme.custom.colors.icon}
                     style={{
-                      width: "24px",
-                      height: "24px"
+                      width:"56px",
+                      height: "56px",
+                      marginBottom:"-34px"
                     }}
                   />
                 }
@@ -112,8 +113,9 @@ export function AddConnectWalletMenu({
                   <HardwareWalletIcon
                     fill={theme.custom.colors.icon}
                     style={{
-                      width: "24px",
-                      height: "24px",
+                      width:"56px",
+                      height: "56px",
+                      marginBottom:"-34px"
                     }}
                   />
                 }
