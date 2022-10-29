@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { updateSession, createSession, getSession } from "./db";
 import { BlockChain, CreateSessionRequest } from "./zodTypes";
 import { validatePulicKey } from "./validate";
+import stripe from "stripe";
 
 const STRIPE_PROD_URL = "https://api.stripe.com/v1";
 
@@ -11,11 +12,7 @@ export const registerOnRampHandlers = (app: Hono) => {
     const body = await c.req.json();
 
     try {
-      // stripe.webhooks.constructEvent(
-      //     c.req.body,
-      //     c.env.SIGNING_SECRET,
-      //     c.env.SIGNING_SECRET
-      // );
+      stripe.webhooks.constructEvent(c.req.body, sig, c.env.SIGNING_SECRET);
       const status = body.data?.object.status;
       const clientSecret = body.data.object.client_secret;
       await updateSession(
