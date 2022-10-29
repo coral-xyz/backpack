@@ -1,12 +1,12 @@
 import { Chain } from "auth/src/zeus";
-import { Blockchain } from "@coral-xyz/common";
+import { BlockChain } from "./zodTypes";
 
 export const createSession = async (
   HASURA_URL: string,
   JWT: string,
   publicKey: string,
   clientSecret: string,
-  blockchain: Blockchain
+  blockchain: BlockChain
 ) => {
   const chain = Chain(HASURA_URL, {
     headers: {

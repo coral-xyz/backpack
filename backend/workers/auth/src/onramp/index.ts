@@ -1,8 +1,7 @@
-import { validatePulicKey } from "onramp/src/validate";
 import { Hono } from "hono";
-import stripe from "stripe";
 import { updateSession, createSession, getSession } from "./db";
 import { BlockChain, CreateSessionRequest } from "./zodTypes";
+import { validatePulicKey } from "./validate";
 
 const STRIPE_PROD_URL = "https://api.stripe.com/v1";
 
@@ -38,6 +37,7 @@ export const registerOnRampHandlers = (app: Hono) => {
     // @ts-ignore
     let chain: BlockChain = searchParams.get("chain");
     let publicKey: string = searchParams.get("publicKey") || "";
+
     try {
       CreateSessionRequest.parse({
         chain,

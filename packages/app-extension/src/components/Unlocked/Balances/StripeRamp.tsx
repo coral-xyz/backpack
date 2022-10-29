@@ -18,9 +18,10 @@ const useStyles = styles((theme: CustomTheme) => ({
   innerContainer: {
     justifyContent: "center",
     display: "flex",
+    color: theme.custom.colors.secondary,
   },
   innerContainerPad: {
-    padding: 10,
+    padding: "0px 30px",
     justifyContent: "center",
     display: "flex",
   },
@@ -34,41 +35,14 @@ export const StripeRamp = ({
   publicKey: string;
 }) => {
   const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
   const [clientSecret, setClientSecret] = useState(false);
-  const [popupClosed, setPopupClosed] = useState(false);
-  const [transactionFailed, setTransactionFailed] = useState(false);
-  const [transactionSucceeded, setTransactionSucceeded] = useState(false);
   const nav = useNavStack();
   const classes = useStyles();
-  const ref = useRef<any>();
 
-  const fetchTransactionStatus = () => {
-    return new Promise((resolve, reject) => {
-      fetch(`${STRIP_RAMP_URL}/onramp/session/${clientSecret}`)
-        .then(async (response) => {
-          const json = await response.json();
-          resolve(json.status);
-        })
-        .catch(reject);
-    });
-  };
-
-  const verifyTransaction = () => {
-    window.setTimeout(async () => {
-      const status = await fetchTransactionStatus().catch((e) => {
-        console.warn(`Error while verifying transaction ` + e);
-      });
-      if (status === "fulfillment_complete") {
-        setTransactionSucceeded(true);
-      } else {
-        setTransactionFailed(true);
-      }
-    }, 8000);
-  };
-
-  useEffect(() => {
+  const fetchToken = () => {
     setLoading(true);
-    let interval: number;
+    setErr("");
     fetch(
       `${STRIP_RAMP_URL}/onramp/session?publicKey=${publicKey}&chain=${blockchain}`,
       {
@@ -79,7 +53,7 @@ export const StripeRamp = ({
         const json = await response.json();
         setLoading(false);
         setClientSecret(json.secret);
-        const popupWindow = window.open(
+        window.open(
           `https://doof72pbjabye.cloudfront.net/stripe-onramp.html?clientSecret=${json.secret}`,
           "blank",
           `toolbar=no,
@@ -88,104 +62,38 @@ export const StripeRamp = ({
             menubar=no,
             scrollbars=yes,
             resizable=no,
-            width=360,
-            height=500`
+            width=400,
+            height=600`
         );
-        interval = window.setInterval(() => {
-          if (popupWindow?.closed) {
-            setPopupClosed(true);
-            clearInterval(interval);
-            verifyTransaction();
-          }
-        }, 1500);
+        nav.close();
       })
       .catch((e) => {
         console.error(e);
+        setErr("Error while fetching token from Stripe");
         setLoading(false);
       });
-    return () => {
-      clearInterval(interval);
-    };
+  };
+  useEffect(() => {
+    fetchToken();
   }, [blockchain, publicKey]);
 
-  if (loading) {
-    return (
-      <div style={{ height: "100%" }}>
-        <div style={{ height: "90vh" }}>
-          {" "}
-          <Loading />{" "}
-        </div>
-      </div>
-    );
-  }
-
-  if (transactionFailed) {
-    return (
-      <div className={classes.outerContainer}>
-        <div className={classes.innerContainer}>
-          <Typography variant={"subtitle1"}>
-            Transaction may have failed
-          </Typography>
-        </div>
-        <div className={classes.innerContainerPad}>
-          <PrimaryButton
-            onClick={() => nav.pop()}
-            label={"Go Back"}
-            style={{
-              marginTop: "40px",
-            }}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  if (transactionSucceeded) {
-    return (
-      <div className={classes.outerContainer}>
-        <div className={classes.innerContainer}>
-          <Typography variant={"subtitle1"}>Transaction succeeded!</Typography>
-        </div>
-        <div className={classes.innerContainerPad}>
-          <PrimaryButton
-            onClick={() => nav.pop()}
-            label={"Go Back"}
-            style={{
-              marginTop: "40px",
-            }}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  if (popupClosed) {
-    return (
-      <div className={classes.outerContainer}>
-        <div className={classes.innerContainer}>
-          <Typography variant={"h6"}>Verifying Transaction</Typography>
-        </div>
-        <br />
-        <div className={classes.innerContainer}>
-          <Loading />
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div ref={ref} style={{ height: "100%" }}>
-      {clientSecret && (
-        <div className={classes.outerContainer}>
+    <div className={classes.outerContainer}>
+      {" "}
+      {err && (
+        <>
           <div className={classes.innerContainer}>
-            <Typography variant={"h6"}>
-              Complete payment in the popup
-            </Typography>
-            <br />
+            <Typography variant={"subtitle1"}>{err}</Typography>
           </div>
-          <div className={classes.innerContainer}>
-            <Loading />
+          <br />
+          <div className={classes.innerContainerPad}>
+            <PrimaryButton label="Try again" onClick={() => fetchToken()} />
           </div>
+        </>
+      )}
+      {!err && (
+        <div className={classes.innerContainer}>
+          <Loading />{" "}
         </div>
       )}
     </div>
