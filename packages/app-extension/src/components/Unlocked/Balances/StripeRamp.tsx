@@ -1,11 +1,12 @@
 import { Blockchain } from "@coral-xyz/common";
 import { useEffect, useRef, useState } from "react";
-import { Loading } from "../../common";
+import { Loading, PrimaryButton } from "../../common";
 import { useNavStack } from "../../common/Layout/NavStack";
 import { Typography } from "@mui/material";
 import { CustomTheme, styles } from "@coral-xyz/themes";
 
-const STRIP_RAMP_URL = "https://auth.xnfts.dev";
+// const STRIP_RAMP_URL = "https://auth.xnfts.dev";
+const STRIP_RAMP_URL = "http://127.0.0.1:8787";
 
 const useStyles = styles((theme: CustomTheme) => ({
   outerContainer: {
@@ -15,6 +16,11 @@ const useStyles = styles((theme: CustomTheme) => ({
     flexDirection: "column",
   },
   innerContainer: {
+    justifyContent: "center",
+    display: "flex",
+  },
+  innerContainerPad: {
+    padding: 10,
     justifyContent: "center",
     display: "flex",
   },
@@ -32,7 +38,7 @@ export const StripeRamp = ({
   const [popupClosed, setPopupClosed] = useState(false);
   const [transactionFailed, setTransactionFailed] = useState(false);
   const [transactionSucceeded, setTransactionSucceeded] = useState(false);
-
+  const nav = useNavStack();
   const classes = useStyles();
   const ref = useRef<any>();
 
@@ -117,7 +123,18 @@ export const StripeRamp = ({
     return (
       <div className={classes.outerContainer}>
         <div className={classes.innerContainer}>
-          <Typography variant={"subtitle1"}>Transaction succeeded!</Typography>
+          <Typography variant={"subtitle1"}>
+            Transaction may have failed
+          </Typography>
+        </div>
+        <div className={classes.innerContainerPad}>
+          <PrimaryButton
+            onClick={() => nav.pop()}
+            label={"Go Back"}
+            style={{
+              marginTop: "40px",
+            }}
+          />
         </div>
       </div>
     );
@@ -129,6 +146,15 @@ export const StripeRamp = ({
         <div className={classes.innerContainer}>
           <Typography variant={"subtitle1"}>Transaction succeeded!</Typography>
         </div>
+        <div className={classes.innerContainerPad}>
+          <PrimaryButton
+            onClick={() => nav.pop()}
+            label={"Go Back"}
+            style={{
+              marginTop: "40px",
+            }}
+          />
+        </div>
       </div>
     );
   }
@@ -137,7 +163,7 @@ export const StripeRamp = ({
     return (
       <div className={classes.outerContainer}>
         <div className={classes.innerContainer}>
-          <Typography variant={"subtitle1"}>Verifying Transaction</Typography>
+          <Typography variant={"h6"}>Verifying Transaction</Typography>
         </div>
         <br />
         <div className={classes.innerContainer}>
@@ -152,7 +178,7 @@ export const StripeRamp = ({
       {clientSecret && (
         <div className={classes.outerContainer}>
           <div className={classes.innerContainer}>
-            <Typography variant={"subtitle1"}>
+            <Typography variant={"h6"}>
               Complete payment in the popup
             </Typography>
             <br />

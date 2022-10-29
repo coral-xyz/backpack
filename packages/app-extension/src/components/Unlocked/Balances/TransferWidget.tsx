@@ -42,8 +42,8 @@ export function TransferWidget({
 }) {
   const enabledBlockchains = useEnabledBlockchains();
   const featureGates = useFeatureGates();
-  const enableOnramp =
-    featureGates && featureGates[STRIPE_ENABLED] && rampEnabled;
+  const enableOnramp = true;
+  // featureGates && featureGates[STRIPE_ENABLED] && rampEnabled;
   const renderSwap =
     blockchain !== Blockchain.ETHEREUM &&
     enabledBlockchains.includes(Blockchain.SOLANA);
