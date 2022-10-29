@@ -3,9 +3,11 @@ import { ArrowForward } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
 import { createPopup } from "@typeform/embed";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { PrimaryButton, SubtextParagraph, TextField } from "../../common";
 import { BackpackHeader } from "../../Locked";
 import { getWaitlistId, setWaitlistId } from "../../common/WaitingRoom";
+import { TextInput } from "../../common/Inputs";
 
 const useStyles = styles(() => ({
   inviteCodeBox: {
@@ -109,17 +111,12 @@ export const InviteCodeForm = ({
             placeholder={"Invite code"}
             type="text"
             value={inviteCode}
-            setValue={(v: string) => {
-              setInviteCode(v.replace(/[^a-zA-Z0-9\\-]/g, ""));
+            setValue={(e: any) => {
+              setInviteCode(e.target.value.replace(/[^a-zA-Z0-9\\-]/g, ""));
             }}
-            isError={error}
-            auto
+            error={error ? true : false}
+            errorMessage={error}
           />
-          {error && (
-            <Typography sx={{ color: theme.custom.colors.negative }}>
-              {error}
-            </Typography>
-          )}
         </Box>
 
         <PrimaryButton label="Go" type="submit" />

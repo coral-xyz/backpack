@@ -9,6 +9,7 @@ import {
   TextField,
 } from "../../common";
 import { getWaitlistId } from "../../common/WaitingRoom";
+import { TextInput } from "../../common/Inputs";
 
 const MIN_LENGTH = 3;
 const MAX_LENGTH = 15;
@@ -88,7 +89,7 @@ export const UsernameForm = ({
         </SubtextParagraph>
       </Box>
       <Box style={{ flex: 1 }}>
-        <TextField
+        <TextInput
           inputProps={{
             name: "username",
             autoComplete: "off",
@@ -98,16 +99,16 @@ export const UsernameForm = ({
           placeholder="Username"
           type="text"
           value={username}
-          setValue={(v: string) => {
+          setValue={(e) => {
             setUsername(
-              v
+              e.target.value
                 .toLowerCase()
                 .replace(/[^a-z0-9_]/g, "")
                 .substring(0, MAX_LENGTH)
             );
           }}
-          isError={error}
-          auto
+          error={error ? true : false}
+          errorMessage={error}
           startAdornment={
             <InputAdornment position="start">
               <AlternateEmail
@@ -121,11 +122,6 @@ export const UsernameForm = ({
             </InputAdornment>
           }
         />
-        {error && (
-          <Typography sx={{ color: theme.custom.colors.negative }}>
-            {error}
-          </Typography>
-        )}
       </Box>
       <Box>
         <PrimaryButton

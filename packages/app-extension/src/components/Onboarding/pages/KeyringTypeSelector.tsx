@@ -1,4 +1,3 @@
-import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
 import { KeyringType, toTitleCase } from "@coral-xyz/common";
 import { Box } from "@mui/material";
 import {

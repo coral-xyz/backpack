@@ -19,6 +19,7 @@ import {
 import { EyeIcon, WarningIcon } from "../../../common/Icon";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
+import { TextInput } from "../../../common/Inputs";
 
 const useStyles = styles((theme: any) => ({
   passwordField: {
@@ -193,15 +194,14 @@ export function ShowPrivateKeyWarning({ publicKey }: { publicKey: string }) {
         }}
       >
         <Box sx={{ marginBottom: "8px" }}>
-          <TextField
+          <TextInput
             autoFocus={true}
-            isError={error}
-            inputProps={{ name: "password" }}
+            error={error}
             placeholder="Password"
-            type="password"
+            inputProps={{ name: "password" }}
             value={password}
-            setValue={setPassword}
-            rootClass={classes.passwordField}
+            type={"password"}
+            setValue={(e) => setPassword(e.target.value)}
           />
         </Box>
         <DangerButton

@@ -15,7 +15,12 @@ import { walletAddressDisplay, PrimaryButton } from "../../../../common";
 import { SettingsList } from "../../../../common/Settings/List";
 import { Sending, Error } from "../Send";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
-import { programs, tryGetAccount, withSend, findAta } from '@cardinal/token-manager'
+import {
+  programs,
+  tryGetAccount,
+  withSend,
+  findAta,
+} from "@cardinal/token-manager";
 
 const logger = getLogger("send-solana-confirmation-card");
 
@@ -66,7 +71,12 @@ export function SendSolanaConfirmationCard({
           destination: new PublicKey(destinationAddress),
           amount: amount.toNumber(),
         });
-      } else if (await isCardinalWrappedToken(solanaCtx.connection, (token.mint?.toString() as string))) {
+      } else if (
+        await isCardinalWrappedToken(
+          solanaCtx.connection,
+          token.mint?.toString() as string
+        )
+      ) {
         txSig = await Solana.transferCardinalToken(solanaCtx, {
           destination: new PublicKey(destinationAddress),
           mint: new PublicKey(token.mint!),
@@ -263,9 +273,10 @@ export const isCardinalWrappedToken = async (
   connection: Connection,
   tokenAddress: string
 ) => {
-  const [tokenManagerId] = await programs.tokenManager.pda.findTokenManagerAddress(
-    new PublicKey(tokenAddress)
-  );
+  const [tokenManagerId] =
+    await programs.tokenManager.pda.findTokenManagerAddress(
+      new PublicKey(tokenAddress)
+    );
   const tokenManagerData = await tryGetAccount(() =>
     programs.tokenManager.accounts.getTokenManager(connection, tokenManagerId)
   );

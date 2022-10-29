@@ -10,6 +10,7 @@ import { useBackgroundClient, useSolanaConnectionUrl } from "@coral-xyz/recoil";
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
 import { SettingsList } from "../../../../common/Settings/List";
 import { useNavStack } from "../../../../common/Layout/NavStack";
+import { PushDetail } from "../../../../common";
 
 const logger = getLogger("preferences");
 
@@ -38,21 +39,18 @@ export function PreferencesSolanaConnection() {
     },
     Custom: {
       onClick: () => {
-        const userProvidedUrl = prompt("Enter your custom endpoint") ?? "";
-        try {
-          const url = new URL(userProvidedUrl.trim()).toString();
-          changeNetwork(url);
-        } catch (e: any) {
-          logger.error(e.toString());
-        }
+        nav.push("preferences-solana-edit-rpc-connection");
       },
       detail:
         currentUrl !== SolanaCluster.MAINNET &&
         currentUrl !== SolanaCluster.DEVNET &&
         currentUrl !== SolanaCluster.LOCALNET ? (
-          <Checkmark />
+          <>
+            <Checkmark />
+            <PushDetail />
+          </>
         ) : (
-          <></>
+          <PushDetail />
         ),
     },
   };
