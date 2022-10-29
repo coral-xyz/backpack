@@ -1,4 +1,4 @@
-import { Blockchain, KeyringType, toTitleCase } from "@coral-xyz/common";
+import { KeyringType, toTitleCase } from "@coral-xyz/common";
 import { Box } from "@mui/material";
 import {
   Header,
@@ -7,7 +7,6 @@ import {
   SubtextParagraph,
 } from "../../common";
 import { HardwareWalletIcon } from "../../common/Icon";
-import { ImportAccounts } from "../../common/Account/ImportAccounts";
 
 export const KeyringTypeSelector = ({
   action,
