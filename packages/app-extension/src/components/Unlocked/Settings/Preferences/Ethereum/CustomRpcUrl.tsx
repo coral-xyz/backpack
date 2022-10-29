@@ -64,7 +64,8 @@ export function PreferenceEthereumCustomRpcUrl() {
         <div style={{ flex: 1, flexGrow: 1 }}>
           <Inputs error={rpcUrlError}>
             <InputListItem
-              isLast={true}
+              isLast={false}
+              isFirst={true}
               button={false}
               title={"RPC"}
               placeholder={"RPC URL"}
@@ -75,6 +76,7 @@ export function PreferenceEthereumCustomRpcUrl() {
             />
             <InputListItem
               isLast={true}
+              isFirst={false}
               button={false}
               title={"Chain"}
               placeholder={"Chain ID"}

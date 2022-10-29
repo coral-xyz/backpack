@@ -84,6 +84,7 @@ export function PreferenceSolanaCustomRpcUrl() {
         <div style={{ flex: 1, flexGrow: 1 }}>
           <Inputs error={rpcUrlError}>
             <InputListItem
+              isFirst={true}
               isLast={true}
               button={false}
               title={"RPC"}
