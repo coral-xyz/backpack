@@ -5,8 +5,7 @@ import { useNavStack } from "../../common/Layout/NavStack";
 import { Typography } from "@mui/material";
 import { CustomTheme, styles } from "@coral-xyz/themes";
 
-// const STRIP_RAMP_URL = "https://auth.xnfts.dev";
-const STRIP_RAMP_URL = "http://127.0.0.1:8787";
+const STRIP_RAMP_URL = "https://auth.xnfts.dev";
 
 const useStyles = styles((theme: CustomTheme) => ({
   outerContainer: {
