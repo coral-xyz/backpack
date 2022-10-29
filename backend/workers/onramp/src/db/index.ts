@@ -4,7 +4,8 @@ export const createSession = async (
   HASURA_URL,
   JWT,
   publicKey,
-  clientSecret
+  clientSecret,
+  blockchain
 ) => {
   const chain = Chain(HASURA_URL, {
     headers: {
@@ -13,7 +14,7 @@ export const createSession = async (
   });
 
   await chain("mutation")({
-    insert_onramp_stripe_onramp_sessions_one: [
+    insert_auth_stripe_onramp_one: [
       {
         object: {
           publicKey,
@@ -41,16 +42,12 @@ export const updateSession = async (
   });
 
   await chain("mutation")({
-    insert_onramp_stripe_onramp_sessions_one: [
+    update_auth_stripe_onramp: [
       {
-        object: {
-          publicKey,
-          clientSecret,
-        },
+        _set: { client_secret: clientSecret, status, webhook_dump: dump },
+        where: { client_secret: { _eq: clientSecret } },
       },
-      {
-        id: true,
-      },
+      {},
     ],
   });
 };
