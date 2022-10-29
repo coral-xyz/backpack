@@ -27,6 +27,7 @@ import {
   BalancesTableHead,
   BalancesTableRow,
 } from "../Unlocked/Balances";
+import { TextInput } from "./Inputs";
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
@@ -81,11 +82,11 @@ export function SearchableTokenTables({
   const [searchFilter, setSearchFilter] = useState("");
   return (
     <>
-      <TextField
+      <TextInput
+        className={classes.searchField}
         placeholder={"Search"}
         value={searchFilter}
-        setValue={setSearchFilter}
-        rootClass={classes.searchField}
+        setValue={(e) => setSearchFilter(e.target.value)}
         inputProps={{
           style: {
             height: "48px",
@@ -118,11 +119,11 @@ export function SearchableTokenTable({
   const [searchFilter, setSearchFilter] = useState("");
   return (
     <>
-      <TextField
+      <TextInput
+        className={classes.searchField}
         placeholder={"Search"}
         value={searchFilter}
-        setValue={setSearchFilter}
-        rootClass={classes.searchField}
+        setValue={(e) => setSearchFilter(e.target.value)}
         inputProps={{
           style: {
             height: "48px",

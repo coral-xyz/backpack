@@ -26,27 +26,27 @@ const useStyles = styles((theme) => ({
     color: theme.custom.colors.fontColor2,
   },
   listParent: {
-    //@ts-ignore
     border: (props) =>
       overrideErrBorder(
         theme.custom.colors.textInputBorderFull,
+        //@ts-ignore
         props.error,
         theme
       ),
     "&:hover": {
-      //@ts-ignore
       border: (props) =>
         overrideErrBorder(
           theme.custom.colors.textInputBorderHovered,
+          //@ts-ignore
           props.error,
           theme
         ),
     },
     "&:focus-within": {
-      //@ts-ignore
       border: (props) =>
         overrideErrBorder(
           theme.custom.colors.textInputBorderFocussed,
+          //@ts-ignore
           props.error,
           theme
         ),
@@ -62,38 +62,38 @@ const useStyles = styles((theme) => ({
       background: theme.custom.colors.textBackground,
       borderRadius: "12px",
       "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-        //@ts-ignore
         border: (props) =>
           overrideErrBorder(
             theme.custom.colors.textInputBorderFocussed,
+            //@ts-ignore
             props.error,
             theme
           ),
         outline: "none",
       },
       "& fieldset": {
-        //@ts-ignore
         border: (props) =>
           overrideErrBorder(
             theme.custom.colors.textInputBorderFull,
+            //@ts-ignore
             props.error,
             theme
           ),
       },
       "&:hover fieldset": {
-        //@ts-ignore
         border: (props) =>
           overrideErrBorder(
             theme.custom.colors.textInputBorderHovered,
+            //@ts-ignore
             props.error,
             theme
           ),
       },
       "&.Mui-focused fieldset": {
-        //@ts-ignore
         border: (props) =>
           overrideErrBorder(
             theme.custom.colors.textInputBorderFocussed,
+            //@ts-ignore
             props.error,
             theme
           ),
@@ -188,6 +188,9 @@ interface InputProps {
   startAdornment?: any;
   errorMessage?: string;
   rows?: number;
+  className?: any;
+  children?: any;
+  select?: boolean;
 }
 
 export const TextInput = ({
@@ -203,6 +206,9 @@ export const TextInput = ({
   endAdornment,
   startAdornment,
   errorMessage,
+  className = "",
+  children,
+  select,
 }: InputProps) => {
   const classes = useStyles({ error });
   const theme = useCustomTheme();
@@ -223,7 +229,7 @@ export const TextInput = ({
         value={value}
         onChange={setValue}
         inputProps={inputProps}
-        className={`${classes.textInputRoot} ${classes.textField}`}
+        className={`${classes.textInputRoot} ${classes.textField} ${className}`}
         variant="outlined"
         fullWidth
         required
@@ -234,7 +240,10 @@ export const TextInput = ({
           startAdornment,
           endAdornment,
         }}
-      />
+        select={select}
+      >
+        {children}
+      </TextField>
       {errorMessage && (
         <Typography
           sx={{ color: theme.custom.colors.negative }}

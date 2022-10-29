@@ -1,5 +1,4 @@
-import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
-import { KeyringType, toTitleCase } from "@coral-xyz/common";
+import { Blockchain, KeyringType, toTitleCase } from "@coral-xyz/common";
 import { Box } from "@mui/material";
 import {
   Header,
@@ -8,6 +7,7 @@ import {
   SubtextParagraph,
 } from "../../common";
 import { HardwareWalletIcon } from "../../common/Icon";
+import { ImportAccounts } from "../../common/Account/ImportAccounts";
 
 export const KeyringTypeSelector = ({
   action,
