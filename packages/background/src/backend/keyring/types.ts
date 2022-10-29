@@ -20,15 +20,15 @@ export interface Keyring {
   toJson(): any;
 }
 
+//
+// HD keyring types
+//
+
 export type HdKeyringJson = {
   mnemonic: string;
   seed: string;
   accountIndices: Array<number>;
   derivationPath: DerivationPath;
-};
-
-export type LedgerKeyringJson = {
-  derivationPaths: Array<ImportedDerivationPath>;
 };
 
 export interface HdKeyringFactory {
@@ -47,16 +47,24 @@ export interface HdKeyring extends Keyring {
   getPublicKey(accountIndex: number): string;
 }
 
+//
+// Ledger keyring types
+//
+
+export type LedgerKeyringJson = {
+  derivationPaths: Array<ImportedDerivationPath>;
+};
+
+export interface LedgerKeyringFactory {
+  fromAccounts(accounts: Array<ImportedDerivationPath>): LedgerKeyring;
+  fromJson(obj: LedgerKeyringJson): LedgerKeyring;
+}
+
 export interface LedgerKeyring extends LedgerKeyringBase {
   signTransaction(tx: Buffer, address: string): Promise<string>;
   signMessage(tx: Buffer, address: string): Promise<string>;
   keyCount(): number;
   ledgerImport(path: string, account: number, publicKey: string): Promise<void>;
-}
-
-export interface LedgerKeyringFactory {
-  init(): LedgerKeyring;
-  fromJson(obj: LedgerKeyringJson): LedgerKeyring;
 }
 
 export type ImportedDerivationPath = {

@@ -1,11 +1,23 @@
 import { Typography } from "@mui/material";
-import { ArrowUpward, ArrowDownward, SwapHoriz } from "@mui/icons-material";
+import {
+  ArrowUpward,
+  ArrowDownward,
+  SwapHoriz,
+  ArrowRight,
+  ArrowBackIosNewSharp,
+  Money,
+} from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useEnabledBlockchains, SwapProvider } from "@coral-xyz/recoil";
+import {
+  useEnabledBlockchains,
+  SwapProvider,
+  useFeatureGates,
+} from "@coral-xyz/recoil";
 import {
   Blockchain,
   SOL_NATIVE_MINT,
   ETH_NATIVE_MINT,
+  STRIPE_ENABLED,
 } from "@coral-xyz/common";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { Deposit } from "./TokensWidget/Deposit";
@@ -13,17 +25,25 @@ import { SendLoader, Send } from "./TokensWidget/Send";
 import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";
+import { Dollar } from "../../common/Icon";
 import { Swap, SelectToken } from "../../Unlocked/Swap";
+import { Ramp } from "./TokensWidget/Ramp";
+import { StripeRamp } from "./StripeRamp";
+import React from "react";
 
 export function TransferWidget({
   blockchain,
   address,
+  rampEnabled,
 }: {
   blockchain?: Blockchain;
   address?: string;
+  rampEnabled: boolean;
 }) {
   const enabledBlockchains = useEnabledBlockchains();
-
+  const featureGates = useFeatureGates();
+  const enableOnramp =
+    featureGates && featureGates[STRIPE_ENABLED] && rampEnabled;
   const renderSwap =
     blockchain !== Blockchain.ETHEREUM &&
     enabledBlockchains.includes(Blockchain.SOLANA);
@@ -32,11 +52,22 @@ export function TransferWidget({
     <div
       style={{
         display: "flex",
-        width: renderSwap ? "191px" : "120px",
+        width:
+          enableOnramp && renderSwap
+            ? "256px"
+            : renderSwap || enableOnramp
+            ? "188px"
+            : "120px",
         marginLeft: "auto",
         marginRight: "auto",
       }}
     >
+      {enableOnramp && (
+        <>
+          <RampButton blockchain={blockchain} address={address} />
+          <div style={{ width: "16px" }} />
+        </>
+      )}
       <ReceiveButton blockchain={blockchain} />
       <div style={{ width: "16px" }} />
       <SendButton blockchain={blockchain} address={address} />
@@ -169,6 +200,61 @@ function ReceiveButton({ blockchain }: { blockchain?: Blockchain }) {
           },
         },
       ]}
+    />
+  );
+}
+
+function RampButton({
+  blockchain,
+  address,
+}: {
+  blockchain?: Blockchain;
+  address?: string;
+}) {
+  const theme = useCustomTheme();
+  return (
+    <TransferButton
+      label={"Buy"}
+      labelComponent={
+        <Dollar
+          fill={theme.custom.colors.fontColor}
+          style={{
+            display: "flex",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        />
+      }
+      routes={
+        blockchain && address
+          ? [
+              {
+                name: "stripe",
+                component: (props: any) => <StripeRamp {...props} />,
+                title: "Buy",
+                props: {
+                  blockchain,
+                  publicKey: address,
+                },
+              },
+            ]
+          : [
+              {
+                component: Ramp,
+                title: "Buy",
+                name: "onramp",
+                props: {
+                  blockchain,
+                  publicKey: address,
+                },
+              },
+              {
+                component: (props: any) => <StripeRamp {...props} />,
+                title: "Buy using Link",
+                name: "stripe",
+              },
+            ]
+      }
     />
   );
 }

@@ -20,6 +20,7 @@ import {
   useActiveWallets,
   useBlockchainLogo,
   useUsername,
+  useAvatarUrl,
   WalletPublicKeys,
 } from "@coral-xyz/recoil";
 import {
@@ -100,10 +101,10 @@ const useStyles = styles((theme) => ({
   },
   menuButton: {
     padding: "2px",
-    background: theme.custom.colors.coralGradient,
+    background: `${theme.custom.colors.avatarIconBackground} !important`,
     "&:hover": {
-      background: `${theme.custom.colors.coralGradient} !important`,
-      backgroundColor: `${theme.custom.colors.coralGradient} !important`,
+      background: `${theme.custom.colors.avatarIconBackground} !important`,
+      backgroundColor: `${theme.custom.colors.avatarIconBackground} !important`,
       opacity: HOVER_OPACITY,
     },
   },
@@ -132,8 +133,6 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-const AVATAR_URL = "/coral.png";
-
 export function SettingsButton() {
   return (
     <div style={{ display: "flex" }}>
@@ -147,6 +146,8 @@ export function SettingsButton() {
 function AvatarButton() {
   const classes = useStyles();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const avatarUrl = useAvatarUrl(32);
+
   return (
     <div className={classes.menuButtonContainer}>
       <IconButton
@@ -157,7 +158,7 @@ function AvatarButton() {
         id="menu-button"
       >
         <img
-          src={AVATAR_URL}
+          src={avatarUrl}
           style={{
             width: "32px",
             height: "32px",
@@ -339,11 +340,12 @@ function _SettingsContent() {
 function AvatarHeader() {
   const username = useUsername();
   const theme = useCustomTheme();
+  const avatarUrl = useAvatarUrl(64);
   return (
     <div style={{ marginBottom: "40px" }}>
       <div
         style={{
-          background: theme.custom.colors.coralGradient,
+          background: theme.custom.colors.avatarIconBackground,
           borderRadius: "40px",
           padding: "3px",
           width: "70px",
@@ -354,7 +356,7 @@ function AvatarHeader() {
         }}
       >
         <img
-          src={"coral.png"}
+          src={avatarUrl}
           style={{
             width: "64px",
             height: "64px",

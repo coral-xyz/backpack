@@ -76,10 +76,21 @@ program
     const port = SIMULATOR_PORT;
 
     let js;
+    let rendererScript;
 
-    rendererJs = fs.readFileSync(join(__dirname, "renderer.js"), {
-      encoding: "utf-8",
-    });
+    try {
+      const rendererFileContent = fs.readFileSync(
+        join(__dirname, "renderer.js"),
+        {
+          encoding: "utf-8",
+        }
+      );
+      rendererScript = `<script>${rendererFileContent}</script>`;
+    } catch (e) {
+      console.log("falling back to latest renderer");
+      // fallback to latest version of renderer
+      rendererScript = `<script src="https://unpkg.com/@coral-xyz/react-xnft-dom-renderer@latest/dist/index.js"></script>`;
+    }
     if (iframe) {
       // If an iframe URL has been provided then serve the iframe xNFT example,
       // but replace the source URL with the provided one
@@ -127,12 +138,13 @@ program
           <head>
             <meta charset="utf-8"/>
             <link rel="stylesheet" href="https://doof72pbjabye.cloudfront.net/fonts/inter/font.css"></link>
+            <script src="https://cdn.tailwindcss.com"></script>
           </head>
           <title>simulator</title>
           <body>
             <div id="container"></div>
             <script>${js}</script>
-            <script>${rendererJs}</script>
+            ${rendererScript}
           </body>
         </html>
       `);
@@ -142,8 +154,6 @@ program
       console.log(`listening on port ${port}`);
     });
   });
-
-program.parse();
 
 program
   .command("init")
@@ -159,3 +169,5 @@ program
     console.debug(`cd ${name}`);
     console.debug(`yarn && yarn dev`);
   });
+
+program.parse();

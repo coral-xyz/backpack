@@ -40,6 +40,11 @@ import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDraw
 import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 import { CheckIcon, CrossIcon } from "../../../common/Icon";
 import { TextInput } from "../../../common/Inputs";
+import {
+  getHashedName,
+  getNameAccountKey,
+  NameRegistryState,
+} from "@bonfida/spl-name-service";
 
 const useStyles = styles((theme) => ({
   container: {
@@ -164,7 +169,12 @@ export function Send({
     isFreshAddress: _,
     isErrorAddress,
     normalizedAddress: destinationAddress,
-  } = useIsValidAddress(blockchain, address, solanaProvider.connection);
+  } = useIsValidAddress(
+    blockchain,
+    address,
+    solanaProvider.connection,
+    ethereumCtx.provider
+  );
 
   useEffect(() => {
     if (!token) return;
@@ -248,7 +258,7 @@ export function Send({
               error={isErrorAddress}
               inputProps={{
                 name: "to",
-                spellCheck: "false"
+                spellCheck: "false",
               }}
             />
           </div>
@@ -563,7 +573,8 @@ export function BottomCard({
 export function useIsValidAddress(
   blockchain: Blockchain,
   address: string,
-  solanaConnection?: Connection
+  solanaConnection?: Connection,
+  ethereumProvider?: ethers.providers.Provider
 ) {
   const [addressError, setAddressError] = useState<boolean>(false);
   const [isFreshAccount, setIsFreshAccount] = useState<boolean>(false); // Not used for now.
@@ -582,27 +593,52 @@ export function useIsValidAddress(
     }
     (async () => {
       if (blockchain === Blockchain.SOLANA) {
-        // Solana address validation
         let pubkey;
-        try {
-          pubkey = new PublicKey(address);
-        } catch (err) {
-          setAddressError(true);
-          // Not valid address so don't bother validating it.
-          return;
-        }
 
         if (!solanaConnection) {
           return;
         }
 
-        const account = await solanaConnection.getAccountInfo(pubkey);
+        // SNS Domain
+        if (address.includes(".sol")) {
+          try {
+            const hashedName = await getHashedName(address.replace(".sol", ""));
+            const nameAccountKey = await getNameAccountKey(
+              hashedName,
+              undefined,
+              new PublicKey("58PwtjSDuFHuUkYjH9BYnnQKHfwo9reZhC2zMJv9JPkx") // SOL TLD Authority
+            );
+
+            const owner = await NameRegistryState.retrieve(
+              solanaConnection,
+              nameAccountKey
+            );
+
+            pubkey = owner.registry.owner;
+          } catch (e) {
+            setAddressError(true);
+            return;
+          }
+        }
+
+        if (!pubkey) {
+          // Solana address validation
+          try {
+            pubkey = new PublicKey(address);
+          } catch (err) {
+            setAddressError(true);
+            // Not valid address so don't bother validating it.
+            return;
+          }
+        }
+
+        const account = await solanaConnection?.getAccountInfo(pubkey);
 
         // Null data means the account has no lamports. This is valid.
         if (!account) {
           setIsFreshAccount(true);
           setAccountValidated(true);
-          setNormalizedAddress(address);
+          setNormalizedAddress(pubkey.toString());
           return;
         }
 
@@ -615,16 +651,33 @@ export function useIsValidAddress(
         // The account data has been successfully validated.
         setAddressError(false);
         setAccountValidated(true);
-        setNormalizedAddress(address);
+        setNormalizedAddress(pubkey.toString());
       } else if (blockchain === Blockchain.ETHEREUM) {
         // Ethereum address validation
         let checksumAddress;
-        try {
-          checksumAddress = ethers.utils.getAddress(address);
-        } catch (e) {
-          setAddressError(true);
+
+        if (!ethereumProvider) {
           return;
         }
+
+        if (address.includes(".eth")) {
+          try {
+            checksumAddress = await ethereumProvider?.resolveName(address);
+          } catch (e) {
+            setAddressError(true);
+            return;
+          }
+        }
+
+        if (!checksumAddress) {
+          try {
+            checksumAddress = ethers.utils.getAddress(address);
+          } catch (e) {
+            setAddressError(true);
+            return;
+          }
+        }
+
         setAddressError(false);
         setAccountValidated(true);
         setNormalizedAddress(checksumAddress);

@@ -21,12 +21,13 @@ import {
   SOLANA_RPC_METHOD_SIMULATE,
 } from "@coral-xyz/common";
 import { VersionedTransaction } from "@solana/web3.js";
+import { ChainedRequestManager } from "../chained-request-manager";
 
 export async function sendAndConfirm<
   T extends Transaction | VersionedTransaction
 >(
   publicKey: PublicKey,
-  requestManager: RequestManager,
+  requestManager: RequestManager | ChainedRequestManager,
   connection: Connection,
   tx: T,
   signers?: Signer[],
@@ -55,7 +56,7 @@ export async function sendAndConfirm<
 
 export async function send<T extends Transaction | VersionedTransaction>(
   publicKey: PublicKey,
-  requestManager: RequestManager,
+  requestManager: RequestManager | ChainedRequestManager,
   connection: Connection,
   tx: T,
   signers?: Signer[],
@@ -96,7 +97,7 @@ export async function signTransaction<
   T extends Transaction | VersionedTransaction
 >(
   publicKey: PublicKey,
-  requestManager: RequestManager,
+  requestManager: RequestManager | ChainedRequestManager,
   connection: Connection,
   tx: T
 ): Promise<T> {
@@ -124,7 +125,7 @@ export async function signAllTransactions<
   T extends Transaction | VersionedTransaction
 >(
   publicKey: PublicKey,
-  requestManager: RequestManager,
+  requestManager: RequestManager | ChainedRequestManager,
   connection: Connection,
   txs: Array<T>
 ): Promise<Array<T>> {
@@ -169,7 +170,7 @@ export async function signAllTransactions<
 
 export async function simulate<T extends Transaction | VersionedTransaction>(
   publicKey: PublicKey,
-  requestManager: RequestManager,
+  requestManager: RequestManager | ChainedRequestManager,
   connection: Connection,
   tx: T,
   signers?: Signer[],
@@ -207,7 +208,7 @@ export async function simulate<T extends Transaction | VersionedTransaction>(
 
 export async function signMessage(
   publicKey: PublicKey,
-  requestManager: RequestManager,
+  requestManager: RequestManager | ChainedRequestManager,
   msg: Uint8Array
 ): Promise<Uint8Array> {
   const msgStr = encode(msg);

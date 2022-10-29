@@ -1,0 +1,4 @@
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- alter table "appstore"."pending_curator_reviews" add column "processed" boolean
+--  null default 'false';

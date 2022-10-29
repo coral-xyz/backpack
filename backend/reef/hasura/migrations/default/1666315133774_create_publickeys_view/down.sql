@@ -1,0 +1,6 @@
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- create view "auth"."publickeys_latest" as
+-- select distinct on (user_id, blockchain) user_id, blockchain, publickey
+-- from "auth"."publickeys"
+-- order by user_id, blockchain, created_at desc;

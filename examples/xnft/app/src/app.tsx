@@ -68,8 +68,8 @@ async function fetchOpenOrdersData(): Promise<
   // All open orders accounts for this wallet.
   //
   const openOrders = await OpenOrders.findForOwner(
-    window.xnft.connection,
-    window.xnft.publicKey,
+    window.xnft.solana.connection,
+    window.xnft.solana.publicKey,
     PID
   );
 
@@ -86,7 +86,7 @@ async function fetchOpenOrdersData(): Promise<
     })();
 
     const multipleMarkets = await anchor.utils.rpc.getMultipleAccounts(
-      window.xnft.connection,
+      window.xnft.solana.connection,
       Array.from(markets.values()).map((m) => new PublicKey(m))
     );
     return new Map(

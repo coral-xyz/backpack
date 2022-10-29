@@ -13,6 +13,7 @@ import {
   useEthereumConnectionUrl,
   useEthereumExplorer,
   useSolanaCtx,
+  useEthereumCtx,
   useSolanaConnectionUrl,
   useSolanaExplorer,
 } from "@coral-xyz/recoil";
@@ -192,6 +193,7 @@ function SendScreen({ nft }: { nft: any }) {
   const classes = useStyles();
   const { close } = useDrawerContext();
   const { provider: solanaProvider } = useAnchorContext();
+  const ethereumCtx = useEthereumCtx();
   const [destinationAddress, setDestinationAddress] = useState("");
   const [openConfirm, setOpenConfirm] = useState(false);
   const {
@@ -201,7 +203,8 @@ function SendScreen({ nft }: { nft: any }) {
   } = useIsValidAddress(
     nft.blockchain,
     destinationAddress,
-    solanaProvider.connection
+    solanaProvider.connection,
+    ethereumCtx.provider
   );
 
   const onReject = () => {

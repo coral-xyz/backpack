@@ -1,0 +1,16 @@
+table:
+  name: publickeys
+  schema: auth
+select_permissions:
+  - role: appstore
+    permission:
+      columns:
+        - blockchain
+        - publickey
+      filter: {}
+  - role: auth_worker
+    permission:
+      columns:
+        - blockchain
+        - publickey
+      filter: {}

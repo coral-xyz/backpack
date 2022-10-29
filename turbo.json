@@ -1,16 +1,15 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "baseBranch": "origin/master",
   "pipeline": {
     "build": {
-      "dependsOn": [
-        "^build",
-        "$BACKPACK_CONFIG_VERSION",
-        "$BACKPACK_CONFIG_LOG_LEVEL",
-        "$BACKPACK_FEATURE_LIGHT_MODE",
-        "$BACKPACK_FEATURE_POP_MODE"
-      ],
-      "outputs": ["build/**", "dist/**"]
+      "dependsOn": ["^build"],
+      "outputs": ["build/**", "dist/**", "packages/wallet-standard/lib/**"],
+      "env": [
+        "BACKPACK_CONFIG_VERSION",
+        "BACKPACK_CONFIG_LOG_LEVEL",
+        "BACKPACK_FEATURE_LIGHT_MODE",
+        "BACKPACK_FEATURE_POP_MODE"
+      ]
     },
     "test": {
       "dependsOn": ["^build"]

@@ -9,12 +9,46 @@ import {
 import { getLogger } from "@coral-xyz/common-public";
 const logger = getLogger("react-xnft/reconciler");
 
+class PendingUpdates {
+  _renderUpdatesTimer = 1000; // 1 second until we persist render request before throwing exception
+  _timeouts: { [instanceId: number]: number };
+
+  constructor() {
+    this._timeouts = {};
+  }
+
+  addRenderUpdate(instanceId: number) {
+    if (this._timeouts[instanceId]) {
+      window.clearTimeout(this._timeouts[instanceId]);
+    }
+
+    this._timeouts[instanceId] = window.setTimeout(() => {
+      console.error(`Render fn222 not found for instance ${instanceId}`);
+      delete this._timeouts[instanceId];
+    }, this._renderUpdatesTimer);
+  }
+
+  isPendingRender(instanceId: number) {
+    if (this._timeouts[instanceId]) {
+      return true;
+    }
+    return false;
+  }
+  removeRenderUpdate(instanceId: number) {
+    if (this._timeouts[instanceId]) {
+      window.clearTimeout(this._timeouts[instanceId]);
+      delete this._timeouts[instanceId];
+    }
+  }
+}
+
 //
 // Note that we only handle methods in the "commit" phase of the react
 // reconciler API.
 //
 export class ReactDom {
   private static instance: ReactDom;
+  private pendingUpdates: PendingUpdates;
   //
   // All Element objects in the dom. The _vdom elements and the _vdomRoot
   // elements are the same objects.
@@ -37,6 +71,7 @@ export class ReactDom {
 
   private constructor() {
     this.clear();
+    this.pendingUpdates = new PendingUpdates();
   }
 
   static getInstance() {
@@ -54,6 +89,14 @@ export class ReactDom {
 
   onRender(viewId: number, fn: (data: Element) => void) {
     this._renderFns.set(viewId, fn);
+    if (this.pendingUpdates.isPendingRender(viewId)) {
+      const element = this._vdom.get(viewId);
+      if (!element) {
+        throw new Error("element not found");
+      }
+      fn(element);
+      this.pendingUpdates.removeRenderUpdate(viewId);
+    }
   }
 
   onRenderRoot(fn: (data: Array<Element>) => void) {
@@ -246,7 +289,8 @@ export class ReactDom {
     }
     const renderFn = this._renderFns.get(instanceId);
     if (!renderFn) {
-      throw new Error("render fn not found");
+      this.pendingUpdates.addRenderUpdate(instanceId);
+      return;
     }
     renderFn(element);
   }

@@ -237,9 +237,10 @@ export class BackgroundSolanaConnection extends Connection {
     rawTransaction: Buffer | Uint8Array | Array<number>,
     options?: SendOptions
   ): Promise<TransactionSignature> {
+    const txStr = encode(rawTransaction);
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION,
-      params: [rawTransaction, options],
+      params: [txStr, options],
     });
   }
 

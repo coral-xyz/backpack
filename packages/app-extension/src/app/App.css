@@ -31,14 +31,13 @@ body {
   cursor: pointer;
   border-radius: inherit;
 }
-
 .view {
   position: absolute;
   top: 0px;
   left: 0px;
   right: 0px;
   bottom: 0px;
-  overflow: scroll;
+  overflow: auto;
   margin-right: -15px;
 }
 

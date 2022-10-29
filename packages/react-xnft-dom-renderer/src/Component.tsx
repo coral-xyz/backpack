@@ -1,26 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Scrollbars } from "react-custom-scrollbars";
 import type { Element } from "react-xnft";
-import { motion, AnimatePresence } from "framer-motion";
 import { NodeKind } from "react-xnft";
+import { AnimatePresence, motion } from "framer-motion";
 import { formatUSD, proxyImageUrl } from "@coral-xyz/common";
-import { useCustomTheme, styles } from "@coral-xyz/themes";
+import { styles } from "@coral-xyz/themes";
 import {
-  Button as MuiButton,
   Card,
   CardContent,
   CardHeader,
+  CircularProgress,
   List,
   ListItem,
   ListItemIcon,
   Typography,
-  TextField as MuiTextField,
-  CircularProgress,
 } from "@mui/material";
-import { TextareaAutosize as MuiTextArea } from "@mui/base";
-import { ExpandMore, ExpandLess } from "@mui/icons-material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { ViewRenderer } from "./ViewRenderer";
-import { useDomContext } from "./Context";
+import { ScrollbarNew } from "./components/Scrollbar";
+import { useDefaultClasses } from "./theme/defaults";
 
 const useStyles = styles((theme) => ({
   blockchainLogo: {
@@ -146,65 +143,16 @@ const useStyles = styles((theme) => ({
   tokenListItemIconRoot: {
     minWidth: "44px",
   },
-  textFieldInput: {
-    fontWeight: 500,
-    borderRadius: "12px",
-    fontSize: "16px",
-    lineHeight: "24px",
-  },
-  textAreaInput: {
-    fontWeight: 500,
-    borderRadius: "12px",
-    fontSize: "16px",
-    lineHeight: "24px",
-    padding: "16.5px 14px",
-    font: "inherit",
-    background: theme.custom.colors.textBackground,
-    border: `2pt solid ${theme.custom.colors.textBackground}`,
-    "&:hover": {
-      border: `2pt solid ${theme.custom.colors.primaryButton}`,
-    },
-    "&:focus": {
-      border: `2pt solid ${theme.custom.colors.primaryButton}`,
-      outline: "none",
-    },
-  },
-  textFieldInputColorEmpty: {
-    color: theme.custom.colors.textPlaceholder,
-  },
-  textFieldInputColor: {
-    color: theme.custom.colors.fontColor2,
-  },
-  textFieldRoot: {
-    "& .MuiOutlinedInput-root": {
-      background: theme.custom.colors.textBackground,
-      borderRadius: "12px",
-      "& fieldset": {
-        border: `${theme.custom.colors.borderFull}`,
-      },
-      "&:hover fieldset": {
-        border: `solid 2pt ${theme.custom.colors.primaryButton}`,
-      },
-      "&.Mui-focused fieldset": {
-        border: `solid 2pt ${theme.custom.colors.primaryButton} !important`,
-        borderColor: `${theme.custom.colors.primaryButton} !important`,
-      },
-    },
-  },
-  textRootError: {
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        border: `solid 2pt ${theme.custom.colors.negative} !important`,
-      },
-      "&.Mui-focused fieldset": {
-        border: `solid 2pt ${theme.custom.colors.negative} !important`,
-        borderColor: `${theme.custom.colors.negative} !important`,
-      },
-    },
-  },
   expand: {
     width: "18px",
     color: theme.custom.colors.secondary,
+  },
+  loadingIndicator: {
+    color:
+      "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
+  },
+  circle: {
+    stroke: "url(#linearColors)",
   },
 }));
 
@@ -328,7 +276,7 @@ export function Component({ viewData }) {
 function Custom({ children, component, props }) {
   const el = React.createElement(
     component,
-    props,
+    { ...props, className: props.tw + " " + props.className },
     children.map((c) => <ViewRenderer key={c.id} element={c} />)
   );
   return el;
@@ -337,6 +285,7 @@ function Custom({ children, component, props }) {
 function Svg({ props, children }: any) {
   return (
     <svg
+      className={props.tw}
       width={props.width}
       height={props.height}
       viewBox={props.viewBox}
@@ -379,6 +328,7 @@ function Circle({ props }: any) {
 
 function Iframe({ props, style }: any) {
   const [xnftProp, setXnftProp] = useState(false);
+  const [id, _setId] = useState(randomString());
   const ref = useRef<any>();
 
   useEffect(() => {
@@ -389,14 +339,15 @@ function Iframe({ props, style }: any) {
       return () => {};
     }
     // @ts-ignore
-    window.xnft.addIframe(ref.current);
+    window.xnft.addIframe(ref.current, props.src, id);
     return () => {
       // @ts-ignore
-      window.xnft.removeIframe(ref.current);
+      window.xnft.removeIframe(id);
     };
   }, [props.src, ref, xnftProp]);
   return isValidSecureUrl(props.src) ? (
     <iframe
+      name={id}
       ref={ref}
       sandbox="allow-same-origin allow-scripts"
       src={props.src}
@@ -722,7 +673,7 @@ export function BalancesTableFooter({ props, style, children }: any) {
 
 function View({ id, props, style, children }: any) {
   return (
-    <div style={style} onClick={props.onClick}>
+    <div style={style} onClick={props.onClick} className={props.tw}>
       {children.map((c: Element) => (
         <ViewRenderer key={c.id} element={c} />
       ))}
@@ -735,17 +686,13 @@ function Table({ props, style, children }: any) {
 }
 
 function Text({ props, children, style }: any) {
-  style = {
-    color: "#fff", // todo: inject theme into top level renderer and set provider?
-    fontWeight: 500,
-    ...style,
-  };
+  const defaultClasses = useDefaultClasses();
   return (
-    <Typography style={style}>
+    <p style={style} className={defaultClasses[NodeKind.Text] + " " + props.tw}>
       {children.map((c: Element) => (
         <ViewRenderer key={c.id} element={c} />
       ))}
-    </Typography>
+    </p>
   );
 }
 
@@ -753,18 +700,19 @@ function _TextField({ id, props, children, style }: any) {
   if (props.multiline) {
     return (
       <TextArea
+        props={props}
         placeholder={props.placeholder}
         value={props.value}
         maxRows={props.numberOfLines}
         minRows={props.numberOfLines}
         onChange={props.onChange}
-        children={children}
         style={style}
       />
     );
   }
   return (
     <TextField
+      props={props}
       placeholder={props.placeholder}
       value={props.value}
       onChange={props.onChange}
@@ -780,28 +728,18 @@ export function TextArea({
   value,
   onChange,
   placeholder,
+  props,
   style,
-  className = "",
 }: any) {
-  const classes = useStyles();
-  className =
-    className +
-    `${classes.textAreaInput} ${
-      value ? classes.textFieldInputColor : classes.textFieldInputColorEmpty
-    }
-    `;
+  const defaultClasses = useDefaultClasses();
   return (
-    <MuiTextArea
-      maxRows={maxRows}
-      minRows={minRows}
+    <textarea
+      rows={minRows}
+      style={style}
+      className={defaultClasses[NodeKind.TextField] + " " + (props.tw || "")}
+      value={value}
       onChange={onChange}
       placeholder={placeholder}
-      style={{
-        width: "100%",
-        ...style,
-      }}
-      value={value}
-      className={className}
     />
   );
 }
@@ -811,66 +749,32 @@ export function TextField({
   type,
   value,
   onChange,
-  rootClass,
-  startAdornment,
-  endAdornment,
-  isError,
-  inputProps,
-  disabled,
-  autoFocus,
-  rows,
-  select,
-  children,
   style,
+  props,
 }: any) {
-  const classes = useStyles();
-  inputProps = Object.assign(
-    {
-      className: `${classes.textFieldInput} ${
-        value ? classes.textFieldInputColor : classes.textFieldInputColorEmpty
-      }`,
-    },
-    inputProps
-  );
+  const defaultClasses = useDefaultClasses();
   return (
-    <MuiTextField
-      autoFocus={autoFocus}
-      multiline={!!rows}
-      rows={rows}
-      disabled={disabled}
-      placeholder={placeholder}
-      variant="outlined"
-      margin="dense"
-      required
-      fullWidth
+    <input
       type={type}
-      inputProps={inputProps}
-      classes={{
-        root: `${isError ? classes.textRootError : ""} ${
-          classes.textFieldRoot
-        } ${rootClass ?? ""}`,
-      }}
-      InputLabelProps={{
-        shrink: false,
-        style: {
-          borderRadius: "12px",
-        },
-      }}
-      InputProps={{
-        startAdornment,
-        endAdornment,
-      }}
+      style={style}
+      className={defaultClasses[NodeKind.TextField] + " " + (props.tw || "")}
       value={value}
       onChange={onChange}
-      select={select}
-      children={children}
-      style={style}
+      placeholder={placeholder}
+      p
     />
   );
 }
 
 function Image({ id, props, style }: any) {
-  return <ProxyImage src={props.src} style={style} onClick={props.onClick} />;
+  return (
+    <ProxyImage
+      className={props.tw}
+      src={props.src}
+      style={style}
+      onClick={props.onClick}
+    />
+  );
 }
 
 function ProxyImage(props: any) {
@@ -918,18 +822,11 @@ export function __Button({
   children,
   childrenRenderer,
 }: any) {
-  const classes = useStyles();
-  const theme = useCustomTheme();
+  const defaultClasses = useDefaultClasses();
   return (
-    <MuiButton
-      disableElevation
-      variant="contained"
-      disableRipple
+    <button
+      className={defaultClasses[NodeKind.Button] + " " + (props.tw || "")}
       style={{
-        borderRadius: "12px",
-        width: "100px",
-        textTransform: "none",
-        backgroundColor: theme.custom.colors.nav,
         ...style,
       }}
       onClick={onClick}
@@ -938,17 +835,33 @@ export function __Button({
         childrenRenderer.map((c: Element) => (
           <ViewRenderer key={c.id} element={c} />
         ))}
-    </MuiButton>
+    </button>
   );
 }
 
 function Loading({ id, props, style }: any) {
-  const theme = useCustomTheme();
+  const classes = useStyles();
   style = {
-    color: theme.custom.colors.activeNavButton,
     ...style,
   };
-  return <CircularProgress style={style} thickness={6} />;
+  return (
+    <>
+      <svg style={{ position: "fixed" }}>
+        <linearGradient id="linearColors" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="15.93%" stopColor="#3EECB8" />
+          <stop offset="58.23%" stopColor="#A372FE" />
+          <stop offset="98.98%" stopColor="#FE7D4A" />
+        </linearGradient>
+      </svg>
+      <CircularProgress
+        className={classes.loadingIndicator}
+        style={style}
+        thickness={6}
+        classes={{ circle: classes.circle }}
+      />
+      ;
+    </>
+  );
 }
 
 function ScrollBar({ id, props, style, children }: any) {
@@ -962,47 +875,9 @@ function ScrollBar({ id, props, style, children }: any) {
 }
 
 export function ScrollBarImpl(props: any) {
-  const theme = useCustomTheme();
   return (
     <>
-      <Scrollbars
-        style={{ width: "100%", height: "100%" }}
-        renderTrackHorizontal={(props) => (
-          <div {...props} className="track-horizontal" />
-        )}
-        renderTrackVertical={(props) => (
-          <div
-            style={{ backgroundColor: theme.custom.colors.scrollbarTrack }}
-            {...props}
-            className="track-vertical"
-          />
-        )}
-        renderThumbHorizontal={(props) => (
-          <div {...props} className="thumb-horizontal" />
-        )}
-        renderThumbVertical={(props) => (
-          <div
-            style={{ backgroundColor: theme.custom.colors.scrollbarThumb }}
-            {...props}
-            className="thumb-vertical"
-          />
-        )}
-        renderView={(props) => <div {...props} className="view" />}
-        autoHide
-        thumbMinSize={30}
-      >
-        {props.children}
-      </Scrollbars>
-      <style>
-        {`
-          .track-vertical {
-            background: ${theme.custom.colors.scrollbarTrack};
-          }
-          .track-vertical .thumb-vertical {
-            background-color: ${theme.custom.colors.scrollbarThumb};
-          }
-				`}
-      </style>
+      <ScrollbarNew {...props}>{props.children}</ScrollbarNew>
     </>
   );
 }
@@ -1046,3 +921,7 @@ export const MOTION_VARIANTS = {
     opacity: 0,
   },
 };
+
+function randomString() {
+  return Math.floor(Math.random() * 10000000) + "";
+}

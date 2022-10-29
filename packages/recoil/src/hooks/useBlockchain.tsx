@@ -3,6 +3,10 @@ import { Blockchain } from "@coral-xyz/common";
 import * as atoms from "../atoms";
 import { TokenData } from "../types";
 
+export function useBlockchainKeyrings() {
+  return useRecoilValue(atoms.blockchainKeyrings);
+}
+
 export function useEnabledBlockchains() {
   return useRecoilValue(atoms.enabledBlockchains);
 }

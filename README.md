@@ -9,7 +9,7 @@
   </p>
 
   <p>
-    <a href="https://github.com/coral-xyz/backpack/actions"><img alt="Build Status" src="https://github.com/coral-xyz/backpack/actions/workflows/pull_request.yml/badge.svg" /></a>
+    <a href="https://github.com/coral-xyz/backpack/actions"><img alt="Build Status" src="https://github.com/coral-xyz/backpack/actions/workflows/pull_requests_and_merges.yml/badge.svg" /></a>
     <a href="https://docs.xnft.gg"><img alt="Tutorials" src="https://img.shields.io/badge/docs-tutorials-blueviolet" /></a>
     <a href="https://discord.gg/w9P85Y9yBR"><img alt="Discord Chat" src="https://img.shields.io/badge/chat-discord-blueviolet" /></a>
   </p>
@@ -87,6 +87,11 @@ _If you run into issues with builds try running `yarn clean` and then start agai
 ### Install the development version of the extension
 
 Go to chrome://extensions, enable developer mode (top right) and drag the `packages/app-extension/dev` dir into the window. This version will have (Dev) in the title and supports live-reloading.
+
+#### Not seeing the dev folder?
+
+- Do you have a stale node process running? Try to kill it all: `killall -9 node` and start over
+- Try running `yarn start` from within `packages/app-extension` while running `yarn start` from root. This should work.
 
 ### Optionally install the built extension
 

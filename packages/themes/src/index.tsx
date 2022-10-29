@@ -4,13 +4,14 @@ import createStyles from "@mui/styles/createStyles";
 
 export const HOVER_OPACITY = 0.8;
 
+export const TEXT_COLOR = "#fff";
 const BACKGROUND_COLOR_0 = "#18181b";
 const BACKGROUND_BACKDROP_COLOR = BACKGROUND_COLOR_0;
-const BACKGROUND_COLOR_1 = "#27272a";
+export const BACKGROUND_COLOR_1 = "#27272a";
 const BACKGROUND_COLOR_2 = "#3F3F46";
 const FONT_COLOR = "#FFFFFF";
 const FONT_COLOR_1 = "#71717A";
-const FONT_COLOR_2 = "#D4D4D8";
+export const FONT_COLOR_2 = "#D4D4D8";
 const FONT_COLOR_3 = "#A1A1AA";
 const BRAND_COLOR = "#FFFFFF";
 const BUTTON_FONT_COLOR = FONT_COLOR;
@@ -20,14 +21,15 @@ const POSITIVE_COLOR = "#35A63A";
 const NEGATIVE_COLOR = "#E95050";
 const SCROLLBAR_THUMB_COLOR = "rgb(153 164 180)";
 
+export const LIGHT_TEXT_COLOR = FONT_COLOR_1;
 const LIGHT_BACKGROUND_BACKDROP_COLOR =
   "linear-gradient(180deg, #F8F8F9 0%, #F0F0F2 100%), #FFFFFF";
 const LIGHT_BACKGROUND_COLOR_0 = "#F0F0F2";
-const LIGHT_BACKGROUND_COLOR_1 = "#ffffff";
+export const LIGHT_BACKGROUND_COLOR_1 = "#ffffff";
 const LIGHT_BACKGROUND_COLOR_2 = LIGHT_BACKGROUND_COLOR_0;
 const LIGHT_FONT_COLOR = "#030A19";
 const LIGHT_FONT_COLOR_1 = "#4E5768";
-const LIGHT_FONT_COLOR_2 = LIGHT_FONT_COLOR;
+export const LIGHT_FONT_COLOR_2 = LIGHT_FONT_COLOR;
 const LIGHT_FONT_COLOR_3 = LIGHT_FONT_COLOR_1;
 const LIGHT_BRAND_COLOR = LIGHT_FONT_COLOR;
 const LIGHT_BUTTON_FONT_COLOR = FONT_COLOR;
@@ -146,6 +148,8 @@ export const darkTheme: any = {
       approveTransactionTableBackground: BACKGROUND_COLOR_2,
       approveTransactionCloseBackground: BACKGROUND_COLOR_0,
       hoverIconBackground: `rgb(39, 39, 42, ${HOVER_OPACITY})`,
+      avatarIconBackground: "#DFE0E5",
+      text: TEXT_COLOR,
       dangerButton: DANGER_COLOR,
       alpha: "#8F929E",
       scrollbarTrack: BACKGROUND_COLOR_0,
@@ -253,6 +257,8 @@ export const lightTheme: any = {
       approveTransactionTableBackground: LIGHT_BACKGROUND_COLOR_1,
       approveTransactionCloseBackground: "#C2C4CC",
       hoverIconBackground: LIGHT_ICON_HOVER_COLOR,
+      avatarIconBackground: "#DFE0E5",
+      text: LIGHT_TEXT_COLOR,
 
       dangerButton: DANGER_COLOR,
       alpha: "#8F929E",

@@ -1,5 +1,9 @@
 import { atom, selector } from "recoil";
-import { UI_RPC_METHOD_KEYRING_STORE_STATE } from "@coral-xyz/common";
+import {
+  KeyringType,
+  UI_RPC_METHOD_KEYRING_STORE_STATE,
+  UI_RPC_METHOD_KEYRING_TYPE_READ,
+} from "@coral-xyz/common";
 import { backgroundClient } from "./client";
 
 export type KeyringStoreState = "locked" | "unlocked" | "needs-onboarding";
@@ -21,6 +25,23 @@ export const keyringStoreState = atom<KeyringStoreState | null>({
       const background = get(backgroundClient);
       return background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_STATE,
+        params: [],
+      });
+    },
+  }),
+});
+
+/**
+ * Type of keyring, i.e. ledger of mnemonic based
+ */
+export const keyringType = atom<KeyringType | null>({
+  key: "keyringType",
+  default: selector({
+    key: "keyringTypeDefault",
+    get: ({ get }) => {
+      const background = get(backgroundClient);
+      return background.request({
+        method: UI_RPC_METHOD_KEYRING_TYPE_READ,
         params: [],
       });
     },
