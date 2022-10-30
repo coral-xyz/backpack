@@ -40,6 +40,19 @@ export class BrowserRuntimeExtension {
       : browser.tabs.sendMessage(tabId, msg);
   }
 
+  public static async openTab(options: chrome.tabs.CreateProperties) {
+    return new Promise((resolve, reject) => {
+      // TODO: `browser` support
+      chrome?.tabs.create(options, (newWindow) => {
+        const error = BrowserRuntimeCommon.checkForError();
+        if (error) {
+          return reject(error);
+        }
+        return resolve(newWindow);
+      });
+    });
+  }
+
   public static async openWindow(options: chrome.windows.CreateData) {
     return new Promise((resolve, reject) => {
       // TODO: `browser` support
@@ -184,7 +197,7 @@ export async function openPopupWindow(
     return getOs() === "Windows";
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     BrowserRuntimeExtension.getLastFocusedWindow().then((window: any) => {
       BrowserRuntimeExtension.openWindow({
         url: `${url}`,
@@ -209,10 +222,14 @@ export async function openPopupWindow(
 
 export function openOnboarding() {
   const url = `${EXPANDED_HTML}?${QUERY_ONBOARDING}`;
-  window.open(chrome.runtime.getURL(url), "_blank");
+  BrowserRuntimeExtension.openTab({
+    url: chrome.runtime.getURL(url),
+  });
 }
 
 export function openConnectHardware(blockchain: Blockchain) {
   const url = `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}&blockchain=${blockchain}`;
-  window.open(chrome.runtime.getURL(url), "_blank");
+  BrowserRuntimeExtension.openTab({
+    url: chrome.runtime.getURL(url),
+  });
 }
