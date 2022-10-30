@@ -223,7 +223,8 @@ export const TextInput = ({
   return (
     <>
       <TextField
-        rows={rows}
+        multiline={!!rows}
+        rows={4}
         type={type}
         placeholder={placeholder}
         value={value}
