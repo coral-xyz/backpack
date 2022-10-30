@@ -111,8 +111,8 @@ export const InviteCodeForm = ({
             placeholder={"Invite code"}
             type="text"
             value={inviteCode}
-            setValue={(e: any) => {
-              setInviteCode(e.target.value.replace(/[^a-zA-Z0-9\\-]/g, ""));
+            setValue={(v: any) => {
+              setInviteCode(v.replace(/[^a-zA-Z0-9\\-]/g, ""));
             }}
             error={error ? true : false}
             errorMessage={error}
