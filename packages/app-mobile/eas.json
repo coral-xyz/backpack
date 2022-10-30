@@ -4,7 +4,7 @@
   },
   "build": {
     "production": {
-      "node": "18"
+      "node": "18.20.0"
     },
     "preview": {
       "extends": "production",
