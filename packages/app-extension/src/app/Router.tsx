@@ -8,7 +8,6 @@ import {
   EXTENSION_HEIGHT,
   QUERY_LOCKED,
   QUERY_APPROVAL,
-  QUERY_LOCKED_APPROVAL,
   QUERY_APPROVE_TRANSACTION,
   QUERY_APPROVE_ALL_TRANSACTIONS,
   QUERY_APPROVE_MESSAGE,
@@ -102,8 +101,6 @@ function PopupRouter() {
       return <QueryLocked />;
     case QUERY_APPROVAL:
       return <QueryApproval />;
-    case QUERY_LOCKED_APPROVAL:
-      return <QueryLockedApproval />;
     case QUERY_APPROVE_TRANSACTION:
       return <QueryApproveTransaction />;
     case QUERY_APPROVE_ALL_TRANSACTIONS:
@@ -115,20 +112,11 @@ function PopupRouter() {
   }
 }
 
-function QueryLockedApproval() {
-  logger.debug("query locked approval");
-  const keyringStoreState = useKeyringStoreState();
-  const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
-  return isLocked ? <LockedBootstrap /> : <QueryApproval />;
-}
-
 function QueryLocked() {
   logger.debug("query locked");
   const background = useBackgroundResponder();
-
   const url = new URL(window.location.href);
   const requestId = parseInt(url.searchParams.get("requestId")!);
-
   const keyringStoreState = useKeyringStoreState();
   const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
 
@@ -156,7 +144,6 @@ function QueryApproval() {
   const title = url.searchParams.get("title");
   const requestId = parseInt(url.searchParams.get("requestId")!);
   const blockchain = url.searchParams.get("blockchain");
-
   const approvedOrigins = useApprovedOrigins();
   const found = approvedOrigins.find((ao) => ao === origin);
 
@@ -164,24 +151,26 @@ function QueryApproval() {
   if (found) {
     window.close();
   }
+
   return (
-    <ApproveOrigin
-      origin={origin}
-      title={title}
-      blockchain={blockchain}
-      onCompletion={async (didApprove: boolean) => {
-        await background.response({
-          id: requestId,
-          result: didApprove,
-        });
-      }}
-    />
+    <WithUnlock>
+      <ApproveOrigin
+        origin={origin}
+        title={title}
+        blockchain={blockchain}
+        onCompletion={async (didApprove: boolean) => {
+          await background.response({
+            id: requestId,
+            result: didApprove,
+          });
+        }}
+      />
+    </WithUnlock>
   );
 }
 
 function QueryApproveTransaction() {
   logger.debug("query approve transaction");
-
   const background = useBackgroundResponder();
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
@@ -191,24 +180,25 @@ function QueryApproveTransaction() {
   const requestId = parseInt(url.searchParams.get("requestId")!);
 
   return (
-    <ApproveTransaction
-      origin={origin!}
-      title={title!}
-      tx={tx}
-      wallet={wallet}
-      onCompletion={async (transaction: any) => {
-        await background.response({
-          id: requestId,
-          result: transaction,
-        });
-      }}
-    />
+    <WithUnlock>
+      <ApproveTransaction
+        origin={origin!}
+        title={title!}
+        tx={tx}
+        wallet={wallet}
+        onCompletion={async (transaction: any) => {
+          await background.response({
+            id: requestId,
+            result: transaction,
+          });
+        }}
+      />
+    </WithUnlock>
   );
 }
 
 function QueryApproveAllTransactions() {
   logger.debug("query approve all transactions");
-
   const background = useBackgroundResponder();
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin")!;
@@ -218,24 +208,25 @@ function QueryApproveAllTransactions() {
   const wallet = url.searchParams.get("wallet")!;
 
   return (
-    <ApproveAllTransactions
-      origin={origin!}
-      title={title!}
-      txs={txs}
-      wallet={wallet}
-      onCompletion={async (didApprove: boolean) => {
-        await background.response({
-          id: requestId,
-          result: didApprove,
-        });
-      }}
-    />
+    <WithUnlock>
+      <ApproveAllTransactions
+        origin={origin!}
+        title={title!}
+        txs={txs}
+        wallet={wallet}
+        onCompletion={async (didApprove: boolean) => {
+          await background.response({
+            id: requestId,
+            result: didApprove,
+          });
+        }}
+      />
+    </WithUnlock>
   );
 }
 
 function QueryApproveMessage() {
   logger.debug("query approve message");
-
   const bg = useBackgroundResponder();
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
@@ -245,29 +236,25 @@ function QueryApproveMessage() {
   const wallet = url.searchParams.get("wallet")!;
 
   return (
-    <ApproveMessage
-      origin={origin}
-      title={title}
-      message={message}
-      wallet={wallet}
-      onCompletion={async (didApprove: boolean) => {
-        await bg.response({
-          id: requestId,
-          result: didApprove,
-        });
-      }}
-    />
+    <WithUnlock>
+      <ApproveMessage
+        origin={origin}
+        title={title}
+        message={message}
+        wallet={wallet}
+        onCompletion={async (didApprove: boolean) => {
+          await bg.response({
+            id: requestId,
+            result: didApprove,
+          });
+        }}
+      />
+    </WithUnlock>
   );
 }
 
 function FullApp() {
   logger.debug("full app");
-
-  const keyringStoreState = useKeyringStoreState();
-  const needsOnboarding =
-    keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
-  const isLocked =
-    !needsOnboarding && keyringStoreState === KeyringStoreStateEnum.Locked;
   const background = useBackgroundClient();
 
   useEffect(() => {
@@ -275,11 +262,23 @@ function FullApp() {
   }, [background]);
 
   return (
+    <WithUnlock>
+      <Unlocked />
+    </WithUnlock>
+  );
+}
+
+function WithUnlock({ children }: { children: React.ReactNode }) {
+  const keyringStoreState = useKeyringStoreState();
+  const needsOnboarding =
+    keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
+  const isLocked =
+    !needsOnboarding && keyringStoreState === KeyringStoreStateEnum.Locked;
+  return (
     <AnimatePresence initial={false}>
       <WithLockMotion id={isLocked ? "locked" : "unlocked"}>
         <Suspense fallback={<div style={{ display: "none" }}></div>}>
-          {isLocked && <LockedBootstrap />}
-          {!isLocked && <Unlocked />}
+          {isLocked ? <Locked /> : children}
         </Suspense>
       </WithLockMotion>
     </AnimatePresence>

@@ -4,7 +4,6 @@ import {
   EXTENSION_HEIGHT,
   QUERY_LOCKED,
   QUERY_APPROVAL,
-  QUERY_LOCKED_APPROVAL,
   QUERY_APPROVE_MESSAGE,
   QUERY_APPROVE_TRANSACTION,
   QUERY_APPROVE_ALL_TRANSACTIONS,
@@ -107,17 +106,6 @@ export async function openXnft(
 ): Promise<chrome.windows.Window> {
   const props = encodeURIComponent(JSON.stringify({ xnftAddress }));
   const url = `${POPUP_HTML}#?pluginProps=${props}`;
-  return openPopupWindow(url);
-}
-
-export async function openLockedApprovalPopupWindow(
-  origin: string,
-  title: string,
-  requestId: number,
-  blockchain: Blockchain
-): Promise<chrome.windows.Window> {
-  const encodedTitle = encodeURIComponent(title);
-  const url = `${POPUP_HTML}?${QUERY_LOCKED_APPROVAL}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&blockchain=${blockchain}`;
   return openPopupWindow(url);
 }
 
