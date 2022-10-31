@@ -16,7 +16,6 @@ import {
   ChannelAppUi,
   openLockedPopupWindow,
   openApprovalPopupWindow,
-  openLockedApprovalPopupWindow,
   openApproveTransactionPopupWindow,
   openApproveAllTransactionsPopupWindow,
   openApproveMessagePopupWindow,
@@ -215,18 +214,40 @@ async function handleConnect(
   if (locks.has(origin)) {
     throw new Error(`already handling a request from ${origin}`);
   }
+
   locks.add(origin);
 
   const keyringStoreState = await ctx.backend.keyringStoreState();
+
+  if (keyringStoreState === "needs-onboarding") {
+    locks.delete(origin);
+    throw new Error("invariant violation keyring not created");
+  }
+
   let didApprove = false;
   let resp: any;
 
-  // Use the UI to ask the user if it should connect.
-  if (keyringStoreState === "unlocked") {
+  if (
+    keyringStoreState === "locked" &&
+    (await ctx.backend.isApprovedOrigin(origin))
+  ) {
+    logger.debug("origin approved but need to unlock");
+    resp = await RequestManager.requestUiAction((requestId: number) => {
+      return openLockedPopupWindow(
+        ctx.sender.origin,
+        ctx.sender.tab.title,
+        requestId,
+        blockchain
+      );
+    });
+    didApprove = !resp.windowClosed && resp.result;
+  } else {
     if (await ctx.backend.isApprovedOrigin(origin)) {
-      logger.debug("already approved so automatically connecting");
+      logger.debug("origin approved so automatically connecting");
       didApprove = true;
     } else {
+      // Origin is not approved and wallet may or may not be locked
+      logger.debug("requesting approval for origin");
       resp = await RequestManager.requestUiAction((requestId: number) => {
         return openApprovalPopupWindow(
           ctx.sender.origin,
@@ -237,31 +258,6 @@ async function handleConnect(
       });
       didApprove = !resp.windowClosed && resp.result;
     }
-  } else if (keyringStoreState === "locked") {
-    if (await ctx.backend.isApprovedOrigin(origin)) {
-      resp = await RequestManager.requestUiAction((requestId: number) => {
-        return openLockedPopupWindow(
-          ctx.sender.origin,
-          ctx.sender.tab.title,
-          requestId,
-          blockchain
-        );
-      });
-      didApprove = !resp.windowClosed && resp.result;
-    } else {
-      resp = await RequestManager.requestUiAction((requestId: number) => {
-        return openLockedApprovalPopupWindow(
-          ctx.sender.origin,
-          ctx.sender.tab.title,
-          requestId,
-          blockchain
-        );
-      });
-      didApprove = !resp.windowClosed && resp.result;
-    }
-  } else {
-    locks.delete(origin);
-    throw new Error("invariant violation keyring not created");
   }
 
   locks.delete(origin);
