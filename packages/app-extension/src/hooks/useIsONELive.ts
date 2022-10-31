@@ -10,6 +10,7 @@ const whitelist = [
   "46YogwAHj4Yi4gZ4Rkyta1dRqKKcKZJy7YC5iJJHDvnw",
   "GqRzxLfxUmuQPh48K3cq7M6uy8bScJV9qVmXcfbmT5jD",
   "2CqD4M1kJb3rHB5ZM25NVQibdJ6v6cryi7GHDaXhac46",
+  "34UpQDG2R66u5XL9BFwNhsdzT6sqzat1Js9Yd7PmEXG2",
 ];
 
 export function useIsONELive() {
