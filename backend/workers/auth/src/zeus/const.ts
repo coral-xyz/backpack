@@ -74,7 +74,6 @@ export const AllTypesProps: Record<string, any> = {
     _and: "auth_stripe_onramp_bool_exp",
     _not: "auth_stripe_onramp_bool_exp",
     _or: "auth_stripe_onramp_bool_exp",
-    blockchain: "String_comparison_exp",
     client_secret: "String_comparison_exp",
     id: "Int_comparison_exp",
     publicKey: "String_comparison_exp",
@@ -90,7 +89,6 @@ export const AllTypesProps: Record<string, any> = {
     where: "auth_stripe_onramp_bool_exp",
   },
   auth_stripe_onramp_order_by: {
-    blockchain: "order_by",
     client_secret: "order_by",
     id: "order_by",
     publicKey: "order_by",
@@ -410,7 +408,6 @@ export const ReturnTypes: Record<string, any> = {
     returning: "auth_publickeys_history",
   },
   auth_stripe_onramp: {
-    blockchain: "String",
     client_secret: "String",
     id: "Int",
     publicKey: "String",

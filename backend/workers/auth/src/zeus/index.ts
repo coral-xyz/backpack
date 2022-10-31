@@ -1270,7 +1270,6 @@ export type ValueTypes = {
   };
   /** columns and relationships of "auth.stripe_onramp" */
   ["auth_stripe_onramp"]: AliasType<{
-    blockchain?: boolean | `@${string}`;
     client_secret?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     publicKey?: boolean | `@${string}`;
@@ -1292,11 +1291,6 @@ export type ValueTypes = {
       | Variable<any, string>;
     _or?:
       | Array<ValueTypes["auth_stripe_onramp_bool_exp"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-    blockchain?:
-      | ValueTypes["String_comparison_exp"]
       | undefined
       | null
       | Variable<any, string>;
@@ -1334,7 +1328,6 @@ export type ValueTypes = {
   };
   /** input type for inserting data into table "auth.stripe_onramp" */
   ["auth_stripe_onramp_insert_input"]: {
-    blockchain?: string | undefined | null | Variable<any, string>;
     client_secret?: string | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     publicKey?: string | undefined | null | Variable<any, string>;
@@ -1365,11 +1358,6 @@ export type ValueTypes = {
   };
   /** Ordering options when selecting data from "auth.stripe_onramp". */
   ["auth_stripe_onramp_order_by"]: {
-    blockchain?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
     client_secret?:
       | ValueTypes["order_by"]
       | undefined
@@ -1396,7 +1384,6 @@ export type ValueTypes = {
   ["auth_stripe_onramp_select_column"]: auth_stripe_onramp_select_column;
   /** input type for updating data in table "auth.stripe_onramp" */
   ["auth_stripe_onramp_set_input"]: {
-    blockchain?: string | undefined | null | Variable<any, string>;
     client_secret?: string | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     publicKey?: string | undefined | null | Variable<any, string>;
@@ -1418,7 +1405,6 @@ export type ValueTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_stripe_onramp_stream_cursor_value_input"]: {
-    blockchain?: string | undefined | null | Variable<any, string>;
     client_secret?: string | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     publicKey?: string | undefined | null | Variable<any, string>;
@@ -2817,7 +2803,6 @@ export type ResolverInputTypes = {
   };
   /** columns and relationships of "auth.stripe_onramp" */
   ["auth_stripe_onramp"]: AliasType<{
-    blockchain?: boolean | `@${string}`;
     client_secret?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     publicKey?: boolean | `@${string}`;
@@ -2836,7 +2821,6 @@ export type ResolverInputTypes = {
       | Array<ResolverInputTypes["auth_stripe_onramp_bool_exp"]>
       | undefined
       | null;
-    blockchain?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     client_secret?:
       | ResolverInputTypes["String_comparison_exp"]
       | undefined
@@ -2857,7 +2841,6 @@ export type ResolverInputTypes = {
   };
   /** input type for inserting data into table "auth.stripe_onramp" */
   ["auth_stripe_onramp_insert_input"]: {
-    blockchain?: string | undefined | null;
     client_secret?: string | undefined | null;
     id?: number | undefined | null;
     publicKey?: string | undefined | null;
@@ -2885,7 +2868,6 @@ export type ResolverInputTypes = {
   };
   /** Ordering options when selecting data from "auth.stripe_onramp". */
   ["auth_stripe_onramp_order_by"]: {
-    blockchain?: ResolverInputTypes["order_by"] | undefined | null;
     client_secret?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     publicKey?: ResolverInputTypes["order_by"] | undefined | null;
@@ -2900,7 +2882,6 @@ export type ResolverInputTypes = {
   ["auth_stripe_onramp_select_column"]: auth_stripe_onramp_select_column;
   /** input type for updating data in table "auth.stripe_onramp" */
   ["auth_stripe_onramp_set_input"]: {
-    blockchain?: string | undefined | null;
     client_secret?: string | undefined | null;
     id?: number | undefined | null;
     publicKey?: string | undefined | null;
@@ -2916,7 +2897,6 @@ export type ResolverInputTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_stripe_onramp_stream_cursor_value_input"]: {
-    blockchain?: string | undefined | null;
     client_secret?: string | undefined | null;
     id?: number | undefined | null;
     publicKey?: string | undefined | null;
@@ -3948,7 +3928,6 @@ export type ModelTypes = {
   };
   /** columns and relationships of "auth.stripe_onramp" */
   ["auth_stripe_onramp"]: {
-    blockchain?: string | undefined;
     client_secret: string;
     id: number;
     publicKey: string;
@@ -3960,7 +3939,6 @@ export type ModelTypes = {
     _and?: Array<ModelTypes["auth_stripe_onramp_bool_exp"]> | undefined;
     _not?: ModelTypes["auth_stripe_onramp_bool_exp"] | undefined;
     _or?: Array<ModelTypes["auth_stripe_onramp_bool_exp"]> | undefined;
-    blockchain?: ModelTypes["String_comparison_exp"] | undefined;
     client_secret?: ModelTypes["String_comparison_exp"] | undefined;
     id?: ModelTypes["Int_comparison_exp"] | undefined;
     publicKey?: ModelTypes["String_comparison_exp"] | undefined;
@@ -3974,7 +3952,6 @@ export type ModelTypes = {
   };
   /** input type for inserting data into table "auth.stripe_onramp" */
   ["auth_stripe_onramp_insert_input"]: {
-    blockchain?: string | undefined;
     client_secret?: string | undefined;
     id?: number | undefined;
     publicKey?: string | undefined;
@@ -3996,7 +3973,6 @@ export type ModelTypes = {
   };
   /** Ordering options when selecting data from "auth.stripe_onramp". */
   ["auth_stripe_onramp_order_by"]: {
-    blockchain?: ModelTypes["order_by"] | undefined;
     client_secret?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
     publicKey?: ModelTypes["order_by"] | undefined;
@@ -4010,7 +3986,6 @@ export type ModelTypes = {
   ["auth_stripe_onramp_select_column"]: auth_stripe_onramp_select_column;
   /** input type for updating data in table "auth.stripe_onramp" */
   ["auth_stripe_onramp_set_input"]: {
-    blockchain?: string | undefined;
     client_secret?: string | undefined;
     id?: number | undefined;
     publicKey?: string | undefined;
@@ -4026,7 +4001,6 @@ export type ModelTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_stripe_onramp_stream_cursor_value_input"]: {
-    blockchain?: string | undefined;
     client_secret?: string | undefined;
     id?: number | undefined;
     publicKey?: string | undefined;
@@ -4516,7 +4490,6 @@ export type GraphQLTypes = {
   /** columns and relationships of "auth.stripe_onramp" */
   ["auth_stripe_onramp"]: {
     __typename: "auth_stripe_onramp";
-    blockchain?: string | undefined;
     client_secret: string;
     id: number;
     publicKey: string;
@@ -4528,7 +4501,6 @@ export type GraphQLTypes = {
     _and?: Array<GraphQLTypes["auth_stripe_onramp_bool_exp"]> | undefined;
     _not?: GraphQLTypes["auth_stripe_onramp_bool_exp"] | undefined;
     _or?: Array<GraphQLTypes["auth_stripe_onramp_bool_exp"]> | undefined;
-    blockchain?: GraphQLTypes["String_comparison_exp"] | undefined;
     client_secret?: GraphQLTypes["String_comparison_exp"] | undefined;
     id?: GraphQLTypes["Int_comparison_exp"] | undefined;
     publicKey?: GraphQLTypes["String_comparison_exp"] | undefined;
@@ -4543,7 +4515,6 @@ export type GraphQLTypes = {
   };
   /** input type for inserting data into table "auth.stripe_onramp" */
   ["auth_stripe_onramp_insert_input"]: {
-    blockchain?: string | undefined;
     client_secret?: string | undefined;
     id?: number | undefined;
     publicKey?: string | undefined;
@@ -4566,7 +4537,6 @@ export type GraphQLTypes = {
   };
   /** Ordering options when selecting data from "auth.stripe_onramp". */
   ["auth_stripe_onramp_order_by"]: {
-    blockchain?: GraphQLTypes["order_by"] | undefined;
     client_secret?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     publicKey?: GraphQLTypes["order_by"] | undefined;
@@ -4581,7 +4551,6 @@ export type GraphQLTypes = {
   ["auth_stripe_onramp_select_column"]: auth_stripe_onramp_select_column;
   /** input type for updating data in table "auth.stripe_onramp" */
   ["auth_stripe_onramp_set_input"]: {
-    blockchain?: string | undefined;
     client_secret?: string | undefined;
     id?: number | undefined;
     publicKey?: string | undefined;
@@ -4597,7 +4566,6 @@ export type GraphQLTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_stripe_onramp_stream_cursor_value_input"]: {
-    blockchain?: string | undefined;
     client_secret?: string | undefined;
     id?: number | undefined;
     publicKey?: string | undefined;
@@ -4966,7 +4934,6 @@ export const enum auth_stripe_onramp_constraint {
 }
 /** select columns of table "auth.stripe_onramp" */
 export const enum auth_stripe_onramp_select_column {
-  blockchain = "blockchain",
   client_secret = "client_secret",
   id = "id",
   publicKey = "publicKey",
@@ -4975,7 +4942,6 @@ export const enum auth_stripe_onramp_select_column {
 }
 /** update columns of table "auth.stripe_onramp" */
 export const enum auth_stripe_onramp_update_column {
-  blockchain = "blockchain",
   client_secret = "client_secret",
   id = "id",
   publicKey = "publicKey",
