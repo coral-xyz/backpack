@@ -191,6 +191,7 @@ interface InputProps {
   className?: any;
   children?: any;
   select?: boolean;
+  margin?: "none" | "dense";
 }
 
 export const TextInput = ({
@@ -209,6 +210,7 @@ export const TextInput = ({
   className = "",
   children,
   select,
+  margin,
 }: InputProps) => {
   const classes = useStyles({ error });
   const theme = useCustomTheme();
@@ -234,7 +236,7 @@ export const TextInput = ({
         variant="outlined"
         fullWidth
         required
-        margin="dense"
+        margin={margin ?? "dense"}
         disabled={disabled}
         autoFocus={autoFocus}
         InputProps={{

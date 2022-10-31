@@ -54,6 +54,7 @@ export function TokenInputField({
   return (
     <TextInput
       {...props}
+      margin="none"
       value={value}
       // Override default TextField setValue with function to truncate decimal inputs
       setValue={(e: any) => {
