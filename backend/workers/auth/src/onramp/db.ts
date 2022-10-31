@@ -5,8 +5,7 @@ export const createSession = async (
   HASURA_URL: string,
   JWT: string,
   publicKey: string,
-  clientSecret: string,
-  blockchain: BlockChain
+  clientSecret: string
 ) => {
   const chain = Chain(HASURA_URL, {
     headers: {
@@ -22,7 +21,6 @@ export const createSession = async (
           client_secret: clientSecret,
           status: "in_progress",
           webhook_dump: "",
-          blockchain,
         },
       },
       {
