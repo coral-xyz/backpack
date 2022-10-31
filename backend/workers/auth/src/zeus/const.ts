@@ -76,7 +76,7 @@ export const AllTypesProps: Record<string, any> = {
     _or: "auth_stripe_onramp_bool_exp",
     client_secret: "String_comparison_exp",
     id: "Int_comparison_exp",
-    publicKey: "String_comparison_exp",
+    public_key: "String_comparison_exp",
     status: "String_comparison_exp",
     webhook_dump: "String_comparison_exp",
   },
@@ -91,7 +91,7 @@ export const AllTypesProps: Record<string, any> = {
   auth_stripe_onramp_order_by: {
     client_secret: "order_by",
     id: "order_by",
-    publicKey: "order_by",
+    public_key: "order_by",
     status: "order_by",
     webhook_dump: "order_by",
   },
@@ -410,7 +410,7 @@ export const ReturnTypes: Record<string, any> = {
   auth_stripe_onramp: {
     client_secret: "String",
     id: "Int",
-    publicKey: "String",
+    public_key: "String",
     status: "String",
     webhook_dump: "String",
   },

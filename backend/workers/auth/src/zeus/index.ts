@@ -1272,7 +1272,7 @@ export type ValueTypes = {
   ["auth_stripe_onramp"]: AliasType<{
     client_secret?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
-    publicKey?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
     status?: boolean | `@${string}`;
     webhook_dump?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
@@ -1304,7 +1304,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
-    publicKey?:
+    public_key?:
       | ValueTypes["String_comparison_exp"]
       | undefined
       | null
@@ -1330,7 +1330,7 @@ export type ValueTypes = {
   ["auth_stripe_onramp_insert_input"]: {
     client_secret?: string | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
-    publicKey?: string | undefined | null | Variable<any, string>;
+    public_key?: string | undefined | null | Variable<any, string>;
     status?: string | undefined | null | Variable<any, string>;
     webhook_dump?: string | undefined | null | Variable<any, string>;
   };
@@ -1364,7 +1364,7 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    publicKey?:
+    public_key?:
       | ValueTypes["order_by"]
       | undefined
       | null
@@ -1386,7 +1386,7 @@ export type ValueTypes = {
   ["auth_stripe_onramp_set_input"]: {
     client_secret?: string | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
-    publicKey?: string | undefined | null | Variable<any, string>;
+    public_key?: string | undefined | null | Variable<any, string>;
     status?: string | undefined | null | Variable<any, string>;
     webhook_dump?: string | undefined | null | Variable<any, string>;
   };
@@ -1407,7 +1407,7 @@ export type ValueTypes = {
   ["auth_stripe_onramp_stream_cursor_value_input"]: {
     client_secret?: string | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
-    publicKey?: string | undefined | null | Variable<any, string>;
+    public_key?: string | undefined | null | Variable<any, string>;
     status?: string | undefined | null | Variable<any, string>;
     webhook_dump?: string | undefined | null | Variable<any, string>;
   };
@@ -2805,7 +2805,7 @@ export type ResolverInputTypes = {
   ["auth_stripe_onramp"]: AliasType<{
     client_secret?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
-    publicKey?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
     status?: boolean | `@${string}`;
     webhook_dump?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
@@ -2826,7 +2826,7 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
-    publicKey?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    public_key?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     status?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     webhook_dump?:
       | ResolverInputTypes["String_comparison_exp"]
@@ -2843,7 +2843,7 @@ export type ResolverInputTypes = {
   ["auth_stripe_onramp_insert_input"]: {
     client_secret?: string | undefined | null;
     id?: number | undefined | null;
-    publicKey?: string | undefined | null;
+    public_key?: string | undefined | null;
     status?: string | undefined | null;
     webhook_dump?: string | undefined | null;
   };
@@ -2870,7 +2870,7 @@ export type ResolverInputTypes = {
   ["auth_stripe_onramp_order_by"]: {
     client_secret?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
-    publicKey?: ResolverInputTypes["order_by"] | undefined | null;
+    public_key?: ResolverInputTypes["order_by"] | undefined | null;
     status?: ResolverInputTypes["order_by"] | undefined | null;
     webhook_dump?: ResolverInputTypes["order_by"] | undefined | null;
   };
@@ -2884,7 +2884,7 @@ export type ResolverInputTypes = {
   ["auth_stripe_onramp_set_input"]: {
     client_secret?: string | undefined | null;
     id?: number | undefined | null;
-    publicKey?: string | undefined | null;
+    public_key?: string | undefined | null;
     status?: string | undefined | null;
     webhook_dump?: string | undefined | null;
   };
@@ -2899,7 +2899,7 @@ export type ResolverInputTypes = {
   ["auth_stripe_onramp_stream_cursor_value_input"]: {
     client_secret?: string | undefined | null;
     id?: number | undefined | null;
-    publicKey?: string | undefined | null;
+    public_key?: string | undefined | null;
     status?: string | undefined | null;
     webhook_dump?: string | undefined | null;
   };
@@ -3930,7 +3930,7 @@ export type ModelTypes = {
   ["auth_stripe_onramp"]: {
     client_secret: string;
     id: number;
-    publicKey: string;
+    public_key: string;
     status: string;
     webhook_dump: string;
   };
@@ -3941,7 +3941,7 @@ export type ModelTypes = {
     _or?: Array<ModelTypes["auth_stripe_onramp_bool_exp"]> | undefined;
     client_secret?: ModelTypes["String_comparison_exp"] | undefined;
     id?: ModelTypes["Int_comparison_exp"] | undefined;
-    publicKey?: ModelTypes["String_comparison_exp"] | undefined;
+    public_key?: ModelTypes["String_comparison_exp"] | undefined;
     status?: ModelTypes["String_comparison_exp"] | undefined;
     webhook_dump?: ModelTypes["String_comparison_exp"] | undefined;
   };
@@ -3954,7 +3954,7 @@ export type ModelTypes = {
   ["auth_stripe_onramp_insert_input"]: {
     client_secret?: string | undefined;
     id?: number | undefined;
-    publicKey?: string | undefined;
+    public_key?: string | undefined;
     status?: string | undefined;
     webhook_dump?: string | undefined;
   };
@@ -3975,7 +3975,7 @@ export type ModelTypes = {
   ["auth_stripe_onramp_order_by"]: {
     client_secret?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
-    publicKey?: ModelTypes["order_by"] | undefined;
+    public_key?: ModelTypes["order_by"] | undefined;
     status?: ModelTypes["order_by"] | undefined;
     webhook_dump?: ModelTypes["order_by"] | undefined;
   };
@@ -3988,7 +3988,7 @@ export type ModelTypes = {
   ["auth_stripe_onramp_set_input"]: {
     client_secret?: string | undefined;
     id?: number | undefined;
-    publicKey?: string | undefined;
+    public_key?: string | undefined;
     status?: string | undefined;
     webhook_dump?: string | undefined;
   };
@@ -4003,7 +4003,7 @@ export type ModelTypes = {
   ["auth_stripe_onramp_stream_cursor_value_input"]: {
     client_secret?: string | undefined;
     id?: number | undefined;
-    publicKey?: string | undefined;
+    public_key?: string | undefined;
     status?: string | undefined;
     webhook_dump?: string | undefined;
   };
@@ -4492,7 +4492,7 @@ export type GraphQLTypes = {
     __typename: "auth_stripe_onramp";
     client_secret: string;
     id: number;
-    publicKey: string;
+    public_key: string;
     status: string;
     webhook_dump: string;
   };
@@ -4503,7 +4503,7 @@ export type GraphQLTypes = {
     _or?: Array<GraphQLTypes["auth_stripe_onramp_bool_exp"]> | undefined;
     client_secret?: GraphQLTypes["String_comparison_exp"] | undefined;
     id?: GraphQLTypes["Int_comparison_exp"] | undefined;
-    publicKey?: GraphQLTypes["String_comparison_exp"] | undefined;
+    public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
     status?: GraphQLTypes["String_comparison_exp"] | undefined;
     webhook_dump?: GraphQLTypes["String_comparison_exp"] | undefined;
   };
@@ -4517,7 +4517,7 @@ export type GraphQLTypes = {
   ["auth_stripe_onramp_insert_input"]: {
     client_secret?: string | undefined;
     id?: number | undefined;
-    publicKey?: string | undefined;
+    public_key?: string | undefined;
     status?: string | undefined;
     webhook_dump?: string | undefined;
   };
@@ -4539,7 +4539,7 @@ export type GraphQLTypes = {
   ["auth_stripe_onramp_order_by"]: {
     client_secret?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
-    publicKey?: GraphQLTypes["order_by"] | undefined;
+    public_key?: GraphQLTypes["order_by"] | undefined;
     status?: GraphQLTypes["order_by"] | undefined;
     webhook_dump?: GraphQLTypes["order_by"] | undefined;
   };
@@ -4553,7 +4553,7 @@ export type GraphQLTypes = {
   ["auth_stripe_onramp_set_input"]: {
     client_secret?: string | undefined;
     id?: number | undefined;
-    publicKey?: string | undefined;
+    public_key?: string | undefined;
     status?: string | undefined;
     webhook_dump?: string | undefined;
   };
@@ -4568,7 +4568,7 @@ export type GraphQLTypes = {
   ["auth_stripe_onramp_stream_cursor_value_input"]: {
     client_secret?: string | undefined;
     id?: number | undefined;
-    publicKey?: string | undefined;
+    public_key?: string | undefined;
     status?: string | undefined;
     webhook_dump?: string | undefined;
   };
@@ -4936,7 +4936,7 @@ export const enum auth_stripe_onramp_constraint {
 export const enum auth_stripe_onramp_select_column {
   client_secret = "client_secret",
   id = "id",
-  publicKey = "publicKey",
+  public_key = "public_key",
   status = "status",
   webhook_dump = "webhook_dump",
 }
@@ -4944,7 +4944,7 @@ export const enum auth_stripe_onramp_select_column {
 export const enum auth_stripe_onramp_update_column {
   client_secret = "client_secret",
   id = "id",
-  publicKey = "publicKey",
+  public_key = "public_key",
   status = "status",
   webhook_dump = "webhook_dump",
 }
