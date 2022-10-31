@@ -17,6 +17,7 @@ import { cors } from "hono/cors";
 import { sign } from "tweetnacl";
 import { z, ZodError } from "zod";
 import { Chain } from "./zeus";
+import { registerOnRampHandlers } from "./onramp";
 
 const BaseCreateUser = z.object({
   username: z
@@ -333,6 +334,8 @@ app.post("/users", async (c) => {
 
   return c.json(res);
 });
+
+registerOnRampHandlers(app);
 
 const validateEthereumSignature = (
   msg: Buffer,
