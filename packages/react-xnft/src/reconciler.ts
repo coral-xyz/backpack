@@ -141,7 +141,9 @@ const RECONCILER = ReactReconciler({
         }
         return createCustomInstance(kind, props, r, h, o);
       default:
-        throw new Error("New error found");
+        throw new Error(
+          `Component ${kind} is not part of the ReactXnft library, please use the available set of components.`
+        );
     }
   },
   createTextInstance: (
