@@ -6,6 +6,7 @@ import { useBackgroundClient, useUsername } from "@coral-xyz/recoil";
 import { TextField, PrimaryButton } from "../common";
 import { RedBackpack, Backpack } from "../common/Icon";
 import { LockedMenu } from "./LockedMenu";
+import { TextInput } from "../common/Inputs";
 
 export const NAV_BAR_HEIGHT = 56;
 
@@ -77,13 +78,13 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
 
           <form onSubmit={_onUnlock} noValidate>
             <Box sx={{ margin: "0 12px 12px 12px" }}>
-              <TextField
+              <TextInput
                 autoFocus={true}
-                isError={error}
+                error={error}
                 placeholder={"Password"}
                 type={"password"}
                 value={password}
-                setValue={setPassword}
+                setValue={(e) => setPassword(e.target.value)}
               />
             </Box>
             <Box sx={{ mx: "12px" }}>

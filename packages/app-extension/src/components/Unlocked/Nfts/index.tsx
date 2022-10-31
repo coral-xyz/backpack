@@ -1,5 +1,5 @@
 import { Grid, Skeleton } from "@mui/material";
-import { Image as ImageIcon } from "@mui/icons-material";
+import { Block, Image as ImageIcon } from "@mui/icons-material";
 import {
   toTitleCase,
   Blockchain,
@@ -23,6 +23,8 @@ import {
   BalancesTableContent,
   BalancesTableHead,
 } from "../Balances";
+import EntryONE from "./EntryONE";
+import { useIsONELive } from "../../../hooks/useIsONELive";
 
 const useStyles = styles(() => ({
   cardContentContainer: {
@@ -31,6 +33,7 @@ const useStyles = styles(() => ({
 }));
 
 export function Nfts() {
+  const isONELive = useIsONELive();
   const activeWallets = useActiveWallets();
   const enabledBlockchains = useEnabledBlockchains();
   const [collections, _, isLoading] = useLoader(
@@ -46,6 +49,7 @@ export function Nfts() {
 
   return (
     <>
+      {isONELive && <EntryONE />}
       {Object.values(collections).flat().length === 0 && !isLoading ? (
         <EmptyState
           icon={(props: any) => <ImageIcon {...props} />}
@@ -53,16 +57,19 @@ export function Nfts() {
           subtitle={"Get started with your first NFT"}
           buttonText={"Browse Magic Eden"}
           onClick={() => window.open("https://magiceden.io")}
+          verticallyCentered={!isONELive}
         />
       ) : (
-        Object.entries(collections).map(([blockchain, collections]) => (
-          <NftTable
-            key={blockchain}
-            blockchain={blockchain as Blockchain}
-            collections={collections as NftCollection[]}
-            isLoading={isLoading}
-          />
-        ))
+        <>
+          {Object.entries(collections).map(([blockchain, collections]) => (
+            <NftTable
+              key={blockchain}
+              blockchain={blockchain as Blockchain}
+              collections={collections as NftCollection[]}
+              isLoading={isLoading}
+            />
+          ))}
+        </>
       )}
     </>
   );
