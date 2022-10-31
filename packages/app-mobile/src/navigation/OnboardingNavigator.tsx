@@ -337,13 +337,15 @@ function OnboardingBlockchainSelectScreen({
     //   ],
     // });
     //
-    // addBlockchainKeyring({
-    //   blockchain: blockchain!,
-    //   derivationPath,
-    //   accountIndex,
-    //   publicKey: publicKey!,
-    //   signature,
-    // });
+    //
+    // @ts-expect-error TODO(peter)
+    addBlockchainKeyring({
+      blockchain: blockchain!,
+      derivationPath,
+      accountIndex,
+      publicKey: publicKey!,
+      // signature,
+    });
   };
 
   // Add the initialisation parameters for a blockchain keyring to state
@@ -352,26 +354,38 @@ function OnboardingBlockchainSelectScreen({
   };
 
   function Network({
-    blockchain,
+    name,
     enabled,
+    selected,
     onSelect,
   }: {
-    blockchain: string;
+    name: string;
     enabled: boolean;
+    selected: boolean;
     onSelect: (blockchain: Blockchain) => void;
   }) {
     return (
-      <View style={{ padding: 8, height: 50 }}>
+      <View
+        style={{
+          padding: 8,
+          height: 50,
+          width: "45%",
+          backgroundColor: "#333",
+          margin: 4,
+        }}
+      >
         <Pressable
           onPress={() => {
             if (enabled) {
               // TODO(peter) make sure this is right
-              const name = blockchain.toLowerCase() as Blockchain;
-              onSelect(name);
+              const blockchain = name.toLowerCase() as Blockchain;
+              onSelect(blockchain);
             }
           }}
         >
-          <Text style={{ color: "#FFF" }}>{blockchain}</Text>
+          <Text style={{ color: "#FFF" }}>
+            {name} {selected ? "selected" : "not"}
+          </Text>
         </Pressable>
       </View>
     );
@@ -382,16 +396,21 @@ function OnboardingBlockchainSelectScreen({
       title="Which network would you like Backpack to use?"
       subtitle="You can always add additional networks later through the settings menu."
     >
-      {BLOCKCHAINS.map((blockchain) => (
-        <Network
-          key={blockchain.name}
-          enabled={blockchain.enabled}
-          blockchain={blockchain.name}
-          onSelect={(blockchain: Blockchain) => {
-            handleBlockchainClick(blockchain);
-          }}
-        />
-      ))}
+      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+        {BLOCKCHAINS.map((blockchain) => (
+          <Network
+            key={blockchain.name}
+            selected={selectedBlockchains.includes(
+              blockchain.name.toLowerCase()
+            )}
+            enabled={blockchain.enabled}
+            name={blockchain.name}
+            onSelect={(blockchain: Blockchain) => {
+              handleBlockchainClick(blockchain);
+            }}
+          />
+        ))}
+      </View>
       <PrimaryButton
         disabled={selectedBlockchains.length === 0}
         label="Next"

@@ -1,3 +1,5 @@
+const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
+
 export default {
   name: "Backpack",
   slug: "backpack",
@@ -35,7 +37,7 @@ export default {
   extra: {
     url: process.env.WEBWORKER_URL,
     eas: {
-      projectId: process.env.EXPO_PROJECT_ID,
+      projectId: projectID,
     },
   },
 };
