@@ -260,6 +260,7 @@ export function Send({
                 name: "to",
                 spellCheck: "false",
               }}
+              margin="none"
             />
           </div>
         </div>
