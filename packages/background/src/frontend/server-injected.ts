@@ -20,6 +20,7 @@ import {
   openApproveAllTransactionsPopupWindow,
   openApproveMessagePopupWindow,
   openXnft,
+  openOnboarding,
   BrowserRuntimeExtension,
   ETHEREUM_RPC_METHOD_CONNECT,
   ETHEREUM_RPC_METHOD_DISCONNECT,
@@ -221,7 +222,8 @@ async function handleConnect(
 
   if (keyringStoreState === "needs-onboarding") {
     locks.delete(origin);
-    throw new Error("invariant violation keyring not created");
+    openOnboarding();
+    return;
   }
 
   let didApprove = false;
