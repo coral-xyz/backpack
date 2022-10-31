@@ -19,7 +19,7 @@ export default {
   assetBundlePatterns: ["**/*"],
   ios: {
     supportsTablet: true,
-    bundleIdentifier: "community.coral.backpack",
+    bundleIdentifier: "community.coral.backpack2",
     infoPlist: {
       WKAppBoundDomains: ["coral-xyz.github.io", "ngrok.io"],
     },

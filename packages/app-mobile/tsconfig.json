@@ -1,5 +1,5 @@
 {
-  "extends": "../../node_modules/expo/tsconfig.base",
+  "extends": "expo/tsconfig.base",
   "baseUrl": "",
   "paths": {
     "@components/*": ["src/components/*"],

@@ -73,7 +73,7 @@ export function PrimaryButton({
         justifyContent: "center",
         alignItems: "center",
         width: "100%",
-        opacity: disabled ? 80 : 100, // TODO(peter)
+        opacity: disabled ? 80 : 100 // TODO(peter) 
       }}
       disabled={disabled}
       onPress={onPress}
