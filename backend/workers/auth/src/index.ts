@@ -13,6 +13,7 @@ import {
 import { ethers } from "ethers";
 import { decode } from "bs58";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { sign } from "tweetnacl";
 import { z, ZodError } from "zod";
 import { Chain } from "./zeus";
@@ -106,6 +107,8 @@ const LegacyCreateUser = z.discriminatedUnion("blockchain", [
 // ----- routing -----
 
 const app = new Hono();
+
+app.use("*", cors());
 
 app.use("*", async (c, next) => {
   try {

@@ -47,9 +47,9 @@ export class BackgroundEthereumProvider extends JsonRpcProvider {
   constructor(
     backgroundClient: BackgroundClient,
     connectionUrl: string,
-    chainId = "0x1"
+    chainId?: string
   ) {
-    super(connectionUrl, parseInt(chainId));
+    super(connectionUrl, chainId ? parseInt(chainId) : undefined);
     this._backgroundClient = backgroundClient;
   }
 

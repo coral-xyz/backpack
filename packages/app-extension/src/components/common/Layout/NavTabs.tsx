@@ -1,6 +1,7 @@
 import { WithTabs } from "./Tab";
 import { ApproveTransactionRequest } from "../../Unlocked/ApproveTransactionRequest";
 import { Router } from "./Router";
+import { DisplayPlugin } from "../../Unlocked/DisplayPlugin";
 
 //
 // The main nav persistent stack.
@@ -17,6 +18,7 @@ export function NavTabs() {
       >
         <Router />
         <ApproveTransactionRequest />
+        <DisplayPlugin />
       </div>
     </WithTabs>
   );

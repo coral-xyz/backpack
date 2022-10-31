@@ -10,6 +10,7 @@ export const EmptyState: React.FC<{
   onClick?: () => void;
   contentStyle?: React.CSSProperties;
   minimize?: boolean;
+  verticallyCentered?: boolean;
 }> = ({
   icon,
   title,
@@ -18,15 +19,17 @@ export const EmptyState: React.FC<{
   onClick,
   contentStyle,
   minimize,
+  verticallyCentered = true,
 }) => {
   const theme = useCustomTheme();
+
   return (
     <div
       style={{
         borderRadius: "12px",
-        paddingLeft: "16px",
-        paddingRight: "16px",
-        height: "100%",
+        paddingLeft: "12px",
+        paddingRight: "12px",
+        height: verticallyCentered ? "100%" : "auto",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",

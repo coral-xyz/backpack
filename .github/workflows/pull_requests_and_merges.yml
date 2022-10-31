@@ -254,7 +254,17 @@ jobs:
           token: ${{ secrets.NPM_ACCESS_TOKEN }}
           tag: latest
           package: packages/react-xnft/package.json
-      - name: "publish to npm: xnft-cli"
+      - name: "publish to npm: @coral-xyz/xnft-cli"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_ACCESS_TOKEN }}
+          tag: latest
+          package: packages/xnft-cli/package.json
+      - name: "change @coral-xyz/xnft-cli package name to xnft"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: sed -i 's/"@coral-xyz\/xnft-cli"/"xnft"/g' packages/xnft-cli/package.json
+      - name: "publish to npm: xnft"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: JS-DevTools/npm-publish@v1
         with:

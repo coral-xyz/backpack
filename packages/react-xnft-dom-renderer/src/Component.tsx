@@ -700,6 +700,7 @@ function _TextField({ id, props, children, style }: any) {
   if (props.multiline) {
     return (
       <TextArea
+        props={props}
         placeholder={props.placeholder}
         value={props.value}
         maxRows={props.numberOfLines}
@@ -711,6 +712,7 @@ function _TextField({ id, props, children, style }: any) {
   }
   return (
     <TextField
+      props={props}
       placeholder={props.placeholder}
       value={props.value}
       onChange={props.onChange}
@@ -726,6 +728,7 @@ export function TextArea({
   value,
   onChange,
   placeholder,
+  props,
   style,
 }: any) {
   const defaultClasses = useDefaultClasses();
@@ -733,7 +736,7 @@ export function TextArea({
     <textarea
       rows={minRows}
       style={style}
-      className={defaultClasses[NodeKind.TextField]}
+      className={defaultClasses[NodeKind.TextField] + " " + (props.tw || "")}
       value={value}
       onChange={onChange}
       placeholder={placeholder}
@@ -741,16 +744,24 @@ export function TextArea({
   );
 }
 
-export function TextField({ placeholder, type, value, onChange, style }: any) {
+export function TextField({
+  placeholder,
+  type,
+  value,
+  onChange,
+  style,
+  props,
+}: any) {
   const defaultClasses = useDefaultClasses();
   return (
     <input
       type={type}
       style={style}
-      className={defaultClasses[NodeKind.TextField]}
+      className={defaultClasses[NodeKind.TextField] + " " + (props.tw || "")}
       value={value}
       onChange={onChange}
       placeholder={placeholder}
+      p
     />
   );
 }
