@@ -21,8 +21,12 @@ import { ErrorMessage } from "./components/ErrorMessage";
 import { PasswordInput } from "./components/PasswordInput";
 import { ButtonFooter, MainContent } from "./components/Templates";
 import { ToggleConnection } from "./screens/Helpers/ToggleConnection";
-import NeedsOnboarding from "./screens/NeedsOnboarding";
+// import NeedsOnboarding from "./screens/NeedsOnboarding";
 import CreateWallet from "./screens/NeedsOnboarding/CreateWallet";
+
+function NeedsOnboarding() {
+  return null;
+}
 
 const HomeScreen = () => {
   const keyringStoreState = useKeyringStoreState();

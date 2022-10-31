@@ -31,11 +31,42 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { encode } from "bs58";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Button,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  AsyncStorage,
+} from "react-native";
 
-type OnboardingAction = "import" | "create";
+function useOnboardingData() {
+  const [data, setData] = useState({
+    step: 0,
+    inviteCode: null,
+    username: null,
+    action: null,
+    keyringType: null,
+    blockchainKeyrings: [],
+    blockchain: null,
+    password: null,
+    mnemonic: undefined,
+  });
+}
+
+async function saveStep(info) {
+  await AsyncStorage.setItem("step", JSON.stringify(info));
+}
+
+async function getStep() {
+  const str = await AsyncStorage.getItem("onboarding");
+  return JSON.parse(str);
+}
+
+type OnboardingAction = "import" | "create" | "recover";
 type OnboardingStackParamList = {
   Welcome: undefined;
+  KeyringTypeSelector: { action: OnboardingAction };
   MnemonicInput: { action: OnboardingAction };
   SelectBlockchain: { action: OnboardingAction; mnemonic: string };
   ImportAccounts: {
@@ -48,7 +79,7 @@ type OnboardingStackParamList = {
     mnemonic: string;
     blockchainKeyrings: BlockchainKeyringInit[];
   };
-  Complete: {
+  Finished: {
     action: OnboardingAction;
     password: string;
     mnemonic: string;
@@ -118,6 +149,15 @@ function WelcomeScreen({
       </View>
     </Screen>
   );
+}
+
+function OnboardingKeyringTypeSelector({
+  route,
+  navigation,
+}: StackScreenProps<OnboardingStackParamList, "KeyringType">) {
+  const { action } = route.params;
+  const [keyringType, setKeyringType] = useState("");
+  return null;
 }
 
 // params.mnemonic (string)
@@ -445,7 +485,7 @@ function OnboardingCreatePasswordScreen({
   } = useForm<CreatePasswordFormData>();
 
   const onSubmit = ({ password }: CreatePasswordFormData) => {
-    navigation.push("Complete", {
+    navigation.push("Finished", {
       action: route.params.action,
       password,
       mnemonic: route.params.mnemonic,
@@ -526,10 +566,10 @@ function OnboardingImportAccountsScreen({
   );
 }
 
-function OnboardingCompleteScreen({
+function OnboardingFinishedScreen({
   route,
   navigation,
-}: StackScreenProps<OnboardingStackParamList, "Complete">) {
+}: StackScreenProps<OnboardingStackParamList, "Finished">) {
   const [isValid, setIsValid] = useState(false);
   const background = useBackgroundClient();
   const { password, mnemonic, blockchainKeyrings } = route.params;
@@ -611,7 +651,7 @@ function OnboardingCompleteScreen({
         onPress={async () => {
           await createUser();
           await createStore();
-          navigation.navigate("Welcome");
+          // Navigation should happen automagically based on keyring state
         }}
       />
     </OnboardingScreen>
@@ -635,12 +675,16 @@ export default function OnboardingNavigator() {
         }}
       >
         <Stack.Screen
-          name="SelectBlockchain"
-          component={OnboardingBlockchainSelectScreen}
+          name="KeyringTypeSelector"
+          component={OnboardingKeyringTypeSelector}
         />
         <Stack.Screen
           name="MnemonicInput"
           component={OnboardingMnemonicInputScreen}
+        />
+        <Stack.Screen
+          name="SelectBlockchain"
+          component={OnboardingBlockchainSelectScreen}
         />
         <Stack.Screen
           name="ImportAccounts"
@@ -650,7 +694,7 @@ export default function OnboardingNavigator() {
           name="CreatePassword"
           component={OnboardingCreatePasswordScreen}
         />
-        <Stack.Screen name="Complete" component={OnboardingCompleteScreen} />
+        <Stack.Screen name="Finished" component={OnboardingFinishedScreen} />
       </Stack.Group>
     </Stack.Navigator>
   );
