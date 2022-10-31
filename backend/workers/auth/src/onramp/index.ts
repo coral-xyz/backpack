@@ -61,7 +61,8 @@ export const registerOnRampHandlers = (app: Hono) => {
         c.env.HASURA_URL,
         c.env.JWT,
         publicKey,
-        json.client_secret
+        json.client_secret,
+        chain
       );
       if (!json.client_secret) {
         throw new Error("Client secret not returned from Stripe");
