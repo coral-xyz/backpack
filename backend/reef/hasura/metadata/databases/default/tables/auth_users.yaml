@@ -33,6 +33,15 @@ select_permissions:
         - username
       filter: {}
       allow_aggregations: true
+  - role: one_xnft
+    permission:
+      columns:
+        - id
+        - updated_at
+        - username
+        - waolist_tokens_eligible
+        - waolist_tokens_minted
+      filter: {}
 update_permissions:
   - role: auth_worker
     permission:
@@ -40,3 +49,10 @@ update_permissions:
         - updated_at
       filter: {}
       check: null
+  - role: one_xnft
+    permission:
+      columns:
+        - waolist_tokens_eligible
+        - waolist_tokens_minted
+      filter: {}
+      check: {}
