@@ -5,7 +5,10 @@
     "@components/*": ["src/components/*"],
     "@hooks/*": ["src/hooks/*"],
     "@lib/*": ["src/lib/*"],
-    "@screens/*": ["src/screens/*"]
+    "@screens/*": ["src/screens/*"],
+    "@coral-xyz/recoil": ["../packages/recoil/*"],
+    "@coral-xyz/common": ["../packages/common/*"],
+    "@coral-xyz/background": ["../packages/background/*"]
   },
   "compilerOptions": {
     "strict": true

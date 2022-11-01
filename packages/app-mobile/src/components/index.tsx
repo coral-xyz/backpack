@@ -1,9 +1,10 @@
-export { MnemonicInputFields } from "./MnemonicInputFields";
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import { Pressable, Text, View } from "react-native";
 
 // probably should put all the components in here as an index
 import { useTheme } from "../hooks/useTheme";
+
+export { MnemonicInputFields } from "./MnemonicInputFields";
 //
 // function getRandomColor() {
 //   var letters = "0123456789ABCDEF";
@@ -56,12 +57,14 @@ export function PrimaryButton({
   style,
   onPress,
   disabled,
+  loading,
   ...props
 }: {
   label: string;
   style?: StyleProp<ViewStyle>;
   onPress: () => void;
   disabled: boolean;
+  loading?: boolean;
 }) {
   const theme = useTheme();
   return (
@@ -87,7 +90,7 @@ export function PrimaryButton({
           color: theme.custom.colors.primaryButtonTextColor,
         }}
       >
-        {label}
+        {loading ? "loading.." : label} {disabled ? "(disabled)" : ""}
       </Text>
     </Pressable>
   );
@@ -134,4 +137,14 @@ export function SubtextParagraph({
       {children}
     </Text>
   );
+}
+
+export function Box({
+  children,
+  style,
+}: {
+  children?: JSX.Element[] | JSX.Element;
+  style?: StyleProp<ViewStyle>;
+}) {
+  return <View style={[{ backgroundColor: "#eee" }, style]}>{children}</View>;
 }
