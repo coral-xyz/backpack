@@ -1,6 +1,14 @@
 import { useState, useEffect } from "react";
 import Transport from "@ledgerhq/hw-transport";
 import {
+  Header,
+  PrimaryButton,
+  SubtextParagraph,
+  TextField,
+} from "../../common";
+import { getWaitlistId } from "../../common/WaitingRoom";
+import { TextInput } from "../../common/Inputs";
+import {
   Blockchain,
   BlockchainKeyringInit,
   DerivationPath,

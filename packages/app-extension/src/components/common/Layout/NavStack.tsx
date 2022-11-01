@@ -16,6 +16,7 @@ export function NavStackEphemeral({
   style,
   navButtonRight,
   navButtonLeft,
+  onClose,
 }: {
   initialRoute: { name: string; title?: string; props?: any };
   children: any;
@@ -23,6 +24,7 @@ export function NavStackEphemeral({
   style?: React.CSSProperties;
   navButtonRight?: React.ReactNode;
   navButtonLeft?: React.ReactNode;
+  onClose?: () => void;
 }) {
   const isArray = children && children.length !== undefined;
   const navScreens =
@@ -33,6 +35,7 @@ export function NavStackEphemeral({
       style={style}
       navButtonRight={navButtonRight}
       navButtonLeft={navButtonLeft}
+      onClose={onClose}
     >
       <NavStackInner navScreens={navScreens} options={options} />
     </NavStackProvider>
@@ -95,6 +98,7 @@ function NavStackProvider({
   navButtonLeft,
   style,
   children,
+  onClose,
 }: any) {
   const [stack, setStack] = useState([{ navAction: "push", ...initialRoute }]);
   const [titleOverride, setTitleOverride] = useState(initialRoute.title);
@@ -136,6 +140,7 @@ function NavStackProvider({
         setStyle,
         contentStyle,
         setContentStyle,
+        close: onClose,
       }}
     >
       {children}
@@ -159,6 +164,7 @@ type NavStackContext = {
   activeRoute: { name: string; props?: any; navAction?: "push" | "pop" };
   push: (route: string, props?: any) => void;
   pop: (count?: number) => void;
+  close: () => void;
   isRoot: boolean;
   toRoot: () => void;
   title: string;

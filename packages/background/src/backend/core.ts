@@ -42,6 +42,7 @@ import {
   SolanaCluster,
   SolanaExplorer,
   deserializeTransaction,
+  FEATURE_GATES_MAP,
 } from "@coral-xyz/common";
 import type {
   KeyringInit,
@@ -931,6 +932,14 @@ export class Backend {
   async enabledBlockchainsRead(): Promise<Array<Blockchain>> {
     const data = await store.getWalletData();
     return data.enabledBlockchains;
+  }
+
+  async setFeatureGates(gates: FEATURE_GATES_MAP) {
+    await store.setFeatureGates(gates);
+  }
+
+  async getFeatureGates() {
+    return await store.getFeatureGates();
   }
 
   ///////////////////////////////////////////////////////////////////////////////

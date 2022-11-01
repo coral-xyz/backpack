@@ -162,6 +162,10 @@ export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET =
   "ui-rpc-method-plugin-storage-get";
 export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT =
   "ui-rpc-method-plugin-storage-put";
+export const UI_RPC_METHOD_SET_FEATURE_GATES =
+  "ui-rpc-method-set-feature-gates";
+export const UI_RPC_METHOD_GET_FEATURE_GATES =
+  "ui-rpc-method-get-feature-gates";
 export const UI_RPC_METHOD_PREVIEW_PUBKEYS =
   "ui-rpc-method-keyring-preview-pubkeys";
 export const UI_RPC_METHOD_SETTINGS_DARK_MODE_READ =
@@ -442,8 +446,7 @@ export const BACKEND_EVENT = "backend-event";
 // Popup query routes.
 //
 export const QUERY_LOCKED = "locked=true";
-export const QUERY_APPROVAL = "approval=true";
-export const QUERY_LOCKED_APPROVAL = "locked-approval=true";
+export const QUERY_APPROVAL = "approve-origin=true";
 export const QUERY_APPROVE_TRANSACTION = "approve-tx=true";
 export const QUERY_APPROVE_ALL_TRANSACTIONS = "approve-all-txs=true";
 export const QUERY_APPROVE_MESSAGE = "approve-message=true";

@@ -1,5 +1,4 @@
 import { proxyImageUrl } from "@coral-xyz/common";
-import React from "react";
 
 export function ProxyImage(props: any) {
   return (
@@ -10,6 +9,7 @@ export function ProxyImage(props: any) {
         currentTarget.src = props.src;
       }}
       src={proxyImageUrl(props.src)}
+      loading="lazy"
     />
   );
 }

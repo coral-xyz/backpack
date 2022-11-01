@@ -33,6 +33,7 @@ import {
   TextField,
   walletAddressDisplay,
 } from "../../common";
+import { TextInput } from "../Inputs";
 
 const { base58: bs58 } = ethers.utils;
 
@@ -322,10 +323,10 @@ export function ImportAccounts({
           </SubtextParagraph>
         </Box>
         <div style={{ margin: "16px" }}>
-          <TextField
-            label="Derivation Path"
+          <TextInput
+            placeholder="Derivation Path"
             value={derivationPath}
-            setValue={setDerivationPath}
+            setValue={(e) => setDerivationPath(e.target.value)}
             select={true}
             disabled={ledgerLocked}
           >
@@ -334,7 +335,7 @@ export function ImportAccounts({
                 {o.label}
               </MenuItem>
             ))}
-          </TextField>
+          </TextInput>
         </div>
         {accounts.length > 0 && (
           <>

@@ -1,5 +1,5 @@
 {
-  "name": "onramp",
+  "name": "feature-gates",
   "version": "0.0.0",
   "devDependencies": {
     "@cloudflare/workers-types": "^3.16.0",
@@ -12,9 +12,6 @@
     "deploy": "wrangler publish"
   },
   "dependencies": {
-    "@solana/web3.js": "^1.66.2",
-    "ethers": "^5.7.2",
-    "hono": "^2.2.1",
-    "zod": "^3.19.1"
+    "hono": "^2.2.1"
   }
 }

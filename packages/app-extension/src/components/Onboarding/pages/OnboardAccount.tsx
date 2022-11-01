@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Blockchain,
   BlockchainKeyringInit,
@@ -53,6 +53,13 @@ export const OnboardAccount = ({
   const [openDrawer, setOpenDrawer] = useState(false);
 
   const selectedBlockchains = blockchainKeyrings.map((b) => b.blockchain);
+
+  useEffect(() => {
+    // Reset blockchain keyrings on certain changes that invalidate the addresses
+    // and signatures that they might contain
+    // e.g. user has navigated backward through the onboarding flow
+    setBlockchainKeyrings([]);
+  }, [action, keyringType, mnemonic]);
 
   const handleBlockchainClick = async (blockchain: Blockchain) => {
     if (selectedBlockchains.includes(blockchain)) {
@@ -222,6 +229,7 @@ export const OnboardAccount = ({
               setOpenDrawer(false);
             }}
             onClose={() => setOpenDrawer(false)}
+            requireSignature={!!BACKPACK_FEATURE_USERNAMES}
           />
         ) : (
           <ImportAccounts

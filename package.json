@@ -13,7 +13,7 @@
   "scripts": {
     "lint:fix": "prettier {examples/xnft,examples/xnft-program-library/packages,packages}/**/*.{ts,tsx,json} --write",
     "prepare": "husky install",
-    "start": "env-cmd --silent turbo run start --concurrency=20",
+    "start": "env-cmd --silent turbo run start --concurrency=100%",
     "start:fresh": "yarn install && yarn clean && yarn install && yarn start",
     "test": "env-cmd --silent turbo run test -- --passWithNoTests --watchAll=false",
     "build": "env-cmd --silent turbo run build",
@@ -31,7 +31,7 @@
     "lint-staged": "^12.4.1",
     "prettier": "^2.6.2",
     "rimraf": "^3.0.2",
-    "turbo": "^1.4.0"
+    "turbo": "^1.6.2"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,css,md,json}": "prettier --write"

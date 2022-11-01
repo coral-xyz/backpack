@@ -1,6 +1,6 @@
 {
   "name": "@coral-xyz/app-extension",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "A next level crypto wallet for Solana and Ethereum",
   "private": true,
   "dependencies": {
@@ -34,7 +34,8 @@
     "react-router-dom": "^6.3.0",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.7",
-    "recoil": "^0.7.5"
+    "recoil": "^0.7.5",
+    "@cardinal/token-manager": "^1.7.9"
   },
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack serve",

@@ -1,7 +1,7 @@
 import _CheckIcon from "@mui/icons-material/Check";
 import _CloseIcon from "@mui/icons-material/Close";
 import { styles } from "@coral-xyz/themes";
-import { useWalletName } from "@coral-xyz/recoil";
+import { useWalletName, useAvatarUrl } from "@coral-xyz/recoil";
 import {
   walletAddressDisplay,
   PrimaryButton,
@@ -109,6 +109,7 @@ export function OriginWalletConnectIcons({
 }) {
   const classes = useStyles();
   const walletName = useWalletName(wallet);
+  const avatarUrl = useAvatarUrl(56);
 
   // This uses a Google API for favicon retrieval, do we want to parse the page ourselves?
   const siteIcon = `https://www.google.com/s2/favicons?domain=${origin}&sz=180`;
@@ -123,7 +124,7 @@ export function OriginWalletConnectIcons({
       <Connectable
         title={walletName}
         description={walletAddressDisplay(wallet)}
-        icon="/coral.png"
+        icon={avatarUrl}
       />
     </div>
   );
