@@ -1,3 +1,4 @@
+import { Screen } from "@components";
 import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
@@ -13,10 +14,11 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { Button, Pressable, Text, View } from "react-native";
 import tw from "twrnc";
 
-import { Screen } from "@components";
-
 import { CustomButton } from "../components/CustomButton";
 import { ButtonFooter, MainContent } from "../components/Templates";
+
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 export default function UnlockedNavigator() {
   return (
@@ -31,9 +33,6 @@ export default function UnlockedNavigator() {
     </Stack.Navigator>
   );
 }
-
-const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
 
 function BalancesScreen() {
   const background = useBackgroundClient();
