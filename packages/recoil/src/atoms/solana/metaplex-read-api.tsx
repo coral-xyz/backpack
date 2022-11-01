@@ -1,5 +1,5 @@
 import { atomFamily, selectorFamily } from "recoil";
-import type { SplNftMetadataString, Nft } from "@coral-xyz/common";
+import type { SplNftMetadataString } from "@coral-xyz/common";
 import _ from "lodash";
 
 type ContentMetadata = {
@@ -57,9 +57,9 @@ const constructMetadataObj = (
 
 // This adapter is intended to map the Read API representation of both compressed and uncompressed NFTs
 // into the NFT model that Backpack accepts.
-const readApiAdapter = async (json: {
-  result: { items: MetaplexAsset[] };
-}): Promise<
+const readApiAdapter = async (
+  items: MetaplexAsset[]
+): Promise<
   Map<
     string,
     SplNftMetadataString & {
@@ -68,7 +68,7 @@ const readApiAdapter = async (json: {
   >
 > => {
   const backpackNftMap = new Map<string, SplNftMetadataString>();
-  for await (const item of json.result.items) {
+  for await (const item of items) {
     const metadata = constructMetadataObj(item.content.metadata);
 
     const updateAuthority =
@@ -122,6 +122,43 @@ const readApiAdapter = async (json: {
   return backpackNftMap;
 };
 
+type ReadApiResponse = {
+  result: {
+    total: number;
+    limit: number;
+    page: number;
+    items: MetaplexAsset[];
+  };
+};
+
+const fetchNftsFromAPI = async (
+  publicKey,
+  connectionUrl,
+  {
+    limit = 50,
+    page = 1,
+  }: {
+    limit?: number;
+    page?: number;
+  }
+) => {
+  const options = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      method: "get_assets_by_owner",
+      // TODO(jon): This should uniquely identify this operation
+      id: "rpd-op-123",
+      params: [publicKey, "created", limit, page, "", ""],
+    }),
+  };
+
+  // The Metaplex Read API is surfaced on the same connection URL as the typical Solana RPC
+  const json = await (await fetch(connectionUrl, options)).json();
+  return json as ReadApiResponse;
+};
+
 export const solanaNftsFromApi = atomFamily({
   key: "solanaNfts",
   default: selectorFamily({
@@ -143,24 +180,27 @@ export const solanaNftsFromApi = atomFamily({
         // Fetch token data.
         //
         try {
-          const options = {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              jsonrpc: "2.0",
-              method: "get_assets_by_owner",
-              // TODO(jon): This should uniquely identify this operation
-              id: "rpd-op-123",
-              // TODO(jon): Figure out if `created` is the best way to sort this.
-              // TODO(jon): Need to properly handle pagination. Probably will just surface the whole list for now.
-              params: [publicKey, "created", 2, 1, "", ""],
-            }),
-          };
+          const results: MetaplexAsset[] = [];
+          let shouldContinuePaginating = true;
+          let page = 1;
+          while (shouldContinuePaginating) {
+            const json = await fetchNftsFromAPI(publicKey, connectionUrl, {
+              limit: 50,
+              page,
+            });
+            const {
+              result: { total, limit, items },
+            } = json;
+            results.push(...items);
+            // Check to see if we've already seen all the results
+            if (page * limit >= 5 /* total*/) {
+              shouldContinuePaginating = false;
+            } else {
+              page += 1;
+            }
+          }
 
-          // The Metaplex Read API is surfaced on the same connection URL as the typical Solana RPC
-          const json = await (await fetch(connectionUrl, options)).json();
-
-          const nftsMap = await readApiAdapter(json);
+          const nftsMap = await readApiAdapter(results);
 
           return {
             splNftMetadata: nftsMap,
