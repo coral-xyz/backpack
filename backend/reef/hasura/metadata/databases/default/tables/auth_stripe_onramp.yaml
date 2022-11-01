@@ -1,0 +1,34 @@
+table:
+  name: stripe_onramp
+  schema: auth
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - id
+        - client_secret
+        - public_key
+        - status
+        - webhook_dump
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - id
+        - client_secret
+        - public_key
+        - status
+        - webhook_dump
+      filter: {}
+update_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - id
+        - client_secret
+        - public_key
+        - status
+        - webhook_dump
+      filter: {}
+      check: {}

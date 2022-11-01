@@ -624,11 +624,24 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
 
   const decimalDifference = fromMintInfo.decimals - toMintInfo.decimals;
   const toAmountWithFees = toAmount.sub(swapFee);
+
+  // Scale a FixedNumber up or down by a number of decimals
+  const scale = (x: FixedNumber, decimalDifference: number) => {
+    if (decimalDifference > 0) {
+      return x.mulUnsafe(FixedNumber.from(10 ** decimalDifference));
+    } else if (decimalDifference < 0) {
+      return x.divUnsafe(FixedNumber.from(10 ** Math.abs(decimalDifference)));
+    }
+    return x;
+  };
+
   const rate = fromAmount.gt(Zero)
-    ? FixedNumber.from(toAmountWithFees)
-        .divUnsafe(FixedNumber.from(fromAmount))
-        .mulUnsafe(FixedNumber.from(10 ** decimalDifference))
-        .toString()
+    ? scale(
+        FixedNumber.from(toAmountWithFees).divUnsafe(
+          FixedNumber.from(fromAmount)
+        ),
+        decimalDifference
+      ).toString()
     : "0";
 
   const rows = [];

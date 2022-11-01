@@ -996,6 +996,18 @@ export type ScalarCoders = {
 type ZEUS_UNIONS = never;
 
 export type ValueTypes = {
+  /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
+  ["Int_comparison_exp"]: {
+    _eq?: number | undefined | null | Variable<any, string>;
+    _gt?: number | undefined | null | Variable<any, string>;
+    _gte?: number | undefined | null | Variable<any, string>;
+    _in?: Array<number> | undefined | null | Variable<any, string>;
+    _is_null?: boolean | undefined | null | Variable<any, string>;
+    _lt?: number | undefined | null | Variable<any, string>;
+    _lte?: number | undefined | null | Variable<any, string>;
+    _neq?: number | undefined | null | Variable<any, string>;
+    _nin?: Array<number> | undefined | null | Variable<any, string>;
+  };
   /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
   ["String_comparison_exp"]: {
     _eq?: string | undefined | null | Variable<any, string>;
@@ -1028,10 +1040,45 @@ export type ValueTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined | null | Variable<any, string>;
   };
+  /** columns and relationships of "auth.publickeys" */
+  ["auth_publickeys"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
+    publickey?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.publickeys". All fields are combined with a logical 'AND'. */
+  ["auth_publickeys_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["auth_publickeys_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["auth_publickeys_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["auth_publickeys_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    blockchain?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    publickey?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
   /** columns and relationships of "auth.publickeys_history" */
   ["auth_publickeys_history"]: AliasType<{
     blockchain?: boolean | `@${string}`;
     publickey?: boolean | `@${string}`;
+    user_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** order by aggregate values of table "auth.publickeys_history" */
@@ -1087,6 +1134,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    user_id?:
+      | ValueTypes["uuid_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
   };
   /** unique or primary key constraints on table "auth.publickeys_history" */
   ["auth_publickeys_history_constraint"]: auth_publickeys_history_constraint;
@@ -1108,6 +1160,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    user_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
   };
   /** order by min() on columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_min_order_by"]: {
@@ -1121,6 +1174,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    user_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
   };
   /** response of any mutation on the table "auth.publickeys_history" */
   ["auth_publickeys_history_mutation_response"]: AliasType<{
@@ -1156,6 +1210,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    user_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
   };
   /** select columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_select_column"]: auth_publickeys_history_select_column;
@@ -1176,9 +1231,203 @@ export type ValueTypes = {
   ["auth_publickeys_history_stream_cursor_value_input"]: {
     blockchain?: string | undefined | null | Variable<any, string>;
     publickey?: string | undefined | null | Variable<any, string>;
+    user_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
   };
   /** placeholder for update columns of table "auth.publickeys_history" (current role has no relevant permissions) */
   ["auth_publickeys_history_update_column"]: auth_publickeys_history_update_column;
+  /** Ordering options when selecting data from "auth.publickeys". */
+  ["auth_publickeys_order_by"]: {
+    blockchain?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    publickey?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** select columns of table "auth.publickeys" */
+  ["auth_publickeys_select_column"]: auth_publickeys_select_column;
+  /** Streaming cursor of the table "auth_publickeys" */
+  ["auth_publickeys_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["auth_publickeys_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_publickeys_stream_cursor_value_input"]: {
+    blockchain?: string | undefined | null | Variable<any, string>;
+    publickey?: string | undefined | null | Variable<any, string>;
+  };
+  /** columns and relationships of "auth.stripe_onramp" */
+  ["auth_stripe_onramp"]: AliasType<{
+    client_secret?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    status?: boolean | `@${string}`;
+    webhook_dump?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.stripe_onramp". All fields are combined with a logical 'AND'. */
+  ["auth_stripe_onramp_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["auth_stripe_onramp_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["auth_stripe_onramp_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["auth_stripe_onramp_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    client_secret?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    public_key?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    status?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    webhook_dump?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_constraint"]: auth_stripe_onramp_constraint;
+  /** input type for incrementing numeric columns in table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_inc_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+  };
+  /** input type for inserting data into table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_insert_input"]: {
+    client_secret?: string | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    public_key?: string | undefined | null | Variable<any, string>;
+    status?: string | undefined | null | Variable<any, string>;
+    webhook_dump?: string | undefined | null | Variable<any, string>;
+  };
+  /** response of any mutation on the table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["auth_stripe_onramp"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_on_conflict"]: {
+    constraint:
+      | ValueTypes["auth_stripe_onramp_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["auth_stripe_onramp_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["auth_stripe_onramp_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "auth.stripe_onramp". */
+  ["auth_stripe_onramp_order_by"]: {
+    client_secret?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    status?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    webhook_dump?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** primary key columns input for table: auth_stripe_onramp */
+  ["auth_stripe_onramp_pk_columns_input"]: {
+    client_secret: string | Variable<any, string>;
+  };
+  /** select columns of table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_select_column"]: auth_stripe_onramp_select_column;
+  /** input type for updating data in table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_set_input"]: {
+    client_secret?: string | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    public_key?: string | undefined | null | Variable<any, string>;
+    status?: string | undefined | null | Variable<any, string>;
+    webhook_dump?: string | undefined | null | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "auth_stripe_onramp" */
+  ["auth_stripe_onramp_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["auth_stripe_onramp_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_stripe_onramp_stream_cursor_value_input"]: {
+    client_secret?: string | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    public_key?: string | undefined | null | Variable<any, string>;
+    status?: string | undefined | null | Variable<any, string>;
+    webhook_dump?: string | undefined | null | Variable<any, string>;
+  };
+  /** update columns of table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_update_column"]: auth_stripe_onramp_update_column;
+  ["auth_stripe_onramp_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ValueTypes["auth_stripe_onramp_inc_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["auth_stripe_onramp_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    where: ValueTypes["auth_stripe_onramp_bool_exp"] | Variable<any, string>;
+  };
   /** columns and relationships of "auth.users" */
   ["auth_users"]: AliasType<{
     id?: boolean | `@${string}`;
@@ -1556,6 +1805,34 @@ export type ValueTypes = {
       },
       ValueTypes["auth_publickeys_history"]
     ];
+    insert_auth_stripe_onramp?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["auth_stripe_onramp_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["auth_stripe_onramp_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_stripe_onramp_mutation_response"]
+    ];
+    insert_auth_stripe_onramp_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["auth_stripe_onramp_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["auth_stripe_onramp_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_stripe_onramp"]
+    ];
     insert_auth_users?: [
       {
         /** the rows to be inserted */
@@ -1583,6 +1860,62 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_users"]
+    ];
+    update_auth_stripe_onramp?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["auth_stripe_onramp_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["auth_stripe_onramp_set_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** filter the rows which have to be updated */;
+        where:
+          | ValueTypes["auth_stripe_onramp_bool_exp"]
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_stripe_onramp_mutation_response"]
+    ];
+    update_auth_stripe_onramp_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["auth_stripe_onramp_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["auth_stripe_onramp_set_input"]
+          | undefined
+          | null
+          | Variable<any, string>;
+        pk_columns:
+          | ValueTypes["auth_stripe_onramp_pk_columns_input"]
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_stripe_onramp"]
+    ];
+    update_auth_stripe_onramp_many?: [
+      {
+        /** updates to execute, in order */
+        updates:
+          | Array<ValueTypes["auth_stripe_onramp_updates"]>
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_stripe_onramp_mutation_response"]
     ];
     update_auth_users?: [
       {
@@ -1627,6 +1960,40 @@ export type ValueTypes = {
   /** column ordering options */
   ["order_by"]: order_by;
   ["query_root"]: AliasType<{
+    auth_publickeys?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_publickeys_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_publickeys_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_publickeys_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_publickeys"]
+    ];
     auth_publickeys_history?: [
       {
         /** distinct select on columns */
@@ -1660,6 +2027,44 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_publickeys_history"]
+    ];
+    auth_stripe_onramp?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_stripe_onramp_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_stripe_onramp_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_stripe_onramp_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_stripe_onramp"]
+    ];
+    auth_stripe_onramp_by_pk?: [
+      { client_secret: string | Variable<any, string> },
+      ValueTypes["auth_stripe_onramp"]
     ];
     auth_users?: [
       {
@@ -1804,6 +2209,40 @@ export type ValueTypes = {
     __typename?: boolean | `@${string}`;
   }>;
   ["subscription_root"]: AliasType<{
+    auth_publickeys?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_publickeys_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_publickeys_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_publickeys_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_publickeys"]
+    ];
     auth_publickeys_history?: [
       {
         /** distinct select on columns */
@@ -1861,6 +2300,92 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_publickeys_history"]
+    ];
+    auth_publickeys_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["auth_publickeys_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_publickeys_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_publickeys"]
+    ];
+    auth_stripe_onramp?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_stripe_onramp_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_stripe_onramp_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_stripe_onramp_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_stripe_onramp"]
+    ];
+    auth_stripe_onramp_by_pk?: [
+      { client_secret: string | Variable<any, string> },
+      ValueTypes["auth_stripe_onramp"]
+    ];
+    auth_stripe_onramp_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["auth_stripe_onramp_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_stripe_onramp_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_stripe_onramp"]
     ];
     auth_users?: [
       {
@@ -2085,6 +2610,18 @@ export type ValueTypes = {
 };
 
 export type ResolverInputTypes = {
+  /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
+  ["Int_comparison_exp"]: {
+    _eq?: number | undefined | null;
+    _gt?: number | undefined | null;
+    _gte?: number | undefined | null;
+    _in?: Array<number> | undefined | null;
+    _is_null?: boolean | undefined | null;
+    _lt?: number | undefined | null;
+    _lte?: number | undefined | null;
+    _neq?: number | undefined | null;
+    _nin?: Array<number> | undefined | null;
+  };
   /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
   ["String_comparison_exp"]: {
     _eq?: string | undefined | null;
@@ -2117,10 +2654,31 @@ export type ResolverInputTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined | null;
   };
+  /** columns and relationships of "auth.publickeys" */
+  ["auth_publickeys"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
+    publickey?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.publickeys". All fields are combined with a logical 'AND'. */
+  ["auth_publickeys_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["auth_publickeys_bool_exp"]>
+      | undefined
+      | null;
+    _not?: ResolverInputTypes["auth_publickeys_bool_exp"] | undefined | null;
+    _or?:
+      | Array<ResolverInputTypes["auth_publickeys_bool_exp"]>
+      | undefined
+      | null;
+    blockchain?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    publickey?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+  };
   /** columns and relationships of "auth.publickeys_history" */
   ["auth_publickeys_history"]: AliasType<{
     blockchain?: boolean | `@${string}`;
     publickey?: boolean | `@${string}`;
+    user_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** order by aggregate values of table "auth.publickeys_history" */
@@ -2160,6 +2718,7 @@ export type ResolverInputTypes = {
       | null;
     blockchain?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     publickey?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    user_id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
   };
   /** unique or primary key constraints on table "auth.publickeys_history" */
   ["auth_publickeys_history_constraint"]: auth_publickeys_history_constraint;
@@ -2173,11 +2732,13 @@ export type ResolverInputTypes = {
   ["auth_publickeys_history_max_order_by"]: {
     blockchain?: ResolverInputTypes["order_by"] | undefined | null;
     publickey?: ResolverInputTypes["order_by"] | undefined | null;
+    user_id?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** order by min() on columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_min_order_by"]: {
     blockchain?: ResolverInputTypes["order_by"] | undefined | null;
     publickey?: ResolverInputTypes["order_by"] | undefined | null;
+    user_id?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** response of any mutation on the table "auth.publickeys_history" */
   ["auth_publickeys_history_mutation_response"]: AliasType<{
@@ -2202,6 +2763,7 @@ export type ResolverInputTypes = {
   ["auth_publickeys_history_order_by"]: {
     blockchain?: ResolverInputTypes["order_by"] | undefined | null;
     publickey?: ResolverInputTypes["order_by"] | undefined | null;
+    user_id?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** select columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_select_column"]: auth_publickeys_history_select_column;
@@ -2216,9 +2778,146 @@ export type ResolverInputTypes = {
   ["auth_publickeys_history_stream_cursor_value_input"]: {
     blockchain?: string | undefined | null;
     publickey?: string | undefined | null;
+    user_id?: ResolverInputTypes["uuid"] | undefined | null;
   };
   /** placeholder for update columns of table "auth.publickeys_history" (current role has no relevant permissions) */
   ["auth_publickeys_history_update_column"]: auth_publickeys_history_update_column;
+  /** Ordering options when selecting data from "auth.publickeys". */
+  ["auth_publickeys_order_by"]: {
+    blockchain?: ResolverInputTypes["order_by"] | undefined | null;
+    publickey?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** select columns of table "auth.publickeys" */
+  ["auth_publickeys_select_column"]: auth_publickeys_select_column;
+  /** Streaming cursor of the table "auth_publickeys" */
+  ["auth_publickeys_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["auth_publickeys_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_publickeys_stream_cursor_value_input"]: {
+    blockchain?: string | undefined | null;
+    publickey?: string | undefined | null;
+  };
+  /** columns and relationships of "auth.stripe_onramp" */
+  ["auth_stripe_onramp"]: AliasType<{
+    client_secret?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    status?: boolean | `@${string}`;
+    webhook_dump?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.stripe_onramp". All fields are combined with a logical 'AND'. */
+  ["auth_stripe_onramp_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["auth_stripe_onramp_bool_exp"]>
+      | undefined
+      | null;
+    _not?: ResolverInputTypes["auth_stripe_onramp_bool_exp"] | undefined | null;
+    _or?:
+      | Array<ResolverInputTypes["auth_stripe_onramp_bool_exp"]>
+      | undefined
+      | null;
+    client_secret?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    public_key?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    status?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    webhook_dump?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+  };
+  /** unique or primary key constraints on table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_constraint"]: auth_stripe_onramp_constraint;
+  /** input type for incrementing numeric columns in table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_inc_input"]: {
+    id?: number | undefined | null;
+  };
+  /** input type for inserting data into table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_insert_input"]: {
+    client_secret?: string | undefined | null;
+    id?: number | undefined | null;
+    public_key?: string | undefined | null;
+    status?: string | undefined | null;
+    webhook_dump?: string | undefined | null;
+  };
+  /** response of any mutation on the table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["auth_stripe_onramp"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_on_conflict"]: {
+    constraint: ResolverInputTypes["auth_stripe_onramp_constraint"];
+    update_columns: Array<
+      ResolverInputTypes["auth_stripe_onramp_update_column"]
+    >;
+    where?:
+      | ResolverInputTypes["auth_stripe_onramp_bool_exp"]
+      | undefined
+      | null;
+  };
+  /** Ordering options when selecting data from "auth.stripe_onramp". */
+  ["auth_stripe_onramp_order_by"]: {
+    client_secret?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    public_key?: ResolverInputTypes["order_by"] | undefined | null;
+    status?: ResolverInputTypes["order_by"] | undefined | null;
+    webhook_dump?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** primary key columns input for table: auth_stripe_onramp */
+  ["auth_stripe_onramp_pk_columns_input"]: {
+    client_secret: string;
+  };
+  /** select columns of table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_select_column"]: auth_stripe_onramp_select_column;
+  /** input type for updating data in table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_set_input"]: {
+    client_secret?: string | undefined | null;
+    id?: number | undefined | null;
+    public_key?: string | undefined | null;
+    status?: string | undefined | null;
+    webhook_dump?: string | undefined | null;
+  };
+  /** Streaming cursor of the table "auth_stripe_onramp" */
+  ["auth_stripe_onramp_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["auth_stripe_onramp_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_stripe_onramp_stream_cursor_value_input"]: {
+    client_secret?: string | undefined | null;
+    id?: number | undefined | null;
+    public_key?: string | undefined | null;
+    status?: string | undefined | null;
+    webhook_dump?: string | undefined | null;
+  };
+  /** update columns of table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_update_column"]: auth_stripe_onramp_update_column;
+  ["auth_stripe_onramp_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ResolverInputTypes["auth_stripe_onramp_inc_input"]
+      | undefined
+      | null;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ResolverInputTypes["auth_stripe_onramp_set_input"]
+      | undefined
+      | null;
+    where: ResolverInputTypes["auth_stripe_onramp_bool_exp"];
+  };
   /** columns and relationships of "auth.users" */
   ["auth_users"]: AliasType<{
     id?: boolean | `@${string}`;
@@ -2492,6 +3191,30 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_publickeys_history"]
     ];
+    insert_auth_stripe_onramp?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["auth_stripe_onramp_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["auth_stripe_onramp_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_stripe_onramp_mutation_response"]
+    ];
+    insert_auth_stripe_onramp_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["auth_stripe_onramp_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["auth_stripe_onramp_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_stripe_onramp"]
+    ];
     insert_auth_users?: [
       {
         /** the rows to be inserted */
@@ -2515,6 +3238,43 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_users"]
+    ];
+    update_auth_stripe_onramp?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["auth_stripe_onramp_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["auth_stripe_onramp_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
+        where: ResolverInputTypes["auth_stripe_onramp_bool_exp"];
+      },
+      ResolverInputTypes["auth_stripe_onramp_mutation_response"]
+    ];
+    update_auth_stripe_onramp_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["auth_stripe_onramp_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["auth_stripe_onramp_set_input"]
+          | undefined
+          | null;
+        pk_columns: ResolverInputTypes["auth_stripe_onramp_pk_columns_input"];
+      },
+      ResolverInputTypes["auth_stripe_onramp"]
+    ];
+    update_auth_stripe_onramp_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ResolverInputTypes["auth_stripe_onramp_updates"]>;
+      },
+      ResolverInputTypes["auth_stripe_onramp_mutation_response"]
     ];
     update_auth_users?: [
       {
@@ -2547,6 +3307,32 @@ export type ResolverInputTypes = {
   /** column ordering options */
   ["order_by"]: order_by;
   ["query_root"]: AliasType<{
+    auth_publickeys?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_publickeys_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_publickeys_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_publickeys_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_publickeys"]
+    ];
     auth_publickeys_history?: [
       {
         /** distinct select on columns */
@@ -2572,6 +3358,36 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_publickeys_history"]
+    ];
+    auth_stripe_onramp?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_stripe_onramp_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_stripe_onramp_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_stripe_onramp_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_stripe_onramp"]
+    ];
+    auth_stripe_onramp_by_pk?: [
+      { client_secret: string },
+      ResolverInputTypes["auth_stripe_onramp"]
     ];
     auth_users?: [
       {
@@ -2672,6 +3488,32 @@ export type ResolverInputTypes = {
     __typename?: boolean | `@${string}`;
   }>;
   ["subscription_root"]: AliasType<{
+    auth_publickeys?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_publickeys_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_publickeys_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_publickeys_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_publickeys"]
+    ];
     auth_publickeys_history?: [
       {
         /** distinct select on columns */
@@ -2713,6 +3555,68 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_publickeys_history"]
+    ];
+    auth_publickeys_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["auth_publickeys_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_publickeys_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_publickeys"]
+    ];
+    auth_stripe_onramp?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_stripe_onramp_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_stripe_onramp_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_stripe_onramp_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_stripe_onramp"]
+    ];
+    auth_stripe_onramp_by_pk?: [
+      { client_secret: string },
+      ResolverInputTypes["auth_stripe_onramp"]
+    ];
+    auth_stripe_onramp_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["auth_stripe_onramp_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_stripe_onramp_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_stripe_onramp"]
     ];
     auth_users?: [
       {
@@ -2867,6 +3771,18 @@ export type ResolverInputTypes = {
 };
 
 export type ModelTypes = {
+  /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
+  ["Int_comparison_exp"]: {
+    _eq?: number | undefined;
+    _gt?: number | undefined;
+    _gte?: number | undefined;
+    _in?: Array<number> | undefined;
+    _is_null?: boolean | undefined;
+    _lt?: number | undefined;
+    _lte?: number | undefined;
+    _neq?: number | undefined;
+    _nin?: Array<number> | undefined;
+  };
   /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
   ["String_comparison_exp"]: {
     _eq?: string | undefined;
@@ -2899,10 +3815,24 @@ export type ModelTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined;
   };
+  /** columns and relationships of "auth.publickeys" */
+  ["auth_publickeys"]: {
+    blockchain?: string | undefined;
+    publickey?: string | undefined;
+  };
+  /** Boolean expression to filter rows from the table "auth.publickeys". All fields are combined with a logical 'AND'. */
+  ["auth_publickeys_bool_exp"]: {
+    _and?: Array<ModelTypes["auth_publickeys_bool_exp"]> | undefined;
+    _not?: ModelTypes["auth_publickeys_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["auth_publickeys_bool_exp"]> | undefined;
+    blockchain?: ModelTypes["String_comparison_exp"] | undefined;
+    publickey?: ModelTypes["String_comparison_exp"] | undefined;
+  };
   /** columns and relationships of "auth.publickeys_history" */
   ["auth_publickeys_history"]: {
     blockchain: string;
     publickey: string;
+    user_id?: ModelTypes["uuid"] | undefined;
   };
   /** order by aggregate values of table "auth.publickeys_history" */
   ["auth_publickeys_history_aggregate_order_by"]: {
@@ -2923,6 +3853,7 @@ export type ModelTypes = {
     _or?: Array<ModelTypes["auth_publickeys_history_bool_exp"]> | undefined;
     blockchain?: ModelTypes["String_comparison_exp"] | undefined;
     publickey?: ModelTypes["String_comparison_exp"] | undefined;
+    user_id?: ModelTypes["uuid_comparison_exp"] | undefined;
   };
   ["auth_publickeys_history_constraint"]: auth_publickeys_history_constraint;
   /** input type for inserting data into table "auth.publickeys_history" */
@@ -2935,11 +3866,13 @@ export type ModelTypes = {
   ["auth_publickeys_history_max_order_by"]: {
     blockchain?: ModelTypes["order_by"] | undefined;
     publickey?: ModelTypes["order_by"] | undefined;
+    user_id?: ModelTypes["order_by"] | undefined;
   };
   /** order by min() on columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_min_order_by"]: {
     blockchain?: ModelTypes["order_by"] | undefined;
     publickey?: ModelTypes["order_by"] | undefined;
+    user_id?: ModelTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "auth.publickeys_history" */
   ["auth_publickeys_history_mutation_response"]: {
@@ -2958,6 +3891,7 @@ export type ModelTypes = {
   ["auth_publickeys_history_order_by"]: {
     blockchain?: ModelTypes["order_by"] | undefined;
     publickey?: ModelTypes["order_by"] | undefined;
+    user_id?: ModelTypes["order_by"] | undefined;
   };
   ["auth_publickeys_history_select_column"]: auth_publickeys_history_select_column;
   /** Streaming cursor of the table "auth_publickeys_history" */
@@ -2971,8 +3905,116 @@ export type ModelTypes = {
   ["auth_publickeys_history_stream_cursor_value_input"]: {
     blockchain?: string | undefined;
     publickey?: string | undefined;
+    user_id?: ModelTypes["uuid"] | undefined;
   };
   ["auth_publickeys_history_update_column"]: auth_publickeys_history_update_column;
+  /** Ordering options when selecting data from "auth.publickeys". */
+  ["auth_publickeys_order_by"]: {
+    blockchain?: ModelTypes["order_by"] | undefined;
+    publickey?: ModelTypes["order_by"] | undefined;
+  };
+  ["auth_publickeys_select_column"]: auth_publickeys_select_column;
+  /** Streaming cursor of the table "auth_publickeys" */
+  ["auth_publickeys_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["auth_publickeys_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_publickeys_stream_cursor_value_input"]: {
+    blockchain?: string | undefined;
+    publickey?: string | undefined;
+  };
+  /** columns and relationships of "auth.stripe_onramp" */
+  ["auth_stripe_onramp"]: {
+    client_secret: string;
+    id: number;
+    public_key: string;
+    status: string;
+    webhook_dump: string;
+  };
+  /** Boolean expression to filter rows from the table "auth.stripe_onramp". All fields are combined with a logical 'AND'. */
+  ["auth_stripe_onramp_bool_exp"]: {
+    _and?: Array<ModelTypes["auth_stripe_onramp_bool_exp"]> | undefined;
+    _not?: ModelTypes["auth_stripe_onramp_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["auth_stripe_onramp_bool_exp"]> | undefined;
+    client_secret?: ModelTypes["String_comparison_exp"] | undefined;
+    id?: ModelTypes["Int_comparison_exp"] | undefined;
+    public_key?: ModelTypes["String_comparison_exp"] | undefined;
+    status?: ModelTypes["String_comparison_exp"] | undefined;
+    webhook_dump?: ModelTypes["String_comparison_exp"] | undefined;
+  };
+  ["auth_stripe_onramp_constraint"]: auth_stripe_onramp_constraint;
+  /** input type for incrementing numeric columns in table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_insert_input"]: {
+    client_secret?: string | undefined;
+    id?: number | undefined;
+    public_key?: string | undefined;
+    status?: string | undefined;
+    webhook_dump?: string | undefined;
+  };
+  /** response of any mutation on the table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["auth_stripe_onramp"]>;
+  };
+  /** on_conflict condition type for table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_on_conflict"]: {
+    constraint: ModelTypes["auth_stripe_onramp_constraint"];
+    update_columns: Array<ModelTypes["auth_stripe_onramp_update_column"]>;
+    where?: ModelTypes["auth_stripe_onramp_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.stripe_onramp". */
+  ["auth_stripe_onramp_order_by"]: {
+    client_secret?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    public_key?: ModelTypes["order_by"] | undefined;
+    status?: ModelTypes["order_by"] | undefined;
+    webhook_dump?: ModelTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: auth_stripe_onramp */
+  ["auth_stripe_onramp_pk_columns_input"]: {
+    client_secret: string;
+  };
+  ["auth_stripe_onramp_select_column"]: auth_stripe_onramp_select_column;
+  /** input type for updating data in table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_set_input"]: {
+    client_secret?: string | undefined;
+    id?: number | undefined;
+    public_key?: string | undefined;
+    status?: string | undefined;
+    webhook_dump?: string | undefined;
+  };
+  /** Streaming cursor of the table "auth_stripe_onramp" */
+  ["auth_stripe_onramp_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["auth_stripe_onramp_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_stripe_onramp_stream_cursor_value_input"]: {
+    client_secret?: string | undefined;
+    id?: number | undefined;
+    public_key?: string | undefined;
+    status?: string | undefined;
+    webhook_dump?: string | undefined;
+  };
+  ["auth_stripe_onramp_update_column"]: auth_stripe_onramp_update_column;
+  ["auth_stripe_onramp_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ModelTypes["auth_stripe_onramp_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["auth_stripe_onramp_set_input"] | undefined;
+    where: ModelTypes["auth_stripe_onramp_bool_exp"];
+  };
   /** columns and relationships of "auth.users" */
   ["auth_users"]: {
     id: ModelTypes["uuid"];
@@ -3164,10 +4206,30 @@ export type ModelTypes = {
     insert_auth_publickeys_history_one?:
       | ModelTypes["auth_publickeys_history"]
       | undefined;
+    /** insert data into the table: "auth.stripe_onramp" */
+    insert_auth_stripe_onramp?:
+      | ModelTypes["auth_stripe_onramp_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "auth.stripe_onramp" */
+    insert_auth_stripe_onramp_one?:
+      | ModelTypes["auth_stripe_onramp"]
+      | undefined;
     /** insert data into the table: "auth.users" */
     insert_auth_users?: ModelTypes["auth_users_mutation_response"] | undefined;
     /** insert a single row into the table: "auth.users" */
     insert_auth_users_one?: ModelTypes["auth_users"] | undefined;
+    /** update data of the table: "auth.stripe_onramp" */
+    update_auth_stripe_onramp?:
+      | ModelTypes["auth_stripe_onramp_mutation_response"]
+      | undefined;
+    /** update single row of the table: "auth.stripe_onramp" */
+    update_auth_stripe_onramp_by_pk?:
+      | ModelTypes["auth_stripe_onramp"]
+      | undefined;
+    /** update multiples rows of table: "auth.stripe_onramp" */
+    update_auth_stripe_onramp_many?:
+      | Array<ModelTypes["auth_stripe_onramp_mutation_response"] | undefined>
+      | undefined;
     /** update data of the table: "auth.users" */
     update_auth_users?: ModelTypes["auth_users_mutation_response"] | undefined;
     /** update single row of the table: "auth.users" */
@@ -3179,8 +4241,14 @@ export type ModelTypes = {
   };
   ["order_by"]: order_by;
   ["query_root"]: {
+    /** fetch data from the table: "auth.publickeys" */
+    auth_publickeys: Array<ModelTypes["auth_publickeys"]>;
     /** fetch data from the table: "auth.publickeys_history" */
     auth_publickeys_history: Array<ModelTypes["auth_publickeys_history"]>;
+    /** fetch data from the table: "auth.stripe_onramp" */
+    auth_stripe_onramp: Array<ModelTypes["auth_stripe_onramp"]>;
+    /** fetch data from the table: "auth.stripe_onramp" using primary key columns */
+    auth_stripe_onramp_by_pk?: ModelTypes["auth_stripe_onramp"] | undefined;
     /** fetch data from the table: "auth.users" */
     auth_users: Array<ModelTypes["auth_users"]>;
     /** fetch aggregated fields from the table: "auth.users" */
@@ -3193,12 +4261,22 @@ export type ModelTypes = {
     invitations_aggregate: ModelTypes["invitations_aggregate"];
   };
   ["subscription_root"]: {
+    /** fetch data from the table: "auth.publickeys" */
+    auth_publickeys: Array<ModelTypes["auth_publickeys"]>;
     /** fetch data from the table: "auth.publickeys_history" */
     auth_publickeys_history: Array<ModelTypes["auth_publickeys_history"]>;
     /** fetch data from the table in a streaming manner : "auth.publickeys_history" */
     auth_publickeys_history_stream: Array<
       ModelTypes["auth_publickeys_history"]
     >;
+    /** fetch data from the table in a streaming manner : "auth.publickeys" */
+    auth_publickeys_stream: Array<ModelTypes["auth_publickeys"]>;
+    /** fetch data from the table: "auth.stripe_onramp" */
+    auth_stripe_onramp: Array<ModelTypes["auth_stripe_onramp"]>;
+    /** fetch data from the table: "auth.stripe_onramp" using primary key columns */
+    auth_stripe_onramp_by_pk?: ModelTypes["auth_stripe_onramp"] | undefined;
+    /** fetch data from the table in a streaming manner : "auth.stripe_onramp" */
+    auth_stripe_onramp_stream: Array<ModelTypes["auth_stripe_onramp"]>;
     /** fetch data from the table: "auth.users" */
     auth_users: Array<ModelTypes["auth_users"]>;
     /** fetch aggregated fields from the table: "auth.users" */
@@ -3243,6 +4321,18 @@ export type ModelTypes = {
 };
 
 export type GraphQLTypes = {
+  /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
+  ["Int_comparison_exp"]: {
+    _eq?: number | undefined;
+    _gt?: number | undefined;
+    _gte?: number | undefined;
+    _in?: Array<number> | undefined;
+    _is_null?: boolean | undefined;
+    _lt?: number | undefined;
+    _lte?: number | undefined;
+    _neq?: number | undefined;
+    _nin?: Array<number> | undefined;
+  };
   /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
   ["String_comparison_exp"]: {
     _eq?: string | undefined;
@@ -3275,11 +4365,26 @@ export type GraphQLTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined;
   };
+  /** columns and relationships of "auth.publickeys" */
+  ["auth_publickeys"]: {
+    __typename: "auth_publickeys";
+    blockchain?: string | undefined;
+    publickey?: string | undefined;
+  };
+  /** Boolean expression to filter rows from the table "auth.publickeys". All fields are combined with a logical 'AND'. */
+  ["auth_publickeys_bool_exp"]: {
+    _and?: Array<GraphQLTypes["auth_publickeys_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["auth_publickeys_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["auth_publickeys_bool_exp"]> | undefined;
+    blockchain?: GraphQLTypes["String_comparison_exp"] | undefined;
+    publickey?: GraphQLTypes["String_comparison_exp"] | undefined;
+  };
   /** columns and relationships of "auth.publickeys_history" */
   ["auth_publickeys_history"]: {
     __typename: "auth_publickeys_history";
     blockchain: string;
     publickey: string;
+    user_id?: GraphQLTypes["uuid"] | undefined;
   };
   /** order by aggregate values of table "auth.publickeys_history" */
   ["auth_publickeys_history_aggregate_order_by"]: {
@@ -3302,6 +4407,7 @@ export type GraphQLTypes = {
     _or?: Array<GraphQLTypes["auth_publickeys_history_bool_exp"]> | undefined;
     blockchain?: GraphQLTypes["String_comparison_exp"] | undefined;
     publickey?: GraphQLTypes["String_comparison_exp"] | undefined;
+    user_id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
   };
   /** unique or primary key constraints on table "auth.publickeys_history" */
   ["auth_publickeys_history_constraint"]: auth_publickeys_history_constraint;
@@ -3315,11 +4421,13 @@ export type GraphQLTypes = {
   ["auth_publickeys_history_max_order_by"]: {
     blockchain?: GraphQLTypes["order_by"] | undefined;
     publickey?: GraphQLTypes["order_by"] | undefined;
+    user_id?: GraphQLTypes["order_by"] | undefined;
   };
   /** order by min() on columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_min_order_by"]: {
     blockchain?: GraphQLTypes["order_by"] | undefined;
     publickey?: GraphQLTypes["order_by"] | undefined;
+    user_id?: GraphQLTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "auth.publickeys_history" */
   ["auth_publickeys_history_mutation_response"]: {
@@ -3341,6 +4449,7 @@ export type GraphQLTypes = {
   ["auth_publickeys_history_order_by"]: {
     blockchain?: GraphQLTypes["order_by"] | undefined;
     publickey?: GraphQLTypes["order_by"] | undefined;
+    user_id?: GraphQLTypes["order_by"] | undefined;
   };
   /** select columns of table "auth.publickeys_history" */
   ["auth_publickeys_history_select_column"]: auth_publickeys_history_select_column;
@@ -3355,9 +4464,123 @@ export type GraphQLTypes = {
   ["auth_publickeys_history_stream_cursor_value_input"]: {
     blockchain?: string | undefined;
     publickey?: string | undefined;
+    user_id?: GraphQLTypes["uuid"] | undefined;
   };
   /** placeholder for update columns of table "auth.publickeys_history" (current role has no relevant permissions) */
   ["auth_publickeys_history_update_column"]: auth_publickeys_history_update_column;
+  /** Ordering options when selecting data from "auth.publickeys". */
+  ["auth_publickeys_order_by"]: {
+    blockchain?: GraphQLTypes["order_by"] | undefined;
+    publickey?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** select columns of table "auth.publickeys" */
+  ["auth_publickeys_select_column"]: auth_publickeys_select_column;
+  /** Streaming cursor of the table "auth_publickeys" */
+  ["auth_publickeys_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["auth_publickeys_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_publickeys_stream_cursor_value_input"]: {
+    blockchain?: string | undefined;
+    publickey?: string | undefined;
+  };
+  /** columns and relationships of "auth.stripe_onramp" */
+  ["auth_stripe_onramp"]: {
+    __typename: "auth_stripe_onramp";
+    client_secret: string;
+    id: number;
+    public_key: string;
+    status: string;
+    webhook_dump: string;
+  };
+  /** Boolean expression to filter rows from the table "auth.stripe_onramp". All fields are combined with a logical 'AND'. */
+  ["auth_stripe_onramp_bool_exp"]: {
+    _and?: Array<GraphQLTypes["auth_stripe_onramp_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["auth_stripe_onramp_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["auth_stripe_onramp_bool_exp"]> | undefined;
+    client_secret?: GraphQLTypes["String_comparison_exp"] | undefined;
+    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
+    status?: GraphQLTypes["String_comparison_exp"] | undefined;
+    webhook_dump?: GraphQLTypes["String_comparison_exp"] | undefined;
+  };
+  /** unique or primary key constraints on table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_constraint"]: auth_stripe_onramp_constraint;
+  /** input type for incrementing numeric columns in table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_insert_input"]: {
+    client_secret?: string | undefined;
+    id?: number | undefined;
+    public_key?: string | undefined;
+    status?: string | undefined;
+    webhook_dump?: string | undefined;
+  };
+  /** response of any mutation on the table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_mutation_response"]: {
+    __typename: "auth_stripe_onramp_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["auth_stripe_onramp"]>;
+  };
+  /** on_conflict condition type for table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_on_conflict"]: {
+    constraint: GraphQLTypes["auth_stripe_onramp_constraint"];
+    update_columns: Array<GraphQLTypes["auth_stripe_onramp_update_column"]>;
+    where?: GraphQLTypes["auth_stripe_onramp_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.stripe_onramp". */
+  ["auth_stripe_onramp_order_by"]: {
+    client_secret?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    public_key?: GraphQLTypes["order_by"] | undefined;
+    status?: GraphQLTypes["order_by"] | undefined;
+    webhook_dump?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: auth_stripe_onramp */
+  ["auth_stripe_onramp_pk_columns_input"]: {
+    client_secret: string;
+  };
+  /** select columns of table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_select_column"]: auth_stripe_onramp_select_column;
+  /** input type for updating data in table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_set_input"]: {
+    client_secret?: string | undefined;
+    id?: number | undefined;
+    public_key?: string | undefined;
+    status?: string | undefined;
+    webhook_dump?: string | undefined;
+  };
+  /** Streaming cursor of the table "auth_stripe_onramp" */
+  ["auth_stripe_onramp_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["auth_stripe_onramp_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_stripe_onramp_stream_cursor_value_input"]: {
+    client_secret?: string | undefined;
+    id?: number | undefined;
+    public_key?: string | undefined;
+    status?: string | undefined;
+    webhook_dump?: string | undefined;
+  };
+  /** update columns of table "auth.stripe_onramp" */
+  ["auth_stripe_onramp_update_column"]: auth_stripe_onramp_update_column;
+  ["auth_stripe_onramp_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: GraphQLTypes["auth_stripe_onramp_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: GraphQLTypes["auth_stripe_onramp_set_input"] | undefined;
+    where: GraphQLTypes["auth_stripe_onramp_bool_exp"];
+  };
   /** columns and relationships of "auth.users" */
   ["auth_users"]: {
     __typename: "auth_users";
@@ -3566,12 +4789,32 @@ export type GraphQLTypes = {
     insert_auth_publickeys_history_one?:
       | GraphQLTypes["auth_publickeys_history"]
       | undefined;
+    /** insert data into the table: "auth.stripe_onramp" */
+    insert_auth_stripe_onramp?:
+      | GraphQLTypes["auth_stripe_onramp_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "auth.stripe_onramp" */
+    insert_auth_stripe_onramp_one?:
+      | GraphQLTypes["auth_stripe_onramp"]
+      | undefined;
     /** insert data into the table: "auth.users" */
     insert_auth_users?:
       | GraphQLTypes["auth_users_mutation_response"]
       | undefined;
     /** insert a single row into the table: "auth.users" */
     insert_auth_users_one?: GraphQLTypes["auth_users"] | undefined;
+    /** update data of the table: "auth.stripe_onramp" */
+    update_auth_stripe_onramp?:
+      | GraphQLTypes["auth_stripe_onramp_mutation_response"]
+      | undefined;
+    /** update single row of the table: "auth.stripe_onramp" */
+    update_auth_stripe_onramp_by_pk?:
+      | GraphQLTypes["auth_stripe_onramp"]
+      | undefined;
+    /** update multiples rows of table: "auth.stripe_onramp" */
+    update_auth_stripe_onramp_many?:
+      | Array<GraphQLTypes["auth_stripe_onramp_mutation_response"] | undefined>
+      | undefined;
     /** update data of the table: "auth.users" */
     update_auth_users?:
       | GraphQLTypes["auth_users_mutation_response"]
@@ -3587,8 +4830,14 @@ export type GraphQLTypes = {
   ["order_by"]: order_by;
   ["query_root"]: {
     __typename: "query_root";
+    /** fetch data from the table: "auth.publickeys" */
+    auth_publickeys: Array<GraphQLTypes["auth_publickeys"]>;
     /** fetch data from the table: "auth.publickeys_history" */
     auth_publickeys_history: Array<GraphQLTypes["auth_publickeys_history"]>;
+    /** fetch data from the table: "auth.stripe_onramp" */
+    auth_stripe_onramp: Array<GraphQLTypes["auth_stripe_onramp"]>;
+    /** fetch data from the table: "auth.stripe_onramp" using primary key columns */
+    auth_stripe_onramp_by_pk?: GraphQLTypes["auth_stripe_onramp"] | undefined;
     /** fetch data from the table: "auth.users" */
     auth_users: Array<GraphQLTypes["auth_users"]>;
     /** fetch aggregated fields from the table: "auth.users" */
@@ -3602,12 +4851,22 @@ export type GraphQLTypes = {
   };
   ["subscription_root"]: {
     __typename: "subscription_root";
+    /** fetch data from the table: "auth.publickeys" */
+    auth_publickeys: Array<GraphQLTypes["auth_publickeys"]>;
     /** fetch data from the table: "auth.publickeys_history" */
     auth_publickeys_history: Array<GraphQLTypes["auth_publickeys_history"]>;
     /** fetch data from the table in a streaming manner : "auth.publickeys_history" */
     auth_publickeys_history_stream: Array<
       GraphQLTypes["auth_publickeys_history"]
     >;
+    /** fetch data from the table in a streaming manner : "auth.publickeys" */
+    auth_publickeys_stream: Array<GraphQLTypes["auth_publickeys"]>;
+    /** fetch data from the table: "auth.stripe_onramp" */
+    auth_stripe_onramp: Array<GraphQLTypes["auth_stripe_onramp"]>;
+    /** fetch data from the table: "auth.stripe_onramp" using primary key columns */
+    auth_stripe_onramp_by_pk?: GraphQLTypes["auth_stripe_onramp"] | undefined;
+    /** fetch data from the table in a streaming manner : "auth.stripe_onramp" */
+    auth_stripe_onramp_stream: Array<GraphQLTypes["auth_stripe_onramp"]>;
     /** fetch data from the table: "auth.users" */
     auth_users: Array<GraphQLTypes["auth_users"]>;
     /** fetch aggregated fields from the table: "auth.users" */
@@ -3658,10 +4917,36 @@ export const enum auth_publickeys_history_constraint {
 export const enum auth_publickeys_history_select_column {
   blockchain = "blockchain",
   publickey = "publickey",
+  user_id = "user_id",
 }
 /** placeholder for update columns of table "auth.publickeys_history" (current role has no relevant permissions) */
 export const enum auth_publickeys_history_update_column {
   _PLACEHOLDER = "_PLACEHOLDER",
+}
+/** select columns of table "auth.publickeys" */
+export const enum auth_publickeys_select_column {
+  blockchain = "blockchain",
+  publickey = "publickey",
+}
+/** unique or primary key constraints on table "auth.stripe_onramp" */
+export const enum auth_stripe_onramp_constraint {
+  stripe_onramp_pkey = "stripe_onramp_pkey",
+}
+/** select columns of table "auth.stripe_onramp" */
+export const enum auth_stripe_onramp_select_column {
+  client_secret = "client_secret",
+  id = "id",
+  public_key = "public_key",
+  status = "status",
+  webhook_dump = "webhook_dump",
+}
+/** update columns of table "auth.stripe_onramp" */
+export const enum auth_stripe_onramp_update_column {
+  client_secret = "client_secret",
+  id = "id",
+  public_key = "public_key",
+  status = "status",
+  webhook_dump = "webhook_dump",
 }
 /** unique or primary key constraints on table "auth.users" */
 export const enum auth_users_constraint {
@@ -3699,7 +4984,9 @@ export const enum order_by {
 }
 
 type ZEUS_VARIABLES = {
+  ["Int_comparison_exp"]: ValueTypes["Int_comparison_exp"];
   ["String_comparison_exp"]: ValueTypes["String_comparison_exp"];
+  ["auth_publickeys_bool_exp"]: ValueTypes["auth_publickeys_bool_exp"];
   ["auth_publickeys_history_aggregate_order_by"]: ValueTypes["auth_publickeys_history_aggregate_order_by"];
   ["auth_publickeys_history_arr_rel_insert_input"]: ValueTypes["auth_publickeys_history_arr_rel_insert_input"];
   ["auth_publickeys_history_bool_exp"]: ValueTypes["auth_publickeys_history_bool_exp"];
@@ -3713,6 +5000,23 @@ type ZEUS_VARIABLES = {
   ["auth_publickeys_history_stream_cursor_input"]: ValueTypes["auth_publickeys_history_stream_cursor_input"];
   ["auth_publickeys_history_stream_cursor_value_input"]: ValueTypes["auth_publickeys_history_stream_cursor_value_input"];
   ["auth_publickeys_history_update_column"]: ValueTypes["auth_publickeys_history_update_column"];
+  ["auth_publickeys_order_by"]: ValueTypes["auth_publickeys_order_by"];
+  ["auth_publickeys_select_column"]: ValueTypes["auth_publickeys_select_column"];
+  ["auth_publickeys_stream_cursor_input"]: ValueTypes["auth_publickeys_stream_cursor_input"];
+  ["auth_publickeys_stream_cursor_value_input"]: ValueTypes["auth_publickeys_stream_cursor_value_input"];
+  ["auth_stripe_onramp_bool_exp"]: ValueTypes["auth_stripe_onramp_bool_exp"];
+  ["auth_stripe_onramp_constraint"]: ValueTypes["auth_stripe_onramp_constraint"];
+  ["auth_stripe_onramp_inc_input"]: ValueTypes["auth_stripe_onramp_inc_input"];
+  ["auth_stripe_onramp_insert_input"]: ValueTypes["auth_stripe_onramp_insert_input"];
+  ["auth_stripe_onramp_on_conflict"]: ValueTypes["auth_stripe_onramp_on_conflict"];
+  ["auth_stripe_onramp_order_by"]: ValueTypes["auth_stripe_onramp_order_by"];
+  ["auth_stripe_onramp_pk_columns_input"]: ValueTypes["auth_stripe_onramp_pk_columns_input"];
+  ["auth_stripe_onramp_select_column"]: ValueTypes["auth_stripe_onramp_select_column"];
+  ["auth_stripe_onramp_set_input"]: ValueTypes["auth_stripe_onramp_set_input"];
+  ["auth_stripe_onramp_stream_cursor_input"]: ValueTypes["auth_stripe_onramp_stream_cursor_input"];
+  ["auth_stripe_onramp_stream_cursor_value_input"]: ValueTypes["auth_stripe_onramp_stream_cursor_value_input"];
+  ["auth_stripe_onramp_update_column"]: ValueTypes["auth_stripe_onramp_update_column"];
+  ["auth_stripe_onramp_updates"]: ValueTypes["auth_stripe_onramp_updates"];
   ["auth_users_bool_exp"]: ValueTypes["auth_users_bool_exp"];
   ["auth_users_constraint"]: ValueTypes["auth_users_constraint"];
   ["auth_users_insert_input"]: ValueTypes["auth_users_insert_input"];
