@@ -237,7 +237,7 @@ async function handleConnect(
     resp = await RequestManager.requestUiAction((requestId: number) => {
       return openLockedPopupWindow(
         ctx.sender.origin,
-        ctx.sender.tab.title,
+        getTabTitle(ctx),
         requestId,
         blockchain
       );
@@ -253,7 +253,7 @@ async function handleConnect(
       resp = await RequestManager.requestUiAction((requestId: number) => {
         return openApprovalPopupWindow(
           ctx.sender.origin,
-          ctx.sender.tab.title,
+          getTabTitle(ctx),
           requestId,
           blockchain
         );
@@ -296,6 +296,10 @@ async function handleConnect(
   throw new Error("user did not approve");
 }
 
+function getTabTitle(ctx) {
+  return ctx.sender.tab?.title ?? `Xnft from ${ctx.sender.origin}`;
+}
+
 function handleDisconnect(
   ctx: Context<Backend>,
   blockchain: Blockchain
@@ -325,7 +329,7 @@ async function handleSolanaSignAndSendTx(
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
       ctx.sender.origin,
-      ctx.sender.tab.title,
+      getTabTitle(ctx),
       requestId,
       tx,
       walletAddress,
@@ -373,7 +377,7 @@ async function handleSolanaSignTx(
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
       ctx.sender.origin,
-      ctx.sender.tab.title,
+      getTabTitle(ctx),
       requestId,
       tx,
       walletAddress,
@@ -418,7 +422,7 @@ async function handleSolanaSignAllTxs(
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveAllTransactionsPopupWindow(
       ctx.sender.origin,
-      ctx.sender.tab.title,
+      getTabTitle(ctx),
       requestId,
       txs,
       walletAddress,
@@ -466,7 +470,7 @@ async function handleSolanaSignMessage(
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveMessagePopupWindow(
       ctx.sender.origin,
-      ctx.sender.tab.title,
+      getTabTitle(ctx),
       requestId,
       msg,
       walletAddress,
@@ -533,7 +537,7 @@ async function handleEthereumSignAndSendTx(
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
       ctx.sender.origin,
-      ctx.sender.tab.title,
+      getTabTitle(ctx),
       requestId,
       tx,
       walletAddress,
@@ -582,7 +586,7 @@ async function handleEthereumSignTx(
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
       ctx.sender.origin,
-      ctx.sender.tab.title,
+      getTabTitle(ctx),
       requestId,
       tx,
       walletAddress,
@@ -632,7 +636,7 @@ async function handleEthereumSignMessage(
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveMessagePopupWindow(
       ctx.sender.origin,
-      ctx.sender.tab.title,
+      getTabTitle(ctx),
       requestId,
       msg,
       walletAddress,
