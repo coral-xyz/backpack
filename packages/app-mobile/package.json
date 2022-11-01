@@ -6,6 +6,7 @@
     "android": "EXPO_USE_BETA_CLI=1 npx expo start --android",
     "ios": "EXPO_USE_BETA_CLI=1 npx expo start --ios",
     "web": "EXPO_USE_BETA_CLI=1 npx expo start --web",
+    "add": "EXPO_USE_BETA_CLI=1 npx expo add",
     "eject": "expo eject",
     "test": "jest",
     "lint:fix": "eslint 'src/**/*' --fix"
@@ -26,6 +27,7 @@
     "expo-constants": "^13.1.1",
     "expo-dev-client": "~1.0.1",
     "expo-font": "~10.1.0",
+    "expo-linking": "^3.2.2",
     "expo-secure-store": "^11.2.0",
     "expo-splash-screen": "~0.15.1",
     "expo-status-bar": "~1.3.0",
