@@ -540,7 +540,7 @@ function OnboardingCreatePasswordScreen({
   );
 }
 
-// TODO(peter) import flow
+// TODO(peter) import flow OnboardingAccount/ImportAccounts
 function OnboardingImportAccountsScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "ImportAccounts">) {
