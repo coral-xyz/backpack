@@ -1,3 +1,6 @@
+// https://github.com/feross/buffer#usage
+// note: the trailing slash is important!
+
 import {
   Box,
   Header,
@@ -40,6 +43,8 @@ import {
   OnboardingProvider,
   useOnboardingData,
 } from "../lib/OnboardingProvider";
+
+const Buffer = require("buffer/").Buffer;
 
 // TODO(peter) fn: any
 function maybeRender(condition: boolean, fn: () => any) {
@@ -194,6 +199,7 @@ function OnboardingMnemonicInputScreen({
   const { onboardingData, setOnboardingData } = useOnboardingData();
   const { action } = onboardingData;
   const readOnly = action === "create";
+  console.log({ action, readOnly });
 
   const background = useBackgroundClient();
   const [mnemonicWords, setMnemonicWords] = useState<string[]>([
@@ -280,20 +286,20 @@ function OnboardingMnemonicInputScreen({
         mnemonicWords={mnemonicWords}
         onChange={readOnly ? undefined : setMnemonicWords}
       />
-      {maybeRender(!readOnly, () => {
+      {maybeRender(!readOnly, () => (
         <StyledText>
           Use a {mnemonicWords.length === 12 ? "24" : "12"}-word recovery
           mnemonic
-        </StyledText>;
-      })}
-      {maybeRender(readOnly, () => {
+        </StyledText>
+      ))}
+      {maybeRender(readOnly, () => (
         <Button
           title="I saved my secret recovery phrase"
           onPress={() => {
             setChecked(!checked);
           }}
-        />;
-      })}
+        />
+      ))}
       {maybeRender(Boolean(error), () => (
         <ErrorMessage for={{ message: error }} />
       ))}
