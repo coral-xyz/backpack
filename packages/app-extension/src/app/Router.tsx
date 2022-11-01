@@ -186,7 +186,7 @@ function QueryApproveTransaction() {
   const requestId = parseInt(url.searchParams.get("requestId")!);
   const tx = url.searchParams.get("tx");
   const wallet = url.searchParams.get("wallet")!;
-  const blockchain = useWalletBlockchain(wallet) as Blockchain;
+  const blockchain = url.searchParams.get("blockchain")! as Blockchain;
 
   return (
     <WithEnabledBlockchain blockchain={blockchain}>
@@ -217,7 +217,7 @@ function QueryApproveAllTransactions() {
   const requestId = parseInt(url.searchParams.get("requestId")!);
   const txs = JSON.parse(url.searchParams.get("txs")!);
   const wallet = url.searchParams.get("wallet")!;
-  const blockchain = useWalletBlockchain(wallet) as Blockchain;
+  const blockchain = url.searchParams.get("blockchain")! as Blockchain;
 
   return (
     <WithEnabledBlockchain blockchain={blockchain}>
@@ -248,7 +248,7 @@ function QueryApproveMessage() {
   const message = url.searchParams.get("message");
   const requestId = parseInt(url.searchParams.get("requestId")!);
   const wallet = url.searchParams.get("wallet")!;
-  const blockchain = useWalletBlockchain(wallet) as Blockchain;
+  const blockchain = url.searchParams.get("blockchain")! as Blockchain;
 
   return (
     <WithEnabledBlockchain blockchain={blockchain}>

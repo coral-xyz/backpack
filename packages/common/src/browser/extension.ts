@@ -136,10 +136,11 @@ export async function openApproveTransactionPopupWindow(
   title: string,
   requestId: number,
   tx: string,
-  walletAddress: string
+  walletAddress: string,
+  blockchain: Blockchain
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
-  const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&tx=${tx}&wallet=${walletAddress}`;
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&tx=${tx}&wallet=${walletAddress}&blockchain=${blockchain}`;
   return await openPopupWindow(url);
 }
 
@@ -148,11 +149,12 @@ export async function openApproveAllTransactionsPopupWindow(
   title: string,
   requestId: number,
   txs: Array<string>,
-  walletAddress: string
+  walletAddress: string,
+  blockchain: Blockchain
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
   const txsStr = encodeURIComponent(JSON.stringify(txs));
-  const url = `${POPUP_HTML}?${QUERY_APPROVE_ALL_TRANSACTIONS}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&txs=${txsStr}&wallet=${walletAddress}`;
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_ALL_TRANSACTIONS}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&txs=${txsStr}&wallet=${walletAddress}&blockchain=${blockchain}`;
   return await openPopupWindow(url);
 }
 
@@ -161,10 +163,11 @@ export async function openApproveMessagePopupWindow(
   title: string,
   requestId: number,
   message: string,
-  walletAddress: string
+  walletAddress: string,
+  blockchain: Blockchain
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
-  const url = `${POPUP_HTML}?${QUERY_APPROVE_MESSAGE}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&message=${message}&wallet=${walletAddress}`;
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_MESSAGE}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&message=${message}&wallet=${walletAddress}&blockchain=${blockchain}`;
   return await openPopupWindow(url);
 }
 
@@ -184,7 +187,7 @@ export async function openPopupWindow(
     return getOs() === "Windows";
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     BrowserRuntimeExtension.getLastFocusedWindow().then((window: any) => {
       BrowserRuntimeExtension.openWindow({
         url: `${url}`,

@@ -326,7 +326,8 @@ async function handleSolanaSignAndSendTx(
       ctx.sender.tab.title,
       requestId,
       tx,
-      walletAddress
+      walletAddress,
+      Blockchain.SOLANA
     );
   });
 
@@ -373,7 +374,8 @@ async function handleSolanaSignTx(
       ctx.sender.tab.title,
       requestId,
       tx,
-      walletAddress
+      walletAddress,
+      Blockchain.SOLANA
     );
   });
 
@@ -417,7 +419,8 @@ async function handleSolanaSignAllTxs(
       ctx.sender.tab.title,
       requestId,
       txs,
-      walletAddress
+      walletAddress,
+      Blockchain.SOLANA
     );
   });
 
@@ -464,7 +467,8 @@ async function handleSolanaSignMessage(
       ctx.sender.tab.title,
       requestId,
       msg,
-      walletAddress
+      walletAddress,
+      Blockchain.SOLANA
     );
   });
 
@@ -530,7 +534,8 @@ async function handleEthereumSignAndSendTx(
       ctx.sender.tab.title,
       requestId,
       tx,
-      walletAddress
+      walletAddress,
+      Blockchain.ETHEREUM
     );
   });
 
@@ -578,7 +583,8 @@ async function handleEthereumSignTx(
       ctx.sender.tab.title,
       requestId,
       tx,
-      walletAddress
+      walletAddress,
+      Blockchain.ETHEREUM
     );
   });
 
@@ -627,7 +633,8 @@ async function handleEthereumSignMessage(
       ctx.sender.tab.title,
       requestId,
       msg,
-      walletAddress
+      walletAddress,
+      Blockchain.ETHEREUM
     );
   });
 
