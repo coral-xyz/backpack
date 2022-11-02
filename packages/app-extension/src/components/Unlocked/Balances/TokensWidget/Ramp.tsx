@@ -1,16 +1,13 @@
+import { useState } from "react";
 import { Button as MuiButton, ListItemIcon, Typography } from "@mui/material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles } from "@coral-xyz/themes";
 import {
   SOL_LOGO_URI,
   useActiveWallets,
   useBlockchainLogo,
 } from "@coral-xyz/recoil";
-import { Blockchain, formatUSD } from "@coral-xyz/common";
-import {
-  PrimaryButton,
-  TextField,
-  walletAddressDisplay,
-} from "../../../common";
+import { Blockchain, toTitleCase } from "@coral-xyz/common";
+import { TextField, walletAddressDisplay } from "../../../common";
 import {
   BalancesTable,
   BalancesTableContent,
@@ -19,8 +16,6 @@ import {
 } from "../Balances";
 import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import React, { useState } from "react";
-import { TokenRow } from "../../../common/TokenTable";
 import { ProxyImage } from "../../../common/ProxyImage";
 import { useNavStack } from "../../../common/Layout/NavStack";
 
@@ -39,18 +34,24 @@ const useStyles = styles((theme) => ({
       },
     },
   },
-  tokenListItemRow: {
-    display: "flex",
-    justifyContent: "space-between",
-  },
   logoIcon: {
     borderRadius: "22px",
     width: "44px",
     height: "44px",
   },
+  tokenListItemRow: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
   tokenListItemIcon: {
     paddingTop: "12px",
     paddingBottom: "12px",
+  },
+  tokenAmount: {
+    fontWeight: 500,
+    fontSize: "14px",
+    color: theme.custom.colors.secondary,
+    lineHeight: "20px",
   },
   balancesTableCellContainer: {
     width: "100%",
@@ -108,11 +109,9 @@ const RAMP_SUPPORTED_TOKENS = {
 
 export function Ramp({
   blockchain,
-  name,
   publicKey,
 }: {
   blockchain: Blockchain;
-  name: string;
   publicKey: string;
 }) {
   const activeWallets = useActiveWallets();
@@ -139,7 +138,6 @@ export function Ramp({
           key={blockchain}
           blockchain={blockchain}
           publicKey={publicKey}
-          name={name}
           onStartRamp={({ publicKey, blockchain }: any) => {
             push("stripe", { publicKey, blockchain });
           }}
@@ -166,12 +164,11 @@ export function Ramp({
           flex: 1,
         }}
       >
-        {activeWallets.map(({ blockchain, name, publicKey }) => (
+        {activeWallets.map(({ blockchain, publicKey }) => (
           <RampCard
             searchFilter={searchFilter}
             key={blockchain}
             blockchain={blockchain}
-            name={name}
             publicKey={publicKey}
             onStartRamp={({ publicKey, blockchain }: any) => {
               push("stripe", { publicKey, blockchain });
@@ -185,13 +182,11 @@ export function Ramp({
 
 export function RampCard({
   blockchain,
-  name,
   publicKey,
   onStartRamp,
   searchFilter,
 }: {
   blockchain: Blockchain;
-  name: string;
   publicKey: string;
   onStartRamp: any;
   searchFilter: string;
@@ -210,7 +205,7 @@ export function RampCard({
     <BalancesTable>
       <BalancesTableHead
         props={{
-          title: blockchain,
+          title: toTitleCase(blockchain),
           iconUrl: blockchainLogo,
           disableToggle: false,
           subtitle: (
@@ -249,7 +244,7 @@ export function RampCard({
   );
 }
 
-function RampTokenCell({ token, style }: any) {
+function RampTokenCell({ token }: any) {
   const { icon, title, subtitle } = token;
   const classes = useStyles();
   return (
