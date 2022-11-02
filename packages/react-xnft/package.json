@@ -13,8 +13,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@coral-xyz/common-public": "^0.2.0-latest.379",
-    "@coral-xyz/themes": "^0.2.0-latest.379",
     "@solana/web3.js": "^1.63.1",
     "eventemitter3": "^4.0.7",
     "react": "^17.0.0",

@@ -1634,23 +1634,6 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@coral-xyz/common-public@^0.2.0-latest.379":
-  version "0.2.0-latest.379"
-  resolved "https://registry.yarnpkg.com/@coral-xyz/common-public/-/common-public-0.2.0-latest.379.tgz#681b4f613a6597d69eae191ae33efb8a6ed446ed"
-  integrity sha512-lYiwow72uAQSMZaP+XFZmk6AVlqy1lH5v1NJuth2Etc+DUxZT9LUxiMDVwwAGwehoO9w7sssL+qMwDWDJs9Lbw==
-  dependencies:
-    uuid "^8.3.2"
-    zustand "^4.0.0-rc.2"
-
-"@coral-xyz/themes@^0.2.0-latest.379":
-  version "0.2.0-latest.379"
-  resolved "https://registry.yarnpkg.com/@coral-xyz/themes/-/themes-0.2.0-latest.379.tgz#66f79767eb587394699f841231c971a1aa4c27e0"
-  integrity sha512-WTWGipyhWg496LApqvAfwTCk73C+ekzaKCGigKhIXwagk5iJDSed1J35xPZXvOgXpGis1qXpF+V187ZdxW3NuA==
-  dependencies:
-    "@mui/material" "^5.8.4"
-    "@mui/styles" "^5.8.4"
-    react "^17.0.0"
-
 "@coral-xyz/xnft-cli@*":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@coral-xyz/xnft-cli/-/xnft-cli-0.0.1.tgz#dfda912320d433743ffa75f0c6146e75c8580c7d"
