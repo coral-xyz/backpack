@@ -9,7 +9,7 @@ import {
 import { externalResourceUri } from "@coral-xyz/common-public";
 import { anchorContext } from "./wallet";
 import { solanaPublicKey, activePublicKeys } from "../wallet";
-import { connectionUrls } from "../preferences";
+import { connectionUrls, isDeveloperMode } from "../preferences";
 
 //
 // Private dev plugins.
@@ -26,6 +26,7 @@ const AURORY_PLUGIN_URL = pluginURL("xnft/aurory");
 const DEGODS_TABLE_PLUGIN_URL = pluginURL(
   "xnft-program-library/packages/deadgods"
 );
+
 const NETWORK_MONITOR = pluginURL(
   "xnft-program-library/packages/network-monitor"
 );
@@ -51,14 +52,15 @@ export function xnftUrl(url: string) {
   const uri = externalResourceUri(url);
   return [PROXY_URL, uri].join("");
 }
-//
-// For now we just provide some default apps.
-//
+
 export const plugins = selector({
   key: "plugins",
   get: ({ get }: any) => {
-    return [
-      {
+    const developerMode = get(isDeveloperMode);
+    const plugins: Array<any> = [];
+    // Display the simulator if developer mode is enabled
+    if (developerMode) {
+      plugins.push({
         url: SIMULATOR_URL,
         iconUrl: "assets/simulator.png",
         title: "Simulator",
@@ -70,8 +72,11 @@ export const plugins = selector({
             xnft: PublicKey.default.toString(),
           },
         },
-      },
-      /*
+      });
+    }
+    return plugins;
+
+    /*
       {
         url: DEGODS_TABLE_PLUGIN_URL,
         iconUrl: "assets/deadgods.png",
@@ -152,7 +157,6 @@ export const plugins = selector({
         },
       },
 			*/
-    ];
   },
 });
 

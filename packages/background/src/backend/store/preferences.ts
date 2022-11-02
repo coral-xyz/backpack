@@ -13,6 +13,7 @@ export type WalletData = {
   approvedOrigins: Array<string>;
   enabledBlockchains: Array<Blockchain>;
   darkMode: boolean;
+  developerMode: boolean;
   solana: SolanaData;
   ethereum?: EthereumData;
 };
@@ -43,3 +44,4 @@ export async function setWalletData(data: WalletData) {
 
 export const DEFAULT_LOCK_INTERVAL_SECS = 15 * 60;
 export const DEFAULT_DARK_MODE = false;
+export const DEFAULT_DEVELOPER_MODE = false;
