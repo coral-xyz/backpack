@@ -1067,7 +1067,10 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async navigationCurrentUrlUpdate(url: string): Promise<string> {
+  async navigationCurrentUrlUpdate(
+    url: string,
+    activeTab?: string
+  ): Promise<string> {
     // Get the tab nav.
     const currNav = await store.getNav();
     if (!currNav) {
@@ -1075,21 +1078,30 @@ export class Backend {
     }
 
     // Update the active tab's nav stack.
-    const navData = currNav.data[currNav.activeTab];
+    const navData = currNav.data[activeTab ?? currNav.activeTab];
+    if (!navData) {
+      // We exit gracefully so that we don't crash the app.
+      console.error(`navData not found for tab ${activeTab}`);
+      return SUCCESS_RESPONSE;
+    }
     navData.urls[navData.urls.length - 1] = url;
-    currNav.data[currNav.activeTab] = navData;
+    currNav.data[activeTab ?? currNav.activeTab] = navData;
 
     // Save the change.
     await store.setNav(currNav);
 
-    // Notify listeners.
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-      data: {
-        url,
-        nav: "tab",
-      },
-    });
+    // Only navigate if the user hasn't already moved away from this tab
+    // or if the user didn't explicitly send an activeTab
+    if (!activeTab || activeTab === currNav.activeTab) {
+      // Notify listeners.
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+        data: {
+          url,
+          nav: "tab",
+        },
+      });
+    }
 
     return SUCCESS_RESPONSE;
   }
