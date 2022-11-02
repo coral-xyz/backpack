@@ -64,14 +64,14 @@ export const UsernameForm = ({
       <Box style={{ margin: "24px" }}>
         <Header text="Claim your username" />
         <SubtextParagraph style={{ margin: "16px 0" }}>
-          <Box style={{ marginBottom: 12 }}>
-            Others can see and find you by this username, and it will be
-            associated with your primary wallet address.
-          </Box>
-          <Box style={{ marginBottom: 12 }}>
-            Choose wisely if you'd like to remain anonymous.
-          </Box>
-          <Box>Have fun!</Box>
+          Others can see and find you by this username, and it will be
+          associated with your primary wallet address.
+          <br />
+          <br />
+          Choose wisely if you'd like to remain anonymous.
+          <br />
+          <br />
+          Have fun!
         </SubtextParagraph>
       </Box>
       <Box
