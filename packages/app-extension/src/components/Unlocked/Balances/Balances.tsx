@@ -143,7 +143,7 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function BalancesTableCell({ props, style }: any) {
+export function BalancesTableCell({ props }: any) {
   const { icon, title, subtitle, usdValue, percentChange } = props;
   const classes = useStyles();
 
@@ -186,7 +186,7 @@ export function BalancesTableCell({ props, style }: any) {
         <div className={classes.tokenListItemRow}>
           {subtitle && (
             <Typography className={classes.tokenAmount}>
-              {!!trim ? trim : subtitle}
+              {trim ? trim : subtitle}
             </Typography>
           )}
           {percentChange !== undefined && positive && (
