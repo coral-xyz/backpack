@@ -940,7 +940,7 @@ type _HostConfig = HostConfig<
   NoTimeout
 >;
 
-type Style = any;
+type Style = React.CSSProperties;
 
 //
 // All node types.
@@ -967,7 +967,7 @@ export type NodeSerialized =
   | BalancesTableCellNodeSerialized
   | BalancesTableFooterNodeSerialized
   | CustomNodeSerialized;
-type NodeProps =
+export type NodeProps =
   | TableProps
   | TableRowProps
   | TextProps
