@@ -168,22 +168,23 @@ export async function separateNfts(
     return m ? MintLayout.decode(m.account.data) : null;
   });
 
+  // if token standard is available then use it. otherwise determine fungibility by decimals
   const tokensWithMetadata = metadataArr
     .map((m, idx) => {
       return { ...m, decimals: mints[idx]?.decimals || 0 };
     })
-    .filter(
-      (m, idx) =>
-        (mints[idx]?.decimals || 0) > 0 ||
-        m.metadata.tokenStandard == TokenStandard.FungibleAsset ||
-        m.metadata.tokenStandard == TokenStandard.Fungible
+    .filter((m, idx) =>
+      m.metadata.tokenStandard
+        ? m.metadata.tokenStandard == TokenStandard.FungibleAsset ||
+          m.metadata.tokenStandard == TokenStandard.Fungible
+        : (mints[idx]?.decimals || 0) > 0
     )
     .filter(Boolean);
-  const nftsWithMetadata = metadataArr.filter(
-    (m, idx) =>
-      (mints[idx]?.decimals || 0) == 0 ||
-      m.metadata.tokenStandard == TokenStandard.NonFungible ||
-      m.metadata.tokenStandard == TokenStandard.NonFungibleEdition
+  const nftsWithMetadata = metadataArr.filter((m, idx) =>
+    m.metadata.tokenStandard
+      ? m.metadata.tokenStandard == TokenStandard.NonFungibleEdition ||
+        (m.metadata.tokenStandard as TokenStandard) == TokenStandard.NonFungible
+      : (mints[idx]?.decimals || 0) == 0
   );
 
   const splTokenMetadata = tokensWithMetadata.reduce((acc, m) => {
