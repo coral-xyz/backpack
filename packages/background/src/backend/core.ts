@@ -58,7 +58,6 @@ import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
-import nav from "@coral-xyz/backpack-web/components/Nav";
 
 const { base58: bs58 } = ethers.utils;
 
