@@ -18,7 +18,11 @@ import * as crypto from "./crypto";
 import { SolanaHdKeyringFactory } from "./solana";
 import { EthereumHdKeyringFactory } from "./ethereum";
 import * as store from "../store";
-import { DefaultKeyname, DEFAULT_DARK_MODE } from "../store";
+import {
+  DefaultKeyname,
+  DEFAULT_DARK_MODE,
+  DEFAULT_DEVELOPER_MODE,
+} from "../store";
 import { BlockchainKeyring } from "./blockchain";
 
 /**
@@ -77,6 +81,7 @@ export class KeyringStore {
         (k) => k.blockchain
       ),
       darkMode: DEFAULT_DARK_MODE,
+      developerMode: DEFAULT_DEVELOPER_MODE,
       solana: {
         explorer: SolanaExplorer.DEFAULT,
         cluster: SolanaCluster.DEFAULT,
