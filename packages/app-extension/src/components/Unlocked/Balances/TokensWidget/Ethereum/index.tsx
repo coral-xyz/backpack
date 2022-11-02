@@ -17,6 +17,7 @@ export function SendEthereumConfirmationCard({
   token,
   destinationAddress,
   amount,
+  onComplete,
 }: {
   token: {
     address: string;
@@ -27,7 +28,7 @@ export function SendEthereumConfirmationCard({
   };
   destinationAddress: string;
   amount: BigNumber;
-  close: (transactionToSend: UnsignedTransaction) => void;
+  onComplete?: () => void;
 }) {
   const ethereumCtx = useEthereumCtx();
   const [txSignature, setTxSignature] = useState<string | null>(null);
@@ -97,6 +98,7 @@ export function SendEthereumConfirmationCard({
       // We already waited, but calling .wait will throw if the transaction failed
       await transaction.wait();
       setCardType("complete");
+      if (onComplete) onComplete();
     } catch (err) {
       logger.error("ethereum transaction failed", err);
       setCardType("error");
