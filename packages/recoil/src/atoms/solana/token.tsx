@@ -8,7 +8,12 @@ import { anchorContext } from "./wallet";
 import { solanaPublicKey } from "../wallet";
 import { solanaConnectionUrl } from "./preferences";
 import { PublicKey } from "@solana/web3.js";
-import { SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
+import {
+  SOL_NATIVE_MINT,
+  TokenMetadata,
+  WSOL_MINT,
+  TOKEN_METADATA_PROGRAM_ID,
+} from "@coral-xyz/common";
 import type {
   SolanaTokenAccountWithKeyString,
   SplNftMetadataString,
@@ -106,20 +111,61 @@ export const solanaTokenNativeBalance = selectorFamily<
     (tokenAddress: string) =>
     ({ get }: any) => {
       const tokenAccount = get(solanaTokenAccountsMap({ tokenAddress }));
-      if (!tokenAccount) {
-        return null;
+      const connectionUrl = get(solanaConnectionUrl)!;
+      const publicKey = get(solanaPublicKey)!;
+      const { splTokenMetadata } = get(
+        customSplTokenAccounts({ connectionUrl, publicKey })
+      );
+      const metadataAddress = PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("metadata"),
+          TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+          new PublicKey(tokenAccount.mint).toBuffer(),
+        ],
+        TOKEN_METADATA_PROGRAM_ID
+      )[0];
+      const nativeBalance = BigNumber.from(tokenAccount.amount.toString());
+      const tokenMetadata: TokenMetadata | null = splTokenMetadata.find(
+        (m: TokenMetadataString) =>
+          metadataAddress.equals(new PublicKey(m.publicKey))
+      );
+      if (tokenMetadata) {
+        const displayBalance = ethers.utils.formatUnits(
+          nativeBalance,
+          tokenMetadata.decimals
+        );
+        const { symbol: ticker, image: logo, name } = tokenMetadata.uriMetadata;
+        const priceMint =
+          tokenAccount.mint.toString() === WSOL_MINT
+            ? SOL_NATIVE_MINT
+            : tokenAccount.mint.toString();
+
+        return {
+          name,
+          decimals: tokenMetadata.decimals!,
+          nativeBalance,
+          displayBalance,
+          ticker,
+          logo,
+          address: tokenAddress,
+          mint: tokenAccount.mint.toString(),
+          priceMint,
+        };
       }
       const tokenRegistry = get(splTokenRegistry)!;
-      const tokenMetadata =
+      const tokenRegMetadata =
         tokenRegistry.get(tokenAccount.mint.toString()) ?? ({} as TokenInfo);
-      const { symbol: ticker, logoURI: logo, name, decimals } = tokenMetadata;
-      const nativeBalance = BigNumber.from(tokenAccount.amount.toString());
+      const {
+        symbol: ticker,
+        logoURI: logo,
+        name,
+        decimals,
+      } = tokenRegMetadata;
       const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
       const priceMint =
         tokenAccount.mint.toString() === WSOL_MINT
           ? SOL_NATIVE_MINT
           : tokenAccount.mint.toString();
-
       return {
         name,
         decimals,

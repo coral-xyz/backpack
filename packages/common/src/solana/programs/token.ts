@@ -3,7 +3,11 @@ import type { Connection } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { AnchorProvider, BN, Spl } from "@project-serum/anchor";
 import type { Provider, Program, SplToken } from "@project-serum/anchor";
-import { metadata } from "@project-serum/token";
+import {
+  Metadata,
+  TokenStandard,
+} from "@metaplex-foundation/mpl-token-metadata";
+import { MintLayout } from "@solana/spl-token";
 import { externalResourceUri } from "@coral-xyz/common-public";
 import type {
   SolanaTokenAccount,
@@ -74,25 +78,40 @@ export async function customSplTokenAccounts(
     closeAuthority: null,
   };
   const tokenAccountsArray = Array.from(tokenAccounts.values());
-
   //
-  // Fetch metadata.
+  // Fetch onchain metadata.
   //
-  const tokenMetadata = await fetchSplMetadata(
+  const tokenMetadataArray = await fetchSplMetadata(
     tokenClient.provider,
     tokenAccountsArray
   );
 
   //
-  // Fetch the metadata uri and interpert as NFTs.
+  // Fetch all metadata uris
   //
-  const nftMetadata = await fetchSplMetadataUri(
+  const tokenAccountsToMetadataWithUri = await fetchSplMetadataUri(
     tokenAccountsArray,
-    tokenMetadata
+    tokenMetadataArray
+  );
+
+  //
+  // Separate into NFTs and fungible tokens
+  //
+  const {
+    splTokenMetadata: tokensWithUriMetadata,
+    splNftMetadata: nftsWithUriMetadata,
+  } = await separateNfts(tokenClient.provider, tokenAccountsToMetadataWithUri);
+
+  //
+  // Construct list of all fungible tokens
+  //
+  const allTokens = await zipFungibleTokens(
+    tokenMetadataArray,
+    tokensWithUriMetadata
   );
 
   const tokenAccountsMap = (
-    Array.from(removeNfts(tokenAccounts, nftMetadata)).map(
+    Array.from(removeNfts(tokenAccounts, nftsWithUriMetadata)).map(
       ([key, SolanaTokenAccountWithKey]) => [
         key,
         {
@@ -105,8 +124,80 @@ export async function customSplTokenAccounts(
 
   return {
     tokenAccountsMap,
-    tokenMetadata,
-    nftMetadata: Array.from(nftMetadata),
+    tokenMetadata: allTokens,
+    nftMetadata: Array.from(nftsWithUriMetadata),
+  };
+}
+
+export async function zipFungibleTokens(
+  tokenAccountsMetadata: (TokenMetadata | null)[],
+  tokensWithMetadataUri: Map<string, SplNftMetadata & { decimals: number }>
+) {
+  const map = tokenAccountsMetadata.reduce((acc, m, idx) => {
+    if (!m) return acc;
+    acc.set(m.publicKey.toString(), m);
+    return acc;
+  }, new Map<string, TokenMetadata>());
+
+  for (const [key, value] of tokensWithMetadataUri) {
+    const old = map.get(value.metadataAddress.toString());
+    if (!old) continue;
+    map.set(value.metadataAddress.toString(), {
+      ...old,
+      uriMetadata: value.tokenMetaUriData,
+      decimals: value.decimals,
+    });
+  }
+  return Array.from(map.values());
+}
+
+export async function separateNfts(
+  provider: Provider,
+  tokens: Map<string, SplNftMetadata>
+) {
+  //
+  // Fetch mints for each token
+  //
+  const metadataArr = Array.from(tokens.values());
+  const mints = (
+    await anchor.utils.rpc.getMultipleAccounts(
+      provider.connection,
+      metadataArr.map((t) => t.metadata.mint)
+    )
+  ).map((m) => {
+    return m ? MintLayout.decode(m.account.data) : null;
+  });
+
+  const tokensWithMetadata = metadataArr
+    .map((m, idx) => {
+      return { ...m, decimals: mints[idx]?.decimals || 0 };
+    })
+    .filter(
+      (m, idx) =>
+        (mints[idx]?.decimals || 0) > 0 ||
+        m.metadata.tokenStandard == TokenStandard.FungibleAsset ||
+        m.metadata.tokenStandard == TokenStandard.Fungible
+    )
+    .filter(Boolean);
+  const nftsWithMetadata = metadataArr.filter(
+    (m, idx) =>
+      (mints[idx]?.decimals || 0) == 0 ||
+      m.metadata.tokenStandard == TokenStandard.NonFungible ||
+      m.metadata.tokenStandard == TokenStandard.NonFungibleEdition
+  );
+
+  const splTokenMetadata = tokensWithMetadata.reduce((acc, m) => {
+    acc.set(m.publicKey.toString(), m);
+    return acc;
+  }, new Map<string, SplNftMetadata & { decimals: number }>());
+  const splNftMetadata = nftsWithMetadata.reduce((acc, m) => {
+    acc.set(m.publicKey.toString(), m);
+    return acc;
+  }, new Map<string, SplNftMetadata>());
+
+  return {
+    splTokenMetadata,
+    splNftMetadata,
   };
 }
 
@@ -135,7 +226,7 @@ export async function fetchSplMetadata(
     t
       ? {
           publicKey: t.publicKey,
-          account: metadata.decodeMetadata(t.account.data),
+          account: Metadata.deserialize(t.account.data)[0],
         }
       : null
   );

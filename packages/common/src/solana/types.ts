@@ -1,5 +1,5 @@
-import { IdlAccounts, SplToken } from "@project-serum/anchor";
-import { metadata } from "@project-serum/token";
+import type { IdlAccounts, SplToken } from "@project-serum/anchor";
+import type { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import type { TokenAccountsFilter } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 
@@ -18,13 +18,15 @@ export type SolanaTokenAccountWithKeySerializable = Omit<
 
 export type TokenMetadata = {
   publicKey: PublicKey;
-  account: metadata.Metadata;
+  account: Metadata;
+  decimals?: number;
+  uriMetadata?: any;
 };
 
 export type SplNftMetadata = {
   publicKey: PublicKey;
   metadataAddress: PublicKey;
-  metadata: metadata.Metadata;
+  metadata: Metadata;
   tokenMetaUriData: any;
 };
 

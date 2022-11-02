@@ -3338,6 +3338,30 @@
   resolved "https://registry.yarnpkg.com/@metamask/safe-event-emitter/-/safe-event-emitter-2.0.0.tgz#af577b477c683fad17c619a78208cede06f9605c"
   integrity sha512-/kSXhY692qiV1MXu6EeOZvg5nECLclxNXcKCxJ3cXQgYuRymRHpdx/t7JXfsK+JLjwA1e1c1/SBrlQYpusC29Q==
 
+"@metaplex-foundation/beet-solana@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@metaplex-foundation/beet-solana/-/beet-solana-0.4.0.tgz#52891e78674aaa54e0031f1bca5bfbc40de12e8d"
+  integrity sha512-B1L94N3ZGMo53b0uOSoznbuM5GBNJ8LwSeznxBxJ+OThvfHQ4B5oMUqb+0zdLRfkKGS7Q6tpHK9P+QK0j3w2cQ==
+  dependencies:
+    "@metaplex-foundation/beet" ">=0.1.0"
+    "@solana/web3.js" "^1.56.2"
+    bs58 "^5.0.0"
+    debug "^4.3.4"
+
+"@metaplex-foundation/beet@>=0.1.0", "@metaplex-foundation/beet@^0.7.1":
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/@metaplex-foundation/beet/-/beet-0.7.1.tgz#0975314211643f87b5f6f3e584fa31abcf4c612c"
+  integrity sha512-hNCEnS2WyCiYyko82rwuISsBY3KYpe828ubsd2ckeqZr7tl0WVLivGkoyA/qdiaaHEBGdGl71OpfWa2rqL3DiA==
+  dependencies:
+    ansicolors "^0.3.2"
+    bn.js "^5.2.0"
+    debug "^4.3.3"
+
+"@metaplex-foundation/cusper@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@metaplex-foundation/cusper/-/cusper-0.0.2.tgz#dc2032a452d6c269e25f016aa4dd63600e2af975"
+  integrity sha512-S9RulC2fFCFOQraz61bij+5YCHhSO9llJegK8c8Y6731fSi6snUSQJdCUqYS8AIgR0TKbQvdvgSyIIdbDFZbBA==
+
 "@metaplex-foundation/mpl-core@^0.0.2":
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@metaplex-foundation/mpl-core/-/mpl-core-0.0.2.tgz#17ee2cc216e17629d6df1dbba75964625ebbd603"
@@ -3354,6 +3378,19 @@
     "@metaplex-foundation/mpl-core" "^0.0.2"
     "@solana/spl-token" "^0.1.8"
     "@solana/web3.js" "^1.31.0"
+
+"@metaplex-foundation/mpl-token-metadata@^2.5.1":
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/@metaplex-foundation/mpl-token-metadata/-/mpl-token-metadata-2.5.1.tgz#0958d49136a102da299de5b2b2b73831196f7593"
+  integrity sha512-n04kZNKowfjRRXGyOxL8CSyXRBdwP2VZsV3WH90DebzKx201ta8QfchpJmMIqcrgFH4GQtcRM7R/5tQRAHWKow==
+  dependencies:
+    "@metaplex-foundation/beet" "^0.7.1"
+    "@metaplex-foundation/beet-solana" "^0.4.0"
+    "@metaplex-foundation/cusper" "^0.0.2"
+    "@solana/spl-token" "^0.2.0"
+    "@solana/web3.js" "^1.35.1"
+    bn.js "^5.2.0"
+    debug "^4.3.3"
 
 "@miniflare/cache@2.9.0":
   version "2.9.0"
@@ -4760,14 +4797,6 @@
     superstruct "^0.15.4"
     toml "^3.0.0"
 
-"@project-serum/borsh@^0.0.1-beta.0":
-  version "0.0.1-beta.0"
-  resolved "https://registry.yarnpkg.com/@project-serum/borsh/-/borsh-0.0.1-beta.0.tgz#8ab465ac23e0d840127c7922f8a1a500b50667d5"
-  integrity sha512-jBrGi0KBMe1UXkItp1JKR8Qtaal4xPrbkIWKzbglqVLRNnG+DiDWpZk8I9XMrSLiAFYTvQp8MIJmwwoWSyN8yQ==
-  dependencies:
-    bn.js "^5.1.2"
-    buffer-layout "^1.2.0"
-
 "@project-serum/borsh@^0.2.2", "@project-serum/borsh@^0.2.4", "@project-serum/borsh@^0.2.5":
   version "0.2.5"
   resolved "https://registry.yarnpkg.com/@project-serum/borsh/-/borsh-0.2.5.tgz#6059287aa624ecebbfc0edd35e4c28ff987d8663"
@@ -4813,14 +4842,6 @@
   dependencies:
     bs58 "^4.0.1"
     eventemitter3 "^4.0.7"
-
-"@project-serum/token@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@project-serum/token/-/token-0.1.0.tgz#142090dc445e5d4fe66c94ddcda1215275331c8c"
-  integrity sha512-F/cJQ2w7OiVtF8rAJGmF66Gmvrk/aH4aWnO3+6vnAuD9jqCuKv4TIrXL/rp+LblUjPluIOabAvvHR5lxga+hQA==
-  dependencies:
-    "@project-serum/borsh" "^0.0.1-beta.0"
-    bn.js "^5.1.3"
 
 "@react-native-community/cli-debugger-ui@^7.0.3":
   version "7.0.3"
@@ -5640,7 +5661,7 @@
     "@wallet-standard/base" "^1.0.0"
     "@wallet-standard/features" "^1.0.0"
 
-"@solana/web3.js@1.52.0", "@solana/web3.js@1.63.1", "@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0", "@solana/web3.js@^1.30.2", "@solana/web3.js@^1.31.0", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.37.1", "@solana/web3.js@^1.43.2", "@solana/web3.js@^1.44.3", "@solana/web3.js@^1.62.1", "@solana/web3.js@^1.63.1", "@solana/web3.js@^1.66.2":
+"@solana/web3.js@1.52.0", "@solana/web3.js@1.63.1", "@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0", "@solana/web3.js@^1.30.2", "@solana/web3.js@^1.31.0", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.35.1", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.37.1", "@solana/web3.js@^1.43.2", "@solana/web3.js@^1.44.3", "@solana/web3.js@^1.56.2", "@solana/web3.js@^1.62.1", "@solana/web3.js@^1.63.1", "@solana/web3.js@^1.66.2":
   version "1.63.1"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.63.1.tgz#88a19a17f5f4aada73ad70a94044c1067cab2b4d"
   integrity sha512-wgEdGVK5FTS2zENxbcGSvKpGZ0jDS6BUdGu8Gn6ns0CzgJkK83u4ip3THSnBPEQ5i/jrqukg998BwV1H67+qiQ==
@@ -8062,6 +8083,11 @@ ansi-styles@^6.0.0:
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-6.1.0.tgz#87313c102b8118abd57371afab34618bf7350ed3"
   integrity sha512-VbqNsoz55SYGczauuup0MFUyXNQviSpFTj1RQtFzmQLk18qbVSpTFFGMT293rmDaQuKCT6InmbuEyUne4mTuxQ==
 
+ansicolors@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/ansicolors/-/ansicolors-0.3.2.tgz#665597de86a9ffe3aa9bfbe6cae5c6ea426b4979"
+  integrity sha512-QXu7BPrP29VllRxH8GwB7x5iX5qWKAAMLqKQGWTeLWVlNHNOpVMJ91dsxQAIWXpjuW5wqvxu3Jd/nRjrJ+0pqg==
+
 any-promise@^1.0.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/any-promise/-/any-promise-1.3.0.tgz#abc6afeedcea52e809cdc0376aed3ce39635d17f"
@@ -8889,7 +8915,7 @@ bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.11.0, bn.js@^4.11.8, bn.js@^4.11.9:
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.12.0.tgz#775b3f278efbb9718eec7361f483fb36fbbfea88"
   integrity sha512-c98Bf3tPniI+scsdk237ku1Dc3ujXQTSgyiPUDEOe7tRkhrqridvh8klBv0HCEso1OLOYcHuCv/cS6DNxKH+ZA==
 
-bn.js@^5.0.0, bn.js@^5.1.0, bn.js@^5.1.1, bn.js@^5.1.2, bn.js@^5.1.3, bn.js@^5.2.0, bn.js@^5.2.1:
+bn.js@^5.0.0, bn.js@^5.1.0, bn.js@^5.1.1, bn.js@^5.1.2, bn.js@^5.2.0, bn.js@^5.2.1:
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.2.1.tgz#0bc527a6a0d18d0aa8d5b0538ce4a77dccfa7b70"
   integrity sha512-eXRvHzWyYPBuB4NBy0cmYQjGitUrtqwbvlzP3G6VFnNRbsZQIxQ10PbKKHt8gZ/HW/D/747aDl+QkDqg3KQLMQ==
