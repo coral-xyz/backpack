@@ -197,7 +197,7 @@ async function handle<T = any>(
     case UI_RPC_METHOD_NAVIGATION_POP:
       return await handleNavigationPop(ctx);
     case UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE:
-      return await handleNavigationCurrentUrlUpdate(ctx, params[0]);
+      return await handleNavigationCurrentUrlUpdate(ctx, params[0], params[1]);
     case UI_RPC_METHOD_NAVIGATION_READ:
       return await handleNavRead(ctx);
     case UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE:
@@ -561,9 +561,10 @@ async function handleNavigationPop(
 
 async function handleNavigationCurrentUrlUpdate(
   ctx: Context<Backend>,
-  url: string
+  url: string,
+  activeTab?: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.navigationCurrentUrlUpdate(url);
+  const resp = await ctx.backend.navigationCurrentUrlUpdate(url, activeTab);
   return [resp];
 }
 

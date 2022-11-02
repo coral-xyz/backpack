@@ -159,7 +159,7 @@ function SendButton({ nft }: { nft: any }) {
           <NavStackEphemeral
             initialRoute={{ name: "send" }}
             options={() => ({
-              title: `${nft.name} / Send`,
+              title: nft.name ? `${nft.name} / Send` : "Send",
             })}
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
@@ -205,7 +205,7 @@ function SendScreen({ nft }: { nft: any }) {
         });
       }
     })();
-  }, [openConfirm]);
+  }, [openConfirm, wasSent, background]);
 
   return (
     <>
@@ -382,7 +382,7 @@ export function NftOptionsButton() {
         });
       }
     })();
-  }, [openDrawer]);
+  }, [openDrawer, wasBurnt, background]);
 
   // @ts-ignore
   const nft: any = nfts.get(searchParams.props.nftId);
@@ -527,9 +527,18 @@ function BurnConfirmationCard({
 
   const onConfirm = async () => {
     try {
-      const _signature = await Solana.burnNft(solanaCtx, {
+      // TODO: should use recoil for this to avoid the extra, unnecessary request.
+      const amount = parseInt(
+        (
+          await solanaCtx.connection.getTokenAccountBalance(
+            new PublicKey(nft.publicKey)
+          )
+        ).value.amount
+      );
+      const _signature = await Solana.burnAndCloseNft(solanaCtx, {
         solDestination: solanaCtx.walletPublicKey,
         mint: new PublicKey(nft.mint.toString()),
+        amount,
       });
       setSignature(_signature);
       setState("sending");
