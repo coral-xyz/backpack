@@ -8,16 +8,14 @@ import {
   useAppIcons,
   useBackgroundClient,
   useEnabledBlockchains,
-  useNavigation,
 } from "@coral-xyz/recoil";
 import {
   Blockchain,
   UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
 } from "@coral-xyz/common";
-import { WithDrawer } from "../../common/Layout/Drawer";
-import { PluginApp } from "./Plugin";
 import { EmptyState } from "../../common/EmptyState";
 import { ProxyImage } from "../../common/ProxyImage";
+import { TAB_APPS } from "@coral-xyz/common";
 
 const ICON_WIDTH = 64;
 
@@ -118,7 +116,7 @@ function PluginGrid() {
     background
       .request({
         method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
-        params: [newUrl],
+        params: [newUrl, TAB_APPS],
       })
       .catch(console.error);
   };
