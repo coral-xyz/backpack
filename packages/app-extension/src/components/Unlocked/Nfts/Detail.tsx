@@ -196,7 +196,7 @@ function SendScreen({ nft }: { nft: any }) {
   useEffect(() => {
     (async () => {
       // If the modal is being closed and the NFT has been sent elsewhere then
-      // navigate back to the nav root because the send screen is no logner
+      // navigate back to the nav root because the send screen is no longer
       // valid as the wallet no longer possesses the NFT.
       if (!openConfirm && wasSent) {
         await background.request({
@@ -372,9 +372,9 @@ export function NftOptionsButton() {
 
   useEffect(() => {
     (async () => {
-      // If the modal is being closed and the NFT has been sent elsewhere then
-      // navigate back to the nav root because the send screen is no logner
-      // valid as the wallet no longer possesses the NFT.
+      // If the modal is being closed and the NFT has been burnt then navigate
+      // back to the nav root because the send screen is no longer valid as the
+      // wallet no longer possesses the NFT.
       if (!openDrawer && wasBurnt) {
         await background.request({
           method: UI_RPC_METHOD_NAVIGATION_TO_ROOT,
