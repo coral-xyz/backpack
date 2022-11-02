@@ -54,7 +54,7 @@ export type SolanaContext = {
 // approval screen.
 //
 export class Solana {
-  public static async burnNft(
+  public static async burnAndCloseNft(
     ctx: SolanaContext,
     req: BurnNftRequest
   ): Promise<string> {
@@ -67,7 +67,7 @@ export class Solana {
     const tx = new Transaction();
     tx.add(
       await tokenClient.methods
-        .burn(new BN(1))
+        .burn(new BN(req.amount ?? 1))
         .accounts({
           source: associatedToken,
           mint,
@@ -521,4 +521,5 @@ export type DeleteInstallRequest = {
 export type BurnNftRequest = {
   solDestination: PublicKey;
   mint: PublicKey;
+  amount?: number;
 };
