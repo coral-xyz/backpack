@@ -24,5 +24,5 @@ export function useIsONELive() {
     });
   }, []);
 
-  return isLive || whitelist.includes(wallet.publicKey);
+  return isLive || whitelist.includes(wallet?.publicKey);
 }
