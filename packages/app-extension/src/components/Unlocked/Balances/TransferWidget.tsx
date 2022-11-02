@@ -1,12 +1,5 @@
 import { Typography } from "@mui/material";
-import {
-  ArrowUpward,
-  ArrowDownward,
-  SwapHoriz,
-  ArrowRight,
-  ArrowBackIosNewSharp,
-  Money,
-} from "@mui/icons-material";
+import { ArrowUpward, ArrowDownward, SwapHoriz } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import {
   useEnabledBlockchains,
@@ -29,7 +22,6 @@ import { Dollar } from "../../common/Icon";
 import { Swap, SelectToken } from "../../Unlocked/Swap";
 import { Ramp } from "./TokensWidget/Ramp";
 import { StripeRamp } from "./StripeRamp";
-import React from "react";
 
 export function TransferWidget({
   blockchain,

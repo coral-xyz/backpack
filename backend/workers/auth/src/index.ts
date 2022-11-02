@@ -13,9 +13,11 @@ import {
 import { ethers } from "ethers";
 import { decode } from "bs58";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { sign } from "tweetnacl";
 import { z, ZodError } from "zod";
 import { Chain } from "./zeus";
+import { registerOnRampHandlers } from "./onramp";
 
 const BaseCreateUser = z.object({
   username: z
@@ -106,6 +108,8 @@ const LegacyCreateUser = z.discriminatedUnion("blockchain", [
 
 const app = new Hono();
 
+app.use("*", cors());
+
 app.use("*", async (c, next) => {
   try {
     await next();
@@ -162,7 +166,7 @@ app.get("/users/:username", async (c) => {
     const { ok } = await res.json<{ ok: boolean }>();
     if (!ok || !res.ok) throw new Error("validation error");
   } catch (err) {
-    return c.json({ message: "Username not available" }, 409);
+    return c.json({ message: "Username is not available" }, 409);
   }
 
   const chain = Chain(c.env.HASURA_URL, {
@@ -204,9 +208,9 @@ app.get("/users/:username", async (c) => {
   });
 
   if (res.auth_users_aggregate?.aggregate?.count === 0) {
-    return c.json({ message: "username available" });
+    return c.json({ message: "Username available" });
   } else {
-    return c.json({ message: "username not available" }, 409);
+    return c.json({ message: "Username has already been claimed" }, 409);
   }
 });
 
@@ -330,6 +334,8 @@ app.post("/users", async (c) => {
 
   return c.json(res);
 });
+
+registerOnRampHandlers(app);
 
 const validateEthereumSignature = (
   msg: Buffer,

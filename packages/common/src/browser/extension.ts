@@ -4,7 +4,6 @@ import {
   EXTENSION_HEIGHT,
   QUERY_LOCKED,
   QUERY_APPROVAL,
-  QUERY_LOCKED_APPROVAL,
   QUERY_APPROVE_MESSAGE,
   QUERY_APPROVE_TRANSACTION,
   QUERY_APPROVE_ALL_TRANSACTIONS,
@@ -39,6 +38,19 @@ export class BrowserRuntimeExtension {
     chrome
       ? chrome.tabs.sendMessage(tabId, msg)
       : browser.tabs.sendMessage(tabId, msg);
+  }
+
+  public static async openTab(options: chrome.tabs.CreateProperties) {
+    return new Promise((resolve, reject) => {
+      // TODO: `browser` support
+      chrome?.tabs.create(options, (newWindow) => {
+        const error = BrowserRuntimeCommon.checkForError();
+        if (error) {
+          return reject(error);
+        }
+        return resolve(newWindow);
+      });
+    });
   }
 
   public static async openWindow(options: chrome.windows.CreateData) {
@@ -110,17 +122,6 @@ export async function openXnft(
   return openPopupWindow(url);
 }
 
-export async function openLockedApprovalPopupWindow(
-  origin: string,
-  title: string,
-  requestId: number,
-  blockchain: Blockchain
-): Promise<chrome.windows.Window> {
-  const encodedTitle = encodeURIComponent(title);
-  const url = `${POPUP_HTML}?${QUERY_LOCKED_APPROVAL}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&blockchain=${blockchain}`;
-  return openPopupWindow(url);
-}
-
 export async function openLockedPopupWindow(
   origin: string,
   title: string,
@@ -148,10 +149,11 @@ export async function openApproveTransactionPopupWindow(
   title: string,
   requestId: number,
   tx: string,
-  walletAddress: string
+  walletAddress: string,
+  blockchain: Blockchain
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
-  const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&tx=${tx}&wallet=${walletAddress}`;
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_TRANSACTION}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&tx=${tx}&wallet=${walletAddress}&blockchain=${blockchain}`;
   return await openPopupWindow(url);
 }
 
@@ -160,11 +162,12 @@ export async function openApproveAllTransactionsPopupWindow(
   title: string,
   requestId: number,
   txs: Array<string>,
-  walletAddress: string
+  walletAddress: string,
+  blockchain: Blockchain
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
   const txsStr = encodeURIComponent(JSON.stringify(txs));
-  const url = `${POPUP_HTML}?${QUERY_APPROVE_ALL_TRANSACTIONS}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&txs=${txsStr}&wallet=${walletAddress}`;
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_ALL_TRANSACTIONS}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&txs=${txsStr}&wallet=${walletAddress}&blockchain=${blockchain}`;
   return await openPopupWindow(url);
 }
 
@@ -173,10 +176,11 @@ export async function openApproveMessagePopupWindow(
   title: string,
   requestId: number,
   message: string,
-  walletAddress: string
+  walletAddress: string,
+  blockchain: Blockchain
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
-  const url = `${POPUP_HTML}?${QUERY_APPROVE_MESSAGE}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&message=${message}&wallet=${walletAddress}`;
+  const url = `${POPUP_HTML}?${QUERY_APPROVE_MESSAGE}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&message=${message}&wallet=${walletAddress}&blockchain=${blockchain}`;
   return await openPopupWindow(url);
 }
 
@@ -196,7 +200,7 @@ export async function openPopupWindow(
     return getOs() === "Windows";
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     BrowserRuntimeExtension.getLastFocusedWindow().then((window: any) => {
       BrowserRuntimeExtension.openWindow({
         url: `${url}`,
@@ -221,10 +225,14 @@ export async function openPopupWindow(
 
 export function openOnboarding() {
   const url = `${EXPANDED_HTML}?${QUERY_ONBOARDING}`;
-  window.open(chrome.runtime.getURL(url), "_blank");
+  BrowserRuntimeExtension.openTab({
+    url: chrome.runtime.getURL(url),
+  });
 }
 
 export function openConnectHardware(blockchain: Blockchain) {
   const url = `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}&blockchain=${blockchain}`;
-  window.open(chrome.runtime.getURL(url), "_blank");
+  BrowserRuntimeExtension.openTab({
+    url: chrome.runtime.getURL(url),
+  });
 }

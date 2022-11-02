@@ -172,6 +172,10 @@ export const UI_RPC_METHOD_SETTINGS_DARK_MODE_READ =
   "ui-rpc-method-settings-dark-mode-read";
 export const UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE =
   "ui-rpc-method-settings-dark-mode-update";
+export const UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_READ =
+  "ui-rpc-method-settings-developer-mode-read";
+export const UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE =
+  "ui-rpc-method-settings-developer-mode-update";
 export const UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET =
   "ui-rpc-method-sign-message-for-wallet";
 export const UI_RPC_METHOD_USERNAME_READ = "ui-rpc-method-username-read";
@@ -230,6 +234,8 @@ export const NOTIFICATION_BLOCKCHAIN_DISABLED =
 export const NOTIFICATION_BLOCKCHAIN_ENABLED =
   "notification-blockchain-enabled";
 export const NOTIFICATION_DARK_MODE_UPDATED = "notification-dark-mode-updated";
+export const NOTIFICATION_DEVELOPER_MODE_UPDATED =
+  "notification-developer-mode-updated";
 export const NOTIFICATION_KEYNAME_UPDATE = "notification-keyname-update";
 export const NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED =
   "notification-keyring-active-blockchain-updated";
@@ -446,8 +452,7 @@ export const BACKEND_EVENT = "backend-event";
 // Popup query routes.
 //
 export const QUERY_LOCKED = "locked=true";
-export const QUERY_APPROVAL = "approval=true";
-export const QUERY_LOCKED_APPROVAL = "locked-approval=true";
+export const QUERY_APPROVAL = "approve-origin=true";
 export const QUERY_APPROVE_TRANSACTION = "approve-tx=true";
 export const QUERY_APPROVE_ALL_TRANSACTIONS = "approve-all-txs=true";
 export const QUERY_APPROVE_MESSAGE = "approve-message=true";

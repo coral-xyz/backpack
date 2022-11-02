@@ -1,14 +1,16 @@
 import { Suspense, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { Block as BlockIcon } from "@mui/icons-material";
 import { styles } from "@coral-xyz/themes";
 import {
+  Blockchain,
   getLogger,
   openOnboarding,
+  toTitleCase,
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
   QUERY_LOCKED,
   QUERY_APPROVAL,
-  QUERY_LOCKED_APPROVAL,
   QUERY_APPROVE_TRANSACTION,
   QUERY_APPROVE_ALL_TRANSACTIONS,
   QUERY_APPROVE_MESSAGE,
@@ -20,6 +22,8 @@ import {
   useBootstrapFast,
   useBackgroundResponder,
   useBackgroundClient,
+  useEnabledBlockchains,
+  useWalletBlockchain,
 } from "@coral-xyz/recoil";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
@@ -31,6 +35,7 @@ import {
 import { ApproveMessage } from "../components/Unlocked/Approvals/ApproveMessage";
 import "./App.css";
 import { refreshFeatureGates } from "../gates/FEATURES";
+import { EmptyState } from "../components/common/EmptyState";
 
 const logger = getLogger("router");
 
@@ -102,8 +107,6 @@ function PopupRouter() {
       return <QueryLocked />;
     case QUERY_APPROVAL:
       return <QueryApproval />;
-    case QUERY_LOCKED_APPROVAL:
-      return <QueryLockedApproval />;
     case QUERY_APPROVE_TRANSACTION:
       return <QueryApproveTransaction />;
     case QUERY_APPROVE_ALL_TRANSACTIONS:
@@ -115,20 +118,11 @@ function PopupRouter() {
   }
 }
 
-function QueryLockedApproval() {
-  logger.debug("query locked approval");
-  const keyringStoreState = useKeyringStoreState();
-  const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
-  return isLocked ? <LockedBootstrap /> : <QueryApproval />;
-}
-
 function QueryLocked() {
   logger.debug("query locked");
   const background = useBackgroundResponder();
-
   const url = new URL(window.location.href);
   const requestId = parseInt(url.searchParams.get("requestId")!);
-
   const keyringStoreState = useKeyringStoreState();
   const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
 
@@ -155,8 +149,7 @@ function QueryApproval() {
   const origin = url.searchParams.get("origin");
   const title = url.searchParams.get("title");
   const requestId = parseInt(url.searchParams.get("requestId")!);
-  const blockchain = url.searchParams.get("blockchain");
-
+  const blockchain = url.searchParams.get("blockchain")! as Blockchain;
   const approvedOrigins = useApprovedOrigins();
   const found = approvedOrigins.find((ao) => ao === origin);
 
@@ -164,51 +157,59 @@ function QueryApproval() {
   if (found) {
     window.close();
   }
+
   return (
-    <ApproveOrigin
-      origin={origin}
-      title={title}
-      blockchain={blockchain}
-      onCompletion={async (didApprove: boolean) => {
-        await background.response({
-          id: requestId,
-          result: didApprove,
-        });
-      }}
-    />
+    <WithEnabledBlockchain blockchain={blockchain!}>
+      <WithUnlock>
+        <ApproveOrigin
+          origin={origin}
+          title={title}
+          blockchain={blockchain}
+          onCompletion={async (didApprove: boolean) => {
+            await background.response({
+              id: requestId,
+              result: didApprove,
+            });
+          }}
+        />
+      </WithUnlock>
+    </WithEnabledBlockchain>
   );
 }
 
 function QueryApproveTransaction() {
   logger.debug("query approve transaction");
-
   const background = useBackgroundResponder();
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
   const title = url.searchParams.get("title");
+  const requestId = parseInt(url.searchParams.get("requestId")!);
   const tx = url.searchParams.get("tx");
   const wallet = url.searchParams.get("wallet")!;
-  const requestId = parseInt(url.searchParams.get("requestId")!);
+  const blockchain = url.searchParams.get("blockchain")! as Blockchain;
 
   return (
-    <ApproveTransaction
-      origin={origin!}
-      title={title!}
-      tx={tx}
-      wallet={wallet}
-      onCompletion={async (transaction: any) => {
-        await background.response({
-          id: requestId,
-          result: transaction,
-        });
-      }}
-    />
+    <WithEnabledBlockchain blockchain={blockchain}>
+      <WithUnlock>
+        <ApproveTransaction
+          origin={origin!}
+          title={title!}
+          tx={tx}
+          wallet={wallet}
+          onCompletion={async (transaction: any) => {
+            await background.response({
+              id: requestId,
+              result: transaction,
+            });
+          }}
+        />
+      </WithUnlock>
+    </WithEnabledBlockchain>
   );
 }
 
 function QueryApproveAllTransactions() {
   logger.debug("query approve all transactions");
-
   const background = useBackgroundResponder();
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin")!;
@@ -216,26 +217,30 @@ function QueryApproveAllTransactions() {
   const requestId = parseInt(url.searchParams.get("requestId")!);
   const txs = JSON.parse(url.searchParams.get("txs")!);
   const wallet = url.searchParams.get("wallet")!;
+  const blockchain = url.searchParams.get("blockchain")! as Blockchain;
 
   return (
-    <ApproveAllTransactions
-      origin={origin!}
-      title={title!}
-      txs={txs}
-      wallet={wallet}
-      onCompletion={async (didApprove: boolean) => {
-        await background.response({
-          id: requestId,
-          result: didApprove,
-        });
-      }}
-    />
+    <WithEnabledBlockchain blockchain={blockchain}>
+      <WithUnlock>
+        <ApproveAllTransactions
+          origin={origin!}
+          title={title!}
+          txs={txs}
+          wallet={wallet}
+          onCompletion={async (didApprove: boolean) => {
+            await background.response({
+              id: requestId,
+              result: didApprove,
+            });
+          }}
+        />
+      </WithUnlock>
+    </WithEnabledBlockchain>
   );
 }
 
 function QueryApproveMessage() {
   logger.debug("query approve message");
-
   const bg = useBackgroundResponder();
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
@@ -243,31 +248,30 @@ function QueryApproveMessage() {
   const message = url.searchParams.get("message");
   const requestId = parseInt(url.searchParams.get("requestId")!);
   const wallet = url.searchParams.get("wallet")!;
+  const blockchain = url.searchParams.get("blockchain")! as Blockchain;
 
   return (
-    <ApproveMessage
-      origin={origin}
-      title={title}
-      message={message}
-      wallet={wallet}
-      onCompletion={async (didApprove: boolean) => {
-        await bg.response({
-          id: requestId,
-          result: didApprove,
-        });
-      }}
-    />
+    <WithEnabledBlockchain blockchain={blockchain}>
+      <WithUnlock>
+        <ApproveMessage
+          origin={origin}
+          title={title}
+          message={message}
+          wallet={wallet}
+          onCompletion={async (didApprove: boolean) => {
+            await bg.response({
+              id: requestId,
+              result: didApprove,
+            });
+          }}
+        />
+      </WithUnlock>
+    </WithEnabledBlockchain>
   );
 }
 
 function FullApp() {
   logger.debug("full app");
-
-  const keyringStoreState = useKeyringStoreState();
-  const needsOnboarding =
-    keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
-  const isLocked =
-    !needsOnboarding && keyringStoreState === KeyringStoreStateEnum.Locked;
   const background = useBackgroundClient();
 
   useEffect(() => {
@@ -275,11 +279,47 @@ function FullApp() {
   }, [background]);
 
   return (
+    <WithUnlock>
+      <Unlocked />
+    </WithUnlock>
+  );
+}
+
+function WithEnabledBlockchain({
+  blockchain,
+  children,
+}: {
+  blockchain: Blockchain;
+  children: React.ReactNode;
+}) {
+  const enabledBlockchains = useEnabledBlockchains();
+  const isEnabled = enabledBlockchains.includes(blockchain);
+  return (
+    <>
+      {isEnabled ? (
+        children
+      ) : (
+        <EmptyState
+          icon={(props: any) => <BlockIcon {...props} />}
+          title={`${toTitleCase(blockchain)} is disabled`}
+          subtitle={`Enable ${toTitleCase(blockchain)} in blockchain settings`}
+        />
+      )}
+    </>
+  );
+}
+
+function WithUnlock({ children }: { children: React.ReactNode }) {
+  const keyringStoreState = useKeyringStoreState();
+  const needsOnboarding =
+    keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
+  const isLocked =
+    !needsOnboarding && keyringStoreState === KeyringStoreStateEnum.Locked;
+  return (
     <AnimatePresence initial={false}>
       <WithLockMotion id={isLocked ? "locked" : "unlocked"}>
         <Suspense fallback={<div style={{ display: "none" }}></div>}>
-          {isLocked && <LockedBootstrap />}
-          {!isLocked && <Unlocked />}
+          {isLocked ? <Locked /> : children}
         </Suspense>
       </WithLockMotion>
     </AnimatePresence>

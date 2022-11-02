@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ethers, BigNumber } from "ethers";
 import { TextField } from "./";
+import { TextInput } from "./Inputs";
 
 export function TokenInputField({
   decimals,
@@ -51,12 +52,17 @@ export function TokenInputField({
   }
 
   return (
-    <TextField
+    <TextInput
       {...props}
+      margin="none"
       value={value}
       // Override default TextField setValue with function to truncate decimal inputs
-      setValue={(amount: string) => {
-        handleTokenInput(amount.replace("-", ""), decimals, props.setValue);
+      setValue={(e: any) => {
+        handleTokenInput(
+          e.target.value.replace("-", ""),
+          decimals,
+          props.setValue
+        );
       }}
       inputProps={{
         ...props.inputProps,

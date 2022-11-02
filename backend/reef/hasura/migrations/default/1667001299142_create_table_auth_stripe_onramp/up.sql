@@ -1,0 +1,1 @@
+CREATE TABLE "auth"."stripe_onramp" ("id" serial NOT NULL, "publicKey" text NOT NULL, "client_secret" text NOT NULL, "webhook_dump" text NOT NULL, "status" text NOT NULL, PRIMARY KEY ("client_secret") );

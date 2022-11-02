@@ -16,11 +16,11 @@ import {
   ChannelAppUi,
   openLockedPopupWindow,
   openApprovalPopupWindow,
-  openLockedApprovalPopupWindow,
   openApproveTransactionPopupWindow,
   openApproveAllTransactionsPopupWindow,
   openApproveMessagePopupWindow,
   openXnft,
+  openOnboarding,
   BrowserRuntimeExtension,
   ETHEREUM_RPC_METHOD_CONNECT,
   ETHEREUM_RPC_METHOD_DISCONNECT,
@@ -215,53 +215,51 @@ async function handleConnect(
   if (locks.has(origin)) {
     throw new Error(`already handling a request from ${origin}`);
   }
+
   locks.add(origin);
 
   const keyringStoreState = await ctx.backend.keyringStoreState();
+
+  if (keyringStoreState === "needs-onboarding") {
+    locks.delete(origin);
+    openOnboarding();
+    return;
+  }
+
   let didApprove = false;
   let resp: any;
 
-  // Use the UI to ask the user if it should connect.
-  if (keyringStoreState === "unlocked") {
+  if (
+    keyringStoreState === "locked" &&
+    (await ctx.backend.isApprovedOrigin(origin))
+  ) {
+    logger.debug("origin approved but need to unlock");
+    resp = await RequestManager.requestUiAction((requestId: number) => {
+      return openLockedPopupWindow(
+        ctx.sender.origin,
+        getTabTitle(ctx),
+        requestId,
+        blockchain
+      );
+    });
+    didApprove = !resp.windowClosed && resp.result;
+  } else {
     if (await ctx.backend.isApprovedOrigin(origin)) {
-      logger.debug("already approved so automatically connecting");
+      logger.debug("origin approved so automatically connecting");
       didApprove = true;
     } else {
+      // Origin is not approved and wallet may or may not be locked
+      logger.debug("requesting approval for origin");
       resp = await RequestManager.requestUiAction((requestId: number) => {
         return openApprovalPopupWindow(
           ctx.sender.origin,
-          ctx.sender.tab.title,
+          getTabTitle(ctx),
           requestId,
           blockchain
         );
       });
       didApprove = !resp.windowClosed && resp.result;
     }
-  } else if (keyringStoreState === "locked") {
-    if (await ctx.backend.isApprovedOrigin(origin)) {
-      resp = await RequestManager.requestUiAction((requestId: number) => {
-        return openLockedPopupWindow(
-          ctx.sender.origin,
-          ctx.sender.tab.title,
-          requestId,
-          blockchain
-        );
-      });
-      didApprove = !resp.windowClosed && resp.result;
-    } else {
-      resp = await RequestManager.requestUiAction((requestId: number) => {
-        return openLockedApprovalPopupWindow(
-          ctx.sender.origin,
-          ctx.sender.tab.title,
-          requestId,
-          blockchain
-        );
-      });
-      didApprove = !resp.windowClosed && resp.result;
-    }
-  } else {
-    locks.delete(origin);
-    throw new Error("invariant violation keyring not created");
   }
 
   locks.delete(origin);
@@ -298,6 +296,10 @@ async function handleConnect(
   throw new Error("user did not approve");
 }
 
+function getTabTitle(ctx) {
+  return ctx.sender.tab?.title ?? `Xnft from ${ctx.sender.origin}`;
+}
+
 function handleDisconnect(
   ctx: Context<Backend>,
   blockchain: Blockchain
@@ -327,10 +329,11 @@ async function handleSolanaSignAndSendTx(
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
       ctx.sender.origin,
-      ctx.sender.tab.title,
+      getTabTitle(ctx),
       requestId,
       tx,
-      walletAddress
+      walletAddress,
+      Blockchain.SOLANA
     );
   });
 
@@ -374,10 +377,11 @@ async function handleSolanaSignTx(
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
       ctx.sender.origin,
-      ctx.sender.tab.title,
+      getTabTitle(ctx),
       requestId,
       tx,
-      walletAddress
+      walletAddress,
+      Blockchain.SOLANA
     );
   });
 
@@ -418,10 +422,11 @@ async function handleSolanaSignAllTxs(
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveAllTransactionsPopupWindow(
       ctx.sender.origin,
-      ctx.sender.tab.title,
+      getTabTitle(ctx),
       requestId,
       txs,
-      walletAddress
+      walletAddress,
+      Blockchain.SOLANA
     );
   });
 
@@ -465,10 +470,11 @@ async function handleSolanaSignMessage(
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveMessagePopupWindow(
       ctx.sender.origin,
-      ctx.sender.tab.title,
+      getTabTitle(ctx),
       requestId,
       msg,
-      walletAddress
+      walletAddress,
+      Blockchain.SOLANA
     );
   });
 
@@ -531,10 +537,11 @@ async function handleEthereumSignAndSendTx(
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
       ctx.sender.origin,
-      ctx.sender.tab.title,
+      getTabTitle(ctx),
       requestId,
       tx,
-      walletAddress
+      walletAddress,
+      Blockchain.ETHEREUM
     );
   });
 
@@ -579,10 +586,11 @@ async function handleEthereumSignTx(
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
       ctx.sender.origin,
-      ctx.sender.tab.title,
+      getTabTitle(ctx),
       requestId,
       tx,
-      walletAddress
+      walletAddress,
+      Blockchain.ETHEREUM
     );
   });
 
@@ -628,10 +636,11 @@ async function handleEthereumSignMessage(
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveMessagePopupWindow(
       ctx.sender.origin,
-      ctx.sender.tab.title,
+      getTabTitle(ctx),
       requestId,
       msg,
-      walletAddress
+      walletAddress,
+      Blockchain.ETHEREUM
     );
   });
 

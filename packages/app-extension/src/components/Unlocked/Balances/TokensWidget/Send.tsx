@@ -26,7 +26,6 @@ import { WithHeaderButton } from "./Token";
 import { SendEthereumConfirmationCard } from "./Ethereum";
 import { SendSolanaConfirmationCard } from "./Solana";
 import {
-  TextField,
   TextFieldLabel,
   PrimaryButton,
   SecondaryButton,
@@ -40,6 +39,7 @@ import { MaxLabel } from "../../../common/MaxLabel";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
 import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 import { CheckIcon, CrossIcon } from "../../../common/Icon";
+import { TextInput } from "../../../common/Inputs";
 import {
   getHashedName,
   getNameAccountKey,
@@ -251,16 +251,16 @@ export function Send({
             style={{ marginLeft: "24px", marginRight: "24px" }}
           />
           <div style={{ margin: "0 12px" }}>
-            <TextField
-              rootClass={classes.textRoot}
+            <TextInput
               placeholder={`${toTitleCase(blockchain)} address`}
               value={address}
-              setValue={(address: string) => setAddress(address.trim())}
-              isError={isErrorAddress}
+              setValue={(e) => setAddress(e.target.value.trim())}
+              error={isErrorAddress}
               inputProps={{
                 name: "to",
                 spellCheck: "false",
               }}
+              margin="none"
             />
           </div>
         </div>
@@ -303,10 +303,6 @@ export function Send({
             token={token}
             destinationAddress={destinationAddress}
             amount={amount!}
-            close={() => {
-              setOpenDrawer(false);
-              close();
-            }}
           />
         </ApproveTransactionDrawer>
       </div>
