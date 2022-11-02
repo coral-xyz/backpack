@@ -159,7 +159,7 @@ function SendButton({ nft }: { nft: any }) {
           <NavStackEphemeral
             initialRoute={{ name: "send" }}
             options={() => ({
-              title: `${nft.name} / Send`,
+              title: nft.name ? `${nft.name} / Send` : "Send",
             })}
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
