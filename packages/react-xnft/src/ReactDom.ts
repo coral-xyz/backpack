@@ -115,51 +115,8 @@ export class ReactDom {
       throw new Error("element not found");
     }
 
-    switch (instance.kind) {
-      case NodeKind.View:
-        if (updatePayload.style) {
-          instance.style = updatePayload.style;
-        }
-        break;
-      case NodeKind.Text:
-        if (updatePayload.style) {
-          instance.style = updatePayload.style;
-        }
-        break;
-      case NodeKind.TextField:
-        if (updatePayload.value !== undefined && updatePayload.value !== null) {
-          instance.props.value = updatePayload.value;
-        }
-        break;
-      case NodeKind.NavAnimation:
-        if (
-          updatePayload.routeName !== undefined &&
-          updatePayload.routeName !== null
-        ) {
-          instance.props.routeName = updatePayload.routeName;
-        }
-        break;
-      case NodeKind.Path:
-        if (updatePayload.fill !== undefined && updatePayload.fill !== null) {
-          instance.props.fill = updatePayload.fill;
-        }
-        break;
-      case NodeKind.Button:
-        if (updatePayload.style !== undefined && updatePayload.style !== null) {
-          instance.style = updatePayload.style;
-        }
-        break;
-      case NodeKind.Image:
-        if (updatePayload.style) {
-          instance.style = updatePayload.style;
-        }
-        if (updatePayload.src) {
-          instance.props.src = updatePayload.src;
-        }
-        break;
-      default:
-        throw new Error("invariant violation");
-    }
+    instance.props = { ...updatePayload.props };
+
     this._render(instanceId);
   }
 

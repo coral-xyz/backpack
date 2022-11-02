@@ -157,7 +157,9 @@ const useStyles = styles((theme) => ({
 }));
 
 export function Component({ viewData }) {
-  const { id, props, style, kind } = viewData;
+  const { id, props, kind } = viewData;
+  const style = props?.style || {};
+
   switch (kind) {
     case NodeKind.View:
       return (
