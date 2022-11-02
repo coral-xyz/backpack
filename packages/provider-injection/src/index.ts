@@ -12,23 +12,19 @@ import {
   CHANNEL_PLUGIN_RPC_RESPONSE,
 } from "@coral-xyz/common";
 import { initialize } from "@coral-xyz/wallet-standard";
-import type {
-  WalletProvider,
-  BackpackProvider,
-  WindowEthereum,
-  Window,
-} from "./types";
+import type { WalletProvider, WindowEthereum } from "./types";
 
 const logger = getLogger("provider-injection");
 
 // Entry.
 function main() {
   logger.debug("starting injected script");
-  initProvider();
+  initSolana();
+  initEthereum();
   logger.debug("provider ready");
 }
 
-function initProvider() {
+function initSolana() {
   const solana = new ProviderSolanaInjection();
 
   try {
@@ -36,14 +32,6 @@ function initProvider() {
   } catch (e) {
     console.warn(
       "Backpack couldn't override `window.backpack`. Disable other Solana wallets to use Backpack."
-    );
-  }
-
-  try {
-    Object.defineProperty(window, "ethereum", { value: ethereum });
-  } catch (e) {
-    console.warn(
-      "Backpack couldn't override `window.ethereum`. Disable other Ethereum wallets to use Backpack."
     );
   }
 
@@ -74,13 +62,13 @@ function initProvider() {
 }
 
 function initEthereum() {
-  const ethereum = new ProviderEthereumInjection();
+  const backpackEthereum = new ProviderEthereumInjection();
 
   // Setup the wallet router
   if (!window.walletRouter) {
     Object.defineProperty(window, "walletRouter", {
       value: {
-        currentProvider: window.backpack,
+        currentProvider: window.ethereum ? window.ethereum : backpackEthereum,
 
         providers: [
           ...new Set([
@@ -92,27 +80,23 @@ function initEthereum() {
                 : // Else just window.ethereum if it is registered
                   [window.ethereum]
               : []),
-            window.backpack,
+            backpackEthereum,
           ]),
         ],
 
-        setCurrentProvider(
-          checkIdentity: (provider: WalletProvider) => boolean
-        ) {
-          if (!this.hasProvider(checkIdentity)) {
-            throw new Error(
-              "The given identity did not match to any of the recognized providers!"
-            );
+        setProvider(predicate: (provider: WalletProvider) => boolean) {
+          const match = this.providers.find(predicate);
+          if (!match) {
+            throw new Error("No matching provider found");
           }
           this.previousProvider = this.currentProvider;
-          this.currentProvider = this.getProvider(checkIdentity);
+          this.currentProvider = match;
         },
 
         addProvider(newProvider: WalletProvider) {
           if (!this.providers.includes(newProvider)) {
             this.providers.push(newProvider);
           }
-          this.previousProvider = newProvider;
         },
       },
     });
@@ -143,8 +127,16 @@ function initEthereum() {
               !(prop in window.walletRouter.currentProvider) &&
               prop in window.walletRouter
             ) {
-              return Reflect.get(target, prop, receiver);
+              if (
+                window.location.href.includes("app.uniswap.org") ||
+                (window.location.href.includes("kwenta.io") &&
+                  prop === "providers")
+              ) {
+                return null;
+              }
+              return window.walletRouter[prop];
             }
+            return Reflect.get(target, prop, receiver);
           },
         }
       );
