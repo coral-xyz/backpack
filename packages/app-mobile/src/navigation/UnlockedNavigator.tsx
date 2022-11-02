@@ -1,21 +1,25 @@
-import { Screen } from "@components";
+import { EmptyState, PrimaryButton, Screen, Typography } from "@components";
 import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
+  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
 } from "@coral-xyz/common";
 import {
+  useAppIcons,
   useBackgroundClient,
   useBlockchainTokensSorted,
+  useEnabledBlockchains,
 } from "@coral-xyz/recoil";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
-import { Button, Pressable, Text, View } from "react-native";
+import { Button, FlatList, Pressable, Text, View } from "react-native";
 import tw from "twrnc";
 
 import { CustomButton } from "../components/CustomButton";
 import { ButtonFooter, MainContent } from "../components/Templates";
+import { useTheme } from "../hooks/useTheme";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -32,6 +36,93 @@ export default function UnlockedNavigator() {
       </Stack.Group>
     </Stack.Navigator>
   );
+}
+
+type Plugin = {
+  title: string;
+  iconUrl: string;
+  url: string;
+  install: any;
+};
+
+function PluginGrid() {
+  const plugins = useAppIcons();
+  const background = useBackgroundClient();
+
+  const onPressPlugin = (p: Plugin) => {
+    // Update the URL to use the plugin.
+    //
+    // This will do two things
+    //
+    // 1. Update and persist the new url. Important so that if the user
+    //    closes/re-opens the app, the plugin opens up immediately.
+    // 2. Cause a reload of this route with the plguin url in the search
+    //    params, which will trigger the drawer to activate.
+    //
+    const newUrl = `${location.pathname}${
+      location.search
+    }&plugin=${encodeURIComponent(p.install.account.xnft.toString())}`;
+    console.log("onPressPlugin:newUrl", newUrl);
+    // TODO(peter) probably Linking.openURL ?
+    background
+      .request({
+        method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+        params: [newUrl],
+      })
+      .catch(console.error);
+  };
+
+  function renderItem({ item }) {
+    return (
+      <Pressable onPress={() => onPressPlugin(item)}>
+        <View>
+          <Text>{item.url}</Text>
+        </View>
+      </Pressable>
+    );
+  }
+
+  // HACK: hide autoinstalled ONE xnft -> entrypoint in collectibles.
+  const pluginsWithoutONExNFT = plugins.filter(
+    (p) =>
+      p.install.account.xfnit.toString() !==
+      "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4"
+  );
+
+  return (
+    <Screen>
+      <FlatList
+        data={pluginsWithoutONExNFT}
+        numColumns={3}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.url}
+        initialNumToRender={12} // TODO
+      />
+    </Screen>
+  );
+}
+
+function AppListScreen() {
+  const enabledBlockchains = useEnabledBlockchains();
+  if (!enabledBlockchains.includes(Blockchain.SOLANA)) {
+    return (
+      <EmptyState
+        // icon={(props: any) => <BlockIcon {...props} />}
+        title={"Solana is disabled"}
+        subtitle={"Enable Solana in blockchain settings to use apps"}
+      />
+    );
+  }
+
+  return (
+    <View style={{ flex: 1, backgroundColor: "orange" }}>
+      <PluginGrid />
+    </View>
+  );
+}
+
+function NFTListScreen() {
+  return null;
 }
 
 function BalancesScreen() {
@@ -59,7 +150,7 @@ function BalancesScreen() {
       </MainContent>
       <ButtonFooter>
         <CustomButton
-          text="Toggle Connection"
+          text="Toggle Connection (does nothing)"
           onPress={() => {
             // navigate("/toggle-connection");
           }}
@@ -71,7 +162,6 @@ function BalancesScreen() {
               method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
               params: [],
             });
-            // navigate("/");
           }}
         />
       </ButtonFooter>
@@ -122,7 +212,7 @@ function Header({ title, navigation }: { title: string; navigation: any }) {
         />
         <Button
           onPress={() => navigation.navigate("AccountSettings")}
-          title="Account Settings"
+          title="Account"
         />
       </View>
     </View>
@@ -160,8 +250,8 @@ function UnlockedBottomTabNavigator() {
       })}
     >
       <Tab.Screen name="Balances" component={BalancesScreen} />
-      <Tab.Screen name="Applications" component={BalancesScreen} />
-      <Tab.Screen name="Collectibles" component={BalancesScreen} />
+      <Tab.Screen name="Applications" component={AppListScreen} />
+      <Tab.Screen name="Collectibles" component={NFTListScreen} />
     </Tab.Navigator>
   );
 }

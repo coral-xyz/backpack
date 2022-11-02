@@ -1,34 +1,43 @@
 // TODO(peter) move all the RPC/onboarding function shit here & out of every individual screen (eventually)
-import { useContext, createContext, useState } from "react";
-import type {
-  Blockchain,
-  KeyringType,
-  BlockchainKeyringInit,
-} from "@coral-xyz/common";
+import type { BlockchainKeyringInit, KeyringType } from "@coral-xyz/common";
+import { Blockchain } from "@coral-xyz/common";
+import { createContext, useContext, useState } from "react";
 
-const BLOCKCHAIN_OPTIONS = [
+type BlockchainSelectOption = {
+  id: string;
+  label: string;
+  enabled: boolean;
+};
+
+const BLOCKCHAIN_OPTIONS: BlockchainSelectOption[] = [
   {
-    name: "Ethereum",
+    id: Blockchain.ETHEREUM,
+    label: "Ethereum",
     enabled: true,
   },
   {
-    name: "Solana",
+    id: Blockchain.SOLANA,
+    label: "Solana",
     enabled: true,
   },
   {
-    name: "Polygon",
+    id: "polygon",
+    label: "Polygon",
     enabled: false,
   },
   {
-    name: "BSC",
+    id: "bsc",
+    label: "BSC",
     enabled: false,
   },
   {
-    name: "Avalanche",
+    id: "avalanche",
+    label: "Avalanche",
     enabled: false,
   },
   {
-    name: "Cosmos",
+    id: "cosmos",
+    label: "Cosmos",
     enabled: false,
   },
 ];
@@ -43,7 +52,7 @@ export type OnboardingData = {
   blockchain: Blockchain | null;
   password: string | null;
   mnemonic: string | undefined;
-  blockchainOptions: Array<{ name: string; enabled: boolean }>;
+  blockchainOptions: BlockchainSelectOption[];
   waitlistId: string | undefined;
 };
 

@@ -148,3 +148,69 @@ export function Box({
 }) {
   return <View style={[{ backgroundColor: "#eee" }, style]}>{children}</View>;
 }
+
+export function Typography({
+  children,
+  style,
+  ...props
+}: {
+  children: string;
+  style?: StyleProp<TextStyle>;
+}) {
+  return (
+    <Text style={style} {...props}>
+      {children}
+    </Text>
+  );
+}
+
+export function EmptyState({
+  icon,
+  title,
+  subtitle,
+  buttonText,
+  onPress,
+  minimize,
+  verticallyCentered,
+}: {
+  icon: (props: any) => React.ReactNode;
+  title: string;
+  subtitle: string;
+  buttonText?: string;
+  onPress?: () => void | undefined;
+  // style?: React.CSSProperties;
+  minimize?: boolean;
+  verticallyCentered?: boolean;
+}) {
+  const theme = useTheme();
+  return (
+    <View>
+      <Typography
+        style={{
+          fontSize: 24,
+          lineHeight: 32,
+          textAlign: "center",
+          fontWeight: "500",
+          color: theme.custom.colors.fontColor,
+        }}
+      >
+        {title}
+      </Typography>
+      {minimize !== true && (
+        <Typography
+          style={{
+            marginTop: 8,
+            color: theme.custom.colors.secondary,
+            textAlign: "center",
+            fontSize: 16,
+            lineHeight: 24,
+            fontWeight: "500",
+          }}
+        >
+          {subtitle}
+        </Typography>
+      )}
+      <PrimaryButton label={buttonText} onPress={onPress} />
+    </View>
+  );
+}

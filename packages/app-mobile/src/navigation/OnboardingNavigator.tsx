@@ -37,7 +37,14 @@ import { encode } from "bs58";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import type { StyleProp, ViewStyle } from "react-native";
-import { Button, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Button,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import {
   OnboardingProvider,
@@ -403,22 +410,26 @@ function OnboardingBlockchainSelectScreen({
   };
 
   function Network({
-    name,
+    id,
+    label,
     enabled,
     selected,
     onSelect,
   }: {
-    name: string;
+    id: Blockchain;
+    label: string;
     enabled: boolean;
     selected: boolean;
-    onSelect: (blockchain: Blockchain) => void;
+    onSelect: (b: Blockchain) => void;
   }) {
     return (
       <View
         style={{
           padding: 8,
-          height: 50,
-          width: "45%",
+          height: 80,
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
           backgroundColor: "#333",
           margin: 4,
         }}
@@ -426,17 +437,27 @@ function OnboardingBlockchainSelectScreen({
         <Pressable
           onPress={() => {
             if (enabled) {
-              // TODO(peter) make sure this is right
-              const blockchain = name.toLowerCase() as Blockchain;
-              onSelect(blockchain);
+              onSelect(id);
             }
           }}
         >
           <Text style={{ color: "#FFF" }}>
-            {name} {selected ? "selected" : "not"}
+            {label} {selected ? "(selected)" : ""}
           </Text>
         </Pressable>
       </View>
+    );
+  }
+
+  function renderItem({ item }) {
+    return (
+      <Network
+        id={item.id}
+        selected={selectedBlockchains.includes(item.id)}
+        enabled={item.enabled}
+        label={item.label}
+        onSelect={(b: Blockchain) => handleBlockchainClick(b)}
+      />
     );
   }
 
@@ -445,21 +466,15 @@ function OnboardingBlockchainSelectScreen({
       title="Which network would you like Backpack to use?"
       subtitle="You can always add additional networks later through the settings menu."
     >
-      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-        {blockchainOptions.map((blockchain) => (
-          <Network
-            key={blockchain.name}
-            selected={selectedBlockchains.includes(
-              blockchain.name.toLowerCase()
-            )}
-            enabled={blockchain.enabled}
-            name={blockchain.name}
-            onSelect={(blockchain: Blockchain) => {
-              handleBlockchainClick(blockchain);
-            }}
-          />
-        ))}
-      </View>
+      <FlatList
+        numColumns={2}
+        data={blockchainOptions}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        extraData={selectedBlockchains}
+        scrollEnabled={false}
+        initialNumToRender={blockchainOptions.length}
+      />
       <PrimaryButton
         disabled={selectedBlockchains.length === 0}
         label="Next"
