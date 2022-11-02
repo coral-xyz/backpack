@@ -5,13 +5,14 @@ import {
   BACKPACK_FEATURE_LIGHT_MODE,
   BACKPACK_CONFIG_VERSION,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
+  UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
 } from "@coral-xyz/common";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import {
   useBackgroundClient,
   useBlockchainLogo,
   useDarkMode,
-  useEnabledBlockchains,
+  useDeveloperMode,
 } from "@coral-xyz/recoil";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
@@ -21,12 +22,19 @@ export function Preferences() {
   const nav = useNavStack();
   const background = useBackgroundClient();
   const isDarkMode = useDarkMode();
-  const enabledBlockchains = useEnabledBlockchains();
+  const isDeveloperMode = useDeveloperMode();
 
   const onDarkModeSwitch = async (isDarkMode: boolean) => {
     await background.request({
       method: UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
       params: [isDarkMode],
+    });
+  };
+
+  const onDeveloperModeSwitch = async (isDeveloperMode: boolean) => {
+    await background.request({
+      method: UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
+      params: [isDeveloperMode],
     });
   };
 
@@ -46,12 +54,23 @@ export function Preferences() {
     menuItems["Dark Mode"] = {
       onClick: () => onDarkModeSwitch(!isDarkMode),
       detail: (
-        <DarkModeSwitch
-          onSwitch={(isDarkMode) => onDarkModeSwitch(isDarkMode)}
+        <ModeSwitch
+          enabled={isDarkMode}
+          onSwitch={(enabled) => onDarkModeSwitch(enabled)}
         />
       ),
     };
   }
+
+  menuItems["Developer Mode"] = {
+    onClick: () => onDeveloperModeSwitch(!isDeveloperMode),
+    detail: (
+      <ModeSwitch
+        enabled={isDeveloperMode}
+        onSwitch={(enabled) => onDeveloperModeSwitch(enabled)}
+      />
+    ),
+  };
 
   const blockchainMenuItems: any = {
     Solana: {
@@ -115,15 +134,14 @@ export function Preferences() {
   );
 }
 
-function DarkModeSwitch({
+function ModeSwitch({
+  enabled,
   onSwitch,
 }: {
-  onSwitch: (isDarkMode: boolean) => void;
+  enabled: boolean;
+  onSwitch: (enabled: boolean) => void;
 }) {
-  const isDarkMode = useDarkMode();
-  return (
-    <SwitchToggle enabled={isDarkMode} onChange={() => onSwitch(!isDarkMode)} />
-  );
+  return <SwitchToggle enabled={enabled} onChange={() => onSwitch(!enabled)} />;
 }
 
 export function SwitchToggle({

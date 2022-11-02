@@ -22,6 +22,7 @@ import {
   NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_BLOCKCHAIN_ENABLED,
   NOTIFICATION_DARK_MODE_UPDATED,
+  NOTIFICATION_DEVELOPER_MODE_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
@@ -787,6 +788,26 @@ export class Backend {
       name: NOTIFICATION_DARK_MODE_UPDATED,
       data: {
         darkMode,
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
+  async developerModeRead(): Promise<boolean> {
+    const data = await store.getWalletData();
+    return data.developerMode ?? false;
+  }
+
+  async developerModeUpdate(developerMode: boolean): Promise<string> {
+    const data = await store.getWalletData();
+    await store.setWalletData({
+      ...data,
+      developerMode,
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_DEVELOPER_MODE_UPDATED,
+      data: {
+        developerMode,
       },
     });
     return SUCCESS_RESPONSE;
