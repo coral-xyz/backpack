@@ -205,7 +205,7 @@ function SendScreen({ nft }: { nft: any }) {
         });
       }
     })();
-  }, [openConfirm]);
+  }, [openConfirm, wasSent, background]);
 
   return (
     <>
@@ -382,7 +382,7 @@ export function NftOptionsButton() {
         });
       }
     })();
-  }, [openDrawer]);
+  }, [openDrawer, wasBurnt, background]);
 
   // @ts-ignore
   const nft: any = nfts.get(searchParams.props.nftId);
