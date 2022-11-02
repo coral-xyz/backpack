@@ -1,4 +1,4 @@
-import { EmptyState, PrimaryButton, Screen, Typography } from "@components";
+import { EmptyState, Screen } from "@components";
 import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
@@ -19,7 +19,7 @@ import tw from "twrnc";
 
 import { CustomButton } from "../components/CustomButton";
 import { ButtonFooter, MainContent } from "../components/Templates";
-import { useTheme } from "../hooks/useTheme";
+import { RandomBackgroundScreen } from "../screens/Helpers/RandomBackgroundScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -103,22 +103,23 @@ function PluginGrid() {
 }
 
 function AppListScreen() {
-  const enabledBlockchains = useEnabledBlockchains();
-  if (!enabledBlockchains.includes(Blockchain.SOLANA)) {
-    return (
-      <EmptyState
-        // icon={(props: any) => <BlockIcon {...props} />}
-        title={"Solana is disabled"}
-        subtitle={"Enable Solana in blockchain settings to use apps"}
-      />
-    );
-  }
-
-  return (
-    <View style={{ flex: 1, backgroundColor: "orange" }}>
-      <PluginGrid />
-    </View>
-  );
+  return null;
+  // const enabledBlockchains = useEnabledBlockchains();
+  // if (!enabledBlockchains.includes(Blockchain.SOLANA)) {
+  //   return (
+  //     <EmptyState
+  //       // icon={(props: any) => <BlockIcon {...props} />}
+  //       title={"Solana is disabled"}
+  //       subtitle={"Enable Solana in blockchain settings to use apps"}
+  //     />
+  //   );
+  // }
+  //
+  // return (
+  //   <View style={{ flex: 1, backgroundColor: "orange" }}>
+  //     <PluginGrid />
+  //   </View>
+  // );
 }
 
 function NFTListScreen() {
@@ -126,10 +127,12 @@ function NFTListScreen() {
 }
 
 function BalancesScreen() {
+  console.log("balances");
   const background = useBackgroundClient();
   //  const wallet = useActiveSolanaWallet();
 
   const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
+  console.log("tokenAccountsSorted", tokenAccountsSorted);
   return (
     <Screen>
       <MainContent>
@@ -250,8 +253,8 @@ function UnlockedBottomTabNavigator() {
       })}
     >
       <Tab.Screen name="Balances" component={BalancesScreen} />
-      <Tab.Screen name="Applications" component={AppListScreen} />
-      <Tab.Screen name="Collectibles" component={NFTListScreen} />
+      <Tab.Screen name="Applications" component={RandomBackgroundScreen} />
+      <Tab.Screen name="Collectibles" component={RandomBackgroundScreen} />
     </Tab.Navigator>
   );
 }
