@@ -50,6 +50,8 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
+  UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_READ,
+  UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
   UI_RPC_METHOD_APPROVED_ORIGINS_DELETE,
@@ -195,7 +197,7 @@ async function handle<T = any>(
     case UI_RPC_METHOD_NAVIGATION_POP:
       return await handleNavigationPop(ctx);
     case UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE:
-      return await handleNavigationCurrentUrlUpdate(ctx, params[0]);
+      return await handleNavigationCurrentUrlUpdate(ctx, params[0], params[1]);
     case UI_RPC_METHOD_NAVIGATION_READ:
       return await handleNavRead(ctx);
     case UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE:
@@ -213,6 +215,10 @@ async function handle<T = any>(
       return await handleDarkModeRead(ctx);
     case UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE:
       return await handleDarkModeUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_READ:
+      return await handleDeveloperModeRead(ctx);
+    case UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE:
+      return await handleDeveloperModeUpdate(ctx, params[0]);
     case UI_RPC_METHOD_APPROVED_ORIGINS_READ:
       return await handleApprovedOriginsRead(ctx);
     case UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE:
@@ -555,9 +561,10 @@ async function handleNavigationPop(
 
 async function handleNavigationCurrentUrlUpdate(
   ctx: Context<Backend>,
-  url: string
+  url: string,
+  activeTab?: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.navigationCurrentUrlUpdate(url);
+  const resp = await ctx.backend.navigationCurrentUrlUpdate(url, activeTab);
   return [resp];
 }
 
@@ -595,6 +602,21 @@ async function handleDarkModeUpdate(
   darkMode: boolean
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.darkModeUpdate(darkMode);
+  return [resp];
+}
+
+async function handleDeveloperModeRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<boolean>> {
+  const resp = await ctx.backend.developerModeRead();
+  return [resp];
+}
+
+async function handleDeveloperModeUpdate(
+  ctx: Context<Backend>,
+  developerMode: boolean
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.developerModeUpdate(developerMode);
   return [resp];
 }
 

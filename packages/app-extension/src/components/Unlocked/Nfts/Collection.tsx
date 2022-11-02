@@ -52,7 +52,7 @@ function NftCard({ nft }: any) {
   const { push } = useNavigation();
   const onClick = () => {
     push({
-      title: nft.name,
+      title: nft.name || "",
       componentId: NAV_COMPONENT_NFT_DETAIL,
       componentProps: {
         nftId: nft.id,

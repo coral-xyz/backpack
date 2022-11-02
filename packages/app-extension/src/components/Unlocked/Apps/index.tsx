@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { getSvgPath } from "figma-squircle";
 import { Grid, Button, Typography } from "@mui/material";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
@@ -8,16 +7,14 @@ import {
   useAppIcons,
   useBackgroundClient,
   useEnabledBlockchains,
-  useNavigation,
 } from "@coral-xyz/recoil";
 import {
   Blockchain,
   UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
 } from "@coral-xyz/common";
-import { WithDrawer } from "../../common/Layout/Drawer";
-import { PluginApp } from "./Plugin";
 import { EmptyState } from "../../common/EmptyState";
 import { ProxyImage } from "../../common/ProxyImage";
+import { TAB_APPS } from "@coral-xyz/common";
 
 const ICON_WIDTH = 64;
 
@@ -59,7 +56,6 @@ const useStyles = styles((theme) => ({
 
 export function Apps() {
   const enabledBlockchains = useEnabledBlockchains();
-  const theme = useCustomTheme();
 
   if (!enabledBlockchains.includes(Blockchain.SOLANA)) {
     return (
@@ -67,6 +63,56 @@ export function Apps() {
         icon={(props: any) => <BlockIcon {...props} />}
         title={"Solana is disabled"}
         subtitle={"Enable Solana in blockchain settings to use apps"}
+      />
+    );
+  }
+
+  return <PluginGrid />;
+}
+
+function PluginGrid() {
+  const _plugins = useAppIcons();
+  const location = useLocation();
+  const background = useBackgroundClient();
+  const theme = useCustomTheme();
+
+  const plugins = _plugins
+    // HACK: hide autoinstalled ONE xnft -> entrypoint in collectibles.
+    .filter(
+      (p) =>
+        p.install.account.xnft.toString() !==
+        "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4"
+    );
+
+  const onClickPlugin = (p: any) => {
+    // Update the URL to use the plugin.
+    //
+    // This will do two things
+    //
+    // 1. Update and persist the new url. Important so that if the user
+    //    closes/re-opens the app, the plugin opens up immediately.
+    // 2. Cause a reload of this route with the plguin url in the search
+    //    params, which will trigger the drawer to activate.
+    //
+    const newUrl = `${location.pathname}${
+      location.search
+    }&plugin=${encodeURIComponent(p.install.account.xnft.toString())}`;
+    background
+      .request({
+        method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+        params: [newUrl, TAB_APPS],
+      })
+      .catch(console.error);
+  };
+
+  if (plugins.length === 0) {
+    return (
+      <EmptyState
+        icon={(props: any) => <BlockIcon {...props} />}
+        title={"No xNFTS"}
+        subtitle={"Get started with your first xNFT"}
+        buttonText={"Browse xNFTs"}
+        onClick={() => window.open("https://xnft.gg")}
       />
     );
   }
@@ -90,63 +136,24 @@ export function Apps() {
           borderRadius: "10px",
         }}
       >
-        <PluginGrid />
+        <Grid container style={{}}>
+          {plugins.map((p: any, idx: number) => {
+            return (
+              <Grid
+                item
+                key={p.url}
+                xs={3}
+                style={{
+                  marginTop: idx >= 4 ? "24px" : 0,
+                }}
+              >
+                <PluginIcon plugin={p} onClick={() => onClickPlugin(p)} />
+              </Grid>
+            );
+          })}
+        </Grid>
       </div>
     </div>
-  );
-}
-
-function PluginGrid() {
-  const plugins = useAppIcons();
-  const [searchParams] = useSearchParams();
-  const location = useLocation();
-  const background = useBackgroundClient();
-
-  const onClickPlugin = (p: any) => {
-    // Update the URL to use the plugin.
-    //
-    // This will do two things
-    //
-    // 1. Update and persist the new url. Important so that if the user
-    //    closes/re-opens the app, the plugin opens up immediately.
-    // 2. Cause a reload of this route with the plguin url in the search
-    //    params, which will trigger the drawer to activate.
-    //
-    const newUrl = `${location.pathname}${
-      location.search
-    }&plugin=${encodeURIComponent(p.install.account.xnft.toString())}`;
-    background
-      .request({
-        method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
-        params: [newUrl],
-      })
-      .catch(console.error);
-  };
-
-  return (
-    <Grid container style={{}}>
-      {plugins
-        // HACK: hide autoinstalled ONE xnft -> entrypoint in collectibles.
-        .filter(
-          (p) =>
-            p.install.account.xnft.toString() !==
-            "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4"
-        )
-        .map((p: any, idx: number) => {
-          return (
-            <Grid
-              item
-              key={p.url}
-              xs={3}
-              style={{
-                marginTop: idx >= 4 ? "24px" : 0,
-              }}
-            >
-              <PluginIcon plugin={p} onClick={() => onClickPlugin(p)} />
-            </Grid>
-          );
-        })}
-    </Grid>
   );
 }
 

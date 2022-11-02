@@ -15,12 +15,7 @@ import { walletAddressDisplay, PrimaryButton } from "../../../../common";
 import { SettingsList } from "../../../../common/Settings/List";
 import { Sending, Error } from "../Send";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
-import {
-  programs,
-  tryGetAccount,
-  withSend,
-  findAta,
-} from "@cardinal/token-manager";
+import { programs, tryGetAccount } from "@cardinal/token-manager";
 
 const logger = getLogger("send-solana-confirmation-card");
 
@@ -37,6 +32,7 @@ export function SendSolanaConfirmationCard({
   token,
   destinationAddress,
   amount,
+  onComplete,
 }: {
   token: {
     address: string;
@@ -47,7 +43,7 @@ export function SendSolanaConfirmationCard({
   };
   destinationAddress: string;
   amount: BigNumber;
-  close: () => void;
+  onComplete?: () => void;
 }) {
   const [txSignature, setTxSignature] = useState<string | null>(null);
   const solanaCtx = useSolanaCtx();
@@ -113,6 +109,7 @@ export function SendSolanaConfirmationCard({
           : solanaCtx.commitment
       );
       setCardType("complete");
+      if (onComplete) onComplete();
     } catch (err: any) {
       logger.error("unable to confirm", err);
       setError(err.toString());

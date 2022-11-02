@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, InputAdornment, IconButton } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient, useUsername } from "@coral-xyz/recoil";
@@ -17,6 +18,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<boolean>(false);
 
   const _onUnlock = async (e: any) => {
@@ -82,9 +84,22 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
                 autoFocus={true}
                 error={error}
                 placeholder={"Password"}
-                type={"password"}
+                type={showPassword ? "text" : "password"}
                 value={password}
                 setValue={(e) => setPassword(e.target.value)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      disableRipple
+                      sx={{ color: theme.custom.colors.icon }}
+                      onClick={() => setShowPassword(!showPassword)}
+                      onMouseDown={() => setShowPassword(!showPassword)}
+                      tabIndex={-1}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
               />
             </Box>
             <Box sx={{ mx: "12px" }}>

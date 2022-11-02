@@ -1,9 +1,12 @@
 import { Suspense, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { Block as BlockIcon } from "@mui/icons-material";
 import { styles } from "@coral-xyz/themes";
 import {
+  Blockchain,
   getLogger,
   openOnboarding,
+  toTitleCase,
   EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
   QUERY_LOCKED,
@@ -19,6 +22,8 @@ import {
   useBootstrapFast,
   useBackgroundResponder,
   useBackgroundClient,
+  useEnabledBlockchains,
+  useWalletBlockchain,
 } from "@coral-xyz/recoil";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
@@ -30,6 +35,7 @@ import {
 import { ApproveMessage } from "../components/Unlocked/Approvals/ApproveMessage";
 import "./App.css";
 import { refreshFeatureGates } from "../gates/FEATURES";
+import { EmptyState } from "../components/common/EmptyState";
 
 const logger = getLogger("router");
 
@@ -143,7 +149,7 @@ function QueryApproval() {
   const origin = url.searchParams.get("origin");
   const title = url.searchParams.get("title");
   const requestId = parseInt(url.searchParams.get("requestId")!);
-  const blockchain = url.searchParams.get("blockchain");
+  const blockchain = url.searchParams.get("blockchain")! as Blockchain;
   const approvedOrigins = useApprovedOrigins();
   const found = approvedOrigins.find((ao) => ao === origin);
 
@@ -153,19 +159,21 @@ function QueryApproval() {
   }
 
   return (
-    <WithUnlock>
-      <ApproveOrigin
-        origin={origin}
-        title={title}
-        blockchain={blockchain}
-        onCompletion={async (didApprove: boolean) => {
-          await background.response({
-            id: requestId,
-            result: didApprove,
-          });
-        }}
-      />
-    </WithUnlock>
+    <WithEnabledBlockchain blockchain={blockchain!}>
+      <WithUnlock>
+        <ApproveOrigin
+          origin={origin}
+          title={title}
+          blockchain={blockchain}
+          onCompletion={async (didApprove: boolean) => {
+            await background.response({
+              id: requestId,
+              result: didApprove,
+            });
+          }}
+        />
+      </WithUnlock>
+    </WithEnabledBlockchain>
   );
 }
 
@@ -175,25 +183,28 @@ function QueryApproveTransaction() {
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
   const title = url.searchParams.get("title");
+  const requestId = parseInt(url.searchParams.get("requestId")!);
   const tx = url.searchParams.get("tx");
   const wallet = url.searchParams.get("wallet")!;
-  const requestId = parseInt(url.searchParams.get("requestId")!);
+  const blockchain = url.searchParams.get("blockchain")! as Blockchain;
 
   return (
-    <WithUnlock>
-      <ApproveTransaction
-        origin={origin!}
-        title={title!}
-        tx={tx}
-        wallet={wallet}
-        onCompletion={async (transaction: any) => {
-          await background.response({
-            id: requestId,
-            result: transaction,
-          });
-        }}
-      />
-    </WithUnlock>
+    <WithEnabledBlockchain blockchain={blockchain}>
+      <WithUnlock>
+        <ApproveTransaction
+          origin={origin!}
+          title={title!}
+          tx={tx}
+          wallet={wallet}
+          onCompletion={async (transaction: any) => {
+            await background.response({
+              id: requestId,
+              result: transaction,
+            });
+          }}
+        />
+      </WithUnlock>
+    </WithEnabledBlockchain>
   );
 }
 
@@ -206,22 +217,25 @@ function QueryApproveAllTransactions() {
   const requestId = parseInt(url.searchParams.get("requestId")!);
   const txs = JSON.parse(url.searchParams.get("txs")!);
   const wallet = url.searchParams.get("wallet")!;
+  const blockchain = url.searchParams.get("blockchain")! as Blockchain;
 
   return (
-    <WithUnlock>
-      <ApproveAllTransactions
-        origin={origin!}
-        title={title!}
-        txs={txs}
-        wallet={wallet}
-        onCompletion={async (didApprove: boolean) => {
-          await background.response({
-            id: requestId,
-            result: didApprove,
-          });
-        }}
-      />
-    </WithUnlock>
+    <WithEnabledBlockchain blockchain={blockchain}>
+      <WithUnlock>
+        <ApproveAllTransactions
+          origin={origin!}
+          title={title!}
+          txs={txs}
+          wallet={wallet}
+          onCompletion={async (didApprove: boolean) => {
+            await background.response({
+              id: requestId,
+              result: didApprove,
+            });
+          }}
+        />
+      </WithUnlock>
+    </WithEnabledBlockchain>
   );
 }
 
@@ -234,22 +248,25 @@ function QueryApproveMessage() {
   const message = url.searchParams.get("message");
   const requestId = parseInt(url.searchParams.get("requestId")!);
   const wallet = url.searchParams.get("wallet")!;
+  const blockchain = url.searchParams.get("blockchain")! as Blockchain;
 
   return (
-    <WithUnlock>
-      <ApproveMessage
-        origin={origin}
-        title={title}
-        message={message}
-        wallet={wallet}
-        onCompletion={async (didApprove: boolean) => {
-          await bg.response({
-            id: requestId,
-            result: didApprove,
-          });
-        }}
-      />
-    </WithUnlock>
+    <WithEnabledBlockchain blockchain={blockchain}>
+      <WithUnlock>
+        <ApproveMessage
+          origin={origin}
+          title={title}
+          message={message}
+          wallet={wallet}
+          onCompletion={async (didApprove: boolean) => {
+            await bg.response({
+              id: requestId,
+              result: didApprove,
+            });
+          }}
+        />
+      </WithUnlock>
+    </WithEnabledBlockchain>
   );
 }
 
@@ -265,6 +282,30 @@ function FullApp() {
     <WithUnlock>
       <Unlocked />
     </WithUnlock>
+  );
+}
+
+function WithEnabledBlockchain({
+  blockchain,
+  children,
+}: {
+  blockchain: Blockchain;
+  children: React.ReactNode;
+}) {
+  const enabledBlockchains = useEnabledBlockchains();
+  const isEnabled = enabledBlockchains.includes(blockchain);
+  return (
+    <>
+      {isEnabled ? (
+        children
+      ) : (
+        <EmptyState
+          icon={(props: any) => <BlockIcon {...props} />}
+          title={`${toTitleCase(blockchain)} is disabled`}
+          subtitle={`Enable ${toTitleCase(blockchain)} in blockchain settings`}
+        />
+      )}
+    </>
   );
 }
 
