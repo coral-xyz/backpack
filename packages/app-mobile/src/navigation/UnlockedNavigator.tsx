@@ -1,6 +1,9 @@
-import { EmptyState, Screen } from "@components";
+import { Screen } from "@components";
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
+  ETH_NATIVE_MINT,
+  NAV_COMPONENT_TOKEN,
+  SOL_NATIVE_MINT,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
 } from "@coral-xyz/common";
@@ -8,7 +11,6 @@ import {
   useAppIcons,
   useBackgroundClient,
   useBlockchainTokensSorted,
-  useEnabledBlockchains,
 } from "@coral-xyz/recoil";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -102,72 +104,45 @@ function PluginGrid() {
   );
 }
 
-function AppListScreen() {
-  return null;
-  // const enabledBlockchains = useEnabledBlockchains();
-  // if (!enabledBlockchains.includes(Blockchain.SOLANA)) {
-  //   return (
-  //     <EmptyState
-  //       // icon={(props: any) => <BlockIcon {...props} />}
-  //       title={"Solana is disabled"}
-  //       subtitle={"Enable Solana in blockchain settings to use apps"}
-  //     />
-  //   );
-  // }
-  //
-  // return (
-  //   <View style={{ flex: 1, backgroundColor: "orange" }}>
-  //     <PluginGrid />
-  //   </View>
-  // );
-}
-
-function NFTListScreen() {
-  return null;
-}
-
 function BalancesScreen() {
   console.log("balances");
   const background = useBackgroundClient();
   //  const wallet = useActiveSolanaWallet();
 
-  const tokenAccountsSorted = useBlockchainTokensSorted(Blockchain.SOLANA);
-  console.log("tokenAccountsSorted", tokenAccountsSorted);
+  function BalanceSummaryWidget() {
+    return null;
+  }
+
+  function TransferWidget({ rampEnabled }) {
+    return null;
+  }
+
+  function onPressTokenRow(blockchain: Blockchain, token: Token) {
+    console.log("onPressTokenRow", blockchain, token);
+  }
+
+  function TokenTables({ onPressRow, customFilter }) {
+    return null;
+  }
+
   return (
     <Screen>
-      <MainContent>
-        <View style={tw`bg-black p-4 rounded-xl`}>
-          <Text style={tw`text-white text-xs`}>
-            {JSON.stringify(tokenAccountsSorted)}
-          </Text>
-        </View>
-
-        <Pressable>
-          <Text style={tw`text-white text-xs`}>Receive</Text>
-          <Text style={tw`text-white text-xs`}>Send</Text>
-        </Pressable>
-
-        <View style={tw`bg-black p-4 rounded-xl`}>
-          <Text style={tw`text-white text-xs`}>Tokens</Text>
-        </View>
-      </MainContent>
-      <ButtonFooter>
-        <CustomButton
-          text="Toggle Connection (does nothing)"
-          onPress={() => {
-            // navigate("/toggle-connection");
-          }}
-        />
-        <CustomButton
-          text="Lock"
-          onPress={async () => {
-            await background.request({
-              method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-              params: [],
-            });
-          }}
-        />
-      </ButtonFooter>
+      <BalanceSummaryWidget />
+      <View style={{ paddingVertical: 32 }}>
+        <TransferWidget rampEnabled={true} />
+      </View>
+      <TokenTables
+        onPressRow={onPressTokenRow}
+        customFilter={(token) => {
+          if (token.mint && token.mint === SOL_NATIVE_MINT) {
+            return true;
+          }
+          if (token.address && token.address === ETH_NATIVE_MINT) {
+            return true;
+          }
+          return !token.nativeBalance.isZero();
+        }}
+      />
     </Screen>
   );
 }
