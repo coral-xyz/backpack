@@ -710,23 +710,7 @@ export const HOST: Host = {
   })(),
 };
 
-type _HostConfig = HostConfig<
-  NodeKind,
-  NodeProps,
-  RootContainer,
-  NodeSerialized,
-  TextSerialized,
-  HydratableInstance,
-  Element,
-  Host,
-  UpdateDiff,
-  ChildSet,
-  TimeoutHandle,
-  NoTimeout
->;
-
 type Style = React.CSSProperties;
-
 
 //
 // All node types.
