@@ -1,11 +1,4 @@
 type WalletProvider = {
-  providerInfo?: {
-    label: string;
-    injectedNamespace: string;
-    iconURL: string;
-    identityFlag?: string;
-    checkIdentity?: () => boolean;
-  };
   on: (
     eventName: string | symbol,
     listener: (...args: unknown[]) => void
@@ -23,6 +16,7 @@ type BackpackProvider = WalletProvider & {
 
 type WindowEthereum = WalletProvider & {
   isMetaMask?: boolean;
+  isBackpack?: boolean;
   autoRefreshOnNetworkChange?: boolean;
 };
 
@@ -35,6 +29,5 @@ interface Window {
     ) => WalletProvider["providerInfo"];
     addProvider: (newProvider: WalletProvider) => void;
   };
-  backpack?: BackpackProvider;
   ethereum?: WindowEthereum;
 }

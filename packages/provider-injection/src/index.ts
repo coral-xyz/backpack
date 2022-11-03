@@ -61,6 +61,10 @@ function initSolana() {
   initialize(solana);
 }
 
+/**
+ * Initialise window.ethereum with a proxy that can handle multiple wallets
+ * colliding on `window.ethereum`.
+ */
 function initEthereum() {
   const backpackEthereum = new ProviderEthereumInjection();
 
@@ -102,7 +106,10 @@ function initEthereum() {
     });
   }
 
+  // Preserve equality between component renders to avoid mistaken provider
+  // detection changes
   let cachedWindowEthereumProxy: WindowEthereum;
+  // If the cached provider changes, we want to change the cached proxy as well
   let cachedCurrentProvider: WalletProvider;
 
   Object.defineProperty(window, "ethereum", {
@@ -122,6 +129,9 @@ function initEthereum() {
         window.walletRouter.currentProvider,
         {
           get(target, prop, receiver) {
+            // Sites using web3-react force metamask usage by searching the
+            // providers array, so remove it for specific sites
+            // https://github.com/Uniswap/web3-react/blob/f5a54af645a4a2e125ee2f5ead6dd1ecd5d01dda/packages/metamask/src/index.ts#L56-L59
             if (
               window.walletRouter &&
               !(prop in window.walletRouter.currentProvider) &&
