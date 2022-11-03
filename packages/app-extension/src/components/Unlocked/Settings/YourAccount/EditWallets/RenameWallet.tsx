@@ -4,7 +4,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { UI_RPC_METHOD_KEYNAME_UPDATE } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useNavStack } from "../../../../common/Layout/NavStack";
-import { TextField, PrimaryButton, SecondaryButton } from "../../../../common";
+import { PrimaryButton, SecondaryButton } from "../../../../common";
 import { TextInput } from "../../../../common/Inputs";
 
 export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
