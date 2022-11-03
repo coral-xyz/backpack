@@ -1,4 +1,0 @@
-name = "solanauth"
-main = "src/index.ts"
-compatibility_date = "2022-09-21"
-node_compat = true

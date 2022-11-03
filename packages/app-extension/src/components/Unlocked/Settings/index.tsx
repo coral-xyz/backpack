@@ -41,7 +41,6 @@ import {
   LaunchDetail,
   PrimaryButton,
   SubtextParagraph,
-  TextField,
   WalletAddress,
 } from "../../../components/common";
 import {
@@ -170,7 +169,7 @@ function AvatarButton() {
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "root", title: "Profile" }}
-            options={(args) => ({ title: "" })}
+            options={() => ({ title: "" })}
             navButtonLeft={
               <CloseButton onClick={() => setSettingsOpen(false)} />
             }
@@ -332,7 +331,7 @@ function _SettingsContent() {
     <div>
       <AvatarHeader />
       <WalletLists close={close} />
-      <SettingsList close={close} />
+      <SettingsList />
     </div>
   );
 }
@@ -765,7 +764,7 @@ export const AddConnectWalletButton = ({
   );
 };
 
-function SettingsList({ close }: { close: () => void }) {
+function SettingsList() {
   const theme = useCustomTheme();
   const nav = useNavStack();
   const background = useBackgroundClient();
@@ -956,7 +955,6 @@ function SettingsList({ close }: { close: () => void }) {
 }
 
 export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
-  const classes = useStyles();
   const background = useBackgroundClient();
   const existingPublicKeys = useWalletPublicKeys();
   const nav = useNavStack();
@@ -981,7 +979,14 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
     };
   }, [theme]);
 
-  const onClick = async () => {
+  useEffect(() => {
+    // Clear error on form input changes
+    setError(null);
+  }, [name, secretKey]);
+
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     let secretKeyHex;
     try {
       secretKeyHex = validateSecretKey(
@@ -1010,8 +1015,9 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
 
   return (
     <>
-      <Box
-        sx={{
+      <form
+        onSubmit={save}
+        style={{
           display: "flex",
           flexDirection: "column",
           height: "100%",
@@ -1038,7 +1044,14 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
             <TextInput
               placeholder="Enter private key"
               value={secretKey}
-              setValue={(e) => setSecretKey(e.target.value)}
+              setValue={(e) => {
+                setSecretKey(e.target.value);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  save(e);
+                }
+              }}
               rows={4}
               error={error ? true : false}
               errorMessage={error || ""}
@@ -1055,12 +1068,12 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
           }}
         >
           <PrimaryButton
-            onClick={onClick}
+            type="submit"
             label="Import"
             disabled={secretKey.length === 0}
           />
         </Box>
-      </Box>
+      </form>
       <WithMiniDrawer
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}

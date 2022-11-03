@@ -1,6 +1,9 @@
 import React from "react";
-
-const c = (name: string) => (props: any) => React.createElement(name, props);
+import { NodeProps } from "./reconciler";
+interface IProps extends NodeProps {
+  style?: React.CSSProperties;
+}
+const c = (name: string) => (props: IProps) => React.createElement(name, props);
 
 export const Text = c("Text");
 export const TextField = c("TextField");
