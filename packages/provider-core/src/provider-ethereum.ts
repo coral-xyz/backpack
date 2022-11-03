@@ -120,6 +120,11 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
    */
   #provider?: ethers.providers.JsonRpcProvider;
 
+  /**
+   * Deprecated.
+   */
+  autoRefreshOnNetworkChange: Boolean;
+
   constructor() {
     super();
 
@@ -144,6 +149,7 @@ export class ProviderEthereumInjection extends PrivateEventEmitter {
     this.#isBackpack = true;
     this.#chainId = "0x1";
     this.#publicKey = null;
+    this.autoRefreshOnNetworkChange = false;
   }
 
   // Setup channels with the content script.
