@@ -111,6 +111,8 @@ export const solanaTokenNativeBalance = selectorFamily<
     (tokenAddress: string) =>
     ({ get }: any) => {
       const tokenAccount = get(solanaTokenAccountsMap({ tokenAddress }));
+      if (!tokenAccount) return null;
+
       const connectionUrl = get(solanaConnectionUrl)!;
       const publicKey = get(solanaPublicKey)!;
       const { splTokenMetadata } = get(
@@ -134,19 +136,20 @@ export const solanaTokenNativeBalance = selectorFamily<
           nativeBalance,
           tokenMetadata.decimals
         );
-        const { symbol: ticker, image: logo, name } = tokenMetadata.uriMetadata;
+        const { symbol: onChainSymbol, name: onChainName } =
+          tokenMetadata.account.data;
         const priceMint =
           tokenAccount.mint.toString() === WSOL_MINT
             ? SOL_NATIVE_MINT
             : tokenAccount.mint.toString();
 
         return {
-          name,
+          name: tokenMetadata.uriMetadata?.name || onChainName,
           decimals: tokenMetadata.decimals!,
           nativeBalance,
           displayBalance,
-          ticker,
-          logo,
+          ticker: tokenMetadata.uriMetadata?.symbol || onChainSymbol,
+          logo: tokenMetadata.uriMetadata?.image || "",
           address: tokenAddress,
           mint: tokenAccount.mint.toString(),
           priceMint,
