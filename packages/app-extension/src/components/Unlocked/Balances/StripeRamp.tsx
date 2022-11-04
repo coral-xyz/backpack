@@ -53,7 +53,7 @@ export const StripeRamp = ({
         setLoading(false);
         setClientSecret(json.secret);
         window.open(
-          `https://doof72pbjabye.cloudfront.net/stripe-onramp.html?clientSecret=${json.secret}`,
+          `https://doof72pbjabye.cloudfront.net/stripe.html?clientSecret=${json.secret}`,
           "blank",
           `toolbar=no,
             location=no,
