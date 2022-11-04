@@ -10,7 +10,7 @@ export function App() {
       video: true,
       audio: true,
     });
-    setAudioTrack(stream.getAudioTracks[0]);
+    setAudioTrack(stream.getAudioTracks()[0]);
     setVideoTrack(stream.getVideoTracks()[0]);
   };
   useEffect(() => {
@@ -30,13 +30,14 @@ export function App() {
       )}
       <Text>Video</Text>
       {videoTrack && (
-        <Video
-          autoplay={true}
-          controls={true}
-          volume={1}
-          stream={new MediaStream([videoTrack])}
-          tw={"rounded-full"}
-        />
+        <View tw={"overflow-hidden relative m-3 rounded-3xl"}>
+          <Video
+            autoplay={true}
+            volume={1}
+            stream={new MediaStream([videoTrack])}
+            tw={"relative"}
+          />
+        </View>
       )}
     </View>
   );
