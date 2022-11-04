@@ -133,6 +133,7 @@ export class Plugin {
     this.iframeRoot.style.border = "none";
 
     this.iframeRoot.setAttribute("fetchpriority", "low");
+    this.iframeRoot.setAttribute("allow", "camera;microphone");
     this.iframeRoot.src = this.iframeRootUrl;
     this.iframeRoot.sandbox.add("allow-same-origin");
     this.iframeRoot.sandbox.add("allow-scripts");
