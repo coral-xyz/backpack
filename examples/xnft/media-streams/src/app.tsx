@@ -2,27 +2,42 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Video, Audio } from "react-xnft";
 
 export function App() {
-  const [audioTrack, setAudioTrack] = useState(null);
-  const [videoTrack, setVideoTrack] = useState(null);
+  const [audioTrack, setAudioTrack] = useState<MediaStreamTrack | null>(null);
+  const [videoTrack, setVideoTrack] = useState<MediaStreamTrack | null>(null);
 
+  const init = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true,
+    });
+    setAudioTrack(stream.getAudioTracks[0]);
+    setVideoTrack(stream.getVideoTracks()[0]);
+  };
   useEffect(() => {
-    window.navigator.getUserMedia();
+    init();
   }, []);
 
   return (
     <View>
-      <Text>Video</Text>
-      <Video
-        src={"https://www.w3schools.com/html/mov_bbb.mp4"}
-        autoplay={false}
-        controls={true}
-      />
       <Text>Audio</Text>
-      <Audio
-        autoplay={false}
-        controls={true}
-        src={"https://www.w3schools.com/html/horse.mp3"}
-      />
+      {audioTrack && (
+        <Audio
+          autoplay={true}
+          controls={true}
+          volume={0.2}
+          stream={new MediaStream([audioTrack])}
+        />
+      )}
+      <Text>Video</Text>
+      {videoTrack && (
+        <Video
+          autoplay={true}
+          controls={true}
+          volume={1}
+          stream={new MediaStream([videoTrack])}
+          tw={"rounded-full"}
+        />
+      )}
     </View>
   );
 }

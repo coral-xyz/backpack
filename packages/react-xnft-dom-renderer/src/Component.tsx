@@ -868,6 +868,7 @@ function Video({ id, props }) {
     return (
       <video
         className={props.tw || ""}
+        controls={props.controls}
         ref={ref}
         style={props.style}
         autoPlay={props.autoplay}
@@ -879,6 +880,7 @@ function Video({ id, props }) {
   return (
     <video
       className={props.tw || ""}
+      controls={props.controls}
       ref={ref}
       style={props.style}
       autoPlay={props.autoplay}
@@ -909,6 +911,7 @@ function Audio({ id, props }) {
   if (props.src) {
     return (
       <audio
+        controls={props.controls}
         ref={ref}
         style={props.style}
         src={props.src}
@@ -920,6 +923,7 @@ function Audio({ id, props }) {
   return (
     <audio
       ref={ref}
+      controls={props.controls}
       style={props.style}
       autoPlay={props.autoplay}
       muted={props.muted}

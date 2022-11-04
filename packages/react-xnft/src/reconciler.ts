@@ -772,7 +772,10 @@ export type NodeSerialized =
   | BalancesTableRowNodeSerialized
   | BalancesTableCellNodeSerialized
   | BalancesTableFooterNodeSerialized
+  | AudioNodeSerialized
+  | VideoNodeSerialized
   | CustomNodeSerialized;
+
 export type NodeProps =
   | TableProps
   | TableRowProps
