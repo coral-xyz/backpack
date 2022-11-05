@@ -1,0 +1,16 @@
+{
+  "name": "@coral-xyz/media-streams",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "xnft build",
+    "start": "xnft watch",
+    "dev": "xnft dev"
+  },
+  "devDependencies": {
+    "@coral-xyz/xnft-cli": "*"
+  },
+  "dependencies": {
+    "react-xnft": "*",
+    "react": "^17.0.2"
+  }
+}

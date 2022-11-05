@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { LegacyRef, useEffect, useRef, useState } from "react";
 import type { Element } from "react-xnft";
 import { NodeKind } from "react-xnft";
 import { AnimatePresence, motion } from "framer-motion";
@@ -157,8 +157,8 @@ const useStyles = styles((theme) => ({
 }));
 
 export function Component({ viewData }) {
-  const { id, props, kind } = viewData;
-  const style = props?.style || {};
+  const { id, props, kind, style: viewDataStyle } = viewData;
+  const style = viewDataStyle || props?.style || {};
 
   switch (kind) {
     case NodeKind.View:
@@ -201,6 +201,10 @@ export function Component({ viewData }) {
           childrenRenderer={viewData.children}
         />
       );
+    case NodeKind.Audio:
+      return <Audio props={props} id={id} />;
+    case NodeKind.Video:
+      return <Video props={props} id={id} />;
     case NodeKind.Loading:
       return <Loading id={id} props={props} style={style} />;
     case NodeKind.ScrollBar:
@@ -838,6 +842,92 @@ export function __Button({
           <ViewRenderer key={c.id} element={c} />
         ))}
     </button>
+  );
+}
+
+function Video({ id, props }) {
+  const ref = useRef<any>();
+
+  useEffect(() => {
+    if (props.stream && ref && ref.current) {
+      ref.current.srcObject = props.stream;
+      if (!props.muted) {
+        ref.current.play();
+      }
+    }
+  }, [props.stream, ref]);
+
+  useEffect(() => {
+    if (ref && ref.current) {
+      ref.current.volume = props.volume;
+      ref.current.muted = props.muted;
+    }
+  }, [props.muted, props.volume, ref]);
+
+  if (props.src) {
+    return (
+      <video
+        className={props.tw || ""}
+        controls={props.controls}
+        ref={ref}
+        style={props.style}
+        autoPlay={props.autoplay}
+        muted={props.muted}
+        src={props.src}
+      />
+    );
+  }
+  return (
+    <video
+      className={props.tw || ""}
+      controls={props.controls}
+      ref={ref}
+      style={props.style}
+      autoPlay={props.autoplay}
+      muted={props.muted}
+    />
+  );
+}
+
+function Audio({ id, props }) {
+  const ref = useRef<any>();
+
+  useEffect(() => {
+    if (props.stream && ref && ref.current) {
+      ref.current.srcObject = props.stream;
+      if (!props.muted) {
+        ref.current.play();
+      }
+    }
+  }, [props.stream, ref]);
+
+  useEffect(() => {
+    if (ref && ref.current) {
+      ref.current.volume = props.volume;
+      ref.current.muted = props.muted;
+    }
+  }, [props.muted, props.volume, ref]);
+
+  if (props.src) {
+    return (
+      <audio
+        controls={props.controls}
+        ref={ref}
+        style={props.style}
+        src={props.src}
+        autoPlay={props.autoplay}
+        muted={props.muted}
+      />
+    );
+  }
+  return (
+    <audio
+      ref={ref}
+      controls={props.controls}
+      style={props.style}
+      autoPlay={props.autoplay}
+      muted={props.muted}
+    />
   );
 }
 
