@@ -111,6 +111,10 @@ const RECONCILER = ReactReconciler({
         return createButtonInstance(kind, props, r, h, o);
       case NodeKind.Loading:
         return createLoadingInstance(kind, props, r, h, o);
+      case NodeKind.Audio:
+        return createAudioInstance(kind, props, r, h, o);
+      case NodeKind.Video:
+        return createVideoInstance(kind, props, r, h, o);
       case NodeKind.ScrollBar:
         return createScrollBarInstance(kind, props, r, h, o);
       case NodeKind.Svg:
@@ -436,6 +440,38 @@ function createButtonInstance(
   };
 }
 
+function createAudioInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): AudioNodeSerialized {
+  const id = h.nextId();
+  return {
+    id,
+    kind: NodeKind.Audio,
+    props,
+    children: [],
+  };
+}
+
+function createVideoInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): VideoNodeSerialized {
+  const id = h.nextId();
+  return {
+    id,
+    kind: NodeKind.Video,
+    props,
+    children: [],
+  };
+}
+
 function createLoadingInstance(
   _kind: NodeKind,
   props: NodeProps,
@@ -736,7 +772,10 @@ export type NodeSerialized =
   | BalancesTableRowNodeSerialized
   | BalancesTableCellNodeSerialized
   | BalancesTableFooterNodeSerialized
+  | AudioNodeSerialized
+  | VideoNodeSerialized
   | CustomNodeSerialized;
+
 export type NodeProps =
   | TableProps
   | TableRowProps
@@ -770,6 +809,8 @@ export enum NodeKind {
   TextField = "TextField",
   Image = "Image",
   View = "View",
+  Audio = "Audio",
+  Video = "Video",
   Button = "Button",
   Loading = "Loading",
   ScrollBar = "ScrollBar",
@@ -885,6 +926,29 @@ type LoadingNodeSerialized = DefNodeSerialized<NodeKind.Loading, LoadingProps>;
 type LoadingProps = {
   style: Style;
   children: undefined;
+};
+
+type AudioNodeSerialized = DefNodeSerialized<NodeKind.Audio, AudioProps>;
+type AudioProps = {
+  style: Style;
+  children: undefined;
+  volume: number;
+  src: string;
+  stream: MediaStream;
+  muted: boolean;
+  autoplay: boolean;
+};
+
+type VideoNodeSerialized = DefNodeSerialized<NodeKind.Video, VideoProps>;
+type VideoProps = {
+  style: Style;
+  children: undefined;
+  volume: number;
+  src: string;
+  stream: MediaStream;
+  muted: boolean;
+  autoplay: boolean;
+  tw: string;
 };
 
 //
