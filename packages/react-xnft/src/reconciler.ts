@@ -1,23 +1,7 @@
 import ReactReconciler, { HostConfig, OpaqueHandle } from "react-reconciler";
 import { EventEmitter } from "eventemitter3";
 import { ReactDom } from "./ReactDom";
-import {
-  AnimationEventHandler,
-  ClipboardEventHandler,
-  CompositionEventHandler,
-  DragEventHandler,
-  FocusEventHandler,
-  FormEventHandler,
-  KeyboardEventHandler,
-  MouseEventHandler,
-  PointerEventHandler,
-  ReactEventHandler,
-  ReactNode,
-  TouchEventHandler,
-  TransitionEventHandler,
-  UIEventHandler,
-  WheelEventHandler,
-} from "react";
+import { ReactNode } from "react";
 import { getLogger, Event } from "@coral-xyz/common-public";
 import { NAV_STACK } from "./Context";
 import { CONNECT, ETHEREUM_CONNECT, SOLANA_CONNECT } from "./EVENTS";
