@@ -282,7 +282,7 @@ export function Component({ viewData }) {
 function Custom({ children, component, props }) {
   const el = React.createElement(
     component,
-    { ...props, className: props.tw + " " + props.className },
+    { ...props, className: props?.tw + " " + props.className },
     children.map((c) => <ViewRenderer key={c.id} element={c} />)
   );
   return el;
@@ -291,7 +291,7 @@ function Custom({ children, component, props }) {
 function Svg({ props, children }: any) {
   return (
     <svg
-      className={props.tw}
+      className={props?.tw}
       width={props.width}
       height={props.height}
       viewBox={props.viewBox}
@@ -459,6 +459,7 @@ export function BalancesTableHead({ props, style }: any) {
   const { showContent, setShowContent } = useBalancesContext();
   return (
     <Button
+      props={{}}
       style={{
         width: "100%",
         borderRadius: 0,
@@ -680,7 +681,7 @@ export function BalancesTableFooter({ props, style, children }: any) {
 
 function View({ id, props, style, children }: any) {
   return (
-    <div style={style} onClick={props.onClick} className={props.tw}>
+    <div style={style} onClick={props.onClick} className={props?.tw}>
       {children.map((c: Element) => (
         <ViewRenderer key={c.id} element={c} />
       ))}
@@ -695,7 +696,10 @@ function Table({ props, style, children }: any) {
 function Text({ props, children, style }: any) {
   const defaultClasses = useDefaultClasses();
   return (
-    <p style={style} className={defaultClasses[NodeKind.Text] + " " + props.tw}>
+    <p
+      style={style}
+      className={defaultClasses[NodeKind.Text] + " " + props?.tw}
+    >
       {children.map((c: Element) => (
         <ViewRenderer key={c.id} element={c} />
       ))}
@@ -743,7 +747,7 @@ export function TextArea({
     <textarea
       rows={minRows}
       style={style}
-      className={defaultClasses[NodeKind.TextField] + " " + (props.tw || "")}
+      className={defaultClasses[NodeKind.TextField] + " " + (props?.tw || "")}
       value={value}
       onChange={onChange}
       placeholder={placeholder}
@@ -764,7 +768,7 @@ export function TextField({
     <input
       type={type}
       style={style}
-      className={defaultClasses[NodeKind.TextField] + " " + (props.tw || "")}
+      className={defaultClasses[NodeKind.TextField] + " " + (props?.tw || "")}
       value={value}
       onChange={onChange}
       placeholder={placeholder}
@@ -776,7 +780,7 @@ export function TextField({
 function Image({ id, props, style }: any) {
   return (
     <ProxyImage
-      className={props.tw}
+      className={props?.tw}
       src={props.src}
       style={style}
       onClick={props.onClick}
@@ -832,7 +836,7 @@ export function __Button({
   const defaultClasses = useDefaultClasses();
   return (
     <button
-      className={defaultClasses[NodeKind.Button] + " " + (props.tw || "")}
+      className={defaultClasses[NodeKind.Button] + " " + (props?.tw || "")}
       style={{
         ...style,
       }}
@@ -868,7 +872,7 @@ function Video({ id, props }) {
   if (props.src) {
     return (
       <video
-        className={props.tw || ""}
+        className={props?.tw || ""}
         controls={props.controls}
         ref={ref}
         style={props.style}
@@ -880,7 +884,7 @@ function Video({ id, props }) {
   }
   return (
     <video
-      className={props.tw || ""}
+      className={props?.tw || ""}
       controls={props.controls}
       ref={ref}
       style={props.style}
