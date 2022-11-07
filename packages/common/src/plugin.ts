@@ -1,4 +1,4 @@
-import { PublicKey } from "@solana/web3.js";
+import { ConfirmOptions, PublicKey, SendOptions } from "@solana/web3.js";
 import {
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
@@ -388,7 +388,9 @@ export class Plugin {
       case PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX:
         return await this._handleSolanaSignAndSendTransaction(
           params[0],
-          params[1]
+          params[1],
+          params[2],
+          params[3]
         );
       case PLUGIN_SOLANA_RPC_METHOD_SIGN_MESSAGE:
         return await this._handleSolanaSignMessage(params[0], params[1]);
@@ -482,13 +484,17 @@ export class Plugin {
 
   private async _handleSolanaSignAndSendTransaction(
     transaction: string,
-    pubkey: string
+    pubkey: string,
+    options: SendOptions | ConfirmOptions,
+    confirmTransaction: boolean
   ): Promise<RpcResponse> {
     try {
       const signature = await this._requestTransactionApproval(
         PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION,
         transaction,
-        pubkey
+        pubkey,
+        options,
+        confirmTransaction
       );
       return [signature];
     } catch (err: any) {
@@ -558,7 +564,9 @@ export class Plugin {
   private async _requestTransactionApproval(
     kind: string,
     transaction: string | string[],
-    publicKey: string
+    publicKey: string,
+    options?: SendOptions | ConfirmOptions,
+    confirmTransaction?: boolean
   ): Promise<string | null> {
     return new Promise<string | null>((resolve, reject) => {
       this._requestTxApprovalFn!({
@@ -569,6 +577,8 @@ export class Plugin {
         publicKey,
         resolve,
         reject,
+        confirmTransaction,
+        options,
       });
     });
   }
