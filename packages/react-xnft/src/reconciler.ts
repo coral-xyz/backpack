@@ -97,7 +97,7 @@ const RECONCILER = ReactReconciler({
     logger.debug("createInstance", kind, props);
     switch (kind) {
       case NodeKind.View:
-        return createViewInstance(kind, props, r, h, o);
+        return createViewInstance(kind, props as ViewProps, r, h, o);
       case NodeKind.Table:
         return createTableInstance(kind, props, r, h, o);
       case NodeKind.TableRow:
@@ -127,7 +127,13 @@ const RECONCILER = ReactReconciler({
       case NodeKind.Iframe:
         return createIframeInstance(kind, props, r, h, o);
       case NodeKind.NavAnimation:
-        return createNavAnimationInstance(kind, props, r, h, o);
+        return createNavAnimationInstance(
+          kind,
+          props as NavAnimationProps,
+          r,
+          h,
+          o
+        );
       case NodeKind.BalancesTable:
         return createBalancesTableInstance(kind, props, r, h, o);
       case NodeKind.BalancesTableHead:
@@ -141,7 +147,7 @@ const RECONCILER = ReactReconciler({
       case NodeKind.BalancesTableFooter:
         return createBalancesTableFooterInstance(kind, props, r, h, o);
       case NodeKind.Custom:
-        if (!props.component) {
+        if (!(props as CustomProps).component) {
           throw new Error("Component not found in Custom Node");
         }
         return createCustomInstance(kind, props, r, h, o);
@@ -336,7 +342,7 @@ function createTableInstance(
   return {
     id: h.nextId(),
     kind: NodeKind.Table,
-    props: props,
+    props: props as TableProps,
     children: [],
   };
 }
@@ -351,7 +357,7 @@ function createTableRowInstance(
   return {
     id: h.nextId(),
     kind: NodeKind.TableRow,
-    props: props,
+    props: props as TableRowProps,
     children: [],
   };
 }
@@ -366,7 +372,7 @@ function createTextLabelInstance(
   return {
     id: h.nextId(),
     kind: NodeKind.Text,
-    props: props,
+    props: props as TextProps,
     children: [],
   };
 }
@@ -382,7 +388,7 @@ function createTextFieldInstance(
   return {
     id,
     kind: NodeKind.TextField,
-    props: props,
+    props: props as TextFieldProps,
     children: [],
   };
 }
@@ -402,7 +408,7 @@ function createImageInstance(
     props: {
       ...props,
       src,
-      children: props.children,
+      children: (props as ImageProps).children,
     },
     children: [],
   };
@@ -419,7 +425,7 @@ function createButtonInstance(
   return {
     id,
     kind: NodeKind.Button,
-    props: props,
+    props: props as ButtonProps,
     children: [],
   };
 }
@@ -435,7 +441,7 @@ function createAudioInstance(
   return {
     id,
     kind: NodeKind.Audio,
-    props,
+    props: props as AudioProps,
     children: [],
   };
 }
@@ -451,7 +457,7 @@ function createVideoInstance(
   return {
     id,
     kind: NodeKind.Video,
-    props,
+    props: props as VideoProps,
     children: [],
   };
 }
@@ -484,7 +490,7 @@ function createScrollBarInstance(
   return {
     id,
     kind: NodeKind.ScrollBar,
-    props: props,
+    props: props as ScrollBarProps,
     children: [],
   };
 }
@@ -602,7 +608,7 @@ function createBalancesTableInstance(
   return {
     id: h.nextId(),
     kind: NodeKind.BalancesTable,
-    props: props,
+    props: props as BalancesTableProps,
     children: [],
   };
 }
@@ -633,7 +639,7 @@ function createBalancesTableContentInstance(
   return {
     id: h.nextId(),
     kind: NodeKind.BalancesTableContent,
-    props: props,
+    props: props as BalancesTableContentProps,
     children: [],
   };
 }
@@ -649,7 +655,7 @@ function createBalancesTableRowInstance(
   return {
     id,
     kind: NodeKind.BalancesTableRow,
-    props: props,
+    props: props as BalancesTableRowProps,
     children: [],
   };
 }
@@ -664,7 +670,7 @@ function createBalancesTableCellInstance(
   return {
     id: h.nextId(),
     kind: NodeKind.BalancesTableCell,
-    props: props,
+    props: props as BalancesTableCellProps,
     children: [],
   };
 }
@@ -679,7 +685,7 @@ function createBalancesTableFooterInstance(
   return {
     id: h.nextId(),
     kind: NodeKind.BalancesTableFooter,
-    props: props,
+    props: props as BalancesTableFooterProps,
     children: [],
   };
 }
@@ -795,6 +801,7 @@ export enum NodeKind {
 type TableNodeSerialized = DefNodeSerialized<NodeKind.Table, TableProps>;
 export type TableProps = {
   style?: Style;
+  onClick?: () => void;
   children: ReactNode;
 };
 
@@ -807,6 +814,7 @@ type TableRowNodeSerialized = DefNodeSerialized<
 >;
 export type TableRowProps = {
   style?: Style;
+  onClick?: () => void;
   children: ReactNode;
 };
 
@@ -816,6 +824,7 @@ export type TableRowProps = {
 type TextNodeSerialized = DefNodeSerialized<NodeKind.Text, TextProps>;
 export type TextProps = {
   style?: Style;
+  onClick?: () => void;
   children?: ReactNode;
   tw?: string;
 };
@@ -834,8 +843,9 @@ export type TextFieldProps = {
   numberOfLines?: number;
   placeholder?: string;
   style?: Style;
+  onClick?: () => void;
   children: ReactNode;
-  tw: string;
+  tw?: string;
 };
 
 //
@@ -844,9 +854,10 @@ export type TextFieldProps = {
 type ImageNodeSerialized = DefNodeSerialized<NodeKind.Image, ImageProps>;
 export interface ImageProps {
   style?: Style;
+  onClick?: () => void;
   children?: ReactNode;
   src: string;
-  tw: string;
+  tw?: string;
 }
 
 //
@@ -855,6 +866,7 @@ export interface ImageProps {
 type ViewNodeSerialized = DefNodeSerialized<NodeKind.View, ViewProps>;
 export type ViewProps = {
   style?: Style;
+  onClick?: () => void;
   children?: ReactNode;
   tw?: string;
 };
@@ -865,6 +877,7 @@ export type ViewProps = {
 type ButtonNodeSerialized = DefNodeSerialized<NodeKind.Button, ButtonProps>;
 export type ButtonProps = {
   style?: Style;
+  onClick?: () => void;
   children?: ReactNode;
   tw?: string;
 };
@@ -875,6 +888,7 @@ export type ButtonProps = {
 type LoadingNodeSerialized = DefNodeSerialized<NodeKind.Loading, LoadingProps>;
 export type LoadingProps = {
   style?: Style;
+  onClick?: () => void;
   children: ReactNode;
 };
 
@@ -891,14 +905,15 @@ type AudioProps = {
 
 type VideoNodeSerialized = DefNodeSerialized<NodeKind.Video, VideoProps>;
 type VideoProps = {
-  style: Style;
+  style?: Style;
+  onClick?: () => void;
   children: undefined;
   volume: number;
   src: string;
   stream: MediaStream;
   muted: boolean;
   autoplay: boolean;
-  tw: string;
+  tw?: string;
 };
 
 //
@@ -910,6 +925,7 @@ type ScrollBarNodeSerialized = DefNodeSerialized<
 >;
 export type ScrollBarProps = {
   style?: Style;
+  onClick?: () => void;
   children: ReactNode;
 };
 
@@ -924,6 +940,7 @@ export type SvgProps = {
   fill: string;
   children?: ReactNode;
   style?: Style;
+  onClick?: () => void;
   tw?: string;
 };
 
@@ -952,7 +969,7 @@ export type CircleProps = {
   pathLength: string;
   strokeDasharray: string;
   strokeDashoffset: string;
-  tw: string;
+  tw?: string;
 };
 
 //
@@ -961,17 +978,18 @@ export type CircleProps = {
 type IframeNodeSerialized = DefNodeSerialized<NodeKind.Iframe, IframeProps>;
 export type IframeProps = {
   style?: Style;
+  onClick?: () => void;
   children: ReactNode;
   width: string;
   height: string;
   xnft: boolean;
-  tw: string;
+  tw?: string;
 };
 
 //
 // Custom.
 //
-type CustomProps = any;
+type CustomProps = Record<string, any>;
 
 //
 // NavAnimation.
@@ -984,6 +1002,7 @@ export type NavAnimationProps = {
   routeName: string;
   navAction: string;
   style?: Style;
+  onClick?: () => void;
   children: ReactNode;
 };
 
@@ -996,6 +1015,7 @@ export type TextSerialized = {
   text: string | number;
   props?: TextProps;
   style?: Style;
+  onClick?: () => void;
 };
 
 //

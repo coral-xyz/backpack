@@ -1,4 +1,4 @@
-import React, { DOMAttributes } from "react";
+import React from "react";
 import {
   ImageProps,
   ViewProps,
@@ -20,23 +20,12 @@ import {
   BalancesTableCellProps,
   BalancesTableRowProps,
   BalancesTableContentProps,
-  NodeProps,
 } from "./reconciler";
-const doesElementHaveDomAttributes = (
-  element: NodeProps | (NodeProps & DOMAttributes<NodeProps>)
-): element is NodeProps & DOMAttributes<NodeProps> => {
-  return element?.onClick !== undefined;
-};
+
 const c =
   <T,>(name: string) =>
-  (props: T extends DOMAttributes<T> ? T & DOMAttributes<T> : T) =>
-    React.createElement(
-      name,
-      doesElementHaveDomAttributes(props)
-        ? (props as T & DOMAttributes<T>)
-        : (props as T)
-    );
-
+  (props: T) =>
+    React.createElement(name, props);
 
 export const Text = c<TextProps>("Text");
 export const TextField = c<TextFieldProps>("TextField");
