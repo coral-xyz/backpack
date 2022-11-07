@@ -319,8 +319,8 @@ export function Sending({
   titleOverride,
 }: {
   blockchain: Blockchain;
-  amount: BigNumber;
-  token: any;
+  amount?: BigNumber;
+  token?: any;
   signature: string;
   isComplete: boolean;
   titleOverride?: string;
@@ -349,14 +349,16 @@ export function Sending({
       >
         {titleOverride ? titleOverride : isComplete ? "Sent" : "Sending..."}
       </Typography>
-      <TokenAmountHeader
-        style={{
-          marginTop: "16px",
-          marginBottom: "0px",
-        }}
-        amount={amount}
-        token={token}
-      />
+      {amount && (
+        <TokenAmountHeader
+          style={{
+            marginTop: "16px",
+            marginBottom: "0px",
+          }}
+          amount={amount}
+          token={token}
+        />
+      )}
       <div
         style={{
           flex: 1,

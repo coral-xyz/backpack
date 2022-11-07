@@ -35,6 +35,9 @@ import {
 import { Scrollbar } from "../common/Layout/Scrollbar";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { TransactionData } from "../common/TransactionData";
+import { useConnection } from "react-xnft";
+import { Sending } from "./Balances/TokensWidget/Send";
+import { ConfirmOptions, SendOptions } from "@solana/web3.js";
 
 const useStyles = styles((theme) => ({
   confirmRow: {
@@ -169,6 +172,8 @@ export function ApproveTransactionRequest() {
             transaction={request!.data as string}
             onResolve={onResolve}
             onReject={onReject}
+            confirmTransaction={request.confirmTransaction}
+            options={request.options}
           />
         )}
       </Suspense>
@@ -291,6 +296,8 @@ function SendTransactionRequest({
   blockchain,
   onResolve,
   onReject,
+  confirmTransaction,
+  options,
 }: {
   publicKey: string;
   transaction: string;
@@ -298,6 +305,8 @@ function SendTransactionRequest({
   blockchain: Blockchain;
   onResolve: (signature: string) => void;
   onReject: () => void;
+  confirmTransaction?: boolean;
+  options?: SendOptions | ConfirmOptions;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -306,6 +315,11 @@ function SendTransactionRequest({
   const pluginUrl = usePluginUrl(request?.xnftAddress);
   const transactionData = useTransactionData(blockchain, transaction);
   const { loading, transaction: transactionToSend, from } = transactionData;
+  const connection = useConnection();
+  const [signature, setSignature] = useState("");
+  const [txState, setTxState] = useState<
+    "approve" | "confirming" | "succeeded" | "failed"
+  >("approve");
 
   //
   // Executes when the modal clicks "Approve" in the drawer popup
@@ -319,7 +333,30 @@ function SendTransactionRequest({
         method: uiRpcMethod,
         params: [transactionToSend, publicKey],
       })
-      .then(onResolve)
+      .then(async (signature) => {
+        setSignature(signature);
+        if (confirmTransaction) {
+          setTxState("confirming");
+          const { blockhash, lastValidBlockHeight } =
+            await connection.getLatestBlockhash(options?.preflightCommitment);
+          const resp = await connection.confirmTransaction(
+            {
+              signature,
+              blockhash,
+              lastValidBlockHeight,
+            },
+            // @ts-ignore
+            options?.commitment
+          );
+          if (resp?.value.err) {
+            setTxState("failed");
+          } else {
+            setTxState("succeeded");
+          }
+        } else {
+          onResolve(signature);
+        }
+      })
       .catch(onReject);
   };
 
@@ -358,6 +395,36 @@ function SendTransactionRequest({
       classes: { root: classes.approveTableRoot },
     },
   };
+
+  if (txState === "confirming") {
+    return (
+      <Sending
+        blockchain={blockchain}
+        signature={signature}
+        isComplete={false}
+      />
+    );
+  }
+
+  if (txState === "succeeded") {
+    return (
+      <Sending
+        blockchain={blockchain}
+        signature={signature}
+        isComplete={true}
+      />
+    );
+  }
+
+  if (txState === "failed") {
+    return (
+      <Sending
+        blockchain={blockchain}
+        signature={signature}
+        isComplete={true}
+      />
+    );
+  }
 
   return (
     <Request
