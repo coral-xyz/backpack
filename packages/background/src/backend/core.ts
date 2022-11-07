@@ -975,8 +975,6 @@ export class Backend {
         ...preference,
       },
     };
-    console.log("updated preferences are");
-    console.log(updatedPreferences);
     await store.setXnftPreferences(updatedPreferences);
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_XNFT_PREFERENCE_UPDATED,
