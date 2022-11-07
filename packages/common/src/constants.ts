@@ -166,6 +166,11 @@ export const UI_RPC_METHOD_SET_FEATURE_GATES =
   "ui-rpc-method-set-feature-gates";
 export const UI_RPC_METHOD_GET_FEATURE_GATES =
   "ui-rpc-method-get-feature-gates";
+export const UI_RPC_METHOD_GET_XNFT_PREFERENCES =
+  "ui-rpc-method-get-xnft-preference";
+export const UI_RPC_METHOD_SET_XNFT_PREFERENCES =
+  "ui-rpc-method-set-xnft-preference";
+
 export const UI_RPC_METHOD_PREVIEW_PUBKEYS =
   "ui-rpc-method-keyring-preview-pubkeys";
 export const UI_RPC_METHOD_SETTINGS_DARK_MODE_READ =
@@ -231,6 +236,8 @@ export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
   "notification-auto-lock-secs-updated";
 export const NOTIFICATION_BLOCKCHAIN_DISABLED =
   "notification-blockchain-disabled";
+export const NOTIFICATION_XNFT_PREFERENCE_UPDATED =
+  "notification-xnft-preference-updated";
 export const NOTIFICATION_BLOCKCHAIN_ENABLED =
   "notification-blockchain-enabled";
 export const NOTIFICATION_DARK_MODE_UPDATED = "notification-dark-mode-updated";

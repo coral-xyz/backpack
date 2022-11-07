@@ -8,6 +8,7 @@ import type {
   Context,
   EventEmitter,
   Blockchain,
+  XnftPreference,
 } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
 import {
@@ -87,6 +88,8 @@ import {
   UI_RPC_METHOD_SET_FEATURE_GATES,
   FEATURE_GATES_MAP,
   UI_RPC_METHOD_GET_FEATURE_GATES,
+  UI_RPC_METHOD_GET_XNFT_PREFERENCES,
+  UI_RPC_METHOD_SET_XNFT_PREFERENCES,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import type { Backend } from "../backend/core";
@@ -235,6 +238,10 @@ async function handle<T = any>(
       return await handleSetFeatureGates(ctx, params[0]);
     case UI_RPC_METHOD_GET_FEATURE_GATES:
       return await handleGetFeatureGates(ctx);
+    case UI_RPC_METHOD_GET_XNFT_PREFERENCES:
+      return await handleGetXnftPreferences(ctx);
+    case UI_RPC_METHOD_SET_XNFT_PREFERENCES:
+      return await handleSetXnftPreferences(ctx, params[0], params[1]);
     case UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD:
       return await handleBlockchainKeyringsAdd(
         ctx,
@@ -871,6 +878,20 @@ async function handleSetFeatureGates(
 
 async function handleGetFeatureGates(ctx: Context<Backend>) {
   const resp = await ctx.backend.getFeatureGates();
+  return [resp];
+}
+
+async function handleGetXnftPreferences(ctx: Context<Backend>) {
+  const resp = await ctx.backend.getXnftPreferences();
+  return [resp];
+}
+
+async function handleSetXnftPreferences(
+  ctx: Context<Backend>,
+  xnftId: string,
+  preference: XnftPreference
+) {
+  const resp = await ctx.backend.setXnftPreferences(xnftId, preference);
   return [resp];
 }
 

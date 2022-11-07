@@ -37,7 +37,7 @@ import { getLogger, Event, XnftMetadata } from "@coral-xyz/common-public";
 import { BackgroundClient } from "./channel/app-ui";
 import { PluginServer } from "./channel/plugin";
 
-import { Blockchain, RpcResponse } from "./types";
+import { Blockchain, RpcResponse, XnftPreference } from "./types";
 
 const logger = getLogger("common/plugin");
 
@@ -123,7 +123,7 @@ export class Plugin {
   //
   // Loads the plugin javascript code inside the iframe.
   //
-  public createIframe() {
+  public createIframe(preference: XnftPreference) {
     logger.debug("creating iframe element");
 
     this._nextRenderId = 0;
@@ -132,6 +132,12 @@ export class Plugin {
     this.iframeRoot.style.height = "100vh";
     this.iframeRoot.style.border = "none";
 
+    if (preference.mediaPermissions) {
+      this.iframeRoot.setAttribute(
+        "allow",
+        "camera;microphone;display-capture"
+      );
+    }
     this.iframeRoot.setAttribute("fetchpriority", "low");
     this.iframeRoot.src = this.iframeRootUrl;
     this.iframeRoot.sandbox.add("allow-same-origin");
@@ -211,8 +217,8 @@ export class Plugin {
   // Rendering.
   //////////////////////////////////////////////////////////////////////////////
 
-  public mount() {
-    this.createIframe();
+  public mount(preference: XnftPreference) {
+    this.createIframe(preference);
     this.didFinishSetup!.then(() => {
       this.pushMountNotification();
     });

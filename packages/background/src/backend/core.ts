@@ -40,10 +40,13 @@ import {
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
+  NOTIFICATION_XNFT_PREFERENCE_UPDATED,
   SolanaCluster,
   SolanaExplorer,
   deserializeTransaction,
   FEATURE_GATES_MAP,
+  XnftPreferenceStore,
+  XnftPreference,
 } from "@coral-xyz/common";
 import type {
   KeyringInit,
@@ -961,6 +964,28 @@ export class Backend {
 
   async getFeatureGates() {
     return await store.getFeatureGates();
+  }
+
+  async setXnftPreferences(xnftId: string, preference: XnftPreference) {
+    const currentPreferences = (await store.getXnftPreferences()) || {};
+    const updatedPreferences = {
+      ...currentPreferences,
+      [xnftId]: {
+        ...(currentPreferences[xnftId] || {}),
+        ...preference,
+      },
+    };
+    console.log("updated preferences are");
+    console.log(updatedPreferences);
+    await store.setXnftPreferences(updatedPreferences);
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_XNFT_PREFERENCE_UPDATED,
+      data: { updatedPreferences },
+    });
+  }
+
+  async getXnftPreferences() {
+    return await store.getXnftPreferences();
   }
 
   ///////////////////////////////////////////////////////////////////////////////
