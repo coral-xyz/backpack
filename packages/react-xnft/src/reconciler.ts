@@ -802,7 +802,7 @@ type TableNodeSerialized = DefNodeSerialized<NodeKind.Table, TableProps>;
 export type TableProps = {
   style?: Style;
   onClick?: () => void;
-  children: ReactNode;
+  children?: ReactNode | undefined;
 };
 
 //
@@ -815,7 +815,7 @@ type TableRowNodeSerialized = DefNodeSerialized<
 export type TableRowProps = {
   style?: Style;
   onClick?: () => void;
-  children: ReactNode;
+  children?: ReactNode | undefined;
 };
 
 //
@@ -825,7 +825,7 @@ type TextNodeSerialized = DefNodeSerialized<NodeKind.Text, TextProps>;
 export type TextProps = {
   style?: Style;
   onClick?: () => void;
-  children?: ReactNode;
+  children?: ReactNode | undefined;
   tw?: string;
 };
 
@@ -844,7 +844,7 @@ export type TextFieldProps = {
   placeholder?: string;
   style?: Style;
   onClick?: () => void;
-  children: ReactNode;
+  children?: ReactNode | undefined;
   tw?: string;
 };
 
@@ -855,7 +855,7 @@ type ImageNodeSerialized = DefNodeSerialized<NodeKind.Image, ImageProps>;
 export interface ImageProps {
   style?: Style;
   onClick?: () => void;
-  children?: ReactNode;
+  children?: ReactNode | undefined;
   src: string;
   tw?: string;
 }
@@ -867,7 +867,7 @@ type ViewNodeSerialized = DefNodeSerialized<NodeKind.View, ViewProps>;
 export type ViewProps = {
   style?: Style;
   onClick?: () => void;
-  children?: ReactNode;
+  children?: ReactNode | undefined;
   tw?: string;
 };
 
@@ -878,7 +878,7 @@ type ButtonNodeSerialized = DefNodeSerialized<NodeKind.Button, ButtonProps>;
 export type ButtonProps = {
   style?: Style;
   onClick?: () => void;
-  children?: ReactNode;
+  children?: ReactNode | undefined;
   tw?: string;
 };
 
@@ -889,7 +889,7 @@ type LoadingNodeSerialized = DefNodeSerialized<NodeKind.Loading, LoadingProps>;
 export type LoadingProps = {
   style?: Style;
   onClick?: () => void;
-  children: ReactNode;
+  children?: ReactNode | undefined;
 };
 
 type AudioNodeSerialized = DefNodeSerialized<NodeKind.Audio, AudioProps>;
@@ -926,7 +926,7 @@ type ScrollBarNodeSerialized = DefNodeSerialized<
 export type ScrollBarProps = {
   style?: Style;
   onClick?: () => void;
-  children: ReactNode;
+  children?: ReactNode | undefined;
 };
 
 //
@@ -938,7 +938,7 @@ export type SvgProps = {
   height: string;
   viewBox: string;
   fill: string;
-  children?: ReactNode;
+  children?: ReactNode | undefined;
   style?: Style;
   onClick?: () => void;
   tw?: string;
@@ -979,7 +979,7 @@ type IframeNodeSerialized = DefNodeSerialized<NodeKind.Iframe, IframeProps>;
 export type IframeProps = {
   style?: Style;
   onClick?: () => void;
-  children: ReactNode;
+  children?: ReactNode | undefined;
   width: string;
   height: string;
   xnft: boolean;
@@ -1003,7 +1003,7 @@ export type NavAnimationProps = {
   navAction: string;
   style?: Style;
   onClick?: () => void;
-  children: ReactNode;
+  children?: ReactNode | undefined;
 };
 
 //
@@ -1027,7 +1027,7 @@ type BalancesTableNodeSerialized = DefNodeSerialized<
 >;
 export type BalancesTableProps = {
   style?: Style;
-  children: ReactNode;
+  children?: ReactNode | undefined;
 };
 type BalancesTableHeadNodeSerialized = DefNodeSerialized<
   NodeKind.BalancesTableHead,
@@ -1037,7 +1037,7 @@ export type BalancesTableHeadProps = {
   style?: Style;
   title: string;
   iconUrl: string;
-  children: ReactNode;
+  children?: ReactNode | undefined;
 };
 type BalancesTableContentNodeSerialized = DefNodeSerialized<
   NodeKind.BalancesTableContent,
@@ -1045,7 +1045,7 @@ type BalancesTableContentNodeSerialized = DefNodeSerialized<
 >;
 export type BalancesTableContentProps = {
   style?: Style;
-  children: ReactNode;
+  children?: ReactNode | undefined;
 };
 type BalancesTableRowNodeSerialized = DefNodeSerialized<
   NodeKind.BalancesTableRow,
@@ -1053,7 +1053,7 @@ type BalancesTableRowNodeSerialized = DefNodeSerialized<
 >;
 export type BalancesTableRowProps = {
   style?: Style;
-  children: ReactNode;
+  children?: ReactNode | undefined;
 };
 type BalancesTableCellNodeSerialized = DefNodeSerialized<
   NodeKind.BalancesTableCell,
@@ -1066,7 +1066,7 @@ export type BalancesTableCellProps = {
   usdValue?: number;
   percentChange?: number;
   style?: Style;
-  children: ReactNode;
+  children?: ReactNode | undefined;
 };
 type BalancesTableFooterNodeSerialized = DefNodeSerialized<
   NodeKind.BalancesTableFooter,
@@ -1074,7 +1074,7 @@ type BalancesTableFooterNodeSerialized = DefNodeSerialized<
 >;
 export type BalancesTableFooterProps = {
   style?: Style;
-  children: ReactNode;
+  children?: ReactNode | undefined;
 };
 
 //
