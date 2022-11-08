@@ -20,6 +20,7 @@ import {
   BalancesTableCellProps,
   BalancesTableRowProps,
   BalancesTableContentProps,
+  CustomProps,
 } from "./reconciler";
 
 const c =
@@ -55,4 +56,4 @@ export const BalancesTableFooter = c<BalancesTableFooterProps>(
   "BalancesTableFooter"
 );
 
-export const Custom = c("Custom");
+export const Custom = c<CustomProps>("Custom");

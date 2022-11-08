@@ -168,8 +168,6 @@ const RECONCILER = ReactReconciler({
       id: h.nextId(),
       kind: "raw" as const,
       text,
-      props: undefined,
-      style: undefined,
     };
     return instance;
   },
@@ -933,8 +931,8 @@ export type ScrollBarProps = {
 //
 type SvgNodeSerialized = DefNodeSerialized<NodeKind.Svg, SvgProps>;
 export type SvgProps = {
-  width: string;
-  height: string;
+  width: number;
+  height: number;
   viewBox: string;
   fill: string;
   children?: ReactNode | undefined;
@@ -979,6 +977,7 @@ export type IframeProps = {
   style?: Style;
   onClick?: () => void;
   children?: ReactNode | undefined;
+  src: string;
   width: string;
   height: string;
   xnft: boolean;
@@ -988,7 +987,7 @@ export type IframeProps = {
 //
 // Custom.
 //
-type CustomProps = Record<string, any>;
+export type CustomProps = Record<string, any>;
 
 //
 // NavAnimation.
@@ -1012,9 +1011,6 @@ export type TextSerialized = {
   id: number;
   kind: "raw";
   text: string | number;
-  props?: TextProps;
-  style?: Style;
-  onClick?: () => void;
 };
 
 //
