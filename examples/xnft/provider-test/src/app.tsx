@@ -58,8 +58,12 @@ export function App() {
         lamports: 1,
       })
     );
-    const result = await window.xnft.solana.sendAndConfirm(transaction);
-    console.log("solana sign and confirm transaction", result);
+    try {
+      const result = await window.xnft.solana.sendAndConfirm(transaction);
+      console.log("solana sign and confirm transaction", result);
+    } catch (e) {
+      console.log(`Error while signing and confirming transaction ${e}`);
+    }
   };
 
   const solanaSignMessage = async () => {
@@ -202,7 +206,7 @@ export function App() {
           style={{ width: "100%" }}
           onClick={solanaSignAndConfirmTransaction}
         >
-          Sign and confirm Solana Message
+          Sign and confirm Solana Tx
         </Button>
       </View>
       <View style={{ margin: "24px" }}>

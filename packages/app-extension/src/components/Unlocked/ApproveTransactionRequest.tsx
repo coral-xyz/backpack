@@ -3,6 +3,7 @@ import {
   useActivePublicKeys,
   useBackgroundClient,
   usePluginUrl,
+  useSolanaCtx,
   useTransactionData,
   useTransactionRequest,
 } from "@coral-xyz/recoil";
@@ -35,9 +36,11 @@ import {
 import { Scrollbar } from "../common/Layout/Scrollbar";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { TransactionData } from "../common/TransactionData";
-import { useConnection } from "react-xnft";
-import { Sending } from "./Balances/TokensWidget/Send";
+import { useConnection } from "@solana/wallet-adapter-react";
+import { Sending } from "./XnftPopovers/Sending";
+import { ErrorTransaction } from "./XnftPopovers/ErrorTransaction";
 import { ConfirmOptions, SendOptions } from "@solana/web3.js";
+import { Success } from "./XnftPopovers/Success";
 
 const useStyles = styles((theme) => ({
   confirmRow: {
@@ -101,10 +104,11 @@ export function ApproveTransactionRequest() {
   const [request, setRequest] = useTransactionRequest();
   const activePublicKeys = useActivePublicKeys();
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [signature, setSignature] = useState<string | null>(null);
 
   useEffect(() => {
     setOpenDrawer(request !== undefined);
-  }, [request]);
+  }, [request, signature]);
 
   if (!request) return <></>;
 
@@ -119,7 +123,11 @@ export function ApproveTransactionRequest() {
 
   const onResolve = (signature: string) => {
     request!.resolve(signature);
-    setRequest(undefined);
+    if (!request.confirmTransaction) {
+      setRequest(undefined);
+    } else {
+      setSignature(signature);
+    }
   };
 
   const onReject = (
@@ -142,7 +150,11 @@ export function ApproveTransactionRequest() {
     <ApproveTransactionDrawer
       openDrawer={openDrawer}
       setOpenDrawer={(b) => {
-        if (b === false) onReject();
+        if (b === false && !signature) onReject();
+        if (b === false && signature) {
+          setRequest(undefined);
+          setSignature(null);
+        }
         setOpenDrawer(b);
       }}
     >
@@ -315,7 +327,7 @@ function SendTransactionRequest({
   const pluginUrl = usePluginUrl(request?.xnftAddress);
   const transactionData = useTransactionData(blockchain, transaction);
   const { loading, transaction: transactionToSend, from } = transactionData;
-  const connection = useConnection();
+  const solanaCtx = useSolanaCtx();
   const [signature, setSignature] = useState("");
   const [txState, setTxState] = useState<
     "approve" | "confirming" | "succeeded" | "failed"
@@ -338,8 +350,10 @@ function SendTransactionRequest({
         if (confirmTransaction) {
           setTxState("confirming");
           const { blockhash, lastValidBlockHeight } =
-            await connection.getLatestBlockhash(options?.preflightCommitment);
-          const resp = await connection.confirmTransaction(
+            await solanaCtx.connection.getLatestBlockhash(
+              options?.preflightCommitment
+            );
+          const resp = await solanaCtx.connection.confirmTransaction(
             {
               signature,
               blockhash,
@@ -351,6 +365,7 @@ function SendTransactionRequest({
           if (resp?.value.err) {
             setTxState("failed");
           } else {
+            onResolve(signature);
             setTxState("succeeded");
           }
         } else {
@@ -397,31 +412,21 @@ function SendTransactionRequest({
   };
 
   if (txState === "confirming") {
-    return (
-      <Sending
-        blockchain={blockchain}
-        signature={signature}
-        isComplete={false}
-      />
-    );
+    return <Sending blockchain={blockchain} signature={signature} />;
   }
 
   if (txState === "succeeded") {
-    return (
-      <Sending
-        blockchain={blockchain}
-        signature={signature}
-        isComplete={true}
-      />
-    );
+    return <Success blockchain={blockchain} signature={signature} />;
   }
 
   if (txState === "failed") {
     return (
-      <Sending
+      <ErrorTransaction
         blockchain={blockchain}
         signature={signature}
-        isComplete={true}
+        onRetry={() => {
+          onConfirm();
+        }}
       />
     );
   }
