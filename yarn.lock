@@ -1634,7 +1634,7 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@coral-xyz/xnft-cli@*", "@coral-xyz/xnft-cli@^0.0.1":
+"@coral-xyz/xnft-cli@*":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@coral-xyz/xnft-cli/-/xnft-cli-0.0.1.tgz#dfda912320d433743ffa75f0c6146e75c8580c7d"
   integrity sha512-l54B9Ja/lm3fLp8MasH6ap7TnGiIwIVbyVTbEBohRRpPnG7i4S5E/8lVseB3G9RsbJMQq4wK7mj2SA6892n6kg==
@@ -5640,7 +5640,7 @@
     "@wallet-standard/base" "^1.0.0"
     "@wallet-standard/features" "^1.0.0"
 
-"@solana/web3.js@1.52.0", "@solana/web3.js@1.63.1", "@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0", "@solana/web3.js@^1.30.2", "@solana/web3.js@^1.31.0", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.37.1", "@solana/web3.js@^1.43.2", "@solana/web3.js@^1.44.3", "@solana/web3.js@^1.62.1", "@solana/web3.js@^1.63.1", "@solana/web3.js@^1.66.2":
+"@solana/web3.js@1.52.0", "@solana/web3.js@1.63.1", "@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0", "@solana/web3.js@^1.30.2", "@solana/web3.js@^1.31.0", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.37.1", "@solana/web3.js@^1.43.2", "@solana/web3.js@^1.44.3", "@solana/web3.js@^1.63.1", "@solana/web3.js@^1.66.2":
   version "1.63.1"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.63.1.tgz#88a19a17f5f4aada73ad70a94044c1067cab2b4d"
   integrity sha512-wgEdGVK5FTS2zENxbcGSvKpGZ0jDS6BUdGu8Gn6ns0CzgJkK83u4ip3THSnBPEQ5i/jrqukg998BwV1H67+qiQ==
@@ -19736,18 +19736,6 @@ react-window@^1.8.7:
   dependencies:
     "@babel/runtime" "^7.0.0"
     memoize-one ">=3.1.1 <6"
-
-react-xnft@latest:
-  version "0.2.0-latest.333"
-  resolved "https://registry.yarnpkg.com/react-xnft/-/react-xnft-0.2.0-latest.333.tgz#dbbf7e29c93128f5b70c15e83ed56e01ebf6d086"
-  integrity sha512-u2Z6sohZNMVZ++7xPHBgrZdrpNgveKLLAQMUFht652Mhzlx4Gd0SpGzDEIEtLc2pApSUcCv9da2uLi+E8RTx1A==
-  dependencies:
-    "@coral-xyz/common-public" "*"
-    "@coral-xyz/themes" "*"
-    "@solana/web3.js" "^1.63.1"
-    eventemitter3 "^4.0.7"
-    react "^17.0.0"
-    react-reconciler "^0.26.0"
 
 react@16.13.1, react@17.0.2, react@^17.0.0, react@^17.0.2, react@^18.1.0, react@^18.2.0:
   version "17.0.2"

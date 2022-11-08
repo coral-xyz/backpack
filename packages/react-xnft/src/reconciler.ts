@@ -105,6 +105,8 @@ const RECONCILER = ReactReconciler({
         return createTextLabelInstance(kind, props, r, h, o);
       case NodeKind.TextField:
         return createTextFieldInstance(kind, props, r, h, o);
+      case NodeKind.FileInput:
+        return createFileInputInstance(kind, props, r, h, o);
       case NodeKind.Image:
         return createImageInstance(kind, props, r, h, o);
       case NodeKind.Button:
@@ -392,6 +394,25 @@ function createTextFieldInstance(
   return {
     id,
     kind: NodeKind.TextField,
+    props: {
+      ...props,
+      children: undefined,
+    },
+    children: [],
+  };
+}
+
+function createFileInputInstance(
+  _kind: NodeKind,
+  props: NodeProps,
+  _r: RootContainer,
+  h: Host,
+  _o: OpaqueHandle
+): FileInputNodeSerialized {
+  const id = h.nextId();
+  return {
+    id,
+    kind: NodeKind.FileInput,
     props: {
       ...props,
       children: undefined,
@@ -756,6 +777,7 @@ export type NodeSerialized =
   | TableRowNodeSerialized
   | TextNodeSerialized
   | TextFieldNodeSerialized
+  | FileInputNodeSerialized
   | ImageNodeSerialized
   | ViewNodeSerialized
   | ButtonNodeSerialized
@@ -781,6 +803,7 @@ export type NodeProps =
   | TableRowProps
   | TextProps
   | TextFieldProps
+  | FileInputProps
   | ImageProps
   | ViewProps
   | ButtonProps
@@ -807,6 +830,7 @@ export enum NodeKind {
   TableRow = "TableRow",
   Text = "Text",
   TextField = "TextField",
+  FileInput = "FileInput",
   Image = "Image",
   View = "View",
   Audio = "Audio",
@@ -880,6 +904,21 @@ type TextFieldProps = {
   multiline?: boolean;
   numberOfLines?: number;
   placeholder?: string;
+  style: Style;
+  children: undefined;
+  tw: string;
+};
+
+//
+// TextField.
+//
+type FileInputNodeSerialized = DefNodeSerialized<
+  NodeKind.FileInput,
+  FileInputProps
+>;
+type FileInputProps = {
+  onChange?: (event: Event) => void;
+  value?: any;
   style: Style;
   children: undefined;
   tw: string;

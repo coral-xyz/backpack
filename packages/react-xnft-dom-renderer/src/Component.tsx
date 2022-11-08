@@ -181,6 +181,15 @@ export function Component({ viewData }) {
           children={viewData.children}
         />
       );
+    case NodeKind.TextField:
+      return (
+        <_TextField
+          id={id}
+          props={props}
+          style={style}
+          children={viewData.children}
+        />
+      );
     case NodeKind.Table:
       return <Table props={props} style={style} />;
     case NodeKind.Image:
@@ -772,7 +781,6 @@ export function TextField({
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      p
     />
   );
 }
