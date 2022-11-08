@@ -933,8 +933,8 @@ type SvgNodeSerialized = DefNodeSerialized<NodeKind.Svg, SvgProps>;
 export type SvgProps = {
   width: number;
   height: number;
-  viewBox: string;
-  fill: string;
+  viewBox?: string;
+  fill?: string;
   children?: ReactNode | undefined;
   style?: Style;
   onClick?: () => void;
@@ -978,9 +978,9 @@ export type IframeProps = {
   onClick?: () => void;
   children?: ReactNode | undefined;
   src: string;
-  width: string;
-  height: string;
-  xnft: boolean;
+  width?: string;
+  height?: string;
+  xnft?: boolean;
   tw?: string;
 };
 
@@ -1049,6 +1049,7 @@ type BalancesTableRowNodeSerialized = DefNodeSerialized<
 export type BalancesTableRowProps = {
   style?: Style;
   children?: ReactNode | undefined;
+  onClick?: () => void;
 };
 type BalancesTableCellNodeSerialized = DefNodeSerialized<
   NodeKind.BalancesTableCell,
