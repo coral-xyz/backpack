@@ -772,7 +772,6 @@ export function TextField({
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      p
     />
   );
 }
