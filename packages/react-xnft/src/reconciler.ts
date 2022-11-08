@@ -159,7 +159,6 @@ const RECONCILER = ReactReconciler({
   },
   createTextInstance: (
     text: string,
-    props: TextProps,
     _r: RootContainer,
     h: Host,
     _o: OpaqueHandle
@@ -169,8 +168,8 @@ const RECONCILER = ReactReconciler({
       id: h.nextId(),
       kind: "raw" as const,
       text,
-      props: props,
-      style: props.style,
+      props: undefined,
+      style: undefined,
     };
     return instance;
   },
