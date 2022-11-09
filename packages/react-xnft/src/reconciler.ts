@@ -822,6 +822,7 @@ export type NodeProps =
   | BalancesTableCellProps
   | BalancesTableFooterProps
   | CustomProps;
+  
 export enum NodeKind {
   //
   // App.
@@ -918,7 +919,6 @@ type FileInputNodeSerialized = DefNodeSerialized<
 >;
 type FileInputProps = {
   onChange?: (event: Event) => void;
-  value?: any;
   style: Style;
   children: undefined;
   tw: string;

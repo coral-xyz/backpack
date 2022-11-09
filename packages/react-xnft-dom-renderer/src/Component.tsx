@@ -181,12 +181,13 @@ export function Component({ viewData }) {
           children={viewData.children}
         />
       );
-    case NodeKind.TextField:
+    case NodeKind.FileInput:
       return (
-        <_TextField
+        <FileInput
           id={id}
           props={props}
           style={style}
+          onChange={props.onChange}
           children={viewData.children}
         />
       );
@@ -781,6 +782,22 @@ export function TextField({
       value={value}
       onChange={onChange}
       placeholder={placeholder}
+    />
+  );
+}
+
+export function FileInput({
+  onChange,
+  style,
+  props,
+}: any) {
+  const defaultClasses = useDefaultClasses();
+  return (
+    <input
+      type={"file"}
+      style={style}
+      className={defaultClasses[NodeKind.FileInput] + " " + (props?.tw || "")}
+      onChange={onChange}
     />
   );
 }
