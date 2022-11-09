@@ -27,7 +27,7 @@
     "@mui/styles": "^5.8.4",
     "@solana/web3.js": "^1.63.1",
     "framer-motion": "^6.5.1",
-    "parcel": "^2.7.0",
+    "parcel": "^2.8.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scrollbars-custom": "^4.1.1",
