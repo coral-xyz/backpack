@@ -1,6 +1,7 @@
 import ReactReconciler, { HostConfig, OpaqueHandle } from "react-reconciler";
 import { EventEmitter } from "eventemitter3";
 import { ReactDom } from "./ReactDom";
+import { ReactNode } from "react";
 import { getLogger, Event } from "@coral-xyz/common-public";
 import { NAV_STACK } from "./Context";
 import { CONNECT, ETHEREUM_CONNECT, SOLANA_CONNECT } from "./EVENTS";
@@ -96,7 +97,7 @@ const RECONCILER = ReactReconciler({
     logger.debug("createInstance", kind, props);
     switch (kind) {
       case NodeKind.View:
-        return createViewInstance(kind, props, r, h, o);
+        return createViewInstance(kind, props as ViewProps, r, h, o);
       case NodeKind.Table:
         return createTableInstance(kind, props, r, h, o);
       case NodeKind.TableRow:
@@ -128,7 +129,13 @@ const RECONCILER = ReactReconciler({
       case NodeKind.Iframe:
         return createIframeInstance(kind, props, r, h, o);
       case NodeKind.NavAnimation:
-        return createNavAnimationInstance(kind, props, r, h, o);
+        return createNavAnimationInstance(
+          kind,
+          props as NavAnimationProps,
+          r,
+          h,
+          o
+        );
       case NodeKind.BalancesTable:
         return createBalancesTableInstance(kind, props, r, h, o);
       case NodeKind.BalancesTableHead:
@@ -142,7 +149,7 @@ const RECONCILER = ReactReconciler({
       case NodeKind.BalancesTableFooter:
         return createBalancesTableFooterInstance(kind, props, r, h, o);
       case NodeKind.Custom:
-        if (!props.component) {
+        if (!(props as CustomProps).component) {
           throw new Error("Component not found in Custom Node");
         }
         return createCustomInstance(kind, props, r, h, o);
@@ -163,8 +170,6 @@ const RECONCILER = ReactReconciler({
       id: h.nextId(),
       kind: "raw" as const,
       text,
-      props: undefined,
-      style: undefined,
     };
     return instance;
   },
@@ -321,10 +326,7 @@ function createViewInstance(
   return {
     id,
     kind: NodeKind.View,
-    props: {
-      ...props,
-      children: undefined,
-    },
+    props: props,
     children: [],
   };
 }
@@ -339,10 +341,7 @@ function createTableInstance(
   return {
     id: h.nextId(),
     kind: NodeKind.Table,
-    props: {
-      ...props,
-      children: undefined,
-    },
+    props: props as TableProps,
     children: [],
   };
 }
@@ -357,10 +356,7 @@ function createTableRowInstance(
   return {
     id: h.nextId(),
     kind: NodeKind.TableRow,
-    props: {
-      ...props,
-      children: undefined,
-    },
+    props: props as TableRowProps,
     children: [],
   };
 }
@@ -375,10 +371,7 @@ function createTextLabelInstance(
   return {
     id: h.nextId(),
     kind: NodeKind.Text,
-    props: {
-      ...props,
-      children: undefined,
-    },
+    props: props as TextProps,
     children: [],
   };
 }
@@ -394,10 +387,7 @@ function createTextFieldInstance(
   return {
     id,
     kind: NodeKind.TextField,
-    props: {
-      ...props,
-      children: undefined,
-    },
+    props: props as TextFieldProps,
     children: [],
   };
 }
@@ -436,7 +426,7 @@ function createImageInstance(
     props: {
       ...props,
       src,
-      children: undefined,
+      children: (props as ImageProps).children,
     },
     children: [],
   };
@@ -453,10 +443,7 @@ function createButtonInstance(
   return {
     id,
     kind: NodeKind.Button,
-    props: {
-      ...props,
-      children: undefined,
-    },
+    props: props as ButtonProps,
     children: [],
   };
 }
@@ -472,7 +459,7 @@ function createAudioInstance(
   return {
     id,
     kind: NodeKind.Audio,
-    props,
+    props: props as AudioProps,
     children: [],
   };
 }
@@ -488,7 +475,7 @@ function createVideoInstance(
   return {
     id,
     kind: NodeKind.Video,
-    props,
+    props: props as VideoProps,
     children: [],
   };
 }
@@ -521,10 +508,7 @@ function createScrollBarInstance(
   return {
     id,
     kind: NodeKind.ScrollBar,
-    props: {
-      ...props,
-      children: undefined,
-    },
+    props: props as ScrollBarProps,
     children: [],
   };
 }
@@ -540,10 +524,7 @@ function createSvgInstance(
     id: h.nextId(),
     kind: NodeKind.Svg,
     // @ts-ignore
-    props: {
-      ...props,
-      children: undefined,
-    },
+    props: props,
     children: [],
   };
 }
@@ -613,10 +594,7 @@ function createCustomInstance(
     id: h.nextId(),
     kind: NodeKind.Custom,
     // @ts-ignore
-    props: {
-      ...props,
-      children: undefined,
-    },
+    props: props,
     children: [],
     component: kind,
   };
@@ -624,7 +602,7 @@ function createCustomInstance(
 
 function createNavAnimationInstance(
   _kind: NodeKind,
-  props: NodeProps,
+  props: NavAnimationProps,
   _r: RootContainer,
   h: Host,
   _o: OpaqueHandle
@@ -633,10 +611,7 @@ function createNavAnimationInstance(
     id: h.nextId(),
     kind: NodeKind.NavAnimation,
     // @ts-ignore
-    props: {
-      ...props,
-      children: undefined,
-    },
+    props: props,
     children: [],
   };
 }
@@ -651,10 +626,7 @@ function createBalancesTableInstance(
   return {
     id: h.nextId(),
     kind: NodeKind.BalancesTable,
-    props: {
-      ...props,
-      children: undefined,
-    },
+    props: props as BalancesTableProps,
     children: [],
   };
 }
@@ -670,10 +642,7 @@ function createBalancesTableHeadInstance(
     id: h.nextId(),
     kind: NodeKind.BalancesTableHead,
     // @ts-ignore
-    props: {
-      ...props,
-      children: undefined,
-    },
+    props: props,
     children: [],
   };
 }
@@ -688,10 +657,7 @@ function createBalancesTableContentInstance(
   return {
     id: h.nextId(),
     kind: NodeKind.BalancesTableContent,
-    props: {
-      ...props,
-      children: undefined,
-    },
+    props: props as BalancesTableContentProps,
     children: [],
   };
 }
@@ -707,10 +673,7 @@ function createBalancesTableRowInstance(
   return {
     id,
     kind: NodeKind.BalancesTableRow,
-    props: {
-      ...props,
-      children: undefined,
-    },
+    props: props as BalancesTableRowProps,
     children: [],
   };
 }
@@ -725,10 +688,7 @@ function createBalancesTableCellInstance(
   return {
     id: h.nextId(),
     kind: NodeKind.BalancesTableCell,
-    props: {
-      ...props,
-      children: undefined,
-    },
+    props: props as BalancesTableCellProps,
     children: [],
   };
 }
@@ -743,10 +703,7 @@ function createBalancesTableFooterInstance(
   return {
     id: h.nextId(),
     kind: NodeKind.BalancesTableFooter,
-    props: {
-      ...props,
-      children: undefined,
-    },
+    props: props as BalancesTableFooterProps,
     children: [],
   };
 }
@@ -810,10 +767,9 @@ export type NodeProps =
   | LoadingProps
   | ScrollBarProps
   | IframeProps
-  // TODO: add these and fix the types.
-  //	| SvgProps
-  //	| PathProps
-  //	| CircleProps
+  | SvgProps
+  | PathProps
+  | CircleProps
   | NavAnimationProps
   | BalancesTableProps
   | BalancesTableHeadProps
@@ -865,9 +821,10 @@ export enum NodeKind {
 // Table.
 //
 type TableNodeSerialized = DefNodeSerialized<NodeKind.Table, TableProps>;
-type TableProps = {
-  style: Style;
-  children: undefined;
+export type TableProps = {
+  style?: Style;
+  onClick?: () => void;
+  children?: ReactNode | undefined;
 };
 
 //
@@ -877,19 +834,21 @@ type TableRowNodeSerialized = DefNodeSerialized<
   NodeKind.TableRow,
   TableRowProps
 >;
-type TableRowProps = {
-  style: Style;
-  children: undefined;
+export type TableRowProps = {
+  style?: Style;
+  onClick?: () => void;
+  children?: ReactNode | undefined;
 };
 
 //
 // Text.
 //
 type TextNodeSerialized = DefNodeSerialized<NodeKind.Text, TextProps>;
-type TextProps = {
-  style: Style;
-  children: undefined;
-  tw: string;
+export type TextProps = {
+  style?: Style;
+  onClick?: () => void;
+  children?: ReactNode | undefined;
+  tw?: string;
 };
 
 //
@@ -899,15 +858,16 @@ type TextFieldNodeSerialized = DefNodeSerialized<
   NodeKind.TextField,
   TextFieldProps
 >;
-type TextFieldProps = {
+export type TextFieldProps = {
   onChange?: (event: Event) => void;
   value?: any;
   multiline?: boolean;
   numberOfLines?: number;
   placeholder?: string;
-  style: Style;
-  children: undefined;
-  tw: string;
+  style?: Style;
+  onClick?: () => void;
+  children?: ReactNode | undefined;
+  tw?: string;
 };
 
 //
@@ -928,43 +888,44 @@ type FileInputProps = {
 // Image.
 //
 type ImageNodeSerialized = DefNodeSerialized<NodeKind.Image, ImageProps>;
-type ImageProps = {
-  style: Style;
-  onClick?: (() => Promise<void>) | boolean;
-  children: undefined;
+export interface ImageProps {
+  style?: Style;
+  onClick?: () => void;
+  children?: ReactNode | undefined;
   src: string;
-  tw: string;
-};
+  tw?: string;
+}
 
 //
 // View.
 //
 type ViewNodeSerialized = DefNodeSerialized<NodeKind.View, ViewProps>;
-type ViewProps = {
-  onClick?: () => Promise<void>;
-  style: Style;
-  children: undefined;
-  tw: string;
+export type ViewProps = {
+  style?: Style;
+  onClick?: () => void;
+  children?: ReactNode | undefined;
+  tw?: string;
 };
 
 //
 // Button.
 //
 type ButtonNodeSerialized = DefNodeSerialized<NodeKind.Button, ButtonProps>;
-type ButtonProps = {
-  onClick?: (() => Promise<void>) | boolean;
-  style: Style;
-  children: undefined;
-  tw: string;
+export type ButtonProps = {
+  style?: Style;
+  onClick?: () => void;
+  children?: ReactNode | undefined;
+  tw?: string;
 };
 
 //
 // Loading.
 //
 type LoadingNodeSerialized = DefNodeSerialized<NodeKind.Loading, LoadingProps>;
-type LoadingProps = {
-  style: Style;
-  children: undefined;
+export type LoadingProps = {
+  style?: Style;
+  onClick?: () => void;
+  children?: ReactNode | undefined;
 };
 
 type AudioNodeSerialized = DefNodeSerialized<NodeKind.Audio, AudioProps>;
@@ -980,14 +941,15 @@ type AudioProps = {
 
 type VideoNodeSerialized = DefNodeSerialized<NodeKind.Video, VideoProps>;
 type VideoProps = {
-  style: Style;
+  style?: Style;
+  onClick?: () => void;
   children: undefined;
   volume: number;
   src: string;
   stream: MediaStream;
   muted: boolean;
   autoplay: boolean;
-  tw: string;
+  tw?: string;
 };
 
 //
@@ -997,41 +959,43 @@ type ScrollBarNodeSerialized = DefNodeSerialized<
   NodeKind.ScrollBar,
   ScrollBarProps
 >;
-type ScrollBarProps = {
-  style: Style;
-  children: undefined;
+export type ScrollBarProps = {
+  style?: Style;
+  onClick?: () => void;
+  children?: ReactNode | undefined;
 };
 
 //
 // Svg.
 //
 type SvgNodeSerialized = DefNodeSerialized<NodeKind.Svg, SvgProps>;
-type SvgProps = {
-  width: string;
-  height: string;
-  viewBox: string;
-  fill: string;
-  children: undefined;
-  style: Style;
-  tw: string;
+export type SvgProps = {
+  width: number;
+  height: number;
+  viewBox?: string;
+  fill?: string;
+  children?: ReactNode | undefined;
+  style?: Style;
+  onClick?: () => void;
+  tw?: string;
 };
 
 //
 // Path.
 //
 type PathNodeSerialized = DefNodeSerialized<NodeKind.Path, PathProps>;
-type PathProps = {
+export type PathProps = {
   d: string;
   fill: string;
-  style: Style;
+  style?: Style;
   fillRule?: string;
   clipRule?: string;
   stroke?: string;
-  tw: string;
+  tw?: string;
 };
 
 type CircleNodeSerialized = DefNodeSerialized<NodeKind.Circle, CircleProps>;
-type CircleProps = {
+export type CircleProps = {
   cx: string;
   cy: string;
   r: string;
@@ -1041,39 +1005,42 @@ type CircleProps = {
   pathLength: string;
   strokeDasharray: string;
   strokeDashoffset: string;
-  tw: string;
+  tw?: string;
 };
 
 //
 // IFrame.
 //
 type IframeNodeSerialized = DefNodeSerialized<NodeKind.Iframe, IframeProps>;
-type IframeProps = {
-  style: Style;
-  children: undefined;
-  width: string;
-  height: string;
-  xnft: boolean;
-  tw: string;
+export type IframeProps = {
+  style?: Style;
+  onClick?: () => void;
+  children?: ReactNode | undefined;
+  src: string;
+  width?: string;
+  height?: string;
+  xnft?: boolean;
+  tw?: string;
 };
 
 //
 // Custom.
 //
-type CustomProps = any;
+export type CustomProps = Record<string, any>;
 
 //
 // NavAnimation.
 //
-type NavAnimationNodeSerialized = DefNodeSerialized<
+export type NavAnimationNodeSerialized = DefNodeSerialized<
   NodeKind.NavAnimation,
   NavAnimationProps
 >;
-type NavAnimationProps = {
+export type NavAnimationProps = {
   routeName: string;
   navAction: string;
-  style: undefined;
-  children: undefined;
+  style?: Style;
+  onClick?: () => void;
+  children?: ReactNode | undefined;
 };
 
 //
@@ -1083,8 +1050,6 @@ export type TextSerialized = {
   id: number;
   kind: "raw";
   text: string | number;
-  props: undefined;
-  style: undefined;
 };
 
 //
@@ -1094,57 +1059,57 @@ type BalancesTableNodeSerialized = DefNodeSerialized<
   NodeKind.BalancesTable,
   BalancesTableProps
 >;
-type BalancesTableProps = {
-  style: Style;
-  children: undefined;
+export type BalancesTableProps = {
+  style?: Style;
+  children?: ReactNode | undefined;
 };
 type BalancesTableHeadNodeSerialized = DefNodeSerialized<
   NodeKind.BalancesTableHead,
   BalancesTableHeadProps
 >;
-type BalancesTableHeadProps = {
-  style: Style;
+export type BalancesTableHeadProps = {
+  style?: Style;
   title: string;
   iconUrl: string;
-  children: undefined;
+  children?: ReactNode | undefined;
 };
 type BalancesTableContentNodeSerialized = DefNodeSerialized<
   NodeKind.BalancesTableContent,
   BalancesTableContentProps
 >;
-type BalancesTableContentProps = {
-  style: Style;
-  children: undefined;
+export type BalancesTableContentProps = {
+  style?: Style;
+  children?: ReactNode | undefined;
 };
 type BalancesTableRowNodeSerialized = DefNodeSerialized<
   NodeKind.BalancesTableRow,
   BalancesTableRowProps
 >;
-type BalancesTableRowProps = {
-  onClick?: (() => Promise<void>) | boolean;
-  style: Style;
-  children: undefined;
+export type BalancesTableRowProps = {
+  style?: Style;
+  children?: ReactNode | undefined;
+  onClick?: () => void;
 };
 type BalancesTableCellNodeSerialized = DefNodeSerialized<
   NodeKind.BalancesTableCell,
   BalancesTableCellProps
 >;
-type BalancesTableCellProps = {
+export type BalancesTableCellProps = {
   icon?: string;
   title?: string;
   subtitle?: string;
   usdValue?: number;
   percentChange?: number;
-  style: Style;
-  children: undefined;
+  style?: Style;
+  children?: ReactNode | undefined;
 };
 type BalancesTableFooterNodeSerialized = DefNodeSerialized<
   NodeKind.BalancesTableFooter,
   BalancesTableFooterProps
 >;
-type BalancesTableFooterProps = {
-  style: Style;
-  children: undefined;
+export type BalancesTableFooterProps = {
+  style?: Style;
+  children?: ReactNode | undefined;
 };
 
 //

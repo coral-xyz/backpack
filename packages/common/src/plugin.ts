@@ -1,4 +1,4 @@
-import { PublicKey } from "@solana/web3.js";
+import { ConfirmOptions, PublicKey, SendOptions } from "@solana/web3.js";
 import {
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
@@ -37,7 +37,7 @@ import { getLogger, Event, XnftMetadata } from "@coral-xyz/common-public";
 import { BackgroundClient } from "./channel/app-ui";
 import { PluginServer } from "./channel/plugin";
 
-import { Blockchain, RpcResponse } from "./types";
+import { Blockchain, RpcResponse, XnftPreference } from "./types";
 
 const logger = getLogger("common/plugin");
 
@@ -123,7 +123,7 @@ export class Plugin {
   //
   // Loads the plugin javascript code inside the iframe.
   //
-  public createIframe() {
+  public createIframe(preference: XnftPreference) {
     logger.debug("creating iframe element");
 
     this._nextRenderId = 0;
@@ -132,6 +132,12 @@ export class Plugin {
     this.iframeRoot.style.height = "100vh";
     this.iframeRoot.style.border = "none";
 
+    if (preference.mediaPermissions) {
+      this.iframeRoot.setAttribute(
+        "allow",
+        "camera;microphone;display-capture"
+      );
+    }
     this.iframeRoot.setAttribute("fetchpriority", "low");
     this.iframeRoot.src = this.iframeRootUrl;
     this.iframeRoot.sandbox.add("allow-same-origin");
@@ -211,8 +217,8 @@ export class Plugin {
   // Rendering.
   //////////////////////////////////////////////////////////////////////////////
 
-  public mount() {
-    this.createIframe();
+  public mount(preference: XnftPreference) {
+    this.createIframe(preference);
     this.didFinishSetup!.then(() => {
       this.pushMountNotification();
     });
@@ -388,7 +394,9 @@ export class Plugin {
       case PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX:
         return await this._handleSolanaSignAndSendTransaction(
           params[0],
-          params[1]
+          params[1],
+          params[2],
+          params[3]
         );
       case PLUGIN_SOLANA_RPC_METHOD_SIGN_MESSAGE:
         return await this._handleSolanaSignMessage(params[0], params[1]);
@@ -482,13 +490,17 @@ export class Plugin {
 
   private async _handleSolanaSignAndSendTransaction(
     transaction: string,
-    pubkey: string
+    pubkey: string,
+    options: SendOptions | ConfirmOptions,
+    confirmTransaction: boolean
   ): Promise<RpcResponse> {
     try {
       const signature = await this._requestTransactionApproval(
         PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION,
         transaction,
-        pubkey
+        pubkey,
+        options,
+        confirmTransaction
       );
       return [signature];
     } catch (err: any) {
@@ -558,7 +570,9 @@ export class Plugin {
   private async _requestTransactionApproval(
     kind: string,
     transaction: string | string[],
-    publicKey: string
+    publicKey: string,
+    options?: SendOptions | ConfirmOptions,
+    confirmTransaction?: boolean
   ): Promise<string | null> {
     return new Promise<string | null>((resolve, reject) => {
       this._requestTxApprovalFn!({
@@ -569,6 +583,8 @@ export class Plugin {
         publicKey,
         resolve,
         reject,
+        confirmTransaction,
+        options,
       });
     });
   }
