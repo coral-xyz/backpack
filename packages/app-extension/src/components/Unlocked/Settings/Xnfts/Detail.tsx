@@ -78,8 +78,8 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
               ],
             });
             if (updatedMediaPermissions) {
-              //@ts-ignore: camera not part of the typedoc yet
               const result = await window.navigator.permissions.query({
+                //@ts-ignore: camera not part of the typedoc yet
                 name: "camera",
               });
               if (result.state !== "granted") {
