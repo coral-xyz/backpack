@@ -13,7 +13,6 @@ const Permissions = () => {
         video: true,
         audio: true,
       });
-      console.error("hi there");
       setPermissionGranted(true);
       stream.getTracks().forEach((x) => x.stop());
     } catch (err) {
