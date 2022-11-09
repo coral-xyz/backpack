@@ -42,7 +42,7 @@ export function Preferences() {
   // Global.
   //
   const menuItems: any = {
-    "Auto-lock timer": {
+    "Auto-Lock Timer": {
       onClick: () => nav.push("preferences-auto-lock"),
     },
     "Trusted Sites": {

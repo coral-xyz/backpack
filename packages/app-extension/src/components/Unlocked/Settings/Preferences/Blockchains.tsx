@@ -93,7 +93,7 @@ export function PreferencesBlockchains({
   };
 
   const menuItems = {
-    "Enable blockchain": {
+    "Enable Blockchain": {
       onClick: () => _onClick(isEnabled),
       detail: (
         <SwitchToggle
