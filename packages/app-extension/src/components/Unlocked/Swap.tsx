@@ -803,7 +803,7 @@ export function SelectToken({
   };
 
   useEffect(() => {
-    nav.setTitle("Select token");
+    nav.setTitle("Select Token");
   }, [nav]);
 
   return (

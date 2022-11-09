@@ -154,7 +154,7 @@ function SendButton({
               {
                 name: "select-token",
                 component: SendToken,
-                title: "Select token",
+                title: "Select Token",
               },
               {
                 name: "send",
