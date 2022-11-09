@@ -68,7 +68,6 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
           enabled={xnftPreference.mediaPermissions}
           onChange={async () => {
             const updatedMediaPermissions = !xnftPreference.mediaPermissions;
-
             await background.request({
               method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
               params: [
@@ -78,6 +77,16 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
                 },
               ],
             });
+            if (updatedMediaPermissions) {
+              //@ts-ignore: camera not part of the typedoc yet
+              const result = await window.navigator.permissions.query({
+                name: "camera",
+              });
+              if (result.state !== "granted") {
+                window.open("/permissions.html", "_blank");
+                return;
+              }
+            }
           }}
         />
       ),
