@@ -80,3 +80,10 @@ export type BlockchainKeyringInit = {
   publicKey: string;
   signature: string | null;
 };
+
+export interface XnftPreference {
+  disabled: boolean;
+  mediaPermissions: boolean;
+}
+
+export type XnftPreferenceStore = { [key: string]: XnftPreference };

@@ -1,8 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import { Loading } from "../components/common";
-import { useAvatarUrl, useDarkMode, useUsername } from "@coral-xyz/recoil";
+import {
+  useAvatarUrl,
+  useDarkMode,
+  useUsername,
+  useXnftPreference,
+} from "@coral-xyz/recoil";
+import { XnftPreference } from "@coral-xyz/common";
 
-export function PluginRenderer({ plugin }: { plugin: any }) {
+export function PluginRenderer({
+  plugin,
+  xnftPreference,
+}: {
+  plugin: any;
+  xnftPreference: XnftPreference;
+}) {
   const ref = useRef<any>();
   const [loaded, setLoaded] = useState(false);
   const username = useUsername();
@@ -11,7 +23,7 @@ export function PluginRenderer({ plugin }: { plugin: any }) {
 
   useEffect(() => {
     if (plugin && ref && ref.current) {
-      plugin.mount();
+      plugin.mount(xnftPreference);
       plugin.didFinishSetup!.then(() => {
         plugin.pushAppUiMetadata({ isDarkMode, username, avatarUrl });
         plugin.iframeRoot.style.display = "";
