@@ -3,3 +3,4 @@ export * from "./Icons";
 export * from "./Stack";
 export * from "./List";
 export * from "./storage";
+export * from "./media-permissions";
