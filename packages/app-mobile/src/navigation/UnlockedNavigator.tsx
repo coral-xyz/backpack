@@ -2,11 +2,10 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
+import AppListScreen from "@screens/Unlocked/AppListScreen";
+import BalancesScreen from "@screens/Unlocked/BalancesScreen";
+import NftCollectiblesScreen from "@screens/Unlocked/NftCollectiblesScreen";
 import { Button, Text, View } from "react-native";
-
-import BalancesScreen from "../screens/Unlocked/BalancesScreen";
-import NftCollectiblesScreen from "../screens/Unlocked/NftCollectiblesScreen";
-import AppListScreen from "../screens/Unlocked/AppListScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
