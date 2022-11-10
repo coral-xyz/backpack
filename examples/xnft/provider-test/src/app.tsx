@@ -50,6 +50,22 @@ export function App() {
     console.log("ethereum send transaction", result);
   };
 
+  const solanaSignAndConfirmTransaction = async () => {
+    const transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: window.xnft.solana.publicKey,
+        toPubkey: new PublicKey("H4YJ7ESVkiiP9tGeQJy9jKVSHk98tSAUD3LqTowH9tEY"),
+        lamports: 1,
+      })
+    );
+    try {
+      const result = await window.xnft.solana.sendAndConfirm(transaction);
+      console.log("solana sign and confirm transaction", result);
+    } catch (e) {
+      console.log(`Error while signing and confirming transaction ${e}`);
+    }
+  };
+
   const solanaSignMessage = async () => {
     const result = await window.xnft.solana.signMessage(
       Buffer.from("Hello, world!")
@@ -183,6 +199,14 @@ export function App() {
       <View style={{ margin: "24px" }}>
         <Button style={{ width: "100%" }} onClick={solanaSignMessage}>
           Sign Solana Message
+        </Button>
+      </View>
+      <View style={{ margin: "24px" }}>
+        <Button
+          style={{ width: "100%" }}
+          onClick={solanaSignAndConfirmTransaction}
+        >
+          Sign and confirm Solana Tx
         </Button>
       </View>
       <View style={{ margin: "24px" }}>

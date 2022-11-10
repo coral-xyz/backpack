@@ -32,6 +32,7 @@ import {
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
   NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
+  NOTIFICATION_XNFT_PREFERENCE_UPDATED,
 } from "@coral-xyz/common";
 import {
   KeyringStoreStateEnum,
@@ -59,6 +60,7 @@ export function NotificationsProvider(props: any) {
   const setActiveWallets = useSetRecoilState(atoms.activeWallets);
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
   const setAutoLockSecs = useSetRecoilState(atoms.autoLockSecs);
+  const setXnftPreferences = useSetRecoilState(atoms.xnftPreferences);
   const setIsDarkMode = useSetRecoilState(atoms.isDarkMode);
   const setIsDeveloperMode = useSetRecoilState(atoms.isDeveloperMode);
   const setEnabledBlockchains = useSetRecoilState(atoms.enabledBlockchains);
@@ -122,6 +124,9 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_AUTO_LOCK_SECS_UPDATED:
           handleAutoLockSecsUpdated(notif);
+          break;
+        case NOTIFICATION_XNFT_PREFERENCE_UPDATED:
+          handleXnftPreferenceUpdated(notif);
           break;
         case NOTIFICATION_DARK_MODE_UPDATED:
           handleIsDarkModeUpdated(notif);
@@ -324,6 +329,10 @@ export function NotificationsProvider(props: any) {
 
     const handleAutoLockSecsUpdated = (notif: Notification) => {
       setAutoLockSecs(notif.data.autoLockSecs);
+    };
+
+    const handleXnftPreferenceUpdated = (notif: Notification) => {
+      setXnftPreferences(notif.data.updatedPreferences);
     };
 
     const handleIsDarkModeUpdated = (notif: Notification) => {
