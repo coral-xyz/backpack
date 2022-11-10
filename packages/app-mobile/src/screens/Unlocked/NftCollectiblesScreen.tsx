@@ -1,5 +1,5 @@
-import { Grid, Skeleton } from "@mui/material";
-import { Block, Image as ImageIcon } from "@mui/icons-material";
+// import { Grid, Skeleton } from "@mui/material";
+// import { Block, Image as ImageIcon } from "@mui/icons-material";
 import {
   toTitleCase,
   Blockchain,
@@ -15,27 +15,54 @@ import {
   useLoader,
   useNavigation,
 } from "@coral-xyz/recoil";
-import { useCustomTheme, styles } from "@coral-xyz/themes";
-import { GridCard } from "./Common";
-import { EmptyState } from "../../common/EmptyState";
-import {
-  BalancesTable,
-  BalancesTableContent,
-  BalancesTableHead,
-} from "../Balances";
-import EntryONE from "./EntryONE";
-import { useIsONELive } from "../../../hooks/useIsONELive";
+import { View, Text, SectionList, Pressable } from "react-native";
+import { useTheme } from "@hooks";
+// import { GridCard } from "./Common";
+// import { EmptyState } from "../../common/EmptyState";
+// import {
+//   BalancesTable,
+//   BalancesTableContent,
+//   BalancesTableHead,
+// } from "../Balances";
+// import EntryONE from "./EntryONE";
+// import { useIsONELive } from "../../../hooks/useIsONELive";
 
-const useStyles = styles(() => ({
-  cardContentContainer: {
-    //    marginTop: "36px",
-  },
-}));
+function Header({ title }) {
+  console.log("title", title);
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
+      <View>
+        <View
+          style={{
+            width: 32,
+            height: 32,
+            backgroundColor: "yellow",
+            marginRight: 12,
+          }}
+        />
+        <Text>{title}</Text>
+      </View>
+      <View style={{ width: 32, height: 32, backgroundColor: "orange" }} />
+    </View>
+  );
+}
 
-export function Nfts() {
+function ListItem({ item }) {
+  console.log("item", item);
+  return <View style={{ backgroundColor: "yellow" }} />;
+}
+
+export default function NftCollectiblesScreen() {
   const isONELive = useIsONELive();
   const activeWallets = useActiveWallets();
   const enabledBlockchains = useEnabledBlockchains();
+
   const [collections, _, isLoading] = useLoader(
     nftCollections,
     Object.fromEntries(
@@ -47,8 +74,17 @@ export function Nfts() {
     [activeWallets]
   );
 
+  const sections = Object.entries(collections).map(
+    ([blockchain, collections]) => {
+      return {
+        title: toTitleCase(blockchain),
+        data: collections,
+      };
+    }
+  );
+
   return (
-    <>
+    <Screen>
       {isONELive && <EntryONE />}
       {Object.values(collections).flat().length === 0 && !isLoading ? (
         <EmptyState
@@ -60,18 +96,15 @@ export function Nfts() {
           verticallyCentered={!isONELive}
         />
       ) : (
-        <>
-          {Object.entries(collections).map(([blockchain, collections]) => (
-            <NftTable
-              key={blockchain}
-              blockchain={blockchain as Blockchain}
-              collections={collections as NftCollection[]}
-              isLoading={isLoading}
-            />
-          ))}
-        </>
+        <SectionList
+          renderItem={({ item }) => <ListItem title={item} />}
+          renderSectionHeader={({ section }) => (
+            <Header title={section.title} />
+          )}
+          sections={sections}
+        />
       )}
-    </>
+    </Screen>
   );
 }
 
@@ -84,8 +117,8 @@ export function NftTable({
   collections: NftCollection[];
   isLoading: boolean;
 }) {
-  const classes = useStyles();
-  const theme = useCustomTheme();
+  // const classes = useStyles();
+  const theme = useTheme();
   const blockchainLogo = useBlockchainLogo(blockchain);
   const title = toTitleCase(blockchain);
   if (!isLoading && collections.length === 0) return <></>;
@@ -136,13 +169,12 @@ export function NftTable({
   );
 }
 
-// each grid piece is a collection of NFTs you can navigate to
 function NftCollectionCard({ collection }: { collection: NftCollection }) {
   const { push } = useNavigation();
   // Display the first NFT in the collection as the thumbnail in the grid
   const collectionDisplayNft = collection.items[0];
 
-  const onClick = () => {
+  const onPress = () => {
     if (collection.items.length === 1) {
       if (!collectionDisplayNft.name || !collectionDisplayNft.id) {
         throw new Error("invalid NFT data");
@@ -168,10 +200,8 @@ function NftCollectionCard({ collection }: { collection: NftCollection }) {
   };
 
   return (
-    <GridCard
-      onClick={onClick}
-      nft={collectionDisplayNft}
-      subtitle={{ name: collection.name, length: collection.items.length }}
-    />
+    <View style={{ width: 150, height: 150, borderRadius: 20 }}>
+      <Pressable onPress={onPress}></Pressable>
+    </View>
   );
 }

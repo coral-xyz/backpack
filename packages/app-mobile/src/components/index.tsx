@@ -1,13 +1,12 @@
-import type { StyleProp, TextStyle, ViewStyle } from "react-native";
-import { Pressable, Text, View } from "react-native";
-
+import { proxyImageUrl } from "@coral-xyz/common";
 // probably should put all the components in here as an index
-import { useTheme } from "../hooks/useTheme";
+import { useTheme } from "@hooks";
+import type { StyleProp, TextStyle, ViewStyle } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 
 export { MnemonicInputFields } from "./MnemonicInputFields";
 //
-// function getRandomColor() {
-//   var letters = "0123456789ABCDEF";
+// function getRandomColor() { var letters = "0123456789ABCDEF";
 //   var color = "#";
 //   for (var i = 0; i < 6; i++) {
 //     color += letters[Math.floor(Math.random() * 16)];
@@ -212,5 +211,20 @@ export function EmptyState({
       )}
       <PrimaryButton label={buttonText} onPress={onPress} />
     </View>
+  );
+}
+
+// React Native apps need to specifcy a width and height for remote images
+export function ProxyImage({ src, ...props }: any) {
+  const url = proxyImageUrl(props.src);
+  return (
+    <Image
+      {...props}
+      // onError={({ currentTarget }) => {
+      //   currentTarget.onerror = props.onError || null;
+      //   currentTarget.src = props.src;
+      // }}
+      source={url}
+    />
   );
 }

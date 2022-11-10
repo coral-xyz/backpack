@@ -1,27 +1,12 @@
-import { Screen } from "@components";
-import type { Blockchain } from "@coral-xyz/common";
-import {
-  ETH_NATIVE_MINT,
-  NAV_COMPONENT_TOKEN,
-  SOL_NATIVE_MINT,
-  UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
-} from "@coral-xyz/common";
-import {
-  useAppIcons,
-  useBackgroundClient,
-  useBlockchainTokensSorted,
-} from "@coral-xyz/recoil";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
-import { Button, FlatList, Pressable, Text, View } from "react-native";
-import tw from "twrnc";
+import { Button, Text, View } from "react-native";
 
-import { CustomButton } from "../components/CustomButton";
-import { ButtonFooter, MainContent } from "../components/Templates";
-import { RandomBackgroundScreen } from "../screens/Helpers/RandomBackgroundScreen";
+import BalancesScreen from "../screens/Unlocked/BalancesScreen";
+import NftCollectiblesScreen from "../screens/Unlocked/NftCollectiblesScreen";
+import AppListScreen from "../screens/Unlocked/AppListScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -37,113 +22,6 @@ export default function UnlockedNavigator() {
         <Stack.Screen name="RecentActivity" component={RecentActivityModal} />
       </Stack.Group>
     </Stack.Navigator>
-  );
-}
-
-type Plugin = {
-  title: string;
-  iconUrl: string;
-  url: string;
-  install: any;
-};
-
-function PluginGrid() {
-  const plugins = useAppIcons();
-  const background = useBackgroundClient();
-
-  const onPressPlugin = (p: Plugin) => {
-    // Update the URL to use the plugin.
-    //
-    // This will do two things
-    //
-    // 1. Update and persist the new url. Important so that if the user
-    //    closes/re-opens the app, the plugin opens up immediately.
-    // 2. Cause a reload of this route with the plguin url in the search
-    //    params, which will trigger the drawer to activate.
-    //
-    const newUrl = `${location.pathname}${
-      location.search
-    }&plugin=${encodeURIComponent(p.install.account.xnft.toString())}`;
-    console.log("onPressPlugin:newUrl", newUrl);
-    // TODO(peter) probably Linking.openURL ?
-    background
-      .request({
-        method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
-        params: [newUrl],
-      })
-      .catch(console.error);
-  };
-
-  function renderItem({ item }) {
-    return (
-      <Pressable onPress={() => onPressPlugin(item)}>
-        <View>
-          <Text>{item.url}</Text>
-        </View>
-      </Pressable>
-    );
-  }
-
-  // HACK: hide autoinstalled ONE xnft -> entrypoint in collectibles.
-  const pluginsWithoutONExNFT = plugins.filter(
-    (p) =>
-      p.install.account.xfnit.toString() !==
-      "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4"
-  );
-
-  return (
-    <Screen>
-      <FlatList
-        data={pluginsWithoutONExNFT}
-        numColumns={3}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.url}
-        initialNumToRender={12} // TODO
-      />
-    </Screen>
-  );
-}
-
-function BalancesScreen() {
-  console.log("balances");
-  const background = useBackgroundClient();
-  //  const wallet = useActiveSolanaWallet();
-
-  function BalanceSummaryWidget() {
-    return null;
-  }
-
-  function TransferWidget({ rampEnabled }) {
-    return null;
-  }
-
-  function onPressTokenRow(blockchain: Blockchain, token: Token) {
-    console.log("onPressTokenRow", blockchain, token);
-  }
-
-  function TokenTables({ onPressRow, customFilter }) {
-    return null;
-  }
-
-  return (
-    <Screen>
-      <BalanceSummaryWidget />
-      <View style={{ paddingVertical: 32 }}>
-        <TransferWidget rampEnabled={true} />
-      </View>
-      <TokenTables
-        onPressRow={onPressTokenRow}
-        customFilter={(token) => {
-          if (token.mint && token.mint === SOL_NATIVE_MINT) {
-            return true;
-          }
-          if (token.address && token.address === ETH_NATIVE_MINT) {
-            return true;
-          }
-          return !token.nativeBalance.isZero();
-        }}
-      />
-    </Screen>
   );
 }
 
@@ -228,8 +106,8 @@ function UnlockedBottomTabNavigator() {
       })}
     >
       <Tab.Screen name="Balances" component={BalancesScreen} />
-      <Tab.Screen name="Applications" component={RandomBackgroundScreen} />
-      <Tab.Screen name="Collectibles" component={RandomBackgroundScreen} />
+      <Tab.Screen name="Applications" component={AppListScreen} />
+      <Tab.Screen name="Collectibles" component={NftCollectiblesScreen} />
     </Tab.Navigator>
   );
 }
