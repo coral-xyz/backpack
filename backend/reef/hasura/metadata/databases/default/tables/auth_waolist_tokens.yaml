@@ -1,0 +1,30 @@
+table:
+  name: waolist_tokens
+  schema: auth
+insert_permissions:
+  - role: one_xnft
+    permission:
+      check: {}
+      columns:
+        - username
+        - minted_count
+        - eligible_count
+        - tx_list
+select_permissions:
+  - role: one_xnft
+    permission:
+      columns:
+        - username
+        - eligible_count
+        - minted_count
+        - tx_list
+      filter: {}
+update_permissions:
+  - role: one_xnft
+    permission:
+      columns:
+        - eligible_count
+        - minted_count
+        - tx_list
+      filter: {}
+      check: null
