@@ -1,10 +1,12 @@
 import { useLocation } from "react-router-dom";
 import { getSvgPath } from "figma-squircle";
-import { Grid, Button, Typography } from "@mui/material";
+import { Skeleton, Grid, Button, Typography } from "@mui/material";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import {
-  useAppIcons,
+  appIcons,
+  useLoader,
+  useActiveWallets,
   useBackgroundClient,
   useEnabledBlockchains,
 } from "@coral-xyz/recoil";
@@ -71,18 +73,19 @@ export function Apps() {
 }
 
 function PluginGrid() {
-  const _plugins = useAppIcons();
   const location = useLocation();
   const background = useBackgroundClient();
   const theme = useCustomTheme();
+  const activeWallets = useActiveWallets();
 
-  const plugins = _plugins
-    // HACK: hide autoinstalled ONE xnft -> entrypoint in collectibles.
-    .filter(
-      (p) =>
-        p.install.account.xnft.toString() !==
-        "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4"
-    );
+  const [plugins, _, isLoading] = useLoader(
+    appIcons,
+    [],
+    // Note this reloads on any change to the active wallets, which reloads
+    // NFTs for both blockchains.
+    // TODO Make this reload for only the relevant blockchain
+    [activeWallets]
+  );
 
   const onClickPlugin = (p: any) => {
     // Update the URL to use the plugin.
@@ -105,7 +108,7 @@ function PluginGrid() {
       .catch(console.error);
   };
 
-  if (plugins.length === 0) {
+  if (!isLoading && plugins.length === 0) {
     return (
       <EmptyState
         icon={(props: any) => <BlockIcon {...props} />}
@@ -137,20 +140,44 @@ function PluginGrid() {
         }}
       >
         <Grid container style={{}}>
-          {plugins.map((p: any, idx: number) => {
-            return (
-              <Grid
-                item
-                key={p.url}
-                xs={3}
-                style={{
-                  marginTop: idx >= 4 ? "24px" : 0,
-                }}
-              >
-                <PluginIcon plugin={p} onClick={() => onClickPlugin(p)} />
-              </Grid>
-            );
-          })}
+          {true || isLoading
+            ? Array.from(Array(8).keys()).map((_, idx) => {
+                return (
+                  <Grid
+                    item
+                    key={idx}
+                    xs={3}
+                    style={{
+                      marginTop: idx >= 4 ? "24px" : 0,
+                    }}
+                  >
+                    <div
+                      style={{
+                        height: ICON_WIDTH,
+                        display: "flex",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Skeleton width={ICON_WIDTH} />
+                    </div>
+                  </Grid>
+                );
+              })
+            : plugins.map((p: any, idx: number) => {
+                return (
+                  <Grid
+                    item
+                    key={p.url}
+                    xs={3}
+                    style={{
+                      marginTop: idx >= 4 ? "24px" : 0,
+                    }}
+                  >
+                    <PluginIcon plugin={p} onClick={() => onClickPlugin(p)} />
+                  </Grid>
+                );
+              })}
         </Grid>
       </div>
     </div>
