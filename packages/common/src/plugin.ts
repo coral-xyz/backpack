@@ -31,6 +31,7 @@ import {
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
   PLUGIN_NOTIFICATION_UPDATE_METADATA,
+  PLUGIN_RPC_METHOD_POP_OUT,
 } from "./constants";
 
 import { getLogger, Event, XnftMetadata } from "@coral-xyz/common-public";
@@ -38,6 +39,7 @@ import { BackgroundClient } from "./channel/app-ui";
 import { PluginServer } from "./channel/plugin";
 
 import { Blockchain, RpcResponse, XnftPreference } from "./types";
+// import {openPopupWindow} from "@coral-xyz/common";
 
 const logger = getLogger("common/plugin");
 
@@ -375,6 +377,8 @@ export class Plugin {
         return await this._handlePut(params[0], params[1]);
       case PLUGIN_RPC_METHOD_WINDOW_OPEN:
         return await this._handleWindowOpen(params[0]);
+      case PLUGIN_RPC_METHOD_POP_OUT:
+        return await this._handlePopout();
       case PLUGIN_ETHEREUM_RPC_METHOD_SIGN_TX:
         return await this._handleEthereumSignTransaction(params[0], params[1]);
       case PLUGIN_ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX:
@@ -546,6 +550,11 @@ export class Plugin {
       params: [this.xnftAddress.toString(), key, value],
     });
     return [resp];
+  }
+
+  private async _handlePopout(): Promise<RpcResponse> {
+    window.open("popup.html", "_blank");
+    return ["success"];
   }
 
   private async _handleWindowOpen(url: string): Promise<RpcResponse> {
