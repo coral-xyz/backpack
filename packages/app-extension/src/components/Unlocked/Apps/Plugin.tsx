@@ -63,9 +63,6 @@ export function _PluginDisplay({
     xnftId: plugin.xnftInstallAddress.toString(),
   });
 
-  console.error("address is ");
-  console.error(plugin.xnftInstallAddress.toString());
-
   // TODO: splash loading page.
   return (
     <div

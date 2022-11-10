@@ -87,7 +87,6 @@ export function useFreshPlugin(address?: string): {
     (async () => {
       try {
         const xnft = await fetchXnft(provider, new PublicKey(address));
-        console.error(xnft);
         const plugin = new Plugin(
           new PublicKey(address),
           xnft.xnftAccount.publicKey,
@@ -122,8 +121,6 @@ export function useFreshPlugin(address?: string): {
 export function getPlugin(p: any): Plugin {
   let plug = PLUGIN_CACHE.get(p.install.account.xnft.toString());
   if (!plug) {
-    console.error("2nd");
-    console.error(p);
     plug = new Plugin(
       p.install.account.xnft,
       p.install.publicKey,

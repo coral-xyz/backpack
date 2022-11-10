@@ -127,7 +127,7 @@ export class Plugin {
   // Loads the plugin javascript code inside the iframe.
   //
   public createIframe(preference: XnftPreference) {
-    logger.debug("creating iframe element " + preference);
+    logger.debug("creating iframe element");
 
     this._nextRenderId = 0;
     this.iframeRoot = document.createElement("iframe");
@@ -135,8 +135,6 @@ export class Plugin {
     this.iframeRoot.style.height = "100vh";
     this.iframeRoot.style.border = "none";
 
-    console.error("preference is ");
-    console.error(preference);
     if (preference.mediaPermissions) {
       this.iframeRoot.setAttribute(
         "allow",
