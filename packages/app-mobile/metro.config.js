@@ -18,6 +18,7 @@ module.exports = () => {
   // config.resolver.disableHierarchicalLookup = true;
 
   config.transformer = {
+    ...config.transformer,
     getTransformOptions: async () => ({
       transform: {
         experimentalImportSupport: false,

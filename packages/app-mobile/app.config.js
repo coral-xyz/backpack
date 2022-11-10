@@ -1,4 +1,5 @@
 const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
+const packageName = "peterpme.coral.backpack";
 
 export default {
   name: "Backpack",
@@ -19,7 +20,7 @@ export default {
   assetBundlePatterns: ["**/*"],
   ios: {
     supportsTablet: true,
-    bundleIdentifier: "community.coral.backpack",
+    bundleIdentifier: packageName,
     infoPlist: {
       WKAppBoundDomains: ["coral-xyz.github.io", "ngrok.io"],
     },
@@ -29,7 +30,7 @@ export default {
       foregroundImage: "./assets/adaptive-icon.png",
       backgroundColor: "#FFFFFF",
     },
-    package: "community.coral.backpack",
+    package: packageName,
   },
   web: {
     favicon: "./assets/favicon.png",
