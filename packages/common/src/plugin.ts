@@ -39,7 +39,6 @@ import { BackgroundClient } from "./channel/app-ui";
 import { PluginServer } from "./channel/plugin";
 
 import { Blockchain, RpcResponse, XnftPreference } from "./types";
-// import {openPopupWindow} from "@coral-xyz/common";
 
 const logger = getLogger("common/plugin");
 
