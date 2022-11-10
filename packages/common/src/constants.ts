@@ -433,6 +433,8 @@ export const LEDGER_METHOD_ETHEREUM_SIGN_EIP712_HASHED_MESSAGE =
 
 export const PLUGIN_RPC_METHOD_WINDOW_OPEN = "rpc-method-window-open";
 
+export const PLUGIN_RPC_METHOD_POP_OUT = "rpc-method-pop-out";
+
 export const BACKGROUND_SERVICE_WORKER_READY = "service-worker-ready";
 
 export const POST_MESSAGE_ORIGIN = "*";
