@@ -79,9 +79,11 @@ export class Plugin {
   readonly iconUrl: string;
   readonly title: string;
   readonly xnftAddress: PublicKey;
+  readonly xnftInstallAddress: PublicKey;
 
   constructor(
     xnftAddress: PublicKey,
+    xnftInstallAddress: PublicKey,
     url: string,
     iconUrl: string,
     title: string,
@@ -97,6 +99,7 @@ export class Plugin {
     this.iframeRootUrl = url;
     this.iconUrl = iconUrl;
     this.xnftAddress = xnftAddress;
+    this.xnftInstallAddress = xnftInstallAddress;
 
     //
     // RPC Server channel from plugin -> extension-ui.
@@ -124,7 +127,7 @@ export class Plugin {
   // Loads the plugin javascript code inside the iframe.
   //
   public createIframe(preference: XnftPreference) {
-    logger.debug("creating iframe element");
+    logger.debug("creating iframe element " + preference);
 
     this._nextRenderId = 0;
     this.iframeRoot = document.createElement("iframe");
@@ -132,6 +135,8 @@ export class Plugin {
     this.iframeRoot.style.height = "100vh";
     this.iframeRoot.style.border = "none";
 
+    console.error("preference is ");
+    console.error(preference);
     if (preference.mediaPermissions) {
       this.iframeRoot.setAttribute(
         "allow",
