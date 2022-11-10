@@ -88,39 +88,42 @@ export function useMetadata(): XnftMetadata {
   return metadata;
 }
 
-
-export function useDimensions({debounceMs=1000}) {
-  const [dimensions, setDimensions] = useState({ 
+export function useDimensions(debounceMs = 0) {
+  const [dimensions, setDimensions] = useState({
     height: window.innerHeight,
-    width: window.innerWidth
+    width: window.innerWidth,
   });
 
-  const debounce = (fn, ms) => {
-    let timer
-    return _ => {
-      clearTimeout(timer)
-      timer = setTimeout(_ => {
-        timer = null
-        fn.apply(this, arguments)
-      }, ms)
+  const debounce = (fn) => {
+    let timer;
+    return () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        timer = null;
+        fn.apply(this, arguments);
+      }, debounceMs);
     };
-  }
+  };
 
-  useEffect(()=>{   
+  useEffect(() => {
+    setDimensions({
+      height: window.innerHeight,
+      width: window.innerWidth,
+    });
+
     const debouncedHandleResize = debounce(function handleResize() {
       setDimensions({
         height: window.innerHeight,
-        width: window.innerWidth
+        width: window.innerWidth,
       });
-    }, debounceMs)
+    });
 
-    window.addEventListener('resize', debouncedHandleResize)
+    window.addEventListener("resize", debouncedHandleResize);
 
     return () => {
-      window.removeEventListener('resize', debouncedHandleResize)    
+      window.removeEventListener("resize", debouncedHandleResize);
     };
-    
-  },[]);
+  }, []);
 
   return dimensions;
 }
