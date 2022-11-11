@@ -44,8 +44,6 @@ import { allPlugins } from "../hooks";
 import { WalletPublicKeys } from "../types";
 
 const logger = getLogger("notifications-provider");
-console.log("r432:WEB");
-logger.debug("r432:WEB");
 
 //
 // The Notifications provider is used to subscribe and handle notifications
@@ -53,8 +51,6 @@ logger.debug("r432:WEB");
 // a unidirectional data flow: app -> background script -> notifications.
 //
 export function NotificationsProvider(props: any) {
-  console.log("NotificationsProvider:props", props);
-  logger.debug("NotificationsProvider:props", props);
   const setWalletPublicKeys = useSetRecoilState(atoms.walletPublicKeys);
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveWallets = useSetRecoilState(atoms.activeWallets);
@@ -77,8 +73,6 @@ export function NotificationsProvider(props: any) {
   const setEthereumFeeData = useSetRecoilState(atoms.ethereumFeeData);
   const updateEthereumBalances = useUpdateEthereumBalances();
   const navigate = useNavigate();
-  console.log("NotificationsProvider:navigate", navigate);
-  logger.debug("NotificationsProvider:navigate", navigate);
 
   useEffect(() => {
     ////////////////////////////////////////////////////////////////////////////
@@ -316,14 +310,6 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleNavigationUrlDidChange = (notif: Notification) => {
-      console.log(
-        "NotificationsProvider:handleNavigationUrlDidChange(notif)",
-        notif
-      );
-      logger.debug(
-        "NotificationsProvider:handleNavigationUrlDidChange(notif)",
-        notif
-      );
       navigate(notif.data.url);
     };
 
