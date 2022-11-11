@@ -1,3 +1,4 @@
+// Stub only mobile only. TODO(peter) consolidate most of these function calls
 import React, { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 import {
@@ -20,6 +21,7 @@ import {
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_DARK_MODE_UPDATED,
+  NOTIFICATION_DEVELOPER_MODE_UPDATED,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
@@ -30,6 +32,7 @@ import {
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
   NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
+  NOTIFICATION_XNFT_PREFERENCE_UPDATED,
 } from "@coral-xyz/common";
 import {
   KeyringStoreStateEnum,
@@ -41,8 +44,6 @@ import { allPlugins } from "../hooks";
 import { WalletPublicKeys } from "../types";
 
 const logger = getLogger("notifications-provider");
-console.log("r432:NATIVE");
-logger.debug("r432:NATIVE");
 
 //
 // The Notifications provider is used to subscribe and handle notifications
@@ -50,14 +51,14 @@ logger.debug("r432:NATIVE");
 // a unidirectional data flow: app -> background script -> notifications.
 //
 export function NotificationsProvider(props: any) {
-  console.log("NotificationsProvider:props", props);
-  logger.debug("NotificationsProvider:props", props);
   const setWalletPublicKeys = useSetRecoilState(atoms.walletPublicKeys);
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveWallets = useSetRecoilState(atoms.activeWallets);
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
   const setAutoLockSecs = useSetRecoilState(atoms.autoLockSecs);
+  const setXnftPreferences = useSetRecoilState(atoms.xnftPreferences);
   const setIsDarkMode = useSetRecoilState(atoms.isDarkMode);
+  const setIsDeveloperMode = useSetRecoilState(atoms.isDeveloperMode);
   const setEnabledBlockchains = useSetRecoilState(atoms.enabledBlockchains);
   // Solana
   const setSolanaConnectionUrl = useSetRecoilState(atoms.solanaConnectionUrl);
@@ -117,8 +118,14 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_AUTO_LOCK_SECS_UPDATED:
           handleAutoLockSecsUpdated(notif);
           break;
+        case NOTIFICATION_XNFT_PREFERENCE_UPDATED:
+          handleXnftPreferenceUpdated(notif);
+          break;
         case NOTIFICATION_DARK_MODE_UPDATED:
           handleIsDarkModeUpdated(notif);
+          break;
+        case NOTIFICATION_DEVELOPER_MODE_UPDATED:
+          handleIsDeveloperModeUpdated(notif);
           break;
         case NOTIFICATION_SOLANA_EXPLORER_UPDATED:
           handleSolanaExplorerUpdated(notif);
@@ -302,24 +309,23 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleNavigationUrlDidChange = (notif: Notification) => {
-      console.log(
-        "NotificationsProvider:handleNavigationUrlDidChange(notif)",
-        notif
-      );
-      logger.debug(
-        "NotificationsProvider:handleNavigationUrlDidChange(notif)",
-        notif
-      );
-      console.log("TODO MAYBE ???");
-      // navigate(notif.data.url);
+      logger.debug("handleNavigationUrlDidChange:notif", notif);
     };
 
     const handleAutoLockSecsUpdated = (notif: Notification) => {
       setAutoLockSecs(notif.data.autoLockSecs);
     };
 
+    const handleXnftPreferenceUpdated = (notif: Notification) => {
+      setXnftPreferences(notif.data.updatedPreferences);
+    };
+
     const handleIsDarkModeUpdated = (notif: Notification) => {
       setIsDarkMode(notif.data.darkMode);
+    };
+
+    const handleIsDeveloperModeUpdated = (notif: Notification) => {
+      setIsDeveloperMode(notif.data.developerMode);
     };
 
     const handleSolanaExplorerUpdated = (notif: Notification) => {
