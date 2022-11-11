@@ -74,7 +74,7 @@ yarn install
 yarn build
 ```
 
-### Start packages for development
+### Start everything inside `./packages` for development
 
 ```bash
 yarn start
