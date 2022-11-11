@@ -246,6 +246,7 @@ function SkeletonAppIcon() {
           clipPath: `path('${squircleIconPath}')`,
           marginLeft: "auto",
           marginRight: "auto",
+          background: "rgba(0,0,0,0.15)",
         }}
       />
       <Skeleton
@@ -255,6 +256,7 @@ function SkeletonAppIcon() {
           transform: "none",
           marginLeft: "auto",
           marginRight: "auto",
+          background: "rgba(0,0,0,0.15)",
         }}
       />
     </div>

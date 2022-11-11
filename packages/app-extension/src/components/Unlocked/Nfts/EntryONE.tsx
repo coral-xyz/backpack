@@ -49,6 +49,7 @@ const useStyles = styles((theme) => ({
     height: "100%",
     width: "100%",
     transform: "none",
+    backgroundColor: theme.custom.colors.balanceSkeleton,
   },
   hidden: {
     visibility: "hidden",
