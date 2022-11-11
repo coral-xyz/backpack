@@ -1,5 +1,4 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
-import Buffer from "buffer";
 import makeStyles from "@mui/styles/makeStyles";
 import { Box, Typography, InputAdornment, IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";

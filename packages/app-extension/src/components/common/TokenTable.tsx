@@ -240,8 +240,6 @@ export function TokenTable({
       }
     : {};
 
-  console.log({ tokenAccountsFiltered, activeWallets });
-
   return (
     <BalancesTable style={tableStyle}>
       <BalancesTableHead

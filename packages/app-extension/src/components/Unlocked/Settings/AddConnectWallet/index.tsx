@@ -48,8 +48,6 @@ export function AddConnectWalletMenu({
     };
   }, [nav.setContentStyle]);
 
-  console.log("AddConnectWalletMenu");
-
   return (
     <>
       <div

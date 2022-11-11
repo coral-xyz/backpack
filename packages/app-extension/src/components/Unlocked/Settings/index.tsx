@@ -965,12 +965,6 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [newPublicKey, setNewPublicKey] = useState("");
 
-  console.log("ImportSecretKey", {
-    secretKey,
-    newPublicKey,
-    existingPublicKeys,
-  });
-
   useEffect(() => {
     const prevTitle = nav.title;
     nav.setTitle("");
