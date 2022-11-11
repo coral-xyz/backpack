@@ -23,6 +23,5 @@
     "start": {
       "dependsOn": ["^build"]
     }
-  },
-  "globalDependencies": [".env"]
+  }
 }
