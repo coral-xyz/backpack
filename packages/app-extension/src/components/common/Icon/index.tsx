@@ -1,14 +1,20 @@
-import { styles, HOVER_OPACITY } from "@coral-xyz/themes";
-
-const useStyles = styles((theme) => ({
-  hoverButton: {
-    "&:hover": {
-      "& path": {
-        //				opacity: .8,
-      },
-    },
-  },
-}));
+export function QuestionIcon({ fill = "#A1A1AA", ...props }) {
+  return (
+    <svg
+      width="56"
+      height="56"
+      viewBox="0 0 56 56"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M28.335 5C15.4677 5 5 15.4677 5 28.335C5 41.2023 15.4677 51.67 28.335 51.67C41.2023 51.67 51.67 41.2023 51.67 28.335C51.67 15.4677 41.2023 5 28.335 5ZM27.3627 41.9471C25.7526 41.9471 24.4458 40.6403 24.4458 39.0302C24.4458 37.4201 25.7526 36.1133 27.3627 36.1133C28.9728 36.1133 30.2796 37.4201 30.2796 39.0302C30.2796 40.6403 28.9728 41.9471 27.3627 41.9471ZM35.7458 24.6928C35.1449 25.6554 34.0035 26.7366 32.3195 27.9383C29.5951 29.9529 29.669 30.4001 29.669 32.2242H24.8911C24.8911 30.7988 24.86 29.704 25.6301 28.3719C26.1221 27.5183 27.0244 26.6102 28.335 25.6495C29.9082 24.5256 31.4366 23.4424 31.4366 21.5562C31.4366 19.7886 29.9237 19.1585 28.1561 19.1585C26.3535 19.1585 24.298 19.7477 21.9898 20.9261L20.0239 16.9786C24.2183 14.6276 30.8377 13.5639 34.4565 16.51C37.1128 18.6743 37.1284 22.4799 35.7458 24.6928Z"
+        fill={fill}
+      />
+    </svg>
+  );
+}
 
 export function WarningIcon({ fill = "#A1A1AA", ...props }) {
   return (
@@ -334,10 +340,8 @@ export function EyeIcon() {
 }
 
 export function BalancesIcon({ fill = "#99A4B4", ...props }) {
-  const classes = useStyles();
   return (
     <svg
-      className={classes.hoverButton}
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
@@ -355,10 +359,8 @@ export function BalancesIcon({ fill = "#99A4B4", ...props }) {
 }
 
 export function GridIcon({ fill = "#99A4B4", ...props }) {
-  const classes = useStyles();
   return (
     <svg
-      className={classes.hoverButton}
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
@@ -387,10 +389,8 @@ export function GridIcon({ fill = "#99A4B4", ...props }) {
 }
 
 export function ImageIcon({ fill = "#99A4B4", ...props }) {
-  const classes = useStyles();
   return (
     <svg
-      className={classes.hoverButton}
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
@@ -437,10 +437,8 @@ export function MoreIcon({ fill = "#99A4B4" }) {
 }
 
 export function SwapIcon({ fill = "#99A4B4" }) {
-  const classes = useStyles();
   return (
     <svg
-      className={classes.hoverButton}
       width="24"
       height="24"
       viewBox="0 0 24 24"
