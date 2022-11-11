@@ -189,7 +189,7 @@ export class Backend {
   }
 
   async solanaConnectionUrlRead(): Promise<string> {
-    const data = await getWalletData();
+    let data = await getWalletData();
 
     // migrate the old default RPC value, this can be removed in future
     const OLD_DEFAULT = "https://solana-rpc-nodes.projectserum.com";
@@ -200,13 +200,14 @@ export class Backend {
       data.solana?.cluster === OLD_DEFAULT
     ) {
       // set the user's RPC URL to the new default value
-      await setWalletData({
+      data = {
         ...data,
         solana: {
           ...data.solana,
           cluster: SolanaCluster.DEFAULT,
         },
-      });
+      };
+      await setWalletData(data);
     }
 
     return (data.solana && data.solana.cluster) ?? SolanaCluster.DEFAULT;
