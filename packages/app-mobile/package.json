@@ -9,7 +9,8 @@
     "add": "EXPO_USE_BETA_CLI=1 npx expo add",
     "eject": "expo eject",
     "test": "jest",
-    "lint:fix": "eslint 'src/**/*' --fix"
+    "lint:fix": "eslint 'src/**/*' --fix",
+    "postinstall": "cd ../.. && yarn && yarn build"
   },
   "dependencies": {
     "@coral-xyz/common": "*",
