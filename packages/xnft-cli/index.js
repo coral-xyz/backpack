@@ -6,8 +6,13 @@
 const { Parcel } = require("@parcel/core");
 const { program } = require("commander");
 const { join, resolve } = require("path");
+const fs = require("fs");
 
 const { SIMULATOR_PORT } = { SIMULATOR_PORT: 9933 }; // TODO: replace with import.
+
+const pkgBuffer = fs.readFileSync(__dirname + "/package.json");
+const pkg = JSON.parse(pkgBuffer.toString());
+program.version(pkg.version);
 
 const options = {
   entries: "./src/index.tsx",
