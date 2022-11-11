@@ -11,6 +11,8 @@
     "lint:fix": "eslint 'src/**/*' --fix"
   },
   "dependencies": {
+    "@cardinal/payment-manager": "^1.7.9",
+    "@cardinal/token-manager": "^1.7.9",
     "@coral-xyz/common": "*",
     "@coral-xyz/recoil": "*",
     "@react-navigation/native": "^6.0.11",
