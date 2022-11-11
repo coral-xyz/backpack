@@ -41,8 +41,6 @@ import { allPlugins } from "../hooks";
 import { WalletPublicKeys } from "../types";
 
 const logger = getLogger("notifications-provider");
-console.log("r432:NATIVE");
-logger.debug("r432:NATIVE");
 
 //
 // The Notifications provider is used to subscribe and handle notifications
@@ -50,8 +48,6 @@ logger.debug("r432:NATIVE");
 // a unidirectional data flow: app -> background script -> notifications.
 //
 export function NotificationsProvider(props: any) {
-  console.log("NotificationsProvider:props", props);
-  logger.debug("NotificationsProvider:props", props);
   const setWalletPublicKeys = useSetRecoilState(atoms.walletPublicKeys);
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveWallets = useSetRecoilState(atoms.activeWallets);
@@ -302,16 +298,7 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleNavigationUrlDidChange = (notif: Notification) => {
-      console.log(
-        "NotificationsProvider:handleNavigationUrlDidChange(notif)",
-        notif
-      );
-      logger.debug(
-        "NotificationsProvider:handleNavigationUrlDidChange(notif)",
-        notif
-      );
-      console.log("TODO MAYBE ???");
-      // navigate(notif.data.url);
+      logger.debug("handleNavigationUrlDidChange:notif", notif);
     };
 
     const handleAutoLockSecsUpdated = (notif: Notification) => {
