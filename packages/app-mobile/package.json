@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "eas-build-post-install": "cd ../../ && yarn build",
     "android": "EXPO_USE_BETA_CLI=1 npx expo start --android",
     "ios": "EXPO_USE_BETA_CLI=1 npx expo start --ios",
     "web": "EXPO_USE_BETA_CLI=1 npx expo start --web",
