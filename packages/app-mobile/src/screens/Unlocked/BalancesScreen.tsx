@@ -29,14 +29,14 @@ function BalanceSummaryWidget() {
 
 export function TokenTable({
   blockchain,
-  onClickRow,
+  onPressRow,
   tokenAccounts,
   searchFilter = "",
   customFilter = () => true,
   displayWalletHeader = true,
 }: {
   blockchain: Blockchain;
-  onClickRow: (blockchain: Blockchain, token: Token) => void;
+  onPressRow: (blockchain: Blockchain, token: Token) => void;
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   searchFilter?: string;
   customFilter?: (token: Token) => boolean;
