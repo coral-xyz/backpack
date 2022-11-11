@@ -3,7 +3,12 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["build/**", "dist/**", "packages/wallet-standard/lib/**"],
+      "outputs": [
+        "build/**",
+        "dist/**",
+        "packages/wallet-standard/lib/**",
+        "node_modules/.cache/metro/**"
+      ],
       "env": [
         "BACKPACK_CONFIG_VERSION",
         "BACKPACK_CONFIG_LOG_LEVEL",
@@ -12,7 +17,8 @@
       ]
     },
     "test": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "inputs": ["**/*.{ts,tsx,js,jsx}"]
     },
     "start": {
       "dependsOn": ["^build"]
