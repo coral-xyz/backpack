@@ -191,13 +191,14 @@ export const xnfts = atom({
 export const appIcons = selector({
   key: "appIcons",
   get: async ({ get }) => {
-    const xnftData = get(xnfts);
-    const _pluginData = get(plugins);
-    const pluginData = _pluginData.filter(
+    const _xnftData = get(xnfts);
+    const xnftData = _xnftData.filter(
       (p) =>
+        // @ts-ignore
         p.install.account.xnft.toString() !==
         "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4"
     );
+    const pluginData = get(plugins);
     // HACK: hide autoinstalled ONE xnft -> entrypoint in collectibles.
     return xnftData.concat(pluginData);
   },

@@ -139,9 +139,9 @@ function PluginGrid() {
           borderRadius: "10px",
         }}
       >
-        <Grid container style={{}}>
-          {true || isLoading
-            ? Array.from(Array(8).keys()).map((_, idx) => {
+        <Grid container>
+          {isLoading
+            ? Array.from(Array(10).keys()).map((_, idx) => {
                 return (
                   <Grid
                     item
@@ -151,16 +151,7 @@ function PluginGrid() {
                       marginTop: idx >= 4 ? "24px" : 0,
                     }}
                   >
-                    <div
-                      style={{
-                        height: ICON_WIDTH,
-                        display: "flex",
-                        justifyContent: "center",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <Skeleton width={ICON_WIDTH} />
-                    </div>
+                    <SkeletonAppIcon />
                   </Grid>
                 );
               })
@@ -230,6 +221,42 @@ function AppIcon({
         />
       </Button>
       <Typography className={classes.pluginTitle}>{title}</Typography>
+    </div>
+  );
+}
+
+function SkeletonAppIcon() {
+  return (
+    <div
+      style={{
+        width: "72px",
+        height: "88px",
+        display: "flex",
+        justifyContent: "space-between",
+        flexDirection: "column",
+        marginLeft: "auto",
+        marginRight: "auto",
+      }}
+    >
+      <Skeleton
+        height={ICON_WIDTH}
+        width={ICON_WIDTH}
+        sx={{
+          transform: "none",
+          clipPath: `path('${squircleIconPath}')`,
+          marginLeft: "auto",
+          marginRight: "auto",
+        }}
+      />
+      <Skeleton
+        height={12}
+        width={48}
+        sx={{
+          transform: "none",
+          marginLeft: "auto",
+          marginRight: "auto",
+        }}
+      />
     </div>
   );
 }
