@@ -15,6 +15,7 @@ import {
   Blockchain,
   PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED,
   PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED,
+  PLUGIN_RPC_METHOD_POP_OUT,
 } from "@coral-xyz/common";
 import { RequestManager } from "./request-manager";
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
@@ -85,6 +86,13 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
     await this.#requestManager.request({
       method: PLUGIN_RPC_METHOD_WINDOW_OPEN,
       params: [url],
+    });
+  }
+
+  public async popout() {
+    await this.#requestManager.request({
+      method: PLUGIN_RPC_METHOD_POP_OUT,
+      params: [],
     });
   }
 
