@@ -1,0 +1,18 @@
+{
+  "name": "@coral-xyz/example-file-input",
+  "version": "0.1.0",
+  "description": "demonstrates how to use the FileInput component",
+  "main": "index.js",
+  "scripts": {
+    "build": "xnft build",
+    "start": "xnft watch",
+    "dev": "xnft dev"
+  },
+  "devDependencies": {
+    "@coral-xyz/xnft-cli": "*"
+  },
+  "dependencies": {
+    "react-xnft": "*",
+    "react": "^17.0.2"
+  }
+}

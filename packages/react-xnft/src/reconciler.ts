@@ -877,7 +877,7 @@ type FileInputNodeSerialized = DefNodeSerialized<
 export type FileInputProps = {
   onChange?: (event: Event) => void;
   style?: Style;
-  children: undefined;
+  children?: undefined;
   tw?: string;
 };
 
