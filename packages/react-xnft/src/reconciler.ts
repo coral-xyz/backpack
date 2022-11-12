@@ -403,10 +403,7 @@ function createFileInputInstance(
   return {
     id,
     kind: NodeKind.FileInput,
-    props: {
-      ...props,
-      children: undefined,
-    },
+    props: props as FileInputProps,
     children: [],
   };
 }
@@ -778,7 +775,7 @@ export type NodeProps =
   | BalancesTableCellProps
   | BalancesTableFooterProps
   | CustomProps;
-  
+
 export enum NodeKind {
   //
   // App.
@@ -877,11 +874,11 @@ type FileInputNodeSerialized = DefNodeSerialized<
   NodeKind.FileInput,
   FileInputProps
 >;
-type FileInputProps = {
+export type FileInputProps = {
   onChange?: (event: Event) => void;
-  style: Style;
+  style?: Style;
   children: undefined;
-  tw: string;
+  tw?: string;
 };
 
 //

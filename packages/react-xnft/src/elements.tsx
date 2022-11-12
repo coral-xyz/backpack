@@ -4,6 +4,7 @@ import {
   ViewProps,
   TextProps,
   TextFieldProps,
+  FileInputProps,
   BalancesTableHeadProps,
   TableProps,
   TableRowProps,
@@ -30,6 +31,7 @@ const c =
 
 export const Text = c<TextProps>("Text");
 export const TextField = c<TextFieldProps>("TextField");
+export const FileInput = c<FileInputProps>("FileInput");
 export const Image = c<ImageProps>("Image");
 export const Table = c<TableProps>("Table");
 export const TableHead = c<BalancesTableHeadProps>("TableHead"); // There was no TableHead Props type

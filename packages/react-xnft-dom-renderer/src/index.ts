@@ -8,6 +8,7 @@ export {
   BalancesTableHead,
   BalancesTableRow,
   TextField,
+  FileInput,
   ScrollBarImpl,
   WithMotion,
 } from "./Component";
