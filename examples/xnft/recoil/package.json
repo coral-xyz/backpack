@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "scripts": {
     "build": "xnft build",
+    "dev": "xnft dev",
     "start": "xnft watch"
   },
   "devDependencies": {

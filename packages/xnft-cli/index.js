@@ -2,7 +2,7 @@
 
 // using JS for now because there are race-condition issues
 // with compiling typescript before running in the monorepo
-
+const GlobalsPolyfills = require("@esbuild-plugins/node-globals-polyfill");
 const { Parcel } = require("@parcel/core");
 const { program } = require("commander");
 const { join, resolve } = require("path");
@@ -35,22 +35,54 @@ const options = {
   ],
 };
 
-program.command("build").action(async () => {
-  // https://parceljs.org/features/parcel-api/#building
-  const bundler = new Parcel({
-    ...options,
-    mode: "production",
-    sourceMap: false,
-    optimize: true,
-  });
+const esBuildOptions = {
+  entryPoints: ["./src/index.tsx"],
+  outfile: "dist/index.js",
+  bundle: true,
+  target: "es2022",
+  define: {
+    global: "window",
+  },
+  plugins: [
+    GlobalsPolyfills.default({
+      process: true,
+      buffer: true,
+    }),
+  ],
+};
 
-  try {
-    const { buildTime } = await bundler.run();
-    console.debug(`✨ built in ${buildTime}ms!`);
-  } catch (err) {
-    console.error(err.diagnostics);
-  }
-});
+program
+  .command("build")
+  .option(
+    "-e, --esbuild <boolean>",
+    "Use esbuild to compile your project, useful when you want to polyfill constructs like process"
+  )
+  .action(async ({ esbuild }) => {
+    if (esbuild) {
+      const startTime = new Date();
+      require("esbuild")
+        .build({
+          ...esBuildOptions,
+        })
+        .then((result) => {
+          console.debug(`✨ esbuild built in ${new Date() - startTime}ms!`);
+        });
+    } else {
+      // https://parceljs.org/features/parcel-api/#building
+      const bundler = new Parcel({
+        ...options,
+        mode: "production",
+        sourceMap: false,
+        optimize: true,
+      });
+      try {
+        const { buildTime } = await bundler.run();
+        console.debug(`✨ parcel built in ${buildTime}ms!`);
+      } catch (err) {
+        console.error(err.diagnostics);
+      }
+    }
+  });
 
 program.command("watch").action(async () => {
   console.debug(`👀 watching ${resolve()}`);
@@ -71,7 +103,11 @@ program
     "a URL to load inside an iframe xNFT in the simulator",
     (url) => new URL(url)?.href
   )
-  .action(async ({ iframe }) => {
+  .option(
+    "-e, --esbuild <boolean>",
+    "Use esbuild to compile your project, useful when you want to polyfill constructs like process"
+  )
+  .action(async ({ iframe, esbuild }) => {
     console.debug(`👀 watching ${resolve()}`);
 
     const express = require("express");
@@ -108,32 +144,50 @@ program
           iframe
         );
     } else {
-      // https://parceljs.org/features/parcel-api/#watching
-      const bundler = new Parcel({
-        ...options,
-        mode: "development",
-        sourceMap: true,
-        optimize: false,
-      });
+      if (!esbuild) {
+        const bundler = new Parcel({
+          ...options,
+          mode: "development",
+          sourceMap: true,
+          optimize: false,
+        });
 
-      if (!fs.existsSync("dist/index.js")) {
-        if (!fs.existsSync("dist")) {
-          fs.mkdirSync("dist");
+        if (!fs.existsSync("dist/index.js")) {
+          if (!fs.existsSync("dist")) {
+            fs.mkdirSync("dist");
+          }
+          fs.writeFileSync("dist/index.js", "");
         }
-        fs.writeFileSync("dist/index.js", "");
-      }
 
-      js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
-      await bundler.watch((err, buildEvent) => {
-        console.log("build changed");
-        if (err) {
-          console.error("build error", JSON.stringify(err));
-        }
-        if (buildEvent.type === "buildFailure") {
-          console.error("build error", JSON.stringify(buildEvent));
-        }
         js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
-      });
+        await bundler.watch((err, buildEvent) => {
+          console.log("build changed");
+          if (err) {
+            console.error("build error", JSON.stringify(err));
+          }
+          if (buildEvent.type === "buildFailure") {
+            console.error("build error", JSON.stringify(buildEvent));
+          }
+          js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
+        });
+      } else {
+        // https://parceljs.org/features/parcel-api/#watching
+        require("esbuild")
+          .build({
+            ...esBuildOptions,
+            watch: {
+              onRebuild(error, result) {
+                console.log("build changed");
+                if (error) console.error("build error", JSON.stringify(err));
+                js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
+              },
+            },
+          })
+          .then((result) => {
+            console.log("watching...");
+            js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
+          });
+      }
     }
 
     app.get("/", (req, res) => {
