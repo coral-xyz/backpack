@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
+    "android": "patch & expo start --android",
+    "ios": "patch & expo start --ios",
+    "web": "patch & expo start --web",
     "eject": "expo eject",
     "e2e": "jest",
-    "lint:fix": "eslint 'src/**/*' --fix"
+    "lint:fix": "eslint 'src/**/*' --fix",
+    "patch": "cd ../../ && npx patch-package"
   },
   "dependencies": {
     "@cardinal/payment-manager": "^1.7.9",
