@@ -5,15 +5,13 @@ export function App() {
   const [selectedFiles, setSelectedFiles] = useState([]);
   return (
     <View style={{ color: "white" }}>
-      <Text>Select Files:</Text>
       <FileInput
-        onChange={(e) => setSelectedFiles(e.target.files || selectedFiles)}
-      />
-
+        onChange={(e) => setSelectedFiles(Array.from(e.target.files))}
+      ></FileInput>
       <Text>Files you Selected:</Text>
 
       {selectedFiles.map((f) => (
-        <Text>{f?.name ?? ""}</Text>
+        <Text>{`name: ${f?.name} size: ${f?.size} type: ${f?.type}`}</Text>
       ))}
     </View>
   );
