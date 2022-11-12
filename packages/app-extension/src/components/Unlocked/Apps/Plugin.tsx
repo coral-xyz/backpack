@@ -60,7 +60,7 @@ export function _PluginDisplay({
 }) {
   const theme = useCustomTheme();
   const xnftPreference = useXnftPreference({
-    xnftId: plugin.xnftInstallAddress.toString(),
+    xnftId: plugin.xnftInstallAddress?.toString(),
   });
 
   // TODO: splash loading page.
