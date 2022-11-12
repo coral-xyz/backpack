@@ -9,12 +9,14 @@
     "build": "shx cp ../../examples/xnft/iframe/dist/index.js iframe.js && shx cp ../react-xnft-dom-renderer/dist/index.js renderer.js"
   },
   "dependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@parcel/config-default": "^2.7.0",
     "@parcel/core": "^2.7.0",
     "@parcel/reporter-cli": "^2.7.0",
     "commander": "^9.3.0",
-    "express": "^4.18.1",
-    "download-git-repo": "latest"
+    "download-git-repo": "latest",
+    "esbuild": "^0.15.13",
+    "express": "^4.18.1"
   },
   "devDependencies": {
     "react-xnft": "*",

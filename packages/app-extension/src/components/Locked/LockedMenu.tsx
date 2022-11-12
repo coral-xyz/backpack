@@ -2,7 +2,6 @@ import { Box, ListItemText, Toolbar, IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircleOutlined";
 import LockIcon from "@mui/icons-material/Lock";
-import SupportIcon from "@mui/icons-material/Support";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import CallMadeIcon from "@mui/icons-material/CallMade";
@@ -58,7 +57,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
-            options={(args) => ({ title: "" })}
+            options={() => ({ title: "" })}
             navButtonLeft={<CloseButton onClick={() => setMenuOpen(false)} />}
           >
             <NavStackScreen
@@ -88,7 +87,7 @@ export function LockedMenuList() {
   const options = [
     {
       icon: <AccountCircleIcon style={{ color: theme.custom.colors.icon }} />,
-      text: "Reset Secret Recovery Phrase",
+      text: "Reset Backpack",
       onClick: () => nav.push("reset"),
       suffix: (
         <ChevronRightIcon
