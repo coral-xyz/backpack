@@ -2,8 +2,8 @@
   "name": "@coral-xyz/example-plugin-recoil",
   "version": "0.1.0",
   "scripts": {
-    "build": "xnft build -e true",
-    "dev": "xnft dev -e true",
+    "build": "xnft build",
+    "dev": "xnft dev",
     "start": "xnft watch"
   },
   "devDependencies": {
