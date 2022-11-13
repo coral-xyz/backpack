@@ -1,5 +1,7 @@
-require("react-native-get-random-values");
-require("react-native-url-polyfill/auto");
+import "react-native-get-random-values";
+import "react-native-url-polyfill/auto";
+// Import the the ethers shims (**BEFORE** ethers)
+import "@ethersproject/shims";
 
 import {
   BACKGROUND_SERVICE_WORKER_READY,
@@ -13,6 +15,7 @@ import { Suspense, useRef } from "react";
 import { Platform, SafeAreaView, StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
 import { RecoilRoot } from "recoil";
+
 import App from "./src/App";
 
 const LOCALHOST_WEBVIEW_URI = "http://localhost:9333";
@@ -21,13 +24,7 @@ const WEBVIEW_URI = (() => {
   if (process.env.NODE_ENV === "production") {
     return Constants.manifest.extra.url || alert("No WEBVIEW_URI");
   } else {
-    if (Platform.OS === "ios") {
-      // iOS can only use serviceworkers from localhost or WKAppBoundDomains
-      // we can't use WKAppBoundDomains in development, so it must use localhost
-      return LOCALHOST_WEBVIEW_URI;
-    } else {
-      return Constants.manifest.extra.url || LOCALHOST_WEBVIEW_URI;
-    }
+    return Constants.manifest.extra.url || LOCALHOST_WEBVIEW_URI;
   }
 })();
 
