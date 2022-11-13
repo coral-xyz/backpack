@@ -39,6 +39,7 @@ import { BackgroundClient } from "./channel/app-ui";
 import { PluginServer } from "./channel/plugin";
 
 import { Blockchain, RpcResponse, XnftPreference } from "./types";
+import { openPopupWindow } from "./browser/extension";
 
 const logger = getLogger("common/plugin");
 
@@ -380,7 +381,7 @@ export class Plugin {
       case PLUGIN_RPC_METHOD_WINDOW_OPEN:
         return await this._handleWindowOpen(params[0]);
       case PLUGIN_RPC_METHOD_POP_OUT:
-        return await this._handlePopout();
+        return await this._handlePopout(params[0]);
       case PLUGIN_ETHEREUM_RPC_METHOD_SIGN_TX:
         return await this._handleEthereumSignTransaction(params[0], params[1]);
       case PLUGIN_ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX:
@@ -554,8 +555,12 @@ export class Plugin {
     return [resp];
   }
 
-  private async _handlePopout(): Promise<RpcResponse> {
-    window.open("popup.html", "_blank");
+  private async _handlePopout(fullscreen: boolean): Promise<RpcResponse> {
+    if (fullscreen) {
+      window.open("popup.html", "_blank");
+    } else {
+      await openPopupWindow("popup.html");
+    }
     return ["success"];
   }
 
