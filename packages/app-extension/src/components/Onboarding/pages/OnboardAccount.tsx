@@ -151,14 +151,12 @@ export const OnboardAccount = ({
           />,
         ]
       : []),
-    // first screen to PICK which you want to do
     <CreateOrImportWallet
       onNext={(action) => {
         setAction(action);
         nextStep();
       }}
     />,
-    // similar to CreateOrImportWallet, this is another Picker (ledger, mnemonic, etc)
     <KeyringTypeSelector
       action={action!}
       onNext={(keyringType: KeyringType) => {

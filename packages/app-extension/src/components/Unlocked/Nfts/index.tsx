@@ -136,7 +136,6 @@ export function NftTable({
   );
 }
 
-// each grid piece is a collection of NFTs you can navigate to
 function NftCollectionCard({ collection }: { collection: NftCollection }) {
   const { push } = useNavigation();
   // Display the first NFT in the collection as the thumbnail in the grid
