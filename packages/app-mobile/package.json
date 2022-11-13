@@ -52,7 +52,8 @@
     "react-router-native": "^6.3.0",
     "react-test-renderer": "^18.2.0",
     "recoil": "^0.7.5",
-    "twrnc": "^3.3.3"
+    "twrnc": "^3.3.3",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
