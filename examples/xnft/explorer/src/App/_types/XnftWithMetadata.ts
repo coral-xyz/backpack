@@ -1,0 +1,17 @@
+import CustomJsonMetadata from "../_types/CustomJsonMetadata";
+import { PublicKey } from "@solana/web3.js";
+import XnftAccount from "./XnftAccount";
+import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
+
+interface XnftTokenData {
+  owner: PublicKey;
+  publicKey: PublicKey;
+}
+
+export interface XnftWithMetadata {
+  account: XnftAccount;
+  json: CustomJsonMetadata;
+  metadata: Metadata;
+  publicKey: PublicKey;
+  token?: XnftTokenData;
+}
