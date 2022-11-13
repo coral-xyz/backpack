@@ -480,3 +480,7 @@ export const BACKPACK_LINK = "https://backpack.app";
 
 export const ALCHEMY_ETHEREUM_MAINNET_API_KEY =
   "DlJr6QuBC2EaE-L60-iqQQGq9hi9-XSZ";
+
+export const MOBILE_CHANNEL_LOGS = "mobile-logs";
+
+export const IMAGE_PROXY_URL = "https://d1a7965zcx2lcc.cloudfront.net";

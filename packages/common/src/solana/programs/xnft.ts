@@ -3,7 +3,7 @@ import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import type { Provider } from "@project-serum/anchor";
 import { metadata } from "@project-serum/token";
-import { externalResourceUri } from "@coral-xyz/common-public";
+import { externalResourceUri } from "../../utils";
 
 export const XNFT_PROGRAM_ID = new PublicKey(
   "BaHSGaf883GA3u8qSC5wNigcXyaScJLSBJZbALWvPcjs"

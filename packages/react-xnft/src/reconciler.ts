@@ -2,7 +2,7 @@ import ReactReconciler, { HostConfig, OpaqueHandle } from "react-reconciler";
 import { EventEmitter } from "eventemitter3";
 import { ReactDom } from "./ReactDom";
 import { ReactNode } from "react";
-import { getLogger, Event } from "@coral-xyz/common-public";
+import { getLogger, Event } from "@coral-xyz/common";
 import { NAV_STACK } from "./Context";
 import { CONNECT, ETHEREUM_CONNECT, SOLANA_CONNECT } from "./EVENTS";
 

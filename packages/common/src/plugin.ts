@@ -1,4 +1,4 @@
-import { ConfirmOptions, PublicKey, SendOptions } from "@solana/web3.js";
+import type { ConfirmOptions, PublicKey, SendOptions } from "@solana/web3.js";
 import {
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
@@ -34,12 +34,13 @@ import {
   PLUGIN_RPC_METHOD_POP_OUT,
 } from "./constants";
 
-import { getLogger, Event, XnftMetadata } from "@coral-xyz/common-public";
-import { BackgroundClient } from "./channel/app-ui";
+import type { BackgroundClient } from "./channel/app-ui";
 import { PluginServer } from "./channel/plugin";
 
-import { Blockchain, RpcResponse, XnftPreference } from "./types";
+import type { Event, RpcResponse, XnftMetadata, XnftPreference } from "./types";
+import { Blockchain } from "./types";
 import { openPopupWindow } from "./browser/extension";
+import { getLogger } from "./logging";
 
 const logger = getLogger("common/plugin");
 

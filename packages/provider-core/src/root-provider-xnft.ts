@@ -1,5 +1,4 @@
-import type { Event } from "@coral-xyz/common";
-import type { XnftMetadata } from "@coral-xyz/common-public";
+import type { Event, XnftMetadata } from "@coral-xyz/common";
 import {
   getLogger,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,

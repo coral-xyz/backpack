@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { ReactDom } from "react-xnft";
-import { XnftMetadata } from "@coral-xyz/common-public";
+import { XnftMetadata } from "@coral-xyz/common";
 
 interface Metadata {
   isDarkMode: boolean;

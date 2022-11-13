@@ -1,9 +1,11 @@
 import type { PublicKey } from "@solana/web3.js";
-import type { RpcRequest } from "@coral-xyz/common-public";
-import type { Context, RpcResponse, EventEmitter } from "./types";
+import type { Context, RpcResponse, EventEmitter, RpcRequest } from "./types";
 
-export * from "@coral-xyz/common-public";
 export * from "./constants";
+export * from "./logging";
+export * from "./utils";
+export * from "./zustand-store";
+
 export * from "./crypto";
 export * from "./channel";
 export * from "./browser";

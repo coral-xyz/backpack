@@ -6,7 +6,7 @@ import {
   NodeSerialized,
 } from "./index";
 
-import { getLogger } from "@coral-xyz/common-public";
+import { getLogger } from "@coral-xyz/common";
 const logger = getLogger("react-xnft/reconciler");
 
 class PendingUpdates {

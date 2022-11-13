@@ -4,7 +4,6 @@ import * as anchor from "@project-serum/anchor";
 import { AnchorProvider, BN, Spl } from "@project-serum/anchor";
 import type { Provider, Program, SplToken } from "@project-serum/anchor";
 import { metadata } from "@project-serum/token";
-import { externalResourceUri } from "@coral-xyz/common-public";
 import type {
   SolanaTokenAccount,
   SolanaTokenAccountWithKey,
@@ -12,6 +11,7 @@ import type {
   SplNftMetadata,
   TokenMetadata,
 } from "../types";
+import { externalResourceUri } from "../../utils";
 
 export const TOKEN_PROGRAM_ID = new PublicKey(
   "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"

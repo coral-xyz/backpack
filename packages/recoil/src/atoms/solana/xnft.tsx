@@ -1,12 +1,12 @@
 import { atom, selector } from "recoil";
 import { PublicKey } from "@solana/web3.js";
 import {
+  externalResourceUri,
   fetchXnfts,
   Blockchain,
   BACKPACK_CONFIG_XNFT_PROXY,
   SIMULATOR_PORT,
 } from "@coral-xyz/common";
-import { externalResourceUri } from "@coral-xyz/common-public";
 import { anchorContext } from "./wallet";
 import { solanaPublicKey, activePublicKeys } from "../wallet";
 import { connectionUrls, isDeveloperMode } from "../preferences";

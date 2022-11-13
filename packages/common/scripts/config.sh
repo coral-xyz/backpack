@@ -15,6 +15,7 @@
 # BACKPACK_CONFIG_VERSION
 # BACKPACK_FEATURE_LIGHT_MODE
 # BACKPACK_FEATURE_POP_MODE
+# BACKPACK_CONFIG_LOG_LEVEL
 #
 ################################################################################
 
@@ -41,6 +42,7 @@ export const BACKPACK_FEATURE_LIGHT_MODE = ${BACKPACK_FEATURE_LIGHT_MODE:=true};
 export const BACKPACK_FEATURE_POP_MODE = ${BACKPACK_FEATURE_POP_MODE:=true};
 export const BACKPACK_FEATURE_USERNAMES = ${BACKPACK_FEATURE_USERNAMES:=false};
 export const BACKPACK_FEATURE_XNFT = ${BACKPACK_FEATURE_XNFT:=true};
+export const BACKPACK_CONFIG_LOG_LEVEL: "trace" | "debug" | "error" | "warning" | "info" = "${BACKPACK_CONFIG_LOG_LEVEL:=debug}";
 
 EOF
 }
