@@ -5,6 +5,7 @@ import tw from "twrnc";
 import { addTestIdentifier } from "../../lib/addTestIdentifier";
 
 export default function NeedsOnboarding() {
+  console.log("NeedsOnboarding");
   return (
     <>
       <View style={tw`flex-grow content-center p-4`}>
