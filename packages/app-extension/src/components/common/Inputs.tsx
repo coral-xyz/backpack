@@ -178,6 +178,7 @@ export const InputListItem = ({
 interface InputProps {
   value: string;
   setValue: (e: any) => void;
+  onKeyDown?: (e: any) => void;
   error?: boolean;
   type?: string;
   placeholder?: string;
@@ -198,6 +199,7 @@ export const TextInput = ({
   rows,
   value,
   setValue,
+  onKeyDown,
   error = false,
   type = "text",
   placeholder = "",
@@ -231,6 +233,7 @@ export const TextInput = ({
         placeholder={placeholder}
         value={value}
         onChange={setValue}
+        onKeyDown={onKeyDown}
         inputProps={inputProps}
         className={`${classes.textInputRoot} ${classes.textField} ${className}`}
         variant="outlined"

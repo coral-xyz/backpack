@@ -87,3 +87,43 @@ export function useMetadata(): XnftMetadata {
   }, []);
   return metadata;
 }
+
+export function useDimensions(debounceMs = 0) {
+  const [dimensions, setDimensions] = useState({
+    height: window.innerHeight,
+    width: window.innerWidth,
+  });
+
+  const debounce = (fn) => {
+    let timer;
+    return () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        timer = null;
+        fn.apply(this, arguments);
+      }, debounceMs);
+    };
+  };
+
+  useEffect(() => {
+    setDimensions({
+      height: window.innerHeight,
+      width: window.innerWidth,
+    });
+
+    const debouncedHandleResize = debounce(function handleResize() {
+      setDimensions({
+        height: window.innerHeight,
+        width: window.innerWidth,
+      });
+    });
+
+    window.addEventListener("resize", debouncedHandleResize);
+
+    return () => {
+      window.removeEventListener("resize", debouncedHandleResize);
+    };
+  }, []);
+
+  return dimensions;
+}

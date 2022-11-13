@@ -303,10 +303,6 @@ export function Send({
             token={token}
             destinationAddress={destinationAddress}
             amount={amount!}
-            close={() => {
-              setOpenDrawer(false);
-              close();
-            }}
           />
         </ApproveTransactionDrawer>
       </div>

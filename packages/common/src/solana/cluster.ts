@@ -1,5 +1,4 @@
-export const DEFAULT_SOLANA_CLUSTER =
-  "https://solana-rpc-nodes.projectserum.com";
+export const DEFAULT_SOLANA_CLUSTER = "https://solana-rpc.xnfts.dev";
 export const SolanaCluster = {
   MAINNET: DEFAULT_SOLANA_CLUSTER,
   DEVNET: "https://api.devnet.solana.com",

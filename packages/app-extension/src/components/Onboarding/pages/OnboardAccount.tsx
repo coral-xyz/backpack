@@ -199,7 +199,9 @@ export const OnboardAccount = ({
   return (
     <WithNav
       navButtonLeft={
-        step > 0 ? <NavBackButton onClick={prevStep} /> : undefined
+        step > 0 && step !== steps.length - 1 ? (
+          <NavBackButton onClick={prevStep} />
+        ) : undefined
       }
       {...navProps}
       // Only display the onboarding menu on the first step

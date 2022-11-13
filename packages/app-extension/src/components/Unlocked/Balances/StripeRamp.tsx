@@ -1,5 +1,5 @@
 import { Blockchain } from "@coral-xyz/common";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Loading, PrimaryButton } from "../../common";
 import { useNavStack } from "../../common/Layout/NavStack";
 import { Typography } from "@mui/material";
@@ -53,7 +53,7 @@ export const StripeRamp = ({
         setLoading(false);
         setClientSecret(json.secret);
         window.open(
-          `https://doof72pbjabye.cloudfront.net/stripe-onramp.html?clientSecret=${json.secret}`,
+          `https://doof72pbjabye.cloudfront.net/stripe.html?clientSecret=${json.secret}`,
           "blank",
           `toolbar=no,
             location=no,

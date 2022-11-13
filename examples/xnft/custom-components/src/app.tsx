@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text } from "react-xnft";
+import { View, Text, Button } from "react-xnft";
 import { Video } from "./components/Video";
 import { Audio } from "./components/Audio";
 
@@ -18,6 +18,13 @@ export function App() {
         controls={true}
         src={"https://www.w3schools.com/html/horse.mp3"}
       />
+      <Button
+        onClick={() => {
+          window.xnft.popout();
+        }}
+      >
+        Go full screen
+      </Button>
     </View>
   );
 }

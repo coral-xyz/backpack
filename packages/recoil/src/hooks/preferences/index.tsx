@@ -30,6 +30,10 @@ export function useDarkMode(): boolean {
   return useRecoilValue(atoms.isDarkMode)!;
 }
 
+export function useDeveloperMode(): boolean {
+  return useRecoilValue(atoms.isDeveloperMode)!;
+}
+
 export function useConnectionUrls() {
   return useRecoilValue(atoms.connectionUrls);
 }

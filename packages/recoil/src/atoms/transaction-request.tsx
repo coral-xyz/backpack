@@ -8,6 +8,7 @@ import {
   PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE,
 } from "@coral-xyz/common";
+import { ConfirmOptions, SendOptions } from "@solana/web3.js";
 
 //
 // Transaction being requested for signing.
@@ -22,6 +23,8 @@ export type TransactionRequest = {
   pluginUrl?: string;
   data: string | string[];
   publicKey: string;
+  confirmTransaction?: boolean;
+  options?: SendOptions | ConfirmOptions;
   kind:
     | typeof PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION
     | typeof PLUGIN_REQUEST_SOLANA_SIGN_ALL_TRANSACTIONS

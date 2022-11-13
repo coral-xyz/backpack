@@ -39,7 +39,7 @@ function Nav() {
                   {/* Logo */}
                   <Link href="/">
                     <div className="flex">
-                      <Image alt="" src="/logo1.svg" width="120px" height="40px" />
+                      <Image alt="Backpack" src="/backpack.svg" width="150px" height="50px" />
                     </div>
                   </Link>
                 </div>
@@ -83,9 +83,9 @@ function Nav() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex flex-row items-center gap-4">
+                <div className="flex flex-row items-center gap-4 lg:hidden">
                   {/* Mobile menu button */}
-                  <div className="flex lg:hidden">
+                  <div className="flex">
                     <Disclosure.Button
                       className="inline-flex items-center
                 justify-center rounded-md p-2 text-zinc-100 hover:bg-zinc-700

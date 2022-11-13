@@ -9,6 +9,7 @@ export * from "./db";
 export * from "./keyring";
 export * from "./keyname";
 export * from "./feature-gates";
+export * from "./xnft-preferences";
 
 export function reset() {
   return LocalStorageDb.reset();
