@@ -189,6 +189,7 @@ export function Component({ viewData }) {
           style={style}
           onChange={props.onChange}
           children={viewData.children}
+          multiple={props.multiple}
         />
       );
     case NodeKind.Table:
@@ -786,11 +787,7 @@ export function TextField({
   );
 }
 
-export function FileInput({
-  onChange,
-  style,
-  props,
-}: any) {
+export function FileInput({ onChange, style, props }: any) {
   const defaultClasses = useDefaultClasses();
   return (
     <input
@@ -798,6 +795,7 @@ export function FileInput({
       style={style}
       className={defaultClasses[NodeKind.FileInput] + " " + (props?.tw || "")}
       onChange={onChange}
+      multiple={props?.multiple}
     />
   );
 }

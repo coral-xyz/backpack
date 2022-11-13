@@ -879,6 +879,7 @@ export type FileInputProps = {
   style?: Style;
   children?: ReactNode | undefined;
   tw?: string;
+  multiple?: boolean;
 };
 
 //

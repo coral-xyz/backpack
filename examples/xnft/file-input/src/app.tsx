@@ -7,6 +7,7 @@ export function App() {
     <View style={{ color: "white" }}>
       <FileInput
         onChange={(e) => setSelectedFiles(Array.from(e.target.files))}
+        multiple={false}
       ></FileInput>
       <Text>Files you Selected:</Text>
 
