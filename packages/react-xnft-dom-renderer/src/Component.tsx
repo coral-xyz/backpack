@@ -955,7 +955,6 @@ function Loading({ id, props, style }: any) {
         thickness={6}
         classes={{ circle: classes.circle }}
       />
-      ;
     </>
   );
 }

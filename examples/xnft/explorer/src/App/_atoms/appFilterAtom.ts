@@ -1,14 +1,18 @@
 import { atom, selector } from "recoil";
 
 type AppFilterAtom = {
-  search: string;
-  sortBy: "updated" | "ratings" | "installs";
+  sortBy: "updated" | "ratings" | "installs" | "created";
+  sortDesc: boolean;
   includeSuspended: boolean;
 };
 
 const appFilterStoreageAtom = atom<Partial<AppFilterAtom>>({
   key: "appFilterStoreageAtom",
-  default: {},
+  default: {
+    sortBy: "ratings",
+    sortDesc: true,
+    includeSuspended: false,
+  },
 });
 
 const appFilterAtom = selector<Partial<AppFilterAtom>>({

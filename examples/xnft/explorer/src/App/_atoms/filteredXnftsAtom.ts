@@ -7,42 +7,80 @@ const filteredXnftsAtom = selector<XnftWithMetadata[]>({
   key: "filteredXnftsAtom",
   get: ({ get }) => {
     const filter = get(appFilterAtom);
-    let filteredList = get(xnftsAtom);
+    const xnfts = get(xnftsAtom);
 
-    console.log(filter);
+    let filteredList = [...xnfts];
 
     if (!filter.includeSuspended) {
       filteredList = filteredList.filter((app) => !app.account.suspended);
     }
-    console.log(filteredList);
-    switch (filter.sortBy) {
-      case "installs": {
-        filteredList.sort(
-          (a, b) =>
-            b.account.totalInstalls.toNumber() -
-            a.account.totalInstalls.toNumber()
-        );
+
+    if (!filter.sortDesc) {
+      switch (filter.sortBy) {
+        case "installs": {
+          filteredList.sort(
+            (a, b) =>
+              a.account.totalInstalls.toNumber() -
+              b.account.totalInstalls.toNumber()
+          );
+          break;
+        }
+        case "ratings": {
+          filteredList.sort(
+            (a, b) =>
+              a.account.totalRating.toNumber() -
+              b.account.totalRating.toNumber()
+          );
+          break;
+        }
+        case "updated": {
+          filteredList.sort(
+            (a, b) =>
+              a.account.updatedTs.toNumber() - b.account.updatedTs.toNumber()
+          );
+          break;
+        }
+        default: {
+          filteredList.sort(
+            (a, b) =>
+              a.account.createdTs.toNumber() - b.account.createdTs.toNumber()
+          );
+          break;
+        }
       }
-      case "ratings": {
-        filteredList.sort(
-          (a, b) =>
-            b.account.totalRating.toNumber() - a.account.totalRating.toNumber()
-        );
-      }
-      case "updated": {
-        filteredList.sort(
-          (a, b) =>
-            b.account.updatedTs.toNumber() - a.account.updatedTs.toNumber()
-        );
-      }
-      default: {
-        filteredList.sort(
-          (a, b) =>
-            b.account.createdTs?.toNumber() - a.account.createdTs?.toNumber()
-        );
+    } else {
+      switch (filter.sortBy) {
+        case "installs": {
+          filteredList.sort(
+            (a, b) =>
+              b.account.totalInstalls.toNumber() -
+              a.account.totalInstalls.toNumber()
+          );
+          break;
+        }
+        case "ratings": {
+          filteredList.sort(
+            (a, b) =>
+              b.account.totalRating.toNumber() -
+              a.account.totalRating.toNumber()
+          );
+          break;
+        }
+        case "updated": {
+          filteredList.sort(
+            (a, b) =>
+              b.account.updatedTs.toNumber() - a.account.updatedTs.toNumber()
+          );
+          break;
+        }
+        default: {
+          filteredList.sort(
+            (a, b) =>
+              b.account.createdTs.toNumber() - a.account.createdTs.toNumber()
+          );
+        }
       }
     }
-
     return filteredList;
   },
 });

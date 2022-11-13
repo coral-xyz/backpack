@@ -5,52 +5,161 @@ import {
   Image,
   Text,
   ScrollBar,
+  Button,
 } from "react-xnft";
 import React, { useState } from "react";
 import { useRecoilState, useRecoilValueLoadable } from "recoil";
-import FilterIcon from "./FilterIcon";
+import FilterIcon from "./Icons/FilterIcon";
 import filteredXnftsAtom from "./_atoms/filteredXnftsAtom";
-import xnftsAtom from "./_atoms/xnftsAtom";
 import getGatewayUri from "./_utils/getGatewayUri";
 import { XnftWithMetadata } from "./_types/XnftWithMetadata";
+import appFilterAtom from "./_atoms/appFilterAtom";
+import ArrowDownIcon from "./Icons/ArrowDownIcon";
+import ArrowUpIcon from "./Icons/ArrowUpIcon";
+import CircleUnchecked from "./Icons/CircleUnchecked";
+import CircleChecked from "./Icons/CircleChecked";
+import Rating from "./Rating";
 
 function AppList() {
   const xnfts = useRecoilValueLoadable(filteredXnftsAtom);
-  const [filter, setFilter] = useState<string>("");
+  const [filter, setFilter] = useRecoilState(appFilterAtom);
+  const [search, setSearch] = useState<string>("");
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   // const nav = useNavigation();
 
   if (xnfts.state !== "hasValue") {
     return null;
   }
+  console.log("Applist", xnfts.contents);
 
   let filteredList = xnfts.contents;
 
-  if (filter !== "") {
-    const regex = new RegExp(filter, "i");
+  if (search !== "") {
+    const regex = new RegExp(search, "i");
     filteredList = filteredList.filter(
       (app) => regex.test(app.json.name) || regex.test(app.json.description)
     );
   }
 
   return (
-    <View tw="flex flex-col h-full py-3 cursor-pointer">
+    <View tw="flex flex-col h-full py-3">
       <View tw="flex flex-row px-4 pb-3">
         <View tw="flex-1">
           <TextField
             placeholder="Search all apps"
             onChange={(e) => {
-              setFilter(e.target.value);
+              setSearch(e.target.value);
             }}
-            value={filter}
+            value={search}
           />
         </View>
-        <View tw="pl-4 flex justify-center items-center">
-          <FilterIcon size={32} color={"white"} />
+        <View
+          tw="pl-4 flex justify-center items-center cursor-pointer"
+          onClick={() => setDrawerOpen(!drawerOpen)}
+        >
+          <FilterIcon
+            size={32}
+            color={drawerOpen ? "rgb(96,165,250)" : "white"}
+          />
         </View>
       </View>
-      <View tw="flex flex-row px-4 pb-3 bg-[#27272A]"></View>
+      <View
+        tw={`max-h-[0rem] ${
+          drawerOpen ? "max-h-[10rem]" : "max-h-[0rem]"
+        } h-auto overflow-hidden transition-[max-height] duration-300 ease-in-out`}
+      >
+        <View tw="p-2 bg-[#27272A]">
+          <Text tw="mx-2">Sort By:</Text>
+          <View tw="flex-row">
+            <SortButton
+              label="Rating"
+              desc={!!filter.sortDesc}
+              active={filter.sortBy === "ratings"}
+              onClick={() => {
+                if (filter.sortBy !== "ratings") {
+                  setFilter({
+                    sortBy: "ratings",
+                  });
+                } else {
+                  setFilter({
+                    sortDesc: !filter.sortDesc,
+                  });
+                }
+              }}
+            />
+            <SortButton
+              label="Installs"
+              desc={!!filter.sortDesc}
+              active={filter.sortBy === "installs"}
+              onClick={() => {
+                if (filter.sortBy !== "installs") {
+                  setFilter({
+                    sortBy: "installs",
+                  });
+                } else {
+                  setFilter({
+                    sortDesc: !filter.sortDesc,
+                  });
+                }
+              }}
+            />
+            <SortButton
+              label="Updated"
+              desc={!!filter.sortDesc}
+              active={filter.sortBy === "updated"}
+              onClick={() => {
+                if (filter.sortBy !== "updated") {
+                  setFilter({
+                    sortBy: "updated",
+                  });
+                } else {
+                  setFilter({
+                    sortDesc: !filter.sortDesc,
+                  });
+                }
+              }}
+            />
+            <SortButton
+              label="Created"
+              desc={!!filter.sortDesc}
+              active={filter.sortBy === "created"}
+              onClick={() => {
+                if (filter.sortBy !== "created") {
+                  setFilter({
+                    sortBy: "created",
+                  });
+                } else {
+                  setFilter({
+                    sortDesc: !filter.sortDesc,
+                  });
+                }
+              }}
+            />
+          </View>
+          <Text tw="mx-2">Include:</Text>
+          <View tw="flex-row">
+            <Button
+              onClick={() => {
+                setFilter({ includeSuspended: !filter.includeSuspended });
+              }}
+              tw={`${
+                filter.includeSuspended
+                  ? "text-[#000] font-bold"
+                  : "font-medium "
+              } inline-flex flex-row m-2 px-3 justify-center items-center rounded text-xs tracking-wide`}
+            >
+              {filter.includeSuspended ? (
+                <CircleChecked tw="m-0 mr-1" size={16} color="black" />
+              ) : (
+                <CircleUnchecked tw="m-0 mr-1" size={16} color="#71717A" />
+              )}
+              {"Suspended"}
+            </Button>
+          </View>
+        </View>
+      </View>
       <View tw="flex-1">
-        <ScrollBar>
+        <ScrollBar key={Math.random()}>
           {filteredList &&
             filteredList.map((app) => (
               <RenderApp key={app.publicKey.toString()} app={app} />
@@ -61,9 +170,42 @@ function AppList() {
   );
 }
 
-function RenderApp({ app }: { app: XnftWithMetadata }) {
+function SortButton({
+  label,
+  desc,
+  active,
+  onClick,
+}: {
+  label: string;
+  desc: boolean;
+  active: boolean;
+  onClick: () => void;
+}) {
   return (
-    <View tw="flex items-center gap-4 rounded-lg bg-[#27272A] m-4 p-4 shadow-lg transition-all hover:-translate-y-0.1 hover:bg-[#27272A]/40">
+    <Button
+      onClick={onClick}
+      tw={`${
+        active ? "text-[#000] font-bold" : "font-medium "
+      } inline-flex flex-row m-2 px-3 justify-center items-center rounded text-xs tracking-wide`}
+    >
+      {label}
+      {active &&
+        (desc ? (
+          <ArrowDownIcon tw="ml-1 mt-1" width={12} height={9} color="black" />
+        ) : (
+          <ArrowUpIcon tw="ml-1 mt-1" width={12} height={9} color="black" />
+        ))}
+    </Button>
+  );
+}
+
+function RenderApp({ app }: { app: XnftWithMetadata }) {
+  const nav = useNavigation();
+  return (
+    <View
+      onClick={() => nav.push("details", { app })}
+      tw="flex items-center gap-4 rounded-lg bg-[#27272A] m-4 p-4 shadow-lg transition-all hover:-translate-y-0.1 hover:bg-[#27272A]/40 cursor-pointer"
+    >
       <View tw="flex items-center">
         <Image
           tw="rounded-lg"
@@ -81,16 +223,10 @@ function RenderApp({ app }: { app: XnftWithMetadata }) {
         <View tw="truncate text-xs tracking-wide text-[#FAFAFA]/75">
           {app.json.description}
         </View>
+        <View tw="py-1">
+          <Rating app={app} starSize={12} />
+        </View>
       </View>
-      {/* <View tw="my-auto">
-      <AppPrimaryButton
-        disabled={!connected}
-        installed={installed}
-        loading={loading}
-        onClick={onButtonClick}
-        price={price}
-      />
-    </View> */}
     </View>
   );
 }

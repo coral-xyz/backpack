@@ -2,6 +2,7 @@ import { Stack, Text, Image, View } from "react-xnft";
 import React from "react";
 // import TokenDetails from "./TokenDetails";
 import AppList from "./AppList";
+import AppDetails from "./AppDetails";
 
 function Navigation() {
   return (
@@ -20,7 +21,7 @@ function Navigation() {
             };
           case "details": {
             return {
-              title: route.props?.token.name,
+              title: route.props?.app.json.name,
             };
           }
           default:
@@ -35,10 +36,10 @@ function Navigation() {
       }}
     >
       <Stack.Screen name={"list"} component={(props) => <AppList />} />
-      {/* <Stack.Screen
+      <Stack.Screen
         name={"details"}
-        component={(props) => <TokenDetails {...props} />}
-      /> */}
+        component={(props) => <AppDetails {...props} />}
+      />
     </Stack.Navigator>
   );
 }
