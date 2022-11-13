@@ -136,35 +136,7 @@ export const solanaTokenNativeBalance = selectorFamily<
       const tokenRegMetadata =
         tokenRegistry.get(tokenAccount.mint.toString()) ?? ({} as TokenInfo);
 
-      if (tokenRegMetadata) {
-        const {
-          symbol: ticker,
-          logoURI: logo,
-          name,
-          decimals,
-        } = tokenRegMetadata;
-        const displayBalance = ethers.utils.formatUnits(
-          nativeBalance,
-          decimals
-        );
-        const priceMint =
-          tokenAccount.mint.toString() === WSOL_MINT
-            ? SOL_NATIVE_MINT
-            : tokenAccount.mint.toString();
-        return {
-          name,
-          decimals,
-          nativeBalance,
-          displayBalance,
-          ticker,
-          logo,
-          address: tokenAddress,
-          mint: tokenAccount.mint.toString(),
-          priceMint,
-        };
-      }
-
-      if (tokenMetadata) {
+      if (tokenMetadata && Object.keys(tokenRegMetadata).length == 0) {
         const displayBalance = ethers.utils.formatUnits(
           nativeBalance,
           tokenMetadata.decimals
@@ -189,7 +161,28 @@ export const solanaTokenNativeBalance = selectorFamily<
         };
       }
 
-      return null;
+      const {
+        symbol: ticker,
+        logoURI: logo,
+        name,
+        decimals,
+      } = tokenRegMetadata;
+      const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
+      const priceMint =
+        tokenAccount.mint.toString() === WSOL_MINT
+          ? SOL_NATIVE_MINT
+          : tokenAccount.mint.toString();
+      return {
+        name,
+        decimals,
+        nativeBalance,
+        displayBalance,
+        ticker,
+        logo,
+        address: tokenAddress,
+        mint: tokenAccount.mint.toString(),
+        priceMint,
+      };
     },
 });
 
