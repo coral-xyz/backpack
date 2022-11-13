@@ -131,6 +131,39 @@ export const solanaTokenNativeBalance = selectorFamily<
         (m: TokenMetadataString) =>
           metadataAddress.equals(new PublicKey(m.publicKey))
       );
+
+      const tokenRegistry = get(splTokenRegistry)!;
+      const tokenRegMetadata =
+        tokenRegistry.get(tokenAccount.mint.toString()) ?? ({} as TokenInfo);
+
+      if (tokenRegMetadata) {
+        const {
+          symbol: ticker,
+          logoURI: logo,
+          name,
+          decimals,
+        } = tokenRegMetadata;
+        const displayBalance = ethers.utils.formatUnits(
+          nativeBalance,
+          decimals
+        );
+        const priceMint =
+          tokenAccount.mint.toString() === WSOL_MINT
+            ? SOL_NATIVE_MINT
+            : tokenAccount.mint.toString();
+        return {
+          name,
+          decimals,
+          nativeBalance,
+          displayBalance,
+          ticker,
+          logo,
+          address: tokenAddress,
+          mint: tokenAccount.mint.toString(),
+          priceMint,
+        };
+      }
+
       if (tokenMetadata) {
         const displayBalance = ethers.utils.formatUnits(
           nativeBalance,
@@ -155,31 +188,8 @@ export const solanaTokenNativeBalance = selectorFamily<
           priceMint,
         };
       }
-      const tokenRegistry = get(splTokenRegistry)!;
-      const tokenRegMetadata =
-        tokenRegistry.get(tokenAccount.mint.toString()) ?? ({} as TokenInfo);
-      const {
-        symbol: ticker,
-        logoURI: logo,
-        name,
-        decimals,
-      } = tokenRegMetadata;
-      const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
-      const priceMint =
-        tokenAccount.mint.toString() === WSOL_MINT
-          ? SOL_NATIVE_MINT
-          : tokenAccount.mint.toString();
-      return {
-        name,
-        decimals,
-        nativeBalance,
-        displayBalance,
-        ticker,
-        logo,
-        address: tokenAddress,
-        mint: tokenAccount.mint.toString(),
-        priceMint,
-      };
+
+      return null;
     },
 });
 
