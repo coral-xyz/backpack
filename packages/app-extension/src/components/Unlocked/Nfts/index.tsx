@@ -148,7 +148,7 @@ function NftCollectionCard({ collection }: { collection: NftCollection }) {
       }
       // If there is only one item in the collection, link straight to its detail page
       push({
-        title: collectionDisplayNft.name,
+        title: collectionDisplayNft.name || "",
         componentId: NAV_COMPONENT_NFT_DETAIL,
         componentProps: {
           nftId: collectionDisplayNft.id,

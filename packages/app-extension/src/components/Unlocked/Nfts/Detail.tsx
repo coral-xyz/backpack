@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BigNumber } from "ethers";
 import { PublicKey } from "@solana/web3.js";
 import { Typography, IconButton, Popover } from "@mui/material";
 import { Whatshot, CallMade } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { useCustomTheme, styles } from "@coral-xyz/themes";
+import { useCustomTheme } from "@coral-xyz/themes";
 import {
   nftMetadata,
+  useBackgroundClient,
   useDecodedSearchParams,
   useAnchorContext,
   useLoader,
@@ -24,13 +25,9 @@ import {
   Solana,
   confirmTransaction,
   getLogger,
+  UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
-import {
-  PrimaryButton,
-  SecondaryButton,
-  NegativeButton,
-  TextField,
-} from "../../common";
+import { PrimaryButton, SecondaryButton, NegativeButton } from "../../common";
 import {
   useDrawerContext,
   WithDrawer,
@@ -53,16 +50,6 @@ import { ProxyImage } from "../../common/ProxyImage";
 import { TextInput } from "../../common/Inputs";
 
 const logger = getLogger("app-extension/nft-detail");
-
-const useStyles = styles((theme) => ({
-  textRoot: {
-    marginTop: "12px !important",
-    marginBottom: "0 !important",
-    "& .MuiOutlinedInput-root": {
-      backgroundColor: `${theme.custom.colors.nav} !important`,
-    },
-  },
-}));
 
 export function NftsDetail({ nftId }: { nftId: string }) {
   const [nfts] = useLoader(nftMetadata, new Map());
@@ -153,7 +140,6 @@ function Description({ nft }: { nft: any }) {
 }
 
 function SendButton({ nft }: { nft: any }) {
-  const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
   const send = () => {
     setOpenDrawer(true);
@@ -173,7 +159,7 @@ function SendButton({ nft }: { nft: any }) {
           <NavStackEphemeral
             initialRoute={{ name: "send" }}
             options={() => ({
-              title: `${nft.name} / Send`,
+              title: nft.name ? `${nft.name} / Send` : "Send",
             })}
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
@@ -189,13 +175,13 @@ function SendButton({ nft }: { nft: any }) {
 }
 
 function SendScreen({ nft }: { nft: any }) {
-  const theme = useCustomTheme();
-  const classes = useStyles();
+  const background = useBackgroundClient();
   const { close } = useDrawerContext();
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [destinationAddress, setDestinationAddress] = useState("");
   const [openConfirm, setOpenConfirm] = useState(false);
+  const [wasSent, setWasSent] = useState(false);
   const {
     isValidAddress,
     isErrorAddress,
@@ -207,12 +193,19 @@ function SendScreen({ nft }: { nft: any }) {
     ethereumCtx.provider
   );
 
-  const onReject = () => {
-    close();
-  };
-  const onSend = () => {
-    setOpenConfirm(true);
-  };
+  useEffect(() => {
+    (async () => {
+      // If the modal is being closed and the NFT has been sent elsewhere then
+      // navigate back to the nav root because the send screen is no longer
+      // valid as the wallet no longer possesses the NFT.
+      if (!openConfirm && wasSent) {
+        await background.request({
+          method: UI_RPC_METHOD_NAVIGATION_TO_ROOT,
+          params: [],
+        });
+      }
+    })();
+  }, [openConfirm, wasSent, background]);
 
   return (
     <>
@@ -256,12 +249,12 @@ function SendScreen({ nft }: { nft: any }) {
               style={{
                 marginRight: "8px",
               }}
-              onClick={onReject}
+              onClick={close}
               label={"Cancel"}
             />
             <PrimaryButton
               disabled={!isValidAddress}
-              onClick={onSend}
+              onClick={() => setOpenConfirm(true)}
               label={"Next"}
             />
           </div>
@@ -281,7 +274,7 @@ function SendScreen({ nft }: { nft: any }) {
             }}
             destinationAddress={destinationAddress}
             amount={BigNumber.from(1)}
-            close={() => close()}
+            onComplete={() => setWasSent(true)}
           />
         )}
         {nft.blockchain === Blockchain.ETHEREUM && (
@@ -294,7 +287,7 @@ function SendScreen({ nft }: { nft: any }) {
             }}
             destinationAddress={destinationAddress}
             amount={BigNumber.from(1)}
-            close={() => close()}
+            onComplete={() => setWasSent(true)}
           />
         )}
       </ApproveTransactionDrawer>
@@ -370,14 +363,34 @@ function Attributes({ nft }: { nft: any }) {
 
 export function NftOptionsButton() {
   const theme = useCustomTheme();
+  const background = useBackgroundClient();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
   const searchParams = useDecodedSearchParams();
   const [nfts] = useLoader(nftMetadata, new Map());
+  const [wasBurnt, setWasBurnt] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      // If the modal is being closed and the NFT has been burnt then navigate
+      // back to the nav root because the send screen is no longer valid as the
+      // wallet no longer possesses the NFT.
+      if (!openDrawer && wasBurnt) {
+        await background.request({
+          method: UI_RPC_METHOD_NAVIGATION_TO_ROOT,
+          params: [],
+        });
+      }
+    })();
+  }, [openDrawer, wasBurnt, background]);
+
   // @ts-ignore
   const nft: any = nfts.get(searchParams.props.nftId);
+
   const isEthereum = nft && nft.contractAddress;
+
   const explorer = isEthereum ? useEthereumExplorer() : useSolanaExplorer();
+
   const connectionUrl = isEthereum
     ? useEthereumConnectionUrl()
     : useSolanaConnectionUrl();
@@ -385,9 +398,11 @@ export function NftOptionsButton() {
   const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const onClose = () => {
     setAnchorEl(null);
   };
+
   const onBurn = () => {
     onClose();
     setOpenDrawer(true);
@@ -483,13 +498,19 @@ export function NftOptionsButton() {
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}
       >
-        <BurnConfirmationCard nft={nft} />
+        <BurnConfirmationCard nft={nft} onComplete={() => setWasBurnt(true)} />
       </ApproveTransactionDrawer>
     </>
   );
 }
 
-function BurnConfirmationCard({ nft }: { nft: any }) {
+function BurnConfirmationCard({
+  nft,
+  onComplete,
+}: {
+  nft: any;
+  onComplete?: () => void;
+}) {
   const [state, setState] = useState<
     "confirm" | "sending" | "confirmed" | "error"
   >("confirm");
@@ -506,9 +527,18 @@ function BurnConfirmationCard({ nft }: { nft: any }) {
 
   const onConfirm = async () => {
     try {
-      const _signature = await Solana.burnNft(solanaCtx, {
+      // TODO: should use recoil for this to avoid the extra, unnecessary request.
+      const amount = parseInt(
+        (
+          await solanaCtx.connection.getTokenAccountBalance(
+            new PublicKey(nft.publicKey)
+          )
+        ).value.amount
+      );
+      const _signature = await Solana.burnAndCloseNft(solanaCtx, {
         solDestination: solanaCtx.walletPublicKey,
         mint: new PublicKey(nft.mint.toString()),
+        amount,
       });
       setSignature(_signature);
       setState("sending");
@@ -526,13 +556,14 @@ function BurnConfirmationCard({ nft }: { nft: any }) {
             : solanaCtx.commitment
         );
         setState("confirmed");
+        if (onComplete) onComplete();
       } catch (err: any) {
-        logger.error("unable to confirm", err);
+        logger.error("unable to confirm NFT burn", err);
         setError(err.toString());
         setState("error");
       }
     } catch (err: any) {
-      console.log("ERROR", err);
+      console.log("error burning NFT", err);
       setError(err);
       setState("error");
     }

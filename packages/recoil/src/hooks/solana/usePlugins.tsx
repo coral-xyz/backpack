@@ -89,6 +89,7 @@ export function useFreshPlugin(address?: string): {
         const xnft = await fetchXnft(provider, new PublicKey(address));
         const plugin = new Plugin(
           new PublicKey(address),
+          xnft.xnftAccount.publicKey,
           xnftUrl(xnft.metadataBlob.properties.bundle),
           xnft.metadataBlob.image,
           xnft.xnftAccount.name,
@@ -122,6 +123,7 @@ export function getPlugin(p: any): Plugin {
   if (!plug) {
     plug = new Plugin(
       p.install.account.xnft,
+      p.install.publicKey,
       p.url,
       p.iconUrl,
       p.title,

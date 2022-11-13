@@ -7,6 +7,9 @@ import {
   explorerUrl,
   Blockchain,
   Solana,
+  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+  UI_RPC_METHOD_GET_XNFT_PREFERENCES,
+  UI_RPC_METHOD_SET_XNFT_PREFERENCES,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import {
@@ -14,6 +17,8 @@ import {
   useSolanaExplorer,
   useSolanaConnectionUrl,
   useNavigation,
+  useXnftPreference,
+  useBackgroundClient,
 } from "@coral-xyz/recoil";
 import { SwitchToggle } from "../Preferences";
 import { SettingsList } from "../../../common/Settings/List";
@@ -36,7 +41,9 @@ const logger = getLogger("xnft-detail");
 export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   const theme = useCustomTheme();
   const [openConfirm, setOpenConfirm] = useState(false);
+  const xnftPreference = useXnftPreference({ xnftId: xnft.install.publicKey });
   const nav = useNavStack();
+  const background = useBackgroundClient();
 
   const isDisabled = xnft.install.publicKey === PublicKey.default.toString();
 
@@ -46,7 +53,43 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
 
   const menuItems = {
     Display: {
-      detail: <SwitchToggle enabled={true} onChange={() => {}} />,
+      detail: (
+        <SwitchToggle enabled={!xnftPreference.disabled} onChange={() => {}} />
+      ),
+      onClick: () => {},
+      style: {
+        opacity: 0.5,
+      },
+    },
+    MediaAccess: {
+      label: "Cam/Mic/Display access",
+      detail: (
+        <SwitchToggle
+          enabled={xnftPreference.mediaPermissions}
+          onChange={async () => {
+            const updatedMediaPermissions = !xnftPreference.mediaPermissions;
+            await background.request({
+              method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
+              params: [
+                xnft.install.publicKey,
+                {
+                  mediaPermissions: updatedMediaPermissions,
+                },
+              ],
+            });
+            if (updatedMediaPermissions) {
+              const result = await window.navigator.permissions.query({
+                //@ts-ignore: camera not part of the typedoc yet
+                name: "camera",
+              });
+              if (result.state !== "granted") {
+                window.open("/permissions.html", "_blank");
+                return;
+              }
+            }
+          }}
+        />
+      ),
       onClick: () => {},
       style: {
         opacity: 0.5,

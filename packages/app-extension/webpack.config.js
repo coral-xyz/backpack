@@ -68,6 +68,7 @@ const options = {
   entry: {
     background: "./src/background/index.ts",
     options: "./src/options/index.tsx",
+    permissions: "./src/permissions/index.tsx",
     popup: "./src/index.tsx",
     contentScript: "./src/contentScript/index.ts",
     // injected: "../provider-injection/dist/browser/index.js",

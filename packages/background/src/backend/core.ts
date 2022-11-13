@@ -22,6 +22,7 @@ import {
   NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_BLOCKCHAIN_ENABLED,
   NOTIFICATION_DARK_MODE_UPDATED,
+  NOTIFICATION_DEVELOPER_MODE_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
@@ -39,10 +40,13 @@ import {
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
+  NOTIFICATION_XNFT_PREFERENCE_UPDATED,
   SolanaCluster,
   SolanaExplorer,
   deserializeTransaction,
   FEATURE_GATES_MAP,
+  XnftPreferenceStore,
+  XnftPreference,
 } from "@coral-xyz/common";
 import type {
   KeyringInit,
@@ -185,7 +189,27 @@ export class Backend {
   }
 
   async solanaConnectionUrlRead(): Promise<string> {
-    const data = await getWalletData();
+    let data = await getWalletData();
+
+    // migrate the old default RPC value, this can be removed in future
+    const OLD_DEFAULT = "https://solana-rpc-nodes.projectserum.com";
+    if (
+      // if the current default RPC does not match the old one
+      SolanaCluster.DEFAULT !== OLD_DEFAULT &&
+      // and the user's RPC URL is that old default value
+      data.solana?.cluster === OLD_DEFAULT
+    ) {
+      // set the user's RPC URL to the new default value
+      data = {
+        ...data,
+        solana: {
+          ...data.solana,
+          cluster: SolanaCluster.DEFAULT,
+        },
+      };
+      await setWalletData(data);
+    }
+
     return (data.solana && data.solana.cluster) ?? SolanaCluster.DEFAULT;
   }
 
@@ -791,6 +815,26 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async developerModeRead(): Promise<boolean> {
+    const data = await store.getWalletData();
+    return data.developerMode ?? false;
+  }
+
+  async developerModeUpdate(developerMode: boolean): Promise<string> {
+    const data = await store.getWalletData();
+    await store.setWalletData({
+      ...data,
+      developerMode,
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_DEVELOPER_MODE_UPDATED,
+      data: {
+        developerMode,
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
   async isApprovedOrigin(origin: string): Promise<boolean> {
     const data = await store.getWalletData();
     if (!data.approvedOrigins) {
@@ -942,6 +986,26 @@ export class Backend {
     return await store.getFeatureGates();
   }
 
+  async setXnftPreferences(xnftId: string, preference: XnftPreference) {
+    const currentPreferences = (await store.getXnftPreferences()) || {};
+    const updatedPreferences = {
+      ...currentPreferences,
+      [xnftId]: {
+        ...(currentPreferences[xnftId] || {}),
+        ...preference,
+      },
+    };
+    await store.setXnftPreferences(updatedPreferences);
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_XNFT_PREFERENCE_UPDATED,
+      data: { updatedPreferences },
+    });
+  }
+
+  async getXnftPreferences() {
+    return await store.getXnftPreferences();
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Navigation.
   ///////////////////////////////////////////////////////////////////////////////
@@ -1046,7 +1110,10 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async navigationCurrentUrlUpdate(url: string): Promise<string> {
+  async navigationCurrentUrlUpdate(
+    url: string,
+    activeTab?: string
+  ): Promise<string> {
     // Get the tab nav.
     const currNav = await store.getNav();
     if (!currNav) {
@@ -1054,21 +1121,30 @@ export class Backend {
     }
 
     // Update the active tab's nav stack.
-    const navData = currNav.data[currNav.activeTab];
+    const navData = currNav.data[activeTab ?? currNav.activeTab];
+    if (!navData) {
+      // We exit gracefully so that we don't crash the app.
+      console.error(`navData not found for tab ${activeTab}`);
+      return SUCCESS_RESPONSE;
+    }
     navData.urls[navData.urls.length - 1] = url;
-    currNav.data[currNav.activeTab] = navData;
+    currNav.data[activeTab ?? currNav.activeTab] = navData;
 
     // Save the change.
     await store.setNav(currNav);
 
-    // Notify listeners.
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-      data: {
-        url,
-        nav: "tab",
-      },
-    });
+    // Only navigate if the user hasn't already moved away from this tab
+    // or if the user didn't explicitly send an activeTab
+    if (!activeTab || activeTab === currNav.activeTab) {
+      // Notify listeners.
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
+        data: {
+          url,
+          nav: "tab",
+        },
+      });
+    }
 
     return SUCCESS_RESPONSE;
   }

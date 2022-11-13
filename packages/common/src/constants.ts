@@ -166,12 +166,21 @@ export const UI_RPC_METHOD_SET_FEATURE_GATES =
   "ui-rpc-method-set-feature-gates";
 export const UI_RPC_METHOD_GET_FEATURE_GATES =
   "ui-rpc-method-get-feature-gates";
+export const UI_RPC_METHOD_GET_XNFT_PREFERENCES =
+  "ui-rpc-method-get-xnft-preference";
+export const UI_RPC_METHOD_SET_XNFT_PREFERENCES =
+  "ui-rpc-method-set-xnft-preference";
+
 export const UI_RPC_METHOD_PREVIEW_PUBKEYS =
   "ui-rpc-method-keyring-preview-pubkeys";
 export const UI_RPC_METHOD_SETTINGS_DARK_MODE_READ =
   "ui-rpc-method-settings-dark-mode-read";
 export const UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE =
   "ui-rpc-method-settings-dark-mode-update";
+export const UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_READ =
+  "ui-rpc-method-settings-developer-mode-read";
+export const UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE =
+  "ui-rpc-method-settings-developer-mode-update";
 export const UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET =
   "ui-rpc-method-sign-message-for-wallet";
 export const UI_RPC_METHOD_USERNAME_READ = "ui-rpc-method-username-read";
@@ -227,9 +236,13 @@ export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
   "notification-auto-lock-secs-updated";
 export const NOTIFICATION_BLOCKCHAIN_DISABLED =
   "notification-blockchain-disabled";
+export const NOTIFICATION_XNFT_PREFERENCE_UPDATED =
+  "notification-xnft-preference-updated";
 export const NOTIFICATION_BLOCKCHAIN_ENABLED =
   "notification-blockchain-enabled";
 export const NOTIFICATION_DARK_MODE_UPDATED = "notification-dark-mode-updated";
+export const NOTIFICATION_DEVELOPER_MODE_UPDATED =
+  "notification-developer-mode-updated";
 export const NOTIFICATION_KEYNAME_UPDATE = "notification-keyname-update";
 export const NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED =
   "notification-keyring-active-blockchain-updated";
@@ -419,6 +432,8 @@ export const LEDGER_METHOD_ETHEREUM_SIGN_EIP712_HASHED_MESSAGE =
   "ledger-method-ethereum-sign-eip712-hashed-message";
 
 export const PLUGIN_RPC_METHOD_WINDOW_OPEN = "rpc-method-window-open";
+
+export const PLUGIN_RPC_METHOD_POP_OUT = "rpc-method-pop-out";
 
 export const BACKGROUND_SERVICE_WORKER_READY = "service-worker-ready";
 

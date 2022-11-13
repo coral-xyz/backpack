@@ -34,7 +34,7 @@ export async function sendAndConfirm<
   options?: ConfirmOptions
 ): Promise<TransactionSignature> {
   const [signature, { blockhash, lastValidBlockHeight }] = await Promise.all([
-    send(publicKey, requestManager, connection, tx, signers, options),
+    send(publicKey, requestManager, connection, tx, signers, options, true),
     connection.getLatestBlockhash(options?.preflightCommitment),
   ]);
 
@@ -60,7 +60,8 @@ export async function send<T extends Transaction | VersionedTransaction>(
   connection: Connection,
   tx: T,
   signers?: Signer[],
-  options?: SendOptions
+  options?: SendOptions | ConfirmOptions,
+  confirmTransaction?: boolean
 ): Promise<TransactionSignature> {
   const versioned = isVersionedTransaction(tx);
   if (!versioned) {
@@ -89,7 +90,7 @@ export async function send<T extends Transaction | VersionedTransaction>(
   const txStr = encode(txSerialize);
   return await requestManager.request({
     method: SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
-    params: [txStr, publicKey.toString(), options],
+    params: [txStr, publicKey.toString(), options, confirmTransaction],
   });
 }
 

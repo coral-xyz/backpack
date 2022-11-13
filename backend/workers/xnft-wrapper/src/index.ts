@@ -2,7 +2,7 @@ const RPC = "https://api.devnet.solana.com";
 
 //TODO: This should always point to the most recent released renderer code
 const PROD_RENDERER_URL =
-  "https://unpkg.com/@coral-xyz/react-xnft-dom-renderer@0.2.0-latest.214/dist/index.js";
+  "https://unpkg.com/@coral-xyz/react-xnft-dom-renderer@0.2.0-latest.427/dist/index.js";
 
 const V1_BUNDLES: string[] = [
   "https://ipfs.io/ipfs/bafybeibhd37z7osxbp2fvxcenid6uufsvrpumawxw4ked7h2br4duz3sme",
@@ -92,6 +92,7 @@ export default {
           <head>
             <meta charset="utf-8"/>
             <link rel="stylesheet" href="https://doof72pbjabye.cloudfront.net/fonts/inter/font.css"></link>
+            <script src="https://cdn.tailwindcss.com"></script>
           </head>
           <body>
             <div id="container"></div>

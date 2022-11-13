@@ -21,6 +21,7 @@ import {
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_DARK_MODE_UPDATED,
+  NOTIFICATION_DEVELOPER_MODE_UPDATED,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
@@ -31,6 +32,7 @@ import {
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
   NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
+  NOTIFICATION_XNFT_PREFERENCE_UPDATED,
 } from "@coral-xyz/common";
 import {
   KeyringStoreStateEnum,
@@ -54,7 +56,9 @@ export function NotificationsProvider(props: any) {
   const setActiveWallets = useSetRecoilState(atoms.activeWallets);
   const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
   const setAutoLockSecs = useSetRecoilState(atoms.autoLockSecs);
+  const setXnftPreferences = useSetRecoilState(atoms.xnftPreferences);
   const setIsDarkMode = useSetRecoilState(atoms.isDarkMode);
+  const setIsDeveloperMode = useSetRecoilState(atoms.isDeveloperMode);
   const setEnabledBlockchains = useSetRecoilState(atoms.enabledBlockchains);
   // Solana
   const setSolanaConnectionUrl = useSetRecoilState(atoms.solanaConnectionUrl);
@@ -115,8 +119,14 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_AUTO_LOCK_SECS_UPDATED:
           handleAutoLockSecsUpdated(notif);
           break;
+        case NOTIFICATION_XNFT_PREFERENCE_UPDATED:
+          handleXnftPreferenceUpdated(notif);
+          break;
         case NOTIFICATION_DARK_MODE_UPDATED:
           handleIsDarkModeUpdated(notif);
+          break;
+        case NOTIFICATION_DEVELOPER_MODE_UPDATED:
+          handleIsDeveloperModeUpdated(notif);
           break;
         case NOTIFICATION_SOLANA_EXPLORER_UPDATED:
           handleSolanaExplorerUpdated(notif);
@@ -307,8 +317,16 @@ export function NotificationsProvider(props: any) {
       setAutoLockSecs(notif.data.autoLockSecs);
     };
 
+    const handleXnftPreferenceUpdated = (notif: Notification) => {
+      setXnftPreferences(notif.data.updatedPreferences);
+    };
+
     const handleIsDarkModeUpdated = (notif: Notification) => {
       setIsDarkMode(notif.data.darkMode);
+    };
+
+    const handleIsDeveloperModeUpdated = (notif: Notification) => {
+      setIsDeveloperMode(notif.data.developerMode);
     };
 
     const handleSolanaExplorerUpdated = (notif: Notification) => {

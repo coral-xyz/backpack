@@ -100,7 +100,11 @@ export function useDecodedSearchParams<
   const ob = {};
   searchParams.forEach((v, k) => {
     if (k !== "nav") {
-      ob[k as keyof ExtensionSearchParams] = JSON.parse(decodeURIComponent(v));
+      try {
+        ob[k as keyof ExtensionSearchParams] = JSON.parse(
+          decodeURIComponent(v)
+        );
+      } catch {}
     }
   });
   return ob as SearchParamsType;
