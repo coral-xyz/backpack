@@ -89,10 +89,10 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
     });
   }
 
-  public async popout() {
+  public async popout(fullscreen: boolean) {
     await this.#requestManager.request({
       method: PLUGIN_RPC_METHOD_POP_OUT,
-      params: [],
+      params: [fullscreen],
     });
   }
 
