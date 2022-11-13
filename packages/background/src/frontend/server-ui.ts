@@ -38,6 +38,7 @@ import {
   UI_RPC_METHOD_KEYRING_RESET,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLETS,
+  UI_RPC_METHOD_KEYRING_UPDATE_LAST_USED,
   UI_RPC_METHOD_KEYNAME_READ,
   UI_RPC_METHOD_KEYNAME_UPDATE,
   UI_RPC_METHOD_PASSWORD_UPDATE,
@@ -181,6 +182,8 @@ async function handle<T = any>(
       );
     case UI_RPC_METHOD_KEYRING_RESET:
       return await handleKeyringReset(ctx);
+    case UI_RPC_METHOD_KEYRING_UPDATE_LAST_USED:
+      return await handleKeyringUpdateLastUsed(ctx);
     //
     // Ledger.
     //
@@ -535,6 +538,13 @@ async function handleKeyringReset(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
   const resp = ctx.backend.keyringReset();
+  return [resp];
+}
+
+async function handleKeyringUpdateLastUsed(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = ctx.backend.keyringUpdateLastUsed();
   return [resp];
 }
 

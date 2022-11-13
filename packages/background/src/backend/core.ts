@@ -45,7 +45,6 @@ import {
   SolanaExplorer,
   deserializeTransaction,
   FEATURE_GATES_MAP,
-  XnftPreferenceStore,
   XnftPreference,
 } from "@coral-xyz/common";
 import type {
@@ -748,6 +747,11 @@ export class Backend {
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_RESET,
     });
+    return SUCCESS_RESPONSE;
+  }
+
+  keyringUpdateLastUsed() {
+    this.keyringStore.updateLastUsed();
     return SUCCESS_RESPONSE;
   }
 

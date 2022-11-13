@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Loading } from "../components/common";
-import {
-  useAvatarUrl,
-  useDarkMode,
-  useUsername,
-  useXnftPreference,
-} from "@coral-xyz/recoil";
+import { useAvatarUrl, useDarkMode, useUsername } from "@coral-xyz/recoil";
 import { XnftPreference } from "@coral-xyz/common";
 
 export function PluginRenderer({

@@ -2,12 +2,7 @@ import { Button, Divider } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
 import { Plugin } from "@coral-xyz/common";
 import { PluginRenderer } from "../../../plugin/Renderer";
-import {
-  useDarkMode,
-  usePlugins,
-  useXnftPreference,
-  useXnftPreferences,
-} from "@coral-xyz/recoil";
+import { usePlugins, useXnftPreference } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { PowerIcon, MoreIcon } from "../../common/Icon";
 import { Simulator } from "./Simulator";

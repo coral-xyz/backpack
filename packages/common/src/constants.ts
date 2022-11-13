@@ -146,6 +146,8 @@ export const UI_RPC_METHOD_KEYRING_TYPE_READ =
   "ui-rpc-method-keyring-type-read";
 export const UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC =
   "ui-rpc-method-validate-mnemonic";
+export const UI_RPC_METHOD_KEYRING_UPDATE_LAST_USED =
+  "ui-rpc-method-keyring-update-last-used";
 export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
 export const UI_RPC_METHOD_LEDGER_IMPORT = "ui-rpc-method-ledger-import";
 export const UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE =

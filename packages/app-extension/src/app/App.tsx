@@ -2,6 +2,7 @@ import { RecoilRoot } from "recoil";
 import { HashRouter } from "react-router-dom";
 import {
   useBackgroundKeepAlive,
+  useUpdateLastUsed,
   NotificationsProvider,
 } from "@coral-xyz/recoil";
 import { Router } from "./Router";
@@ -31,6 +32,7 @@ export default function App() {
 
 function _App() {
   useBackgroundKeepAlive();
+  useUpdateLastUsed();
   return (
     <WithTheme>
       <NotificationsProvider>
