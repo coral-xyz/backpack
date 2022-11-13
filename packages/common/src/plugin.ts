@@ -560,6 +560,7 @@ export class Plugin {
       window.open("popup.html", "_blank");
     } else {
       await openPopupWindow("popup.html");
+      window.close();
     }
     return ["success"];
   }
