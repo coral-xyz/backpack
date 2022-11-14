@@ -33,10 +33,9 @@ const Permissions = () => {
   }, []);
 
   const registerServiceWorker = async () => {
-    const swRegistration = await navigator.serviceWorker.register(
-      "assets/service.js"
-    ); //notice the file name
-    /////////////
+    // const swRegistration = await navigator.serviceWorker.register(
+    //   "assets/service.js"
+    // );
 
     const urlB64ToUint8Array = (base64String: any) => {
       const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -65,6 +64,7 @@ const Permissions = () => {
     };
 
     navigator.serviceWorker.ready.then(async (serviceWorkerRegistration) => {
+      console.log(serviceWorkerRegistration);
       console.log("ready!!");
       // This will be called only once when the service worker is installed for first time.
       try {
@@ -72,10 +72,19 @@ const Permissions = () => {
           "BA_9ntbAGy7SAn9oUzkGiWQXqCqc1BQs-7OK6C4fMkC7Y0nWiPqhNPder3-nklzley4IetxjSCd6cI8jHgZ01us"
         );
         const options = { applicationServerKey, userVisibleOnly: true };
-        const subscription =
-          await serviceWorkerRegistration.pushManager.subscribe(options);
-        const response = await saveSubscription(subscription);
-        console.log(response);
+        return serviceWorkerRegistration.pushManager
+          .subscribe(options)
+          .then(async function (subscription) {
+            if (!subscription) {
+              // Set appropriate app states.
+              return;
+            }
+            const response = await saveSubscription(subscription);
+            console.log(response);
+          })
+          .catch(function (err) {
+            console.log("error in subcription .. " + err);
+          });
       } catch (err) {
         console.log("Error", err);
       }
@@ -90,7 +99,7 @@ const Permissions = () => {
 
     ////////////
 
-    return swRegistration;
+    // return swRegistration;
   };
   const showLocalNotification = (
     title: string,
