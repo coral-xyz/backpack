@@ -7,6 +7,7 @@ import {
   Metadata,
   TokenStandard,
 } from "@metaplex-foundation/mpl-token-metadata";
+import type { Mint, RawMint } from "@solana/spl-token";
 import { MintLayout } from "@solana/spl-token";
 import { externalResourceUri } from "@coral-xyz/common-public";
 import type {
@@ -77,13 +78,19 @@ export async function customSplTokenAccounts(
     delegatedAmount: new BN(0),
     closeAuthority: null,
   };
+
   const tokenAccountsArray = Array.from(tokenAccounts.values());
+  const tokenAccountToMint = await fetchMints(
+    tokenClient.provider,
+    tokenAccountsArray
+  );
   //
   // Fetch onchain metadata.
   //
   const tokenMetadataArray = await fetchSplMetadata(
     tokenClient.provider,
-    tokenAccountsArray
+    tokenAccountsArray,
+    tokenAccountToMint
   );
 
   //
@@ -100,7 +107,7 @@ export async function customSplTokenAccounts(
   const {
     splTokenMetadata: tokensWithUriMetadata,
     splNftMetadata: nftsWithUriMetadata,
-  } = await separateNfts(tokenClient.provider, tokenAccountsToMetadataWithUri);
+  } = await separateNfts(tokenAccountsToMetadataWithUri);
 
   //
   // Construct list of all fungible tokens
@@ -129,9 +136,27 @@ export async function customSplTokenAccounts(
   };
 }
 
-export async function zipFungibleTokens(
+async function fetchMints(
+  provider: Provider,
+  tokenAccounts: SolanaTokenAccountWithKey[]
+): Promise<Map<string, RawMint | null>> {
+  const mints: [string, RawMint | null][] = (
+    await anchor.utils.rpc.getMultipleAccounts(
+      provider.connection,
+      tokenAccounts.map((t) => t.mint)
+    )
+  ).map((m, idx) => {
+    return [
+      tokenAccounts[idx].key.toString(),
+      m ? MintLayout.decode(m.account.data) : null,
+    ];
+  });
+  return new Map(mints);
+}
+
+async function zipFungibleTokens(
   tokenAccountsMetadata: (TokenMetadata | null)[],
-  tokensWithMetadataUri: Map<string, SplNftMetadata & { decimals: number }>
+  tokensWithMetadataUri: Map<string, SplNftMetadata>
 ) {
   const map = tokenAccountsMetadata.reduce((acc, m, idx) => {
     if (!m) return acc;
@@ -151,46 +176,32 @@ export async function zipFungibleTokens(
   return Array.from(map.values());
 }
 
-export async function separateNfts(
-  provider: Provider,
-  tokens: Map<string, SplNftMetadata>
-) {
-  //
-  // Fetch mints for each token
-  //
+export async function separateNfts(tokens: Map<string, SplNftMetadata>) {
   const metadataArr = Array.from(tokens.values());
-  const mints = (
-    await anchor.utils.rpc.getMultipleAccounts(
-      provider.connection,
-      metadataArr.map((t) => t.metadata.mint)
-    )
-  ).map((m) => {
-    return m ? MintLayout.decode(m.account.data) : null;
-  });
 
   // if token standard is available then use it. otherwise determine fungibility by decimals
   const tokensWithMetadata = metadataArr
-    .map((m, idx) => {
-      return { ...m, decimals: mints[idx]?.decimals || 0 };
+    .map((m) => {
+      return { ...m, decimals: m.decimals || 0 };
     })
-    .filter((m, idx) =>
+    .filter((m) =>
       m.metadata.tokenStandard
         ? m.metadata.tokenStandard == TokenStandard.FungibleAsset ||
           m.metadata.tokenStandard == TokenStandard.Fungible
-        : (mints[idx]?.decimals || 0) > 0
+        : m.decimals || 0 > 0
     )
     .filter(Boolean);
-  const nftsWithMetadata = metadataArr.filter((m, idx) =>
+  const nftsWithMetadata = metadataArr.filter((m) =>
     m.metadata.tokenStandard
       ? m.metadata.tokenStandard == TokenStandard.NonFungibleEdition ||
         (m.metadata.tokenStandard as TokenStandard) == TokenStandard.NonFungible
-      : (mints[idx]?.decimals || 0) == 0
+      : (m.decimals || 0) == 0
   );
 
   const splTokenMetadata = tokensWithMetadata.reduce((acc, m) => {
     acc.set(m.publicKey.toString(), m);
     return acc;
-  }, new Map<string, SplNftMetadata & { decimals: number }>());
+  }, new Map<string, SplNftMetadata>());
   const splNftMetadata = nftsWithMetadata.reduce((acc, m) => {
     acc.set(m.publicKey.toString(), m);
     return acc;
@@ -204,7 +215,8 @@ export async function separateNfts(
 
 export async function fetchSplMetadata(
   provider: Provider,
-  tokens: SolanaTokenAccountWithKey[]
+  tokens: SolanaTokenAccountWithKey[],
+  mints: Map<string, RawMint | null>
 ): Promise<(TokenMetadata | null)[]> {
   //
   // Fetch metadata for each token.
@@ -223,11 +235,12 @@ export async function fetchSplMetadata(
       provider.connection,
       metaAddrs.map((t) => t.metadataAddress)
     )
-  ).map((t) =>
+  ).map((t, idx) =>
     t
       ? {
           publicKey: t.publicKey,
           account: Metadata.deserialize(t.account.data)[0],
+          decimals: mints.get(tokens[idx].key.toString())?.decimals,
         }
       : null
   );
@@ -283,6 +296,7 @@ export async function fetchSplMetadataUri(
       metadataAddress: tokenMetadata.publicKey,
       metadata: tokenMetadata.account,
       tokenMetaUriData: tokenMetaUriData[idx],
+      decimals: tokenMetadata.decimals,
     });
     return acc;
   }, new Map<string, SplNftMetadata>());

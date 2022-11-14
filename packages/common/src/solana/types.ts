@@ -28,6 +28,7 @@ export type SplNftMetadata = {
   metadataAddress: PublicKey;
   metadata: Metadata;
   tokenMetaUriData: any;
+  decimals?: number;
 };
 
 // https://stackoverflow.com/a/72190984
